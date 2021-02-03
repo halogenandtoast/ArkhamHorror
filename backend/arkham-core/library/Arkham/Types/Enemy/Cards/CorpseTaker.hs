@@ -9,7 +9,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
 
-newtype CorpseTaker = CorpseTaker Attrs
+newtype CorpseTaker = CorpseTaker EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 corpseTaker :: EnemyId -> CorpseTaker
@@ -29,7 +29,7 @@ instance ActionRunner env => HasActions env CorpseTaker where
   getActions i window (CorpseTaker attrs) = getActions i window attrs
 
 instance EnemyRunner env => RunMessage env CorpseTaker where
-  runMessage msg e@(CorpseTaker attrs@Attrs {..}) = case msg of
+  runMessage msg e@(CorpseTaker attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
       farthestEmptyLocationIds <- map unFarthestLocationId
         <$> getSetList (iid, EmptyLocation)

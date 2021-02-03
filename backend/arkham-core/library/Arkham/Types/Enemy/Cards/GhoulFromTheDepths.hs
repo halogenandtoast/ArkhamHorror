@@ -8,7 +8,7 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
-newtype GhoulFromTheDepths = GhoulFromTheDepths Attrs
+newtype GhoulFromTheDepths = GhoulFromTheDepths EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 ghoulFromTheDepths :: EnemyId -> GhoulFromTheDepths
@@ -28,7 +28,7 @@ instance ActionRunner env => HasActions env GhoulFromTheDepths where
   getActions i window (GhoulFromTheDepths attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env GhoulFromTheDepths where
-  runMessage msg e@(GhoulFromTheDepths attrs@Attrs {..}) = case msg of
+  runMessage msg e@(GhoulFromTheDepths attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAt (Just iid) enemyId (LocationWithTitle "Bathroom")
     _ -> GhoulFromTheDepths <$> runMessage msg attrs

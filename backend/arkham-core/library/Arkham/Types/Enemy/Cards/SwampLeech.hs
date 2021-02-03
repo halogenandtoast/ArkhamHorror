@@ -9,7 +9,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Trait
 
-newtype SwampLeech = SwampLeech Attrs
+newtype SwampLeech = SwampLeech EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 swampLeech :: EnemyId -> SwampLeech
@@ -35,7 +35,7 @@ instance ActionRunner env => HasActions env SwampLeech where
     pure $ filter (not . isEvade) actions'
 
 instance EnemyRunner env => RunMessage env SwampLeech where
-  runMessage msg e@(SwampLeech attrs@Attrs {..}) = case msg of
+  runMessage msg e@(SwampLeech attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
       bayouLocations <- getSetList @LocationId [Bayou]
       e <$ spawnAtOneOf iid enemyId bayouLocations

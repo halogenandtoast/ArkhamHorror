@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
-newtype CloverClubPitBoss = CloverClubPitBoss Attrs
+newtype CloverClubPitBoss = CloverClubPitBoss EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 cloverClubPitBoss :: EnemyId -> CloverClubPitBoss
@@ -29,7 +29,7 @@ instance ActionRunner env => HasActions env CloverClubPitBoss where
   getActions i window (CloverClubPitBoss attrs) = getActions i window attrs
 
 instance EnemyRunner env => RunMessage env CloverClubPitBoss where
-  runMessage msg e@(CloverClubPitBoss attrs@Attrs {..}) = case msg of
+  runMessage msg e@(CloverClubPitBoss attrs@EnemyAttrs {..}) = case msg of
     After (GainClues iid n) | n > 0 -> do
       lid <- getId iid
       e <$ when

@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
-newtype IcyGhoul = IcyGhoul Attrs
+newtype IcyGhoul = IcyGhoul EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 icyGhoul :: EnemyId -> IcyGhoul
@@ -25,7 +25,7 @@ instance ActionRunner env => HasActions env IcyGhoul where
   getActions i window (IcyGhoul attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env IcyGhoul where
-  runMessage msg e@(IcyGhoul attrs@Attrs {..}) = case msg of
+  runMessage msg e@(IcyGhoul attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAt (Just iid) enemyId (LocationWithTitle "Cellar")
     _ -> IcyGhoul <$> runMessage msg attrs

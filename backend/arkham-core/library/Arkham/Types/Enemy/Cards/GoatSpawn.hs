@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
-newtype GoatSpawn = GoatSpawn Attrs
+newtype GoatSpawn = GoatSpawn EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 goatSpawn :: EnemyId -> GoatSpawn
@@ -24,7 +24,7 @@ instance ActionRunner env => HasActions env GoatSpawn where
   getActions i window (GoatSpawn attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env GoatSpawn where
-  runMessage msg (GoatSpawn attrs@Attrs {..}) = case msg of
+  runMessage msg (GoatSpawn attrs@EnemyAttrs {..}) = case msg of
     EnemyDefeated eid _ _ _ _ _ | eid == enemyId -> do
       investigatorIds <- getSetList enemyLocation
       unshiftMessages

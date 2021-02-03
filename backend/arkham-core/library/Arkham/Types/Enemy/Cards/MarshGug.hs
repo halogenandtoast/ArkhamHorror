@@ -7,7 +7,7 @@ import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Trait
 
-newtype MarshGug = MarshGug Attrs
+newtype MarshGug = MarshGug EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 marshGug :: EnemyId -> MarshGug
@@ -27,7 +27,7 @@ instance ActionRunner env => HasActions env MarshGug where
   getActions i window (MarshGug attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env MarshGug where
-  runMessage msg e@(MarshGug attrs@Attrs {..}) = case msg of
+  runMessage msg e@(MarshGug attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy _ _ eid | eid == enemyId -> do
       leadInvestigatorId <- getLeadInvestigatorId
       bayouLocations <- getSetList [Bayou]

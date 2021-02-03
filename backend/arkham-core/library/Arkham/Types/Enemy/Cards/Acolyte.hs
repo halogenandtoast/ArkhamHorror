@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
-newtype Acolyte = Acolyte Attrs
+newtype Acolyte = Acolyte EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 acolyte :: EnemyId -> Acolyte
@@ -27,7 +27,7 @@ instance ActionRunner env => HasActions env Acolyte where
   getActions i window (Acolyte attrs) = getActions i window attrs
 
 instance EnemyRunner env => RunMessage env Acolyte where
-  runMessage msg e@(Acolyte attrs@Attrs {..}) = case msg of
+  runMessage msg e@(Acolyte attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAtEmptyLocation iid eid
     EnemySpawn _ _ eid | eid == enemyId ->

@@ -76,10 +76,10 @@ data Enemy
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-newtype BaseEnemy = BaseEnemy Attrs
+newtype BaseEnemy = BaseEnemy EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
-baseEnemy :: EnemyId -> CardCode -> (Attrs -> Attrs) -> Enemy
+baseEnemy :: EnemyId -> CardCode -> (EnemyAttrs -> EnemyAttrs) -> Enemy
 baseEnemy a b f = BaseEnemy' . BaseEnemy $ baseAttrs a b f
 
 instance ActionRunner env => HasActions env BaseEnemy where
@@ -99,9 +99,9 @@ actionFromMessage (ActivateCardAbilityAction _ ability) =
     _ -> Nothing
 actionFromMessage _ = Nothing
 
-preventedByModifier :: Attrs -> Message -> Modifier -> Bool
-preventedByModifier Attrs {..} msg (Modifier _ (CannotTakeAction matcher)) =
-  case actionFromMessage msg of
+preventedByModifier :: EnemyAttrs -> Message -> Modifier -> Bool
+preventedByModifier EnemyAttrs {..} msg (Modifier _ (CannotTakeAction matcher))
+  = case actionFromMessage msg of
     Just action -> case matcher of
       IsAction a -> a == action
       EnemyAction a traits ->
@@ -137,7 +137,7 @@ deriving anyclass instance
 
 instance Entity Enemy where
   type EntityId Enemy = EnemyId
-  type EntityAttrs Enemy = Attrs
+  type EntityAttrs Enemy = EnemyAttrs
 
 instance NamedEntity Enemy where
   toName = toName . toAttrs

@@ -7,7 +7,7 @@ import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Trait
 
-newtype BogGator = BogGator Attrs
+newtype BogGator = BogGator EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 bogGator :: EnemyId -> BogGator
@@ -22,7 +22,7 @@ bogGator uuid =
     . (preyL .~ LowestSkill SkillAgility)
 
 instance HasSet Trait env LocationId => HasModifiersFor env BogGator where
-  getModifiersFor _ (EnemyTarget eid) (BogGator a@Attrs {..})
+  getModifiersFor _ (EnemyTarget eid) (BogGator a@EnemyAttrs {..})
     | spawned a && eid == enemyId = do
       bayouLocation <- member Bayou <$> getSet enemyLocation
       pure $ toModifiers a $ if bayouLocation

@@ -5,7 +5,7 @@ where
 
 import TestImport
 
-import Arkham.Types.Enemy.Attrs (Attrs(..))
+import Arkham.Types.Enemy.Attrs (EnemyAttrs(..))
 import Arkham.Types.Location.Attrs (Attrs(..))
 
 spec :: Spec

@@ -6,7 +6,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 
-newtype StubbornDetective = StubbornDetective Attrs
+newtype StubbornDetective = StubbornDetective EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 stubbornDetective :: EnemyId -> StubbornDetective
@@ -20,7 +20,7 @@ stubbornDetective uuid = StubbornDetective $ (weaknessBaseAttrs uuid "01102")
   }
 
 instance HasId LocationId env InvestigatorId => HasModifiersFor env StubbornDetective where
-  getModifiersFor _ (InvestigatorTarget iid) (StubbornDetective a@Attrs {..})
+  getModifiersFor _ (InvestigatorTarget iid) (StubbornDetective a@EnemyAttrs {..})
     | spawned a = do
       locationId <- getId @LocationId iid
       pure $ toModifiers a [ Blank | locationId == enemyLocation ]

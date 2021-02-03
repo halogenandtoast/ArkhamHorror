@@ -9,7 +9,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 
-newtype GrapplingHorror = GrapplingHorror Attrs
+newtype GrapplingHorror = GrapplingHorror EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 grapplingHorror :: EnemyId -> GrapplingHorror
@@ -23,7 +23,7 @@ grapplingHorror uuid =
     . (evadeL .~ 2)
 
 instance HasModifiersFor env GrapplingHorror where
-  getModifiersFor _ (InvestigatorTarget iid) (GrapplingHorror a@Attrs {..}) =
+  getModifiersFor _ (InvestigatorTarget iid) (GrapplingHorror a@EnemyAttrs {..}) =
     if iid `elem` enemyEngagedInvestigators
       then pure $ toModifiers a [CannotMove]
       else pure []

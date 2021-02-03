@@ -10,7 +10,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 
-newtype Umordhoth = Umordhoth Attrs
+newtype Umordhoth = Umordhoth EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 umordhoth :: EnemyId -> Umordhoth
@@ -28,7 +28,7 @@ instance HasModifiersFor env Umordhoth where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Umordhoth where
-  getActions iid NonFast (Umordhoth attrs@Attrs {..}) =
+  getActions iid NonFast (Umordhoth attrs@EnemyAttrs {..}) =
     withBaseActions iid NonFast attrs $ do
       maid <- fmap unStoryAssetId <$> getId (CardCode "01117")
       locationId <- getId @LocationId iid
@@ -49,7 +49,7 @@ instance ActionRunner env => HasActions env Umordhoth where
   getActions i window (Umordhoth attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env Umordhoth where
-  runMessage msg e@(Umordhoth attrs@Attrs {..}) = case msg of
+  runMessage msg e@(Umordhoth attrs@EnemyAttrs {..}) = case msg of
     EnemySpawn _ _ eid | eid == enemyId -> do
       playerCount <- unPlayerCount <$> getCount ()
       Umordhoth

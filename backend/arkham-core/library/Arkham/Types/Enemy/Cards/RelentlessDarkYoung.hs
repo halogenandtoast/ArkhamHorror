@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
-newtype RelentlessDarkYoung = RelentlessDarkYoung Attrs
+newtype RelentlessDarkYoung = RelentlessDarkYoung EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 relentlessDarkYoung :: EnemyId -> RelentlessDarkYoung

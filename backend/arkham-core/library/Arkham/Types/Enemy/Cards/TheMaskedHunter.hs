@@ -6,7 +6,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 
-newtype TheMaskedHunter = TheMaskedHunter Attrs
+newtype TheMaskedHunter = TheMaskedHunter EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theMaskedHunter :: EnemyId -> TheMaskedHunter
@@ -22,7 +22,7 @@ theMaskedHunter uuid =
     . (uniqueL .~ True)
 
 instance HasModifiersFor env TheMaskedHunter where
-  getModifiersFor _ (InvestigatorTarget iid) (TheMaskedHunter a@Attrs {..}) =
+  getModifiersFor _ (InvestigatorTarget iid) (TheMaskedHunter a@EnemyAttrs {..}) =
     if iid `elem` enemyEngagedInvestigators
       then pure $ toModifiers a [CannotDiscoverClues, CannotSpendClues]
       else pure []
@@ -32,7 +32,7 @@ instance ActionRunner env => HasActions env TheMaskedHunter where
   getActions i window (TheMaskedHunter attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env TheMaskedHunter where
-  runMessage msg (TheMaskedHunter attrs@Attrs {..}) = case msg of
+  runMessage msg (TheMaskedHunter attrs@EnemyAttrs {..}) = case msg of
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
       playerCount <- unPlayerCount <$> getCount ()
       TheMaskedHunter

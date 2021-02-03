@@ -6,7 +6,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.RequestedTokenStrategy
 
-newtype HuntingHorror = HuntingHorror Attrs
+newtype HuntingHorror = HuntingHorror EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 huntingHorror :: EnemyId -> HuntingHorror
@@ -26,7 +26,7 @@ instance ActionRunner env => HasActions env HuntingHorror where
   getActions i window (HuntingHorror attrs) = getActions i window attrs
 
 instance EnemyRunner env => RunMessage env HuntingHorror where
-  runMessage msg e@(HuntingHorror attrs@Attrs {..}) = case msg of
+  runMessage msg e@(HuntingHorror attrs@EnemyAttrs {..}) = case msg of
     BeginEnemy ->
       e <$ unshiftMessage (RequestTokens (toSource attrs) Nothing 1 SetAside)
     RequestedTokens source _ tokens | isSource attrs source -> do

@@ -7,7 +7,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Trait
 
-newtype ConglomerationOfSpheres = ConglomerationOfSpheres Attrs
+newtype ConglomerationOfSpheres = ConglomerationOfSpheres EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 conglomerationOfSpheres :: EnemyId -> ConglomerationOfSpheres
@@ -29,7 +29,7 @@ instance ActionRunner env => HasActions env ConglomerationOfSpheres where
     getActions i window attrs
 
 instance EnemyRunner env => RunMessage env ConglomerationOfSpheres where
-  runMessage msg e@(ConglomerationOfSpheres attrs@Attrs {..}) = case msg of
+  runMessage msg e@(ConglomerationOfSpheres attrs@EnemyAttrs {..}) = case msg of
     After (FightEnemy _ eid source _ _) | eid == enemyId -> do
       traits <- getSet source
       e <$ when

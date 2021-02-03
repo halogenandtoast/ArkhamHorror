@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
-newtype RavenousGhoul = RavenousGhoul Attrs
+newtype RavenousGhoul = RavenousGhoul EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 ravenousGhoul :: EnemyId -> RavenousGhoul

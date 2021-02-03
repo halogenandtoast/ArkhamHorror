@@ -4,7 +4,7 @@ module Arkham.Types.Asset.Cards.Rolands38SpecialSpec
 
 import TestImport
 
-import Arkham.Types.Enemy.Attrs (Attrs(..))
+import Arkham.Types.Enemy.Attrs (EnemyAttrs(..))
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 import Arkham.Types.Location.Attrs (Attrs(..))
 

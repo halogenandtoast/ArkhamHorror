@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
-newtype YithianObserver = YithianObserver Attrs
+newtype YithianObserver = YithianObserver EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 yithianObserver :: EnemyId -> YithianObserver
@@ -26,7 +26,7 @@ instance ActionRunner env => HasActions env YithianObserver where
   getActions i window (YithianObserver attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env YithianObserver where
-  runMessage msg e@(YithianObserver attrs@Attrs {..}) = case msg of
+  runMessage msg e@(YithianObserver attrs@EnemyAttrs {..}) = case msg of
     PerformEnemyAttack iid eid | eid == enemyId -> do
       cardCount' <- unCardCount <$> getCount iid
       if cardCount' == 0

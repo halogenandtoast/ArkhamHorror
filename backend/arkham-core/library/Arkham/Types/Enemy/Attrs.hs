@@ -11,7 +11,7 @@ import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Trait
 
-data Attrs = Attrs
+data EnemyAttrs = EnemyAttrs
   { enemyName :: Text
   , enemyId :: EnemyId
   , enemyCardCode :: CardCode
@@ -37,25 +37,25 @@ data Attrs = Attrs
   }
   deriving stock (Show, Generic)
 
-makeLensesWith suffixedFields ''Attrs
+makeLensesWith suffixedFields ''EnemyAttrs
 
-spawned :: Attrs -> Bool
-spawned Attrs { enemyLocation } = enemyLocation /= "unknown"
+spawned :: EnemyAttrs -> Bool
+spawned EnemyAttrs { enemyLocation } = enemyLocation /= "unknown"
 
-instance ToJSON Attrs where
+instance ToJSON EnemyAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "enemy"
   toEncoding = genericToEncoding $ aesonOptions $ Just "enemy"
 
-instance FromJSON Attrs where
+instance FromJSON EnemyAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "enemy"
 
-instance IsCard Attrs where
+instance IsCard EnemyAttrs where
   getCardId = CardId . unEnemyId . enemyId
   getCardCode = enemyCardCode
   getTraits = enemyTraits
   getKeywords = enemyKeywords
 
-baseAttrs :: EnemyId -> CardCode -> (Attrs -> Attrs) -> Attrs
+baseAttrs :: EnemyId -> CardCode -> (EnemyAttrs -> EnemyAttrs) -> EnemyAttrs
 baseAttrs eid cardCode f =
   let
     MkEncounterCard {..} =
@@ -64,7 +64,7 @@ baseAttrs eid cardCode f =
           (lookup cardCode allEncounterCards)
         $ CardId (unEnemyId eid)
   in
-    f $ Attrs
+    f $ EnemyAttrs
       { enemyName = ecName
       , enemyId = eid
       , enemyCardCode = cardCode
@@ -89,7 +89,7 @@ baseAttrs eid cardCode f =
       , enemyUnique = False
       }
 
-weaknessBaseAttrs :: EnemyId -> CardCode -> Attrs
+weaknessBaseAttrs :: EnemyId -> CardCode -> EnemyAttrs
 weaknessBaseAttrs eid cardCode =
   let
     MkPlayerCard {..} =
@@ -98,7 +98,7 @@ weaknessBaseAttrs eid cardCode =
           (lookup cardCode allPlayerCards)
         $ CardId (unEnemyId eid)
   in
-    Attrs
+    EnemyAttrs
       { enemyName = pcName
       , enemyId = eid
       , enemyCardCode = cardCode
@@ -161,9 +161,9 @@ spawnAtOneOf iid eid targetLids = do
 
 modifiedEnemyFight
   :: (MonadReader env m, HasModifiersFor env (), HasSource ForSkillTest env)
-  => Attrs
+  => EnemyAttrs
   -> m Int
-modifiedEnemyFight Attrs {..} = do
+modifiedEnemyFight EnemyAttrs {..} = do
   msource <- asks $ getSource ForSkillTest
   let source = fromMaybe (EnemySource enemyId) msource
   modifiers' <-
@@ -175,9 +175,9 @@ modifiedEnemyFight Attrs {..} = do
 
 modifiedEnemyEvade
   :: (MonadReader env m, HasModifiersFor env (), HasSource ForSkillTest env)
-  => Attrs
+  => EnemyAttrs
   -> m Int
-modifiedEnemyEvade Attrs {..} = do
+modifiedEnemyEvade EnemyAttrs {..} = do
   msource <- asks $ getSource ForSkillTest
   let source = fromMaybe (EnemySource enemyId) msource
   modifiers' <-
@@ -189,10 +189,10 @@ modifiedEnemyEvade Attrs {..} = do
 
 getModifiedDamageAmount
   :: (MonadReader env m, HasModifiersFor env (), HasSource ForSkillTest env)
-  => Attrs
+  => EnemyAttrs
   -> Int
   -> m Int
-getModifiedDamageAmount Attrs {..} baseAmount = do
+getModifiedDamageAmount EnemyAttrs {..} baseAmount = do
   msource <- asks $ getSource ForSkillTest
   let source = fromMaybe (EnemySource enemyId) msource
   modifiers' <-
@@ -207,9 +207,9 @@ getModifiedDamageAmount Attrs {..} baseAmount = do
 
 getModifiedKeywords
   :: (MonadReader env m, HasModifiersFor env (), HasSource ForSkillTest env)
-  => Attrs
+  => EnemyAttrs
   -> m (HashSet Keyword)
-getModifiedKeywords Attrs {..} = do
+getModifiedKeywords EnemyAttrs {..} = do
   msource <- asks $ getSource ForSkillTest
   let source = fromMaybe (EnemySource enemyId) msource
   modifiers' <-
@@ -230,8 +230,8 @@ canEnterLocation eid lid = do
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits
     _ -> False
 
-instance ActionRunner env => HasActions env Attrs where
-  getActions iid NonFast Attrs {..} = do
+instance ActionRunner env => HasActions env EnemyAttrs where
+  getActions iid NonFast EnemyAttrs {..} = do
     canFight <- getCanFight enemyId iid
     canEngage <- getCanEngage enemyId iid
     canEvade <- getCanEvade enemyId iid
@@ -251,35 +251,35 @@ instance ActionRunner env => HasActions env Attrs where
       ]
   getActions _ _ _ = pure []
 
-instance Entity Attrs where
-  type EntityId Attrs = EnemyId
-  type EntityAttrs Attrs = Attrs
+instance Entity EnemyAttrs where
+  type EntityId EnemyAttrs = EnemyId
+  type EntityAttrs EnemyAttrs = EnemyAttrs
   toId = enemyId
   toAttrs = id
 
-instance NamedEntity Attrs where
+instance NamedEntity EnemyAttrs where
   toName = mkName . enemyName
 
-instance TargetEntity Attrs where
+instance TargetEntity EnemyAttrs where
   toTarget = EnemyTarget . toId
-  isTarget Attrs { enemyId } (EnemyTarget eid) = enemyId == eid
-  isTarget Attrs { enemyCardCode } (CardCodeTarget cardCode) =
+  isTarget EnemyAttrs { enemyId } (EnemyTarget eid) = enemyId == eid
+  isTarget EnemyAttrs { enemyCardCode } (CardCodeTarget cardCode) =
     enemyCardCode == cardCode
   isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
   isTarget _ _ = False
 
-instance SourceEntity Attrs where
+instance SourceEntity EnemyAttrs where
   toSource = EnemySource . toId
-  isSource Attrs { enemyId } (EnemySource eid) = enemyId == eid
-  isSource Attrs { enemyCardCode } (CardCodeSource cardCode) =
+  isSource EnemyAttrs { enemyId } (EnemySource eid) = enemyId == eid
+  isSource EnemyAttrs { enemyCardCode } (CardCodeSource cardCode) =
     enemyCardCode == cardCode
   isSource _ _ = False
 
 getModifiedHealth
   :: (MonadReader env m, HasModifiersFor env (), HasCount PlayerCount env ())
-  => Attrs
+  => EnemyAttrs
   -> m Int
-getModifiedHealth Attrs {..} = do
+getModifiedHealth EnemyAttrs {..} = do
   playerCount <- getPlayerCount
   modifiers' <-
     map modifierType
@@ -289,8 +289,8 @@ getModifiedHealth Attrs {..} = do
   applyModifier (HealthModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-instance EnemyRunner env => RunMessage env Attrs where
-  runMessage msg a@Attrs {..} = case msg of
+instance EnemyRunner env => RunMessage env EnemyAttrs where
+  runMessage msg a@EnemyAttrs {..} = case msg of
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
       preyIds <- map unPreyId <$> getSetList enemyPrey
       preyIdsWithLocation <- for preyIds

@@ -11,7 +11,7 @@ import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Trait
 
-newtype SlimeCoveredDhole = SlimeCoveredDhole Attrs
+newtype SlimeCoveredDhole = SlimeCoveredDhole EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 slimeCoveredDhole :: EnemyId -> SlimeCoveredDhole
@@ -45,7 +45,7 @@ nonBayouLocations
 nonBayouLocations = difference <$> getLocationSet <*> bayouLocations
 
 instance (EnemyRunner env) => RunMessage env SlimeCoveredDhole where
-  runMessage msg e@(SlimeCoveredDhole attrs@Attrs {..}) = case msg of
+  runMessage msg e@(SlimeCoveredDhole attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
       spawnLocations <- setToList <$> nonBayouLocations
       e <$ spawnAtOneOf iid enemyId spawnLocations

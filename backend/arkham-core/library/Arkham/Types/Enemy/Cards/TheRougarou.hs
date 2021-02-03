@@ -13,7 +13,7 @@ newtype TheRougarouMetadata = TheRougarouMetadata { damagePerPhase :: Int }
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-newtype TheRougarou = TheRougarou (Attrs `With` TheRougarouMetadata)
+newtype TheRougarou = TheRougarou (EnemyAttrs `With` TheRougarouMetadata)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theRougarou :: EnemyId -> TheRougarou
@@ -55,7 +55,7 @@ instance ActionRunner env => HasActions env TheRougarou where
       else pure actions'
 
 instance EnemyRunner env => RunMessage env TheRougarou where
-  runMessage msg (TheRougarou (attrs@Attrs {..} `With` metadata)) = case msg of
+  runMessage msg (TheRougarou (attrs@EnemyAttrs {..} `With` metadata)) = case msg of
     EndPhase ->
       TheRougarou . (`with` TheRougarouMetadata 0) <$> runMessage msg attrs
     EnemyDamage eid _ _ n | eid == enemyId -> do

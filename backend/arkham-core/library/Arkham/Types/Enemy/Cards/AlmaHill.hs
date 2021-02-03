@@ -11,7 +11,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
 
-newtype AlmaHill = AlmaHill Attrs
+newtype AlmaHill = AlmaHill EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 almaHill :: EnemyId -> AlmaHill
@@ -28,7 +28,7 @@ instance HasModifiersFor env AlmaHill where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env AlmaHill where
-  getActions iid NonFast (AlmaHill attrs@Attrs {..}) =
+  getActions iid NonFast (AlmaHill attrs@EnemyAttrs {..}) =
     withBaseActions iid NonFast attrs $ do
       locationId <- getId @LocationId iid
       pure
@@ -44,7 +44,7 @@ instance ActionRunner env => HasActions env AlmaHill where
   getActions _ _ _ = pure []
 
 instance (EnemyRunner env) => RunMessage env AlmaHill where
-  runMessage msg e@(AlmaHill attrs@Attrs {..}) = case msg of
+  runMessage msg e@(AlmaHill attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAt (Just iid) eid (LocationWithTitle "Southside")
     UseCardAbility iid (EnemySource eid) _ 1 _ | eid == enemyId ->

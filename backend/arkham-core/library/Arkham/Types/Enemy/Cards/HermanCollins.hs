@@ -10,7 +10,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 
-newtype HermanCollins = HermanCollins Attrs
+newtype HermanCollins = HermanCollins EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 hermanCollins :: EnemyId -> HermanCollins
@@ -28,7 +28,7 @@ instance HasModifiersFor env HermanCollins where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env HermanCollins where
-  getActions iid NonFast (HermanCollins attrs@Attrs {..}) =
+  getActions iid NonFast (HermanCollins attrs@EnemyAttrs {..}) =
     withBaseActions iid NonFast attrs $ do
       locationId <- getId @LocationId iid
       pure
@@ -47,7 +47,7 @@ instance ActionRunner env => HasActions env HermanCollins where
   getActions _ _ _ = pure []
 
 instance EnemyRunner env => RunMessage env HermanCollins where
-  runMessage msg e@(HermanCollins attrs@Attrs {..}) = case msg of
+  runMessage msg e@(HermanCollins attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAt (Just iid) eid (LocationWithTitle "Graveyard")
     UseCardAbility _ source _ 1 _ | isSource attrs source ->

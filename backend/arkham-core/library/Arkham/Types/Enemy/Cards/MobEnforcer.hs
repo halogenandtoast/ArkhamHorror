@@ -10,7 +10,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 
-newtype MobEnforcer = MobEnforcer Attrs
+newtype MobEnforcer = MobEnforcer EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 mobEnforcer :: EnemyId -> MobEnforcer
@@ -27,7 +27,7 @@ instance HasModifiersFor env MobEnforcer where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env MobEnforcer where
-  getActions iid NonFast (MobEnforcer attrs@Attrs {..}) =
+  getActions iid NonFast (MobEnforcer attrs@EnemyAttrs {..}) =
     withBaseActions iid NonFast attrs $ do
       resourceCount <- getResourceCount iid
       locationId <- getId @LocationId iid
@@ -47,7 +47,7 @@ instance ActionRunner env => HasActions env MobEnforcer where
   getActions i window (MobEnforcer attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env MobEnforcer where
-  runMessage msg e@(MobEnforcer attrs@Attrs {..}) = case msg of
+  runMessage msg e@(MobEnforcer attrs@EnemyAttrs {..}) = case msg of
     UseCardAbility _ (EnemySource eid) _ 1 _ | eid == enemyId ->
       e <$ unshiftMessage (Discard $ toTarget attrs)
     _ -> MobEnforcer <$> runMessage msg attrs

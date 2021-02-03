@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
-newtype Mobster = Mobster Attrs
+newtype Mobster = Mobster EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 mobster :: EnemyId -> Mobster
@@ -25,7 +25,7 @@ instance ActionRunner env => HasActions env Mobster where
   getActions i window (Mobster attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env Mobster where
-  runMessage msg e@(Mobster attrs@Attrs {..}) = case msg of
+  runMessage msg e@(Mobster attrs@EnemyAttrs {..}) = case msg of
     After (PerformEnemyAttack iid eid) | eid == enemyId ->
       e <$ unshiftMessage (SpendResources iid 1)
     _ -> Mobster <$> runMessage msg attrs

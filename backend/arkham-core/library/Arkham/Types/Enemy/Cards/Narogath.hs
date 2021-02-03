@@ -9,7 +9,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Trait
 import qualified Arkham.Types.Trait as Trait
 
-newtype Narogath = Narogath Attrs
+newtype Narogath = Narogath EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 narogath :: EnemyId -> Narogath
@@ -25,7 +25,7 @@ narogath uuid =
     . (uniqueL .~ True)
 
 instance (HasSet InvestigatorId env LocationId, HasSet ConnectedLocationId env LocationId) => HasModifiersFor env Narogath where
-  getModifiersFor _ (InvestigatorTarget iid) (Narogath a@Attrs {..})
+  getModifiersFor _ (InvestigatorTarget iid) (Narogath a@EnemyAttrs {..})
     | spawned a = do
       connectedLocationIds <- map unConnectedLocationId
         <$> getSetList enemyLocation
@@ -41,7 +41,7 @@ instance ActionRunner env => HasActions env Narogath where
   getActions i window (Narogath attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env Narogath where
-  runMessage msg (Narogath attrs@Attrs {..}) = case msg of
+  runMessage msg (Narogath attrs@EnemyAttrs {..}) = case msg of
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
       playerCount <- unPlayerCount <$> getCount ()
       Narogath

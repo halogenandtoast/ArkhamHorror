@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype Atychiphobia = Atychiphobia Attrs
+newtype Atychiphobia = Atychiphobia TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 atychiphobia :: TreacheryId -> Maybe InvestigatorId -> Atychiphobia
@@ -19,7 +19,7 @@ instance HasModifiersFor env Atychiphobia where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Atychiphobia where
-  getActions iid NonFast (Atychiphobia a@Attrs {..}) =
+  getActions iid NonFast (Atychiphobia a@TreacheryAttrs {..}) =
     withTreacheryInvestigator a $ \tormented -> do
       investigatorLocationId <- getId @LocationId iid
       treacheryLocation <- getId tormented
@@ -32,7 +32,7 @@ instance ActionRunner env => HasActions env Atychiphobia where
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env Atychiphobia where
-  runMessage msg t@(Atychiphobia attrs@Attrs {..}) = case msg of
+  runMessage msg t@(Atychiphobia attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
     FailedSkillTest iid _ _ _ _ _ | treacheryOnInvestigator iid attrs ->

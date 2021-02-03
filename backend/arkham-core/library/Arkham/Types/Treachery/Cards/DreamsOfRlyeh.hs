@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
-newtype DreamsOfRlyeh = DreamsOfRlyeh Attrs
+newtype DreamsOfRlyeh = DreamsOfRlyeh TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 dreamsOfRlyeh :: TreacheryId -> a -> DreamsOfRlyeh
@@ -24,7 +24,7 @@ instance HasModifiersFor env DreamsOfRlyeh where
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env DreamsOfRlyeh where
-  getActions iid NonFast (DreamsOfRlyeh a@Attrs {..}) = pure
+  getActions iid NonFast (DreamsOfRlyeh a@TreacheryAttrs {..}) = pure
     [ ActivateCardAbilityAction
         iid
         (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
@@ -33,7 +33,7 @@ instance HasActions env DreamsOfRlyeh where
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env DreamsOfRlyeh where
-  runMessage msg t@(DreamsOfRlyeh attrs@Attrs {..}) = case msg of
+  runMessage msg t@(DreamsOfRlyeh attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId (InvestigatorTarget iid))
     UseCardAbility iid (TreacherySource tid) _ 1 _ | tid == treacheryId ->

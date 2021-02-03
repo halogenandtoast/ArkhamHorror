@@ -7,7 +7,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
-newtype FrozenInFear = FrozenInFear Attrs
+newtype FrozenInFear = FrozenInFear TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 frozenInFear :: TreacheryId -> a -> FrozenInFear
@@ -26,7 +26,7 @@ instance HasActions env FrozenInFear where
   getActions i window (FrozenInFear attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env FrozenInFear where
-  runMessage msg t@(FrozenInFear attrs@Attrs {..}) = case msg of
+  runMessage msg t@(FrozenInFear attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
     ChooseEndTurn iid | treacheryOnInvestigator iid attrs -> t <$ unshiftMessage

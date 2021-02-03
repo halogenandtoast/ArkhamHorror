@@ -11,7 +11,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
-newtype RipplesOnTheSurface = RipplesOnTheSurface Attrs
+newtype RipplesOnTheSurface = RipplesOnTheSurface TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 ripplesOnTheSurface :: TreacheryId -> a -> RipplesOnTheSurface
@@ -34,7 +34,7 @@ instance HasActions env RipplesOnTheSurface where
   getActions i window (RipplesOnTheSurface attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env RipplesOnTheSurface where
-  runMessage msg t@(RipplesOnTheSurface attrs@Attrs {..}) = case msg of
+  runMessage msg t@(RipplesOnTheSurface attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ unshiftMessages
       [ RevelationSkillTest iid source SkillWillpower 3
       , Discard (TreacheryTarget treacheryId)

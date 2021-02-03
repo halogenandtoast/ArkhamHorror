@@ -8,7 +8,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype Hypochondria = Hypochondria Attrs
+newtype Hypochondria = Hypochondria TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 hypochondria :: TreacheryId -> Maybe InvestigatorId -> Hypochondria
@@ -18,7 +18,7 @@ instance HasModifiersFor env Hypochondria where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Hypochondria where
-  getActions iid NonFast (Hypochondria a@Attrs {..}) =
+  getActions iid NonFast (Hypochondria a@TreacheryAttrs {..}) =
     withTreacheryInvestigator a $ \tormented -> do
       treacheryLocation <- getId tormented
       investigatorLocationId <- getId @LocationId iid
@@ -31,7 +31,7 @@ instance ActionRunner env => HasActions env Hypochondria where
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env Hypochondria where
-  runMessage msg t@(Hypochondria attrs@Attrs {..}) = case msg of
+  runMessage msg t@(Hypochondria attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
     After (InvestigatorTakeDamage iid _ n _)

@@ -6,7 +6,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype VaultOfEarthlyDemise = VaultOfEarthlyDemise Attrs
+newtype VaultOfEarthlyDemise = VaultOfEarthlyDemise TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 vaultOfEarthlyDemise :: TreacheryId -> a -> VaultOfEarthlyDemise
@@ -24,7 +24,7 @@ instance HasActions env VaultOfEarthlyDemise where
   getActions i window (VaultOfEarthlyDemise attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env VaultOfEarthlyDemise where
-  runMessage msg (VaultOfEarthlyDemise attrs@Attrs {..}) = case msg of
+  runMessage msg (VaultOfEarthlyDemise attrs@TreacheryAttrs {..}) = case msg of
     AttachTreachery tid _ | tid == treacheryId -> do
       actsRemaining <- unActsRemainingCount <$> getCount ()
       VaultOfEarthlyDemise

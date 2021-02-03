@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype TerrorFromBeyond = TerrorFromBeyond Attrs
+newtype TerrorFromBeyond = TerrorFromBeyond TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 terrorFromBeyond :: TreacheryId -> a -> TerrorFromBeyond

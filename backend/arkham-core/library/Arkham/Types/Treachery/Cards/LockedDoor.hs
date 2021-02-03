@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
-newtype LockedDoor = LockedDoor Attrs
+newtype LockedDoor = LockedDoor TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 lockedDoor :: TreacheryId -> a -> LockedDoor
@@ -24,7 +24,7 @@ instance HasModifiersFor env LockedDoor where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env LockedDoor where
-  getActions iid NonFast (LockedDoor a@Attrs {..}) = do
+  getActions iid NonFast (LockedDoor a@TreacheryAttrs {..}) = do
     investigatorLocationId <- getId @LocationId iid
     pure
       [ ActivateCardAbilityAction
@@ -35,7 +35,7 @@ instance ActionRunner env => HasActions env LockedDoor where
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env LockedDoor where
-  runMessage msg t@(LockedDoor attrs@Attrs {..}) = case msg of
+  runMessage msg t@(LockedDoor attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       exemptLocations <- getSet @LocationId
         (TreacheryCardCode treacheryCardCode)

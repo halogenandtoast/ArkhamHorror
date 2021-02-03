@@ -6,7 +6,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype UmordhothsHunger = UmordhothsHunger Attrs
+newtype UmordhothsHunger = UmordhothsHunger TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 umordhothsHunger :: TreacheryId -> a -> UmordhothsHunger
@@ -19,7 +19,7 @@ instance HasActions env UmordhothsHunger where
   getActions i window (UmordhothsHunger attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env UmordhothsHunger where
-  runMessage msg t@(UmordhothsHunger attrs@Attrs {..}) = case msg of
+  runMessage msg t@(UmordhothsHunger attrs@TreacheryAttrs {..}) = case msg of
     Revelation _ source | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
       msgs <- for investigatorIds $ \iid -> do

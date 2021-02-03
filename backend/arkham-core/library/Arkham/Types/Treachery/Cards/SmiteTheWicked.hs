@@ -6,7 +6,7 @@ import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype SmiteTheWicked = SmiteTheWicked Attrs
+newtype SmiteTheWicked = SmiteTheWicked TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 smiteTheWicked :: TreacheryId -> Maybe InvestigatorId -> SmiteTheWicked
@@ -19,7 +19,7 @@ instance HasActions env SmiteTheWicked where
   getActions i window (SmiteTheWicked attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env SmiteTheWicked where
-  runMessage msg t@(SmiteTheWicked attrs@Attrs {..}) = case msg of
+  runMessage msg t@(SmiteTheWicked attrs@TreacheryAttrs {..}) = case msg of
     Revelation _iid source | isSource attrs source -> do
       t <$ unshiftMessage
         (DiscardEncounterUntilFirst

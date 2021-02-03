@@ -9,7 +9,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
-newtype HospitalDebts = HospitalDebts Attrs
+newtype HospitalDebts = HospitalDebts TreacheryAttrs
   deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 hospitalDebts :: TreacheryId -> Maybe InvestigatorId -> HospitalDebts
@@ -24,13 +24,13 @@ instance HasModifiersFor env HospitalDebts where
       [ XPModifier (-2) | treacheryOnInvestigator iid attrs && resources' < 6 ]
   getModifiersFor _ _ _ = pure []
 
-ability :: Attrs -> Ability
+ability :: TreacheryAttrs -> Ability
 ability a = (mkAbility (toSource a) 1 (FastAbility Free))
   { abilityLimit = PlayerLimit PerRound 2
   }
 
 instance ActionRunner env => HasActions env HospitalDebts where
-  getActions iid (DuringTurn You) (HospitalDebts a@Attrs {..}) =
+  getActions iid (DuringTurn You) (HospitalDebts a@TreacheryAttrs {..}) =
     withTreacheryInvestigator a $ \tormented -> do
       resourceCount <- getResourceCount iid
       treacheryLocationId <- getId tormented
@@ -42,7 +42,7 @@ instance ActionRunner env => HasActions env HospitalDebts where
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env HospitalDebts where
-  runMessage msg t@(HospitalDebts attrs@Attrs {..}) = case msg of
+  runMessage msg t@(HospitalDebts attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ unshiftMessages
       [ RemoveCardFromHand iid "01011"
       , AttachTreachery treacheryId (InvestigatorTarget iid)

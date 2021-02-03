@@ -9,7 +9,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
-newtype Haunted = Haunted Attrs
+newtype Haunted = Haunted TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 haunted :: TreacheryId -> Maybe InvestigatorId -> Haunted
@@ -23,7 +23,7 @@ instance HasModifiersFor env Haunted where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env Haunted where
-  getActions iid NonFast (Haunted a@Attrs {..}) =
+  getActions iid NonFast (Haunted a@TreacheryAttrs {..}) =
     withTreacheryInvestigator a $ \tormented -> do
       investigatorLocationId <- getId @LocationId iid
       treacheryLocation <- getId tormented
@@ -36,7 +36,7 @@ instance ActionRunner env => HasActions env Haunted where
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env Haunted where
-  runMessage msg t@(Haunted attrs@Attrs {..}) = case msg of
+  runMessage msg t@(Haunted attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
     UseCardAbility _ (TreacherySource tid) _ 1 _ | tid == treacheryId ->

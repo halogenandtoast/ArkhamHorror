@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype CryptChill = CryptChill Attrs
+newtype CryptChill = CryptChill TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 cryptChill :: TreacheryId -> a -> CryptChill
@@ -18,7 +18,7 @@ instance HasActions env CryptChill where
   getActions i window (CryptChill attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env CryptChill where
-  runMessage msg t@(CryptChill attrs@Attrs {..}) = case msg of
+  runMessage msg t@(CryptChill attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ unshiftMessages
       [ RevelationSkillTest iid source SkillWillpower 4
       , Discard (TreacheryTarget treacheryId)

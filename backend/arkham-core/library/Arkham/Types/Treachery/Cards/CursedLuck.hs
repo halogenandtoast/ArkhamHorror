@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
-newtype CursedLuck = CursedLuck Attrs
+newtype CursedLuck = CursedLuck TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 cursedLuck :: TreacheryId -> Maybe InvestigatorId -> CursedLuck
@@ -27,7 +27,7 @@ instance HasActions env CursedLuck where
   getActions i window (CursedLuck attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env CursedLuck where
-  runMessage msg t@(CursedLuck attrs@Attrs {..}) = case msg of
+  runMessage msg t@(CursedLuck attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId (InvestigatorTarget iid))
     PassedSkillTest iid _ _ (SkillTestInitiatorTarget _) _ n

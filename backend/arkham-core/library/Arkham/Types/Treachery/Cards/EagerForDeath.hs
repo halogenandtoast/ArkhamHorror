@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype EagerForDeath = EagerForDeath Attrs
+newtype EagerForDeath = EagerForDeath TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 eagerForDeath :: TreacheryId -> a -> EagerForDeath

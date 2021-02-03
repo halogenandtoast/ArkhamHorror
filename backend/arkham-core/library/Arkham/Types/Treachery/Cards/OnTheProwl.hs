@@ -11,7 +11,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 import Arkham.Types.Trait
 
-newtype OnTheProwl = OnTheProwl Attrs
+newtype OnTheProwl = OnTheProwl TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 onTheProwl :: TreacheryId -> a -> OnTheProwl
@@ -37,7 +37,7 @@ nonBayouLocations
 nonBayouLocations = difference <$> getLocationSet <*> bayouLocations
 
 instance TreacheryRunner env => RunMessage env OnTheProwl where
-  runMessage msg t@(OnTheProwl attrs@Attrs {..}) = case msg of
+  runMessage msg t@(OnTheProwl attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
       t <$ case mrougarou of

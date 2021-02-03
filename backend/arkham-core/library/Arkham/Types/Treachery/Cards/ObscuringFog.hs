@@ -6,7 +6,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
-newtype ObscuringFog = ObscuringFog Attrs
+newtype ObscuringFog = ObscuringFog TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 obscuringFog :: TreacheryId -> a -> ObscuringFog
@@ -22,7 +22,7 @@ instance HasActions env ObscuringFog where
   getActions i window (ObscuringFog attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env ObscuringFog where
-  runMessage msg t@(ObscuringFog attrs@Attrs {..}) = case msg of
+  runMessage msg t@(ObscuringFog attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       currentLocationId <- getId iid
       obscuringFogCount <- unTreacheryCount

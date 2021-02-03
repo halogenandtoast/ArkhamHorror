@@ -6,7 +6,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype OnWingsOfDarkness = OnWingsOfDarkness Attrs
+newtype OnWingsOfDarkness = OnWingsOfDarkness TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 onWingsOfDarkness :: TreacheryId -> a -> OnWingsOfDarkness
@@ -19,7 +19,7 @@ instance HasActions env OnWingsOfDarkness where
   getActions i window (OnWingsOfDarkness attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env OnWingsOfDarkness where
-  runMessage msg t@(OnWingsOfDarkness attrs@Attrs {..}) = case msg of
+  runMessage msg t@(OnWingsOfDarkness attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ unshiftMessages
       [RevelationSkillTest iid source SkillAgility 4, Discard (toTarget attrs)]
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _

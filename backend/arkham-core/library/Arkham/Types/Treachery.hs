@@ -99,7 +99,7 @@ deriving anyclass instance
 
 instance Entity Treachery where
   type EntityId Treachery = TreacheryId
-  type EntityAttrs Treachery = Attrs
+  type EntityAttrs Treachery = TreacheryAttrs
 
 instance NamedEntity Treachery where
   toName = toName . toAttrs

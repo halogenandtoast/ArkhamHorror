@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype GraspingHands = GraspingHands Attrs
+newtype GraspingHands = GraspingHands TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 graspingHands :: TreacheryId -> a -> GraspingHands
@@ -22,7 +22,7 @@ instance HasActions env GraspingHands where
   getActions i window (GraspingHands attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env GraspingHands where
-  runMessage msg t@(GraspingHands attrs@Attrs {..}) = case msg of
+  runMessage msg t@(GraspingHands attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ unshiftMessages
       [ RevelationSkillTest iid source SkillAgility 3
       , Discard (TreacheryTarget treacheryId)

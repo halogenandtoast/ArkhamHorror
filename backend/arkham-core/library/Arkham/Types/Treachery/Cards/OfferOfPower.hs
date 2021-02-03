@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype OfferOfPower = OfferOfPower Attrs
+newtype OfferOfPower = OfferOfPower TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 offerOfPower :: TreacheryId -> a -> OfferOfPower
@@ -18,7 +18,7 @@ instance HasActions env OfferOfPower where
   getActions i window (OfferOfPower attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env OfferOfPower where
-  runMessage msg t@(OfferOfPower attrs@Attrs {..}) = case msg of
+  runMessage msg t@(OfferOfPower attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       t <$ unshiftMessages
         [ chooseOne

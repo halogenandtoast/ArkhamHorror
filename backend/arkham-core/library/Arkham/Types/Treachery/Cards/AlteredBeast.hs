@@ -10,7 +10,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype AlteredBeast = AlteredBeast Attrs
+newtype AlteredBeast = AlteredBeast TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 alteredBeast :: TreacheryId -> a -> AlteredBeast
@@ -23,7 +23,7 @@ instance HasActions env AlteredBeast where
   getActions i window (AlteredBeast attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env AlteredBeast where
-  runMessage msg t@(AlteredBeast attrs@Attrs {..}) = case msg of
+  runMessage msg t@(AlteredBeast attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       abominations <- getSetList @EnemyId Abomination
       t <$ case abominations of

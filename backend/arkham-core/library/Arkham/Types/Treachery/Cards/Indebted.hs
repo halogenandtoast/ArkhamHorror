@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
-newtype Indebted = Indebted Attrs
+newtype Indebted = Indebted TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 indebted :: TreacheryId -> Maybe InvestigatorId -> Indebted
@@ -27,7 +27,7 @@ instance HasActions env Indebted where
   getActions iid window (Indebted attrs) = getActions iid window attrs
 
 instance (TreacheryRunner env) => RunMessage env Indebted where
-  runMessage msg t@(Indebted attrs@Attrs {..}) = case msg of
+  runMessage msg t@(Indebted attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
     _ -> Indebted <$> runMessage msg attrs

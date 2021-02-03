@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
-newtype WrackedByNightmares = WrackedByNightmares Attrs
+newtype WrackedByNightmares = WrackedByNightmares TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 wrackedByNightmares
@@ -26,7 +26,7 @@ instance HasModifiersFor env WrackedByNightmares where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env WrackedByNightmares where
-  getActions iid NonFast (WrackedByNightmares a@Attrs {..}) =
+  getActions iid NonFast (WrackedByNightmares a@TreacheryAttrs {..}) =
     withTreacheryInvestigator a $ \tormented -> do
       treacheryLocation <- getId tormented
       investigatorLocationId <- getId @LocationId iid
@@ -39,7 +39,7 @@ instance ActionRunner env => HasActions env WrackedByNightmares where
   getActions _ _ _ = pure []
 
 instance TreacheryRunner env => RunMessage env WrackedByNightmares where
-  runMessage msg t@(WrackedByNightmares attrs@Attrs {..}) = case msg of
+  runMessage msg t@(WrackedByNightmares attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
     AttachTreachery tid (InvestigatorTarget iid) | tid == treacheryId -> do

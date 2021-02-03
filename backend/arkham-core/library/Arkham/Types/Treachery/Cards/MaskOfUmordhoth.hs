@@ -9,7 +9,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
-newtype MaskOfUmordhoth = MaskOfUmordhoth Attrs
+newtype MaskOfUmordhoth = MaskOfUmordhoth TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 maskOfUmordhoth :: TreacheryId -> a -> MaskOfUmordhoth
@@ -29,7 +29,7 @@ instance HasActions env MaskOfUmordhoth where
   getActions i window (MaskOfUmordhoth attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env MaskOfUmordhoth where
-  runMessage msg t@(MaskOfUmordhoth attrs@Attrs {..}) = case msg of
+  runMessage msg t@(MaskOfUmordhoth attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       enemies <- map unFarthestEnemyId <$> getSetList (iid, EnemyTrait Cultist)
       t <$ case enemies of

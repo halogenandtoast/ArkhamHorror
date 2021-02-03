@@ -9,7 +9,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype SearchingForIzzie = SearchingForIzzie Attrs
+newtype SearchingForIzzie = SearchingForIzzie TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 searchingForIzzie :: TreacheryId -> Maybe InvestigatorId -> SearchingForIzzie
@@ -19,7 +19,7 @@ instance HasModifiersFor env SearchingForIzzie where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env SearchingForIzzie where
-  getActions iid NonFast (SearchingForIzzie attrs@Attrs {..}) = do
+  getActions iid NonFast (SearchingForIzzie attrs@TreacheryAttrs {..}) = do
     investigatorLocationId <- getId @LocationId iid
     pure
       [ ActivateCardAbilityAction
@@ -30,7 +30,7 @@ instance ActionRunner env => HasActions env SearchingForIzzie where
   getActions _ _ _ = pure []
 
 instance TreacheryRunner env => RunMessage env SearchingForIzzie where
-  runMessage msg t@(SearchingForIzzie attrs@Attrs {..}) = case msg of
+  runMessage msg t@(SearchingForIzzie attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       farthestLocations <- map unFarthestLocationId <$> getSetList iid
       t <$ case farthestLocations of

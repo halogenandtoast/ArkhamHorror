@@ -12,7 +12,7 @@ newtype Metadata = Metadata { dealtDamageThisTurn :: Bool }
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-newtype CurseOfTheRougarou = CurseOfTheRougarou (Attrs `With` Metadata)
+newtype CurseOfTheRougarou = CurseOfTheRougarou (TreacheryAttrs `With` Metadata)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 curseOfTheRougarou :: TreacheryId -> Maybe InvestigatorId -> CurseOfTheRougarou
@@ -27,7 +27,7 @@ instance HasActions env CurseOfTheRougarou where
     getActions iid window attrs
 
 instance (TreacheryRunner env) => RunMessage env CurseOfTheRougarou where
-  runMessage msg t@(CurseOfTheRougarou (attrs@Attrs {..} `With` metadata)) =
+  runMessage msg t@(CurseOfTheRougarou (attrs@TreacheryAttrs {..} `With` metadata)) =
     case msg of
       Revelation iid source | isSource attrs source -> do
         t <$ unshiftMessage

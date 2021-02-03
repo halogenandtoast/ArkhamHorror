@@ -10,7 +10,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype PassageIntoTheVeil = PassageIntoTheVeil Attrs
+newtype PassageIntoTheVeil = PassageIntoTheVeil TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 passageIntoTheVeil :: TreacheryId -> a -> PassageIntoTheVeil
@@ -23,7 +23,7 @@ instance HasActions env PassageIntoTheVeil where
   getActions i window (PassageIntoTheVeil attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env PassageIntoTheVeil where
-  runMessage msg t@(PassageIntoTheVeil attrs@Attrs {..}) = case msg of
+  runMessage msg t@(PassageIntoTheVeil attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       huntingHorrorAtYourLocation <- enemyAtInvestigatorLocation "02141" iid
       t <$ unshiftMessage

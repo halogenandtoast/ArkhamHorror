@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
-newtype UnhallowedCountry = UnhallowedCountry Attrs
+newtype UnhallowedCountry = UnhallowedCountry TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 unhallowedCountry :: TreacheryId -> a -> UnhallowedCountry
@@ -33,7 +33,7 @@ instance HasActions env UnhallowedCountry where
   getActions i window (UnhallowedCountry attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env UnhallowedCountry where
-  runMessage msg t@(UnhallowedCountry attrs@Attrs {..}) = case msg of
+  runMessage msg t@(UnhallowedCountry attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
     ChooseEndTurn iid | treacheryOnInvestigator iid attrs -> t <$ unshiftMessage

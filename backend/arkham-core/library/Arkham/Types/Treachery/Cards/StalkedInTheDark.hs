@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype StalkedInTheDark = StalkedInTheDark TreacheryAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stalkedInTheDark :: TreacheryId -> a -> StalkedInTheDark
 stalkedInTheDark uuid _ = StalkedInTheDark $ baseAttrs uuid "02143"

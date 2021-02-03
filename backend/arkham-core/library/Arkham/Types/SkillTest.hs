@@ -28,7 +28,7 @@ data SkillTest = SkillTest
   , skillTestAction :: Maybe Action
   , skillTestSubscribers :: [Target]
   }
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
 
 makeLensesWith (suffixedWithFields "skillTest") ''SkillTest
 

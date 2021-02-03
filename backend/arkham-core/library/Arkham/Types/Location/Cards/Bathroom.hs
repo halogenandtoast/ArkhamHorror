@@ -8,7 +8,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 
 newtype Bathroom = Bathroom LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bathroom :: Bathroom
 bathroom = Bathroom $ baseAttrs

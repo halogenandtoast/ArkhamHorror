@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Effect.Attrs
 
 newtype RiteOfSeeking = RiteOfSeeking EffectAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riteOfSeeking :: EffectArgs -> RiteOfSeeking
 riteOfSeeking = RiteOfSeeking . uncurry4 (baseAttrs "02028")

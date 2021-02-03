@@ -7,7 +7,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype DissonantVoices= DissonantVoices TreacheryAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dissonantVoices :: TreacheryId -> a -> DissonantVoices
 dissonantVoices uuid _ = DissonantVoices $ baseAttrs uuid "01165"

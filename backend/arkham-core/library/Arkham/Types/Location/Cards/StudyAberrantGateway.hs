@@ -12,7 +12,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 
 newtype StudyAberrantGateway = StudyAberrantGateway LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 studyAberrantGateway :: StudyAberrantGateway
 studyAberrantGateway = StudyAberrantGateway $ baseAttrs

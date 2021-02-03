@@ -11,7 +11,7 @@ import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 
 newtype RollingBackwards = RollingBackwards AgendaAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rollingBackwards :: RollingBackwards
 rollingBackwards = RollingBackwards

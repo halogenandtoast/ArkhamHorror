@@ -7,7 +7,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
 newtype HeirloomOfHyperborea = HeirloomOfHyperborea AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 heirloomOfHyperborea :: AssetId -> HeirloomOfHyperborea
 heirloomOfHyperborea uuid = HeirloomOfHyperborea

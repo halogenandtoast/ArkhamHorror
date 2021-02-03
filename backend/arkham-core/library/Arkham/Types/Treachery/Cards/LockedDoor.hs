@@ -11,7 +11,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype LockedDoor = LockedDoor TreacheryAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lockedDoor :: TreacheryId -> a -> LockedDoor
 lockedDoor uuid _ = LockedDoor $ baseAttrs uuid "01174"

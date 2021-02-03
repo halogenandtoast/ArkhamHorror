@@ -11,7 +11,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype ArcaneStudies = ArcaneStudies AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arcaneStudies :: AssetId -> ArcaneStudies
 arcaneStudies uuid = ArcaneStudies $ baseAttrs uuid "01062"

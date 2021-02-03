@@ -11,7 +11,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
 newtype Bandolier = Bandolier AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bandolier :: AssetId -> Bandolier
 bandolier uuid = Bandolier

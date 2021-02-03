@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Trait
 
 newtype PeterClover = PeterClover AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 peterClover :: AssetId -> PeterClover
 peterClover uuid = PeterClover

@@ -10,7 +10,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
 newtype WizardOfTheOrder = WizardOfTheOrder EnemyAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wizardOfTheOrder :: EnemyId -> WizardOfTheOrder
 wizardOfTheOrder uuid =

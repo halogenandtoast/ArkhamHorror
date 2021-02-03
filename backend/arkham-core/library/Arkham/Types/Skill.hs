@@ -27,7 +27,7 @@ data Skill
   | UnexpectedCourage' UnexpectedCourage
   | DoubleOrNothing' DoubleOrNothing
   | TrueUnderstanding' TrueUnderstanding
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance ActionRunner env => HasActions env Skill

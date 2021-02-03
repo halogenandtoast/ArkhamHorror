@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.TheEssexCountyExpress
   ( TheEssexCountyExpress(..)
   , theEssexCountyExpress
-  )
-where
+  ) where
 
 import Arkham.Import hiding (Cultist)
 
@@ -17,7 +16,7 @@ import qualified Arkham.Types.Trait as Trait
 import Data.List.NonEmpty (NonEmpty(..))
 
 newtype TheEssexCountyExpress = TheEssexCountyExpress ScenarioAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 theEssexCountyExpress :: Difficulty -> TheEssexCountyExpress
 theEssexCountyExpress difficulty = TheEssexCountyExpress $ base
@@ -174,105 +173,115 @@ investigatorDefeat ScenarioAttrs {..} = do
       <> [ AddCampaignCardToDeck iid "02178" | iid <- defeatedInvestigatorIds ]
 
 instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
-  runMessage msg s@(TheEssexCountyExpress attrs@ScenarioAttrs {..}) = case msg of
-    SetTokensForScenario -> do
-      standalone <- isNothing <$> getId @(Maybe CampaignId) ()
-      s <$ if standalone
-        then unshiftMessage (SetTokens standaloneTokens)
-        else pure ()
-    Setup -> do
-      investigatorIds <- getInvestigatorIds
-      engineCar <- sample $ "02175" :| ["02176", "02177"]
-      trainCars <- take 6 <$> shuffleM
-        ["02167", "02168", "02169", "02170", "02171", "02172", "02173", "02174"]
-      encounterDeck <- buildEncounterDeck
-        [ EncounterSet.TheEssexCountyExpress
-        , EncounterSet.TheBeyond
-        , EncounterSet.StrikingFear
-        , EncounterSet.AncientEvils
-        , EncounterSet.DarkCult
-        ]
-
-      let
-        start = fromJustNote "No train cars?" $ headMay trainCars
-        end = fromJustNote "No train cars?" $ headMay $ reverse trainCars
-        allCars = trainCars <> [engineCar]
-        token = case scenarioDifficulty of
-          Easy -> MinusTwo
-          Standard -> MinusThree
-          Hard -> MinusFour
-          Expert -> MinusFive
-
-      unshiftMessages
-        $ [ story investigatorIds theEssexCountyExpressIntro
-          , AddToken token
-          , SetEncounterDeck encounterDeck
-          , AddAgenda "02160"
-          , AddAct "02165"
+  runMessage msg s@(TheEssexCountyExpress attrs@ScenarioAttrs {..}) =
+    case msg of
+      SetTokensForScenario -> do
+        standalone <- isNothing <$> getId @(Maybe CampaignId) ()
+        s <$ if standalone
+          then unshiftMessage (SetTokens standaloneTokens)
+          else pure ()
+      Setup -> do
+        investigatorIds <- getInvestigatorIds
+        engineCar <- sample $ "02175" :| ["02176", "02177"]
+        trainCars <- take 6 <$> shuffleM
+          [ "02167"
+          , "02168"
+          , "02169"
+          , "02170"
+          , "02171"
+          , "02172"
+          , "02173"
+          , "02174"
           ]
-        <> concat
-             [ [ PlaceLocation location
-               , SetLocationLabel location ("trainCar" <> tshow @Int n)
-               ]
-             | (n, location) <- zip [6, 5 ..] trainCars
-             ]
-        <> [ PlacedLocationDirection lid1 LeftOf lid2
-           | (lid1, lid2) <- zip allCars (drop 1 allCars)
-           ]
-        <> [ PlaceLocation engineCar
-           , PlacedLocationDirection engineCar RightOf end
-           , CreateWindowModifierEffect
-             EffectSetupWindow
-             (EffectModifiers [Modifier (ScenarioSource scenarioId) Blank])
-             (ScenarioSource scenarioId)
-             (LocationTarget start)
-           , RevealLocation Nothing start
-           , MoveAllTo start
-           ]
+        encounterDeck <- buildEncounterDeck
+          [ EncounterSet.TheEssexCountyExpress
+          , EncounterSet.TheBeyond
+          , EncounterSet.StrikingFear
+          , EncounterSet.AncientEvils
+          , EncounterSet.DarkCult
+          ]
 
-      let
-        locations' = mapFromList $ map
-          (second pure . toFst (getLocationName . lookupLocation))
-          (engineCar : trainCars)
-      TheEssexCountyExpress
-        <$> runMessage msg (attrs & locationsL .~ locations')
-    ResolveToken _ Tablet iid | isEasyStandard attrs -> do
-      closestCultists <- map unClosestEnemyId
-        <$> getSetList (iid, [Trait.Cultist])
-      s <$ case closestCultists of
-        [] -> pure ()
-        [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
-        xs -> unshiftMessage
-          (chooseOne iid [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
-    ResolveToken _ Tablet _ | isHardExpert attrs -> do
-      cultists <- getSetList @EnemyId Trait.Cultist
-      s <$ unshiftMessages [ PlaceDoom (EnemyTarget eid) 1 | eid <- cultists ]
-    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ n ->
-      s <$ case drawnTokenFace token of
-        Cultist ->
-          unshiftMessages [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
-        ElderThing | isEasyStandard attrs ->
-          unshiftMessage $ ChooseAndDiscardCard iid
-        ElderThing | isHardExpert attrs ->
-          unshiftMessages $ replicate n (ChooseAndDiscardCard iid)
-        _ -> pure ()
-    ScenarioResolution NoResolution ->
-      s <$ unshiftMessages [ScenarioResolution $ Resolution 2]
-    ScenarioResolution (Resolution 1) -> do
-      msgs <- investigatorDefeat attrs
-      leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
-      defeatedInvestigatorIds <- map unDefeatedInvestigatorId <$> getSetList ()
-      xp <- getXp
-      s <$ unshiftMessages
-        (msgs
-        <> [ chooseOne
-               leadInvestigatorId
-               [ Run
-                   [ Continue "Continue"
-                   , FlavorText
-                     Nothing
-                     [ "You breathe a sigh of relief as the gate behind\
+        let
+          start = fromJustNote "No train cars?" $ headMay trainCars
+          end = fromJustNote "No train cars?" $ headMay $ reverse trainCars
+          allCars = trainCars <> [engineCar]
+          token = case scenarioDifficulty of
+            Easy -> MinusTwo
+            Standard -> MinusThree
+            Hard -> MinusFour
+            Expert -> MinusFive
+
+        unshiftMessages
+          $ [ story investigatorIds theEssexCountyExpressIntro
+            , AddToken token
+            , SetEncounterDeck encounterDeck
+            , AddAgenda "02160"
+            , AddAct "02165"
+            ]
+          <> concat
+               [ [ PlaceLocation location
+                 , SetLocationLabel location ("trainCar" <> tshow @Int n)
+                 ]
+               | (n, location) <- zip [6, 5 ..] trainCars
+               ]
+          <> [ PlacedLocationDirection lid1 LeftOf lid2
+             | (lid1, lid2) <- zip allCars (drop 1 allCars)
+             ]
+          <> [ PlaceLocation engineCar
+             , PlacedLocationDirection engineCar RightOf end
+             , CreateWindowModifierEffect
+               EffectSetupWindow
+               (EffectModifiers [Modifier (ScenarioSource scenarioId) Blank])
+               (ScenarioSource scenarioId)
+               (LocationTarget start)
+             , RevealLocation Nothing start
+             , MoveAllTo start
+             ]
+
+        let
+          locations' = mapFromList $ map
+            (second pure . toFst (getLocationName . lookupLocation))
+            (engineCar : trainCars)
+        TheEssexCountyExpress
+          <$> runMessage msg (attrs & locationsL .~ locations')
+      ResolveToken _ Tablet iid | isEasyStandard attrs -> do
+        closestCultists <- map unClosestEnemyId
+          <$> getSetList (iid, [Trait.Cultist])
+        s <$ case closestCultists of
+          [] -> pure ()
+          [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
+          xs -> unshiftMessage
+            (chooseOne iid [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
+      ResolveToken _ Tablet _ | isHardExpert attrs -> do
+        cultists <- getSetList @EnemyId Trait.Cultist
+        s <$ unshiftMessages [ PlaceDoom (EnemyTarget eid) 1 | eid <- cultists ]
+      FailedSkillTest iid _ _ (DrawnTokenTarget token) _ n ->
+        s <$ case drawnTokenFace token of
+          Cultist -> unshiftMessages
+            [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
+          ElderThing | isEasyStandard attrs ->
+            unshiftMessage $ ChooseAndDiscardCard iid
+          ElderThing | isHardExpert attrs ->
+            unshiftMessages $ replicate n (ChooseAndDiscardCard iid)
+          _ -> pure ()
+      ScenarioResolution NoResolution ->
+        s <$ unshiftMessages [ScenarioResolution $ Resolution 2]
+      ScenarioResolution (Resolution 1) -> do
+        msgs <- investigatorDefeat attrs
+        leadInvestigatorId <- getLeadInvestigatorId
+        investigatorIds <- getInvestigatorIds
+        defeatedInvestigatorIds <- map unDefeatedInvestigatorId
+          <$> getSetList ()
+        xp <- getXp
+        s <$ unshiftMessages
+          (msgs
+          <> [ chooseOne
+                 leadInvestigatorId
+                 [ Run
+                     [ Continue "Continue"
+                     , FlavorText
+                       Nothing
+                       [ "You breathe a sigh of relief as the gate behind\
                      \ the train collapses harmlessly upon itself. The few passengers\
                      \ who survived the ordeal seem unable to comprehend what\
                      \ just happened. One passenger mentions “a pipe bursting in\
@@ -280,44 +289,45 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
                      \ the innocent and ignorant, those who either cannot or choose\
                      \ not to delve further into the mystery. You, on the other hand,\
                      \ know better… although in hindsight, you wish you didn’t."
+                       ]
+                     ]
+                 ]
+             ]
+          <> [ GainXP
+                 iid
+                 (xp + (if iid `elem` defeatedInvestigatorIds then 1 else 0))
+             | iid <- investigatorIds
+             ]
+          <> [EndOfGame]
+          )
+      ScenarioResolution (Resolution 2) -> do
+        msgs <- investigatorDefeat attrs
+        leadInvestigatorId <- getLeadInvestigatorId
+        investigatorIds <- getInvestigatorIds
+        defeatedInvestigatorIds <- map unDefeatedInvestigatorId
+          <$> getSetList ()
+        xp <- getXp
+        s <$ unshiftMessages
+          (msgs
+          <> [ chooseOne
+               leadInvestigatorId
+               [ Run
+                   [ Continue "Continue"
+                   , FlavorText
+                     Nothing
+                     [ "Rattled,\
+                     \ you begin walking alongside the train tracks, making your\
+                     \ way towards Dunwich."
                      ]
                    ]
                ]
-           ]
-        <> [ GainXP
-               iid
-               (xp + (if iid `elem` defeatedInvestigatorIds then 1 else 0))
-           | iid <- investigatorIds
-           ]
-        <> [EndOfGame]
-        )
-    ScenarioResolution (Resolution 2) -> do
-      msgs <- investigatorDefeat attrs
-      leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
-      defeatedInvestigatorIds <- map unDefeatedInvestigatorId <$> getSetList ()
-      xp <- getXp
-      s <$ unshiftMessages
-        (msgs
-        <> [ chooseOne
-             leadInvestigatorId
-             [ Run
-                 [ Continue "Continue"
-                 , FlavorText
-                   Nothing
-                   [ "Rattled,\
-                     \ you begin walking alongside the train tracks, making your\
-                     \ way towards Dunwich."
-                   ]
-                 ]
+             , Record TheInvestigatorsWereDelayedOnTheirWayToDunwich
              ]
-           , Record TheInvestigatorsWereDelayedOnTheirWayToDunwich
-           ]
-        <> [ GainXP
-               iid
-               (xp + (if iid `elem` defeatedInvestigatorIds then 1 else 0))
-           | iid <- investigatorIds
-           ]
-        <> [EndOfGame]
-        )
-    _ -> TheEssexCountyExpress <$> runMessage msg attrs
+          <> [ GainXP
+                 iid
+                 (xp + (if iid `elem` defeatedInvestigatorIds then 1 else 0))
+             | iid <- investigatorIds
+             ]
+          <> [EndOfGame]
+          )
+      _ -> TheEssexCountyExpress <$> runMessage msg attrs

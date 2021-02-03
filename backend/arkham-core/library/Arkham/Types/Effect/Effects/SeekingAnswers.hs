@@ -10,7 +10,7 @@ import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 
 newtype SeekingAnswers = SeekingAnswers EffectAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 seekingAnswers :: EffectArgs -> SeekingAnswers
 seekingAnswers = SeekingAnswers . uncurry4 (baseAttrs "02023")

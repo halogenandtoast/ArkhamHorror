@@ -14,7 +14,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait hiding (Cultist)
 
 newtype BackAlley = BackAlley LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 backAlley :: BackAlley
 backAlley = BackAlley

@@ -13,7 +13,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait hiding (Supply)
 
 newtype EasttownArkhamPoliceStation = EasttownArkhamPoliceStation LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 easttownArkhamPoliceStation :: EasttownArkhamPoliceStation
 easttownArkhamPoliceStation = EasttownArkhamPoliceStation

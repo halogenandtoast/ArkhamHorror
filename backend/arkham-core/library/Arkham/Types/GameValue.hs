@@ -1,15 +1,14 @@
 module Arkham.Types.GameValue
   ( GameValue(..)
   , fromGameValue
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 data GameValue a
   = Static a
   | PerPlayer a
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 instance Functor GameValue where

@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.TheHouseAlwaysWins
   ( TheHouseAlwaysWins(..)
   , theHouseAlwaysWins
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -15,7 +14,7 @@ import Arkham.Types.Scenario.Runner
 import Arkham.Types.ScenarioLogKey
 
 newtype TheHouseAlwaysWins = TheHouseAlwaysWins ScenarioAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 theHouseAlwaysWins :: Difficulty -> TheHouseAlwaysWins
 theHouseAlwaysWins difficulty =

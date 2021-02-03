@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype Atychiphobia = Atychiphobia TreacheryAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 atychiphobia :: TreacheryId -> Maybe InvestigatorId -> Atychiphobia
 atychiphobia uuid iid = Atychiphobia $ weaknessAttrs uuid iid "60504"

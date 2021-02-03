@@ -13,7 +13,7 @@ import Arkham.Types.Trait hiding (Cultist)
 import Data.List.NonEmpty (NonEmpty(..))
 
 newtype ReturnToTheDevourerBelow = ReturnToTheDevourerBelow TheDevourerBelow
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 returnToTheDevourerBelow :: Difficulty -> ReturnToTheDevourerBelow
 returnToTheDevourerBelow difficulty =

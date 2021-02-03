@@ -9,7 +9,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
 newtype JimsTrumpet = JimsTrumpet AssetAttrs
-  deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 jimsTrumpet :: AssetId -> JimsTrumpet
 jimsTrumpet uuid =

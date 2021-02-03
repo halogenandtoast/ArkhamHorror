@@ -9,7 +9,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype FacultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 facultyOfficesTheHourIsLate :: FacultyOfficesTheHourIsLate
 facultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate $ baseAttrs

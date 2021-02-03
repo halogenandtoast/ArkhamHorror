@@ -6,7 +6,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
 newtype OnTheLam = OnTheLam EventAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 onTheLam :: InvestigatorId -> EventId -> OnTheLam
 onTheLam iid uuid = OnTheLam $ baseAttrs iid uuid "01010"

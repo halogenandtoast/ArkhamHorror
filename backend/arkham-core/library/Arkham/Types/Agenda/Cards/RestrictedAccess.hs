@@ -10,7 +10,7 @@ import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card.EncounterCardMatcher
 
 newtype RestrictedAccess = RestrictedAccess AgendaAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 restrictedAccess :: RestrictedAccess
 restrictedAccess = RestrictedAccess

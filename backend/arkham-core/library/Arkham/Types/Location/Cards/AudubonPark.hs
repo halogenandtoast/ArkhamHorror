@@ -8,7 +8,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype AudubonPark = AudubonPark LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 audubonPark :: AudubonPark
 audubonPark = AudubonPark $ base { locationVictory = Just 1 }

@@ -3,8 +3,7 @@
 module Arkham.Types.Agenda.Attrs
   ( module Arkham.Types.Agenda.Attrs
   , module X
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -21,7 +20,7 @@ data AgendaAttrs = AgendaAttrs
   , agendaTreacheries :: HashSet TreacheryId
   , agendaCardsUnderneath :: [Card]
   }
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
 
 makeLensesWith suffixedFields ''AgendaAttrs
 

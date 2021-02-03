@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 
 newtype CloseCall2 = CloseCall2 EventAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 closeCall2 :: InvestigatorId -> EventId -> CloseCall2
 closeCall2 iid uuid = CloseCall2 $ baseAttrs iid uuid "01083"

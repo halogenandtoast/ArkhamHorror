@@ -10,7 +10,7 @@ import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 
 newtype WillToSurvive4 = WillToSurvive4 EffectAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 willToSurvive4 :: EffectArgs -> WillToSurvive4
 willToSurvive4 = WillToSurvive4 . uncurry4 (baseAttrs "01085")

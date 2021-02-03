@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype Hyperawareness = Hyperawareness AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hyperawareness :: AssetId -> Hyperawareness
 hyperawareness uuid = Hyperawareness $ baseAttrs uuid "01034"

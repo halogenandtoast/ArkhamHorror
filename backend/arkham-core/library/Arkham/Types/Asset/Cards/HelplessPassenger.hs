@@ -9,7 +9,7 @@ import Arkham.Types.Action
 import Arkham.Types.Asset.Attrs
 
 newtype HelplessPassenger = HelplessPassenger AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 helplessPassenger :: AssetId -> HelplessPassenger
 helplessPassenger uuid = HelplessPassenger $ (baseAttrs uuid "02179")

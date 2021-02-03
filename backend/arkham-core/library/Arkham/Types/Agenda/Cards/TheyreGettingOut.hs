@@ -7,7 +7,7 @@ import Arkham.Types.Agenda.Runner
 import Arkham.Types.Trait
 
 newtype TheyreGettingOut = TheyreGettingOut AgendaAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theyreGettingOut :: TheyreGettingOut
 theyreGettingOut = TheyreGettingOut

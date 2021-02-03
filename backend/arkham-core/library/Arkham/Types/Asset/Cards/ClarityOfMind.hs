@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Uses
 
 newtype ClarityOfMind = ClarityOfMind AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 clarityOfMind :: AssetId -> ClarityOfMind
 clarityOfMind uuid =

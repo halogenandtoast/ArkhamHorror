@@ -10,11 +10,11 @@ import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 
 newtype TheRougarouMetadata = TheRougarouMetadata { damagePerPhase :: Int }
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 newtype TheRougarou = TheRougarou (EnemyAttrs `With` TheRougarouMetadata)
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theRougarou :: EnemyId -> TheRougarou
 theRougarou uuid =

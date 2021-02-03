@@ -73,11 +73,11 @@ data Enemy
   | MarshGug' MarshGug
   | DarkYoungHost' DarkYoungHost
   | BaseEnemy' BaseEnemy
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 newtype BaseEnemy = BaseEnemy EnemyAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 baseEnemy :: EnemyId -> CardCode -> (EnemyAttrs -> EnemyAttrs) -> Enemy
 baseEnemy a b f = BaseEnemy' . BaseEnemy $ baseAttrs a b f

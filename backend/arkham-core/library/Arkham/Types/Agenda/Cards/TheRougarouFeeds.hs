@@ -12,7 +12,7 @@ import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Trait
 
 newtype TheRougarouFeeds = TheRougarouFeeds AgendaAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theRougarouFeeds :: TheRougarouFeeds
 theRougarouFeeds = TheRougarouFeeds

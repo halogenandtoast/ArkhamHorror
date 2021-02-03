@@ -8,7 +8,7 @@ import Arkham.Import
 import Arkham.Types.Asset.Attrs
 
 newtype Adaptable1 = Adaptable1 AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 adaptable1 :: AssetId -> Adaptable1
 adaptable1 uuid = Adaptable1 $ baseAttrs uuid "02110"

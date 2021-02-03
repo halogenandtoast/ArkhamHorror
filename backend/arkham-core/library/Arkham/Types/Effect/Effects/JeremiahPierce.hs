@@ -10,7 +10,7 @@ import Arkham.Types.Action
 import Arkham.Types.Effect.Attrs
 
 newtype JeremiahPierce = JeremiahPierce EffectAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jeremiahPierce :: EffectArgs -> JeremiahPierce
 jeremiahPierce = JeremiahPierce . uncurry4 (baseAttrs "50044")

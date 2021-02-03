@@ -7,7 +7,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype LeoDeLuca = LeoDeLuca AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 leoDeLuca :: AssetId -> LeoDeLuca
 leoDeLuca uuid = LeoDeLuca $ (baseAttrs uuid "01048")

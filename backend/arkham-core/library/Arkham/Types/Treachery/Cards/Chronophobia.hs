@@ -9,7 +9,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype Chronophobia = Chronophobia TreacheryAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chronophobia :: TreacheryId -> Maybe InvestigatorId -> Chronophobia
 chronophobia uuid iid = Chronophobia $ weaknessAttrs uuid iid "02039"

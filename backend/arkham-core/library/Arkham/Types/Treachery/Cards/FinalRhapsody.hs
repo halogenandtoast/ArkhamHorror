@@ -7,7 +7,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype FinalRhapsody = FinalRhapsody TreacheryAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 finalRhapsody :: TreacheryId -> Maybe InvestigatorId -> FinalRhapsody
 finalRhapsody uuid iid = FinalRhapsody $ weaknessAttrs uuid iid "02013"

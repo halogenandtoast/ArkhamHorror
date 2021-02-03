@@ -6,7 +6,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype FalseLead = FalseLead TreacheryAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 falseLead :: TreacheryId -> a -> FalseLead
 falseLead uuid _ = FalseLead $ baseAttrs uuid "01136"

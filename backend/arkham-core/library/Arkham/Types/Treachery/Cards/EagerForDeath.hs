@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype EagerForDeath = EagerForDeath TreacheryAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 eagerForDeath :: TreacheryId -> a -> EagerForDeath
 eagerForDeath uuid _ = EagerForDeath $ baseAttrs uuid "02091"

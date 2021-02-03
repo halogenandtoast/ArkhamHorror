@@ -8,7 +8,7 @@ import Arkham.Import
 import Arkham.Types.Effect.Attrs
 
 newtype WindowModifierEffect = WindowModifierEffect EffectAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 windowModifierEffect
   :: EffectId

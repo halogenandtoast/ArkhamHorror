@@ -17,7 +17,7 @@ data EventAttrs = EventAttrs
   , eventWeakness :: Bool
   , eventDoom :: Int
   }
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
 
 makeLensesWith suffixedFields ''EventAttrs
 

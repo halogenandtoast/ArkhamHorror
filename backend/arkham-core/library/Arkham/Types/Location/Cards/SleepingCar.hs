@@ -14,7 +14,7 @@ import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
 
 newtype SleepingCar = SleepingCar LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sleepingCar :: SleepingCar
 sleepingCar = SleepingCar

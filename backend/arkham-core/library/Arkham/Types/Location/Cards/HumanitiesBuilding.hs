@@ -8,7 +8,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype HumanitiesBuilding = HumanitiesBuilding LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 humanitiesBuilding :: HumanitiesBuilding
 humanitiesBuilding = HumanitiesBuilding $ baseAttrs

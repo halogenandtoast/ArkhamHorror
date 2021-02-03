@@ -90,7 +90,7 @@ drawCard [] = (Nothing, [])
 drawCard (x : xs) = (Just x, xs)
 
 newtype Deck a = Deck { unDeck :: [a] }
-  deriving newtype (Semigroup, Monoid, ToJSON, FromJSON)
+  deriving newtype (Semigroup, Monoid, ToJSON, FromJSON, Eq)
 
 instance Show (Deck a) where
   show _ = "<Deck>"
@@ -103,6 +103,8 @@ instance Show (Bag a) where
 
 data With a b = With a b
 
+instance (Eq a, Eq b) => Eq (With a b) where
+  With a1 b1 == With a2 b2 = a1 == a2 && b1 == b2
 
 instance (ToJSON a, ToJSON b) => ToJSON (a `With` b) where
   toJSON (a `With` b) = case (toJSON a, toJSON b) of

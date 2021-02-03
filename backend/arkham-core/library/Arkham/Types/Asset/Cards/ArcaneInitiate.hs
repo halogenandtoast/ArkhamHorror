@@ -7,7 +7,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
 newtype ArcaneInitiate = ArcaneInitiate AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arcaneInitiate :: AssetId -> ArcaneInitiate
 arcaneInitiate uuid = ArcaneInitiate $ (baseAttrs uuid "01063")

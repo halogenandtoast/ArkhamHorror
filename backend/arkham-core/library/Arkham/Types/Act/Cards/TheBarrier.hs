@@ -7,7 +7,7 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
 newtype TheBarrier = TheBarrier ActAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theBarrier :: TheBarrier
 theBarrier = TheBarrier $ baseAttrs "01109" "The Barrier" (Act 2 A) Nothing

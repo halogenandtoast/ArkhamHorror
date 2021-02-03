@@ -11,7 +11,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
 newtype DaisysToteBagAdvanced = DaisysToteBagAdvanced AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 daisysToteBagAdvanced :: AssetId -> DaisysToteBagAdvanced
 daisysToteBagAdvanced uuid = DaisysToteBagAdvanced $ baseAttrs uuid "90002"

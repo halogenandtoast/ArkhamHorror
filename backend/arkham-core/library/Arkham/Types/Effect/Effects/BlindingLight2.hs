@@ -10,7 +10,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Effect.Attrs
 
 newtype BlindingLight2 = BlindingLight2 EffectAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blindingLight2 :: EffectArgs -> BlindingLight2
 blindingLight2 = BlindingLight2 . uncurry4 (baseAttrs "01069")

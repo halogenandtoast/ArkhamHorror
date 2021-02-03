@@ -11,7 +11,7 @@ import Arkham.Types.Event.Attrs
 -- Check player card with behavior
 
 newtype AstoundingRevelation = AstoundingRevelation EventAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 astoundingRevelation :: InvestigatorId -> EventId -> AstoundingRevelation
 astoundingRevelation iid uuid =

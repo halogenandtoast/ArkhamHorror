@@ -25,7 +25,7 @@ data Scenario
   | ReturnToTheDevourerBelow' ReturnToTheDevourerBelow
   | CurseOfTheRougarou' CurseOfTheRougarou
   | BaseScenario' BaseScenario
-  deriving stock (Show, Generic)
+  deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance ScenarioRunner env => RunMessage env Scenario
@@ -55,7 +55,7 @@ instance HasSet ScenarioLogKey env Scenario where
   getSet = pure . scenarioLog . toAttrs
 
 newtype BaseScenario = BaseScenario ScenarioAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 instance HasTokenValue env InvestigatorId => HasTokenValue env BaseScenario where
   getTokenValue (BaseScenario attrs) iid = \case

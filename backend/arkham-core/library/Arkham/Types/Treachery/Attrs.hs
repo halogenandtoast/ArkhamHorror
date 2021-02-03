@@ -22,7 +22,7 @@ data TreacheryAttrs = TreacheryAttrs
   , treacheryClues :: Maybe Int
   , treacheryResources :: Maybe Int
   }
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
 
 makeLensesWith suffixedFields ''TreacheryAttrs
 

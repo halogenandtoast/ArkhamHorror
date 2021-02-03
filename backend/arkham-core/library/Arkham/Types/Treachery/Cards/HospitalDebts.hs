@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype HospitalDebts = HospitalDebts TreacheryAttrs
-  deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 hospitalDebts :: TreacheryId -> Maybe InvestigatorId -> HospitalDebts
 hospitalDebts uuid iid = HospitalDebts

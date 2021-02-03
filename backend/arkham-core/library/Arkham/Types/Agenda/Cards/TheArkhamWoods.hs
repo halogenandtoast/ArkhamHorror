@@ -8,7 +8,7 @@ import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Trait
 
 newtype TheArkhamWoods = TheArkhamWoods AgendaAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theArkhamWoods :: TheArkhamWoods
 theArkhamWoods =

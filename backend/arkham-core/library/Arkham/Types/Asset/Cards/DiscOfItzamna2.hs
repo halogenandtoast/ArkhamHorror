@@ -8,7 +8,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
 newtype DiscOfItzamna2 = DiscOfItzamna2 AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 discOfItzamna2 :: AssetId -> DiscOfItzamna2
 discOfItzamna2 uuid =

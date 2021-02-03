@@ -11,7 +11,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Keyword
 
 newtype FishingNet = FishingNet AssetAttrs
-  deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 fishingNet :: AssetId -> FishingNet
 fishingNet uuid = FishingNet $ (baseAttrs uuid "81021") { assetIsStory = True }

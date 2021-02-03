@@ -10,7 +10,7 @@ import Arkham.Types.Trait
 import qualified Arkham.Types.Trait as Trait
 
 newtype Narogath = Narogath EnemyAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 narogath :: EnemyId -> Narogath
 narogath uuid =

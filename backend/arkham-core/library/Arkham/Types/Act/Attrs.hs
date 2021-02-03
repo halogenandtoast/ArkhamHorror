@@ -3,8 +3,7 @@
 module Arkham.Types.Act.Attrs
   ( module Arkham.Types.Act.Attrs
   , module X
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -20,7 +19,7 @@ data ActAttrs = ActAttrs
   , actClues :: Maybe Int
   , actTreacheries :: HashSet TreacheryId
   }
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
 
 makeLensesWith suffixedFields ''ActAttrs
 

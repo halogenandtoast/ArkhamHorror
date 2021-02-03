@@ -11,7 +11,7 @@ import Arkham.Types.Agenda.Runner
 import Arkham.Types.Trait
 
 newtype ChaosInTheCloverClub = ChaosInTheCloverClub AgendaAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chaosInTheCloverClub :: ChaosInTheCloverClub
 chaosInTheCloverClub = ChaosInTheCloverClub

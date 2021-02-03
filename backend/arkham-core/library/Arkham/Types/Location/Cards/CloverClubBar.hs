@@ -14,7 +14,7 @@ import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
 
 newtype CloverClubBar = CloverClubBar LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cloverClubBar :: CloverClubBar
 cloverClubBar = CloverClubBar $ baseAttrs

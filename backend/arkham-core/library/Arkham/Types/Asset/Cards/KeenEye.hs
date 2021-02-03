@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype KeenEye = KeenEye AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 keenEye :: AssetId -> KeenEye
 keenEye uuid = KeenEye $ baseAttrs uuid "07152"

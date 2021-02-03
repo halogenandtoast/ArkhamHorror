@@ -11,7 +11,7 @@ import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 
 newtype TimeIsRunningShort = TimeIsRunningShort AgendaAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 timeIsRunningShort :: TimeIsRunningShort
 timeIsRunningShort = TimeIsRunningShort

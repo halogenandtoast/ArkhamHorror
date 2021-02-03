@@ -7,7 +7,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype TheZealotsSeal = TheZealotsSeal TreacheryAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theZealotsSeal :: TreacheryId -> a -> TheZealotsSeal
 theZealotsSeal uuid _ = TheZealotsSeal $ baseAttrs uuid "50024"

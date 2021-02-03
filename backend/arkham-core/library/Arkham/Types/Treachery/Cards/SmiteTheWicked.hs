@@ -7,7 +7,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype SmiteTheWicked = SmiteTheWicked TreacheryAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 smiteTheWicked :: TreacheryId -> Maybe InvestigatorId -> SmiteTheWicked
 smiteTheWicked uuid iid = SmiteTheWicked $ weaknessAttrs uuid iid "02007"

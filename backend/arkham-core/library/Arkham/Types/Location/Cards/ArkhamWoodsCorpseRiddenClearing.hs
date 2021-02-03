@@ -9,7 +9,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype ArkhamWoodsCorpseRiddenClearing = ArkhamWoodsCorpseRiddenClearing LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsCorpseRiddenClearing :: ArkhamWoodsCorpseRiddenClearing
 arkhamWoodsCorpseRiddenClearing = ArkhamWoodsCorpseRiddenClearing $ base

@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.CampaignLogKey
 
 newtype StrangeSolution = StrangeSolution AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strangeSolution :: AssetId -> StrangeSolution
 strangeSolution uuid = StrangeSolution $ baseAttrs uuid "02021"

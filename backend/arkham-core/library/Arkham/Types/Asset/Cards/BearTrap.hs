@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype BearTrap = BearTrap AssetAttrs
-  deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 bearTrap :: AssetId -> BearTrap
 bearTrap uuid = BearTrap $ (baseAttrs uuid "81020") { assetIsStory = True }

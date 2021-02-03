@@ -11,7 +11,7 @@ import Arkham.Types.Asset.Uses
 import Arkham.Types.Trait
 
 newtype BookOfShadows3 = BookOfShadows3 AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bookOfShadows3 :: AssetId -> BookOfShadows3
 bookOfShadows3 uuid =

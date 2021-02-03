@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Effect.Attrs
 
 newtype BaseballBat = BaseballBat EffectAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 baseballBat :: EffectArgs -> BaseballBat
 baseballBat = BaseballBat . uncurry4 (baseAttrs "01074")

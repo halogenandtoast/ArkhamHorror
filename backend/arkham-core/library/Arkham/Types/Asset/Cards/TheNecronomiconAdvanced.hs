@@ -11,7 +11,7 @@ import Arkham.Types.Asset.Runner
 import qualified Arkham.Types.Token as Token
 
 newtype TheNecronomiconAdvanced = TheNecronomiconAdvanced AssetAttrs
-  deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 theNecronomiconAdvanced :: AssetId -> TheNecronomiconAdvanced
 theNecronomiconAdvanced uuid =

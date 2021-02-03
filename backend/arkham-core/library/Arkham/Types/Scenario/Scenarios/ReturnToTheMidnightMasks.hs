@@ -14,7 +14,7 @@ import Arkham.Types.Trait (Trait)
 import Data.List.NonEmpty (NonEmpty(..))
 
 newtype ReturnToTheMidnightMasks = ReturnToTheMidnightMasks TheMidnightMasks
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 returnToTheMidnightMasks :: Difficulty -> ReturnToTheMidnightMasks
 returnToTheMidnightMasks difficulty =

@@ -12,7 +12,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype SpectralMist = SpectralMist TreacheryAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 spectralMist :: TreacheryId -> a -> SpectralMist
 spectralMist uuid _ = SpectralMist $ baseAttrs uuid "81025"

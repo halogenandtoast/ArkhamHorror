@@ -7,7 +7,7 @@ import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
 
 newtype SurvivalInstinct = SurvivalInstinct SkillAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 survivalInstinct :: InvestigatorId -> SkillId -> SurvivalInstinct
 survivalInstinct iid uuid = SurvivalInstinct $ baseAttrs iid uuid "01081"

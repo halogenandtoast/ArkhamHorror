@@ -9,7 +9,7 @@ import Arkham.Types.Asset.Uses
 import Arkham.Types.Event.Attrs
 
 newtype Contraband = Contraband EventAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 contraband :: InvestigatorId -> EventId -> Contraband
 contraband iid uuid = Contraband $ baseAttrs iid uuid "02109"

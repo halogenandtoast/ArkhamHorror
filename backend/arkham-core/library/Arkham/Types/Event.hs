@@ -66,7 +66,7 @@ data Event
   | Contraband2' Contraband2
   | Taunt3' Taunt3
   | IveGotAPlan2' IveGotAPlan2
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance HasActions env Event

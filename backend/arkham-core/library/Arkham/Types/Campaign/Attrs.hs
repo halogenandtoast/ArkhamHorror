@@ -24,7 +24,7 @@ data CampaignAttrs = CampaignAttrs
   , campaignCompletedSteps :: [CampaignStep]
   , campaignResolutions :: HashMap ScenarioId Resolution
   }
-  deriving stock (Show, Generic)
+  deriving stock (Show, Generic, Eq)
 
 makeLensesWith suffixedFields ''CampaignAttrs
 

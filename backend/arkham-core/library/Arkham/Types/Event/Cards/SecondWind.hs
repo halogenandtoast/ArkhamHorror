@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 
 newtype SecondWind = SecondWind EventAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 secondWind :: InvestigatorId -> EventId -> SecondWind
 secondWind iid uuid = SecondWind $ baseAttrs iid uuid "04149"

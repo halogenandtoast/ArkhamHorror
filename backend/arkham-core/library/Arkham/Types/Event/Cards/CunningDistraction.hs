@@ -6,7 +6,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
 newtype CunningDistraction = CunningDistraction EventAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cunningDistraction :: InvestigatorId -> EventId -> CunningDistraction
 cunningDistraction iid uuid = CunningDistraction $ baseAttrs iid uuid "01078"

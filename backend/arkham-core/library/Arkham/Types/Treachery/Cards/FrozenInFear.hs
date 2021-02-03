@@ -8,7 +8,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype FrozenInFear = FrozenInFear TreacheryAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 frozenInFear :: TreacheryId -> a -> FrozenInFear
 frozenInFear uuid _ = FrozenInFear $ baseAttrs uuid "01164"

@@ -35,7 +35,7 @@ data LocationAttrs = LocationAttrs
   , locationConnectsTo :: HashSet Direction
   , locationCardsUnderneath :: [Card]
   }
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
 
 makeLensesWith suffixedFields ''LocationAttrs
 

@@ -6,7 +6,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype DraggedUnder = DraggedUnder TreacheryAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 draggedUnder :: TreacheryId -> a -> DraggedUnder
 draggedUnder uuid _ = DraggedUnder $ baseAttrs uuid "81026"

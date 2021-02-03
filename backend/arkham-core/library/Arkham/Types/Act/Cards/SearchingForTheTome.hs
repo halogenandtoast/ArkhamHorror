@@ -11,7 +11,7 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
 newtype SearchingForTheTome = SearchingForTheTome ActAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 searchingForTheTome :: SearchingForTheTome
 searchingForTheTome = SearchingForTheTome

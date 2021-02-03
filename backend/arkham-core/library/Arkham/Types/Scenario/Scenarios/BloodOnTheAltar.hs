@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.BloodOnTheAltar
   ( BloodOnTheAltar(..)
   , bloodOnTheAltar
-  )
-where
+  ) where
 
 import Arkham.Import hiding (Cultist)
 
@@ -16,7 +15,7 @@ import Arkham.Types.Token
 import Data.List.NonEmpty (NonEmpty(..))
 
 newtype BloodOnTheAltar = BloodOnTheAltar ScenarioAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 bloodOnTheAltar :: Difficulty -> BloodOnTheAltar
 bloodOnTheAltar difficulty = BloodOnTheAltar $ base

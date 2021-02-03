@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype SlitheringBehindYou = SlitheringBehindYou TreacheryAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 slitheringBehindYou :: TreacheryId -> a -> SlitheringBehindYou
 slitheringBehindYou uuid _ = SlitheringBehindYou $ baseAttrs uuid "02146"

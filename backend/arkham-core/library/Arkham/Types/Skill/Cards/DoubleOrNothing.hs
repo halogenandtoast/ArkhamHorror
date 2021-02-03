@@ -10,7 +10,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
 
-newtype DoubleOrNothing = DoubleOrNothing Attrs
+newtype DoubleOrNothing = DoubleOrNothing SkillAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 doubleOrNothing :: InvestigatorId -> SkillId -> DoubleOrNothing

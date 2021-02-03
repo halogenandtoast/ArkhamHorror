@@ -11,7 +11,7 @@ import Arkham.Types.Skill.Runner
 import Arkham.Types.SkillId
 import Arkham.Types.Target
 
-newtype Guts = Guts Attrs
+newtype Guts = Guts SkillAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 guts :: InvestigatorId -> SkillId -> Guts
@@ -24,7 +24,7 @@ instance HasActions env Guts where
   getActions i window (Guts attrs) = getActions i window attrs
 
 instance (SkillRunner env) => RunMessage env Guts where
-  runMessage msg s@(Guts attrs@Attrs {..}) = case msg of
+  runMessage msg s@(Guts attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest _ _ _ (SkillTarget sid) _ _ | sid == skillId ->
       s <$ unshiftMessage (DrawCards skillOwner 1 False)
     _ -> Guts <$> runMessage msg attrs

@@ -6,7 +6,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
 
-newtype Deduction = Deduction Attrs
+newtype Deduction = Deduction SkillAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 deduction :: InvestigatorId -> SkillId -> Deduction
@@ -19,7 +19,7 @@ instance HasActions env Deduction where
   getActions i window (Deduction attrs) = getActions i window attrs
 
 instance (SkillRunner env) => RunMessage env Deduction where
-  runMessage msg s@(Deduction attrs@Attrs {..}) = case msg of
+  runMessage msg s@(Deduction attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest iid (Just Action.Investigate) _ (SkillTarget sid) _ _
       | sid == skillId -> do
         lid <- getId @LocationId iid

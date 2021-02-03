@@ -11,7 +11,7 @@ import Arkham.Types.Skill.Runner
 import Arkham.Types.SkillId
 import Arkham.Types.Target
 
-newtype ManualDexterity = ManualDexterity Attrs
+newtype ManualDexterity = ManualDexterity SkillAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 manualDexterity :: InvestigatorId -> SkillId -> ManualDexterity
@@ -24,7 +24,7 @@ instance HasActions env ManualDexterity where
   getActions i window (ManualDexterity attrs) = getActions i window attrs
 
 instance (SkillRunner env) => RunMessage env ManualDexterity where
-  runMessage msg s@(ManualDexterity attrs@Attrs {..}) = case msg of
+  runMessage msg s@(ManualDexterity attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest _ _ _ (SkillTarget sid) _ _ | sid == skillId ->
       s <$ unshiftMessage (DrawCards skillOwner 1 False)
     _ -> ManualDexterity <$> runMessage msg attrs

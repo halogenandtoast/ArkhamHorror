@@ -1,19 +1,18 @@
 module Arkham.Types.Asset.Cards.ArcaneStudies2Spec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
-import Arkham.Types.Investigator.Attrs (Attrs(..))
+import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
 spec = describe "Arcane Studies (2)" $ do
   it "Adds 1 to willpower check for each resource spent" $ do
     arcaneStudies2 <- buildAsset "50007"
-    investigator <- testInvestigator "00000"
-      $ \attrs -> attrs { investigatorWillpower = 1, investigatorResources = 2 }
-    (didPassTest, logger) <- didPassSkillTestBy investigator 0
+    investigator <- testInvestigator "00000" $ \attrs ->
+      attrs { investigatorWillpower = 1, investigatorResources = 2 }
+    (didPassTest, logger) <- didPassSkillTestBy investigator SkillWillpower 0
     void
       $ runGameTest
           investigator
@@ -45,9 +44,9 @@ spec = describe "Arcane Studies (2)" $ do
 
   it "Adds 1 to intellect check for each resource spent" $ do
     arcaneStudies2 <- buildAsset "50007"
-    investigator <- testInvestigator "00000"
-      $ \attrs -> attrs { investigatorIntellect = 1, investigatorResources = 2 }
-    (didPassTest, logger) <- didPassSkillTestBy investigator 0
+    investigator <- testInvestigator "00000" $ \attrs ->
+      attrs { investigatorIntellect = 1, investigatorResources = 2 }
+    (didPassTest, logger) <- didPassSkillTestBy investigator SkillIntellect 0
     void
       $ runGameTest
           investigator

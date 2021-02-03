@@ -1,11 +1,10 @@
 module Arkham.Types.Event.Cards.DodgeSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
-import Arkham.Types.Investigator.Attrs (Attrs(..))
+import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
 spec = do

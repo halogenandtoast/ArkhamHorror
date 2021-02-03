@@ -1,8 +1,7 @@
 module Arkham.Types.Investigator.Cards.DaisyWalker
   ( DaisyWalker(..)
   , daisyWalker
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -11,7 +10,7 @@ import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
 import Arkham.Types.Trait
 
-newtype DaisyWalker = DaisyWalker Attrs
+newtype DaisyWalker = DaisyWalker InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env DaisyWalker where
@@ -42,7 +41,7 @@ instance HasTokenValue env DaisyWalker where
   getTokenValue (DaisyWalker attrs) iid token = getTokenValue attrs iid token
 
 instance InvestigatorRunner env => RunMessage env DaisyWalker where
-  runMessage msg i@(DaisyWalker attrs@Attrs {..}) = case msg of
+  runMessage msg i@(DaisyWalker attrs@InvestigatorAttrs {..}) = case msg of
     ResetGame -> do
       attrs' <- runMessage msg attrs
       pure $ DaisyWalker $ attrs' { investigatorTomeActions = Just 1 }

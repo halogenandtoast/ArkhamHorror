@@ -8,7 +8,7 @@ import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
 import Arkham.Types.Trait
 
-newtype JimCulver = JimCulver Attrs
+newtype JimCulver = JimCulver InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env JimCulver where
@@ -42,7 +42,7 @@ instance HasTokenValue env JimCulver where
   getTokenValue (JimCulver attrs) iid token = getTokenValue attrs iid token
 
 instance InvestigatorRunner env => RunMessage env JimCulver where
-  runMessage msg i@(JimCulver attrs@Attrs {..}) = case msg of
+  runMessage msg i@(JimCulver attrs@InvestigatorAttrs {..}) = case msg of
     When (RevealToken source iid ElderSign) | iid == investigatorId -> do
       Just RevealToken{} <- popMessage
       i <$ unshiftMessage

@@ -48,7 +48,7 @@ instance ToPlayerCard Treachery where
     (getCardCode treachery)
     (CardId . unTreacheryId $ toId treachery)
 
-class Entity a => TestEntity a where
+class (Entity a, TargetEntity a) => TestEntity a where
   updated :: Game queue -> a -> a
 
 instance TestEntity Agenda where
@@ -84,7 +84,8 @@ instance ToEncounterCard Enemy where
   asEncounterCard enemy =
     lookupEncounterCard (getCardCode enemy) (CardId . unEnemyId $ toId enemy)
 
-isInEncounterDiscard :: (ToEncounterCard entity) => Game queue -> entity -> Bool
+isInEncounterDiscard
+  :: (ToEncounterCard entity) => Game queue -> entity -> Bool
 isInEncounterDiscard game entity = card `elem` discard'
  where
   discard' = game ^. discardL
@@ -93,7 +94,7 @@ isInEncounterDiscard game entity = card `elem` discard'
 updatedResourceCount :: Game queue -> Investigator -> Int
 updatedResourceCount game investigator =
   game ^?! investigatorsL . ix (toId investigator) . to
-    (Investigator.investigatorResources . investigatorAttrs)
+    (Investigator.investigatorResources . toAttrs)
 
 evadedBy :: Game queue -> Investigator -> Enemy -> Bool
 evadedBy game _investigator enemy =
@@ -111,7 +112,7 @@ hasDamage n a = getDamage a == n
 hasTrauma :: (HasTrauma a) => (Int, Int) -> a -> Bool
 hasTrauma n a = getTrauma a == n
 
-hasDoom :: (Entity a) => Game queue -> Int -> a -> Bool
+hasDoom :: (TargetEntity a) => Game queue -> Int -> a -> Bool
 hasDoom game n a = case toTarget a of
   AgendaTarget aid -> getCount aid game == DoomCount n
   _ -> error "Not implemented"

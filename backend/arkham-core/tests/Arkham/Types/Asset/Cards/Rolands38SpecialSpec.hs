@@ -1,12 +1,11 @@
 module Arkham.Types.Asset.Cards.Rolands38SpecialSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
 import Arkham.Types.Enemy.Attrs (Attrs(..))
-import Arkham.Types.Investigator.Attrs (Attrs(..))
+import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 import Arkham.Types.Location.Attrs (Attrs(..))
 
 spec :: Spec
@@ -21,7 +20,7 @@ spec = describe "Roland's .39 Special" $ do
     game <- runGameTest
       investigator
       [ SetTokens [Zero]
-      , PlacedLocation (getLocationId location)
+      , PlacedLocation (toId location)
       , enemySpawn location enemy
       , playAsset investigator rolands38Special
       , moveTo investigator location
@@ -52,7 +51,7 @@ spec = describe "Roland's .39 Special" $ do
         game <- runGameTest
           investigator
           [ SetTokens [Zero]
-          , PlacedLocation (getLocationId location)
+          , PlacedLocation (toId location)
           , enemySpawn location enemy
           , playAsset investigator rolands38Special
           , moveTo investigator location

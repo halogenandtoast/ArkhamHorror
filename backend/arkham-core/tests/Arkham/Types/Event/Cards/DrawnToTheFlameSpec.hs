@@ -1,11 +1,10 @@
 module Arkham.Types.Event.Cards.DrawnToTheFlameSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
-import Arkham.Types.Investigator.Attrs (Attrs(..))
+import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 import Arkham.Types.Location.Attrs (Attrs(..))
 import Arkham.Types.Trait
 
@@ -28,8 +27,8 @@ spec = describe "Drawn to the flame" $ do
             investigator
             [ SetEncounterDeck [onWingsOfDarkness]
             , SetTokens [Zero]
-            , PlacedLocation (getLocationId startLocation)
-            , PlacedLocation (getLocationId centralLocation)
+            , PlacedLocation (toId startLocation)
+            , PlacedLocation (toId centralLocation)
             , moveTo investigator startLocation
             , playEvent investigator drawnToTheFlame
             ]

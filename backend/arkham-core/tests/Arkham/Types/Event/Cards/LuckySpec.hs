@@ -1,19 +1,18 @@
 module Arkham.Types.Event.Cards.LuckySpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
-import Arkham.Types.Investigator.Attrs (Attrs(..))
+import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
 spec = describe "Lucky!" $ do
   it "adds 2 to a skill test when you would fail" $ do
-    investigator <- testInvestigator "00000"
-      $ \attrs -> attrs { investigatorIntellect = 1, investigatorResources = 1 }
+    investigator <- testInvestigator "00000" $ \attrs ->
+      attrs { investigatorIntellect = 1, investigatorResources = 1 }
     lucky <- buildPlayerCard "01080"
-    (didPassTest, logger) <- didPassSkillTestBy investigator 0
+    (didPassTest, logger) <- didPassSkillTestBy investigator SkillIntellect 0
     void
       $ runGameTest
           investigator
@@ -32,10 +31,10 @@ spec = describe "Lucky!" $ do
       >>= runGameTestOnlyOptionWithLogger "apply results" logger
     readIORef didPassTest `shouldReturn` True
   it "does not cause an autofail to pass" $ do
-    investigator <- testInvestigator "00000"
-      $ \attrs -> attrs { investigatorIntellect = 1, investigatorResources = 1 }
+    investigator <- testInvestigator "00000" $ \attrs ->
+      attrs { investigatorIntellect = 1, investigatorResources = 1 }
     lucky <- buildPlayerCard "01080"
-    (didFailTest, logger) <- didFailSkillTestBy investigator 2
+    (didFailTest, logger) <- didFailSkillTestBy investigator SkillIntellect 2
     void
       $ runGameTest
           investigator

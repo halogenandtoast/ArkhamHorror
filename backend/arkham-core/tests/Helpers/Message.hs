@@ -24,7 +24,7 @@ moveFrom :: Investigator -> Location -> Message
 moveFrom i l = MoveFrom (toId i) (toId l)
 
 moveAllTo :: Location -> Message
-moveAllTo = MoveAllTo . getLocationId
+moveAllTo = MoveAllTo . toId
 
 enemySpawn :: Location -> Enemy -> Message
 enemySpawn l e = EnemySpawn Nothing (toId l) (toId e)
@@ -62,12 +62,8 @@ drawCards :: Investigator -> Int -> Message
 drawCards i n = DrawCards (toId i) n False
 
 investigate :: Investigator -> Location -> Message
-investigate i l = Investigate
-  (toId i)
-  (getLocationId l)
-  (TestSource mempty)
-  SkillIntellect
-  False
+investigate i l =
+  Investigate (toId i) (toId l) (TestSource mempty) SkillIntellect False
 
 beginSkillTest :: Investigator -> SkillType -> Int -> Message
 beginSkillTest i stype difficulty = BeginSkillTest

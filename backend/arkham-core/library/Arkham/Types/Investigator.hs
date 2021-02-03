@@ -39,7 +39,7 @@ baseInvestigator
   -> ClassSymbol
   -> Stats
   -> [Trait]
-  -> (Attrs -> Attrs)
+  -> (InvestigatorAttrs -> InvestigatorAttrs)
   -> Investigator
 baseInvestigator a b c d e f =
   BaseInvestigator' . BaseInvestigator . f $ baseAttrs a b c d e
@@ -54,7 +54,7 @@ instance HasTokenValue env BaseInvestigator where
   getTokenValue (BaseInvestigator attrs) iid token =
     getTokenValue attrs iid token
 
-newtype BaseInvestigator = BaseInvestigator Attrs
+newtype BaseInvestigator = BaseInvestigator InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env BaseInvestigator where
@@ -114,11 +114,11 @@ instance IsCard Investigator where
 
 instance HasDamage Investigator where
   getDamage i = (investigatorHealthDamage, investigatorSanityDamage)
-    where Attrs {..} = toAttrs i
+    where InvestigatorAttrs {..} = toAttrs i
 
 instance HasTrauma Investigator where
   getTrauma i = (investigatorPhysicalTrauma, investigatorMentalTrauma)
-    where Attrs {..} = toAttrs i
+    where InvestigatorAttrs {..} = toAttrs i
 
 instance HasSet EnemyId env Investigator where
   getSet = pure . investigatorEngagedEnemies . toAttrs
@@ -350,7 +350,7 @@ getRemainingHealth i = do
 
 instance Entity Investigator where
   type EntityId Investigator = InvestigatorId
-  type EntityAttrs Investigator = Attrs
+  type EntityAttrs Investigator = InvestigatorAttrs
 
 instance NamedEntity Investigator where
   toName = toName . toAttrs

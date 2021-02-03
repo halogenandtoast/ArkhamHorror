@@ -7,7 +7,7 @@ import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
 import Arkham.Types.Trait
 
-newtype TonyMorgan = TonyMorgan Attrs
+newtype TonyMorgan = TonyMorgan InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env TonyMorgan where

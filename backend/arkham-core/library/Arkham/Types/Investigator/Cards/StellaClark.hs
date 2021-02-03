@@ -7,7 +7,7 @@ import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
 import Arkham.Types.Trait
 
-newtype StellaClark = StellaClark Attrs
+newtype StellaClark = StellaClark InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env StellaClark where

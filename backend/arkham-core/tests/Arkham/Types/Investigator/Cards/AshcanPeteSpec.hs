@@ -1,7 +1,6 @@
 module Arkham.Types.Investigator.Cards.AshcanPeteSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
@@ -45,7 +44,7 @@ spec = describe "\"Ashcan\" Pete" $ do
     it "gives +2 and readies duke" $ do
       let ashcanPete = lookupInvestigator "02005"
       duke <- buildAsset "02014"
-      (didPassTest, logger) <- didPassSkillTestBy ashcanPete 2
+      (didPassTest, logger) <- didPassSkillTestBy ashcanPete SkillIntellect 2
       game <-
         runGameTest
           ashcanPete

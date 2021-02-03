@@ -1,12 +1,11 @@
 module Arkham.Types.Event.Cards.BaitAndSwitchSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
 import qualified Arkham.Types.Enemy.Attrs as EnemyAttrs
-import Arkham.Types.Investigator.Attrs (Attrs(..))
+import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
 spec = describe "Bait and Switch" $ do
@@ -19,8 +18,8 @@ spec = describe "Bait and Switch" $ do
     game <-
       runGameTest
         investigator
-        [ PlacedLocation (getLocationId location1)
-        , PlacedLocation (getLocationId location2)
+        [ PlacedLocation (toId location1)
+        , PlacedLocation (toId location2)
         , SetTokens [Zero]
         , enemySpawn location1 enemy
         , moveTo investigator location1
@@ -38,4 +37,4 @@ spec = describe "Bait and Switch" $ do
     baitAndSwitch `shouldSatisfy` isInDiscardOf game investigator
     enemy `shouldSatisfy` evadedBy game investigator
     enemyLocation <- withGame game (getId @LocationId (toId enemy))
-    enemyLocation `shouldBe` getLocationId location2
+    enemyLocation `shouldBe` toId location2

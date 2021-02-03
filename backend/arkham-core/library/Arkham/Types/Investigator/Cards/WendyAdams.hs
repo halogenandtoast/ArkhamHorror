@@ -11,7 +11,7 @@ import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
 import Arkham.Types.Trait
 
-newtype WendyAdams = WendyAdams Attrs
+newtype WendyAdams = WendyAdams InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env WendyAdams where
@@ -38,7 +38,7 @@ instance HasTokenValue env WendyAdams where
     pure $ TokenValue ElderSign (PositiveModifier 0)
   getTokenValue (WendyAdams attrs) iid token = getTokenValue attrs iid token
 
-ability :: Attrs -> Token -> Ability
+ability :: InvestigatorAttrs -> Token -> Ability
 ability attrs token = base
   { abilityLimit = PlayerLimit PerTestOrAbility 1
   , abilityMetadata = Just (TargetMetadata $ TokenFaceTarget token)
@@ -50,13 +50,13 @@ ability attrs token = base
     (ReactionAbility $ HandDiscardCost 1 Nothing mempty mempty)
 
 instance ActionRunner env => HasActions env WendyAdams where
-  getActions iid (WhenRevealToken You token) (WendyAdams attrs@Attrs {..})
-    | iid == investigatorId = pure
-      [ActivateCardAbilityAction investigatorId $ ability attrs token]
+  getActions iid (WhenRevealToken You token) (WendyAdams attrs@InvestigatorAttrs {..})
+    | iid == investigatorId
+    = pure [ActivateCardAbilityAction investigatorId $ ability attrs token]
   getActions i window (WendyAdams attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env WendyAdams where
-  runMessage msg i@(WendyAdams attrs@Attrs {..}) = case msg of
+  runMessage msg i@(WendyAdams attrs@InvestigatorAttrs {..}) = case msg of
     UseCardAbility _ (InvestigatorSource iid) (Just (TargetMetadata (TokenFaceTarget token))) 1 _
       | iid == investigatorId
       -> do

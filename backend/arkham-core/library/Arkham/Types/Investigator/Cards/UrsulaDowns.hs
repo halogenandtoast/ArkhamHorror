@@ -7,7 +7,7 @@ import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
 import Arkham.Types.Trait
 
-newtype UrsulaDowns = UrsulaDowns Attrs
+newtype UrsulaDowns = UrsulaDowns InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env UrsulaDowns where

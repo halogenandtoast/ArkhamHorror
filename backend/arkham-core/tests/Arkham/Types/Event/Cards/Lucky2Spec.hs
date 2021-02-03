@@ -1,11 +1,10 @@
 module Arkham.Types.Event.Cards.Lucky2Spec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
-import Arkham.Types.Investigator.Attrs (Attrs(..))
+import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
 spec = describe "Lucky! (2)" $ do
@@ -17,7 +16,7 @@ spec = describe "Lucky! (2)" $ do
       , investigatorDeck = Deck [cardToDraw]
       }
     lucky2 <- buildPlayerCard "01084"
-    (didPassTest, logger) <- didPassSkillTestBy investigator 0
+    (didPassTest, logger) <- didPassSkillTestBy investigator SkillIntellect 0
     game <-
       runGameTest
         investigator
@@ -45,7 +44,7 @@ spec = describe "Lucky! (2)" $ do
       , investigatorDeck = Deck [cardToDraw]
       }
     lucky <- buildPlayerCard "01084"
-    (didFailTest, logger) <- didFailSkillTestBy investigator 2
+    (didFailTest, logger) <- didFailSkillTestBy investigator SkillIntellect 2
     game <-
       runGameTest
         investigator

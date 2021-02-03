@@ -11,7 +11,7 @@ import Arkham.Types.Action
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Helpers
 
-newtype IveGotAPlan = IveGotAPlan Attrs
+newtype IveGotAPlan = IveGotAPlan EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 iveGotAPlan :: InvestigatorId -> EventId -> IveGotAPlan
@@ -28,7 +28,7 @@ instance (HasCount ClueCount env InvestigatorId) => HasModifiersFor env IveGotAP
   getModifiersFor _ _ _ = pure []
 
 instance HasQueue env => RunMessage env IveGotAPlan where
-  runMessage msg e@(IveGotAPlan attrs@Attrs {..}) = case msg of
+  runMessage msg e@(IveGotAPlan attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       e <$ unshiftMessage
         (ChooseFightEnemy iid (EventSource eid) SkillIntellect False)

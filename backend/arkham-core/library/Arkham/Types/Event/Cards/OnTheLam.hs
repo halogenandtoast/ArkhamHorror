@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
-newtype OnTheLam = OnTheLam Attrs
+newtype OnTheLam = OnTheLam EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 onTheLam :: InvestigatorId -> EventId -> OnTheLam
@@ -18,7 +18,7 @@ instance HasActions env OnTheLam where
   getActions i window (OnTheLam attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env OnTheLam where
-  runMessage msg e@(OnTheLam attrs@Attrs {..}) = case msg of
+  runMessage msg e@(OnTheLam attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       e <$ unshiftEffect attrs (InvestigatorTarget iid)
     _ -> OnTheLam <$> runMessage msg attrs

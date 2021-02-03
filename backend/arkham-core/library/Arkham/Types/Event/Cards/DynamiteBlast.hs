@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
-newtype DynamiteBlast = DynamiteBlast Attrs
+newtype DynamiteBlast = DynamiteBlast EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 dynamiteBlast :: InvestigatorId -> EventId -> DynamiteBlast
@@ -18,7 +18,7 @@ instance HasActions env DynamiteBlast where
   getActions i window (DynamiteBlast attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env DynamiteBlast where
-  runMessage msg e@(DynamiteBlast attrs@Attrs {..}) = case msg of
+  runMessage msg e@(DynamiteBlast attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       currentLocationId <- getId @LocationId iid
       connectedLocationIds <- map unConnectedLocationId

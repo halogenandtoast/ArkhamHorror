@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
-newtype BloodRite = BloodRite Attrs
+newtype BloodRite = BloodRite EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 bloodRite :: InvestigatorId -> EventId -> BloodRite
@@ -18,7 +18,7 @@ instance HasActions env BloodRite where
   getActions i window (BloodRite attrs) = getActions i window attrs
 
 instance EventRunner env => RunMessage env BloodRite where
-  runMessage msg e@(BloodRite attrs@Attrs {..}) = case msg of
+  runMessage msg e@(BloodRite attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ unshiftMessages
       [ DrawCards iid 2 False
       , PayForCardAbility iid (EventSource eid) (Just $ IntMetadata 0) 1

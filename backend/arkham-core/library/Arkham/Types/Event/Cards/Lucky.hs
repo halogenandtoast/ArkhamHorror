@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
-newtype Lucky = Lucky Attrs
+newtype Lucky = Lucky EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 lucky :: InvestigatorId -> EventId -> Lucky
@@ -18,7 +18,7 @@ instance HasActions env Lucky where
   getActions i window (Lucky attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env Lucky where
-  runMessage msg e@(Lucky attrs@Attrs {..}) = case msg of
+  runMessage msg e@(Lucky attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ unshiftMessages
       [ Discard (EventTarget eid)
       , CreateEffect "01080" Nothing (EventSource eid) (InvestigatorTarget iid)

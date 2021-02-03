@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
-newtype DrawnToTheFlame = DrawnToTheFlame Attrs
+newtype DrawnToTheFlame = DrawnToTheFlame EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 drawnToTheFlame :: InvestigatorId -> EventId -> DrawnToTheFlame
@@ -18,7 +18,7 @@ instance HasActions env DrawnToTheFlame where
   getActions i window (DrawnToTheFlame attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env DrawnToTheFlame where
-  runMessage msg e@(DrawnToTheFlame attrs@Attrs {..}) = case msg of
+  runMessage msg e@(DrawnToTheFlame attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ unshiftMessages
       [ InvestigatorDrawEncounterCard iid
       , InvestigatorDiscoverCluesAtTheirLocation iid 2

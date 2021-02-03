@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
-newtype WardOfProtection = WardOfProtection Attrs
+newtype WardOfProtection = WardOfProtection EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 wardOfProtection :: InvestigatorId -> EventId -> WardOfProtection
@@ -18,7 +18,7 @@ instance HasActions env WardOfProtection where
   getActions i window (WardOfProtection attrs) = getActions i window attrs
 
 instance EventRunner env => RunMessage env WardOfProtection where
-  runMessage msg e@(WardOfProtection attrs@Attrs {..}) = case msg of
+  runMessage msg e@(WardOfProtection attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ unshiftMessages
       [ CancelNext RevelationMessage
       , InvestigatorAssignDamage iid (EventSource eid) DamageAny 0 1

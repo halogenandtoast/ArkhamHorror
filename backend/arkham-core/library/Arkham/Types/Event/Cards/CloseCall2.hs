@@ -4,7 +4,7 @@ import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 
-newtype CloseCall2 = CloseCall2 Attrs
+newtype CloseCall2 = CloseCall2 EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 closeCall2 :: InvestigatorId -> EventId -> CloseCall2
@@ -17,7 +17,7 @@ instance HasActions env CloseCall2 where
   getActions i window (CloseCall2 attrs) = getActions i window attrs
 
 instance HasQueue env => RunMessage env CloseCall2 where
-  runMessage msg e@(CloseCall2 attrs@Attrs {..}) = case msg of
+  runMessage msg e@(CloseCall2 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent _iid eid (Just (EnemyTarget enemyId))
       | eid == eventId -> e <$ unshiftMessages
         [ ShuffleBackIntoEncounterDeck (EnemyTarget enemyId)

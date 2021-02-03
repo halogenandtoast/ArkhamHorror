@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
-newtype LookWhatIFound = LookWhatIFound Attrs
+newtype LookWhatIFound = LookWhatIFound EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 lookWhatIFound :: InvestigatorId -> EventId -> LookWhatIFound
@@ -18,7 +18,7 @@ instance HasActions env LookWhatIFound where
   getActions i window (LookWhatIFound attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env LookWhatIFound where
-  runMessage msg e@(LookWhatIFound attrs@Attrs {..}) = case msg of
+  runMessage msg e@(LookWhatIFound attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       e <$ unshiftMessages
         [ InvestigatorDiscoverCluesAtTheirLocation iid 2

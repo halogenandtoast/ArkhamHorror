@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
-newtype Taunt = Taunt Attrs
+newtype Taunt = Taunt EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 taunt :: InvestigatorId -> EventId -> Taunt
@@ -22,7 +22,7 @@ instance HasModifiersFor env Taunt where
   getModifiersFor = noModifiersFor
 
 instance (EventRunner env) => RunMessage env Taunt where
-  runMessage msg e@(Taunt attrs@Attrs {..}) = case msg of
+  runMessage msg e@(Taunt attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       lid <- getId @LocationId iid
       enemyIds <- getSetList lid

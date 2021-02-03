@@ -8,7 +8,7 @@ import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 
-newtype Shortcut = Shortcut Attrs
+newtype Shortcut = Shortcut EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 shortcut :: InvestigatorId -> EventId -> Shortcut
@@ -27,7 +27,7 @@ instance
   , HasId LocationId env InvestigatorId
   )
   => RunMessage env Shortcut where
-  runMessage msg e@(Shortcut attrs@Attrs {..}) = case msg of
+  runMessage msg e@(Shortcut attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       lid <- getId @LocationId iid
       investigatorIds <- getSetList lid

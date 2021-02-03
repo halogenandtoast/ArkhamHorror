@@ -4,7 +4,7 @@ import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 
-newtype SearchForTheTruth = SearchForTheTruth Attrs
+newtype SearchForTheTruth = SearchForTheTruth EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 searchForTheTruth :: InvestigatorId -> EventId -> SearchForTheTruth
@@ -17,7 +17,7 @@ instance HasActions env SearchForTheTruth where
   getActions i window (SearchForTheTruth attrs) = getActions i window attrs
 
 instance (HasQueue env, HasCount ClueCount env InvestigatorId) => RunMessage env SearchForTheTruth where
-  runMessage msg e@(SearchForTheTruth attrs@Attrs {..}) = case msg of
+  runMessage msg e@(SearchForTheTruth attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       clueCount' <- unClueCount <$> getCount iid
       e <$ unshiftMessages

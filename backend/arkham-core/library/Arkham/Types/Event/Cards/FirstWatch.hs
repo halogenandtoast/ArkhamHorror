@@ -11,7 +11,7 @@ import Arkham.Types.Game.Helpers
 newtype FirstWatchMetadata = FirstWatchMetadata { firstWatchPairings :: [(InvestigatorId, EncounterCard)] }
   deriving newtype (Show, ToJSON, FromJSON)
 
-newtype FirstWatch = FirstWatch (Attrs `With` FirstWatchMetadata)
+newtype FirstWatch = FirstWatch (EventAttrs `With` FirstWatchMetadata)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 firstWatch :: InvestigatorId -> EventId -> FirstWatch
@@ -26,7 +26,7 @@ instance HasModifiersFor env FirstWatch where
   getModifiersFor = noModifiersFor
 
 instance (HasQueue env, HasSet InvestigatorId env (), HasCount PlayerCount env ()) => RunMessage env FirstWatch where
-  runMessage msg e@(FirstWatch (attrs@Attrs {..} `With` metadata@FirstWatchMetadata {..}))
+  runMessage msg e@(FirstWatch (attrs@EventAttrs {..} `With` metadata@FirstWatchMetadata {..}))
     = case msg of
       InvestigatorPlayEvent _ eid _ | eid == eventId -> do
         withQueue $ \queue -> do

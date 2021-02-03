@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
-newtype Evidence = Evidence Attrs
+newtype Evidence = Evidence EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 evidence :: InvestigatorId -> EventId -> Evidence
@@ -18,7 +18,7 @@ instance HasActions env Evidence where
   getActions i window (Evidence attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env Evidence where
-  runMessage msg e@(Evidence attrs@Attrs {..}) = case msg of
+  runMessage msg e@(Evidence attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       currentLocationId <- getId @LocationId iid
       locationClueCount <- unClueCount <$> getCount currentLocationId

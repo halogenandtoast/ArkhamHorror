@@ -8,7 +8,7 @@ import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 
-newtype ThinkOnYourFeet = ThinkOnYourFeet Attrs
+newtype ThinkOnYourFeet = ThinkOnYourFeet EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 thinkOnYourFeet :: InvestigatorId -> EventId -> ThinkOnYourFeet
@@ -26,7 +26,7 @@ instance
   , HasId LocationId env InvestigatorId
   )
   => RunMessage env ThinkOnYourFeet where
-  runMessage msg e@(ThinkOnYourFeet attrs@Attrs {..}) = case msg of
+  runMessage msg e@(ThinkOnYourFeet attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       lid <- getId @LocationId iid
       connectedLocationIds <- map unAccessibleLocationId <$> getSetList lid

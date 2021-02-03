@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
-newtype WorkingAHunch = WorkingAHunch Attrs
+newtype WorkingAHunch = WorkingAHunch EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 workingAHunch :: InvestigatorId -> EventId -> WorkingAHunch
@@ -18,7 +18,7 @@ instance HasActions env WorkingAHunch where
   getActions i window (WorkingAHunch attrs) = getActions i window attrs
 
 instance EventRunner env => RunMessage env WorkingAHunch where
-  runMessage msg e@(WorkingAHunch attrs@Attrs {..}) = case msg of
+  runMessage msg e@(WorkingAHunch attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       currentLocationId <- getId @LocationId iid
       locationClueCount <- unClueCount <$> getCount currentLocationId

@@ -10,7 +10,7 @@ module TestImport
 import Arkham.Import as X
 
 import Arkham.Types.Agenda as X
-import qualified Arkham.Types.Agenda.Attrs as AgendaAttrs
+import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Asset as X
 import qualified Arkham.Types.Asset.Attrs as Asset
 import Arkham.Types.Card.PlayerCard (basePlayerCard)
@@ -112,17 +112,9 @@ testAsset f = do
   assetId <- liftIO $ AssetId <$> nextRandom
   pure $ baseAsset assetId "asset" f
 
-testAgenda
-  :: MonadIO m
-  => CardCode
-  -> (AgendaAttrs.Attrs -> AgendaAttrs.Attrs)
-  -> m Agenda
-testAgenda cardCode f = pure $ baseAgenda
-  (AgendaId cardCode)
-  "Agenda"
-  (AgendaAttrs.Agenda 1 AgendaAttrs.A)
-  (Static 1)
-  f
+testAgenda :: MonadIO m => CardCode -> (AgendaAttrs -> AgendaAttrs) -> m Agenda
+testAgenda cardCode f =
+  pure $ baseAgenda (AgendaId cardCode) "Agenda" (Agenda 1 A) (Static 1) f
 
 testLocation
   :: MonadIO m

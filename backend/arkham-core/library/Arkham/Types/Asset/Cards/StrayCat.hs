@@ -9,7 +9,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype StrayCat = StrayCat Attrs
+newtype StrayCat = StrayCat AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 strayCat :: AssetId -> StrayCat
@@ -19,7 +19,7 @@ strayCat uuid = StrayCat
 instance HasModifiersFor env StrayCat where
   getModifiersFor = noModifiersFor
 
-ability :: Attrs -> Ability
+ability :: AssetAttrs -> Ability
 ability a = mkAbility (toSource a) 1 (FastAbility (DiscardCost $ toTarget a))
 
 instance HasActions env StrayCat where

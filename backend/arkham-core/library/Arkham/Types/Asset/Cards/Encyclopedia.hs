@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 
-newtype Encyclopedia = Encyclopedia Attrs
+newtype Encyclopedia = Encyclopedia AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 encyclopedia :: AssetId -> Encyclopedia

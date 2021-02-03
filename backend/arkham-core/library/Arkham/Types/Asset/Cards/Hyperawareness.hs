@@ -9,7 +9,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype Hyperawareness = Hyperawareness Attrs
+newtype Hyperawareness = Hyperawareness AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 hyperawareness :: AssetId -> Hyperawareness
@@ -18,7 +18,7 @@ hyperawareness uuid = Hyperawareness $ baseAttrs uuid "01034"
 instance HasModifiersFor env Hyperawareness where
   getModifiersFor = noModifiersFor
 
-ability :: Int -> Attrs -> Ability
+ability :: Int -> AssetAttrs -> Ability
 ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)
 
 instance HasActions env Hyperawareness where
@@ -29,7 +29,7 @@ instance HasActions env Hyperawareness where
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Hyperawareness where
-  runMessage msg a@(Hyperawareness attrs@Attrs {..}) = case msg of
+  runMessage msg a@(Hyperawareness attrs@AssetAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage
         (CreateWindowModifierEffect

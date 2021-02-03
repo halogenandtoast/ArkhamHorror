@@ -11,7 +11,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 
-newtype Rolands38Special = Rolands38Special Attrs
+newtype Rolands38Special = Rolands38Special AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 rolands38Special :: AssetId -> Rolands38Special
@@ -21,7 +21,7 @@ rolands38Special uuid =
 instance HasModifiersFor env Rolands38Special where
   getModifiersFor = noModifiersFor
 
-fightAbility :: Attrs -> Ability
+fightAbility :: AssetAttrs -> Ability
 fightAbility attrs = mkAbility
   (toSource attrs)
   1

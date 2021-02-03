@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Keyword
 
-newtype FishingNet = FishingNet Attrs
+newtype FishingNet = FishingNet AssetAttrs
   deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 fishingNet :: AssetId -> FishingNet
@@ -22,7 +22,7 @@ instance HasModifiersFor env FishingNet where
     [ RemoveKeyword Retaliate | assetEnemy attrs == Just eid ]
   getModifiersFor _ _ _ = pure []
 
-ability :: Attrs -> Ability
+ability :: AssetAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (FastAbility Free)
 
 instance ActionRunner env => HasActions env FishingNet where
@@ -41,7 +41,7 @@ instance ActionRunner env => HasActions env FishingNet where
   getActions iid window (FishingNet x) = getActions iid window x
 
 instance AssetRunner env => RunMessage env FishingNet where
-  runMessage msg a@(FishingNet attrs@Attrs {..}) = case msg of
+  runMessage msg a@(FishingNet attrs@AssetAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
       case mrougarou of

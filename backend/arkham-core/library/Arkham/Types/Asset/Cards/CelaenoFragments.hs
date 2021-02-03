@@ -6,7 +6,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype CelaenoFragments = CelaenoFragments Attrs
+newtype CelaenoFragments = CelaenoFragments AssetAttrs
   deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 celaenoFragments :: AssetId -> CelaenoFragments

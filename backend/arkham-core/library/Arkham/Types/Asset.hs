@@ -158,7 +158,7 @@ instance AssetRunner env => RunMessage env Asset where
 
 instance Entity Asset where
   type EntityId Asset = AssetId
-  type EntityAttrs Asset = Attrs
+  type EntityAttrs Asset = AssetAttrs
 
 instance NamedEntity Asset where
   toName = toName . toAttrs
@@ -178,15 +178,15 @@ instance IsCard Asset where
   getTraits = getTraits . toAttrs
   getKeywords = getKeywords . toAttrs
 
-newtype BaseAsset = BaseAsset Attrs
+newtype BaseAsset = BaseAsset AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
-baseAsset :: AssetId -> CardCode -> (Attrs -> Attrs) -> Asset
+baseAsset :: AssetId -> CardCode -> (AssetAttrs -> AssetAttrs) -> Asset
 baseAsset a b f = BaseAsset' . BaseAsset . f $ baseAttrs a b
 
 instance HasDamage Asset where
   getDamage a =
-    let Attrs {..} = toAttrs a in (assetHealthDamage, assetSanityDamage)
+    let AssetAttrs {..} = toAttrs a in (assetHealthDamage, assetSanityDamage)
 
 instance HasActions env BaseAsset where
   getActions iid window (BaseAsset attrs) = getActions iid window attrs

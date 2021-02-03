@@ -10,19 +10,19 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype FireAxe = FireAxe Attrs
+newtype FireAxe = FireAxe AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 fireAxe :: AssetId -> FireAxe
 fireAxe uuid = FireAxe $ (baseAttrs uuid "02032") { assetSlots = [HandSlot] }
 
-fightAbility :: Attrs -> Ability
+fightAbility :: AssetAttrs -> Ability
 fightAbility attrs = mkAbility
   (toSource attrs)
   1
   (ActionAbility (Just Action.Fight) (ActionCost 1))
 
-reactionAbility :: Attrs -> Ability
+reactionAbility :: AssetAttrs -> Ability
 reactionAbility attrs = base { abilityLimit = PlayerLimit PerTestOrAbility 3 } -- per attack
   where base = mkAbility (toSource attrs) 2 (ReactionAbility $ ResourceCost 1)
 

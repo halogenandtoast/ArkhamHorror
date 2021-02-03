@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype ArcaneStudies = ArcaneStudies Attrs
+newtype ArcaneStudies = ArcaneStudies AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 arcaneStudies :: AssetId -> ArcaneStudies
@@ -19,7 +19,7 @@ arcaneStudies uuid = ArcaneStudies $ baseAttrs uuid "01062"
 instance HasModifiersFor env ArcaneStudies where
   getModifiersFor = noModifiersFor
 
-ability :: Int -> Attrs -> Ability
+ability :: Int -> AssetAttrs -> Ability
 ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)
 
 instance HasActions env ArcaneStudies where

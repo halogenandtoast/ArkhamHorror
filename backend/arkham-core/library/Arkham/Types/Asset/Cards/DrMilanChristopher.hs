@@ -6,7 +6,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype DrMilanChristopher = DrMilanChristopher Attrs
+newtype DrMilanChristopher = DrMilanChristopher AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 drMilanChristopher :: AssetId -> DrMilanChristopher

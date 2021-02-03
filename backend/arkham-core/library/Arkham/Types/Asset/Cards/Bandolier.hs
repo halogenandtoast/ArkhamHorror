@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
-newtype Bandolier = Bandolier Attrs
+newtype Bandolier = Bandolier AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 bandolier :: AssetId -> Bandolier
@@ -23,7 +23,7 @@ instance HasModifiersFor env Bandolier where
 instance HasActions env Bandolier where
   getActions iid window (Bandolier x) = getActions iid window x
 
-slot :: Attrs -> Slot
+slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Weapon Nothing
 
 instance AssetRunner env => RunMessage env Bandolier where

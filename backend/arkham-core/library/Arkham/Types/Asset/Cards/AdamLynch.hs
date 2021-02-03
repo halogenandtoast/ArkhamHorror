@@ -8,7 +8,7 @@ import Arkham.Import
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 
-newtype AdamLynch = AdamLynch Attrs
+newtype AdamLynch = AdamLynch AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 adamLynch :: AssetId -> AdamLynch

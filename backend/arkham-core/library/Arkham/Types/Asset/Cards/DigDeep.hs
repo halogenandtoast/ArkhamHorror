@@ -9,7 +9,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype DigDeep = DigDeep Attrs
+newtype DigDeep = DigDeep AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 digDeep :: AssetId -> DigDeep
@@ -18,7 +18,7 @@ digDeep uuid = DigDeep $ baseAttrs uuid "01077"
 instance HasModifiersFor env DigDeep where
   getModifiersFor = noModifiersFor
 
-ability :: Int -> Attrs -> Ability
+ability :: Int -> AssetAttrs -> Ability
 ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)
 
 instance HasActions env DigDeep where

@@ -6,7 +6,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
-newtype ArcaneInitiate = ArcaneInitiate Attrs
+newtype ArcaneInitiate = ArcaneInitiate AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 arcaneInitiate :: AssetId -> ArcaneInitiate
@@ -16,7 +16,7 @@ arcaneInitiate uuid = ArcaneInitiate $ (baseAttrs uuid "01063")
   , assetSanity = Just 2
   }
 
-fastAbility :: Attrs -> Ability
+fastAbility :: AssetAttrs -> Ability
 fastAbility a =
   mkAbility (toSource a) 1 (FastAbility $ ExhaustCost (toTarget a))
 

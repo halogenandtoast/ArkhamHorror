@@ -6,7 +6,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype WendysAmulet = WendysAmulet Attrs
+newtype WendysAmulet = WendysAmulet AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 wendysAmulet :: AssetId -> WendysAmulet

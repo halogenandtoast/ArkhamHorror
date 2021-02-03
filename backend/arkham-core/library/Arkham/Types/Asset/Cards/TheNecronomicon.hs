@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import qualified Arkham.Types.Token as Token
 
-newtype TheNecronomicon = TheNecronomicon Attrs
+newtype TheNecronomicon = TheNecronomicon AssetAttrs
   deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 theNecronomicon :: AssetId -> TheNecronomicon

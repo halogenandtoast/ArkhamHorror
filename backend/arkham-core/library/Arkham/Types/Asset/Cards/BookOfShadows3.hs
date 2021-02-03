@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Trait
 
-newtype BookOfShadows3 = BookOfShadows3 Attrs
+newtype BookOfShadows3 = BookOfShadows3 AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 bookOfShadows3 :: AssetId -> BookOfShadows3
@@ -20,8 +20,8 @@ bookOfShadows3 uuid =
 instance HasModifiersFor env BookOfShadows3 where
   getModifiersFor = noModifiersFor
 
-slot :: Attrs -> Slot
-slot Attrs { assetId } = Slot (AssetSource assetId) Nothing
+slot :: AssetAttrs -> Slot
+slot AssetAttrs { assetId } = Slot (AssetSource assetId) Nothing
 
 instance HasActions env BookOfShadows3 where
   getActions iid NonFast (BookOfShadows3 a) | ownedBy a iid = pure

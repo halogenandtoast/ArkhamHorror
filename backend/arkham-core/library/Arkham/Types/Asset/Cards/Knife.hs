@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype Knife = Knife Attrs
+newtype Knife = Knife AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 knife :: AssetId -> Knife

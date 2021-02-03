@@ -10,7 +10,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 
-newtype Kukri = Kukri Attrs
+newtype Kukri = Kukri AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 kukri :: AssetId -> Kukri

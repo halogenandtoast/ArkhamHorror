@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Game.Helpers
 
-newtype HiredMuscle1 = HiredMuscle1 Attrs
+newtype HiredMuscle1 = HiredMuscle1 AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 hiredMuscle1 :: AssetId -> HiredMuscle1
@@ -28,7 +28,7 @@ instance HasModifiersFor env HiredMuscle1 where
   getModifiersFor _ _ _ = pure []
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env HiredMuscle1 where
-  runMessage msg a@(HiredMuscle1 attrs@Attrs {..}) = case msg of
+  runMessage msg a@(HiredMuscle1 attrs@AssetAttrs {..}) = case msg of
     EndUpkeep -> do
       let iid = fromJustNote "must be owned" assetInvestigator
       a <$ unshiftMessage

@@ -6,7 +6,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype Pickpocketing = Pickpocketing Attrs
+newtype Pickpocketing = Pickpocketing AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 pickpoketing :: AssetId -> Pickpocketing

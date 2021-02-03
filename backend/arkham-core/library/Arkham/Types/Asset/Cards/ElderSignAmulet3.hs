@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
-newtype ElderSignAmulet3 = ElderSignAmulet3 Attrs
+newtype ElderSignAmulet3 = ElderSignAmulet3 AssetAttrs
   deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 elderSignAmulet3 :: AssetId -> ElderSignAmulet3

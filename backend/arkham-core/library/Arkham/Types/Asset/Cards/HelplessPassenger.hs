@@ -8,7 +8,7 @@ import Arkham.Import
 import Arkham.Types.Action
 import Arkham.Types.Asset.Attrs
 
-newtype HelplessPassenger = HelplessPassenger Attrs
+newtype HelplessPassenger = HelplessPassenger AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 helplessPassenger :: AssetId -> HelplessPassenger
@@ -18,7 +18,7 @@ helplessPassenger uuid = HelplessPassenger $ (baseAttrs uuid "02179")
   , assetIsStory = True
   }
 
-ability :: Attrs -> Ability
+ability :: AssetAttrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (ActionAbility (Just Parley) $ ActionCost 1)
 
@@ -44,7 +44,7 @@ instance
   , HasId (Maybe LocationId) env (Direction, LocationId)
   )
   => RunMessage env HelplessPassenger where
-  runMessage msg a@(HelplessPassenger attrs@Attrs {..}) = case msg of
+  runMessage msg a@(HelplessPassenger attrs@AssetAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid
       spawnAt <- fromMaybe lid <$> getId (LeftOf, lid)

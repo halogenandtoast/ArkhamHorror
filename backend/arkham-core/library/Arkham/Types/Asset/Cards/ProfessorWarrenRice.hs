@@ -6,7 +6,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype ProfessorWarrenRice = ProfessorWarrenRice Attrs
+newtype ProfessorWarrenRice = ProfessorWarrenRice AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 professorWarrenRice :: AssetId -> ProfessorWarrenRice
@@ -22,7 +22,7 @@ instance HasModifiersFor env ProfessorWarrenRice where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env ProfessorWarrenRice where
-  getActions iid (AfterDiscoveringClues You YourLocation) (ProfessorWarrenRice a@Attrs {..})
+  getActions iid (AfterDiscoveringClues You YourLocation) (ProfessorWarrenRice a@AssetAttrs {..})
     = do
       lid <- getId @LocationId iid
       lastClue <- (== 0) . unClueCount <$> getCount lid

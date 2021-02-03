@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
-newtype DaisysToteBag = DaisysToteBag Attrs
+newtype DaisysToteBag = DaisysToteBag AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 daisysToteBag :: AssetId -> DaisysToteBag
@@ -22,7 +22,7 @@ instance HasModifiersFor env DaisysToteBag where
 instance HasActions env DaisysToteBag where
   getActions i window (DaisysToteBag x) = getActions i window x
 
-slot :: Attrs -> Slot
+slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Tome Nothing
 
 instance AssetRunner env => RunMessage env DaisysToteBag where

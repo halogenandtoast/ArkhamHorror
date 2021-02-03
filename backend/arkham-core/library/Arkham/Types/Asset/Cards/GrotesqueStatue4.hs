@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.ChaosBagStepState
 
-newtype GrotesqueStatue4 = GrotesqueStatue4 Attrs
+newtype GrotesqueStatue4 = GrotesqueStatue4 AssetAttrs
   deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 grotesqueStatue4 :: AssetId -> GrotesqueStatue4
@@ -20,7 +20,7 @@ grotesqueStatue4 uuid =
 instance HasModifiersFor env GrotesqueStatue4 where
   getModifiersFor = noModifiersFor
 
-ability :: Attrs -> Source -> Ability
+ability :: AssetAttrs -> Source -> Ability
 ability attrs source = base
   { abilityMetadata = Just (SourceMetadata source)
   , abilityLimit = PlayerLimit PerTestOrAbility 1 -- TODO: not a real limit

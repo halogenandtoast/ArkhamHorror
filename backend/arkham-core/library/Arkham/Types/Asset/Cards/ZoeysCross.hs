@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
-newtype ZoeysCross = ZoeysCross Attrs
+newtype ZoeysCross = ZoeysCross AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 zoeysCross :: AssetId -> ZoeysCross
@@ -19,7 +19,7 @@ zoeysCross uuid =
 instance HasModifiersFor env ZoeysCross where
   getModifiersFor = noModifiersFor
 
-ability :: Attrs -> EnemyId -> Ability
+ability :: AssetAttrs -> EnemyId -> Ability
 ability attrs eid = base
   { abilityMetadata = Just (TargetMetadata (EnemyTarget eid))
   }
@@ -30,7 +30,7 @@ ability attrs eid = base
     (ReactionAbility $ Costs [ExhaustCost (toTarget attrs), ResourceCost 1])
 
 instance HasActions env ZoeysCross where
-  getActions iid (AfterEnemyEngageInvestigator You eid) (ZoeysCross a@Attrs {..})
+  getActions iid (AfterEnemyEngageInvestigator You eid) (ZoeysCross a@AssetAttrs {..})
     | ownedBy a iid
     = pure [ActivateCardAbilityAction iid (ability a eid)]
   getActions i window (ZoeysCross x) = getActions i window x

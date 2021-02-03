@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
-newtype Aquinnah1 = Aquinnah1 Attrs
+newtype Aquinnah1 = Aquinnah1 AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 aquinnah1 :: AssetId -> Aquinnah1
@@ -19,7 +19,7 @@ aquinnah1 uuid = Aquinnah1 $ (baseAttrs uuid "01082")
   , assetSanity = Just 4
   }
 
-reactionAbility :: Attrs -> Ability
+reactionAbility :: AssetAttrs -> Ability
 reactionAbility attrs = mkAbility
   (toSource attrs)
   1

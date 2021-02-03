@@ -1,11 +1,10 @@
 module Arkham.Types.Investigator.Cards.DaisyWalkerSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
-import Arkham.Types.Asset.Attrs (Attrs(..))
+import Arkham.Types.Asset.Attrs (AssetAttrs(..))
 import Arkham.Types.Trait
 
 spec :: Spec

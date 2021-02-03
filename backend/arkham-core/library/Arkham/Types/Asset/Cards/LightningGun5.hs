@@ -11,7 +11,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Uses (Uses(..), useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
 
-newtype LightningGun5 = LightningGun5 Attrs
+newtype LightningGun5 = LightningGun5 AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 lightningGun5 :: AssetId -> LightningGun5

@@ -8,7 +8,7 @@ import Arkham.Import
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 
-newtype DrFrancisMorgan = DrFrancisMorgan Attrs
+newtype DrFrancisMorgan = DrFrancisMorgan AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 drFrancisMorgan :: AssetId -> DrFrancisMorgan
@@ -18,7 +18,7 @@ drFrancisMorgan uuid = DrFrancisMorgan $ (baseAttrs uuid "02080")
   , assetSanity = Just 1
   }
 
-ability :: Attrs -> Ability
+ability :: AssetAttrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (ReactionAbility $ ExhaustCost (toTarget attrs))
 

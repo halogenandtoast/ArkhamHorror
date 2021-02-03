@@ -9,7 +9,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype KeenEye3 = KeenEye3 Attrs
+newtype KeenEye3 = KeenEye3 AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 keenEye3 :: AssetId -> KeenEye3
@@ -29,7 +29,7 @@ instance HasModifiersFor env KeenEye3 where
   getModifiersFor = noModifiersFor
 
 instance AssetRunner env => RunMessage env KeenEye3 where
-  runMessage msg a@(KeenEye3 attrs@Attrs {..}) = case msg of
+  runMessage msg a@(KeenEye3 attrs@AssetAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage
         (CreateWindowModifierEffect

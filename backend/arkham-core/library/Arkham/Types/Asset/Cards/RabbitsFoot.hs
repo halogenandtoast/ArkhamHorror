@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
-newtype RabbitsFoot = RabbitsFoot Attrs
+newtype RabbitsFoot = RabbitsFoot AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 rabbitsFoot :: AssetId -> RabbitsFoot

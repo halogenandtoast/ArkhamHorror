@@ -11,7 +11,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype Switchblade = Switchblade Attrs
+newtype Switchblade = Switchblade AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 switchblade :: AssetId -> Switchblade

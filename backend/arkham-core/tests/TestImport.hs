@@ -36,7 +36,6 @@ import Arkham.Types.Difficulty
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Location.Attrs
-import qualified Arkham.Types.Location.Attrs as Location
 import Arkham.Types.Phase
 import Arkham.Types.Scenario.Attrs
 import Control.Monad.State hiding (replicateM)
@@ -143,18 +142,18 @@ testConnectedLocations f1 f2 = do
   location1 <- testLocation
     "00000"
     (f1
-    . (Location.symbolL .~ Square)
-    . (Location.revealedSymbolL .~ Square)
-    . (Location.connectedSymbolsL .~ setFromList [Triangle])
-    . (Location.revealedConnectedSymbolsL .~ setFromList [Triangle])
+    . (symbolL .~ Square)
+    . (revealedSymbolL .~ Square)
+    . (connectedSymbolsL .~ setFromList [Triangle])
+    . (revealedConnectedSymbolsL .~ setFromList [Triangle])
     )
   location2 <- testLocation
     "00001"
     (f2
-    . (Location.symbolL .~ Triangle)
-    . (Location.revealedSymbolL .~ Triangle)
-    . (Location.connectedSymbolsL .~ setFromList [Square])
-    . (Location.revealedConnectedSymbolsL .~ setFromList [Square])
+    . (symbolL .~ Triangle)
+    . (revealedSymbolL .~ Triangle)
+    . (connectedSymbolsL .~ setFromList [Square])
+    . (revealedConnectedSymbolsL .~ setFromList [Square])
     )
   pure (location1, location2)
 
@@ -166,13 +165,10 @@ testUnconnectedLocations
 testUnconnectedLocations f1 f2 = do
   location1 <- testLocation
     "00000"
-    (f1 . (Location.symbolL .~ Square) . (Location.revealedSymbolL .~ Square))
+    (f1 . (symbolL .~ Square) . (revealedSymbolL .~ Square))
   location2 <- testLocation
     "00001"
-    (f2
-    . (Location.symbolL .~ Triangle)
-    . (Location.revealedSymbolL .~ Triangle)
-    )
+    (f2 . (symbolL .~ Triangle) . (revealedSymbolL .~ Triangle))
   pure (location1, location2)
 
 getActionsOf

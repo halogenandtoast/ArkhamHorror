@@ -8,7 +8,7 @@ import Arkham.Types.Skill.Runner
 import Arkham.Types.Trait
 import qualified Data.HashMap.Strict as HashMap
 
-data Attrs = Attrs
+data SkillAttrs = SkillAttrs
   { skillName :: Text
   , skillId :: SkillId
   , skillCardCode :: CardCode
@@ -18,41 +18,41 @@ data Attrs = Attrs
   }
   deriving stock (Show, Generic)
 
-makeLensesWith suffixedFields ''Attrs
+makeLensesWith suffixedFields ''SkillAttrs
 
-instance ToJSON Attrs where
+instance ToJSON SkillAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "skill"
   toEncoding = genericToEncoding $ aesonOptions $ Just "skill"
 
-instance FromJSON Attrs where
+instance FromJSON SkillAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "skill"
 
-instance Entity Attrs where
-  type EntityId Attrs = SkillId
-  type EntityAttrs Attrs = Attrs
+instance Entity SkillAttrs where
+  type EntityId SkillAttrs = SkillId
+  type EntityAttrs SkillAttrs = SkillAttrs
   toId = skillId
   toAttrs = id
 
-instance NamedEntity Attrs where
+instance NamedEntity SkillAttrs where
   toName = mkName . skillName
 
-instance TargetEntity Attrs where
+instance TargetEntity SkillAttrs where
   toTarget = SkillTarget . skillId
-  isTarget Attrs { skillId } (SkillTarget sid) = skillId == sid
+  isTarget SkillAttrs { skillId } (SkillTarget sid) = skillId == sid
   isTarget _ _ = False
 
-instance SourceEntity Attrs where
+instance SourceEntity SkillAttrs where
   toSource = SkillSource . skillId
-  isSource Attrs { skillId } (SkillSource sid) = skillId == sid
+  isSource SkillAttrs { skillId } (SkillSource sid) = skillId == sid
   isSource _ _ = False
 
-instance IsCard Attrs where
+instance IsCard SkillAttrs where
   getCardId = CardId . unSkillId . skillId
   getCardCode = skillCardCode
   getTraits = skillTraits
   getKeywords = mempty
 
-baseAttrs :: InvestigatorId -> SkillId -> CardCode -> Attrs
+baseAttrs :: InvestigatorId -> SkillId -> CardCode -> SkillAttrs
 baseAttrs iid eid cardCode =
   let
     MkPlayerCard {..} =
@@ -61,7 +61,7 @@ baseAttrs iid eid cardCode =
           (HashMap.lookup cardCode allPlayerCards)
         $ CardId (unSkillId eid)
   in
-    Attrs
+    SkillAttrs
       { skillName = pcName
       , skillId = eid
       , skillCardCode = pcCardCode
@@ -70,7 +70,7 @@ baseAttrs iid eid cardCode =
       , skillWeakness = False
       }
 
-weaknessAttrs :: InvestigatorId -> SkillId -> CardCode -> Attrs
+weaknessAttrs :: InvestigatorId -> SkillId -> CardCode -> SkillAttrs
 weaknessAttrs iid eid cardCode =
   let
     MkPlayerCard {..} =
@@ -79,7 +79,7 @@ weaknessAttrs iid eid cardCode =
           (HashMap.lookup cardCode allPlayerCards)
         $ CardId (unSkillId eid)
   in
-    Attrs
+    SkillAttrs
       { skillName = pcName
       , skillId = eid
       , skillCardCode = pcCardCode
@@ -88,8 +88,8 @@ weaknessAttrs iid eid cardCode =
       , skillWeakness = True
       }
 
-instance HasActions env Attrs where
+instance HasActions env SkillAttrs where
   getActions _ _ _ = pure []
 
-instance (SkillRunner env) => RunMessage env Attrs where
+instance (SkillRunner env) => RunMessage env SkillAttrs where
   runMessage _ a = pure a

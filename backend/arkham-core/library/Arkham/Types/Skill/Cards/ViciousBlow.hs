@@ -7,7 +7,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
 
-newtype ViciousBlow = ViciousBlow Attrs
+newtype ViciousBlow = ViciousBlow SkillAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 viciousBlow :: InvestigatorId -> SkillId -> ViciousBlow
@@ -20,7 +20,7 @@ instance HasActions env ViciousBlow where
   getActions i window (ViciousBlow attrs) = getActions i window attrs
 
 instance (SkillRunner env) => RunMessage env ViciousBlow where
-  runMessage msg s@(ViciousBlow attrs@Attrs {..}) = case msg of
+  runMessage msg s@(ViciousBlow attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest iid (Just Fight) _ (SkillTarget sid) _ _ | sid == skillId ->
       s <$ unshiftMessage
         (CreateWindowModifierEffect

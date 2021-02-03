@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
 
-newtype TrueUnderstanding = TrueUnderstanding Attrs
+newtype TrueUnderstanding = TrueUnderstanding SkillAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 trueUnderstanding :: InvestigatorId -> SkillId -> TrueUnderstanding
@@ -22,7 +22,7 @@ instance HasActions env TrueUnderstanding where
   getActions iid window (TrueUnderstanding attrs) = getActions iid window attrs
 
 instance SkillRunner env => RunMessage env TrueUnderstanding where
-  runMessage msg s@(TrueUnderstanding attrs@Attrs {..}) = case msg of
+  runMessage msg s@(TrueUnderstanding attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest iid _ _ (SkillTarget sid) _ _ | sid == skillId ->
       s <$ unshiftMessage (InvestigatorDiscoverCluesAtTheirLocation iid 1)
     _ -> TrueUnderstanding <$> runMessage msg attrs

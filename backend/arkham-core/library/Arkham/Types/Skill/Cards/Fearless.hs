@@ -11,7 +11,7 @@ import Arkham.Types.Skill.Runner
 import Arkham.Types.SkillId
 import Arkham.Types.Target
 
-newtype Fearless = Fearless Attrs
+newtype Fearless = Fearless SkillAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 fearless :: InvestigatorId -> SkillId -> Fearless
@@ -24,7 +24,7 @@ instance HasActions env Fearless where
   getActions i window (Fearless attrs) = getActions i window attrs
 
 instance (SkillRunner env) => RunMessage env Fearless where
-  runMessage msg s@(Fearless attrs@Attrs {..}) = case msg of
+  runMessage msg s@(Fearless attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest _ _ _ (SkillTarget sid) _ _ | sid == skillId ->
       s <$ unshiftMessage (HealHorror (InvestigatorTarget skillOwner) 1)
     _ -> Fearless <$> runMessage msg attrs

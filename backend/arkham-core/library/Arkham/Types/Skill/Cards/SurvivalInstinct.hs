@@ -6,7 +6,7 @@ import Arkham.Types.Action
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
 
-newtype SurvivalInstinct = SurvivalInstinct Attrs
+newtype SurvivalInstinct = SurvivalInstinct SkillAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 survivalInstinct :: InvestigatorId -> SkillId -> SurvivalInstinct
@@ -19,7 +19,7 @@ instance HasActions env SurvivalInstinct where
   getActions i window (SurvivalInstinct attrs) = getActions i window attrs
 
 instance SkillRunner env => RunMessage env SurvivalInstinct where
-  runMessage msg s@(SurvivalInstinct attrs@Attrs {..}) = case msg of
+  runMessage msg s@(SurvivalInstinct attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest iid (Just Evade) _ (SkillTarget sid) _ _ | sid == skillId ->
       do
         engagedEnemyIds <- getSetList iid

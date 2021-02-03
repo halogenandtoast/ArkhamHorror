@@ -7,7 +7,7 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
 newtype CampusSafety = CampusSafety ActAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 campusSafety :: CampusSafety
 campusSafety =

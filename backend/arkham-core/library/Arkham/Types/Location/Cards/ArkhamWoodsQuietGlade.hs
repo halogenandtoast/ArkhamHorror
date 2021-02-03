@@ -12,7 +12,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype ArkhamWoodsQuietGlade = ArkhamWoodsQuietGlade LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsQuietGlade :: ArkhamWoodsQuietGlade
 arkhamWoodsQuietGlade = ArkhamWoodsQuietGlade $ base

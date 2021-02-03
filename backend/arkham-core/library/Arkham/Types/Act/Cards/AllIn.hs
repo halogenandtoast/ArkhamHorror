@@ -12,7 +12,7 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.Action
 
 newtype AllIn = AllIn ActAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 allIn :: AllIn
 allIn = AllIn $ baseAttrs "02068" "All In" (Act 3 A) Nothing

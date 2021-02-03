@@ -7,7 +7,7 @@ import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 
 newtype StubbornDetective = StubbornDetective EnemyAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stubbornDetective :: EnemyId -> StubbornDetective
 stubbornDetective uuid = StubbornDetective $ (weaknessBaseAttrs uuid "01102")

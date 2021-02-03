@@ -11,7 +11,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 
 newtype Encyclopedia = Encyclopedia AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 encyclopedia :: AssetId -> Encyclopedia
 encyclopedia uuid =

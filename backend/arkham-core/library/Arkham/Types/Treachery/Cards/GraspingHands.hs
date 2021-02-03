@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype GraspingHands = GraspingHands TreacheryAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 graspingHands :: TreacheryId -> a -> GraspingHands
 graspingHands uuid _ = GraspingHands $ baseAttrs uuid "01162"

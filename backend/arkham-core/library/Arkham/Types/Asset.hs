@@ -126,7 +126,7 @@ data Asset
   | DaisysToteBagAdvanced' DaisysToteBagAdvanced
   | TheNecronomiconAdvanced' TheNecronomiconAdvanced
   | BaseAsset' BaseAsset
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 instance ActionRunner env => HasActions env Asset where
@@ -179,7 +179,7 @@ instance IsCard Asset where
   getKeywords = getKeywords . toAttrs
 
 newtype BaseAsset = BaseAsset AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 baseAsset :: AssetId -> CardCode -> (AssetAttrs -> AssetAttrs) -> Asset
 baseAsset a b f = BaseAsset' . BaseAsset . f $ baseAttrs a b

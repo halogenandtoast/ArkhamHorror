@@ -13,7 +13,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 
 newtype FortyFiveAutomatic = FortyFiveAutomatic AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fortyFiveAutomatic :: AssetId -> FortyFiveAutomatic
 fortyFiveAutomatic uuid =

@@ -6,7 +6,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
 newtype DarkMemory = DarkMemory EventAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 darkMemory :: InvestigatorId -> EventId -> DarkMemory
 darkMemory iid uuid = DarkMemory $ weaknessAttrs iid uuid "01013"

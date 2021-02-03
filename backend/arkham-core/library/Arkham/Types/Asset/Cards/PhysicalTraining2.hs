@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype PhysicalTraining2 = PhysicalTraining2 AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 physicalTraining2 :: AssetId -> PhysicalTraining2
 physicalTraining2 uuid = PhysicalTraining2 $ baseAttrs uuid "50001"

@@ -8,7 +8,7 @@ import Arkham.Types.Agenda.Runner
 import Arkham.Types.Trait
 
 newtype TheRitualBegins = TheRitualBegins AgendaAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theRitualBegins :: TheRitualBegins
 theRitualBegins = TheRitualBegins

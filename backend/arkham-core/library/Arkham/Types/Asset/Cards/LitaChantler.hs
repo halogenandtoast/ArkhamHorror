@@ -8,7 +8,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
 newtype LitaChantler = LitaChantler AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 litaChantler :: AssetId -> LitaChantler
 litaChantler uuid = LitaChantler $ (baseAttrs uuid "01117")

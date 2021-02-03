@@ -7,7 +7,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Helpers
 
 newtype Backstab = Backstab EventAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 backstab :: InvestigatorId -> EventId -> Backstab
 backstab iid uuid = Backstab $ baseAttrs iid uuid "01051"

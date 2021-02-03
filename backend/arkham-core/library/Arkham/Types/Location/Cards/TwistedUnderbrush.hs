@@ -12,7 +12,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype TwistedUnderbrush = TwistedUnderbrush LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 twistedUnderbrush :: TwistedUnderbrush
 twistedUnderbrush = TwistedUnderbrush $ base { locationVictory = Just 1 }

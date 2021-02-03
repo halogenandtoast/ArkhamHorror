@@ -13,7 +13,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype YourHouse = YourHouse LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yourHouse :: YourHouse
 yourHouse = YourHouse $ baseAttrs

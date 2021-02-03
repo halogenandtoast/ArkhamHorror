@@ -10,7 +10,7 @@ import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 
 newtype Burglary = Burglary EffectAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 burglary :: EffectArgs -> Burglary
 burglary = Burglary . uncurry4 (baseAttrs "01045")

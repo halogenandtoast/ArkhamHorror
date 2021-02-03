@@ -8,7 +8,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 
 newtype FarAboveYourHouse = FarAboveYourHouse LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 farAboveYourHouse :: FarAboveYourHouse
 farAboveYourHouse = FarAboveYourHouse $ base { locationVictory = Just 1 }

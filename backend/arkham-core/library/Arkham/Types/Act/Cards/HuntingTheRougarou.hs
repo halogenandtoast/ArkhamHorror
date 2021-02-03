@@ -9,7 +9,7 @@ import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
 
 newtype HuntingTheRougarou = HuntingTheRougarou ActAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 huntingTheRougarou :: HuntingTheRougarou
 huntingTheRougarou = HuntingTheRougarou

@@ -10,7 +10,7 @@ import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 
 newtype TheCurseSpreads = TheCurseSpreads AgendaAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theCurseSpreads :: TheCurseSpreads
 theCurseSpreads = TheCurseSpreads

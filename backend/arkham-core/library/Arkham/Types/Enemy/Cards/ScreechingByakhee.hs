@@ -7,7 +7,7 @@ import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 
 newtype ScreechingByakhee = ScreechingByakhee EnemyAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 screechingByakhee :: EnemyId -> ScreechingByakhee
 screechingByakhee uuid =

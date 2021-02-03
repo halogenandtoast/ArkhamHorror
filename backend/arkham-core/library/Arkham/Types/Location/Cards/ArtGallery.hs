@@ -12,7 +12,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait hiding (Cultist)
 
 newtype ArtGallery = ArtGallery LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 artGallery :: ArtGallery
 artGallery = ArtGallery

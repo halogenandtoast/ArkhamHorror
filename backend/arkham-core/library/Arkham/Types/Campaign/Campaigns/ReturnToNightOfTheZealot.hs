@@ -9,7 +9,7 @@ import Arkham.Types.CampaignStep
 import Arkham.Types.Difficulty
 
 newtype ReturnToNightOfTheZealot = ReturnToNightOfTheZealot NightOfTheZealot
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 returnToNightOfTheZealot :: Difficulty -> ReturnToNightOfTheZealot
 returnToNightOfTheZealot difficulty =

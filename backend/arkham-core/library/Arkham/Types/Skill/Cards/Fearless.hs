@@ -12,7 +12,7 @@ import Arkham.Types.SkillId
 import Arkham.Types.Target
 
 newtype Fearless = Fearless SkillAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fearless :: InvestigatorId -> SkillId -> Fearless
 fearless iid uuid = Fearless $ baseAttrs iid uuid "01067"

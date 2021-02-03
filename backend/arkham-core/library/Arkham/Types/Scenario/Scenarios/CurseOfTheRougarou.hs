@@ -16,11 +16,11 @@ import Arkham.Types.Trait hiding (Cultist)
 import Control.Monad.Extra (findM)
 
 newtype CurseOfTheRougarouMetadata = CurseOfTheRougarouMetadata { setAsideLocationTraits :: HashSet Trait }
-  deriving stock (Show, Generic)
+  deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 
 newtype CurseOfTheRougarou = CurseOfTheRougarou (ScenarioAttrs `With` CurseOfTheRougarouMetadata)
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 curseOfTheRougarou :: Difficulty -> CurseOfTheRougarou
 curseOfTheRougarou difficulty =

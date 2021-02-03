@@ -32,7 +32,7 @@ data AssetAttrs = AssetAttrs
   , assetCanLeavePlayByNormalMeans :: Bool
   , assetIsStory :: Bool
   }
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
 
 makeLensesWith suffixedFields ''AssetAttrs
 

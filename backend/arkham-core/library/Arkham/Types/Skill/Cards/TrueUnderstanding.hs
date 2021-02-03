@@ -10,7 +10,7 @@ import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
 
 newtype TrueUnderstanding = TrueUnderstanding SkillAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 trueUnderstanding :: InvestigatorId -> SkillId -> TrueUnderstanding
 trueUnderstanding iid uuid = TrueUnderstanding $ baseAttrs iid uuid "04153"

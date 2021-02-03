@@ -8,7 +8,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Trait
 
 newtype BogGator = BogGator EnemyAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bogGator :: EnemyId -> BogGator
 bogGator uuid =

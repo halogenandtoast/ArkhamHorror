@@ -9,7 +9,7 @@ import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Trait
 
 newtype RiseOfTheGhouls = RiseOfTheGhouls AgendaAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riseOfTheGhouls :: RiseOfTheGhouls
 riseOfTheGhouls = RiseOfTheGhouls

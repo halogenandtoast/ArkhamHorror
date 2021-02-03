@@ -9,7 +9,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype RexsCurse = RexsCurse TreacheryAttrs
-  deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 rexsCurse :: TreacheryId -> Maybe InvestigatorId -> RexsCurse
 rexsCurse uuid iid = RexsCurse $ weaknessAttrs uuid iid "02009"

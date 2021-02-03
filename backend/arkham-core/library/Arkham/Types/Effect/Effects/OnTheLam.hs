@@ -9,7 +9,7 @@ import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 
 newtype OnTheLam = OnTheLam EffectAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 onTheLam :: EffectArgs -> OnTheLam
 onTheLam = OnTheLam . uncurry4 (baseAttrs "01010")

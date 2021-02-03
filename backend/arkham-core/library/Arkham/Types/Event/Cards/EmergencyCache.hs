@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 
 newtype EmergencyCache = EmergencyCache EventAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 emergencyCache :: InvestigatorId -> EventId -> EmergencyCache
 emergencyCache iid uuid = EmergencyCache $ baseAttrs iid uuid "01088"

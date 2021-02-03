@@ -10,7 +10,7 @@ import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 
 newtype MindWipe1 = MindWipe1 EffectAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mindWipe1 :: EffectArgs -> MindWipe1
 mindWipe1 = MindWipe1 . uncurry4 (baseAttrs "01068")

@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 
 newtype SearchForTheTruth = SearchForTheTruth EventAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 searchForTheTruth :: InvestigatorId -> EventId -> SearchForTheTruth
 searchForTheTruth iid uuid = SearchForTheTruth $ baseAttrs iid uuid "02008"

@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 
 newtype SeekingAnswers = SeekingAnswers EventAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 seekingAnswers :: InvestigatorId -> EventId -> SeekingAnswers
 seekingAnswers iid uuid = SeekingAnswers $ baseAttrs iid uuid "02023"

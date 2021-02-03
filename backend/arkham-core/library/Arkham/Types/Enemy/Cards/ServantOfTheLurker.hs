@@ -6,7 +6,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
 newtype ServantOfTheLurker = ServantOfTheLurker EnemyAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 servantOfTheLurker :: EnemyId -> ServantOfTheLurker
 servantOfTheLurker uuid =

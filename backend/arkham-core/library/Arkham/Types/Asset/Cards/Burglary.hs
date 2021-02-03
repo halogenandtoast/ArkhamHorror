@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
 newtype Burglary = Burglary AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 burglary :: AssetId -> Burglary
 burglary uuid = Burglary $ baseAttrs uuid "01045"

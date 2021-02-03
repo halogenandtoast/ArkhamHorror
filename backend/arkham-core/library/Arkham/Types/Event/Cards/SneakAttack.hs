@@ -6,7 +6,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
 newtype SneakAttack = SneakAttack EventAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sneakAttack :: InvestigatorId -> EventId -> SneakAttack
 sneakAttack iid uuid = SneakAttack $ baseAttrs iid uuid "01052"

@@ -106,7 +106,7 @@ data Game queue = Game
   -- Active questions
   , gameQuestion :: HashMap InvestigatorId Question
   }
-  deriving stock Generic
+  deriving stock (Eq, Generic)
 
 makeLensesWith suffixedFields ''Game
 

@@ -6,7 +6,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
 newtype WardOfProtection = WardOfProtection EventAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wardOfProtection :: InvestigatorId -> EventId -> WardOfProtection
 wardOfProtection iid uuid = WardOfProtection $ baseAttrs iid uuid "01065"

@@ -6,7 +6,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
 newtype DynamiteBlast2 = DynamiteBlast2 EventAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dynamiteBlast2 :: InvestigatorId -> EventId -> DynamiteBlast2
 dynamiteBlast2 iid uuid = DynamiteBlast2 $ baseAttrs iid uuid "01023"

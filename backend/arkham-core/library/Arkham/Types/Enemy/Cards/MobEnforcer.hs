@@ -11,7 +11,7 @@ import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 
 newtype MobEnforcer = MobEnforcer EnemyAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mobEnforcer :: EnemyId -> MobEnforcer
 mobEnforcer uuid = MobEnforcer $ (weaknessBaseAttrs uuid "01101")

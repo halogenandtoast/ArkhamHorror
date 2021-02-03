@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype Haunted = Haunted TreacheryAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 haunted :: TreacheryId -> Maybe InvestigatorId -> Haunted
 haunted uuid iid = Haunted $ weaknessAttrs uuid iid "01098"

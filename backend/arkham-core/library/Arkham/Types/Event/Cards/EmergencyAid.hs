@@ -9,7 +9,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Trait
 
 newtype EmergencyAid = EmergencyAid EventAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 emergencyAid :: InvestigatorId -> EventId -> EmergencyAid
 emergencyAid iid uuid = EmergencyAid $ baseAttrs iid uuid "02105"

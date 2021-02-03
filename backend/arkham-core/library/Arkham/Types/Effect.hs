@@ -37,7 +37,7 @@ data Effect
   | CursedShores' CursedShores
   | WindowModifierEffect' WindowModifierEffect
   | PayForAbilityEffect' PayForAbilityEffect
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance HasModifiersFor env Effect

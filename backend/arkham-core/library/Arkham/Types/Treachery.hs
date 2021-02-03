@@ -82,7 +82,7 @@ data Treachery
   | OnTheProwl' OnTheProwl
   | BeastOfTheBayou' BeastOfTheBayou
   | InsatiableBloodlust' InsatiableBloodlust
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance ActionRunner env => HasActions env Treachery

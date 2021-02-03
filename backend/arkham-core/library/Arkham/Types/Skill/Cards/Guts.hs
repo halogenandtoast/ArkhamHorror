@@ -12,7 +12,7 @@ import Arkham.Types.SkillId
 import Arkham.Types.Target
 
 newtype Guts = Guts SkillAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 guts :: InvestigatorId -> SkillId -> Guts
 guts iid uuid = Guts $ baseAttrs iid uuid "01089"

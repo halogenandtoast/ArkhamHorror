@@ -7,7 +7,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 
 newtype ForbiddenKnowledge = ForbiddenKnowledge AssetAttrs
-  deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 forbiddenKnowledge :: AssetId -> ForbiddenKnowledge
 forbiddenKnowledge uuid = ForbiddenKnowledge $ baseAttrs uuid "01058"

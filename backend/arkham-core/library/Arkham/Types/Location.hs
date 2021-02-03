@@ -121,7 +121,7 @@ data Location
   | RitualGrounds' RitualGrounds
   | OvergrownCairns' OvergrownCairns
   | BaseLocation' BaseLocation
-  deriving stock (Show, Generic)
+  deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance ActionRunner env => HasActions env Location
@@ -161,7 +161,7 @@ instance SourceEntity Location where
   isSource = isSource . toAttrs
 
 newtype BaseLocation = BaseLocation LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env BaseLocation where
   getModifiersFor = noModifiersFor

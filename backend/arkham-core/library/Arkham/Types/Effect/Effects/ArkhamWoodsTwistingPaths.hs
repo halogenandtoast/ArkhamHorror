@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Effect.Attrs
 
 newtype ArkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths EffectAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsTwistingPaths :: EffectArgs -> ArkhamWoodsTwistingPaths
 arkhamWoodsTwistingPaths =

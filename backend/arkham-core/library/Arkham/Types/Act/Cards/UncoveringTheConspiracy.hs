@@ -12,7 +12,7 @@ import Arkham.Types.Act.Runner
 import qualified Data.HashSet as HashSet
 
 newtype UncoveringTheConspiracy = UncoveringTheConspiracy ActAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 uncoveringTheConspiracy :: UncoveringTheConspiracy
 uncoveringTheConspiracy = UncoveringTheConspiracy

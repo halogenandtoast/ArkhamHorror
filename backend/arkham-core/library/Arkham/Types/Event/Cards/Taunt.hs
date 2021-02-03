@@ -10,7 +10,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
 newtype Taunt = Taunt EventAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 taunt :: InvestigatorId -> EventId -> Taunt
 taunt iid uuid = Taunt $ baseAttrs iid uuid "02017"

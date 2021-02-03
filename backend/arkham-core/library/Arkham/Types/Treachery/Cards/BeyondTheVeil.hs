@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype BeyondTheVeil = BeyondTheVeil TreacheryAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 beyondTheVeil :: TreacheryId -> a -> BeyondTheVeil
 beyondTheVeil uuid _ = BeyondTheVeil $ baseAttrs uuid "02084"

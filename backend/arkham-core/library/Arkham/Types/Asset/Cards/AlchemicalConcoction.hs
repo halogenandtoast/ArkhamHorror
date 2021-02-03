@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 
 newtype AlchemicalConcoction = AlchemicalConcoction AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alchemicalConcoction :: AssetId -> AlchemicalConcoction
 alchemicalConcoction uuid = AlchemicalConcoction $ baseAttrs uuid "02059"

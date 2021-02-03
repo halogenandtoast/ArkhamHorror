@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype BeatCop = BeatCop AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 beatCop :: AssetId -> BeatCop
 beatCop uuid = BeatCop $ (baseAttrs uuid "01018")

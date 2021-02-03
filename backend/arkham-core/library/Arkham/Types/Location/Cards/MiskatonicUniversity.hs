@@ -13,7 +13,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype MiskatonicUniversity = MiskatonicUniversity LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miskatonicUniversity :: MiskatonicUniversity
 miskatonicUniversity = MiskatonicUniversity $ base { locationVictory = Just 1 }

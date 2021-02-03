@@ -10,7 +10,7 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
 newtype GetTheEngineRunning = GetTheEngineRunning ActAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 getTheEngineRunning :: GetTheEngineRunning
 getTheEngineRunning = GetTheEngineRunning

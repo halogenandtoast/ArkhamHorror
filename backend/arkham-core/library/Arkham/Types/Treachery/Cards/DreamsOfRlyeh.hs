@@ -11,7 +11,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype DreamsOfRlyeh = DreamsOfRlyeh TreacheryAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dreamsOfRlyeh :: TreacheryId -> a -> DreamsOfRlyeh
 dreamsOfRlyeh uuid _ = DreamsOfRlyeh $ baseAttrs uuid "01182"

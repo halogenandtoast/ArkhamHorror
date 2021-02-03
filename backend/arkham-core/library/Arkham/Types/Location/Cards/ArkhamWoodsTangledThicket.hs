@@ -8,7 +8,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype ArkhamWoodsTangledThicket = ArkhamWoodsTangledThicket LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsTangledThicket :: ArkhamWoodsTangledThicket
 arkhamWoodsTangledThicket = ArkhamWoodsTangledThicket $ base

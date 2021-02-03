@@ -9,11 +9,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype Metadata = Metadata { dealtDamageThisTurn :: Bool }
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 newtype CurseOfTheRougarou = CurseOfTheRougarou (TreacheryAttrs `With` Metadata)
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 curseOfTheRougarou :: TreacheryId -> Maybe InvestigatorId -> CurseOfTheRougarou
 curseOfTheRougarou uuid iid =

@@ -10,7 +10,7 @@ import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 
 newtype CurseOfTheRougarouTabletToken = CurseOfTheRougarouTabletToken EffectAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 curseOfTheRougarouTabletToken :: EffectArgs -> CurseOfTheRougarouTabletToken
 curseOfTheRougarouTabletToken =

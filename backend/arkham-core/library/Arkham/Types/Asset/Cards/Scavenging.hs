@@ -12,7 +12,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
 newtype Scavenging = Scavenging AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 scavenging :: AssetId -> Scavenging
 scavenging uuid = Scavenging $ baseAttrs uuid "01073"

@@ -14,7 +14,7 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Trait
 
 newtype FindingLadyEsprit = FindingLadyEsprit ActAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 findingLadyEsprit :: FindingLadyEsprit
 findingLadyEsprit =

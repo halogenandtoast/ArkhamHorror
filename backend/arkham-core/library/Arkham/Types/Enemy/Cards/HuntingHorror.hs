@@ -7,7 +7,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.RequestedTokenStrategy
 
 newtype HuntingHorror = HuntingHorror EnemyAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 huntingHorror :: EnemyId -> HuntingHorror
 huntingHorror uuid =

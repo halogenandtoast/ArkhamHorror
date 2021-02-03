@@ -13,7 +13,7 @@ import Arkham.Types.Asset.Uses (Uses(..), useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
 
 newtype SpringfieldM19034 = SpringfieldM19034 AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 springfieldM19034 :: AssetId -> SpringfieldM19034
 springfieldM19034 uuid = SpringfieldM19034

@@ -1,7 +1,6 @@
 module Arkham.Types.Prey
   ( Prey(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -21,5 +20,5 @@ data Prey
   | MostClues
   | NearestToEnemyWithTrait Trait
   | OnlyPrey Prey
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

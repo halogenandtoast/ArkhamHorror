@@ -12,7 +12,7 @@ import Arkham.Types.Trait (Trait)
 import Data.List.NonEmpty (NonEmpty(..))
 
 newtype ReturnToTheGathering = ReturnToTheGathering TheGathering
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 returnToTheGathering :: Difficulty -> ReturnToTheGathering
 returnToTheGathering difficulty = ReturnToTheGathering . TheGathering $ base

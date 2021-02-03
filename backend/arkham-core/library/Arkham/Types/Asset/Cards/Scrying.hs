@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 
 newtype Scrying = Scrying AssetAttrs
-  deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 scrying :: AssetId -> Scrying
 scrying uuid = Scrying $ (baseAttrs uuid "01061") { assetSlots = [ArcaneSlot] }

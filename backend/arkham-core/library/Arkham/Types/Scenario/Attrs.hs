@@ -14,7 +14,7 @@ import Arkham.Types.Scenario.Runner
 import Arkham.Types.Location as X
 
 newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
-  deriving newtype (Show, IsString, ToJSON, FromJSON)
+  deriving newtype (Show, IsString, ToJSON, FromJSON, Eq)
 
 data ScenarioAttrs = ScenarioAttrs
   { scenarioName :: Text
@@ -29,7 +29,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioLocations :: HashMap LocationName [LocationId]
   , scenarioSetAsideCards :: [Card]
   }
-  deriving stock (Show, Generic)
+  deriving stock (Show, Generic, Eq)
 
 makeLensesWith suffixedFields ''ScenarioAttrs
 

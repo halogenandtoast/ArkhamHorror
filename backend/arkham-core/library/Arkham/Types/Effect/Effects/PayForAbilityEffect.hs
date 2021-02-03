@@ -13,7 +13,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Trait
 
 newtype PayForAbilityEffect = PayForAbilityEffect (EffectAttrs `With` Payment)
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 payForAbilityEffect
   :: EffectId -> Maybe Ability -> Source -> Target -> PayForAbilityEffect

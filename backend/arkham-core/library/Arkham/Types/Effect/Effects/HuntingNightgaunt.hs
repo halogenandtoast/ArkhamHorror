@@ -11,7 +11,7 @@ import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 
 newtype HuntingNightgaunt = HuntingNightgaunt EffectAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 huntingNightgaunt :: EffectArgs -> HuntingNightgaunt
 huntingNightgaunt = HuntingNightgaunt . uncurry4 (baseAttrs "01172")

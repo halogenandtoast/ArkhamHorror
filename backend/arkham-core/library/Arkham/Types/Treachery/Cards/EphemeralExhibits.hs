@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype EphemeralExhibits = EphemeralExhibits TreacheryAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ephemeralExhibits :: TreacheryId -> a -> EphemeralExhibits
 ephemeralExhibits uuid _ = EphemeralExhibits $ baseAttrs uuid "02145"

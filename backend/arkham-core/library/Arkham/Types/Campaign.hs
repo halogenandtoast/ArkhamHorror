@@ -11,7 +11,7 @@ data Campaign
   = NightOfTheZealot' NightOfTheZealot
   | ReturnToNightOfTheZealot' ReturnToNightOfTheZealot
   | TheDunwichLegacy' TheDunwichLegacy
-  deriving stock (Show, Generic)
+  deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance CampaignRunner env => RunMessage env Campaign

@@ -12,7 +12,7 @@ data CampaignLog = CampaignLog
   , campaignLogRecordedCounts :: HashMap CampaignLogKey Int
   , campaignLogRecordedSets :: HashMap CampaignLogKey [CardCode]
   }
-  deriving stock (Show, Generic)
+  deriving stock (Show, Generic, Eq)
 
 recorded :: Lens' CampaignLog (HashSet CampaignLogKey)
 recorded = lens campaignLogRecorded $ \m x -> m { campaignLogRecorded = x }

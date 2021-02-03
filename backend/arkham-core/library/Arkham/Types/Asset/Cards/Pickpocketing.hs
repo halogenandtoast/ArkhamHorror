@@ -7,7 +7,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype Pickpocketing = Pickpocketing AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pickpoketing :: AssetId -> Pickpocketing
 pickpoketing uuid = Pickpocketing $ baseAttrs uuid "01046"

@@ -7,7 +7,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 
 newtype HoleInTheWall = HoleInTheWall LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 holeInTheWall :: HoleInTheWall
 holeInTheWall = HoleInTheWall $ baseAttrs

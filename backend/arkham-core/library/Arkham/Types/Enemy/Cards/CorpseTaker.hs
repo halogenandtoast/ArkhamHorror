@@ -10,7 +10,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
 
 newtype CorpseTaker = CorpseTaker EnemyAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 corpseTaker :: EnemyId -> CorpseTaker
 corpseTaker uuid =

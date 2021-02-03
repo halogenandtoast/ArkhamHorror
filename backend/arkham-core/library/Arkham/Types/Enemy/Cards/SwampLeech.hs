@@ -10,7 +10,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Trait
 
 newtype SwampLeech = SwampLeech EnemyAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 swampLeech :: EnemyId -> SwampLeech
 swampLeech uuid =

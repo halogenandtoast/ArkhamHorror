@@ -1,7 +1,6 @@
 module Arkham.Types.Agenda
   ( module Arkham.Types.Agenda
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -83,7 +82,7 @@ data Agenda
   | TheRougarouFeeds' TheRougarouFeeds
   | TheCurseSpreads' TheCurseSpreads
   | BaseAgenda' BaseAgenda
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance ActionRunner env => HasActions env Agenda
@@ -106,7 +105,7 @@ instance SourceEntity Agenda where
   isSource = isSource . toAttrs
 
 newtype BaseAgenda = BaseAgenda AgendaAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 baseAgenda
   :: AgendaId

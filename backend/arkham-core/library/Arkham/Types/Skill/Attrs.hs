@@ -16,7 +16,7 @@ data SkillAttrs = SkillAttrs
   , skillOwner :: InvestigatorId
   , skillWeakness :: Bool
   }
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
 
 makeLensesWith suffixedFields ''SkillAttrs
 

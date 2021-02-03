@@ -1,8 +1,7 @@
 module Arkham.Types.Act
   ( Act(..)
   , lookupAct
-  )
-where
+  ) where
 
 import Arkham.Import hiding (fold)
 
@@ -34,7 +33,7 @@ data Act
   | MysteriousGateway' MysteriousGateway
   | FindingLadyEsprit' FindingLadyEsprit
   | HuntingTheRougarou' HuntingTheRougarou
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance ActionRunner env => HasActions env Act

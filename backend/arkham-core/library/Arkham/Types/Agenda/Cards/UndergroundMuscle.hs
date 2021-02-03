@@ -10,7 +10,7 @@ import Arkham.Types.Agenda.Runner
 import Arkham.Types.EncounterSet
 
 newtype UndergroundMuscle = UndergroundMuscle AgendaAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 undergroundMuscle :: UndergroundMuscle
 undergroundMuscle = UndergroundMuscle

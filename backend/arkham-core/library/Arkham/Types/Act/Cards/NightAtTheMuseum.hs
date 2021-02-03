@@ -11,7 +11,7 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.Card.EncounterCardMatcher
 
 newtype NightAtTheMuseum = NightAtTheMuseum ActAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 nightAtTheMuseum :: NightAtTheMuseum
 nightAtTheMuseum =

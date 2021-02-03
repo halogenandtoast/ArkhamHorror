@@ -11,7 +11,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype Knife = Knife AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 knife :: AssetId -> Knife
 knife uuid = Knife $ (baseAttrs uuid "01086") { assetSlots = [HandSlot] }

@@ -9,10 +9,10 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Game.Helpers
 
 newtype FirstWatchMetadata = FirstWatchMetadata { firstWatchPairings :: [(InvestigatorId, EncounterCard)] }
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, Eq, ToJSON, FromJSON)
 
 newtype FirstWatch = FirstWatch (EventAttrs `With` FirstWatchMetadata)
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 firstWatch :: InvestigatorId -> EventId -> FirstWatch
 firstWatch iid uuid =

@@ -10,7 +10,7 @@ import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 
 newtype MindOverMatter = MindOverMatter EffectAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mindOverMatter :: EffectArgs -> MindOverMatter
 mindOverMatter = MindOverMatter . uncurry4 (baseAttrs "01036")

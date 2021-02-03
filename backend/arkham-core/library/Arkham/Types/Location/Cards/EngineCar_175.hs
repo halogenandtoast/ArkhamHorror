@@ -13,7 +13,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype EngineCar_175 = EngineCar_175 LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 engineCar_175 :: EngineCar_175
 engineCar_175 = EngineCar_175

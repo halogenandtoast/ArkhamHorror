@@ -11,7 +11,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype PassageIntoTheVeil = PassageIntoTheVeil TreacheryAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 passageIntoTheVeil :: TreacheryId -> a -> PassageIntoTheVeil
 passageIntoTheVeil uuid _ = PassageIntoTheVeil $ baseAttrs uuid "02144"

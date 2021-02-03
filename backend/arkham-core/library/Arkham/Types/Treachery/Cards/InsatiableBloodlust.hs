@@ -7,7 +7,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype InsatiableBloodlust = InsatiableBloodlust TreacheryAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 insatiableBloodlust :: TreacheryId -> a -> InsatiableBloodlust
 insatiableBloodlust uuid _ = InsatiableBloodlust $ baseAttrs uuid "81036"

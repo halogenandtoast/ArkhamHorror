@@ -12,7 +12,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype StMarysHospital = StMarysHospital LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stMarysHospital :: StMarysHospital
 stMarysHospital = StMarysHospital $ baseAttrs

@@ -12,7 +12,7 @@ import Arkham.Types.SkillId
 import Arkham.Types.Target
 
 newtype Perception = Perception SkillAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 perception :: InvestigatorId -> SkillId -> Perception
 perception iid uuid = Perception $ baseAttrs iid uuid "01090"

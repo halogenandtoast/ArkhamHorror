@@ -9,7 +9,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype Dormitories = Dormitories LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dormitories :: Dormitories
 dormitories = Dormitories $ base { locationVictory = Just 1 }

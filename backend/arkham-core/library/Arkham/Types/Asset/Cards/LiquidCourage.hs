@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Uses
 
 newtype LiquidCourage = LiquidCourage AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 liquidCourage :: AssetId -> LiquidCourage
 liquidCourage uuid = LiquidCourage $ baseAttrs uuid "02024"

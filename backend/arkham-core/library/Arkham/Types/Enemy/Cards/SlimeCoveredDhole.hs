@@ -12,7 +12,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Trait
 
 newtype SlimeCoveredDhole = SlimeCoveredDhole EnemyAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 slimeCoveredDhole :: EnemyId -> SlimeCoveredDhole
 slimeCoveredDhole uuid =

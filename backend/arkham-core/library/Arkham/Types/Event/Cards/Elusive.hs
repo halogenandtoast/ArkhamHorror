@@ -6,7 +6,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
 newtype Elusive = Elusive EventAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 elusive :: InvestigatorId -> EventId -> Elusive
 elusive iid uuid = Elusive $ baseAttrs iid uuid "01050"

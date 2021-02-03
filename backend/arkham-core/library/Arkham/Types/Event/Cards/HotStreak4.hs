@@ -6,7 +6,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
 newtype HotStreak4 = HotStreak4 EventAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hotStreak4 :: InvestigatorId -> EventId -> HotStreak4
 hotStreak4 iid uuid = HotStreak4 $ baseAttrs iid uuid "01057"

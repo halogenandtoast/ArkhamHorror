@@ -11,7 +11,7 @@ import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
 
 newtype DoubleOrNothing = DoubleOrNothing SkillAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 doubleOrNothing :: InvestigatorId -> SkillId -> DoubleOrNothing
 doubleOrNothing iid uuid = DoubleOrNothing $ baseAttrs iid uuid "02026"

@@ -12,7 +12,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype Machete = Machete AssetAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 machete :: AssetId -> Machete
 machete uuid = Machete $ (baseAttrs uuid "01020") { assetSlots = [HandSlot] }

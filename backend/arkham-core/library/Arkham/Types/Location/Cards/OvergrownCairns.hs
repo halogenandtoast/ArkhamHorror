@@ -13,7 +13,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype OvergrownCairns = OvergrownCairns LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 overgrownCairns :: OvergrownCairns
 overgrownCairns = OvergrownCairns $ baseAttrs

@@ -12,7 +12,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype BrackishWaters = BrackishWaters LocationAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 brackishWaters :: BrackishWaters
 brackishWaters = BrackishWaters $ baseAttrs

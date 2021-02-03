@@ -35,7 +35,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyClues :: Int
   , enemyUnique :: Bool
   }
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
 
 makeLensesWith suffixedFields ''EnemyAttrs
 

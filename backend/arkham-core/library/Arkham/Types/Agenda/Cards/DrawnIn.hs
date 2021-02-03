@@ -11,7 +11,7 @@ import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 
 newtype DrawnIn = DrawnIn AgendaAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drawnIn :: DrawnIn
 drawnIn = DrawnIn $ baseAttrs "02163" "Drawn In" (Agenda 4 A) (Static 3)

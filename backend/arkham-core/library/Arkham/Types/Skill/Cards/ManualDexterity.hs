@@ -12,7 +12,7 @@ import Arkham.Types.SkillId
 import Arkham.Types.Target
 
 newtype ManualDexterity = ManualDexterity SkillAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 manualDexterity :: InvestigatorId -> SkillId -> ManualDexterity
 manualDexterity iid uuid = ManualDexterity $ baseAttrs iid uuid "01092"

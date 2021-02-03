@@ -6,7 +6,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
 newtype CorpseHungryGhoul = CorpseHungryGhoul EnemyAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 corpseHungryGhoul :: EnemyId -> CorpseHungryGhoul
 corpseHungryGhoul uuid =

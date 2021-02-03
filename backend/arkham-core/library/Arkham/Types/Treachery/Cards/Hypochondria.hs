@@ -9,7 +9,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype Hypochondria = Hypochondria TreacheryAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hypochondria :: TreacheryId -> Maybe InvestigatorId -> Hypochondria
 hypochondria uuid iid = Hypochondria $ weaknessAttrs uuid iid "01100"

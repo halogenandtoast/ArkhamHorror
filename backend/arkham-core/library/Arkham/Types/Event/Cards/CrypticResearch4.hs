@@ -6,7 +6,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
 newtype CrypticResearch4 = CrypticResearch4 EventAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 crypticResearch4 :: InvestigatorId -> EventId -> CrypticResearch4
 crypticResearch4 iid uuid = CrypticResearch4 $ baseAttrs iid uuid "01043"

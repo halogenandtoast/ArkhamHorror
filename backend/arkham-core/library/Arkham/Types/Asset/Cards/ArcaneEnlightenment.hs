@@ -11,7 +11,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
 newtype ArcaneEnlightenment = ArcaneEnlightenment AssetAttrs
-  deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 arcaneEnlightenment :: AssetId -> ArcaneEnlightenment
 arcaneEnlightenment uuid =

@@ -19,7 +19,7 @@ data EffectAttrs = EffectAttrs
   , effectMetadata :: Maybe (EffectMetadata Message)
   , effectWindow :: Maybe EffectWindow
   }
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
 
 makeLensesWith suffixedFields ''EffectAttrs
 

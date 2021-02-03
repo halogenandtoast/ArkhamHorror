@@ -9,6 +9,7 @@ module Api.Handler.Arkham.Games
   ) where
 
 import Api.Arkham.Helpers
+import Arkham.Game
 import Arkham.Types.CampaignId
 import Arkham.Types.Difficulty
 import Arkham.Types.Game

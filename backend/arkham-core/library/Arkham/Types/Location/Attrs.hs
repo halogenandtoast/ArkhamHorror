@@ -374,7 +374,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
               pure . not $ flip any modifiers' $ \case
                 SpawnNonEliteAtConnectingInstead{} -> True
                 _ -> False
-          withQueue $ \queue -> (filter (/= next) queue, ())
+          withQueue_ $ filter (/= next)
           if null availableLocationIds
             then unshiftMessage (Discard (EnemyTarget eid))
             else unshiftMessage

@@ -1,8 +1,5 @@
 module Arkham.Types.Treachery
-  ( lookupTreachery
-  , Treachery(..)
-  , isWeakness
-  , treacheryTarget
+  ( module Arkham.Types.Treachery
   ) where
 
 import Arkham.Import
@@ -11,6 +8,15 @@ import Arkham.Types.Trait (Trait)
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Cards
 import Arkham.Types.Treachery.Runner
+
+createTreachery
+  :: MonadRandom m
+  => CardCode
+  -> Maybe InvestigatorId
+  -> m (TreacheryId, Treachery)
+createTreachery cardCode miid = do
+  tid <- getRandom
+  pure (tid, lookupTreachery cardCode tid miid)
 
 data Treachery
   = CoverUp' CoverUp

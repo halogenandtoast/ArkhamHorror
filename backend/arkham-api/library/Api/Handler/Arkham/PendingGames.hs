@@ -5,6 +5,7 @@ module Api.Handler.Arkham.PendingGames
 import Import hiding (on, (==.))
 
 import Api.Arkham.Helpers
+import Arkham.Game
 import Arkham.Types.Game
 import Arkham.Types.Investigator
 import Data.Aeson

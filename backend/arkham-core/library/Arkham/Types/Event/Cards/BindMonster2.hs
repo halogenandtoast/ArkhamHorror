@@ -1,8 +1,7 @@
 module Arkham.Types.Event.Cards.BindMonster2
   ( bindMonster2
   , BindMonster2(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -47,7 +46,7 @@ instance HasQueue env => RunMessage env BindMonster2 where
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> case eventAttachedTarget of
         Just target@(EnemyTarget _) ->
-          e <$ withQueue (\queue -> (filter (/= Ready target) queue, ()))
+          e <$ withQueue_ (filter (/= Ready target))
         _ -> error "invalid target"
     FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> e <$ unshiftMessage (Discard $ toTarget attrs)

@@ -1,8 +1,7 @@
 module Arkham.Types.Event.Cards.LetMeHandleThis
   ( letMeHandleThis
   , LetMeHandleThis(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -24,16 +23,13 @@ instance HasQueue env => RunMessage env LetMeHandleThis where
   runMessage msg e@(LetMeHandleThis attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid (Just (TreacheryTarget tid))
       | eid == eventId -> do
-        withQueue $ \queue ->
-          let
-            messages = flip map queue $ \case
-              Revelation _ (TreacherySource tid') | tid == tid' ->
-                Revelation iid (TreacherySource tid')
-              AfterRevelation _ tid' | tid == tid' -> AfterRevelation iid tid'
-              Surge _ (TreacherySource tid') | tid == tid' ->
-                Surge iid (TreacherySource tid')
-              other -> other
-          in (messages, ())
+        withQueue_ $ map $ \case
+          Revelation _ (TreacherySource tid') | tid == tid' ->
+            Revelation iid (TreacherySource tid')
+          AfterRevelation _ tid' | tid == tid' -> AfterRevelation iid tid'
+          Surge _ (TreacherySource tid') | tid == tid' ->
+            Surge iid (TreacherySource tid')
+          other -> other
         e <$ unshiftMessages
           [ CreateEffect
             eventCardCode

@@ -134,10 +134,6 @@ deriving anyclass instance
   )
   => HasModifiersFor env Location
 
-isBlanked :: Message -> Bool
-isBlanked Blanked{} = True
-isBlanked _ = False
-
 instance LocationRunner env => RunMessage env Location where
   runMessage msg l = do
     modifiers' <- getModifiersFor (toSource l) (toTarget l) ()

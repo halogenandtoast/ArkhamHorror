@@ -9,12 +9,13 @@ module TestImport
 
 import Arkham.Import as X
 
+import Arkham.Game as X hiding (newGame)
 import Arkham.Types.Agenda as X
 import Arkham.Types.Asset as X
 import Arkham.Types.ChaosBag as X
 import Arkham.Types.Enemy as X
 import Arkham.Types.Event as X
-import Arkham.Types.Game as X hiding (newGame)
+import Arkham.Types.Game as X
 import Arkham.Types.Game.Helpers as X
 import Arkham.Types.Investigator as X
 import Arkham.Types.Location as X

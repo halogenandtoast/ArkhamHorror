@@ -1,23 +1,21 @@
 module Arkham.Types.Asset
-  ( lookupAsset
-  , baseAsset
-  , allAssets
-  , isHealthDamageable
-  , isSanityDamageable
-  , isStory
-  , slotsOf
-  , useTypeOf
-  , Asset
+  ( module Arkham.Types.Asset
+  , module X
   ) where
 
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Cards
-import Arkham.Types.Asset.Class
+import Arkham.Types.Asset.Class as X
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Trait (Trait)
+
+createAsset :: MonadRandom m => CardCode -> m (AssetId, Asset)
+createAsset cardCode = do
+  aid <- getRandom
+  pure (aid, lookupAsset cardCode aid)
 
 data Asset
   = Rolands38Special' Rolands38Special

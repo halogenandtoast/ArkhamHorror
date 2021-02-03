@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.YourHouse
   ( YourHouse(..)
   , yourHouse
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -36,8 +35,8 @@ ability attrs =
     }
 
 instance ActionRunner env => HasActions env YourHouse where
-  getActions iid NonFast (YourHouse attrs@LocationAttrs {..}) | locationRevealed =
-    withBaseActions iid NonFast attrs $ pure
+  getActions iid NonFast (YourHouse attrs@LocationAttrs {..})
+    | locationRevealed = withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction iid (ability attrs)
       | iid `member` locationInvestigators
       ]
@@ -48,10 +47,8 @@ instance (LocationRunner env) => RunMessage env YourHouse where
     Will spawnMsg@(EnemySpawn miid _ eid) -> do
       cardCode <- getId @CardCode eid
       when (cardCode == "01116") $ do
-        withQueue $ \queue ->
-          ( filter (and . sequence [(/= After spawnMsg), (/= spawnMsg)]) queue
-          , ()
-          )
+        withQueue_
+          $ filter (and . sequence [(/= After spawnMsg), (/= spawnMsg)])
         unshiftMessages
           [ EnemySpawn miid locationId eid
           , After (EnemySpawn miid locationId eid)

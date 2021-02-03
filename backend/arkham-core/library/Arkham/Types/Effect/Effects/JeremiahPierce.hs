@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Action
 import Arkham.Types.Effect.Attrs
 
-newtype JeremiahPierce = JeremiahPierce Attrs
+newtype JeremiahPierce = JeremiahPierce EffectAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 jeremiahPierce :: EffectArgs -> JeremiahPierce

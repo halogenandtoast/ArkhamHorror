@@ -9,14 +9,14 @@ import Arkham.Import
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 
-newtype SureGamble3 = SureGamble3 Attrs
+newtype SureGamble3 = SureGamble3 EffectAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 sureGamble3 :: EffectArgs -> SureGamble3
 sureGamble3 = SureGamble3 . uncurry4 (baseAttrs "01088")
 
 instance HasModifiersFor env SureGamble3 where
-  getModifiersFor _ target (SureGamble3 a@Attrs {..}) | target == effectTarget =
+  getModifiersFor _ target (SureGamble3 a@EffectAttrs {..}) | target == effectTarget =
     pure [toModifier a NegativeToPositive]
   getModifiersFor _ _ _ = pure []
 

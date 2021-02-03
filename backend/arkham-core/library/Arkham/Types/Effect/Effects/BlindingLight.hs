@@ -9,7 +9,7 @@ import Arkham.Import
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Effect.Attrs
 
-newtype BlindingLight = BlindingLight Attrs
+newtype BlindingLight = BlindingLight EffectAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 blindingLight :: EffectArgs -> BlindingLight
@@ -19,7 +19,7 @@ instance HasModifiersFor env BlindingLight where
   getModifiersFor = noModifiersFor
 
 instance HasQueue env => RunMessage env BlindingLight where
-  runMessage msg e@(BlindingLight attrs@Attrs {..}) = case msg of
+  runMessage msg e@(BlindingLight attrs@EffectAttrs {..}) = case msg of
     RevealToken _ iid token | InvestigatorTarget iid == effectTarget ->
       e <$ when
         (token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])

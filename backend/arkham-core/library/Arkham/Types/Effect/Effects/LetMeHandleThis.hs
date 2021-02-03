@@ -9,14 +9,14 @@ import Arkham.Import
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 
-newtype LetMeHandleThis = LetMeHandleThis Attrs
+newtype LetMeHandleThis = LetMeHandleThis EffectAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 letMeHandleThis :: EffectArgs -> LetMeHandleThis
 letMeHandleThis = LetMeHandleThis . uncurry4 (baseAttrs "03022")
 
 instance HasModifiersFor env LetMeHandleThis where
-  getModifiersFor source target (LetMeHandleThis a@Attrs {..})
+  getModifiersFor source target (LetMeHandleThis a@EffectAttrs {..})
     | source == effectSource && target == effectTarget = pure
       [toModifier a $ AnySkillValue 2]
   getModifiersFor _ _ _ = pure []

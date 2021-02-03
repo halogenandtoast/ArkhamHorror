@@ -9,14 +9,14 @@ import Arkham.Import
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 
-newtype Lucky = Lucky Attrs
+newtype Lucky = Lucky EffectAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 lucky :: EffectArgs -> Lucky
 lucky = Lucky . uncurry4 (baseAttrs "01080")
 
 instance HasModifiersFor env Lucky where
-  getModifiersFor _ target (Lucky a@Attrs {..}) | target == effectTarget =
+  getModifiersFor _ target (Lucky a@EffectAttrs {..}) | target == effectTarget =
     pure [toModifier a $ AnySkillValue 2]
   getModifiersFor _ _ _ = pure []
 

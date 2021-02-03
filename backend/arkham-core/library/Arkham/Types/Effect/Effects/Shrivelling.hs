@@ -7,7 +7,7 @@ import Arkham.Import
 
 import Arkham.Types.Effect.Attrs
 
-newtype Shrivelling = Shrivelling Attrs
+newtype Shrivelling = Shrivelling EffectAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 shrivelling :: EffectArgs -> Shrivelling
@@ -17,7 +17,7 @@ instance HasModifiersFor env Shrivelling where
   getModifiersFor = noModifiersFor
 
 instance HasQueue env => RunMessage env Shrivelling where
-  runMessage msg e@(Shrivelling attrs@Attrs {..}) = case msg of
+  runMessage msg e@(Shrivelling attrs@EffectAttrs {..}) = case msg of
     RevealToken _ iid token | InvestigatorTarget iid == effectTarget ->
       e <$ when
         (token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])

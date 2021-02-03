@@ -9,14 +9,14 @@ import Arkham.Import
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 
-newtype MindOverMatter = MindOverMatter Attrs
+newtype MindOverMatter = MindOverMatter EffectAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 mindOverMatter :: EffectArgs -> MindOverMatter
 mindOverMatter = MindOverMatter . uncurry4 (baseAttrs "01036")
 
 instance HasModifiersFor env MindOverMatter where
-  getModifiersFor _ target (MindOverMatter a@Attrs {..})
+  getModifiersFor _ target (MindOverMatter a@EffectAttrs {..})
     | target == effectTarget = pure $ toModifiers
       a
       [ UseSkillInPlaceOf SkillCombat SkillIntellect

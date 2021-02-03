@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 
-newtype CurseOfTheRougarouTabletToken = CurseOfTheRougarouTabletToken Attrs
+newtype CurseOfTheRougarouTabletToken = CurseOfTheRougarouTabletToken EffectAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 curseOfTheRougarouTabletToken :: EffectArgs -> CurseOfTheRougarouTabletToken
@@ -17,7 +17,7 @@ curseOfTheRougarouTabletToken =
   CurseOfTheRougarouTabletToken . uncurry4 (baseAttrs "81001")
 
 instance HasModifiersFor env CurseOfTheRougarouTabletToken where
-  getModifiersFor _ target (CurseOfTheRougarouTabletToken a@Attrs {..})
+  getModifiersFor _ target (CurseOfTheRougarouTabletToken a@EffectAttrs {..})
     | target == effectTarget = pure [toModifier a CannotMove]
   getModifiersFor _ _ _ = pure []
 

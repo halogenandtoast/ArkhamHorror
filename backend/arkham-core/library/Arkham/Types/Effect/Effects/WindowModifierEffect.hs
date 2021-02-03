@@ -7,7 +7,7 @@ import Arkham.Import
 
 import Arkham.Types.Effect.Attrs
 
-newtype WindowModifierEffect = WindowModifierEffect Attrs
+newtype WindowModifierEffect = WindowModifierEffect EffectAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 windowModifierEffect
@@ -18,7 +18,7 @@ windowModifierEffect
   -> Target
   -> WindowModifierEffect
 windowModifierEffect eid metadata effectWindow source target =
-  WindowModifierEffect $ Attrs
+  WindowModifierEffect $ EffectAttrs
     { effectId = eid
     , effectSource = source
     , effectTarget = target
@@ -29,7 +29,7 @@ windowModifierEffect eid metadata effectWindow source target =
     }
 
 instance HasModifiersFor env WindowModifierEffect where
-  getModifiersFor _ target (WindowModifierEffect Attrs {..})
+  getModifiersFor _ target (WindowModifierEffect EffectAttrs {..})
     | target == effectTarget = case effectMetadata of
       Just (EffectModifiers modifiers) -> pure modifiers
       _ -> pure []

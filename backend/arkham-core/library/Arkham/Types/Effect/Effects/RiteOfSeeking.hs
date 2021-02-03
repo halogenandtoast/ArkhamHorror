@@ -8,7 +8,7 @@ import Arkham.Import
 
 import Arkham.Types.Effect.Attrs
 
-newtype RiteOfSeeking = RiteOfSeeking Attrs
+newtype RiteOfSeeking = RiteOfSeeking EffectAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 riteOfSeeking :: EffectArgs -> RiteOfSeeking
@@ -18,7 +18,7 @@ instance HasModifiersFor env RiteOfSeeking where
   getModifiersFor = noModifiersFor
 
 instance (HasQueue env) => RunMessage env RiteOfSeeking where
-  runMessage msg e@(RiteOfSeeking attrs@Attrs {..}) = case msg of
+  runMessage msg e@(RiteOfSeeking attrs@EffectAttrs {..}) = case msg of
     RevealToken _ iid token -> case effectTarget of
       InvestigationTarget iid' _ | iid == iid' -> e <$ when
         (token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])

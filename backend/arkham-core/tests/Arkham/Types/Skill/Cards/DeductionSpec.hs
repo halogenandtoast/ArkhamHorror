@@ -5,7 +5,7 @@ module Arkham.Types.Skill.Cards.DeductionSpec
 import TestImport
 
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
-import Arkham.Types.Location.Attrs (Attrs(..))
+import Arkham.Types.Location.Attrs (LocationAttrs(..))
 
 spec :: Spec
 spec = describe "Deduction" $ do

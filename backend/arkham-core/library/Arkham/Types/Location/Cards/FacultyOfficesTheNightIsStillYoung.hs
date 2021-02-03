@@ -13,7 +13,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype FacultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung Attrs
+newtype FacultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 facultyOfficesTheNightIsStillYoung :: FacultyOfficesTheNightIsStillYoung
@@ -37,7 +37,7 @@ instance HasModifiersFor env FacultyOfficesTheNightIsStillYoung where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env FacultyOfficesTheNightIsStillYoung where
-  getActions iid FastPlayerWindow (FacultyOfficesTheNightIsStillYoung attrs@Attrs {..})
+  getActions iid FastPlayerWindow (FacultyOfficesTheNightIsStillYoung attrs@LocationAttrs {..})
     | locationRevealed
     = withBaseActions iid FastPlayerWindow attrs $ do
       requiredClueCount <- getPlayerCountValue (PerPlayer 2)

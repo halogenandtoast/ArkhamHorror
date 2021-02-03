@@ -9,7 +9,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype ArkhamWoodsLakeside = ArkhamWoodsLakeside Attrs
+newtype ArkhamWoodsLakeside = ArkhamWoodsLakeside LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 arkhamWoodsLakeside :: ArkhamWoodsLakeside
@@ -35,7 +35,7 @@ instance ActionRunner env => HasActions env ArkhamWoodsLakeside where
   getActions i window (ArkhamWoodsLakeside attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsLakeside where
-  runMessage msg l@(ArkhamWoodsLakeside attrs@Attrs {..}) = case msg of
+  runMessage msg l@(ArkhamWoodsLakeside attrs@LocationAttrs {..}) = case msg of
     RevealToken (SkillTestSource _ _ source (Just Action.Investigate)) iid _
       | isSource attrs source && iid `elem` locationInvestigators -> do
         let

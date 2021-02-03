@@ -12,7 +12,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype SouthsideHistoricalSociety = SouthsideHistoricalSociety Attrs
+newtype SouthsideHistoricalSociety = SouthsideHistoricalSociety LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 southsideHistoricalSociety :: SouthsideHistoricalSociety
@@ -29,14 +29,14 @@ southsideHistoricalSociety = SouthsideHistoricalSociety $ baseAttrs
 instance HasModifiersFor env SouthsideHistoricalSociety where
   getModifiersFor = noModifiersFor
 
-ability :: Attrs -> Ability
+ability :: LocationAttrs -> Ability
 ability attrs =
   (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
     { abilityLimit = PlayerLimit PerGame 1
     }
 
 instance ActionRunner env => HasActions env SouthsideHistoricalSociety where
-  getActions iid NonFast (SouthsideHistoricalSociety attrs@Attrs {..})
+  getActions iid NonFast (SouthsideHistoricalSociety attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction iid (ability attrs)
       | iid `member` locationInvestigators

@@ -12,7 +12,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype ExhibitHallHallOfTheDead = ExhibitHallHallOfTheDead Attrs
+newtype ExhibitHallHallOfTheDead = ExhibitHallHallOfTheDead LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 exhibitHallHallOfTheDead :: ExhibitHallHallOfTheDead

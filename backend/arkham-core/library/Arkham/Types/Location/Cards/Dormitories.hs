@@ -8,7 +8,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype Dormitories = Dormitories Attrs
+newtype Dormitories = Dormitories LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 dormitories :: Dormitories
@@ -29,7 +29,7 @@ instance HasModifiersFor env Dormitories where
     pure $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []
 
-ability :: Int -> Attrs -> Ability
+ability :: Int -> LocationAttrs -> Ability
 ability requiredClueCount attrs = mkAbility
   (toSource attrs)
   1
@@ -38,7 +38,7 @@ ability requiredClueCount attrs = mkAbility
   )
 
 instance ActionRunner env => HasActions env Dormitories where
-  getActions iid FastPlayerWindow (Dormitories attrs@Attrs {..})
+  getActions iid FastPlayerWindow (Dormitories attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid FastPlayerWindow attrs $ do
       requiredClueCount <- getPlayerCountValue (PerPlayer 3)
       pure [ActivateCardAbilityAction iid (ability requiredClueCount attrs)]

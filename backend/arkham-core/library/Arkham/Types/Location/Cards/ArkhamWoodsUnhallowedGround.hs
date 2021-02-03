@@ -7,7 +7,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype ArkhamWoodsUnhallowedGround = ArkhamWoodsUnhallowedGround Attrs
+newtype ArkhamWoodsUnhallowedGround = ArkhamWoodsUnhallowedGround LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 arkhamWoodsUnhallowedGround :: ArkhamWoodsUnhallowedGround
@@ -35,7 +35,7 @@ instance ActionRunner env => HasActions env ArkhamWoodsUnhallowedGround where
     getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsUnhallowedGround where
-  runMessage msg l@(ArkhamWoodsUnhallowedGround attrs@Attrs {..}) = case msg of
+  runMessage msg l@(ArkhamWoodsUnhallowedGround attrs@LocationAttrs {..}) = case msg of
     MoveTo iid lid | lid == locationId -> do
       unshiftMessage
         (BeginSkillTest

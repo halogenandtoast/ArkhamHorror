@@ -7,7 +7,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype ArkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths Attrs
+newtype ArkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 arkhamWoodsTwistingPaths :: ArkhamWoodsTwistingPaths
@@ -34,7 +34,7 @@ instance ActionRunner env => HasActions env ArkhamWoodsTwistingPaths where
     getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsTwistingPaths where
-  runMessage msg l@(ArkhamWoodsTwistingPaths attrs@Attrs {..}) = case msg of
+  runMessage msg l@(ArkhamWoodsTwistingPaths attrs@LocationAttrs {..}) = case msg of
     Will (MoveTo iid lid)
       | iid `elem` locationInvestigators && lid /= locationId -> do
         moveFrom <- popMessage -- MoveFrom

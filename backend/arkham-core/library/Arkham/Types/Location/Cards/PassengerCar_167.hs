@@ -12,7 +12,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype PassengerCar_167 = PassengerCar_167 Attrs
+newtype PassengerCar_167 = PassengerCar_167 LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 passengerCar_167 :: PassengerCar_167
@@ -30,7 +30,7 @@ passengerCar_167 = PassengerCar_167
     (singleton Train)
 
 instance HasCount ClueCount env LocationId => HasModifiersFor env PassengerCar_167 where
-  getModifiersFor _ target (PassengerCar_167 location@Attrs {..})
+  getModifiersFor _ target (PassengerCar_167 location@LocationAttrs {..})
     | isTarget location target = case lookup LeftOf locationDirections of
       Just leftLocation -> do
         clueCount <- unClueCount <$> getCount leftLocation
@@ -44,7 +44,7 @@ instance ActionRunner env => HasActions env PassengerCar_167 where
   getActions iid window (PassengerCar_167 attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env PassengerCar_167 where
-  runMessage msg l@(PassengerCar_167 attrs@Attrs {..}) = case msg of
+  runMessage msg l@(PassengerCar_167 attrs@LocationAttrs {..}) = case msg of
     AfterEnterLocation iid lid | lid == locationId -> do
       let cost = SkillIconCost 2 (singleton SkillAgility)
       hasSkills <- getCanAffordCost iid (toSource attrs) Nothing cost

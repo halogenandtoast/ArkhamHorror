@@ -12,7 +12,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait hiding (Supply)
 
-newtype EasttownArkhamPoliceStation = EasttownArkhamPoliceStation Attrs
+newtype EasttownArkhamPoliceStation = EasttownArkhamPoliceStation LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 easttownArkhamPoliceStation :: EasttownArkhamPoliceStation
@@ -32,7 +32,7 @@ easttownArkhamPoliceStation = EasttownArkhamPoliceStation
 instance HasModifiersFor env EasttownArkhamPoliceStation where
   getModifiersFor _ _ _ = pure []
 
-ability :: Attrs -> Ability
+ability :: LocationAttrs -> Ability
 ability attrs =
   (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
     { abilityLimit = PlayerLimit PerGame 1

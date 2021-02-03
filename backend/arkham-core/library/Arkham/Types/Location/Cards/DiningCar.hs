@@ -13,7 +13,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype DiningCar = DiningCar Attrs
+newtype DiningCar = DiningCar LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 diningCar :: DiningCar
@@ -31,7 +31,7 @@ diningCar = DiningCar
     (singleton Train)
 
 instance HasCount ClueCount env LocationId => HasModifiersFor env DiningCar where
-  getModifiersFor _ target (DiningCar location@Attrs {..})
+  getModifiersFor _ target (DiningCar location@LocationAttrs {..})
     | isTarget location target = case lookup LeftOf locationDirections of
       Just leftLocation -> do
         clueCount <- unClueCount <$> getCount leftLocation

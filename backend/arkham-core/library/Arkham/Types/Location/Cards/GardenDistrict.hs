@@ -13,7 +13,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
 
-newtype GardenDistrict = GardenDistrict Attrs
+newtype GardenDistrict = GardenDistrict LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 gardenDistrict :: GardenDistrict
@@ -31,7 +31,7 @@ instance HasModifiersFor env GardenDistrict where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env GardenDistrict where
-  getActions iid NonFast (GardenDistrict attrs@Attrs {..}) | locationRevealed =
+  getActions iid NonFast (GardenDistrict attrs@LocationAttrs {..}) | locationRevealed =
     withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction
           iid

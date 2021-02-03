@@ -12,7 +12,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype Broadmoor = Broadmoor Attrs
+newtype Broadmoor = Broadmoor LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 broadmoor :: Broadmoor
@@ -32,7 +32,7 @@ instance HasModifiersFor env Broadmoor where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Broadmoor where
-  getActions iid NonFast (Broadmoor attrs@Attrs {..}) =
+  getActions iid NonFast (Broadmoor attrs@LocationAttrs {..}) =
     withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction
           iid

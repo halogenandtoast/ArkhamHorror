@@ -11,7 +11,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype RivertownAbandonedWarehouse = RivertownAbandonedWarehouse Attrs
+newtype RivertownAbandonedWarehouse = RivertownAbandonedWarehouse LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 rivertownAbandonedWarehouse :: RivertownAbandonedWarehouse
@@ -28,7 +28,7 @@ rivertownAbandonedWarehouse = RivertownAbandonedWarehouse $ baseAttrs
 instance HasModifiersFor env RivertownAbandonedWarehouse where
   getModifiersFor _ _ _ = pure []
 
-ability :: Attrs -> Ability
+ability :: LocationAttrs -> Ability
 ability attrs = base { abilityLimit = GroupLimit PerGame 1 }
  where
   base = mkAbility

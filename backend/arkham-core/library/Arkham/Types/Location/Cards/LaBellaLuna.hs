@@ -13,7 +13,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype LaBellaLuna = LaBellaLuna Attrs
+newtype LaBellaLuna = LaBellaLuna LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 laBellaLuna :: LaBellaLuna
@@ -30,14 +30,14 @@ laBellaLuna = LaBellaLuna $ baseAttrs
 instance HasModifiersFor env LaBellaLuna where
   getModifiersFor = noModifiersFor
 
-ability :: Attrs -> Ability
+ability :: LocationAttrs -> Ability
 ability attrs = mkAbility
   (toSource attrs)
   1
   (ActionAbility (Just Action.Resign) (ActionCost 1))
 
 instance ActionRunner env => HasActions env LaBellaLuna where
-  getActions iid NonFast (LaBellaLuna attrs@Attrs {..}) | locationRevealed =
+  getActions iid NonFast (LaBellaLuna attrs@LocationAttrs {..}) | locationRevealed =
     withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction iid (ability attrs)
       | iid `member` locationInvestigators

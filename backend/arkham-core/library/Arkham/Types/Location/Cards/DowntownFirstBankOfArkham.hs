@@ -12,7 +12,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype DowntownFirstBankOfArkham = DowntownFirstBankOfArkham Attrs
+newtype DowntownFirstBankOfArkham = DowntownFirstBankOfArkham LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 downtownFirstBankOfArkham :: DowntownFirstBankOfArkham
@@ -29,14 +29,14 @@ downtownFirstBankOfArkham = DowntownFirstBankOfArkham $ baseAttrs
 instance HasModifiersFor env DowntownFirstBankOfArkham where
   getModifiersFor = noModifiersFor
 
-ability :: Attrs -> Ability
+ability :: LocationAttrs -> Ability
 ability attrs =
   (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
     { abilityLimit = PlayerLimit PerGame 1
     }
 
 instance ActionRunner env => HasActions env DowntownFirstBankOfArkham where
-  getActions iid NonFast (DowntownFirstBankOfArkham attrs@Attrs {..})
+  getActions iid NonFast (DowntownFirstBankOfArkham attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ do
       canGainResources <-
         notElem CannotGainResources

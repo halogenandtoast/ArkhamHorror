@@ -7,7 +7,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 
-newtype FarAboveYourHouse = FarAboveYourHouse Attrs
+newtype FarAboveYourHouse = FarAboveYourHouse LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 farAboveYourHouse :: FarAboveYourHouse

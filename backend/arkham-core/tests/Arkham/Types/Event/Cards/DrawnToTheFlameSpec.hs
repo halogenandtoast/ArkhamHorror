@@ -5,7 +5,7 @@ module Arkham.Types.Event.Cards.DrawnToTheFlameSpec
 import TestImport
 
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
-import Arkham.Types.Location.Attrs (Attrs(..))
+import Arkham.Types.Location.Attrs (LocationAttrs(..))
 import Arkham.Types.Trait
 
 spec :: Spec

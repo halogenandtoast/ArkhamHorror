@@ -12,7 +12,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype TrappersCabin = TrappersCabin Attrs
+newtype TrappersCabin = TrappersCabin LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 trappersCabin :: TrappersCabin
@@ -34,7 +34,7 @@ instance HasModifiersFor env TrappersCabin where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env TrappersCabin where
-  getActions iid NonFast (TrappersCabin attrs@Attrs {..}) | locationRevealed =
+  getActions iid NonFast (TrappersCabin attrs@LocationAttrs {..}) | locationRevealed =
     withBaseActions iid NonFast attrs $ do
       assetNotTaken <- isNothing
         <$> getId @(Maybe StoryAssetId) (CardCode "81020")

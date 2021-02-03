@@ -11,7 +11,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait hiding (Cultist)
 
-newtype DarkenedHall = DarkenedHall Attrs
+newtype DarkenedHall = DarkenedHall LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 darkenedHall :: DarkenedHall
@@ -37,7 +37,7 @@ instance ActionRunner env => HasActions env DarkenedHall where
   getActions iid window (DarkenedHall attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env DarkenedHall where
-  runMessage msg (DarkenedHall attrs@Attrs {..}) = case msg of
+  runMessage msg (DarkenedHall attrs@LocationAttrs {..}) = case msg of
     RevealLocation _ lid | lid == locationId -> do
       locations <- shuffleM ["02075", "02076", "02077"]
       unshiftMessages $ concat

@@ -7,7 +7,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype RitualGrounds = RitualGrounds Attrs
+newtype RitualGrounds = RitualGrounds LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 ritualGrounds :: RitualGrounds
@@ -30,7 +30,7 @@ instance ActionRunner env => HasActions env RitualGrounds where
   getActions i window (RitualGrounds attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env RitualGrounds where
-  runMessage msg l@(RitualGrounds attrs@Attrs {..}) = case msg of
+  runMessage msg l@(RitualGrounds attrs@LocationAttrs {..}) = case msg of
     EndTurn iid | iid `elem` locationInvestigators -> l <$ unshiftMessages
       [DrawCards iid 1 False, InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1]
     _ -> RitualGrounds <$> runMessage msg attrs

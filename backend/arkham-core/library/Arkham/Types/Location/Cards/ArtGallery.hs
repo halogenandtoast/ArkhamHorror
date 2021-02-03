@@ -11,7 +11,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait hiding (Cultist)
 
-newtype ArtGallery = ArtGallery Attrs
+newtype ArtGallery = ArtGallery LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 artGallery :: ArtGallery
@@ -35,7 +35,7 @@ instance ActionRunner env => HasActions env ArtGallery where
   getActions iid window (ArtGallery attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env ArtGallery where
-  runMessage msg l@(ArtGallery attrs@Attrs {..}) = case msg of
+  runMessage msg l@(ArtGallery attrs@LocationAttrs {..}) = case msg of
     After (FailedSkillTest iid (Just Action.Investigate) _ (SkillTestInitiatorTarget _) _ _)
       -> l <$ unshiftMessage (SpendResources iid 2)
     _ -> ArtGallery <$> runMessage msg attrs

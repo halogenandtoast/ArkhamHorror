@@ -13,7 +13,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Phase
 import Arkham.Types.Trait hiding (Cultist)
 
-newtype VipArea = VipArea Attrs
+newtype VipArea = VipArea LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 vipArea :: VipArea
@@ -43,4 +43,4 @@ instance ActionRunner env => HasActions env VipArea where
   getActions iid window (VipArea attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env VipArea where
-  runMessage msg (VipArea attrs@Attrs {..}) = VipArea <$> runMessage msg attrs
+  runMessage msg (VipArea attrs@LocationAttrs {..}) = VipArea <$> runMessage msg attrs

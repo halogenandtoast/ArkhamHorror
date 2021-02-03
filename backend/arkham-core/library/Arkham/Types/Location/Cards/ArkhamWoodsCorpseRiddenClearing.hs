@@ -8,7 +8,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype ArkhamWoodsCorpseRiddenClearing = ArkhamWoodsCorpseRiddenClearing Attrs
+newtype ArkhamWoodsCorpseRiddenClearing = ArkhamWoodsCorpseRiddenClearing LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 arkhamWoodsCorpseRiddenClearing :: ArkhamWoodsCorpseRiddenClearing

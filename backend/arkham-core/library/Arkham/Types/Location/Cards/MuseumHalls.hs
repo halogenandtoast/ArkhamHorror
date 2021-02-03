@@ -11,7 +11,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype MuseumHalls = MuseumHalls Attrs
+newtype MuseumHalls = MuseumHalls LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 museumHalls :: MuseumHalls

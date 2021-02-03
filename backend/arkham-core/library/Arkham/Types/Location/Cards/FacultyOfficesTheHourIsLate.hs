@@ -8,7 +8,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype FacultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate Attrs
+newtype FacultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 facultyOfficesTheHourIsLate :: FacultyOfficesTheHourIsLate

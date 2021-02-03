@@ -13,7 +13,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
 
-newtype FoulSwamp = FoulSwamp Attrs
+newtype FoulSwamp = FoulSwamp LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 foulSwamp :: FoulSwamp
@@ -33,7 +33,7 @@ instance HasModifiersFor env FoulSwamp where
     $ toModifiers attrs [CannotHealHorror, CannotCancelHorror]
   getModifiersFor _ _ _ = pure []
 
-ability :: InvestigatorId -> Attrs -> Ability
+ability :: InvestigatorId -> LocationAttrs -> Ability
 ability iid attrs = base { abilityMetadata = Just (IntMetadata 0) }
  where
   base = mkAbility
@@ -46,7 +46,7 @@ ability iid attrs = base { abilityMetadata = Just (IntMetadata 0) }
     )
 
 instance ActionRunner env => HasActions env FoulSwamp where
-  getActions iid NonFast (FoulSwamp attrs@Attrs {..}) | locationRevealed =
+  getActions iid NonFast (FoulSwamp attrs@LocationAttrs {..}) | locationRevealed =
     withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction iid (ability iid attrs)
       | iid `member` locationInvestigators

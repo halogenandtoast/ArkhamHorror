@@ -12,7 +12,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype ParlorCar = ParlorCar Attrs
+newtype ParlorCar = ParlorCar LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 parlorCar :: ParlorCar
@@ -32,7 +32,7 @@ parlorCar = ParlorCar $ base
     (singleton Train)
 
 instance HasCount ClueCount env LocationId => HasModifiersFor env ParlorCar where
-  getModifiersFor _ target (ParlorCar location@Attrs {..})
+  getModifiersFor _ target (ParlorCar location@LocationAttrs {..})
     | isTarget location target = case lookup LeftOf locationDirections of
       Just leftLocation -> do
         clueCount <- unClueCount <$> getCount leftLocation
@@ -44,7 +44,7 @@ instance HasCount ClueCount env LocationId => HasModifiersFor env ParlorCar wher
       Nothing -> pure $ toModifiers location [CannotInvestigate]
   getModifiersFor _ _ _ = pure []
 
-ability :: Attrs -> Ability
+ability :: LocationAttrs -> Ability
 ability attrs = mkAbility
   (toSource attrs)
   1
@@ -57,7 +57,7 @@ instance ActionRunner env => HasActions env ParlorCar where
   getActions iid window (ParlorCar attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env ParlorCar where
-  runMessage msg l@(ParlorCar attrs@Attrs {..}) = case msg of
+  runMessage msg l@(ParlorCar attrs@LocationAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ unshiftMessage (DiscoverCluesAtLocation iid locationId 1)
     _ -> ParlorCar <$> runMessage msg attrs

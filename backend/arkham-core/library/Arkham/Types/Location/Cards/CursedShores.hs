@@ -12,7 +12,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype CursedShores = CursedShores Attrs
+newtype CursedShores = CursedShores LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 cursedShores :: CursedShores
@@ -30,7 +30,7 @@ instance HasModifiersFor env CursedShores where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env CursedShores where
-  getActions iid NonFast (CursedShores attrs@Attrs {..}) | locationRevealed =
+  getActions iid NonFast (CursedShores attrs@LocationAttrs {..}) | locationRevealed =
     withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction
           iid
@@ -40,7 +40,7 @@ instance ActionRunner env => HasActions env CursedShores where
   getActions i window (CursedShores attrs) = getActions i window attrs
 
 instance LocationRunner env => RunMessage env CursedShores where
-  runMessage msg l@(CursedShores attrs@Attrs {..}) = case msg of
+  runMessage msg l@(CursedShores attrs@LocationAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ unshiftMessages
       [ InvestigatorAssignDamage iid source DamageAny 1 0

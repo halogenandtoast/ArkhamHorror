@@ -12,7 +12,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype DowntownArkhamAsylum = DowntownArkhamAsylum Attrs
+newtype DowntownArkhamAsylum = DowntownArkhamAsylum LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 downtownArkhamAsylum :: DowntownArkhamAsylum
@@ -31,14 +31,14 @@ downtownArkhamAsylum = DowntownArkhamAsylum $ base { locationVictory = Just 1 }
 instance HasModifiersFor env DowntownArkhamAsylum where
   getModifiersFor = noModifiersFor
 
-ability :: Attrs -> Ability
+ability :: LocationAttrs -> Ability
 ability attrs =
   (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
     { abilityLimit = PlayerLimit PerGame 1
     }
 
 instance ActionRunner env => HasActions env DowntownArkhamAsylum where
-  getActions iid NonFast (DowntownArkhamAsylum attrs@Attrs {..})
+  getActions iid NonFast (DowntownArkhamAsylum attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction iid (ability attrs)
       | iid `elem` locationInvestigators

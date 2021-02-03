@@ -12,7 +12,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype StudentUnion = StudentUnion Attrs
+newtype StudentUnion = StudentUnion LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 studentUnion :: StudentUnion
@@ -30,7 +30,7 @@ instance HasModifiersFor env StudentUnion where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env StudentUnion where
-  getActions iid NonFast (StudentUnion attrs@Attrs {..}) | locationRevealed =
+  getActions iid NonFast (StudentUnion attrs@LocationAttrs {..}) | locationRevealed =
     withBaseActions iid NonFast attrs $ do
       let
         ability =

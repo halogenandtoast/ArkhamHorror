@@ -8,7 +8,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype ArkhamWoodsGreatWillow = ArkhamWoodsGreatWillow Attrs
+newtype ArkhamWoodsGreatWillow = ArkhamWoodsGreatWillow LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 arkhamWoodsGreatWillow :: ArkhamWoodsGreatWillow
@@ -36,7 +36,7 @@ instance ActionRunner env => HasActions env ArkhamWoodsGreatWillow where
 
 -- | Unused here is on a forced ability
 instance LocationRunner env => RunMessage env ArkhamWoodsGreatWillow where
-  runMessage msg l@(ArkhamWoodsGreatWillow attrs@Attrs {..}) = case msg of
+  runMessage msg l@(ArkhamWoodsGreatWillow attrs@LocationAttrs {..}) = case msg of
     PassedSkillTest iid _ source@(TreacherySource _) _ _ _
       | iid `elem` locationInvestigators -> do
         let

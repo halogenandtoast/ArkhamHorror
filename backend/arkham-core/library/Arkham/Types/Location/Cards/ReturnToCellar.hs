@@ -6,7 +6,7 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 
-newtype ReturnToCellar = ReturnToCellar Attrs
+newtype ReturnToCellar = ReturnToCellar LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 returnToCellar :: ReturnToCellar

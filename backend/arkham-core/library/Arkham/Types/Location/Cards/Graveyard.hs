@@ -7,7 +7,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype Graveyard = Graveyard Attrs
+newtype Graveyard = Graveyard LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 graveyard :: Graveyard
@@ -30,7 +30,7 @@ instance ActionRunner env => HasActions env Graveyard where
   getActions i window (Graveyard attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env Graveyard where
-  runMessage msg l@(Graveyard attrs@Attrs {..}) = case msg of
+  runMessage msg l@(Graveyard attrs@LocationAttrs {..}) = case msg of
     AfterEnterLocation iid lid | lid == locationId -> do
       unshiftMessage
         (BeginSkillTest

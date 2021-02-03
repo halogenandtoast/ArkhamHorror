@@ -7,7 +7,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype ArkhamWoodsCliffside = ArkhamWoodsCliffside Attrs
+newtype ArkhamWoodsCliffside = ArkhamWoodsCliffside LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 arkhamWoodsCliffside :: ArkhamWoodsCliffside
@@ -33,7 +33,7 @@ instance ActionRunner env => HasActions env ArkhamWoodsCliffside where
   getActions i window (ArkhamWoodsCliffside attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsCliffside where
-  runMessage msg (ArkhamWoodsCliffside attrs@Attrs {..}) = case msg of
+  runMessage msg (ArkhamWoodsCliffside attrs@LocationAttrs {..}) = case msg of
     Investigate iid lid s _ False | lid == locationId -> do
       let investigate = Investigate iid lid s SkillAgility False
       ArkhamWoodsCliffside <$> runMessage investigate attrs

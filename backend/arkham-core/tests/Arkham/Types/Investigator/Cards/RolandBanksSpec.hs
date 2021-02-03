@@ -6,7 +6,7 @@ where
 import TestImport
 
 import Arkham.Types.Enemy.Attrs (EnemyAttrs(..))
-import Arkham.Types.Location.Attrs (Attrs(..))
+import Arkham.Types.Location.Attrs (LocationAttrs(..))
 
 spec :: Spec
 spec = describe "Roland Banks" $ do

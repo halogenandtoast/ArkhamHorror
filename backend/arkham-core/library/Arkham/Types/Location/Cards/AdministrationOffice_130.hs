@@ -11,7 +11,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype AdministrationOffice_130 = AdministrationOffice_130 Attrs
+newtype AdministrationOffice_130 = AdministrationOffice_130 LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 administrationOffice_130 :: AdministrationOffice_130

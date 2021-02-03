@@ -9,7 +9,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Trait
 
-data Attrs = Attrs
+data LocationAttrs = LocationAttrs
   { locationName :: LocationName
   , locationLabel :: Text
   , locationId :: LocationId
@@ -37,54 +37,56 @@ data Attrs = Attrs
   }
   deriving stock (Show, Generic)
 
-makeLensesWith suffixedFields ''Attrs
+makeLensesWith suffixedFields ''LocationAttrs
 
-instance ToJSON Attrs where
+instance ToJSON LocationAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "location"
   toEncoding = genericToEncoding $ aesonOptions $ Just "location"
 
-instance FromJSON Attrs where
+instance FromJSON LocationAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "location"
 
-instance Entity Attrs where
-  type EntityId Attrs = LocationId
-  type EntityAttrs Attrs = Attrs
+instance Entity LocationAttrs where
+  type EntityId LocationAttrs = LocationId
+  type EntityAttrs LocationAttrs = LocationAttrs
   toId = locationId
   toAttrs = id
 
-instance NamedEntity Attrs where
+instance NamedEntity LocationAttrs where
   toName = unLocationName . locationName
 
-instance TargetEntity Attrs where
+instance TargetEntity LocationAttrs where
   toTarget = LocationTarget . toId
-  isTarget Attrs { locationId } (LocationTarget lid) = locationId == lid
+  isTarget LocationAttrs { locationId } (LocationTarget lid) =
+    locationId == lid
   isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
   isTarget _ _ = False
 
-instance SourceEntity Attrs where
+instance SourceEntity LocationAttrs where
   toSource = LocationSource . toId
-  isSource Attrs { locationId } (LocationSource lid) = locationId == lid
+  isSource LocationAttrs { locationId } (LocationSource lid) =
+    locationId == lid
   isSource _ _ = False
 
-instance IsCard Attrs where
+instance IsCard LocationAttrs where
   getCardId = error "locations are not treated like cards"
   getCardCode = unLocationId . locationId
   getTraits = locationTraits
   getKeywords = mempty
 
-instance HasName env Attrs where
+instance HasName env LocationAttrs where
   getName = pure . unLocationName . locationName
 
-instance HasId (Maybe LocationId) env (Direction, Attrs) where
-  getId (dir, Attrs {..}) = pure $ lookup dir locationDirections
+instance HasId (Maybe LocationId) env (Direction, LocationAttrs) where
+  getId (dir, LocationAttrs {..}) = pure $ lookup dir locationDirections
 
-instance HasList UnderneathCard env Attrs where
+instance HasList UnderneathCard env LocationAttrs where
   getList = pure . map UnderneathCard . locationCardsUnderneath
 
-unrevealed :: Attrs -> Bool
+unrevealed :: LocationAttrs -> Bool
 unrevealed = not . locationRevealed
 
-revealed :: Attrs -> Bool
+revealed :: LocationAttrs -> Bool
 revealed = locationRevealed
 
 baseAttrs
@@ -96,9 +98,9 @@ baseAttrs
   -> LocationSymbol
   -> [LocationSymbol]
   -> [Trait]
-  -> Attrs
+  -> LocationAttrs
 baseAttrs lid name encounterSet shroud' revealClues symbol' connectedSymbols' traits'
-  = Attrs
+  = LocationAttrs
     { locationName = LocationName name
     , locationLabel = nameToLabel name
     , locationId = lid
@@ -126,7 +128,7 @@ baseAttrs lid name encounterSet shroud' revealClues symbol' connectedSymbols' tr
     }
 
 getModifiedShroudValueFor
-  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Int
+  :: (MonadReader env m, HasModifiersFor env ()) => LocationAttrs -> m Int
 getModifiedShroudValueFor attrs = do
   modifiers' <-
     map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
@@ -138,7 +140,7 @@ getModifiedShroudValueFor attrs = do
 getInvestigateAllowed
   :: (MonadReader env m, HasModifiersFor env ())
   => InvestigatorId
-  -> Attrs
+  -> LocationAttrs
   -> m Bool
 getInvestigateAllowed iid attrs = do
   modifiers1' <-
@@ -162,8 +164,8 @@ canEnterLocation eid lid = do
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits'
     _ -> False
 
-instance ActionRunner env => HasActions env Attrs where
-  getActions iid NonFast location@Attrs {..} = do
+instance ActionRunner env => HasActions env LocationAttrs where
+  getActions iid NonFast location@LocationAttrs {..} = do
     canMoveTo <- getCanMoveTo locationId iid
     canInvestigate <- getCanInvestigate locationId iid
     investigateAllowed <- getInvestigateAllowed iid location
@@ -179,7 +181,7 @@ instance ActionRunner env => HasActions env Attrs where
   getActions _ _ _ = pure []
 
 getShouldSpawnNonEliteAtConnectingInstead
-  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Bool
+  :: (MonadReader env m, HasModifiersFor env ()) => LocationAttrs -> m Bool
 getShouldSpawnNonEliteAtConnectingInstead attrs = do
   modifiers' <-
     map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
@@ -187,11 +189,12 @@ getShouldSpawnNonEliteAtConnectingInstead attrs = do
     SpawnNonEliteAtConnectingInstead{} -> True
     _ -> False
 
-on :: InvestigatorId -> Attrs -> Bool
-on iid Attrs { locationInvestigators } = iid `member` locationInvestigators
+on :: InvestigatorId -> LocationAttrs -> Bool
+on iid LocationAttrs { locationInvestigators } =
+  iid `member` locationInvestigators
 
-instance LocationRunner env => RunMessage env Attrs where
-  runMessage msg a@Attrs {..} = case msg of
+instance LocationRunner env => RunMessage env LocationAttrs where
+  runMessage msg a@LocationAttrs {..} = case msg of
     Investigate iid lid source skillType False | lid == locationId -> do
       allowed <- getInvestigateAllowed iid a
       if allowed

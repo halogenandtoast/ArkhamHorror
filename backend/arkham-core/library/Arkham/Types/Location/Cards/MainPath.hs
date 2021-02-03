@@ -13,7 +13,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype MainPath = MainPath Attrs
+newtype MainPath = MainPath LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 mainPath :: MainPath
@@ -31,7 +31,7 @@ instance HasModifiersFor env MainPath where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env MainPath where
-  getActions iid NonFast (MainPath attrs@Attrs {..}) | locationRevealed =
+  getActions iid NonFast (MainPath attrs@LocationAttrs {..}) | locationRevealed =
     withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction
           iid
@@ -45,7 +45,7 @@ instance ActionRunner env => HasActions env MainPath where
   getActions i window (MainPath attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env MainPath where
-  runMessage msg l@(MainPath attrs@Attrs {..}) = case msg of
+  runMessage msg l@(MainPath attrs@LocationAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ unshiftMessage (Resign iid)
     AddConnection lid _ | locationId /= lid -> do

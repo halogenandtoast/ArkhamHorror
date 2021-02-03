@@ -12,7 +12,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype OvergrownCairns = OvergrownCairns Attrs
+newtype OvergrownCairns = OvergrownCairns LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 overgrownCairns :: OvergrownCairns
@@ -29,7 +29,7 @@ overgrownCairns = OvergrownCairns $ baseAttrs
 instance HasModifiersFor env OvergrownCairns where
   getModifiersFor = noModifiersFor
 
-ability :: Attrs -> Ability
+ability :: LocationAttrs -> Ability
 ability attrs = base { abilityLimit = PlayerLimit PerGame 1 }
  where
   base = mkAbility
@@ -38,7 +38,7 @@ ability attrs = base { abilityLimit = PlayerLimit PerGame 1 }
     (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
 
 instance ActionRunner env => HasActions env OvergrownCairns where
-  getActions iid NonFast (OvergrownCairns attrs@Attrs {..}) | locationRevealed =
+  getActions iid NonFast (OvergrownCairns attrs@LocationAttrs {..}) | locationRevealed =
     withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction iid (ability attrs)
       | iid `member` locationInvestigators

@@ -7,7 +7,7 @@ import TestImport
 
 import qualified Arkham.Types.Enemy.Attrs as Enemy
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
-import Arkham.Types.Location.Attrs (Attrs(..))
+import Arkham.Types.Location.Attrs (LocationAttrs(..))
 
 spec :: Spec
 spec = describe "Duke" $ do

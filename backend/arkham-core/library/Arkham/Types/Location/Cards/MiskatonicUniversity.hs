@@ -12,7 +12,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype MiskatonicUniversity = MiskatonicUniversity Attrs
+newtype MiskatonicUniversity = MiskatonicUniversity LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 miskatonicUniversity :: MiskatonicUniversity
@@ -32,7 +32,7 @@ instance HasModifiersFor env MiskatonicUniversity where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env MiskatonicUniversity where
-  getActions iid NonFast (MiskatonicUniversity attrs@Attrs {..})
+  getActions iid NonFast (MiskatonicUniversity attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction
           iid
@@ -43,7 +43,7 @@ instance ActionRunner env => HasActions env MiskatonicUniversity where
     getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env MiskatonicUniversity where
-  runMessage msg l@(MiskatonicUniversity attrs@Attrs {..}) = case msg of
+  runMessage msg l@(MiskatonicUniversity attrs@LocationAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ unshiftMessage
       (SearchTopOfDeck
         iid

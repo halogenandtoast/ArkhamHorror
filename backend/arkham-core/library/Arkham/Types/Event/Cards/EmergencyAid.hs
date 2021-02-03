@@ -8,7 +8,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Trait
 
-newtype EmergencyAid = EmergencyAid Attrs
+newtype EmergencyAid = EmergencyAid EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 emergencyAid :: InvestigatorId -> EventId -> EmergencyAid
@@ -27,7 +27,7 @@ instance
   , HasSet AssetId env (InvestigatorId, [Trait])
   )
   => RunMessage env EmergencyAid where
-  runMessage msg e@(EmergencyAid attrs@Attrs {..}) = case msg of
+  runMessage msg e@(EmergencyAid attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       locationId <- getId @LocationId iid
       investigatorIds <- getSetList locationId

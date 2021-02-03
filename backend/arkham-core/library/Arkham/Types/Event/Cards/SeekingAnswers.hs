@@ -8,7 +8,7 @@ import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 
-newtype SeekingAnswers = SeekingAnswers Attrs
+newtype SeekingAnswers = SeekingAnswers EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 seekingAnswers :: InvestigatorId -> EventId -> SeekingAnswers
@@ -21,7 +21,7 @@ instance HasModifiersFor env SeekingAnswers where
   getModifiersFor = noModifiersFor
 
 instance (HasQueue env, HasId LocationId env InvestigatorId) => RunMessage env SeekingAnswers where
-  runMessage msg e@(SeekingAnswers attrs@Attrs {..}) = case msg of
+  runMessage msg e@(SeekingAnswers attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       lid <- getId @LocationId iid
       e <$ unshiftMessages

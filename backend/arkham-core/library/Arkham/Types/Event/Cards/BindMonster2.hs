@@ -8,19 +8,19 @@ import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 
-newtype BindMonster2 = BindMonster2 Attrs
+newtype BindMonster2 = BindMonster2 EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 bindMonster2 :: InvestigatorId -> EventId -> BindMonster2
 bindMonster2 iid uuid = BindMonster2 $ baseAttrs iid uuid "02031"
 
-ability :: Target -> Attrs -> Ability
+ability :: Target -> EventAttrs -> Ability
 ability target attrs = (mkAbility (toSource attrs) 1 (ReactionAbility Free))
   { abilityMetadata = Just (TargetMetadata target)
   }
 
 instance HasActions env BindMonster2 where
-  getActions iid (WhenWouldReady target) (BindMonster2 attrs@Attrs {..})
+  getActions iid (WhenWouldReady target) (BindMonster2 attrs@EventAttrs {..})
     | iid == eventOwner = pure
       [ ActivateCardAbilityAction eventOwner (ability target attrs)
       | target `elem` eventAttachedTarget
@@ -31,7 +31,7 @@ instance HasModifiersFor env BindMonster2 where
   getModifiersFor = noModifiersFor
 
 instance HasQueue env => RunMessage env BindMonster2 where
-  runMessage msg e@(BindMonster2 attrs@Attrs {..}) = case msg of
+  runMessage msg e@(BindMonster2 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ unshiftMessages
       [ CreateEffect "02031" Nothing (toSource attrs) SkillTestTarget
       , ChooseEvadeEnemy iid (EventSource eid) SkillWillpower False

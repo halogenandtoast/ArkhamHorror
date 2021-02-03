@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
-newtype MindOverMatter = MindOverMatter Attrs
+newtype MindOverMatter = MindOverMatter EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 mindOverMatter :: InvestigatorId -> EventId -> MindOverMatter
@@ -18,7 +18,7 @@ instance HasActions env MindOverMatter where
   getActions i window (MindOverMatter attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env MindOverMatter where
-  runMessage msg e@(MindOverMatter attrs@Attrs {..}) = case msg of
+  runMessage msg e@(MindOverMatter attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       e <$ unshiftMessages
         [ CreateEffect "01036" Nothing (toSource attrs) (InvestigatorTarget iid)

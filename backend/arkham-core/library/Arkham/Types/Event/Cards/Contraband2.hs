@@ -8,7 +8,7 @@ import Arkham.Import
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Event.Attrs
 
-newtype Contraband2 = Contraband2 Attrs
+newtype Contraband2 = Contraband2 EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 contraband2 :: InvestigatorId -> EventId -> Contraband2
@@ -28,7 +28,7 @@ instance
   , HasCount UsesCount env AssetId
   )
   => RunMessage env Contraband2 where
-  runMessage msg e@(Contraband2 attrs@Attrs {..}) = case msg of
+  runMessage msg e@(Contraband2 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       locationId <- getId @LocationId iid
       investigatorIds <- getSetList @InvestigatorId locationId

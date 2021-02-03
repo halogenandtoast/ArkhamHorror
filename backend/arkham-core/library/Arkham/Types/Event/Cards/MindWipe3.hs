@@ -6,7 +6,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 import Arkham.Types.Trait
 
-newtype MindWipe3 = MindWipe3 Attrs
+newtype MindWipe3 = MindWipe3 EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 mindWipe3 :: InvestigatorId -> EventId -> MindWipe3
@@ -19,7 +19,7 @@ instance HasActions env MindWipe3 where
   getActions i window (MindWipe3 attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env MindWipe3 where
-  runMessage msg e@(MindWipe3 attrs@Attrs {..}) = case msg of
+  runMessage msg e@(MindWipe3 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       locationId <- getId @LocationId iid
       enemyIds <- getSetList locationId

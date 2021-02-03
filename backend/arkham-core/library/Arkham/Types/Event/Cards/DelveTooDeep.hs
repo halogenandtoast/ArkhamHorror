@@ -7,7 +7,7 @@ import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 
-newtype DelveTooDeep = DelveTooDeep Attrs
+newtype DelveTooDeep = DelveTooDeep EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 delveTooDeep :: InvestigatorId -> EventId -> DelveTooDeep
@@ -20,7 +20,7 @@ instance HasModifiersFor env DelveTooDeep where
   getModifiersFor = noModifiersFor
 
 instance HasQueue env => RunMessage env DelveTooDeep where
-  runMessage msg e@(DelveTooDeep attrs@Attrs {..}) = case msg of
+  runMessage msg e@(DelveTooDeep attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent _ eid _ | eid == eventId -> do
       e <$ unshiftMessages [AllDrawEncounterCard, AddToVictory (toTarget attrs)]
     _ -> DelveTooDeep <$> runMessage msg attrs

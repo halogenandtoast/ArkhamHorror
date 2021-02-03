@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
-newtype BlindingLight = BlindingLight Attrs
+newtype BlindingLight = BlindingLight EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 blindingLight :: InvestigatorId -> EventId -> BlindingLight
@@ -18,7 +18,7 @@ instance HasActions env BlindingLight where
   getActions i window (BlindingLight attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env BlindingLight where
-  runMessage msg e@(BlindingLight attrs@Attrs {..}) = case msg of
+  runMessage msg e@(BlindingLight attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ unshiftMessages
       [ CreateEffect "01066" Nothing (toSource attrs) (InvestigatorTarget iid)
       , CreateEffect "01066" Nothing (toSource attrs) SkillTestTarget

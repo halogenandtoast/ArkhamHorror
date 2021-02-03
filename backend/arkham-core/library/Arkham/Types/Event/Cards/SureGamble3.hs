@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
-newtype SureGamble3 = SureGamble3 Attrs
+newtype SureGamble3 = SureGamble3 EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 sureGamble3 :: InvestigatorId -> EventId -> SureGamble3
@@ -18,7 +18,7 @@ instance HasActions env SureGamble3 where
   getActions i window (SureGamble3 attrs) = getActions i window attrs
 
 instance EventRunner env => RunMessage env SureGamble3 where
-  runMessage msg e@(SureGamble3 attrs@Attrs {..}) = case msg of
+  runMessage msg e@(SureGamble3 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent _ eid (Just target@(TokenTarget _))
       | eid == eventId -> e <$ unshiftMessages
         [ CreateEffect "01088" Nothing (toSource attrs) target

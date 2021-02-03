@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
-newtype HotStreak4 = HotStreak4 Attrs
+newtype HotStreak4 = HotStreak4 EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 hotStreak4 :: InvestigatorId -> EventId -> HotStreak4
@@ -18,7 +18,7 @@ instance HasActions env HotStreak4 where
   getActions i window (HotStreak4 attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env HotStreak4 where
-  runMessage msg e@(HotStreak4 attrs@Attrs {..}) = case msg of
+  runMessage msg e@(HotStreak4 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId ->
       e <$ unshiftMessages
         [TakeResources iid 10 False, Discard (EventTarget eid)]

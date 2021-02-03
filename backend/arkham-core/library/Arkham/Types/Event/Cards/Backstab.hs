@@ -6,7 +6,7 @@ import Arkham.Types.Action
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Helpers
 
-newtype Backstab = Backstab Attrs
+newtype Backstab = Backstab EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 backstab :: InvestigatorId -> EventId -> Backstab
@@ -21,7 +21,7 @@ instance HasActions env Backstab where
   getActions i window (Backstab attrs) = getActions i window attrs
 
 instance (HasQueue env) => RunMessage env Backstab where
-  runMessage msg e@(Backstab attrs@Attrs {..}) = case msg of
+  runMessage msg e@(Backstab attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       e <$ unshiftMessages
         [ ChooseFightEnemy iid (EventSource eid) SkillAgility False

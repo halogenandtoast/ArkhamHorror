@@ -8,7 +8,7 @@ import Arkham.Types.Event.Runner
 import Arkham.Types.Trait
 import Control.Monad.Extra hiding (filterM)
 
-newtype ExtraAmmunition1 = ExtraAmmunition1 Attrs
+newtype ExtraAmmunition1 = ExtraAmmunition1 EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 extraAmmunition1 :: InvestigatorId -> EventId -> ExtraAmmunition1
@@ -21,7 +21,7 @@ instance HasActions env ExtraAmmunition1 where
   getActions i window (ExtraAmmunition1 attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env ExtraAmmunition1 where
-  runMessage msg e@(ExtraAmmunition1 attrs@Attrs {..}) = case msg of
+  runMessage msg e@(ExtraAmmunition1 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       investigatorIds <- getSetList @InvestigatorId =<< getId @LocationId iid
       assetIds <- concatForM investigatorIds getSetList

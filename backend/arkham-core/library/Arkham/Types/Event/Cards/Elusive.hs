@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
-newtype Elusive = Elusive Attrs
+newtype Elusive = Elusive EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 elusive :: InvestigatorId -> EventId -> Elusive
@@ -18,7 +18,7 @@ instance HasActions env Elusive where
   getActions i window (Elusive attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env Elusive where
-  runMessage msg e@(Elusive attrs@Attrs {..}) = case msg of
+  runMessage msg e@(Elusive attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       enemyIds <- getSetList iid
       emptyLocations <- mapSet unEmptyLocationId <$> getSet ()

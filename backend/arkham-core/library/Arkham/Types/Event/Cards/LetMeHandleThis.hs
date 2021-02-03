@@ -8,7 +8,7 @@ import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 
-newtype LetMeHandleThis = LetMeHandleThis Attrs
+newtype LetMeHandleThis = LetMeHandleThis EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 letMeHandleThis :: InvestigatorId -> EventId -> LetMeHandleThis
@@ -21,7 +21,7 @@ instance HasActions env LetMeHandleThis where
   getActions iid window (LetMeHandleThis attrs) = getActions iid window attrs
 
 instance HasQueue env => RunMessage env LetMeHandleThis where
-  runMessage msg e@(LetMeHandleThis attrs@Attrs {..}) = case msg of
+  runMessage msg e@(LetMeHandleThis attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid (Just (TreacheryTarget tid))
       | eid == eventId -> do
         withQueue $ \queue ->

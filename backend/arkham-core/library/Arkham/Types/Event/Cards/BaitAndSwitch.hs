@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
-newtype BaitAndSwitch = BaitAndSwitch Attrs
+newtype BaitAndSwitch = BaitAndSwitch EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 baitAndSwitch :: InvestigatorId -> EventId -> BaitAndSwitch
@@ -18,7 +18,7 @@ instance HasActions env BaitAndSwitch where
   getActions i window (BaitAndSwitch attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env BaitAndSwitch where
-  runMessage msg e@(BaitAndSwitch attrs@Attrs {..}) = case msg of
+  runMessage msg e@(BaitAndSwitch attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ unshiftMessages
       [ ChooseEvadeEnemy iid (EventSource eid) SkillAgility False
       , Discard (EventTarget eid)

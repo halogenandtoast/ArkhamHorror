@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Trait
 
-newtype Teamwork = Teamwork Attrs
+newtype Teamwork = Teamwork EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 teamwork :: InvestigatorId -> EventId -> Teamwork
@@ -36,7 +36,7 @@ instance
   , HasId LocationId env InvestigatorId
   )
   => RunMessage env Teamwork where
-  runMessage msg e@(Teamwork attrs@Attrs {..}) = case msg of
+  runMessage msg e@(Teamwork attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid mtarget | eid == eventId ->
       e <$ unshiftMessage (ResolveEvent iid eid mtarget)
     ResolveEvent iid eid mtarget | eid == eventId -> do

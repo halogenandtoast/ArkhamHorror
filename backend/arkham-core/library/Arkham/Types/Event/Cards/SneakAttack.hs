@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
-newtype SneakAttack = SneakAttack Attrs
+newtype SneakAttack = SneakAttack EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 sneakAttack :: InvestigatorId -> EventId -> SneakAttack
@@ -18,7 +18,7 @@ instance HasActions env SneakAttack where
   getActions i window (SneakAttack attrs) = getActions i window attrs
 
 instance EventRunner env => RunMessage env SneakAttack where
-  runMessage msg e@(SneakAttack attrs@Attrs {..}) = case msg of
+  runMessage msg e@(SneakAttack attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       lid <- getId @LocationId iid
       enemyIds <- map unExhaustedEnemyId <$> getSetList lid

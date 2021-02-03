@@ -8,7 +8,7 @@ import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 
-newtype SecondWind = SecondWind Attrs
+newtype SecondWind = SecondWind EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 secondWind :: InvestigatorId -> EventId -> SecondWind
@@ -21,7 +21,7 @@ instance HasModifiersFor env SecondWind where
   getModifiersFor = noModifiersFor
 
 instance (HasQueue env, HasRoundHistory env) => RunMessage env SecondWind where
-  runMessage msg e@(SecondWind attrs@Attrs {..}) = case msg of
+  runMessage msg e@(SecondWind attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       roundHistory <- getRoundHistory =<< ask
       let

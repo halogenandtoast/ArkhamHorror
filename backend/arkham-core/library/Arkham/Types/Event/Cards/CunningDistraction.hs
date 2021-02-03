@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
-newtype CunningDistraction = CunningDistraction Attrs
+newtype CunningDistraction = CunningDistraction EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 cunningDistraction :: InvestigatorId -> EventId -> CunningDistraction
@@ -18,7 +18,7 @@ instance HasActions env CunningDistraction where
   getActions i window (CunningDistraction attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env CunningDistraction where
-  runMessage msg e@(CunningDistraction attrs@Attrs {..}) = case msg of
+  runMessage msg e@(CunningDistraction attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       locationId <- getId @LocationId iid
       enemyIds <- getSetList locationId

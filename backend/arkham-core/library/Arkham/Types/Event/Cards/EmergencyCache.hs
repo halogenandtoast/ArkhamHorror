@@ -4,7 +4,7 @@ import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 
-newtype EmergencyCache = EmergencyCache Attrs
+newtype EmergencyCache = EmergencyCache EventAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 emergencyCache :: InvestigatorId -> EventId -> EmergencyCache
@@ -17,7 +17,7 @@ instance HasActions env EmergencyCache where
   getActions i window (EmergencyCache attrs) = getActions i window attrs
 
 instance HasQueue env => RunMessage env EmergencyCache where
-  runMessage msg e@(EmergencyCache attrs@Attrs {..}) = case msg of
+  runMessage msg e@(EmergencyCache attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId ->
       e <$ unshiftMessages
         [TakeResources iid 3 False, Discard (EventTarget eid)]

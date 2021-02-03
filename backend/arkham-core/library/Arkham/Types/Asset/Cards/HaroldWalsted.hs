@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Trait
 
-newtype HaroldWalsted = HaroldWalsted Attrs
+newtype HaroldWalsted = HaroldWalsted AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 haroldWalsted :: AssetId -> HaroldWalsted

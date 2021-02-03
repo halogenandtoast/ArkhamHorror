@@ -6,7 +6,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
-newtype ResearchLibrarian = ResearchLibrarian Attrs
+newtype ResearchLibrarian = ResearchLibrarian AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 researchLibrarian :: AssetId -> ResearchLibrarian

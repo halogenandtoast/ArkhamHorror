@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype Duke = Duke Attrs
+newtype Duke = Duke AssetAttrs
   deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 duke :: AssetId -> Duke
@@ -26,7 +26,7 @@ instance HasModifiersFor env Duke where
     = pure $ toModifiers a [BaseSkillOf SkillIntellect 4]
   getModifiersFor _ _ _ = pure []
 
-fightAbility :: Attrs -> Ability
+fightAbility :: AssetAttrs -> Ability
 fightAbility attrs = mkAbility
   (toSource attrs)
   1
@@ -35,7 +35,7 @@ fightAbility attrs = mkAbility
     (Costs [ActionCost 1, ExhaustCost (toTarget attrs)])
   )
 
-investigateAbility :: Attrs -> Ability
+investigateAbility :: AssetAttrs -> Ability
 investigateAbility attrs = mkAbility
   (toSource attrs)
   2
@@ -55,12 +55,12 @@ instance ActionRunner env => HasActions env Duke where
          ]
   getActions i window (Duke x) = getActions i window x
 
-dukeInvestigate :: Attrs -> InvestigatorId -> LocationId -> Message
+dukeInvestigate :: AssetAttrs -> InvestigatorId -> LocationId -> Message
 dukeInvestigate attrs iid lid =
   Investigate iid lid (toSource attrs) SkillIntellect False
 
 instance AssetRunner env => RunMessage env Duke where
-  runMessage msg a@(Duke attrs@Attrs {..}) = case msg of
+  runMessage msg a@(Duke attrs@AssetAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ unshiftMessage (ChooseFightEnemy iid source SkillCombat False)
     UseCardAbility iid source _ 2 _ | isSource attrs source -> do

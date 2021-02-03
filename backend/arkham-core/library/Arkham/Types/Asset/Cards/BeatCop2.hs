@@ -9,7 +9,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype BeatCop2 = BeatCop2 Attrs
+newtype BeatCop2 = BeatCop2 AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 beatCop2 :: AssetId -> BeatCop2
@@ -24,7 +24,7 @@ instance HasModifiersFor env BeatCop2 where
     pure [ toModifier a (SkillModifier SkillCombat 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-ability :: Attrs -> Ability
+ability :: AssetAttrs -> Ability
 ability a = mkAbility
   (toSource a)
   1

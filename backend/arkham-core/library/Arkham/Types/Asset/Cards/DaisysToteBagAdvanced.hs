@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
-newtype DaisysToteBagAdvanced = DaisysToteBagAdvanced Attrs
+newtype DaisysToteBagAdvanced = DaisysToteBagAdvanced AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 daisysToteBagAdvanced :: AssetId -> DaisysToteBagAdvanced
@@ -36,7 +36,7 @@ instance HasModifiersFor env DaisysToteBagAdvanced where
       [toModifier a $ CanBecomeFast (Just AssetType, [Tome])]
   getModifiersFor _ _ _ = pure []
 
-slot :: Attrs -> Slot
+slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Tome Nothing
 
 instance AssetRunner env => RunMessage env DaisysToteBagAdvanced where

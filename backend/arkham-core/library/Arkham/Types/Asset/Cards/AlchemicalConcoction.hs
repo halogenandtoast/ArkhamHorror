@@ -9,7 +9,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 
-newtype AlchemicalConcoction = AlchemicalConcoction Attrs
+newtype AlchemicalConcoction = AlchemicalConcoction AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 alchemicalConcoction :: AssetId -> AlchemicalConcoction

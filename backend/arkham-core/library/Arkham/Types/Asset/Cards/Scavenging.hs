@@ -11,7 +11,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
-newtype Scavenging = Scavenging Attrs
+newtype Scavenging = Scavenging AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 scavenging :: AssetId -> Scavenging
@@ -20,7 +20,7 @@ scavenging uuid = Scavenging $ baseAttrs uuid "01073"
 instance HasModifiersFor env Scavenging where
   getModifiersFor = noModifiersFor
 
-ability :: Attrs -> Ability
+ability :: AssetAttrs -> Ability
 ability a =
   mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a))
 

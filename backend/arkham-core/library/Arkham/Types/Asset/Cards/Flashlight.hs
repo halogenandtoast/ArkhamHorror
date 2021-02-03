@@ -11,7 +11,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 
-newtype Flashlight = Flashlight Attrs
+newtype Flashlight = Flashlight AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 flashlight :: AssetId -> Flashlight
@@ -21,7 +21,7 @@ flashlight uuid =
 instance HasModifiersFor env Flashlight where
   getModifiersFor = noModifiersFor
 
-investigateAbility :: Attrs -> Ability
+investigateAbility :: AssetAttrs -> Ability
 investigateAbility attrs = mkAbility
   (toSource attrs)
   1

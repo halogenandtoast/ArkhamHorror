@@ -10,38 +10,39 @@ module TestImport
 import Arkham.Import as X
 
 import Arkham.Types.Agenda as X
-import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Asset as X
-import qualified Arkham.Types.Asset.Attrs as Asset
-import Arkham.Types.Card.PlayerCard (basePlayerCard)
 import Arkham.Types.ChaosBag as X
-import qualified Arkham.Types.ChaosBag as ChaosBag
-import Arkham.Types.Difficulty
 import Arkham.Types.Enemy as X
-import qualified Arkham.Types.Enemy.Attrs as Enemy
 import Arkham.Types.Event as X
 import Arkham.Types.Game as X hiding (newGame)
 import Arkham.Types.Game.Helpers as X
 import Arkham.Types.Investigator as X
-import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Location as X
-import qualified Arkham.Types.Location.Attrs as Location
-import qualified Arkham.Types.Location.Attrs as LocationAttrs
-import Arkham.Types.Phase
 import Arkham.Types.Scenario as X
-import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Stats as X
 import Control.Lens as X (set, (^?!))
 import Control.Monad.Fail as X
-import Control.Monad.State hiding (replicateM)
 import Control.Monad.State as X (get)
-import qualified Data.HashMap.Strict as HashMap
-import Data.These
-import qualified Data.UUID as UUID
 import Data.UUID.V4 as X
 import Helpers.Matchers as X
 import Helpers.Message as X
 import Test.Hspec as X
+
+import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Card.PlayerCard (basePlayerCard)
+import qualified Arkham.Types.ChaosBag as ChaosBag
+import Arkham.Types.Difficulty
+import qualified Arkham.Types.Enemy.Attrs as Enemy
+import Arkham.Types.Investigator.Attrs
+import qualified Arkham.Types.Location.Attrs as Location
+import qualified Arkham.Types.Location.Attrs as LocationAttrs
+import Arkham.Types.Phase
+import Arkham.Types.Scenario.Attrs
+import Control.Monad.State hiding (replicateM)
+import qualified Data.HashMap.Strict as HashMap
+import Data.These
+import qualified Data.UUID as UUID
 
 testScenario
   :: MonadIO m => CardCode -> (ScenarioAttrs -> ScenarioAttrs) -> m Scenario
@@ -104,7 +105,7 @@ testEnemy f = do
   enemyId <- liftIO $ EnemyId <$> nextRandom
   pure $ baseEnemy enemyId "enemy" f
 
-testAsset :: MonadIO m => (Asset.Attrs -> Asset.Attrs) -> m Asset
+testAsset :: MonadIO m => (AssetAttrs -> AssetAttrs) -> m Asset
 testAsset f = do
   assetId <- liftIO $ AssetId <$> nextRandom
   pure $ baseAsset assetId "asset" f

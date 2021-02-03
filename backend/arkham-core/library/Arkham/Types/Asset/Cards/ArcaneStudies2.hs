@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype ArcaneStudies2 = ArcaneStudies2 Attrs
+newtype ArcaneStudies2 = ArcaneStudies2 AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 arcaneStudies2 :: AssetId -> ArcaneStudies2
@@ -19,7 +19,7 @@ arcaneStudies2 uuid = ArcaneStudies2 $ baseAttrs uuid "50007"
 instance HasModifiersFor env ArcaneStudies2 where
   getModifiersFor = noModifiersFor
 
-ability :: Int -> Attrs -> Ability
+ability :: Int -> AssetAttrs -> Ability
 ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)
 
 instance HasActions env ArcaneStudies2 where
@@ -30,7 +30,7 @@ instance HasActions env ArcaneStudies2 where
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env ArcaneStudies2 where
-  runMessage msg a@(ArcaneStudies2 attrs@Attrs {..}) = case msg of
+  runMessage msg a@(ArcaneStudies2 attrs@AssetAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage
         (CreateWindowModifierEffect EffectSkillTestWindow

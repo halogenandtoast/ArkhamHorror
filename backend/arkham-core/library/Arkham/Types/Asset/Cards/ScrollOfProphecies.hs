@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses (Uses(..), useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
 
-newtype ScrollOfProphecies = ScrollOfProphecies Attrs
+newtype ScrollOfProphecies = ScrollOfProphecies AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 scrollOfProphecies :: AssetId -> ScrollOfProphecies
@@ -30,7 +30,7 @@ instance HasActions env ScrollOfProphecies where
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env ScrollOfProphecies where
-  runMessage msg (ScrollOfProphecies attrs@Attrs {..}) = case msg of
+  runMessage msg (ScrollOfProphecies attrs@AssetAttrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
       ScrollOfProphecies
         <$> runMessage msg (attrs & usesL .~ Uses Resource.Secret 4)

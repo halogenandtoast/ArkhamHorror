@@ -11,7 +11,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype Machete = Machete Attrs
+newtype Machete = Machete AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 machete :: AssetId -> Machete
@@ -36,7 +36,7 @@ instance ActionRunner env => HasActions env Machete where
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Machete where
-  runMessage msg a@(Machete attrs@Attrs {..}) = case msg of
+  runMessage msg a@(Machete attrs@AssetAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       criteriaMet <- (== 1) . unEnemyCount <$> getCount iid
       a <$ unshiftMessages

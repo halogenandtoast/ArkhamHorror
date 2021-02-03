@@ -11,7 +11,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
-newtype WhittonGreene = WhittonGreene Attrs
+newtype WhittonGreene = WhittonGreene AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 whittonGreene :: AssetId -> WhittonGreene
@@ -44,7 +44,7 @@ instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor en
   getModifiersFor _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env WhittonGreene where
-  runMessage msg a@(WhittonGreene attrs@Attrs {..}) = case msg of
+  runMessage msg a@(WhittonGreene attrs@AssetAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ unshiftMessage
       (SearchTopOfDeck
         iid

@@ -12,7 +12,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 
-newtype JennysTwin45s = JennysTwin45s Attrs
+newtype JennysTwin45s = JennysTwin45s AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 jennysTwin45s :: AssetId -> JennysTwin45s

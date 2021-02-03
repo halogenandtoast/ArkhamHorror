@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype ToothOfEztli = ToothOfEztli Attrs
+newtype ToothOfEztli = ToothOfEztli AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 toothOfEztli :: AssetId -> ToothOfEztli
@@ -25,7 +25,7 @@ instance HasModifiersFor env ToothOfEztli where
       [SkillModifier SkillWillpower 1, SkillModifier SkillAgility 1]
   getModifiersFor _ _ _ = pure []
 
-ability :: Attrs -> Ability
+ability :: AssetAttrs -> Ability
 ability a =
   mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a))
 
@@ -35,7 +35,7 @@ instance HasActions env ToothOfEztli where
   getActions i window (ToothOfEztli a) = getActions i window a
 
 instance AssetRunner env => RunMessage env ToothOfEztli where
-  runMessage msg a@(ToothOfEztli attrs@Attrs {..}) = case msg of
+  runMessage msg a@(ToothOfEztli attrs@AssetAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage (DrawCards iid 1 False)
     _ -> ToothOfEztli <$> runMessage msg attrs

@@ -9,7 +9,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 
-newtype Blackjack = Blackjack Attrs
+newtype Blackjack = Blackjack AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 blackjack :: AssetId -> Blackjack

@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 
-newtype FirstAid = FirstAid Attrs
+newtype FirstAid = FirstAid AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 firstAid :: AssetId -> FirstAid
@@ -19,7 +19,7 @@ firstAid uuid = FirstAid $ baseAttrs uuid "01019"
 instance HasModifiersFor env FirstAid where
   getModifiersFor = noModifiersFor
 
-ability :: Attrs -> Ability
+ability :: AssetAttrs -> Ability
 ability attrs = mkAbility
   (toSource attrs)
   1
@@ -31,7 +31,7 @@ instance HasActions env FirstAid where
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env FirstAid where
-  runMessage msg a@(FirstAid attrs@Attrs {..}) = case msg of
+  runMessage msg a@(FirstAid attrs@AssetAttrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
       FirstAid <$> runMessage msg (attrs & usesL .~ Uses Supply 3)
     UseCardAbility iid (AssetSource aid) _ 1 _ | aid == assetId -> do

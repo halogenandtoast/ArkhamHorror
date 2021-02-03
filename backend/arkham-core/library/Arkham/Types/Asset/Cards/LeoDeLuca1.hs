@@ -6,7 +6,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype LeoDeLuca1 = LeoDeLuca1 Attrs
+newtype LeoDeLuca1 = LeoDeLuca1 AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 leoDeLuca1 :: AssetId -> LeoDeLuca1
@@ -25,7 +25,7 @@ instance HasActions env LeoDeLuca1 where
   getActions i window (LeoDeLuca1 x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env LeoDeLuca1 where
-  runMessage msg (LeoDeLuca1 attrs@Attrs {..}) = case msg of
+  runMessage msg (LeoDeLuca1 attrs@AssetAttrs {..}) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessage $ GainActions iid (AssetSource aid) 1
       LeoDeLuca1 <$> runMessage msg attrs

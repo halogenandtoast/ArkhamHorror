@@ -8,7 +8,7 @@ import Arkham.Import
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
-newtype JimsTrumpet = JimsTrumpet Attrs
+newtype JimsTrumpet = JimsTrumpet AssetAttrs
   deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 jimsTrumpet :: AssetId -> JimsTrumpet
@@ -18,7 +18,7 @@ jimsTrumpet uuid =
 instance HasModifiersFor env JimsTrumpet where
   getModifiersFor = noModifiersFor
 
-ability :: Attrs -> Ability
+ability :: AssetAttrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (ReactionAbility $ ExhaustCost (toTarget attrs))
 
@@ -36,7 +36,7 @@ instance ActionRunner env => HasActions env JimsTrumpet where
   getActions i window (JimsTrumpet x) = getActions i window x
 
 instance AssetRunner env => RunMessage env JimsTrumpet where
-  runMessage msg a@(JimsTrumpet attrs@Attrs {..}) = case msg of
+  runMessage msg a@(JimsTrumpet attrs@AssetAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       let ownerId = fromJustNote "must be owned" assetInvestigator
       locationId <- getId ownerId

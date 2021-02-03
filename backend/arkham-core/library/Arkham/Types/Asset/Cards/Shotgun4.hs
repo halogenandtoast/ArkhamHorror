@@ -12,7 +12,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 
-newtype Shotgun4 = Shotgun4 Attrs
+newtype Shotgun4 = Shotgun4 AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 shotgun4 :: AssetId -> Shotgun4

@@ -8,14 +8,14 @@ import Arkham.Import
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 
-newtype RitualCandles = RitualCandles Attrs
+newtype RitualCandles = RitualCandles AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 ritualCandles :: AssetId -> RitualCandles
 ritualCandles uuid =
   RitualCandles $ (baseAttrs uuid "02029") { assetSlots = [HandSlot] }
 
-ability :: Attrs -> Ability
+ability :: AssetAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
 instance HasActions env RitualCandles where

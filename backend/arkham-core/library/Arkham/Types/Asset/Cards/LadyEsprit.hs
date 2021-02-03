@@ -8,7 +8,7 @@ import Arkham.Import
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
-newtype LadyEsprit = LadyEsprit Attrs
+newtype LadyEsprit = LadyEsprit AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 ladyEsprit :: AssetId -> LadyEsprit
@@ -19,7 +19,7 @@ ladyEsprit uuid = LadyEsprit $ (baseAttrs uuid "81019")
   , assetIsStory = True
   }
 
-ability :: Attrs -> Ability
+ability :: AssetAttrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
 
@@ -27,7 +27,7 @@ instance HasModifiersFor env LadyEsprit where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env LadyEsprit where
-  getActions iid NonFast (LadyEsprit a@Attrs {..}) = do
+  getActions iid NonFast (LadyEsprit a@AssetAttrs {..}) = do
     locationId <- getId @LocationId iid
     assetLocationId <- case assetInvestigator of
       Nothing -> pure $ fromJustNote "must be set" assetLocation

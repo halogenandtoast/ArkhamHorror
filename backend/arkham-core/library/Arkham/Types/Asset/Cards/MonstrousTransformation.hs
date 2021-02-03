@@ -11,7 +11,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype MonstrousTransformation = MonstrousTransformation Attrs
+newtype MonstrousTransformation = MonstrousTransformation AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 monstrousTransformation :: AssetId -> MonstrousTransformation

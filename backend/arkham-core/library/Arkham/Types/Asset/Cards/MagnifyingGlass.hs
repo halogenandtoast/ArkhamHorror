@@ -7,7 +7,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype MagnifyingGlass = MagnifyingGlass Attrs
+newtype MagnifyingGlass = MagnifyingGlass AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 magnifyingGlass :: AssetId -> MagnifyingGlass

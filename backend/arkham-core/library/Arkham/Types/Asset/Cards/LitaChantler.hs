@@ -7,7 +7,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
-newtype LitaChantler = LitaChantler Attrs
+newtype LitaChantler = LitaChantler AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 litaChantler :: AssetId -> LitaChantler
@@ -18,7 +18,7 @@ litaChantler uuid = LitaChantler $ (baseAttrs uuid "01117")
   }
 
 instance HasId LocationId env InvestigatorId => HasModifiersFor env LitaChantler where
-  getModifiersFor _ (InvestigatorTarget iid) (LitaChantler a@Attrs {..}) = do
+  getModifiersFor _ (InvestigatorTarget iid) (LitaChantler a@AssetAttrs {..}) = do
     locationId <- getId @LocationId iid
     case assetInvestigator of
       Nothing -> pure []
@@ -27,7 +27,7 @@ instance HasId LocationId env InvestigatorId => HasModifiersFor env LitaChantler
         pure [ toModifier a (SkillModifier SkillCombat 1) | sameLocation ]
   getModifiersFor _ _ _ = pure []
 
-ability :: EnemyId -> Attrs -> Ability
+ability :: EnemyId -> AssetAttrs -> Ability
 ability eid a = (mkAbility (toSource a) 1 (ReactionAbility Free))
   { abilityMetadata = Just $ TargetMetadata (EnemyTarget eid)
   }
@@ -41,7 +41,7 @@ instance HasSet Trait env EnemyId => HasActions env LitaChantler where
   getActions i window (LitaChantler a) = getActions i window a
 
 instance (AssetRunner env) => RunMessage env LitaChantler where
-  runMessage msg a@(LitaChantler attrs@Attrs {..}) = case msg of
+  runMessage msg a@(LitaChantler attrs@AssetAttrs {..}) = case msg of
     UseCardAbility _ source (Just (TargetMetadata target)) 1 _
       | isSource attrs source -> do
         a <$ unshiftMessage

@@ -11,7 +11,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 
-newtype Shrivelling = Shrivelling Attrs
+newtype Shrivelling = Shrivelling AssetAttrs
   deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 shrivelling :: AssetId -> Shrivelling

@@ -9,7 +9,7 @@ import Arkham.Types.Asset.Class
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Trait
 
-data Attrs = Attrs
+data AssetAttrs = AssetAttrs
   { assetName :: Text
   , assetId :: AssetId
   , assetCardCode :: CardCode
@@ -34,22 +34,22 @@ data Attrs = Attrs
   }
   deriving stock (Show, Generic)
 
-makeLensesWith suffixedFields ''Attrs
+makeLensesWith suffixedFields ''AssetAttrs
 
-instance ToJSON Attrs where
+instance ToJSON AssetAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "asset"
   toEncoding = genericToEncoding $ aesonOptions $ Just "asset"
 
-instance FromJSON Attrs where
+instance FromJSON AssetAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "asset"
 
-instance IsCard Attrs where
+instance IsCard AssetAttrs where
   getCardId = CardId . unAssetId . assetId
   getCardCode = assetCardCode
   getTraits = assetTraits
   getKeywords = mempty
 
-baseAttrs :: AssetId -> CardCode -> Attrs
+baseAttrs :: AssetId -> CardCode -> AssetAttrs
 baseAttrs aid cardCode =
   let
     MkPlayerCard {..} =
@@ -58,7 +58,7 @@ baseAttrs aid cardCode =
           (lookup cardCode allPlayerCards)
         $ CardId (unAssetId aid)
   in
-    Attrs
+    AssetAttrs
       { assetName = pcName
       , assetId = aid
       , assetCardCode = cardCode
@@ -82,50 +82,50 @@ baseAttrs aid cardCode =
       , assetIsStory = False
       }
 
-instance Entity Attrs where
-  type EntityId Attrs = AssetId
-  type EntityAttrs Attrs = Attrs
+instance Entity AssetAttrs where
+  type EntityId AssetAttrs = AssetId
+  type EntityAttrs AssetAttrs = AssetAttrs
   toId = assetId
   toAttrs = id
 
-instance NamedEntity Attrs where
+instance NamedEntity AssetAttrs where
   toName = mkName . assetName
 
-instance TargetEntity Attrs where
+instance TargetEntity AssetAttrs where
   toTarget = AssetTarget . toId
-  isTarget attrs@Attrs {..} = \case
+  isTarget attrs@AssetAttrs {..} = \case
     AssetTarget aid -> aid == assetId
     CardCodeTarget cardCode -> assetCardCode == cardCode
     CardIdTarget cardId -> unCardId cardId == unAssetId assetId
     SkillTestInitiatorTarget target -> isTarget attrs target
     _ -> False
 
-instance SourceEntity Attrs where
+instance SourceEntity AssetAttrs where
   toSource = AssetSource . toId
-  isSource Attrs { assetId } (AssetSource aid) = assetId == aid
+  isSource AssetAttrs { assetId } (AssetSource aid) = assetId == aid
   isSource _ _ = False
 
-ownedBy :: Attrs -> InvestigatorId -> Bool
-ownedBy Attrs {..} = (== assetInvestigator) . Just
+ownedBy :: AssetAttrs -> InvestigatorId -> Bool
+ownedBy AssetAttrs {..} = (== assetInvestigator) . Just
 
 assetAction
-  :: InvestigatorId -> Attrs -> Int -> Maybe Action -> Cost -> Message
+  :: InvestigatorId -> AssetAttrs -> Int -> Maybe Action -> Cost -> Message
 assetAction iid attrs idx mAction cost =
   ActivateCardAbilityAction iid
     $ mkAbility (toSource attrs) idx (ActionAbility mAction cost)
 
-getInvestigator :: HasCallStack => Attrs -> InvestigatorId
+getInvestigator :: HasCallStack => AssetAttrs -> InvestigatorId
 getInvestigator = fromJustNote "asset must be owned" . view investigatorL
 
-defeated :: Attrs -> Bool
-defeated Attrs {..} =
+defeated :: AssetAttrs -> Bool
+defeated AssetAttrs {..} =
   maybe False (assetHealthDamage >=) assetHealth
     || maybe False (assetSanityDamage >=) assetSanity
 
-instance HasActions env Attrs where
+instance HasActions env AssetAttrs where
   getActions _ _ _ = pure []
 
-instance IsAsset Attrs where
+instance IsAsset AssetAttrs where
   slotsOf = assetSlots
   useTypeOf = useType . assetUses
   isHealthDamageable a = case assetHealth a of
@@ -136,8 +136,8 @@ instance IsAsset Attrs where
     Just n -> n > assetSanityDamage a
   isStory = assetIsStory
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Attrs where
-  runMessage msg a@Attrs {..} = case msg of
+instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs where
+  runMessage msg a@AssetAttrs {..} = case msg of
     ReadyExhausted -> case assetInvestigator of
       Just iid -> do
         modifiers <-

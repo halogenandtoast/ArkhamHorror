@@ -11,7 +11,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Trait
 
-newtype JazzMulligan = JazzMulligan Attrs
+newtype JazzMulligan = JazzMulligan AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 jazzMulligan :: AssetId -> JazzMulligan
@@ -21,7 +21,7 @@ jazzMulligan uuid = JazzMulligan $ (baseAttrs uuid "02060")
   , assetIsStory = True
   }
 
-ability :: Attrs -> Ability
+ability :: AssetAttrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (ActionAbility (Just Parley) $ ActionCost 1)
 
@@ -45,7 +45,7 @@ instance HasSet Trait env LocationId => HasModifiersFor env JazzMulligan where
   getModifiersFor _ _ _ = pure []
 
 instance (HasQueue env, HasModifiersFor env (), HasId LocationId env InvestigatorId) => RunMessage env JazzMulligan where
-  runMessage msg a@(JazzMulligan attrs@Attrs {..}) = case msg of
+  runMessage msg a@(JazzMulligan attrs@AssetAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId iid
       a <$ unshiftMessage (AttachAsset assetId (LocationTarget lid))

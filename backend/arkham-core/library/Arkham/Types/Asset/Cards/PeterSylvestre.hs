@@ -9,7 +9,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype PeterSylvestre = PeterSylvestre Attrs
+newtype PeterSylvestre = PeterSylvestre AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 peterSylvestre :: AssetId -> PeterSylvestre
@@ -24,7 +24,7 @@ instance HasModifiersFor env PeterSylvestre where
     pure [ toModifier a (SkillModifier SkillAgility 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-ability :: Attrs -> Ability
+ability :: AssetAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
 instance HasActions env PeterSylvestre where

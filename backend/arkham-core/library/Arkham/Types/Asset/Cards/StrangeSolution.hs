@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.CampaignLogKey
 
-newtype StrangeSolution = StrangeSolution Attrs
+newtype StrangeSolution = StrangeSolution AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 strangeSolution :: AssetId -> StrangeSolution

@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Game.Helpers
 
-newtype TheNecronomiconOlausWormiusTranslation = TheNecronomiconOlausWormiusTranslation Attrs
+newtype TheNecronomiconOlausWormiusTranslation = TheNecronomiconOlausWormiusTranslation AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theNecronomiconOlausWormiusTranslation

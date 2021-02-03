@@ -9,7 +9,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype PhysicalTraining2 = PhysicalTraining2 Attrs
+newtype PhysicalTraining2 = PhysicalTraining2 AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 physicalTraining2 :: AssetId -> PhysicalTraining2
@@ -18,7 +18,7 @@ physicalTraining2 uuid = PhysicalTraining2 $ baseAttrs uuid "50001"
 instance HasModifiersFor env PhysicalTraining2 where
   getModifiersFor = noModifiersFor
 
-ability :: Int -> Attrs -> Ability
+ability :: Int -> AssetAttrs -> Ability
 ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)
 
 instance HasActions env PhysicalTraining2 where

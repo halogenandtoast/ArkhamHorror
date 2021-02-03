@@ -9,7 +9,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
-newtype Burglary = Burglary Attrs
+newtype Burglary = Burglary AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 burglary :: AssetId -> Burglary
@@ -26,7 +26,7 @@ instance HasActions env Burglary where
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Burglary where
-  runMessage msg a@(Burglary attrs@Attrs {..}) = case msg of
+  runMessage msg a@(Burglary attrs@AssetAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId iid
       a <$ unshiftMessage

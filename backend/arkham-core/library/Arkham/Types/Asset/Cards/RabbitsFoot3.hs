@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
-newtype RabbitsFoot3 = RabbitsFoot3 Attrs
+newtype RabbitsFoot3 = RabbitsFoot3 AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 rabbitsFoot3 :: AssetId -> RabbitsFoot3
@@ -19,7 +19,7 @@ rabbitsFoot3 uuid =
 instance HasModifiersFor env RabbitsFoot3 where
   getModifiersFor = noModifiersFor
 
-ability :: Attrs -> Int -> Ability
+ability :: AssetAttrs -> Int -> Ability
 ability attrs n =
   (mkAbility (toSource attrs) 1 (ReactionAbility $ ExhaustCost (toTarget attrs))
     )

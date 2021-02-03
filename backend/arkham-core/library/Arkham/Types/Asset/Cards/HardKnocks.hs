@@ -9,7 +9,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype HardKnocks = HardKnocks Attrs
+newtype HardKnocks = HardKnocks AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 hardKnocks :: AssetId -> HardKnocks
@@ -18,7 +18,7 @@ hardKnocks uuid = HardKnocks $ baseAttrs uuid "01049"
 instance HasModifiersFor env HardKnocks where
   getModifiersFor = noModifiersFor
 
-ability :: Int -> Attrs -> Ability
+ability :: Int -> AssetAttrs -> Ability
 ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)
 
 instance HasActions env HardKnocks where
@@ -29,7 +29,7 @@ instance HasActions env HardKnocks where
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env HardKnocks where
-  runMessage msg a@(HardKnocks attrs@Attrs {..}) = case msg of
+  runMessage msg a@(HardKnocks attrs@AssetAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage
         (CreateWindowModifierEffect

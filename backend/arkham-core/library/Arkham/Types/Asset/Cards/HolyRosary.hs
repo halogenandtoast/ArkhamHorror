@@ -6,7 +6,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype HolyRosary = HolyRosary Attrs
+newtype HolyRosary = HolyRosary AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 holyRosary :: AssetId -> HolyRosary

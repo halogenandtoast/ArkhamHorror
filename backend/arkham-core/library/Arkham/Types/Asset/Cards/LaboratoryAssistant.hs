@@ -9,7 +9,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype LaboratoryAssistant = LaboratoryAssistant Attrs
+newtype LaboratoryAssistant = LaboratoryAssistant AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 laboratoryAssistant :: AssetId -> LaboratoryAssistant

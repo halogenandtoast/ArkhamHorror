@@ -9,7 +9,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 
-newtype Scrying = Scrying Attrs
+newtype Scrying = Scrying AssetAttrs
   deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 scrying :: AssetId -> Scrying

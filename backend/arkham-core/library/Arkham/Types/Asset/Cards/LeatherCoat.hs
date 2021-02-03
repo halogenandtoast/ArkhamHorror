@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
-newtype LeatherCoat = LeatherCoat Attrs
+newtype LeatherCoat = LeatherCoat AssetAttrs
   deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 leatherCoat :: AssetId -> LeatherCoat

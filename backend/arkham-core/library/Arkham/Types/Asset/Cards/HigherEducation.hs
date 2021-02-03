@@ -9,7 +9,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype HigherEducation = HigherEducation Attrs
+newtype HigherEducation = HigherEducation AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 higherEducation :: AssetId -> HigherEducation
@@ -40,7 +40,7 @@ instance HasModifiersFor env HigherEducation where
   getModifiersFor = noModifiersFor
 
 instance AssetRunner env => RunMessage env HigherEducation where
-  runMessage msg a@(HigherEducation attrs@Attrs {..}) = case msg of
+  runMessage msg a@(HigherEducation attrs@AssetAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
         [ SpendResources iid 1

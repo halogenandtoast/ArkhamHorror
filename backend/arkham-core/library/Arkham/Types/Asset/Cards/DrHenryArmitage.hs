@@ -8,7 +8,7 @@ import Arkham.Import
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
-newtype DrHenryArmitage = DrHenryArmitage Attrs
+newtype DrHenryArmitage = DrHenryArmitage AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 drHenryArmitage :: AssetId -> DrHenryArmitage
@@ -18,7 +18,7 @@ drHenryArmitage uuid = DrHenryArmitage $ (baseAttrs uuid "02040")
   , assetSanity = Just 2
   }
 
-fastAbility :: Attrs -> CardId -> Ability
+fastAbility :: AssetAttrs -> CardId -> Ability
 fastAbility a cid = mkAbility
   (toSource a)
   1

@@ -7,7 +7,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
-newtype DiscOfItzamna2 = DiscOfItzamna2 Attrs
+newtype DiscOfItzamna2 = DiscOfItzamna2 AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 discOfItzamna2 :: AssetId -> DiscOfItzamna2

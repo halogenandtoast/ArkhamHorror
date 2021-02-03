@@ -8,7 +8,7 @@ import Arkham.Import
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
-newtype OldBookOfLore = OldBookOfLore Attrs
+newtype OldBookOfLore = OldBookOfLore AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 oldBookOfLore :: AssetId -> OldBookOfLore
@@ -26,7 +26,7 @@ instance HasActions env OldBookOfLore where
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env OldBookOfLore where
-  runMessage msg a@(OldBookOfLore attrs@Attrs {..}) = case msg of
+  runMessage msg a@(OldBookOfLore attrs@AssetAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid
       investigatorIds <- getSetList locationId

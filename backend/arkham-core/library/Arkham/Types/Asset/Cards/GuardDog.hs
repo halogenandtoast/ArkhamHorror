@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
-newtype GuardDog = GuardDog Attrs
+newtype GuardDog = GuardDog AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 guardDog :: AssetId -> GuardDog
@@ -22,7 +22,7 @@ guardDog uuid = GuardDog $ (baseAttrs uuid "01021")
 instance HasModifiersFor env GuardDog where
   getModifiersFor = noModifiersFor
 
-ability :: Source -> Attrs -> Ability
+ability :: Source -> AssetAttrs -> Ability
 ability source attrs = base
   { abilityLimit = PlayerLimit PerTestOrAbility 1
   , abilityMetadata = Just (SourceMetadata source)
@@ -39,7 +39,7 @@ instance HasActions env GuardDog where
   getActions i window (GuardDog attrs) = getActions i window attrs
 
 instance (AssetRunner env) => RunMessage env GuardDog where
-  runMessage msg a@(GuardDog attrs@Attrs {..}) = case msg of
+  runMessage msg a@(GuardDog attrs@AssetAttrs {..}) = case msg of
     UseCardAbility _ source (Just (SourceMetadata (EnemySource eid))) 1 _
       | isSource attrs source -> a <$ unshiftMessage
         (chooseOne

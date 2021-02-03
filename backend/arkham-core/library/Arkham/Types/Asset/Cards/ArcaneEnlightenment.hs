@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
-newtype ArcaneEnlightenment = ArcaneEnlightenment Attrs
+newtype ArcaneEnlightenment = ArcaneEnlightenment AssetAttrs
   deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 arcaneEnlightenment :: AssetId -> ArcaneEnlightenment
@@ -25,7 +25,7 @@ instance HasModifiersFor env ArcaneEnlightenment where
 instance HasActions env ArcaneEnlightenment where
   getActions i window (ArcaneEnlightenment x) = getActions i window x
 
-slot :: Attrs -> Slot
+slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Tome Nothing
 
 instance (AssetRunner env) => RunMessage env ArcaneEnlightenment where

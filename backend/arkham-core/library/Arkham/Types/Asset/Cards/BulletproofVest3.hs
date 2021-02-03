@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
-newtype BulletproofVest3 = BulletproofVest3 Attrs
+newtype BulletproofVest3 = BulletproofVest3 AssetAttrs
   deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 bulletproofVest3 :: AssetId -> BulletproofVest3

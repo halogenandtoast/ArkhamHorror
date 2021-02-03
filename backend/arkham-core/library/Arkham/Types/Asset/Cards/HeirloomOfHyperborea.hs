@@ -6,7 +6,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
-newtype HeirloomOfHyperborea = HeirloomOfHyperborea Attrs
+newtype HeirloomOfHyperborea = HeirloomOfHyperborea AssetAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 heirloomOfHyperborea :: AssetId -> HeirloomOfHyperborea
@@ -16,7 +16,7 @@ heirloomOfHyperborea uuid = HeirloomOfHyperborea
 instance HasModifiersFor env HeirloomOfHyperborea where
   getModifiersFor = noModifiersFor
 
-reactionAbility :: Attrs -> Ability
+reactionAbility :: AssetAttrs -> Ability
 reactionAbility attrs = mkAbility (toSource attrs) 1 (FastAbility Free)
 
 instance HasActions env HeirloomOfHyperborea where

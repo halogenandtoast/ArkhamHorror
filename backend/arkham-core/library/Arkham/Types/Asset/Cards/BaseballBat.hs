@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
-newtype BaseballBat = BaseballBat Attrs
+newtype BaseballBat = BaseballBat AssetAttrs
   deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 baseballBat :: AssetId -> BaseballBat
@@ -23,14 +23,14 @@ instance HasModifiersFor env BaseballBat where
     = pure $ toModifiers a [DamageDealt 1]
   getModifiersFor _ _ _ = pure []
 
-fightAbility :: Attrs -> Ability
-fightAbility Attrs { assetId } = mkAbility
+fightAbility :: AssetAttrs -> Ability
+fightAbility AssetAttrs { assetId } = mkAbility
   (AssetSource assetId)
   1
   (ActionAbility (Just Action.Fight) (ActionCost 1))
 
 instance ActionRunner env  => HasActions env BaseballBat where
-  getActions iid window (BaseballBat a@Attrs {..}) | ownedBy a iid = do
+  getActions iid window (BaseballBat a@AssetAttrs {..}) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid window
     pure [ ActivateCardAbilityAction iid (fightAbility a) | fightAvailable ]
   getActions _ _ _ = pure []

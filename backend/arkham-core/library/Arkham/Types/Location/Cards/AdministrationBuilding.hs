@@ -7,7 +7,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype AdministrationBuilding = AdministrationBuilding Attrs
+newtype AdministrationBuilding = AdministrationBuilding LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 administrationBuilding :: AdministrationBuilding

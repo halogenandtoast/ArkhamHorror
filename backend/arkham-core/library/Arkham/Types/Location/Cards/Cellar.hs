@@ -6,7 +6,7 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 
-newtype Cellar = Cellar Attrs
+newtype Cellar = Cellar LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 cellar :: Cellar
@@ -30,7 +30,7 @@ instance ActionRunner env => HasActions env Cellar where
   getActions i window (Cellar attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env Cellar where
-  runMessage msg a@(Cellar attrs@Attrs {..}) = case msg of
+  runMessage msg a@(Cellar attrs@LocationAttrs {..}) = case msg of
     AfterEnterLocation iid lid | lid == locationId ->
       a <$ unshiftMessage (InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0)
     _ -> Cellar <$> runMessage msg attrs

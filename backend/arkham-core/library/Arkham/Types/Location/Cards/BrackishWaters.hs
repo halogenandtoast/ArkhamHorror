@@ -11,7 +11,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype BrackishWaters = BrackishWaters Attrs
+newtype BrackishWaters = BrackishWaters LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 brackishWaters :: BrackishWaters
@@ -35,7 +35,7 @@ instance HasModifiersFor env BrackishWaters where
 -- TODO: Cost is an OR and we should be able to capture this
 -- first idea is change discard to take a source @DiscardCost 1 [DiscardFromHand, DiscardFromPlay] (Just AssetType) mempty mempty@
 instance ActionRunner env => HasActions env BrackishWaters where
-  getActions iid NonFast (BrackishWaters attrs@Attrs {..}) =
+  getActions iid NonFast (BrackishWaters attrs@LocationAttrs {..}) =
     withBaseActions iid NonFast attrs $ do
       assetNotTaken <- isNothing
         <$> getId @(Maybe StoryAssetId) (CardCode "81021")

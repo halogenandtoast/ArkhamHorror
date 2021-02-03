@@ -7,7 +7,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype AudubonPark = AudubonPark Attrs
+newtype AudubonPark = AudubonPark LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 audubonPark :: AudubonPark
@@ -30,7 +30,7 @@ instance ActionRunner env => HasActions env AudubonPark where
   getActions i window (AudubonPark attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env AudubonPark where
-  runMessage msg l@(AudubonPark attrs@Attrs {..}) = case msg of
+  runMessage msg l@(AudubonPark attrs@LocationAttrs {..}) = case msg of
     EnemyEvaded iid eid | eid `member` locationEnemies ->
       l <$ unshiftMessage (RandomDiscard iid)
     _ -> AudubonPark <$> runMessage msg attrs

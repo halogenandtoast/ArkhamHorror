@@ -12,7 +12,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype AlchemyLabs = AlchemyLabs Attrs
+newtype AlchemyLabs = AlchemyLabs LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 alchemyLabs :: AlchemyLabs
@@ -32,7 +32,7 @@ instance HasModifiersFor env AlchemyLabs where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env AlchemyLabs where
-  getActions iid NonFast (AlchemyLabs attrs@Attrs {..}) | locationRevealed =
+  getActions iid NonFast (AlchemyLabs attrs@LocationAttrs {..}) | locationRevealed =
     withBaseActions iid NonFast attrs $ do
       let
         ability = mkAbility

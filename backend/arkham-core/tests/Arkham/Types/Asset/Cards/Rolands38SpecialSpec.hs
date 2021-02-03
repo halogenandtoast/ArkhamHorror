@@ -6,7 +6,7 @@ import TestImport
 
 import Arkham.Types.Enemy.Attrs (EnemyAttrs(..))
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
-import Arkham.Types.Location.Attrs (Attrs(..))
+import Arkham.Types.Location.Attrs (LocationAttrs(..))
 
 spec :: Spec
 spec = describe "Roland's .39 Special" $ do

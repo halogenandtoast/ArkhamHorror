@@ -11,7 +11,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype SecurityOffice_129 = SecurityOffice_129 Attrs
+newtype SecurityOffice_129 = SecurityOffice_129 LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 securityOffice_129 :: SecurityOffice_129
@@ -28,7 +28,7 @@ securityOffice_129 = SecurityOffice_129 $ baseAttrs
 instance HasModifiersFor env SecurityOffice_129 where
   getModifiersFor = noModifiersFor
 
-ability :: Attrs -> Ability
+ability :: LocationAttrs -> Ability
 ability attrs =
   (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 2))
     { abilityLimit = PlayerLimit PerTurn 1

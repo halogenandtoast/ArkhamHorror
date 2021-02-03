@@ -147,7 +147,7 @@ instance LocationRunner env => RunMessage env Location where
 
 instance Entity Location where
   type EntityId Location = LocationId
-  type EntityAttrs Location = Attrs
+  type EntityAttrs Location = LocationAttrs
 
 instance NamedEntity Location where
   toName = toName . toAttrs
@@ -160,7 +160,7 @@ instance SourceEntity Location where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 
-newtype BaseLocation = BaseLocation Attrs
+newtype BaseLocation = BaseLocation LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env BaseLocation where
@@ -182,7 +182,7 @@ baseLocation
   -> GameValue Int
   -> LocationSymbol
   -> [LocationSymbol]
-  -> (Attrs -> Attrs)
+  -> (LocationAttrs -> LocationAttrs)
   -> Location
 baseLocation a b c d e f func = BaseLocation' . BaseLocation . func $ baseAttrs
   a
@@ -202,7 +202,7 @@ instance IsCard Location where
 
 instance HasVictoryPoints Location where
   getVictoryPoints l =
-    let Attrs { locationClues, locationVictory } = toAttrs l
+    let LocationAttrs { locationClues, locationVictory } = toAttrs l
     in if locationClues == 0 then locationVictory else Nothing
 
 instance HasCount ClueCount env Location where

@@ -7,7 +7,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype ArkhamWoodsTangledThicket = ArkhamWoodsTangledThicket Attrs
+newtype ArkhamWoodsTangledThicket = ArkhamWoodsTangledThicket LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 arkhamWoodsTangledThicket :: ArkhamWoodsTangledThicket
@@ -34,7 +34,7 @@ instance ActionRunner env => HasActions env ArkhamWoodsTangledThicket where
     getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsTangledThicket where
-  runMessage msg (ArkhamWoodsTangledThicket attrs@Attrs {..}) = case msg of
+  runMessage msg (ArkhamWoodsTangledThicket attrs@LocationAttrs {..}) = case msg of
     Investigate iid lid s _ False | lid == locationId -> do
       let investigate = Investigate iid lid s SkillCombat False
       ArkhamWoodsTangledThicket <$> runMessage investigate attrs

@@ -13,7 +13,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
 
-newtype CloverClubBar = CloverClubBar Attrs
+newtype CloverClubBar = CloverClubBar LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 cloverClubBar :: CloverClubBar
@@ -30,7 +30,7 @@ cloverClubBar = CloverClubBar $ baseAttrs
 instance HasModifiersFor env CloverClubBar where
   getModifiersFor = noModifiersFor
 
-ability :: Attrs -> Ability
+ability :: LocationAttrs -> Ability
 ability attrs = (mkAbility
                   (toSource attrs)
                   1
@@ -41,7 +41,7 @@ ability attrs = (mkAbility
   }
 
 instance ActionRunner env => HasActions env CloverClubBar where
-  getActions iid NonFast (CloverClubBar attrs@Attrs {..}) | locationRevealed =
+  getActions iid NonFast (CloverClubBar attrs@LocationAttrs {..}) | locationRevealed =
     withBaseActions iid NonFast attrs $ do
       step <- unActStep . getStep <$> ask
       pure
@@ -51,7 +51,7 @@ instance ActionRunner env => HasActions env CloverClubBar where
   getActions iid window (CloverClubBar attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env CloverClubBar where
-  runMessage msg l@(CloverClubBar attrs@Attrs {..}) = case msg of
+  runMessage msg l@(CloverClubBar attrs@LocationAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source && locationRevealed ->
       l <$ unshiftMessages
         [GainClues iid 2, DrawCards iid 2 False, Remember $ HadADrink iid]

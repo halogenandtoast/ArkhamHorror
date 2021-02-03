@@ -12,7 +12,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype YourHouse = YourHouse Attrs
+newtype YourHouse = YourHouse LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 yourHouse :: YourHouse
@@ -29,14 +29,14 @@ yourHouse = YourHouse $ baseAttrs
 instance HasModifiersFor env YourHouse where
   getModifiersFor = noModifiersFor
 
-ability :: Attrs -> Ability
+ability :: LocationAttrs -> Ability
 ability attrs =
   (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
     { abilityLimit = PlayerLimit PerTurn 1
     }
 
 instance ActionRunner env => HasActions env YourHouse where
-  getActions iid NonFast (YourHouse attrs@Attrs {..}) | locationRevealed =
+  getActions iid NonFast (YourHouse attrs@LocationAttrs {..}) | locationRevealed =
     withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction iid (ability attrs)
       | iid `member` locationInvestigators
@@ -44,7 +44,7 @@ instance ActionRunner env => HasActions env YourHouse where
   getActions iid window (YourHouse attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env YourHouse where
-  runMessage msg l@(YourHouse attrs@Attrs {..}) = case msg of
+  runMessage msg l@(YourHouse attrs@LocationAttrs {..}) = case msg of
     Will spawnMsg@(EnemySpawn miid _ eid) -> do
       cardCode <- getId @CardCode eid
       when (cardCode == "01116") $ do

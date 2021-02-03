@@ -12,7 +12,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype MiskatonicQuad = MiskatonicQuad Attrs
+newtype MiskatonicQuad = MiskatonicQuad LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 miskatonicQuad :: MiskatonicQuad
@@ -30,7 +30,7 @@ instance HasModifiersFor env MiskatonicQuad where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env MiskatonicQuad where
-  getActions iid NonFast (MiskatonicQuad attrs@Attrs {..}) | locationRevealed =
+  getActions iid NonFast (MiskatonicQuad attrs@LocationAttrs {..}) | locationRevealed =
     withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction
           iid

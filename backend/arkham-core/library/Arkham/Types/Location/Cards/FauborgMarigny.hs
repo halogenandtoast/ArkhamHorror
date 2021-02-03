@@ -12,7 +12,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype FauborgMarigny = FauborgMarigny Attrs
+newtype FauborgMarigny = FauborgMarigny LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 fauborgMarigny :: FauborgMarigny
@@ -35,14 +35,14 @@ instance HasModifiersFor env FauborgMarigny where
       ]
   getModifiersFor _ _ _ = pure []
 
-ability :: Attrs -> Ability
+ability :: LocationAttrs -> Ability
 ability attrs = mkAbility
   (toSource attrs)
   1
   (ActionAbility (Just Action.Resign) (ActionCost 1))
 
 instance ActionRunner env => HasActions env FauborgMarigny where
-  getActions iid NonFast (FauborgMarigny attrs@Attrs {..}) | locationRevealed =
+  getActions iid NonFast (FauborgMarigny attrs@LocationAttrs {..}) | locationRevealed =
     withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction iid (ability attrs)
       | iid `member` locationInvestigators

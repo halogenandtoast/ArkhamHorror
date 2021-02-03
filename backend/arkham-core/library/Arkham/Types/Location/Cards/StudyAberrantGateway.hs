@@ -11,7 +11,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 
-newtype StudyAberrantGateway = StudyAberrantGateway Attrs
+newtype StudyAberrantGateway = StudyAberrantGateway LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 studyAberrantGateway :: StudyAberrantGateway
@@ -44,7 +44,7 @@ instance ActionRunner env => HasActions env StudyAberrantGateway where
     getActions iid window attrs
 
 instance LocationRunner env => RunMessage env StudyAberrantGateway where
-  runMessage msg l@(StudyAberrantGateway attrs@Attrs {..}) = case msg of
+  runMessage msg l@(StudyAberrantGateway attrs@LocationAttrs {..}) = case msg of
     UseCardAbility iid (LocationSource lid) _ 1 _ | lid == locationId ->
       l <$ unshiftMessage (DrawCards iid 3 False)
     When (EnemySpawnAtLocationMatching _ locationMatcher _) -> do

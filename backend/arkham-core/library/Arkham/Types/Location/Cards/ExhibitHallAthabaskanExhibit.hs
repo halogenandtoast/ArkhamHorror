@@ -11,7 +11,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype ExhibitHallAthabaskanExhibit = ExhibitHallAthabaskanExhibit Attrs
+newtype ExhibitHallAthabaskanExhibit = ExhibitHallAthabaskanExhibit LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 exhibitHallAthabaskanExhibit :: ExhibitHallAthabaskanExhibit

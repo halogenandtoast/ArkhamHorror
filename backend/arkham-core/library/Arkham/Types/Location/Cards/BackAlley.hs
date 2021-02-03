@@ -13,7 +13,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait hiding (Cultist)
 
-newtype BackAlley = BackAlley Attrs
+newtype BackAlley = BackAlley LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 backAlley :: BackAlley
@@ -34,7 +34,7 @@ instance HasModifiersFor env BackAlley where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env BackAlley where
-  getActions iid NonFast (BackAlley attrs@Attrs {..}) | locationRevealed =
+  getActions iid NonFast (BackAlley attrs@LocationAttrs {..}) | locationRevealed =
     withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction
           iid
@@ -48,7 +48,7 @@ instance ActionRunner env => HasActions env BackAlley where
   getActions iid window (BackAlley attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env BackAlley where
-  runMessage msg l@(BackAlley attrs@Attrs {..}) = case msg of
+  runMessage msg l@(BackAlley attrs@LocationAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source && locationRevealed ->
       l <$ unshiftMessage (Resign iid)
     _ -> BackAlley <$> runMessage msg attrs

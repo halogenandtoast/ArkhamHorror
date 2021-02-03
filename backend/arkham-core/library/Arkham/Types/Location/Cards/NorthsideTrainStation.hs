@@ -12,7 +12,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype NorthsideTrainStation = NorthsideTrainStation Attrs
+newtype NorthsideTrainStation = NorthsideTrainStation LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 northsideTrainStation :: NorthsideTrainStation
@@ -31,14 +31,14 @@ northsideTrainStation = NorthsideTrainStation
 instance HasModifiersFor env NorthsideTrainStation where
   getModifiersFor = noModifiersFor
 
-ability :: Attrs -> Ability
+ability :: LocationAttrs -> Ability
 ability attrs =
   (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
     { abilityLimit = PlayerLimit PerGame 1
     }
 
 instance ActionRunner env => HasActions env NorthsideTrainStation where
-  getActions iid NonFast (NorthsideTrainStation attrs@Attrs {..})
+  getActions iid NonFast (NorthsideTrainStation attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction iid (ability attrs)
       | iid `member` locationInvestigators
@@ -47,7 +47,7 @@ instance ActionRunner env => HasActions env NorthsideTrainStation where
     getActions iid window attrs
 
 instance LocationRunner env => RunMessage env NorthsideTrainStation where
-  runMessage msg l@(NorthsideTrainStation attrs@Attrs {..}) = case msg of
+  runMessage msg l@(NorthsideTrainStation attrs@LocationAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationIds <- getSetList [Arkham]
       l <$ unshiftMessage

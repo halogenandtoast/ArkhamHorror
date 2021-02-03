@@ -11,7 +11,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype StMarysHospital = StMarysHospital Attrs
+newtype StMarysHospital = StMarysHospital LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 stMarysHospital :: StMarysHospital
@@ -28,14 +28,14 @@ stMarysHospital = StMarysHospital $ baseAttrs
 instance HasModifiersFor env StMarysHospital where
   getModifiersFor = noModifiersFor
 
-ability :: Attrs -> Ability
+ability :: LocationAttrs -> Ability
 ability attrs =
   (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
     { abilityLimit = PlayerLimit PerGame 1
     }
 
 instance ActionRunner env => HasActions env StMarysHospital where
-  getActions iid NonFast (StMarysHospital attrs@Attrs {..}) | locationRevealed =
+  getActions iid NonFast (StMarysHospital attrs@LocationAttrs {..}) | locationRevealed =
     withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction iid (ability attrs)
       | iid `member` locationInvestigators

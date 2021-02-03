@@ -7,7 +7,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype RitualSite = RitualSite Attrs
+newtype RitualSite = RitualSite LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 ritualSite :: RitualSite

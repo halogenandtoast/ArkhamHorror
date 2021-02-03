@@ -7,7 +7,7 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 
-newtype Bathroom = Bathroom Attrs
+newtype Bathroom = Bathroom LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 bathroom :: Bathroom

@@ -6,7 +6,7 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 
-newtype Study = Study Attrs
+newtype Study = Study LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 study :: Study

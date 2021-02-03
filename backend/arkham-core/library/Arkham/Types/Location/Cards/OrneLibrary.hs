@@ -9,7 +9,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype OrneLibrary = OrneLibrary Attrs
+newtype OrneLibrary = OrneLibrary LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 orneLibrary :: OrneLibrary

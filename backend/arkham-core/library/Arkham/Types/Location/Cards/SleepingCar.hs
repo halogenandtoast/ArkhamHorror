@@ -13,7 +13,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
 
-newtype SleepingCar = SleepingCar Attrs
+newtype SleepingCar = SleepingCar LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 sleepingCar :: SleepingCar
@@ -31,7 +31,7 @@ sleepingCar = SleepingCar
     (singleton Train)
 
 instance HasCount ClueCount env LocationId => HasModifiersFor env SleepingCar where
-  getModifiersFor _ target (SleepingCar location@Attrs {..})
+  getModifiersFor _ target (SleepingCar location@LocationAttrs {..})
     | isTarget location target = case lookup LeftOf locationDirections of
       Just leftLocation -> do
         clueCount <- unClueCount <$> getCount leftLocation
@@ -41,7 +41,7 @@ instance HasCount ClueCount env LocationId => HasModifiersFor env SleepingCar wh
       Nothing -> pure []
   getModifiersFor _ _ _ = pure []
 
-ability :: Attrs -> Ability
+ability :: LocationAttrs -> Ability
 ability attrs =
   (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
     { abilityLimit = GroupLimit PerGame 1

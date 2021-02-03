@@ -7,7 +7,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype Rivertown = Rivertown Attrs
+newtype Rivertown = Rivertown LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 rivertown :: Rivertown

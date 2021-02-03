@@ -35,8 +35,8 @@ import qualified Arkham.Types.ChaosBag as ChaosBag
 import Arkham.Types.Difficulty
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Investigator.Attrs
+import Arkham.Types.Location.Attrs
 import qualified Arkham.Types.Location.Attrs as Location
-import qualified Arkham.Types.Location.Attrs as LocationAttrs
 import Arkham.Types.Phase
 import Arkham.Types.Scenario.Attrs
 import Control.Monad.State hiding (replicateM)
@@ -115,10 +115,7 @@ testAgenda cardCode f =
   pure $ baseAgenda (AgendaId cardCode) "Agenda" (Agenda 1 A) (Static 1) f
 
 testLocation
-  :: MonadIO m
-  => CardCode
-  -> (LocationAttrs.Attrs -> LocationAttrs.Attrs)
-  -> m Location
+  :: MonadIO m => CardCode -> (LocationAttrs -> LocationAttrs) -> m Location
 testLocation cardCode f =
   let
     locationId = LocationId cardCode
@@ -139,8 +136,8 @@ testInvestigator cardCode f =
 
 testConnectedLocations
   :: MonadIO m
-  => (LocationAttrs.Attrs -> LocationAttrs.Attrs)
-  -> (LocationAttrs.Attrs -> LocationAttrs.Attrs)
+  => (LocationAttrs -> LocationAttrs)
+  -> (LocationAttrs -> LocationAttrs)
   -> m (Location, Location)
 testConnectedLocations f1 f2 = do
   location1 <- testLocation
@@ -163,8 +160,8 @@ testConnectedLocations f1 f2 = do
 
 testUnconnectedLocations
   :: MonadIO m
-  => (LocationAttrs.Attrs -> LocationAttrs.Attrs)
-  -> (LocationAttrs.Attrs -> LocationAttrs.Attrs)
+  => (LocationAttrs -> LocationAttrs)
+  -> (LocationAttrs -> LocationAttrs)
   -> m (Location, Location)
 testUnconnectedLocations f1 f2 = do
   location1 <- testLocation

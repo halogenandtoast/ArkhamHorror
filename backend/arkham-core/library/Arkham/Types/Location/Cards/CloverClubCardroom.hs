@@ -12,7 +12,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Trait hiding (Cultist)
 
-newtype CloverClubCardroom = CloverClubCardroom Attrs
+newtype CloverClubCardroom = CloverClubCardroom LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 cloverClubCardroom :: CloverClubCardroom
@@ -29,7 +29,7 @@ cloverClubCardroom = CloverClubCardroom $ baseAttrs
 instance HasModifiersFor env CloverClubCardroom where
   getModifiersFor = noModifiersFor
 
-ability :: Attrs -> Ability
+ability :: LocationAttrs -> Ability
 ability attrs = base { abilityLimit = GroupLimit PerRound 1 }
  where
   base = mkAbility
@@ -38,7 +38,7 @@ ability attrs = base { abilityLimit = GroupLimit PerRound 1 }
     (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
 
 instance ActionRunner env => HasActions env CloverClubCardroom where
-  getActions iid NonFast (CloverClubCardroom attrs@Attrs {..})
+  getActions iid NonFast (CloverClubCardroom attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ do
       step <- unActStep . getStep <$> ask
       pure
@@ -49,7 +49,7 @@ instance ActionRunner env => HasActions env CloverClubCardroom where
     getActions iid window attrs
 
 instance LocationRunner env => RunMessage env CloverClubCardroom where
-  runMessage msg l@(CloverClubCardroom attrs@Attrs {..}) = case msg of
+  runMessage msg l@(CloverClubCardroom attrs@LocationAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _
       | isSource attrs source && locationRevealed -> l
       <$ unshiftMessage (RequestTokens source (Just iid) 1 SetAside)

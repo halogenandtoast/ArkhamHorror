@@ -11,7 +11,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
-newtype TwistedUnderbrush = TwistedUnderbrush Attrs
+newtype TwistedUnderbrush = TwistedUnderbrush LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 twistedUnderbrush :: TwistedUnderbrush
@@ -31,7 +31,7 @@ instance HasModifiersFor env TwistedUnderbrush where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env TwistedUnderbrush where
-  getActions iid NonFast (TwistedUnderbrush attrs@Attrs {..})
+  getActions iid NonFast (TwistedUnderbrush attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction
           iid

@@ -6,7 +6,7 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 
-newtype Hallway = Hallway Attrs
+newtype Hallway = Hallway LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 hallway :: Hallway

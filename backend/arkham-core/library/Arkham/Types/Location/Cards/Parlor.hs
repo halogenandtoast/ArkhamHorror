@@ -8,7 +8,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 
-newtype Parlor = Parlor Attrs
+newtype Parlor = Parlor LocationAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 parlor :: Parlor
@@ -28,7 +28,7 @@ instance HasModifiersFor env Parlor where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env Parlor where
-  getActions iid NonFast (Parlor attrs@Attrs {..}) | locationRevealed =
+  getActions iid NonFast (Parlor attrs@LocationAttrs {..}) | locationRevealed =
     withBaseActions iid NonFast attrs $ do
       maid <- fmap unStoryAssetId <$> getId (CardCode "01117")
       case maid of
@@ -61,7 +61,7 @@ instance ActionRunner env => HasActions env Parlor where
   getActions iid window (Parlor attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env Parlor where
-  runMessage msg l@(Parlor attrs@Attrs {..}) = case msg of
+  runMessage msg l@(Parlor attrs@LocationAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _
       | isSource attrs source && locationRevealed -> l
       <$ unshiftMessage (Resign iid)

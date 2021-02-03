@@ -1,7 +1,6 @@
 module Arkham.Types.Treachery.Cards.RexsCurseSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
@@ -22,7 +21,7 @@ spec = describe "Rex's Curse" $ do
     investigator <- testInvestigator "00000" id
     rexsCurse <- buildPlayerCard "02009"
 
-    (didRunMessage, logger) <- didPassSkillTestBy investigator 2
+    (didRunMessage, logger) <- didPassSkillTestBy investigator SkillIntellect 2
     game <-
       runGameTest
         investigator

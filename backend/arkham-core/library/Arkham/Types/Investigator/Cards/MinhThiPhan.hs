@@ -7,7 +7,7 @@ import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
 import Arkham.Types.Trait
 
-newtype MinhThiPhan = MinhThiPhan Attrs
+newtype MinhThiPhan = MinhThiPhan InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env MinhThiPhan where

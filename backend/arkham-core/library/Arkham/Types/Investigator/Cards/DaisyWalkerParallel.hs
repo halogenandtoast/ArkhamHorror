@@ -11,7 +11,7 @@ import Arkham.Types.Stats
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Trait
 
-newtype DaisyWalkerParallel = DaisyWalkerParallel Attrs
+newtype DaisyWalkerParallel = DaisyWalkerParallel InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 daisyWalkerParallel :: DaisyWalkerParallel
@@ -28,7 +28,7 @@ daisyWalkerParallel = DaisyWalkerParallel
     }
 
 instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor env DaisyWalkerParallel where
-  getModifiersFor source target@(InvestigatorTarget iid) (DaisyWalkerParallel attrs@Attrs {..})
+  getModifiersFor source target@(InvestigatorTarget iid) (DaisyWalkerParallel attrs@InvestigatorAttrs {..})
     | iid == investigatorId
     = do
       tomeCount <- unAssetCount <$> getCount (investigatorId, [Tome])
@@ -41,7 +41,7 @@ instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor en
   getModifiersFor source target (DaisyWalkerParallel attrs) =
     getModifiersFor source target attrs
 
-ability :: Attrs -> Ability
+ability :: InvestigatorAttrs -> Ability
 ability attrs = (mkAbility (toSource attrs) 1 (FastAbility Free))
   { abilityLimit = PlayerLimit PerGame 1
   }
@@ -62,33 +62,40 @@ instance ActionRunner env => HasActions env DaisyWalkerParallel where
   getActions i window (DaisyWalkerParallel attrs) = getActions i window attrs
 
 instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
-  runMessage msg i@(DaisyWalkerParallel attrs@Attrs {..}) = case msg of
-    UseCardAbility iid (InvestigatorSource iid') _ 1 _
-      | investigatorId == iid' -> do
-        tomeAssets <- filterM
-          ((elem Tome <$>) . getSet)
-          (setToList investigatorAssets)
-        pairs' <-
-          filter (not . null . snd)
-            <$> traverse (\a -> (a, ) <$> getActions iid NonFast a) tomeAssets
-        if null pairs'
-          then pure i
-          else i <$ unshiftMessage
-            (chooseOneAtATime iid $ map
-              (\(tome, actions) ->
-                TargetLabel (AssetTarget tome) [Run [chooseOne iid actions]]
+  runMessage msg i@(DaisyWalkerParallel attrs@InvestigatorAttrs {..}) =
+    case msg of
+      UseCardAbility iid (InvestigatorSource iid') _ 1 _
+        | investigatorId == iid' -> do
+          tomeAssets <- filterM
+            ((elem Tome <$>) . getSet)
+            (setToList investigatorAssets)
+          pairs' <-
+            filter (not . null . snd)
+              <$> traverse (\a -> (a, ) <$> getActions iid NonFast a) tomeAssets
+          if null pairs'
+            then pure i
+            else i <$ unshiftMessage
+              (chooseOneAtATime iid $ map
+                (\(tome, actions) ->
+                  TargetLabel (AssetTarget tome) [Run [chooseOne iid actions]]
+                )
+                pairs'
               )
-              pairs'
-            )
-    UseCardAbility iid (TokenEffectSource ElderSign) _ 2 _
-      | iid == investigatorId
-      -> i <$ unshiftMessage (SearchDiscard iid (InvestigatorTarget iid) [Tome])
-    ResolveToken _drawnToken ElderSign iid | iid == investigatorId ->
-      i <$ unshiftMessage
-        (chooseOne
-          iid
-          [ UseCardAbility iid (TokenEffectSource ElderSign) Nothing 2 NoPayment
-          , Continue "Do not use Daisy's ability"
-          ]
-        )
-    _ -> DaisyWalkerParallel <$> runMessage msg attrs
+      UseCardAbility iid (TokenEffectSource ElderSign) _ 2 _
+        | iid == investigatorId
+        -> i <$ unshiftMessage
+          (SearchDiscard iid (InvestigatorTarget iid) [Tome])
+      ResolveToken _drawnToken ElderSign iid | iid == investigatorId ->
+        i <$ unshiftMessage
+          (chooseOne
+            iid
+            [ UseCardAbility
+              iid
+              (TokenEffectSource ElderSign)
+              Nothing
+              2
+              NoPayment
+            , Continue "Do not use Daisy's ability"
+            ]
+          )
+      _ -> DaisyWalkerParallel <$> runMessage msg attrs

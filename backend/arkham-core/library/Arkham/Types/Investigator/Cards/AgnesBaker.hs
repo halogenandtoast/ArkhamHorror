@@ -1,8 +1,7 @@
 module Arkham.Types.Investigator.Cards.AgnesBaker
   ( AgnesBaker(..)
   , agnesBaker
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -11,7 +10,7 @@ import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
 import Arkham.Types.Trait
 
-newtype AgnesBaker = AgnesBaker Attrs
+newtype AgnesBaker = AgnesBaker InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env AgnesBaker where
@@ -31,7 +30,7 @@ agnesBaker = AgnesBaker
     , agility = 3
     }
 
-ability :: Attrs -> Ability
+ability :: InvestigatorAttrs -> Ability
 ability attrs = base { abilityLimit = PlayerLimit PerPhase 1 }
   where base = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 

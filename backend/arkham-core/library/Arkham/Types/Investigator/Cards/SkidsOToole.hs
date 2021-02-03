@@ -1,8 +1,7 @@
 module Arkham.Types.Investigator.Cards.SkidsOToole
   ( SkidsOToole(..)
   , skidsOToole
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -11,7 +10,7 @@ import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
 import Arkham.Types.Trait
 
-newtype SkidsOToole = SkidsOToole Attrs
+newtype SkidsOToole = SkidsOToole InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env SkidsOToole where
@@ -33,12 +32,12 @@ skidsOToole = SkidsOToole $ baseAttrs
     }
   [Criminal]
 
-ability :: Attrs -> Ability
+ability :: InvestigatorAttrs -> Ability
 ability attrs = base { abilityLimit = PlayerLimit PerTurn 1 }
   where base = mkAbility (toSource attrs) 1 (FastAbility $ ResourceCost 2)
 
 instance ActionRunner env => HasActions env SkidsOToole where
-  getActions iid (DuringTurn You) (SkidsOToole a@Attrs {..})
+  getActions iid (DuringTurn You) (SkidsOToole a@InvestigatorAttrs {..})
     | iid == investigatorId = pure [ActivateCardAbilityAction iid (ability a)]
   getActions _ _ _ = pure []
 
@@ -49,7 +48,7 @@ instance HasTokenValue env SkidsOToole where
   getTokenValue (SkidsOToole attrs) iid token = getTokenValue attrs iid token
 
 instance (InvestigatorRunner env) => RunMessage env SkidsOToole where
-  runMessage msg i@(SkidsOToole attrs@Attrs {..}) = case msg of
+  runMessage msg i@(SkidsOToole attrs@InvestigatorAttrs {..}) = case msg of
     UseCardAbility _ (InvestigatorSource iid) _ 1 _ | iid == investigatorId ->
       pure . SkidsOToole $ attrs & remainingActionsL +~ 1
     PassedSkillTest iid _ _ (DrawnTokenTarget token) _ _

@@ -1,11 +1,10 @@
 module Arkham.Types.Event.Cards.WillToSurvive4Spec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
-import Arkham.Types.Investigator.Attrs (Attrs(..))
+import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
 spec = describe "Will to Survive (4)" $ do
@@ -13,7 +12,7 @@ spec = describe "Will to Survive (4)" $ do
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorIntellect = 3 }
     willToSurvive4 <- buildEvent "01085" investigator
-    (didPassTest, logger) <- didPassSkillTestBy investigator 0
+    (didPassTest, logger) <- didPassSkillTestBy investigator SkillIntellect 0
     void
       $ runGameTest
           investigator
@@ -29,7 +28,7 @@ spec = describe "Will to Survive (4)" $ do
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorIntellect = 3 }
     willToSurvive4 <- buildEvent "01085" investigator
-    (didFailTest, logger) <- didFailSkillTestBy investigator 3
+    (didFailTest, logger) <- didFailSkillTestBy investigator SkillIntellect 3
     void
       $ runGameTest
           investigator

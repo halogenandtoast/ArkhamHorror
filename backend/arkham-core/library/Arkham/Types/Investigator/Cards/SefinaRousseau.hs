@@ -7,7 +7,7 @@ import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
 import Arkham.Types.Trait
 
-newtype SefinaRousseau = SefinaRousseau Attrs
+newtype SefinaRousseau = SefinaRousseau InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env SefinaRousseau where

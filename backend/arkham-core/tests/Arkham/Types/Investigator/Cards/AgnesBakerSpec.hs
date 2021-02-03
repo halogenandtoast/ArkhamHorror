@@ -16,7 +16,7 @@ spec = describe "Agnes Baker" $ do
       game <-
         runGameTest
           agnesBaker
-          [ PlacedLocation (getLocationId location)
+          [ PlacedLocation (toId location)
           , enemySpawn location enemy
           , moveTo agnesBaker location
           , InvestigatorDirectDamage (toId agnesBaker) (TestSource mempty) 0 1
@@ -37,12 +37,12 @@ spec = describe "Agnes Baker" $ do
     it "gives +1 for each horror on Agnes" $ do
       let agnesBaker = lookupInvestigator "01004"
       location <- testLocation "00000" id
-      (didPassTest, logger) <- didPassSkillTestBy agnesBaker 0
+      (didPassTest, logger) <- didPassSkillTestBy agnesBaker SkillIntellect 0
       void
         $ runGameTest
             agnesBaker
             [ SetTokens [ElderSign]
-            , PlacedLocation (getLocationId location)
+            , PlacedLocation (toId location)
             , moveTo agnesBaker location
             , InvestigatorDirectDamage (toId agnesBaker) (TestSource mempty) 0 2
             , beginSkillTest agnesBaker SkillIntellect 4

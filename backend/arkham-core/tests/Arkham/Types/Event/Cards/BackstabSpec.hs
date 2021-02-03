@@ -1,12 +1,11 @@
 module Arkham.Types.Event.Cards.BackstabSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
 import qualified Arkham.Types.Enemy.Attrs as EnemyAttrs
-import Arkham.Types.Investigator.Attrs (Attrs(..))
+import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
 spec = do

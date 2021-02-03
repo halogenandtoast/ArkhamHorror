@@ -10,7 +10,7 @@ import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
 import Arkham.Types.Trait
 
-newtype RexMurphy = RexMurphy Attrs
+newtype RexMurphy = RexMurphy InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env RexMurphy where
@@ -33,8 +33,9 @@ rexMurphy = RexMurphy $ baseAttrs
   [Reporter]
 
 instance ActionRunner env => HasActions env RexMurphy where
-  getActions iid (AfterPassSkillTest _ _ You n) (RexMurphy attrs@Attrs {..})
-    | iid == investigatorId && n >= 2 = do
+  getActions iid (AfterPassSkillTest _ _ You n) (RexMurphy attrs@InvestigatorAttrs {..})
+    | iid == investigatorId && n >= 2
+    = do
       let ability = mkAbility (toSource attrs) 1 (ReactionAbility Free)
       clueCount' <- unClueCount <$> getCount investigatorLocation
       pure [ ActivateCardAbilityAction investigatorId ability | clueCount' > 0 ]
@@ -46,7 +47,7 @@ instance HasTokenValue env RexMurphy where
   getTokenValue (RexMurphy attrs) iid token = getTokenValue attrs iid token
 
 instance (InvestigatorRunner env) => RunMessage env RexMurphy where
-  runMessage msg i@(RexMurphy attrs@Attrs {..}) = case msg of
+  runMessage msg i@(RexMurphy attrs@InvestigatorAttrs {..}) = case msg of
     UseCardAbility _ (InvestigatorSource iid) _ 1 _ | iid == investigatorId ->
       i <$ unshiftMessage
         (DiscoverCluesAtLocation investigatorId investigatorLocation 1)

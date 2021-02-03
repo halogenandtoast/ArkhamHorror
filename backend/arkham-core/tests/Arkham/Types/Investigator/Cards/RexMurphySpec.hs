@@ -1,7 +1,6 @@
 module Arkham.Types.Investigator.Cards.RexMurphySpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
@@ -64,7 +63,7 @@ spec = describe "Rex Murphy" $ do
     it "can resolve normally with +2" $ do
       let rexMurphy = lookupInvestigator "02002"
       cards <- testPlayerCards 3
-      (didPassTest, logger) <- didPassSkillTestBy rexMurphy 0
+      (didPassTest, logger) <- didPassSkillTestBy rexMurphy SkillIntellect 0
       game <-
         runGameTest
           rexMurphy

@@ -1,7 +1,6 @@
 module Arkham.Types.Asset.Cards.GrotesqueStatue4Spec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
@@ -13,7 +12,10 @@ spec = describe "Grotesque Statue (4)" $ do
     it "reveals 2 tokens and let's you choose one" $ do
       investigator <- testInvestigator "00000" id
       grotestqueStatue <- buildAsset "01071"
-      (didRunMessage, logger) <- didPassSkillTestBy investigator 5
+      (didRunMessage, logger) <- didPassSkillTestBy
+        investigator
+        SkillIntellect
+        5
       game <-
         runGameTest
           investigator

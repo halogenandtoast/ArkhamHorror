@@ -1,7 +1,6 @@
 module Arkham.Types.Investigator.Cards.WendyAdamsSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
@@ -11,7 +10,7 @@ spec = describe "Wendy Adams" $ do
     it "allows you to discard a card to redraw a chaos token" $ do
       let wendyAdams = lookupInvestigator "01005"
       card <- testPlayerCard id
-      (didPassTest, logger) <- didPassSkillTestBy wendyAdams 0
+      (didPassTest, logger) <- didPassSkillTestBy wendyAdams SkillWillpower 0
       void
         $ runGameTest
             wendyAdams
@@ -34,7 +33,7 @@ spec = describe "Wendy Adams" $ do
   context "elder sign" $ do
     it "gives +0" $ do
       let wendyAdams = lookupInvestigator "01005"
-      (didPassTest, logger) <- didPassSkillTestBy wendyAdams 0
+      (didPassTest, logger) <- didPassSkillTestBy wendyAdams SkillWillpower 0
       void
         $ runGameTest
             wendyAdams
@@ -47,7 +46,7 @@ spec = describe "Wendy Adams" $ do
     it "automatically succeeds if Wendy's Amulet is in play" $ do
       let wendyAdams = lookupInvestigator "01005"
       wendysAmulet <- buildAsset "01014"
-      (didPassTest, logger) <- didPassSkillTestBy wendyAdams 4
+      (didPassTest, logger) <- didPassSkillTestBy wendyAdams SkillWillpower 4
       void
         $ runGameTest
             wendyAdams

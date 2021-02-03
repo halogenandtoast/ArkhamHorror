@@ -1,7 +1,6 @@
 module Arkham.Types.Asset.Cards.JimsTrumpetSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
@@ -104,8 +103,8 @@ spec = describe "Jim's Trumpet" $ do
         runGameTest
           investigator
           [ SetTokens [Skull]
-          , PlacedLocation (getLocationId location1)
-          , PlacedLocation (getLocationId location2)
+          , PlacedLocation (toId location1)
+          , PlacedLocation (toId location2)
           , playAsset investigator jimsTrumpet
           , moveTo investigator location1
           , moveTo investigator2 location2
@@ -137,8 +136,8 @@ spec = describe "Jim's Trumpet" $ do
         runGameTest
           investigator
           [ SetTokens [Skull]
-          , PlacedLocation (getLocationId location1)
-          , PlacedLocation (getLocationId location2)
+          , PlacedLocation (toId location1)
+          , PlacedLocation (toId location2)
           , playAsset investigator jimsTrumpet
           , moveTo investigator location1
           , moveTo investigator2 location2

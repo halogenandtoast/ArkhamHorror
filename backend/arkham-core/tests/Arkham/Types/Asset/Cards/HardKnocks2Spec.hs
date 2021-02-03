@@ -1,11 +1,10 @@
 module Arkham.Types.Asset.Cards.HardKnocks2Spec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
-import Arkham.Types.Investigator.Attrs (Attrs(..))
+import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
 spec = describe "Hard Knocks (2)" $ do
@@ -13,7 +12,7 @@ spec = describe "Hard Knocks (2)" $ do
     hardKnocks2 <- buildAsset "50005"
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorCombat = 1, investigatorResources = 2 }
-    (didPassTest, logger) <- didPassSkillTestBy investigator 0
+    (didPassTest, logger) <- didPassSkillTestBy investigator SkillCombat 0
     void
       $ runGameTest
           investigator
@@ -47,7 +46,7 @@ spec = describe "Hard Knocks (2)" $ do
     hardKnocks2 <- buildAsset "50005"
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorAgility = 1, investigatorResources = 2 }
-    (didPassTest, logger) <- didPassSkillTestBy investigator 0
+    (didPassTest, logger) <- didPassSkillTestBy investigator SkillAgility 0
     void
       $ runGameTest
           investigator

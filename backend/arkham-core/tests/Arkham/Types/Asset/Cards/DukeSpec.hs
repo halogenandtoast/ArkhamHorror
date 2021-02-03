@@ -6,7 +6,7 @@ where
 import TestImport
 
 import qualified Arkham.Types.Enemy.Attrs as Enemy
-import Arkham.Types.Investigator.Attrs (Attrs(..))
+import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 import Arkham.Types.Location.Attrs (Attrs(..))
 
 spec :: Spec
@@ -67,8 +67,8 @@ spec = describe "Duke" $ do
             $ \attrs -> attrs { locationShroud = 4, locationClues = 1 }
           game <- runGameTest
             investigator
-            [ PlacedLocation (getLocationId location1)
-            , PlacedLocation (getLocationId location2)
+            [ PlacedLocation (toId location1)
+            , PlacedLocation (toId location2)
             , SetTokens [Zero]
             , playAsset investigator duke
             ]

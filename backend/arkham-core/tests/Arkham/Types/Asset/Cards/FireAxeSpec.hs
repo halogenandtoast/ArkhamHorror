@@ -6,7 +6,7 @@ where
 import TestImport
 
 import Arkham.Types.Enemy.Attrs (Attrs(..))
-import Arkham.Types.Investigator.Attrs (Attrs(..))
+import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
 spec = describe "Fire Axe" $ do

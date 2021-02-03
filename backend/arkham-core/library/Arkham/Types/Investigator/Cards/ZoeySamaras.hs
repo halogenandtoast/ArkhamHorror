@@ -8,7 +8,7 @@ import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
 import Arkham.Types.Trait
 
-newtype ZoeySamaras = ZoeySamaras Attrs
+newtype ZoeySamaras = ZoeySamaras InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env ZoeySamaras where
@@ -31,8 +31,9 @@ zoeySamaras = ZoeySamaras $ baseAttrs
   [Believer, Hunter]
 
 instance ActionRunner env => HasActions env ZoeySamaras where
-  getActions iid (AfterEnemyEngageInvestigator You _) (ZoeySamaras Attrs {..})
-    | iid == investigatorId = do
+  getActions iid (AfterEnemyEngageInvestigator You _) (ZoeySamaras InvestigatorAttrs {..})
+    | iid == investigatorId
+    = do
       let
         ability =
           mkAbility (InvestigatorSource investigatorId) 1 (ReactionAbility Free)
@@ -56,12 +57,13 @@ instance HasTokenValue env ZoeySamaras where
   getTokenValue (ZoeySamaras attrs) iid token = getTokenValue attrs iid token
 
 instance InvestigatorRunner env => RunMessage env ZoeySamaras where
-  runMessage msg i@(ZoeySamaras attrs@Attrs {..}) = case msg of
+  runMessage msg i@(ZoeySamaras attrs@InvestigatorAttrs {..}) = case msg of
     UseCardAbility _ (InvestigatorSource iid) _ 1 _ | iid == investigatorId ->
       i <$ unshiftMessage (TakeResources investigatorId 1 False)
     ResolveToken _drawnToken ElderSign iid | iid == investigatorId ->
       i <$ unshiftMessage
-        (CreateWindowModifierEffect EffectSkillTestWindow
+        (CreateWindowModifierEffect
+          EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [DamageDealt 1])
           (InvestigatorSource investigatorId)
           (InvestigatorTarget investigatorId)

@@ -1,7 +1,6 @@
 module Arkham.Types.Event.Cards.DarkMemorySpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
@@ -16,11 +15,13 @@ spec = do
 
       game <-
         runGameTestWithLogger
-          logger
-          investigator
-          [playEvent investigator darkMemory]
-        $ (eventsL %~ insertEntity darkMemory)
-        . (agendasL %~ insertEntity agenda)
+            logger
+            investigator
+            [playEvent investigator darkMemory]
+            ((eventsL %~ insertEntity darkMemory)
+            . (agendasL %~ insertEntity agenda)
+            )
+          >>= runGameTestOnlyOption "Advance agenda"
       agenda `shouldSatisfy` hasDoom game 1
       darkMemory `shouldSatisfy` isInDiscardOf game investigator
       readIORef didAdvanceAgenda `shouldReturn` True

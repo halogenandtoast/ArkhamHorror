@@ -1,11 +1,10 @@
 module Arkham.Types.Skill.Cards.DeductionSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
-import Arkham.Types.Investigator.Attrs (Attrs(..))
+import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 import Arkham.Types.Location.Attrs (Attrs(..))
 
 spec :: Spec

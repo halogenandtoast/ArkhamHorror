@@ -15,7 +15,7 @@ import Control.Monad.Fail
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 
-data Attrs = Attrs
+data InvestigatorAttrs = InvestigatorAttrs
   { investigatorName :: Text
   , investigatorClass :: ClassSymbol
   , investigatorId :: InvestigatorId
@@ -52,52 +52,52 @@ data Attrs = Attrs
   }
   deriving stock (Show, Generic)
 
-makeLensesWith suffixedFields ''Attrs
+makeLensesWith suffixedFields ''InvestigatorAttrs
 
-instance ToJSON Attrs where
+instance ToJSON InvestigatorAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "investigator"
   toEncoding = genericToEncoding $ aesonOptions $ Just "investigator"
 
-instance FromJSON Attrs where
+instance FromJSON InvestigatorAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "investigator"
 
-instance IsCard Attrs where
+instance IsCard InvestigatorAttrs where
   getCardId = error "Investigators are not treated as cards yet"
   getCardCode = unInvestigatorId . investigatorId
   getTraits = investigatorTraits
   getKeywords = mempty
 
-instance HasCount ActionRemainingCount env Attrs where
+instance HasCount ActionRemainingCount env InvestigatorAttrs where
   getCount = pure . ActionRemainingCount . investigatorRemainingActions
 
-instance HasList Action.TakenAction env Attrs where
+instance HasList Action.TakenAction env InvestigatorAttrs where
   getList = pure . map Action.TakenAction . investigatorActionsTaken
 
-instance Entity Attrs where
-  type EntityId Attrs = InvestigatorId
-  type EntityAttrs Attrs = Attrs
+instance Entity InvestigatorAttrs where
+  type EntityId InvestigatorAttrs = InvestigatorId
+  type EntityAttrs InvestigatorAttrs = InvestigatorAttrs
   toId = investigatorId
   toAttrs = id
 
-instance NamedEntity Attrs where
+instance NamedEntity InvestigatorAttrs where
   toName = mkName . investigatorName
 
-instance TargetEntity Attrs where
+instance TargetEntity InvestigatorAttrs where
   toTarget = InvestigatorTarget . toId
-  isTarget Attrs { investigatorId } (InvestigatorTarget iid) =
+  isTarget InvestigatorAttrs { investigatorId } (InvestigatorTarget iid) =
     iid == investigatorId
   isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
   isTarget _ _ = False
 
-instance SourceEntity Attrs where
+instance SourceEntity InvestigatorAttrs where
   toSource = InvestigatorSource . toId
-  isSource Attrs { investigatorId } (InvestigatorSource iid) =
+  isSource InvestigatorAttrs { investigatorId } (InvestigatorSource iid) =
     iid == investigatorId
   isSource _ _ = False
 
 getFacingDefeat
-  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Bool
-getFacingDefeat a@Attrs {..} = do
+  :: (MonadReader env m, HasModifiersFor env ()) => InvestigatorAttrs -> m Bool
+getFacingDefeat a@InvestigatorAttrs {..} = do
   modifiedHealth <- getModifiedHealth a
   modifiedSanity <- getModifiedSanity a
   pure
@@ -106,7 +106,8 @@ getFacingDefeat a@Attrs {..} = do
     || investigatorSanityDamage
     >= modifiedSanity
 
-skillValueFor :: SkillType -> Maybe Action -> [Modifier] -> Attrs -> Int
+skillValueFor
+  :: SkillType -> Maybe Action -> [Modifier] -> InvestigatorAttrs -> Int
 skillValueFor skill maction tempModifiers attrs = foldr
   (applyModifier . modifierType)
   (baseSkillValueFor skill maction tempModifiers attrs)
@@ -119,7 +120,8 @@ skillValueFor skill maction tempModifiers attrs = foldr
     if skillType == skill && Just action == maction then max 0 (n + m) else n
   applyModifier _ n = n
 
-baseSkillValueFor :: SkillType -> Maybe Action -> [Modifier] -> Attrs -> Int
+baseSkillValueFor
+  :: SkillType -> Maybe Action -> [Modifier] -> InvestigatorAttrs -> Int
 baseSkillValueFor skill _maction tempModifiers attrs = foldr
   (applyModifier . modifierType)
   baseSkillValue
@@ -137,7 +139,7 @@ baseSkillValueFor skill _maction tempModifiers attrs = foldr
 damageValueFor
   :: (MonadReader env m, HasModifiersFor env (), HasSource ForSkillTest env)
   => Int
-  -> Attrs
+  -> InvestigatorAttrs
   -> m Int
 damageValueFor baseValue attrs = do
   source <-
@@ -171,7 +173,7 @@ getIsScenarioAbility = do
 
 getHandSize
   :: (MonadReader env m, HasModifiersFor env (), HasSource ForSkillTest env)
-  => Attrs
+  => InvestigatorAttrs
   -> m Int
 getHandSize attrs = do
   source <- asks $ fromMaybe (toSource attrs) . getSource ForSkillTest
@@ -184,8 +186,8 @@ getHandSize attrs = do
   applyModifier _ n = n
 
 getActionsForTurn
-  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Int
-getActionsForTurn attrs@Attrs {..} = do
+  :: (MonadReader env m, HasModifiersFor env ()) => InvestigatorAttrs -> m Int
+getActionsForTurn attrs@InvestigatorAttrs {..} = do
   modifiers <-
     map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
   pure $ foldr applyModifier 3 modifiers
@@ -194,8 +196,8 @@ getActionsForTurn attrs@Attrs {..} = do
   applyModifier _ n = n
 
 getCanDiscoverClues
-  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Bool
-getCanDiscoverClues attrs@Attrs {..} = do
+  :: (MonadReader env m, HasModifiersFor env ()) => InvestigatorAttrs -> m Bool
+getCanDiscoverClues attrs@InvestigatorAttrs {..} = do
   modifiers <-
     map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
   pure $ not (any match modifiers)
@@ -204,8 +206,8 @@ getCanDiscoverClues attrs@Attrs {..} = do
   match _ = False
 
 getCanSpendClues
-  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Bool
-getCanSpendClues attrs@Attrs {..} = do
+  :: (MonadReader env m, HasModifiersFor env ()) => InvestigatorAttrs -> m Bool
+getCanSpendClues attrs@InvestigatorAttrs {..} = do
   modifiers <-
     map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
   pure $ not (any match modifiers)
@@ -214,8 +216,8 @@ getCanSpendClues attrs@Attrs {..} = do
   match _ = False
 
 getModifiedHealth
-  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Int
-getModifiedHealth attrs@Attrs {..} = do
+  :: (MonadReader env m, HasModifiersFor env ()) => InvestigatorAttrs -> m Int
+getModifiedHealth attrs@InvestigatorAttrs {..} = do
   modifiers <-
     map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
   pure $ foldr applyModifier investigatorHealth modifiers
@@ -224,8 +226,8 @@ getModifiedHealth attrs@Attrs {..} = do
   applyModifier _ n = n
 
 getModifiedSanity
-  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Int
-getModifiedSanity attrs@Attrs {..} = do
+  :: (MonadReader env m, HasModifiersFor env ()) => InvestigatorAttrs -> m Int
+getModifiedSanity attrs@InvestigatorAttrs {..} = do
   modifiers <-
     map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
   pure $ foldr applyModifier investigatorSanity modifiers
@@ -237,14 +239,14 @@ removeFromSlots
   :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = HashMap.map (map (removeIfMatches aid))
 
-fitsAvailableSlots :: [SlotType] -> [Trait] -> Attrs -> Bool
+fitsAvailableSlots :: [SlotType] -> [Trait] -> InvestigatorAttrs -> Bool
 fitsAvailableSlots slotTypes traits a = null
   (slotTypes \\ concatMap
     (\slotType -> availableSlotTypesFor slotType traits a)
     (nub slotTypes)
   )
 
-availableSlotTypesFor :: SlotType -> [Trait] -> Attrs -> [SlotType]
+availableSlotTypesFor :: SlotType -> [Trait] -> InvestigatorAttrs -> [SlotType]
 availableSlotTypesFor slotType traits a =
   case HashMap.lookup slotType (a ^. slotsL) of
     Nothing -> []
@@ -257,18 +259,19 @@ placeInAvailableSlot aid traits (x : xs) = if canPutIntoSlot traits x
   then putIntoSlot aid x : xs
   else x : placeInAvailableSlot aid traits xs
 
-discardableAssets :: SlotType -> Attrs -> [AssetId]
+discardableAssets :: SlotType -> InvestigatorAttrs -> [AssetId]
 discardableAssets slotType a = case HashMap.lookup slotType (a ^. slotsL) of
   Nothing -> []
   Just slots -> mapMaybe slotItem slots
 
-discardableCards :: Attrs -> [Card]
-discardableCards Attrs {..} = if all cardIsWeakness investigatorHand
-  then investigatorHand
-  else filter (not . cardIsWeakness) investigatorHand
+discardableCards :: InvestigatorAttrs -> [Card]
+discardableCards InvestigatorAttrs {..} =
+  if all cardIsWeakness investigatorHand
+    then investigatorHand
+    else filter (not . cardIsWeakness) investigatorHand
 
-getAttrStats :: Attrs -> Stats
-getAttrStats Attrs {..} = Stats
+getAttrStats :: InvestigatorAttrs -> Stats
+getAttrStats InvestigatorAttrs {..} = Stats
   { health = investigatorHealth
   , sanity = investigatorSanity
   , willpower = investigatorWillpower
@@ -277,8 +280,14 @@ getAttrStats Attrs {..} = Stats
   , agility = investigatorAgility
   }
 
-baseAttrs :: InvestigatorId -> Text -> ClassSymbol -> Stats -> [Trait] -> Attrs
-baseAttrs iid name classSymbol Stats {..} traits = Attrs
+baseAttrs
+  :: InvestigatorId
+  -> Text
+  -> ClassSymbol
+  -> Stats
+  -> [Trait]
+  -> InvestigatorAttrs
+baseAttrs iid name classSymbol Stats {..} traits = InvestigatorAttrs
   { investigatorName = name
   , investigatorId = iid
   , investigatorClass = classSymbol
@@ -327,14 +336,17 @@ baseAttrs iid name classSymbol Stats {..} traits = Attrs
   , investigatorTomeActions = Nothing
   }
 
-matchTarget :: Attrs -> ActionTarget -> Action -> Bool
+matchTarget :: InvestigatorAttrs -> ActionTarget -> Action -> Bool
 matchTarget attrs (FirstOneOf as) action =
   action `elem` as && all (`notElem` investigatorActionsTaken attrs) as
 matchTarget _ (IsAction a) action = action == a
 matchTarget _ (EnemyAction a _) action = action == a
 
 getActionCost
-  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> Action -> m Int
+  :: (MonadReader env m, HasModifiersFor env ())
+  => InvestigatorAttrs
+  -> Action
+  -> m Int
 getActionCost attrs a = do
   modifiers <-
     map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
@@ -346,7 +358,7 @@ getActionCost attrs a = do
 
 getActionCostModifier
   :: (MonadReader env m, HasModifiersFor env ())
-  => Attrs
+  => InvestigatorAttrs
   -> Maybe Action
   -> m Int
 getActionCostModifier _ Nothing = pure 0
@@ -360,14 +372,14 @@ getActionCostModifier attrs (Just a) = do
   applyModifier _ n = n
 
 getSpendableClueCount
-  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Int
+  :: (MonadReader env m, HasModifiersFor env ()) => InvestigatorAttrs -> m Int
 getSpendableClueCount a = do
   canSpendClues <- getCanSpendClues a
   pure $ if canSpendClues then investigatorClues a else 0
 
 cluesToDiscover
   :: (MonadReader env m, HasModifiersFor env (), HasSource ForSkillTest env)
-  => Attrs
+  => InvestigatorAttrs
   -> Int
   -> m Int
 cluesToDiscover attrs startValue = do
@@ -382,14 +394,17 @@ cluesToDiscover attrs startValue = do
   applyModifier _ n = n
 
 getCanAfford
-  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> Action -> m Bool
-getCanAfford a@Attrs {..} actionType = do
+  :: (MonadReader env m, HasModifiersFor env ())
+  => InvestigatorAttrs
+  -> Action
+  -> m Bool
+getCanAfford a@InvestigatorAttrs {..} actionType = do
   actionCost <- getActionCost a actionType
   pure $ actionCost <= investigatorRemainingActions
 
 getFastIsPlayable
   :: (MonadReader env m, HasModifiersFor env ())
-  => Attrs
+  => InvestigatorAttrs
   -> [Window]
   -> Card
   -> m Bool
@@ -408,7 +423,10 @@ getFastIsPlayable attrs windows c@(PlayerCard MkPlayerCard {..}) = do
   applyModifier _ val = val
 
 getModifiedCardCost
-  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> Card -> m Int
+  :: (MonadReader env m, HasModifiersFor env ())
+  => InvestigatorAttrs
+  -> Card
+  -> m Int
 getModifiedCardCost attrs (PlayerCard MkPlayerCard {..}) = do
   modifiers <-
     map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
@@ -436,27 +454,30 @@ getModifiedCardCost attrs (EncounterCard MkEncounterCard {..}) = do
 
 getIsPlayable
   :: (MonadReader env m, HasModifiersFor env ())
-  => Attrs
+  => InvestigatorAttrs
   -> [Window]
   -> Card
   -> m Bool
 getIsPlayable _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
-getIsPlayable attrs@Attrs {..} windows c@(PlayerCard MkPlayerCard {..}) = do
-  modifiers <-
-    map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
-  modifiedCardCost <- getModifiedCardCost attrs c
-  pure
-    $ (pcCardType /= SkillType)
-    && (modifiedCardCost <= investigatorResources)
-    && none prevents modifiers
-    && (not pcFast || (pcFast && cardInWindows windows c attrs))
-    && (pcAction /= Just Action.Evade || not (null investigatorEngagedEnemies))
+getIsPlayable attrs@InvestigatorAttrs {..} windows c@(PlayerCard MkPlayerCard {..})
+  = do
+    modifiers <-
+      map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
+    modifiedCardCost <- getModifiedCardCost attrs c
+    pure
+      $ (pcCardType /= SkillType)
+      && (modifiedCardCost <= investigatorResources)
+      && none prevents modifiers
+      && (not pcFast || (pcFast && cardInWindows windows c attrs))
+      && (pcAction /= Just Action.Evade || not (null investigatorEngagedEnemies)
+         )
  where
   none f = not . any f
   prevents (CannotPlay types) = pcCardType `elem` types
   prevents _ = False
 
-drawOpeningHand :: Attrs -> Int -> ([PlayerCard], [Card], [PlayerCard])
+drawOpeningHand
+  :: InvestigatorAttrs -> Int -> ([PlayerCard], [Card], [PlayerCard])
 drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
  where
   go 0 (d, h, cs) = (d, h, cs)
@@ -466,27 +487,27 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
     then go m (c : d, h, cs)
     else go (m - 1) (d, PlayerCard c : h, cs)
 
-cardInWindows :: [Window] -> Card -> Attrs -> Bool
+cardInWindows :: [Window] -> Card -> InvestigatorAttrs -> Bool
 cardInWindows windows c _ = case c of
   PlayerCard pc -> not . null $ pcWindows pc `intersect` setFromList windows
   _ -> False
 
 getPlayableCards
   :: (MonadReader env m, HasModifiersFor env ())
-  => Attrs
+  => InvestigatorAttrs
   -> [Window]
   -> m [Card]
-getPlayableCards a@Attrs {..} windows = do
+getPlayableCards a@InvestigatorAttrs {..} windows = do
   playableDiscards <- getPlayableDiscards a windows
   playableHandCards <- filterM (getFastIsPlayable a windows) investigatorHand
   pure $ playableHandCards <> playableDiscards
 
 getPlayableDiscards
   :: (MonadReader env m, HasModifiersFor env ())
-  => Attrs
+  => InvestigatorAttrs
   -> [Window]
   -> m [Card]
-getPlayableDiscards attrs@Attrs {..} windows = do
+getPlayableDiscards attrs@InvestigatorAttrs {..} windows = do
   modifiers <-
     map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
   filterM (getFastIsPlayable attrs windows) (possibleCards modifiers)
@@ -505,7 +526,7 @@ getPlayableDiscards attrs@Attrs {..} windows = do
 getPossibleSkillTypeChoices
   :: (MonadReader env m, HasModifiersFor env ())
   => SkillType
-  -> Attrs
+  -> InvestigatorAttrs
   -> m [SkillType]
 getPossibleSkillTypeChoices skillType attrs = do
   modifiers <-
@@ -516,19 +537,19 @@ getPossibleSkillTypeChoices skillType attrs = do
     | toReplace == skillType = toUse : skills
   applyModifier _ skills = skills
 
-instance HasModifiersFor env Attrs where
+instance HasModifiersFor env InvestigatorAttrs where
   getModifiersFor = noModifiersFor
 
-instance ActionRunner env => HasActions env Attrs where
+instance ActionRunner env => HasActions env InvestigatorAttrs where
   getActions iid window attrs | iid == investigatorId attrs = concat <$> for
     (attrs ^.. handL . traverse . _PlayerCard)
     (getActions iid window . toPlayerCardWithBehavior)
   getActions _ _ _ = pure []
 
-instance HasTokenValue env Attrs where
+instance HasTokenValue env InvestigatorAttrs where
   getTokenValue _ _ _ = error "should not be asking this here"
 
-instance InvestigatorRunner env => RunMessage env Attrs where
+instance InvestigatorRunner env => RunMessage env InvestigatorAttrs where
   runMessage msg i = do
     traverseOf_
       (handL . traverse . _PlayerCard)
@@ -542,10 +563,10 @@ instance InvestigatorRunner env => RunMessage env Attrs where
 
 hasModifier
   :: (MonadReader env m, HasModifiersFor env ())
-  => Attrs
+  => InvestigatorAttrs
   -> ModifierType
   -> m Bool
-hasModifier Attrs { investigatorId } m =
+hasModifier InvestigatorAttrs { investigatorId } m =
   elem m
     . map modifierType
     <$> getModifiersFor
@@ -561,9 +582,9 @@ runInvestigatorMessage
      , MonadFail m
      )
   => Message
-  -> Attrs
-  -> m Attrs
-runInvestigatorMessage msg a@Attrs {..} = case msg of
+  -> InvestigatorAttrs
+  -> m InvestigatorAttrs
+runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   ResetGame -> pure $ (baseAttrs
                         investigatorId
                         investigatorName

@@ -1,7 +1,6 @@
 module Arkham.Types.Investigator.Cards.JimCulverSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
@@ -43,7 +42,7 @@ spec = describe "Jim Culver" $ do
 
     it "is a +1" $ do
       let jimCulver = lookupInvestigator "02004"
-      (didPassTest, logger) <- didPassSkillTestBy jimCulver 2
+      (didPassTest, logger) <- didPassSkillTestBy jimCulver SkillIntellect 2
       void
         $ runGameTest
             jimCulver
@@ -70,7 +69,7 @@ spec = describe "Jim Culver" $ do
   context "ability" $ do
     it "changes skull modifier to 0" $ do
       let jimCulver = lookupInvestigator "02004"
-      (didPassTest, logger) <- didPassSkillTestBy jimCulver 1
+      (didPassTest, logger) <- didPassSkillTestBy jimCulver SkillIntellect 1
       void
         $ runGameTest
             jimCulver

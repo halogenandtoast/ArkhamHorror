@@ -23,7 +23,7 @@ import Arkham.Types.Event as X
 import Arkham.Types.Game as X hiding (newGame)
 import Arkham.Types.Game.Helpers as X
 import Arkham.Types.Investigator as X
-import qualified Arkham.Types.Investigator.Attrs as InvestigatorAttrs
+import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Location as X
 import qualified Arkham.Types.Location.Attrs as Location
 import qualified Arkham.Types.Location.Attrs as LocationAttrs
@@ -138,7 +138,7 @@ testLocation cardCode f =
 testInvestigator
   :: MonadIO m
   => CardCode
-  -> (InvestigatorAttrs.Attrs -> InvestigatorAttrs.Attrs)
+  -> (InvestigatorAttrs -> InvestigatorAttrs)
   -> m Investigator
 testInvestigator cardCode f =
   let
@@ -207,24 +207,34 @@ createMessageMatcher msg = do
   pure (ref, \msg' -> when (msg == msg') (liftIO $ atomicWriteIORef ref True))
 
 didPassSkillTestBy
-  :: MonadIO m => Investigator -> Int -> m (IORef Bool, Message -> m ())
-didPassSkillTestBy investigator n = createMessageMatcher
+  :: MonadIO m
+  => Investigator
+  -> SkillType
+  -> Int
+  -> m (IORef Bool, Message -> m ())
+didPassSkillTestBy investigator skillType n = createMessageMatcher
   (PassedSkillTest
     (toId investigator)
     Nothing
     (TestSource mempty)
     (SkillTestInitiatorTarget TestTarget)
+    skillType
     n
   )
 
 didFailSkillTestBy
-  :: MonadIO m => Investigator -> Int -> m (IORef Bool, Message -> m ())
-didFailSkillTestBy investigator n = createMessageMatcher
+  :: MonadIO m
+  => Investigator
+  -> SkillType
+  -> Int
+  -> m (IORef Bool, Message -> m ())
+didFailSkillTestBy investigator skillType n = createMessageMatcher
   (FailedSkillTest
     (toId investigator)
     Nothing
     (TestSource mempty)
     (SkillTestInitiatorTarget TestTarget)
+    skillType
     n
   )
 

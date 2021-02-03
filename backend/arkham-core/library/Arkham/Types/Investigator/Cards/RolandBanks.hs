@@ -10,7 +10,7 @@ import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
 import Arkham.Types.Trait
 
-newtype RolandBanks = RolandBanks Attrs
+newtype RolandBanks = RolandBanks InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env RolandBanks where
@@ -30,7 +30,7 @@ rolandBanks = RolandBanks
     , agility = 2
     }
 
-ability :: Attrs -> Ability
+ability :: InvestigatorAttrs -> Ability
 ability attrs = base { abilityLimit = PlayerLimit PerRound 1 }
   where base = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
@@ -47,7 +47,7 @@ instance HasCount ClueCount env LocationId => HasTokenValue env RolandBanks wher
   getTokenValue (RolandBanks attrs) iid token = getTokenValue attrs iid token
 
 instance InvestigatorRunner env => RunMessage env RolandBanks where
-  runMessage msg rb@(RolandBanks attrs@Attrs {..}) = case msg of
+  runMessage msg rb@(RolandBanks attrs@InvestigatorAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       rb <$ unshiftMessage
         (DiscoverCluesAtLocation (toId attrs) investigatorLocation 1)

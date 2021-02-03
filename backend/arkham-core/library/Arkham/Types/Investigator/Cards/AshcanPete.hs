@@ -10,7 +10,7 @@ import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
 import Arkham.Types.Trait
 
-newtype AshcanPete = AshcanPete Attrs
+newtype AshcanPete = AshcanPete InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env AshcanPete where
@@ -32,7 +32,7 @@ ashcanPete = AshcanPete $ baseAttrs
     }
   [Drifter]
 
-ability :: Attrs -> Ability
+ability :: InvestigatorAttrs -> Ability
 ability attrs = base { abilityLimit = PlayerLimit PerRound 1 }
  where
   base = mkAbility
@@ -41,7 +41,7 @@ ability attrs = base { abilityLimit = PlayerLimit PerRound 1 }
     (FastAbility $ HandDiscardCost 1 Nothing mempty mempty)
 
 instance ActionRunner env => HasActions env AshcanPete where
-  getActions iid FastPlayerWindow (AshcanPete attrs@Attrs {..})
+  getActions iid FastPlayerWindow (AshcanPete attrs@InvestigatorAttrs {..})
     | iid == investigatorId = do
       exhaustedAssetIds <- map unExhaustedAssetId <$> getSetList investigatorId
       pure
@@ -56,7 +56,7 @@ instance HasTokenValue env AshcanPete where
   getTokenValue (AshcanPete attrs) iid token = getTokenValue attrs iid token
 
 instance (InvestigatorRunner env) => RunMessage env AshcanPete where
-  runMessage msg i@(AshcanPete attrs@Attrs {..}) = case msg of
+  runMessage msg i@(AshcanPete attrs@InvestigatorAttrs {..}) = case msg of
     ResolveToken _drawnToken ElderSign iid | iid == investigatorId ->
       i <$ unshiftMessage (Ready $ CardCodeTarget "02014")
     UseCardAbility _ (InvestigatorSource iid) _ 1 _ | iid == investigatorId ->

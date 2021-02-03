@@ -1,7 +1,6 @@
 module Arkham.Types.Asset.Cards.BandolierSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
@@ -20,7 +19,7 @@ spec = describe "Bandolier" $ do
     let
       slots =
         fromMaybe []
-          $ investigatorAttrs (updated game investigator)
+          $ toAttrs (updated game investigator)
           ^? Investigator.slotsL
           . ix HandSlot
     slots `shouldSatisfy` elem

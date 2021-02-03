@@ -10,7 +10,7 @@ import Arkham.Import
 import Arkham.Types.Trait
 import Arkham.Types.Effect.Window as X
 
-data Attrs = Attrs
+data EffectAttrs = EffectAttrs
   { effectId :: EffectId
   , effectCardCode :: Maybe CardCode
   , effectTarget :: Target
@@ -21,7 +21,7 @@ data Attrs = Attrs
   }
   deriving stock (Show, Generic)
 
-makeLensesWith suffixedFields ''Attrs
+makeLensesWith suffixedFields ''EffectAttrs
 
 type EffectArgs = (EffectId, Maybe (EffectMetadata Message), Source, Target)
 
@@ -31,8 +31,8 @@ baseAttrs
   -> Maybe (EffectMetadata Message)
   -> Source
   -> Target
-  -> Attrs
-baseAttrs cardCode eid meffectMetadata source target = Attrs
+  -> EffectAttrs
+baseAttrs cardCode eid meffectMetadata source target = EffectAttrs
   { effectId = eid
   , effectSource = source
   , effectTarget = target
@@ -42,18 +42,18 @@ baseAttrs cardCode eid meffectMetadata source target = Attrs
   , effectWindow = Nothing
   }
 
-instance ToJSON Attrs where
+instance ToJSON EffectAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "effect"
   toEncoding = genericToEncoding $ aesonOptions $ Just "effect"
 
-instance FromJSON Attrs where
+instance FromJSON EffectAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "effect"
 
-instance HasActions env Attrs where
+instance HasActions env EffectAttrs where
   getActions _ _ _ = pure []
 
-instance HasQueue env => RunMessage env Attrs where
-  runMessage msg a@Attrs {..} = case msg of
+instance HasQueue env => RunMessage env EffectAttrs where
+  runMessage msg a@EffectAttrs {..} = case msg of
     EndSetup | EffectSetupWindow `elem` effectWindow ->
       a <$ unshiftMessage (DisableEffect effectId)
     EndPhase | EffectPhaseWindow `elem` effectWindow ->
@@ -64,18 +64,18 @@ instance HasQueue env => RunMessage env Attrs where
       a <$ unshiftMessage (DisableEffect effectId)
     _ -> pure a
 
-instance Entity Attrs where
-  type EntityId Attrs = EffectId
-  type EntityAttrs Attrs = Attrs
+instance Entity EffectAttrs where
+  type EntityId EffectAttrs = EffectId
+  type EntityAttrs EffectAttrs = EffectAttrs
   toId = effectId
   toAttrs = id
 
-instance TargetEntity Attrs where
+instance TargetEntity EffectAttrs where
   toTarget = EffectTarget . toId
-  isTarget Attrs { effectId } (EffectTarget eid) = effectId == eid
+  isTarget EffectAttrs { effectId } (EffectTarget eid) = effectId == eid
   isTarget _ _ = False
 
-instance SourceEntity Attrs where
+instance SourceEntity EffectAttrs where
   toSource = EffectSource . toId
-  isSource Attrs { effectId } (EffectSource eid) = effectId == eid
+  isSource EffectAttrs { effectId } (EffectSource eid) = effectId == eid
   isSource _ _ = False

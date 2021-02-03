@@ -9,14 +9,14 @@ import Arkham.Import
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 
-newtype Burglary = Burglary Attrs
+newtype Burglary = Burglary EffectAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 burglary :: EffectArgs -> Burglary
 burglary = Burglary . uncurry4 (baseAttrs "01045")
 
 instance HasModifiersFor env Burglary where
-  getModifiersFor _ (LocationTarget lid) (Burglary attrs@Attrs {..}) =
+  getModifiersFor _ (LocationTarget lid) (Burglary attrs@EffectAttrs {..}) =
     case effectTarget of
       InvestigationTarget _ lid' | lid == lid' ->
         pure [toModifier attrs AlternateSuccessfullInvestigation]
@@ -24,7 +24,7 @@ instance HasModifiersFor env Burglary where
   getModifiersFor _ _ _ = pure []
 
 instance HasQueue env => RunMessage env Burglary where
-  runMessage msg e@(Burglary attrs@Attrs {..}) = case msg of
+  runMessage msg e@(Burglary attrs@EffectAttrs {..}) = case msg of
     CreatedEffect eid _ _ (InvestigationTarget iid lid) | eid == effectId ->
       e <$ unshiftMessage
         (Investigate iid lid (toSource attrs) SkillIntellect False)

@@ -9,14 +9,14 @@ import Arkham.Import
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 
-newtype SeekingAnswers = SeekingAnswers Attrs
+newtype SeekingAnswers = SeekingAnswers EffectAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 seekingAnswers :: EffectArgs -> SeekingAnswers
 seekingAnswers = SeekingAnswers . uncurry4 (baseAttrs "02023")
 
 instance HasModifiersFor env SeekingAnswers where
-  getModifiersFor _ (LocationTarget lid) (SeekingAnswers attrs@Attrs {..}) =
+  getModifiersFor _ (LocationTarget lid) (SeekingAnswers attrs@EffectAttrs {..}) =
     case effectTarget of
       InvestigationTarget _ lid' | lid == lid' ->
         pure [toModifier attrs AlternateSuccessfullInvestigation]
@@ -24,7 +24,7 @@ instance HasModifiersFor env SeekingAnswers where
   getModifiersFor _ _ _ = pure []
 
 instance (HasQueue env, HasSet ConnectedLocationId env LocationId) => RunMessage env SeekingAnswers where
-  runMessage msg e@(SeekingAnswers attrs@Attrs {..}) = case msg of
+  runMessage msg e@(SeekingAnswers attrs@EffectAttrs {..}) = case msg of
     CreatedEffect eid _ _ (InvestigationTarget iid lid) | eid == effectId ->
       e <$ unshiftMessage
         (Investigate iid lid (toSource attrs) SkillIntellect False)

@@ -8,7 +8,7 @@ import Arkham.Import
 
 import Arkham.Types.Effect.Attrs
 
-newtype BaseballBat = BaseballBat Attrs
+newtype BaseballBat = BaseballBat EffectAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 baseballBat :: EffectArgs -> BaseballBat
@@ -18,7 +18,7 @@ instance HasModifiersFor env BaseballBat where
   getModifiersFor = noModifiersFor
 
 instance HasQueue env => RunMessage env BaseballBat where
-  runMessage msg e@(BaseballBat attrs@Attrs {..}) = case msg of
+  runMessage msg e@(BaseballBat attrs@EffectAttrs {..}) = case msg of
     RevealToken _ iid token | InvestigatorTarget iid == effectTarget ->
       case effectSource of
         AssetSource assetId -> e <$ when

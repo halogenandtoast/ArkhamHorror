@@ -12,13 +12,13 @@ import Arkham.Types.Effect.Attrs
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Trait
 
-newtype PayForAbilityEffect = PayForAbilityEffect (Attrs `With` Payment)
+newtype PayForAbilityEffect = PayForAbilityEffect (EffectAttrs `With` Payment)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 payForAbilityEffect
   :: EffectId -> Maybe Ability -> Source -> Target -> PayForAbilityEffect
 payForAbilityEffect eid mAbility source target =
-  PayForAbilityEffect $ (`with` NoPayment) $ Attrs
+  PayForAbilityEffect $ (`with` NoPayment) $ EffectAttrs
     { effectId = eid
     , effectSource = source
     , effectTarget = target
@@ -29,7 +29,7 @@ payForAbilityEffect eid mAbility source target =
     }
 
 instance HasModifiersFor env PayForAbilityEffect where
-  getModifiersFor _ target (PayForAbilityEffect (With Attrs {..} _))
+  getModifiersFor _ target (PayForAbilityEffect (With EffectAttrs {..} _))
     | target == effectTarget = case effectMetadata of
       Just (EffectModifiers modifiers) -> pure modifiers
       _ -> pure []

@@ -8,7 +8,7 @@ import Arkham.Import
 
 import Arkham.Types.Effect.Attrs
 
-newtype Deduction = Deduction Attrs
+newtype Deduction = Deduction EffectAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 deduction :: EffectArgs -> Deduction
@@ -18,7 +18,7 @@ instance HasModifiersFor env Deduction where
   getModifiersFor = noModifiersFor
 
 instance HasQueue env => RunMessage env Deduction where
-  runMessage msg e@(Deduction attrs@Attrs {..}) = case msg of
+  runMessage msg e@(Deduction attrs@EffectAttrs {..}) = case msg of
     SuccessfulInvestigation iid lid _ -> case effectMetadata of
       Just (EffectMetaTarget (LocationTarget lid')) | lid == lid' ->
         e <$ unshiftMessage (InvestigatorDiscoverClues iid lid 1)

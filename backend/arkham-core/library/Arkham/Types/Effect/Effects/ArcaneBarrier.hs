@@ -8,7 +8,7 @@ import Arkham.Import
 
 import Arkham.Types.Effect.Attrs
 
-newtype ArcaneBarrier = ArcaneBarrier Attrs
+newtype ArcaneBarrier = ArcaneBarrier EffectAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 arcaneBarrier :: EffectArgs -> ArcaneBarrier
@@ -18,7 +18,7 @@ instance HasModifiersFor env ArcaneBarrier where
   getModifiersFor = noModifiersFor
 
 instance HasQueue env => RunMessage env ArcaneBarrier where
-  runMessage msg e@(ArcaneBarrier attrs@Attrs {..}) = case msg of
+  runMessage msg e@(ArcaneBarrier attrs@EffectAttrs {..}) = case msg of
     CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == effectId ->
       e <$ unshiftMessage
         (BeginSkillTest

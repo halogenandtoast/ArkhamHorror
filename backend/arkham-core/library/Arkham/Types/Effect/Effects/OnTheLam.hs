@@ -8,14 +8,14 @@ import Arkham.Import
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 
-newtype OnTheLam = OnTheLam Attrs
+newtype OnTheLam = OnTheLam EffectAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 onTheLam :: EffectArgs -> OnTheLam
 onTheLam = OnTheLam . uncurry4 (baseAttrs "01010")
 
 instance HasModifiersFor env OnTheLam where
-  getModifiersFor _ target (OnTheLam a@Attrs {..}) =
+  getModifiersFor _ target (OnTheLam a@EffectAttrs {..}) =
     pure $ toModifiers a [ CannotBeAttackedByNonElite | target == effectTarget ]
 
 instance HasQueue env => RunMessage env OnTheLam where

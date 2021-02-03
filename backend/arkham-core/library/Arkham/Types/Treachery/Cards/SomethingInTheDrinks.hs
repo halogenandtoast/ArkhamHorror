@@ -11,7 +11,7 @@ import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype SomethingInTheDrinks = SomethingInTheDrinks Attrs
+newtype SomethingInTheDrinks = SomethingInTheDrinks TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 somethingInTheDrinks :: TreacheryId -> a -> SomethingInTheDrinks
@@ -24,7 +24,7 @@ instance HasActions env SomethingInTheDrinks where
   getActions i window (SomethingInTheDrinks attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env SomethingInTheDrinks where
-  runMessage msg t@(SomethingInTheDrinks attrs@Attrs {..}) = case msg of
+  runMessage msg t@(SomethingInTheDrinks attrs@TreacheryAttrs {..}) = case msg of
     Revelation _ source | isSource attrs source -> do
       scenarioLogs <- getSet ()
       investigatorIds <- getInvestigatorIds

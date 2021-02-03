@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype DraggedUnder = DraggedUnder Attrs
+newtype DraggedUnder = DraggedUnder TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 draggedUnder :: TreacheryId -> a -> DraggedUnder
@@ -18,7 +18,7 @@ instance HasActions env DraggedUnder where
   getActions i window (DraggedUnder attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env DraggedUnder where
-  runMessage msg t@(DraggedUnder attrs@Attrs {..}) = case msg of
+  runMessage msg t@(DraggedUnder attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (RevelationSkillTest iid source SkillAgility 3)
     MoveFrom iid _ | treacheryOnInvestigator iid attrs -> t <$ unshiftMessages

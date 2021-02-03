@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
-newtype LightOfAforgomon = LightOfAforgomon Attrs
+newtype LightOfAforgomon = LightOfAforgomon TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 lightOfAforgomon :: TreacheryId -> a -> LightOfAforgomon
@@ -25,7 +25,7 @@ instance HasActions env LightOfAforgomon where
   getActions i window (LightOfAforgomon attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env LightOfAforgomon where
-  runMessage msg (LightOfAforgomon attrs@Attrs {..}) = case msg of
+  runMessage msg (LightOfAforgomon attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       exemptActs <- getSet (TreacheryCardCode $ CardCode "81025")
       exemptAgendas <- getSet (TreacheryCardCode $ CardCode "81025")

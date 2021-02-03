@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype Psychosis = Psychosis Attrs
+newtype Psychosis = Psychosis TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 psychosis :: TreacheryId -> Maybe InvestigatorId -> Psychosis
@@ -19,7 +19,7 @@ instance HasModifiersFor env Psychosis where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Psychosis where
-  getActions iid NonFast (Psychosis a@Attrs {..}) =
+  getActions iid NonFast (Psychosis a@TreacheryAttrs {..}) =
     withTreacheryInvestigator a $ \tormented -> do
       investigatorLocationId <- getId @LocationId iid
       treacheryLocation <- getId tormented
@@ -32,7 +32,7 @@ instance ActionRunner env => HasActions env Psychosis where
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env Psychosis where
-  runMessage msg t@(Psychosis attrs@Attrs {..}) = case msg of
+  runMessage msg t@(Psychosis attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
     After (InvestigatorTakeDamage iid _ _ n)

@@ -8,7 +8,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype RexsCurse = RexsCurse Attrs
+newtype RexsCurse = RexsCurse TreacheryAttrs
   deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 rexsCurse :: TreacheryId -> Maybe InvestigatorId -> RexsCurse
@@ -21,7 +21,7 @@ instance HasActions env RexsCurse where
   getActions _ _ _ = pure []
 
 instance TreacheryRunner env => RunMessage env RexsCurse where
-  runMessage msg t@(RexsCurse attrs@Attrs {..}) = case msg of
+  runMessage msg t@(RexsCurse attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId (InvestigatorTarget iid))
     Will (PassedSkillTest iid _ _ SkillTestInitiatorTarget{} _ _)

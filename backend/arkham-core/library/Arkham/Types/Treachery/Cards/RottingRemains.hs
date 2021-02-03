@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype RottingRemains = RottingRemains Attrs
+newtype RottingRemains = RottingRemains TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 rottingRemains :: TreacheryId -> a -> RottingRemains
@@ -18,7 +18,7 @@ instance HasActions env RottingRemains where
   getActions i window (RottingRemains attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env RottingRemains where
-  runMessage msg t@(RottingRemains attrs@Attrs {..}) = case msg of
+  runMessage msg t@(RottingRemains attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ unshiftMessages
       [ RevelationSkillTest iid source SkillWillpower 3
       , Discard (TreacheryTarget treacheryId)

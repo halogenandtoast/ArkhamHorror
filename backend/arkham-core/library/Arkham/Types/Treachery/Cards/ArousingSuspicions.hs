@@ -10,7 +10,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype ArousingSuspicions = ArousingSuspicions Attrs
+newtype ArousingSuspicions = ArousingSuspicions TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 arousingSuspicions :: TreacheryId -> a -> ArousingSuspicions
@@ -23,7 +23,7 @@ instance HasActions env ArousingSuspicions where
   getActions i window (ArousingSuspicions attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env ArousingSuspicions where
-  runMessage msg t@(ArousingSuspicions attrs@Attrs {..}) = case msg of
+  runMessage msg t@(ArousingSuspicions attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid
       criminals <- getSetList @EnemyId ([Criminal], lid)

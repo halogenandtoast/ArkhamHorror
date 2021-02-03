@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype FalseLead = FalseLead Attrs
+newtype FalseLead = FalseLead TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 falseLead :: TreacheryId -> a -> FalseLead
@@ -18,7 +18,7 @@ instance HasActions env FalseLead where
   getActions i window (FalseLead attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env FalseLead where
-  runMessage msg t@(FalseLead attrs@Attrs {..}) = case msg of
+  runMessage msg t@(FalseLead attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       playerClueCount <- unClueCount <$> getCount iid
       if playerClueCount == 0

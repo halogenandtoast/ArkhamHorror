@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype VisionsOfFuturesPast = VisionsOfFuturesPast Attrs
+newtype VisionsOfFuturesPast = VisionsOfFuturesPast TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 visionsOfFuturesPast :: TreacheryId -> a -> VisionsOfFuturesPast
@@ -22,7 +22,7 @@ instance HasActions env VisionsOfFuturesPast where
   getActions i window (VisionsOfFuturesPast attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env VisionsOfFuturesPast where
-  runMessage msg t@(VisionsOfFuturesPast attrs@Attrs {..}) = case msg of
+  runMessage msg t@(VisionsOfFuturesPast attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ unshiftMessages
       [ RevelationSkillTest iid source SkillWillpower 5
       , Discard (TreacheryTarget treacheryId)

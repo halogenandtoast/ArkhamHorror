@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype EphemeralExhibits = EphemeralExhibits Attrs
+newtype EphemeralExhibits = EphemeralExhibits TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 ephemeralExhibits :: TreacheryId -> a -> EphemeralExhibits
@@ -22,7 +22,7 @@ instance HasActions env EphemeralExhibits where
   getActions i window (EphemeralExhibits attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env EphemeralExhibits where
-  runMessage msg t@(EphemeralExhibits attrs@Attrs {..}) = case msg of
+  runMessage msg t@(EphemeralExhibits attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ unshiftMessage
       (BeginSkillTest
         iid

@@ -11,7 +11,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
-newtype SpectralMist = SpectralMist Attrs
+newtype SpectralMist = SpectralMist TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 spectralMist :: TreacheryId -> a -> SpectralMist
@@ -24,7 +24,7 @@ instance HasId LocationId env InvestigatorId => HasModifiersFor env SpectralMist
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env SpectralMist where
-  getActions iid NonFast (SpectralMist a@Attrs {..}) = do
+  getActions iid NonFast (SpectralMist a@TreacheryAttrs {..}) = do
     investigatorLocationId <- getId @LocationId iid
     pure
       [ ActivateCardAbilityAction
@@ -35,7 +35,7 @@ instance ActionRunner env => HasActions env SpectralMist where
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env SpectralMist where
-  runMessage msg t@(SpectralMist attrs@Attrs {..}) = case msg of
+  runMessage msg t@(SpectralMist attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       exemptLocations <- getSet @LocationId
         (TreacheryCardCode $ CardCode "81025")

@@ -11,7 +11,7 @@ import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype ShadowSpawned = ShadowSpawned Attrs
+newtype ShadowSpawned = ShadowSpawned TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 shadowSpawned :: TreacheryId -> a -> ShadowSpawned

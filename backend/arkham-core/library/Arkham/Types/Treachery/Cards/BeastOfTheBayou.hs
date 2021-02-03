@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype BeastOfTheBayou = BeastOfTheBayou Attrs
+newtype BeastOfTheBayou = BeastOfTheBayou TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 beastOfTheBayou :: TreacheryId -> a -> BeastOfTheBayou
@@ -18,7 +18,7 @@ instance HasActions env BeastOfTheBayou where
   getActions i window (BeastOfTheBayou attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env BeastOfTheBayou where
-  runMessage msg t@(BeastOfTheBayou attrs@Attrs {..}) = case msg of
+  runMessage msg t@(BeastOfTheBayou attrs@TreacheryAttrs {..}) = case msg of
     Revelation _iid source | isSource attrs source -> do
       mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
       t <$ case mrougarou of

@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype AbandonedAndAlone = AbandonedAndAlone Attrs
+newtype AbandonedAndAlone = AbandonedAndAlone TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 abandonedAndAlone :: TreacheryId -> Maybe InvestigatorId -> AbandonedAndAlone
@@ -18,7 +18,7 @@ instance HasActions env AbandonedAndAlone where
   getActions i window (AbandonedAndAlone attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env AbandonedAndAlone where
-  runMessage msg t@(AbandonedAndAlone attrs@Attrs {..}) = case msg of
+  runMessage msg t@(AbandonedAndAlone attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       t <$ unshiftMessages
         [ InvestigatorDirectDamage iid source 0 2

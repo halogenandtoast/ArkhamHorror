@@ -6,7 +6,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
-newtype DissonantVoices= DissonantVoices Attrs
+newtype DissonantVoices= DissonantVoices TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 dissonantVoices :: TreacheryId -> a -> DissonantVoices
@@ -23,7 +23,7 @@ instance HasActions env DissonantVoices where
   getActions i window (DissonantVoices attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env DissonantVoices where
-  runMessage msg t@(DissonantVoices attrs@Attrs {..}) = case msg of
+  runMessage msg t@(DissonantVoices attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId (InvestigatorTarget iid))
     EndRound -> t <$ unshiftMessage (Discard $ toTarget attrs)

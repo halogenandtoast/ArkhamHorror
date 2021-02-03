@@ -9,7 +9,7 @@ import Arkham.Types.Keyword
 import Arkham.Types.Treachery.Runner
 import qualified Data.HashMap.Strict as HashMap
 
-data Attrs = Attrs
+data TreacheryAttrs = TreacheryAttrs
   { treacheryName :: Text
   , treacheryId :: TreacheryId
   , treacheryCardCode :: CardCode
@@ -24,38 +24,40 @@ data Attrs = Attrs
   }
   deriving stock (Show, Generic)
 
-makeLensesWith suffixedFields ''Attrs
+makeLensesWith suffixedFields ''TreacheryAttrs
 
-instance ToJSON Attrs where
+instance ToJSON TreacheryAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "treachery"
   toEncoding = genericToEncoding $ aesonOptions $ Just "treachery"
 
-instance FromJSON Attrs where
+instance FromJSON TreacheryAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "treachery"
 
-instance HasCount ResourceCount env Attrs where
+instance HasCount ResourceCount env TreacheryAttrs where
   getCount = pure . ResourceCount . fromMaybe 0 . treacheryResources
 
-instance Entity Attrs where
-  type EntityId Attrs = TreacheryId
-  type EntityAttrs Attrs = Attrs
+instance Entity TreacheryAttrs where
+  type EntityId TreacheryAttrs = TreacheryId
+  type EntityAttrs TreacheryAttrs = TreacheryAttrs
   toId = treacheryId
   toAttrs = id
 
-instance NamedEntity Attrs where
+instance NamedEntity TreacheryAttrs where
   toName = mkName . treacheryName
 
-instance TargetEntity Attrs where
+instance TargetEntity TreacheryAttrs where
   toTarget = TreacheryTarget . toId
-  isTarget Attrs { treacheryId } (TreacheryTarget tid) = treacheryId == tid
+  isTarget TreacheryAttrs { treacheryId } (TreacheryTarget tid) =
+    treacheryId == tid
   isTarget _ _ = False
 
-instance SourceEntity Attrs where
+instance SourceEntity TreacheryAttrs where
   toSource = TreacherySource . toId
-  isSource Attrs { treacheryId } (TreacherySource tid) = treacheryId == tid
+  isSource TreacheryAttrs { treacheryId } (TreacherySource tid) =
+    treacheryId == tid
   isSource _ _ = False
 
-instance IsCard Attrs where
+instance IsCard TreacheryAttrs where
   getCardId = CardId . unTreacheryId . treacheryId
   getCardCode = treacheryCardCode
   getTraits = treacheryTraits
@@ -64,33 +66,34 @@ instance IsCard Attrs where
 -- ownedBy :: Attrs -> InvestigatorId -> Bool
 -- ownedBy Attrs { treacheryOwner } iid = treacheryOwner == Just iid
 
-treacheryOn :: Target -> Attrs -> Bool
-treacheryOn t Attrs { treacheryAttachedTarget } =
+treacheryOn :: Target -> TreacheryAttrs -> Bool
+treacheryOn t TreacheryAttrs { treacheryAttachedTarget } =
   t `elem` treacheryAttachedTarget
 
-treacheryOnInvestigator :: InvestigatorId -> Attrs -> Bool
+treacheryOnInvestigator :: InvestigatorId -> TreacheryAttrs -> Bool
 treacheryOnInvestigator = treacheryOn . InvestigatorTarget
 
-treacheryOnEnemy :: EnemyId -> Attrs -> Bool
+treacheryOnEnemy :: EnemyId -> TreacheryAttrs -> Bool
 treacheryOnEnemy = treacheryOn . EnemyTarget
 
-treacheryOnLocation :: LocationId -> Attrs -> Bool
+treacheryOnLocation :: LocationId -> TreacheryAttrs -> Bool
 treacheryOnLocation = treacheryOn . LocationTarget
 
-withTreacheryEnemy :: MonadIO m => Attrs -> (EnemyId -> m a) -> m a
+withTreacheryEnemy :: MonadIO m => TreacheryAttrs -> (EnemyId -> m a) -> m a
 withTreacheryEnemy attrs f = case treacheryAttachedTarget attrs of
   Just (EnemyTarget eid) -> f eid
   _ -> throwIO
     (InvalidState $ treacheryName attrs <> " must be attached to an enemy")
 
-withTreacheryLocation :: MonadIO m => Attrs -> (LocationId -> m a) -> m a
+withTreacheryLocation
+  :: MonadIO m => TreacheryAttrs -> (LocationId -> m a) -> m a
 withTreacheryLocation attrs f = case treacheryAttachedTarget attrs of
   Just (LocationTarget lid) -> f lid
   _ -> throwIO
     (InvalidState $ treacheryName attrs <> " must be attached to a location")
 
 withTreacheryInvestigator
-  :: MonadIO m => Attrs -> (InvestigatorId -> m a) -> m a
+  :: MonadIO m => TreacheryAttrs -> (InvestigatorId -> m a) -> m a
 withTreacheryInvestigator attrs f = case treacheryAttachedTarget attrs of
   Just (InvestigatorTarget iid) -> f iid
   _ -> throwIO
@@ -99,7 +102,7 @@ withTreacheryInvestigator attrs f = case treacheryAttachedTarget attrs of
     <> " must be attached to an investigator"
     )
 
-baseAttrs :: TreacheryId -> CardCode -> Attrs
+baseAttrs :: TreacheryId -> CardCode -> TreacheryAttrs
 baseAttrs tid cardCode =
   let
     MkEncounterCard {..} =
@@ -108,7 +111,7 @@ baseAttrs tid cardCode =
           (HashMap.lookup cardCode allEncounterCards)
         $ CardId (unTreacheryId tid)
   in
-    Attrs
+    TreacheryAttrs
       { treacheryName = ecName
       , treacheryId = tid
       , treacheryCardCode = ecCardCode
@@ -123,7 +126,11 @@ baseAttrs tid cardCode =
       }
 
 weaknessAttrs
-  :: HasCallStack => TreacheryId -> Maybe InvestigatorId -> CardCode -> Attrs
+  :: HasCallStack
+  => TreacheryId
+  -> Maybe InvestigatorId
+  -> CardCode
+  -> TreacheryAttrs
 weaknessAttrs tid iid cardCode =
   let
     MkPlayerCard {..} =
@@ -132,7 +139,7 @@ weaknessAttrs tid iid cardCode =
           (HashMap.lookup cardCode allPlayerCards)
         $ CardId (unTreacheryId tid)
   in
-    Attrs
+    TreacheryAttrs
       { treacheryName = pcName
       , treacheryId = tid
       , treacheryCardCode = pcCardCode
@@ -146,17 +153,17 @@ weaknessAttrs tid iid cardCode =
       , treacheryResources = Nothing
       }
 
-instance HasActions env Attrs where
+instance HasActions env TreacheryAttrs where
   getActions _ _ _ = pure []
 
-is :: Target -> Attrs -> Bool
+is :: Target -> TreacheryAttrs -> Bool
 is (TreacheryTarget tid) t = tid == treacheryId t
 is (CardCodeTarget cardCode) t = cardCode == treacheryCardCode t
 is (CardIdTarget cardId) t = unCardId cardId == unTreacheryId (treacheryId t)
 is _ _ = False
 
-instance TreacheryRunner env => RunMessage env Attrs where
-  runMessage msg a@Attrs {..} = case msg of
+instance TreacheryRunner env => RunMessage env TreacheryAttrs where
+  runMessage msg a@TreacheryAttrs {..} = case msg of
     InvestigatorEliminated iid
       | InvestigatorTarget iid `elem` treacheryAttachedTarget -> a
       <$ unshiftMessage (Discard $ toTarget a)

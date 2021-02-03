@@ -8,7 +8,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype Chronophobia = Chronophobia Attrs
+newtype Chronophobia = Chronophobia TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 chronophobia :: TreacheryId -> Maybe InvestigatorId -> Chronophobia
@@ -18,7 +18,7 @@ instance HasModifiersFor env Chronophobia where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Chronophobia where
-  getActions iid NonFast (Chronophobia a@Attrs {..}) =
+  getActions iid NonFast (Chronophobia a@TreacheryAttrs {..}) =
     withTreacheryInvestigator a $ \tormented -> do
       investigatorLocationId <- getId @LocationId iid
       treacheryLocation <- getId tormented
@@ -31,7 +31,7 @@ instance ActionRunner env => HasActions env Chronophobia where
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env Chronophobia where
-  runMessage msg t@(Chronophobia attrs@Attrs {..}) = case msg of
+  runMessage msg t@(Chronophobia attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
     EndTurn iid | InvestigatorTarget iid `elem` treacheryAttachedTarget ->

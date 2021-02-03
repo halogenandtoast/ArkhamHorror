@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype ArcaneBarrier = ArcaneBarrier Attrs
+newtype ArcaneBarrier = ArcaneBarrier TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 arcaneBarrier :: TreacheryId -> a -> ArcaneBarrier

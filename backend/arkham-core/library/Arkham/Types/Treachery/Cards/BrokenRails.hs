@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype BrokenRails = BrokenRails Attrs
+newtype BrokenRails = BrokenRails TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 brokenRails :: TreacheryId -> a -> BrokenRails
@@ -22,7 +22,7 @@ instance HasActions env BrokenRails where
   getActions i window (BrokenRails attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env BrokenRails where
-  runMessage msg t@(BrokenRails attrs@Attrs {..}) = case msg of
+  runMessage msg t@(BrokenRails attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid
       investigatorIds <- getSetList lid

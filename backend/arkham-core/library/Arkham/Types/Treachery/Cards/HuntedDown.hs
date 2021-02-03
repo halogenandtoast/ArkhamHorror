@@ -10,7 +10,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype HuntedDown = HuntedDown Attrs
+newtype HuntedDown = HuntedDown TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 huntedDown :: TreacheryId -> a -> HuntedDown
@@ -23,7 +23,7 @@ instance HasActions env HuntedDown where
   getActions i window (HuntedDown attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env HuntedDown where
-  runMessage msg t@(HuntedDown attrs@Attrs {..}) = case msg of
+  runMessage msg t@(HuntedDown attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       destinationId <- getId @LocationId iid
       unengagedEnemyIds <- mapSet unUnengagedEnemyId <$> getSet ()

@@ -6,7 +6,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
-newtype InsatiableBloodlust = InsatiableBloodlust Attrs
+newtype InsatiableBloodlust = InsatiableBloodlust TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 insatiableBloodlust :: TreacheryId -> a -> InsatiableBloodlust
@@ -23,7 +23,7 @@ instance HasActions env InsatiableBloodlust where
   getActions i window (InsatiableBloodlust attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env InsatiableBloodlust where
-  runMessage msg t@(InsatiableBloodlust attrs@Attrs {..}) = case msg of
+  runMessage msg t@(InsatiableBloodlust attrs@TreacheryAttrs {..}) = case msg of
     Revelation _iid source | isSource attrs source -> do
       mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
       case mrougarou of

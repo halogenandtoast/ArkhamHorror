@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype PushedIntoTheBeyond = PushedIntoTheBeyond Attrs
+newtype PushedIntoTheBeyond = PushedIntoTheBeyond TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 pushedIntoTheBeyond :: TreacheryId -> a -> PushedIntoTheBeyond
@@ -22,7 +22,7 @@ instance HasActions env PushedIntoTheBeyond where
   getActions i window (PushedIntoTheBeyond attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env PushedIntoTheBeyond where
-  runMessage msg t@(PushedIntoTheBeyond attrs@Attrs {..}) = case msg of
+  runMessage msg t@(PushedIntoTheBeyond attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       storyAssets <- map unStoryAssetId <$> getSetList iid
       validAssets <- filter (`notElem` storyAssets) <$> getSetList iid

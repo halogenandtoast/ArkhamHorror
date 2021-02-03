@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype UmordhothsWrath = UmordhothsWrath Attrs
+newtype UmordhothsWrath = UmordhothsWrath TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 umordhothsWrath :: TreacheryId -> a -> UmordhothsWrath
@@ -18,7 +18,7 @@ instance HasActions env UmordhothsWrath where
   getActions i window (UmordhothsWrath attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env UmordhothsWrath where
-  runMessage msg t@(UmordhothsWrath attrs@Attrs {..}) = case msg of
+  runMessage msg t@(UmordhothsWrath attrs@TreacheryAttrs {..}) = case msg of
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
       | tid == treacheryId -> t
       <$ unshiftMessage (HandlePointOfFailure iid (TreacheryTarget tid) n)

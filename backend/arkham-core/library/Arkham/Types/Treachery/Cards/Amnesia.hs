@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype Amnesia = Amnesia Attrs
+newtype Amnesia = Amnesia TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 amnesia :: TreacheryId -> Maybe InvestigatorId -> Amnesia
@@ -18,7 +18,7 @@ instance HasActions env Amnesia where
   getActions i window (Amnesia attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env Amnesia where
-  runMessage msg t@(Amnesia attrs@Attrs {..}) = case msg of
+  runMessage msg t@(Amnesia attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       cardCount' <- unCardCount <$> getCount iid
       t <$ unshiftMessages

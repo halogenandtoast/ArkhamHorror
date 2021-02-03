@@ -8,22 +8,22 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype CoverUp = CoverUp Attrs
+newtype CoverUp = CoverUp TreacheryAttrs
   deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 coverUp :: TreacheryId -> Maybe InvestigatorId -> CoverUp
 coverUp uuid iid =
   CoverUp $ (weaknessAttrs uuid iid "01007") { treacheryClues = Just 3 }
 
-coverUpClues :: Attrs -> Int
-coverUpClues Attrs { treacheryClues } =
+coverUpClues :: TreacheryAttrs -> Int
+coverUpClues TreacheryAttrs { treacheryClues } =
   fromJustNote "must be set" treacheryClues
 
 instance HasModifiersFor env CoverUp where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env CoverUp where
-  getActions iid (WhenDiscoverClues You YourLocation) (CoverUp a@Attrs {..}) =
+  getActions iid (WhenDiscoverClues You YourLocation) (CoverUp a@TreacheryAttrs {..}) =
     withTreacheryInvestigator a $ \tormented -> do
       treacheryLocationId <- getId @LocationId tormented
       investigatorLocationId <- getId @LocationId iid
@@ -46,7 +46,7 @@ instance ActionRunner env => HasActions env CoverUp where
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env CoverUp where
-  runMessage msg t@(CoverUp attrs@Attrs {..}) = case msg of
+  runMessage msg t@(CoverUp attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ unshiftMessages
       [ RemoveCardFromHand iid "01007"
       , AttachTreachery treacheryId (InvestigatorTarget iid)

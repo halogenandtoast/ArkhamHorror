@@ -6,7 +6,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype TheYellowSign = TheYellowSign Attrs
+newtype TheYellowSign = TheYellowSign TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theYellowSign :: TreacheryId -> a -> TheYellowSign
@@ -19,7 +19,7 @@ instance HasActions env TheYellowSign where
   getActions i window (TheYellowSign attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env TheYellowSign where
-  runMessage msg t@(TheYellowSign attrs@Attrs {..}) = case msg of
+  runMessage msg t@(TheYellowSign attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ unshiftMessages
       [ BeginSkillTest
         iid

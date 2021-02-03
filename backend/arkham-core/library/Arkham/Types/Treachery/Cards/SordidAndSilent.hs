@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype SordidAndSilent = SordidAndSilent Attrs
+newtype SordidAndSilent = SordidAndSilent TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 sordidAndSilent :: TreacheryId -> a -> SordidAndSilent
@@ -22,7 +22,7 @@ instance HasActions env SordidAndSilent where
   getActions i window (SordidAndSilent attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env SordidAndSilent where
-  runMessage msg t@(SordidAndSilent attrs@Attrs {..}) = case msg of
+  runMessage msg t@(SordidAndSilent attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid
       t <$ unshiftMessage (AttachTreachery treacheryId $ LocationTarget lid)

@@ -7,7 +7,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype MysteriousChanting = MysteriousChanting Attrs
+newtype MysteriousChanting = MysteriousChanting TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 mysteriousChanting :: TreacheryId -> a -> MysteriousChanting
@@ -20,7 +20,7 @@ instance HasActions env MysteriousChanting where
   getActions i window (MysteriousChanting attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env MysteriousChanting where
-  runMessage msg t@(MysteriousChanting attrs@Attrs {..}) = case msg of
+  runMessage msg t@(MysteriousChanting attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid
       enemies <- map unClosestEnemyId <$> getSetList (lid, [Cultist])

@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype AncientEvils = AncientEvils Attrs
+newtype AncientEvils = AncientEvils TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 ancientEvils :: TreacheryId -> a -> AncientEvils
@@ -18,7 +18,7 @@ instance HasActions env AncientEvils where
   getActions i window (AncientEvils attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env AncientEvils where
-  runMessage msg t@(AncientEvils attrs@Attrs {..}) = case msg of
+  runMessage msg t@(AncientEvils attrs@TreacheryAttrs {..}) = case msg of
     Revelation _ source | isSource attrs source -> do
       t <$ unshiftMessages
         [ PlaceDoomOnAgenda

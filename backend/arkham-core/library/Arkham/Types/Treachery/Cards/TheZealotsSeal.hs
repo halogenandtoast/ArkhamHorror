@@ -6,7 +6,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype TheZealotsSeal = TheZealotsSeal Attrs
+newtype TheZealotsSeal = TheZealotsSeal TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theZealotsSeal :: TreacheryId -> a -> TheZealotsSeal
@@ -19,7 +19,7 @@ instance HasActions env TheZealotsSeal where
   getActions i window (TheZealotsSeal attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env TheZealotsSeal where
-  runMessage msg t@(TheZealotsSeal attrs@Attrs {..}) = case msg of
+  runMessage msg t@(TheZealotsSeal attrs@TreacheryAttrs {..}) = case msg of
     Revelation _ source | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
       -- we must unshift this first for other effects happen before

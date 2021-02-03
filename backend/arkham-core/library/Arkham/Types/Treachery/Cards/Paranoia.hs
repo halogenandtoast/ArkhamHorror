@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
-newtype Paranoia = Paranoia Attrs
+newtype Paranoia = Paranoia TreacheryAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 paranoia :: TreacheryId -> Maybe InvestigatorId -> Paranoia
@@ -18,7 +18,7 @@ instance HasActions env Paranoia where
   getActions i window (Paranoia attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env Paranoia where
-  runMessage msg t@(Paranoia attrs@Attrs {..}) = case msg of
+  runMessage msg t@(Paranoia attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       resourceCount' <- unResourceCount <$> getCount iid
       t <$ unshiftMessages

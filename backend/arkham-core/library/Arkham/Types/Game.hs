@@ -1757,8 +1757,8 @@ runGameMessage msg g = case msg of
     let
       card = fromJustNote "could not find card in hand"
         $ find ((== cardId) . getCardId) (handOf investigator)
-      eid = EnemyId $ getCardId card
-      enemy = lookupEnemy cardCode eid
+      enemy = createEnemy card
+      eid = toId enemy
     let
       bearerMessage = case card of
         PlayerCard MkPlayerCard {..} -> case pcBearer of
@@ -2099,8 +2099,8 @@ runGameMessage msg g = case msg of
     pure $ g & assetsL . at assetId ?~ asset
   SpawnEnemyAt card lid -> do
     let
-      eid = EnemyId (getCardId card)
-      enemy = lookupEnemy (getCardCode card) eid
+      enemy = createEnemy card
+      eid = toId enemy
     unshiftMessages
       [ Will (EnemySpawn Nothing lid eid)
       , When (EnemySpawn Nothing lid eid)
@@ -2109,8 +2109,8 @@ runGameMessage msg g = case msg of
     pure $ g & enemiesL . at eid ?~ enemy
   SpawnEnemyAtEngagedWith card lid iid -> do
     let
-      eid = EnemyId (getCardId card)
-      enemy = lookupEnemy (getCardCode card) eid
+      enemy = createEnemy card
+      eid = toId enemy
     unshiftMessages
       [ Will (EnemySpawn (Just iid) lid eid)
       , When (EnemySpawn (Just iid) lid eid)
@@ -2119,8 +2119,8 @@ runGameMessage msg g = case msg of
     pure $ g & enemiesL . at eid ?~ enemy
   CreateEnemyRequest source card -> do
     let
-      enemyId = EnemyId (getCardId card)
-      enemy = lookupEnemy (getCardCode card) enemyId
+      enemy = createEnemy card
+      enemyId = toId enemy
     unshiftMessage (RequestedEnemy source enemyId)
     pure $ g & enemiesL . at enemyId ?~ enemy
   CreateEnemyAtLocationMatching cardCode locationMatcher -> do

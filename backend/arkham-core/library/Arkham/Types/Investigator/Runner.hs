@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.ActId
+import Arkham.Types.Action
 import Arkham.Types.AgendaId
 import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.AssetId
@@ -17,6 +18,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
+import Arkham.Types.Message
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.ScenarioLogKey
@@ -27,9 +29,13 @@ import Arkham.Types.TreacheryId
 
 type InvestigatorRunner env
   = ( CanBeWeakness env TreacheryId
-    , (HasActions env (), HasActions env AssetId)
+    , (HasActions env (), HasActions env AssetId, HasActions env ActionType)
     , ( HasCount ActionTakenCount env InvestigatorId
       , HasCount ActionRemainingCount env InvestigatorId
+      , HasCount
+          ActionRemainingCount
+          env
+          (Maybe Action, [Trait], InvestigatorId)
       , HasCount ActsRemainingCount env ()
       , HasCount AssetCount env (InvestigatorId, [Trait])
       , HasCount CardCount env InvestigatorId
@@ -45,12 +51,16 @@ type InvestigatorRunner env
       , HasCount SanityDamageCount env EnemyId
       , HasCount Shroud env LocationId
       , HasCount SpendableClueCount env InvestigatorId
+      , HasCount SpendableClueCount env ()
       , HasCount TreacheryCount env (LocationId, CardCode)
       , HasCount UsesCount env AssetId
       )
     , ( HasId (Maybe AssetId) env CardCode
       , HasId (Maybe LocationId) env (Direction, LocationId)
+      , HasId (Maybe LocationId) env AssetId
       , HasId (Maybe LocationId) env LocationMatcher
+      , HasId (Maybe OwnerId) env AssetId
+      , HasId (Maybe StoryAssetId) env CardCode
       , HasId (Maybe StoryEnemyId) env CardCode
       , HasId ActiveInvestigatorId env ()
       , HasId CardCode env AssetId
@@ -60,6 +70,9 @@ type InvestigatorRunner env
       , HasId LocationId env InvestigatorId
       )
     , ( HasList DiscardableHandCard env InvestigatorId
+      , HasList DiscardedPlayerCard env InvestigatorId
+      , HasList HandCard env InvestigatorId
+      , HasList InPlayCard env InvestigatorId
       , HasList UsedAbility env ()
       )
     , HasModifiersFor env ()
@@ -93,6 +106,7 @@ type InvestigatorRunner env
       , HasSet EnemyId env ([Trait], LocationId)
       , HasSet EventId env ()
       , HasSet ExhaustedAssetId env InvestigatorId
+      , HasSet ExhaustedAssetId env ()
       , HasSet ExhaustedEnemyId env LocationId
       , HasSet FarthestEnemyId env (InvestigatorId, EnemyTrait)
       , HasSet FarthestLocationId env InvestigatorId
@@ -106,6 +120,7 @@ type InvestigatorRunner env
       , HasSet InvestigatorId env EnemyId
       , HasSet InvestigatorId env LocationId
       , HasSet InvestigatorId env TreacheryCardCode
+      , HasSet InvestigatorId env (HashSet LocationId)
       , HasSet Keyword env EnemyId
       , HasSet LocationId env TreacheryCardCode
       , HasSet LocationId env [Trait]
@@ -120,11 +135,12 @@ type InvestigatorRunner env
       , HasSet Trait env EnemyId
       , HasSet Trait env LocationId
       , HasSet Trait env Source
+      , HasSet Trait env (InvestigatorId, CardId)
       , HasSet TreacheryId env LocationId
       , HasSet UnengagedEnemyId env ()
       , HasSet UniqueEnemyId env ()
       )
     , HasSource ForSkillTest env
-    , HasStep AgendaStep env
+    , (HasStep ActStep env, HasStep AgendaStep env)
     , HasTarget ForSkillTest env
     )

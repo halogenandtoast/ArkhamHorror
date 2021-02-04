@@ -6,6 +6,13 @@
       :src="image"
       @click="$emit('choose', cardAction)"
     />
+    <button
+      v-for="ability in abilities"
+      :key="ability"
+      class="button"
+      :class="{ 'reaction-ability-button': isReactionAbility(ability) }"
+      @click="$emit('choose', ability)"
+      >{{abilityLabel(ability)}}</button>
   </div>
 </template>
 
@@ -55,7 +62,50 @@ export default defineComponent({
 
     const cardAction = computed(() =>  choices.value.findIndex(canInteract))
 
-    return { cardAction, image }
+    function abilityLabel(idx: number) {
+      const label = choices.value[idx].tag === 'Run'
+        ? choices.value[idx].contents[0].contents[1].type.contents[0]
+        : choices.value[idx].contents[1].type.contents[0]
+      if (label) {
+        return typeof label === "string" ? label : label.contents
+      }
+
+      return ""
+    }
+
+    function isReactionAbility(idx: number) {
+      if (choices.value[idx].tag == 'Run') {
+        return choices.value[idx].contents[0].contents[1].type.tag === "ReactionAbility";
+      } else {
+        return choices.value[idx].contents[1].type.tag === "ReactionAbility";
+      }
+    }
+
+    function isActivate(v: Message) {
+      if (v.tag !== 'ActivateCardAbilityAction') {
+        return false
+      }
+
+      const { contents } = v.contents[1].source;
+
+      return contents === id.value
+    }
+
+    const abilities = computed(() => {
+      return choices
+        .value
+        .reduce<number[]>((acc, v, i) => {
+          if (v.tag === 'Run' && isActivate(v.contents[0])) {
+            return [...acc, i];
+          } else if (isActivate(v)) {
+            return [...acc, i];
+          }
+
+          return acc;
+        }, []);
+    })
+
+    return { cardAction, abilities, image, isReactionAbility, abilityLabel }
   }
 })
 </script>
@@ -75,5 +125,22 @@ export default defineComponent({
     border: 2px solid #FF00FF;
     cursor: pointer;
   }
+}
+
+.reaction-ability-button {
+  background-color: #A02ECB;
+  &:before {
+    font-family: "arkham";
+    content: "\0059";
+    margin-right: 5px;
+  }
+}
+
+.button{
+  margin-top: 2px;
+  border: 0;
+  color: #fff;
+  border-radius: 4px;
+  border: 1px solid #ff00ff;
 }
 </style>

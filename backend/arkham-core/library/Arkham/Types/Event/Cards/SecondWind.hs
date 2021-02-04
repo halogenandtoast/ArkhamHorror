@@ -13,7 +13,14 @@ newtype SecondWind = SecondWind EventAttrs
 secondWind :: InvestigatorId -> EventId -> SecondWind
 secondWind iid uuid = SecondWind $ baseAttrs iid uuid "04149"
 
-instance HasActions env SecondWind where
+instance HasCount ActionTakenCount env InvestigatorId => HasActions env SecondWind where
+  getActions iid (InHandWindow ownerId (DuringTurn You)) (SecondWind attrs)
+    | iid == ownerId = do
+      actionsTaken <- unActionTakenCount <$> getCount iid
+      pure
+        [ InitiatePlayCard iid (getCardId attrs) Nothing True
+        | actionsTaken == 0
+        ]
   getActions iid window (SecondWind attrs) = getActions iid window attrs
 
 instance HasModifiersFor env SecondWind where

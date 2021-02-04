@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Types.Action
 import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
+import Arkham.Types.InvestigatorId
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -56,6 +57,7 @@ data Window
   | WhenSuccessfulInvestigation Who Where
   | WhenWouldFailSkillTest Who
   | WhenWouldRevealChaosToken Source Who
+  | InHandWindow InvestigatorId Window
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

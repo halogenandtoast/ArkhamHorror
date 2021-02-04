@@ -4,14 +4,18 @@ module Arkham.Types.Event
 
 import Arkham.Prelude
 
+import Arkham.Types.Asset.Uses (UseType)
+import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.EnemyId
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Cards
 import Arkham.Types.Event.Runner
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Query
+import Arkham.Types.Trait
 
 createEvent :: IsCard a => a -> InvestigatorId -> Event
 createEvent a iid = lookupEvent (getCardCode a) iid (EventId $ getCardId a)
@@ -72,7 +76,13 @@ data Event
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-deriving anyclass instance HasActions env Event
+deriving anyclass instance
+  ( HasCount ActionTakenCount env InvestigatorId
+  , HasId CardCode env EnemyId
+  , HasSet Trait env EnemyId
+  , HasSet AssetId env (InvestigatorId, UseType)
+  )
+  => HasActions env Event
 deriving anyclass instance HasCount ClueCount env InvestigatorId => HasModifiersFor env Event
 deriving anyclass instance EventRunner env => RunMessage env Event
 

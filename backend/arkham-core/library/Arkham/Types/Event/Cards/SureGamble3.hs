@@ -15,6 +15,10 @@ instance HasModifiersFor env SureGamble3 where
   getModifiersFor = noModifiersFor
 
 instance HasActions env SureGamble3 where
+  getActions iid (InHandWindow ownerId (WhenRevealTokenWithNegativeModifier You tid)) (SureGamble3 attrs)
+    | ownerId == iid
+    = pure
+      [InitiatePlayCard iid (getCardId attrs) (Just $ TokenTarget tid) False]
   getActions i window (SureGamble3 attrs) = getActions i window attrs
 
 instance EventRunner env => RunMessage env SureGamble3 where

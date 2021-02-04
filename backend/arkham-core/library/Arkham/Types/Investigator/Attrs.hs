@@ -7,7 +7,6 @@ import Arkham.Import
 
 import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
-import Arkham.Types.Card.PlayerCardWithBehavior
 import Arkham.Types.CommitRestriction
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
@@ -547,7 +546,7 @@ instance HasModifiersFor env InvestigatorAttrs where
 instance ActionRunner env => HasActions env InvestigatorAttrs where
   getActions iid window attrs | iid == investigatorId attrs = concat <$> for
     (attrs ^.. handL . traverse . _PlayerCard)
-    (getActions iid window . toPlayerCardWithBehavior)
+    (getActions iid (InHandWindow iid window) . toCardInstance iid)
   getActions _ _ _ = pure []
 
 instance HasTokenValue env InvestigatorAttrs where
@@ -561,6 +560,13 @@ instance InvestigatorRunner env => RunMessage env EntityInstance where
   runMessage msg (EventInstance x) = EventInstance <$> runMessage msg x
   runMessage msg (SkillInstance x) = SkillInstance <$> runMessage msg x
   runMessage msg (TreacheryInstance x) = TreacheryInstance <$> runMessage msg x
+
+instance ActionRunner env => HasActions env EntityInstance where
+  getActions iid window (AssetInstance x) = getActions iid window x
+  getActions iid window (EnemyInstance x) = getActions iid window x
+  getActions iid window (EventInstance x) = getActions iid window x
+  getActions iid window (SkillInstance x) = getActions iid window x
+  getActions iid window (TreacheryInstance x) = getActions iid window x
 
 toCardInstance :: InvestigatorId -> PlayerCard -> EntityInstance
 toCardInstance iid card = case pcCardType card of
@@ -1561,10 +1567,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 ]
               else choices
             )
-      actions <- fmap concat <$> for cards $ \card' -> getActions
-        iid
-        (WhenAmongSearchedCards You)
-        (toPlayerCardWithBehavior card')
+      actions <-
+        fmap concat <$> for cards $ \card' ->
+          getActions iid (WhenAmongSearchedCards You) (toCardInstance iid card')
       -- TODO: This is for astounding revelation and only one research action is possible
       -- so we are able to short circuit here, but we may have additional cards in the
       -- future so we may want to make this more versatile

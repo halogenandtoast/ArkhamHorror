@@ -2,6 +2,8 @@ module Arkham.Types.Ability.Limit where
 
 import Arkham.Prelude
 
+import Arkham.Types.Trait
+
 data AbilityLimit = PlayerLimit AbilityLimitType Int | GroupLimit AbilityLimitType Int | NoLimit
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
@@ -23,5 +25,6 @@ data AbilityLimitType
   | PerTurn
   | PerWindow
   | PerTestOrAbility
+  | PerSearch (Maybe Trait)
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)

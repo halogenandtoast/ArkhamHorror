@@ -235,7 +235,8 @@ getModifiedSanity attrs@InvestigatorAttrs {..} = do
   applyModifier (SanityModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
+removeFromSlots
+  :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = HashMap.map (map (removeIfMatches aid))
 
 fitsAvailableSlots :: [SlotType] -> [Trait] -> InvestigatorAttrs -> Bool
@@ -1264,9 +1265,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         case mcard of
           Just card@MkPlayerCard {..} -> do
             when (pcCardType == PlayerTreacheryType)
-              $ unshiftMessage (DrewPlayerTreachery iid pcCardCode pcId)
+              $ unshiftMessage (DrewPlayerTreachery iid $ PlayerCard card)
             when (pcCardType == PlayerEnemyType)
-              $ unshiftMessage (DrewPlayerEnemy iid pcCardCode pcId)
+              $ unshiftMessage (DrewPlayerEnemy iid $ PlayerCard card)
             when (pcCardType /= PlayerTreacheryType && pcWeakness)
               $ unshiftMessage
                   (Revelation iid (PlayerCardSource $ getCardId card))
@@ -1467,9 +1468,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     case card of
       MkPlayerCard {..} -> do
         when (pcCardType == PlayerTreacheryType)
-          $ unshiftMessage (DrewPlayerTreachery iid pcCardCode pcId)
+          $ unshiftMessage (DrewPlayerTreachery iid $ PlayerCard card)
         when (pcCardType == PlayerEnemyType)
-          $ unshiftMessage (DrewPlayerEnemy iid pcCardCode pcId)
+          $ unshiftMessage (DrewPlayerEnemy iid $ PlayerCard card)
     pure $ a & deckL .~ Deck deck & handL %~ (PlayerCard card :)
   DisengageEnemy iid eid | iid == investigatorId ->
     pure $ a & engagedEnemiesL %~ deleteSet eid

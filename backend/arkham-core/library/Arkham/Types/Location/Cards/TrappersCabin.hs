@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.TrappersCabin
   ( TrappersCabin(..)
   , trappersCabin
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -34,8 +33,8 @@ instance HasModifiersFor env TrappersCabin where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env TrappersCabin where
-  getActions iid NonFast (TrappersCabin attrs@LocationAttrs {..}) | locationRevealed =
-    withBaseActions iid NonFast attrs $ do
+  getActions iid NonFast (TrappersCabin attrs@LocationAttrs {..})
+    | locationRevealed = withBaseActions iid NonFast attrs $ do
       assetNotTaken <- isNothing
         <$> getId @(Maybe StoryAssetId) (CardCode "81020")
       pure
@@ -56,6 +55,7 @@ instance (LocationRunner env) => RunMessage env TrappersCabin where
       l <$ unshiftMessage
         (BeginSkillTest iid source (toTarget attrs) Nothing SkillIntellect 3)
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> l
-      <$ unshiftMessage (TakeControlOfSetAsideAsset iid "81020")
+      | isSource attrs source -> do
+        bearTrap <- PlayerCard <$> genPlayerCard "81020"
+        l <$ unshiftMessage (TakeControlOfSetAsideAsset iid bearTrap)
     _ -> TrappersCabin <$> runMessage msg attrs

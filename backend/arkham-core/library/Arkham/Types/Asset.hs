@@ -12,10 +12,8 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Trait (Trait)
 
-createAsset :: MonadRandom m => CardCode -> m (AssetId, Asset)
-createAsset cardCode = do
-  aid <- getRandom
-  pure (aid, lookupAsset cardCode aid)
+createAsset :: IsCard a => a -> Asset
+createAsset a = lookupAsset (getCardCode a) (AssetId $ getCardId a)
 
 data Asset
   = Rolands38Special' Rolands38Special

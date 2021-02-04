@@ -1,7 +1,6 @@
 module Arkham.Types.Message
   ( module Arkham.Types.Message
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -147,7 +146,7 @@ data Message
   | AssetDefeated AssetId
   | AttachAsset AssetId Target
   | AttachEvent EventId Target
-  | AttachStoryTreacheryTo CardCode Target
+  | AttachStoryTreacheryTo Card Target
   | AttachTreachery TreacheryId Target
   | AttackEnemy InvestigatorId EnemyId Source SkillType
   | BeforeSkillTest InvestigatorId SkillType
@@ -189,10 +188,10 @@ data Message
   | CreateEnemyRequest Source Card
   | CreatePayAbilityCostEffect (Maybe Ability) Source Target
   | CreateWindowModifierEffect EffectWindow (EffectMetadata Message) Source Target
-  | CreateStoryAssetAt CardCode LocationId
-  | CreateStoryAssetAtLocationMatching CardCode LocationMatcher
+  | CreateStoryAssetAt Card LocationId
+  | CreateStoryAssetAtLocationMatching Card LocationMatcher
   | CreateTokenValueEffect Int Source Target
-  | CreateWeaknessInThreatArea CardCode InvestigatorId
+  | CreateWeaknessInThreatArea Card InvestigatorId
   | CreatedEffect EffectId (Maybe (EffectMetadata Message)) Source Target
   | CrossOutRecord CampaignLogKey
   | Damage Target Source Int
@@ -213,9 +212,9 @@ data Message
   | DrawCards InvestigatorId Int Bool
   | DrawEncounterCards Target Int -- Meant to allow events to handle (e.g. first watch)
   | DrawToken InvestigatorId Token
-  | DrewPlayerEnemy InvestigatorId CardCode CardId
-  | DrewPlayerTreachery InvestigatorId CardCode CardId
-  | DrewTreachery InvestigatorId CardCode
+  | DrewPlayerEnemy InvestigatorId Card
+  | DrewPlayerTreachery InvestigatorId Card
+  | DrewTreachery InvestigatorId Card
   | EmptyDeck InvestigatorId
   | EndCheckWindow
   | EndEnemy
@@ -452,7 +451,7 @@ data Message
   | Surge InvestigatorId Source
   | TakeAction InvestigatorId (Maybe Action) Cost
   | TakeControlOfAsset InvestigatorId AssetId
-  | TakeControlOfSetAsideAsset InvestigatorId CardCode
+  | TakeControlOfSetAsideAsset InvestigatorId Card
   | TakeResources InvestigatorId Int Bool
   | TakeStartingResources InvestigatorId
   | TakenAction InvestigatorId Action

@@ -63,8 +63,9 @@ instance ActRunner env => RunMessage env FindingLadyEsprit where
       pure $ FindingLadyEsprit $ attrs & (sequenceL .~ Act 1 B)
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       [ladyEspritSpawnLocation] <- setToList <$> bayouLocations
+      ladyEsprit <- PlayerCard <$> genPlayerCard "81019"
       a <$ unshiftMessages
-        [ CreateStoryAssetAt "81019" ladyEspritSpawnLocation
+        [ CreateStoryAssetAt ladyEsprit ladyEspritSpawnLocation
         , PutSetAsideIntoPlay (SetAsideLocationsTarget mempty)
         , NextAdvanceActStep aid 2
         ]
@@ -74,6 +75,7 @@ instance ActRunner env => RunMessage env FindingLadyEsprit where
         EncounterSet.CurseOfTheRougarou
       rougarouSpawnLocations <- setToList <$> nonBayouLocations
       theRougarou <- EncounterCard <$> genEncounterCard "81028"
+      curseOfTheRougarou <- EncounterCard <$> genEncounterCard "81029"
       a <$ unshiftMessages
         ([ chooseOne
              leadInvestigatorId
@@ -82,7 +84,7 @@ instance ActRunner env => RunMessage env FindingLadyEsprit where
         <> [ ShuffleEncounterDiscardBackIn
            , ShuffleIntoEncounterDeck curseOfTheRougarouSet
            , AddCampaignCardToDeck leadInvestigatorId "81029"
-           , CreateWeaknessInThreatArea "81029" leadInvestigatorId
+           , CreateWeaknessInThreatArea curseOfTheRougarou leadInvestigatorId
            , NextAct aid "81006"
            ]
         )

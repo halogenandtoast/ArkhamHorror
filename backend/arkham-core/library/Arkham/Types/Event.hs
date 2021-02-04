@@ -13,6 +13,9 @@ import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Query
 
+createEvent :: IsCard a => a -> InvestigatorId -> Event
+createEvent a iid = lookupEvent (getCardCode a) iid (EventId $ getCardId a)
+
 data Event
   = OnTheLam' OnTheLam
   | DarkMemory' DarkMemory

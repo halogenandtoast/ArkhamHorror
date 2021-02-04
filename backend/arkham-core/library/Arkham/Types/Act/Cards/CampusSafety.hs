@@ -27,6 +27,7 @@ instance ActRunner env => RunMessage env CampusSafety where
       completedTheHouseAlwaysWins <-
         elem "02062" . map unCompletedScenarioId <$> getSetList ()
       theExperiment <- EncounterCard <$> genEncounterCard "02058"
+      alchemicalConcoction <- PlayerCard <$> genPlayerCard "02059"
 
       unshiftMessages
         $ [ PlaceLocationMatching (LocationWithTitle "Alchemy Labs")
@@ -38,7 +39,7 @@ instance ActRunner env => RunMessage env CampusSafety where
            | agendaStep <= 2
            ]
         <> [ CreateStoryAssetAtLocationMatching
-               "02059"
+               alchemicalConcoction
                (LocationWithTitle "Alchemy Labs")
            | completedTheHouseAlwaysWins
            ]

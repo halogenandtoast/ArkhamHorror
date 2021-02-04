@@ -28,10 +28,11 @@ instance AgendaRunner env => RunMessage env RestrictedAccess where
       cardCode <- getId @CardCode eid
       when (cardCode == CardCode "02141") $ do
         mShadowSpawnedId <- fmap unStoryTreacheryId <$> getId (CardCode "02142")
+        shadowSpawned <- EncounterCard <$> genEncounterCard "02142"
         case mShadowSpawnedId of
           Just tid -> unshiftMessage $ PlaceResources (TreacheryTarget tid) 1
-          Nothing ->
-            unshiftMessage $ AttachStoryTreacheryTo "02142" (EnemyTarget eid)
+          Nothing -> unshiftMessage
+            $ AttachStoryTreacheryTo shadowSpawned (EnemyTarget eid)
       pure a
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()

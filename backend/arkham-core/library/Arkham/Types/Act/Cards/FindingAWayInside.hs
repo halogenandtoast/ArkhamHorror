@@ -36,12 +36,13 @@ instance ActRunner env => RunMessage env FindingAWayInside where
       | aid == actId && onSide B attrs && isSource attrs source -> do
         leadInvestigatorId <- getLeadInvestigatorId
         investigatorIds <- getInvestigatorIds
+        adamLynch <- PlayerCard <$> genPlayerCard "02139"
         a <$ unshiftMessages
           [ chooseOne
             leadInvestigatorId
             [ TargetLabel
                 (InvestigatorTarget iid)
-                [TakeControlOfSetAsideAsset iid "02139"]
+                [TakeControlOfSetAsideAsset iid adamLynch]
             | iid <- investigatorIds
             ]
           , RevealLocation Nothing "02127"

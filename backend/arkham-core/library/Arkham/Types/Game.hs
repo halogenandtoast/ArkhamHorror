@@ -1611,8 +1611,8 @@ runGameMessage msg g = case msg of
       PlayerCard pc -> case pcCardType pc of
         SkillType -> do
           let
-            skillId = SkillId cardId
-            skill = lookupSkill (pcCardCode pc) iid skillId
+            skill = createSkill pc iid
+            skillId = toId skill
           unshiftMessage (InvestigatorCommittedSkill iid skillId)
           pure $ g & skillsL %~ insertMap skillId skill
         _ -> pure g
@@ -1688,8 +1688,8 @@ runGameMessage msg g = case msg of
           pure $ g & assetsL %~ insertMap aid asset
         EventType -> do
           let
-            eid = EventId cardId
-            event = lookupEvent (pcCardCode pc) iid eid
+            event = createEvent pc iid
+            eid = toId event
           unshiftMessages
             [PlayedCard iid cardId, InvestigatorPlayDynamicEvent iid eid n]
           pure $ g & eventsL %~ insertMap eid event
@@ -1728,8 +1728,8 @@ runGameMessage msg g = case msg of
           pure $ g & assetsL %~ insertMap aid asset
         EventType -> do
           let
-            eid = EventId cardId
-            event = lookupEvent (pcCardCode pc) iid eid
+            event = createEvent pc iid
+            eid = toId event
           unshiftMessages
             [PlayedCard iid cardId, InvestigatorPlayEvent iid eid mtarget]
           pure $ g & eventsL %~ insertMap eid event
@@ -1739,27 +1739,22 @@ runGameMessage msg g = case msg of
     pure $ g & usedAbilitiesL %~ ((iid, ability) :)
   UseLimitedAbility iid ability ->
     pure $ g & usedAbilitiesL %~ ((iid, ability) :)
-  DrewPlayerTreachery iid cardCode cardId -> do
+  DrewPlayerTreachery iid (PlayerCard card) -> do
     let
-      playerCard = lookupPlayerCard cardCode cardId
-      treacheryId = TreacheryId cardId
-      treachery = lookupTreachery cardCode treacheryId (Just iid)
+      treachery = createTreachery card (Just iid)
+      treacheryId = toId treachery
     -- player treacheries will not trigger draw treachery windows
     unshiftMessages
-      $ [ RemoveCardFromHand iid cardCode | pcRevelation playerCard ]
+      $ [ RemoveCardFromHand iid (getCardCode card) | pcRevelation card ]
       <> [ Revelation iid (TreacherySource treacheryId)
          , AfterRevelation iid treacheryId
          ]
     pure $ g & treacheriesL %~ insertMap treacheryId treachery
-  DrewPlayerEnemy iid cardCode cardId -> do
-    investigator <- getInvestigator iid
+  DrewPlayerEnemy iid card -> do
     lid <- locationFor iid
     let
-      card = fromJustNote "could not find card in hand"
-        $ find ((== cardId) . getCardId) (handOf investigator)
       enemy = createEnemy card
       eid = toId enemy
-    let
       bearerMessage = case card of
         PlayerCard MkPlayerCard {..} -> case pcBearer of
           Just bid -> EnemySetBearer eid bid
@@ -1767,7 +1762,7 @@ runGameMessage msg g = case msg of
         _ -> error "this should definitely be a player card"
     unshiftMessages
       (bearerMessage
-      : [RemoveCardFromHand iid cardCode, InvestigatorDrawEnemy iid lid eid]
+      : [RemoveCardFromHand iid (getCardCode card), InvestigatorDrawEnemy iid lid eid]
       )
     pure $ g & enemiesL %~ insertMap eid enemy
   CancelNext msgType -> do
@@ -2081,20 +2076,28 @@ runGameMessage msg g = case msg of
   CreateStoryAssetAtLocationMatching cardCode locationMatcher -> do
     lid <- fromJustNote "missing location" <$> getId locationMatcher
     g <$ unshiftMessage (CreateStoryAssetAt cardCode lid)
-  CreateStoryAssetAt cardCode lid -> do
-    (assetId, asset) <- createAsset cardCode
+  CreateStoryAssetAt card lid -> do
+    let
+      asset = createAsset card
+      assetId = toId asset
     unshiftMessage $ AttachAsset assetId (LocationTarget lid)
     pure $ g & assetsL . at assetId ?~ asset
-  CreateWeaknessInThreatArea cardCode iid -> do
-    (treacheryId, treachery) <- createTreachery cardCode (Just iid)
+  CreateWeaknessInThreatArea card iid -> do
+    let
+      treachery = createTreachery card (Just iid)
+      treacheryId = toId treachery
     unshiftMessage (AttachTreachery treacheryId (InvestigatorTarget iid))
     pure $ g & treacheriesL . at treacheryId ?~ treachery
-  AttachStoryTreacheryTo cardCode target -> do
-    (treacheryId, treachery) <- createTreachery cardCode Nothing
+  AttachStoryTreacheryTo card target -> do
+    let
+      treachery = createTreachery card Nothing
+      treacheryId = toId treachery
     unshiftMessage (AttachTreachery treacheryId target)
     pure $ g & treacheriesL . at treacheryId ?~ treachery
-  TakeControlOfSetAsideAsset iid cardCode -> do
-    (assetId, asset) <- createAsset cardCode
+  TakeControlOfSetAsideAsset iid card -> do
+    let
+      asset = createAsset card
+      assetId = toId asset
     unshiftMessage (TakeControlOfAsset iid assetId)
     pure $ g & assetsL . at assetId ?~ asset
   SpawnEnemyAt card lid -> do
@@ -2324,9 +2327,11 @@ runGameMessage msg g = case msg of
         $ g
         & (enemiesL . at (toId enemy) ?~ enemy)
         & (activeCardL ?~ EncounterCard card)
-    TreacheryType -> g <$ unshiftMessage (DrewTreachery iid (ecCardCode card))
+    TreacheryType -> g <$ unshiftMessage (DrewTreachery iid $ EncounterCard card)
     EncounterAssetType -> do
-      (assetId, asset) <- createAsset (ecCardCode card)
+      let
+        asset = createAsset card
+        assetId = toId asset
       -- Asset is assumed to have a revelation ability if drawn from encounter deck
       unshiftMessages
         $ Revelation iid (AssetSource assetId)
@@ -2336,8 +2341,10 @@ runGameMessage msg g = case msg of
       pure $ g & (assetsL . at assetId ?~ asset)
     LocationType ->
       g <$ unshiftMessage (PlaceLocation . LocationId $ ecCardCode card)
-  DrewTreachery iid cardCode -> do
-    (treacheryId, treachery) <- createTreachery cardCode (Just iid)
+  DrewTreachery iid card -> do
+    let
+      treachery = createTreachery card (Just iid)
+      treacheryId = toId treachery
     checkWindowMessages <- checkWindows iid $ \who ->
       pure
         $ [Fast.WhenDrawTreachery who]
@@ -2355,9 +2362,7 @@ runGameMessage msg g = case msg of
     pure
       $ g
       & (treacheriesL . at treacheryId ?~ treachery)
-      & (activeCardL ?~ EncounterCard
-          (lookupEncounterCard cardCode (unTreacheryId treacheryId))
-        )
+      & (activeCardL ?~ card)
   AfterRevelation{} -> pure $ g & activeCardL .~ Nothing
   ResignWith (AssetTarget aid) -> do
     let asset = getAsset aid g

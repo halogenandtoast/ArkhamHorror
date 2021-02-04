@@ -9,14 +9,9 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Cards
 import Arkham.Types.Treachery.Runner
 
-createTreachery
-  :: MonadRandom m
-  => CardCode
-  -> Maybe InvestigatorId
-  -> m (TreacheryId, Treachery)
-createTreachery cardCode miid = do
-  tid <- getRandom
-  pure (tid, lookupTreachery cardCode tid miid)
+createTreachery :: IsCard a => a -> Maybe InvestigatorId -> Treachery
+createTreachery a miid =
+  lookupTreachery (getCardCode a) (TreacheryId $ getCardId a) miid
 
 data Treachery
   = CoverUp' CoverUp

@@ -31,6 +31,7 @@ instance ActRunner env => RunMessage env BreakingAndEntering where
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       mHuntingHorror <- fmap unStoryEnemyId <$> getId (CardCode "02141")
+      haroldWalsted <- PlayerCard <$> genPlayerCard "02138"
       case mHuntingHorror of
         Just eid -> do
           lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
@@ -52,7 +53,7 @@ instance ActRunner env => RunMessage env BreakingAndEntering where
             leadInvestigatorId
             [ TargetLabel
                 (InvestigatorTarget iid)
-                [TakeControlOfSetAsideAsset iid "02138"]
+                [TakeControlOfSetAsideAsset iid haroldWalsted]
             | iid <- investigatorIds
             ]
           , FindEncounterCard
@@ -63,7 +64,8 @@ instance ActRunner env => RunMessage env BreakingAndEntering where
     FoundEnemyInVoid _ target eid | isTarget attrs target -> do
       lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
         <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
-      a <$ unshiftMessages [EnemySpawnFromVoid Nothing lid eid, NextAct actId "02125"]
+      a <$ unshiftMessages
+        [EnemySpawnFromVoid Nothing lid eid, NextAct actId "02125"]
     FoundEncounterCard _ target ec | isTarget attrs target -> do
       lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
         <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")

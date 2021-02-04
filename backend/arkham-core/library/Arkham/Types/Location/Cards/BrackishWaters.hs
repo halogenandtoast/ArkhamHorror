@@ -75,6 +75,7 @@ instance LocationRunner env => RunMessage env BrackishWaters where
         , BeginSkillTest iid source (toTarget attrs) Nothing SkillAgility 3
         ]
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> l
-      <$ unshiftMessage (TakeControlOfSetAsideAsset iid "81021")
+      | isSource attrs source -> do
+        fishingNet <- PlayerCard <$> genPlayerCard "81021"
+        l <$ unshiftMessage (TakeControlOfSetAsideAsset iid fishingNet)
     _ -> BrackishWaters <$> runMessage msg attrs

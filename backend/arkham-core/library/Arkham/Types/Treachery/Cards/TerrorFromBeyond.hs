@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.TerrorFromBeyond
   ( TerrorFromBeyond(..)
   , terrorFromBeyond
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -30,7 +29,7 @@ instance TreacheryRunner env => RunMessage env TerrorFromBeyond where
         secondCopy =
           count
               (\case
-                DrewTreachery _ (CardCode "02101") -> True
+                DrewTreachery _ card | getCardCode card == "02101" -> True
                 _ -> False
               )
               phaseHistory

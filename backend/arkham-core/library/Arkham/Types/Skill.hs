@@ -1,7 +1,5 @@
 module Arkham.Types.Skill
-  ( lookupSkill
-  , Skill(..)
-  , ownerOfSkill
+  ( module Arkham.Types.Skill
   ) where
 
 import Arkham.Prelude
@@ -13,6 +11,9 @@ import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Cards
 import Arkham.Types.Skill.Runner
 import Arkham.Types.SkillId
+
+createSkill :: IsCard a => a -> InvestigatorId -> Skill
+createSkill a iid = lookupSkill (getCardCode a) iid (SkillId $ getCardId a)
 
 data Skill
   = ViciousBlow' ViciousBlow

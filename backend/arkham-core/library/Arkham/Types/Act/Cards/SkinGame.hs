@@ -42,9 +42,11 @@ instance ActRunner env => RunMessage env SkinGame where
       completedExtracurricularActivity <-
         elem "02041" . map unCompletedScenarioId <$> getSetList ()
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
+      peterClover <- PlayerCard <$> genPlayerCard "02079"
+      drFrancisMorgan <- PlayerCard <$> genPlayerCard "02080"
       a <$ if completedExtracurricularActivity
         then unshiftMessages
-          [ CreateStoryAssetAt "02079" "02072"
+          [ CreateStoryAssetAt peterClover "02072"
           , FindEncounterCard
             leadInvestigatorId
             (toTarget attrs)
@@ -52,7 +54,7 @@ instance ActRunner env => RunMessage env SkinGame where
           , NextAct actId "02068"
           ]
         else unshiftMessages
-          [CreateStoryAssetAt "02080" "02076", NextAct actId "02068"]
+          [CreateStoryAssetAt drFrancisMorgan "02076", NextAct actId "02068"]
     FoundEncounterCard _ target ec | isTarget attrs target ->
       a <$ unshiftMessage (SpawnEnemyAt (EncounterCard ec) "02072")
     _ -> SkinGame <$> runMessage msg attrs

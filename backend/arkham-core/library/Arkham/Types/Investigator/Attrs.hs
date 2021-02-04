@@ -755,9 +755,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure
       $ a
       & (assetsL %~ deleteSet aid)
-      & (discardL
-        %~ (lookupPlayerCard (getCardCode card) (CardId $ unAssetId aid) :)
-        )
+      & (discardL %~ (lookupPlayerCard (getCardCode card) (unAssetId aid) :))
       & (slotsL %~ removeFromSlots aid)
   RemoveFromGame (AssetTarget aid) -> pure $ a & assetsL %~ deleteSet aid
   ChooseFightEnemy iid source skillType isAction | iid == investigatorId -> do

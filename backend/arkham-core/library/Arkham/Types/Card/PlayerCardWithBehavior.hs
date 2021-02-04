@@ -139,7 +139,7 @@ instance
   )
   => RunMessage env BeatCop where
   runMessage (InDiscard (UseCardAbility iid source@(AssetSource aid) _ 1 _)) c@(BeatCop pc)
-    | unAssetId aid == unCardId (getCardId pc)
+    | unAssetId aid == getCardId pc
     = do
       locationId <- getId @LocationId iid
       locationEnemyIds <- getSetList locationId
@@ -173,7 +173,7 @@ instance
   )
   => RunMessage env StrayCat where
   runMessage (InDiscard (UseCardAbility iid (AssetSource aid) _ 1 _)) c@(StrayCat pc)
-    | unAssetId aid == unCardId (getCardId pc)
+    | unAssetId aid == getCardId pc
     = do
       locationId <- getId @LocationId iid
       locationEnemyIds <- getSetList locationId

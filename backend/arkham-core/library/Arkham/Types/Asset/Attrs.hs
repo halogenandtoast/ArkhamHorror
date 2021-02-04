@@ -44,7 +44,7 @@ instance FromJSON AssetAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "asset"
 
 instance IsCard AssetAttrs where
-  getCardId = CardId . unAssetId . assetId
+  getCardId = unAssetId . assetId
   getCardCode = assetCardCode
   getTraits = assetTraits
   getKeywords = mempty
@@ -56,7 +56,7 @@ baseAttrs aid cardCode =
       fromJustNote
           ("missing player card" <> unpack (unCardCode cardCode))
           (lookup cardCode allPlayerCards)
-        $ CardId (unAssetId aid)
+        $ unAssetId aid
   in
     AssetAttrs
       { assetName = pcName
@@ -96,7 +96,7 @@ instance TargetEntity AssetAttrs where
   isTarget attrs@AssetAttrs {..} = \case
     AssetTarget aid -> aid == assetId
     CardCodeTarget cardCode -> assetCardCode == cardCode
-    CardIdTarget cardId -> unCardId cardId == unAssetId assetId
+    CardIdTarget cardId -> cardId == unAssetId assetId
     SkillTestInitiatorTarget target -> isTarget attrs target
     _ -> False
 

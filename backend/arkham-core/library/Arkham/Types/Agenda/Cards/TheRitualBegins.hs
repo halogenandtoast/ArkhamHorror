@@ -50,7 +50,5 @@ instance (AgendaRunner env) => RunMessage env TheRitualBegins where
       case mcard of
         Nothing -> pure a
         Just card -> a <$ unshiftMessages
-          [ AddToHand iid (PlayerCard card)
-          , DrewPlayerTreachery iid (PlayerCard card)
-          ]
+          [AddToHand iid (PlayerCard card), DrewTreachery iid (PlayerCard card)]
     _ -> TheRitualBegins <$> runMessage msg attrs

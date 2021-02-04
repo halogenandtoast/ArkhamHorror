@@ -1265,7 +1265,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         case mcard of
           Just card@MkPlayerCard {..} -> do
             when (pcCardType == PlayerTreacheryType)
-              $ unshiftMessage (DrewPlayerTreachery iid $ PlayerCard card)
+              $ unshiftMessage (DrewTreachery iid $ PlayerCard card)
             when (pcCardType == PlayerEnemyType)
               $ unshiftMessage (DrewPlayerEnemy iid $ PlayerCard card)
             when (pcCardType /= PlayerTreacheryType && pcWeakness)
@@ -1468,7 +1468,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     case card of
       MkPlayerCard {..} -> do
         when (pcCardType == PlayerTreacheryType)
-          $ unshiftMessage (DrewPlayerTreachery iid $ PlayerCard card)
+          $ unshiftMessage (DrewTreachery iid $ PlayerCard card)
         when (pcCardType == PlayerEnemyType)
           $ unshiftMessage (DrewPlayerEnemy iid $ PlayerCard card)
     pure $ a & deckL .~ Deck deck & handL %~ (PlayerCard card :)

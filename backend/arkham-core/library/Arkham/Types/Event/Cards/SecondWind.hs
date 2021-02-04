@@ -26,7 +26,6 @@ instance (HasQueue env, HasRoundHistory env) => RunMessage env SecondWind where
       let
         didDrawTreachery = \case
           DrewTreachery iid' _ -> iid == iid'
-          DrewPlayerTreachery iid' _ -> iid == iid'
           _ -> False
         damageToHeal = if any didDrawTreachery roundHistory then 2 else 1
       e <$ unshiftMessages

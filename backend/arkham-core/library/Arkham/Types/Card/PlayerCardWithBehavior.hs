@@ -27,7 +27,6 @@ data PlayerCard'
   | DarkMemory' DarkMemory
   | BeatCop' BeatCop
   | SureGamble3' SureGamble3
-  | StrayCat' StrayCat
   | CloseCall2' CloseCall2
   | LetMeHandleThis' LetMeHandleThis
   | SecondWind' SecondWind
@@ -44,8 +43,6 @@ newtype DarkMemory = DarkMemory PlayerCard
 newtype BeatCop = BeatCop PlayerCard
   deriving newtype Show
 newtype SureGamble3 = SureGamble3 PlayerCard
-  deriving newtype Show
-newtype StrayCat = StrayCat PlayerCard
   deriving newtype Show
 newtype CloseCall2 = CloseCall2 PlayerCard
   deriving newtype Show
@@ -64,7 +61,6 @@ allPlayerCardsWithBehavior = mapFromList
   , ("01013", DarkMemory' . DarkMemory)
   , ("01018", BeatCop' . BeatCop)
   , ("01056", SureGamble3' . SureGamble3)
-  , ("01076", StrayCat' . StrayCat)
   , ("01083", CloseCall2' . CloseCall2)
   , ("03022", LetMeHandleThis' . LetMeHandleThis)
   , ("04149", SecondWind' . SecondWind)
@@ -160,32 +156,6 @@ instance HasActions env SureGamble3 where
     = pure [InitiatePlayCard iid (getCardId pc) (Just $ TokenTarget tid) False]
   getActions i window (SureGamble3 pc) =
     getActions i window (DefaultPlayerCard pc)
-
-instance HasActions env StrayCat where
-  getActions i window (StrayCat pc) =
-    getActions i window (DefaultPlayerCard pc)
-
-instance
-  ( HasQueue env
-  , HasSet Trait env EnemyId
-  , HasSet EnemyId env LocationId
-  , HasId LocationId env InvestigatorId
-  )
-  => RunMessage env StrayCat where
-  runMessage (InDiscard (UseCardAbility iid (AssetSource aid) _ 1 _)) c@(StrayCat pc)
-    | unAssetId aid == getCardId pc
-    = do
-      locationId <- getId @LocationId iid
-      locationEnemyIds <- getSetList locationId
-      nonEliteEnemyIds <- filterM
-        ((notMember Elite <$>) . getSet)
-        locationEnemyIds
-
-      c <$ unshiftMessage
-        (chooseOne iid [ EnemyEvaded iid enemyId | enemyId <- nonEliteEnemyIds ]
-        )
-  runMessage msg (StrayCat pc) =
-    StrayCat . unDefaultPlayerCard <$> runMessage msg (DefaultPlayerCard pc)
 
 instance (HasQueue env) => RunMessage env CloseCall2 where
   runMessage msg (CloseCall2 pc) =

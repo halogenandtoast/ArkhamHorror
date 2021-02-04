@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
 
 module Arkham.Types.Investigator.Attrs where
 
@@ -14,6 +15,11 @@ import Arkham.Types.Trait
 import Control.Monad.Fail
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
+import Arkham.Types.Treachery
+import Arkham.Types.Enemy
+import Arkham.Types.Skill
+import Arkham.Types.Event
+import Arkham.Types.Asset
 
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorName :: Text
@@ -549,15 +555,44 @@ instance ActionRunner env => HasActions env InvestigatorAttrs where
 instance HasTokenValue env InvestigatorAttrs where
   getTokenValue _ _ _ = error "should not be asking this here"
 
+data EntityInstance = AssetInstance Asset | EventInstance Event | SkillInstance Skill | EnemyInstance Enemy | TreacheryInstance Treachery
+
+instance InvestigatorRunner env => RunMessage env EntityInstance where
+  runMessage msg (AssetInstance x) = AssetInstance <$> runMessage msg x
+  runMessage msg (EnemyInstance x) = EnemyInstance <$> runMessage msg x
+  runMessage msg (EventInstance x) = EventInstance <$> runMessage msg x
+  runMessage msg (SkillInstance x) = SkillInstance <$> runMessage msg x
+  runMessage msg (TreacheryInstance x) = TreacheryInstance <$> runMessage msg x
+
+toCardInstance :: InvestigatorId -> PlayerCard -> EntityInstance
+toCardInstance iid card = case pcCardType card of
+  AssetType -> AssetInstance $ createAsset card
+  PlayerEnemyType -> EnemyInstance $ createEnemy card
+  EventType -> EventInstance $ createEvent card iid
+  SkillType -> SkillInstance $ createSkill card iid
+  PlayerTreacheryType -> TreacheryInstance $ createTreachery card (Just iid)
+
 instance InvestigatorRunner env => RunMessage env InvestigatorAttrs where
-  runMessage msg i = do
+  -- UseCardAbility is special and needs access to the original instance
+  -- therefor we do not wrap with In{Hand,Discard,etc.}
+  runMessage msg@UseCardAbility{} i = do
     traverseOf_
       (handL . traverse . _PlayerCard)
-      (runMessage (InHand msg) . toPlayerCardWithBehavior)
+      (runMessage msg . toPlayerCardWithBehavior)
       i
     traverseOf_
       (discardL . traverse)
-      (runMessage (InDiscard msg) . toPlayerCardWithBehavior)
+      (runMessage msg . toCardInstance (toId i))
+      i
+    runInvestigatorMessage msg i
+  runMessage msg i = do
+    traverseOf_
+      (handL . traverse . _PlayerCard)
+      (runMessage (InHand msg) . toCardInstance (toId i))
+      i
+    traverseOf_
+      (discardL . traverse)
+      (runMessage (InDiscard msg) . toCardInstance (toId i))
       i
     runInvestigatorMessage msg i
 

@@ -1739,17 +1739,6 @@ runGameMessage msg g = case msg of
     pure $ g & usedAbilitiesL %~ ((iid, ability) :)
   UseLimitedAbility iid ability ->
     pure $ g & usedAbilitiesL %~ ((iid, ability) :)
-  DrewPlayerTreachery iid (PlayerCard card) -> do
-    let
-      treachery = createTreachery card (Just iid)
-      treacheryId = toId treachery
-    -- player treacheries will not trigger draw treachery windows
-    unshiftMessages
-      $ [ RemoveCardFromHand iid (getCardCode card) | pcRevelation card ]
-      <> [ Revelation iid (TreacherySource treacheryId)
-         , AfterRevelation iid treacheryId
-         ]
-    pure $ g & treacheriesL %~ insertMap treacheryId treachery
   DrewPlayerEnemy iid card -> do
     lid <- locationFor iid
     let
@@ -2341,7 +2330,7 @@ runGameMessage msg g = case msg of
       pure $ g & (assetsL . at assetId ?~ asset)
     LocationType ->
       g <$ unshiftMessage (PlaceLocation . LocationId $ ecCardCode card)
-  DrewTreachery iid card -> do
+  DrewTreachery iid (EncounterCard card) -> do
     let
       treachery = createTreachery card (Just iid)
       treacheryId = toId treachery
@@ -2362,7 +2351,18 @@ runGameMessage msg g = case msg of
     pure
       $ g
       & (treacheriesL . at treacheryId ?~ treachery)
-      & (activeCardL ?~ card)
+      & (activeCardL ?~ EncounterCard card)
+  DrewTreachery iid (PlayerCard card) -> do
+    let
+      treachery = createTreachery card (Just iid)
+      treacheryId = toId treachery
+    -- player treacheries will not trigger draw treachery windows
+    unshiftMessages
+      $ [ RemoveCardFromHand iid (getCardCode card) | pcRevelation card ]
+      <> [ Revelation iid (TreacherySource treacheryId)
+         , AfterRevelation iid treacheryId
+         ]
+    pure $ g & treacheriesL %~ insertMap treacheryId treachery
   AfterRevelation{} -> pure $ g & activeCardL .~ Nothing
   ResignWith (AssetTarget aid) -> do
     let asset = getAsset aid g

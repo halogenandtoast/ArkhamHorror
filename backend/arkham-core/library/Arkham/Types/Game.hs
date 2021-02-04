@@ -584,7 +584,7 @@ instance HasList InPlayCard (Game queue) InvestigatorId where
     pure $ map
       (\asset -> InPlayCard . PlayerCard $ lookupPlayerCard
         (getCardCode asset)
-        (CardId . unAssetId $ toId asset)
+        (getCardId asset)
       )
       assets
 
@@ -1671,7 +1671,7 @@ runGameMessage msg g = case msg of
         PlayerTreacheryType -> error "unhandled"
         AssetType -> do
           let
-            aid = AssetId $ unCardId cardId
+            aid = AssetId cardId
             asset = fromJustNote
               "could not find asset"
               (lookup (pcCardCode pc) allAssets)
@@ -1712,7 +1712,7 @@ runGameMessage msg g = case msg of
           pure $ g & treacheriesL %~ insertMap tid treachery
         AssetType -> do
           let
-            aid = AssetId $ unCardId cardId
+            aid = AssetId cardId
             asset = fromJustNote
               "could not find asset"
               (lookup (pcCardCode pc) allAssets)

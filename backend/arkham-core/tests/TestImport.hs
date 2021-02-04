@@ -67,10 +67,8 @@ buildEnemy cardCode = do
   enemyId <- liftIO $ EnemyId <$> nextRandom
   pure $ lookupEnemy cardCode enemyId
 
-buildAsset :: MonadIO m => CardCode -> m Asset
-buildAsset cardCode = do
-  assetId <- liftIO $ AssetId <$> nextRandom
-  pure $ lookupAsset cardCode assetId
+buildAsset :: MonadRandom m => CardCode -> m Asset
+buildAsset cardCode = lookupAsset cardCode <$> getRandom
 
 testPlayerCards :: MonadIO m => Int -> m [PlayerCard]
 testPlayerCards count' = replicateM count' (testPlayerCard id)
@@ -105,9 +103,9 @@ testEnemy f = do
   enemyId <- liftIO $ EnemyId <$> nextRandom
   pure $ baseEnemy enemyId "enemy" f
 
-testAsset :: MonadIO m => (AssetAttrs -> AssetAttrs) -> m Asset
+testAsset :: MonadRandom m => (AssetAttrs -> AssetAttrs) -> m Asset
 testAsset f = do
-  assetId <- liftIO $ AssetId <$> nextRandom
+  assetId <- getRandom
   pure $ baseAsset assetId "asset" f
 
 testAgenda :: MonadIO m => CardCode -> (AgendaAttrs -> AgendaAttrs) -> m Agenda

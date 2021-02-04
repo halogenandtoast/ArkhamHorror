@@ -2,7 +2,9 @@ module Arkham.Types.AssetId where
 
 import Arkham.Prelude
 
-newtype AssetId = AssetId { unAssetId :: UUID }
+import Arkham.Types.Card.Id
+
+newtype AssetId = AssetId { unAssetId :: CardId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, Random)
 
 newtype StoryAssetId = StoryAssetId { unStoryAssetId :: AssetId }

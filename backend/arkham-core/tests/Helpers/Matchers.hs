@@ -133,7 +133,7 @@ hasEnemy g e l = toId e `member` getSet @EnemyId l g
 hasCardInPlay :: Game queue -> Card -> Investigator -> Bool
 hasCardInPlay g c i = case c of
   PlayerCard pc -> case pcCardType pc of
-    AssetType -> AssetId (unCardId $ pcId pc) `member` getSet i g
+    AssetType -> AssetId (pcId pc) `member` getSet i g
     _ -> error "not implemented"
   _ -> error "not implemented"
 

@@ -35,4 +35,13 @@ instance HasActions env BeatCop where
 
 -- | See: PlayerCardWithBehavior
 instance AssetRunner env => RunMessage env BeatCop where
-  runMessage msg (BeatCop attrs) = BeatCop <$> runMessage msg attrs
+  runMessage msg a@(BeatCop attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      locationId <- getId @LocationId iid
+      locationEnemyIds <- getSetList locationId
+      a <$ unshiftMessage
+        (chooseOne
+          iid
+          [ EnemyDamage eid iid source 1 | eid <- locationEnemyIds ]
+        )
+    _ -> BeatCop <$> runMessage msg attrs

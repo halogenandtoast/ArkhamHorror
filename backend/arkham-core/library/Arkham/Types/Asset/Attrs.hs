@@ -103,6 +103,7 @@ instance TargetEntity AssetAttrs where
 instance SourceEntity AssetAttrs where
   toSource = AssetSource . toId
   isSource AssetAttrs { assetId } (AssetSource aid) = assetId == aid
+  isSource attrs (PlayerCardSource cid) = getCardId attrs == cid
   isSource _ _ = False
 
 ownedBy :: AssetAttrs -> InvestigatorId -> Bool

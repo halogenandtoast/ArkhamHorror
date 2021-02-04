@@ -572,13 +572,18 @@ toCardInstance iid card = case pcCardType card of
   SkillType -> SkillInstance $ createSkill card iid
   PlayerTreacheryType -> TreacheryInstance $ createTreachery card (Just iid)
 
+-- UseCardAbility and Revelation are special and need access to the original instance
+-- therefor we do not mask with In{Hand,Discard,etc.}
+doNotMask :: Message -> Bool
+doNotMask UseCardAbility{} = True
+doNotMask Revelation{} = True
+doNotMask _ = False
+
 instance InvestigatorRunner env => RunMessage env InvestigatorAttrs where
-  -- UseCardAbility is special and needs access to the original instance
-  -- therefor we do not wrap with In{Hand,Discard,etc.}
-  runMessage msg@UseCardAbility{} i = do
+  runMessage msg i | doNotMask msg = do
     traverseOf_
       (handL . traverse . _PlayerCard)
-      (runMessage msg . toPlayerCardWithBehavior)
+      (runMessage msg . toCardInstance (toId i))
       i
     traverseOf_
       (discardL . traverse)
@@ -588,11 +593,11 @@ instance InvestigatorRunner env => RunMessage env InvestigatorAttrs where
   runMessage msg i = do
     traverseOf_
       (handL . traverse . _PlayerCard)
-      (runMessage (InHand msg) . toCardInstance (toId i))
+      (runMessage (InHand (toId i) msg) . toCardInstance (toId i))
       i
     traverseOf_
       (discardL . traverse)
-      (runMessage (InDiscard msg) . toCardInstance (toId i))
+      (runMessage (InDiscard (toId i) msg) . toCardInstance (toId i))
       i
     runInvestigatorMessage msg i
 
@@ -746,7 +751,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       (chooseOne
         iid
         [ Run [DiscardCard iid (getCardId card), CheckHandSize iid]
-        | card <- investigatorHand
+        | card <- filter (not . pcWeakness)
+          $ mapMaybe (preview _PlayerCard) investigatorHand
         ]
       )
     pure a
@@ -1486,9 +1492,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & deckL %~ Deck . (card :) . unDeck
   AddToHand iid card | iid == investigatorId -> do
     case card of
-      PlayerCard card' -> void $ runMessage
-        (Revelation iid (PlayerCardSource $ getCardId card'))
-        (toPlayerCardWithBehavior card')
+      PlayerCard card' -> when (pcRevelation card')
+        $ unshiftMessage (Revelation iid (PlayerCardSource $ getCardId card'))
       _ -> pure ()
     pure $ a & handL %~ (card :)
   ShuffleCardsIntoDeck iid cards | iid == investigatorId -> do

@@ -13,7 +13,6 @@ import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
 import Arkham.Types.Trait
 import Control.Monad.Fail
-import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import Arkham.Types.Treachery
 import Arkham.Types.Enemy
@@ -243,7 +242,7 @@ getModifiedSanity attrs@InvestigatorAttrs {..} = do
 
 removeFromSlots
   :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
-removeFromSlots aid = HashMap.map (map (removeIfMatches aid))
+removeFromSlots aid = fmap (map (removeIfMatches aid))
 
 fitsAvailableSlots :: [SlotType] -> [Trait] -> InvestigatorAttrs -> Bool
 fitsAvailableSlots slotTypes traits a = null
@@ -253,11 +252,10 @@ fitsAvailableSlots slotTypes traits a = null
   )
 
 availableSlotTypesFor :: SlotType -> [Trait] -> InvestigatorAttrs -> [SlotType]
-availableSlotTypesFor slotType traits a =
-  case HashMap.lookup slotType (a ^. slotsL) of
-    Nothing -> []
-    Just slots ->
-      replicate (length (filter (canPutIntoSlot traits) slots)) slotType
+availableSlotTypesFor slotType traits a = case lookup slotType (a ^. slotsL) of
+  Nothing -> []
+  Just slots ->
+    replicate (length (filter (canPutIntoSlot traits) slots)) slotType
 
 placeInAvailableSlot :: AssetId -> [Trait] -> [Slot] -> [Slot]
 placeInAvailableSlot _ _ [] = error "could not find empty slot"
@@ -266,7 +264,7 @@ placeInAvailableSlot aid traits (x : xs) = if canPutIntoSlot traits x
   else x : placeInAvailableSlot aid traits xs
 
 discardableAssets :: SlotType -> InvestigatorAttrs -> [AssetId]
-discardableAssets slotType a = case HashMap.lookup slotType (a ^. slotsL) of
+discardableAssets slotType a = case lookup slotType (a ^. slotsL) of
   Nothing -> []
   Just slots -> mapMaybe slotItem slots
 
@@ -1238,14 +1236,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & (connectedLocationsL %~ insertSet lid1)
   AddSlot iid slotType slot | iid == investigatorId -> do
     let
-      slots = HashMap.findWithDefault [] slotType investigatorSlots
+      slots = findWithDefault [] slotType investigatorSlots
       assetIds = mapMaybe slotItem slots
       emptiedSlots = sort $ slot : map emptySlot slots
     unshiftMessage (RefillSlots iid slotType assetIds)
-    pure $ a & slotsL %~ HashMap.insert slotType emptiedSlots
+    pure $ a & slotsL %~ insertMap slotType emptiedSlots
   RefillSlots iid slotType assetIds | iid == investigatorId -> do
     let
-      slots = HashMap.findWithDefault [] slotType investigatorSlots
+      slots = findWithDefault [] slotType investigatorSlots
       emptiedSlots = sort $ map emptySlot slots
     assetsWithTraits <- for assetIds $ \assetId -> do
       traits <- getSetList assetId
@@ -1259,7 +1257,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         emptiedSlots
         assetsWithTraits
     if length (mapMaybe slotItem updatedSlots) == length assetIds
-      then pure $ a & slotsL %~ HashMap.insert slotType updatedSlots
+      then pure $ a & slotsL %~ insertMap slotType updatedSlots
       else do
         unshiftMessage
           (chooseOne

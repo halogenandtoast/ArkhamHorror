@@ -19,6 +19,15 @@ instance HasActions env DarkMemory where
 
 instance (EventRunner env) => RunMessage env DarkMemory where
   runMessage msg e@(DarkMemory attrs@EventAttrs {..}) = case msg of
+    InHand ownerId (EndTurn iid) | ownerId == iid -> e <$ unshiftMessages
+      [ RevealInHand $ getCardId attrs
+      , InvestigatorAssignDamage
+        iid
+        (PlayerCardSource $ getCardId attrs)
+        DamageAny
+        0
+        2
+      ]
     InvestigatorPlayEvent _ eid _ | eid == eventId -> do
       e <$ unshiftMessages
         [ PlaceDoomOnAgenda

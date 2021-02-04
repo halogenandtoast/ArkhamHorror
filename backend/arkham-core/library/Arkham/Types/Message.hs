@@ -272,8 +272,8 @@ data Message
   | HealDamage Target Int
   | HealHorror Target Int
   | HuntersMove
-  | InDiscard Message
-  | InHand Message
+  | InDiscard InvestigatorId Message
+  | InHand InvestigatorId Message
   | InitDeck InvestigatorId [PlayerCard] -- used to initialize the deck for the campaign
   | UpgradeDeck InvestigatorId [PlayerCard] -- used to upgrade deck during campaign
   | FinishedUpgradingDecks

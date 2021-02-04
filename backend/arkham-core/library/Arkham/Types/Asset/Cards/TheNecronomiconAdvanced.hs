@@ -43,6 +43,8 @@ instance HasActions env TheNecronomiconAdvanced where
 
 instance (AssetRunner env) => RunMessage env TheNecronomiconAdvanced where
   runMessage msg a@(TheNecronomiconAdvanced attrs) = case msg of
+    Revelation iid source | isSource attrs source ->
+      a <$ unshiftMessage (PlayCard iid (getCardId attrs) Nothing False)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       unshiftMessage $ InvestigatorDamage iid source 0 1
       if fromJustNote "Must be set" (assetHorror attrs) == 1

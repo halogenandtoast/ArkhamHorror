@@ -31,24 +31,9 @@ instance HasModifiersFor env BishopsBrook_202 where
     = pure $ toModifiers attrs [HorrorDealt 1]
   getModifiersFor _ _ _ = pure []
 
-ability :: LocationAttrs -> Ability
-ability a = base { abilityLimit = GroupLimit PerGame 1 }
-  where base = mkAbility (toSource a) 1 (FastAbility Free)
-
 instance ActionRunner env => HasActions env BishopsBrook_202 where
-  getActions iid FastPlayerWindow (BishopsBrook_202 attrs@LocationAttrs {..}) =
-    withBaseActions iid FastPlayerWindow attrs $ pure
-      [ ActivateCardAbilityAction iid (ability attrs)
-      | locationClues == 0 && locationRevealed
-      ]
-  getActions iid window (BishopsBrook_202 attrs) = getActions iid window attrs
+  getActions = withDrawCardUnderneathAction
 
 instance LocationRunner env => RunMessage env BishopsBrook_202 where
-  runMessage msg (BishopsBrook_202 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      case locationCardsUnderneath attrs of
-        (EncounterCard card : rest) -> do
-          unshiftMessage (InvestigatorDrewEncounterCard iid card)
-          pure $ BishopsBrook_202 $ attrs & cardsUnderneathL .~ rest
-        _ -> throwIO $ InvalidState "Not expecting a player card"
-    _ -> BishopsBrook_202 <$> runMessage msg attrs
+  runMessage msg (BishopsBrook_202 attrs) =
+    BishopsBrook_202 <$> runMessage msg attrs

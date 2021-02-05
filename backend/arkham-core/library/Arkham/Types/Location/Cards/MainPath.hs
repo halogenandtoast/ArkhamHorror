@@ -5,10 +5,8 @@ module Arkham.Types.Location.Cards.MainPath
 
 import Arkham.Import
 
-import qualified Arkham.Types.Action as Action
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 

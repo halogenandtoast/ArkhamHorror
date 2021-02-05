@@ -181,6 +181,27 @@ withResignAction iid NonFast location | locationRevealed (toAttrs location) =
   where attrs = toAttrs location
 withResignAction iid window location = getActions iid window (toAttrs location)
 
+withDrawCardUnderneathAction
+  :: ( Entity location
+     , EntityAttrs location ~ LocationAttrs
+     , MonadReader env m
+     , MonadIO m
+     , ActionRunner env
+     )
+  => InvestigatorId
+  -> Window
+  -> location
+  -> m [Message]
+withDrawCardUnderneathAction iid NonFast location
+  | locationRevealed (toAttrs location) = withBaseActions iid NonFast attrs
+  $ pure
+      [ drawCardUnderneathAction iid attrs
+      | iid `on` attrs && locationClues attrs == 0
+      ]
+  where attrs = toAttrs location
+withDrawCardUnderneathAction iid window location =
+  getActions iid window (toAttrs location)
+
 instance ActionRunner env => HasActions env LocationAttrs where
   getActions iid NonFast location@LocationAttrs {..} = do
     canMoveTo <- getCanMoveTo locationId iid
@@ -437,5 +458,11 @@ instance LocationRunner env => RunMessage env LocationAttrs where
         (/= lid)
     UseCardAbility iid source _ 99 _ | isSource a source ->
       a <$ unshiftMessage (Resign iid)
+    UseCardAbility iid source _ 100 _ | isSource a source ->
+      case locationCardsUnderneath of
+        (EncounterCard card : rest) -> do
+          unshiftMessage (InvestigatorDrewEncounterCard iid card)
+          pure $ a & cardsUnderneathL .~ rest
+        _ -> throwIO $ InvalidState "Not expecting a player card or empty yet"
     Blanked msg' -> runMessage msg' a
     _ -> pure a

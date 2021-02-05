@@ -18,3 +18,11 @@ resignAction iid a = ActivateCardAbilityAction
   iid
   (mkAbility (toSource a) 99 (ActionAbility (Just Action.Resign) (ActionCost 1))
   )
+
+drawCardUnderneathAction :: SourceEntity a => InvestigatorId -> a -> Message
+drawCardUnderneathAction iid a = ActivateCardAbilityAction
+  iid
+  ((mkAbility (toSource a) 100 (FastAbility Free))
+    { abilityLimit = GroupLimit PerGame 1
+    }
+  )

@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.MainPath
   ( MainPath(..)
   , mainPath
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -31,18 +30,7 @@ instance HasModifiersFor env MainPath where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env MainPath where
-  getActions iid NonFast (MainPath attrs@LocationAttrs {..}) | locationRevealed =
-    withBaseActions iid NonFast attrs $ pure
-      [ ActivateCardAbilityAction
-          iid
-          (mkAbility
-            (toSource attrs)
-            1
-            (ActionAbility (Just Action.Resign) (ActionCost 1))
-          )
-      | iid `member` locationInvestigators
-      ]
-  getActions i window (MainPath attrs) = getActions i window attrs
+  getActions = withResignAction
 
 instance (LocationRunner env) => RunMessage env MainPath where
   runMessage msg l@(MainPath attrs@LocationAttrs {..}) = case msg of

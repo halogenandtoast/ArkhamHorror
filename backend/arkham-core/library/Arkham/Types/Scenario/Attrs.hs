@@ -173,7 +173,9 @@ instance ScenarioRunner env => RunMessage env ScenarioAttrs where
       a <$ unshiftMessage FailSkillTest
     EndOfScenario -> do
       clearQueue
-      a <$ unshiftMessage (NextCampaignStep Nothing)
+      standalone <- isNothing <$> getId @(Maybe CampaignId) ()
+      a <$ unshiftMessage
+        (if standalone then GameOver else NextCampaignStep Nothing)
     ScenarioResolution _ ->
       error "The scenario should specify what to do for no resolution"
     UseScenarioSpecificAbility{} ->

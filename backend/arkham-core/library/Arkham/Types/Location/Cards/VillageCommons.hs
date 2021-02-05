@@ -28,7 +28,7 @@ instance HasModifiersFor env VillageCommons where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env VillageCommons where
-  getActions iid window (VillageCommons attrs) = getActions iid window attrs
+  getActions = withResignAction
 
 instance LocationRunner env => RunMessage env VillageCommons where
   runMessage msg (VillageCommons attrs) =

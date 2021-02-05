@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.MuseumEntrance
   ( museumEntrance
   , MuseumEntrance(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -32,10 +31,7 @@ instance HasModifiersFor env MuseumEntrance where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env MuseumEntrance where
-  getActions iid NonFast (MuseumEntrance location) | locationRevealed location =
-    withBaseActions iid NonFast location
-      $ pure [ resignAction iid location | iid `on` location ]
-  getActions i window (MuseumEntrance location) = getActions i window location
+  getActions = withResignAction
 
 instance LocationRunner env => RunMessage env MuseumEntrance where
   runMessage msg (MuseumEntrance location) =

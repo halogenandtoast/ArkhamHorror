@@ -5,10 +5,8 @@ module Arkham.Types.Location.Cards.Broadmoor
 
 import Arkham.Import
 
-import qualified Arkham.Types.Action as Action
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
@@ -32,21 +30,7 @@ instance HasModifiersFor env Broadmoor where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Broadmoor where
-  getActions iid NonFast (Broadmoor attrs@LocationAttrs {..}) =
-    withBaseActions iid NonFast attrs $ pure
-      [ ActivateCardAbilityAction
-          iid
-          (mkAbility
-            (toSource attrs)
-            1
-            (ActionAbility (Just Action.Resign) (ActionCost 1))
-          )
-      | iid `member` locationInvestigators
-      ]
-  getActions i window (Broadmoor attrs) = getActions i window attrs
+  getActions = withResignAction
 
-instance (LocationRunner env) => RunMessage env Broadmoor where
-  runMessage msg l@(Broadmoor attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessage (Resign iid)
-    _ -> Broadmoor <$> runMessage msg attrs
+instance LocationRunner env => RunMessage env Broadmoor where
+  runMessage msg (Broadmoor attrs) = Broadmoor <$> runMessage msg attrs

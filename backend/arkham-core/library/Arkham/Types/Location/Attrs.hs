@@ -164,6 +164,23 @@ canEnterLocation eid lid = do
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits'
     _ -> False
 
+withResignAction
+  :: ( Entity location
+     , EntityAttrs location ~ LocationAttrs
+     , MonadReader env m
+     , MonadIO m
+     , ActionRunner env
+     )
+  => InvestigatorId
+  -> Window
+  -> location
+  -> m [Message]
+withResignAction iid NonFast location | locationRevealed (toAttrs location) =
+  withBaseActions iid NonFast attrs
+    $ pure [ resignAction iid attrs | iid `on` attrs ]
+  where attrs = toAttrs location
+withResignAction iid window location = getActions iid window (toAttrs location)
+
 instance ActionRunner env => HasActions env LocationAttrs where
   getActions iid NonFast location@LocationAttrs {..} = do
     canMoveTo <- getCanMoveTo locationId iid

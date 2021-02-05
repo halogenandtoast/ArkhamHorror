@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 729ae43c66d210e6ed9fc1ed7ee6e84511e22e4f5147864daf4fcf75d2a1e026
+-- hash: 335de394b50ea74ec3917daa551a7f6d5d0481fa13b5ff2cb43acfc67d01b3ef
 
 name:           arkham-core
 version:        0.0.0
@@ -39,6 +39,7 @@ library
       Arkham.Types.Act.Cards.NightAtTheMuseum
       Arkham.Types.Act.Cards.RicesWhereabouts
       Arkham.Types.Act.Cards.Run
+      Arkham.Types.Act.Cards.SearchingForAnswers
       Arkham.Types.Act.Cards.SearchingForTheTome
       Arkham.Types.Act.Cards.SkinGame
       Arkham.Types.Act.Cards.TheBarrier
@@ -67,6 +68,7 @@ library
       Arkham.Types.Agenda.Cards.RiseOfTheGhouls
       Arkham.Types.Agenda.Cards.RollingBackwards
       Arkham.Types.Agenda.Cards.ShadowsDeepen
+      Arkham.Types.Agenda.Cards.StrangeDisappearances
       Arkham.Types.Agenda.Cards.TheArkhamWoods
       Arkham.Types.Agenda.Cards.TheBeastUnleashed
       Arkham.Types.Agenda.Cards.TheCloverClub
@@ -457,12 +459,18 @@ library
       Arkham.Types.Location.Cards.BackAlley
       Arkham.Types.Location.Cards.Bathroom
       Arkham.Types.Location.Cards.Bedroom
+      Arkham.Types.Location.Cards.BishopsBrook_202
+      Arkham.Types.Location.Cards.BishopsBrook_203
       Arkham.Types.Location.Cards.BrackishWaters
       Arkham.Types.Location.Cards.Broadmoor
+      Arkham.Types.Location.Cards.BurnedRuins_204
+      Arkham.Types.Location.Cards.BurnedRuins_205
       Arkham.Types.Location.Cards.Cellar
       Arkham.Types.Location.Cards.CloverClubBar
       Arkham.Types.Location.Cards.CloverClubCardroom
       Arkham.Types.Location.Cards.CloverClubLounge
+      Arkham.Types.Location.Cards.CongregationalChurch_208
+      Arkham.Types.Location.Cards.CongregationalChurch_209
       Arkham.Types.Location.Cards.CursedShores
       Arkham.Types.Location.Cards.DarkenedHall
       Arkham.Types.Location.Cards.DeepBelowYourHouse
@@ -492,6 +500,8 @@ library
       Arkham.Types.Location.Cards.GuestHall
       Arkham.Types.Location.Cards.Hallway
       Arkham.Types.Location.Cards.HoleInTheWall
+      Arkham.Types.Location.Cards.HouseInTheReeds_210
+      Arkham.Types.Location.Cards.HouseInTheReeds_211
       Arkham.Types.Location.Cards.HumanitiesBuilding
       Arkham.Types.Location.Cards.LaBellaLuna
       Arkham.Types.Location.Cards.MainPath
@@ -503,6 +513,8 @@ library
       Arkham.Types.Location.Cards.Northside
       Arkham.Types.Location.Cards.NorthsideTrainStation
       Arkham.Types.Location.Cards.OrneLibrary
+      Arkham.Types.Location.Cards.OsbornsGeneralStore_206
+      Arkham.Types.Location.Cards.OsbornsGeneralStore_207
       Arkham.Types.Location.Cards.OvergrownCairns
       Arkham.Types.Location.Cards.Parlor
       Arkham.Types.Location.Cards.ParlorCar
@@ -517,6 +529,8 @@ library
       Arkham.Types.Location.Cards.RitualSite
       Arkham.Types.Location.Cards.Rivertown
       Arkham.Types.Location.Cards.RivertownAbandonedWarehouse
+      Arkham.Types.Location.Cards.Schoolhouse_212
+      Arkham.Types.Location.Cards.Schoolhouse_213
       Arkham.Types.Location.Cards.ScienceBuilding
       Arkham.Types.Location.Cards.SecurityOffice_128
       Arkham.Types.Location.Cards.SecurityOffice_129
@@ -527,8 +541,10 @@ library
       Arkham.Types.Location.Cards.StudentUnion
       Arkham.Types.Location.Cards.Study
       Arkham.Types.Location.Cards.StudyAberrantGateway
+      Arkham.Types.Location.Cards.TheHiddenChamber
       Arkham.Types.Location.Cards.TrappersCabin
       Arkham.Types.Location.Cards.TwistedUnderbrush
+      Arkham.Types.Location.Cards.VillageCommons
       Arkham.Types.Location.Cards.VipArea
       Arkham.Types.Location.Cards.YourHouse
       Arkham.Types.Location.Helpers

@@ -39,6 +39,7 @@ allAgendas = mapFrom
   , RollingBackwards' rollingBackwards
   , DrawnIn' drawnIn
   , OutOfTime' outOfTime
+  , StrangeDisappearances' strangeDisappearances
   , ReturnToPredatorOrPrey' returnToPredatorOrPrey
   , ACreatureOfTheBayou' aCreatureOfTheBayou
   , TheRougarouFeeds' theRougarouFeeds
@@ -77,6 +78,7 @@ data Agenda
   | RollingBackwards' RollingBackwards
   | DrawnIn' DrawnIn
   | OutOfTime' OutOfTime
+  | StrangeDisappearances' StrangeDisappearances
   | ReturnToPredatorOrPrey' ReturnToPredatorOrPrey
   | ACreatureOfTheBayou' ACreatureOfTheBayou
   | TheRougarouFeeds' TheRougarouFeeds

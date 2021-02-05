@@ -90,6 +90,20 @@ data Location
   | EngineCar_175' EngineCar_175
   | EngineCar_176' EngineCar_176
   | EngineCar_177' EngineCar_177
+  | VillageCommons' VillageCommons
+  | BishopsBrook_202' BishopsBrook_202
+  | BishopsBrook_203' BishopsBrook_203
+  | BurnedRuins_204' BurnedRuins_204
+  | BurnedRuins_205' BurnedRuins_205
+  | OsbornsGeneralStore_206' OsbornsGeneralStore_206
+  | OsbornsGeneralStore_207' OsbornsGeneralStore_207
+  | CongregationalChurch_208' CongregationalChurch_208
+  | CongregationalChurch_209' CongregationalChurch_209
+  | HouseInTheReeds_210' HouseInTheReeds_210
+  | HouseInTheReeds_211' HouseInTheReeds_211
+  | Schoolhouse_212' Schoolhouse_212
+  | Schoolhouse_213' Schoolhouse_213
+  | TheHiddenChamber' TheHiddenChamber
   | StudyAberrantGateway' StudyAberrantGateway
   | GuestHall' GuestHall
   | Bedroom' Bedroom
@@ -312,6 +326,20 @@ allLocations = mapFrom
   , EngineCar_175' engineCar_175
   , EngineCar_176' engineCar_176
   , EngineCar_177' engineCar_177
+  , VillageCommons' villageCommons
+  , BishopsBrook_202' bishopsBrook_202
+  , BishopsBrook_203' bishopsBrook_203
+  , BurnedRuins_204' burnedRuins_204
+  , BurnedRuins_205' burnedRuins_205
+  , OsbornsGeneralStore_206' osbornsGeneralStore_206
+  , OsbornsGeneralStore_207' osbornsGeneralStore_207
+  , CongregationalChurch_208' congregationalChurch_208
+  , CongregationalChurch_209' congregationalChurch_209
+  , HouseInTheReeds_210' houseInTheReeds_210
+  , HouseInTheReeds_211' houseInTheReeds_211
+  , Schoolhouse_212' schoolhouse_212
+  , Schoolhouse_213' schoolhouse_213
+  , TheHiddenChamber' theHiddenChamber
   , StudyAberrantGateway' studyAberrantGateway
   , GuestHall' guestHall
   , Bedroom' bedroom

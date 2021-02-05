@@ -1,7 +1,6 @@
 module Arkham.Types.Agenda.Cards
   ( module X
-  )
-where
+  ) where
 
 import Arkham.Types.Agenda.Cards.ACreatureOfTheBayou as X
 import Arkham.Types.Agenda.Cards.ATearInReality as X
@@ -17,6 +16,7 @@ import Arkham.Types.Agenda.Cards.ReturnToPredatorOrPrey as X
 import Arkham.Types.Agenda.Cards.RiseOfTheGhouls as X
 import Arkham.Types.Agenda.Cards.RollingBackwards as X
 import Arkham.Types.Agenda.Cards.ShadowsDeepen as X
+import Arkham.Types.Agenda.Cards.StrangeDisappearances as X
 import Arkham.Types.Agenda.Cards.TheArkhamWoods as X
 import Arkham.Types.Agenda.Cards.TheBeastUnleashed as X
 import Arkham.Types.Agenda.Cards.TheCloverClub as X

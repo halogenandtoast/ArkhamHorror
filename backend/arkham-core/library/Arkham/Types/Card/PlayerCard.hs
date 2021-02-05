@@ -302,7 +302,11 @@ allPlayerCards = mapFromList
   , ("02178", acrossSpaceAndTime)
   , ("02179", helplessPassenger)
   , ("02185", keenEye3)
-  , ("02185", springfieldM19034)
+  , ("02215", keyToTheChamber)
+  , ("02217", zebulonWhateley)
+  , ("02218", earlSawyer)
+  , ("02219", powderOfIbnGhazi)
+  , ("02226", springfieldM19034)
   , ("02301", lightningGun5)
   , ("03022", letMeHandleThis)
   , ("04023", toothOfEztli)
@@ -1346,6 +1350,29 @@ keenEye3 cardId = (asset cardId "02185" "Keen Eye" 0 Guardian)
   { pcTraits = setFromList [Talent]
   , pcPermanent = True
   , pcLevel = 3
+  }
+
+keyToTheChamber :: CardId -> PlayerCard
+keyToTheChamber cardId = (asset cardId "02215" "Key to the Chamber" 0 Neutral)
+  { pcTraits = setFromList [Item, Key]
+  }
+
+zebulonWhateley :: CardId -> PlayerCard
+zebulonWhateley cardId = (asset cardId "02217" "Zebulon Whateley" 3 Neutral)
+  { pcTraits = setFromList [Ally, Dunwich]
+  , pcSkills = [SkillWillpower, SkillWild]
+  }
+
+earlSawyer :: CardId -> PlayerCard
+earlSawyer cardId = (asset cardId "02218" "Earl Sawyer" 3 Neutral)
+  { pcTraits = setFromList [Ally, Dunwich]
+  , pcSkills = [SkillAgility, SkillWild]
+  }
+
+powderOfIbnGhazi :: CardId -> PlayerCard
+powderOfIbnGhazi cardId = (asset cardId "02219" "Powder of Ibn-Ghazi" 0 Neutral
+                          )
+  { pcTraits = singleton Item
   }
 
 springfieldM19034 :: CardId -> PlayerCard

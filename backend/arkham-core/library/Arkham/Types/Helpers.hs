@@ -27,7 +27,9 @@ toLabel (x : xs) = toLower x : go xs
 replaceNonLetters :: String -> String
 replaceNonLetters [] = []
 replaceNonLetters (x : xs) = if not (isLetter x)
-  then ' ' : replaceNonLetters xs
+  then case x of
+    '\'' -> replaceNonLetters xs
+    _ -> ' ' : replaceNonLetters xs
   else x : replaceNonLetters xs
 
 cycleN :: Int -> [a] -> [a]

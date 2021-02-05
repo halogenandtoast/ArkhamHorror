@@ -1533,11 +1533,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       let
         (cards, deck) = splitAt n $ unDeck investigatorDeck
         traits' = setFromList traits
+      unshiftMessage $ EndSearch iid
       case strategy of
         PutBackInAnyOrder -> unshiftMessage
-          (chooseOneAtATime
-            iid
-            [ AddFocusedToTopOfDeck
+          (chooseOneAtATime iid
+          $ [ AddFocusedToTopOfDeck
                 iid
                 (InvestigatorTarget iid')
                 (getCardId card)

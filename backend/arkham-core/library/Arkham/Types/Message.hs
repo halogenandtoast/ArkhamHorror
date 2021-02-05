@@ -225,6 +225,7 @@ data Message
   | EndPhase
   | EndRound
   | EndRoundWindow
+  | EndSearch InvestigatorId
   | EndTurn InvestigatorId
   | EndUpkeep
   | EnemiesAttack

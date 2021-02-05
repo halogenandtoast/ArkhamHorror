@@ -151,6 +151,7 @@ allEncounterCards = mapFromList
   , ("02181", brokenRails)
   , ("02182", grapplingHorror)
   , ("02183", emergentMonstrosity)
+  , ("02215", keyToTheChamber)
   , ("02216", silasBishop)
   , ("02220", kidnapped)
   , ("02221", psychopompsSong)
@@ -595,6 +596,11 @@ emergentMonstrosity :: CardId -> EncounterCard
 emergentMonstrosity cardId = (enemy cardId "02183" "Emergent Monstrosity")
   { ecTraits = setFromList [Monster, Abomination]
   , ecVictoryPoints = Just 1
+  }
+
+keyToTheChamber :: CardId -> EncounterCard
+keyToTheChamber cardId = (asset cardId "02215" "Key to the Chamber")
+  { ecTraits = setFromList [Item, Key]
   }
 
 silasBishop :: CardId -> EncounterCard

@@ -473,20 +473,25 @@ data Message
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-chooseOne :: InvestigatorId -> [Message] -> Message
-chooseOne _ [] = throw $ InvalidState "No messages"
+chooseOne :: HasCallStack => InvestigatorId -> [Message] -> Message
+chooseOne _ [] = throw $ InvalidState $ "No messages for chooseOne\n" <> pack
+  (prettyCallStack callStack)
 chooseOne iid msgs = Ask iid (ChooseOne msgs)
 
-chooseOneAtATime :: InvestigatorId -> [Message] -> Message
-chooseOneAtATime _ [] = throw $ InvalidState "No messages"
+chooseOneAtATime :: HasCallStack => InvestigatorId -> [Message] -> Message
+chooseOneAtATime _ [] =
+  throw $ InvalidState $ "No messages for chooseOneAtATime\n" <> pack
+    (prettyCallStack callStack)
 chooseOneAtATime iid msgs = Ask iid (ChooseOneAtATime msgs)
 
-chooseSome :: InvestigatorId -> [Message] -> Message
-chooseSome _ [] = throw $ InvalidState "No messages"
+chooseSome :: HasCallStack => InvestigatorId -> [Message] -> Message
+chooseSome _ [] = throw $ InvalidState $ "No messages for chooseSome\n" <> pack
+  (prettyCallStack callStack)
 chooseSome iid msgs = Ask iid (ChooseSome $ Done : msgs)
 
-chooseN :: InvestigatorId -> Int -> [Message] -> Message
-chooseN _ _ [] = throw $ InvalidState "No messages"
+chooseN :: HasCallStack => InvestigatorId -> Int -> [Message] -> Message
+chooseN _ _ [] = throw $ InvalidState $ "No messages for chooseN\n" <> pack
+  (prettyCallStack callStack)
 chooseN iid n msgs = Ask iid (ChooseN n msgs)
 
 chooseUpgradeDeck :: InvestigatorId -> Message

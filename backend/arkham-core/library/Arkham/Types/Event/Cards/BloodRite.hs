@@ -26,7 +26,7 @@ instance EventRunner env => RunMessage env BloodRite where
       ]
     PayForCardAbility iid source meta@(Just (IntMetadata n)) 1
       | isSource attrs source -> if n == 2
-        then runMessage (UseCardAbility iid source meta 1 NoPayment) e
+        then e <$ unshiftMessage (UseCardAbility iid source meta 1 NoPayment)
         else do
           cards <- map unDiscardableHandCard <$> getList iid
           e <$ unshiftMessage
@@ -52,19 +52,20 @@ instance EventRunner env => RunMessage env BloodRite where
         enemyIds <- getSetList @EnemyId locationId
         e <$ unshiftMessages
           (replicate
-              n
-              (chooseOne
-                iid
-                [ Label "Gain Resource" [TakeResources iid 1 False]
-                , Label
-                  "Spend Resource and Deal 1 Damage To Enemy At Your Location"
-                  [ SpendResources iid 1
-                  , chooseOne
-                    iid
-                    [ EnemyDamage enemyId iid source 1 | enemyId <- enemyIds ]
-                  ]
-                ]
-              )
-          <> [Discard (EventTarget eventId)]
+            n
+            (chooseOne iid
+            $ [Label "Gain Resource" [TakeResources iid 1 False]]
+            <> [ Label
+                   "Spend Resource and Deal 1 Damage To Enemy At Your Location"
+                   [ SpendResources iid 1
+                   , chooseOne
+                     iid
+                     [ EnemyDamage enemyId iid source 1
+                     | enemyId <- enemyIds
+                     ]
+                   ]
+               | not (null enemyIds)
+               ]
+            )
           )
     _ -> BloodRite <$> runMessage msg attrs

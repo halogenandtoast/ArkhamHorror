@@ -83,13 +83,17 @@ getCanAffordUse
   => InvestigatorId
   -> Ability
   -> m Bool
-getCanAffordUse iid ability@Ability {..} = case abilityLimit of
-  NoLimit -> case abilityType of
+getCanAffordUse iid ability = case abilityLimit ability of
+  NoLimit -> case abilityType ability of
     ReactionAbility _ ->
       notElem (iid, ability) . map unUsedAbility <$> getList ()
     ForcedAbility -> notElem (iid, ability) . map unUsedAbility <$> getList ()
     ActionAbility _ _ -> pure True
     FastAbility _ -> pure True
+  PlayerLimit (PerSearch (Just _)) n ->
+    (< n)
+      . count ((== abilityLimit ability) . abilityLimit . snd . unUsedAbility)
+      <$> getList ()
   PlayerLimit _ n ->
     (< n) . count (== (iid, ability)) . map unUsedAbility <$> getList ()
   GroupLimit _ n ->
@@ -227,8 +231,6 @@ instance
             _ -> pure True
         filterM canAffordAction actions''
       else pure forcedActions
-
-
 
 enemyAtInvestigatorLocation
   :: ( MonadReader env m

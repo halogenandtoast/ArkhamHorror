@@ -1638,6 +1638,13 @@ runGameMessage msg g = case msg of
             abilityLimitType abilityLimit /= Just PerTestOrAbility
           )
         )
+  EndSearch _ ->
+      pure $ g & (usedAbilitiesL %~ filter
+          (\(_, Ability {..}) -> case abilityLimitType abilityLimit of
+                                   Just (PerSearch _) -> False
+                                   _ -> True
+          )
+        )
   ReturnToHand iid (SkillTarget skillId) -> do
     let
       skill =
@@ -1677,13 +1684,13 @@ runGameMessage msg g = case msg of
               (lookup (pcCardCode pc) allAssets)
               aid
           unshiftMessages
-            [ InvestigatorPlayDynamicAsset
+            [ PlayedCard iid cardId
+            , InvestigatorPlayDynamicAsset
               iid
               aid
               (slotsOf asset)
               (toList $ getTraits asset)
               n
-            , PlayedCard iid cardId
             ]
           pure $ g & assetsL %~ insertMap aid asset
         EventType -> do
@@ -1718,12 +1725,12 @@ runGameMessage msg g = case msg of
               (lookup (pcCardCode pc) allAssets)
               aid
           unshiftMessages
-            [ InvestigatorPlayAsset
+            [ PlayedCard iid cardId
+            , InvestigatorPlayAsset
               iid
               aid
               (slotsOf asset)
               (toList $ getTraits asset)
-            , PlayedCard iid cardId
             ]
           pure $ g & assetsL %~ insertMap aid asset
         EventType -> do

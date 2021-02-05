@@ -38,20 +38,12 @@ instance ActionRunner env => HasActions env Parlor where
           assetLocationId <- getId aid
           investigatorLocationId <- getId @LocationId iid
           pure
-            $ [ ActivateCardAbilityAction
-                  iid
-                  (mkAbility
-                    (LocationSource "01115")
-                    1
-                    (ActionAbility (Just Action.Resign) $ ActionCost 1)
-                  )
-              | iid `member` locationInvestigators
-              ]
+            $ [ resignAction iid attrs | iid `member` locationInvestigators ]
             <> [ ActivateCardAbilityAction
                    iid
                    (mkAbility
                      (ProxySource (AssetSource aid) (LocationSource "01115"))
-                     2
+                     1
                      (ActionAbility (Just Action.Parley) $ ActionCost 1)
                    )
                | isNothing miid
@@ -62,10 +54,7 @@ instance ActionRunner env => HasActions env Parlor where
 
 instance (LocationRunner env) => RunMessage env Parlor where
   runMessage msg l@(Parlor attrs@LocationAttrs {..}) = case msg of
-    UseCardAbility iid source _ 1 _
-      | isSource attrs source && locationRevealed -> l
-      <$ unshiftMessage (Resign iid)
-    UseCardAbility iid (ProxySource _ source) _ 2 _
+    UseCardAbility iid (ProxySource _ source) _ 1 _
       | isSource attrs source && locationRevealed -> do
         maid <- fmap unStoryAssetId <$> getId (CardCode "01117")
         case maid of

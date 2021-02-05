@@ -1,14 +1,11 @@
 module Arkham.Types.Location.Cards.BackAlley
   ( backAlley
   , BackAlley(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
-import qualified Arkham.Types.Action as Action
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Game.Helpers
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait hiding (Cultist)
@@ -34,21 +31,7 @@ instance HasModifiersFor env BackAlley where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env BackAlley where
-  getActions iid NonFast (BackAlley attrs@LocationAttrs {..}) | locationRevealed =
-    withBaseActions iid NonFast attrs $ pure
-      [ ActivateCardAbilityAction
-          iid
-          (mkAbility
-            (toSource attrs)
-            1
-            (ActionAbility (Just Action.Resign) (ActionCost 1))
-          )
-      | iid `member` locationInvestigators
-      ]
-  getActions iid window (BackAlley attrs) = getActions iid window attrs
+  getActions = withResignAction
 
 instance LocationRunner env => RunMessage env BackAlley where
-  runMessage msg l@(BackAlley attrs@LocationAttrs {..}) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source && locationRevealed ->
-      l <$ unshiftMessage (Resign iid)
-    _ -> BackAlley <$> runMessage msg attrs
+  runMessage msg (BackAlley attrs) = BackAlley <$> runMessage msg attrs

@@ -30,6 +30,7 @@ data Act
   | SearchingForTheTome' SearchingForTheTome
   | Run' Run
   | GetTheEngineRunning' GetTheEngineRunning
+  | SearchingForAnswers' SearchingForAnswers
   | MysteriousGateway' MysteriousGateway
   | FindingLadyEsprit' FindingLadyEsprit
   | HuntingTheRougarou' HuntingTheRougarou
@@ -84,6 +85,7 @@ allActs = mapFrom
   , SearchingForTheTome' searchingForTheTome
   , Run' run
   , GetTheEngineRunning' getTheEngineRunning
+  , SearchingForAnswers' searchingForAnswers
   , MysteriousGateway' mysteriousGateway
   , FindingLadyEsprit' findingLadyEsprit
   , HuntingTheRougarou' huntingTheRougarou

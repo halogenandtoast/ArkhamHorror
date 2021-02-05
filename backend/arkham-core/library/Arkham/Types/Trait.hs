@@ -52,6 +52,7 @@ data Trait
   | Dreamer
   | Dreamlands
   | Drifter
+  | Dunwich
   | Eldritch
   | Elite
   | Endtimes
@@ -83,6 +84,7 @@ data Trait
   | Instrument
   | Item
   | Job
+  | Key
   | Lunatic
   | Madness
   | Mask

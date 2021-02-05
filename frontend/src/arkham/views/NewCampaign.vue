@@ -95,6 +95,10 @@ const scenarios = [
     name: 'The Essex County Express',
   },
   {
+    id: '02195',
+    name: 'Blood on the Altar',
+  },
+  {
     id: '81001',
     name: 'Curse of the Rougarou',
   },

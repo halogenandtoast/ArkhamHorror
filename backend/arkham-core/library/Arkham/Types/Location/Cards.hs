@@ -1,7 +1,6 @@
 module Arkham.Types.Location.Cards
   ( module X
-  )
-where
+  ) where
 
 import Arkham.Types.Location.Cards.AdministrationBuilding as X
 import Arkham.Types.Location.Cards.AdministrationOffice_130 as X
@@ -23,12 +22,18 @@ import Arkham.Types.Location.Cards.AudubonPark as X
 import Arkham.Types.Location.Cards.BackAlley as X
 import Arkham.Types.Location.Cards.Bathroom as X
 import Arkham.Types.Location.Cards.Bedroom as X
+import Arkham.Types.Location.Cards.BishopsBrook_202 as X
+import Arkham.Types.Location.Cards.BishopsBrook_203 as X
 import Arkham.Types.Location.Cards.BrackishWaters as X
 import Arkham.Types.Location.Cards.Broadmoor as X
+import Arkham.Types.Location.Cards.BurnedRuins_204 as X
+import Arkham.Types.Location.Cards.BurnedRuins_205 as X
 import Arkham.Types.Location.Cards.Cellar as X
 import Arkham.Types.Location.Cards.CloverClubBar as X
 import Arkham.Types.Location.Cards.CloverClubCardroom as X
 import Arkham.Types.Location.Cards.CloverClubLounge as X
+import Arkham.Types.Location.Cards.CongregationalChurch_208 as X
+import Arkham.Types.Location.Cards.CongregationalChurch_209 as X
 import Arkham.Types.Location.Cards.CursedShores as X
 import Arkham.Types.Location.Cards.DarkenedHall as X
 import Arkham.Types.Location.Cards.DeepBelowYourHouse as X
@@ -58,6 +63,8 @@ import Arkham.Types.Location.Cards.Graveyard as X
 import Arkham.Types.Location.Cards.GuestHall as X
 import Arkham.Types.Location.Cards.Hallway as X
 import Arkham.Types.Location.Cards.HoleInTheWall as X
+import Arkham.Types.Location.Cards.HouseInTheReeds_210 as X
+import Arkham.Types.Location.Cards.HouseInTheReeds_211 as X
 import Arkham.Types.Location.Cards.HumanitiesBuilding as X
 import Arkham.Types.Location.Cards.LaBellaLuna as X
 import Arkham.Types.Location.Cards.MainPath as X
@@ -69,6 +76,8 @@ import Arkham.Types.Location.Cards.MuseumHalls as X
 import Arkham.Types.Location.Cards.Northside as X
 import Arkham.Types.Location.Cards.NorthsideTrainStation as X
 import Arkham.Types.Location.Cards.OrneLibrary as X
+import Arkham.Types.Location.Cards.OsbornsGeneralStore_206 as X
+import Arkham.Types.Location.Cards.OsbornsGeneralStore_207 as X
 import Arkham.Types.Location.Cards.OvergrownCairns as X
 import Arkham.Types.Location.Cards.Parlor as X
 import Arkham.Types.Location.Cards.ParlorCar as X
@@ -83,6 +92,8 @@ import Arkham.Types.Location.Cards.RitualGrounds as X
 import Arkham.Types.Location.Cards.RitualSite as X
 import Arkham.Types.Location.Cards.Rivertown as X
 import Arkham.Types.Location.Cards.RivertownAbandonedWarehouse as X
+import Arkham.Types.Location.Cards.Schoolhouse_212 as X
+import Arkham.Types.Location.Cards.Schoolhouse_213 as X
 import Arkham.Types.Location.Cards.ScienceBuilding as X
 import Arkham.Types.Location.Cards.SecurityOffice_128 as X
 import Arkham.Types.Location.Cards.SecurityOffice_129 as X
@@ -93,7 +104,9 @@ import Arkham.Types.Location.Cards.StMarysHospital as X
 import Arkham.Types.Location.Cards.StudentUnion as X
 import Arkham.Types.Location.Cards.Study as X
 import Arkham.Types.Location.Cards.StudyAberrantGateway as X
+import Arkham.Types.Location.Cards.TheHiddenChamber as X
 import Arkham.Types.Location.Cards.TrappersCabin as X
 import Arkham.Types.Location.Cards.TwistedUnderbrush as X
+import Arkham.Types.Location.Cards.VillageCommons as X
 import Arkham.Types.Location.Cards.VipArea as X
 import Arkham.Types.Location.Cards.YourHouse as X

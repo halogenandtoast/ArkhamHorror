@@ -151,6 +151,12 @@ allEncounterCards = mapFromList
   , ("02181", brokenRails)
   , ("02182", grapplingHorror)
   , ("02183", emergentMonstrosity)
+  , ("02216", silasBishop)
+  , ("02220", kidnapped)
+  , ("02221", psychopompsSong)
+  , ("02222", strangeSigns)
+  , ("02223", rottingRemainsBloodOnTheAltar)
+  , ("02224", servantOfManyMouths)
   , ("50022", corpseHungryGhoul)
   , ("50023", ghoulFromTheDepths)
   , ("50024", theZealotsSeal)
@@ -589,6 +595,36 @@ emergentMonstrosity :: CardId -> EncounterCard
 emergentMonstrosity cardId = (enemy cardId "02183" "Emergent Monstrosity")
   { ecTraits = setFromList [Monster, Abomination]
   , ecVictoryPoints = Just 1
+  }
+
+silasBishop :: CardId -> EncounterCard
+silasBishop cardId = (enemy cardId "02216" "Silas Bishop")
+  { ecTraits = setFromList [Monster, Abomination, Elite]
+  , ecKeywords = singleton Keyword.Massive
+  , ecVictoryPoints = Just 2
+  }
+
+kidnapped :: CardId -> EncounterCard
+kidnapped cardId = treachery cardId "02220" "Kidnapped!"
+
+psychopompsSong :: CardId -> EncounterCard
+psychopompsSong cardId = (treachery cardId "02221" "Psychopomp's Song")
+  { ecTraits = singleton Omen
+  , ecKeywords = setFromList [Keyword.Surge, Keyword.Peril]
+  }
+
+strangeSigns :: CardId -> EncounterCard
+strangeSigns cardId =
+  (treachery cardId "02222" "Strange Signs") { ecTraits = singleton Omen }
+
+rottingRemainsBloodOnTheAltar :: CardId -> EncounterCard
+rottingRemainsBloodOnTheAltar cardId =
+  (treachery cardId "02223" "Rotting Remains") { ecTraits = singleton Terror }
+
+servantOfManyMouths :: CardId -> EncounterCard
+servantOfManyMouths cardId = (enemy cardId "02224" "Servant of Many Mouths")
+  { ecTraits = singleton Humanoid
+  , ecKeywords = singleton Keyword.Retaliate
   }
 
 corpseHungryGhoul :: CardId -> EncounterCard

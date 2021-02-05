@@ -169,7 +169,6 @@ export default defineComponent({
         return {
           display: 'grid',
           'grid-template-areas': locationLayout.map((row) => `"${row}"`).join(' '),
-          'grid-template-columns': 'min-content 0fr',
           'grid-row-gap': '10px',
         };
       }

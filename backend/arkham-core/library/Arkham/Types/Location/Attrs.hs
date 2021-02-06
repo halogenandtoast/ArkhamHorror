@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE PatternSynonyms #-}
 
 module Arkham.Types.Location.Attrs where
 
@@ -8,6 +9,16 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Location.Runner
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Trait
+
+pattern AfterFailedInvestigate :: InvestigatorId -> Target -> Message
+pattern AfterFailedInvestigate iid target <-
+  After (FailedSkillTest iid (Just Action.Investigate) _ target _ _)
+
+pattern UseResign :: InvestigatorId -> Source -> Message
+pattern UseResign iid source <- UseCardAbility iid source _ 99 _
+
+pattern UseDrawCardUnderneath :: InvestigatorId -> Source -> Message
+pattern UseDrawCardUnderneath iid source <- UseCardAbility iid source _ 100 _
 
 data LocationAttrs = LocationAttrs
   { locationName :: LocationName
@@ -456,9 +467,8 @@ instance LocationRunner env => RunMessage env LocationAttrs where
     RemoveLocation lid ->
       pure $ a & connectedLocationsL %~ deleteSet lid & directionsL %~ filterMap
         (/= lid)
-    UseCardAbility iid source _ 99 _ | isSource a source ->
-      a <$ unshiftMessage (Resign iid)
-    UseCardAbility iid source _ 100 _ | isSource a source ->
+    UseResign iid source | isSource a source -> a <$ unshiftMessage (Resign iid)
+    UseDrawCardUnderneath iid source | isSource a source ->
       case locationCardsUnderneath of
         (EncounterCard card : rest) -> do
           unshiftMessage (InvestigatorDrewEncounterCard iid card)

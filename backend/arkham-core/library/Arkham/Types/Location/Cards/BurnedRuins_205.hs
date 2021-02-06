@@ -28,8 +28,15 @@ instance HasModifiersFor env BurnedRuins_205 where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env BurnedRuins_205 where
-  getActions iid window (BurnedRuins_205 attrs) = getActions iid window attrs
+  getActions = withDrawCardUnderneathAction
 
 instance LocationRunner env => RunMessage env BurnedRuins_205 where
-  runMessage msg (BurnedRuins_205 attrs) =
-    BurnedRuins_205 <$> runMessage msg attrs
+  runMessage msg (BurnedRuins_205 attrs) = case msg of
+    AfterFailedInvestigate _ target | isTarget attrs target -> do
+      pure
+        . BurnedRuins_205
+        $ (if locationClues attrs > 0
+            then attrs & cluesL -~ 1 & doomL +~ 1
+            else attrs
+          )
+    _ -> BurnedRuins_205 <$> runMessage msg attrs

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 335de394b50ea74ec3917daa551a7f6d5d0481fa13b5ff2cb43acfc67d01b3ef
+-- hash: 2403d8ca883865e34eac5ee818b269f4b569fb5cb92aa83fc91a9b438d4ed89b
 
 name:           arkham-core
 version:        0.0.0
@@ -145,6 +145,7 @@ library
       Arkham.Types.Asset.Cards.JimsTrumpet
       Arkham.Types.Asset.Cards.KeenEye
       Arkham.Types.Asset.Cards.KeenEye3
+      Arkham.Types.Asset.Cards.KeyToTheChamber
       Arkham.Types.Asset.Cards.Knife
       Arkham.Types.Asset.Cards.Kukri
       Arkham.Types.Asset.Cards.LaboratoryAssistant
@@ -302,6 +303,7 @@ library
       Arkham.Types.Enemy.Cards.RelentlessDarkYoung
       Arkham.Types.Enemy.Cards.RuthTurner
       Arkham.Types.Enemy.Cards.ScreechingByakhee
+      Arkham.Types.Enemy.Cards.ServantOfManyMouths
       Arkham.Types.Enemy.Cards.ServantOfTheLurker
       Arkham.Types.Enemy.Cards.SilverTwilightAcolyte
       Arkham.Types.Enemy.Cards.SlimeCoveredDhole

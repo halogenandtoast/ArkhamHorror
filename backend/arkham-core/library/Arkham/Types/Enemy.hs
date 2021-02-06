@@ -1,7 +1,6 @@
 module Arkham.Types.Enemy
   ( module Arkham.Types.Enemy
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -53,6 +52,7 @@ data Enemy
   | HuntingHorror' HuntingHorror
   | GrapplingHorror' GrapplingHorror
   | EmergentMonstrosity' EmergentMonstrosity
+  | ServantOfManyMouths' ServantOfManyMouths
   | CorpseHungryGhoul' CorpseHungryGhoul
   | GhoulFromTheDepths' GhoulFromTheDepths
   | Narogath' Narogath
@@ -229,6 +229,7 @@ allEnemies = mapFromList
   , ("02141", HuntingHorror' . huntingHorror)
   , ("02182", GrapplingHorror' . grapplingHorror)
   , ("02183", EmergentMonstrosity' . emergentMonstrosity)
+  , ("02224", ServantOfManyMouths' . servantOfManyMouths)
   , ("50022", CorpseHungryGhoul' . corpseHungryGhoul)
   , ("50023", GhoulFromTheDepths' . ghoulFromTheDepths)
   , ("50026b", Narogath' . narogath)

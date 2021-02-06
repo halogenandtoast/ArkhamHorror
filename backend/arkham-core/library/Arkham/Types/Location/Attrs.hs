@@ -360,6 +360,8 @@ instance LocationRunner env => RunMessage env LocationAttrs where
           unshiftMessage (AddedConnection locationId lid)
           pure $ a & connectedLocationsL %~ insertSet lid
         else pure a
+    AddDirectConnection fromLid toLid | fromLid == locationId -> do
+      pure $ a & connectedLocationsL %~ insertSet toLid
     DiscoverCluesAtLocation iid lid n maction | lid == locationId -> do
       let discoveredClues = min n locationClues
       checkWindowMsgs <- checkWindows

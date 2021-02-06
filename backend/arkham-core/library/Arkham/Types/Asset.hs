@@ -98,6 +98,7 @@ data Asset
   | Bandolier' Bandolier
   | HelplessPassenger' HelplessPassenger
   | KeenEye3' KeenEye3
+  | KeyToTheChamber' KeyToTheChamber
   | SpringfieldM19034' SpringfieldM19034
   | LightningGun5' LightningGun5
   | ToothOfEztli' ToothOfEztli
@@ -308,6 +309,7 @@ allAssets = mapFromList
   , ("02147", Bandolier' . bandolier)
   , ("02179", HelplessPassenger' . helplessPassenger)
   , ("02185", KeenEye3' . keenEye3)
+  , ("02215", KeyToTheChamber' . keyToTheChamber)
   , ("02226", SpringfieldM19034' . springfieldM19034)
   , ("02301", LightningGun5' . lightningGun5)
   , ("04023", ToothOfEztli' . toothOfEztli)

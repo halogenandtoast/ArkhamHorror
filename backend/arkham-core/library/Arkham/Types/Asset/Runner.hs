@@ -1,6 +1,6 @@
 module Arkham.Types.Asset.Runner where
 
-import ClassyPrelude
+import Arkham.Prelude
 
 import Arkham.Types.AssetId
 import Arkham.Types.Card
@@ -9,6 +9,7 @@ import Arkham.Types.Direction
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Query
 import Arkham.Types.Trait
 
@@ -25,6 +26,7 @@ type AssetRunner env
     , HasCount ResourceCount env InvestigatorId
     , HasCount SanityDamageCount env EnemyId
     , HasId (Maybe LocationId) env (Direction, LocationId)
+    , HasId (Maybe LocationId) env LocationMatcher
     , HasId (Maybe StoryEnemyId) env CardCode
     , HasId ActiveInvestigatorId env ()
     , HasId CardCode env EnemyId

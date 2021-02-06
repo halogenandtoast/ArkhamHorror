@@ -1,7 +1,6 @@
 module Arkham.Types.Message
   ( module Arkham.Types.Message
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -112,6 +111,7 @@ data Message
   | AddCampaignCardToEncounterDeck CardCode
   | AddConnection LocationId LocationSymbol
   | AddConnectionBack LocationId LocationSymbol
+  | AddDirectConnection LocationId LocationId
   | AddFocusedToHand InvestigatorId Target CardId
   | AddFocusedToTopOfDeck InvestigatorId Target CardId
   | AddSkillTestSubscriber Target

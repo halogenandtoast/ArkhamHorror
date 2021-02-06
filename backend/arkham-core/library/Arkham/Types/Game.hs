@@ -1891,7 +1891,7 @@ runGameMessage msg g = case msg of
       then do
         unshiftMessage $ After msg
         pure $ g & (enemiesL %~ deleteMap eid) & (victoryDisplayL %~ (card :))
-      else g <$ unshiftMessages [When msg, Discard (EnemyTarget eid), After msg]
+      else g <$ unshiftMessages [When msg, After msg, Discard (EnemyTarget eid)]
   Discard (SearchedCardTarget iid cardId) -> do
     let
       card = fromJustNote "must exist"

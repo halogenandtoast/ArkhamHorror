@@ -59,6 +59,7 @@ import Arkham.Types.Asset.Cards.JennysTwin45s as X
 import Arkham.Types.Asset.Cards.JimsTrumpet as X
 import Arkham.Types.Asset.Cards.KeenEye as X
 import Arkham.Types.Asset.Cards.KeenEye3 as X
+import Arkham.Types.Asset.Cards.KeyToTheChamber as X
 import Arkham.Types.Asset.Cards.Knife as X
 import Arkham.Types.Asset.Cards.Kukri as X
 import Arkham.Types.Asset.Cards.LaboratoryAssistant as X

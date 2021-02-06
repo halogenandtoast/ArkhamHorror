@@ -7,6 +7,7 @@ import Arkham.Import
 
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
@@ -25,10 +26,12 @@ burnedRuins_204 = BurnedRuins_204 $ baseAttrs
   [Dunwich]
 
 instance HasModifiersFor env BurnedRuins_204 where
-  getModifiersFor = noModifiersFor
+  getModifiersFor _ (EnemyTarget eid) (BurnedRuins_204 attrs@LocationAttrs {..})
+    | eid `elem` locationEnemies = pure $ toModifiers attrs [EnemyEvade 1]
+  getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env BurnedRuins_204 where
-  getActions iid window (BurnedRuins_204 attrs) = getActions iid window attrs
+  getActions = withDrawCardUnderneathAction
 
 instance LocationRunner env => RunMessage env BurnedRuins_204 where
   runMessage msg (BurnedRuins_204 attrs) =

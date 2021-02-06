@@ -145,6 +145,7 @@ deriving anyclass instance
   , HasCount ClueCount env LocationId
   , HasCount ResourceCount env InvestigatorId
   , HasId (Maybe StoryEnemyId) env CardCode
+  , HasId (Maybe StoryAssetId) env CardCode
   )
   => HasModifiersFor env Location
 

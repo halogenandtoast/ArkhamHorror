@@ -2,6 +2,7 @@ module Arkham.Types.Window where
 
 import Arkham.Prelude
 
+import Arkham.Types.ActId
 import Arkham.Types.Action
 import Arkham.Types.AgendaId
 import Arkham.Types.Card.Id
@@ -35,6 +36,7 @@ data Window
   | AnyPhaseBegins
   | DuringTurn Who
   | NonFast
+  | WhenActAdvance ActId
   | WhenAgendaAdvance AgendaId
   | WhenAllDrawEncounterCard
   | WhenAmongSearchedCards Who

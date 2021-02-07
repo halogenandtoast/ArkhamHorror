@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.SearchingForAnswers
   ( SearchingForAnswers(..)
   , searchingForAnswers
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -20,5 +21,18 @@ instance ActionRunner env => HasActions env SearchingForAnswers where
     getActions iid window attrs
 
 instance ActRunner env => RunMessage env SearchingForAnswers where
-  runMessage msg (SearchingForAnswers attrs) =
-    SearchingForAnswers <$> runMessage msg attrs
+  runMessage msg a@(SearchingForAnswers attrs@ActAttrs {..}) = case msg of
+    WhenEnterLocation _ "02214" ->
+      a <$ unshiftMessage (AdvanceAct actId (toSource attrs))
+    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+      unrevealedLocationIds <- map unUnrevealedLocationId <$> getSetList ()
+      hiddenChamber <- fromJustNote "must exist"
+        <$> getId (LocationWithTitle "The Hidden Chamber")
+      silasBishop <- EncounterCard <$> genEncounterCard "02216"
+      a <$ unshiftMessages
+        ([ RevealLocation Nothing lid | lid <- unrevealedLocationIds ]
+        <> [ MoveAllCluesTo (LocationTarget hiddenChamber)
+           , CreateEnemyAt silasBishop hiddenChamber
+           ]
+        )
+    _ -> SearchingForAnswers <$> runMessage msg attrs

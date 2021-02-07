@@ -239,8 +239,7 @@ getModifiedSanity attrs@InvestigatorAttrs {..} = do
   applyModifier (SanityModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-removeFromSlots
-  :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
+removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = fmap (map (removeIfMatches aid))
 
 fitsAvailableSlots :: [SlotType] -> [Trait] -> InvestigatorAttrs -> Bool
@@ -1055,6 +1054,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & cluesL +~ n
   InvestigatorDiscardAllClues iid | iid == investigatorId ->
     pure $ a & cluesL .~ 0
+  MoveAllCluesTo target | not (isTarget a target) -> do
+    when
+      (investigatorClues > 0)
+      (unshiftMessage $ PlaceClues target investigatorClues)
+    pure $ a & cluesL .~ 0
   PayCardCost iid cardId | iid == investigatorId -> do
     let
       card =
@@ -1582,9 +1586,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 ]
               else choices
             )
-      actions <-
-        fmap concat <$> for cards $ \card' ->
-          getActions iid (WhenAmongSearchedCards You) (toCardInstance iid card')
+      actions <- fmap concat <$> for cards $ \card' ->
+        getActions iid (WhenAmongSearchedCards You) (toCardInstance iid card')
       -- TODO: This is for astounding revelation and only one research action is possible
       -- so we are able to short circuit here, but we may have additional cards in the
       -- future so we may want to make this more versatile

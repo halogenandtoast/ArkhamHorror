@@ -171,7 +171,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
                  [ Run
                      [ Continue "Continue"
                      , FlavorText
-                       (Just "Interlude 1: Armitage's Fate")
+                       (Just "Interlude I: Armitage's Fate")
                        [ "You are more than a little rattled by your experiences\
                         \ in the university and the Clover Club. You’re not sure what to make of\
                         \ whoever—or whatever—was after Rice and Morgan. Worried about Dr.\

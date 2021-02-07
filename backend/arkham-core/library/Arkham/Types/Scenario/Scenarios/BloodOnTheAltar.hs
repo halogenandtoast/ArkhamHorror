@@ -15,8 +15,9 @@ import Arkham.Types.Scenario.Runner
 import Arkham.Types.Token
 import Data.List.NonEmpty (NonEmpty(..))
 
-newtype BloodOnTheAltarMetadata = BloodOnTheAltarMetadata [Card]
-  deriving newtype (Show, Eq, ToJSON, FromJSON)
+newtype BloodOnTheAltarMetadata = BloodOnTheAltarMetadata { sacrifices :: [Card]}
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 newtype BloodOnTheAltar = BloodOnTheAltar (ScenarioAttrs `With` BloodOnTheAltarMetadata)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)

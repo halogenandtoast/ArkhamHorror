@@ -1,7 +1,6 @@
 module Arkham.Types.Treachery.Cards
   ( module X
-  )
-where
+  ) where
 
 import Arkham.Types.Treachery.Cards.AbandonedAndAlone as X
 import Arkham.Types.Treachery.Cards.AcrossTimeAndSpace as X
@@ -39,6 +38,7 @@ import Arkham.Types.Treachery.Cards.Hypochondria as X
 import Arkham.Types.Treachery.Cards.Indebted as X
 import Arkham.Types.Treachery.Cards.InsatiableBloodlust as X
 import Arkham.Types.Treachery.Cards.InternalInjury as X
+import Arkham.Types.Treachery.Cards.Kidnapped as X
 import Arkham.Types.Treachery.Cards.LightOfAforgomon as X
 import Arkham.Types.Treachery.Cards.LockedDoor as X
 import Arkham.Types.Treachery.Cards.MaskedHorrors as X
@@ -50,6 +50,7 @@ import Arkham.Types.Treachery.Cards.OnTheProwl as X
 import Arkham.Types.Treachery.Cards.OnWingsOfDarkness as X
 import Arkham.Types.Treachery.Cards.Paranoia as X
 import Arkham.Types.Treachery.Cards.PassageIntoTheVeil as X
+import Arkham.Types.Treachery.Cards.PsychopompsSong as X
 import Arkham.Types.Treachery.Cards.Psychosis as X
 import Arkham.Types.Treachery.Cards.PushedIntoTheBeyond as X
 import Arkham.Types.Treachery.Cards.RexsCurse as X

@@ -3,6 +3,7 @@ module Arkham.Types.Window where
 import Arkham.Prelude
 
 import Arkham.Types.Action
+import Arkham.Types.AgendaId
 import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
@@ -34,6 +35,7 @@ data Window
   | AnyPhaseBegins
   | DuringTurn Who
   | NonFast
+  | WhenAgendaAdvance AgendaId
   | WhenAllDrawEncounterCard
   | WhenAmongSearchedCards Who
   | WhenDealtDamage Source Target
@@ -57,6 +59,7 @@ data Window
   | WhenSuccessfulInvestigation Who Where
   | WhenWouldFailSkillTest Who
   | WhenWouldRevealChaosToken Source Who
+  | WhenWouldTakeDamage Source Target
   | InHandWindow InvestigatorId Window
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)

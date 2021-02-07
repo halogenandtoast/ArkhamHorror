@@ -120,6 +120,8 @@ data Message
   | AddToEncounterDeck EncounterCard
   | AddToHand InvestigatorId Card
   | AddToHandFromDeck InvestigatorId CardId
+  | AddToScenarioDeck Target
+  | AddCardToScenarioDeck Card
   | AddToVictory Target
   | AddToken Token
   | AddTraits Target [Trait]

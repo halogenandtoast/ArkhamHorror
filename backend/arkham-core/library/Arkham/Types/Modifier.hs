@@ -59,6 +59,7 @@ data ModifierType
   | CannotTakeAction ActionTarget
   | CannotHealHorror
   | CannotInvestigate
+  | CannotMakeAttacksOfOpportunity
   | CannotMove
   | CannotPlay [PlayerCardType]
   | CannotSpendClues

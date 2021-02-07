@@ -29,6 +29,7 @@ type TreacheryRunner env
     , HasSet AgendaId env ()
     , HasSet AgendaId env TreacheryCardCode
     , HasSet AssetId env InvestigatorId
+    , HasSet AssetId env (InvestigatorId, [Trait])
     , HasSet ClosestEnemyId env (LocationId, [Trait])
     , HasSet ClosestPathLocationId env (LocationId, LocationId)
     , HasSet ConnectedLocationId env LocationId

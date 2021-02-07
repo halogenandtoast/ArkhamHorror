@@ -52,6 +52,7 @@ data Enemy
   | HuntingHorror' HuntingHorror
   | GrapplingHorror' GrapplingHorror
   | EmergentMonstrosity' EmergentMonstrosity
+  | SilasBishop' SilasBishop
   | ServantOfManyMouths' ServantOfManyMouths
   | CorpseHungryGhoul' CorpseHungryGhoul
   | GhoulFromTheDepths' GhoulFromTheDepths
@@ -229,6 +230,7 @@ allEnemies = mapFromList
   , ("02141", HuntingHorror' . huntingHorror)
   , ("02182", GrapplingHorror' . grapplingHorror)
   , ("02183", EmergentMonstrosity' . emergentMonstrosity)
+  , ("02216", SilasBishop' . silasBishop)
   , ("02224", ServantOfManyMouths' . servantOfManyMouths)
   , ("50022", CorpseHungryGhoul' . corpseHungryGhoul)
   , ("50023", GhoulFromTheDepths' . ghoulFromTheDepths)

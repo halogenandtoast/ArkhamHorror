@@ -1,7 +1,6 @@
 module Arkham.Types.Treachery
   ( module Arkham.Types.Treachery
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -69,6 +68,8 @@ data Treachery
   | AcrossTimeAndSpace' AcrossTimeAndSpace
   | ClawsOfSteam' ClawsOfSteam
   | BrokenRails' BrokenRails
+  | Kidnapped' Kidnapped
+  | PsychopompsSong' PsychopompsSong
   | StrangeSigns' StrangeSigns
   | RottingRemainsBloodOnTheAltar' RottingRemainsBloodOnTheAltar
   | TheZealotsSeal' TheZealotsSeal
@@ -197,6 +198,8 @@ allTreacheries = mapFromList
   , ("02178", (AcrossTimeAndSpace' .) . acrossTimeAndSpace)
   , ("02180", (ClawsOfSteam' .) . clawsOfSteam)
   , ("02181", (BrokenRails' .) . brokenRails)
+  , ("02220", (Kidnapped' .) . kidnapped)
+  , ("02221", (PsychopompsSong' .) . psychopompsSong)
   , ("02222", (StrangeSigns' .) . strangeSigns)
   , ( "02223"
     , (RottingRemainsBloodOnTheAltar' .) . rottingRemainsBloodOnTheAltar

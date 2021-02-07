@@ -34,6 +34,11 @@ data CampaignLogKey
   | TheInvestigatorsPutSilasBishopOutOfHisMisery
   | TheInvestigatorsRestoredSilasBishop
   | TheInvestigatorsBanishedSilasBishop
+  | DrHenryArmitageSurvivedTheDunwichLegacy
+  | ProfessorWarrenRiceSurvivedTheDunwichLegacy
+  | DrFrancisMorganSurvivedTheDunwichLegacy
+  | ZebulonWhatelySurvivedTheDunwichLegacy
+  | EarlSawyerSurvivedTheDunwichLegacy
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
   | TheRougarouEscapedAndYouEmbracedTheCurse

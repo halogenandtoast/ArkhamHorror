@@ -31,6 +31,7 @@ type AssetRunner env
     , HasId ActiveInvestigatorId env ()
     , HasId CardCode env EnemyId
     , HasId LocationId env InvestigatorId
+    , HasRecord env
     , HasSet AccessibleLocationId env LocationId
     , HasSet AssetId env InvestigatorId
     , HasSet BlockedLocationId env ()
@@ -38,9 +39,11 @@ type AssetRunner env
     , HasSet EnemyId env ([Trait], LocationId)
     , HasSet EnemyId env InvestigatorId
     , HasSet EnemyId env LocationId
+    , HasSet ExhaustedEnemyId env LocationId
     , HasSet InScenarioInvestigatorId env ()
     , HasSet InvestigatorId env ()
     , HasSet InvestigatorId env LocationId
+    , HasSet StoryEnemyId env CardCode
     , HasSet Trait env AssetId
     , HasSet Trait env EnemyId
     )

@@ -310,6 +310,17 @@ instance HasId (Maybe TreacheryId) (Game queue) CardCode where
 instance HasId (Maybe StoryEnemyId) (Game queue) CardCode where
   getId cardCode = fmap StoryEnemyId <$> getId cardCode
 
+instance HasSet StoryEnemyId (Game queue) CardCode where
+  getSet cardCode = mapSet StoryEnemyId <$> getSet cardCode
+
+instance HasSet EnemyId (Game queue) CardCode where
+  getSet cardCode =
+    setFromList
+      . map fst
+      . filter ((cardCode ==) . getCardCode . snd)
+      . mapToList
+      <$> view enemiesL
+
 instance HasId (Maybe EnemyId) (Game queue) CardCode where
   getId cardCode =
     (fst <$>)

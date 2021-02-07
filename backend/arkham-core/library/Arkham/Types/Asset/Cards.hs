@@ -1,6 +1,7 @@
 module Arkham.Types.Asset.Cards
   ( module X
-  ) where
+  )
+where
 
 import Arkham.Types.Asset.Cards.AdamLynch as X
 import Arkham.Types.Asset.Cards.Adaptable1 as X
@@ -32,6 +33,7 @@ import Arkham.Types.Asset.Cards.DrFrancisMorgan as X
 import Arkham.Types.Asset.Cards.DrHenryArmitage as X
 import Arkham.Types.Asset.Cards.DrMilanChristopher as X
 import Arkham.Types.Asset.Cards.Duke as X
+import Arkham.Types.Asset.Cards.EarlSawyer as X
 import Arkham.Types.Asset.Cards.ElderSignAmulet3 as X
 import Arkham.Types.Asset.Cards.Encyclopedia as X
 import Arkham.Types.Asset.Cards.Encyclopedia2 as X
@@ -85,6 +87,7 @@ import Arkham.Types.Asset.Cards.PhysicalTraining as X
 import Arkham.Types.Asset.Cards.PhysicalTraining2 as X
 import Arkham.Types.Asset.Cards.Pickpocketing as X
 import Arkham.Types.Asset.Cards.PoliceBadge2 as X
+import Arkham.Types.Asset.Cards.PowderOfIbnGhazi as X
 import Arkham.Types.Asset.Cards.ProfessorWarrenRice as X
 import Arkham.Types.Asset.Cards.RabbitsFoot as X
 import Arkham.Types.Asset.Cards.RabbitsFoot3 as X
@@ -107,4 +110,5 @@ import Arkham.Types.Asset.Cards.TheNecronomiconOlausWormiusTranslation as X
 import Arkham.Types.Asset.Cards.ToothOfEztli as X
 import Arkham.Types.Asset.Cards.WendysAmulet as X
 import Arkham.Types.Asset.Cards.WhittonGreene as X
+import Arkham.Types.Asset.Cards.ZebulonWhateley as X
 import Arkham.Types.Asset.Cards.ZoeysCross as X

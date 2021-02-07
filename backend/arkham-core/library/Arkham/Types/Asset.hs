@@ -1,7 +1,8 @@
 module Arkham.Types.Asset
   ( module Arkham.Types.Asset
   , module X
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -99,6 +100,9 @@ data Asset
   | HelplessPassenger' HelplessPassenger
   | KeenEye3' KeenEye3
   | KeyToTheChamber' KeyToTheChamber
+  | ZebulonWhateley' ZebulonWhateley
+  | EarlSawyer' EarlSawyer
+  | PowderOfIbnGhazi' PowderOfIbnGhazi
   | SpringfieldM19034' SpringfieldM19034
   | LightningGun5' LightningGun5
   | ToothOfEztli' ToothOfEztli
@@ -310,6 +314,9 @@ allAssets = mapFromList
   , ("02179", HelplessPassenger' . helplessPassenger)
   , ("02185", KeenEye3' . keenEye3)
   , ("02215", KeyToTheChamber' . keyToTheChamber)
+  , ("02217", ZebulonWhateley' . zebulonWhateley)
+  , ("02218", EarlSawyer' . earlSawyer)
+  , ("02219", PowderOfIbnGhazi' . powderOfIbnGhazi)
   , ("02226", SpringfieldM19034' . springfieldM19034)
   , ("02301", LightningGun5' . lightningGun5)
   , ("04023", ToothOfEztli' . toothOfEztli)

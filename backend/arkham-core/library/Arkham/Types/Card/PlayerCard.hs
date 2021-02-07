@@ -13,9 +13,11 @@ import Arkham.Types.ClassSymbol
 import Arkham.Types.CommitRestriction
 import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
+import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
 import Arkham.Types.Window
+import Data.UUID
 
 data PlayerCardType
   = AssetType
@@ -80,6 +82,10 @@ traits = lens pcTraits $ \m x -> m { pcTraits = x }
 
 genPlayerCard :: MonadRandom m => CardCode -> m PlayerCard
 genPlayerCard cardCode = lookupPlayerCard cardCode <$> getRandom
+
+lookupPlayerCardName :: CardCode -> Name
+lookupPlayerCardName cardCode =
+  mkName . pcName $ lookupPlayerCard cardCode (CardId nil)
 
 lookupPlayerCard :: CardCode -> (CardId -> PlayerCard)
 lookupPlayerCard cardCode =

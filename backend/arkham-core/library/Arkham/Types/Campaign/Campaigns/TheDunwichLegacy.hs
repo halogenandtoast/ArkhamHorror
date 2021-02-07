@@ -13,6 +13,18 @@ import qualified Arkham.Types.Token as Token
 newtype TheDunwichLegacy = TheDunwichLegacy CampaignAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
+findOwner
+  :: (MonadReader env m, HasList CampaignStoryCard env ())
+  => CardCode
+  -> m (Maybe InvestigatorId)
+findOwner cardCode = do
+  campaignStoryCards <- getList ()
+  pure
+    $ campaignStoryCardInvestigatorId
+    <$> find
+          ((== cardCode) . getCardCode . campaignStoryCardPlayerCard)
+          campaignStoryCards
+
 theDunwichLegacy :: Difficulty -> TheDunwichLegacy
 theDunwichLegacy difficulty = TheDunwichLegacy
   (baseAttrs (CampaignId "02") "The Dunwich Legacy" difficulty chaosBagContents)
@@ -208,23 +220,193 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
               )
             | iid <- investigatorIds
             ]
-          , chooseOne
+          , addCampaignCardToDeckChoice
             leadInvestigatorId
-            [ Label
-              "Add Dr. Henry Armitage to a deck"
-              [ chooseOne
-                  leadInvestigatorId
-                  [ TargetLabel
-                      (InvestigatorTarget iid)
-                      [AddCampaignCardToDeck iid "02040"]
-                  | iid <- investigatorIds
-                  ]
-              ]
-            , Label "Do not add Dr. Henry Armitage to any deck" []
-            ]
+            investigatorIds
+            "02040"
           , NextCampaignStep Nothing
           ]
-    CampaignStep (Just (InterludeStep 2)) -> error "TODO: not implemented yet"
+    CampaignStep (Just (InterludeStep 2)) -> do
+      sacrificedToYogSothoth <- asks $ hasRecordSet SacrificedToYogSothoth
+      investigatorIds <- getSetList ()
+      leadInvestigatorId <- getLeadInvestigatorId
+      drHenryArmitageUnowned <- isNothing <$> findOwner "02040"
+      professorWarrenRiceUnowned <- isNothing <$> findOwner "02061"
+      drFrancisMorganUnowned <- isNothing <$> findOwner "02080"
+      let
+        addPowderOfIbnGhazi =
+          addCampaignCardToDeckChoice leadInvestigatorId investigatorIds "02219"
+            <$ guard
+                 (any
+                   (`notElem` sacrificedToYogSothoth)
+                   ["02040", "02061", "02080"]
+                 )
+        addDrHenryArmitage =
+          addCampaignCardToDeckChoice leadInvestigatorId investigatorIds "02040"
+            <$ guard
+                 (drHenryArmitageUnowned
+                 && "02040"
+                 `notElem` sacrificedToYogSothoth
+                 )
+        addProfessorWarrenRice =
+          addCampaignCardToDeckChoice leadInvestigatorId investigatorIds "02061"
+            <$ guard
+                 (professorWarrenRiceUnowned
+                 && "02061"
+                 `notElem` sacrificedToYogSothoth
+                 )
+        addDrFrancisMorgan =
+          addCampaignCardToDeckChoice leadInvestigatorId investigatorIds "02080"
+            <$ guard
+                 (drFrancisMorganUnowned
+                 && "02080"
+                 `notElem` sacrificedToYogSothoth
+                 )
+        addZebulonWhateley =
+          addCampaignCardToDeckChoice leadInvestigatorId investigatorIds "02217"
+            <$ guard ("02217" `notElem` sacrificedToYogSothoth)
+        addEarlSawyer =
+          addCampaignCardToDeckChoice leadInvestigatorId investigatorIds "02218"
+            <$ guard ("02218" `notElem` sacrificedToYogSothoth)
+      c <$ unshiftMessages
+        ([ AskMap
+           . mapFromList
+           $ [ ( iid
+               , ChooseOne
+                 [ Run
+                     [ Continue "Continue"
+                     , FlavorText
+                       (Just "Interlude II: The Survivors")
+                       [ "Inside the chamber that contained the terrible beast, you find the missing\
+                          \ townsfolk and the others from Arkham; they are bound and shackled. You\
+                          \ also find several documents that suggest the creature you found isn’t the\
+                          \ only one of its kind in Dunwich. You free the creature’s victims from their\
+                          \ bonds, and they offer you their thanks. You begin to plan your next move."
+                       ]
+                     ]
+                 ]
+               )
+             | iid <- investigatorIds
+             ]
+         ]
+        <> [ AskMap
+             . mapFromList
+             $ [ ( iid
+                 , ChooseOne
+                   [ Run
+                       [ Continue "Continue"
+                       , FlavorText
+                         (Just "Interlude II: The Survivors")
+                         [ "“It is far worse than we had thought,” Dr. Armitage\
+                        \ says, pale and trembling. “Wilbur Whateley was only the beginning.\
+                        \ There were more, many more in Dunwich, who knew of the ‘Great Old\
+                        \ Ones’ and who desired power and knowledge above all else, the Earth\
+                        \ be damned. I knew I should have burned that wretch’s journal. But\
+                        \ thanks to its contents, I know how we can stop them. We are the only\
+                        \ ones who can! Now quickly, help me with this solution—the powder is\
+                        \ the key, yes, the powder is the only way…”"
+                         ]
+                       ]
+                   ]
+                 )
+               | iid <- investigatorIds
+               ]
+           | "02040" `notElem` sacrificedToYogSothoth
+           ]
+        <> addDrHenryArmitage
+        <> [ AskMap
+             . mapFromList
+             $ [ ( iid
+                 , ChooseOne
+                   [ Run
+                       [ Continue "Continue"
+                       , FlavorText
+                         (Just "Interlude II: The Survivors")
+                         [ "Professor Rice adjusts his glasses and studies the\
+                          \ documents and arcane manuscripts left in the chamber. “I thought\
+                          \ this nightmare was over and done with,” he sighs. “But we have a duty\
+                          \ to see this through. We have to stop these creatures, or it won’t be just\
+                          \ Dunwich in trouble. The powder mixture Armitage created to see the\
+                          \ creatures will be our saving grace,” he explains, and sets off to the task\
+                          \ of recreating the powder."
+                         ]
+                       ]
+                   ]
+                 )
+               | iid <- investigatorIds
+               ]
+           | "02061" `notElem` sacrificedToYogSothoth
+           ]
+        <> addProfessorWarrenRice
+        <> [ AskMap
+             . mapFromList
+             $ [ ( iid
+                 , ChooseOne
+                   [ Run
+                       [ Continue "Continue"
+                       , FlavorText
+                         (Just "Interlude II: The Survivors")
+                         [ "“Thank you for everything you’ve done,” Dr. Morgan\
+                          \ says, taking count of your provisions and ammunition. “Last time, we\
+                          \ needed some of that strange powder Armitage concocted to even see the\
+                          \ beast that terrorized Dunwich. If there’s more of those things out there,\
+                          \ we’re going to need that powder. I think I remember how he made it…”"
+                         ]
+                       ]
+                   ]
+                 )
+               | iid <- investigatorIds
+               ]
+           | "02080" `notElem` sacrificedToYogSothoth
+           ]
+        <> addDrFrancisMorgan
+        <> [ AskMap
+             . mapFromList
+             $ [ ( iid
+                 , ChooseOne
+                   [ Run
+                       [ Continue "Continue"
+                       , FlavorText
+                         (Just "Interlude II: The Survivors")
+                         [ "“Dunwich’s had its fair share of oddities,” Zebulon\
+                           \ explains to you with a quavering voice, “but I ain’t ever seen anything\
+                           \ as sick and twisted as this…this…thing.” He gives the creature’s\
+                           \ remains one last sickened glance before closing the door to the chamber\
+                           \ behind him, shuddering. He locks eyes with you, his expression grim.\
+                           \ “Whoever dun this gotta pay. I’ll do all I can to help.”"
+                         ]
+                       ]
+                   ]
+                 )
+               | iid <- investigatorIds
+               ]
+           | "02217" `notElem` sacrificedToYogSothoth
+           ]
+        <> addZebulonWhateley
+        <> [ AskMap
+             . mapFromList
+             $ [ ( iid
+                 , ChooseOne
+                   [ Run
+                       [ Continue "Continue"
+                       , FlavorText
+                         (Just "Interlude II: The Survivors")
+                         [ "“I never could’a made it if it weren’t for you,” Earl says with a stammer,\
+                           \ shaking your hand repeatedly. “If ’n there’s anything I can do to repay\
+                           \ yeh, just ask away. I ain’t much of a fighter or anythin’, but I’ll do all I\
+                           \ can. Jus’…don’t make me look at anythin’ like that beast again, a’right?”"
+                         ]
+                       ]
+                   ]
+                 )
+               | iid <- investigatorIds
+               ]
+           | "02218" `notElem` sacrificedToYogSothoth
+           ]
+        <> addEarlSawyer
+        <> addPowderOfIbnGhazi
+        <> [NextCampaignStep Nothing]
+        )
     NextCampaignStep mNextCampaignStep -> do
       let
         nextStep = case mNextCampaignStep of

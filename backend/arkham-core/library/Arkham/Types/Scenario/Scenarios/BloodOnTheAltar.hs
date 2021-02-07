@@ -180,10 +180,10 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
             <> [ EncounterSet.NaomisCrew | oBannionGangHasABoneToPick ]
             )
 
+        theHiddenChamber <-
+          EncounterCard . lookupEncounterCard "02214" <$> getRandom
         keyToTheChamber <-
           EncounterCard . lookupEncounterCard "02215" <$> getRandom
-        theHiddenChamber <-
-          EncounterCard . lookupEncounterCard "02216" <$> getRandom
         cardsToPutUnderneath <-
           shuffleM
           $ keyToTheChamber

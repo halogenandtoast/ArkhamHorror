@@ -420,6 +420,7 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
                    , Record TheInvestigatorsBanishedSilasBishop
                    ]
                  <> removeSacrificedMessages
+                 <> [RecordSet SacrificedToYogSothoth sacrificedToYogSothoth]
                  <> removeNecronomicon
                ]
            ]

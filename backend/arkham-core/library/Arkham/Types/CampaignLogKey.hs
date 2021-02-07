@@ -34,6 +34,7 @@ data CampaignLogKey
   | TheInvestigatorsPutSilasBishopOutOfHisMisery
   | TheInvestigatorsRestoredSilasBishop
   | TheInvestigatorsBanishedSilasBishop
+  | SacrificedToYogSothoth
   | DrHenryArmitageSurvivedTheDunwichLegacy
   | ProfessorWarrenRiceSurvivedTheDunwichLegacy
   | DrFrancisMorganSurvivedTheDunwichLegacy

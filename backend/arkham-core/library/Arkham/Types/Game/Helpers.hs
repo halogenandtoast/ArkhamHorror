@@ -7,6 +7,7 @@ import Arkham.Import
 import Arkham.Types.Action hiding (Ability)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.CampaignLogKey
+import Arkham.Types.Card.PlayerCard hiding (traits)
 import Arkham.Types.Keyword
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Trait (Trait)
@@ -526,3 +527,22 @@ sourceToTarget = \case
   ProxySource _ source -> sourceToTarget source
   EffectSource eid -> EffectTarget eid
   ResourceSource -> ResourceTarget
+
+addCampaignCardToDeckChoice
+  :: InvestigatorId -> [InvestigatorId] -> CardCode -> Message
+addCampaignCardToDeckChoice leadInvestigatorId investigatorIds cardCode =
+  chooseOne
+    leadInvestigatorId
+    [ Label
+      ("Add " <> tshow name <> " to a deck")
+      [ chooseOne
+          leadInvestigatorId
+          [ TargetLabel
+              (InvestigatorTarget iid)
+              [AddCampaignCardToDeck iid cardCode]
+          | iid <- investigatorIds
+          ]
+      ]
+    , Label ("Do not add " <> tshow name <> " to any deck") []
+    ]
+  where name = lookupPlayerCardName cardCode

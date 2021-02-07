@@ -10,11 +10,12 @@ newtype DrMilanChristopher = DrMilanChristopher AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drMilanChristopher :: AssetId -> DrMilanChristopher
-drMilanChristopher uuid = DrMilanChristopher $ (baseAttrs uuid "01033")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 1
-  , assetSanity = Just 2
-  }
+drMilanChristopher uuid =
+  DrMilanChristopher
+    $ baseAttrs uuid "01033"
+    & (healthL ?~ 1)
+    & (sanityL ?~ 2)
+    & (slotsL .~ [AllySlot])
 
 instance HasModifiersFor env DrMilanChristopher where
   getModifiersFor _ (InvestigatorTarget iid) (DrMilanChristopher a) =

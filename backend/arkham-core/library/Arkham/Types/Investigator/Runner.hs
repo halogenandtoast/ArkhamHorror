@@ -79,6 +79,7 @@ type InvestigatorRunner env
     , HasPhaseHistory env
     , HasPlayerCard env AssetId
     , HasQueue env
+    , HasRecord env
     , HasRoundHistory env
     , ( HasSet AccessibleLocationId env LocationId
       , HasSet ActId env TreacheryCardCode
@@ -131,6 +132,7 @@ type InvestigatorRunner env
       , HasSet SanityDamageableAssetId env InvestigatorId
       , HasSet ScenarioLogKey env ()
       , HasSet StoryAssetId env InvestigatorId
+      , HasSet StoryEnemyId env CardCode
       , HasSet Trait env AssetId
       , HasSet Trait env EnemyId
       , HasSet Trait env LocationId

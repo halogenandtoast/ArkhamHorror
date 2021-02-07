@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3d81459a6f70e11254a1608e300e7bc7efbcb2170c51323aa9cc21f601851bda
+-- hash: 1ddd35454fc12def3770868d3bdf57e25741dc54edc510560f2de93383bb38de
 
 name:           arkham-core
 version:        0.0.0
@@ -121,6 +121,7 @@ library
       Arkham.Types.Asset.Cards.DrHenryArmitage
       Arkham.Types.Asset.Cards.DrMilanChristopher
       Arkham.Types.Asset.Cards.Duke
+      Arkham.Types.Asset.Cards.EarlSawyer
       Arkham.Types.Asset.Cards.ElderSignAmulet3
       Arkham.Types.Asset.Cards.Encyclopedia
       Arkham.Types.Asset.Cards.Encyclopedia2
@@ -174,6 +175,7 @@ library
       Arkham.Types.Asset.Cards.PhysicalTraining2
       Arkham.Types.Asset.Cards.Pickpocketing
       Arkham.Types.Asset.Cards.PoliceBadge2
+      Arkham.Types.Asset.Cards.PowderOfIbnGhazi
       Arkham.Types.Asset.Cards.ProfessorWarrenRice
       Arkham.Types.Asset.Cards.RabbitsFoot
       Arkham.Types.Asset.Cards.RabbitsFoot3
@@ -196,6 +198,7 @@ library
       Arkham.Types.Asset.Cards.ToothOfEztli
       Arkham.Types.Asset.Cards.WendysAmulet
       Arkham.Types.Asset.Cards.WhittonGreene
+      Arkham.Types.Asset.Cards.ZebulonWhateley
       Arkham.Types.Asset.Cards.ZoeysCross
       Arkham.Types.Asset.Class
       Arkham.Types.Asset.Helpers

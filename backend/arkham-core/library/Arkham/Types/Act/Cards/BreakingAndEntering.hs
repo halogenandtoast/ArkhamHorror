@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.BreakingAndEntering
   ( BreakingAndEntering(..)
   , breakingAndEntering
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -22,11 +23,6 @@ instance ActionRunner env => HasActions env BreakingAndEntering where
 
 instance ActRunner env => RunMessage env BreakingAndEntering where
   runMessage msg a@(BreakingAndEntering attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      unshiftMessage
-        (chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)])
-      pure $ BreakingAndEntering $ attrs & sequenceL .~ Act 2 B
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds

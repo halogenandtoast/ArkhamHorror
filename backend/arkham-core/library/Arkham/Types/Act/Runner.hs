@@ -23,6 +23,7 @@ type ActRunner env
     , HasList ResignedCardCode env ()
     , HasRecord env
     , HasSet AssetId env EnemyId
+    , HasSet CompletedScenarioId env ()
     , HasSet EnemyId env LocationId
     , HasSet InvestigatorId env ()
     , HasSet InvestigatorId env (HashSet LocationId)
@@ -33,8 +34,8 @@ type ActRunner env
     , HasSet LocationId env [Trait]
     , HasSet ScenarioLogKey env ()
     , HasSet Trait env AssetId
+    , HasSet UnrevealedLocationId env ()
     , HasSet VictoryDisplayCardCode env ()
-    , HasSet CompletedScenarioId env ()
     , HasStep AgendaStep env
     , HasList LocationName env ()
     )

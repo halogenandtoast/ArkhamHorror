@@ -3,7 +3,8 @@
 module Arkham.Types.Act.Attrs
   ( module Arkham.Types.Act.Attrs
   , module X
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -90,8 +91,15 @@ instance ActionRunner env => HasActions env ActAttrs where
     Nothing -> pure []
   getActions _ _ _ = pure []
 
-instance (HasQueue env, HasSet InScenarioInvestigatorId env ()) => RunMessage env ActAttrs where
+instance (HasQueue env, HasSet InScenarioInvestigatorId env (), HasId LeadInvestigatorId env ()) => RunMessage env ActAttrs where
   runMessage msg a@ActAttrs {..} = case msg of
+    AdvanceAct aid source | aid == actId && actSide actSequence == A -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      unshiftMessages
+        [ CheckWindow leadInvestigatorId [WhenActAdvance actId]
+        , chooseOne leadInvestigatorId [AdvanceAct actId source]
+        ]
+      pure $ a & (sequenceL .~ Act (unActStep $ actStep actSequence) B)
     AttachTreachery tid (ActTarget aid) | aid == actId ->
       pure $ a & treacheriesL %~ insertSet tid
     InvestigatorResigned _ -> do

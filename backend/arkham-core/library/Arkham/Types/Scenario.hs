@@ -1,6 +1,7 @@
 module Arkham.Types.Scenario
   ( module Arkham.Types.Scenario
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -53,6 +54,9 @@ instance Entity Scenario where
 
 instance HasSet ScenarioLogKey env Scenario where
   getSet = pure . scenarioLog . toAttrs
+
+instance HasCount ScenarioDeckCount env Scenario where
+  getCount = getCount . toAttrs
 
 newtype BaseScenario = BaseScenario ScenarioAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)

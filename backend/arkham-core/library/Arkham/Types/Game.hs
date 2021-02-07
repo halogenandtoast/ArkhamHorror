@@ -245,6 +245,9 @@ instance HasId CardCode (Game queue) EnemyId where
 instance HasId CardCode (Game queue) AssetId where
   getId = (getCardCode <$>) . getAsset
 
+instance HasCount ScenarioDeckCount (Game queue) () where
+  getCount _ = getCount =<< fromJustNote "scenario has to be set" . modeScenario <$> view modeL
+
 instance HasCount UsesCount (Game queue) AssetId where
   getCount = getCount <=< getAsset
 

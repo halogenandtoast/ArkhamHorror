@@ -13,6 +13,7 @@ type AgendaRunner env
     , HasCount EnemyCount env (LocationId, [Trait])
     , HasCount EnemyCount env (LocationMatcher, [Trait])
     , HasCount PlayerCount env ()
+    , HasCount ScenarioDeckCount env ()
     , HasId (Maybe LocationId) env LocationMatcher
     , HasId (Maybe LocationId) env (Direction, LocationId)
     , HasId (Maybe StoryEnemyId) env CardCode

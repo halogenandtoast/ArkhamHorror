@@ -93,7 +93,10 @@ instance
       pure $ a & treacheriesL %~ insertSet tid
     AdvanceAgenda aid | aid == agendaId && agendaSide agendaSequence == A -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      unshiftMessage $ chooseOne leadInvestigatorId [AdvanceAgenda agendaId]
+      unshiftMessages
+        [ CheckWindow leadInvestigatorId [WhenAgendaAdvance agendaId]
+        , chooseOne leadInvestigatorId [AdvanceAgenda agendaId]
+        ]
       pure
         $ a
         & (sequenceL .~ Agenda (unAgendaStep $ agendaStep agendaSequence) B)

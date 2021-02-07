@@ -183,6 +183,10 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs whe
       pure $ a & investigatorL ?~ iid
     TakeControlOfAsset iid aid | aid == assetId ->
       pure $ a & investigatorL ?~ iid
+    AddToScenarioDeck target | isTarget a target -> do
+      unshiftMessages
+        [AddCardToScenarioDeck (toCard a), RemoveFromGame (toTarget a)]
+      pure $ a & investigatorL .~ Nothing
     Exhaust target | a `isTarget` target -> pure $ a & exhaustedL .~ True
     Ready target | a `isTarget` target -> case assetInvestigator of
       Just iid -> do

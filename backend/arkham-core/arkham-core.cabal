@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0cbbb5525232d248211d8edac1e432e8eb65e63330ddbaff57bbe2d49f4a4078
+-- hash: e8c4e8b96754aa2366302b9f4496fcd28960c638f988ce003e6cebd115237bc5
 
 name:           arkham-core
 version:        0.0.0
@@ -305,6 +305,7 @@ library
       Arkham.Types.Enemy.Cards.ScreechingByakhee
       Arkham.Types.Enemy.Cards.ServantOfManyMouths
       Arkham.Types.Enemy.Cards.ServantOfTheLurker
+      Arkham.Types.Enemy.Cards.SilasBishop
       Arkham.Types.Enemy.Cards.SilverTwilightAcolyte
       Arkham.Types.Enemy.Cards.SlimeCoveredDhole
       Arkham.Types.Enemy.Cards.StubbornDetective
@@ -652,6 +653,7 @@ library
       Arkham.Types.Treachery.Cards.Indebted
       Arkham.Types.Treachery.Cards.InsatiableBloodlust
       Arkham.Types.Treachery.Cards.InternalInjury
+      Arkham.Types.Treachery.Cards.Kidnapped
       Arkham.Types.Treachery.Cards.LightOfAforgomon
       Arkham.Types.Treachery.Cards.LockedDoor
       Arkham.Types.Treachery.Cards.MaskedHorrors
@@ -663,6 +665,7 @@ library
       Arkham.Types.Treachery.Cards.OnWingsOfDarkness
       Arkham.Types.Treachery.Cards.Paranoia
       Arkham.Types.Treachery.Cards.PassageIntoTheVeil
+      Arkham.Types.Treachery.Cards.PsychopompsSong
       Arkham.Types.Treachery.Cards.Psychosis
       Arkham.Types.Treachery.Cards.PushedIntoTheBeyond
       Arkham.Types.Treachery.Cards.RexsCurse

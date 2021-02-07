@@ -618,8 +618,13 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
         $ unshiftMessage (EnemyEngageInvestigator enemyId iid)
       pure a
     CheckAttackOfOpportunity iid isFast
-      | not isFast && iid `elem` enemyEngagedInvestigators && not enemyExhausted
-      -> a <$ unshiftMessage (EnemyWillAttack iid enemyId)
+      | not isFast && iid `elem` enemyEngagedInvestigators && not enemyExhausted -> do
+        modifiers' <-
+          map modifierType
+            <$> getModifiersFor (toSource a) (EnemyTarget enemyId) ()
+        a <$ unless
+          (CannotMakeAttacksOfOpportunity `elem` modifiers')
+          (unshiftMessage (EnemyWillAttack iid enemyId))
     InvestigatorDrawEnemy iid lid eid | eid == enemyId -> do
       unshiftMessages $ resolve (EnemySpawn (Just iid) lid eid)
       pure $ a & locationL .~ lid

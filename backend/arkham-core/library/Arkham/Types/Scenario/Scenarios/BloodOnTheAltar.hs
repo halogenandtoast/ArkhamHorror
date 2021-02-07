@@ -430,4 +430,18 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
         <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
         <> [EndOfGame]
         )
+    AddCardToScenarioDeck card -> case scenarioDeck of
+      Just (PotentialSacrifices cards) ->
+        pure . BloodOnTheAltar $ attrs & deckL ?~ PotentialSacrifices
+          (card : cards)
+      _ -> throwIO $ InvalidState "incorrect deck"
+    UseScenarioSpecificAbility _ 1 -> case scenarioDeck of
+      Just (PotentialSacrifices []) -> pure s
+      Just (PotentialSacrifices cards) -> do
+        c : cards' <- shuffleM cards
+        agendaId <- fromJustNote "missing agenda" . headMay <$> getSetList ()
+        unshiftMessage (PlaceUnderneath (AgendaTarget agendaId) [c])
+        pure . BloodOnTheAltar $ attrs & deckL ?~ PotentialSacrifices cards'
+      _ -> throwIO $ InvalidState "incorrect deck"
+
     _ -> BloodOnTheAltar <$> runMessage msg attrs

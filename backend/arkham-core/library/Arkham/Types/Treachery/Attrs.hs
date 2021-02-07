@@ -79,6 +79,9 @@ treacheryOnEnemy = treacheryOn . EnemyTarget
 treacheryOnLocation :: LocationId -> TreacheryAttrs -> Bool
 treacheryOnLocation = treacheryOn . LocationTarget
 
+treacheryOnAgenda :: AgendaId -> TreacheryAttrs -> Bool
+treacheryOnAgenda = treacheryOn . AgendaTarget
+
 withTreacheryEnemy :: MonadIO m => TreacheryAttrs -> (EnemyId -> m a) -> m a
 withTreacheryEnemy attrs f = case treacheryAttachedTarget attrs of
   Just (EnemyTarget eid) -> f eid

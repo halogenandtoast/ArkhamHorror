@@ -117,6 +117,12 @@ fromQueue
   :: (MonadIO m, MonadReader env m, HasQueue env) => ([Message] -> r) -> m r
 fromQueue f = f <$> (readIORef =<< asks (view messageQueue))
 
+findFromQueue
+  :: (MonadIO m, MonadReader env m, HasQueue env)
+  => (Message -> Bool)
+  -> m (Maybe Message)
+findFromQueue f = fromQueue (find f)
+
 popMessage :: (MonadIO m, MonadReader env m, HasQueue env) => m (Maybe Message)
 popMessage = withQueue $ \case
   [] -> ([], Nothing)
@@ -145,6 +151,18 @@ unshiftMessage = unshiftMessages . pure
 unshiftMessages
   :: (MonadIO m, MonadReader env m, HasQueue env) => [Message] -> m ()
 unshiftMessages msgs = withQueue $ \queue -> (msgs <> queue, ())
+
+replaceMessage
+  :: (MonadIO m, MonadReader env m, HasQueue env)
+  => Message
+  -> [Message]
+  -> m ()
+replaceMessage msg replacement = withQueue $ \queue ->
+  let (before, after) = span (== msg) queue
+  in
+    case after of
+      [] -> (before, ())
+      (_ : rest) -> (before <> replacement <> rest, ())
 
 pairInvestigatorIdsForWindow
   :: ( MonadReader env m

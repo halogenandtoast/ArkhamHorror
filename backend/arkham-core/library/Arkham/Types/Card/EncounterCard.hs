@@ -2,7 +2,8 @@ module Arkham.Types.Card.EncounterCard
   ( module Arkham.Types.Card.EncounterCard
   , module Arkham.Types.Card.EncounterCardMatcher
   , module Arkham.Types.Card.EncounterCardType
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -151,6 +152,7 @@ allEncounterCards = mapFromList
   , ("02181", brokenRails)
   , ("02182", grapplingHorror)
   , ("02183", emergentMonstrosity)
+  , ("02214", theHiddenChamber)
   , ("02215", keyToTheChamber)
   , ("02216", silasBishop)
   , ("02220", kidnapped)
@@ -596,6 +598,12 @@ emergentMonstrosity :: CardId -> EncounterCard
 emergentMonstrosity cardId = (enemy cardId "02183" "Emergent Monstrosity")
   { ecTraits = setFromList [Monster, Abomination]
   , ecVictoryPoints = Just 1
+  }
+
+theHiddenChamber :: CardId -> EncounterCard
+theHiddenChamber cardId = (location cardId "02214" "The Hidden Chamber")
+  { ecTraits = singleton Dunwich
+  , ecVictoryPoints = Just 2
   }
 
 keyToTheChamber :: CardId -> EncounterCard

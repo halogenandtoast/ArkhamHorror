@@ -26,9 +26,9 @@ bloodOnTheAltar :: Difficulty -> BloodOnTheAltar
 bloodOnTheAltar difficulty =
   BloodOnTheAltar . (`with` BloodOnTheAltarMetadata []) $ base
     { scenarioLocationLayout = Just
-      [ ".                    houseInTheReeds      houseInTheReeds schoolhouse    schoolhouse         ."
-      , "congregationalChurch congregationalChurch villageCommons  villageCommons osbornsGeneralStore osbornsGeneralStore"
-      , ".                    burnedRuins          burnedRuins     bishopsBrook   bishopsBrook        ."
+      [ ". houseInTheReedsHiddenChamber houseInTheReedsHiddenChamber houseInTheReeds houseInTheReeds schoolhouse schoolhouse schoolhouseHiddenChamber schoolhouseHiddenChamber ."
+      , "congregationalChurchHiddenChamber congregationalChurchHiddenChamber congregationalChurch congregationalChurch villageCommons  villageCommons osbornsGeneralStore osbornsGeneralStore osbornsGeneralStoreHiddenChamber osbornsGeneralStoreHiddenChamber"
+      , ". burnedRuinsHiddenChamber burnedRuinsHiddenChamber burnedRuins burnedRuins bishopsBrook bishopsBrook bishopsBrookHiddenChamber bishopsBrookHiddenChamber ."
       ]
     }
  where

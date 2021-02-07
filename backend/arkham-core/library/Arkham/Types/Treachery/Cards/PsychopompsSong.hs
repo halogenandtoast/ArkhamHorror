@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.PsychopompsSong
   ( psychopompsSong
   , PsychopompsSong(..)
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -22,7 +23,7 @@ ability attrs = mkAbility (toSource attrs) 1 ForcedAbility
 
 instance HasActions env PsychopompsSong where
   getActions iid (WhenWouldTakeDamage source (InvestigatorTarget iid')) (PsychopompsSong attrs)
-    | isSource attrs source && treacheryOnInvestigator iid attrs && iid == iid'
+    | treacheryOnInvestigator iid attrs && iid == iid'
     = pure [ActivateCardAbilityAction iid (ability attrs)]
   getActions i window (PsychopompsSong attrs) = getActions i window attrs
 

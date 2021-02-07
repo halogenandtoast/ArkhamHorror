@@ -1,6 +1,7 @@
 module Arkham.Types.Agenda.Cards
   ( module X
-  ) where
+  )
+where
 
 import Arkham.Types.Agenda.Cards.ACreatureOfTheBayou as X
 import Arkham.Types.Agenda.Cards.ATearInReality as X
@@ -22,6 +23,7 @@ import Arkham.Types.Agenda.Cards.TheBeastUnleashed as X
 import Arkham.Types.Agenda.Cards.TheCloverClub as X
 import Arkham.Types.Agenda.Cards.TheCurseSpreads as X
 import Arkham.Types.Agenda.Cards.TheMawWidens as X
+import Arkham.Types.Agenda.Cards.TheOldOnesHunger as X
 import Arkham.Types.Agenda.Cards.TheRitualBegins as X
 import Arkham.Types.Agenda.Cards.TheRougarouFeeds as X
 import Arkham.Types.Agenda.Cards.TheyreGettingOut as X

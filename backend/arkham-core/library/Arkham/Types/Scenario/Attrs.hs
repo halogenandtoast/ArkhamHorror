@@ -3,7 +3,8 @@
 module Arkham.Types.Scenario.Attrs
   ( module Arkham.Types.Scenario.Attrs
   , module X
-  ) where
+  )
+where
 
 import Arkham.Import hiding (log)
 
@@ -39,6 +40,13 @@ instance ToJSON ScenarioAttrs where
 
 instance FromJSON ScenarioAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "scenario"
+
+instance HasCount ScenarioDeckCount env ScenarioAttrs where
+  getCount ScenarioAttrs { scenarioDeck } = case scenarioDeck of
+    Just (CultistDeck cards) -> pure . ScenarioDeckCount $ length cards
+    Just (ExhibitDeck cards) -> pure . ScenarioDeckCount $ length cards
+    Just (PotentialSacrifices cards) -> pure . ScenarioDeckCount $ length cards
+    Nothing -> pure $ ScenarioDeckCount 0
 
 toTokenValue :: ScenarioAttrs -> Token -> Int -> Int -> TokenValue
 toTokenValue attrs t esVal heVal = TokenValue

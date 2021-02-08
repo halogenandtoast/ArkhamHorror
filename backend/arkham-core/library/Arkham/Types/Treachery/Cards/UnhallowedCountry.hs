@@ -10,7 +10,6 @@ import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
-import qualified Data.UUID as UUID
 
 newtype UnhallowedCountry = UnhallowedCountry TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -23,7 +22,7 @@ instance (HasSet Trait env AssetId, HasId (Maybe OwnerId) env AssetId) => HasMod
     pure $ toModifiers
       attrs
       [ CannotPlay [AssetType] | treacheryOnInvestigator iid attrs ]
-  getModifiersFor source (AssetTarget aid) (UnhallowedCountry attrs) = do
+  getModifiersFor _ (AssetTarget aid) (UnhallowedCountry attrs) = do
     traits <- getSet @Trait aid
     miid <- fmap unOwnerId <$> getId aid
     case miid of

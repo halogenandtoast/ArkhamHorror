@@ -52,26 +52,29 @@ instance TreacheryRunner env => RunMessage env Kidnapped where
           ]
         ]
       )
-    FailedSkillTest iid _ source _ _ _ | isSource attrs source -> do
-      allies <- getSetList @AssetId (iid, [Ally])
-      if null allies
-        then t <$ unshiftMessages
-          [ InvestigatorAssignDamage iid source DamageAny 2 0
-          , Discard (toTarget attrs)
-          ]
-        else do
-          agendaId <-
-            fromJustNote "missing agenga" . headMay <$> getSetList @AgendaId ()
-          t <$ unshiftMessages
-            [ chooseOne
-              iid
-              [ TargetLabel
-                  (AssetTarget aid)
-                  [AddToScenarioDeck (AssetTarget aid)]
-              | aid <- allies
-              ]
-            , AttachTreachery treacheryId (AgendaTarget agendaId)
+    FailedSkillTest iid _ _ (SkillTestInitiatorTarget target) _ _
+      | isTarget attrs target -> do
+        allies <- getSetList @AssetId (iid, [Ally])
+        if null allies
+          then t <$ unshiftMessages
+            [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0
+            , Discard (toTarget attrs)
             ]
+          else do
+            agendaId <-
+              fromJustNote "missing agenga"
+              . headMay
+              <$> getSetList @AgendaId ()
+            t <$ unshiftMessages
+              [ chooseOne
+                iid
+                [ TargetLabel
+                    (AssetTarget aid)
+                    [AddToScenarioDeck (AssetTarget aid)]
+                | aid <- allies
+                ]
+              , AttachTreachery treacheryId (AgendaTarget agendaId)
+              ]
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       t <$ unshiftMessage (UseScenarioSpecificAbility iid 1)
     _ -> Kidnapped <$> runMessage msg attrs

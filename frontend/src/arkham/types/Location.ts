@@ -1,4 +1,5 @@
 import { JsonDecoder } from 'ts.data.json';
+import { Card, cardDecoder } from '@/arkham/types/Card';
 
 interface ModifierType {
   tag: string;
@@ -48,6 +49,7 @@ export interface LocationContents {
   connectedLocations: string[];
   treacheries: string[];
   assets: string[];
+  cardsUnderneath: Card[];
 }
 
 export const locationContentsDecoder = JsonDecoder.object<LocationContents>(
@@ -64,6 +66,7 @@ export const locationContentsDecoder = JsonDecoder.object<LocationContents>(
     connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
     treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
     assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),
+    cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'UnderneathCard[]'),
   },
   'Attrs',
 );

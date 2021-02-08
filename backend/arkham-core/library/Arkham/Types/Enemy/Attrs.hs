@@ -585,11 +585,8 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
             (setToList enemyTraits)
           )
         )
-    EnemyDefeated eid iid _ _ _ _ | eid == enemyId -> do
-      -- TODO: Move this out to part of the discard effect
-      msgs <- checkWindows iid (\who -> pure [AfterEnemyDefeated who enemyId])
-      a <$ unshiftMessages
-        (msgs <> [ Discard (AssetTarget aid) | aid <- setToList enemyAssets ])
+    EnemyDefeated eid _ _ _ _ _ | eid == enemyId ->
+      a <$ unshiftMessages (map (Discard . AssetTarget) (setToList enemyAssets))
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
       lid <- getId @LocationId iid
       pure $ a & engagedInvestigatorsL %~ insertSet iid & locationL .~ lid

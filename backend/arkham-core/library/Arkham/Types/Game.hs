@@ -12,6 +12,7 @@ import Arkham.Types.ModifierData
 import Arkham.Types.Action (Action, TakenAction)
 import Arkham.Types.Agenda
 import Arkham.Types.Asset
+import Arkham.Types.EntityInstance
 import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.Campaign
 import Arkham.Types.ChaosBag
@@ -1901,14 +1902,15 @@ runGameMessage msg g = case msg of
       Nothing -> error "enemy was not in void"
   EnemyDefeated eid iid _ _ _ _ -> do
     broadcastWindow Fast.WhenEnemyDefeated iid g
+    afterMsgs <- checkWindows iid (\who -> pure [AfterEnemyDefeated who eid])
     let
       enemy = getEnemy eid g
       card = toCard enemy
     if isJust (getEnemyVictory enemy)
       then do
-        unshiftMessage $ After msg
-        pure $ g & (enemiesL %~ deleteMap eid) & (victoryDisplayL %~ (card :))
-      else g <$ unshiftMessages [When msg, After msg, Discard (EnemyTarget eid)]
+        unshiftMessages $ [After msg] <> afterMsgs <> [RemoveEnemy eid]
+        pure $ g & (victoryDisplayL %~ (card :))
+      else g <$ unshiftMessages ([When msg, After msg] <> afterMsgs <> [Discard (EnemyTarget eid)])
   Discard (SearchedCardTarget iid cardId) -> do
     let
       card = fromJustNote "must exist"
@@ -2352,8 +2354,12 @@ runGameMessage msg g = case msg of
           | Keyword.Surge `member` ecKeywords card
           ]
       pure $ g & (assetsL . at assetId ?~ asset)
-    LocationType ->
-      g <$ unshiftMessage (PlaceLocation . LocationId $ ecCardCode card)
+    LocationType -> do
+      let
+        location = createLocation card
+        locationId = toId location
+      unshiftMessage $ Revelation iid (LocationSource locationId)
+      pure $ g & (locationsL . at locationId ?~ location)
   DrewTreachery iid (EncounterCard card) -> do
     let
       treachery = createTreachery card (Just iid)
@@ -2387,7 +2393,8 @@ runGameMessage msg g = case msg of
          , AfterRevelation iid treacheryId
          ]
     pure $ g & treacheriesL %~ insertMap treacheryId treachery
-  AfterRevelation{} -> pure $ g & activeCardL .~ Nothing
+  AfterRevelation{} ->
+    pure $ g & activeCardL .~ Nothing
   ResignWith (AssetTarget aid) -> do
     let asset = getAsset aid g
     pure $ g & resignedCardCodesL %~ (getCardCode asset :)
@@ -2446,4 +2453,6 @@ instance RunMessage GameInternal GameInternal where
       >>= traverseOf (skillTestL . traverse) (runMessage msg)
       >>= traverseOf (skillsL . traverse) (runMessage msg)
       >>= traverseOf (investigatorsL . traverse) (runMessage msg)
+      >>= traverseOf (discardL . traverse) (\c -> c <$ runMessage (maskedMsg (InDiscard (gameLeadInvestigatorId g))) (toCardInstance (gameLeadInvestigatorId g) (EncounterCard c)))
       >>= runGameMessage msg
+   where maskedMsg f = if doNotMask msg then msg else f msg

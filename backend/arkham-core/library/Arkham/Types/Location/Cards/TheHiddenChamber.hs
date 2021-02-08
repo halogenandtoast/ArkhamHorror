@@ -49,13 +49,14 @@ instance ActionRunner env => HasActions env TheHiddenChamber where
 -- to the drawing of the card from underneath.
 instance LocationRunner env => RunMessage env TheHiddenChamber where
   runMessage msg (TheHiddenChamber attrs) = case msg of
-    RevealLocation (Just iid) lid | lid == locationId attrs -> do
+    Revelation iid source | isSource attrs source -> do
       connectedLocation <- getId iid
       name <- getName connectedLocation
       unshiftMessages
-        [ AddDirectConnection lid connectedLocation
-        , AddDirectConnection connectedLocation lid
-        , SetLocationLabel lid $ nameToLabel name <> "HiddenChamber"
+        [ PlaceLocation (toId attrs)
+        , AddDirectConnection (toId attrs) connectedLocation
+        , AddDirectConnection connectedLocation (toId attrs)
+        , SetLocationLabel (toId attrs) $ nameToLabel name <> "HiddenChamber"
         ]
       TheHiddenChamber <$> runMessage msg attrs
     _ -> TheHiddenChamber <$> runMessage msg attrs

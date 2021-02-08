@@ -448,5 +448,4 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
             & deckL
             ?~ PotentialSacrifices cards'
         _ -> throwIO $ InvalidState "incorrect deck"
-
       _ -> BloodOnTheAltar . (`with` metadata) <$> runMessage msg attrs

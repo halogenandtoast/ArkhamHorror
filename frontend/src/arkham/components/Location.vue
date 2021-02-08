@@ -49,6 +49,9 @@
       <div v-if="location.contents.clues > 0" class="pool">
         <PoolItem type="clue" :amount="location.contents.clues" />
       </div>
+      <div v-if="location.contents.cardsUnderneath.length > 0" class="pool">
+        <PoolItem type="card" :amount="location.contents.cardsUnderneath.length" />
+      </div>
     </div>
     <div class="location-asset-column">
       <Asset

@@ -87,6 +87,7 @@ type InvestigatorRunner env
       , HasSet AgendaId env ()
       , HasSet AgendaId env TreacheryCardCode
       , HasSet AloofEnemyId env LocationId
+      , HasSet AssetId env ()
       , HasSet AssetId env (InvestigatorId, UseType)
       , HasSet AssetId env (InvestigatorId, [Trait])
       , HasSet AssetId env InvestigatorId

@@ -309,6 +309,7 @@ type ActionRunner env
     , HasList UsedAbility env ()
     , HasModifiersFor env ()
     , HasSet AccessibleLocationId env LocationId
+    , HasSet AssetId env ()
     , HasSet AssetId env (InvestigatorId, UseType)
     , HasSet ConnectedLocationId env LocationId
     , HasSet EnemyId env InvestigatorId

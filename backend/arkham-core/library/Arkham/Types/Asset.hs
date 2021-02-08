@@ -132,7 +132,10 @@ data Asset
 
 instance ActionRunner env => HasActions env Asset where
   getActions iid window asset = do
-    modifiers' <- getModifiersFor (toSource asset) (toTarget asset) ()
+    inPlay <- member (toId asset) <$> getSet ()
+    modifiers' <- if inPlay
+      then getModifiersFor (toSource asset) (toTarget asset) ()
+      else pure []
     if any isBlank modifiers'
       then getActions iid window (toAttrs asset)
       else defaultGetActions iid window asset
@@ -152,7 +155,10 @@ deriving anyclass instance
 
 instance AssetRunner env => RunMessage env Asset where
   runMessage msg asset = do
-    modifiers' <- getModifiersFor (toSource asset) (toTarget asset) ()
+    inPlay <- member (toId asset) <$> getSet ()
+    modifiers' <- if inPlay
+      then getModifiersFor (toSource asset) (toTarget asset) ()
+      else pure []
     if any isBlank modifiers'
       then runMessage (Blanked msg) asset
       else defaultRunMessage msg asset

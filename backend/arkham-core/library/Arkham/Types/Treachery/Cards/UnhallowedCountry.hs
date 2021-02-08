@@ -6,9 +6,11 @@ where
 
 import Arkham.Import
 
+import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
+import qualified Data.UUID as UUID
 
 newtype UnhallowedCountry = UnhallowedCountry TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -16,16 +18,24 @@ newtype UnhallowedCountry = UnhallowedCountry TreacheryAttrs
 unhallowedCountry :: TreacheryId -> a -> UnhallowedCountry
 unhallowedCountry uuid _ = UnhallowedCountry $ baseAttrs uuid "02088"
 
-instance HasId (Maybe OwnerId) env AssetId => HasModifiersFor env UnhallowedCountry where
+instance (HasSet Trait env AssetId, HasId (Maybe OwnerId) env AssetId) => HasModifiersFor env UnhallowedCountry where
   getModifiersFor _ (InvestigatorTarget iid) (UnhallowedCountry attrs) =
     pure $ toModifiers
       attrs
       [ CannotPlay [AssetType] | treacheryOnInvestigator iid attrs ]
-  getModifiersFor _ (AssetTarget aid) (UnhallowedCountry attrs) = do
+  getModifiersFor source (AssetTarget aid) (UnhallowedCountry attrs) = do
+    if aid == AssetId
+        (CardId . fromJustNote "ok" $ UUID.fromString
+          "6076bd5a-289b-408e-bca7-d8a9f302acf3"
+        )
+      then error $ show source
+      else pure ()
+    traits <- getSet @Trait aid
     miid <- fmap unOwnerId <$> getId aid
     case miid of
-      Just iid ->
-        pure $ toModifiers attrs [ Blank | treacheryOnInvestigator iid attrs ]
+      Just iid -> pure $ toModifiers
+        attrs
+        [ Blank | treacheryOnInvestigator iid attrs && Ally `member` traits ]
       Nothing -> pure []
   getModifiersFor _ _ _ = pure []
 

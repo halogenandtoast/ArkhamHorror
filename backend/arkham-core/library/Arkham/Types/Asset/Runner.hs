@@ -33,6 +33,7 @@ type AssetRunner env
     , HasId LocationId env InvestigatorId
     , HasRecord env
     , HasSet AccessibleLocationId env LocationId
+    , HasSet AssetId env ()
     , HasSet AssetId env InvestigatorId
     , HasSet BlockedLocationId env ()
     , HasSet ConnectedLocationId env LocationId

@@ -46,11 +46,13 @@
         :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
       />
-      <div v-if="location.contents.clues > 0" class="pool">
-        <PoolItem type="clue" :amount="location.contents.clues" />
-      </div>
-      <div v-if="location.contents.cardsUnderneath.length > 0" class="pool">
-        <PoolItem type="card" :amount="location.contents.cardsUnderneath.length" />
+      <div class="pool">
+        <div v-if="location.contents.clues > 0" class="pool">
+          <PoolItem type="clue" :amount="location.contents.clues" />
+        </div>
+        <div v-if="location.contents.cardsUnderneath.length > 0" class="pool">
+          <PoolItem type="card" :amount="location.contents.cardsUnderneath.length" />
+        </div>
       </div>
     </div>
     <div class="location-asset-column">
@@ -413,5 +415,11 @@ export default defineComponent({
   /deep/ .card {
   width: 60px !important;
   }
+}
+
+.pool {
+  display: flex;
+  align-self: flex-start;
+  align-items: flex-end;
 }
 </style>

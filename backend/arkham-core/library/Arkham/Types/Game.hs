@@ -1220,6 +1220,9 @@ instance HasSet DiscardableAssetId (Game queue) InvestigatorId where
 instance HasSet AssetId (Game queue) EnemyId where
   getSet = getSet <=< getEnemy
 
+instance HasSet AssetId (Game queue) () where
+  getSet _ = keysSet <$> view assetsL
+
 instance HasSet AssetId (Game queue) LocationId where
   getSet = getSet <=< getLocation
 

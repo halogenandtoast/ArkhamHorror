@@ -1,6 +1,7 @@
 module Arkham.Types.Treachery
   ( module Arkham.Types.Treachery
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -96,6 +97,7 @@ deriving anyclass instance
   ( HasCount PlayerCount env ()
   , HasId LocationId env InvestigatorId
   , HasId (Maybe OwnerId) env AssetId
+  , HasSet Trait env AssetId
   , HasSet Trait env LocationId
   , HasSet UniqueEnemyId env ()
   , HasCount ResourceCount env TreacheryId

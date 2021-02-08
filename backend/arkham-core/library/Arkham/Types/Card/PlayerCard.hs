@@ -804,7 +804,7 @@ leatherCoat cardId = (asset cardId "01072" "Leather Coat" 0 Survivor)
   }
 
 scavenging :: CardId -> PlayerCard
-scavenging cardId = (asset cardId "01073" "Scavending" 1 Survivor)
+scavenging cardId = (asset cardId "01073" "Scavenging" 1 Survivor)
   { pcSkills = [SkillIntellect]
   , pcTraits = setFromList [Talent]
   }

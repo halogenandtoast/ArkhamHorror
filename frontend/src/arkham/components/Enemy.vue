@@ -36,12 +36,12 @@
       class="button engage-button"
       @click="$emit('choose', engageAction)"
     >Engage</button>
-    <button
+    <AbilityButton
       v-for="ability in abilities"
       :key="ability"
-      class="button ability-button"
+      :ability="choices[ability]"
       @click="$emit('choose', ability)"
-      >{{abilityLabel(ability)}}</button>
+      />
     <div class="pool">
       <PoolItem type="health" :amount="enemy.contents.damage" />
       <PoolItem v-if="enemy.contents.doom > 0" type="doom" :amount="enemy.contents.doom" />
@@ -53,14 +53,15 @@
 import { defineComponent, computed } from 'vue'
 import { Game } from '@/arkham/types/Game'
 import * as ArkhamGame from '@/arkham/types/Game'
-import { MessageType } from '@/arkham/types/Message'
+import { Message, MessageType } from '@/arkham/types/Message'
 import PoolItem from '@/arkham/components/PoolItem.vue'
+import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Treachery from '@/arkham/components/Treachery.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import * as Arkham from '@/arkham/types/Enemy'
 
 export default defineComponent({
-  components: { PoolItem, Treachery, Asset },
+  components: { PoolItem, Treachery, AbilityButton, Asset },
   props: {
     game: { type: Object as () => Game, required: true },
     enemy: { type: Object as () => Arkham.Enemy, required: true },
@@ -165,15 +166,31 @@ export default defineComponent({
         .findIndex((c) => c.tag === MessageType.ENGAGE_ENEMY && c.contents[1] === id.value);
     })
 
-    function abilityLabel(idx: number) {
-      return choices.value[idx].contents[1].type.contents[1];
+    function isActivate(v: Message) {
+      if (v.tag !== 'ActivateCardAbilityAction') {
+        return false
+      }
+
+      const { tag, contents } = v.contents[1].source;
+
+      if (tag === 'EnemySource' && contents === id.value) {
+        return true
+      }
+
+      if (tag === 'ProxySource' && contents[0].tag === 'EnemySource' && contents[0].contents === id.value) {
+        return true
+      }
+
+      return false
     }
 
     const abilities = computed(() => {
       return choices
         .value
         .reduce<number[]>((acc, v, i) => {
-          if (v.tag === 'ActivateCardAbilityAction' && v.contents[1].source.tag === 'EnemySource' && v.contents[1].source.contents === id.value) {
+          if (v.tag === 'Run' && isActivate(v.contents[0])) {
+            return [...acc, i];
+          } else if (isActivate(v)) {
             return [...acc, i];
           }
 
@@ -181,7 +198,7 @@ export default defineComponent({
         }, []);
     })
 
-    return { abilities, abilityLabel, engageAction, fightAction, evadeAction, cardAction, image }
+    return { abilities, choices, engageAction, fightAction, evadeAction, cardAction, image }
   }
 })
 </script>
@@ -251,15 +268,6 @@ export default defineComponent({
   color: #fff;
   border-radius: 4px;
   border: 1px solid #ff00ff;
-}
-
-.ability-button {
-  background-color: #555;
-  &:before {
-    font-family: "arkham";
-    content: "\0049";
-    margin-right: 5px;
-  }
 }
 
 ::v-deep .treachery {

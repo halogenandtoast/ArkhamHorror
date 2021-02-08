@@ -171,8 +171,24 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs whe
         pure $ a & usesL .~ Uses useType' (max 0 (m - n))
       _ -> error "Trying to use the wrong use type"
     AttachAsset aid target | aid == assetId -> case target of
-      LocationTarget lid -> pure $ a & locationL ?~ lid
-      EnemyTarget eid -> pure $ a & enemyL ?~ eid
+      LocationTarget lid ->
+        pure
+          $ a
+          & investigatorL
+          .~ Nothing
+          & enemyL
+          .~ Nothing
+          & locationL
+          ?~ lid
+      EnemyTarget eid ->
+        pure
+          $ a
+          & investigatorL
+          .~ Nothing
+          & locationL
+          .~ Nothing
+          & enemyL
+          ?~ eid
       _ -> error "Cannot attach asset to that type"
     RemoveFromGame target | a `isTarget` target ->
       a <$ unshiftMessage (RemovedFromPlay $ toSource a)

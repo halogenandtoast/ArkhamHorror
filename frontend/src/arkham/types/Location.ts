@@ -41,6 +41,7 @@ export interface LocationContents {
   label: string;
   id: string;
   clues: number;
+  doom: number;
   shroud: number;
   revealed: boolean;
   investigators: string[];
@@ -58,6 +59,7 @@ export const locationContentsDecoder = JsonDecoder.object<LocationContents>(
     label: JsonDecoder.string,
     id: JsonDecoder.string,
     clues: JsonDecoder.number,
+    doom: JsonDecoder.number,
     shroud: JsonDecoder.number,
     revealed: JsonDecoder.boolean,
     investigators: JsonDecoder.array<string>(JsonDecoder.string, 'InvestigatorId[]'),

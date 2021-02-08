@@ -48,7 +48,7 @@ instance EnemyRunner env => RunMessage env ServantOfManyMouths where
             [ TargetLabel
                 (LocationTarget lid)
                 [DiscoverCluesAtLocation iid lid 1 Nothing]
-            | lid <- locationIds
+            | lid <- locationsWithClues
             ]
           )
         )

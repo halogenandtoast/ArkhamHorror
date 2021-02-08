@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.Schoolhouse_213
   ( schoolhouse_213
   , Schoolhouse_213(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -30,8 +29,7 @@ instance HasModifiersFor env Schoolhouse_213 where
 
 
 instance ActionRunner env => HasActions env Schoolhouse_213 where
-  getActions iid window (Schoolhouse_213 attrs) = getActions iid window attrs
-
+  getActions = withDrawCardUnderneathAction
 
 instance LocationRunner env => RunMessage env Schoolhouse_213 where
   runMessage msg l@(Schoolhouse_213 attrs) = case msg of

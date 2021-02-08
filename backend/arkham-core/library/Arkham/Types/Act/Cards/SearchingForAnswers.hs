@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.SearchingForAnswers
   ( SearchingForAnswers(..)
   , searchingForAnswers
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -33,6 +32,7 @@ instance ActRunner env => RunMessage env SearchingForAnswers where
         ([ RevealLocation Nothing lid | lid <- unrevealedLocationIds ]
         <> [ MoveAllCluesTo (LocationTarget hiddenChamber)
            , CreateEnemyAt silasBishop hiddenChamber
+           , NextAct aid "02200"
            ]
         )
     _ -> SearchingForAnswers <$> runMessage msg attrs

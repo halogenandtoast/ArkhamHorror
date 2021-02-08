@@ -235,7 +235,8 @@ getModifiedSanity attrs@InvestigatorAttrs {..} = do
   applyModifier (SanityModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
+removeFromSlots
+  :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = fmap (map (removeIfMatches aid))
 
 fitsAvailableSlots :: [SlotType] -> [Trait] -> InvestigatorAttrs -> Bool
@@ -585,6 +586,11 @@ hasModifier InvestigatorAttrs { investigatorId } m =
           (InvestigatorTarget investigatorId)
           ()
 
+isForced :: Message -> Bool
+isForced (ActivateCardAbilityAction _ Ability { abilityType }) =
+  abilityType == ForcedAbility
+isForced _ = False
+
 runInvestigatorMessage
   :: ( InvestigatorRunner env
      , MonadReader env m
@@ -879,7 +885,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       (investigatorDefeated || investigatorResigned)
     -> a <$ unshiftMessages
       ([ CheckWindow iid [WhenWouldTakeDamage source (toTarget a)]
-       | damage > 0 || horror > 0
+       | damage > 0
+       ]
+      <> [ CheckWindow iid [WhenWouldTakeHorror source (toTarget a)]
+       | horror > 0
        ]
       <> [InvestigatorDamage iid source damage horror, CheckDefeated]
       <> [After (InvestigatorTakeDamage iid source damage horror)]
@@ -1448,18 +1457,21 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     actions <- fmap concat <$> for windows $ \window -> getActions iid window ()
     playableCards <- getPlayableCards a windows
     if not (null playableCards) || not (null actions)
-      then a <$ unshiftMessage
-        (chooseOne iid
-        $ [ Run
-              [ PayCardCost iid (getCardId c)
-              , PlayCard iid (getCardId c) Nothing False
-              , CheckWindow iid windows
-              ]
-          | c <- playableCards
-          ]
-        <> map (Run . (: [CheckWindow iid windows])) actions
-        <> [Continue "Skip playing fast cards or using reactions"]
-        )
+      then if any isForced actions
+        then a <$ unshiftMessage
+          (chooseOne iid $ map (Run . (: [CheckWindow iid windows])) actions)
+        else a <$ unshiftMessage
+          (chooseOne iid
+          $ [ Run
+                [ PayCardCost iid (getCardId c)
+                , PlayCard iid (getCardId c) Nothing False
+                , CheckWindow iid windows
+                ]
+            | c <- playableCards
+            ]
+          <> map (Run . (: [CheckWindow iid windows])) actions
+          <> [Continue "Skip playing fast cards or using reactions"]
+          )
       else pure a
   SpendActions iid _ n | iid == investigatorId ->
     pure $ a & remainingActionsL %~ max 0 . subtract n

@@ -594,13 +594,10 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
       pure $ a & engagedInvestigatorsL .~ singleton iid
     MoveTo iid lid | iid `elem` enemyEngagedInvestigators -> do
       keywords <- getModifiedKeywords a
-      if Keyword.Massive `elem` keywords
-        then pure a
-        else do
-          willMove <- canEnterLocation enemyId lid
-          if willMove
-            then pure $ a & locationL .~ lid
-            else a <$ unshiftMessage (DisengageEnemy iid enemyId)
+      willMove <- canEnterLocation enemyId lid
+      if Keyword.Massive `notElem` keywords && willMove
+        then pure $ a & locationL .~ lid
+        else a <$ unshiftMessage (DisengageEnemy iid enemyId)
     AfterEnterLocation iid lid | lid == enemyLocation -> do
       keywords <- getModifiedKeywords a
       when

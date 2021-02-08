@@ -1,7 +1,6 @@
 module Arkham.Types.Agenda
   ( module Arkham.Types.Agenda
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -42,6 +41,7 @@ allAgendas = mapFrom
   , OutOfTime' outOfTime
   , StrangeDisappearances' strangeDisappearances
   , TheOldOnesHunger' theOldOnesHunger
+  , FeedTheBeast' feedTheBeast
   , ReturnToPredatorOrPrey' returnToPredatorOrPrey
   , ACreatureOfTheBayou' aCreatureOfTheBayou
   , TheRougarouFeeds' theRougarouFeeds
@@ -82,6 +82,7 @@ data Agenda
   | OutOfTime' OutOfTime
   | StrangeDisappearances' StrangeDisappearances
   | TheOldOnesHunger' TheOldOnesHunger
+  | FeedTheBeast' FeedTheBeast
   | ReturnToPredatorOrPrey' ReturnToPredatorOrPrey
   | ACreatureOfTheBayou' ACreatureOfTheBayou
   | TheRougarouFeeds' TheRougarouFeeds

@@ -42,10 +42,6 @@ instance HasId (Maybe StoryAssetId) env CardCode => HasModifiersFor env TheHidde
 instance ActionRunner env => HasActions env TheHiddenChamber where
   getActions iid window (TheHiddenChamber attrs) = getActions iid window attrs
 
--- N.B. we handle this in a sort of hacky way, because the reveal should
--- be triggered from an investigator action, we check which location they
--- are currently at. It would likely to be better to tie this directly
--- to the drawing of the card from underneath.
 instance LocationRunner env => RunMessage env TheHiddenChamber where
   runMessage msg (TheHiddenChamber attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
@@ -58,6 +54,8 @@ instance LocationRunner env => RunMessage env TheHiddenChamber where
         , SetLocationLabel (toId attrs) $ nameToLabel name <> "HiddenChamber"
         ]
       TheHiddenChamber <$> runMessage msg attrs
+    -- Revealing will cause the other location to drop it's known connections
+    -- So we must queue up to add it back
     RevealLocation _ lid | lid == locationId attrs -> do
       unshiftMessages $ map
         (`AddDirectConnection` toId attrs)

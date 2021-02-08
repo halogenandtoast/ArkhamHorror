@@ -888,8 +888,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
        | damage > 0
        ]
       <> [ CheckWindow iid [WhenWouldTakeHorror source (toTarget a)]
-       | horror > 0
-       ]
+         | horror > 0
+         ]
       <> [InvestigatorDamage iid source damage horror, CheckDefeated]
       <> [After (InvestigatorTakeDamage iid source damage horror)]
       <> [ CheckWindow iid [WhenDealtHorror source (toTarget a)]
@@ -908,8 +908,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             (InvestigatorDirectDamage iid source damage horror)
         else a <$ unshiftMessages
           ([ CheckWindow iid [WhenWouldTakeDamage source (toTarget a)]
-           | damage > 0 || horror > 0
+           | damage > 0
            ]
+          <> [ CheckWindow iid [WhenWouldTakeHorror source (toTarget a)]
+             | horror > 0
+             ]
           <> [ InvestigatorDoAssignDamage
                iid
                source

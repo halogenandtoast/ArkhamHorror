@@ -35,7 +35,6 @@ instance TreacheryRunner env => RunMessage env PsychopompsSong where
         InvestigatorDamage iid' _ n _ | iid' == iid -> n > 0
         InvestigatorDoAssignDamage iid' _ _ n _ [] [] | iid' == iid -> n > 0
         _ -> False
-      _ <- error $ show mMsg
       case mMsg of
         Just damageMsg -> do
           let

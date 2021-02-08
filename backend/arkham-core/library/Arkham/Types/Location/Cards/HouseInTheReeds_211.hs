@@ -28,8 +28,7 @@ instance HasModifiersFor env HouseInTheReeds_211 where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env HouseInTheReeds_211 where
-  getActions iid window (HouseInTheReeds_211 attrs) =
-    getActions iid window attrs
+  getActions = withDrawCardUnderneathAction
 
 instance LocationRunner env => RunMessage env HouseInTheReeds_211 where
   runMessage msg (HouseInTheReeds_211 attrs) =

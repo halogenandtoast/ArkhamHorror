@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.TheHiddenChamber
   ( theHiddenChamber
   , TheHiddenChamber(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -58,5 +57,10 @@ instance LocationRunner env => RunMessage env TheHiddenChamber where
         , AddDirectConnection connectedLocation (toId attrs)
         , SetLocationLabel (toId attrs) $ nameToLabel name <> "HiddenChamber"
         ]
+      TheHiddenChamber <$> runMessage msg attrs
+    RevealLocation _ lid | lid == locationId attrs -> do
+      unshiftMessages $ map
+        (`AddDirectConnection` toId attrs)
+        (setToList $ locationConnectedLocations attrs)
       TheHiddenChamber <$> runMessage msg attrs
     _ -> TheHiddenChamber <$> runMessage msg attrs

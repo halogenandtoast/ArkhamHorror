@@ -62,6 +62,7 @@ data Window
   | WhenWouldFailSkillTest Who
   | WhenWouldRevealChaosToken Source Who
   | WhenWouldTakeDamage Source Target
+  | WhenWouldTakeHorror Source Target
   | InHandWindow InvestigatorId Window
   | InDiscardWindow InvestigatorId Window
   deriving stock (Show, Generic, Eq)

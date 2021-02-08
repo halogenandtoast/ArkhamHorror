@@ -1,7 +1,6 @@
 module Arkham.Types.Treachery
   ( module Arkham.Types.Treachery
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -53,6 +52,7 @@ data Treachery
   | BeyondTheVeil' BeyondTheVeil
   | LightOfAforgomon' LightOfAforgomon
   | UnhallowedCountry' UnhallowedCountry
+  | SordidAndSilent' SordidAndSilent
   | EagerForDeath' EagerForDeath
   | CursedLuck' CursedLuck
   | TwistOfFate' TwistOfFate
@@ -184,6 +184,7 @@ allTreacheries = mapFromList
   , ("02084", (BeyondTheVeil' .) . beyondTheVeil)
   , ("02085", (LightOfAforgomon' .) . lightOfAforgomon)
   , ("02088", (UnhallowedCountry' .) . unhallowedCountry)
+  , ("02089", (SordidAndSilent' .) . sordidAndSilent)
   , ("02091", (EagerForDeath' .) . eagerForDeath)
   , ("02092", (CursedLuck' .) . cursedLuck)
   , ("02093", (TwistOfFate' .) . twistOfFate)

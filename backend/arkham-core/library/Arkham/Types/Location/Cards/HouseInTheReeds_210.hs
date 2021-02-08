@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.HouseInTheReeds_210
   ( houseInTheReeds_210
   , HouseInTheReeds_210(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -46,6 +45,8 @@ instance LocationRunner env => RunMessage env HouseInTheReeds_210 where
         (toTarget attrs)
         (EncounterCardMatchByType (EnemyType, Just Nightgaunt))
       HouseInTheReeds_210 <$> runMessage msg attrs
-    FoundEncounterCard _iid target card | isTarget attrs target ->
-      l <$ unshiftMessage (SpawnEnemyAt (EncounterCard card) (toId attrs))
+    FoundEncounterCard _iid target card | isTarget attrs target -> do
+      villageCommonsId <- fromJustNote "missing village commons"
+        <$> getId (LocationWithTitle "Village Commons")
+      l <$ unshiftMessage (SpawnEnemyAt (EncounterCard card) villageCommonsId)
     _ -> HouseInTheReeds_210 <$> runMessage msg attrs

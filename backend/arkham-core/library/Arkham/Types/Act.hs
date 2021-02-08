@@ -31,6 +31,7 @@ data Act
   | Run' Run
   | GetTheEngineRunning' GetTheEngineRunning
   | SearchingForAnswers' SearchingForAnswers
+  | TheChamberOfTheBeast' TheChamberOfTheBeast
   | MysteriousGateway' MysteriousGateway
   | FindingLadyEsprit' FindingLadyEsprit
   | HuntingTheRougarou' HuntingTheRougarou
@@ -86,6 +87,7 @@ allActs = mapFrom
   , Run' run
   , GetTheEngineRunning' getTheEngineRunning
   , SearchingForAnswers' searchingForAnswers
+  , TheChamberOfTheBeast' theChamberOfTheBeast
   , MysteriousGateway' mysteriousGateway
   , FindingLadyEsprit' findingLadyEsprit
   , HuntingTheRougarou' huntingTheRougarou

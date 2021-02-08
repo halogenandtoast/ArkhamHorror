@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.HuntingNightgaunt
   ( huntingNightgaunt
   , HuntingNightgaunt(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -18,7 +17,7 @@ huntingNightgaunt = HuntingNightgaunt . uncurry4 (baseAttrs "01172")
 
 instance HasModifiersFor env HuntingNightgaunt where
   getModifiersFor (SkillTestSource _ _ _ (Just Evade)) (DrawnTokenTarget _) (HuntingNightgaunt a@EffectAttrs {..})
-    = pure [toModifier a DoubleNegativeModifiersOnTokens]
+    = pure $ toModifiers a [DoubleNegativeModifiersOnTokens]
   getModifiersFor _ _ _ = pure []
 
 instance HasQueue env => RunMessage env HuntingNightgaunt where

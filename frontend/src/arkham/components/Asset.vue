@@ -6,13 +6,12 @@
       class="card"
       @click="$emit('choose', cardAction)"
     />
-    <button
+    <AbilityButton
       v-for="ability in abilities"
       :key="ability"
-      class="button"
-      :class="{ 'ability-button': isActionAbility(ability), 'fast-ability-button': isFastActionAbility(ability), 'reaction-ability-button': isReactionAbility(ability) }"
+      :ability="choices[ability]"
       @click="$emit('choose', ability)"
-      >{{abilityLabel(ability)}}</button>
+      />
     <div v-if="hasPool" class="pool">
       <PoolItem
         v-if="asset.contents.uses && asset.contents.uses.amount > 0"
@@ -49,10 +48,11 @@ import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { Message, MessageType } from '@/arkham/types/Message';
 import PoolItem from '@/arkham/components/PoolItem.vue';
+import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import * as Arkham from '@/arkham/types/Asset';
 
 export default defineComponent({
-  components: { PoolItem },
+  components: { PoolItem, AbilityButton },
   props: {
     game: { type: Object as () => Game, required: true },
     asset: { type: Object as () => Arkham.Asset, required: true },
@@ -123,41 +123,6 @@ export default defineComponent({
     const healthAction = computed(() => choices.value.findIndex(canAdjustHealth))
     const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
 
-    function abilityLabel(idx: number) {
-      const label = choices.value[idx].tag === 'Run'
-        ? choices.value[idx].contents[0].contents[1].type.contents[0]
-        : choices.value[idx].contents[1].type.contents[0]
-      if (label) {
-        return typeof label === "string" ? label : label.contents
-      }
-
-      return ""
-    }
-
-    function isActionAbility(idx: number) {
-      if (choices.value[idx].tag == 'Run') {
-        return choices.value[idx].contents[0].contents[1].type.tag === "ActionAbility";
-      } else {
-        return choices.value[idx].contents[1].type.tag === "ActionAbility";
-      }
-    }
-
-    function isFastActionAbility(idx: number) {
-      if (choices.value[idx].tag == 'Run') {
-        return choices.value[idx].contents[0].contents[1].type.tag === "FastAbility";
-      } else {
-        return choices.value[idx].contents[1].type.tag === "FastAbility";
-      }
-    }
-
-    function isReactionAbility(idx: number) {
-      if (choices.value[idx].tag == 'Run') {
-        return choices.value[idx].contents[0].contents[1].type.tag === "ReactionAbility";
-      } else {
-        return choices.value[idx].contents[1].type.tag === "ReactionAbility";
-      }
-    }
-
     function isActivate(v: Message) {
       if (v.tag !== 'ActivateCardAbilityAction') {
         return false
@@ -190,7 +155,7 @@ export default defineComponent({
         }, []);
     })
 
-    return { id, hasPool, exhausted, image, abilities, abilityLabel, sanityAction, healthAction, cardAction, isActionAbility, isFastActionAbility, isReactionAbility }
+    return { id, hasPool, exhausted, image, abilities, sanityAction, healthAction, cardAction, choices }
   }
 })
 </script>
@@ -231,32 +196,4 @@ export default defineComponent({
   border-radius: 4px;
   border: 1px solid #ff00ff;
 }
-
-.ability-button {
-  background-color: #555;
-  &:before {
-    font-family: "arkham";
-    content: "\0049";
-    margin-right: 5px;
-  }
-}
-
-.fast-ability-button {
-  background-color: #555;
-  &:before {
-    font-family: "arkham";
-    content: "\0075";
-    margin-right: 5px;
-  }
-}
-
-.reaction-ability-button {
-  background-color: #A02ECB;
-  &:before {
-    font-family: "arkham";
-    content: "\0059";
-    margin-right: 5px;
-  }
-}
-
 </style>

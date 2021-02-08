@@ -32,12 +32,12 @@
         class="button investigate-button"
         @click="doInvestigate"
       >Investigate</button>
-      <button
+      <AbilityButton
         v-for="ability in abilities"
         :key="ability"
-        :class="{button: true, 'ability-button': singleAction(ability), 'double-ability-button': doubleAction(ability), 'fast-ability-button': fastAction(ability) }"
+        :ability="choices[ability]"
         @click="$emit('choose', ability)"
-        >{{abilityLabel(ability)}}</button>
+        />
       <Treachery
         v-for="treacheryId in location.contents.treacheries"
         :key="treacheryId"
@@ -49,6 +49,9 @@
       <div class="pool">
         <div v-if="location.contents.clues > 0" class="pool">
           <PoolItem type="clue" :amount="location.contents.clues" />
+        </div>
+        <div v-if="location.contents.doom > 0" class="pool">
+          <PoolItem type="doom" :amount="location.contents.doom" />
         </div>
         <div v-if="location.contents.cardsUnderneath.length > 0" class="pool">
           <PoolItem type="card" :amount="location.contents.cardsUnderneath.length" />
@@ -79,12 +82,12 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue';
 import { Game } from '@/arkham/types/Game';
-import { Cost } from '@/arkham/types/Cost';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
+import AbilityButton from '@/arkham/components/AbilityButton.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import * as Arkham from '@/arkham/types/Location';
 
@@ -94,6 +97,7 @@ export default defineComponent({
     Treachery,
     Asset,
     PoolItem,
+    AbilityButton,
   },
   props: {
     game: { type: Object as () => Game, required: true },
@@ -111,6 +115,13 @@ export default defineComponent({
 
     const id = computed(() => props.location.contents.id)
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+
+    const targetAction = computed(() => {
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.TARGET_LABEL
+          && c.contents[0].contents === id.value);
+    })
 
     const attachTreacheryToLocationAction = computed(() => {
       return choices
@@ -180,6 +191,10 @@ export default defineComponent({
         return createEnemyAtAction.value;
       }
 
+      if (targetAction.value !== -1) {
+        return targetAction.value;
+      }
+
       return moveAction.value;
     })
 
@@ -188,10 +203,6 @@ export default defineComponent({
         .value
         .findIndex((c) => c.tag === MessageType.INVESTIGATE && c.contents[1] === id.value);
     })
-
-    function abilityLabel(idx: number) {
-      return choices.value[idx].contents[1].type.contents[0];
-    }
 
     const abilities = computed(() => {
       return choices
@@ -233,47 +244,16 @@ export default defineComponent({
 
     const portrait = (cardCode: string) => `/img/arkham/portraits/${cardCode}.jpg`
 
-    function singleAction(idx: number) {
-      if (choices.value[idx].contents[1].type.tag !== "ActionAbility") {
-        return false
-      }
-      const { contents } = choices.value[idx].contents[1].type.contents[1]
-      if (typeof contents.some == 'function') {
-        return contents.some((cost: Cost) => cost.tag == "ActionCost" && cost.contents == 1)
-      } else {
-        return contents === 1
-      }
-    }
-
-    function doubleAction(idx: number) {
-      if (choices.value[idx].contents[1].type.tag !== "ActionAbility") {
-        return false
-      }
-      const { contents } = choices.value[idx].contents[1].type.contents[1]
-      if (typeof contents.some == 'function') {
-        return contents.some((cost: Cost) => cost.tag == "ActionCost" && cost.contents == 2)
-      } else {
-        return contents === 2
-      }
-    }
-
-    function fastAction(idx: number) {
-      return choices.value[idx].contents[1].type.tag === "FastAbility"
-    }
-
     return {
       portrait,
       doInvestigate,
       blocked,
       enemies,
       abilities,
-      abilityLabel,
       investigateAction,
       cardAction,
       image,
-      singleAction,
-      doubleAction,
-      fastAction
+      choices,
     }
   }
 })

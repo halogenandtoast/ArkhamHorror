@@ -6,12 +6,20 @@
       @click="$emit('choose', interactAction)"
       :src="image"
     />
-    <button
+    <AbilityButton
       v-for="ability in abilities"
       :key="ability"
-      class="button ability-button"
+      :ability="choices[ability]"
       @click="$emit('choose', ability)"
-      >{{abilityLabel(ability)}}</button>
+      />
+    <Treachery
+      v-for="treacheryId in agenda.contents.treacheries"
+      :key="treacheryId"
+      :treachery="game.currentData.treacheries[treacheryId]"
+      :game="game"
+      :investigatorId="investigatorId"
+      @choose="$emit('choose', $event)"
+    />
     <div class="pool">
       <PoolItem
         type="doom"
@@ -26,11 +34,13 @@ import { defineComponent, computed } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { Message, MessageType } from '@/arkham/types/Message';
+import AbilityButton from '@/arkham/components/AbilityButton.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
+import Treachery from '@/arkham/components/Treachery.vue';
 import * as Arkham from '@/arkham/types/Agenda';
 
 export default defineComponent({
-  components: { PoolItem },
+  components: { PoolItem, AbilityButton, Treachery },
   props: {
     agenda: { type: Object as () => Arkham.Agenda, required: true },
     game: { type: Object as () => Game, required: true },
@@ -65,15 +75,6 @@ export default defineComponent({
 
     const interactAction = computed(() => choices.value.findIndex(canInteract));
 
-    function abilityLabel(idx: number) {
-      const label = choices.value[idx].contents[1].type.contents[0]
-      if (label) {
-        return typeof label === "string" ? label : label.contents
-      }
-
-      return ""
-    }
-
     const abilities = computed(() => {
       return choices
         .value
@@ -86,7 +87,7 @@ export default defineComponent({
         }, [])
     })
 
-    return { abilities, abilityLabel, interactAction, image, id }
+    return { abilities, choices, interactAction, image, id }
   }
 })
 </script>
@@ -131,12 +132,10 @@ export default defineComponent({
   border: 1px solid #ff00ff;
 }
 
-.ability-button {
-  background-color: #555;
-  &:before {
-    font-family: "arkham";
-    content: "\0049";
-    margin-right: 5px;
-  }
+::v-deep .treachery {
+  object-fit: cover;
+  object-position: 0 -74px;
+  height: 68px;
+  margin-top: 2px;
 }
 </style>

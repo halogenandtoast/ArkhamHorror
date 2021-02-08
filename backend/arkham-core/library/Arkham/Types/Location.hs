@@ -1,6 +1,7 @@
 module Arkham.Types.Location
   ( module Arkham.Types.Location
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -24,6 +25,9 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.Query
 import Arkham.Types.TreacheryId
+
+createLocation :: IsCard a => a -> Location
+createLocation a = lookupLocation (LocationId $ getCardCode a)
 
 data Location
   = Study' Study

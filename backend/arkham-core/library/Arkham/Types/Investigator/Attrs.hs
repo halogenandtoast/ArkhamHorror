@@ -11,13 +11,9 @@ import Arkham.Types.CommitRestriction
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
 import Arkham.Types.Trait
+import Arkham.Types.EntityInstance
 import Control.Monad.Fail
 import qualified Data.HashSet as HashSet
-import Arkham.Types.Treachery
-import Arkham.Types.Enemy
-import Arkham.Types.Skill
-import Arkham.Types.Event
-import Arkham.Types.Asset
 
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorName :: Text
@@ -545,62 +541,34 @@ instance HasModifiersFor env InvestigatorAttrs where
 instance ActionRunner env => HasActions env InvestigatorAttrs where
   getActions iid window attrs | iid == investigatorId attrs = concat <$> for
     (attrs ^.. handL . traverse . _PlayerCard)
-    (getActions iid (InHandWindow iid window) . toCardInstance iid)
+    (getActions iid (InHandWindow iid window) . toCardInstance iid . PlayerCard)
   getActions _ _ _ = pure []
 
 instance HasTokenValue env InvestigatorAttrs where
   getTokenValue _ _ _ = error "should not be asking this here"
 
-data EntityInstance = AssetInstance Asset | EventInstance Event | SkillInstance Skill | EnemyInstance Enemy | TreacheryInstance Treachery
-
-instance InvestigatorRunner env => RunMessage env EntityInstance where
-  runMessage msg (AssetInstance x) = AssetInstance <$> runMessage msg x
-  runMessage msg (EnemyInstance x) = EnemyInstance <$> runMessage msg x
-  runMessage msg (EventInstance x) = EventInstance <$> runMessage msg x
-  runMessage msg (SkillInstance x) = SkillInstance <$> runMessage msg x
-  runMessage msg (TreacheryInstance x) = TreacheryInstance <$> runMessage msg x
-
-instance ActionRunner env => HasActions env EntityInstance where
-  getActions iid window (AssetInstance x) = getActions iid window x
-  getActions iid window (EnemyInstance x) = getActions iid window x
-  getActions iid window (EventInstance x) = getActions iid window x
-  getActions iid window (SkillInstance x) = getActions iid window x
-  getActions iid window (TreacheryInstance x) = getActions iid window x
-
-toCardInstance :: InvestigatorId -> PlayerCard -> EntityInstance
-toCardInstance iid card = case pcCardType card of
-  AssetType -> AssetInstance $ createAsset card
-  PlayerEnemyType -> EnemyInstance $ createEnemy card
-  EventType -> EventInstance $ createEvent card iid
-  SkillType -> SkillInstance $ createSkill card iid
-  PlayerTreacheryType -> TreacheryInstance $ createTreachery card (Just iid)
-
--- UseCardAbility and Revelation are special and need access to the original instance
--- therefor we do not mask with In{Hand,Discard,etc.}
-doNotMask :: Message -> Bool
-doNotMask UseCardAbility{} = True
-doNotMask Revelation{} = True
-doNotMask _ = False
-
 instance InvestigatorRunner env => RunMessage env InvestigatorAttrs where
   runMessage msg i | doNotMask msg = do
     traverseOf_
       (handL . traverse . _PlayerCard)
-      (runMessage msg . toCardInstance (toId i))
+      (runMessage msg . toCardInstance (toId i) . PlayerCard)
       i
     traverseOf_
       (discardL . traverse)
-      (runMessage msg . toCardInstance (toId i))
+      (runMessage msg . toCardInstance (toId i) . PlayerCard)
       i
     runInvestigatorMessage msg i
   runMessage msg i = do
     traverseOf_
       (handL . traverse . _PlayerCard)
-      (runMessage (InHand (toId i) msg) . toCardInstance (toId i))
+      (runMessage (InHand (toId i) msg) . toCardInstance (toId i) . PlayerCard)
       i
     traverseOf_
       (discardL . traverse)
-      (runMessage (InDiscard (toId i) msg) . toCardInstance (toId i))
+      (runMessage (InDiscard (toId i) msg)
+      . toCardInstance (toId i)
+      . PlayerCard
+      )
       i
     runInvestigatorMessage msg i
 
@@ -729,7 +697,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & engagedEnemiesL %~ deleteSet eid
   EnemyEngageInvestigator eid iid | iid == investigatorId ->
     pure $ a & engagedEnemiesL %~ insertSet eid
-  EnemyDefeated eid _ _ _ _ _ -> pure $ a & engagedEnemiesL %~ deleteSet eid
   RemoveEnemy eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
   TakeControlOfAsset iid aid | iid == investigatorId ->
     pure $ a & assetsL %~ insertSet aid
@@ -1586,8 +1553,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 ]
               else choices
             )
-      actions <- fmap concat <$> for cards $ \card' ->
-        getActions iid (WhenAmongSearchedCards You) (toCardInstance iid card')
+      actions <- fmap concat <$> for cards $ \card' -> getActions
+        iid
+        (WhenAmongSearchedCards You)
+        (toCardInstance iid $ PlayerCard card')
       -- TODO: This is for astounding revelation and only one research action is possible
       -- so we are able to short circuit here, but we may have additional cards in the
       -- future so we may want to make this more versatile

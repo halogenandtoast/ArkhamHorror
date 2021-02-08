@@ -63,6 +63,7 @@ data Window
   | WhenWouldRevealChaosToken Source Who
   | WhenWouldTakeDamage Source Target
   | InHandWindow InvestigatorId Window
+  | InDiscardWindow InvestigatorId Window
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

@@ -24,12 +24,6 @@ instance (HasSet Trait env AssetId, HasId (Maybe OwnerId) env AssetId) => HasMod
       attrs
       [ CannotPlay [AssetType] | treacheryOnInvestigator iid attrs ]
   getModifiersFor source (AssetTarget aid) (UnhallowedCountry attrs) = do
-    if aid == AssetId
-        (CardId . fromJustNote "ok" $ UUID.fromString
-          "6076bd5a-289b-408e-bca7-d8a9f302acf3"
-        )
-      then error $ show source
-      else pure ()
     traits <- getSet @Trait aid
     miid <- fmap unOwnerId <$> getId aid
     case miid of

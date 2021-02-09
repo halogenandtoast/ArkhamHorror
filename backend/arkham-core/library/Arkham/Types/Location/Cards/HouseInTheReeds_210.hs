@@ -30,7 +30,9 @@ instance HasModifiersFor env HouseInTheReeds_210 where
   getModifiersFor _ (InvestigatorTarget iid) (HouseInTheReeds_210 attrs) =
     pure $ toModifiers
       attrs
-      [ CannotPlay [EventType] | iid `elem` locationInvestigators attrs ]
+      [ CannotPlay [(EventType, mempty)]
+      | iid `elem` locationInvestigators attrs
+      ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env HouseInTheReeds_210 where

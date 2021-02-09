@@ -5,6 +5,7 @@ module Arkham.Types.Investigator.Cards.AshcanPete
 
 import Arkham.Import
 
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
@@ -14,6 +15,8 @@ newtype AshcanPete = AshcanPete InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env AshcanPete where
+  getModifiersFor _ (AssetTarget aid) (AshcanPete a)
+    | aid `member` investigatorAssets a = pure $ toModifiers a [Blank]
   getModifiersFor source target (AshcanPete attrs) =
     getModifiersFor source target attrs
 

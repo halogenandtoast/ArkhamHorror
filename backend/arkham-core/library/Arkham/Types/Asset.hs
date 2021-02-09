@@ -1,8 +1,7 @@
 module Arkham.Types.Asset
   ( module Arkham.Types.Asset
   , module X
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -132,10 +131,7 @@ data Asset
 
 instance ActionRunner env => HasActions env Asset where
   getActions iid window asset = do
-    inPlay <- member (toId asset) <$> getSet ()
-    modifiers' <- if inPlay
-      then getModifiersFor (toSource asset) (toTarget asset) ()
-      else pure []
+    modifiers' <- getModifiersFor (toSource asset) (toTarget asset) ()
     if any isBlank modifiers'
       then getActions iid window (toAttrs asset)
       else defaultGetActions iid window asset
@@ -155,10 +151,8 @@ deriving anyclass instance
 
 instance AssetRunner env => RunMessage env Asset where
   runMessage msg asset = do
-    inPlay <- member (toId asset) <$> getSet ()
-    modifiers' <- if inPlay
-      then getModifiersFor (toSource asset) (toTarget asset) ()
-      else pure []
+    modifiers' <- getModifiersFor (toSource asset) (toTarget asset) ()
+    _ <- error $ show modifiers'
     if any isBlank modifiers'
       then runMessage (Blanked msg) asset
       else defaultRunMessage msg asset

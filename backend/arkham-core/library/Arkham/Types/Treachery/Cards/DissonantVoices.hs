@@ -16,7 +16,9 @@ instance HasModifiersFor env DissonantVoices where
   getModifiersFor _ (InvestigatorTarget iid) (DissonantVoices attrs) =
     pure $ toModifiers
       attrs
-      [ CannotPlay [AssetType, EventType] | treacheryOnInvestigator iid attrs ]
+      [ CannotPlay [(AssetType, mempty), (EventType, mempty)]
+      | treacheryOnInvestigator iid attrs
+      ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env DissonantVoices where

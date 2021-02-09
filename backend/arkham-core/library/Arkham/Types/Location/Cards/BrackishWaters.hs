@@ -29,7 +29,9 @@ instance HasModifiersFor env BrackishWaters where
   getModifiersFor _ (InvestigatorTarget iid) (BrackishWaters attrs) =
     pure $ toModifiers
       attrs
-      [ CannotPlay [AssetType] | iid `elem` locationInvestigators attrs ]
+      [ CannotPlay [(AssetType, mempty)]
+      | iid `elem` locationInvestigators attrs
+      ]
   getModifiersFor _ _ _ = pure []
 
 -- TODO: Cost is an OR and we should be able to capture this

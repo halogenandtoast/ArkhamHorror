@@ -4,12 +4,20 @@ module Arkham.Types.SkillTest
   ( module Arkham.Types.SkillTest
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
 import Arkham.Types.Action (Action)
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.SkillTestResult
 import Arkham.Types.Stats
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.Card.Id
+import Arkham.Types.SkillType
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Source
+import Arkham.Types.Target
+import Arkham.Types.Token
 import qualified Data.HashMap.Strict as HashMap
 import Data.Semigroup
 import System.Environment

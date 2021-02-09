@@ -1,6 +1,5 @@
 module Arkham.Types.Location.Cards.ArkhamWoodsLakeside where
 
-import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import qualified Arkham.Types.EncounterSet as EncounterSet

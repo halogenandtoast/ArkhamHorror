@@ -3,7 +3,6 @@ module Arkham.Types.Effect.Effects.Shrivelling
   , Shrivelling(..)
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Effect.Attrs
 

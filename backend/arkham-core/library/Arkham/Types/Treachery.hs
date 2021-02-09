@@ -2,7 +2,6 @@ module Arkham.Types.Treachery
   ( module Arkham.Types.Treachery
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Trait (Trait)
 import Arkham.Types.Treachery.Attrs

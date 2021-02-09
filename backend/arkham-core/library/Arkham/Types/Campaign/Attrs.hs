@@ -2,7 +2,6 @@
 
 module Arkham.Types.Campaign.Attrs where
 
-import Arkham.Import hiding (log)
 
 import Arkham.Types.Campaign.Runner
 import Arkham.Types.CampaignLog

@@ -3,7 +3,6 @@ module Arkham.Types.Scenario
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Difficulty
 import Arkham.Types.Scenario.Attrs

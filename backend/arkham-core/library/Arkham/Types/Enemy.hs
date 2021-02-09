@@ -3,7 +3,6 @@ module Arkham.Types.Enemy
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Action
 import Arkham.Types.Trait (Trait)

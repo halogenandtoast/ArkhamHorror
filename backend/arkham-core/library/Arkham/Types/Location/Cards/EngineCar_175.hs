@@ -4,7 +4,6 @@ module Arkham.Types.Location.Cards.EngineCar_175
   )
 where
 
-import Arkham.Import
 
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs

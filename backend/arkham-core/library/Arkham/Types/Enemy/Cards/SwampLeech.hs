@@ -4,7 +4,6 @@ module Arkham.Types.Enemy.Cards.SwampLeech
   )
 where
 
-import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Trait

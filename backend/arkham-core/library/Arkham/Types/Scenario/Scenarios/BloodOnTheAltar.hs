@@ -4,7 +4,6 @@ module Arkham.Types.Scenario.Scenarios.BloodOnTheAltar
   )
 where
 
-import Arkham.Import hiding (Cultist)
 
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Difficulty

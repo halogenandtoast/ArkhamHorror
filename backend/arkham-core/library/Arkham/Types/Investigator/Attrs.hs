@@ -3,7 +3,6 @@
 
 module Arkham.Types.Investigator.Attrs where
 
-import Arkham.Import
 
 import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action

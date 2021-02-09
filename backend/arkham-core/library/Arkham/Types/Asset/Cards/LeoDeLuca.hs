@@ -1,6 +1,5 @@
 module Arkham.Types.Asset.Cards.LeoDeLuca where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers

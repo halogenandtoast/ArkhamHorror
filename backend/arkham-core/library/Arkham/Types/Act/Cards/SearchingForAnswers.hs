@@ -3,7 +3,6 @@ module Arkham.Types.Act.Cards.SearchingForAnswers
   , searchingForAnswers
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner

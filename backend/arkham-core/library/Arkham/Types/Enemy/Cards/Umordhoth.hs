@@ -4,7 +4,6 @@ module Arkham.Types.Enemy.Cards.Umordhoth
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers

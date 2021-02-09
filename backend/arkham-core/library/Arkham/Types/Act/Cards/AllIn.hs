@@ -4,7 +4,6 @@ module Arkham.Types.Act.Cards.AllIn
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers

@@ -1,6 +1,5 @@
 module Arkham.Types.Act.Cards.DisruptingTheRitual where
 
-import Arkham.Import
 
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers

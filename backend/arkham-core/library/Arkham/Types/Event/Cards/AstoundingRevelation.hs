@@ -3,7 +3,6 @@ module Arkham.Types.Event.Cards.AstoundingRevelation
   , AstoundingRevelation(..)
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Uses (UseType(..))
 import Arkham.Types.Event.Attrs

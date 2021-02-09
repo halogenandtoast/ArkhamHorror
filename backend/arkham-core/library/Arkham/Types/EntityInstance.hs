@@ -3,7 +3,6 @@ module Arkham.Types.EntityInstance
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Asset
 import Arkham.Types.Enemy

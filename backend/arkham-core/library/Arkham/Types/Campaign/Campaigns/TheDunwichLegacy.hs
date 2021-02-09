@@ -1,6 +1,5 @@
 module Arkham.Types.Campaign.Campaigns.TheDunwichLegacy where
 
-import Arkham.Import
 
 import Arkham.Types.Campaign.Attrs
 import Arkham.Types.Campaign.Runner

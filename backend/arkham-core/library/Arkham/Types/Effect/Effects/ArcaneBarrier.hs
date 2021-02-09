@@ -4,7 +4,6 @@ module Arkham.Types.Effect.Effects.ArcaneBarrier
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Effect.Attrs
 

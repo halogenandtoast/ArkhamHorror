@@ -4,7 +4,6 @@ module Arkham.Types.Event.Cards.ThinkOnYourFeet
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 

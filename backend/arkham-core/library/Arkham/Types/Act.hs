@@ -3,7 +3,6 @@ module Arkham.Types.Act
   , lookupAct
   ) where
 
-import Arkham.Import hiding (fold)
 
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Cards

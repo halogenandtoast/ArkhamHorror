@@ -4,7 +4,6 @@ module Arkham.Types.Treachery.Cards.AlteredBeast
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs

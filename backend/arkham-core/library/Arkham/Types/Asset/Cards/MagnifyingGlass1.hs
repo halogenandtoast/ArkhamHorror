@@ -1,6 +1,5 @@
 module Arkham.Types.Asset.Cards.MagnifyingGlass1 where
 
-import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs

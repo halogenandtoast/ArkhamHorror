@@ -4,7 +4,6 @@ module Arkham.Types.Event.Cards.IveGotAPlan
   )
 where
 
-import Arkham.Import
 
 
 import Arkham.Types.Action

@@ -1,6 +1,5 @@
 module Arkham.Types.Asset.Cards.RabbitsFoot where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner

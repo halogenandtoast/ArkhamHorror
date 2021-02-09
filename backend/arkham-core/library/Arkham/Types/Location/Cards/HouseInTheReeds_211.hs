@@ -3,7 +3,6 @@ module Arkham.Types.Location.Cards.HouseInTheReeds_211
   , HouseInTheReeds_211(..)
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Card.EncounterCardMatcher
 import qualified Arkham.Types.EncounterSet as EncounterSet

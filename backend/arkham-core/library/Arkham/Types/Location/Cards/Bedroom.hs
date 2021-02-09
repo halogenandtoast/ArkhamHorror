@@ -1,6 +1,5 @@
 module Arkham.Types.Location.Cards.Bedroom where
 
-import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import qualified Arkham.Types.EncounterSet as EncounterSet

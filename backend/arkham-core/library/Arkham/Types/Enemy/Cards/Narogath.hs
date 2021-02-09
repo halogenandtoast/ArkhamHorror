@@ -1,6 +1,5 @@
 module Arkham.Types.Enemy.Cards.Narogath where
 
-import Arkham.Import hiding (Cultist)
 
 import Arkham.Types.Action
 import Arkham.Types.Enemy.Attrs

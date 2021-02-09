@@ -3,7 +3,6 @@ module Arkham.Types.Location.Cards.RivertownAbandonedWarehouse
   , rivertownAbandonedWarehouse
   ) where
 
-import Arkham.Import hiding (Cultist)
 
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers

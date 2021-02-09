@@ -4,7 +4,6 @@ module Arkham.Types.Effect.Effects.Burglary
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers

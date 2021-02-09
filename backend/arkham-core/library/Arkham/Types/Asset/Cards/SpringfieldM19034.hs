@@ -4,7 +4,6 @@ module Arkham.Types.Asset.Cards.SpringfieldM19034
   )
 where
 
-import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs

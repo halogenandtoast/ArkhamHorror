@@ -1,6 +1,5 @@
 module Arkham.Types.Enemy.Cards.RelentlessDarkYoung where
 
-import Arkham.Import
 
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner

@@ -3,7 +3,6 @@ module Arkham.Types.Asset.Cards.Adaptable1
   , Adaptable1(..)
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 

@@ -1,6 +1,5 @@
 module Arkham.Types.Location.Cards.ArkhamWoodsGreatWillow where
 
-import Arkham.Import
 
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers

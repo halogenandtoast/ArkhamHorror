@@ -3,7 +3,6 @@ module Arkham.Types.Asset.Cards.DigDeep2
   , digDeep2
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers

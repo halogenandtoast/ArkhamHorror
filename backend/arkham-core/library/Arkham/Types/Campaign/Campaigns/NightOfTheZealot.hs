@@ -1,6 +1,5 @@
 module Arkham.Types.Campaign.Campaigns.NightOfTheZealot where
 
-import Arkham.Import
 
 import Arkham.Types.Campaign.Attrs
 import Arkham.Types.Campaign.Runner

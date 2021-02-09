@@ -3,7 +3,6 @@ module Arkham.Types.Enemy.Cards.HermanCollins
   , hermanCollins
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Action hiding (Ability)
 import Arkham.Types.Enemy.Attrs

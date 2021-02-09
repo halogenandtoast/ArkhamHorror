@@ -1,6 +1,5 @@
 module Arkham.Types.Treachery.Cards.FrozenInFear where
 
-import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Treachery.Attrs

@@ -3,7 +3,6 @@ module Arkham.Types.Location.Cards.BackAlley
   , BackAlley(..)
   ) where
 
-import Arkham.Import
 
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs

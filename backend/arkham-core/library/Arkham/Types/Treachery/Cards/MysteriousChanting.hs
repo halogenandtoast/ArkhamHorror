@@ -1,6 +1,5 @@
 module Arkham.Types.Treachery.Cards.MysteriousChanting where
 
-import Arkham.Import hiding (Cultist)
 
 import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Trait

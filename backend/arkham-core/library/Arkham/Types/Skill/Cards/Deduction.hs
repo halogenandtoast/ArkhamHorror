@@ -1,6 +1,5 @@
 module Arkham.Types.Skill.Cards.Deduction where
 
-import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Skill.Attrs

@@ -3,7 +3,6 @@ module Arkham.Types.Asset.Cards.PeterSylvestre
   , peterSylvestre
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers

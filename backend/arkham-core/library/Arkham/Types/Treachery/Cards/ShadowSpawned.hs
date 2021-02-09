@@ -4,7 +4,6 @@ module Arkham.Types.Treachery.Cards.ShadowSpawned
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Game.Helpers
 import qualified Arkham.Types.Keyword as Keyword

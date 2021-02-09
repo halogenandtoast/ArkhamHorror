@@ -1,6 +1,5 @@
 module Arkham.Types.Event.Cards.CrypticResearch4 where
 
-import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner

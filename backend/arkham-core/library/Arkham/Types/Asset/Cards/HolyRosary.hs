@@ -1,6 +1,5 @@
 module Arkham.Types.Asset.Cards.HolyRosary where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers

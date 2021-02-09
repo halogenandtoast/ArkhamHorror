@@ -1,9 +1,19 @@
-module Arkham.Types.Treachery.Cards.UmordhothsWrath where
+module Arkham.Types.Treachery.Cards.UmordhothsWrath
+  ( UmordhothsWrath(..)
+  , umordhothsWrath
+  ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.Message
+import Arkham.Types.Query
+import Arkham.Types.SkillType
+import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.TreacheryId
 
 newtype UmordhothsWrath = UmordhothsWrath TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

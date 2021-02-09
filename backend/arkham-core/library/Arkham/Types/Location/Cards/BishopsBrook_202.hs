@@ -3,7 +3,6 @@ module Arkham.Types.Location.Cards.BishopsBrook_202
   , BishopsBrook_202(..)
   ) where
 
-import Arkham.Import
 
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers

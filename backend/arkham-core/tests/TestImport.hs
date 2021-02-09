@@ -8,7 +8,6 @@ module TestImport
   )
 where
 
-import Arkham.Import as X
 
 import Arkham.Game as X hiding (newGame)
 import Arkham.Types.Agenda as X

@@ -3,7 +3,6 @@ module Arkham.Types.Location.Cards.BurnedRuins_204
   , BurnedRuins_204(..)
   ) where
 
-import Arkham.Import
 
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs

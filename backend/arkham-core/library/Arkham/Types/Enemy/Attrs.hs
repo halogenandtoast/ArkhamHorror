@@ -2,7 +2,6 @@
 
 module Arkham.Types.Enemy.Attrs where
 
-import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Enemy.Runner

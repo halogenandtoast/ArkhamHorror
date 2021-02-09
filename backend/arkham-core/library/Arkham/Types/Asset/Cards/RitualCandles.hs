@@ -3,7 +3,6 @@ module Arkham.Types.Asset.Cards.RitualCandles
   , RitualCandles(..)
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers

@@ -1,12 +1,9 @@
 module Arkham.Types.Investigator.Cards.AshcanPete
   ( AshcanPete(..)
   , ashcanPete
-  )
-where
+  ) where
 
-import Arkham.Import
 
-import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats

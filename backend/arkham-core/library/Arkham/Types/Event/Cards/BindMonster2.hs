@@ -3,7 +3,6 @@ module Arkham.Types.Event.Cards.BindMonster2
   , BindMonster2(..)
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 

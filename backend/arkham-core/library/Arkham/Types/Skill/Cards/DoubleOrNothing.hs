@@ -4,7 +4,6 @@ module Arkham.Types.Skill.Cards.DoubleOrNothing
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Skill.Attrs

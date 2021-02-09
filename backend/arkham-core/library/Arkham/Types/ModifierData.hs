@@ -2,7 +2,12 @@ module Arkham.Types.ModifierData
   ( module Arkham.Types.ModifierData
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
+
+import Arkham.Types.Classes
+import Arkham.Types.Helpers
+import Arkham.Types.Modifier
+import Arkham.Types.Query
 
 newtype ModifierData = ModifierData { mdModifiers :: [Modifier] }
   deriving stock (Show, Eq, Generic)

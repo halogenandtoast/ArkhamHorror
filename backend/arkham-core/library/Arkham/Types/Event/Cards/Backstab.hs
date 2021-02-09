@@ -1,6 +1,5 @@
 module Arkham.Types.Event.Cards.Backstab where
 
-import Arkham.Import
 
 import Arkham.Types.Action
 import Arkham.Types.Event.Attrs

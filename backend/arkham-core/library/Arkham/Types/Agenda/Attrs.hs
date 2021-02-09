@@ -5,7 +5,6 @@ module Arkham.Types.Agenda.Attrs
   , module X
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Agenda.Sequence as X
 import Arkham.Types.Game.Helpers

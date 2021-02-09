@@ -4,7 +4,6 @@ module Arkham.Types.Act.Cards.Run
   )
 where
 
-import Arkham.Import hiding (Run)
 
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner

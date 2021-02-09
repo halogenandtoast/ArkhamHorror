@@ -3,7 +3,6 @@ module Arkham.Types.Asset.Cards.Encyclopedia2
   , encyclopedia2
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers

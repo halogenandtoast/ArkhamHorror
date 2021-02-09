@@ -1,7 +1,7 @@
 module Arkham.Types.Enemy.Runner where
 
-import Arkham.Import
-
+import Arkham.Types.Classes
+import Arkham.Types.Source
 import Arkham.Types.Trait
 
 type EnemyRunner env

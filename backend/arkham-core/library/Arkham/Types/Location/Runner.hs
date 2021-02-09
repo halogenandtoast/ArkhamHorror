@@ -1,8 +1,9 @@
 module Arkham.Types.Location.Runner where
 
-import Arkham.Import
-
 import Arkham.Types.Asset.Uses
+import Arkham.Types.Classes
+import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Trait
 
 type LocationRunner env
@@ -39,4 +40,3 @@ type LocationRunner env
     , HasSet UnrevealedLocationId env ()
     , HasSet UnrevealedLocationId env LocationMatcher
     )
-

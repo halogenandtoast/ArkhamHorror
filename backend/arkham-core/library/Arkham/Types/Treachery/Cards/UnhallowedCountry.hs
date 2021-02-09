@@ -3,7 +3,6 @@ module Arkham.Types.Treachery.Cards.UnhallowedCountry
   , unhallowedCountry
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs

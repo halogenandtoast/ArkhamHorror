@@ -1,6 +1,5 @@
 module Arkham.Types.Campaign.Campaigns.ReturnToNightOfTheZealot where
 
-import Arkham.Import hiding (Cultist)
 
 import Arkham.Types.Campaign.Attrs
 import Arkham.Types.Campaign.Campaigns.NightOfTheZealot

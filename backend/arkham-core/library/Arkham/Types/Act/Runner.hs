@@ -1,7 +1,6 @@
 module Arkham.Types.Act.Runner where
 
-import Arkham.Import
-
+import Arkham.Types.Classes
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait (Trait)
 

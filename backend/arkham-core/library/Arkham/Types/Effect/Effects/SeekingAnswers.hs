@@ -4,7 +4,6 @@ module Arkham.Types.Effect.Effects.SeekingAnswers
   )
 where
 
-import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Effect.Attrs

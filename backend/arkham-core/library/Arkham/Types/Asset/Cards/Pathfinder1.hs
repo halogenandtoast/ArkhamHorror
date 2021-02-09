@@ -3,7 +3,6 @@ module Arkham.Types.Asset.Cards.Pathfinder1
   , Pathfinder1(..)
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 

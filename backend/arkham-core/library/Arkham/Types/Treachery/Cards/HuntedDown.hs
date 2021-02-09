@@ -4,7 +4,6 @@ module Arkham.Types.Treachery.Cards.HuntedDown
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs

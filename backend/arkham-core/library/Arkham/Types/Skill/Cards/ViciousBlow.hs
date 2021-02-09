@@ -1,6 +1,5 @@
 module Arkham.Types.Skill.Cards.ViciousBlow where
 
-import Arkham.Import
 
 import Arkham.Types.Action
 import Arkham.Types.Game.Helpers

@@ -1,6 +1,5 @@
 module Arkham.Types.Event.Cards.EmergencyCache where
 
-import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 

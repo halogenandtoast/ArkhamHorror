@@ -4,7 +4,6 @@ module Arkham.Types.Skill.Cards.TrueUnderstanding
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner

@@ -6,7 +6,6 @@ module Arkham.Types.Scenario.Attrs
   )
 where
 
-import Arkham.Import hiding (log)
 
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Difficulty

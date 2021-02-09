@@ -1,6 +1,5 @@
 module Arkham.Types.Asset.Cards.OccultLexicon where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner

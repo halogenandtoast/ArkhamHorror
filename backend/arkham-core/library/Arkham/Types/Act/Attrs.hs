@@ -6,7 +6,6 @@ module Arkham.Types.Act.Attrs
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Act.Sequence as X
 import Arkham.Types.Game.Helpers

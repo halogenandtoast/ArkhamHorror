@@ -1,6 +1,5 @@
 module Arkham.Types.Asset.Cards.BulletproofVest3 where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner

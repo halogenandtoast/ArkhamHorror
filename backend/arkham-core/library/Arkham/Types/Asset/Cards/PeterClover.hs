@@ -4,7 +4,6 @@ module Arkham.Types.Asset.Cards.PeterClover
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Trait

@@ -4,7 +4,6 @@ module Arkham.Types.Asset.Cards.TheNecronomiconOlausWormiusTranslation
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Game.Helpers

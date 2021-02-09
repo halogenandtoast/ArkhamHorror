@@ -4,7 +4,6 @@ module Arkham.Types.Treachery.Cards.WrackedByNightmares
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers

@@ -3,7 +3,6 @@ module Arkham.Types.Event.Cards.DelveTooDeep
   , DelveTooDeep(..)
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 

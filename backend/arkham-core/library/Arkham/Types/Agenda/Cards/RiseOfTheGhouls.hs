@@ -1,6 +1,5 @@
 module Arkham.Types.Agenda.Cards.RiseOfTheGhouls where
 
-import Arkham.Import
 
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers

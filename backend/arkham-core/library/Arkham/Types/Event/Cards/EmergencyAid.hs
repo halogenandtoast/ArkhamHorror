@@ -3,7 +3,6 @@ module Arkham.Types.Event.Cards.EmergencyAid
   , EmergencyAid(..)
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Trait

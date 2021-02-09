@@ -3,7 +3,6 @@ module Arkham.Types.Enemy.Cards.GrapplingHorror
   , grapplingHorror
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers

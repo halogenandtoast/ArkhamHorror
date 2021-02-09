@@ -4,7 +4,6 @@ module Arkham.Types.Enemy.Cards.PeterWarren
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Action hiding (Ability)
 import Arkham.Types.Enemy.Attrs

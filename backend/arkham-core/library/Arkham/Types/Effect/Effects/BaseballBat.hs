@@ -4,7 +4,6 @@ module Arkham.Types.Effect.Effects.BaseballBat
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Effect.Attrs
 

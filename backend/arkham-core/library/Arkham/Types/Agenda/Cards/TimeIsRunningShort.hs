@@ -4,7 +4,6 @@ module Arkham.Types.Agenda.Cards.TimeIsRunningShort
   )
 where
 
-import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Agenda.Attrs

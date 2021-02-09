@@ -3,7 +3,6 @@ module Arkham.Types.Asset.Cards.AlchemicalConcoction
   , AlchemicalConcoction(..)
   ) where
 
-import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs

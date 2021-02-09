@@ -2,12 +2,11 @@
 
 module Arkham.Types.Game.Helpers where
 
-import Arkham.Import
-
 import Arkham.Types.Action hiding (Ability)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card.PlayerCard hiding (traits)
+import Arkham.Types.Classes
 import Arkham.Types.Keyword
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Trait (Trait)

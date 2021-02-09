@@ -1,6 +1,5 @@
 module Arkham.Types.Enemy.Cards.TheExperiment where
 
-import Arkham.Import
 
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner

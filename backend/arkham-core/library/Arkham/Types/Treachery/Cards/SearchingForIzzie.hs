@@ -3,7 +3,6 @@ module Arkham.Types.Treachery.Cards.SearchingForIzzie
   , searchingForIzzie
   ) where
 
-import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Treachery.Attrs

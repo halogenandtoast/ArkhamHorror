@@ -3,7 +3,6 @@ module Arkham.Types.Treachery.Cards.SlitheringBehindYou
   , slitheringBehindYou
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Treachery.Attrs

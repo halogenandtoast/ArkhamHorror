@@ -3,7 +3,6 @@ module Arkham.Types.Act.Cards.NightAtTheMuseum
   , nightAtTheMuseum
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers

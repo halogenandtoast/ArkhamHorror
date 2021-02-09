@@ -1,6 +1,5 @@
 module Arkham.Types.Asset.Cards.WendysAmulet where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers

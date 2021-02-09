@@ -3,7 +3,6 @@ module Arkham.Types.Asset.Cards.HelplessPassenger
   , HelplessPassenger(..)
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Action
 import Arkham.Types.Asset.Attrs

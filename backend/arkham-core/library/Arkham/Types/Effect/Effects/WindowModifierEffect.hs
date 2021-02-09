@@ -3,7 +3,6 @@ module Arkham.Types.Effect.Effects.WindowModifierEffect
   , WindowModifierEffect(..)
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Effect.Attrs
 

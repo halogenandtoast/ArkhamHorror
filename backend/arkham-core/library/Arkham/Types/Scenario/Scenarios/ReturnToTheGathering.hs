@@ -1,6 +1,5 @@
 module Arkham.Types.Scenario.Scenarios.ReturnToTheGathering where
 
-import Arkham.Import
 
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet

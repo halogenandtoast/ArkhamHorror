@@ -2,7 +2,6 @@ module Arkham.Types.Effect
   ( module Arkham.Types.Effect
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Action
 import Arkham.Types.Effect.Attrs

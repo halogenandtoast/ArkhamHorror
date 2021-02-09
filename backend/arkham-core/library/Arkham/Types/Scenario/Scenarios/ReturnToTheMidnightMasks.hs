@@ -1,6 +1,5 @@
 module Arkham.Types.Scenario.Scenarios.ReturnToTheMidnightMasks where
 
-import Arkham.Import hiding (Cultist)
 
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Difficulty

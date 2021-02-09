@@ -3,7 +3,6 @@ module Arkham.Types.Asset.Cards.LadyEsprit
   , ladyEsprit
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner

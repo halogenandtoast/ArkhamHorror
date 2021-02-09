@@ -2,7 +2,6 @@ module Arkham.Types.Agenda
   ( module Arkham.Types.Agenda
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Cards

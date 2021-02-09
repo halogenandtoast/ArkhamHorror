@@ -3,7 +3,6 @@ module Arkham.Types.Location.Cards.AlchemyLabs
   , AlchemyLabs(..)
   ) where
 
-import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import qualified Arkham.Types.EncounterSet as EncounterSet

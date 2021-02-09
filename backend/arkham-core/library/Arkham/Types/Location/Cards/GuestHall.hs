@@ -1,6 +1,5 @@
 module Arkham.Types.Location.Cards.GuestHall where
 
-import Arkham.Import
 
 import Arkham.Types.Action
 import qualified Arkham.Types.EncounterSet as EncounterSet

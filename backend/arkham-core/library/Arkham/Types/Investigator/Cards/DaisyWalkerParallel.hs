@@ -3,7 +3,6 @@ module Arkham.Types.Investigator.Cards.DaisyWalkerParallel
   , daisyWalkerParallel
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner

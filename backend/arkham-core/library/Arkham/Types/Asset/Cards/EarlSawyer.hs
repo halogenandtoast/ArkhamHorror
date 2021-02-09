@@ -4,7 +4,6 @@ module Arkham.Types.Asset.Cards.EarlSawyer
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers

@@ -4,7 +4,6 @@ module Arkham.Types.Effect.Effects.JeremiahPierce
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Action
 import Arkham.Types.Effect.Attrs

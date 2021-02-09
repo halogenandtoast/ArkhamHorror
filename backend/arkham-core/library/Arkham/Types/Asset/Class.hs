@@ -1,10 +1,11 @@
 module Arkham.Types.Asset.Class
   ( module Arkham.Types.Asset.Class
-  )
-where
+  ) where
 
-import Arkham.Import
+import Arkham.Prelude
+
 import Arkham.Types.Asset.Uses
+import Arkham.Types.Slot
 
 class IsAsset a where
   slotsOf :: a -> [SlotType]

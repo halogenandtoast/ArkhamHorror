@@ -1,6 +1,5 @@
 module Arkham.Types.Location.Cards.RitualGrounds where
 
-import Arkham.Import
 
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs

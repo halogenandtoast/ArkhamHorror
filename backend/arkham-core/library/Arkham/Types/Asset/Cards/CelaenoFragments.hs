@@ -1,6 +1,5 @@
 module Arkham.Types.Asset.Cards.CelaenoFragments where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers

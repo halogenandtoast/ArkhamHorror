@@ -3,7 +3,6 @@ module Arkham.Types.Investigator.Cards.WendyAdams
   , wendyAdams
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs

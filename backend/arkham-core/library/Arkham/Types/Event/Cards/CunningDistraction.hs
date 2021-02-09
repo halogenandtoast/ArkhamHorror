@@ -1,6 +1,5 @@
 module Arkham.Types.Event.Cards.CunningDistraction where
 
-import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner

@@ -1,6 +1,5 @@
 module Arkham.Types.Scenario.Scenarios.TheGathering where
 
-import Arkham.Import hiding (Cultist)
 
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card.EncounterCardMatcher

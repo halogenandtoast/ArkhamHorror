@@ -4,7 +4,6 @@ module Arkham.Types.Game
   ( module Arkham.Types.Game
   ) where
 
-import Arkham.Import hiding (first)
 
 import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Act

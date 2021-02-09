@@ -1,6 +1,5 @@
 module Arkham.Types.Treachery.Cards.AbandonedAndAlone where
 
-import Arkham.Import
 
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner

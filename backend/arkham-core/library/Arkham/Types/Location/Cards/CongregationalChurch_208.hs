@@ -3,7 +3,6 @@ module Arkham.Types.Location.Cards.CongregationalChurch_208
   , CongregationalChurch_208(..)
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Card.EncounterCardMatcher
 import qualified Arkham.Types.EncounterSet as EncounterSet

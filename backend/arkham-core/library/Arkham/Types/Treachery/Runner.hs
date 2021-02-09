@@ -1,7 +1,19 @@
 module Arkham.Types.Treachery.Runner where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Ability
+import Arkham.Types.ActId
+import Arkham.Types.AgendaId
+import Arkham.Types.AssetId
+import Arkham.Types.Card.CardCode
+import Arkham.Types.Card.Id
+import Arkham.Types.Card.PlayerCard
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.Query
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
 

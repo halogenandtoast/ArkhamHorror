@@ -3,7 +3,6 @@ module Arkham.Types.Asset.Cards.Shrivelling
   , shrivelling
   ) where
 
-import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs

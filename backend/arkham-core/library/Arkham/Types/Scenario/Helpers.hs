@@ -4,7 +4,6 @@ module Arkham.Types.Scenario.Helpers
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.EncounterSet

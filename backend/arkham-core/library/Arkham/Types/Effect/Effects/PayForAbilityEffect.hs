@@ -4,7 +4,6 @@ module Arkham.Types.Effect.Effects.PayForAbilityEffect
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Action hiding (Ability, TakenAction)
 import qualified Arkham.Types.Action as Action

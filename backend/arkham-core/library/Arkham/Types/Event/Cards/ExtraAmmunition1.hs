@@ -1,6 +1,5 @@
 module Arkham.Types.Event.Cards.ExtraAmmunition1 where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Event.Attrs

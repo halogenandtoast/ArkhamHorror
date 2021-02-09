@@ -4,7 +4,6 @@ module Arkham.Types.Scenario.Scenarios.TheHouseAlwaysWins
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Difficulty

@@ -4,7 +4,6 @@ module Arkham.Types.Location.Cards.DiningCar
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Card.EncounterCardMatcher
 import qualified Arkham.Types.EncounterSet as EncounterSet

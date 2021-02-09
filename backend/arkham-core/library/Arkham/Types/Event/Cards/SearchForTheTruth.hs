@@ -1,6 +1,5 @@
 module Arkham.Types.Event.Cards.SearchForTheTruth where
 
-import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 

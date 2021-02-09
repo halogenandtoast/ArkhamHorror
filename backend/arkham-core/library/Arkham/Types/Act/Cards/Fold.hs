@@ -4,7 +4,6 @@ module Arkham.Types.Act.Cards.Fold
   )
 where
 
-import Arkham.Import hiding (fold)
 
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers

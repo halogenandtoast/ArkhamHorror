@@ -3,7 +3,6 @@ module Arkham.Types.Enemy.Cards.CorpseTaker
   , corpseTaker
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner

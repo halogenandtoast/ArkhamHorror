@@ -1,6 +1,5 @@
 module Arkham.Types.Agenda.Cards.QuietHalls where
 
-import Arkham.Import
 
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner

@@ -3,7 +3,6 @@ module Arkham.Types.Location.Cards.Schoolhouse_213
   , Schoolhouse_213(..)
   ) where
 
-import Arkham.Import
 
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs

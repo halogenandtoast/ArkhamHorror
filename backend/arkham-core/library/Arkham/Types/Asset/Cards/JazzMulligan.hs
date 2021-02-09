@@ -4,7 +4,6 @@ module Arkham.Types.Asset.Cards.JazzMulligan
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Action
 import Arkham.Types.Asset.Attrs

@@ -1,6 +1,5 @@
 module Arkham.Types.Treachery.Cards.SmiteTheWicked where
 
-import Arkham.Import
 
 import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Treachery.Attrs

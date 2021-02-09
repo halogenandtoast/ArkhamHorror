@@ -3,7 +3,6 @@ module Arkham.Types.Event.Cards.LetMeHandleThis
   , LetMeHandleThis(..)
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 

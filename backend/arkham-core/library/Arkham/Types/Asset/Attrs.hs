@@ -2,12 +2,21 @@
 
 module Arkham.Types.Asset.Attrs where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.InvestigatorId
+import Arkham.Types.EnemyId
+import Arkham.Types.LocationId
+import Arkham.Types.Message
 import Arkham.Types.Action
+import Arkham.Types.AssetId
+import Arkham.Types.Card.CardCode
+import Arkham.Types.Card.Cost
 import Arkham.Types.Asset.Class
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Trait
+import Arkham.Types.Slot
 
 data AssetAttrs = AssetAttrs
   { assetName :: Text

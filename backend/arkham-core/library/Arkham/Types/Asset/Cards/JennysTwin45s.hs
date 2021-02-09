@@ -4,7 +4,6 @@ module Arkham.Types.Asset.Cards.JennysTwin45s
   )
 where
 
-import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs

@@ -4,7 +4,6 @@ module Arkham.Types.Treachery.Cards.CursedSwamp
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs

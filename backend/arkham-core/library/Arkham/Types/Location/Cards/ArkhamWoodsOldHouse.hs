@@ -1,6 +1,5 @@
 module Arkham.Types.Location.Cards.ArkhamWoodsOldHouse where
 
-import Arkham.Import
 
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs

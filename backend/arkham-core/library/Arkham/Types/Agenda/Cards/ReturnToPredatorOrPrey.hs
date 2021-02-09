@@ -3,7 +3,6 @@ module Arkham.Types.Agenda.Cards.ReturnToPredatorOrPrey
   , returnToPredatorOrPrey
   ) where
 
-import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Agenda.Attrs

@@ -1,6 +1,5 @@
 module Arkham.Types.Treachery.Cards.UmordhothsHunger where
 
-import Arkham.Import
 
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Treachery.Attrs

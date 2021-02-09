@@ -3,7 +3,6 @@ module Arkham.Types.Scenario.Scenarios.TheEssexCountyExpress
   , theEssexCountyExpress
   ) where
 
-import Arkham.Import hiding (Cultist)
 
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Difficulty

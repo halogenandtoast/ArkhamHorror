@@ -3,7 +3,6 @@ module Arkham.Types.Act.Cards.BeginnersLuck
   , beginnersLuck
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Card.EncounterCardMatcher

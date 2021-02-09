@@ -3,7 +3,6 @@ module Arkham.Types.Asset.Cards.BeatCop
   , beatCop
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers

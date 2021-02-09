@@ -3,7 +3,6 @@ module Arkham.Types.Agenda.Cards.PredatorOrPrey
   , predatorOrPrey
   ) where
 
-import Arkham.Import
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner

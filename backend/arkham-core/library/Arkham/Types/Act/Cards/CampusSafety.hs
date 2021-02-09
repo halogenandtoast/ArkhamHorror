@@ -1,6 +1,5 @@
 module Arkham.Types.Act.Cards.CampusSafety where
 
-import Arkham.Import
 
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers

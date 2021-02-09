@@ -3,7 +3,6 @@ module Arkham.Types.Effect.Effects.HuntingNightgaunt
   , HuntingNightgaunt(..)
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Action
 import Arkham.Types.Effect.Attrs

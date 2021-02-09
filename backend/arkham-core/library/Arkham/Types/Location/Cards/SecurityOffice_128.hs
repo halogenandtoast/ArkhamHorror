@@ -3,7 +3,6 @@ module Arkham.Types.Location.Cards.SecurityOffice_128
   , SecurityOffice_128(..)
   ) where
 
-import Arkham.Import
 
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs

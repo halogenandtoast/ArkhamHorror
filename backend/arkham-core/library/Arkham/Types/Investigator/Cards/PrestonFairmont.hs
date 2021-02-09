@@ -1,6 +1,5 @@
 module Arkham.Types.Investigator.Cards.PrestonFairmont where
 
-import Arkham.Import
 
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner

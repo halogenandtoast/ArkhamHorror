@@ -3,7 +3,6 @@ module Arkham.Types.Asset.Cards.KeyToTheChamber
   , KeyToTheChamber(..)
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 

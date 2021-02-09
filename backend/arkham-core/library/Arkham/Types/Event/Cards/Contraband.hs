@@ -3,7 +3,6 @@ module Arkham.Types.Event.Cards.Contraband
   , Contraband(..)
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Event.Attrs

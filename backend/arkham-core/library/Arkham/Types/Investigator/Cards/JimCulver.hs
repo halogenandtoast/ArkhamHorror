@@ -1,6 +1,5 @@
 module Arkham.Types.Investigator.Cards.JimCulver where
 
-import Arkham.Import
 
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs

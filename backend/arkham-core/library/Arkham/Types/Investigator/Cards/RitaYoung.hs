@@ -1,6 +1,5 @@
 module Arkham.Types.Investigator.Cards.RitaYoung where
 
-import Arkham.Import
 
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner

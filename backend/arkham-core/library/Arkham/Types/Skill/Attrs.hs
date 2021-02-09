@@ -2,7 +2,6 @@
 
 module Arkham.Types.Skill.Attrs where
 
-import Arkham.Import
 
 import Arkham.Types.Skill.Runner
 import Arkham.Types.Trait

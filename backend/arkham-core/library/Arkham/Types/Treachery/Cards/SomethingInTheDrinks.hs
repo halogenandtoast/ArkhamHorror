@@ -4,7 +4,6 @@ module Arkham.Types.Treachery.Cards.SomethingInTheDrinks
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Game.Helpers
 import Arkham.Types.ScenarioLogKey

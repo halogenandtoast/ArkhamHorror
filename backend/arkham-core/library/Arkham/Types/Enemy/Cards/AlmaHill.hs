@@ -4,7 +4,6 @@ module Arkham.Types.Enemy.Cards.AlmaHill
   )
 where
 
-import Arkham.Import
 
 import Arkham.Types.Action
 import Arkham.Types.Enemy.Attrs

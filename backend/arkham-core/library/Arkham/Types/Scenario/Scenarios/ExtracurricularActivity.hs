@@ -1,6 +1,5 @@
 module Arkham.Types.Scenario.Scenarios.ExtracurricularActivity where
 
-import Arkham.Import hiding (Cultist)
 
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Difficulty

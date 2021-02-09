@@ -3,7 +3,6 @@
 
 module Arkham.Types.Location.Attrs where
 
-import Arkham.Import hiding (toUpper, toLower)
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Location.Runner

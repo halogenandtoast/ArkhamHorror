@@ -1,6 +1,5 @@
 module Arkham.Types.Event.Cards.Barricade3 where
 
-import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Helpers

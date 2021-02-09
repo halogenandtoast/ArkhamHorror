@@ -1,6 +1,5 @@
 module Arkham.Types.Treachery.Cards.DissonantVoices where
 
-import Arkham.Import
 
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers

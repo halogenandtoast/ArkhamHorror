@@ -1,6 +1,5 @@
 module Arkham.Game where
 
-import Arkham.Import
 
 import Arkham.Types.Campaign
 import Arkham.Types.ChaosBag

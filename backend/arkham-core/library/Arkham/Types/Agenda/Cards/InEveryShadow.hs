@@ -3,7 +3,6 @@ module Arkham.Types.Agenda.Cards.InEveryShadow
   , inEveryShadow
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner

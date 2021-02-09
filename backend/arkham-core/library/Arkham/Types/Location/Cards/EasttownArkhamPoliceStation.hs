@@ -3,7 +3,6 @@ module Arkham.Types.Location.Cards.EasttownArkhamPoliceStation
   , easttownArkhamPoliceStation
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Asset.Uses
 import qualified Arkham.Types.EncounterSet as EncounterSet

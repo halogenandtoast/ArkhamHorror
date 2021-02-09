@@ -1,6 +1,5 @@
 module Arkham.Types.Treachery.Cards.TheZealotsSeal where
 
-import Arkham.Import
 
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Treachery.Attrs

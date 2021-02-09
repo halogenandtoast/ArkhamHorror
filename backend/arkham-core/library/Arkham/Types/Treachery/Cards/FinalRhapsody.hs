@@ -1,6 +1,5 @@
 module Arkham.Types.Treachery.Cards.FinalRhapsody where
 
-import Arkham.Import
 
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Treachery.Attrs

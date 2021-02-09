@@ -2,8 +2,13 @@
 
 module Arkham.Types.Event.Attrs where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.EventId
+import Arkham.Types.Target
+import Arkham.Types.Card.CardCode
+import Arkham.Types.InvestigatorId
 import Arkham.Types.Trait
 import qualified Data.HashMap.Strict as HashMap
 

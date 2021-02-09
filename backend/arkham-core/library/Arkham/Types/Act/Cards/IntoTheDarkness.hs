@@ -1,6 +1,5 @@
 module Arkham.Types.Act.Cards.IntoTheDarkness where
 
-import Arkham.Import
 
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers

@@ -3,7 +3,6 @@ module Arkham.Types.Treachery.Cards.RexsCurse
   , rexsCurse
   ) where
 
-import Arkham.Import
 
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner

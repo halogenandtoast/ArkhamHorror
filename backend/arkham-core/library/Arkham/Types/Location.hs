@@ -156,9 +156,8 @@ deriving anyclass instance
 instance LocationRunner env => RunMessage env Location where
   runMessage msg l = do
     modifiers' <- getModifiersFor (toSource l) (toTarget l) ()
-    if any isBlank modifiers' && not (isBlanked msg)
-      then runMessage (Blanked msg) l
-      else defaultRunMessage msg l
+    let msg' = if any isBlank modifiers' then Blanked msg else msg
+    defaultRunMessage msg' l
 
 instance Entity Location where
   type EntityId Location = LocationId

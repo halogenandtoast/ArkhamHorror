@@ -1,6 +1,7 @@
 module Arkham.Types.Investigator
   ( module Arkham.Types.Investigator
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -79,10 +80,10 @@ instance ActionRunner env => HasActions env Investigator where
       else defaultGetActions iid window investigator
 
 instance InvestigatorRunner env => RunMessage env Investigator where
-  runMessage msg@(ResolveToken _ _ iid) i | iid == toId i = do
+  runMessage msg i = do
     modifiers' <- getModifiersFor (toSource i) (toTarget i) ()
-    if any isBlank modifiers' then pure i else defaultRunMessage msg i
-  runMessage msg i = defaultRunMessage msg i
+    let msg' = if any isBlank modifiers' then Blanked msg else msg
+    defaultRunMessage msg' i
 
 instance HasId InvestigatorId () Investigator where
   getId = pure . toId

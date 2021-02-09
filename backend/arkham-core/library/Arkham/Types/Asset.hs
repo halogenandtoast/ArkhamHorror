@@ -1,7 +1,8 @@
 module Arkham.Types.Asset
   ( module Arkham.Types.Asset
   , module X
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -152,10 +153,8 @@ deriving anyclass instance
 instance AssetRunner env => RunMessage env Asset where
   runMessage msg asset = do
     modifiers' <- getModifiersFor (toSource asset) (toTarget asset) ()
-    _ <- error $ show modifiers'
-    if any isBlank modifiers'
-      then runMessage (Blanked msg) asset
-      else defaultRunMessage msg asset
+    let msg' = if any isBlank modifiers' then Blanked msg else msg
+    defaultRunMessage msg' asset
 
 instance Entity Asset where
   type EntityId Asset = AssetId

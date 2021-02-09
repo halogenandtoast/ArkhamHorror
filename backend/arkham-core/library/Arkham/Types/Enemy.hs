@@ -1,6 +1,7 @@
 module Arkham.Types.Enemy
   ( module Arkham.Types.Enemy
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -151,9 +152,8 @@ instance SourceEntity Enemy where
 instance (EnemyRunner env) => RunMessage env Enemy where
   runMessage msg e = do
     modifiers' <- getModifiersFor (toSource e) (toTarget e) ()
-    if any isBlank modifiers' && not (isBlanked msg)
-      then runMessage (Blanked msg) e
-      else defaultRunMessage msg e
+    let msg' = if any isBlank modifiers' then Blanked msg else msg
+    defaultRunMessage msg' e
 
 instance HasVictoryPoints Enemy where
   getVictoryPoints = enemyVictory . toAttrs

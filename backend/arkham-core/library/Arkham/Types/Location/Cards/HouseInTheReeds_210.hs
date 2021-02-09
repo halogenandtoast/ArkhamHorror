@@ -5,7 +5,6 @@ module Arkham.Types.Location.Cards.HouseInTheReeds_210
 
 import Arkham.Import
 
-import Arkham.Types.Card.EncounterCardMatcher
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -39,16 +38,5 @@ instance ActionRunner env => HasActions env HouseInTheReeds_210 where
   getActions = withDrawCardUnderneathAction
 
 instance LocationRunner env => RunMessage env HouseInTheReeds_210 where
-  runMessage msg l@(HouseInTheReeds_210 attrs) = case msg of
-    RevealLocation miid lid | lid == locationId attrs -> do
-      iid <- maybe getLeadInvestigatorId pure miid
-      unshiftMessage $ FindEncounterCard
-        iid
-        (toTarget attrs)
-        (EncounterCardMatchByType (EnemyType, Just Nightgaunt))
-      HouseInTheReeds_210 <$> runMessage msg attrs
-    FoundEncounterCard _iid target card | isTarget attrs target -> do
-      villageCommonsId <- fromJustNote "missing village commons"
-        <$> getId (LocationWithTitle "Village Commons")
-      l <$ unshiftMessage (SpawnEnemyAt (EncounterCard card) villageCommonsId)
-    _ -> HouseInTheReeds_210 <$> runMessage msg attrs
+  runMessage msg (HouseInTheReeds_210 attrs) =
+    HouseInTheReeds_210 <$> runMessage msg attrs

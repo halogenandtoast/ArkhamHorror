@@ -61,7 +61,7 @@ data ModifierType
   | CannotInvestigate
   | CannotMakeAttacksOfOpportunity
   | CannotMove
-  | CannotPlay [PlayerCardType]
+  | CannotPlay [(PlayerCardType, HashSet Trait)]
   | CannotSpendClues
   | ControlledAssetsCannotReady
   | DamageDealt Int

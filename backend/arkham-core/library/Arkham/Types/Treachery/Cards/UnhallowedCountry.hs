@@ -1,12 +1,11 @@
 module Arkham.Types.Treachery.Cards.UnhallowedCountry
   ( UnhallowedCountry(..)
   , unhallowedCountry
-  )
-where
+  ) where
 
 import Arkham.Import
 
--- import Arkham.Types.Trait
+import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
@@ -17,20 +16,21 @@ newtype UnhallowedCountry = UnhallowedCountry TreacheryAttrs
 unhallowedCountry :: TreacheryId -> a -> UnhallowedCountry
 unhallowedCountry uuid _ = UnhallowedCountry $ baseAttrs uuid "02088"
 
--- instance (HasSet Trait env AssetId, HasId (Maybe OwnerId) env AssetId) => HasModifiersFor env UnhallowedCountry where
-instance HasModifiersFor env UnhallowedCountry where
+instance (HasSet Trait env AssetId, HasId (Maybe OwnerId) env AssetId) => HasModifiersFor env UnhallowedCountry where
   getModifiersFor _ (InvestigatorTarget iid) (UnhallowedCountry attrs) =
     pure $ toModifiers
       attrs
-      [ CannotPlay [AssetType] | treacheryOnInvestigator iid attrs ]
-  -- getModifiersFor _ (AssetTarget aid) (UnhallowedCountry attrs) = do
-  --   traits <- getSet @Trait aid
-  --   miid <- fmap unOwnerId <$> getId aid
-  --   case miid of
-  --     Just iid -> pure $ toModifiers
-  --       attrs
-  --       [ Blank | treacheryOnInvestigator iid attrs && Ally `member` traits ]
-  --     Nothing -> pure []
+      [ CannotPlay [(AssetType, singleton Ally)]
+      | treacheryOnInvestigator iid attrs
+      ]
+  getModifiersFor _ (AssetTarget aid) (UnhallowedCountry attrs) = do
+    traits <- getSet @Trait aid
+    miid <- fmap unOwnerId <$> getId aid
+    pure $ case miid of
+      Just iid -> toModifiers
+        attrs
+        [ Blank | treacheryOnInvestigator iid attrs && Ally `member` traits ]
+      Nothing -> []
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env UnhallowedCountry where

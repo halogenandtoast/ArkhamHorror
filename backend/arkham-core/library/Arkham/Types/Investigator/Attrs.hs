@@ -472,7 +472,13 @@ getIsPlayable attrs@InvestigatorAttrs {..} windows c@(PlayerCard MkPlayerCard {.
          )
  where
   none f = not . any f
-  prevents (CannotPlay types) = pcCardType `elem` types
+  prevents (CannotPlay typePairs) = any
+    (\(cType, traits) ->
+      pcCardType
+        == cType
+        && (null traits || not (null (intersection pcTraits traits)))
+    )
+    typePairs
   prevents _ = False
 
 drawOpeningHand

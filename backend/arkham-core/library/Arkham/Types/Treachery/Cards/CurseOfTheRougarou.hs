@@ -6,16 +6,13 @@ module Arkham.Types.Treachery.Cards.CurseOfTheRougarou
 import Arkham.Prelude
 
 import Arkham.Types.Classes
-import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.TreacheryId
 
 newtype Metadata = Metadata { dealtDamageThisTurn :: Bool }
   deriving stock (Show, Eq, Generic)
@@ -36,8 +33,8 @@ instance HasActions env CurseOfTheRougarou where
     getActions iid window attrs
 
 instance (TreacheryRunner env) => RunMessage env CurseOfTheRougarou where
-  runMessage msg t@(CurseOfTheRougarou (attrs@TreacheryAttrs {..} `With` metadata)) =
-    case msg of
+  runMessage msg t@(CurseOfTheRougarou (attrs@TreacheryAttrs {..} `With` metadata))
+    = case msg of
       Revelation iid source | isSource attrs source -> do
         t <$ unshiftMessage
           (AttachTreachery treacheryId $ InvestigatorTarget iid)

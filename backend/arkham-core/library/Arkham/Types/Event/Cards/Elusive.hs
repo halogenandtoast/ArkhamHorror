@@ -3,14 +3,13 @@ module Arkham.Types.Event.Cards.Elusive where
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import Arkham.Types.Event.Attrs
+import Arkham.Types.Event.Runner
 import Arkham.Types.EventId
-import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Event.Attrs
-import Arkham.Types.Event.Runner
 
 newtype Elusive = Elusive EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

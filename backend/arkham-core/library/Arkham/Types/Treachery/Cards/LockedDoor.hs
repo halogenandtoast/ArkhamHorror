@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.LockedDoor
   ( LockedDoor(..)
   , lockedDoor
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -10,7 +9,6 @@ import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Helpers
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -18,13 +16,11 @@ import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.TreacheryId
+import Arkham.Types.Window
 
 newtype LockedDoor = LockedDoor TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

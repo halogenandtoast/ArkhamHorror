@@ -3,8 +3,7 @@
 module Arkham.Types.Scenario.Attrs
   ( module Arkham.Types.Scenario.Attrs
   , module X
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -145,16 +144,20 @@ type ScenarioAttrsRunner env
     , HasQueue env
     )
 
+getIsStandalone
+  :: (MonadReader env m, HasId (Maybe CampaignId) env ()) => m Bool
+getIsStandalone = isNothing <$> getId @(Maybe CampaignId) ()
+
 instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
   runMessage msg a@ScenarioAttrs {..} = case msg of
     Setup -> a <$ pushMessage BeginInvestigation
     StartCampaign -> do
-      standalone <- isNothing <$> getId @(Maybe CampaignId) ()
+      standalone <- getIsStandalone
       a <$ if standalone
         then unshiftMessage $ StartScenario scenarioId
         else pure ()
     InitDeck iid deck -> do
-      standalone <- isNothing <$> getId @(Maybe CampaignId) ()
+      standalone <- getIsStandalone
       a <$ if standalone then unshiftMessage $ LoadDeck iid deck else pure ()
     PlaceLocationMatching locationMatcher -> do
       let
@@ -203,7 +206,7 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
       a <$ unshiftMessage FailSkillTest
     EndOfScenario -> do
       clearQueue
-      standalone <- isNothing <$> getId @(Maybe CampaignId) ()
+      standalone <- getIsStandalone
       a <$ unshiftMessage
         (if standalone then GameOver else NextCampaignStep Nothing)
     ScenarioResolution _ ->

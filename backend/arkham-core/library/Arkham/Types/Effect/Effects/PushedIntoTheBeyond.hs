@@ -1,19 +1,17 @@
 module Arkham.Types.Effect.Effects.PushedIntoTheBeyond
   ( PushedIntoTheBeyond(..)
   , pushedIntoTheBeyond
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Effect.Attrs
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Exception
-import Arkham.Types.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Effect.Attrs
 
 newtype PushedIntoTheBeyond = PushedIntoTheBeyond EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -32,6 +30,8 @@ instance HasQueue env => RunMessage env PushedIntoTheBeyond where
       case effectMetadata of
         Just (EffectCardCode x) -> e <$ when
           (x `elem` map pcCardCode cards)
-          (unshiftMessage (InvestigatorAssignDamage iid effectSource DamageAny 0 2))
+          (unshiftMessage
+            (InvestigatorAssignDamage iid effectSource DamageAny 0 2)
+          )
         _ -> throwIO (InvalidState "Must have one card as the target")
     _ -> PushedIntoTheBeyond <$> runMessage msg attrs

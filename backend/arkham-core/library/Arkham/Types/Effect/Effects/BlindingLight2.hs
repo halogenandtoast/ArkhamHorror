@@ -1,19 +1,17 @@
 module Arkham.Types.Effect.Effects.BlindingLight2
   ( blindingLight2
   , BlindingLight2(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
-import Arkham.Types.Helpers
+import Arkham.Types.Effect.Attrs
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.Effect.Attrs
 
 newtype BlindingLight2 = BlindingLight2 EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

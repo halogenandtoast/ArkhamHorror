@@ -1,7 +1,6 @@
 module Arkham.Types.Location
   ( module Arkham.Types.Location
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -15,7 +14,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Card
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
-import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Cards

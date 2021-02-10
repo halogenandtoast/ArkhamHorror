@@ -10,7 +10,6 @@ import Arkham.Types.Difficulty
 import Arkham.Types.EncounterSet (gatherEncounterSet)
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.EnemyId
-import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Query
@@ -19,7 +18,6 @@ import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.Scenario.Scenarios.TheMidnightMasks
 import Arkham.Types.Trait (Trait)
-import Data.List.NonEmpty (NonEmpty(..))
 
 newtype ReturnToTheMidnightMasks = ReturnToTheMidnightMasks TheMidnightMasks
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)

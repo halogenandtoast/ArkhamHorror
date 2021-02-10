@@ -3,7 +3,6 @@ module Arkham.Types.Classes.Entity where
 
 import Arkham.Prelude
 
-import Arkham.Types.Helpers
 import Arkham.Types.Name
 import Arkham.Types.Source
 import Arkham.Types.Target

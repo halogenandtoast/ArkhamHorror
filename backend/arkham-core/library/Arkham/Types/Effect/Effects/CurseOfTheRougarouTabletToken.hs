@@ -1,17 +1,15 @@
 module Arkham.Types.Effect.Effects.CurseOfTheRougarouTabletToken
   ( curseOfTheRougarouTabletToken
   , CurseOfTheRougarouTabletToken(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Classes
-import Arkham.Types.Helpers
-import Arkham.Types.Message
-import Arkham.Types.Modifier
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
+import Arkham.Types.Message
+import Arkham.Types.Modifier
 
 newtype CurseOfTheRougarouTabletToken = CurseOfTheRougarouTabletToken EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

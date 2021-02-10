@@ -9,15 +9,14 @@ import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Event.Attrs
 import Arkham.Types.EventId
-import Arkham.Types.Helpers
+import Arkham.Types.Game.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Event.Attrs
-import Arkham.Types.Game.Helpers
 
 newtype FirstWatchMetadata = FirstWatchMetadata { firstWatchPairings :: [(InvestigatorId, EncounterCard)] }
   deriving newtype (Show, Eq, ToJSON, FromJSON)

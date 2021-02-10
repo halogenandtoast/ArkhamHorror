@@ -2,18 +2,15 @@ module Arkham.Types.Skill.Cards.SurvivalInstinct where
 
 import Arkham.Prelude
 
+import Arkham.Types.Action
 import Arkham.Types.Classes
-import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
-import Arkham.Types.SkillId
-import Arkham.Types.Target
-
-
-import Arkham.Types.Action
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
+import Arkham.Types.SkillId
+import Arkham.Types.Target
 
 newtype SurvivalInstinct = SurvivalInstinct SkillAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

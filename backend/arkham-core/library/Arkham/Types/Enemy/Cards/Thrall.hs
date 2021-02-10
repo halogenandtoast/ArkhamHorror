@@ -1,20 +1,18 @@
 module Arkham.Types.Enemy.Cards.Thrall
   ( Thrall(..)
   , thrall
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
 import Arkham.Types.Exception
 import Arkham.Types.GameValue
-import Arkham.Types.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Query
-import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Runner
 
 newtype Thrall = Thrall EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

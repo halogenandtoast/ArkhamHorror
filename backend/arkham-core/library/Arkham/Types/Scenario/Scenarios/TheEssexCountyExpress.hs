@@ -16,7 +16,6 @@ import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.EnemyId
-import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -29,7 +28,6 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
 import qualified Arkham.Types.Trait as Trait
-import Data.List.NonEmpty (NonEmpty(..))
 
 newtype TheEssexCountyExpress = TheEssexCountyExpress ScenarioAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)

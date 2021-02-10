@@ -1,18 +1,16 @@
 module Arkham.Types.Effect.Effects.BaseballBat
   ( baseballBat
   , BaseballBat(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Classes
-import Arkham.Types.Helpers
+import Arkham.Types.Effect.Attrs
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
-import Arkham.Types.Effect.Attrs
 
 newtype BaseballBat = BaseballBat EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

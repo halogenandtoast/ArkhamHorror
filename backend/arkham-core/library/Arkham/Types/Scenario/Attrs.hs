@@ -28,7 +28,6 @@ import Arkham.Types.Token
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Difficulty
 import Arkham.Types.Scenario.Deck as X
-import Arkham.Types.Scenario.Runner
 import Arkham.Types.Location as X
 
 newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
@@ -139,8 +138,14 @@ findLocationKey locationMatcher locations = find matchKey $ keys locations
     LocationWithFullTitle title' subtitle' ->
       title == title' && Just subtitle' == msubtitle
 
+type ScenarioAttrsRunner env
+  = ( HasSet InScenarioInvestigatorId env ()
+    , HasSet AgendaId env ()
+    , HasId (Maybe CampaignId) env ()
+    , HasQueue env
+    )
 
-instance ScenarioRunner env => RunMessage env ScenarioAttrs where
+instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
   runMessage msg a@ScenarioAttrs {..} = case msg of
     Setup -> a <$ pushMessage BeginInvestigation
     StartCampaign -> do

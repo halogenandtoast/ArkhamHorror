@@ -3,8 +3,12 @@ module Arkham.Types.Scenario.Scenarios.TheMiskatonicMuseum where
 import Arkham.Prelude
 
 import Arkham.Types.CampaignId
+import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
+import Arkham.Types.Difficulty
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.EnemyId
 import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
@@ -13,15 +17,11 @@ import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Resolution
-import Arkham.Types.Target
-import Arkham.Types.Token
-import Arkham.Types.CampaignLogKey
-import Arkham.Types.Card.EncounterCardMatcher
-import Arkham.Types.Difficulty
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
+import Arkham.Types.Target
+import Arkham.Types.Token
 import Data.List.NonEmpty (NonEmpty(..))
 
 newtype TheMiskatonicMuseum = TheMiskatonicMuseum ScenarioAttrs

@@ -46,8 +46,6 @@ import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window
-
-
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Cards
 import Arkham.Types.Agenda.Runner

@@ -359,7 +359,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       pure $ a & assetsL %~ insertSet aid
     AttachAsset aid _ -> pure $ a & assetsL %~ deleteSet aid
     AddConnection lid symbol' | lid /= locationId -> do
-      -- | Since connections can be one directional we need to check both cases
+      -- Since connections can be one directional we need to check both cases
       let
         symbols = if locationRevealed
           then locationRevealedConnectedSymbols

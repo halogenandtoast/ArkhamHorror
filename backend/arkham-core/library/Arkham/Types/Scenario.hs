@@ -1,27 +1,25 @@
 module Arkham.Types.Scenario
   ( module Arkham.Types.Scenario
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import Arkham.Types.ActId
 import Arkham.Types.AgendaId
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Difficulty
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
-import Arkham.Types.ScenarioId
-import Arkham.Types.Token
-import Arkham.Types.Difficulty
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.Scenario.Scenarios
+import Arkham.Types.ScenarioId
 import Arkham.Types.ScenarioLogKey
+import Arkham.Types.Token
 import Arkham.Types.Trait (Trait)
 
 data Scenario
@@ -33,6 +31,7 @@ data Scenario
   | TheMiskatonicMuseum' TheMiskatonicMuseum
   | TheEssexCountyExpress' TheEssexCountyExpress
   | BloodOnTheAltar' BloodOnTheAltar
+  | UndimensionedAndUnseen' UndimensionedAndUnseen
   | ReturnToTheGathering' ReturnToTheGathering
   | ReturnToTheMidnightMasks' ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow' ReturnToTheDevourerBelow
@@ -118,6 +117,7 @@ allScenarios = mapFromList
   , ("02118", TheMiskatonicMuseum' . theMiskatonicMuseum)
   , ("02159", TheEssexCountyExpress' . theEssexCountyExpress)
   , ("02195", BloodOnTheAltar' . bloodOnTheAltar)
+  , ("02236", UndimensionedAndUnseen' . undimensionedAndUnseen)
   , ("50011", ReturnToTheGathering' . returnToTheGathering)
   , ("50025", ReturnToTheMidnightMasks' . returnToTheMidnightMasks)
   , ("50032", ReturnToTheDevourerBelow' . returnToTheDevourerBelow)

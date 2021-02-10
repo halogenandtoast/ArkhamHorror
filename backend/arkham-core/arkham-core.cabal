@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 300e1005e0680daaab1d43338224857be2f430a202c770db6f8dd07489fa4587
+-- hash: 25164209a2adf6d58a2fb6ba457fd02fb212f628511cb7c148e3e4be52992647
 
 name:           arkham-core
 version:        0.0.0
@@ -231,7 +231,10 @@ library
       Arkham.Types.ChaosBagStepState
       Arkham.Types.Classes
       Arkham.Types.Classes.Entity
+      Arkham.Types.Classes.HasQueue
       Arkham.Types.Classes.HasRecord
+      Arkham.Types.Classes.HasTokenValue
+      Arkham.Types.Classes.RunMessage
       Arkham.Types.ClassSymbol
       Arkham.Types.CommitRestriction
       Arkham.Types.Cost
@@ -592,6 +595,7 @@ library
       Arkham.Types.Scenario.Scenarios.TheHouseAlwaysWins
       Arkham.Types.Scenario.Scenarios.TheMidnightMasks
       Arkham.Types.Scenario.Scenarios.TheMiskatonicMuseum
+      Arkham.Types.Scenario.Scenarios.UndimensionedAndUnseen
       Arkham.Types.ScenarioId
       Arkham.Types.ScenarioLogKey
       Arkham.Types.Skill

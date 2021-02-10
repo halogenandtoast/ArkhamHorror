@@ -29,7 +29,7 @@
       "  )",
       "where",
       "",
-      "import Arkham.Import",
+      "import Arkham.Prelude",
       "",
       "import Arkham.Types.Treachery.Attrs",
       "import Arkham.Types.Treachery.Runner",
@@ -70,7 +70,7 @@
       "  )",
       "where",
       "",
-      "import Arkham.Import",
+      "import Arkham.Prelude",
       "",
       "import Arkham.Types.Asset.Attrs",
       "",
@@ -101,7 +101,7 @@
       "  )",
       "where",
       "",
-      "import Arkham.Import",
+      "import Arkham.Prelude",
       "",
       "import Arkham.Types.Event.Attrs",
       "",
@@ -132,7 +132,7 @@
       "  )",
       "where",
       "",
-      "import Arkham.Import",
+      "import Arkham.Prelude",
       "",
       "import qualified Arkham.Types.EncounterSet as EncounterSet",
       "import Arkham.Types.Location.Attrs",
@@ -174,7 +174,7 @@
       "  )",
       "where",
       "",
-      "import Arkham.Import",
+      "import Arkham.Prelude",
       "",
       "import Arkham.Types.Skill.Attrs",
       "import Arkham.Types.Skill.Runner",
@@ -202,7 +202,7 @@
       "  )",
       "where",
       "",
-      "import Arkham.Import"
+      "import Arkham.Prelude"
     ]
   },
   "arkham-core/tests/Arkham/Types/*Spec.hs": {

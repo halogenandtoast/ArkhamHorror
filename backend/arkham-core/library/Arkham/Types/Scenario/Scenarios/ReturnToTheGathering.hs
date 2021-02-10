@@ -3,12 +3,12 @@ module Arkham.Types.Scenario.Scenarios.ReturnToTheGathering where
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import Arkham.Types.Difficulty
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Query
-import Arkham.Types.Difficulty
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner

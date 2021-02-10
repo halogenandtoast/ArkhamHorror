@@ -15,7 +15,10 @@ import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes.Entity as X
+import Arkham.Types.Classes.HasQueue as X
 import Arkham.Types.Classes.HasRecord as X
+import Arkham.Types.Classes.HasTokenValue as X
+import Arkham.Types.Classes.RunMessage as X
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword
@@ -30,140 +33,13 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
-import Arkham.Types.Token (Token, TokenValue(..))
 import Arkham.Types.Trait
 import Arkham.Types.Window (Who, Window)
 import qualified Arkham.Types.Window as Window
-import Control.Monad.Fail
 import qualified Data.HashSet as HashSet
 import GHC.Generics
 
 newtype Distance = Distance { unDistance :: Int }
-
-class HasQueue a where
-  messageQueue :: Lens' a (IORef [Message])
-
-class (HasQueue env) => RunMessage1 env f where
-  runMessage1 :: (MonadIO m, MonadReader env m, MonadRandom m, MonadFail m) => Message -> f p -> m (f p)
-
-instance (HasQueue env, RunMessage1 env f) => RunMessage1 env (M1 i c f) where
-  runMessage1 msg (M1 x) = M1 <$> runMessage1 msg x
-
-instance (HasQueue env, RunMessage1 env l, RunMessage1 env r) => RunMessage1 env (l :+: r) where
-  runMessage1 msg (L1 x) = L1 <$> runMessage1 msg x
-  runMessage1 msg (R1 x) = R1 <$> runMessage1 msg x
-
-instance (HasQueue env, RunMessage env p) => RunMessage1 env (K1 R p) where
-  runMessage1 msg (K1 x) = K1 <$> runMessage msg x
-
-class (HasQueue env) => RunMessage env a where
-  runMessage :: (HasCallStack, MonadIO m, MonadRandom m, MonadReader env m, MonadFail m) => Message -> a -> m a
-  default runMessage :: (Generic a, RunMessage1 env (Rep a), MonadIO m, MonadRandom m, MonadReader env m, MonadFail m) => Message -> a -> m a
-  runMessage = defaultRunMessage
-
-defaultRunMessage
-  :: ( Generic a
-     , RunMessage1 env (Rep a)
-     , MonadIO m
-     , MonadRandom m
-     , MonadReader env m
-     , MonadFail m
-     )
-  => Message
-  -> a
-  -> m a
-defaultRunMessage msg = fmap to . runMessage1 msg . from
-
-class HasTokenValue1 env f where
-  getTokenValue1 :: MonadReader env m => f p -> InvestigatorId -> Token -> m TokenValue
-
-instance (HasTokenValue1 env f) => HasTokenValue1 env (M1 i c f) where
-  getTokenValue1 (M1 x) iid token = getTokenValue1 x iid token
-
-instance (HasTokenValue1 env l, HasTokenValue1 env r) => HasTokenValue1 env (l :+: r) where
-  getTokenValue1 (L1 x) iid token = getTokenValue1 x iid token
-  getTokenValue1 (R1 x) iid token = getTokenValue1 x iid token
-
-instance (HasTokenValue env p) => HasTokenValue1 env (K1 R p) where
-  getTokenValue1 (K1 x) iid token = getTokenValue x iid token
-
-class HasTokenValue env a where
-  getTokenValue :: MonadReader env m => a -> InvestigatorId -> Token -> m TokenValue
-  default getTokenValue :: (Generic a, HasTokenValue1 env (Rep a), MonadReader env m) => a -> InvestigatorId -> Token -> m TokenValue
-  getTokenValue = defaultGetTokenValue
-
-defaultGetTokenValue
-  :: (Generic a, HasTokenValue1 env (Rep a), MonadReader env m)
-  => a
-  -> InvestigatorId
-  -> Token
-  -> m TokenValue
-defaultGetTokenValue a iid token = getTokenValue1 (from a) iid token
-
-withQueue
-  :: (MonadIO m, MonadReader env m, HasQueue env)
-  => ([Message] -> ([Message], r))
-  -> m r
-withQueue body = do
-  ref <- asks $ view messageQueue
-  liftIO $ atomicModifyIORef' ref body
-
-withQueue_
-  :: (MonadIO m, MonadReader env m, HasQueue env)
-  => ([Message] -> [Message])
-  -> m ()
-withQueue_ body = withQueue ((, ()) . body)
-
-fromQueue
-  :: (MonadIO m, MonadReader env m, HasQueue env) => ([Message] -> r) -> m r
-fromQueue f = f <$> (readIORef =<< asks (view messageQueue))
-
-findFromQueue
-  :: (MonadIO m, MonadReader env m, HasQueue env)
-  => (Message -> Bool)
-  -> m (Maybe Message)
-findFromQueue f = fromQueue (find f)
-
-popMessage :: (MonadIO m, MonadReader env m, HasQueue env) => m (Maybe Message)
-popMessage = withQueue $ \case
-  [] -> ([], Nothing)
-  (m : ms) -> (ms, Just m)
-
-clearQueue :: (MonadIO m, MonadReader env m, HasQueue env) => m ()
-clearQueue = withQueue $ const ([], ())
-
-peekMessage
-  :: (MonadIO m, MonadReader env m, HasQueue env) => m (Maybe Message)
-peekMessage = withQueue $ \case
-  [] -> ([], Nothing)
-  (m : ms) -> (m : ms, Just m)
-
-pushMessage :: (MonadIO m, MonadReader env m, HasQueue env) => Message -> m ()
-pushMessage = pushMessages . pure
-
-pushMessages
-  :: (MonadIO m, MonadReader env m, HasQueue env) => [Message] -> m ()
-pushMessages msgs = withQueue $ \queue -> (queue <> msgs, ())
-
-unshiftMessage
-  :: (MonadIO m, MonadReader env m, HasQueue env) => Message -> m ()
-unshiftMessage = unshiftMessages . pure
-
-unshiftMessages
-  :: (MonadIO m, MonadReader env m, HasQueue env) => [Message] -> m ()
-unshiftMessages msgs = withQueue $ \queue -> (msgs <> queue, ())
-
-replaceMessage
-  :: (MonadIO m, MonadReader env m, HasQueue env)
-  => Message
-  -> [Message]
-  -> m ()
-replaceMessage msg replacement = withQueue $ \queue ->
-  let (before, after) = span (== msg) queue
-  in
-    case after of
-      [] -> (before, ())
-      (_ : rest) -> (before <> replacement <> rest, ())
 
 pairInvestigatorIdsForWindow
   :: ( MonadReader env m

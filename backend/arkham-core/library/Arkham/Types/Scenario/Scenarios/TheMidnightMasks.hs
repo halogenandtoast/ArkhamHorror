@@ -2,50 +2,16 @@ module Arkham.Types.Scenario.Scenarios.TheMidnightMasks where
 
 import Arkham.Prelude
 
-import Arkham.Json
-import Arkham.Types.Ability
-import Arkham.Types.ActId
-import Arkham.Types.AgendaId
-import Arkham.Types.AssetId
-import Arkham.Types.CampaignId
 import Arkham.Types.Card
-import Arkham.Types.Card.Cost
-import Arkham.Types.Card.Id
 import Arkham.Types.Classes
-import Arkham.Types.ClassSymbol
-import Arkham.Types.Cost
-import Arkham.Types.Direction
-import Arkham.Types.Effect.Window
-import Arkham.Types.EffectId
-import Arkham.Types.EffectMetadata
-import Arkham.Types.EncounterSet (EncounterSet)
 import Arkham.Types.EnemyId
-import Arkham.Types.EventId
-import Arkham.Types.Exception
-import Arkham.Types.GameValue
 import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.LocationMatcher
-import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.Name
-import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.Resolution
-import Arkham.Types.ScenarioId
-import Arkham.Types.SkillId
-import Arkham.Types.SkillType
-import Arkham.Types.Slot
-import Arkham.Types.Source
-import Arkham.Types.Stats (Stats)
 import Arkham.Types.Target
 import Arkham.Types.Token
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
- hiding (Cultist)
-
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Difficulty
 import Arkham.Types.EncounterSet (gatherEncounterSet)
@@ -53,7 +19,6 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
-import Arkham.Types.Token
 import Arkham.Types.Trait (Trait)
 import qualified Arkham.Types.Trait as Trait
 import Data.List.NonEmpty (NonEmpty(..))
@@ -141,7 +106,7 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
       investigatorIds <- getInvestigatorIds
       (acolytes, darkCult) <- splitAt (count' - 1)
         <$> gatherEncounterSet EncounterSet.DarkCult
-      -- ^ we will spawn these acolytes
+      -- we will spawn these acolytes
       southside <- sample $ "01126" :| ["01127"]
       downtown <- sample $ "01130" :| ["01131"]
       houseBurnedDown <- getHasRecord YourHouseHasBurnedToTheGround

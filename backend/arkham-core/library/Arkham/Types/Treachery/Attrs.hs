@@ -18,8 +18,6 @@ import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Trait
 import Arkham.Types.Keyword
 import Arkham.Types.Treachery.Runner

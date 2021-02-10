@@ -1,12 +1,18 @@
 module Arkham.Types.Treachery.Cards.SordidAndSilent
   ( SordidAndSilent(..)
   , sordidAndSilent
-  )
-where
+  ) where
 
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.TreacheryId
 
 newtype SordidAndSilent = SordidAndSilent TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -29,7 +35,9 @@ instance TreacheryRunner env => RunMessage env SordidAndSilent where
       Just (LocationTarget lid) -> do
         iids <- getSetList @InvestigatorId lid
         t <$ unshiftMessages
-          [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1 | iid <- iids ]
+          [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
+          | iid <- iids
+          ]
       _ -> pure t
     AdvanceAgenda _ -> t <$ unshiftMessage (Discard $ toTarget attrs)
     _ -> SordidAndSilent <$> runMessage msg attrs

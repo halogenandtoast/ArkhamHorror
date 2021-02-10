@@ -1,9 +1,21 @@
-module Arkham.Types.Treachery.Cards.SmiteTheWicked where
+module Arkham.Types.Treachery.Cards.SmiteTheWicked
+  ( SmiteTheWicked(..)
+  , smiteTheWicked
+  ) where
 
+import Arkham.Prelude
 
+import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCardMatcher
+import Arkham.Types.Classes
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.TreacheryId
 
 newtype SmiteTheWicked = SmiteTheWicked TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

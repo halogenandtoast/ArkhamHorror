@@ -5,7 +5,18 @@ module Arkham.Types.Effect.Attrs
   , module X
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
+
+import Arkham.Json
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.Effect.Window
+import Arkham.Types.EffectId
+import Arkham.Types.EffectMetadata
+import Arkham.Types.Message
+import Arkham.Types.Source
+import Arkham.Types.Target
+
 
 import Arkham.Types.Trait
 import Arkham.Types.Effect.Window as X

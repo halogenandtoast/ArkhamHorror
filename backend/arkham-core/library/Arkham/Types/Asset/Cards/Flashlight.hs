@@ -3,8 +3,19 @@ module Arkham.Types.Asset.Cards.Flashlight
   , flashlight
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Ability
+import Arkham.Types.AssetId
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.Effect.Window
+import Arkham.Types.EffectMetadata
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.SkillType
+import Arkham.Types.Slot
+import Arkham.Types.Target
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers

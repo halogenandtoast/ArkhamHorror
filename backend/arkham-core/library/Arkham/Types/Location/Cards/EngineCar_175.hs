@@ -4,8 +4,16 @@ module Arkham.Types.Location.Cards.EngineCar_175
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.Direction
+import Arkham.Types.GameValue
+import Arkham.Types.LocationId
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Modifier
+import Arkham.Types.Name
+import Arkham.Types.Query
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers

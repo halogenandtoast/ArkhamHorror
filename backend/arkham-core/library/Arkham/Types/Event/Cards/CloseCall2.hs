@@ -1,9 +1,18 @@
 module Arkham.Types.Event.Cards.CloseCall2 where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.EncounterCard
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
 import Arkham.Types.Event.Attrs
+import Arkham.Types.EventId
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
+import Arkham.Types.Target
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype CloseCall2 = CloseCall2 EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

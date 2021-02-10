@@ -1,7 +1,12 @@
 module Arkham.Types.Event.Cards.DrawnToTheFlame where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.EventId
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
+import Arkham.Types.Target
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 

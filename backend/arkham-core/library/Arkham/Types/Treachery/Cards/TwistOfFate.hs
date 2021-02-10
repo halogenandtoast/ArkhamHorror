@@ -3,7 +3,13 @@ module Arkham.Types.Treachery.Cards.TwistOfFate
   , twistOfFate
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
+
+import Arkham.Types.Classes
+import Arkham.Types.Message
+import Arkham.Types.Token
+import Arkham.Types.TreacheryId
+
 
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Treachery.Attrs

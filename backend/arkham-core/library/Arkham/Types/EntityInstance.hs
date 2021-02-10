@@ -3,8 +3,12 @@ module Arkham.Types.EntityInstance
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
 import Arkham.Types.Asset
 import Arkham.Types.Enemy
 import Arkham.Types.Event

@@ -4,8 +4,22 @@ module Arkham.Types.Effect.Effects.PayForAbilityEffect
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Ability
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.EffectId
+import Arkham.Types.EffectMetadata
+import Arkham.Types.Helpers
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.SkillType
+import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Action hiding (Ability, TakenAction)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Effect.Attrs

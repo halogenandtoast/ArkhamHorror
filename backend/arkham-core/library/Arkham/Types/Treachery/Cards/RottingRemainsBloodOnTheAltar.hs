@@ -4,7 +4,11 @@ module Arkham.Types.Treachery.Cards.RottingRemainsBloodOnTheAltar
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
+
+import Arkham.Types.Classes
+import Arkham.Types.TreacheryId
+
 
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Cards.RottingRemains

@@ -1,7 +1,12 @@
 module Arkham.Types.Event.Cards.SearchForTheTruth where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.EventId
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
+import Arkham.Types.Query
 import Arkham.Types.Event.Attrs
 
 newtype SearchForTheTruth = SearchForTheTruth EventAttrs

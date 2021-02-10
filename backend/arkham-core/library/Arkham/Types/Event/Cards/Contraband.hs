@@ -3,8 +3,16 @@ module Arkham.Types.Event.Cards.Contraband
   , Contraband(..)
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.AssetId
+import Arkham.Types.Classes
+import Arkham.Types.EventId
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Query
+import Arkham.Types.Target
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Event.Attrs
 

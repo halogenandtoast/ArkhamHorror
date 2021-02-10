@@ -1,6 +1,14 @@
 module Arkham.Types.Treachery.Cards.UmordhothsHunger where
 
-import Arkham.Import
+import Arkham.Prelude
+
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
+import Arkham.Types.Message
+import Arkham.Types.Query
+import Arkham.Types.Target
+import Arkham.Types.TreacheryId
+
 
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Treachery.Attrs

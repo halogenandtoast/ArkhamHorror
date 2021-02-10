@@ -3,7 +3,18 @@ module Arkham.Types.Treachery.Cards.Kidnapped
   , Kidnapped(..)
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
+
+import Arkham.Types.Ability
+import Arkham.Types.AgendaId
+import Arkham.Types.AssetId
+import Arkham.Types.Classes
+import Arkham.Types.Message
+import Arkham.Types.SkillType
+import Arkham.Types.Target
+import Arkham.Types.TreacheryId
+import Arkham.Types.Window
+
 
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs

@@ -3,8 +3,30 @@
 
 module Arkham.Types.Location.Attrs where
 
-import Arkham.Import hiding (toUpper, toLower)
+import Arkham.Prelude
 
+import Arkham.Json
+import Arkham.Types.AssetId
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.Direction
+import Arkham.Types.EncounterSet (EncounterSet)
+import Arkham.Types.EnemyId
+import Arkham.Types.EventId
+import Arkham.Types.Exception
+import Arkham.Types.GameValue
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Name
+import Arkham.Types.Query
+import Arkham.Types.SkillType
+import Arkham.Types.Source
+import Arkham.Types.Target
+import Arkham.Types.TreacheryId
+import Arkham.Types.Window
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Location.Runner
 import Arkham.Types.Location.Helpers
@@ -337,7 +359,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       pure $ a & assetsL %~ insertSet aid
     AttachAsset aid _ -> pure $ a & assetsL %~ deleteSet aid
     AddConnection lid symbol' | lid /= locationId -> do
-      -- | Since connections can be one directional we need to check both cases
+      -- Since connections can be one directional we need to check both cases
       let
         symbols = if locationRevealed
           then locationRevealedConnectedSymbols

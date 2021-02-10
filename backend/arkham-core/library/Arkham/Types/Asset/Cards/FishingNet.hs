@@ -3,8 +3,19 @@ module Arkham.Types.Asset.Cards.FishingNet
   , fishingNet
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Ability
+import Arkham.Types.AssetId
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.EnemyId
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Target
+import Arkham.Types.Window
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Game.Helpers

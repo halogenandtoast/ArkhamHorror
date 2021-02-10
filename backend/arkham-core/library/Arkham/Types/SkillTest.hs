@@ -4,8 +4,22 @@ module Arkham.Types.SkillTest
   ( module Arkham.Types.SkillTest
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Json
+import Arkham.Types.Card
+import Arkham.Types.Card.Id
+import Arkham.Types.Classes
+import Arkham.Types.Helpers
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.SkillType
+import Arkham.Types.Source
+import Arkham.Types.Target
+import Arkham.Types.Token
+import Arkham.Types.Window
 import Arkham.Types.Action (Action)
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.SkillTestResult

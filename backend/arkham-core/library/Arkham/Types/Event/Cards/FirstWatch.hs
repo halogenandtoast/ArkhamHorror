@@ -3,8 +3,19 @@ module Arkham.Types.Event.Cards.FirstWatch
   , FirstWatch(..)
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Ability
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.EventId
+import Arkham.Types.Helpers
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
+import Arkham.Types.Query
+import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Game.Helpers
 

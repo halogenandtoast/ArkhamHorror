@@ -1,11 +1,11 @@
 module Arkham.Types.EncounterSet
   ( EncounterSet(..)
   , gatherEncounterSet
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
+import Arkham.EncounterCard
 import Arkham.Types.Card
 
 data EncounterSet

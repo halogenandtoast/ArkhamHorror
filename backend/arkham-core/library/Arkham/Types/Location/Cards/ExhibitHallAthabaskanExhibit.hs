@@ -3,8 +3,16 @@ module Arkham.Types.Location.Cards.ExhibitHallAthabaskanExhibit
   , ExhibitHallAthabaskanExhibit(..)
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.GameValue
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Name
+import Arkham.Types.SkillType
+import Arkham.Types.Target
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers

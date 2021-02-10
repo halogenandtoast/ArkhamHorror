@@ -3,8 +3,15 @@ module Arkham.Types.Effect.Effects.WindowModifierEffect
   , WindowModifierEffect(..)
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.Effect.Window
+import Arkham.Types.EffectId
+import Arkham.Types.EffectMetadata
+import Arkham.Types.Message
+import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Effect.Attrs
 
 newtype WindowModifierEffect = WindowModifierEffect EffectAttrs

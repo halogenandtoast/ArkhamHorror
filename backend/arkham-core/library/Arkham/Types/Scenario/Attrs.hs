@@ -6,8 +6,25 @@ module Arkham.Types.Scenario.Attrs
   )
 where
 
-import Arkham.Import hiding (log)
+import Arkham.Prelude
 
+import Arkham.Json
+import Arkham.Types.ActId
+import Arkham.Types.AgendaId
+import Arkham.Types.CampaignId
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
+import Arkham.Types.Message
+import Arkham.Types.Name
+import Arkham.Types.Query
+import Arkham.Types.Resolution
+import Arkham.Types.ScenarioId
+import Arkham.Types.Source
+import Arkham.Types.Target
+import Arkham.Types.Token
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Difficulty
 import Arkham.Types.Scenario.Deck as X
@@ -163,8 +180,8 @@ instance ScenarioRunner env => RunMessage env ScenarioAttrs where
         [x] -> a <$ unshiftMessage (PlaceDoom (AgendaTarget x) 1)
         _ -> error "multiple agendas should be handled by the scenario"
     Discard (ActTarget _) -> pure $ a & actStackL .~ []
-    -- ^ See: Vengeance Awaits / The Devourer Below - right now the assumption
-    -- | is that the act deck has been replaced.
+    -- See: Vengeance Awaits / The Devourer Below - right now the assumption
+    -- is that the act deck has been replaced.
     InvestigatorDefeated _ -> do
       investigatorIds <- getSet @InScenarioInvestigatorId ()
       if null investigatorIds

@@ -1,7 +1,14 @@
 module Arkham.Types.Location.Cards.DeepBelowYourHouse where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.GameValue
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.Name
+import Arkham.Types.SkillType
+import Arkham.Types.Target
 import Arkham.Types.Card.EncounterCardMatcher
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs

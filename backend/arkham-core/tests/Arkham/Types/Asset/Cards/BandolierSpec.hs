@@ -5,6 +5,7 @@ module Arkham.Types.Asset.Cards.BandolierSpec
 import TestImport
 
 import qualified Arkham.Types.Investigator.Attrs as Investigator
+import Arkham.Types.Slot
 import Arkham.Types.Trait
 
 spec :: Spec

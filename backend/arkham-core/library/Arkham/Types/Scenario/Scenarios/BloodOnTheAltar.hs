@@ -1,18 +1,31 @@
 module Arkham.Types.Scenario.Scenarios.BloodOnTheAltar
   ( BloodOnTheAltar(..)
   , bloodOnTheAltar
-  )
-where
+  ) where
 
-import Arkham.Import hiding (Cultist)
+import Arkham.Prelude
 
+import Arkham.EncounterCard
+import Arkham.PlayerCard
+import Arkham.Types.AgendaId
+import Arkham.Types.CampaignId
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.Exception
+import Arkham.Types.Helpers
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Name
+import Arkham.Types.Resolution
+import Arkham.Types.Target
+import Arkham.Types.Token
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
-import Arkham.Types.Token
 import Data.List.NonEmpty (NonEmpty(..))
 
 newtype BloodOnTheAltarMetadata = BloodOnTheAltarMetadata { sacrifices :: [Card]}

@@ -1,7 +1,12 @@
 module Arkham.Types.Campaign where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.CampaignId
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.ScenarioId
+import Arkham.Types.Token
 import Arkham.Types.Campaign.Attrs
 import Arkham.Types.Campaign.Campaigns
 import Arkham.Types.Campaign.Runner

@@ -4,8 +4,15 @@ module Arkham.Types.Effect.Effects.ArcaneBarrier
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.EffectMetadata
+import Arkham.Types.Helpers
+import Arkham.Types.Message
+import Arkham.Types.SkillType
+import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Effect.Attrs
 
 newtype ArcaneBarrier = ArcaneBarrier EffectAttrs

@@ -3,8 +3,12 @@ module Arkham.Types.Location.Cards.BurnedRuins_205
   , BurnedRuins_205(..)
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.GameValue
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Name
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner

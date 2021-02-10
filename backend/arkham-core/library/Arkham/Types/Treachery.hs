@@ -2,12 +2,21 @@ module Arkham.Types.Treachery
   ( module Arkham.Types.Treachery
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.AssetId
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.Query
+import Arkham.Types.Target
 import Arkham.Types.Trait (Trait)
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Cards
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.TreacheryId
 
 createTreachery :: IsCard a => a -> Maybe InvestigatorId -> Treachery
 createTreachery a miid =
@@ -88,6 +97,7 @@ data Treachery
   | OnTheProwl' OnTheProwl
   | BeastOfTheBayou' BeastOfTheBayou
   | InsatiableBloodlust' InsatiableBloodlust
+  | BaseTreachery' BaseTreachery
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -222,7 +232,24 @@ allTreacheries = mapFromList
   , ("81034", (OnTheProwl' .) . onTheProwl)
   , ("81035", (BeastOfTheBayou' .) . beastOfTheBayou)
   , ("81036", (InsatiableBloodlust' .) . insatiableBloodlust)
+  , ("treachery", const . (`baseTreachery` "treachery"))
   ]
+
+newtype BaseTreachery = BaseTreachery TreacheryAttrs
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+baseTreachery :: TreacheryId -> CardCode -> Treachery
+baseTreachery a b = BaseTreachery' . BaseTreachery $ baseAttrs a b
+
+instance HasActions env BaseTreachery where
+  getActions treachery window (BaseTreachery attrs) =
+    getActions treachery window attrs
+
+instance HasModifiersFor env BaseTreachery where
+  getModifiersFor = noModifiersFor
+
+instance (TreacheryRunner env) => RunMessage env BaseTreachery where
+  runMessage msg (BaseTreachery attrs) = BaseTreachery <$> runMessage msg attrs
 
 isWeakness :: Treachery -> Bool
 isWeakness = treacheryWeakness . toAttrs

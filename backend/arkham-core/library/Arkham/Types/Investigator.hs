@@ -3,8 +3,23 @@ module Arkham.Types.Investigator
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.AssetId
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
+import Arkham.Types.EnemyId
+import Arkham.Types.Helpers
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Prey
+import Arkham.Types.Query
+import Arkham.Types.SkillType
+import Arkham.Types.Source
+import Arkham.Types.TreacheryId
 import Arkham.Types.Action (Action, TakenAction)
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Cards

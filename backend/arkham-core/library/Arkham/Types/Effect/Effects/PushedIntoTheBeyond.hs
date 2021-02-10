@@ -4,8 +4,15 @@ module Arkham.Types.Effect.Effects.PushedIntoTheBeyond
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.EffectMetadata
+import Arkham.Types.Exception
+import Arkham.Types.Helpers
+import Arkham.Types.Message
+import Arkham.Types.Target
 import Arkham.Types.Effect.Attrs
 
 newtype PushedIntoTheBeyond = PushedIntoTheBeyond EffectAttrs

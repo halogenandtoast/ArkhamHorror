@@ -4,8 +4,14 @@ module Arkham.Types.Effect.Effects.BindMonster2
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
+import Arkham.Types.Helpers
+import Arkham.Types.Message
+import Arkham.Types.Source
+import Arkham.Types.Target
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Trait

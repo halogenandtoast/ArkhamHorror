@@ -1,6 +1,15 @@
 module Arkham.Types.Skill.Cards.Deduction where
 
-import Arkham.Import
+import Arkham.Prelude
+
+import Arkham.Types.Classes
+import Arkham.Types.EffectMetadata
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.SkillId
+import Arkham.Types.Target
+
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Skill.Attrs

@@ -5,45 +5,63 @@
 module TestImport
   ( module X
   , module TestImport
-  )
-where
+  ) where
 
-import Arkham.Import as X
+import Arkham.Prelude as X
 
+import Arkham.EncounterCard
 import Arkham.Game as X hiding (newGame)
+import Arkham.PlayerCard
 import Arkham.Types.Agenda as X
+import Arkham.Types.Agenda.Attrs
+import Arkham.Types.AgendaId
 import Arkham.Types.Asset as X
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Card as X
+import Arkham.Types.Card.Id
 import Arkham.Types.ChaosBag as X
+import qualified Arkham.Types.ChaosBag as ChaosBag
+import Arkham.Types.Classes as X
+import Arkham.Types.ClassSymbol
+import Arkham.Types.Cost as X
+import Arkham.Types.Difficulty
 import Arkham.Types.Enemy as X
+import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Event as X
 import Arkham.Types.Game as X
 import Arkham.Types.Game.Helpers as X
+import Arkham.Types.GameValue as X
+import Arkham.Types.Helpers as X
 import Arkham.Types.Investigator as X
+import Arkham.Types.Investigator.Attrs
+import Arkham.Types.InvestigatorId
 import Arkham.Types.Location as X
+import Arkham.Types.Location.Attrs
+import Arkham.Types.LocationId as X
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Message as X
+import Arkham.Types.Name
+import Arkham.Types.Phase
+import Arkham.Types.Query as X
 import Arkham.Types.Scenario as X
+import Arkham.Types.Scenario.Attrs
+import Arkham.Types.SkillType as X
+import Arkham.Types.Source as X
 import Arkham.Types.Stats as X
+import Arkham.Types.Target as X
+import Arkham.Types.Token as X
+import Arkham.Types.Window as X
 import Control.Lens as X (set, (^?!))
 import Control.Monad.Fail as X
 import Control.Monad.State as X (get)
-import Data.UUID.V4 as X
-import Helpers.Matchers as X
-import Helpers.Message as X
-import Test.Hspec as X
-
-import Arkham.Types.Agenda.Attrs
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Card.PlayerCard (basePlayerCard)
-import qualified Arkham.Types.ChaosBag as ChaosBag
-import Arkham.Types.Difficulty
-import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Investigator.Attrs
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Phase
-import Arkham.Types.Scenario.Attrs
 import Control.Monad.State hiding (replicateM)
 import qualified Data.HashMap.Strict as HashMap
 import Data.These
 import qualified Data.UUID as UUID
+import Data.UUID.V4 as X
+import Helpers.Matchers as X
+import Helpers.Message as X
+import Test.Hspec as X
 
 testScenario
   :: MonadIO m => CardCode -> (ScenarioAttrs -> ScenarioAttrs) -> m Scenario

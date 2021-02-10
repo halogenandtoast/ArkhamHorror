@@ -3,8 +3,16 @@ module Arkham.Types.Location.Cards.AdministrationOffice_130
   , AdministrationOffice_130(..)
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.GameValue
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Modifier
+import Arkham.Types.Name
+import Arkham.Types.Query
+import Arkham.Types.Source
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers

@@ -1,13 +1,21 @@
 module Arkham.Types.Treachery.Cards.MaskOfUmordhoth where
 
-import Arkham.Import hiding (Cultist)
+import           Arkham.Json
 
-import Arkham.Types.Card.EncounterCardMatcher
+import           Arkham.Prelude
+import           Arkham.Types.Card
+import           Arkham.Types.Card.EncounterCardMatcher
+import           Arkham.Types.Classes
+import           Arkham.Types.EnemyId
 import qualified Arkham.Types.Keyword as Keyword
-import Arkham.Types.Trait
-import Arkham.Types.Treachery.Attrs
-import Arkham.Types.Treachery.Helpers
-import Arkham.Types.Treachery.Runner
+import           Arkham.Types.Message
+import           Arkham.Types.Modifier
+import           Arkham.Types.Target
+import           Arkham.Types.Trait
+import           Arkham.Types.Treachery.Attrs
+import           Arkham.Types.Treachery.Helpers
+import           Arkham.Types.Treachery.Runner
+import           Arkham.Types.TreacheryId
 
 newtype MaskOfUmordhoth = MaskOfUmordhoth TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

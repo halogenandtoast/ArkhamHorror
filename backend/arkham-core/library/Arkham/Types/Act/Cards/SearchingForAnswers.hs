@@ -3,10 +3,17 @@ module Arkham.Types.Act.Cards.SearchingForAnswers
   , searchingForAnswers
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.EncounterCard
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
+import Arkham.Types.Message
+import Arkham.Types.Target
 
 newtype SearchingForAnswers = SearchingForAnswers ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

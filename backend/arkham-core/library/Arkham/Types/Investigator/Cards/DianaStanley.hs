@@ -1,7 +1,9 @@
 module Arkham.Types.Investigator.Cards.DianaStanley where
 
-import Arkham.Import hiding (Cultist)
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats

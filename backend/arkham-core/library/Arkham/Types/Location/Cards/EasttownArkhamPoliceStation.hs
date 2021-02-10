@@ -3,8 +3,17 @@ module Arkham.Types.Location.Cards.EasttownArkhamPoliceStation
   , easttownArkhamPoliceStation
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Ability
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.GameValue
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.Name
+import Arkham.Types.Target
+import Arkham.Types.Window
 import Arkham.Types.Asset.Uses
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers

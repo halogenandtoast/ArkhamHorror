@@ -1,7 +1,13 @@
 module Arkham.Types.Asset.Cards.HolyRosary where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.AssetId
+import Arkham.Types.Classes
+import Arkham.Types.Modifier
+import Arkham.Types.SkillType
+import Arkham.Types.Slot
+import Arkham.Types.Target
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner

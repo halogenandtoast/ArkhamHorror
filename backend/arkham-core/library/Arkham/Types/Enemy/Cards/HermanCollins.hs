@@ -3,8 +3,17 @@ module Arkham.Types.Enemy.Cards.HermanCollins
   , hermanCollins
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Ability
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.EnemyId
+import Arkham.Types.GameValue
+import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
+import Arkham.Types.Message
+import Arkham.Types.Window
 import Arkham.Types.Action hiding (Ability)
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers

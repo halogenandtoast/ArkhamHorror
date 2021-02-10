@@ -3,7 +3,9 @@ module Arkham.Types.Asset.Class
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
+
+import Arkham.Types.Slot
 import Arkham.Types.Asset.Uses
 
 class IsAsset a where

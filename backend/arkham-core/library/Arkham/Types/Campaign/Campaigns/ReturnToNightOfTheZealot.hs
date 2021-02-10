@@ -1,7 +1,10 @@
 module Arkham.Types.Campaign.Campaigns.ReturnToNightOfTheZealot where
 
-import Arkham.Import hiding (Cultist)
+import Arkham.Prelude
 
+import Arkham.Types.CampaignId
+import Arkham.Types.Classes
+import Arkham.Types.Message
 import Arkham.Types.Campaign.Attrs
 import Arkham.Types.Campaign.Campaigns.NightOfTheZealot
 import Arkham.Types.Campaign.Runner

@@ -3,8 +3,17 @@ module Arkham.Types.Asset.Cards.AdamLynch
   , AdamLynch(..)
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.AssetId
+import Arkham.Types.Classes
+import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Source
+import Arkham.Types.Target
+import Arkham.Types.Token
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 

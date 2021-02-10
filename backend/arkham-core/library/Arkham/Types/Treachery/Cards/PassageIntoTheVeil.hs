@@ -4,7 +4,15 @@ module Arkham.Types.Treachery.Cards.PassageIntoTheVeil
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
+
+import Arkham.Types.AssetId
+import Arkham.Types.Classes
+import Arkham.Types.Message
+import Arkham.Types.SkillType
+import Arkham.Types.Target
+import Arkham.Types.TreacheryId
+
 
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Treachery.Attrs

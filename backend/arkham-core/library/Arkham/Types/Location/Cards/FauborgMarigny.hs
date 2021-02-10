@@ -3,8 +3,15 @@ module Arkham.Types.Location.Cards.FauborgMarigny
   , fauborgMarigny
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.GameValue
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Modifier
+import Arkham.Types.Name
+import Arkham.Types.Target
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers

@@ -4,8 +4,13 @@ module Arkham.Types.Effect.Effects.RiteOfSeeking
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.Helpers
+import Arkham.Types.Message
+import Arkham.Types.Target
+import Arkham.Types.Token
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Effect.Attrs
 

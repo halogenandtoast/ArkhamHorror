@@ -1,6 +1,15 @@
 module Arkham.Types.Treachery.Cards.FrozenInFear where
 
-import Arkham.Import
+import Arkham.Prelude
+
+import Arkham.Types.Classes
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.SkillType
+import Arkham.Types.Source
+import Arkham.Types.Target
+import Arkham.Types.TreacheryId
+
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Treachery.Attrs

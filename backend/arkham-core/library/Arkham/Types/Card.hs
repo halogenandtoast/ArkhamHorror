@@ -10,13 +10,7 @@ import Arkham.Types.Card.Class as X
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.EncounterCard as X
-  ( EncounterCard(..)
-  , EncounterCardType(..)
-  , allEncounterCards
-  , encounterCardMatch
-  , genEncounterCard
-  , lookupEncounterCard
-  )
+  (EncounterCard(..), EncounterCardType(..), encounterCardMatch)
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Card.PlayerCard as X
@@ -25,9 +19,6 @@ import Arkham.Types.Card.PlayerCard as X
   , DiscardedPlayerCard(..)
   , PlayerCard(..)
   , PlayerCardType(..)
-  , allPlayerCards
-  , genPlayerCard
-  , lookupPlayerCard
   , playerCardMatch
   )
 import Arkham.Types.InvestigatorId
@@ -95,20 +86,3 @@ toEncounterCard (PlayerCard _) = Nothing
 cardIsWeakness :: Card -> Bool
 cardIsWeakness (EncounterCard _) = False
 cardIsWeakness (PlayerCard pc) = pcWeakness pc
-
-buildCard :: MonadRandom m => CardCode -> m Card
-buildCard cardCode = lookupCard cardCode <$> getRandom
-
-lookupCard :: CardCode -> (CardId -> Card)
-lookupCard cardCode =
-  let
-    encounterCard = do
-      f <- lookup cardCode allEncounterCards
-      pure $ EncounterCard . f
-    playerCard = do
-      f <- lookup cardCode allPlayerCards
-      pure $ PlayerCard . f
-  in
-    fromJustNote ("Missing card " <> show cardCode)
-    $ encounterCard
-    <|> playerCard

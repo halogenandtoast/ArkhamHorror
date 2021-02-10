@@ -3,8 +3,17 @@ module Arkham.Types.Event.Cards.AstoundingRevelation
   , AstoundingRevelation(..)
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Ability
+import Arkham.Types.AssetId
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.EventId
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
+import Arkham.Types.Target
+import Arkham.Types.Window
 import Arkham.Types.Asset.Uses (UseType(..))
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Trait

@@ -1,7 +1,12 @@
 module Arkham.Types.Enemy.Cards.GhoulPriest where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
+import Arkham.Types.GameValue
+import Arkham.Types.Prey
+import Arkham.Types.SkillType
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 

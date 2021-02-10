@@ -1,14 +1,24 @@
 module Arkham.Types.Scenario.Scenarios.TheMidnightMasks where
 
-import Arkham.Import hiding (Cultist)
+import Arkham.Prelude
 
+import Arkham.EncounterCard
 import Arkham.Types.CampaignLogKey
+import Arkham.Types.Card
+import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.EncounterSet (gatherEncounterSet)
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.EnemyId
+import Arkham.Types.Helpers
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
+import Arkham.Types.Query
+import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
+import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait (Trait)
 import qualified Arkham.Types.Trait as Trait
@@ -97,7 +107,7 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
       investigatorIds <- getInvestigatorIds
       (acolytes, darkCult) <- splitAt (count' - 1)
         <$> gatherEncounterSet EncounterSet.DarkCult
-      -- ^ we will spawn these acolytes
+      -- we will spawn these acolytes
       southside <- sample $ "01126" :| ["01127"]
       downtown <- sample $ "01130" :| ["01131"]
       houseBurnedDown <- getHasRecord YourHouseHasBurnedToTheGround

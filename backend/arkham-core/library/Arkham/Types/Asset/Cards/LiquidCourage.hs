@@ -4,8 +4,18 @@ module Arkham.Types.Asset.Cards.LiquidCourage
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Ability
+import Arkham.Types.AssetId
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.SkillType
+import Arkham.Types.Target
+import Arkham.Types.Window
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Uses
 

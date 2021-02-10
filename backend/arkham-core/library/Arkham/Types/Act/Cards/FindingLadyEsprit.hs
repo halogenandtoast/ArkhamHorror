@@ -3,14 +3,24 @@ module Arkham.Types.Act.Cards.FindingLadyEsprit
   , findingLadyEsprit
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.EncounterCard
+import Arkham.PlayerCard
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
+import Arkham.Types.Card
+import Arkham.Types.Classes
 import Arkham.Types.EncounterSet (gatherEncounterSet)
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.GameValue
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Target
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype FindingLadyEsprit = FindingLadyEsprit ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

@@ -3,8 +3,16 @@ module Arkham.Types.Investigator.Cards.AgnesBaker
   , agnesBaker
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Ability
+import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
+import Arkham.Types.Cost
+import Arkham.Types.EnemyId
+import Arkham.Types.Message
+import Arkham.Types.Token
+import Arkham.Types.Window
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats

@@ -3,8 +3,32 @@
 
 module Arkham.Types.Investigator.Attrs where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Json
+import Arkham.PlayerCard
+import Arkham.Types.Ability
+import Arkham.Types.AssetId
+import Arkham.Types.Card
+import Arkham.Types.Card.Cost
+import Arkham.Types.Card.Id
+import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
+import Arkham.Types.Cost
+import Arkham.Types.EnemyId
+import Arkham.Types.Helpers
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Name
+import Arkham.Types.Query
+import Arkham.Types.SkillType
+import Arkham.Types.Slot
+import Arkham.Types.Source
+import Arkham.Types.Target
+import Arkham.Types.TreacheryId
+import Arkham.Types.Window
 import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.CommitRestriction

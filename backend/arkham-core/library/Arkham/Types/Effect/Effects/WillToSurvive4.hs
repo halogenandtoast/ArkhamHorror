@@ -4,8 +4,12 @@ module Arkham.Types.Effect.Effects.WillToSurvive4
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.Helpers
+import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 

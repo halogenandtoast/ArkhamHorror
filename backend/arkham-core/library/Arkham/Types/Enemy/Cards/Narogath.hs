@@ -1,7 +1,18 @@
 module Arkham.Types.Enemy.Cards.Narogath where
 
-import Arkham.Import hiding (Cultist)
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
+import Arkham.Types.GameValue
+import Arkham.Types.Helpers ()
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Prey
+import Arkham.Types.Query
+import Arkham.Types.Target
 import Arkham.Types.Action
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers

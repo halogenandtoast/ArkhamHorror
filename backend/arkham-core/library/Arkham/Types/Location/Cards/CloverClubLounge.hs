@@ -3,8 +3,18 @@ module Arkham.Types.Location.Cards.CloverClubLounge
   , CloverClubLounge(..)
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Ability
+import Arkham.Types.ActId
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.GameValue
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.Name
+import Arkham.Types.Window
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Location.Attrs

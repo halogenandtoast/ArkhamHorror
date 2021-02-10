@@ -4,8 +4,15 @@ module Arkham.Types.Effect.Effects.SeekingAnswers
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.Helpers
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.SkillType
+import Arkham.Types.Target
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers

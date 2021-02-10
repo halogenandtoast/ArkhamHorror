@@ -1,7 +1,15 @@
 module Arkham.Types.Enemy.Cards.TheMaskedHunter where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
+import Arkham.Types.GameValue
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Prey
+import Arkham.Types.Query
+import Arkham.Types.Target
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner

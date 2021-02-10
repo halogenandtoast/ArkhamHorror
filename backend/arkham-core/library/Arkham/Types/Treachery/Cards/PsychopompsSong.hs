@@ -3,7 +3,16 @@ module Arkham.Types.Treachery.Cards.PsychopompsSong
   , PsychopompsSong(..)
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
+
+import Arkham.Types.Ability
+import Arkham.Types.Classes
+import Arkham.Types.Exception
+import Arkham.Types.Message
+import Arkham.Types.Target
+import Arkham.Types.TreacheryId
+import Arkham.Types.Window
+
 
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner

@@ -1,7 +1,16 @@
 module Arkham.Types.Skill.Cards.ViciousBlow where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.Effect.Window
+import Arkham.Types.EffectMetadata
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.SkillId
+import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Action
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Skill.Attrs

@@ -3,8 +3,15 @@ module Arkham.Types.Asset.Cards.Scavenging
   , scavenging
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Ability
+import Arkham.Types.AssetId
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.Message
+import Arkham.Types.Target
+import Arkham.Types.Window
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers

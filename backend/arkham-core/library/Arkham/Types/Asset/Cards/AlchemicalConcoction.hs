@@ -3,8 +3,21 @@ module Arkham.Types.Asset.Cards.AlchemicalConcoction
   , AlchemicalConcoction(..)
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Ability
+import Arkham.Types.AssetId
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.Effect.Window
+import Arkham.Types.EffectMetadata
+import Arkham.Types.EnemyId
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.SkillType
+import Arkham.Types.Source
+import Arkham.Types.Target
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers

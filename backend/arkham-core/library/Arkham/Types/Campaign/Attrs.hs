@@ -2,14 +2,26 @@
 
 module Arkham.Types.Campaign.Attrs where
 
-import Arkham.Import hiding (log)
+import Arkham.Prelude
 
+import Arkham.EncounterCard
+import Arkham.Json
+import Arkham.PlayerCard
 import Arkham.Types.Campaign.Runner
+import Arkham.Types.CampaignId
 import Arkham.Types.CampaignLog
 import Arkham.Types.CampaignStep
+import Arkham.Types.Card
+import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
+import Arkham.Types.Name
+import Arkham.Types.Resolution
+import Arkham.Types.ScenarioId
+import Arkham.Types.Token
 
 data CampaignAttrs = CampaignAttrs
   { campaignId :: CampaignId

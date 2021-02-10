@@ -1,7 +1,9 @@
 module Arkham.Types.Enemy.Cards.SwarmOfRats where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 

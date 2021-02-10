@@ -4,7 +4,15 @@ module Arkham.Types.Treachery.Cards.ShadowSpawned
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
+
+import Arkham.Types.Classes
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Query
+import Arkham.Types.Target
+import Arkham.Types.TreacheryId
+
 
 import Arkham.Types.Game.Helpers
 import qualified Arkham.Types.Keyword as Keyword

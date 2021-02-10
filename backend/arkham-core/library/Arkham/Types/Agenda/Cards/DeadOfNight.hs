@@ -1,10 +1,19 @@
 module Arkham.Types.Agenda.Cards.DeadOfNight where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.EncounterCard
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
+import Arkham.Types.GameValue
+import Arkham.Types.LocationMatcher
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Target
 
 newtype DeadOfNight = DeadOfNight AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

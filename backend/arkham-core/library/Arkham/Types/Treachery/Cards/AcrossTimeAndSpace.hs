@@ -3,7 +3,12 @@ module Arkham.Types.Treachery.Cards.AcrossTimeAndSpace
   , AcrossTimeAndSpace(..)
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
+
+import Arkham.Types.Classes
+import Arkham.Types.Message
+import Arkham.Types.TreacheryId
+
 
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner

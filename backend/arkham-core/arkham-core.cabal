@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c441ef073f5ac3d0cd7e399295f6eff2ca675751256b61e6d62d5daa63142273
+-- hash: 2add62405097a37f05e1edb0ee655afdc4e9c29d507f44a8a661a59322890959
 
 name:           arkham-core
 version:        0.0.0
@@ -13,7 +13,6 @@ build-type:     Simple
 library
   exposed-modules:
       Arkham.Game
-      Arkham.Import
       Arkham.Json
       Arkham.Prelude
       Arkham.Types.Ability

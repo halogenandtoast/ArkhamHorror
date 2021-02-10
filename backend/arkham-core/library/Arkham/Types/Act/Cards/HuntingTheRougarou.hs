@@ -1,7 +1,19 @@
 module Arkham.Types.Act.Cards.HuntingTheRougarou where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Ability
+import Arkham.Types.AssetId
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.EnemyId
+import Arkham.Types.GameValue
+import Arkham.Types.Message
+import Arkham.Types.Query
+import Arkham.Types.Resolution
+import Arkham.Types.Target
+import Arkham.Types.Window
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner

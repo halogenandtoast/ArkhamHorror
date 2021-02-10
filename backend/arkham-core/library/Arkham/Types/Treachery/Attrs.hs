@@ -2,8 +2,24 @@
 
 module Arkham.Types.Treachery.Attrs where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Json
+import Arkham.PlayerCard
+import Arkham.EncounterCard
+import Arkham.Types.AgendaId
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
+import Arkham.Types.Exception
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Name
+import Arkham.Types.Query
+import Arkham.Types.Source
+import Arkham.Types.Target
+import Arkham.Types.TreacheryId
 import Arkham.Types.Trait
 import Arkham.Types.Keyword
 import Arkham.Types.Treachery.Runner

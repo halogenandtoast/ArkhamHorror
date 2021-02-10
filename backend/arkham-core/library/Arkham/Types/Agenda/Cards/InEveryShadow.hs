@@ -3,10 +3,18 @@ module Arkham.Types.Agenda.Cards.InEveryShadow
   , inEveryShadow
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.EncounterCard
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.GameValue
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
+import Arkham.Types.Target
+import Arkham.Types.TreacheryId
 
 newtype InEveryShadow = InEveryShadow AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

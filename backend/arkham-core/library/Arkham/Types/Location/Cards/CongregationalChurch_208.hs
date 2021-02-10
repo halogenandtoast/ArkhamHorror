@@ -3,8 +3,15 @@ module Arkham.Types.Location.Cards.CongregationalChurch_208
   , CongregationalChurch_208(..)
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.GameValue
+import Arkham.Types.LocationMatcher
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Card.EncounterCardMatcher
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers

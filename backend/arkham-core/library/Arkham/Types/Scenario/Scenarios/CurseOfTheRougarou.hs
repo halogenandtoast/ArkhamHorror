@@ -3,15 +3,26 @@ module Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
   , curseOfTheRougarou
   ) where
 
-import Arkham.Import hiding (Cultist)
+import Arkham.Prelude
 
+import Arkham.Json
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
+import Arkham.Types.Helpers
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Resolution
+import Arkham.Types.Source
+import Arkham.Types.Target
+import Arkham.Types.Token
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
-import Arkham.Types.Token
 import Arkham.Types.Trait hiding (Cultist)
 import Control.Monad.Extra (findM)
 

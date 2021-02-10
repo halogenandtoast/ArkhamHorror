@@ -3,7 +3,19 @@ module Arkham.Types.Treachery.Cards.Hypochondria
   , hypochondria
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
+
+import Arkham.Types.Ability
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Source
+import Arkham.Types.Target
+import Arkham.Types.TreacheryId
+import Arkham.Types.Window
+
 
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner

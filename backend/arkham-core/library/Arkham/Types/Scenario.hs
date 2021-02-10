@@ -3,8 +3,20 @@ module Arkham.Types.Scenario
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.ActId
+import Arkham.Types.AgendaId
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Query
+import Arkham.Types.Resolution
+import Arkham.Types.ScenarioId
+import Arkham.Types.Token
 import Arkham.Types.Difficulty
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Runner

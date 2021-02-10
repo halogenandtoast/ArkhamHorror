@@ -4,8 +4,11 @@ module Arkham.Types.Enemy.Cards.Acolyte
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
+import Arkham.Types.Message
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 

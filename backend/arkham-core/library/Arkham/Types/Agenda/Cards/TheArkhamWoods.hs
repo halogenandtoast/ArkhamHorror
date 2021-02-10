@@ -1,7 +1,13 @@
 module Arkham.Types.Agenda.Cards.TheArkhamWoods where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.GameValue
+import Arkham.Types.Message
+import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card.EncounterCardMatcher

@@ -2,8 +2,29 @@
 
 module Arkham.Types.Enemy.Attrs where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Json
+import Arkham.EncounterCard
+import Arkham.PlayerCard
+import Arkham.Types.AssetId
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
+import Arkham.Types.GameValue
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Name
+import Arkham.Types.Prey
+import Arkham.Types.Query
+import Arkham.Types.SkillType
+import Arkham.Types.Source
+import Arkham.Types.Target
+import Arkham.Types.TreacheryId
+import Arkham.Types.Window
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers

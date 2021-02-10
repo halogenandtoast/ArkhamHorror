@@ -4,8 +4,15 @@ module Arkham.Types.Enemy.Cards.Thrall
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
+import Arkham.Types.Exception
+import Arkham.Types.GameValue
+import Arkham.Types.Helpers
+import Arkham.Types.Message
+import Arkham.Types.Query
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 

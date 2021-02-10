@@ -1,11 +1,19 @@
 module Arkham.Types.Scenario.Scenarios.ReturnToTheMidnightMasks where
 
-import Arkham.Import hiding (Cultist)
+import Arkham.Prelude
 
+import Arkham.EncounterCard
 import Arkham.Types.CampaignLogKey
+import Arkham.Types.Card
+import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.EncounterSet (gatherEncounterSet)
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.EnemyId
+import Arkham.Types.Helpers
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
+import Arkham.Types.Query
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
@@ -41,7 +49,7 @@ instance (ScenarioRunner env) => RunMessage env ReturnToTheMidnightMasks where
         investigatorIds <- getInvestigatorIds
         (acolytes, theDevourersCult) <- splitAt (count' - 1)
           <$> gatherEncounterSet EncounterSet.TheDevourersCult
-        -- ^ we will spawn these disciples of the devourer
+        -- we will spawn these disciples of the devourer
 
         southside <- sample $ "01126" :| ["01127"]
         downtown <- sample $ "01130" :| ["01131"]

@@ -1,18 +1,27 @@
 module Arkham.Types.Scenario.Scenarios.TheHouseAlwaysWins
   ( TheHouseAlwaysWins(..)
   , theHouseAlwaysWins
-  )
-where
+  ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Card
 import Arkham.Types.CampaignLogKey
+import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.Helpers
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
+import Arkham.Types.Query
+import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.ScenarioLogKey
+import Arkham.Types.Source
+import Arkham.Types.Target
+import Arkham.Types.Token
 
 newtype TheHouseAlwaysWins = TheHouseAlwaysWins ScenarioAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)

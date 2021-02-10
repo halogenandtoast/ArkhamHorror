@@ -3,10 +3,20 @@ module Arkham.Types.Agenda.Cards.PredatorOrPrey
   , predatorOrPrey
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
+
+import Arkham.EncounterCard
+import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.GameValue
+import Arkham.Types.Message
+import Arkham.Types.Source
+import Arkham.Types.Window
 
 newtype PredatorOrPrey = PredatorOrPrey AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

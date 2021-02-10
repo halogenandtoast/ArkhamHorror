@@ -4,8 +4,16 @@ module Arkham.Types.Agenda.Cards.TheCloverClub
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
+import Arkham.Types.GameValue
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Query
+import Arkham.Types.ScenarioId
+import Arkham.Types.Target
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Game.Helpers

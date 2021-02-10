@@ -3,11 +3,17 @@ module Arkham.Types.Act.Cards.FindingAWayInside
   , findingAWayInside
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.PlayerCard
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.GameValue
+import Arkham.Types.Message
+import Arkham.Types.Target
 
 newtype FindingAWayInside = FindingAWayInside ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

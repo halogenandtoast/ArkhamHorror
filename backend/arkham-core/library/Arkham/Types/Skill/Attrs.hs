@@ -2,7 +2,18 @@
 
 module Arkham.Types.Skill.Attrs where
 
-import Arkham.Import
+import Arkham.Prelude
+
+import Arkham.Json
+import Arkham.PlayerCard
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Name
+import Arkham.Types.SkillId
+import Arkham.Types.Source
+import Arkham.Types.Target
+
 
 import Arkham.Types.Skill.Runner
 import Arkham.Types.Trait

@@ -4,8 +4,13 @@ module Arkham.Types.Effect.Effects.JeremiahPierce
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.Helpers
+import Arkham.Types.Message
+import Arkham.Types.SkillType
+import Arkham.Types.Target
 import Arkham.Types.Action
 import Arkham.Types.Effect.Attrs
 

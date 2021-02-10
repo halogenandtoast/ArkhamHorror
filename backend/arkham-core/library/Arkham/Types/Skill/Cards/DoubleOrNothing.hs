@@ -4,7 +4,14 @@ module Arkham.Types.Skill.Cards.DoubleOrNothing
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
+
+import Arkham.Types.Classes
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Modifier
+import Arkham.Types.SkillId
+import Arkham.Types.Target
+
 
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Skill.Attrs

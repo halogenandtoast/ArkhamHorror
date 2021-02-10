@@ -3,8 +3,16 @@ module Arkham.Types.Asset.Cards.StrayCat
   , strayCat
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Ability
+import Arkham.Types.AssetId
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Slot
+import Arkham.Types.Window
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner

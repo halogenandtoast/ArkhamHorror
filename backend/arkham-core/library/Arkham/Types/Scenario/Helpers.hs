@@ -4,7 +4,12 @@ module Arkham.Types.Scenario.Helpers
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
+
+import Arkham.Types.CampaignId
+import Arkham.Types.Card
+import Arkham.Types.Classes
+
 
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.EncounterSet

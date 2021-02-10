@@ -1,11 +1,16 @@
 module Arkham.Types.Act.Cards.InvestigatingTheTrail where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.EncounterCard
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.CampaignLogKey
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.GameValue
+import Arkham.Types.Message
 
 newtype InvestigatingTheTrail = InvestigatingTheTrail ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

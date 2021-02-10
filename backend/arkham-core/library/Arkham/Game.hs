@@ -1,7 +1,14 @@
 module Arkham.Game where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.CampaignId
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.Helpers
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
+import Arkham.Types.ScenarioId
 import Arkham.Types.Campaign
 import Arkham.Types.ChaosBag
 import Arkham.Types.Difficulty

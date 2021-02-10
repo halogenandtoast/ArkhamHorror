@@ -3,11 +3,20 @@ module Arkham.Types.Agenda.Cards.RestrictedAccess
   , restrictedAccess
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.EncounterCard
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
+import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCardMatcher
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
+import Arkham.Types.GameValue
+import Arkham.Types.Message
+import Arkham.Types.Query
+import Arkham.Types.Target
+import Arkham.Types.TreacheryId
 
 newtype RestrictedAccess = RestrictedAccess AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

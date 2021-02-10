@@ -3,8 +3,13 @@ module Arkham.Types.Effect.Effects.Shrivelling
   , Shrivelling(..)
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.Helpers
+import Arkham.Types.Message
+import Arkham.Types.Target
+import Arkham.Types.Token
 import Arkham.Types.Effect.Attrs
 
 newtype Shrivelling = Shrivelling EffectAttrs

@@ -3,8 +3,15 @@ module Arkham.Types.Investigator.Cards.DaisyWalker
   , daisyWalker
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
+import Arkham.Types.Message
+import Arkham.Types.Query
+import Arkham.Types.Source
+import Arkham.Types.Target
+import Arkham.Types.Token
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats

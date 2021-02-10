@@ -1,9 +1,17 @@
 module Arkham.Types.Agenda.Cards.VengeanceAwaits where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.EncounterCard
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.GameValue
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Resolution
+import Arkham.Types.Target
 
 newtype VengeanceAwaits = VengeanceAwaits AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

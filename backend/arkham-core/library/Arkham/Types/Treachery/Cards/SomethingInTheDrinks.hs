@@ -4,7 +4,12 @@ module Arkham.Types.Treachery.Cards.SomethingInTheDrinks
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
+
+import Arkham.Types.Classes
+import Arkham.Types.Message
+import Arkham.Types.TreacheryId
+
 
 import Arkham.Types.Game.Helpers
 import Arkham.Types.ScenarioLogKey

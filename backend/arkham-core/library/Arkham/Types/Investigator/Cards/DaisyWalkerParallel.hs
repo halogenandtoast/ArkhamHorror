@@ -3,8 +3,21 @@ module Arkham.Types.Investigator.Cards.DaisyWalkerParallel
   , daisyWalkerParallel
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Ability
+import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
+import Arkham.Types.Cost
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Query
+import Arkham.Types.SkillType
+import Arkham.Types.Source
+import Arkham.Types.Target
+import Arkham.Types.Token
+import Arkham.Types.Window
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats

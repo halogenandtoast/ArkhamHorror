@@ -4,7 +4,15 @@ module Arkham.Types.Treachery.Cards.BeyondTheVeil
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
+
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
+import Arkham.Types.Target
+import Arkham.Types.TreacheryId
+
 
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner

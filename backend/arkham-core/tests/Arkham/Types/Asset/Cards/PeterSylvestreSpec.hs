@@ -1,9 +1,10 @@
 module Arkham.Types.Asset.Cards.PeterSylvestreSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
+
+import Arkham.Types.Modifier
 
 spec :: Spec
 spec = describe "Peter Sylvestre" $ do

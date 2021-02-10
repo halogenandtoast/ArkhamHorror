@@ -3,8 +3,15 @@ module Arkham.Types.Enemy.Cards.TheRougarou
   , theRougarou
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
+import Arkham.Types.GameValue
+import Arkham.Types.Helpers
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Target
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner

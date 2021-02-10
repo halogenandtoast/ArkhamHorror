@@ -4,7 +4,14 @@ module Arkham.Types.Skill.Cards.TrueUnderstanding
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
+
+import Arkham.Types.Classes
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
+import Arkham.Types.SkillId
+import Arkham.Types.Target
+
 
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner

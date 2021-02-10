@@ -3,13 +3,27 @@ module Arkham.Types.Location.Cards.TrappersCabin
   , trappersCabin
   ) where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.PlayerCard (genPlayerCard)
+import Arkham.Types.Ability
+import Arkham.Types.AssetId
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.Cost
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Name
+import Arkham.Types.SkillType
+import Arkham.Types.Target
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype TrappersCabin = TrappersCabin LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

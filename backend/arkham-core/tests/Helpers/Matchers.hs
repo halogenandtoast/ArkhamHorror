@@ -2,6 +2,8 @@ module Helpers.Matchers where
 
 import Arkham.Prelude
 
+import Arkham.EncounterCard
+import Arkham.PlayerCard
 import Arkham.Types.Agenda
 import Arkham.Types.Asset
 import Arkham.Types.AssetId
@@ -80,7 +82,8 @@ instance ToEncounterCard Enemy where
   asEncounterCard enemy =
     lookupEncounterCard (getCardCode enemy) (getCardId enemy)
 
-isInEncounterDiscard :: (ToEncounterCard entity) => Game queue -> entity -> Bool
+isInEncounterDiscard
+  :: (ToEncounterCard entity) => Game queue -> entity -> Bool
 isInEncounterDiscard game entity = card `elem` discard'
  where
   discard' = game ^. discardL

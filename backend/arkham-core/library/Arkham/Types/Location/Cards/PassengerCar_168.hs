@@ -4,8 +4,19 @@ module Arkham.Types.Location.Cards.PassengerCar_168
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.Direction
+import Arkham.Types.GameValue
+import Arkham.Types.LocationId
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Name
+import Arkham.Types.Query
+import Arkham.Types.SkillType
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers

@@ -1,7 +1,13 @@
 module Arkham.Types.Campaign.Campaigns.TheDunwichLegacy where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.CampaignId
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
+import Arkham.Types.Resolution
 import Arkham.Types.Campaign.Attrs
 import Arkham.Types.Campaign.Runner
 import Arkham.Types.CampaignLogKey

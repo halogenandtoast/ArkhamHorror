@@ -4,9 +4,17 @@ module Arkham.Types.Event.Cards.IveGotAPlan
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
 
-
+import Arkham.Types.Classes
+import Arkham.Types.EventId
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Query
+import Arkham.Types.SkillType
+import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Action
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Helpers

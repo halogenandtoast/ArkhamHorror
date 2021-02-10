@@ -6,8 +6,20 @@ module Arkham.Types.Act.Attrs
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Json
+import Arkham.Types.ActId
+import Arkham.Types.Classes
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Name
+import Arkham.Types.Query
+import Arkham.Types.Source
+import Arkham.Types.Target
+import Arkham.Types.TreacheryId
+import Arkham.Types.Window
 import Arkham.Types.Act.Sequence as X
 import Arkham.Types.Game.Helpers
 import Arkham.Types.RequiredClues as X

@@ -4,8 +4,15 @@ module Arkham.Types.Agenda.Cards.TheCurseSpreads
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
+import Arkham.Types.GameValue
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
+import Arkham.Types.Resolution
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 

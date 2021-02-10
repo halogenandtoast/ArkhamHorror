@@ -3,8 +3,21 @@ module Arkham.Types.Enemy
   )
 where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Ability
+import Arkham.Types.AssetId
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
+import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Prey
+import Arkham.Types.Query
+import Arkham.Types.Target
+import Arkham.Types.TreacheryId
 import Arkham.Types.Action
 import Arkham.Types.Trait (Trait)
 import Arkham.Types.Enemy.Attrs

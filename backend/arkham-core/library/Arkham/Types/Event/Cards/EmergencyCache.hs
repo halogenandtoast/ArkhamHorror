@@ -1,7 +1,12 @@
 module Arkham.Types.Event.Cards.EmergencyCache where
 
-import Arkham.Import
+import Arkham.Prelude
 
+import Arkham.Types.Classes
+import Arkham.Types.EventId
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
+import Arkham.Types.Target
 import Arkham.Types.Event.Attrs
 
 newtype EmergencyCache = EmergencyCache EventAttrs

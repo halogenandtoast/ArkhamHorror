@@ -10,7 +10,6 @@ import Arkham.Json
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
-import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message

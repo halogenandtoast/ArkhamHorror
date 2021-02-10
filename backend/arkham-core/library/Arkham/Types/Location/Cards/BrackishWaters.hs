@@ -14,7 +14,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
-import Arkham.Types.Helpers
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner

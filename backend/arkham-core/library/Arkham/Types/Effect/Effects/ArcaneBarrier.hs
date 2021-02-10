@@ -1,19 +1,17 @@
 module Arkham.Types.Effect.Effects.ArcaneBarrier
   ( ArcaneBarrier(..)
   , arcaneBarrier
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import Arkham.Types.Effect.Attrs
 import Arkham.Types.EffectMetadata
-import Arkham.Types.Helpers
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Effect.Attrs
 
 newtype ArcaneBarrier = ArcaneBarrier EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

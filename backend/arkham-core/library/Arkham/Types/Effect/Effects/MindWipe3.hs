@@ -1,17 +1,15 @@
 module Arkham.Types.Effect.Effects.MindWipe3
   ( mindWipe3
   , MindWipe3(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Classes
-import Arkham.Types.Helpers
-import Arkham.Types.Message
-import Arkham.Types.Modifier
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
+import Arkham.Types.Message
+import Arkham.Types.Modifier
 
 newtype MindWipe3 = MindWipe3 EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -20,8 +18,9 @@ mindWipe3 :: EffectArgs -> MindWipe3
 mindWipe3 = MindWipe3 . uncurry4 (baseAttrs "50008")
 
 instance HasModifiersFor env MindWipe3 where
-  getModifiersFor _ target (MindWipe3 a@EffectAttrs {..}) | target == effectTarget =
-    pure $ toModifiers a [Blank, DamageDealt (-1), HorrorDealt (-1)]
+  getModifiersFor _ target (MindWipe3 a@EffectAttrs {..})
+    | target == effectTarget = pure
+    $ toModifiers a [Blank, DamageDealt (-1), HorrorDealt (-1)]
   getModifiersFor _ _ _ = pure []
 
 instance HasQueue env => RunMessage env MindWipe3 where

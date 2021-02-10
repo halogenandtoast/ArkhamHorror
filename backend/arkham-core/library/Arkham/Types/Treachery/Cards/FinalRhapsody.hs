@@ -3,16 +3,13 @@ module Arkham.Types.Treachery.Cards.FinalRhapsody where
 import Arkham.Prelude
 
 import Arkham.Types.Classes
-import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
-import Arkham.Types.Token
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.RequestedTokenStrategy
+import Arkham.Types.Token
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.TreacheryId
 
 newtype FinalRhapsody = FinalRhapsody TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

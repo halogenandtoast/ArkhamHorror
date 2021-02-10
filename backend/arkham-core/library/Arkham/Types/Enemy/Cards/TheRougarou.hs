@@ -6,15 +6,14 @@ module Arkham.Types.Enemy.Cards.TheRougarou
 import Arkham.Prelude
 
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.Helpers
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Target
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
+import Arkham.Types.EnemyId
+import Arkham.Types.GameValue
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Target
 
 newtype TheRougarouMetadata = TheRougarouMetadata { damagePerPhase :: Int }
   deriving stock (Show, Eq, Generic)
@@ -62,32 +61,35 @@ instance ActionRunner env => HasActions env TheRougarou where
       else pure actions'
 
 instance EnemyRunner env => RunMessage env TheRougarou where
-  runMessage msg (TheRougarou (attrs@EnemyAttrs {..} `With` metadata)) = case msg of
-    EndPhase ->
-      TheRougarou . (`with` TheRougarouMetadata 0) <$> runMessage msg attrs
-    EnemyDamage eid _ _ n | eid == enemyId -> do
-      let damage' = damagePerPhase metadata
-      damageThreshold <- getPlayerCountValue (PerPlayer 1)
-      if (damage' + n) > damageThreshold
-        then do
-          investigatorIds <- getInvestigatorIds
-          leadInvestigatorId <- getLeadInvestigatorId
-          farthestLocationIds <- case investigatorIds of
-            [iid] -> map unFarthestLocationId <$> getSetList iid
-            iids -> map unFarthestLocationId <$> getSetList iids
-          case farthestLocationIds of
-            [] -> error "can't happen"
-            [x] -> unshiftMessage (MoveUntil x (EnemyTarget enemyId))
-            xs -> unshiftMessage
-              (chooseOne
-                leadInvestigatorId
-                [ MoveUntil x (EnemyTarget enemyId) | x <- xs ]
-              )
-          TheRougarou
-            . (`with` TheRougarouMetadata ((damage' + n) `mod` damageThreshold))
+  runMessage msg (TheRougarou (attrs@EnemyAttrs {..} `With` metadata)) =
+    case msg of
+      EndPhase ->
+        TheRougarou . (`with` TheRougarouMetadata 0) <$> runMessage msg attrs
+      EnemyDamage eid _ _ n | eid == enemyId -> do
+        let damage' = damagePerPhase metadata
+        damageThreshold <- getPlayerCountValue (PerPlayer 1)
+        if (damage' + n) > damageThreshold
+          then do
+            investigatorIds <- getInvestigatorIds
+            leadInvestigatorId <- getLeadInvestigatorId
+            farthestLocationIds <- case investigatorIds of
+              [iid] -> map unFarthestLocationId <$> getSetList iid
+              iids -> map unFarthestLocationId <$> getSetList iids
+            case farthestLocationIds of
+              [] -> error "can't happen"
+              [x] -> unshiftMessage (MoveUntil x (EnemyTarget enemyId))
+              xs -> unshiftMessage
+                (chooseOne
+                  leadInvestigatorId
+                  [ MoveUntil x (EnemyTarget enemyId) | x <- xs ]
+                )
+            TheRougarou
+              . (`with` TheRougarouMetadata
+                  ((damage' + n) `mod` damageThreshold)
+                )
+              <$> runMessage msg attrs
+          else
+            TheRougarou
+            . (`with` TheRougarouMetadata (damage' + n))
             <$> runMessage msg attrs
-        else
-          TheRougarou
-          . (`with` TheRougarouMetadata (damage' + n))
-          <$> runMessage msg attrs
-    _ -> TheRougarou . (`with` metadata) <$> runMessage msg attrs
+      _ -> TheRougarou . (`with` metadata) <$> runMessage msg attrs

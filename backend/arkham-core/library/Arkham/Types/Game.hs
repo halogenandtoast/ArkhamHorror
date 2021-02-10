@@ -72,7 +72,6 @@ import Data.These
 import Data.These.Lens
 import Data.List.Extra (groupOn, cycle)
 import qualified Data.HashMap.Strict as HashMap
-import Data.List.NonEmpty (NonEmpty(..))
 import qualified Data.Sequence as Seq
 
 type GameInternal = Game (IORef [Message])

@@ -1,19 +1,17 @@
 module Arkham.Types.Effect.Effects.CursedShores
   ( cursedShores
   , CursedShores(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Classes
-import Arkham.Types.Helpers
+import Arkham.Types.Effect.Attrs
+import Arkham.Types.Effect.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Effect.Attrs
-import Arkham.Types.Effect.Helpers
 
 newtype CursedShores = CursedShores EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

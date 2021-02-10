@@ -1,18 +1,16 @@
 module Arkham.Types.Effect.Effects.Deduction
   ( deduction
   , Deduction(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
+import Arkham.Types.Effect.Attrs
 import Arkham.Types.EffectMetadata
-import Arkham.Types.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Target
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.Effect.Attrs
 
 newtype Deduction = Deduction EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

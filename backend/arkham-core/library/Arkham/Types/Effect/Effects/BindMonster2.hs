@@ -1,19 +1,17 @@
 module Arkham.Types.Effect.Effects.BindMonster2
   ( bindMonster2
   , BindMonster2(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
+import Arkham.Types.Effect.Attrs
 import Arkham.Types.EnemyId
-import Arkham.Types.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.Effect.Attrs
 import Arkham.Types.Trait
 
 newtype BindMonster2 = BindMonster2 EffectAttrs

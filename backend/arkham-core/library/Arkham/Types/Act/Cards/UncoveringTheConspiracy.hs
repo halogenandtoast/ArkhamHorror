@@ -1,24 +1,22 @@
 module Arkham.Types.Act.Cards.UncoveringTheConspiracy
   ( UncoveringTheConspiracy(..)
   , uncoveringTheConspiracy
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Act.Attrs
+import Arkham.Types.Act.Helpers
+import Arkham.Types.Act.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.GameValue
-import Arkham.Types.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Resolution
 import Arkham.Types.Source
 import Arkham.Types.Window
-import Arkham.Types.Act.Attrs
-import Arkham.Types.Act.Helpers
-import Arkham.Types.Act.Runner
 import qualified Data.HashSet as HashSet
 
 newtype UncoveringTheConspiracy = UncoveringTheConspiracy ActAttrs

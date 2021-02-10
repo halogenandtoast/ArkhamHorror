@@ -3,16 +3,15 @@ module Arkham.Types.Agenda.Cards.TheyreGettingOut where
 import Arkham.Prelude
 
 import Arkham.Types.ActId
+import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
-import Arkham.Types.Helpers
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
-import Arkham.Types.Agenda.Attrs
-import Arkham.Types.Agenda.Runner
 import Arkham.Types.Trait
 
 newtype TheyreGettingOut = TheyreGettingOut AgendaAttrs

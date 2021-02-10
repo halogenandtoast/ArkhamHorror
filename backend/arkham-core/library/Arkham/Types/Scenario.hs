@@ -4,6 +4,7 @@ module Arkham.Types.Scenario
 
 import Arkham.Prelude
 
+import Arkham.Types.ActId
 import Arkham.Types.AgendaId
 import Arkham.Types.Card
 import Arkham.Types.Classes

@@ -4,16 +4,15 @@ module Arkham.Types.Agenda
 
 import Arkham.Prelude
 
+import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Cards
+import Arkham.Types.Agenda.Runner
 import Arkham.Types.AgendaId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
-import Arkham.Types.Helpers
 import Arkham.Types.Query
-import Arkham.Types.Agenda.Attrs
-import Arkham.Types.Agenda.Cards
-import Arkham.Types.Agenda.Runner
 import Arkham.Types.Trait (Trait)
 
 lookupAgenda :: AgendaId -> Agenda

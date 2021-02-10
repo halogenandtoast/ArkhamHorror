@@ -10,7 +10,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.EnemyId
-import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
@@ -22,7 +21,6 @@ import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.Target
 import Arkham.Types.Token
-import Data.List.NonEmpty (NonEmpty(..))
 
 newtype TheMiskatonicMuseum = TheMiskatonicMuseum ScenarioAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)

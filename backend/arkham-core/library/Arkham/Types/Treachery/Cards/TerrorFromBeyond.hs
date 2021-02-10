@@ -8,12 +8,9 @@ import Arkham.Prelude
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
-import Arkham.Types.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 

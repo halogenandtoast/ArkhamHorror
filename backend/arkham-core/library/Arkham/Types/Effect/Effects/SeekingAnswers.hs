@@ -1,21 +1,19 @@
 module Arkham.Types.Effect.Effects.SeekingAnswers
   ( seekingAnswers
   , SeekingAnswers(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
-import Arkham.Types.Helpers
+import Arkham.Types.Effect.Attrs
+import Arkham.Types.Effect.Helpers
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.Effect.Attrs
-import Arkham.Types.Effect.Helpers
 
 newtype SeekingAnswers = SeekingAnswers EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

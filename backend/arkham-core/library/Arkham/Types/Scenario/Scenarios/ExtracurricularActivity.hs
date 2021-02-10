@@ -2,23 +2,22 @@ module Arkham.Types.Scenario.Scenarios.ExtracurricularActivity where
 
 import Arkham.Prelude
 
+import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
 import Arkham.Types.Classes
-import Arkham.Types.Helpers
+import Arkham.Types.Difficulty
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
-import Arkham.Types.ScenarioId
-import Arkham.Types.Target
-import Arkham.Types.Token
-import Arkham.Types.CampaignLogKey
-import Arkham.Types.Difficulty
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
+import Arkham.Types.ScenarioId
+import Arkham.Types.Target
+import Arkham.Types.Token
 
 newtype ExtracurricularActivity = ExtracurricularActivity ScenarioAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)

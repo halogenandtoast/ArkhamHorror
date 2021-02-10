@@ -6,11 +6,10 @@ module Arkham.Types.Effect.Effects.OnTheLam
 import Arkham.Prelude
 
 import Arkham.Types.Classes
-import Arkham.Types.Helpers
-import Arkham.Types.Message
-import Arkham.Types.Modifier
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
+import Arkham.Types.Message
+import Arkham.Types.Modifier
 
 newtype OnTheLam = OnTheLam EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

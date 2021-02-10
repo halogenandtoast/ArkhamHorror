@@ -8,11 +8,9 @@ import Arkham.Prelude
 import Arkham.EncounterCard
 import Arkham.PlayerCard
 import Arkham.Types.AgendaId
-import Arkham.Types.CampaignId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Exception
-import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
@@ -26,7 +24,6 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
-import Data.List.NonEmpty (NonEmpty(..))
 
 newtype BloodOnTheAltarMetadata = BloodOnTheAltarMetadata { sacrifices :: [Card]}
   deriving stock (Show, Eq, Generic)
@@ -164,7 +161,7 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
   runMessage msg s@(BloodOnTheAltar (attrs@ScenarioAttrs {..} `With` metadata@(BloodOnTheAltarMetadata sacrificed)))
     = case msg of
       SetTokensForScenario -> do
-        standalone <- isNothing <$> getId @(Maybe CampaignId) ()
+        standalone <- getIsStandalone
         s <$ if standalone
           then unshiftMessage (SetTokens standaloneTokens)
           else pure ()

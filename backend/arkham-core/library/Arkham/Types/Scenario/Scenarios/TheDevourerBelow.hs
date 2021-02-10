@@ -10,7 +10,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.EnemyId
-import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Query
@@ -22,7 +21,6 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait hiding (Cultist)
-import Data.List.NonEmpty (NonEmpty(..))
 
 newtype TheDevourerBelow = TheDevourerBelow ScenarioAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)

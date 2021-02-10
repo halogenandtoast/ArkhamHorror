@@ -40,6 +40,8 @@ data CampaignLogKey
   | DrFrancisMorganSurvivedTheDunwichLegacy
   | ZebulonWhatelySurvivedTheDunwichLegacy
   | EarlSawyerSurvivedTheDunwichLegacy
+  | YouCalmedTheTownsfolk
+  | YouWarnedTheTownsfolk
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
   | TheRougarouEscapedAndYouEmbracedTheCurse

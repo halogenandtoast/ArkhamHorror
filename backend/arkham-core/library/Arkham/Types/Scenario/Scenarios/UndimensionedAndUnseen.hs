@@ -133,6 +133,7 @@ instance HasTokenValue env InvestigatorId => HasTokenValue env UndimensionedAndU
 instance
   ( HasId LeadInvestigatorId env ()
   , HasSet InvestigatorId env ()
+  , HasRecord env
   , ScenarioAttrsRunner env
   )
   => RunMessage env UndimensionedAndUnseen where
@@ -173,6 +174,9 @@ instance
       blastedHeath <- sample $ "02248" :| ["02249"]
       whateleyRuins <- sample $ "02250" :| ["02251"]
       devilsHopYard <- sample $ "00252" :| ["02253"]
+
+      sacrificedToYogSothoth <- length
+        <$> asks (hasRecordSet SacrificedToYogSothoth)
 
       let
         locations =

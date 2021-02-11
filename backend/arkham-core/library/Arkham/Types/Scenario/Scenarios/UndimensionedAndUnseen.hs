@@ -1,11 +1,11 @@
 module Arkham.Types.Scenario.Scenarios.UndimensionedAndUnseen
   ( UndimensionedAndUnseen(..)
   , undimensionedAndUnseen
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
+import Arkham.EncounterCard
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -20,20 +20,25 @@ import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Token
 import Arkham.Types.Trait hiding (Cultist)
 
-newtype UndimensionedAndUnseen = UndimensionedAndUnseen ScenarioAttrs
+newtype UndimensionedAndUnseenMetadata = UndimensionedAndUnseenMetadata { setAsideSpawnOfYogSothoth :: Int }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+newtype UndimensionedAndUnseen = UndimensionedAndUnseen (ScenarioAttrs `With` UndimensionedAndUnseenMetadata)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 undimensionedAndUnseen :: Difficulty -> UndimensionedAndUnseen
-undimensionedAndUnseen difficulty = UndimensionedAndUnseen $ base
-  { scenarioLocationLayout = Just
-    [ ". blastedHeath devilsHopYard"
-    , ". blastedHeath devilsHopYard"
-    , "dunwichVillage tenAcreMeadow ."
-    , "dunwichVillage tenAcreMeadow whateleyRuins"
-    , ". coldSpringGlen whateleyRuins"
-    , ". coldSpringGlen ."
-    ]
-  }
+undimensionedAndUnseen difficulty =
+  UndimensionedAndUnseen . (`with` UndimensionedAndUnseenMetadata 0) $ base
+    { scenarioLocationLayout = Just
+      [ ". blastedHeath devilsHopYard"
+      , ". blastedHeath devilsHopYard"
+      , "dunwichVillage tenAcreMeadow ."
+      , "dunwichVillage tenAcreMeadow whateleyRuins"
+      , ". coldSpringGlen whateleyRuins"
+      , ". coldSpringGlen ."
+      ]
+    }
  where
   base = baseAttrs
     "02236"
@@ -127,7 +132,7 @@ standaloneTokens =
   ]
 
 instance HasTokenValue env InvestigatorId => HasTokenValue env UndimensionedAndUnseen where
-  getTokenValue (UndimensionedAndUnseen attrs) iid token =
+  getTokenValue (UndimensionedAndUnseen (attrs `With` _)) iid token =
     getTokenValue attrs iid token
 
 instance
@@ -137,87 +142,111 @@ instance
   , ScenarioAttrsRunner env
   )
   => RunMessage env UndimensionedAndUnseen where
-  runMessage msg s@(UndimensionedAndUnseen attrs) = case msg of
-    SetTokensForScenario -> do
-      standalone <- getIsStandalone
-      s <$ if standalone
-        then unshiftMessage (SetTokens standaloneTokens)
-        else pure ()
-    Setup -> do
-      investigatorIds <- getInvestigatorIds
-      leadInvestigatorId <- getLeadInvestigatorId
-      s <$ unshiftMessages
-        [ story investigatorIds undimensionedAndUnseenIntro
-        , chooseOne
-          leadInvestigatorId
-          [ Label
-            "You try to calm down the townsfolk in order to learn more."
-            [SetupStep 1]
-          , Label
-            "You try to warn the townsfolk and convince them to evacuate."
-            [SetupStep 2]
+  runMessage msg s@(UndimensionedAndUnseen (attrs `With` metadata)) =
+    case msg of
+      SetTokensForScenario -> do
+        standalone <- getIsStandalone
+        s <$ if standalone
+          then unshiftMessage (SetTokens standaloneTokens)
+          else pure ()
+      Setup -> do
+        investigatorIds <- getInvestigatorIds
+        leadInvestigatorId <- getLeadInvestigatorId
+        s <$ unshiftMessages
+          [ story investigatorIds undimensionedAndUnseenIntro
+          , chooseOne
+            leadInvestigatorId
+            [ Label
+              "You try to calm down the townsfolk in order to learn more."
+              [SetupStep 1]
+            , Label
+              "You try to warn the townsfolk and convince them to evacuate."
+              [SetupStep 2]
+            ]
           ]
-        ]
-    SetupStep n -> do
-      investigatorIds <- getInvestigatorIds
-      encounterDeck <- buildEncounterDeck
-        [ EncounterSet.UndimensionedAndUnseen
-        , EncounterSet.Whippoorwills
-        , EncounterSet.BeastThralls
-        , EncounterSet.Dunwich
-        , EncounterSet.StrikingFear
-        ]
-
-      dunwichVillage <- sample $ "02242" :| ["02243"]
-      coldSpringGlen <- sample $ "02244" :| ["02245"]
-      tenAcreMeadow <- sample $ "02246" :| ["02247"]
-      blastedHeath <- sample $ "02248" :| ["02249"]
-      whateleyRuins <- sample $ "02250" :| ["02251"]
-      devilsHopYard <- sample $ "00252" :| ["02253"]
-
-      sacrificedToYogSothoth <- length
-        <$> asks (hasRecordSet SacrificedToYogSothoth)
-
-      let
-        locations =
-          [ dunwichVillage
-          , coldSpringGlen
-          , tenAcreMeadow
-          , blastedHeath
-          , whateleyRuins
-          , devilsHopYard
+      SetupStep n -> do
+        standalone <- getIsStandalone
+        investigatorIds <- getInvestigatorIds
+        encounterDeck <- buildEncounterDeckExcluding
+          ["02255"]
+          [ EncounterSet.UndimensionedAndUnseen
+          , EncounterSet.Whippoorwills
+          , EncounterSet.BeastThralls
+          , EncounterSet.Dunwich
+          , EncounterSet.StrikingFear
           ]
-        locations' = mapFromList $ map
-          (second pure . toFst (getLocationName . lookupLocation))
-          locations
 
-      unshiftMessages
-        $ [ story
-            investigatorIds
-            (if n == 1
-              then undimensionedAndUnseenPart1
-              else undimensionedAndUnseenPart2
-            )
-          , Record
-            (if n == 1 then YouCalmedTheTownsfolk else YouWarnedTheTownsfolk)
-          , SetEncounterDeck encounterDeck
-          , AddAgenda "02237"
-          , AddAct "02240"
-          ]
-        <> map PlaceLocation locations
-        <> [RevealLocation Nothing dunwichVillage, MoveAllTo dunwichVillage]
-        <> [ SearchCollectionForRandom
-               iid
-               (toSource attrs)
-               (PlayerTreacheryType, setFromList [Madness, Injury, Pact])
-           | iid <- investigatorIds
-           ]
+        dunwichVillage <- sample $ "02242" :| ["02243"]
+        coldSpringGlen <- sample $ "02244" :| ["02245"]
+        tenAcreMeadow <- sample $ "02246" :| ["02247"]
+        blastedHeath <- sample $ "02248" :| ["02249"]
+        whateleyRuins <- sample $ "02250" :| ["02251"]
+        devilsHopYard <- sample $ "00252" :| ["02253"]
 
-      UndimensionedAndUnseen
-        <$> runMessage msg (attrs & locationsL .~ locations')
+        sacrificedToYogSothoth <- if standalone
+          then pure 3
+          else length <$> asks (hasRecordSet SacrificedToYogSothoth)
 
-    RequestedPlayerCard iid source mcard | isSource attrs source ->
-      case mcard of
-        Nothing -> pure s
-        Just card -> s <$ unshiftMessage (ShuffleCardsIntoDeck iid [card])
-    _ -> UndimensionedAndUnseen <$> runMessage msg attrs
+        (msgs, setAsideCount) <- case sacrificedToYogSothoth of
+          2 -> do
+            broodOfYogSothoth <- EncounterCard <$> genEncounterCard "02255"
+            pure ([CreateEnemyAt broodOfYogSothoth coldSpringGlen], 3)
+          3 -> do
+            broodOfYogSothoth <- EncounterCard <$> genEncounterCard "02255"
+            pure ([CreateEnemyAt broodOfYogSothoth coldSpringGlen], 2)
+          x -> if x <= 2
+            then do
+              broodOfYogSothoth1 <- EncounterCard <$> genEncounterCard "02255"
+              broodOfYogSothoth2 <- EncounterCard <$> genEncounterCard "02255"
+              pure
+                ( [ CreateEnemyAt broodOfYogSothoth1 coldSpringGlen
+                  , CreateEnemyAt broodOfYogSothoth2 blastedHeath
+                  ]
+                , 3
+                )
+            else pure ([], 2)
+
+        let
+          locations =
+            [ dunwichVillage
+            , coldSpringGlen
+            , tenAcreMeadow
+            , blastedHeath
+            , whateleyRuins
+            , devilsHopYard
+            ]
+          locations' = mapFromList $ map
+            (second pure . toFst (getLocationName . lookupLocation))
+            locations
+
+        unshiftMessages
+          $ [ story
+              investigatorIds
+              (if n == 1
+                then undimensionedAndUnseenPart1
+                else undimensionedAndUnseenPart2
+              )
+            , Record
+              (if n == 1 then YouCalmedTheTownsfolk else YouWarnedTheTownsfolk)
+            , SetEncounterDeck encounterDeck
+            , AddAgenda "02237"
+            , AddAct "02240"
+            ]
+          <> map PlaceLocation locations
+          <> [RevealLocation Nothing dunwichVillage, MoveAllTo dunwichVillage]
+          <> [ SearchCollectionForRandom
+                 iid
+                 (toSource attrs)
+                 (PlayerTreacheryType, setFromList [Madness, Injury, Pact])
+             | iid <- investigatorIds
+             ]
+          <> msgs
+
+        UndimensionedAndUnseen
+          . (`with` UndimensionedAndUnseenMetadata setAsideCount)
+          <$> runMessage msg (attrs & locationsL .~ locations')
+      RequestedPlayerCard iid source mcard | isSource attrs source ->
+        case mcard of
+          Nothing -> pure s
+          Just card -> s <$ unshiftMessage (ShuffleCardsIntoDeck iid [card])
+      _ -> UndimensionedAndUnseen . (`with` metadata) <$> runMessage msg attrs

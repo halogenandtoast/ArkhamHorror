@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 666d908a96df5994ac70839c6d1b575ca08a2e01fda433441490bd515e0a9be6
+-- hash: 64cdf739a03ee57f6ae07bfbe33a0069884225482a467d095a471ab359d17d1b
 
 name:           arkham-core
 version:        0.0.0
@@ -492,6 +492,8 @@ library
       Arkham.Types.Location.Cards.CursedShores
       Arkham.Types.Location.Cards.DarkenedHall
       Arkham.Types.Location.Cards.DeepBelowYourHouse
+      Arkham.Types.Location.Cards.DevilsHopYard_252
+      Arkham.Types.Location.Cards.DevilsHopYard_253
       Arkham.Types.Location.Cards.DiningCar
       Arkham.Types.Location.Cards.Dormitories
       Arkham.Types.Location.Cards.DowntownArkhamAsylum

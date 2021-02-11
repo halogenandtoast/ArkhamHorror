@@ -22,6 +22,9 @@ data Ability = Ability
   }
   deriving stock (Show, Generic)
 
+abilityLimitL :: Lens' Ability AbilityLimit
+abilityLimitL = lens abilityLimit $ \m x -> m { abilityLimit = x }
+
 instance Eq Ability where
   a == b =
     (abilitySource a == abilitySource b) && (abilityIndex a == abilityIndex b)

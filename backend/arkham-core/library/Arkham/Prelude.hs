@@ -99,6 +99,9 @@ concatMapM' f xs = concatMapM f (toList xs)
 count :: (a -> Bool) -> [a] -> Int
 count = (length .) . filter
 
+none :: MonoFoldable mono => (Element mono -> Bool) -> mono -> Bool
+none = (not .) . any
+
 countM :: Monad m => (a -> m Bool) -> [a] -> m Int
 countM = ((length <$>) .) . filterM
 

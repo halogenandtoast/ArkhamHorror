@@ -6,6 +6,7 @@ module Arkham.Types.Game
 
 import Arkham.Prelude
 
+import Control.Monad.Extra (anyM)
 import Arkham.Json
 import Arkham.EncounterCard
 import Arkham.PlayerCard
@@ -286,6 +287,9 @@ instance HasId CardCode (Game queue) AssetId where
 instance HasCount ScenarioDeckCount (Game queue) () where
   getCount _ = getCount . fromJustNote "scenario has to be set" . modeScenario =<< view modeL
 
+instance HasCount SetAsideCount (Game queue) CardCode where
+  getCount cardCode = getCount . (,cardCode) . fromJustNote "scenario has to be set" . modeScenario =<< view modeL
+
 instance HasCount UsesCount (Game queue) AssetId where
   getCount = getCount <=< getAsset
 
@@ -294,6 +298,9 @@ instance HasId (Maybe OwnerId) (Game queue) AssetId where
 
 instance HasName (Game queue) LocationId where
   getName = getName <=< getLocation
+
+instance HasName (Game queue) AssetId where
+  getName = getName <=< getAsset
 
 instance HasId (Maybe LocationId) (Game queue) AssetId where
   getId = getId <=< getAsset
@@ -311,6 +318,23 @@ instance HasSet EnemyId (Game queue) LocationMatcher where
     getSet location
    where
     missingLocation = "No location with matching: " <> show locationMatcher
+
+instance HasSet FightableEnemyId (Game queue) (InvestigatorId, Source) where
+  getSet (iid, source) = do
+    locationId <- getId @LocationId iid
+    enemyIds <- getSet @EnemyId locationId
+    investigatorEnemyIds <- getSet @EnemyId iid
+    aloofEnemyIds <- mapSet unAloofEnemyId <$> getSet locationId
+    let potentials = setToList (investigatorEnemyIds `union` (enemyIds `difference` aloofEnemyIds))
+    fightableEnemyIds <- flip filterM potentials $ \eid -> do
+      modifiers' <- map modifierType <$> getModifiersFor source (EnemyTarget eid) ()
+      not <$> anyM (\case
+        CanOnlyBeAttackedByAbilityOn cardCodes ->
+          case source of
+            (AssetSource aid) -> (`member` cardCodes) <$> getId @CardCode aid
+            _ -> pure True
+        _ -> pure False) modifiers'
+    pure $ setFromList $ map FightableEnemyId fightableEnemyIds
 
 instance HasSet ClosestPathLocationId (Game queue) (LocationId, LocationMatcher) where
   getSet (lid, locationMatcher) = maybe (pure mempty) (getSet . (lid, ) . toId)

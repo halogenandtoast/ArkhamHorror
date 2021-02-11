@@ -5,6 +5,11 @@ module Arkham.Types.Asset
 
 import Arkham.Prelude
 
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Cards
+import Arkham.Types.Asset.Class as X
+import Arkham.Types.Asset.Runner
+import Arkham.Types.Asset.Uses
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -16,11 +21,6 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.Target
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Cards
-import Arkham.Types.Asset.Class as X
-import Arkham.Types.Asset.Runner
-import Arkham.Types.Asset.Uses
 import Arkham.Types.Trait (Trait)
 
 createAsset :: IsCard a => a -> Asset
@@ -178,6 +178,9 @@ instance Entity Asset where
 
 instance NamedEntity Asset where
   toName = toName . toAttrs
+
+instance HasName env Asset where
+  getName = pure . toName
 
 instance TargetEntity Asset where
   toTarget = toTarget . toAttrs

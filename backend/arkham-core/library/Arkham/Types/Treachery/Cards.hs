@@ -67,6 +67,7 @@ import Arkham.Types.Treachery.Cards.SpectralMist as X
 import Arkham.Types.Treachery.Cards.StalkedInTheDark as X
 import Arkham.Types.Treachery.Cards.StrangeSigns as X
 import Arkham.Types.Treachery.Cards.TerrorFromBeyond as X
+import Arkham.Types.Treachery.Cards.TheCreaturesTracks as X
 import Arkham.Types.Treachery.Cards.TheYellowSign as X
 import Arkham.Types.Treachery.Cards.TheZealotsSeal as X
 import Arkham.Types.Treachery.Cards.TwistOfFate as X

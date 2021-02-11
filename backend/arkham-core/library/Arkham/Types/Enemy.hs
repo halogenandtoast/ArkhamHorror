@@ -1,7 +1,6 @@
 module Arkham.Types.Enemy
   ( module Arkham.Types.Enemy
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -68,6 +67,7 @@ data Enemy
   | EmergentMonstrosity' EmergentMonstrosity
   | SilasBishop' SilasBishop
   | ServantOfManyMouths' ServantOfManyMouths
+  | BroodOfYogSothoth' BroodOfYogSothoth
   | CorpseHungryGhoul' CorpseHungryGhoul
   | GhoulFromTheDepths' GhoulFromTheDepths
   | Narogath' Narogath
@@ -162,7 +162,7 @@ instance SourceEntity Enemy where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 
-instance (EnemyRunner env) => RunMessage env Enemy where
+instance (EnemyRunner env, HasName env AssetId) => RunMessage env Enemy where
   runMessage msg e = do
     modifiers' <- getModifiersFor (toSource e) (toTarget e) ()
     let msg' = if any isBlank modifiers' then Blanked msg else msg
@@ -248,6 +248,7 @@ allEnemies = mapFromList
   , ("02183", EmergentMonstrosity' . emergentMonstrosity)
   , ("02216", SilasBishop' . silasBishop)
   , ("02224", ServantOfManyMouths' . servantOfManyMouths)
+  , ("02255", BroodOfYogSothoth' . broodOfYogSothoth)
   , ("50022", CorpseHungryGhoul' . corpseHungryGhoul)
   , ("50023", GhoulFromTheDepths' . ghoulFromTheDepths)
   , ("50026b", Narogath' . narogath)

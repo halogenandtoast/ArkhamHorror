@@ -63,6 +63,7 @@ data ModifierType
   | CannotMove
   | CannotPlay [(PlayerCardType, HashSet Trait)]
   | CannotSpendClues
+  | CanOnlyBeAttackedByAbilityOn (HashSet CardCode)
   | ControlledAssetsCannotReady
   | DamageDealt Int
   | DamageTaken Int

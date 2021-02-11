@@ -3,13 +3,14 @@
 module Arkham.Types.Scenario.Attrs
   ( module Arkham.Types.Scenario.Attrs
   , module X
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Json
+import Arkham.Types.Game.Helpers
 import Arkham.Types.ActId
+import Arkham.Types.Window
 import Arkham.Types.AgendaId
 import Arkham.Types.CampaignId
 import Arkham.Types.Card
@@ -67,6 +68,11 @@ instance HasCount ScenarioDeckCount env ScenarioAttrs where
     Just (ExhibitDeck cards) -> pure . ScenarioDeckCount $ length cards
     Just (PotentialSacrifices cards) -> pure . ScenarioDeckCount $ length cards
     Nothing -> pure $ ScenarioDeckCount 0
+
+instance HasCount SetAsideCount env (ScenarioAttrs, CardCode) where
+  getCount (attrs, cardCode) = pure . SetAsideCount $ count
+    ((== cardCode) . getCardCode)
+    (attrs ^. setAsideCardsL)
 
 toTokenValue :: ScenarioAttrs -> Token -> Int -> Int -> TokenValue
 toTokenValue attrs t esVal heVal = TokenValue
@@ -146,6 +152,8 @@ type ScenarioAttrsRunner env
   = ( HasSet InScenarioInvestigatorId env ()
     , HasSet AgendaId env ()
     , HasId (Maybe CampaignId) env ()
+    , HasSet LocationId env ()
+    , HasId LeadInvestigatorId env ()
     , HasQueue env
     )
 
@@ -221,4 +229,17 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
         "The scenario should specify what to do for a scenario specific ability."
     LookAtTopOfDeck _ ScenarioDeckTarget _ ->
       error "The scenario should handle looking at the top of the scenario deck"
+    ChooseRandomLocation target -> do
+      locationIds <- getSetList @LocationId ()
+      leadInvestigatorId <- getLeadInvestigatorId
+      case locationIds of
+        [] -> error "no locations?"
+        (h : t) -> do
+          randomLocationId <- sample $ h :| t
+          a <$ unshiftMessages
+            [ CheckWindow
+              leadInvestigatorId
+              [WhenChosenRandomLocation randomLocationId]
+            , ChosenRandomLocation target randomLocationId
+            ]
     _ -> pure a

@@ -1,7 +1,6 @@
 module Arkham.Types.Message
   ( module Arkham.Types.Message
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -181,6 +180,8 @@ data Message
   | ChooseLeadInvestigator
   | ChoosePlayer InvestigatorId ChoosePlayerChoice
   | ChoosePlayerOrder [InvestigatorId] [InvestigatorId]
+  | ChooseRandomLocation Target
+  | ChosenRandomLocation Target LocationId
   | ChooseTokenGroups Source InvestigatorId ChaosBagStep
   | CommitCard InvestigatorId CardId
   | CompleteObjective

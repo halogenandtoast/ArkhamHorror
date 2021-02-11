@@ -135,6 +135,8 @@ allEncounterCards = mapFromList
   , ("02222", strangeSigns)
   , ("02223", rottingRemainsBloodOnTheAltar)
   , ("02224", servantOfManyMouths)
+  , ("02255", broodOfYogSothoth)
+  , ("02259", theCreaturesTracks)
   , ("50022", corpseHungryGhoul)
   , ("50023", ghoulFromTheDepths)
   , ("50024", theZealotsSeal)
@@ -614,6 +616,19 @@ servantOfManyMouths :: CardId -> EncounterCard
 servantOfManyMouths cardId = (enemy cardId "02224" "Servant of Many Mouths")
   { ecTraits = singleton Humanoid
   , ecKeywords = singleton Keyword.Retaliate
+  }
+
+broodOfYogSothoth :: CardId -> EncounterCard
+broodOfYogSothoth cardId = (enemy cardId "02255" "Brood of Yog-Sothoth")
+  { ecTraits = setFromList [Monster, Abomination]
+  , ecKeywords = singleton Keyword.Massive
+  , ecVictoryPoints = Just 1
+  }
+
+theCreaturesTracks :: CardId -> EncounterCard
+theCreaturesTracks cardId = (treachery cardId "02259" "The Creatures' Tracks")
+  { ecTraits = singleton Terror
+  , ecKeywords = singleton Keyword.Peril
   }
 
 corpseHungryGhoul :: CardId -> EncounterCard

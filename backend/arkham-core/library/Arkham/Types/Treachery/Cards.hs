@@ -58,6 +58,7 @@ import Arkham.Types.Treachery.Cards.RexsCurse as X
 import Arkham.Types.Treachery.Cards.RipplesOnTheSurface as X
 import Arkham.Types.Treachery.Cards.RottingRemains as X
 import Arkham.Types.Treachery.Cards.RottingRemainsBloodOnTheAltar as X
+import Arkham.Types.Treachery.Cards.RuinAndDestruction as X
 import Arkham.Types.Treachery.Cards.SearchingForIzzie as X
 import Arkham.Types.Treachery.Cards.ShadowSpawned as X
 import Arkham.Types.Treachery.Cards.SlitheringBehindYou as X

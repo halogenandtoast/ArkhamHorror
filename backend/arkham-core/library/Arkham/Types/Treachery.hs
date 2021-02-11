@@ -82,6 +82,7 @@ data Treachery
   | PsychopompsSong' PsychopompsSong
   | StrangeSigns' StrangeSigns
   | RottingRemainsBloodOnTheAltar' RottingRemainsBloodOnTheAltar
+  | RuinAndDestruction' RuinAndDestruction
   | AttractingAttention' AttractingAttention
   | TheCreaturesTracks' TheCreaturesTracks
   | TheZealotsSeal' TheZealotsSeal
@@ -219,6 +220,7 @@ allTreacheries = mapFromList
   , ( "02223"
     , (RottingRemainsBloodOnTheAltar' .) . rottingRemainsBloodOnTheAltar
     )
+  , ("02257", (RuinAndDestruction' .) . ruinAndDestruction)
   , ("02258", (AttractingAttention' .) . attractingAttention)
   , ("02259", (TheCreaturesTracks' .) . theCreaturesTracks)
   , ("50024", (TheZealotsSeal' .) . theZealotsSeal)

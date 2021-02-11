@@ -165,6 +165,7 @@ type ActionRunner env
     , HasCount ActionTakenCount env InvestigatorId
     , HasCount CardCount env InvestigatorId
     , HasCount ClueCount env LocationId
+    , HasCount ClueCount env InvestigatorId
     , HasCount HorrorCount env InvestigatorId
     , HasCount PlayerCount env ()
     , HasCount ResourceCount env InvestigatorId

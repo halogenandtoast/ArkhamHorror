@@ -106,6 +106,8 @@ data Location
   | Schoolhouse_212' Schoolhouse_212
   | Schoolhouse_213' Schoolhouse_213
   | TheHiddenChamber' TheHiddenChamber
+  | DevilsHopYard_252' DevilsHopYard_252
+  | DevilsHopYard_253' DevilsHopYard_253
   | StudyAberrantGateway' StudyAberrantGateway
   | GuestHall' GuestHall
   | Bedroom' Bedroom
@@ -342,6 +344,8 @@ allLocations = mapFrom
   , Schoolhouse_212' schoolhouse_212
   , Schoolhouse_213' schoolhouse_213
   , TheHiddenChamber' theHiddenChamber
+  , DevilsHopYard_252' devilsHopYard_252
+  , DevilsHopYard_253' devilsHopYard_253
   , StudyAberrantGateway' studyAberrantGateway
   , GuestHall' guestHall
   , Bedroom' bedroom

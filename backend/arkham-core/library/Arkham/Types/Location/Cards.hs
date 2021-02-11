@@ -37,6 +37,8 @@ import Arkham.Types.Location.Cards.CongregationalChurch_209 as X
 import Arkham.Types.Location.Cards.CursedShores as X
 import Arkham.Types.Location.Cards.DarkenedHall as X
 import Arkham.Types.Location.Cards.DeepBelowYourHouse as X
+import Arkham.Types.Location.Cards.DevilsHopYard_252 as X
+import Arkham.Types.Location.Cards.DevilsHopYard_253 as X
 import Arkham.Types.Location.Cards.DiningCar as X
 import Arkham.Types.Location.Cards.Dormitories as X
 import Arkham.Types.Location.Cards.DowntownArkhamAsylum as X

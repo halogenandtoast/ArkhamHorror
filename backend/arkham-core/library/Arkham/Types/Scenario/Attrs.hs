@@ -141,12 +141,15 @@ instance HasTokenValue env InvestigatorId => HasTokenValue env ScenarioAttrs whe
 
 findLocationKey
   :: LocationMatcher -> HashMap LocationName [LocationId] -> Maybe LocationName
-findLocationKey locationMatcher locations = find matchKey $ keys locations
+findLocationKey locationMatcher locations = fst
+  <$> find match (mapToList locations)
  where
-  matchKey (LocationName (Name title msubtitle)) = case locationMatcher of
-    LocationWithTitle title' -> title == title'
-    LocationWithFullTitle title' subtitle' ->
-      title == title' && Just subtitle' == msubtitle
+  match (LocationName (Name title msubtitle), locationIds) =
+    case locationMatcher of
+      LocationWithTitle title' -> title == title'
+      LocationWithFullTitle title' subtitle' ->
+        title == title' && Just subtitle' == msubtitle
+      LocationWithId lid -> lid `elem` locationIds
 
 type ScenarioAttrsRunner env
   = ( HasSet InScenarioInvestigatorId env ()

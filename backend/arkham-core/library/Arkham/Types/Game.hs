@@ -216,6 +216,10 @@ getLocationsMatching = \case
     filter ((== Name title (Just subtitle)) . unLocationName . getLocationName)
       . toList
       <$> view locationsL
+  LocationWithId locationId ->
+    filter ((== locationId) . toId)
+      . toList
+      <$> view locationsL
 
 getEnemy :: (HasCallStack, MonadReader (Game queue) m) => EnemyId -> m Enemy
 getEnemy eid = fromJustNote missingEnemy <$> preview (enemiesL . ix eid)

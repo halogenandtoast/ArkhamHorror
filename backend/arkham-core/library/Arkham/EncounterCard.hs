@@ -136,6 +136,7 @@ allEncounterCards = mapFromList
   , ("02223", rottingRemainsBloodOnTheAltar)
   , ("02224", servantOfManyMouths)
   , ("02255", broodOfYogSothoth)
+  , ("02258", attractingAttention)
   , ("02259", theCreaturesTracks)
   , ("50022", corpseHungryGhoul)
   , ("50023", ghoulFromTheDepths)
@@ -623,6 +624,11 @@ broodOfYogSothoth cardId = (enemy cardId "02255" "Brood of Yog-Sothoth")
   { ecTraits = setFromList [Monster, Abomination]
   , ecKeywords = singleton Keyword.Massive
   , ecVictoryPoints = Just 1
+  }
+
+attractingAttention :: CardId -> EncounterCard
+attractingAttention cardId = (treachery cardId "02258" "Attracting Attention")
+  { ecKeywords = singleton Keyword.Surge
   }
 
 theCreaturesTracks :: CardId -> EncounterCard

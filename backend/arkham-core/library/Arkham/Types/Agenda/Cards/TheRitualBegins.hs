@@ -2,6 +2,9 @@ module Arkham.Types.Agenda.Cards.TheRitualBegins where
 
 import Arkham.Prelude
 
+import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Helpers
+import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
@@ -10,9 +13,6 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Agenda.Attrs
-import Arkham.Types.Agenda.Helpers
-import Arkham.Types.Agenda.Runner
 import Arkham.Types.Trait
 
 newtype TheRitualBegins = TheRitualBegins AgendaAttrs
@@ -52,7 +52,7 @@ instance (AgendaRunner env) => RunMessage env TheRitualBegins where
         (SearchCollectionForRandom
           iid
           (AgendaSource agendaId)
-          (PlayerTreacheryType, Just Madness)
+          (PlayerTreacheryType, singleton Madness)
         )
     RequestedPlayerCard iid (AgendaSource aid) mcard | aid == agendaId ->
       case mcard of

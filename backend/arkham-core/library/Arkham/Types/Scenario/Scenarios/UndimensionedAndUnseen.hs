@@ -1,11 +1,13 @@
 module Arkham.Types.Scenario.Scenarios.UndimensionedAndUnseen
   ( UndimensionedAndUnseen(..)
   , undimensionedAndUnseen
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
 import Arkham.Types.CampaignLogKey
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
@@ -16,6 +18,7 @@ import Arkham.Types.Query
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Token
+import Arkham.Types.Trait hiding (Cultist)
 
 newtype UndimensionedAndUnseen = UndimensionedAndUnseen ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -171,22 +174,8 @@ instance
       whateleyRuins <- sample $ "02250" :| ["02251"]
       devilsHopYard <- sample $ "00252" :| ["02253"]
 
-
-      unshiftMessages
-        [ story
-          investigatorIds
-          (if n == 1
-            then undimensionedAndUnseenPart1
-            else undimensionedAndUnseenPart2
-          )
-        , Record
-          (if n == 1 then YouCalmedTheTownsfolk else YouWarnedTheTownsfolk)
-        , SetEncounterDeck encounterDeck
-        ]
-
       let
-        locations' = mapFromList $ map
-          (second pure . toFst (getLocationName . lookupLocation))
+        locations =
           [ dunwichVillage
           , coldSpringGlen
           , tenAcreMeadow
@@ -194,6 +183,37 @@ instance
           , whateleyRuins
           , devilsHopYard
           ]
+        locations' = mapFromList $ map
+          (second pure . toFst (getLocationName . lookupLocation))
+          locations
+
+      unshiftMessages
+        $ [ story
+            investigatorIds
+            (if n == 1
+              then undimensionedAndUnseenPart1
+              else undimensionedAndUnseenPart2
+            )
+          , Record
+            (if n == 1 then YouCalmedTheTownsfolk else YouWarnedTheTownsfolk)
+          , SetEncounterDeck encounterDeck
+          , AddAgenda "02237"
+          , AddAct "02240"
+          ]
+        <> map PlaceLocation locations
+        <> [RevealLocation Nothing dunwichVillage, MoveAllTo dunwichVillage]
+        <> [ SearchCollectionForRandom
+               iid
+               (toSource attrs)
+               (PlayerTreacheryType, setFromList [Madness, Injury, Pact])
+           | iid <- investigatorIds
+           ]
+
       UndimensionedAndUnseen
         <$> runMessage msg (attrs & locationsL .~ locations')
+
+    RequestedPlayerCard iid source mcard | isSource attrs source ->
+      case mcard of
+        Nothing -> pure s
+        Just card -> s <$ unshiftMessage (ShuffleCardsIntoDeck iid [card])
     _ -> UndimensionedAndUnseen <$> runMessage msg attrs

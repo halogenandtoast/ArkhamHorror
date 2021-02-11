@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.BrackishWaters
   ( BrackishWaters(..)
   , brackishWaters
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -65,8 +66,7 @@ instance ActionRunner env => HasActions env BrackishWaters where
       let
         assetsCount =
           count
-              (maybe False (playerCardMatch (AssetType, Nothing)) . toPlayerCard
-              )
+              (maybe False (playerCardMatch (AssetType, mempty)) . toPlayerCard)
               hand
             + inPlayAssetsCount
       pure

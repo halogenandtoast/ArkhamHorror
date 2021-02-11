@@ -23,7 +23,7 @@ spec = describe "Arcane Initiate" $ do
     $ do
         arcaneInitiate <- buildAsset "01063"
         investigator <- testInvestigator "00000" id
-        card <- testPlayerCard $ set PlayerCard.traits (setFromList [Spell])
+        card <- testPlayerCard $ set PlayerCard.traitsL (setFromList [Spell])
         otherCards <- testPlayerCards 2
         game <- runGameTest
           investigator

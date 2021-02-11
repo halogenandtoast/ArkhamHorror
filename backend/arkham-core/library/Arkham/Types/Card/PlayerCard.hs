@@ -73,9 +73,11 @@ instance HasCost PlayerCard where
     StaticCost n -> n
     DynamicCost -> 0
 
-traits :: Lens' PlayerCard (HashSet Trait)
-traits = lens pcTraits $ \m x -> m { pcTraits = x }
+traitsL :: Lens' PlayerCard (HashSet Trait)
+traitsL = lens pcTraits $ \m x -> m { pcTraits = x }
 
-playerCardMatch :: (PlayerCardType, Maybe Trait) -> PlayerCard -> Bool
-playerCardMatch (cardType, mtrait) MkPlayerCard {..} =
-  pcCardType == cardType && maybe True (`elem` pcTraits) mtrait
+playerCardMatch :: (PlayerCardType, HashSet Trait) -> PlayerCard -> Bool
+playerCardMatch (cardType, traits) MkPlayerCard {..} =
+  pcCardType
+    == cardType
+    && (null traits || not (null (intersection pcTraits traits)))

@@ -692,7 +692,7 @@ instance HasSet HandCardId (Game queue) (InvestigatorId, PlayerCardType) where
     setFromList
       . map (HandCardId . getCardId)
       . filter
-          (maybe False (playerCardMatch (cardType, Nothing)) . toPlayerCard)
+          (maybe False (playerCardMatch (cardType, mempty)) . toPlayerCard)
       . handOf
       <$> getInvestigator iid
 

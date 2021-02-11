@@ -76,6 +76,8 @@
       "import Arkham.Prelude",
       "",
       "import Arkham.Types.Asset.Attrs",
+      "import Arkham.Types.AssetId",
+      "import Arkham.Types.Classes",
       "",
       "newtype {dot} = {dot} AssetAttrs",
       "  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)",

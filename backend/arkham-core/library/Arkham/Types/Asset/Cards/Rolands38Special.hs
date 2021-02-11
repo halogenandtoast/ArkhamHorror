@@ -6,6 +6,11 @@ module Arkham.Types.Asset.Cards.Rolands38Special
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
+import Arkham.Types.Asset.Uses
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -18,11 +23,6 @@ import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
-import Arkham.Types.Asset.Uses
 
 newtype Rolands38Special = Rolands38Special AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -57,7 +57,8 @@ instance AssetRunner env => RunMessage env Rolands38Special where
       locationId <- getId @LocationId iid
       anyClues <- (> 0) . unClueCount <$> getCount locationId
       a <$ unshiftMessages
-        [ CreateWindowModifierEffect EffectSkillTestWindow
+        [ CreateWindowModifierEffect
+          EffectSkillTestWindow
           (EffectModifiers $ toModifiers
             attrs
             [ DamageDealt 1
@@ -66,6 +67,6 @@ instance AssetRunner env => RunMessage env Rolands38Special where
           )
           source
           (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillCombat False
+        , ChooseFightEnemy iid source SkillCombat mempty False
         ]
     _ -> Rolands38Special <$> runMessage msg attrs

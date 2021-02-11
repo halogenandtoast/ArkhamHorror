@@ -1,12 +1,16 @@
 module Arkham.Types.Asset.Cards.JennysTwin45s
   ( JennysTwin45s(..)
   , jennysTwin45s
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
+import Arkham.Types.Asset.Uses
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -17,11 +21,6 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
-import Arkham.Types.Asset.Uses
 
 newtype JennysTwin45s = JennysTwin45s AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -57,12 +56,13 @@ instance AssetRunner env => RunMessage env JennysTwin45s where
       JennysTwin45s <$> runMessage msg (attrs & usesL .~ Uses Ammo n)
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
-        [ CreateWindowModifierEffect EffectSkillTestWindow
+        [ CreateWindowModifierEffect
+          EffectSkillTestWindow
           (EffectModifiers
           $ toModifiers attrs [DamageDealt 1, SkillModifier SkillCombat 2]
           )
           source
           (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillCombat False
+        , ChooseFightEnemy iid source SkillCombat mempty False
         ]
     _ -> JennysTwin45s <$> runMessage msg attrs

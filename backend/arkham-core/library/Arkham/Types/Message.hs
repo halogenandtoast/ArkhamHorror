@@ -175,7 +175,7 @@ data Message
   | ChooseAndDiscardCard InvestigatorId
   | ChooseEndTurn InvestigatorId
   | ChooseEvadeEnemy InvestigatorId Source SkillType Bool
-  | ChooseFightEnemy InvestigatorId Source SkillType Bool
+  | ChooseFightEnemy InvestigatorId Source SkillType (HashSet Trait) Bool
   | ChooseFightEnemyNotEngagedWithInvestigator InvestigatorId Source SkillType Bool
   | ChooseLeadInvestigator
   | ChoosePlayer InvestigatorId ChoosePlayerChoice

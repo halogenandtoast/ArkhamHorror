@@ -38,5 +38,5 @@ instance HasQueue env => RunMessage env IveGotAPlan where
   runMessage msg e@(IveGotAPlan attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       e <$ unshiftMessage
-        (ChooseFightEnemy iid (EventSource eid) SkillIntellect False)
+        (ChooseFightEnemy iid (EventSource eid) SkillIntellect mempty False)
     _ -> IveGotAPlan <$> runMessage msg attrs

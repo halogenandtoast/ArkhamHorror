@@ -136,6 +136,7 @@ allEncounterCards = mapFromList
   , ("02223", rottingRemainsBloodOnTheAltar)
   , ("02224", servantOfManyMouths)
   , ("02255", broodOfYogSothoth)
+  , ("02256", toweringBeasts)
   , ("02257", ruinAndDestruction)
   , ("02258", attractingAttention)
   , ("02259", theCreaturesTracks)
@@ -625,6 +626,11 @@ broodOfYogSothoth cardId = (enemy cardId "02255" "Brood of Yog-Sothoth")
   { ecTraits = setFromList [Monster, Abomination]
   , ecKeywords = singleton Keyword.Massive
   , ecVictoryPoints = Just 1
+  }
+
+toweringBeasts :: CardId -> EncounterCard
+toweringBeasts cardId = (treachery cardId "02256" "Towering Beasts")
+  { ecKeywords = singleton Keyword.Peril
   }
 
 ruinAndDestruction :: CardId -> EncounterCard

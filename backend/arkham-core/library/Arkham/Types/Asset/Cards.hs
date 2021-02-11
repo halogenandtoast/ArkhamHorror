@@ -1,7 +1,6 @@
 module Arkham.Types.Asset.Cards
   ( module X
-  )
-where
+  ) where
 
 import Arkham.Types.Asset.Cards.AdamLynch as X
 import Arkham.Types.Asset.Cards.Adaptable1 as X
@@ -37,6 +36,7 @@ import Arkham.Types.Asset.Cards.EarlSawyer as X
 import Arkham.Types.Asset.Cards.ElderSignAmulet3 as X
 import Arkham.Types.Asset.Cards.Encyclopedia as X
 import Arkham.Types.Asset.Cards.Encyclopedia2 as X
+import Arkham.Types.Asset.Cards.EsotericFormula as X
 import Arkham.Types.Asset.Cards.FireAxe as X
 import Arkham.Types.Asset.Cards.FirstAid as X
 import Arkham.Types.Asset.Cards.FishingNet as X

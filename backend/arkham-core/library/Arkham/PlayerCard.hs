@@ -194,6 +194,7 @@ allPlayerCards = mapFromList
   , ("02218", earlSawyer)
   , ("02219", powderOfIbnGhazi)
   , ("02226", springfieldM19034)
+  , ("02254", esotericFormula)
   , ("02301", lightningGun5)
   , ("03022", letMeHandleThis)
   , ("04023", toothOfEztli)
@@ -1325,6 +1326,11 @@ springfieldM19034 cardId = (asset cardId "02226" "Springfiled M1903" 4 Guardian
   { pcTraits = setFromList [Item, Weapon, Firearm]
   , pcLevel = 4
   , pcSkills = [SkillCombat, SkillAgility]
+  }
+
+esotericFormula :: CardId -> PlayerCard
+esotericFormula cardId = (asset cardId "02254" "Esoteric Formula" 0 Neutral)
+  { pcTraits = singleton Spell
   }
 
 lightningGun5 :: CardId -> PlayerCard

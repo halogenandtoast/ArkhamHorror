@@ -6,6 +6,11 @@ module Arkham.Types.Asset.Cards.LightningGun5
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Uses (Uses(..), useCount)
+import qualified Arkham.Types.Asset.Uses as Resource
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -16,11 +21,6 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Uses (Uses(..), useCount)
-import qualified Arkham.Types.Asset.Uses as Resource
 
 newtype LightningGun5 = LightningGun5 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -60,7 +60,7 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env LightningGun5 
           )
           source
           (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillCombat False
+        , ChooseFightEnemy iid source SkillCombat mempty False
         ]
       pure $ LightningGun5 $ attrs & usesL %~ Resource.use
     _ -> LightningGun5 <$> runMessage msg attrs

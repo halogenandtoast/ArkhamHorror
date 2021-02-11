@@ -6,6 +6,10 @@ module Arkham.Types.Asset.Cards.Duke
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -17,10 +21,6 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Window
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 
 newtype Duke = Duke AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
@@ -74,7 +74,7 @@ dukeInvestigate attrs iid lid =
 instance AssetRunner env => RunMessage env Duke where
   runMessage msg a@(Duke attrs@AssetAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      a <$ unshiftMessage (ChooseFightEnemy iid source SkillCombat False)
+      a <$ unshiftMessage (ChooseFightEnemy iid source SkillCombat mempty False)
     UseCardAbility iid source _ 2 _ | isSource attrs source -> do
       lid <- getId iid
       accessibleLocationIds <- map unAccessibleLocationId <$> getSetList lid

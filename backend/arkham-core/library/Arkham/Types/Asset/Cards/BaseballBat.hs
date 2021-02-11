@@ -58,6 +58,6 @@ instance (AssetRunner env) => RunMessage env BaseballBat where
           source
           (InvestigatorTarget iid)
         , CreateEffect "01074" Nothing source (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillCombat False
+        , ChooseFightEnemy iid source SkillCombat mempty False
         ]
     _ -> BaseballBat <$> runMessage msg attrs

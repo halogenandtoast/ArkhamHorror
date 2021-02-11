@@ -1,12 +1,16 @@
 module Arkham.Types.Asset.Cards.FortyOneDerringer
   ( FortyOneDerringer(..)
   , fortyOneDerringer
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
+import Arkham.Types.Asset.Uses
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -17,11 +21,6 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
-import Arkham.Types.Asset.Uses
 
 newtype FortyOneDerringer = FortyOneDerringer AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -62,7 +61,7 @@ instance AssetRunner env => RunMessage env FortyOneDerringer where
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 2])
           source
           (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillCombat False
+        , ChooseFightEnemy iid source SkillCombat mempty False
         ]
     PassedSkillTest iid (Just Action.Fight) source _ _ n
       | isSource attrs source && n >= 2 -> a <$ unshiftMessage

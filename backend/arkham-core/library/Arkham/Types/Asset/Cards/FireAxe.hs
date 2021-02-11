@@ -72,7 +72,7 @@ instance (AssetRunner env) => RunMessage env FireAxe where
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
           source
           (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillCombat False
+        , ChooseFightEnemy iid source SkillCombat mempty False
         ]
     UseCardAbility iid source _ 2 _ | isSource attrs source ->
       a <$ unshiftMessage

@@ -1,12 +1,14 @@
 module Arkham.Types.Event.Cards.IveGotAPlan2
   ( iveGotAPlan2
   , IveGotAPlan2(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
+import Arkham.Types.Action
 import Arkham.Types.Classes
+import Arkham.Types.Event.Attrs
+import Arkham.Types.Event.Helpers
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
@@ -15,9 +17,6 @@ import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Action
-import Arkham.Types.Event.Attrs
-import Arkham.Types.Event.Helpers
 
 newtype IveGotAPlan2 = IveGotAPlan2 EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -41,5 +40,5 @@ instance HasQueue env => RunMessage env IveGotAPlan2 where
   runMessage msg e@(IveGotAPlan2 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       e <$ unshiftMessage
-        (ChooseFightEnemy iid (EventSource eid) SkillIntellect False)
+        (ChooseFightEnemy iid (EventSource eid) SkillIntellect mempty False)
     _ -> IveGotAPlan2 <$> runMessage msg attrs

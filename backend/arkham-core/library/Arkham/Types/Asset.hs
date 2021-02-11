@@ -114,6 +114,7 @@ data Asset
   | EarlSawyer' EarlSawyer
   | PowderOfIbnGhazi' PowderOfIbnGhazi
   | SpringfieldM19034' SpringfieldM19034
+  | EsotericFormula' EsotericFormula
   | LightningGun5' LightningGun5
   | ToothOfEztli' ToothOfEztli
   | OccultLexicon' OccultLexicon
@@ -156,6 +157,7 @@ deriving anyclass instance
   , HasId (Maybe LocationId) env LocationMatcher
   , HasCount ResourceCount env InvestigatorId
   , HasCount CardCount env InvestigatorId
+  , HasCount ClueCount env EnemyId
   , HasCount AssetCount env (InvestigatorId, [Trait])
   , HasSet Trait env LocationId
   , HasTarget ForSkillTest env
@@ -336,6 +338,7 @@ allAssets = mapFromList
   , ("02218", EarlSawyer' . earlSawyer)
   , ("02219", PowderOfIbnGhazi' . powderOfIbnGhazi)
   , ("02226", SpringfieldM19034' . springfieldM19034)
+  , ("02254", EsotericFormula' . esotericFormula)
   , ("02301", LightningGun5' . lightningGun5)
   , ("04023", ToothOfEztli' . toothOfEztli)
   , ("05316", OccultLexicon' . occultLexicon)

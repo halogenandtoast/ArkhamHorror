@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7333b7a9a3c98dbdf72d45a7f1c84c306d46cdfa687d3887d9707c8dfde666df
+-- hash: 666d908a96df5994ac70839c6d1b575ca08a2e01fda433441490bd515e0a9be6
 
 name:           arkham-core
 version:        0.0.0
@@ -127,6 +127,7 @@ library
       Arkham.Types.Asset.Cards.ElderSignAmulet3
       Arkham.Types.Asset.Cards.Encyclopedia
       Arkham.Types.Asset.Cards.Encyclopedia2
+      Arkham.Types.Asset.Cards.EsotericFormula
       Arkham.Types.Asset.Cards.FireAxe
       Arkham.Types.Asset.Cards.FirstAid
       Arkham.Types.Asset.Cards.FishingNet
@@ -702,6 +703,7 @@ library
       Arkham.Types.Treachery.Cards.TheCreaturesTracks
       Arkham.Types.Treachery.Cards.TheYellowSign
       Arkham.Types.Treachery.Cards.TheZealotsSeal
+      Arkham.Types.Treachery.Cards.ToweringBeasts
       Arkham.Types.Treachery.Cards.TwistOfFate
       Arkham.Types.Treachery.Cards.UmordhothsHunger
       Arkham.Types.Treachery.Cards.UmordhothsWrath

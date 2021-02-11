@@ -1,12 +1,15 @@
 module Arkham.Types.Asset.Cards.MonstrousTransformation
   ( MonstrousTransformation(..)
   , monstrousTransformation
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -16,10 +19,6 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 
 newtype MonstrousTransformation = MonstrousTransformation AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -58,11 +57,12 @@ instance (AssetRunner env) => RunMessage env MonstrousTransformation where
   runMessage msg (MonstrousTransformation attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       unshiftMessages
-        [ CreateWindowModifierEffect EffectSkillTestWindow
+        [ CreateWindowModifierEffect
+          EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [DamageDealt 1])
           source
           (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillCombat False
+        , ChooseFightEnemy iid source SkillCombat mempty False
         ]
       pure $ MonstrousTransformation $ attrs & exhaustedL .~ True
     _ -> MonstrousTransformation <$> runMessage msg attrs

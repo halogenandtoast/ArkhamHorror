@@ -1,12 +1,15 @@
 module Arkham.Types.Asset.Cards.Machete
   ( Machete(..)
   , machete
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -18,10 +21,6 @@ import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 
 newtype Machete = Machete AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -52,13 +51,14 @@ instance AssetRunner env => RunMessage env Machete where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       criteriaMet <- (== 1) . unEnemyCount <$> getCount iid
       a <$ unshiftMessages
-        [ CreateWindowModifierEffect EffectSkillTestWindow
+        [ CreateWindowModifierEffect
+          EffectSkillTestWindow
           (EffectModifiers $ toModifiers
             attrs
             ([ DamageDealt 1 | criteriaMet ] <> [SkillModifier SkillCombat 1])
           )
           source
           (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillCombat False
+        , ChooseFightEnemy iid source SkillCombat mempty False
         ]
     _ -> Machete <$> runMessage msg attrs

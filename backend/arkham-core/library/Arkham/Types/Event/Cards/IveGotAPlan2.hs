@@ -29,7 +29,7 @@ instance HasActions env IveGotAPlan2 where
   getActions iid window (IveGotAPlan2 attrs) = getActions iid window attrs
 
 instance (HasCount ClueCount env InvestigatorId) => HasModifiersFor env IveGotAPlan2 where
-  getModifiersFor (SkillTestSource iid _ _ (Just Fight)) (InvestigatorTarget _) (IveGotAPlan2 attrs)
+  getModifiersFor (SkillTestSource iid _ _ _ (Just Fight)) (InvestigatorTarget _) (IveGotAPlan2 attrs)
     = do
       clueCount <- unClueCount <$> getCount iid
       pure $ toModifiers

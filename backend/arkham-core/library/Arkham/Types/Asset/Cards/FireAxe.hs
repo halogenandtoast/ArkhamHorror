@@ -6,6 +6,10 @@ module Arkham.Types.Asset.Cards.FireAxe
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -20,10 +24,6 @@ import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Window
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 
 newtype FireAxe = FireAxe AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -42,7 +42,7 @@ reactionAbility attrs = base { abilityLimit = PlayerLimit PerTestOrAbility 3 } -
   where base = mkAbility (toSource attrs) 2 (ReactionAbility $ ResourceCost 1)
 
 instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env FireAxe where
-  getModifiersFor (SkillTestSource _ _ source (Just Action.Fight)) (InvestigatorTarget iid) (FireAxe a)
+  getModifiersFor (SkillTestSource _ _ source _ (Just Action.Fight)) (InvestigatorTarget iid) (FireAxe a)
     | ownedBy a iid && isSource a source
     = do
       resourceCount <- getResourceCount iid
@@ -57,7 +57,7 @@ instance ActionRunner env => HasActions env FireAxe where
     msource <- asks $ getSource ForSkillTest
     let
       using = case msource of
-        Just (SkillTestSource _ _ source (Just Action.Fight))
+        Just (SkillTestSource _ _ source _ (Just Action.Fight))
           | isSource a source -> True
         _ -> False
     pure [ ActivateCardAbilityAction iid (reactionAbility a) | using ]

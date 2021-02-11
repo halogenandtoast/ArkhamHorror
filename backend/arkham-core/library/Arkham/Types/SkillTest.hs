@@ -55,6 +55,7 @@ instance SourceEntity SkillTest where
     skillTestInvestigator
     skillTestSkillType
     skillTestSource
+    skillTestTarget
     skillTestAction
   isSource _ SkillTestSource{} = True
   isSource _ _ = False
@@ -207,7 +208,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
           [RequestTokens (toSource s) (Just iid) 1 SetAside, RunSkillTest iid]
     DrawAnotherToken iid -> s <$ unshiftMessages
       [RequestTokens (toSource s) (Just iid) 1 SetAside, RunSkillTest iid]
-    RequestedTokens (SkillTestSource siid skillType source maction) (Just iid) tokenFaces
+    RequestedTokens (SkillTestSource siid skillType source target maction) (Just iid) tokenFaces
       -> do
         unshiftMessage (RevealSkillTestTokens iid)
         for_ tokenFaces $ \tokenFace -> do
@@ -216,7 +217,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
             (\who -> pure [WhenRevealToken who tokenFace])
           unshiftMessages $ checkWindowMsgs <> resolve
             (RevealToken
-              (SkillTestSource siid skillType source maction)
+              (SkillTestSource siid skillType source target maction)
               iid
               tokenFace
             )

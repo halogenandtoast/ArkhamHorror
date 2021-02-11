@@ -1,12 +1,14 @@
 module Arkham.Types.Event.Cards.IveGotAPlan
   ( iveGotAPlan
   , IveGotAPlan(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
+import Arkham.Types.Action
 import Arkham.Types.Classes
+import Arkham.Types.Event.Attrs
+import Arkham.Types.Event.Helpers
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
@@ -15,9 +17,6 @@ import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Action
-import Arkham.Types.Event.Attrs
-import Arkham.Types.Event.Helpers
 
 newtype IveGotAPlan = IveGotAPlan EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -29,7 +28,7 @@ instance HasActions env IveGotAPlan where
   getActions iid window (IveGotAPlan attrs) = getActions iid window attrs
 
 instance (HasCount ClueCount env InvestigatorId) => HasModifiersFor env IveGotAPlan where
-  getModifiersFor (SkillTestSource iid _ _ (Just Fight)) (InvestigatorTarget _) (IveGotAPlan attrs)
+  getModifiersFor (SkillTestSource iid _ _ _ (Just Fight)) (InvestigatorTarget _) (IveGotAPlan attrs)
     = do
       clueCount <- unClueCount <$> getCount iid
       pure $ toModifiers attrs [DamageDealt (min clueCount 3)]

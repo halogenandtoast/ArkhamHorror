@@ -3,7 +3,10 @@ module Arkham.Types.Location.Cards.ScienceBuilding where
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
@@ -11,9 +14,6 @@ import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype ScienceBuilding = ScienceBuilding LocationAttrs
@@ -41,7 +41,7 @@ instance (LocationRunner env) => RunMessage env ScienceBuilding where
     RevealLocation _ lid | lid == locationId attrs -> do
       unshiftMessage $ PlaceLocationMatching (LocationWithTitle "Alchemy Labs")
       ScienceBuilding <$> runMessage msg attrs
-    FailedSkillTest iid _ (SkillTestSource _ SkillWillpower _ _) SkillTestInitiatorTarget{} _ _
+    FailedSkillTest iid _ (SkillTestSource _ SkillWillpower _ _ _) SkillTestInitiatorTarget{} _ _
       | iid `elem` locationInvestigators attrs
       -> l <$ unshiftMessage
         (InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0)

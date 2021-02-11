@@ -72,6 +72,7 @@ import Arkham.Types.Treachery.Cards.TerrorFromBeyond as X
 import Arkham.Types.Treachery.Cards.TheCreaturesTracks as X
 import Arkham.Types.Treachery.Cards.TheYellowSign as X
 import Arkham.Types.Treachery.Cards.TheZealotsSeal as X
+import Arkham.Types.Treachery.Cards.ToweringBeasts as X
 import Arkham.Types.Treachery.Cards.TwistOfFate as X
 import Arkham.Types.Treachery.Cards.UmordhothsHunger as X
 import Arkham.Types.Treachery.Cards.UmordhothsWrath as X

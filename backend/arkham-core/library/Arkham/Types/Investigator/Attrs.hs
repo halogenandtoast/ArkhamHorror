@@ -804,13 +804,27 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (discardL %~ (lookupPlayerCard (getCardCode card) (unAssetId aid) :))
       & (slotsL %~ removeFromSlots aid)
   RemoveFromGame (AssetTarget aid) -> pure $ a & assetsL %~ deleteSet aid
-  ChooseFightEnemy iid source skillType isAction | iid == investigatorId -> do
-    enemyIds <- map unFightableEnemyId <$> getSetList (iid, source)
-    a <$ unshiftMessage
-      (chooseOne
-        iid
-        [ FightEnemy iid eid source skillType isAction | eid <- enemyIds ]
-      )
+  ChooseFightEnemy iid source skillType traits isAction
+    | iid == investigatorId -> do
+      enemyIds <- map unFightableEnemyId <$> getSetList (iid, source)
+      if null traits
+        then do
+          a <$ unshiftMessage
+            (chooseOne
+              iid
+              [ FightEnemy iid eid source skillType isAction | eid <- enemyIds ]
+            )
+        else do
+          validEnemies <- filterM
+            (fmap (not . null . intersection traits) . getSet @Trait)
+            enemyIds
+          a <$ unshiftMessage
+            (chooseOne
+              iid
+              [ FightEnemy iid eid source skillType isAction
+              | eid <- validEnemies
+              ]
+            )
   ChooseFightEnemyNotEngagedWithInvestigator iid source skillType isAction
     | iid == investigatorId -> do
       enemyIds <- getSet investigatorLocation

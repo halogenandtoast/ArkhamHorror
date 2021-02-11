@@ -195,6 +195,7 @@ type ActionRunner env
     , HasSet ExhaustedAssetId env InvestigatorId
     , HasSet ExhaustedAssetId env ()
     , HasSet ExhaustedEnemyId env LocationId
+    , HasSet FightableEnemyId env (InvestigatorId, Source)
     , HasSet InvestigatorId env ()
     , HasSet InvestigatorId env EnemyId
     , HasSet InvestigatorId env LocationId

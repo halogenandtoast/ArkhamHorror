@@ -6,6 +6,9 @@ module Arkham.Types.Asset.Cards.Blackjack
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -16,9 +19,6 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
 
 newtype Blackjack = Blackjack AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -57,6 +57,6 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Blackjack wher
           )
           source
           (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillCombat False
+        , ChooseFightEnemy iid source SkillCombat mempty False
         ]
     _ -> Blackjack <$> runMessage msg attrs

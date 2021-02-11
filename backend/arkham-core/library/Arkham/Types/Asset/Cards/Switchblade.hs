@@ -1,12 +1,15 @@
 module Arkham.Types.Asset.Cards.Switchblade
   ( Switchblade(..)
   , switchblade
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -17,10 +20,6 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 
 newtype Switchblade = Switchblade AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -46,7 +45,7 @@ instance ActionRunner env => HasActions env Switchblade where
 instance (AssetRunner env) => RunMessage env Switchblade where
   runMessage msg a@(Switchblade attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage (ChooseFightEnemy iid source SkillCombat False)
+      a <$ unshiftMessage (ChooseFightEnemy iid source SkillCombat mempty False)
     PassedSkillTest iid (Just Action.Fight) source SkillTestInitiatorTarget{} _ n
       | n > 2 && isSource attrs source
       -> a <$ unshiftMessage

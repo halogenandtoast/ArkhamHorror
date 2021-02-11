@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Scenarios.UndimensionedAndUnseen
   ( UndimensionedAndUnseen(..)
   , undimensionedAndUnseen
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -9,6 +10,7 @@ import Arkham.EncounterCard
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.EnemyId
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
@@ -131,13 +133,29 @@ standaloneTokens =
   , ElderSign
   ]
 
-instance HasTokenValue env InvestigatorId => HasTokenValue env UndimensionedAndUnseen where
-  getTokenValue (UndimensionedAndUnseen (attrs `With` _)) iid token =
-    getTokenValue attrs iid token
+instance HasRecord UndimensionedAndUnseen where
+  hasRecord _ _ = False
+  hasRecordSet SacrificedToYogSothoth _ = ["02040"]
+  hasRecordSet _ _ = []
+
+instance
+  ( HasSet StoryEnemyId env CardCode
+  , HasTokenValue env InvestigatorId
+  )
+  => HasTokenValue env UndimensionedAndUnseen where
+  getTokenValue (UndimensionedAndUnseen (attrs `With` _)) iid = \case
+    Skull -> do
+      broodCount <- length <$> getSetList @StoryEnemyId (CardCode "02255")
+      pure $ toTokenValue attrs Skull broodCount (2 * broodCount)
+    Cultist -> pure $ TokenValue Cultist NoModifier
+    Tablet -> pure $ TokenValue Tablet ZeroModifier
+    ElderThing -> pure $ toTokenValue attrs ElderThing 3 5
+    otherFace -> getTokenValue attrs iid otherFace
 
 instance
   ( HasId LeadInvestigatorId env ()
   , HasSet InvestigatorId env ()
+  , HasList DeckCard env InvestigatorId
   , HasRecord env
   , ScenarioAttrsRunner env
   )
@@ -187,6 +205,14 @@ instance
           then pure 3
           else length <$> asks (hasRecordSet SacrificedToYogSothoth)
 
+        investigatorsWithPowderOfIbnGhazi <- catMaybes <$> for
+          investigatorIds
+          (\iid -> do
+            powderOfIbnGhazi <-
+              find ((== "02219") . getCardCode) . map unDeckCard <$> getList iid
+            pure $ (iid, ) <$> powderOfIbnGhazi
+          )
+
         (msgs, setAsideCount) <- case sacrificedToYogSothoth of
           2 -> do
             broodOfYogSothoth <- EncounterCard <$> genEncounterCard "02255"
@@ -234,11 +260,21 @@ instance
             ]
           <> map PlaceLocation locations
           <> [RevealLocation Nothing dunwichVillage, MoveAllTo dunwichVillage]
+          <> [ chooseOne
+                 iid
+                 [ Label
+                   "Play Powder of Ibn-Ghazi"
+                   [PutCardIntoPlay iid (PlayerCard card) Nothing]
+                 , Label "Do no play Powder of Ibn-Ghazi" []
+                 ]
+             | (iid, card) <- investigatorsWithPowderOfIbnGhazi
+             ]
           <> [ SearchCollectionForRandom
                  iid
                  (toSource attrs)
                  (PlayerTreacheryType, setFromList [Madness, Injury, Pact])
-             | iid <- investigatorIds
+             | not standalone
+             , iid <- investigatorIds
              ]
           <> msgs
 

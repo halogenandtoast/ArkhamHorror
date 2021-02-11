@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Scenarios.BloodOnTheAltar
   ( BloodOnTheAltar(..)
   , bloodOnTheAltar
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -30,7 +31,7 @@ newtype BloodOnTheAltarMetadata = BloodOnTheAltarMetadata { sacrifices :: [Card]
   deriving anyclass (ToJSON, FromJSON)
 
 newtype BloodOnTheAltar = BloodOnTheAltar (ScenarioAttrs `With` BloodOnTheAltarMetadata)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
 
 bloodOnTheAltar :: Difficulty -> BloodOnTheAltar
 bloodOnTheAltar difficulty =

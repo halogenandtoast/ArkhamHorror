@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 25164209a2adf6d58a2fb6ba457fd02fb212f628511cb7c148e3e4be52992647
+-- hash: 6ccbf59f676a724671ff2f714d05c1db8b56a30f8cf4503b6c883c6920e93029
 
 name:           arkham-core
 version:        0.0.0
@@ -268,6 +268,7 @@ library
       Arkham.Types.Effect.Effects.SeekingAnswers
       Arkham.Types.Effect.Effects.Shrivelling
       Arkham.Types.Effect.Effects.SureGamble3
+      Arkham.Types.Effect.Effects.UndimensionedAndUnseenTabletToken
       Arkham.Types.Effect.Effects.WillToSurvive4
       Arkham.Types.Effect.Effects.WindowModifierEffect
       Arkham.Types.Effect.Helpers

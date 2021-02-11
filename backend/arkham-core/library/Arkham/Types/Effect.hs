@@ -1,12 +1,14 @@
 module Arkham.Types.Effect
   ( module Arkham.Types.Effect
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Difficulty
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectId
 import Arkham.Types.EffectMetadata
@@ -15,6 +17,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Target
 
@@ -82,6 +85,7 @@ data Effect
   | BindMonster2' BindMonster2
   | PushedIntoTheBeyond' PushedIntoTheBeyond
   | ArcaneBarrier' ArcaneBarrier
+  | UndimensionedAndUnseenTabletToken' UndimensionedAndUnseenTabletToken
   | LetMeHandleThis' LetMeHandleThis
   | MindWipe3' MindWipe3
   | JeremiahPierce' JeremiahPierce
@@ -92,7 +96,7 @@ data Effect
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-deriving anyclass instance HasModifiersFor env Effect
+deriving anyclass instance HasId Difficulty env () => HasModifiersFor env Effect
 deriving anyclass instance
   ( HasQueue env
   , HasSet ConnectedLocationId env LocationId
@@ -102,6 +106,9 @@ deriving anyclass instance
   , HasSet Trait env Source
   , HasModifiersFor env ()
   , HasList TakenAction env InvestigatorId
+  , HasId Difficulty env ()
+  , HasCount ClueCount env EnemyId
+  , HasSet StoryEnemyId env CardCode
   )
   => RunMessage env Effect
 
@@ -157,6 +164,9 @@ allEffects = mapFromList
   , ("02031", BindMonster2' . bindMonster2)
   , ("02100", PushedIntoTheBeyond' . pushedIntoTheBeyond)
   , ("02102", ArcaneBarrier' . arcaneBarrier)
+  , ( "02236"
+    , UndimensionedAndUnseenTabletToken' . undimensionedAndUnseenTabletToken
+    )
   , ("03022", LetMeHandleThis' . letMeHandleThis)
   , ("50008", MindWipe3' . mindWipe3)
   , ("50044", JeremiahPierce' . jeremiahPierce)

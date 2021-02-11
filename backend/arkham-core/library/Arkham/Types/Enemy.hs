@@ -174,6 +174,9 @@ instance HasVictoryPoints Enemy where
 instance HasCount DoomCount env Enemy where
   getCount = pure . DoomCount . enemyDoom . toAttrs
 
+instance HasCount ClueCount env Enemy where
+  getCount = pure . ClueCount . enemyClues . toAttrs
+
 instance HasCount HealthDamageCount env Enemy where
   getCount = pure . HealthDamageCount . enemyHealthDamage . toAttrs
 

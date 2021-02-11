@@ -29,6 +29,7 @@ type ScenarioRunner env
     , HasId LocationId env InvestigatorId
     , HasId (Maybe CampaignId) env ()
     , HasId (Maybe StoryEnemyId) env CardCode
+    , HasList DeckCard env InvestigatorId
     , HasList CampaignStoryCard env ()
     , HasList UnderneathCard env AgendaId
     , HasName env LocationId

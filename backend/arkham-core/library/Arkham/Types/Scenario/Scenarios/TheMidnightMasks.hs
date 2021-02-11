@@ -23,7 +23,7 @@ import Arkham.Types.Trait (Trait)
 import qualified Arkham.Types.Trait as Trait
 
 newtype TheMidnightMasks = TheMidnightMasks ScenarioAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
 
 theMidnightMasks :: Difficulty -> TheMidnightMasks
 theMidnightMasks difficulty =

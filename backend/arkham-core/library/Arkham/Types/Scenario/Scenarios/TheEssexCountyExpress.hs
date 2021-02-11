@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Scenarios.TheEssexCountyExpress
   ( TheEssexCountyExpress(..)
   , theEssexCountyExpress
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -30,7 +31,7 @@ import Arkham.Types.Token
 import qualified Arkham.Types.Trait as Trait
 
 newtype TheEssexCountyExpress = TheEssexCountyExpress ScenarioAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
 
 theEssexCountyExpress :: Difficulty -> TheEssexCountyExpress
 theEssexCountyExpress difficulty = TheEssexCountyExpress $ base

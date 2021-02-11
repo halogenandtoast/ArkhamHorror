@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.UndimensionedAndUnseen
   ( UndimensionedAndUnseen(..)
   , undimensionedAndUnseen
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -13,6 +12,7 @@ import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Game.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
@@ -20,6 +20,8 @@ import Arkham.Types.Query
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Token
+import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Trait hiding (Cultist)
 
 newtype UndimensionedAndUnseenMetadata = UndimensionedAndUnseenMetadata { setAsideSpawnOfYogSothoth :: Int }
@@ -154,6 +156,8 @@ instance
 
 instance
   ( HasId LeadInvestigatorId env ()
+  , HasId CardCode env EnemyId
+  , HasSource ForSkillTest env
   , HasSet InvestigatorId env ()
   , HasList DeckCard env InvestigatorId
   , HasRecord env
@@ -281,6 +285,25 @@ instance
         UndimensionedAndUnseen
           . (`with` UndimensionedAndUnseenMetadata setAsideCount)
           <$> runMessage msg (attrs & locationsL .~ locations')
+      ResolveToken drawnToken Tablet _ -> s <$ unshiftMessage
+        (CreateEffect
+          "02236"
+          Nothing
+          (DrawnTokenSource drawnToken)
+          (DrawnTokenTarget drawnToken)
+        )
+      ResolveToken _ ElderThing iid -> do
+        msource <- asks $ getSource ForSkillTest
+        case msource of
+          Just (SkillTestSource _ _ _ (EnemyTarget eid) (Just action)) -> do
+            enemyCardCode <- getId @CardCode eid
+            s <$ when
+              (enemyCardCode
+              == "02255"
+              && (action `elem` [Action.Evade, Action.Fight])
+              )
+              (unshiftMessage $ EnemyAttack iid eid)
+          _ -> pure s
       RequestedPlayerCard iid source mcard | isSource attrs source ->
         case mcard of
           Nothing -> pure s

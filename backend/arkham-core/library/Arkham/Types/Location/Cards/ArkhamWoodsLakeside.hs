@@ -3,17 +3,17 @@ module Arkham.Types.Location.Cards.ArkhamWoodsLakeside where
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Source
-import qualified Arkham.Types.Action as Action
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Game.Helpers
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype ArkhamWoodsLakeside = ArkhamWoodsLakeside LocationAttrs
@@ -43,7 +43,7 @@ instance ActionRunner env => HasActions env ArkhamWoodsLakeside where
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsLakeside where
   runMessage msg l@(ArkhamWoodsLakeside attrs@LocationAttrs {..}) = case msg of
-    RevealToken (SkillTestSource _ _ source (Just Action.Investigate)) iid _
+    RevealToken (SkillTestSource _ _ source _ (Just Action.Investigate)) iid _
       | isSource attrs source && iid `elem` locationInvestigators -> do
         let
           ability = (mkAbility (toSource attrs) 0 ForcedAbility)

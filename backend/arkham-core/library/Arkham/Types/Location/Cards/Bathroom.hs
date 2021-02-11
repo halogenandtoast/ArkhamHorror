@@ -2,17 +2,17 @@ module Arkham.Types.Location.Cards.Bathroom where
 
 import Arkham.Prelude
 
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Source
 import Arkham.Types.Token
-import qualified Arkham.Types.Action as Action
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 
 newtype Bathroom = Bathroom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -36,7 +36,7 @@ instance ActionRunner env => HasActions env Bathroom where
 
 instance (LocationRunner env) => RunMessage env Bathroom where
   runMessage msg l@(Bathroom attrs) = case msg of
-    After (RevealToken (SkillTestSource _ _ source (Just Action.Investigate)) iid tokenFace)
+    After (RevealToken (SkillTestSource _ _ source _ (Just Action.Investigate)) iid tokenFace)
       | isSource attrs source
       -> l <$ when
         (tokenFace `elem` [Skull, Cultist, Tablet, AutoFail])

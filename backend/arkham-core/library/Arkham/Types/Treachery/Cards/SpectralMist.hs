@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.SpectralMist
   ( SpectralMist(..)
   , spectralMist
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -33,7 +32,7 @@ spectralMist :: TreacheryId -> a -> SpectralMist
 spectralMist uuid _ = SpectralMist $ baseAttrs uuid "81025"
 
 instance HasId LocationId env InvestigatorId => HasModifiersFor env SpectralMist where
-  getModifiersFor (SkillTestSource iid _ _ _) _ (SpectralMist a) = do
+  getModifiersFor (SkillTestSource iid _ _ _ _) _ (SpectralMist a) = do
     lid <- getId @LocationId iid
     pure $ toModifiers a [ Difficulty 1 | treacheryOnLocation lid a ]
   getModifiersFor _ _ _ = pure []

@@ -38,7 +38,7 @@ instance
   , HasId LocationId env InvestigatorId
   )
   => HasModifiersFor env HaroldWalsted where
-  getModifiersFor (SkillTestSource _ _ _ (Just Action.Investigate)) (InvestigatorTarget iid) (HaroldWalsted attrs)
+  getModifiersFor (SkillTestSource _ _ _ _ (Just Action.Investigate)) (InvestigatorTarget iid) (HaroldWalsted attrs)
     = do
       lid <- getId @LocationId iid
       isMiskatonic <- member Miskatonic <$> getSet lid

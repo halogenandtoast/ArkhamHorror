@@ -50,6 +50,7 @@ type TreacheryRunner env
     , HasSet DiscardableAssetId env InvestigatorId
     , HasSet EnemyId env LocationId
     , HasSet EnemyId env Trait
+    , HasSet EnemyId env CardCode
     , HasSet EnemyId env ([Trait], LocationId)
     , HasSet FarthestLocationId env InvestigatorId
     , HasSet HandCardId env (InvestigatorId, PlayerCardType)

@@ -18,7 +18,7 @@ newtype AttractingAttention = AttractingAttention TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 attractingAttention :: TreacheryId -> a -> AttractingAttention
-attractingAttention uuid _ = AttractingAttention $ baseAttrs uuid "TODO"
+attractingAttention uuid _ = AttractingAttention $ baseAttrs uuid "02258"
 
 instance HasModifiersFor env AttractingAttention where
   getModifiersFor = noModifiersFor

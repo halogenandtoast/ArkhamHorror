@@ -42,6 +42,8 @@ data CampaignLogKey
   | EarlSawyerSurvivedTheDunwichLegacy
   | YouCalmedTheTownsfolk
   | YouWarnedTheTownsfolk
+  | BroodEscapedIntoTheWild
+  | NoBroodEscapedIntoTheWild
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
   | TheRougarouEscapedAndYouEmbracedTheCurse

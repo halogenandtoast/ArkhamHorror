@@ -48,6 +48,7 @@ type ScenarioRunner env
     , HasSet LocationId env [Trait]
     , HasSet LocationId env LocationMatcher
     , HasSet ScenarioLogKey env ()
+    , HasSet StoryEnemyId env CardCode
     , HasSet Trait env LocationId
     , HasSet VictoryDisplayCardCode env ()
     , HasSource ForSkillTest env

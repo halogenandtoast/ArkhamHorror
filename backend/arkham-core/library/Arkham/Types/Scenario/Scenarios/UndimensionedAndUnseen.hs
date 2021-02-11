@@ -5,6 +5,7 @@ module Arkham.Types.Scenario.Scenarios.UndimensionedAndUnseen
 
 import Arkham.Prelude
 
+import Arkham.Types.Resolution
 import Arkham.EncounterCard
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
@@ -158,7 +159,9 @@ instance
   ( HasId LeadInvestigatorId env ()
   , HasId CardCode env EnemyId
   , HasSource ForSkillTest env
+  , HasCount XPCount env ()
   , HasSet InvestigatorId env ()
+  , HasSet StoryEnemyId env CardCode
   , HasList DeckCard env InvestigatorId
   , HasRecord env
   , ScenarioAttrsRunner env
@@ -308,4 +311,61 @@ instance
         case mcard of
           Nothing -> pure s
           Just card -> s <$ unshiftMessage (ShuffleCardsIntoDeck iid [card])
+      ScenarioResolution NoResolution ->
+        s <$ unshiftMessages [ScenarioResolution $ Resolution 1]
+      ScenarioResolution (Resolution 1) -> do
+        leadInvestigatorId <- getLeadInvestigatorId
+        investigatorIds <- getInvestigatorIds
+        xp <- getXp
+        broodEscapedIntoTheWild <-
+          (+ setAsideSpawnOfYogSothoth metadata)
+          . length
+          <$> getSetList @StoryEnemyId (CardCode "02255")
+        s <$ unshiftMessages
+          ([ chooseOne
+             leadInvestigatorId
+             [ Run
+                 [ Continue "Continue"
+                 , FlavorText
+                   Nothing
+                   [ "You did all you could to stop the rampaging\
+                         \ monsters, but there were more of them than you realized and\
+                         \ you weren’t able to slay them all. Exhausted and terrified, you\
+                         \ retreat to Zebulon’s home and hope to survive the night."
+                   ]
+                 ]
+             ]
+           , RecordCount BroodEscapedIntoTheWild broodEscapedIntoTheWild
+           ]
+          <> [ RemoveCampaignCardFromDeck iid "02219"
+             | iid <- investigatorIds
+             ]
+          <> [ GainXP iid xp | iid <- investigatorIds ]
+          <> [EndOfGame]
+          )
+      ScenarioResolution (Resolution 2) -> do
+        leadInvestigatorId <- getLeadInvestigatorId
+        investigatorIds <- getInvestigatorIds
+        xp <- getXp
+        s <$ unshiftMessages
+          ([ chooseOne
+             leadInvestigatorId
+             [ Run
+                 [ Continue "Continue"
+                 , FlavorText
+                   Nothing
+                   [ "After slaying what seems to be the last of\
+                     \ the rampaging monsters you retreat to Zebulon’s home,\
+                     \ exhausted and rattled by your experience"
+                   ]
+                 ]
+             ]
+           , Record NoBroodEscapedIntoTheWild
+           ]
+          <> [ RemoveCampaignCardFromDeck iid "02219"
+             | iid <- investigatorIds
+             ]
+          <> [ GainXP iid xp | iid <- investigatorIds ]
+          <> [EndOfGame]
+          )
       _ -> UndimensionedAndUnseen . (`with` metadata) <$> runMessage msg attrs

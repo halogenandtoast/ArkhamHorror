@@ -23,7 +23,7 @@ import Arkham.Types.Target
 import Arkham.Types.Token
 
 newtype TheMiskatonicMuseum = TheMiskatonicMuseum ScenarioAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
 
 theMiskatonicMuseum :: Difficulty -> TheMiskatonicMuseum
 theMiskatonicMuseum difficulty = TheMiskatonicMuseum $ base

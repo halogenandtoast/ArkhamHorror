@@ -373,6 +373,7 @@ data Message
   | Remember ScenarioLogKey
   | RemoveAbilitiesFrom Source
   | RemoveAllCopiesOfCardFromGame InvestigatorId CardCode
+  | RemoveAllClues Target
   | RemoveAllDoom
   | RemoveCampaignCardFromDeck InvestigatorId CardCode
   | RemoveCardFromHand InvestigatorId CardCode

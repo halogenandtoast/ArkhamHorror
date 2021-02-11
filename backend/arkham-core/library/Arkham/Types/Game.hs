@@ -10,6 +10,7 @@ import Arkham.Json
 import Arkham.EncounterCard
 import Arkham.PlayerCard
 import Arkham.Types.Ability
+import Arkham.Types.Difficulty
 import Arkham.Types.ActId
 import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
@@ -249,10 +250,14 @@ instance CanBeWeakness (Game queue) TreacheryId where
 
 instance HasRecord (Game queue) where
   hasRecord key g = case modeCampaign $ g ^. modeL of
-    Nothing -> False
+    Nothing -> case modeScenario $ g ^. modeL of
+                 Just s -> hasRecord key s
+                 Nothing -> False
     Just c -> hasRecord key c
   hasRecordSet key g = case modeCampaign $ g ^. modeL of
-    Nothing -> []
+    Nothing -> case modeScenario $ g ^. modeL of
+                 Just s -> hasRecordSet key s
+                 Nothing -> []
     Just c -> hasRecordSet key c
 
 instance HasCard InvestigatorId (Game queue) where
@@ -428,6 +433,9 @@ instance HasCount TreacheryCount (Game queue) (LocationId, CardCode) where
 
 instance HasCount ClueCount (Game queue) AssetId where
   getCount = getCount <=< getAsset
+
+instance HasCount ClueCount (Game queue) EnemyId where
+  getCount = getCount <=< getEnemy
 
 instance HasCount DoomCount (Game queue) EnemyId where
   getCount = getCount <=< getEnemy
@@ -1414,6 +1422,13 @@ instance HasActions GameInternal ActionType where
       AgendaActionType -> concatMapM' (getActions iid window) (g ^. agendasL)
       InvestigatorActionType ->
         concatMapM' (getActions iid window) (g ^. investigatorsL)
+
+instance HasId Difficulty (Game queue) () where
+  getId _ =
+      these
+        difficultyOf
+        difficultyOfScenario
+        (const . difficultyOf) <$> view modeL
 
 instance HasActions GameInternal (ActionType, Trait) where
   getActions iid window (actionType, trait) = do

@@ -3,7 +3,8 @@
 module Arkham.Types.Scenario.Attrs
   ( module Arkham.Types.Scenario.Attrs
   , module X
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -55,6 +56,10 @@ instance ToJSON ScenarioAttrs where
 
 instance FromJSON ScenarioAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "scenario"
+
+instance HasRecord ScenarioAttrs where
+  hasRecord _ = pure False
+  hasRecordSet _ = pure []
 
 instance HasCount ScenarioDeckCount env ScenarioAttrs where
   getCount ScenarioAttrs { scenarioDeck } = case scenarioDeck of

@@ -1,6 +1,7 @@
 module Arkham.Types.Scenario
   ( module Arkham.Types.Scenario
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -39,7 +40,7 @@ data Scenario
   | CurseOfTheRougarou' CurseOfTheRougarou
   | BaseScenario' BaseScenario
   deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, HasRecord)
 
 deriving anyclass instance ScenarioRunner env => RunMessage env Scenario
 deriving anyclass instance
@@ -50,6 +51,7 @@ deriving anyclass instance
   , HasCount EnemyCount env [Trait]
   , HasSet EnemyId env Trait
   , HasSet EnemyId env LocationId
+  , HasSet StoryEnemyId env CardCode
   , HasSet LocationId env ()
   , HasSet Trait env LocationId
   , HasList UnderneathCard env LocationId
@@ -71,7 +73,7 @@ instance HasCount ScenarioDeckCount env Scenario where
   getCount = getCount . toAttrs
 
 newtype BaseScenario = BaseScenario ScenarioAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
 
 instance HasTokenValue env InvestigatorId => HasTokenValue env BaseScenario where
   getTokenValue (BaseScenario attrs) iid = \case

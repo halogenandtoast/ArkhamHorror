@@ -495,7 +495,6 @@ getIsPlayable attrs@InvestigatorAttrs {..} windows c@(PlayerCard MkPlayerCard {.
       && (pcAction /= Just Action.Evade || not (null investigatorEngagedEnemies)
          )
  where
-  none f = not . any f
   prevents (CannotPlay typePairs) = any
     (\(cType, traits) ->
       pcCardType
@@ -806,17 +805,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (slotsL %~ removeFromSlots aid)
   RemoveFromGame (AssetTarget aid) -> pure $ a & assetsL %~ deleteSet aid
   ChooseFightEnemy iid source skillType isAction | iid == investigatorId -> do
-    enemyIds <- getSet investigatorLocation
-    aloofEnemyIds <- mapSet unAloofEnemyId <$> getSet investigatorLocation
-    let
-      fightableEnemyIds =
-        investigatorEngagedEnemies `union` (enemyIds `difference` aloofEnemyIds)
+    enemyIds <- map unFightableEnemyId <$> getSetList (iid, source)
     a <$ unshiftMessage
       (chooseOne
         iid
-        [ FightEnemy iid eid source skillType isAction
-        | eid <- setToList fightableEnemyIds
-        ]
+        [ FightEnemy iid eid source skillType isAction | eid <- enemyIds ]
       )
   ChooseFightEnemyNotEngagedWithInvestigator iid source skillType isAction
     | iid == investigatorId -> do

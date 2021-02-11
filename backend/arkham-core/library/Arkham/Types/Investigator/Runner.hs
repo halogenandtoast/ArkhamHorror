@@ -50,6 +50,7 @@ type InvestigatorRunner env
       , HasCount RemainingSanity env InvestigatorId
       , HasCount ResourceCount env InvestigatorId
       , HasCount SanityDamageCount env EnemyId
+      , HasCount SetAsideCount env CardCode
       , HasCount Shroud env LocationId
       , HasCount SpendableClueCount env InvestigatorId
       , HasCount SpendableClueCount env ()
@@ -78,7 +79,7 @@ type InvestigatorRunner env
       , HasList UsedAbility env ()
       )
     , HasModifiersFor env ()
-    , HasName env LocationId
+    , (HasName env AssetId, HasName env LocationId)
     , HasPhaseHistory env
     , HasPlayerCard env AssetId
     , HasQueue env
@@ -117,6 +118,7 @@ type InvestigatorRunner env
         , HasSet FarthestLocationId env InvestigatorId
         , HasSet FarthestLocationId env (InvestigatorId, EmptyLocation)
         , HasSet FarthestLocationId env [InvestigatorId]
+        , HasSet FightableEnemyId env (InvestigatorId, Source)
         , HasSet HandCardId env (InvestigatorId, PlayerCardType)
         , HasSet HandCardId env InvestigatorId
         , HasSet HealthDamageableAssetId env InvestigatorId

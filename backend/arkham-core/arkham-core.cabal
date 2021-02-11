@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6ccbf59f676a724671ff2f714d05c1db8b56a30f8cf4503b6c883c6920e93029
+-- hash: dea3169107cbda3ab85736461a23942fe08c977d526749112d0b16991c0a017d
 
 name:           arkham-core
 version:        0.0.0
@@ -285,6 +285,7 @@ library
       Arkham.Types.Enemy.Cards.AvianThrall
       Arkham.Types.Enemy.Cards.BillyCooper
       Arkham.Types.Enemy.Cards.BogGator
+      Arkham.Types.Enemy.Cards.BroodOfYogSothoth
       Arkham.Types.Enemy.Cards.CloverClubPitBoss
       Arkham.Types.Enemy.Cards.ConglomerationOfSpheres
       Arkham.Types.Enemy.Cards.CorpseHungryGhoul
@@ -696,6 +697,7 @@ library
       Arkham.Types.Treachery.Cards.StalkedInTheDark
       Arkham.Types.Treachery.Cards.StrangeSigns
       Arkham.Types.Treachery.Cards.TerrorFromBeyond
+      Arkham.Types.Treachery.Cards.TheCreaturesTracks
       Arkham.Types.Treachery.Cards.TheYellowSign
       Arkham.Types.Treachery.Cards.TheZealotsSeal
       Arkham.Types.Treachery.Cards.TwistOfFate

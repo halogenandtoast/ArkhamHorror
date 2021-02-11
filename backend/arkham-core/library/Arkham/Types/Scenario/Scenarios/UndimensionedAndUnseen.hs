@@ -25,25 +25,20 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait hiding (Cultist)
 
-newtype UndimensionedAndUnseenMetadata = UndimensionedAndUnseenMetadata { setAsideSpawnOfYogSothoth :: Int }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-newtype UndimensionedAndUnseen = UndimensionedAndUnseen (ScenarioAttrs `With` UndimensionedAndUnseenMetadata)
+newtype UndimensionedAndUnseen = UndimensionedAndUnseen ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 undimensionedAndUnseen :: Difficulty -> UndimensionedAndUnseen
-undimensionedAndUnseen difficulty =
-  UndimensionedAndUnseen . (`with` UndimensionedAndUnseenMetadata 0) $ base
-    { scenarioLocationLayout = Just
-      [ ". blastedHeath devilsHopYard"
-      , ". blastedHeath devilsHopYard"
-      , "dunwichVillage tenAcreMeadow ."
-      , "dunwichVillage tenAcreMeadow whateleyRuins"
-      , ". coldSpringGlen whateleyRuins"
-      , ". coldSpringGlen ."
-      ]
-    }
+undimensionedAndUnseen difficulty = UndimensionedAndUnseen $ base
+  { scenarioLocationLayout = Just
+    [ ". blastedHeath devilsHopYard"
+    , ". blastedHeath devilsHopYard"
+    , "dunwichVillage tenAcreMeadow ."
+    , "dunwichVillage tenAcreMeadow whateleyRuins"
+    , ". coldSpringGlen whateleyRuins"
+    , ". coldSpringGlen ."
+    ]
+  }
  where
   base = baseAttrs
     "02236"
@@ -146,7 +141,7 @@ instance
   , HasTokenValue env InvestigatorId
   )
   => HasTokenValue env UndimensionedAndUnseen where
-  getTokenValue (UndimensionedAndUnseen (attrs `With` _)) iid = \case
+  getTokenValue (UndimensionedAndUnseen attrs) iid = \case
     Skull -> do
       broodCount <- length <$> getSetList @StoryEnemyId (CardCode "02255")
       pure $ toTokenValue attrs Skull broodCount (2 * broodCount)
@@ -156,8 +151,7 @@ instance
     otherFace -> getTokenValue attrs iid otherFace
 
 instance
-  ( HasId LeadInvestigatorId env ()
-  , HasId CardCode env EnemyId
+  ( HasId CardCode env EnemyId
   , HasSource ForSkillTest env
   , HasCount XPCount env ()
   , HasSet InvestigatorId env ()
@@ -167,205 +161,217 @@ instance
   , ScenarioAttrsRunner env
   )
   => RunMessage env UndimensionedAndUnseen where
-  runMessage msg s@(UndimensionedAndUnseen (attrs `With` metadata)) =
-    case msg of
-      SetTokensForScenario -> do
-        standalone <- getIsStandalone
-        s <$ if standalone
-          then unshiftMessage (SetTokens standaloneTokens)
-          else pure ()
-      Setup -> do
-        investigatorIds <- getInvestigatorIds
-        leadInvestigatorId <- getLeadInvestigatorId
-        s <$ unshiftMessages
-          [ story investigatorIds undimensionedAndUnseenIntro
-          , chooseOne
-            leadInvestigatorId
-            [ Label
-              "You try to calm down the townsfolk in order to learn more."
-              [SetupStep 1]
-            , Label
-              "You try to warn the townsfolk and convince them to evacuate."
-              [SetupStep 2]
-            ]
+  runMessage msg s@(UndimensionedAndUnseen attrs) = case msg of
+    SetTokensForScenario -> do
+      standalone <- getIsStandalone
+      s <$ if standalone
+        then unshiftMessage (SetTokens standaloneTokens)
+        else pure ()
+    Setup -> do
+      investigatorIds <- getInvestigatorIds
+      leadInvestigatorId <- getLeadInvestigatorId
+      s <$ unshiftMessages
+        [ story investigatorIds undimensionedAndUnseenIntro
+        , chooseOne
+          leadInvestigatorId
+          [ Label
+            "You try to calm down the townsfolk in order to learn more."
+            [SetupStep 1]
+          , Label
+            "You try to warn the townsfolk and convince them to evacuate."
+            [SetupStep 2]
           ]
-      SetupStep n -> do
-        standalone <- getIsStandalone
-        investigatorIds <- getInvestigatorIds
-        encounterDeck <- buildEncounterDeckExcluding
-          ["02255"]
-          [ EncounterSet.UndimensionedAndUnseen
-          , EncounterSet.Whippoorwills
-          , EncounterSet.BeastThralls
-          , EncounterSet.Dunwich
-          , EncounterSet.StrikingFear
-          ]
+        ]
+    SetupStep n -> do
+      standalone <- getIsStandalone
+      investigatorIds <- getInvestigatorIds
+      encounterDeck <- buildEncounterDeckExcluding
+        ["02255"]
+        [ EncounterSet.UndimensionedAndUnseen
+        , EncounterSet.Whippoorwills
+        , EncounterSet.BeastThralls
+        , EncounterSet.Dunwich
+        , EncounterSet.StrikingFear
+        ]
 
-        dunwichVillage <- sample $ "02242" :| ["02243"]
-        coldSpringGlen <- sample $ "02244" :| ["02245"]
-        tenAcreMeadow <- sample $ "02246" :| ["02247"]
-        blastedHeath <- sample $ "02248" :| ["02249"]
-        whateleyRuins <- sample $ "02250" :| ["02251"]
-        devilsHopYard <- sample $ "00252" :| ["02253"]
+      dunwichVillage <- sample $ "02242" :| ["02243"]
+      coldSpringGlen <- sample $ "02244" :| ["02245"]
+      tenAcreMeadow <- sample $ "02246" :| ["02247"]
+      blastedHeath <- sample $ "02248" :| ["02249"]
+      whateleyRuins <- sample $ "02250" :| ["02251"]
+      devilsHopYard <- sample $ "00252" :| ["02253"]
 
-        sacrificedToYogSothoth <- if standalone
-          then pure 3
-          else length <$> asks (hasRecordSet SacrificedToYogSothoth)
+      sacrificedToYogSothoth <- if standalone
+        then pure 3
+        else length <$> asks (hasRecordSet SacrificedToYogSothoth)
 
-        investigatorsWithPowderOfIbnGhazi <- catMaybes <$> for
-          investigatorIds
-          (\iid -> do
-            powderOfIbnGhazi <-
-              find ((== "02219") . getCardCode) . map unDeckCard <$> getList iid
-            pure $ (iid, ) <$> powderOfIbnGhazi
-          )
-
-        (msgs, setAsideCount) <- case sacrificedToYogSothoth of
-          2 -> do
-            broodOfYogSothoth <- EncounterCard <$> genEncounterCard "02255"
-            pure ([CreateEnemyAt broodOfYogSothoth coldSpringGlen], 3)
-          3 -> do
-            broodOfYogSothoth <- EncounterCard <$> genEncounterCard "02255"
-            pure ([CreateEnemyAt broodOfYogSothoth coldSpringGlen], 2)
-          x -> if x <= 2
-            then do
-              broodOfYogSothoth1 <- EncounterCard <$> genEncounterCard "02255"
-              broodOfYogSothoth2 <- EncounterCard <$> genEncounterCard "02255"
-              pure
-                ( [ CreateEnemyAt broodOfYogSothoth1 coldSpringGlen
-                  , CreateEnemyAt broodOfYogSothoth2 blastedHeath
-                  ]
-                , 3
-                )
-            else pure ([], 2)
-
-        let
-          locations =
-            [ dunwichVillage
-            , coldSpringGlen
-            , tenAcreMeadow
-            , blastedHeath
-            , whateleyRuins
-            , devilsHopYard
-            ]
-          locations' = mapFromList $ map
-            (second pure . toFst (getLocationName . lookupLocation))
-            locations
-
-        unshiftMessages
-          $ [ story
-              investigatorIds
-              (if n == 1
-                then undimensionedAndUnseenPart1
-                else undimensionedAndUnseenPart2
-              )
-            , Record
-              (if n == 1 then YouCalmedTheTownsfolk else YouWarnedTheTownsfolk)
-            , SetEncounterDeck encounterDeck
-            , AddAgenda "02237"
-            , AddAct "02240"
-            ]
-          <> map PlaceLocation locations
-          <> [RevealLocation Nothing dunwichVillage, MoveAllTo dunwichVillage]
-          <> [ chooseOne
-                 iid
-                 [ Label
-                   "Play Powder of Ibn-Ghazi"
-                   [PutCardIntoPlay iid (PlayerCard card) Nothing]
-                 , Label "Do no play Powder of Ibn-Ghazi" []
-                 ]
-             | (iid, card) <- investigatorsWithPowderOfIbnGhazi
-             ]
-          <> [ SearchCollectionForRandom
-                 iid
-                 (toSource attrs)
-                 (PlayerTreacheryType, setFromList [Madness, Injury, Pact])
-             | not standalone
-             , iid <- investigatorIds
-             ]
-          <> msgs
-
-        UndimensionedAndUnseen
-          . (`with` UndimensionedAndUnseenMetadata setAsideCount)
-          <$> runMessage msg (attrs & locationsL .~ locations')
-      ResolveToken drawnToken Tablet _ -> s <$ unshiftMessage
-        (CreateEffect
-          "02236"
-          Nothing
-          (DrawnTokenSource drawnToken)
-          (DrawnTokenTarget drawnToken)
+      investigatorsWithPowderOfIbnGhazi <- catMaybes <$> for
+        investigatorIds
+        (\iid -> do
+          powderOfIbnGhazi <-
+            find ((== "02219") . getCardCode) . map unDeckCard <$> getList iid
+          pure $ (iid, ) <$> powderOfIbnGhazi
         )
-      ResolveToken _ ElderThing iid -> do
-        msource <- asks $ getSource ForSkillTest
-        case msource of
-          Just (SkillTestSource _ _ _ (EnemyTarget eid) (Just action)) -> do
-            enemyCardCode <- getId @CardCode eid
-            s <$ when
-              (enemyCardCode
-              == "02255"
-              && (action `elem` [Action.Evade, Action.Fight])
+
+      (msgs, setAsideCount) <- case sacrificedToYogSothoth of
+        2 -> do
+          broodOfYogSothoth <- EncounterCard <$> genEncounterCard "02255"
+          pure ([CreateEnemyAt broodOfYogSothoth coldSpringGlen], 3)
+        3 -> do
+          broodOfYogSothoth <- EncounterCard <$> genEncounterCard "02255"
+          pure ([CreateEnemyAt broodOfYogSothoth coldSpringGlen], 2)
+        x -> if x <= 2
+          then do
+            broodOfYogSothoth1 <- EncounterCard <$> genEncounterCard "02255"
+            broodOfYogSothoth2 <- EncounterCard <$> genEncounterCard "02255"
+            pure
+              ( [ CreateEnemyAt broodOfYogSothoth1 coldSpringGlen
+                , CreateEnemyAt broodOfYogSothoth2 blastedHeath
+                ]
+              , 3
               )
-              (unshiftMessage $ EnemyAttack iid eid)
-          _ -> pure s
-      RequestedPlayerCard iid source mcard | isSource attrs source ->
-        case mcard of
-          Nothing -> pure s
-          Just card -> s <$ unshiftMessage (ShuffleCardsIntoDeck iid [card])
-      ScenarioResolution NoResolution ->
-        s <$ unshiftMessages [ScenarioResolution $ Resolution 1]
-      ScenarioResolution (Resolution 1) -> do
-        leadInvestigatorId <- getLeadInvestigatorId
-        investigatorIds <- getInvestigatorIds
-        xp <- getXp
-        broodEscapedIntoTheWild <-
-          (+ setAsideSpawnOfYogSothoth metadata)
-          . length
-          <$> getSetList @StoryEnemyId (CardCode "02255")
-        s <$ unshiftMessages
-          ([ chooseOne
-             leadInvestigatorId
-             [ Run
-                 [ Continue "Continue"
-                 , FlavorText
-                   Nothing
-                   [ "You did all you could to stop the rampaging\
+          else pure ([], 2)
+
+      setAsideBroodOfYogSothoth <- replicateM
+        setAsideCount
+        (EncounterCard <$> genEncounterCard "02255")
+
+      let
+        locations =
+          [ dunwichVillage
+          , coldSpringGlen
+          , tenAcreMeadow
+          , blastedHeath
+          , whateleyRuins
+          , devilsHopYard
+          ]
+        locations' = mapFromList $ map
+          (second pure . toFst (getLocationName . lookupLocation))
+          locations
+
+      unshiftMessages
+        $ [ story
+            investigatorIds
+            (if n == 1
+              then undimensionedAndUnseenPart1
+              else undimensionedAndUnseenPart2
+            )
+          , Record
+            (if n == 1 then YouCalmedTheTownsfolk else YouWarnedTheTownsfolk)
+          , SetEncounterDeck encounterDeck
+          , AddAgenda "02237"
+          , AddAct "02240"
+          ]
+        <> map PlaceLocation locations
+        <> [RevealLocation Nothing dunwichVillage, MoveAllTo dunwichVillage]
+        <> [ chooseOne
+               iid
+               [ Label
+                 "Play Powder of Ibn-Ghazi"
+                 [PutCardIntoPlay iid (PlayerCard card) Nothing]
+               , Label "Do no play Powder of Ibn-Ghazi" []
+               ]
+           | (iid, card) <- investigatorsWithPowderOfIbnGhazi
+           ]
+        <> [ SearchCollectionForRandom
+               iid
+               (toSource attrs)
+               (PlayerTreacheryType, setFromList [Madness, Injury, Pact])
+           | not standalone
+           , iid <- investigatorIds
+           ]
+        <> msgs
+
+      UndimensionedAndUnseen <$> runMessage
+        msg
+        (attrs
+        & locationsL
+        .~ locations'
+        & setAsideCardsL
+        .~ setAsideBroodOfYogSothoth
+        )
+    ResolveToken drawnToken Tablet _ -> s <$ unshiftMessage
+      (CreateEffect
+        "02236"
+        Nothing
+        (DrawnTokenSource drawnToken)
+        (DrawnTokenTarget drawnToken)
+      )
+    ResolveToken _ ElderThing iid -> do
+      msource <- asks $ getSource ForSkillTest
+      case msource of
+        Just (SkillTestSource _ _ _ (EnemyTarget eid) (Just action)) -> do
+          enemyCardCode <- getId @CardCode eid
+          s <$ when
+            (enemyCardCode
+            == "02255"
+            && (action `elem` [Action.Evade, Action.Fight])
+            )
+            (unshiftMessage $ EnemyAttack iid eid)
+        _ -> pure s
+    RequestedPlayerCard iid source mcard | isSource attrs source ->
+      case mcard of
+        Nothing -> pure s
+        Just card -> s <$ unshiftMessage (ShuffleCardsIntoDeck iid [card])
+    ScenarioResolution NoResolution ->
+      s <$ unshiftMessages [ScenarioResolution $ Resolution 1]
+    ScenarioResolution (Resolution 1) -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      investigatorIds <- getInvestigatorIds
+      xp <- getXp
+      broodEscapedIntoTheWild <-
+        (+ count ((== "02255") . getCardCode) (scenarioSetAsideCards attrs))
+        . length
+        <$> getSetList @StoryEnemyId (CardCode "02255")
+      s <$ unshiftMessages
+        ([ chooseOne
+           leadInvestigatorId
+           [ Run
+               [ Continue "Continue"
+               , FlavorText
+                 Nothing
+                 [ "You did all you could to stop the rampaging\
                          \ monsters, but there were more of them than you realized and\
                          \ you weren’t able to slay them all. Exhausted and terrified, you\
                          \ retreat to Zebulon’s home and hope to survive the night."
-                   ]
                  ]
-             ]
-           , RecordCount BroodEscapedIntoTheWild broodEscapedIntoTheWild
+               ]
            ]
-          <> [ RemoveCampaignCardFromDeck iid "02219"
-             | iid <- investigatorIds
-             ]
-          <> [ GainXP iid xp | iid <- investigatorIds ]
-          <> [EndOfGame]
-          )
-      ScenarioResolution (Resolution 2) -> do
-        leadInvestigatorId <- getLeadInvestigatorId
-        investigatorIds <- getInvestigatorIds
-        xp <- getXp
-        s <$ unshiftMessages
-          ([ chooseOne
-             leadInvestigatorId
-             [ Run
-                 [ Continue "Continue"
-                 , FlavorText
-                   Nothing
-                   [ "After slaying what seems to be the last of\
+         , RecordCount BroodEscapedIntoTheWild broodEscapedIntoTheWild
+         ]
+        <> [ RemoveCampaignCardFromDeck iid "02219" | iid <- investigatorIds ]
+        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [EndOfGame]
+        )
+    ScenarioResolution (Resolution 2) -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      investigatorIds <- getInvestigatorIds
+      xp <- getXp
+      s <$ unshiftMessages
+        ([ chooseOne
+           leadInvestigatorId
+           [ Run
+               [ Continue "Continue"
+               , FlavorText
+                 Nothing
+                 [ "After slaying what seems to be the last of\
                      \ the rampaging monsters you retreat to Zebulon’s home,\
                      \ exhausted and rattled by your experience"
-                   ]
                  ]
-             ]
-           , Record NoBroodEscapedIntoTheWild
+               ]
            ]
-          <> [ RemoveCampaignCardFromDeck iid "02219"
-             | iid <- investigatorIds
-             ]
-          <> [ GainXP iid xp | iid <- investigatorIds ]
-          <> [EndOfGame]
-          )
-      _ -> UndimensionedAndUnseen . (`with` metadata) <$> runMessage msg attrs
+         , Record NoBroodEscapedIntoTheWild
+         ]
+        <> [ RemoveCampaignCardFromDeck iid "02219" | iid <- investigatorIds ]
+        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [EndOfGame]
+        )
+    UseScenarioSpecificAbility _ 1 ->
+      s <$ unshiftMessage (ChooseRandomLocation (toTarget attrs))
+    ChosenRandomLocation target randomLocationId | isTarget attrs target ->
+      case scenarioSetAsideCards attrs of
+        [] -> error "should not call when empty"
+        (x : xs) -> do
+          unshiftMessage (CreateEnemyAt x randomLocationId)
+          pure . UndimensionedAndUnseen $ attrs & setAsideCardsL .~ xs
+    _ -> UndimensionedAndUnseen <$> runMessage msg attrs

@@ -27,6 +27,7 @@ type TreacheryRunner env
     , HasCount DamageCount env InvestigatorId
     , HasCount PlayerCount env ()
     , HasCount ResourceCount env InvestigatorId
+    , HasCount SetAsideCount env CardCode
     , HasCount Shroud env LocationId
     , HasCount SpendableClueCount env InvestigatorId
     , HasCount TreacheryCount env (LocationId, CardCode)

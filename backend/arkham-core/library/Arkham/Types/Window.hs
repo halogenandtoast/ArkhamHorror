@@ -8,6 +8,7 @@ import Arkham.Types.AgendaId
 import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -40,6 +41,7 @@ data Window
   | WhenAgendaAdvance AgendaId
   | WhenAllDrawEncounterCard
   | WhenAmongSearchedCards Who
+  | WhenChosenRandomLocation LocationId
   | WhenDealtDamage Source Target
   | WhenDealtHorror Source Target
   | WhenDefeated Source

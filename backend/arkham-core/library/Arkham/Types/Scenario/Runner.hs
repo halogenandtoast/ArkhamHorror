@@ -45,6 +45,7 @@ type ScenarioRunner env
     , HasSet EnemyId env Trait
     , HasSet InScenarioInvestigatorId env ()
     , HasSet InvestigatorId env ()
+    , HasSet LocationId env ()
     , HasSet LocationId env [Trait]
     , HasSet LocationId env LocationMatcher
     , HasSet ScenarioLogKey env ()

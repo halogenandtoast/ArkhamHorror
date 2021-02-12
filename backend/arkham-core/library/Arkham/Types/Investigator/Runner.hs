@@ -105,6 +105,7 @@ type InvestigatorRunner env
         , HasSet ConnectedLocationId env LocationId
         , HasSet DiscardableAssetId env InvestigatorId
         , HasSet EmptyLocationId env ()
+        , HasSet EnemyAccessibleLocationId env (EnemyId, LocationId)
         , HasSet EnemyId env CardCode
         , HasSet EnemyId env InvestigatorId
         , HasSet EnemyId env LocationId

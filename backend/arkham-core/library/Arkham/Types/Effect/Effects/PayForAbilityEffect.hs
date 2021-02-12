@@ -166,7 +166,7 @@ instance
           cards = filter
             (and . sequence
               [ maybe (const True) (==) mPlayerCardType . pcCardType
-              , (|| null traits) . not . null . intersection traits . pcTraits
+              , (|| null traits) . notNull . intersection traits . pcTraits
               , (|| null skillTypes)
               . not
               . null

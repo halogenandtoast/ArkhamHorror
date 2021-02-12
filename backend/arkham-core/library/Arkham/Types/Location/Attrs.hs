@@ -160,6 +160,23 @@ baseAttrs lid name encounterSet shroud' revealClues symbol' connectedSymbols' tr
     , locationCardsUnderneath = mempty
     }
 
+locationEnemiesWithTrait
+  :: (MonadReader env m, HasSet Trait env EnemyId)
+  => LocationAttrs
+  -> Trait
+  -> m [EnemyId]
+locationEnemiesWithTrait LocationAttrs { locationEnemies } trait =
+  filterM (fmap (member trait) . getSet) (setToList locationEnemies)
+
+locationInvestigatorsWithClues
+  :: (MonadReader env m, HasCount ClueCount env InvestigatorId)
+  => LocationAttrs
+  -> m [InvestigatorId]
+locationInvestigatorsWithClues LocationAttrs { locationInvestigators } =
+  filterM
+    (fmap ((> 0) . unClueCount) . getCount)
+    (setToList locationInvestigators)
+
 getModifiedShroudValueFor
   :: (MonadReader env m, HasModifiersFor env ()) => LocationAttrs -> m Int
 getModifiedShroudValueFor attrs = do
@@ -467,7 +484,9 @@ instance LocationRunner env => RunMessage env LocationAttrs where
     EnemyDefeated eid _ _ _ _ _ -> pure $ a & enemiesL %~ deleteSet eid
     TakeControlOfAsset _ aid -> pure $ a & assetsL %~ deleteSet aid
     MoveAllCluesTo target | not (isTarget a target) -> do
-      when (locationClues > 0) (unshiftMessage $ PlaceClues target locationClues)
+      when
+        (locationClues > 0)
+        (unshiftMessage $ PlaceClues target locationClues)
       pure $ a & cluesL .~ 0
     PlaceClues (LocationTarget lid) n | lid == locationId ->
       pure $ a & cluesL +~ n

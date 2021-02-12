@@ -17,11 +17,9 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
-import Arkham.Types.Query
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window
-import Control.Monad.Extra (anyM)
 
 newtype DevilsHopYard_253 = DevilsHopYard_253 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -48,12 +46,8 @@ ability attrs =
 instance ActionRunner env => HasActions env DevilsHopYard_253 where
   getActions iid FastPlayerWindow (DevilsHopYard_253 attrs) =
     withBaseActions iid FastPlayerWindow attrs $ do
-      investigatorsWithClues <- not . null <$> filterM
-        (fmap ((> 0) . unClueCount) . getCount)
-        (setToList $ locationInvestigators attrs)
-      anyAbominations <- anyM
-        (fmap (member Abomination) . getSet @Trait)
-        (setToList $ locationEnemies attrs)
+      investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
+      anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
       pure
         [ ActivateCardAbilityAction iid (ability attrs)
         | investigatorsWithClues && anyAbominations
@@ -63,12 +57,8 @@ instance ActionRunner env => HasActions env DevilsHopYard_253 where
 instance LocationRunner env => RunMessage env DevilsHopYard_253 where
   runMessage msg l@(DevilsHopYard_253 attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      investigatorsWithClues <- filterM
-        (fmap ((> 0) . unClueCount) . getCount)
-        (setToList $ locationInvestigators attrs)
-      abominations <- filterM
-        (fmap (member Abomination) . getSet @Trait)
-        (setToList $ locationEnemies attrs)
+      investigatorsWithClues <- locationInvestigatorsWithClues attrs
+      abominations <- locationEnemiesWithTrait attrs Abomination
       when
         (null investigatorsWithClues || null abominations)
         (throwIO $ InvalidState "should not have been able to use this ability")

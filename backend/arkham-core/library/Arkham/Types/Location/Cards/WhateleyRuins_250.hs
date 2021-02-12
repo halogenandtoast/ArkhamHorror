@@ -1,6 +1,6 @@
-module Arkham.Types.Location.Cards.DevilsHopYard_252
-  ( devilsHopYard_252
-  , DevilsHopYard_252(..)
+module Arkham.Types.Location.Cards.WhateleyRuins_250
+  ( whateleyRuins_250
+  , WhateleyRuins_250(..)
   ) where
 
 import Arkham.Prelude
@@ -16,36 +16,42 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Query
+import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
-newtype DevilsHopYard_252 = DevilsHopYard_252 LocationAttrs
+newtype WhateleyRuins_250 = WhateleyRuins_250 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-devilsHopYard_252 :: DevilsHopYard_252
-devilsHopYard_252 = DevilsHopYard_252 $ baseAttrs
-  "02252"
-  (Name "Devil's Hop Yard" Nothing)
+whateleyRuins_250 :: WhateleyRuins_250
+whateleyRuins_250 = WhateleyRuins_250 $ baseAttrs
+  "02250"
+  (Name "Whateley Ruins" Nothing)
   EncounterSet.UndimensionedAndUnseen
-  1
-  (Static 2)
-  Hourglass
-  [Square, Plus]
+  3
+  (PerPlayer 2)
+  Plus
+  [Triangle, Diamond, Hourglass]
   [Dunwich]
 
-instance HasModifiersFor env DevilsHopYard_252 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env WhateleyRuins_250 where
+  getModifiersFor _ (InvestigatorTarget iid) (WhateleyRuins_250 attrs) =
+    pure $ toModifiers
+      attrs
+      [ SkillModifier SkillWillpower (-1) | iid `on` attrs ]
+  getModifiersFor _ _ _ = pure []
 
 ability :: LocationAttrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (FastAbility Free)
     & (abilityLimitL .~ GroupLimit PerGame 1)
 
-instance ActionRunner env => HasActions env DevilsHopYard_252 where
-  getActions iid FastPlayerWindow (DevilsHopYard_252 attrs) =
+instance ActionRunner env => HasActions env WhateleyRuins_250 where
+  getActions iid FastPlayerWindow (WhateleyRuins_250 attrs) =
     withBaseActions iid FastPlayerWindow attrs $ do
       investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
@@ -53,10 +59,10 @@ instance ActionRunner env => HasActions env DevilsHopYard_252 where
         [ ActivateCardAbilityAction iid (ability attrs)
         | investigatorsWithClues && anyAbominations
         ]
-  getActions iid window (DevilsHopYard_252 attrs) = getActions iid window attrs
+  getActions iid window (WhateleyRuins_250 attrs) = getActions iid window attrs
 
-instance LocationRunner env => RunMessage env DevilsHopYard_252 where
-  runMessage msg l@(DevilsHopYard_252 attrs) = case msg of
+instance LocationRunner env => RunMessage env WhateleyRuins_250 where
+  runMessage msg l@(WhateleyRuins_250 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       investigatorWithCluePairs <- filter ((> 0) . snd) <$> traverse
         (traverseToSnd (fmap unClueCount . getCount))
@@ -90,8 +96,17 @@ instance LocationRunner env => RunMessage env DevilsHopYard_252 where
                      ]
                  | clueCount > 1
                  ]
+              <> [ chooseOne
+                     iid'
+                     [ Label
+                       "Spend a third clue"
+                       [placeClueOnAbomination iid']
+                     , Label "Do not spend a third clue" []
+                     ]
+                 | clueCount > 2
+                 ]
               )
           | (iid', clueCount) <- investigatorWithCluePairs
           ]
         )
-    _ -> DevilsHopYard_252 <$> runMessage msg attrs
+    _ -> WhateleyRuins_250 <$> runMessage msg attrs

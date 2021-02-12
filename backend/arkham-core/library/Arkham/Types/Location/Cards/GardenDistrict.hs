@@ -1,27 +1,27 @@
 module Arkham.Types.Location.Cards.GardenDistrict
   ( GardenDistrict(..)
   , gardenDistrict
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.GameValue
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
-import Arkham.Types.Name
-import Arkham.Types.SkillType
-import Arkham.Types.Source
-import Arkham.Types.Window
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.ScenarioLogKey
+import Arkham.Types.SkillType
+import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype GardenDistrict = GardenDistrict LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -41,8 +41,8 @@ instance HasModifiersFor env GardenDistrict where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env GardenDistrict where
-  getActions iid NonFast (GardenDistrict attrs@LocationAttrs {..}) | locationRevealed =
-    withBaseActions iid NonFast attrs $ pure
+  getActions iid NonFast (GardenDistrict attrs@LocationAttrs {..})
+    | locationRevealed = withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction
           iid
           (mkAbility
@@ -59,6 +59,7 @@ instance (LocationRunner env) => RunMessage env GardenDistrict where
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ unshiftMessage
         (BeginSkillTest iid source (toTarget attrs) Nothing SkillAgility 7)
-    PassedSkillTest _ _ source _ _ _ | isSource attrs source ->
-      l <$ unshiftMessage (Remember FoundAStrangeDoll)
+    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+      | isSource attrs source -> l
+      <$ unshiftMessage (Remember FoundAStrangeDoll)
     _ -> GardenDistrict <$> runMessage msg attrs

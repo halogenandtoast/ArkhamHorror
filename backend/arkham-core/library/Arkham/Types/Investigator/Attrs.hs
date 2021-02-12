@@ -517,7 +517,7 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
 
 cardInWindows :: [Window] -> Card -> InvestigatorAttrs -> Bool
 cardInWindows windows c _ = case c of
-  PlayerCard pc -> not . null $ pcWindows pc `intersect` setFromList windows
+  PlayerCard pc -> notNull $ pcWindows pc `intersect` setFromList windows
   _ -> False
 
 getPlayableCards
@@ -816,7 +816,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             )
         else do
           validEnemies <- filterM
-            (fmap (not . null . intersection traits) . getSet @Trait)
+            (fmap (notNull . intersection traits) . getSet @Trait)
             enemyIds
           a <$ unshiftMessage
             (chooseOne

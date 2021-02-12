@@ -106,6 +106,8 @@ data Location
   | Schoolhouse_212' Schoolhouse_212
   | Schoolhouse_213' Schoolhouse_213
   | TheHiddenChamber' TheHiddenChamber
+  | TenAcreMeadow_246' TenAcreMeadow_246
+  | TenAcreMeadow_247' TenAcreMeadow_247
   | BlastedHeath_248' BlastedHeath_248
   | BlastedHeath_249' BlastedHeath_249
   | WhateleyRuins_250' WhateleyRuins_250
@@ -348,6 +350,8 @@ allLocations = mapFrom
   , Schoolhouse_212' schoolhouse_212
   , Schoolhouse_213' schoolhouse_213
   , TheHiddenChamber' theHiddenChamber
+  , TenAcreMeadow_246' tenAcreMeadow_246
+  , TenAcreMeadow_247' tenAcreMeadow_247
   , BlastedHeath_248' blastedHeath_248
   , BlastedHeath_249' blastedHeath_249
   , WhateleyRuins_250' whateleyRuins_250

@@ -1,7 +1,6 @@
 module Arkham.Types.Effect
   ( module Arkham.Types.Effect
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -86,6 +85,7 @@ data Effect
   | PushedIntoTheBeyond' PushedIntoTheBeyond
   | ArcaneBarrier' ArcaneBarrier
   | UndimensionedAndUnseenTabletToken' UndimensionedAndUnseenTabletToken
+  | TenAcreMeadow_246' TenAcreMeadow_246
   | LetMeHandleThis' LetMeHandleThis
   | MindWipe3' MindWipe3
   | JeremiahPierce' JeremiahPierce
@@ -167,6 +167,7 @@ allEffects = mapFromList
   , ( "02236"
     , UndimensionedAndUnseenTabletToken' . undimensionedAndUnseenTabletToken
     )
+  , ("02246", TenAcreMeadow_246' . tenAcreMeadow_246)
   , ("03022", LetMeHandleThis' . letMeHandleThis)
   , ("50008", MindWipe3' . mindWipe3)
   , ("50044", JeremiahPierce' . jeremiahPierce)

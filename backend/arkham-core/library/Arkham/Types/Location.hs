@@ -106,6 +106,8 @@ data Location
   | Schoolhouse_212' Schoolhouse_212
   | Schoolhouse_213' Schoolhouse_213
   | TheHiddenChamber' TheHiddenChamber
+  | BlastedHeath_248' BlastedHeath_248
+  | BlastedHeath_249' BlastedHeath_249
   | WhateleyRuins_250' WhateleyRuins_250
   | WhateleyRuins_251' WhateleyRuins_251
   | DevilsHopYard_252' DevilsHopYard_252
@@ -346,6 +348,8 @@ allLocations = mapFrom
   , Schoolhouse_212' schoolhouse_212
   , Schoolhouse_213' schoolhouse_213
   , TheHiddenChamber' theHiddenChamber
+  , BlastedHeath_248' blastedHeath_248
+  , BlastedHeath_249' blastedHeath_249
   , WhateleyRuins_250' whateleyRuins_250
   , WhateleyRuins_251' whateleyRuins_251
   , DevilsHopYard_252' devilsHopYard_252

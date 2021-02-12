@@ -106,6 +106,8 @@ data Location
   | Schoolhouse_212' Schoolhouse_212
   | Schoolhouse_213' Schoolhouse_213
   | TheHiddenChamber' TheHiddenChamber
+  | WhateleyRuins_250' WhateleyRuins_250
+  | WhateleyRuins_251' WhateleyRuins_251
   | DevilsHopYard_252' DevilsHopYard_252
   | DevilsHopYard_253' DevilsHopYard_253
   | StudyAberrantGateway' StudyAberrantGateway
@@ -344,6 +346,8 @@ allLocations = mapFrom
   , Schoolhouse_212' schoolhouse_212
   , Schoolhouse_213' schoolhouse_213
   , TheHiddenChamber' theHiddenChamber
+  , WhateleyRuins_250' whateleyRuins_250
+  , WhateleyRuins_251' whateleyRuins_251
   , DevilsHopYard_252' devilsHopYard_252
   , DevilsHopYard_253' devilsHopYard_253
   , StudyAberrantGateway' studyAberrantGateway

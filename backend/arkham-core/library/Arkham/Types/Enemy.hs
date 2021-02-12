@@ -117,7 +117,7 @@ preventedByModifier EnemyAttrs {..} msg (Modifier _ (CannotTakeAction matcher))
     Just action -> case matcher of
       IsAction a -> a == action
       EnemyAction a traits ->
-        a == action && not (null $ setFromList traits `intersect` enemyTraits)
+        a == action && notNull (setFromList traits `intersect` enemyTraits)
       FirstOneOf _ -> False -- TODO: We can't tell here
     Nothing -> False
 preventedByModifier _ _ _ = False
@@ -269,7 +269,7 @@ allEnemies = mapFromList
   ]
 
 isEngaged :: Enemy -> Bool
-isEngaged = not . null . enemyEngagedInvestigators . toAttrs
+isEngaged = notNull . enemyEngagedInvestigators . toAttrs
 
 isUnique :: Enemy -> Bool
 isUnique = enemyUnique . toAttrs

@@ -83,7 +83,7 @@ instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
             ((elem Tome <$>) . getSet)
             (setToList investigatorAssets)
           pairs' <-
-            filter (not . null . snd)
+            filter (notNull . snd)
               <$> traverse (\a -> (a, ) <$> getActions iid NonFast a) tomeAssets
           if null pairs'
             then pure i

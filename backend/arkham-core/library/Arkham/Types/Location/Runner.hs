@@ -33,6 +33,7 @@ type LocationRunner env
     , HasId ActiveInvestigatorId env ()
     , HasId CardCode env EnemyId
     , HasId LeadInvestigatorId env ()
+    , HasId LocationId env EnemyId
     , HasId LocationId env InvestigatorId
     , HasList HandCard env InvestigatorId
     , HasList LocationName env ()
@@ -44,6 +45,8 @@ type LocationRunner env
     , HasSet AssetId env InvestigatorId
     , HasSet ConnectedLocationId env LocationId
     , HasSet EnemyId env Trait
+    , HasSet EnemyId env CardCode
+    , HasSet EnemyAccessibleLocationId env (EnemyId, LocationId)
     , HasSet EventId env ()
     , HasSet HandCardId env (InvestigatorId, PlayerCardType)
     , HasSet InvestigatorId env ()

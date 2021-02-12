@@ -196,7 +196,7 @@ getCanAffordCost iid source mAction = \case
         Just cardType -> (== cardType) . pcCardType
       traitFilter = if null traits
         then const True
-        else not . null . intersect traits . pcTraits
+        else notNull . intersect traits . pcTraits
       skillTypeFilter = if null skillTypes
         then const True
         else

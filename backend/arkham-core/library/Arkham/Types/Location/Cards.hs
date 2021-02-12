@@ -111,4 +111,6 @@ import Arkham.Types.Location.Cards.TrappersCabin as X
 import Arkham.Types.Location.Cards.TwistedUnderbrush as X
 import Arkham.Types.Location.Cards.VillageCommons as X
 import Arkham.Types.Location.Cards.VipArea as X
+import Arkham.Types.Location.Cards.WhateleyRuins_250 as X
+import Arkham.Types.Location.Cards.WhateleyRuins_251 as X
 import Arkham.Types.Location.Cards.YourHouse as X

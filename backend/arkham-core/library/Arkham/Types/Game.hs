@@ -955,7 +955,7 @@ instance HasSet LocationId (Game queue) [Trait] where
   getSet traits = keysSet . filterMap hasMatchingTrait <$> view locationsL
    where
     hasMatchingTrait =
-      not . null . (setFromList traits `intersection`) . getTraits
+      notNull . (setFromList traits `intersection`) . getTraits
 
 instance HasSet ActId (Game queue) () where
   getSet _ = keysSet <$> view actsL
@@ -1064,7 +1064,7 @@ markDistances game initialLocation target = do
 instance HasSet ClosestPathLocationId (Game queue) (LocationId, Prey) where
   getSet (start, prey) = do
     g <- ask
-    let matcher lid = not . null $ getSet @PreyId (prey, lid) g
+    let matcher lid = notNull $ getSet @PreyId (prey, lid) g
     pure $ setFromList . map ClosestPathLocationId $ getShortestPath
       g
       start
@@ -1087,7 +1087,7 @@ instance HasSet ClosestEnemyId (Game queue) LocationId where
         if null theSet
           then unions <$> traverse (getSet . unClosestLocationId) lids
           else pure theSet
-    where matcher g lid = not . null $ getSet @EnemyId lid g
+    where matcher g lid = notNull $ getSet @EnemyId lid g
 
 instance HasSet ClosestEnemyId (Game queue) InvestigatorId where
   getSet = getSet <=< locationFor
@@ -1113,7 +1113,7 @@ instance HasSet ClosestEnemyId (Game queue) (LocationId, [Trait]) where
                     (\lid -> getSet (unClosestLocationId lid, traits))
                     lids
           else pure theSet
-    where matcher g lid = not . null $ getSet @EnemyId (traits, lid) g
+    where matcher g lid = notNull $ getSet @EnemyId (traits, lid) g
 
 instance HasSet ClosestEnemyId (Game queue) (InvestigatorId, [Trait]) where
   getSet (iid, traits) = getSet . (, traits) =<< locationFor iid
@@ -1261,6 +1261,20 @@ instance HasSet AccessibleLocationId (Game queue) LocationId where
       $ connectedLocationIds
       `difference` blockedLocationIds
 
+instance HasSet EnemyAccessibleLocationId (Game queue) (EnemyId, LocationId) where
+  getSet (eid, lid) = do
+    enemy <- getEnemy eid
+    location <- getLocation lid
+    connectedLocationIds <- map unConnectedLocationId <$> getSetList location
+    let
+      enemyIsElite = Elite `member` getTraits enemy
+      unblocked lid' = do
+        modifiers' <- map modifierType <$> getModifiersFor (EnemySource eid) (LocationTarget lid') ()
+        pure $ enemyIsElite || CannotBeAttackedByNonElite `notElem` modifiers'
+    setFromList
+      . map EnemyAccessibleLocationId
+      <$> filterM unblocked connectedLocationIds
+
 instance HasSet AssetId (Game queue) InvestigatorId where
   getSet = getSet <=< getInvestigator
 
@@ -1368,7 +1382,7 @@ instance HasSet EnemyId (Game queue) ([Trait], LocationId) where
     enemyIds <- getSetList =<< getLocation lid
     setFromList
       <$> filterM
-            ((not . null . (setFromList traits `intersection`) . getTraits <$>)
+            ((notNull . (setFromList traits `intersection`) . getTraits <$>)
             . getEnemy
             )
             enemyIds

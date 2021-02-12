@@ -18,6 +18,9 @@ newtype BlockedLocationId = BlockedLocationId { unBlockedLocationId :: LocationI
 newtype AccessibleLocationId = AccessibleLocationId { unAccessibleLocationId :: LocationId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 
+newtype EnemyAccessibleLocationId = EnemyAccessibleLocationId { unEnemyAccessibleLocationId :: LocationId }
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+
 newtype ClosestLocationId = ClosestLocationId { unClosestLocationId :: LocationId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 

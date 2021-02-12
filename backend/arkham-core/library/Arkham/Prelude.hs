@@ -102,6 +102,9 @@ count = (length .) . filter
 none :: MonoFoldable mono => (Element mono -> Bool) -> mono -> Bool
 none = (not .) . any
 
+notNull :: MonoFoldable mono => mono -> Bool
+notNull = not . null
+
 countM :: Monad m => (a -> m Bool) -> [a] -> m Int
 countM = ((length <$>) .) . filterM
 

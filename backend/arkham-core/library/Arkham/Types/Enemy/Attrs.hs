@@ -495,7 +495,7 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
           preyIds <- setFromList . map unPreyId <$> getSetList enemyPrey
 
           filteredClosestLocationIds <- flip filterM matchingClosestLocationIds
-            $ \lid -> not . null . intersect preyIds <$> getSet lid
+            $ \lid -> notNull . intersect preyIds <$> getSet lid
 
           -- If we have any locations with prey, that takes priority, otherwise
           -- we return all locations which may have matched via AnyPrey

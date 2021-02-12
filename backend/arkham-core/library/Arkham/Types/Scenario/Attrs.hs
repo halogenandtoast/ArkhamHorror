@@ -232,8 +232,9 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
         "The scenario should specify what to do for a scenario specific ability."
     LookAtTopOfDeck _ ScenarioDeckTarget _ ->
       error "The scenario should handle looking at the top of the scenario deck"
-    ChooseRandomLocation target -> do
-      locationIds <- getSetList @LocationId ()
+    ChooseRandomLocation target exclusions -> do
+      locationIds <-
+        setToList . (`difference` exclusions) <$> getSet @LocationId ()
       leadInvestigatorId <- getLeadInvestigatorId
       case locationIds of
         [] -> error "no locations?"

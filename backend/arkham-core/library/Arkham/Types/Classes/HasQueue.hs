@@ -67,10 +67,17 @@ replaceMessage
   => Message
   -> [Message]
   -> m ()
-replaceMessage msg replacement = withQueue $ \queue ->
-  let (before, after) = span (== msg) queue
+replaceMessage msg replacement =
+  replaceMessageMatching (== msg) (const replacement)
+
+replaceMessageMatching
+  :: (MonadIO m, MonadReader env m, HasQueue env)
+  => (Message -> Bool)
+  -> (Message -> [Message])
+  -> m ()
+replaceMessageMatching matcher replacer = withQueue $ \queue ->
+  let (before, after) = span matcher queue
   in
     case after of
       [] -> (before, ())
-      (_ : rest) -> (before <> replacement <> rest, ())
-
+      (msg' : rest) -> (before <> replacer msg' <> rest, ())

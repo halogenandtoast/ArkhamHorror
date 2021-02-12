@@ -180,7 +180,7 @@ data Message
   | ChooseLeadInvestigator
   | ChoosePlayer InvestigatorId ChoosePlayerChoice
   | ChoosePlayerOrder [InvestigatorId] [InvestigatorId]
-  | ChooseRandomLocation Target
+  | ChooseRandomLocation Target (HashSet LocationId)
   | ChosenRandomLocation Target LocationId
   | ChooseTokenGroups Source InvestigatorId ChaosBagStep
   | CommitCard InvestigatorId CardId

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 53c08e30fb57aa66a6d485d431e303feba6648f6c9a04f632014f8e516839647
+-- hash: baf1a23e7182cd580d3569b4086de4ef198721d633548315c370577ea14f866a
 
 name:           arkham-core
 version:        0.0.0
@@ -269,6 +269,7 @@ library
       Arkham.Types.Effect.Effects.SeekingAnswers
       Arkham.Types.Effect.Effects.Shrivelling
       Arkham.Types.Effect.Effects.SureGamble3
+      Arkham.Types.Effect.Effects.TenAcreMeadow_246
       Arkham.Types.Effect.Effects.UndimensionedAndUnseenTabletToken
       Arkham.Types.Effect.Effects.WillToSurvive4
       Arkham.Types.Effect.Effects.WindowModifierEffect
@@ -563,6 +564,8 @@ library
       Arkham.Types.Location.Cards.StudentUnion
       Arkham.Types.Location.Cards.Study
       Arkham.Types.Location.Cards.StudyAberrantGateway
+      Arkham.Types.Location.Cards.TenAcreMeadow_246
+      Arkham.Types.Location.Cards.TenAcreMeadow_247
       Arkham.Types.Location.Cards.TheHiddenChamber
       Arkham.Types.Location.Cards.TrappersCabin
       Arkham.Types.Location.Cards.TwistedUnderbrush

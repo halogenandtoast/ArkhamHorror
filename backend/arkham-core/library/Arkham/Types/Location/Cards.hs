@@ -108,6 +108,8 @@ import Arkham.Types.Location.Cards.StMarysHospital as X
 import Arkham.Types.Location.Cards.StudentUnion as X
 import Arkham.Types.Location.Cards.Study as X
 import Arkham.Types.Location.Cards.StudyAberrantGateway as X
+import Arkham.Types.Location.Cards.TenAcreMeadow_246 as X
+import Arkham.Types.Location.Cards.TenAcreMeadow_247 as X
 import Arkham.Types.Location.Cards.TheHiddenChamber as X
 import Arkham.Types.Location.Cards.TrappersCabin as X
 import Arkham.Types.Location.Cards.TwistedUnderbrush as X

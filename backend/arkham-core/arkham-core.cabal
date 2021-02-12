@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 39f794b9637fea298c1e01218f4e0ac479c7d38152eb77b50ecbbf1fa81a5fbf
+-- hash: 53c08e30fb57aa66a6d485d431e303feba6648f6c9a04f632014f8e516839647
 
 name:           arkham-core
 version:        0.0.0
@@ -479,6 +479,8 @@ library
       Arkham.Types.Location.Cards.Bedroom
       Arkham.Types.Location.Cards.BishopsBrook_202
       Arkham.Types.Location.Cards.BishopsBrook_203
+      Arkham.Types.Location.Cards.BlastedHeath_248
+      Arkham.Types.Location.Cards.BlastedHeath_249
       Arkham.Types.Location.Cards.BrackishWaters
       Arkham.Types.Location.Cards.Broadmoor
       Arkham.Types.Location.Cards.BurnedRuins_204

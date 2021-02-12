@@ -24,6 +24,8 @@ import Arkham.Types.Location.Cards.Bathroom as X
 import Arkham.Types.Location.Cards.Bedroom as X
 import Arkham.Types.Location.Cards.BishopsBrook_202 as X
 import Arkham.Types.Location.Cards.BishopsBrook_203 as X
+import Arkham.Types.Location.Cards.BlastedHeath_248 as X
+import Arkham.Types.Location.Cards.BlastedHeath_249 as X
 import Arkham.Types.Location.Cards.BrackishWaters as X
 import Arkham.Types.Location.Cards.Broadmoor as X
 import Arkham.Types.Location.Cards.BurnedRuins_204 as X

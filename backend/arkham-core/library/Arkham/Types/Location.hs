@@ -106,6 +106,8 @@ data Location
   | Schoolhouse_212' Schoolhouse_212
   | Schoolhouse_213' Schoolhouse_213
   | TheHiddenChamber' TheHiddenChamber
+  | ColdSpringGlen_244' ColdSpringGlen_244
+  | ColdSpringGlen_245' ColdSpringGlen_245
   | TenAcreMeadow_246' TenAcreMeadow_246
   | TenAcreMeadow_247' TenAcreMeadow_247
   | BlastedHeath_248' BlastedHeath_248
@@ -350,6 +352,8 @@ allLocations = mapFrom
   , Schoolhouse_212' schoolhouse_212
   , Schoolhouse_213' schoolhouse_213
   , TheHiddenChamber' theHiddenChamber
+  , ColdSpringGlen_244' coldSpringGlen_244
+  , ColdSpringGlen_245' coldSpringGlen_245
   , TenAcreMeadow_246' tenAcreMeadow_246
   , TenAcreMeadow_247' tenAcreMeadow_247
   , BlastedHeath_248' blastedHeath_248

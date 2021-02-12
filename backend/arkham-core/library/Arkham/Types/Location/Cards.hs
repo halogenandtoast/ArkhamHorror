@@ -34,6 +34,8 @@ import Arkham.Types.Location.Cards.Cellar as X
 import Arkham.Types.Location.Cards.CloverClubBar as X
 import Arkham.Types.Location.Cards.CloverClubCardroom as X
 import Arkham.Types.Location.Cards.CloverClubLounge as X
+import Arkham.Types.Location.Cards.ColdSpringGlen_244 as X
+import Arkham.Types.Location.Cards.ColdSpringGlen_245 as X
 import Arkham.Types.Location.Cards.CongregationalChurch_208 as X
 import Arkham.Types.Location.Cards.CongregationalChurch_209 as X
 import Arkham.Types.Location.Cards.CursedShores as X

@@ -367,7 +367,7 @@ instance
         <> [EndOfGame]
         )
     UseScenarioSpecificAbility _ 1 ->
-      s <$ unshiftMessage (ChooseRandomLocation (toTarget attrs))
+      s <$ unshiftMessage (ChooseRandomLocation (toTarget attrs) mempty)
     ChosenRandomLocation target randomLocationId | isTarget attrs target ->
       case scenarioSetAsideCards attrs of
         [] -> error "should not call when empty"

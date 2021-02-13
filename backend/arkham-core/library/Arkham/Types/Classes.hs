@@ -2,7 +2,8 @@
 module Arkham.Types.Classes
   ( module Arkham.Types.Classes
   , module X
-  ) where
+  )
+where
 
 import Arkham.Prelude hiding (to)
 
@@ -190,6 +191,7 @@ type ActionRunner env
     , HasSet AssetId env ()
     , HasSet AssetId env (InvestigatorId, UseType)
     , HasSet ConnectedLocationId env LocationId
+    , HasSet EnemyId env CardCode
     , HasSet EnemyId env InvestigatorId
     , HasSet EnemyId env LocationId
     , HasSet EnemyId env ([Trait], LocationId)

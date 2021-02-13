@@ -1,6 +1,7 @@
 module Arkham.Types.Location
   ( module Arkham.Types.Location
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -106,6 +107,8 @@ data Location
   | Schoolhouse_212' Schoolhouse_212
   | Schoolhouse_213' Schoolhouse_213
   | TheHiddenChamber' TheHiddenChamber
+  | DunwichVillage_242' DunwichVillage_242
+  | DunwichVillage_243' DunwichVillage_243
   | ColdSpringGlen_244' ColdSpringGlen_244
   | ColdSpringGlen_245' ColdSpringGlen_245
   | TenAcreMeadow_246' TenAcreMeadow_246

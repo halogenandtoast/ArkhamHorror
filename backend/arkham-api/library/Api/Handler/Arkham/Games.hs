@@ -6,14 +6,15 @@ module Api.Handler.Arkham.Games
   , putApiV1ArkhamGameR
   , deleteApiV1ArkhamGameR
   , putApiV1ArkhamGameRawR
-  ) where
+  )
+where
 
 import Api.Arkham.Helpers
 import Arkham.Game
+import Arkham.Prelude ((!!?))
 import Arkham.Types.CampaignId
 import Arkham.Types.Difficulty
 import Arkham.Types.Game
-import Arkham.Types.Helpers
 import Arkham.Types.Investigator
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message

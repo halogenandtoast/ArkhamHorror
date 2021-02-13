@@ -1,6 +1,7 @@
 {-# LANGUAGE TupleSections #-}
 module Api.Arkham.Helpers where
 
+import Arkham.PlayerCard
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.InvestigatorId

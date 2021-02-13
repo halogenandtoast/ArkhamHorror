@@ -1,6 +1,7 @@
 module Arkham.Types.Agenda.Cards
   ( module X
-  ) where
+  )
+where
 
 import Arkham.Types.Agenda.Cards.ACreatureOfTheBayou as X
 import Arkham.Types.Agenda.Cards.ATearInReality as X
@@ -12,6 +13,7 @@ import Arkham.Types.Agenda.Cards.InEveryShadow as X
 import Arkham.Types.Agenda.Cards.OutOfTime as X
 import Arkham.Types.Agenda.Cards.PredatorOrPrey as X
 import Arkham.Types.Agenda.Cards.QuietHalls as X
+import Arkham.Types.Agenda.Cards.RampagingCreatures as X
 import Arkham.Types.Agenda.Cards.RestrictedAccess as X
 import Arkham.Types.Agenda.Cards.ReturnToPredatorOrPrey as X
 import Arkham.Types.Agenda.Cards.RiseOfTheGhouls as X

@@ -1,6 +1,7 @@
 module Arkham.Types.Act.Cards
   ( module X
-  ) where
+  )
+where
 
 import Arkham.Types.Act.Cards.AfterHours as X
 import Arkham.Types.Act.Cards.AllIn as X
@@ -19,6 +20,7 @@ import Arkham.Types.Act.Cards.MysteriousGateway as X
 import Arkham.Types.Act.Cards.NightAtTheMuseum as X
 import Arkham.Types.Act.Cards.RicesWhereabouts as X
 import Arkham.Types.Act.Cards.Run as X
+import Arkham.Types.Act.Cards.SaracenicScript as X
 import Arkham.Types.Act.Cards.SearchingForAnswers as X
 import Arkham.Types.Act.Cards.SearchingForTheTome as X
 import Arkham.Types.Act.Cards.SkinGame as X

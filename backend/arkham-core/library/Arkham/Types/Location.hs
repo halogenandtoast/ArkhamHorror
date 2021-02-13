@@ -355,6 +355,8 @@ allLocations = mapFrom
   , Schoolhouse_212' schoolhouse_212
   , Schoolhouse_213' schoolhouse_213
   , TheHiddenChamber' theHiddenChamber
+  , DunwichVillage_242' dunwichVillage_242
+  , DunwichVillage_243' dunwichVillage_243
   , ColdSpringGlen_244' coldSpringGlen_244
   , ColdSpringGlen_245' coldSpringGlen_245
   , TenAcreMeadow_246' tenAcreMeadow_246

@@ -99,6 +99,10 @@ const scenarios = [
     name: 'Blood on the Altar',
   },
   {
+    id: '02236',
+    name: 'Undimensioned and Unseen',
+  },
+  {
     id: '81001',
     name: 'Curse of the Rougarou',
   },

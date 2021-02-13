@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7716590f3bae2ea6e6e2e60e6aaa34bfa4e9ed31dd3e4161f5626844c06dd72b
+-- hash: 60081a800031314aac4f04666087a3ce2a315f9946c3cb0b2172c5e90217f089
 
 name:           arkham-core
 version:        0.0.0
@@ -41,6 +41,7 @@ library
       Arkham.Types.Act.Cards.NightAtTheMuseum
       Arkham.Types.Act.Cards.RicesWhereabouts
       Arkham.Types.Act.Cards.Run
+      Arkham.Types.Act.Cards.SaracenicScript
       Arkham.Types.Act.Cards.SearchingForAnswers
       Arkham.Types.Act.Cards.SearchingForTheTome
       Arkham.Types.Act.Cards.SkinGame
@@ -67,6 +68,7 @@ library
       Arkham.Types.Agenda.Cards.OutOfTime
       Arkham.Types.Agenda.Cards.PredatorOrPrey
       Arkham.Types.Agenda.Cards.QuietHalls
+      Arkham.Types.Agenda.Cards.RampagingCreatures
       Arkham.Types.Agenda.Cards.RestrictedAccess
       Arkham.Types.Agenda.Cards.ReturnToPredatorOrPrey
       Arkham.Types.Agenda.Cards.RiseOfTheGhouls

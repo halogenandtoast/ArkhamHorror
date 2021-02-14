@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5a1df149e53d86704ef87f16458c7c2f59acc68c129d4c642fb16c6cf44a0e6c
+-- hash: 49ff4d58eb58609e8ba76dc7ea615fe31dda9a012e361fccdc4fe3a53c7e3493
 
 name:           arkham-core
 version:        0.0.0
@@ -618,6 +618,7 @@ library
       Arkham.Types.Scenario.Scenarios.TheMidnightMasks
       Arkham.Types.Scenario.Scenarios.TheMiskatonicMuseum
       Arkham.Types.Scenario.Scenarios.UndimensionedAndUnseen
+      Arkham.Types.Scenario.Scenarios.WhereDoomAwaits
       Arkham.Types.ScenarioId
       Arkham.Types.ScenarioLogKey
       Arkham.Types.Skill

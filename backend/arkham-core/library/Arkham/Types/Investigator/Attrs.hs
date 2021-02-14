@@ -1233,6 +1233,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (handL %~ filter ((/= cardCode) . getCardCode))
   InvestigatorDamage iid _ health sanity | iid == investigatorId ->
     pure $ a & healthDamageL +~ health & sanityDamageL +~ sanity
+  DrivenInsane iid | iid == investigatorId -> do
+    pure $ a & mentalTraumaL .~ investigatorSanity
   CheckDefeated -> do
     facingDefeat <- getFacingDefeat a
     if facingDefeat

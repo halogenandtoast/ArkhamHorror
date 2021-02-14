@@ -69,6 +69,9 @@ instance HasQueue env => RunMessage env EffectAttrs where
       a <$ unshiftMessage (DisableEffect effectId)
     SkillTestEnds _ | EffectSkillTestWindow `elem` effectWindow ->
       a <$ unshiftMessage (DisableEffect effectId)
+    CancelSkillEffects -> case effectSource of
+      (SkillSource _) -> a <$ unshiftMessage (DisableEffect effectId)
+      _ -> pure a
     _ -> pure a
 
 instance Entity EffectAttrs where

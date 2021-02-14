@@ -3,7 +3,8 @@ module Arkham.Types.CampaignLogKey where
 import Arkham.Prelude
 
 data CampaignLogKey
-  = GhoulPriestIsStillAlive
+  = DrivenInsaneInvestigators
+  | GhoulPriestIsStillAlive
   | YourHouseIsStillStanding
   | YourHouseHasBurnedToTheGround
   | LitaWasForcedToFindOthersToHelpHerCause
@@ -44,6 +45,8 @@ data CampaignLogKey
   | YouWarnedTheTownsfolk
   | BroodEscapedIntoTheWild
   | NoBroodEscapedIntoTheWild
+  | TheInvestigatorsEnteredTheGate
+  | YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
   | TheRougarouEscapedAndYouEmbracedTheCurse

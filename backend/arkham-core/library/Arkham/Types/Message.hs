@@ -165,6 +165,7 @@ data Message
   | Blanked Message
   | CampaignStep (Maybe CampaignStep)
   | CancelNext MessageType
+  | CancelSkillEffects
   | ChangeCardToFast InvestigatorId CardId
   | CheckAttackOfOpportunity InvestigatorId Bool
   | CheckDefeated
@@ -219,6 +220,7 @@ data Message
   | DrawToken InvestigatorId Token
   | DrewPlayerEnemy InvestigatorId Card
   | DrewTreachery InvestigatorId Card
+  | DrivenInsane InvestigatorId
   | EmptyDeck InvestigatorId
   | EndCheckWindow
   | EndEnemy

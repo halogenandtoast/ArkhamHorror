@@ -31,6 +31,7 @@ data EncounterSet
   | TheEssexCountyExpress
   | BloodOnTheAltar
   | UndimensionedAndUnseen
+  | WhereDoomAwaits
   | Sorcery
   | BishopsThralls
   | Dunwich
@@ -105,6 +106,13 @@ setCards = \case
       <> replicate 3 "02257"
       <> replicate 2 "02258"
       <> replicate 2 "02259"
+  WhereDoomAwaits ->
+    "02293"
+      : replicate 2 "02294"
+      <> ["02295"]
+      <> replicate 3 "02296"
+      <> replicate 3 "02297"
+      <> replicate 3 "02298"
   Sorcery -> replicate 3 "02083" <> replicate 3 "02084"
   BishopsThralls -> replicate 2 "02085" <> replicate 3 "02086" <> ["02087"]
   Dunwich -> replicate 2 "02088" <> replicate 2 "02089"

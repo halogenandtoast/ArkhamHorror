@@ -10,6 +10,7 @@ import Arkham.PlayerCard
 import Arkham.Types.Campaign.Runner
 import Arkham.Types.CampaignId
 import Arkham.Types.CampaignLog
+import Arkham.Types.CampaignLogKey
 import Arkham.Types.CampaignStep
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -123,6 +124,10 @@ instance CampaignRunner env => RunMessage env CampaignAttrs where
     ScenarioResolution r -> case campaignStep of
       Just (ScenarioStep sid) -> pure $ a & resolutionsL %~ insertMap sid r
       _ -> error "must be called in a scenario"
+    DrivenInsane iid -> pure $ a & logL . recordedSets %~ insertWith
+      (<>)
+      DrivenInsaneInvestigators
+      (singleton $ unInvestigatorId iid)
     _ -> pure a
 
 baseAttrs :: CampaignId -> Text -> Difficulty -> [Token] -> CampaignAttrs

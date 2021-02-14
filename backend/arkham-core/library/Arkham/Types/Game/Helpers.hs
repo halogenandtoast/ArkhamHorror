@@ -267,6 +267,9 @@ enemyAtInvestigatorLocation cardCode iid = do
 getHasRecord :: (HasRecord env, MonadReader env m) => CampaignLogKey -> m Bool
 getHasRecord = asks . hasRecord
 
+getRecordCount :: (HasRecord env, MonadReader env m) => CampaignLogKey -> m Int
+getRecordCount = asks . hasRecordCount
+
 getRecordSet
   :: (HasRecord env, MonadReader env m) => CampaignLogKey -> m [CardCode]
 getRecordSet = asks . hasRecordSet

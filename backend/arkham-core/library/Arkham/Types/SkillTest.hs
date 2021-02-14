@@ -500,6 +500,8 @@ instance SkillTestRunner env => RunMessage env SkillTest where
           <$> for skillTestRevealedTokens (getModifiedTokenValue s)
         pure $ s & valueModifierL %~ subtract tokenValues
     RunSkillTest _ -> do
+      modifiers' <-
+        map modifierType <$> getModifiersFor (toSource s) SkillTestTarget ()
       tokenValues <- sum
         <$> for skillTestRevealedTokens (getModifiedTokenValue s)
       stats <- getStats (skillTestInvestigator, skillTestAction) (toSource s)
@@ -507,8 +509,12 @@ instance SkillTestRunner env => RunMessage env SkillTest where
       let
         currentSkillValue = statsSkillValue stats skillTestSkillType
         totaledTokenValues = tokenValues + skillTestValueModifier
-        modifiedSkillValue' =
-          max 0 (currentSkillValue + totaledTokenValues + skillIconCount s)
+        modifiedSkillValue' = max
+          0
+          (currentSkillValue
+          + totaledTokenValues
+          + (if CancelSkills `elem` modifiers' then 0 else skillIconCount s)
+          )
       unshiftMessage SkillTestResults
       liftIO $ whenM
         (isJust <$> lookupEnv "DEBUG")

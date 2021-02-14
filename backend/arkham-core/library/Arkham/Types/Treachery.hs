@@ -1,6 +1,7 @@
 module Arkham.Types.Treachery
   ( module Arkham.Types.Treachery
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -86,6 +87,7 @@ data Treachery
   | RuinAndDestruction' RuinAndDestruction
   | AttractingAttention' AttractingAttention
   | TheCreaturesTracks' TheCreaturesTracks
+  | VortexOfTime' VortexOfTime
   | TheZealotsSeal' TheZealotsSeal
   | MaskedHorrors' MaskedHorrors
   | VaultOfEarthlyDemise' VaultOfEarthlyDemise
@@ -225,6 +227,7 @@ allTreacheries = mapFromList
   , ("02257", (RuinAndDestruction' .) . ruinAndDestruction)
   , ("02258", (AttractingAttention' .) . attractingAttention)
   , ("02259", (TheCreaturesTracks' .) . theCreaturesTracks)
+  , ("02298", (VortexOfTime' .) . vortexOfTime)
   , ("50024", (TheZealotsSeal' .) . theZealotsSeal)
   , ("50031", (MaskedHorrors' .) . maskedHorrors)
   , ("50032b", (VaultOfEarthlyDemise' .) . vaultOfEarthlyDemise)

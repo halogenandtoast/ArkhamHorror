@@ -142,6 +142,12 @@ allEncounterCards = mapFromList
   , ("02257", ruinAndDestruction)
   , ("02258", attractingAttention)
   , ("02259", theCreaturesTracks)
+  , ("02293", sethBishop)
+  , ("02294", devoteeOfTheKey)
+  , ("02295", crazedShoggoth)
+  , ("02296", ritesHowled)
+  , ("02297", spacesBetween)
+  , ("02298", vortexOfTime)
   , ("50022", corpseHungryGhoul)
   , ("50023", ghoulFromTheDepths)
   , ("50024", theZealotsSeal)
@@ -714,6 +720,43 @@ theCreaturesTracks cardId =
     { ecTraits = singleton Terror
     , ecKeywords = singleton Keyword.Peril
     }
+
+sethBishop :: CardId -> EncounterCard
+sethBishop cardId =
+  (enemy cardId "02293" (Name "Seth Bishop" (Just "Sorcerer of Dunwich")))
+    { ecTraits = setFromList [Humanoid, Sorcerer, Elite]
+    , ecKeywords = setFromList [Keyword.Retaliate]
+    , ecVictoryPoints = Just 1
+    }
+
+devoteeOfTheKey :: CardId -> EncounterCard
+devoteeOfTheKey cardId =
+  (enemy cardId "02294" (Name "Devotee of the Key" Nothing))
+    { ecTraits = setFromList [Humanoid, Sorcerer]
+    }
+
+crazedShoggoth :: CardId -> EncounterCard
+crazedShoggoth cardId = (enemy cardId "02295" (Name "Crazed Shoggoth" Nothing))
+  { ecTraits = setFromList [Monster, Shoggoth]
+  , ecVictoryPoints = Just 1
+  }
+
+ritesHowled :: CardId -> EncounterCard
+ritesHowled cardId = (treachery cardId "02296" (Name "Rites Howled" Nothing))
+  { ecTraits = singleton Hex
+  }
+
+spacesBetween :: CardId -> EncounterCard
+spacesBetween cardId =
+  (treachery cardId "02297" (Name "Spaces Between" Nothing))
+    { ecTraits = setFromList [Hex, Hazard]
+    }
+
+vortexOfTime :: CardId -> EncounterCard
+vortexOfTime cardId = (treachery cardId "02298" (Name "Vortex of Time" Nothing)
+                      )
+  { ecTraits = setFromList [Hex, Hazard]
+  }
 
 corpseHungryGhoul :: CardId -> EncounterCard
 corpseHungryGhoul cardId =

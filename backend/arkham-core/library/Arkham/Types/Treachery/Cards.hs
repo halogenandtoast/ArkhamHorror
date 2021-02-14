@@ -1,6 +1,7 @@
 module Arkham.Types.Treachery.Cards
   ( module X
-  ) where
+  )
+where
 
 import Arkham.Types.Treachery.Cards.AbandonedAndAlone as X
 import Arkham.Types.Treachery.Cards.AcrossTimeAndSpace as X
@@ -79,4 +80,5 @@ import Arkham.Types.Treachery.Cards.UmordhothsWrath as X
 import Arkham.Types.Treachery.Cards.UnhallowedCountry as X
 import Arkham.Types.Treachery.Cards.VaultOfEarthlyDemise as X
 import Arkham.Types.Treachery.Cards.VisionsOfFuturesPast as X
+import Arkham.Types.Treachery.Cards.VortexOfTime as X
 import Arkham.Types.Treachery.Cards.WrackedByNightmares as X

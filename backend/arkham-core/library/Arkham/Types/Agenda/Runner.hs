@@ -7,6 +7,7 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Direction
 import Arkham.Types.EnemyId
+import Arkham.Types.EnemyMatcher
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
@@ -28,6 +29,7 @@ type AgendaRunner env
     , HasCount EnemyCount env (LocationMatcher, [Trait])
     , HasCount PlayerCount env ()
     , HasCount ScenarioDeckCount env ()
+    , HasCount SetAsideCount env CardCode
     , HasId (Maybe LocationId) env LocationMatcher
     , HasId (Maybe LocationId) env (Direction, LocationId)
     , HasId (Maybe StoryEnemyId) env CardCode
@@ -44,6 +46,7 @@ type AgendaRunner env
     , HasSet EnemyId env ()
     , HasSet EnemyId env ([Trait], LocationId)
     , HasSet EnemyId env LocationId
+    , HasSet EnemyId env EnemyMatcher
     , HasSet EnemyId env LocationMatcher
     , HasSet EnemyId env Trait
     , HasSet InScenarioInvestigatorId env ()

@@ -3,7 +3,8 @@
 module Arkham.Types.Scenario.Attrs
   ( module Arkham.Types.Scenario.Attrs
   , module X
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -246,4 +247,13 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
               [WhenChosenRandomLocation randomLocationId]
             , ChosenRandomLocation target randomLocationId
             ]
+    RequestSetAsideCard target cardCode -> do
+      let
+        (before, rest) =
+          span ((== cardCode) . getCardCode) scenarioSetAsideCards
+      case rest of
+        [] -> error "requested a card that is not set aside"
+        (x : xs) -> do
+          unshiftMessage (RequestedSetAsideCard target x)
+          pure $ a & setAsideCardsL .~ (before <> xs)
     _ -> pure a

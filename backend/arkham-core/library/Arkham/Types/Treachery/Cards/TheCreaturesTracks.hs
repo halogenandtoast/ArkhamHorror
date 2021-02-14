@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.TheCreaturesTracks
   ( theCreaturesTracks
   , TheCreaturesTracks(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -43,7 +44,7 @@ instance TreacheryRunner env => RunMessage env TheCreaturesTracks where
               [InvestigatorAssignDamage iid source DamageAny 0 2]
             , Label
               "Spawn a set aside Brood of Yog-Sothoth at a random location"
-              [UseScenarioSpecificAbility iid 1]
+              [UseScenarioSpecificAbility iid Nothing 1]
             ]
           , Discard (toTarget attrs)
           ]

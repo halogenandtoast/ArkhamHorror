@@ -1,14 +1,19 @@
 module Arkham.Types.Location.Cards.MuseumHalls
   ( museumHalls
   , MuseumHalls(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
@@ -17,20 +22,15 @@ import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype MuseumHalls = MuseumHalls LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 museumHalls :: MuseumHalls
-museumHalls = MuseumHalls $ base
-  { locationConnectedSymbols = setFromList [Circle, Diamond, Triangle]
-  }
+museumHalls = MuseumHalls
+  $ base { locationConnectedSymbols = setFromList [Circle, Diamond, Triangle] }
  where
   base = baseAttrs
     "02127"
@@ -98,7 +98,7 @@ instance LocationRunner env => RunMessage env MuseumHalls where
           )
     UseCardAbility iid source _ 1 _
       | isSource location source && revealed location -> l
-      <$ unshiftMessage (UseScenarioSpecificAbility iid 1)
+      <$ unshiftMessage (UseScenarioSpecificAbility iid Nothing 1)
     PassedSkillTest _ _ source _ _ _ | isSource location source -> do
       actId <- fromJustNote "missing act" . headMay <$> getSetList ()
       l <$ unshiftMessage (AdvanceAct actId source)

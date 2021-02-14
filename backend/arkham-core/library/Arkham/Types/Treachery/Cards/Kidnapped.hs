@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.Kidnapped
   ( kidnapped
   , Kidnapped(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -87,5 +88,5 @@ instance TreacheryRunner env => RunMessage env Kidnapped where
               , AttachTreachery treacheryId (AgendaTarget agendaId)
               ]
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      t <$ unshiftMessage (UseScenarioSpecificAbility iid 1)
+      t <$ unshiftMessage (UseScenarioSpecificAbility iid Nothing 1)
     _ -> Kidnapped <$> runMessage msg attrs

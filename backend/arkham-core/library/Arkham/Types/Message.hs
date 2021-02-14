@@ -1,6 +1,7 @@
 module Arkham.Types.Message
   ( module Arkham.Types.Message
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -389,11 +390,13 @@ data Message
   | RemoveTraits Target [Trait]
   | RemovedFromPlay Source
   | ReplaceCurrentDraw Source InvestigatorId ChaosBagStep
+  | RequestSetAsideCard Target CardCode
   | RequestTokens Source (Maybe InvestigatorId) Int RequestedTokenStrategy
   | RequestedEncounterCard Source (Maybe EncounterCard)
   | RequestedEncounterCards Target [EncounterCard]
   | RequestedEnemy Source EnemyId
   | RequestedPlayerCard InvestigatorId Source (Maybe PlayerCard)
+  | RequestedSetAsideCard Target Card
   | RequestedTokens Source (Maybe InvestigatorId) [Token]
   | RerunSkillTest
   | ResetGame
@@ -471,7 +474,7 @@ data Message
   | UnfocusTokens
   | UseCardAbility InvestigatorId Source (Maybe AbilityMetadata) Int Payment
   | UseLimitedAbility InvestigatorId Ability
-  | UseScenarioSpecificAbility InvestigatorId Int
+  | UseScenarioSpecificAbility InvestigatorId (Maybe Target) Int
   | When Message
   | WhenAttackEnemy InvestigatorId EnemyId
   | WhenEnterLocation InvestigatorId LocationId

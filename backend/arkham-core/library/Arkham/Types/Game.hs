@@ -28,6 +28,7 @@ import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
+import Arkham.Types.EnemyMatcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
@@ -209,11 +210,11 @@ getLocationsMatching
   :: MonadReader (Game queue) m => LocationMatcher -> m [Location]
 getLocationsMatching = \case
   LocationWithTitle title ->
-    filter ((== title) . nameTitle . unLocationName . getLocationName)
+    filter ((== title) . nameTitle . toName)
       . toList
       <$> view locationsL
   LocationWithFullTitle title subtitle ->
-    filter ((== Name title (Just subtitle)) . unLocationName . getLocationName)
+    filter ((== Name title (Just subtitle)) . toName)
       . toList
       <$> view locationsL
   LocationWithId locationId ->
@@ -224,6 +225,26 @@ getLocationsMatching = \case
 getEnemy :: (HasCallStack, MonadReader (Game queue) m) => EnemyId -> m Enemy
 getEnemy eid = fromJustNote missingEnemy <$> preview (enemiesL . ix eid)
   where missingEnemy = "Unknown enemy: " <> show eid
+
+getEnemyMatching
+  :: MonadReader (Game queue) m => EnemyMatcher -> m (Maybe Enemy)
+getEnemyMatching = (listToMaybe <$>) . getEnemiesMatching
+
+getEnemiesMatching
+  :: MonadReader (Game queue) m => EnemyMatcher -> m [Enemy]
+getEnemiesMatching = \case
+  EnemyWithTitle title ->
+    filter ((== title) . nameTitle . toName)
+      . toList
+      <$> view enemiesL
+  EnemyWithFullTitle title subtitle ->
+    filter ((== Name title (Just subtitle)) . toName)
+      . toList
+      <$> view enemiesL
+  EnemyWithId enemyId ->
+    filter ((== enemyId) . toId)
+      . toList
+      <$> view enemiesL
 
 getAgenda :: (HasCallStack, MonadReader (Game queue) m) => AgendaId -> m Agenda
 getAgenda aid = fromJustNote missingAgenda <$> preview (agendasL . ix aid)
@@ -888,6 +909,9 @@ instance HasSet LocationId (Game queue) () where
 
 instance HasSet LocationId (Game queue) LocationMatcher where
   getSet = (setFromList . map toId <$>) . getLocationsMatching
+
+instance HasSet EnemyId (Game queue) EnemyMatcher where
+  getSet = (setFromList . map toId <$>) . getEnemiesMatching
 
 instance HasList LocationName (Game queue) () where
   getList _ = map getLocationName . toList <$> view locationsL

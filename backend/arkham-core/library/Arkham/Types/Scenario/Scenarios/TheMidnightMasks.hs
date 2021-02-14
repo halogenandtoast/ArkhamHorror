@@ -178,7 +178,7 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
           , scenarioLocations = locations'
           }
         )
-    UseScenarioSpecificAbility iid 1 ->
+    UseScenarioSpecificAbility iid _ 1 ->
       case fromJustNote "must be set" scenarioDeck of
         CultistDeck [] -> pure s
         CultistDeck (x : xs) -> do

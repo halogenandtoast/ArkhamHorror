@@ -50,6 +50,7 @@ allAgendas = mapFrom
   , FeedTheBeast' feedTheBeast
   , RampagingCreatures' rampagingCreatures
   , BidingItsTime' bidingItsTime
+  , HorrorsUnleashed' horrorsUnleashed
   , ReturnToPredatorOrPrey' returnToPredatorOrPrey
   , ACreatureOfTheBayou' aCreatureOfTheBayou
   , TheRougarouFeeds' theRougarouFeeds
@@ -93,6 +94,7 @@ data Agenda
   | FeedTheBeast' FeedTheBeast
   | RampagingCreatures' RampagingCreatures
   | BidingItsTime' BidingItsTime
+  | HorrorsUnleashed' HorrorsUnleashed
   | ReturnToPredatorOrPrey' ReturnToPredatorOrPrey
   | ACreatureOfTheBayou' ACreatureOfTheBayou
   | TheRougarouFeeds' TheRougarouFeeds

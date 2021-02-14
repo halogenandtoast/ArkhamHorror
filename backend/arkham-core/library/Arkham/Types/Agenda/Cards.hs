@@ -9,6 +9,7 @@ import Arkham.Types.Agenda.Cards.ChaosInTheCloverClub as X
 import Arkham.Types.Agenda.Cards.DeadOfNight as X
 import Arkham.Types.Agenda.Cards.DrawnIn as X
 import Arkham.Types.Agenda.Cards.FeedTheBeast as X
+import Arkham.Types.Agenda.Cards.HorrorsUnleashed as X
 import Arkham.Types.Agenda.Cards.InEveryShadow as X
 import Arkham.Types.Agenda.Cards.OutOfTime as X
 import Arkham.Types.Agenda.Cards.PredatorOrPrey as X

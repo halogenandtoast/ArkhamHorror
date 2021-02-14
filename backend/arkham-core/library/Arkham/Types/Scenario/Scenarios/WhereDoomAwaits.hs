@@ -134,6 +134,7 @@ instance HasRecord WhereDoomAwaits where
   hasRecord _ _ = False
   hasRecordSet SacrificedToYogSothoth _ = ["02040"]
   hasRecordSet _ _ = []
+  hasRecordCount _ _ = 0
 
 instance
   ( HasSet StoryEnemyId env CardCode

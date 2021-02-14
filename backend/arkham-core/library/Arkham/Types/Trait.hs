@@ -117,9 +117,11 @@ data Trait
   | Scheme
   | Scholar
   | Science
+  | SentinelHill
   | Serpent
   | Service
   | Servitor
+  | Shoggoth
   | SilverTwilight
   | Socialite
   | Song

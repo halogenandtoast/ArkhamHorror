@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.UncoveringTheConspiracy
   ( UncoveringTheConspiracy(..)
   , uncoveringTheConspiracy
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -66,6 +67,6 @@ instance ActRunner env => RunMessage env UncoveringTheConspiracy where
       requiredClues <- getPlayerCountValue (PerPlayer 2)
       a <$ unshiftMessages
         [ SpendClues requiredClues investigatorIds
-        , UseScenarioSpecificAbility iid 1
+        , UseScenarioSpecificAbility iid Nothing 1
         ]
     _ -> UncoveringTheConspiracy <$> runMessage msg attrs

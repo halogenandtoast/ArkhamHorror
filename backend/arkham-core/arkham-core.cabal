@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 60081a800031314aac4f04666087a3ce2a315f9946c3cb0b2172c5e90217f089
+-- hash: 381424274c20c287cdd758657db6550afa4237e694c922cf5cba44826737bcd2
 
 name:           arkham-core
 version:        0.0.0
@@ -60,6 +60,7 @@ library
       Arkham.Types.Agenda.Cards
       Arkham.Types.Agenda.Cards.ACreatureOfTheBayou
       Arkham.Types.Agenda.Cards.ATearInReality
+      Arkham.Types.Agenda.Cards.BidingItsTime
       Arkham.Types.Agenda.Cards.ChaosInTheCloverClub
       Arkham.Types.Agenda.Cards.DeadOfNight
       Arkham.Types.Agenda.Cards.DrawnIn
@@ -343,6 +344,7 @@ library
       Arkham.Types.Enemy.Helpers
       Arkham.Types.Enemy.Runner
       Arkham.Types.EnemyId
+      Arkham.Types.EnemyMatcher
       Arkham.Types.EntityInstance
       Arkham.Types.Event
       Arkham.Types.Event.Attrs

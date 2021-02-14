@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Scenarios.UndimensionedAndUnseen
   ( UndimensionedAndUnseen(..)
   , undimensionedAndUnseen
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -366,12 +367,20 @@ instance
         <> [ GainXP iid xp | iid <- investigatorIds ]
         <> [EndOfGame]
         )
-    UseScenarioSpecificAbility _ 1 ->
+    UseScenarioSpecificAbility _ Nothing 1 ->
       s <$ unshiftMessage (ChooseRandomLocation (toTarget attrs) mempty)
-    ChosenRandomLocation target randomLocationId | isTarget attrs target ->
+    UseScenarioSpecificAbility _ (Just (LocationTarget lid)) 1 ->
       case scenarioSetAsideCards attrs of
         [] -> error "should not call when empty"
         (x : xs) -> do
-          unshiftMessage (CreateEnemyAt x randomLocationId)
+          unshiftMessage (CreateEnemyAt x lid)
           pure . UndimensionedAndUnseen $ attrs & setAsideCardsL .~ xs
+    ChosenRandomLocation target randomLocationId | isTarget attrs target -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      s <$ unshiftMessage
+        (UseScenarioSpecificAbility
+          leadInvestigatorId
+          (Just (LocationTarget randomLocationId))
+          1
+        )
     _ -> UndimensionedAndUnseen <$> runMessage msg attrs

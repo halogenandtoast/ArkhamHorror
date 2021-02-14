@@ -33,7 +33,7 @@ import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Trait
 
 data EnemyAttrs = EnemyAttrs
-  { enemyName :: Text
+  { enemyName :: EnemyName
   , enemyId :: EnemyId
   , enemyCardCode :: CardCode
   , enemyEngagedInvestigators :: HashSet InvestigatorId
@@ -86,7 +86,7 @@ baseAttrs eid cardCode f =
         $ unEnemyId eid
   in
     f $ EnemyAttrs
-      { enemyName = ecName
+      { enemyName = EnemyName ecName
       , enemyId = eid
       , enemyCardCode = cardCode
       , enemyEngagedInvestigators = mempty
@@ -120,7 +120,7 @@ weaknessBaseAttrs eid cardCode =
         $ unEnemyId eid
   in
     EnemyAttrs
-      { enemyName = pcName
+      { enemyName = EnemyName (mkName pcName)
       , enemyId = eid
       , enemyCardCode = cardCode
       , enemyEngagedInvestigators = mempty
@@ -279,7 +279,7 @@ instance Entity EnemyAttrs where
   toAttrs = id
 
 instance NamedEntity EnemyAttrs where
-  toName = mkName . enemyName
+  toName = unEnemyName . enemyName
 
 instance TargetEntity EnemyAttrs where
   toTarget = EnemyTarget . toId

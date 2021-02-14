@@ -448,7 +448,7 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
             & deckL
             ?~ PotentialSacrifices (card : cards)
         _ -> throwIO $ InvalidState "incorrect deck"
-      UseScenarioSpecificAbility _ 1 -> case scenarioDeck of
+      UseScenarioSpecificAbility _ _ 1 -> case scenarioDeck of
         Just (PotentialSacrifices []) -> pure s
         Just (PotentialSacrifices cards) -> do
           c : cards' <- shuffleM cards

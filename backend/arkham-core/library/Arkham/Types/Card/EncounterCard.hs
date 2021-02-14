@@ -2,7 +2,8 @@ module Arkham.Types.Card.EncounterCard
   ( module Arkham.Types.Card.EncounterCard
   , module Arkham.Types.Card.EncounterCardMatcher
   , module Arkham.Types.Card.EncounterCardType
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -12,11 +13,12 @@ import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Card.EncounterCardType
 import Arkham.Types.Card.Id
 import Arkham.Types.Keyword (Keyword)
+import Arkham.Types.Name
 import Arkham.Types.Trait
 
 data EncounterCard = MkEncounterCard
   { ecCardCode :: CardCode
-  , ecName :: Text
+  , ecName :: Name
   , ecCardType :: EncounterCardType
   , ecTraits :: HashSet Trait
   , ecKeywords :: HashSet Keyword

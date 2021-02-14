@@ -6,12 +6,12 @@ where
 
 import Arkham.Prelude
 
+import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Query
-import Arkham.Types.Agenda.Attrs
-import Arkham.Types.Agenda.Runner
 
 newtype TheOldOnesHunger = TheOldOnesHunger AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -33,7 +33,7 @@ instance AgendaRunner env => RunMessage env TheOldOnesHunger where
       scenarioDeckCount <- unScenarioDeckCount <$> getCount ()
       if scenarioDeckCount >= 2
         then a <$ unshiftMessages
-          [ UseScenarioSpecificAbility leadInvestigatorId 1
+          [ UseScenarioSpecificAbility leadInvestigatorId Nothing 1
           , NextAgenda agendaId "02198"
           ]
         else a <$ unshiftMessage (NextAgenda agendaId "02198")

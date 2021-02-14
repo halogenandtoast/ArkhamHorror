@@ -26,7 +26,7 @@ import Arkham.Types.Treachery.Runner
 import qualified Data.HashMap.Strict as HashMap
 
 data TreacheryAttrs = TreacheryAttrs
-  { treacheryName :: Text
+  { treacheryName :: TreacheryName
   , treacheryId :: TreacheryId
   , treacheryCardCode :: CardCode
   , treacheryTraits :: HashSet Trait
@@ -59,7 +59,7 @@ instance Entity TreacheryAttrs where
   toAttrs = id
 
 instance NamedEntity TreacheryAttrs where
-  toName = mkName . treacheryName
+  toName = unTreacheryName . treacheryName
 
 instance TargetEntity TreacheryAttrs where
   toTarget = TreacheryTarget . toId
@@ -102,14 +102,20 @@ withTreacheryEnemy :: MonadIO m => TreacheryAttrs -> (EnemyId -> m a) -> m a
 withTreacheryEnemy attrs f = case treacheryAttachedTarget attrs of
   Just (EnemyTarget eid) -> f eid
   _ -> throwIO
-    (InvalidState $ treacheryName attrs <> " must be attached to an enemy")
+    (InvalidState
+    $ tshow (treacheryName attrs)
+    <> " must be attached to an enemy"
+    )
 
 withTreacheryLocation
   :: MonadIO m => TreacheryAttrs -> (LocationId -> m a) -> m a
 withTreacheryLocation attrs f = case treacheryAttachedTarget attrs of
   Just (LocationTarget lid) -> f lid
   _ -> throwIO
-    (InvalidState $ treacheryName attrs <> " must be attached to a location")
+    (InvalidState
+    $ tshow (treacheryName attrs)
+    <> " must be attached to a location"
+    )
 
 withTreacheryInvestigator
   :: MonadIO m => TreacheryAttrs -> (InvestigatorId -> m a) -> m a
@@ -117,7 +123,7 @@ withTreacheryInvestigator attrs f = case treacheryAttachedTarget attrs of
   Just (InvestigatorTarget iid) -> f iid
   _ -> throwIO
     (InvalidState
-    $ treacheryName attrs
+    $ tshow (treacheryName attrs)
     <> " must be attached to an investigator"
     )
 
@@ -131,7 +137,7 @@ baseAttrs tid cardCode =
         $ unTreacheryId tid
   in
     TreacheryAttrs
-      { treacheryName = ecName
+      { treacheryName = TreacheryName ecName
       , treacheryId = tid
       , treacheryCardCode = ecCardCode
       , treacheryTraits = ecTraits
@@ -159,7 +165,7 @@ weaknessAttrs tid iid cardCode =
         $ unTreacheryId tid
   in
     TreacheryAttrs
-      { treacheryName = pcName
+      { treacheryName = TreacheryName (mkName pcName)
       , treacheryId = tid
       , treacheryCardCode = pcCardCode
       , treacheryTraits = pcTraits

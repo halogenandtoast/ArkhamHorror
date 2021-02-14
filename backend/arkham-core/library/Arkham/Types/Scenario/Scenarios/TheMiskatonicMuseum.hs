@@ -141,7 +141,7 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
       s <$ if standalone
         then unshiftMessage (SetTokens standaloneTokens)
         else pure ()
-    UseScenarioSpecificAbility _ 1 ->
+    UseScenarioSpecificAbility _ _ 1 ->
       case fromJustNote "must be set" scenarioDeck of
         ExhibitDeck [] -> pure s
         ExhibitDeck (x : xs) -> do

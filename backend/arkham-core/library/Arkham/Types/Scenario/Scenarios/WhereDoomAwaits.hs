@@ -1,30 +1,32 @@
 module Arkham.Types.Scenario.Scenarios.WhereDoomAwaits
   ( WhereDoomAwaits(..)
   , whereDoomAwaits
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import Arkham.Types.Resolution
-import Arkham.EncounterCard
+import Arkham.Types.AgendaId
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
+import Arkham.Types.Card.Cost
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
 import Arkham.Types.Difficulty
+import Arkham.Types.Effect.Window
+import Arkham.Types.EffectMetadata
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import qualified Arkham.Types.Action as Action
 import Arkham.Types.Game.Helpers
 import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
 import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.Query
+import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
-import Arkham.Types.Token
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Trait hiding (Cultist)
+import Arkham.Types.Token
+import Arkham.Types.Trait hiding (Cultist, Expert)
 
 newtype WhereDoomAwaits = WhereDoomAwaits ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -48,64 +50,50 @@ whereDoomAwaits difficulty = WhereDoomAwaits $ base
 
 whereDoomAwaitsIntro :: Message
 whereDoomAwaitsIntro = FlavorText
-  (Just "Scenario V: Undimensioned and Unseen")
-  [ "Your search of the village of Dunwich has\
-    \ uncovered a number of documents, journal entries,\
-    \ and esoteric theories. Reading through these\
-    \ materials leaves you exhausted and emotionally\
-    \ drained. Most of the content was written by\
-    \ a single source—a man named Seth Bishop.\
-    \ When you ask around town, you learn that Seth\
-    \ is a citizen of Dunwich. Along with several others, Seth had witnessed\
-    \ firsthand the devastation wrought by the events of “the Dunwich\
-    \ horror,” as Armitage had dubbed the incident. Curiously, since that time,\
-    \ very few people had seen Seth around town, and those who did claimed\
-    \ his eyes had been bloodshot and his face sweaty and pale."
-  , "You don’t doubt that somebody who has seen what Seth has seen would\
-    \ appear nervous or paranoid. But the more you read of his frantic and\
-    \ unhinged writings, the more you believe he is involved in recent events.\
-    \ His writings speak of having “gathered the remains” and of using\
-    \ arcane methods to “imbue the fathers’ essence” into other creatures, and\
-    \ eventually, into other people. The explanations and diagrams that follow\
-    \ are unfathomably complex and defy understanding."
-  , "Before you are able to find Seth and confront him, several men and\
-    \ women from the village approach you in a panic. “It’s back!” one of them\
-    \ wails. You recognize him as Curtis Whateley, of the undecayed branch.\
-    \ “Whatever it was that killed them Fryes, it’s back! Up and smashed the\
-    \ Bishops’ home like it were made o’ paper!” Curtis and the other townsfolk\
-    \ are clamoring amongst themselves, raising their voices in a panic."
+  (Just "Scenario VI: Where Doom Awaits")
+  [ "You awaken to the sound of screeching. Fearing\
+    \ the worst, you grab your equipment and head\
+    \ out into the streets of Dunwich. As soon as you\
+    \ step outside, you sense a foulness in the cold night\
+    \ air: an awful, pungent smell that can scarcely\
+    \ be described and a heaviness to the atmosphere\
+    \ that makes it difficult to breathe. The citizens of\
+    \ Dunwich have sealed their doors, and the town feels quiet and lonesome.\
+    \ In the distance, a faint glow emanates from a hilltop above the village.\
+    \ You know of this hill from both your interactions with Zebulon and\
+    \ Armitage’s records. It is called Sentinel Hill. The tales speak of satanic\
+    \ rites being performed there—rites in which great ritual-pyres light up\
+    \ the night sky while the ground rumbles furiously below."
+  , "Flocks of whippoorwills perch on the rooftops of the village around you,\
+    \ watching ominously as you climb inside Zebulon’s old and beat-up truck.\
+    \ As you drive towards Sentinel Hill, more screeching fills the sky with an\
+    \ awful pitch that is painful to your ears. Everything you have read about\
+    \ and experienced in Dunwich has led to this. If the foul ritual Seth seeks\
+    \ to perform has anything to do with what Armitage and his colleagues\
+    \ prevented several months back, it involves the favor of an ancient\
+    \ creature—Yog‑Sothoth. Failing to stop this ritual may spell doom...not\
+    \ only Dunwich, but for the entire world."
   ]
 
 whereDoomAwaitsPart1 :: Message
 whereDoomAwaitsPart1 = FlavorText
   Nothing
-  [ "You aim to calm the townsfolk so they can explain to you what\
-    \ is going on. They inform you that there was a rumbling to the north, and\
-    \ when they went to investigate they found the Bishops’ farmhouse had\
-    \ been torn to shreds. A trail of heavy tracks led into nearby Cold Spring\
-    \ Glen. “You know what to do, right? You Arkham folk stopped that thing\
-    \ last time,” one of the townsfolk says. Curtis shakes his head and bites at\
-    \ his lip."
-  , "“We couldn’t even see that hellish thing until the old professor sprayed\
-    \ that there powder on it,” He says. “To this day, I wish I hadn’t seen it at\
-    \ all…” Something must be done to stop the monster’s rampage. But, if the\
-    \ documents you found are true, there may be more than one such creature\
-    \ on the loose…."
-  ]
-
-whereDoomAwaitsPart2 :: Message
-whereDoomAwaitsPart2 = FlavorText
-  Nothing
-  [ "You warn the townsfolk that they are in grave danger, and urge\
-    \ them to flee Dunwich while they can. Several of them immediately heed\
-    \ your advice, remembering the terrible monstrosity that had previously\
-    \ endangered the town. Curtis drops to his knees in despair, sweating\
-    \ feverishly. “It’s that thing again, ain’t it? It’s come back fer us,” Curtis\
-    \ stutters. “I hope you’ve got some of that powder the old professor had last\
-    \ time. We couldn’t even see the damned thing until he sprayed it. To this\
-    \ day, I wish I hadn’t seen it at all…” Something must be done to stop the\
-    \ monster’s rampage. But, if the documents you found are true, there may\
-    \ be more than one such creature on the loose…."
+  [ "The path leading up Sentinel Hill is narrow and too torn up for\
+    \ Zebulon’s truck, so you park at the base of the hill and prepare to make\
+    \ the rest of the trip on foot. Just then, you notice that you are not alone.\
+    \ Several men and women emerge from the woods behind you, brandishing\
+    \ firearms and lining you up in their sights. You raise your hands and brace\
+    \ for the worst. “Wait,” one of them says, raising his hand to the others. “I\
+    \ recognize you from the Clover Club.” He grins toothily and lowers his\
+    \ weapon. “Naomi sends her regards.”"
+  , "Curious, you ask what the gangsters are doing here. “Ms. O’Bannion had\
+    \ us investigate the attack on her fiancé’s club,” he explains. “Turns out\
+    \ there were some men in Arkham behind the whole thing. Some Bishop\
+    \ fellow and his lackeys. We tailed them all the way to this dump.” Before\
+    \ he can explain further, the all-too-familiar ratta-tat of a tommy gun\
+    \ echoes across the hill. “That’ll be Vinny. Come on, boys!” He beckons to\
+    \ the others to follow and runs up the hill. Shaking your head, you do the\
+    \ same. These mobsters don’t know what they’re getting into."
   ]
 
 standaloneTokens :: [Token]
@@ -121,6 +109,7 @@ standaloneTokens =
   , MinusThree
   , MinusThree
   , MinusFour
+  , MinusFive
   , Skull
   , Skull
   , Cultist
@@ -131,31 +120,42 @@ standaloneTokens =
   ]
 
 instance HasRecord WhereDoomAwaits where
+  hasRecord NaomiHasTheInvestigatorsBacks _ = False
+  hasRecord TheInvestigatorsPutSilasBishopOutOfHisMisery _ = False
+  hasRecord NoBroodEscapedIntoTheWild _ = True
   hasRecord _ _ = False
-  hasRecordSet SacrificedToYogSothoth _ = ["02040"]
   hasRecordSet _ _ = []
+  hasRecordCount _ _ = 0
 
 instance
-  ( HasSet StoryEnemyId env CardCode
-  , HasTokenValue env InvestigatorId
+  ( HasTokenValue env InvestigatorId
+  , HasStep AgendaStep env
+  , HasSet Trait env LocationId
+  , HasId LocationId env InvestigatorId
   )
   => HasTokenValue env WhereDoomAwaits where
   getTokenValue (WhereDoomAwaits attrs) iid = \case
     Skull -> do
-      broodCount <- length <$> getSetList @StoryEnemyId (CardCode "02255")
-      pure $ toTokenValue attrs Skull broodCount (2 * broodCount)
+      lid <- getId @LocationId iid
+      isAltered <- member Altered <$> getSet lid
+      if isAltered
+        then pure $ toTokenValue attrs Skull 3 5
+        else pure $ toTokenValue attrs Skull 1 2
     Cultist -> pure $ TokenValue Cultist NoModifier
-    Tablet -> pure $ TokenValue Tablet ZeroModifier
-    ElderThing -> pure $ toTokenValue attrs ElderThing 3 5
+    Tablet -> do
+      agendaStep <- asks $ unAgendaStep . getStep
+      pure $ TokenValue
+        Tablet
+        (if isEasyStandard attrs
+          then NegativeModifier (if agendaStep == 2 then 4 else 2)
+          else if agendaStep == 2 then AutoFailModifier else NegativeModifier 3
+        )
+    ElderThing -> pure $ TokenValue Tablet (NegativeModifier 0) -- determined by an effect
     otherFace -> getTokenValue attrs iid otherFace
 
 instance
-  ( HasId CardCode env EnemyId
-  , HasSource ForSkillTest env
-  , HasCount XPCount env ()
+  ( HasCount XPCount env ()
   , HasSet InvestigatorId env ()
-  , HasSet StoryEnemyId env CardCode
-  , HasList DeckCard env InvestigatorId
   , HasRecord env
   , ScenarioAttrsRunner env
   )
@@ -169,156 +169,95 @@ instance
     Setup -> do
       investigatorIds <- getInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
-      s <$ unshiftMessages
-        [ story investigatorIds whereDoomAwaitsIntro
-        , chooseOne
-          leadInvestigatorId
-          [ Label
-            "You try to calm down the townsfolk in order to learn more."
-            [SetupStep 1]
-          , Label
-            "You try to warn the townsfolk and convince them to evacuate."
-            [SetupStep 2]
-          ]
-        ]
-    SetupStep n -> do
-      standalone <- getIsStandalone
-      investigatorIds <- getInvestigatorIds
       encounterDeck <- buildEncounterDeckExcluding
-        ["02255"]
+        ["02293"]
         [ EncounterSet.WhereDoomAwaits
-        , EncounterSet.Whippoorwills
         , EncounterSet.BeastThralls
-        , EncounterSet.Dunwich
+        , EncounterSet.Sorcery
+        , EncounterSet.BishopsThralls
         , EncounterSet.StrikingFear
+        , EncounterSet.AncientEvils
+        , EncounterSet.ChillingCold
         ]
 
-      dunwichVillage <- sample $ "02242" :| ["02243"]
-      coldSpringGlen <- sample $ "02244" :| ["02245"]
-      tenAcreMeadow <- sample $ "02246" :| ["02247"]
-      blastedHeath <- sample $ "02248" :| ["02249"]
-      whateleyRuins <- sample $ "02250" :| ["02251"]
-      devilsHopYard <- sample $ "00252" :| ["02253"]
+      naomiHasTheInvestigatorsBacks <- getHasRecord
+        NaomiHasTheInvestigatorsBacks
+      noBroodEscaped <- getHasRecord NoBroodEscapedIntoTheWild
+      broodEscapedCount <- if noBroodEscaped
+        then pure 0
+        else getRecordCount BroodEscapedIntoTheWild
+      silasBishopPutOutOfMisery <- getHasRecord
+        TheInvestigatorsPutSilasBishopOutOfHisMisery
 
-      sacrificedToYogSothoth <- if standalone
-        then pure 3
-        else length <$> asks (hasRecordSet SacrificedToYogSothoth)
+      silasMsgs <- if silasBishopPutOutOfMisery
+        then do
+          (conglomerationOfSpheres : rest) <- EncounterSet.gatherEncounterSet
+            EncounterSet.HideousAbominations
+          pure
+            [ SpawnEnemyAt (EncounterCard conglomerationOfSpheres) "02283"
+            , ShuffleIntoEncounterDeck rest
+            ]
+        else pure []
 
-      investigatorsWithPowderOfIbnGhazi <- catMaybes <$> for
-        investigatorIds
-        (\iid -> do
-          powderOfIbnGhazi <-
-            find ((== "02219") . getCardCode) . map unDeckCard <$> getList iid
-          pure $ (iid, ) <$> powderOfIbnGhazi
-        )
-
-      (msgs, setAsideCount) <- case sacrificedToYogSothoth of
-        2 -> do
-          broodOfYogSothoth <- EncounterCard <$> genEncounterCard "02255"
-          pure ([CreateEnemyAt broodOfYogSothoth coldSpringGlen], 3)
-        3 -> do
-          broodOfYogSothoth <- EncounterCard <$> genEncounterCard "02255"
-          pure ([CreateEnemyAt broodOfYogSothoth coldSpringGlen], 2)
-        x -> if x <= 2
-          then do
-            broodOfYogSothoth1 <- EncounterCard <$> genEncounterCard "02255"
-            broodOfYogSothoth2 <- EncounterCard <$> genEncounterCard "02255"
-            pure
-              ( [ CreateEnemyAt broodOfYogSothoth1 coldSpringGlen
-                , CreateEnemyAt broodOfYogSothoth2 blastedHeath
-                ]
-              , 3
-              )
-          else pure ([], 2)
-
-      setAsideBroodOfYogSothoth <- replicateM
-        setAsideCount
-        (EncounterCard <$> genEncounterCard "02255")
+      divergingPaths <- take 3 <$> shuffleM ["02285", "02286", "02287", "02288"]
+      alteredPaths <- take 3 <$> shuffleM ["02289", "02290", "02291", "02292"]
 
       let
-        locations =
-          [ dunwichVillage
-          , coldSpringGlen
-          , tenAcreMeadow
-          , blastedHeath
-          , whateleyRuins
-          , devilsHopYard
-          ]
+        inPlayLocations = ["02282", "02283", "02284"]
+        locations = inPlayLocations <> divergingPaths <> alteredPaths
         locations' = mapFromList $ map
           (second pure . toFst (getLocationName . lookupLocation))
           locations
+        token = case scenarioDifficulty attrs of
+          Easy -> MinusThree
+          Standard -> MinusFive
+          Hard -> MinusSix
+          Expert -> MinusSeven
 
       unshiftMessages
-        $ [ story
-            investigatorIds
-            (if n == 1 then whereDoomAwaitsPart1 else whereDoomAwaitsPart2)
-          , Record
-            (if n == 1 then YouCalmedTheTownsfolk else YouWarnedTheTownsfolk)
-          , SetEncounterDeck encounterDeck
-          , AddAgenda "02237"
-          , AddAct "02240"
+        $ story investigatorIds whereDoomAwaitsIntro
+        : [ story investigatorIds whereDoomAwaitsPart1
+          | naomiHasTheInvestigatorsBacks
           ]
-        <> map PlaceLocation locations
-        <> [RevealLocation Nothing dunwichVillage, MoveAllTo dunwichVillage]
-        <> [ chooseOne
-               iid
-               [ Label
-                 "Play Powder of Ibn-Ghazi"
-                 [PutCardIntoPlay iid (PlayerCard card) Nothing]
-               , Label "Do no play Powder of Ibn-Ghazi" []
-               ]
-           | (iid, card) <- investigatorsWithPowderOfIbnGhazi
+        <> [ GainClues leadInvestigatorId 1 | naomiHasTheInvestigatorsBacks ]
+        <> [ AddToken token
+           , SetEncounterDeck encounterDeck
+           , AddAgenda "02275"
+           , AddAct "02277"
            ]
-        <> [ SearchCollectionForRandom
-               iid
-               (toSource attrs)
-               (PlayerTreacheryType, setFromList [Madness, Injury, Pact])
-           | not standalone
-           , iid <- investigatorIds
-           ]
-        <> msgs
+        <> replicate broodEscapedCount PlaceDoomOnAgenda
+        <> map PlaceLocation inPlayLocations
+        <> silasMsgs
+        <> [RevealLocation Nothing "02282", MoveAllTo "02282"]
 
-      WhereDoomAwaits <$> runMessage
-        msg
-        (attrs
-        & locationsL
-        .~ locations'
-        & setAsideCardsL
-        .~ setAsideBroodOfYogSothoth
-        )
-    ResolveToken drawnToken Tablet _ -> s <$ unshiftMessage
-      (CreateEffect
-        "02236"
-        Nothing
+      WhereDoomAwaits <$> runMessage msg (attrs & locationsL .~ locations')
+    ResolveToken drawnToken Cultist iid -> s <$ unshiftMessages
+      [ CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers $ toModifiers attrs [CancelSkills])
         (DrawnTokenSource drawnToken)
-        (DrawnTokenTarget drawnToken)
+        SkillTestTarget
+      , CancelSkillEffects
+      , DrawAnotherToken iid
+      ]
+    ResolveToken drawnToken ElderThing iid -> s <$ unshiftMessage
+      (DiscardTopOfDeck
+        iid
+        (if isEasyStandard attrs then 2 else 3)
+        (Just $ DrawnTokenTarget drawnToken)
       )
-    ResolveToken _ ElderThing iid -> do
-      msource <- asks $ getSource ForSkillTest
-      case msource of
-        Just (SkillTestSource _ _ _ (EnemyTarget eid) (Just action)) -> do
-          enemyCardCode <- getId @CardCode eid
-          s <$ when
-            (enemyCardCode
-            == "02255"
-            && (action `elem` [Action.Evade, Action.Fight])
-            )
-            (unshiftMessage $ EnemyAttack iid eid)
-        _ -> pure s
-    RequestedPlayerCard iid source mcard | isSource attrs source ->
-      case mcard of
-        Nothing -> pure s
-        Just card -> s <$ unshiftMessage (ShuffleCardsIntoDeck iid [card])
+    DiscardedTopOfDeck _iid cards target@(DrawnTokenTarget token) ->
+      s <$ case drawnTokenFace token of
+        ElderThing -> do
+          let n = sum $ map (toPrintedCost . pcCost) cards
+          unshiftMessage $ CreateTokenValueEffect (-n) (toSource attrs) target
+        _ -> pure ()
     ScenarioResolution NoResolution ->
-      s <$ unshiftMessages [ScenarioResolution $ Resolution 1]
+      s <$ unshiftMessage (ScenarioResolution $ Resolution 2)
     ScenarioResolution (Resolution 1) -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
       xp <- getXp
-      broodEscapedIntoTheWild <-
-        (+ count ((== "02255") . getCardCode) (scenarioSetAsideCards attrs))
-        . length
-        <$> getSetList @StoryEnemyId (CardCode "02255")
+      investigatorIds <- getInvestigatorIds
+      leadInvestigatorId <- getLeadInvestigatorId
       s <$ unshiftMessages
         ([ chooseOne
            leadInvestigatorId
@@ -326,23 +265,25 @@ instance
                [ Continue "Continue"
                , FlavorText
                  Nothing
-                 [ "You did all you could to stop the rampaging\
-                         \ monsters, but there were more of them than you realized and\
-                         \ you weren’t able to slay them all. Exhausted and terrified, you\
-                         \ retreat to Zebulon’s home and hope to survive the night."
+                 [ "The poorly bound tome appears to be the\
+                   \ written records of Old Whateley, the man who taught Wilbur\
+                   \ the ancient secrets of sorcery. You find a passage describing a\
+                   \ place outside of time and space, where worlds converge and\
+                   \ Yog-Sothoth dwells. Only by reaching this nexus at the edge of\
+                   \ reality can you unmake the tear that has split open the world.\
+                   \ Feeling as if you may be going to your doom, you muster a\
+                   \ final ounce of courage and step into the gate."
                  ]
                ]
            ]
-         , RecordCount BroodEscapedIntoTheWild broodEscapedIntoTheWild
+         , Record TheInvestigatorsEnteredTheGate
          ]
-        <> [ RemoveCampaignCardFromDeck iid "02219" | iid <- investigatorIds ]
         <> [ GainXP iid xp | iid <- investigatorIds ]
         <> [EndOfGame]
         )
     ScenarioResolution (Resolution 2) -> do
-      leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      xp <- getXp
+      leadInvestigatorId <- getLeadInvestigatorId
       s <$ unshiftMessages
         ([ chooseOne
            leadInvestigatorId
@@ -350,32 +291,24 @@ instance
                [ Continue "Continue"
                , FlavorText
                  Nothing
-                 [ "After slaying what seems to be the last of\
-                     \ the rampaging monsters you retreat to Zebulon’s home,\
-                     \ exhausted and rattled by your experience"
+                 [ "The sorcerers from Dunwich, seeking arcane\
+                        \ power from beyond this realm, have accomplished what\
+                        \ Wilbur and Old Whateley could not. Through blood sacrifice\
+                        \ and indescribable experiments, the dark power the sorcerers\
+                        \ sought is now within their reach. However, they will never get\
+                        \ the chance to truly wield this power. In beseeching Wilbur’s\
+                        \ father for knowledge, they have drawn the creature forth\
+                        \ from its extradimensional realm. Yog-Sothoth emerges from\
+                        \ the open rift above Sentinel Hill, blotting out the sky and\
+                        \ enveloping the world. Now it has come to Earth, and it rules\
+                        \ where humanity once tread."
                  ]
                ]
            ]
-         , Record NoBroodEscapedIntoTheWild
+         , Record
+           YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality
          ]
-        <> [ RemoveCampaignCardFromDeck iid "02219" | iid <- investigatorIds ]
-        <> [ GainXP iid xp | iid <- investigatorIds ]
-        <> [EndOfGame]
-        )
-    UseScenarioSpecificAbility _ Nothing 1 ->
-      s <$ unshiftMessage (ChooseRandomLocation (toTarget attrs) mempty)
-    UseScenarioSpecificAbility _ (Just (LocationTarget lid)) 1 ->
-      case scenarioSetAsideCards attrs of
-        [] -> error "should not call when empty"
-        (x : xs) -> do
-          unshiftMessage (CreateEnemyAt x lid)
-          pure . WhereDoomAwaits $ attrs & setAsideCardsL .~ xs
-    ChosenRandomLocation target randomLocationId | isTarget attrs target -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      s <$ unshiftMessage
-        (UseScenarioSpecificAbility
-          leadInvestigatorId
-          (Just (LocationTarget randomLocationId))
-          1
+        <> [ DrivenInsane iid | iid <- investigatorIds ]
+        <> [GameOver]
         )
     _ -> WhereDoomAwaits <$> runMessage msg attrs

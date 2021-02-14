@@ -35,6 +35,7 @@ instance FromJSON CampaignLog where
 instance HasRecord CampaignLog where
   hasRecord key = member key . campaignLogRecorded
   hasRecordSet key = findWithDefault [] key . campaignLogRecordedSets
+  hasRecordCount key = findWithDefault 0 key . campaignLogRecordedCounts
 
 mkCampaignLog :: CampaignLog
 mkCampaignLog = CampaignLog

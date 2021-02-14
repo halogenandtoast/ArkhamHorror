@@ -285,6 +285,11 @@ instance HasRecord (Game queue) where
                  Just s -> hasRecordSet key s
                  Nothing -> []
     Just c -> hasRecordSet key c
+  hasRecordCount key g = case modeCampaign $ g ^. modeL of
+    Nothing -> case modeScenario $ g ^. modeL of
+                 Just s -> hasRecordCount key s
+                 Nothing -> 0
+    Just c -> hasRecordCount key c
 
 instance HasCard InvestigatorId (Game queue) where
   getCard iid cardId g = getCard () cardId (getInvestigator iid g)

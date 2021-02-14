@@ -44,6 +44,7 @@ data ModifierType
   | BaseSkillOf SkillType Int
   | Blank
   | Blocked
+  | CancelSkills
   | CanBeAssignedDamage
   | CanBecomeFast (Maybe PlayerCardType, [Trait])
   | CanPlayTopOfDiscard (Maybe PlayerCardType, [Trait])

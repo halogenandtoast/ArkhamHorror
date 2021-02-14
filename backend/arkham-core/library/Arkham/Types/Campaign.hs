@@ -2,15 +2,15 @@ module Arkham.Types.Campaign where
 
 import Arkham.Prelude
 
-import Arkham.Types.CampaignId
-import Arkham.Types.Card
-import Arkham.Types.Classes
-import Arkham.Types.ScenarioId
-import Arkham.Types.Token
 import Arkham.Types.Campaign.Attrs
 import Arkham.Types.Campaign.Campaigns
 import Arkham.Types.Campaign.Runner
+import Arkham.Types.CampaignId
+import Arkham.Types.Card
+import Arkham.Types.Classes
 import Arkham.Types.Difficulty
+import Arkham.Types.ScenarioId
+import Arkham.Types.Token
 
 data Campaign
   = NightOfTheZealot' NightOfTheZealot
@@ -24,6 +24,7 @@ deriving anyclass instance CampaignRunner env => RunMessage env Campaign
 instance HasRecord Campaign where
   hasRecord key = hasRecord key . campaignLog . toAttrs
   hasRecordSet key = hasRecordSet key . campaignLog . toAttrs
+  hasRecordCount key = hasRecordCount key . campaignLog . toAttrs
 
 instance HasSet CompletedScenarioId env Campaign where
   getSet = getSet . toAttrs

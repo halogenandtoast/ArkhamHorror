@@ -11,6 +11,7 @@ data Trait
   = Abomination
   | Agency
   | Ally
+  | Altered
   | AncientOne
   | Arkham
   | Armor

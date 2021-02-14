@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.UndimensionedAndUnseen
   ( UndimensionedAndUnseen(..)
   , undimensionedAndUnseen
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -136,6 +135,7 @@ instance HasRecord UndimensionedAndUnseen where
   hasRecord _ _ = False
   hasRecordSet SacrificedToYogSothoth _ = ["02040"]
   hasRecordSet _ _ = []
+  hasRecordCount _ _ = 0
 
 instance
   ( HasSet StoryEnemyId env CardCode

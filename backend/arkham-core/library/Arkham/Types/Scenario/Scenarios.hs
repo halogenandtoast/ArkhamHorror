@@ -1,6 +1,7 @@
 module Arkham.Types.Scenario.Scenarios
   ( module X
-  ) where
+  )
+where
 
 import Arkham.Types.Scenario.Scenarios.BloodOnTheAltar as X
 import Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou as X
@@ -15,3 +16,4 @@ import Arkham.Types.Scenario.Scenarios.TheHouseAlwaysWins as X
 import Arkham.Types.Scenario.Scenarios.TheMidnightMasks as X
 import Arkham.Types.Scenario.Scenarios.TheMiskatonicMuseum as X
 import Arkham.Types.Scenario.Scenarios.UndimensionedAndUnseen as X
+import Arkham.Types.Scenario.Scenarios.WhereDoomAwaits as X

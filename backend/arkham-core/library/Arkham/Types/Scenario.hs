@@ -1,6 +1,7 @@
 module Arkham.Types.Scenario
   ( module Arkham.Types.Scenario
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -33,6 +34,7 @@ data Scenario
   | TheEssexCountyExpress' TheEssexCountyExpress
   | BloodOnTheAltar' BloodOnTheAltar
   | UndimensionedAndUnseen' UndimensionedAndUnseen
+  | WhereDoomAwaits' WhereDoomAwaits
   | ReturnToTheGathering' ReturnToTheGathering
   | ReturnToTheMidnightMasks' ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow' ReturnToTheDevourerBelow
@@ -123,6 +125,7 @@ allScenarios = mapFromList
   , ("02159", TheEssexCountyExpress' . theEssexCountyExpress)
   , ("02195", BloodOnTheAltar' . bloodOnTheAltar)
   , ("02236", UndimensionedAndUnseen' . undimensionedAndUnseen)
+  , ("02274", WhereDoomAwaits' . whereDoomAwaits)
   , ("50011", ReturnToTheGathering' . returnToTheGathering)
   , ("50025", ReturnToTheMidnightMasks' . returnToTheMidnightMasks)
   , ("50032", ReturnToTheDevourerBelow' . returnToTheDevourerBelow)

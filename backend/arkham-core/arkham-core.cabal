@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 381424274c20c287cdd758657db6550afa4237e694c922cf5cba44826737bcd2
+-- hash: 2ad7e4f28d4d0ebebd4c0f80d7e7e0257bb0fa273e06338306a6e3dd0d38cd96
 
 name:           arkham-core
 version:        0.0.0
@@ -65,6 +65,7 @@ library
       Arkham.Types.Agenda.Cards.DeadOfNight
       Arkham.Types.Agenda.Cards.DrawnIn
       Arkham.Types.Agenda.Cards.FeedTheBeast
+      Arkham.Types.Agenda.Cards.HorrorsUnleashed
       Arkham.Types.Agenda.Cards.InEveryShadow
       Arkham.Types.Agenda.Cards.OutOfTime
       Arkham.Types.Agenda.Cards.PredatorOrPrey

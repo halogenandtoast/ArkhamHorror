@@ -1,33 +1,36 @@
 module Arkham.Types.Act.Cards.BeginnersLuck
   ( BeginnersLuck(..)
   , beginnersLuck
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Act.Attrs
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Query
+import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Target
 import Arkham.Types.Token
-import Arkham.Types.Window
-import Arkham.Types.Act.Attrs
-import Arkham.Types.Card.EncounterCardMatcher
-import Arkham.Types.Game.Helpers
-import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype BeginnersLuck = BeginnersLuck ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 beginnersLuck :: BeginnersLuck
-beginnersLuck =
-  BeginnersLuck $ baseAttrs "02066" "Beginner's Luck" (Act 1 A) Nothing
+beginnersLuck = BeginnersLuck $ baseAttrs
+  "02066"
+  "Beginner's Luck"
+  (Act 1 A)
+  (Just $ RequiredClues (PerPlayer 4) Nothing)
 
 ability :: ActAttrs -> Ability
 ability attrs = (mkAbility (toSource attrs) 1 (ReactionAbility Free))
@@ -40,25 +43,12 @@ instance ActionRunner env => HasActions env BeginnersLuck where
   getActions iid window (BeginnersLuck x) = getActions iid window x
 
 instance
-  ( HasQueue env
+  ( ActAttrsRunner env
   , HasList Token env ()
-  , HasCount PlayerCount env ()
   , HasCount SpendableClueCount env ()
-  , HasSet InvestigatorId env ()
-  , HasId LeadInvestigatorId env ()
-  , HasSet InScenarioInvestigatorId env ()
   )
   => RunMessage env BeginnersLuck where
   runMessage msg a@(BeginnersLuck attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
-      requiredClues <- getPlayerCountValue (PerPlayer 4)
-      unshiftMessages
-        [ SpendClues requiredClues investigatorIds
-        , chooseOne leadInvestigatorId [AdvanceAct aid $ toSource attrs]
-        ]
-      pure $ BeginnersLuck $ attrs & sequenceL .~ Act 1 B
     AdvanceAct aid _ | aid == actId && onSide B attrs -> a <$ unshiftMessages
       [ PlaceLocation "02074"
       , DiscardEncounterUntilFirst

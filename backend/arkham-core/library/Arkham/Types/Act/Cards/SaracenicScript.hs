@@ -6,11 +6,15 @@ where
 
 import Arkham.Prelude
 
+import Arkham.PlayerCard
 import Arkham.Types.Act.Attrs
-import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
+import Arkham.Types.CampaignLogKey
+import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 
@@ -30,18 +34,18 @@ instance ActionRunner env => HasActions env SaracenicScript where
   getActions i window (SaracenicScript x) = getActions i window x
 
 instance ActRunner env => RunMessage env SaracenicScript where
-  runMessage msg (SaracenicScript attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      whateleyRuins <- fromJustNote "must exist"
-        <$> getLocationIdWithTitle "Whateley Ruins"
-      investigatorIds <- getSetList whateleyRuins
-      requiredClueCount <- getPlayerCountValue (PerPlayer 2)
-      unshiftMessages
-        (SpendClues requiredClueCount investigatorIds
-        : [ chooseOne iid [AdvanceAct aid (toSource attrs)]
-          | iid <- investigatorIds
-          ]
+  runMessage msg a@(SaracenicScript attrs@ActAttrs {..}) = case msg of
+    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+      survived <- getHasRecord DrHenryArmitageSurvivedTheDunwichLegacy
+      investigatorIds <- map unInScenarioInvestigatorId
+        <$> getSetList @InScenarioInvestigatorId ()
+      investigatorEsotericFormulaPairs <- for investigatorIds
+        $ \iid -> (iid, ) <$> (PlayerCard <$> genPlayerCard "02254")
+      a <$ unshiftMessages
+        ([ TakeControlOfSetAsideAsset iid esotericFormula
+         | (iid, esotericFormula) <- investigatorEsotericFormulaPairs
+         ]
+        <> [ PlaceDoomOnAgenda | not survived ]
+        <> [NextAct aid "02241"]
         )
-      pure $ SaracenicScript $ attrs & sequenceL .~ Act 2 B
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> error "TODO"
     _ -> SaracenicScript <$> runMessage msg attrs

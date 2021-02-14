@@ -11,8 +11,10 @@ import Arkham.Prelude
 import Arkham.Json
 import Arkham.Types.ActId
 import Arkham.Types.Classes
+import Arkham.Types.Exception
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Query
@@ -103,14 +105,45 @@ instance ActionRunner env => HasActions env ActAttrs where
     Nothing -> pure []
   getActions _ _ _ = pure []
 
-instance (HasQueue env, HasSet InScenarioInvestigatorId env (), HasId LeadInvestigatorId env ()) => RunMessage env ActAttrs where
+type ActAttrsRunner env
+  = ( HasQueue env
+    , HasSet InScenarioInvestigatorId env ()
+    , HasSet InvestigatorId env ()
+    , HasCount PlayerCount env ()
+    , HasId LeadInvestigatorId env ()
+    , HasId (Maybe LocationId) env LocationMatcher
+    , HasSet InvestigatorId env LocationId
+    )
+
+instance ActAttrsRunner env => RunMessage env ActAttrs where
   runMessage msg a@ActAttrs {..} = case msg of
-    AdvanceAct aid source | aid == actId && actSide actSequence == A -> do
+    AdvanceAct aid _ | aid == actId && onSide A a -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      unshiftMessages
-        [ CheckWindow leadInvestigatorId [WhenActAdvance actId]
-        , chooseOne leadInvestigatorId [AdvanceAct actId source]
-        ]
+      case actRequiredClues of
+        Just (RequiredClues requiredClues Nothing) -> do
+          totalRequiredClues <- getPlayerCountValue requiredClues
+          investigatorIds <- getInvestigatorIds
+          unshiftMessages
+            [ SpendClues totalRequiredClues investigatorIds
+            , CheckWindow leadInvestigatorId [WhenActAdvance actId]
+            , chooseOne leadInvestigatorId [AdvanceAct aid (toSource a)]
+            ]
+        Just (RequiredClues requiredClues (Just locationMatcher)) -> do
+          mLocationId <- getId @(Maybe LocationId) locationMatcher
+          case mLocationId of
+            Just lid -> do
+              investigatorIds <- getSetList @InvestigatorId lid
+              totalRequiredClues <- getPlayerCountValue requiredClues
+              unshiftMessages
+                (SpendClues totalRequiredClues investigatorIds
+                : [ CheckWindow leadInvestigatorId [WhenActAdvance actId]
+                  , chooseOne leadInvestigatorId [AdvanceAct aid (toSource a)]
+                  ]
+                )
+            Nothing ->
+              throwIO $ InvalidState
+                "Should not have advanced if locaiton does not exists"
+        Nothing -> throwIO $ InvalidState "Should be handled by the act"
       pure $ a & (sequenceL .~ Act (unActStep $ actStep actSequence) B)
     AttachTreachery tid (ActTarget aid) | aid == actId ->
       pure $ a & treacheriesL %~ insertSet tid

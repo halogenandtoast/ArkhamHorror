@@ -170,6 +170,7 @@ type ActionRunner env
     , HasCount HorrorCount env InvestigatorId
     , HasCount PlayerCount env ()
     , HasCount ResourceCount env InvestigatorId
+    , HasCount SetAsideCount env CardCode
     , HasCount SpendableClueCount env InvestigatorId
     , HasCount SpendableClueCount env ()
     , HasCount UsesCount env AssetId

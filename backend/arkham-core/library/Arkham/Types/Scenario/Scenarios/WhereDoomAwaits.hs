@@ -12,6 +12,7 @@ import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
+import Arkham.Types.LocationId
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import qualified Arkham.Types.Action as Action
@@ -32,10 +33,9 @@ newtype WhereDoomAwaits = WhereDoomAwaits ScenarioAttrs
 whereDoomAwaits :: Difficulty -> WhereDoomAwaits
 whereDoomAwaits difficulty = WhereDoomAwaits $ base
   { scenarioLocationLayout = Just
-    [ ". sentinelPeak lostMemories uprootedWoods"
-    , ". . ascendingPath dimensionalGap"
-    , "frozenSpring baseOfTheHil . aTearInThePath"
-    , "eerieGlade slaughteredWoods destroyedPath ."
+    [ "divergingPath1 divergingPath2 divergingPath3"
+    , "baseOfTheHill ascendingPath sentinelPeak"
+    , "alteredPath1 alteredPath2 alteredPath3"
     ]
   }
  where
@@ -155,6 +155,8 @@ instance
   , HasSource ForSkillTest env
   , HasCount XPCount env ()
   , HasSet InvestigatorId env ()
+  , HasSet LocationId env [Trait]
+  , HasSet Trait env LocationId
   , HasSet StoryEnemyId env CardCode
   , HasList DeckCard env InvestigatorId
   , HasRecord env
@@ -379,4 +381,15 @@ instance
           (Just (LocationTarget randomLocationId))
           1
         )
+    PlacedLocation lid -> do
+      traits <- getSet lid
+      when (Woods `member` traits) $ do
+        woodsCount <- length <$> getSetList @LocationId [Woods]
+        unshiftMessage
+          (SetLocationLabel lid $ "divergingPath" <> tshow woodsCount)
+      when (Altered `member` traits) $ do
+        alteredCount <- length <$> getSetList @LocationId [Woods]
+        unshiftMessage
+          (SetLocationLabel lid $ "alteredPathPath" <> tshow alteredCount)
+      pure s
     _ -> WhereDoomAwaits <$> runMessage msg attrs

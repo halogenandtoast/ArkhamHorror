@@ -66,6 +66,7 @@ import Arkham.Types.Treachery.Cards.SlitheringBehindYou as X
 import Arkham.Types.Treachery.Cards.SmiteTheWicked as X
 import Arkham.Types.Treachery.Cards.SomethingInTheDrinks as X
 import Arkham.Types.Treachery.Cards.SordidAndSilent as X
+import Arkham.Types.Treachery.Cards.SpacesBetween as X
 import Arkham.Types.Treachery.Cards.SpectralMist as X
 import Arkham.Types.Treachery.Cards.StalkedInTheDark as X
 import Arkham.Types.Treachery.Cards.StrangeSigns as X

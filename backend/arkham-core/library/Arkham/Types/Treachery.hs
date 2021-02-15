@@ -87,6 +87,7 @@ data Treachery
   | RuinAndDestruction' RuinAndDestruction
   | AttractingAttention' AttractingAttention
   | TheCreaturesTracks' TheCreaturesTracks
+  | SpacesBetween' SpacesBetween
   | VortexOfTime' VortexOfTime
   | TheZealotsSeal' TheZealotsSeal
   | MaskedHorrors' MaskedHorrors
@@ -227,6 +228,7 @@ allTreacheries = mapFromList
   , ("02257", (RuinAndDestruction' .) . ruinAndDestruction)
   , ("02258", (AttractingAttention' .) . attractingAttention)
   , ("02259", (TheCreaturesTracks' .) . theCreaturesTracks)
+  , ("02297", (SpacesBetween' .) . spacesBetween)
   , ("02298", (VortexOfTime' .) . vortexOfTime)
   , ("50024", (TheZealotsSeal' .) . theZealotsSeal)
   , ("50031", (MaskedHorrors' .) . maskedHorrors)

@@ -1,7 +1,8 @@
 module Arkham.Types.Asset
   ( module Arkham.Types.Asset
   , module X
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -225,7 +226,7 @@ instance Discardable Asset where
   canBeDiscarded = assetCanLeavePlayByNormalMeans . toAttrs
 
 instance HasId (Maybe OwnerId) env Asset where
-  getId = pure . fmap OwnerId . assetInvestigator . toAttrs
+  getId = pure . coerce . assetInvestigator . toAttrs
 
 instance HasId (Maybe LocationId) env Asset where
   getId = pure . assetLocation . toAttrs

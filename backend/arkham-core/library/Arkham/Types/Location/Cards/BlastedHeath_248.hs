@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.BlastedHeath_248
   ( blastedHeath_248
   , BlastedHeath_248(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

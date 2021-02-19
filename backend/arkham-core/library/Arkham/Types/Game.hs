@@ -380,10 +380,10 @@ instance HasSet StoryAssetId (Game queue) InvestigatorId where
       <$> view assetsL
 
 instance HasId (Maybe StoryAssetId) (Game queue) CardCode where
-  getId cardCode = fmap StoryAssetId <$> getId cardCode
+  getId cardCode = coerce @(Maybe StoryAssetId) <$> getId cardCode
 
 instance HasId (Maybe StoryTreacheryId) (Game queue) CardCode where
-  getId cardCode = fmap StoryTreacheryId <$> getId cardCode
+  getId cardCode = coerce @(Maybe StoryTreacheryId) <$> getId cardCode
 
 instance HasId (Maybe AssetId) (Game queue) CardCode where
   getId cardCode =
@@ -400,7 +400,7 @@ instance HasId (Maybe TreacheryId) (Game queue) CardCode where
       <$> view treacheriesL
 
 instance HasId (Maybe StoryEnemyId) (Game queue) CardCode where
-  getId cardCode = fmap StoryEnemyId <$> getId cardCode
+  getId cardCode = coerce @(Maybe StoryEnemyId) <$> getId cardCode
 
 instance HasSet StoryEnemyId (Game queue) CardCode where
   getSet cardCode = mapSet StoryEnemyId <$> getSet cardCode

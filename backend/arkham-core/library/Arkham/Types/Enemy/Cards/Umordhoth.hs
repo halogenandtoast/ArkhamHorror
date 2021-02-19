@@ -11,6 +11,9 @@ import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
@@ -20,9 +23,6 @@ import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Source
 import Arkham.Types.Window
-import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Helpers
-import Arkham.Types.Enemy.Runner
 
 newtype Umordhoth = Umordhoth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

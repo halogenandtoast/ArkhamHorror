@@ -37,6 +37,7 @@ type TreacheryRunner env
     , HasId LocationId env EnemyId
     , HasId LocationId env InvestigatorId
     , HasList UsedAbility env ()
+    , HasList DiscardedPlayerCard env InvestigatorId
     , HasPhaseHistory env
     , HasSet ActId env ()
     , HasSet ActId env TreacheryCardCode

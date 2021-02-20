@@ -1,7 +1,6 @@
 module Arkham.Types.Treachery.Cards
   ( module X
-  )
-where
+  ) where
 
 import Arkham.Types.Treachery.Cards.AbandonedAndAlone as X
 import Arkham.Types.Treachery.Cards.AcrossTimeAndSpace as X
@@ -57,6 +56,7 @@ import Arkham.Types.Treachery.Cards.Psychosis as X
 import Arkham.Types.Treachery.Cards.PushedIntoTheBeyond as X
 import Arkham.Types.Treachery.Cards.RexsCurse as X
 import Arkham.Types.Treachery.Cards.RipplesOnTheSurface as X
+import Arkham.Types.Treachery.Cards.RitesHowled as X
 import Arkham.Types.Treachery.Cards.RottingRemains as X
 import Arkham.Types.Treachery.Cards.RottingRemainsBloodOnTheAltar as X
 import Arkham.Types.Treachery.Cards.RuinAndDestruction as X

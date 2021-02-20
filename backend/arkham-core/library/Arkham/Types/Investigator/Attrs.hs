@@ -12,7 +12,7 @@ import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
-import Arkham.Types.Classes
+import Arkham.Types.Classes hiding (discard)
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Cost
 import Arkham.Types.EnemyId

@@ -3,6 +3,7 @@ module Arkham.Types.Classes.Entity where
 
 import Arkham.Prelude
 
+import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -17,6 +18,10 @@ class Entity a where
   toAttrs :: a -> EntityAttrs a
   default toAttrs :: (HasAttrs1 (EntityAttrs a) (Rep a), Generic a) => a -> EntityAttrs a
   toAttrs = defaultToAttrs
+
+class TargetEntity a => DiscardableEntity a where
+  discard :: a -> Message
+  discard = Discard . toTarget
 
 class NamedEntity a where
   toName :: a -> Name

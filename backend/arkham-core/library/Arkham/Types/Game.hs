@@ -18,7 +18,7 @@ import Arkham.Types.AssetId
 import Arkham.Types.CampaignId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
-import Arkham.Types.Classes
+import Arkham.Types.Classes hiding (discard)
 import Arkham.Types.Direction
 import Arkham.Types.EffectId
 import Arkham.Types.EffectMetadata

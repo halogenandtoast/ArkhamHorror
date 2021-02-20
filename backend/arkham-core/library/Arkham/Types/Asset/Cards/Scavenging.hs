@@ -6,17 +6,17 @@ module Arkham.Types.Asset.Cards.Scavenging
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Window
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype Scavenging = Scavenging AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -35,11 +35,8 @@ instance ActionRunner env => HasActions env Scavenging where
   getActions iid (AfterPassSkillTest (Just Action.Investigate) _ You n) (Scavenging a)
     | ownedBy a iid && n >= 2
     = do
-      discard <- getDiscardOf iid
-      pure
-        [ ActivateCardAbilityAction iid (ability a)
-        | any ((Item `member`) . getTraits) discard
-        ]
+      hasItemInDiscard <- any ((Item `member`) . getTraits) <$> getDiscardOf iid
+      pure [ ActivateCardAbilityAction iid (ability a) | hasItemInDiscard ]
   getActions i window (Scavenging x) = getActions i window x
 
 instance AssetRunner env => RunMessage env Scavenging where

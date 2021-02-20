@@ -79,6 +79,8 @@ instance IsCard TreacheryAttrs where
   getTraits = treacheryTraits
   getKeywords = treacheryKeywords
 
+instance DiscardableEntity TreacheryAttrs
+
 -- ownedBy :: Attrs -> InvestigatorId -> Bool
 -- ownedBy Attrs { treacheryOwner } iid = treacheryOwner == Just iid
 

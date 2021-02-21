@@ -163,7 +163,12 @@ instance SourceEntity Enemy where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 
-instance (EnemyRunner env, HasName env AssetId) => RunMessage env Enemy where
+instance
+  ( EnemyRunner env
+  , HasName env AssetId
+  , HasSet ClosestLocationId env (LocationId, [Trait])
+  )
+  => RunMessage env Enemy where
   runMessage msg e = do
     modifiers' <- getModifiersFor (toSource e) (toTarget e) ()
     let msg' = if any isBlank modifiers' then Blanked msg else msg

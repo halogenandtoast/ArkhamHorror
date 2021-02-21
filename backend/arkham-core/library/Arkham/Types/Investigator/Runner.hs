@@ -98,6 +98,7 @@ type InvestigatorRunner env
         , HasSet AssetId env LocationId
         , HasSet BlockedLocationId env ()
         , HasSet ClosestEnemyId env (LocationId, [Trait])
+        , HasSet ClosestLocationId env (LocationId, [Trait])
         , HasSet ClosestPathLocationId env (LocationId, LocationId)
         , HasSet ClosestPathLocationId env (LocationId, Prey)
         , HasSet CommittedCardCode env ()

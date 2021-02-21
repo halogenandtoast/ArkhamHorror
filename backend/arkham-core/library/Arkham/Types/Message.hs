@@ -168,7 +168,7 @@ data Message
   | CancelSkillEffects
   | ChangeCardToFast InvestigatorId CardId
   | CheckAttackOfOpportunity InvestigatorId Bool
-  | CheckDefeated
+  | CheckDefeated Source
   | CheckHandSize InvestigatorId
   | CheckWindow InvestigatorId [Window]
   | ChooseActivateCardAbilityAction InvestigatorId
@@ -316,8 +316,8 @@ data Message
   | InvestigatorResigned InvestigatorId
   | InvestigatorSpendClues InvestigatorId Int
   | InvestigatorTakeDamage InvestigatorId Source Int Int
-  | InvestigatorWhenDefeated InvestigatorId
-  | InvestigatorWhenEliminated InvestigatorId
+  | InvestigatorWhenDefeated Source InvestigatorId
+  | InvestigatorWhenEliminated Source InvestigatorId
   | Label Text [Message]
   | LoadDeck InvestigatorId [PlayerCard] -- used to reset the deck of the investigator
   | LookAtRevealed LocationId

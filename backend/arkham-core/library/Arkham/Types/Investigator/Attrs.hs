@@ -720,9 +720,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     unshiftMessages $ resolve $ InvestigatorResigned iid
     pure $ a & resignedL .~ True
   InvestigatorDefeated iid | iid == investigatorId ->
-    a <$ unshiftMessage (InvestigatorWhenEliminated iid)
+    a <$ unshiftMessage (InvestigatorWhenEliminated (toSource a) iid)
   InvestigatorResigned iid | iid == investigatorId ->
-    a <$ unshiftMessage (InvestigatorWhenEliminated iid)
+    a <$ unshiftMessage (InvestigatorWhenEliminated (toSource a) iid)
   -- InvestigatorWhenEliminated is handled by the scenario
   InvestigatorEliminated iid | iid == investigatorId -> do
     unshiftMessage
@@ -927,7 +927,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       <> [ CheckWindow iid [WhenWouldTakeHorror source (toTarget a)]
          | horror > 0
          ]
-      <> [InvestigatorDamage iid source damage horror, CheckDefeated]
+      <> [InvestigatorDamage iid source damage horror, CheckDefeated source]
       <> [After (InvestigatorTakeDamage iid source damage horror)]
       <> [ CheckWindow iid [WhenDealtHorror source (toTarget a)]
          | horror > 0
@@ -958,7 +958,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                horror
                []
                []
-             , CheckDefeated
+             , CheckDefeated source
              ]
           <> [After (InvestigatorTakeDamage iid source damage horror)]
           )
@@ -1235,13 +1235,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & healthDamageL +~ health & sanityDamageL +~ sanity
   DrivenInsane iid | iid == investigatorId -> do
     pure $ a & mentalTraumaL .~ investigatorSanity
-  CheckDefeated -> do
+  CheckDefeated source -> do
     facingDefeat <- getFacingDefeat a
     if facingDefeat
       then do
         modifiedHealth <- getModifiedHealth a
         modifiedSanity <- getModifiedSanity a
-        unshiftMessage (InvestigatorWhenDefeated investigatorId)
+        unshiftMessage (InvestigatorWhenDefeated source investigatorId)
         let
           physicalTrauma =
             if investigatorHealthDamage >= modifiedHealth then 1 else 0
@@ -1261,7 +1261,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ if cannotHealHorror
       then a
       else a & sanityDamageL %~ max 0 . subtract amount
-  InvestigatorWhenDefeated iid | iid == investigatorId -> do
+  InvestigatorWhenDefeated _source iid | iid == investigatorId -> do
     unshiftMessage (InvestigatorDefeated iid)
     pure $ a & defeatedL .~ True & endedTurnL .~ True
   InvestigatorKilled iid | iid == investigatorId -> do

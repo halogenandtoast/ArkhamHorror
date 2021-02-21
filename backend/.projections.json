@@ -92,7 +92,7 @@
       "instance HasModifiersFor env {dot} where",
       "  getModifiersFor = noModifiersFor",
       "",
-      "instance EnemyAttrsHasAction env => HasActions env {dot} where",
+      "instance EnemyAttrsHasActions env => HasActions env {dot} where",
       "  getActions i window ({dot} attrs) = getActions i window attrs",
       "",
       "instance EnemyAttrsRunMessage env => RunMessage env {dot} where",

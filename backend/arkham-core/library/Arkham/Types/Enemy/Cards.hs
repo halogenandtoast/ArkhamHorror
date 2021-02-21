@@ -13,6 +13,7 @@ import Arkham.Types.Enemy.Cards.CloverClubPitBoss as X
 import Arkham.Types.Enemy.Cards.ConglomerationOfSpheres as X
 import Arkham.Types.Enemy.Cards.CorpseHungryGhoul as X
 import Arkham.Types.Enemy.Cards.CorpseTaker as X
+import Arkham.Types.Enemy.Cards.CrazedShoggoth as X
 import Arkham.Types.Enemy.Cards.DarkYoungHost as X
 import Arkham.Types.Enemy.Cards.DiscipleOfTheDevourer as X
 import Arkham.Types.Enemy.Cards.EmergentMonstrosity as X

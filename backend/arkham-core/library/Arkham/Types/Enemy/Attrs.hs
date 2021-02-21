@@ -26,7 +26,6 @@ import Arkham.Types.Target
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window
 import qualified Arkham.Types.Action as Action
-import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
@@ -241,7 +240,10 @@ getModifiedKeywords EnemyAttrs {..} = do
   applyModifier _ n = n
 
 canEnterLocation
-  :: (EnemyRunner env, MonadReader env m) => EnemyId -> LocationId -> m Bool
+  :: (HasModifiersFor env (), HasSet Trait env EnemyId, MonadReader env m)
+  => EnemyId
+  -> LocationId
+  -> m Bool
 canEnterLocation eid lid = do
   traits <- getSet eid
   modifiers' <-
@@ -251,7 +253,17 @@ canEnterLocation eid lid = do
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits
     _ -> False
 
-instance ActionRunner env => HasActions env EnemyAttrs where
+type EnemyAttrsHasActions env
+  = ( HasCostPayment env
+    , HasSet InvestigatorId env EnemyId
+    , HasSet Keyword env EnemyId
+    , HasSet Trait env Source
+    , HasId LocationId env InvestigatorId
+    , HasId LocationId env EnemyId
+    , HasModifiersFor env ()
+    )
+
+instance EnemyAttrsHasActions env => HasActions env EnemyAttrs where
   getActions iid NonFast EnemyAttrs {..} = do
     canFight <- getCanFight enemyId iid
     canEngage <- getCanEngage enemyId iid
@@ -310,7 +322,26 @@ getModifiedHealth EnemyAttrs {..} = do
   applyModifier (HealthModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-instance EnemyRunner env => RunMessage env EnemyAttrs where
+type EnemyAttrsRunMessage env
+  = ( HasQueue env
+    , HasCount PlayerCount env ()
+    , HasId (Maybe LocationId) env LocationMatcher
+    , HasId LeadInvestigatorId env ()
+    , HasId LocationId env InvestigatorId
+    , HasModifiersFor env ()
+    , HasSet ClosestPathLocationId env (LocationId, LocationId)
+    , HasSet ClosestPathLocationId env (LocationId, Prey)
+    , HasSet ConnectedLocationId env LocationId
+    , HasSet InvestigatorId env ()
+    , HasSet InvestigatorId env LocationId
+    , HasSet LocationId env ()
+    , HasSet PreyId env (Prey, LocationId)
+    , HasSet PreyId env Prey
+    , HasSet Trait env EnemyId
+    , HasSource ForSkillTest env
+    )
+
+instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
   runMessage msg a@EnemyAttrs {..} = case msg of
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
       preyIds <- map unPreyId <$> getSetList enemyPrey

@@ -68,6 +68,7 @@ data Enemy
   | SilasBishop' SilasBishop
   | ServantOfManyMouths' ServantOfManyMouths
   | BroodOfYogSothoth' BroodOfYogSothoth
+  | CrazedShoggoth' CrazedShoggoth
   | CorpseHungryGhoul' CorpseHungryGhoul
   | GhoulFromTheDepths' GhoulFromTheDepths
   | Narogath' Narogath
@@ -249,6 +250,7 @@ allEnemies = mapFromList
   , ("02216", SilasBishop' . silasBishop)
   , ("02224", ServantOfManyMouths' . servantOfManyMouths)
   , ("02255", BroodOfYogSothoth' . broodOfYogSothoth)
+  , ("02295", CrazedShoggoth' . crazedShoggoth)
   , ("50022", CorpseHungryGhoul' . corpseHungryGhoul)
   , ("50023", GhoulFromTheDepths' . ghoulFromTheDepths)
   , ("50026b", Narogath' . narogath)

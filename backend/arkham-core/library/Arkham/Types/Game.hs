@@ -364,7 +364,7 @@ instance HasSet FightableEnemyId (Game queue) (InvestigatorId, Source) where
             (AssetSource aid) -> (`member` cardCodes) <$> getId @CardCode aid
             _ -> pure True
         _ -> pure False) modifiers'
-    pure $ setFromList $ map FightableEnemyId fightableEnemyIds
+    pure . setFromList . coerce $ fightableEnemyIds
 
 instance HasSet ClosestPathLocationId (Game queue) (LocationId, LocationMatcher) where
   getSet (lid, locationMatcher) = maybe (pure mempty) (getSet . (lid, ) . toId)
@@ -374,7 +374,7 @@ instance HasSet StoryAssetId (Game queue) InvestigatorId where
   getSet iid = do
     assetIds <- getSet =<< getInvestigator iid
     setFromList
-      . map (StoryAssetId . toId)
+      . map (coerce . toId)
       . filter (\a -> toId a `member` assetIds && isStory a)
       . toList
       <$> view assetsL
@@ -698,7 +698,7 @@ instance HasList InPlayCard (Game queue) InvestigatorId where
       assets
 
 instance HasList ResignedCardCode (Game queue) () where
-  getList _ = map ResignedCardCode <$> view resignedCardCodesL
+  getList _ = view $ resignedCardCodesL . to coerce
 
 instance HasList Token (Game queue) () where
   getList _ = getList =<< view chaosBagL
@@ -728,7 +728,7 @@ instance HasList Location (Game queue) () where
   getList _ = toList <$> view locationsL
 
 instance HasList UsedAbility (Game queue) () where
-  getList _ = map UsedAbility <$> view usedAbilitiesL
+  getList _ = view $ usedAbilitiesL . to coerce
 
 instance HasList Enemy (Game queue) () where
   getList _ = toList <$> view enemiesL
@@ -747,12 +747,12 @@ instance HasSet CompletedScenarioId (Game queue) () where
 
 instance HasSet HandCardId (Game queue) InvestigatorId where
   getSet iid =
-    setFromList . map (HandCardId . getCardId) . handOf <$> getInvestigator iid
+    setFromList . map (coerce . getCardId) . handOf <$> getInvestigator iid
 
 instance HasSet HandCardId (Game queue) (InvestigatorId, PlayerCardType) where
   getSet (iid, cardType) =
     setFromList
-      . map (HandCardId . getCardId)
+      . map (coerce . getCardId)
       . filter
           (maybe False (playerCardMatch (cardType, mempty)) . toPlayerCard)
       . handOf
@@ -840,7 +840,7 @@ instance HasSet ExhaustedAssetId (Game queue) InvestigatorId where
   getSet iid = do
     investigator <- getInvestigator iid
     assetIds <- getSetList investigator
-    setFromList . map ExhaustedAssetId <$> filterM isAssetExhausted assetIds
+    setFromList . coerce <$> filterM isAssetExhausted assetIds
     where isAssetExhausted = (isExhausted <$>) . getAsset
 
 instance HasSet ExhaustedEnemyId (Game queue) LocationId where
@@ -855,7 +855,7 @@ instance HasSet ExhaustedEnemyId (Game queue) LocationId where
 instance HasSet ExhaustedAssetId (Game queue) () where
   getSet () = do
     assetIds <- keys <$> view assetsL
-    setFromList . map ExhaustedAssetId <$> filterM isAssetExhausted assetIds
+    setFromList . coerce <$> filterM isAssetExhausted assetIds
     where isAssetExhausted = (isExhausted <$>) . getAsset
 
 instance HasSet AgendaId (Game queue) () where
@@ -864,7 +864,7 @@ instance HasSet AgendaId (Game queue) () where
 instance HasSet VictoryDisplayCardCode (Game queue) () where
   getSet _ =
     setFromList
-      . map (VictoryDisplayCardCode . getCardCode)
+      . map (coerce . getCardCode)
       <$> view victoryDisplayL
 
 instance HasSet ClueCount (Game queue) () where
@@ -1094,7 +1094,7 @@ instance HasSet ClosestPathLocationId (Game queue) (LocationId, Prey) where
   getSet (start, prey) = do
     g <- ask
     let matcher lid = notNull $ getSet @PreyId (prey, lid) g
-    pure $ setFromList . map ClosestPathLocationId $ getShortestPath
+    pure . setFromList . coerce $ getShortestPath
       g
       start
       matcher
@@ -1102,7 +1102,7 @@ instance HasSet ClosestPathLocationId (Game queue) (LocationId, Prey) where
 instance HasSet ClosestEnemyId (Game queue) LocationId where
   getSet start = do
     g <- ask
-    let locations = map ClosestLocationId $ getShortestPath g start (matcher g)
+    let locations = coerce $ getShortestPath g start (matcher g)
     case locations of
       [] -> pure mempty
       lids -> do
@@ -1121,10 +1121,16 @@ instance HasSet ClosestEnemyId (Game queue) LocationId where
 instance HasSet ClosestEnemyId (Game queue) InvestigatorId where
   getSet = getSet <=< locationFor
 
+instance HasSet ClosestLocationId (Game queue) (LocationId, [Trait]) where
+  getSet (start, traits) = do
+    g <- ask
+    pure . setFromList . coerce $ getShortestPath g start (matcher g)
+    where matcher g lid = notNull $ setFromList traits `intersect` getSet lid g
+
 instance HasSet ClosestEnemyId (Game queue) (LocationId, [Trait]) where
   getSet (start, traits) = do
     g <- ask
-    let locations = map ClosestLocationId $ getShortestPath g start (matcher g)
+    let locations = coerce $ getShortestPath g start (matcher g)
     case locations of
       [] -> pure mempty
       lids -> do
@@ -1174,7 +1180,7 @@ instance HasSet ClosestPathLocationId (Game queue) (LocationId, LocationId) wher
             connectedLocationIds
         pure
           $ setFromList
-          . maybe [] (map (ClosestPathLocationId . fst))
+          . maybe [] (coerce . map fst)
           . headMay
           . groupOn snd
           $ sortOn snd candidates
@@ -1183,7 +1189,7 @@ instance HasSet FarthestLocationId (Game queue) InvestigatorId where
   getSet iid = do
     g <- ask
     start <- locationFor iid
-    pure . setFromList . map FarthestLocationId $ getLongestPath
+    pure . setFromList . coerce $ getLongestPath
       g
       start
       (const True)
@@ -1193,7 +1199,7 @@ instance HasSet FarthestLocationId (Game queue) (InvestigatorId, EmptyLocation) 
     g <- ask
     start <- locationFor iid
     emptyLocationIds <- map unEmptyLocationId <$> getSetList ()
-    pure . setFromList . map FarthestLocationId $ getLongestPath
+    pure . setFromList . coerce $ getLongestPath
       g
       start
       (`elem` emptyLocationIds)
@@ -1209,7 +1215,7 @@ instance HasSet FarthestEnemyId (Game queue) (InvestigatorId, EnemyTrait) where
         runReader (getSetList @EnemyId =<< getLocation lid) g
     pure
       . setFromList
-      . map FarthestEnemyId
+      . coerce
       . concatMap (filter enemyMatches . enemyIdsForLocation)
       $ getLongestPath g start (any enemyMatches . enemyIdsForLocation)
 
@@ -1252,7 +1258,7 @@ instance HasSet FarthestLocationId (Game queue) [InvestigatorId] where
         distanceAggregates $ foldr (unionWith min) mempty distances
     pure
       . setFromList
-      . maybe [] (map FarthestLocationId)
+      . maybe [] coerce
       . headMay
       . map snd
       . sortOn (Down . fst)
@@ -1267,14 +1273,14 @@ instance HasSet PreyId (Game queue) Prey where
   getSet preyType = do
     investigatorIds <- getSetList ()
     let matcher = getIsPrey preyType <=< getInvestigator
-    setFromList . map PreyId <$> filterM matcher investigatorIds
+    setFromList . coerce <$> filterM matcher investigatorIds
 
 instance HasSet PreyId (Game queue) (Prey, LocationId) where
   getSet (preyType, lid) = do
     location <- getLocation lid
     investigators <- getSetList location
     setFromList
-      . map PreyId
+      . coerce
       <$> filterM (getIsPrey preyType <=< getInvestigator) investigators
 
 instance HasSet ConnectedLocationId (Game queue) LocationId where
@@ -1301,7 +1307,7 @@ instance HasSet EnemyAccessibleLocationId (Game queue) (EnemyId, LocationId) whe
         modifiers' <- map modifierType <$> getModifiersFor (EnemySource eid) (LocationTarget lid') ()
         pure $ enemyIsElite || CannotBeAttackedByNonElite `notElem` modifiers'
     setFromList
-      . map EnemyAccessibleLocationId
+      . coerce
       <$> filterM unblocked connectedLocationIds
 
 instance HasSet AssetId (Game queue) InvestigatorId where
@@ -1326,7 +1332,7 @@ instance HasSet DiscardableAssetId (Game queue) InvestigatorId where
     investigator <- getInvestigator iid
     assetIds <- getSetList @AssetId investigator
     setFromList
-      . map DiscardableAssetId
+      . coerce
       <$> filterM ((canBeDiscarded <$>) . getAsset) assetIds
 
 instance HasSet AssetId (Game queue) EnemyId where
@@ -1401,7 +1407,7 @@ instance HasSet EnemyId (Game queue) () where
 instance HasSet UniqueEnemyId (Game queue) () where
   getSet _ = do
     enemies <- filter isUnique . toList <$> view enemiesL
-    pure . setFromList $ map (UniqueEnemyId . toId) enemies
+    pure . setFromList . coerce $ map toId enemies
 
 instance HasSet EnemyId (Game queue) LocationId where
   getSet = getSet <=< getLocation
@@ -1420,7 +1426,7 @@ instance HasSet AloofEnemyId (Game queue) LocationId where
   getSet lid = do
     enemyIds <- getSetList @EnemyId lid
     enemiesWithKeywords <- traverse (traverseToSnd getSetList) enemyIds
-    pure $ setFromList $ map (AloofEnemyId . fst) $ filter
+    pure . setFromList . coerce . map fst $ filter
       (elem Keyword.Aloof . snd)
       enemiesWithKeywords
 

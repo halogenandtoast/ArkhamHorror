@@ -216,7 +216,7 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
         else pure a
     AllInvestigatorsResigned ->
       a <$ unshiftMessage (ScenarioResolution NoResolution)
-    InvestigatorWhenEliminated iid ->
+    InvestigatorWhenEliminated _ iid ->
       a <$ unshiftMessage (InvestigatorEliminated iid)
     Remember logKey -> pure $ a & logL %~ insertSet logKey
     ResolveToken _drawnToken token _iid | token == AutoFail ->

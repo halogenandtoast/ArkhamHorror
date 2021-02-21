@@ -170,7 +170,7 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs whe
     PlaceClues target n | isTarget a target -> pure $ a & cluesL +~ n
     RemoveClues target n | isTarget a target ->
       pure $ a & cluesL %~ max 0 . subtract n
-    CheckDefeated ->
+    CheckDefeated _ ->
       a <$ when (defeated a) (unshiftMessages $ resolve $ AssetDefeated assetId)
     AssetDefeated aid | aid == assetId ->
       a <$ unshiftMessage (Discard $ toTarget a)

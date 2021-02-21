@@ -6,6 +6,8 @@ module Arkham.Types.Asset.Cards.LadyEsprit
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -14,8 +16,6 @@ import Arkham.Types.Message
 import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
 
 newtype LadyEsprit = LadyEsprit AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -54,6 +54,6 @@ instance (AssetRunner env) => RunMessage env LadyEsprit where
         iid
         [HealDamage (InvestigatorTarget iid) 2, TakeResources iid 2 False]
       runMessage
-        CheckDefeated
+        (CheckDefeated source)
         (LadyEsprit $ attrs & exhaustedL .~ True & sanityDamageL +~ 1)
     _ -> LadyEsprit <$> runMessage msg attrs

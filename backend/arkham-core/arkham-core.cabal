@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: da86372cc72069bc5f57bccd8e8d53551329cd57d1e7e703f33dcf02af41e8ff
+-- hash: 3fe671f56d80534b239ada6659c5c966e1df8108a2852a51cc0f0cc6abc2c759
 
 name:           arkham-core
 version:        0.0.0
@@ -327,6 +327,7 @@ library
       Arkham.Types.Enemy.Cards.ScreechingByakhee
       Arkham.Types.Enemy.Cards.ServantOfManyMouths
       Arkham.Types.Enemy.Cards.ServantOfTheLurker
+      Arkham.Types.Enemy.Cards.SethBishop
       Arkham.Types.Enemy.Cards.SilasBishop
       Arkham.Types.Enemy.Cards.SilverTwilightAcolyte
       Arkham.Types.Enemy.Cards.SlimeCoveredDhole

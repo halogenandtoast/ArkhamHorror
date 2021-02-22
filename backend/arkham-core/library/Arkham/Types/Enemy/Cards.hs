@@ -43,6 +43,7 @@ import Arkham.Types.Enemy.Cards.RuthTurner as X
 import Arkham.Types.Enemy.Cards.ScreechingByakhee as X
 import Arkham.Types.Enemy.Cards.ServantOfManyMouths as X
 import Arkham.Types.Enemy.Cards.ServantOfTheLurker as X
+import Arkham.Types.Enemy.Cards.SethBishop as X
 import Arkham.Types.Enemy.Cards.SilasBishop as X
 import Arkham.Types.Enemy.Cards.SilverTwilightAcolyte as X
 import Arkham.Types.Enemy.Cards.SlimeCoveredDhole as X

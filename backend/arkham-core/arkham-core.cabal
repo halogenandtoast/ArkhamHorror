@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3fe671f56d80534b239ada6659c5c966e1df8108a2852a51cc0f0cc6abc2c759
+-- hash: afca8da66d675273df6ce471b3a7399a39620cbd985bd31ccf536cbbc0ebfbe2
 
 name:           arkham-core
 version:        0.0.0
@@ -540,6 +540,7 @@ library
       Arkham.Types.Location.Cards.HouseInTheReeds_211
       Arkham.Types.Location.Cards.HumanitiesBuilding
       Arkham.Types.Location.Cards.LaBellaLuna
+      Arkham.Types.Location.Cards.LostMemories
       Arkham.Types.Location.Cards.MainPath
       Arkham.Types.Location.Cards.MiskatonicQuad
       Arkham.Types.Location.Cards.MiskatonicUniversity

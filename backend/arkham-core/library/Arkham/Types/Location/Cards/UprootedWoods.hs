@@ -1,6 +1,6 @@
-module Arkham.Types.Location.Cards.LostMemories
-  ( lostMemories
-  , LostMemories(..)
+module Arkham.Types.Location.Cards.UprootedWoods
+  ( uprootedWoods
+  , UprootedWoods(..)
   ) where
 
 import Arkham.Prelude
@@ -18,19 +18,19 @@ import Arkham.Types.Query
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
-newtype LostMemories = LostMemories LocationAttrs
+newtype UprootedWoods = UprootedWoods LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-lostMemories :: LostMemories
-lostMemories =
-  LostMemories
+uprootedWoods :: UprootedWoods
+uprootedWoods =
+  UprootedWoods
     $ base
-    & (revealedSymbolL .~ T)
-    & (revealedConnectedSymbolsL .~ setFromList [Square, Moon])
+    & (revealedSymbolL .~ Moon)
+    & (revealedConnectedSymbolsL .~ setFromList [Square, T])
  where
   base = baseAttrs
-    "02292"
-    (Name "Lost Memories" Nothing)
+    "02291"
+    (Name "Uprooted Woods" Nothing)
     EncounterSet.WhereDoomAwaits
     2
     (PerPlayer 1)
@@ -38,26 +38,24 @@ lostMemories =
     []
     [Dunwich, Woods, Altered]
 
-instance HasModifiersFor env LostMemories where
+instance HasModifiersFor env UprootedWoods where
   getModifiersFor = noModifiersFor
 
 forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
 
-instance ActionRunner env => HasActions env LostMemories where
-  getActions iid (AfterRevealLocation You) (LostMemories attrs)
+instance ActionRunner env => HasActions env UprootedWoods where
+  getActions iid (AfterRevealLocation You) (UprootedWoods attrs)
     | iid `on` attrs = do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid
       pure
         [ ActivateCardAbilityAction iid (forcedAbility attrs)
-        | actionRemainingCount > 0
+        | actionRemainingCount == 0
         ]
-  getActions iid window (LostMemories attrs) = getActions iid window attrs
+  getActions iid window (UprootedWoods attrs) = getActions iid window attrs
 
-instance LocationRunner env => RunMessage env LostMemories where
-  runMessage msg l@(LostMemories attrs) = case msg of
+instance LocationRunner env => RunMessage env UprootedWoods where
+  runMessage msg l@(UprootedWoods attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      actionRemainingCount <- unActionRemainingCount <$> getCount iid
-      l <$ unshiftMessage
-        (InvestigatorAssignDamage iid source DamageAny 0 actionRemainingCount)
-    _ -> LostMemories <$> runMessage msg attrs
+      l <$ unshiftMessage (DiscardTopOfDeck iid 5 Nothing)
+    _ -> UprootedWoods <$> runMessage msg attrs

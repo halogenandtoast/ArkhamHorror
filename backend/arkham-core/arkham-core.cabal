@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: afca8da66d675273df6ce471b3a7399a39620cbd985bd31ccf536cbbc0ebfbe2
+-- hash: 6f51dcb12dc2a6d5bf1a05823ac6b85bf0e71dbd49c58cbd0d842dbe56baf5fd
 
 name:           arkham-core
 version:        0.0.0
@@ -583,6 +583,7 @@ library
       Arkham.Types.Location.Cards.TheHiddenChamber
       Arkham.Types.Location.Cards.TrappersCabin
       Arkham.Types.Location.Cards.TwistedUnderbrush
+      Arkham.Types.Location.Cards.UprootedWoods
       Arkham.Types.Location.Cards.VillageCommons
       Arkham.Types.Location.Cards.VipArea
       Arkham.Types.Location.Cards.WhateleyRuins_250

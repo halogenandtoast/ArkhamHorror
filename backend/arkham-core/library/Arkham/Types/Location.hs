@@ -118,6 +118,7 @@ data Location
   | WhateleyRuins_251' WhateleyRuins_251
   | DevilsHopYard_252' DevilsHopYard_252
   | DevilsHopYard_253' DevilsHopYard_253
+  | UprootedWoods' UprootedWoods
   | LostMemories' LostMemories
   | StudyAberrantGateway' StudyAberrantGateway
   | GuestHall' GuestHall
@@ -367,6 +368,7 @@ allLocations = mapFrom
   , WhateleyRuins_251' whateleyRuins_251
   , DevilsHopYard_252' devilsHopYard_252
   , DevilsHopYard_253' devilsHopYard_253
+  , UprootedWoods' uprootedWoods
   , LostMemories' lostMemories
   , StudyAberrantGateway' studyAberrantGateway
   , GuestHall' guestHall

@@ -118,6 +118,7 @@ data Location
   | WhateleyRuins_251' WhateleyRuins_251
   | DevilsHopYard_252' DevilsHopYard_252
   | DevilsHopYard_253' DevilsHopYard_253
+  | DimensionalGap' DimensionalGap
   | ATearInThePath' ATearInThePath
   | UprootedWoods' UprootedWoods
   | LostMemories' LostMemories
@@ -369,6 +370,7 @@ allLocations = mapFrom
   , WhateleyRuins_251' whateleyRuins_251
   , DevilsHopYard_252' devilsHopYard_252
   , DevilsHopYard_253' devilsHopYard_253
+  , DimensionalGap' dimensionalGap
   , ATearInThePath' aTearInThePath
   , UprootedWoods' uprootedWoods
   , LostMemories' lostMemories

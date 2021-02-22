@@ -50,6 +50,7 @@ data Source
   | ProxySource Source Source
   | EffectSource EffectId
   | ResourceSource
+  | AbilitySource Source Int
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 

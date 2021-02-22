@@ -547,6 +547,7 @@ sourceToTarget = \case
   ProxySource _ source -> sourceToTarget source
   EffectSource eid -> EffectTarget eid
   ResourceSource -> ResourceTarget
+  AbilitySource{} -> error "not implemented"
 
 addCampaignCardToDeckChoice
   :: InvestigatorId -> [InvestigatorId] -> CardCode -> Message

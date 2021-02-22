@@ -806,6 +806,7 @@ instance HasSet Trait (Game queue) LocationId where
 
 instance HasSet Trait (Game queue) Source where
   getSet = \case
+    AbilitySource{} -> pure mempty
     AssetSource aid -> getTraits <$> getAsset aid
     EventSource eid -> getTraits <$> getEvent eid
     EffectSource eid -> getSet =<< getEffect eid

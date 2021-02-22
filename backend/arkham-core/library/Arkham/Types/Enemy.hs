@@ -68,6 +68,7 @@ data Enemy
   | SilasBishop' SilasBishop
   | ServantOfManyMouths' ServantOfManyMouths
   | BroodOfYogSothoth' BroodOfYogSothoth
+  | SethBishop' SethBishop
   | DevoteeOfTheKey' DevoteeOfTheKey
   | CrazedShoggoth' CrazedShoggoth
   | CorpseHungryGhoul' CorpseHungryGhoul
@@ -256,6 +257,7 @@ allEnemies = mapFromList
   , ("02216", SilasBishop' . silasBishop)
   , ("02224", ServantOfManyMouths' . servantOfManyMouths)
   , ("02255", BroodOfYogSothoth' . broodOfYogSothoth)
+  , ("02293", SethBishop' . sethBishop)
   , ("02294", DevoteeOfTheKey' . devoteeOfTheKey)
   , ("02295", CrazedShoggoth' . crazedShoggoth)
   , ("50022", CorpseHungryGhoul' . corpseHungryGhoul)

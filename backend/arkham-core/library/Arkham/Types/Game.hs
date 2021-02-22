@@ -221,6 +221,21 @@ getLocationsMatching = \case
     filter ((== locationId) . toId)
       . toList
       <$> view locationsL
+  AnyLocation -> toList <$> view locationsL
+  EmptyLocation -> filter isEmptyLocation . toList <$> view locationsL
+  FarthestLocationFromYou matcher -> do
+    g <- ask
+    start <- locationFor =<< view activeInvestigatorIdL
+    matchingLocationIds <- map toId <$> getLocationsMatching matcher
+    let matches = getLongestPath g start (`elem` matchingLocationIds)
+    filter ((`elem` matches) . toId) . toList <$> view locationsL
+  LocationMatchers (x :| xs) -> do
+    matches :: HashSet LocationId <- foldl' intersection
+      <$> (setFromList . map toId <$> getLocationsMatching x)
+      <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
+    filter ((`member` matches) . toId)
+      . toList
+      <$> view locationsL
 
 getEnemy :: (HasCallStack, MonadReader (Game queue) m) => EnemyId -> m Enemy
 getEnemy eid = fromJustNote missingEnemy <$> preview (enemiesL . ix eid)
@@ -1194,15 +1209,15 @@ instance HasSet FarthestLocationId (Game queue) InvestigatorId where
       start
       (const True)
 
-instance HasSet FarthestLocationId (Game queue) (InvestigatorId, EmptyLocation) where
-  getSet (iid, _) = do
+instance HasSet FarthestLocationId (Game queue) (InvestigatorId, LocationMatcher) where
+  getSet (iid, matcher) = do
     g <- ask
     start <- locationFor iid
-    emptyLocationIds <- map unEmptyLocationId <$> getSetList ()
+    matchingLocationIds <- map toId <$> getLocationsMatching matcher
     pure . setFromList . coerce $ getLongestPath
       g
       start
-      (`elem` emptyLocationIds)
+      (`elem` matchingLocationIds)
 
 instance HasSet FarthestEnemyId (Game queue) (InvestigatorId, EnemyTrait) where
   getSet (iid, enemyTrait) = do

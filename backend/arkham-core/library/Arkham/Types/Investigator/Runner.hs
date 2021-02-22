@@ -119,7 +119,6 @@ type InvestigatorRunner env
         , HasSet ExhaustedEnemyId env LocationId
         , HasSet FarthestEnemyId env (InvestigatorId, EnemyTrait)
         , HasSet FarthestLocationId env InvestigatorId
-        , HasSet FarthestLocationId env (InvestigatorId, EmptyLocation)
         , HasSet FarthestLocationId env [InvestigatorId]
         , HasSet FightableEnemyId env (InvestigatorId, Source)
         , HasSet HandCardId env (InvestigatorId, PlayerCardType)

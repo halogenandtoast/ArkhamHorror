@@ -54,6 +54,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyDoom :: Int
   , enemyClues :: Int
   , enemyUnique :: Bool
+  , enemySpawnAt :: Maybe LocationMatcher
   }
   deriving stock (Show, Eq, Generic)
 
@@ -107,6 +108,7 @@ baseAttrs eid cardCode f =
       , enemyClues = 0
       , enemyVictory = ecVictoryPoints
       , enemyUnique = False
+      , enemySpawnAt = Nothing
       }
 
 weaknessBaseAttrs :: EnemyId -> CardCode -> EnemyAttrs
@@ -141,6 +143,7 @@ weaknessBaseAttrs eid cardCode =
       , enemyClues = 0
       , enemyDoom = 0
       , enemyUnique = False
+      , enemySpawnAt = Nothing
       }
 
 spawnAtEmptyLocation
@@ -671,9 +674,14 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
         a <$ unless
           (CannotMakeAttacksOfOpportunity `elem` modifiers')
           (unshiftMessage (EnemyWillAttack iid enemyId))
-    InvestigatorDrawEnemy iid lid eid | eid == enemyId -> do
-      unshiftMessages $ resolve (EnemySpawn (Just iid) lid eid)
-      pure $ a & locationL .~ lid
+    InvestigatorDrawEnemy iid lid eid | eid == enemyId ->
+      a
+        <$ (case enemySpawnAt of
+             Nothing ->
+               unshiftMessages (resolve (EnemySpawn (Just iid) lid eid))
+             Just matcher -> do
+               spawnAt (Just iid) enemyId matcher
+           )
     InvestigatorEliminated iid ->
       pure $ a & engagedInvestigatorsL %~ deleteSet iid
     UnengageNonMatching iid traits

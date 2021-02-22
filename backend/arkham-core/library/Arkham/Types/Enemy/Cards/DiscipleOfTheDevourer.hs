@@ -4,12 +4,12 @@ import Arkham.Prelude
 
 import Arkham.Types.AgendaId
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.LocationId
-import Arkham.Types.Message
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
+import Arkham.Types.EnemyId
+import Arkham.Types.GameValue
+import Arkham.Types.LocationMatcher
+import Arkham.Types.Message
 
 newtype DiscipleOfTheDevourer = DiscipleOfTheDevourer EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -22,6 +22,7 @@ discipleOfTheDevourer uuid =
     . (fightL .~ 3)
     . (healthL .~ Static 1)
     . (evadeL .~ 1)
+    . (spawnAtL ?~ FarthestLocationFromYou EmptyLocation)
 
 instance HasModifiersFor env DiscipleOfTheDevourer where
   getModifiersFor = noModifiersFor
@@ -30,12 +31,8 @@ instance ActionRunner env => HasActions env DiscipleOfTheDevourer where
   getActions i window (DiscipleOfTheDevourer attrs) = getActions i window attrs
 
 instance EnemyRunner env => RunMessage env DiscipleOfTheDevourer where
-  runMessage msg e@(DiscipleOfTheDevourer attrs@EnemyAttrs {..}) = case msg of
-    InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
-      farthestEmptyLocationIds <- map unFarthestLocationId
-        <$> getSetList (iid, EmptyLocation)
-      e <$ spawnAtOneOf iid eid farthestEmptyLocationIds
-    EnemySpawn (Just iid) _ eid | eid == enemyId -> do
+  runMessage msg (DiscipleOfTheDevourer attrs) = case msg of
+    EnemySpawn (Just iid) _ eid | eid == enemyId attrs -> do
       let
         messages =
           [PlaceDoom (toTarget attrs) 1, InvestigatorPlaceCluesOnLocation iid 1]

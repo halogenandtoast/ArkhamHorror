@@ -17,6 +17,7 @@ import Arkham.Types.Location.Cards.ArkhamWoodsTwistingPaths as X
 import Arkham.Types.Location.Cards.ArkhamWoodsUnhallowedGround as X
 import Arkham.Types.Location.Cards.ArkhamWoodsWoodenBridge as X
 import Arkham.Types.Location.Cards.ArtGallery as X
+import Arkham.Types.Location.Cards.ATearInThePath as X
 import Arkham.Types.Location.Cards.Attic as X
 import Arkham.Types.Location.Cards.AudubonPark as X
 import Arkham.Types.Location.Cards.BackAlley as X

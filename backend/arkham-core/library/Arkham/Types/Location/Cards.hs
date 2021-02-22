@@ -68,6 +68,7 @@ import Arkham.Types.Location.Cards.FarAboveYourHouse as X
 import Arkham.Types.Location.Cards.FauborgMarigny as X
 import Arkham.Types.Location.Cards.ForgottenMarsh as X
 import Arkham.Types.Location.Cards.FoulSwamp as X
+import Arkham.Types.Location.Cards.FrozenSpring as X
 import Arkham.Types.Location.Cards.GardenDistrict as X
 import Arkham.Types.Location.Cards.Graveyard as X
 import Arkham.Types.Location.Cards.GuestHall as X

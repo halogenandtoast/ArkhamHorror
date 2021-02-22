@@ -1,9 +1,22 @@
 import { JsonDecoder } from 'ts.data.json';
 
+export interface EnemyName {
+  title: string;
+  subtitle: string | null;
+}
+
+export const enemyNameDecoder = JsonDecoder.object<EnemyName>(
+  {
+    title: JsonDecoder.string,
+    subtitle: JsonDecoder.nullable(JsonDecoder.string),
+  },
+  'EnemyName'
+);
+
 export interface EnemyContents {
   id: string;
   cardCode: string;
-  name: string;
+  name: EnemyName;
   damage: number;
   doom: number;
   engagedInvestigators: string[];
@@ -14,7 +27,7 @@ export interface EnemyContents {
 export const enemyContentsDecoder = JsonDecoder.object<EnemyContents>({
   id: JsonDecoder.string,
   cardCode: JsonDecoder.string,
-  name: JsonDecoder.string,
+  name: enemyNameDecoder,
   damage: JsonDecoder.number,
   doom: JsonDecoder.number,
   engagedInvestigators: JsonDecoder.array<string>(JsonDecoder.string, 'InvestigatorIds[]'),

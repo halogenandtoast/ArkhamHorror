@@ -151,6 +151,11 @@ findLocationKey locationMatcher locations = fst
       LocationWithFullTitle title' subtitle' ->
         title == title' && Just subtitle' == msubtitle
       LocationWithId lid -> lid `elem` locationIds
+      AnyLocation -> True
+      -- TODO: Encode these into an either?
+      EmptyLocation -> error "needs to find a singular location"
+      FarthestLocationFromYou _ -> error "needs to find a singular location"
+      LocationMatchers _ -> error "not implemented"
 
 type ScenarioAttrsRunner env
   = ( HasSet InScenarioInvestigatorId env ()

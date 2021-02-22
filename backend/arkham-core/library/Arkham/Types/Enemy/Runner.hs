@@ -34,7 +34,6 @@ type EnemyRunner env
     , HasSet ClosestPathLocationId env (LocationId, Prey)
     , HasSet ConnectedLocationId env LocationId
     , HasSet EmptyLocationId env ()
-    , HasSet FarthestLocationId env (InvestigatorId, EmptyLocation)
     , HasSet FarthestLocationId env InvestigatorId
     , HasSet FarthestLocationId env [InvestigatorId]
     , HasSet InvestigatorId env ()

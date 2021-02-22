@@ -6,13 +6,14 @@ module Arkham.Types.Enemy.Cards.CorpseTaker
 import Arkham.Prelude
 
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.LocationId
-import Arkham.Types.Message
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
+import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
+import Arkham.Types.GameValue
+import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
+import Arkham.Types.Message
 
 newtype CorpseTaker = CorpseTaker EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -26,6 +27,7 @@ corpseTaker uuid =
     . (fightL .~ 4)
     . (healthL .~ Static 3)
     . (evadeL .~ 3)
+    . (spawnAtL ?~ FarthestLocationFromYou EmptyLocation)
 
 instance HasModifiersFor env CorpseTaker where
   getModifiersFor = noModifiersFor
@@ -35,10 +37,6 @@ instance ActionRunner env => HasActions env CorpseTaker where
 
 instance EnemyRunner env => RunMessage env CorpseTaker where
   runMessage msg e@(CorpseTaker attrs@EnemyAttrs {..}) = case msg of
-    InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
-      farthestEmptyLocationIds <- map unFarthestLocationId
-        <$> getSetList (iid, EmptyLocation)
-      e <$ spawnAtOneOf iid eid farthestEmptyLocationIds
     EndMythos -> pure $ CorpseTaker $ attrs & doomL +~ 1
     EndEnemy -> do
       mRivertown <- getLocationIdWithTitle "Rivertown"

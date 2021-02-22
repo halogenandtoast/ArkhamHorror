@@ -1,14 +1,17 @@
 module Arkham.Types.Enemy.Cards.VictoriaDevereux
   ( VictoriaDevereux(..)
   , victoriaDevereux
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Action hiding (Ability)
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
 import Arkham.Types.LocationId
@@ -16,10 +19,6 @@ import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Window
-import Arkham.Types.Action hiding (Ability)
-import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Helpers
-import Arkham.Types.Enemy.Runner
 
 newtype VictoriaDevereux = VictoriaDevereux EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -33,6 +32,7 @@ victoriaDevereux uuid =
     . (healthL .~ Static 3)
     . (evadeL .~ 2)
     . (uniqueL .~ True)
+    . (spawnAtL ?~ LocationWithTitle "Northside")
 
 instance HasModifiersFor env VictoriaDevereux where
   getModifiersFor = noModifiersFor
@@ -57,9 +57,7 @@ instance ActionRunner env => HasActions env VictoriaDevereux where
   getActions _ _ _ = pure []
 
 instance (EnemyRunner env) => RunMessage env VictoriaDevereux where
-  runMessage msg e@(VictoriaDevereux attrs@EnemyAttrs {..}) = case msg of
-    InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
-      e <$ spawnAt (Just iid) eid (LocationWithTitle "Northside")
-    UseCardAbility _ (EnemySource eid) _ 1 _ | eid == enemyId ->
+  runMessage msg e@(VictoriaDevereux attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ unshiftMessage (AddToVictory $ toTarget attrs)
     _ -> VictoriaDevereux <$> runMessage msg attrs

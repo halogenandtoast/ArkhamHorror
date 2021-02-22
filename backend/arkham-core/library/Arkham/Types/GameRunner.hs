@@ -91,7 +91,6 @@ type GameRunner env
       , HasSet EventId env LocationId
       , HasSet ExhaustedAssetId env InvestigatorId
       , HasSet FarthestEnemyId env (InvestigatorId, EnemyTrait)
-      , HasSet FarthestLocationId env (InvestigatorId, EmptyLocation)
       , HasSet FarthestLocationId env [InvestigatorId]
       , HasSet FarthestLocationId env InvestigatorId
       , HasSet HandCardId env InvestigatorId

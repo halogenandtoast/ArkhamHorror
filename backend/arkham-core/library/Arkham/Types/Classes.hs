@@ -2,8 +2,7 @@
 module Arkham.Types.Classes
   ( module Arkham.Types.Classes
   , module X
-  )
-where
+  ) where
 
 import Arkham.Prelude hiding (to)
 
@@ -162,6 +161,7 @@ type ActionRunner env
   = ( HasQueue env
     , HasActions env ActionType
     , HasCount AssetCount env (InvestigatorId, [Trait])
+    , HasCount ActionRemainingCount env InvestigatorId
     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
     , HasCount ActionTakenCount env InvestigatorId
     , HasCount CardCount env InvestigatorId

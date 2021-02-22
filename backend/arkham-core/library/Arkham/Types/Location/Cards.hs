@@ -118,6 +118,7 @@ import Arkham.Types.Location.Cards.TenAcreMeadow_247 as X
 import Arkham.Types.Location.Cards.TheHiddenChamber as X
 import Arkham.Types.Location.Cards.TrappersCabin as X
 import Arkham.Types.Location.Cards.TwistedUnderbrush as X
+import Arkham.Types.Location.Cards.UprootedWoods as X
 import Arkham.Types.Location.Cards.VillageCommons as X
 import Arkham.Types.Location.Cards.VipArea as X
 import Arkham.Types.Location.Cards.WhateleyRuins_250 as X

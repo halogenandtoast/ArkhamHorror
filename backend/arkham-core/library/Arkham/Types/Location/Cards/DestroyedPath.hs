@@ -41,7 +41,7 @@ destroyedPath =
     (Static 0)
     NoSymbol
     []
-    [Dunwich, Woods, Altered]
+    [Dunwich, Woods]
 
 instance HasModifiersFor env DestroyedPath where
   getModifiersFor = noModifiersFor

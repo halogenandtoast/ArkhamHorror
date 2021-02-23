@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 781242500111b43ec2e336e69127ac268abc923d1d62ea0aba65b87742c02907
+-- hash: ef0006a37d37876b4ebb06029c77d8ba29dc9c467f4f75e90ffa4789933b52c1
 
 name:           arkham-core
 version:        0.0.0
@@ -576,6 +576,7 @@ library
       Arkham.Types.Location.Cards.ScienceBuilding
       Arkham.Types.Location.Cards.SecurityOffice_128
       Arkham.Types.Location.Cards.SecurityOffice_129
+      Arkham.Types.Location.Cards.SlaughteredWoods
       Arkham.Types.Location.Cards.SleepingCar
       Arkham.Types.Location.Cards.SouthsideHistoricalSociety
       Arkham.Types.Location.Cards.SouthsideMasBoardingHouse

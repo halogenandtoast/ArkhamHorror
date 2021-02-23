@@ -35,7 +35,7 @@ frozenSpring =
     (PerPlayer 1)
     NoSymbol
     []
-    [Dunwich, Woods, Altered]
+    [Dunwich, Woods]
 
 instance HasModifiersFor env FrozenSpring where
   getModifiersFor = noModifiersFor

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 41521efd6f27cb7676e5dae3d3ec159c5208f093b862f2c0283ce2b5b8e9896a
+-- hash: 781242500111b43ec2e336e69127ac268abc923d1d62ea0aba65b87742c02907
 
 name:           arkham-core
 version:        0.0.0
@@ -519,6 +519,7 @@ library
       Arkham.Types.Location.Cards.DunwichVillage_243
       Arkham.Types.Location.Cards.Easttown
       Arkham.Types.Location.Cards.EasttownArkhamPoliceStation
+      Arkham.Types.Location.Cards.EerieGlade
       Arkham.Types.Location.Cards.EngineCar_175
       Arkham.Types.Location.Cards.EngineCar_176
       Arkham.Types.Location.Cards.EngineCar_177

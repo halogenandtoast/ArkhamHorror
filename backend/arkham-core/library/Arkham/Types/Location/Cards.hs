@@ -53,6 +53,7 @@ import Arkham.Types.Location.Cards.DunwichVillage_242 as X
 import Arkham.Types.Location.Cards.DunwichVillage_243 as X
 import Arkham.Types.Location.Cards.Easttown as X
 import Arkham.Types.Location.Cards.EasttownArkhamPoliceStation as X
+import Arkham.Types.Location.Cards.EerieGlade as X
 import Arkham.Types.Location.Cards.EngineCar_175 as X
 import Arkham.Types.Location.Cards.EngineCar_176 as X
 import Arkham.Types.Location.Cards.EngineCar_177 as X

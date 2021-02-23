@@ -1,6 +1,6 @@
-module Arkham.Types.Location.Cards.ATearInThePath
-  ( aTearInThePath
-  , ATearInThePath(..)
+module Arkham.Types.Location.Cards.SlaughteredWoods
+  ( slaugteredWoods
+  , SlaughteredWoods(..)
   )
 where
 
@@ -19,44 +19,44 @@ import Arkham.Types.Query
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
-newtype ATearInThePath = ATearInThePath LocationAttrs
+newtype SlaughteredWoods = SlaughteredWoods LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-aTearInThePath :: ATearInThePath
-aTearInThePath =
-  ATearInThePath
+slaugteredWoods :: SlaughteredWoods
+slaugteredWoods =
+  SlaughteredWoods
     $ base
-    & (revealedSymbolL .~ Equals)
-    & (revealedConnectedSymbolsL .~ setFromList [Square, Squiggle])
+    & (revealedSymbolL .~ Plus)
+    & (revealedConnectedSymbolsL .~ setFromList [Triangle, Hourglass])
  where
   base = baseAttrs
-    "02290"
-    (Name "A Tear in the Path" Nothing)
+    "02285"
+    (Name "Slaughtered Woods" Nothing)
     EncounterSet.WhereDoomAwaits
-    3
+    2
     (PerPlayer 1)
     NoSymbol
     []
-    [Dunwich, Woods, Altered]
+    [Dunwich, Woods]
 
-instance HasModifiersFor env ATearInThePath where
+instance HasModifiersFor env SlaughteredWoods where
   getModifiersFor = noModifiersFor
 
 forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
 
-instance ActionRunner env => HasActions env ATearInThePath where
-  getActions iid (AfterRevealLocation You) (ATearInThePath attrs)
+instance ActionRunner env => HasActions env SlaughteredWoods where
+  getActions iid (AfterRevealLocation You) (SlaughteredWoods attrs)
     | iid `on` attrs = do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid
       pure
         [ ActivateCardAbilityAction iid (forcedAbility attrs)
         | actionRemainingCount == 0
         ]
-  getActions iid window (ATearInThePath attrs) = getActions iid window attrs
+  getActions iid window (SlaughteredWoods attrs) = getActions iid window attrs
 
-instance LocationRunner env => RunMessage env ATearInThePath where
-  runMessage msg l@(ATearInThePath attrs) = case msg of
+instance LocationRunner env => RunMessage env SlaughteredWoods where
+  runMessage msg l@(SlaughteredWoods attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessage (InvestigatorAssignDamage iid source DamageAny 2 0)
-    _ -> ATearInThePath <$> runMessage msg attrs
+      l <$ unshiftMessage (InvestigatorAssignDamage iid source DamageAny 0 2)
+    _ -> SlaughteredWoods <$> runMessage msg attrs

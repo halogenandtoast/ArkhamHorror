@@ -1,6 +1,7 @@
 module Arkham.Types.Location.Cards
   ( module X
-  ) where
+  )
+where
 
 import Arkham.Types.Location.Cards.AdministrationBuilding as X
 import Arkham.Types.Location.Cards.AdministrationOffice_130 as X
@@ -110,6 +111,7 @@ import Arkham.Types.Location.Cards.Schoolhouse_213 as X
 import Arkham.Types.Location.Cards.ScienceBuilding as X
 import Arkham.Types.Location.Cards.SecurityOffice_128 as X
 import Arkham.Types.Location.Cards.SecurityOffice_129 as X
+import Arkham.Types.Location.Cards.SlaughteredWoods as X
 import Arkham.Types.Location.Cards.SleepingCar as X
 import Arkham.Types.Location.Cards.SouthsideHistoricalSociety as X
 import Arkham.Types.Location.Cards.SouthsideMasBoardingHouse as X

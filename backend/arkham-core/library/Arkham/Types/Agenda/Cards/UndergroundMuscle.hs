@@ -5,17 +5,18 @@ module Arkham.Types.Agenda.Cards.UndergroundMuscle
 
 import Arkham.Prelude
 
+import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.EncounterSet
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Query
-import Arkham.Types.Agenda.Attrs
-import Arkham.Types.Agenda.Runner
-import Arkham.Types.EncounterSet
 
 newtype UndergroundMuscle = UndergroundMuscle AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -54,7 +55,7 @@ instance AgendaRunner env => RunMessage env UndergroundMuscle where
                , ShuffleEncounterDiscardBackIn
                , ShuffleIntoEncounterDeck $ rest <> strikingFear
                ]
-              <> [ MoveAction iid "02070" False
+              <> [ MoveAction iid "02070" Free False
                  | iid <- laBellaLunaInvestigators
                  ]
               <> [ EnemyMove eid laBellaLunaId "02070"

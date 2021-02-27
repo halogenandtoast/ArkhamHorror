@@ -5,6 +5,9 @@ module Arkham.Types.Asset.Cards.CatBurgler1
 
 import Arkham.Prelude
 
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -17,9 +20,6 @@ import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 
 newtype CatBurgler1 = CatBurgler1 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -61,7 +61,7 @@ instance AssetRunner env => RunMessage env CatBurgler1 where
         $ [ DisengageEnemy iid eid | eid <- engagedEnemyIds ]
         <> [ chooseOne
                iid
-               [ MoveAction iid lid False | lid <- accessibleLocationIds ]
+               [ MoveAction iid lid Free False | lid <- accessibleLocationIds ]
            | not (null accessibleLocationIds)
            ]
       pure $ CatBurgler1 $ attrs & exhaustedL .~ True

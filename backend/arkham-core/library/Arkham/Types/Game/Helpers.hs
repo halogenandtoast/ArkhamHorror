@@ -164,15 +164,17 @@ getCanAffordCost iid source mAction = \case
     pure $ spendableClues >= n
   GroupClueCost n Nothing -> do
     totalSpendableClues <- unSpendableClueCount <$> getCount ()
-    pure $ totalSpendableClues >= n
+    cost <- getPlayerCountValue n
+    pure $ totalSpendableClues >= cost
   GroupClueCost n (Just locationMatcher) -> do
     mLocationId <- getId @(Maybe LocationId) locationMatcher
+    cost <- getPlayerCountValue n
     case mLocationId of
       Just lid -> do
         iids <- getSetList @InvestigatorId lid
         totalSpendableClues <- sum
           <$> for iids ((unSpendableClueCount <$>) . getCount)
-        pure $ totalSpendableClues >= n
+        pure $ totalSpendableClues >= cost
       Nothing -> pure False
   ResourceCost n -> do
     resources <- unResourceCount <$> getCount iid

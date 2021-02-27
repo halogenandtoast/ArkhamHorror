@@ -381,6 +381,13 @@ instance HasSet FightableEnemyId (Game queue) (InvestigatorId, Source) where
         _ -> pure False) modifiers'
     pure . setFromList . coerce $ fightableEnemyIds
 
+instance HasSet SetAsideLocationId (Game queue) () where
+  getSet _ = do
+    mScenario <- modeScenario <$> view modeL
+    case mScenario of
+      Just scenario -> getSet scenario
+      Nothing -> error "missing scenario"
+
 instance HasSet ClosestPathLocationId (Game queue) (LocationId, LocationMatcher) where
   getSet (lid, locationMatcher) = maybe (pure mempty) (getSet . (lid, ) . toId)
     =<< getLocationMatching locationMatcher

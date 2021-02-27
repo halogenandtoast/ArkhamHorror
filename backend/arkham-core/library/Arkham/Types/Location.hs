@@ -1,7 +1,6 @@
 module Arkham.Types.Location
   ( module Arkham.Types.Location
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -119,6 +118,8 @@ data Location
   | WhateleyRuins_251' WhateleyRuins_251
   | DevilsHopYard_252' DevilsHopYard_252
   | DevilsHopYard_253' DevilsHopYard_253
+  | AscendingPath' AscendingPath
+  | SentinelPeak' SentinelPeak
   | SlaughteredWoods' SlaughteredWoods
   | EerieGlade' EerieGlade
   | FrozenSpring' FrozenSpring
@@ -374,6 +375,8 @@ allLocations = mapFrom
   , WhateleyRuins_251' whateleyRuins_251
   , DevilsHopYard_252' devilsHopYard_252
   , DevilsHopYard_253' devilsHopYard_253
+  , AscendingPath' ascendingPath
+  , SentinelPeak' sentinelPeak
   , SlaughteredWoods' slaugteredWoods
   , EerieGlade' eerieGlade
   , FrozenSpring' frozenSpring

@@ -1,29 +1,28 @@
 module Arkham.Types.Location.Cards.FacultyOfficesTheNightIsStillYoung
   ( facultyOfficesTheNightIsStillYoung
   , FacultyOfficesTheNightIsStillYoung(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Resolution
-import Arkham.Types.Window
-import Arkham.Types.Card.EncounterCardMatcher
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Game.Helpers
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype FacultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -51,22 +50,20 @@ instance HasModifiersFor env FacultyOfficesTheNightIsStillYoung where
 instance ActionRunner env => HasActions env FacultyOfficesTheNightIsStillYoung where
   getActions iid FastPlayerWindow (FacultyOfficesTheNightIsStillYoung attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid FastPlayerWindow attrs $ do
-      requiredClueCount <- getPlayerCountValue (PerPlayer 2)
-      pure
-        [ ActivateCardAbilityAction
-            iid
-            (mkAbility
-              (toSource attrs)
-              1
-              (FastAbility
-                (GroupClueCost
-                  requiredClueCount
-                  (Just $ LocationWithTitle "Faculty Offices")
-                )
+    = withBaseActions iid FastPlayerWindow attrs $ pure
+      [ ActivateCardAbilityAction
+          iid
+          (mkAbility
+            (toSource attrs)
+            1
+            (FastAbility
+              (GroupClueCost
+                (PerPlayer 2)
+                (Just $ LocationWithTitle "Faculty Offices")
               )
             )
-        ]
+          )
+      ]
   getActions iid window (FacultyOfficesTheNightIsStillYoung attrs) =
     getActions iid window attrs
 

@@ -35,7 +35,7 @@ import Data.Aeson as X
 import qualified Data.Char as C
 import Data.Coerce as X (coerce)
 import Data.List as X (nub, (\\))
-import Data.List.NonEmpty as X (NonEmpty(..))
+import Data.List.NonEmpty as X (NonEmpty(..), nonEmpty)
 import Data.UUID as X (UUID)
 import GHC.Stack as X
 import Language.Haskell.TH hiding (location)

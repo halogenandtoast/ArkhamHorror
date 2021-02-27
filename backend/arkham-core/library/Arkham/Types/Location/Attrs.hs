@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Json
 import Arkham.Types.AssetId
 import Arkham.Types.Card
+import Arkham.Types.Cost
 import Arkham.Types.Classes
 import Arkham.Types.Direction
 import Arkham.Types.EncounterSet (EncounterSet)
@@ -44,6 +45,7 @@ pattern UseDrawCardUnderneath iid source <- UseCardAbility iid source _ 100 _
 
 data LocationAttrs = LocationAttrs
   { locationName :: LocationName
+  , locationUnrevealedName :: LocationName
   , locationLabel :: Text
   , locationId :: LocationId
   , locationRevealClues :: GameValue Int
@@ -67,6 +69,7 @@ data LocationAttrs = LocationAttrs
   , locationDirections :: HashMap Direction LocationId
   , locationConnectsTo :: HashSet Direction
   , locationCardsUnderneath :: [Card]
+  , locationCostToEnterUnrevealed :: Cost
   }
   deriving stock (Show, Eq, Generic)
 
@@ -108,7 +111,10 @@ instance IsCard LocationAttrs where
   getKeywords = mempty
 
 instance HasName env LocationAttrs where
-  getName = pure . unLocationName . locationName
+  getName attrs = pure . unLocationName . locationNameFunc $ attrs
+   where
+    locationNameFunc =
+      if locationRevealed attrs then locationName else locationUnrevealedName
 
 instance HasId (Maybe LocationId) env (Direction, LocationAttrs) where
   getId (dir, LocationAttrs {..}) = pure $ lookup dir locationDirections
@@ -135,6 +141,7 @@ baseAttrs
 baseAttrs lid name encounterSet shroud' revealClues symbol' connectedSymbols' traits'
   = LocationAttrs
     { locationName = LocationName name
+    , locationUnrevealedName = LocationName name
     , locationLabel = nameToLabel name
     , locationId = lid
     , locationRevealClues = revealClues
@@ -158,6 +165,7 @@ baseAttrs lid name encounterSet shroud' revealClues symbol' connectedSymbols' tr
     , locationDirections = mempty
     , locationConnectsTo = mempty
     , locationCardsUnderneath = mempty
+    , locationCostToEnterUnrevealed = ActionCost 1
     }
 
 locationEnemiesWithTrait
@@ -261,11 +269,14 @@ instance ActionRunner env => HasActions env LocationAttrs where
       $ moveActions canMoveTo
       <> investigateActions canInvestigate investigateAllowed
    where
+    costToEnter =
+      if locationRevealed then ActionCost 1 else locationCostToEnterUnrevealed
     investigateActions canInvestigate investigateAllowed =
       [ Investigate iid locationId (InvestigatorSource iid) SkillIntellect True
       | canInvestigate && investigateAllowed
       ]
-    moveActions canMoveTo = [ MoveAction iid locationId True | canMoveTo ]
+    moveActions canMoveTo =
+      [ MoveAction iid locationId costToEnter True | canMoveTo ]
   getActions _ _ _ = pure []
 
 getShouldSpawnNonEliteAtConnectingInstead

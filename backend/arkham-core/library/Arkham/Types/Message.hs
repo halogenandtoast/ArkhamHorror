@@ -325,7 +325,7 @@ data Message
   | LoseActions InvestigatorId Source Int
   | SpendActions InvestigatorId Source Int
   | Move InvestigatorId LocationId LocationId
-  | MoveAction InvestigatorId LocationId Bool
+  | MoveAction InvestigatorId LocationId Cost Bool
   | MoveAllCluesTo Target
   | MoveAllTo LocationId
   | MoveFrom InvestigatorId LocationId

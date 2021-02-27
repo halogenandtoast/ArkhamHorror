@@ -6,6 +6,7 @@ module Arkham.Types.Asset.Cards.Pathfinder1
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Asset.Attrs
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -14,7 +15,6 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
 
 newtype Pathfinder1 = Pathfinder1 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -49,6 +49,6 @@ instance
       a <$ unshiftMessage
         (chooseOne
           iid
-          [ MoveAction iid lid False | lid <- accessibleLocationIds ]
+          [ MoveAction iid lid Free False | lid <- accessibleLocationIds ]
         )
     _ -> Pathfinder1 <$> runMessage msg attrs

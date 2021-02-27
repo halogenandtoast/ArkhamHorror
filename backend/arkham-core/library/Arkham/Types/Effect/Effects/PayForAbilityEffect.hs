@@ -152,13 +152,15 @@ instance
       ClueCost x -> e <$ unshiftMessage (InvestigatorSpendClues iid x)
       GroupClueCost x Nothing -> do
         investigatorIds <- map unInScenarioInvestigatorId <$> getSetList ()
-        e <$ unshiftMessage (SpendClues x investigatorIds)
+        totalClues <- getPlayerCountValue x
+        e <$ unshiftMessage (SpendClues totalClues investigatorIds)
       GroupClueCost x (Just locationMatcher) -> do
         mLocationId <- getId @(Maybe LocationId) locationMatcher
+        totalClues <- getPlayerCountValue x
         case mLocationId of
           Just lid -> do
             iids <- getSetList @InvestigatorId lid
-            e <$ unshiftMessage (SpendClues x iids)
+            e <$ unshiftMessage (SpendClues totalClues iids)
           Nothing -> error "could not pay cost"
       HandDiscardCost x mPlayerCardType traits skillTypes -> do
         handCards <- mapMaybe (preview _PlayerCard . unHandCard) <$> getList iid

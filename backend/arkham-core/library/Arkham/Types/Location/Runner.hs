@@ -54,6 +54,7 @@ type LocationRunner env
     , HasSet LocationId env ()
     , HasSet LocationId env LocationMatcher
     , HasSet LocationId env [Trait]
+    , HasSet SetAsideLocationId env ()
     , HasSet Trait env Source
     , HasSet Trait env EnemyId
     , HasSet Trait env LocationId

@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Types.Action
 import Arkham.Types.Classes
+import Arkham.Types.Cost
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
@@ -39,7 +40,7 @@ instance SkillRunner env => RunMessage env SurvivalInstinct where
           moveOptions = chooseOne
             iid
             ([Label "Do not move to a connecting location" []]
-            <> [ MoveAction iid lid False
+            <> [ MoveAction iid lid Free False
                | lid <- unblockedConnectedLocationIds
                ]
             )

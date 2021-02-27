@@ -124,6 +124,7 @@ type HasCostPayment env
   = ( HasCount SpendableClueCount env InvestigatorId
     , HasCount SpendableClueCount env ()
     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
+    , HasCount PlayerCount env ()
     , HasList HandCard env InvestigatorId
     , HasCount ResourceCount env InvestigatorId
     , HasCount UsesCount env AssetId

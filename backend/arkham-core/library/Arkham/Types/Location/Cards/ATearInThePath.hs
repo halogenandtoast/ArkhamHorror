@@ -25,19 +25,18 @@ newtype ATearInThePath = ATearInThePath LocationAttrs
 aTearInThePath :: ATearInThePath
 aTearInThePath =
   ATearInThePath
-    $ base
+    $ baseAttrs
+        "02290"
+        (Name "A Tear in the Path" Nothing)
+        EncounterSet.WhereDoomAwaits
+        3
+        (PerPlayer 1)
+        NoSymbol
+        []
+        [Dunwich, Woods, Altered]
     & (revealedSymbolL .~ Equals)
     & (revealedConnectedSymbolsL .~ setFromList [Square, Squiggle])
- where
-  base = baseAttrs
-    "02290"
-    (Name "A Tear in the Path" Nothing)
-    EncounterSet.WhereDoomAwaits
-    3
-    (PerPlayer 1)
-    NoSymbol
-    []
-    [Dunwich, Woods, Altered]
+    & (unrevealedNameL .~ LocationName (mkName "Altered Path"))
 
 instance HasModifiersFor env ATearInThePath where
   getModifiersFor = noModifiersFor

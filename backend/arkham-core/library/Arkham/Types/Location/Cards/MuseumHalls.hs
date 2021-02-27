@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.MuseumHalls
   ( museumHalls
   , MuseumHalls(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -29,8 +28,9 @@ newtype MuseumHalls = MuseumHalls LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 museumHalls :: MuseumHalls
-museumHalls = MuseumHalls
-  $ base { locationConnectedSymbols = setFromList [Circle, Diamond, Triangle] }
+museumHalls = MuseumHalls $ base
+  { locationConnectedSymbols = setFromList [Circle, Diamond, Triangle]
+  }
  where
   base = baseAttrs
     "02127"
@@ -62,23 +62,21 @@ instance ActionRunner env => HasActions env MuseumHalls where
             )
         ]
   getActions iid NonFast (MuseumHalls location) | revealed location =
-    withBaseActions iid NonFast location $ do
-      clueCost <- getPlayerCountValue (PerPlayer 1)
-      pure
-        [ ActivateCardAbilityAction
-            iid
-            (mkAbility
-              (toSource location)
-              1
-              (ActionAbility Nothing $ Costs
-                [ ActionCost 1
-                , GroupClueCost
-                  clueCost
-                  (Just $ LocationWithTitle "Museum Halls")
-                ]
-              )
+    withBaseActions iid NonFast location $ pure
+      [ ActivateCardAbilityAction
+          iid
+          (mkAbility
+            (toSource location)
+            1
+            (ActionAbility Nothing $ Costs
+              [ ActionCost 1
+              , GroupClueCost
+                (PerPlayer 1)
+                (Just $ LocationWithTitle "Museum Halls")
+              ]
             )
-        ]
+          )
+      ]
   getActions iid window (MuseumHalls attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env MuseumHalls where

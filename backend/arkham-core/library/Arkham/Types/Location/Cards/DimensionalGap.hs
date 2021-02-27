@@ -25,19 +25,18 @@ newtype DimensionalGap = DimensionalGap LocationAttrs
 dimensionalGap :: DimensionalGap
 dimensionalGap =
   DimensionalGap
-    $ base
+    $ baseAttrs
+        "02289"
+        (Name "Dimensional Gap" Nothing)
+        EncounterSet.WhereDoomAwaits
+        3
+        (PerPlayer 1)
+        NoSymbol
+        []
+        [Dunwich, Woods, Altered]
     & (revealedSymbolL .~ T)
     & (revealedConnectedSymbolsL .~ setFromList [Square, Moon])
- where
-  base = baseAttrs
-    "02289"
-    (Name "Dimensional Gap" Nothing)
-    EncounterSet.WhereDoomAwaits
-    3
-    (PerPlayer 1)
-    NoSymbol
-    []
-    [Dunwich, Woods, Altered]
+    & (unrevealedNameL .~ LocationName (mkName "Altered Path"))
 
 instance HasModifiersFor env DimensionalGap where
   getModifiersFor = noModifiersFor

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ef0006a37d37876b4ebb06029c77d8ba29dc9c467f4f75e90ffa4789933b52c1
+-- hash: 5ff6d97de53202d2d699b8265c718e7716bf359abe75ad49563d90815cd42e04
 
 name:           arkham-core
 version:        0.0.0
@@ -482,10 +482,12 @@ library
       Arkham.Types.Location.Cards.ArkhamWoodsUnhallowedGround
       Arkham.Types.Location.Cards.ArkhamWoodsWoodenBridge
       Arkham.Types.Location.Cards.ArtGallery
+      Arkham.Types.Location.Cards.AscendingPath
       Arkham.Types.Location.Cards.ATearInThePath
       Arkham.Types.Location.Cards.Attic
       Arkham.Types.Location.Cards.AudubonPark
       Arkham.Types.Location.Cards.BackAlley
+      Arkham.Types.Location.Cards.BaseOfTheHill
       Arkham.Types.Location.Cards.Bathroom
       Arkham.Types.Location.Cards.Bedroom
       Arkham.Types.Location.Cards.BishopsBrook_202
@@ -576,6 +578,7 @@ library
       Arkham.Types.Location.Cards.ScienceBuilding
       Arkham.Types.Location.Cards.SecurityOffice_128
       Arkham.Types.Location.Cards.SecurityOffice_129
+      Arkham.Types.Location.Cards.SentinelPeak
       Arkham.Types.Location.Cards.SlaughteredWoods
       Arkham.Types.Location.Cards.SleepingCar
       Arkham.Types.Location.Cards.SouthsideHistoricalSociety

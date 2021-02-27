@@ -140,6 +140,7 @@ type InvestigatorRunner env
         , HasSet PreyId env (Prey, LocationId)
         , HasSet RevealedLocationId env ()
         , HasSet SanityDamageableAssetId env InvestigatorId
+        , HasSet SetAsideLocationId env ()
         , HasSet ScenarioLogKey env ()
         , HasSet StoryAssetId env InvestigatorId
         , HasSet StoryEnemyId env CardCode

@@ -24,19 +24,18 @@ newtype LostMemories = LostMemories LocationAttrs
 lostMemories :: LostMemories
 lostMemories =
   LostMemories
-    $ base
+    $ baseAttrs
+        "02292"
+        (Name "Lost Memories" Nothing)
+        EncounterSet.WhereDoomAwaits
+        2
+        (PerPlayer 1)
+        NoSymbol
+        []
+        [Dunwich, Woods, Altered]
     & (revealedSymbolL .~ T)
     & (revealedConnectedSymbolsL .~ setFromList [Square, Moon])
- where
-  base = baseAttrs
-    "02292"
-    (Name "Lost Memories" Nothing)
-    EncounterSet.WhereDoomAwaits
-    2
-    (PerPlayer 1)
-    NoSymbol
-    []
-    [Dunwich, Woods, Altered]
+    & (unrevealedNameL .~ LocationName (mkName "Altered Path"))
 
 instance HasModifiersFor env LostMemories where
   getModifiersFor = noModifiersFor

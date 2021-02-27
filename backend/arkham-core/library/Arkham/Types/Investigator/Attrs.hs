@@ -900,12 +900,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       , TryEvadeEnemy iid eid source skillType
       , AfterEvadeEnemy iid eid
       ]
-  MoveAction iid lid True | iid == investigatorId -> a <$ unshiftMessages
-    [ TakeAction iid (Just Action.Move) (ActionCost 1)
+  MoveAction iid lid cost True | iid == investigatorId -> a <$ unshiftMessages
+    [ TakeAction iid (Just Action.Move) cost
     , CheckAttackOfOpportunity iid False
-    , MoveAction iid lid False
+    , MoveAction iid lid cost False
     ]
-  MoveAction iid lid False | iid == investigatorId ->
+  MoveAction iid lid _cost False | iid == investigatorId ->
     a <$ unshiftMessages (resolve $ Move iid investigatorLocation lid)
   Move iid fromLocationId toLocationId | iid == investigatorId ->
     a <$ unshiftMessages

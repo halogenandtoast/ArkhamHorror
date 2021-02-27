@@ -24,19 +24,18 @@ newtype UprootedWoods = UprootedWoods LocationAttrs
 uprootedWoods :: UprootedWoods
 uprootedWoods =
   UprootedWoods
-    $ base
+    $ baseAttrs
+        "02291"
+        (Name "Uprooted Woods" Nothing)
+        EncounterSet.WhereDoomAwaits
+        2
+        (PerPlayer 1)
+        NoSymbol
+        []
+        [Dunwich, Woods, Altered]
     & (revealedSymbolL .~ Moon)
     & (revealedConnectedSymbolsL .~ setFromList [Square, T])
- where
-  base = baseAttrs
-    "02291"
-    (Name "Uprooted Woods" Nothing)
-    EncounterSet.WhereDoomAwaits
-    2
-    (PerPlayer 1)
-    NoSymbol
-    []
-    [Dunwich, Woods, Altered]
+    & (unrevealedNameL .~ LocationName (mkName "Altered Path"))
 
 instance HasModifiersFor env UprootedWoods where
   getModifiersFor = noModifiersFor

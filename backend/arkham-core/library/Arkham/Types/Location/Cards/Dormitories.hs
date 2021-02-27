@@ -5,19 +5,19 @@ import Arkham.Prelude
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Resolution
-import Arkham.Types.Window
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Game.Helpers
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype Dormitories = Dormitories LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -40,19 +40,18 @@ instance HasModifiersFor env Dormitories where
     pure $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []
 
-ability :: Int -> LocationAttrs -> Ability
-ability requiredClueCount attrs = mkAbility
+ability :: LocationAttrs -> Ability
+ability attrs = mkAbility
   (toSource attrs)
   1
   (FastAbility
-    (GroupClueCost requiredClueCount $ Just (LocationWithTitle "Dormitories"))
+    (GroupClueCost (PerPlayer 3) $ Just (LocationWithTitle "Dormitories"))
   )
 
 instance ActionRunner env => HasActions env Dormitories where
   getActions iid FastPlayerWindow (Dormitories attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid FastPlayerWindow attrs $ do
-      requiredClueCount <- getPlayerCountValue (PerPlayer 3)
-      pure [ActivateCardAbilityAction iid (ability requiredClueCount attrs)]
+    | locationRevealed = withBaseActions iid FastPlayerWindow attrs
+    $ pure [ActivateCardAbilityAction iid (ability attrs)]
   getActions iid window (Dormitories attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env Dormitories where

@@ -1,7 +1,6 @@
 module Arkham.Types.Scenario
   ( module Arkham.Types.Scenario
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -75,6 +74,9 @@ instance HasCount ScenarioDeckCount env Scenario where
 
 instance HasCount SetAsideCount env (Scenario, CardCode) where
   getCount = getCount . first toAttrs
+
+instance HasSet SetAsideLocationId env Scenario where
+  getSet = getSet . toAttrs
 
 newtype BaseScenario = BaseScenario ScenarioAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)

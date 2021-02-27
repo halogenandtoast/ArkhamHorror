@@ -83,7 +83,10 @@ instance AssetRunner env => RunMessage env Duke where
         else unshiftMessage
           (chooseOne iid
           $ dukeInvestigate attrs iid lid
-          : [ Run [MoveAction iid lid' False, dukeInvestigate attrs iid lid']
+          : [ Run
+                [ MoveAction iid lid' Free False
+                , dukeInvestigate attrs iid lid'
+                ]
             | lid' <- accessibleLocationIds
             ]
           )

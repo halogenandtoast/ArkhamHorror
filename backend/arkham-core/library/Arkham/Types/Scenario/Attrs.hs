@@ -46,6 +46,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioLog :: HashSet ScenarioLogKey
   , scenarioLocations :: HashMap LocationName [LocationId]
   , scenarioSetAsideCards :: [Card]
+  , scenarioSetAsideLocations :: HashSet LocationId
   }
   deriving stock (Show, Generic, Eq)
 
@@ -75,6 +76,9 @@ instance HasCount SetAsideCount env (ScenarioAttrs, CardCode) where
     ((== cardCode) . getCardCode)
     (attrs ^. setAsideCardsL)
 
+instance HasSet SetAsideLocationId env ScenarioAttrs where
+  getSet = pure . mapSet SetAsideLocationId . scenarioSetAsideLocations
+
 toTokenValue :: ScenarioAttrs -> Token -> Int -> Int -> TokenValue
 toTokenValue attrs t esVal heVal = TokenValue
   t
@@ -101,6 +105,7 @@ baseAttrs cardCode name agendaStack actStack' difficulty = ScenarioAttrs
   , scenarioLog = mempty
   , scenarioLocations = mempty
   , scenarioSetAsideCards = mempty
+  , scenarioSetAsideLocations = mempty
   }
 
 instance Entity ScenarioAttrs where
@@ -252,6 +257,7 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
               [WhenChosenRandomLocation randomLocationId]
             , ChosenRandomLocation target randomLocationId
             ]
+    PlaceLocation lid -> pure $ a & setAsideLocationsL %~ deleteSet lid
     RequestSetAsideCard target cardCode -> do
       let
         (before, rest) =

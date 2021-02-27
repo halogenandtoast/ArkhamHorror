@@ -8,6 +8,7 @@ import Arkham.Types.Asset.Uses
 import Arkham.Types.AssetId
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
+import Arkham.Types.GameValue
 import Arkham.Types.LocationMatcher
 import Arkham.Types.SkillType
 import Arkham.Types.Source
@@ -55,7 +56,7 @@ data Payment
 data Cost
   = ActionCost Int
   | ClueCost Int
-  | GroupClueCost Int (Maybe LocationMatcher)
+  | GroupClueCost (GameValue Int) (Maybe LocationMatcher)
   | ExhaustCost Target
   | Costs [Cost]
   | DamageCost Source Target Int

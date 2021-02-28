@@ -6,6 +6,7 @@ module Arkham.Types.Game
 
 import Arkham.Prelude
 
+import Arkham.Types.LocationSymbol
 import Control.Monad.Extra (anyM)
 import Arkham.Json
 import Arkham.EncounterCard
@@ -308,6 +309,9 @@ instance HasRecord (Game queue) where
 
 instance HasCard InvestigatorId (Game queue) where
   getCard iid cardId g = getCard () cardId (getInvestigator iid g)
+
+instance HasId LocationSymbol (Game queue) LocationId where
+  getId = getId <=< getLocation
 
 instance HasId LeadInvestigatorId (Game queue) () where
   getId _ = LeadInvestigatorId <$> view leadInvestigatorIdL
@@ -943,6 +947,9 @@ instance HasCount RemainingSanity (Game queue) InvestigatorId where
 
 instance HasSet LocationId (Game queue) () where
   getSet _ = keysSet <$> view locationsL
+
+instance HasSet LocationId (Game queue) (HashSet LocationSymbol) where
+  getSet locationSymbols = keysSet . filterMap ((`member` locationSymbols) .  toLocationSymbol) <$> view locationsL
 
 instance HasSet LocationId (Game queue) LocationMatcher where
   getSet = (setFromList . map toId <$>) . getLocationsMatching

@@ -27,6 +27,9 @@ import Arkham.Types.TreacheryId
 createLocation :: IsCard a => a -> Location
 createLocation a = lookupLocation (LocationId $ getCardCode a)
 
+toLocationSymbol :: Location -> LocationSymbol
+toLocationSymbol = locationSymbol . toAttrs
+
 data Location
   = Study' Study
   | Hallway' Hallway
@@ -273,6 +276,9 @@ instance HasSet ConnectedLocationId env Location where
 
 instance HasId LocationId env Location where
   getId = pure . toId
+
+instance HasId LocationSymbol env Location where
+  getId = getId . toAttrs
 
 instance HasId (Maybe LocationId) env (Direction, Location) where
   getId (dir, location) = getId (dir, toAttrs location)

@@ -119,6 +119,9 @@ instance HasName env LocationAttrs where
 instance HasId (Maybe LocationId) env (Direction, LocationAttrs) where
   getId (dir, LocationAttrs {..}) = pure $ lookup dir locationDirections
 
+instance HasId LocationSymbol env LocationAttrs where
+  getId = pure . locationSymbol
+
 instance HasList UnderneathCard env LocationAttrs where
   getList = pure . map UnderneathCard . locationCardsUnderneath
 
@@ -386,20 +389,24 @@ instance LocationRunner env => RunMessage env LocationAttrs where
     AttachAsset aid (LocationTarget lid) | lid == locationId ->
       pure $ a & assetsL %~ insertSet aid
     AttachAsset aid _ -> pure $ a & assetsL %~ deleteSet aid
+    AddConnection lid _ | lid == locationId -> do
+      connectedLocations <- getSetList
+        (if locationRevealed
+          then locationRevealedConnectedSymbols
+          else locationConnectedSymbols
+        )
+      unshiftMessages $ map (AddedConnection locationId) connectedLocations
+      pure $ a & connectedLocationsL %~ union (setFromList connectedLocations)
     AddConnection lid symbol' | lid /= locationId -> do
-      -- Since connections can be one directional we need to check both cases
       let
         symbols = if locationRevealed
           then locationRevealedConnectedSymbols
           else locationConnectedSymbols
       if symbol' `elem` symbols
         then do
-          unshiftMessages
-            [ AddConnectionBack locationId locationSymbol
-            , AddedConnection locationId lid
-            ]
+          unshiftMessage (AddedConnection locationId lid)
           pure $ a & connectedLocationsL %~ insertSet lid
-        else a <$ unshiftMessages [AddConnectionBack locationId locationSymbol]
+        else pure a
     AddConnectionBack lid symbol' | lid /= locationId -> do
       let
         symbols = if locationRevealed

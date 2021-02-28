@@ -11,6 +11,7 @@ import Arkham.Json
 import Arkham.Types.ActId
 import Arkham.Types.Classes
 import Arkham.Types.Exception
+import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
@@ -117,31 +118,38 @@ type ActAttrsRunner env
     , HasSet InvestigatorId env LocationId
     )
 
+advanceActSideA
+  :: ( MonadReader env m
+     , HasId LeadInvestigatorId env ()
+     , HasCount PlayerCount env ()
+     )
+  => [InvestigatorId]
+  -> GameValue Int
+  -> ActAttrs
+  -> m [Message]
+advanceActSideA investigatorIds requiredClues attrs = do
+  leadInvestigatorId <- getLeadInvestigatorId
+  totalRequiredClues <- getPlayerCountValue requiredClues
+  pure
+    [ SpendClues totalRequiredClues investigatorIds
+    , CheckWindow leadInvestigatorId [WhenActAdvance (toId attrs)]
+    , chooseOne leadInvestigatorId [AdvanceAct (toId attrs) (toSource attrs)]
+    ]
+
 instance ActAttrsRunner env => RunMessage env ActAttrs where
   runMessage msg a@ActAttrs {..} = case msg of
     AdvanceAct aid _ | aid == actId && onSide A a -> do
-      leadInvestigatorId <- getLeadInvestigatorId
       case actRequiredClues of
         Just (RequiredClues requiredClues Nothing) -> do
-          totalRequiredClues <- getPlayerCountValue requiredClues
           investigatorIds <- getInvestigatorIds
-          unshiftMessages
-            [ SpendClues totalRequiredClues investigatorIds
-            , CheckWindow leadInvestigatorId [WhenActAdvance actId]
-            , chooseOne leadInvestigatorId [AdvanceAct aid (toSource a)]
-            ]
+          unshiftMessages =<< advanceActSideA investigatorIds requiredClues a
         Just (RequiredClues requiredClues (Just locationMatcher)) -> do
           mLocationId <- getId @(Maybe LocationId) locationMatcher
           case mLocationId of
             Just lid -> do
               investigatorIds <- getSetList @InvestigatorId lid
-              totalRequiredClues <- getPlayerCountValue requiredClues
               unshiftMessages
-                (SpendClues totalRequiredClues investigatorIds
-                : [ CheckWindow leadInvestigatorId [WhenActAdvance actId]
-                  , chooseOne leadInvestigatorId [AdvanceAct aid (toSource a)]
-                  ]
-                )
+                =<< advanceActSideA investigatorIds requiredClues a
             Nothing ->
               throwIO $ InvalidState
                 "Should not have advanced if locaiton does not exists"

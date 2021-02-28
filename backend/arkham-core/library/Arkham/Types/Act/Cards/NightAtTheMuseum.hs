@@ -5,19 +5,19 @@ module Arkham.Types.Act.Cards.NightAtTheMuseum
 
 import Arkham.Prelude
 
+import Arkham.Types.Act.Attrs
+import Arkham.Types.Act.Helpers
+import Arkham.Types.Act.Runner
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Act.Attrs
-import Arkham.Types.Act.Helpers
-import Arkham.Types.Act.Runner
-import Arkham.Types.Card.EncounterCardMatcher
 
 newtype NightAtTheMuseum = NightAtTheMuseum ActAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 nightAtTheMuseum :: NightAtTheMuseum
 nightAtTheMuseum =

@@ -4,6 +4,7 @@ module Arkham.Types.Scenario
 
 import Arkham.Prelude
 
+import Arkham.Types.Name
 import Arkham.Types.ActId
 import Arkham.Types.AgendaId
 import Arkham.Types.Card
@@ -77,6 +78,24 @@ instance HasCount SetAsideCount env (Scenario, CardCode) where
 
 instance HasSet SetAsideLocationId env Scenario where
   getSet = getSet . toAttrs
+
+instance HasName Scenario SetAsideLocationId where
+  getName saLocationId = do
+    locations <- asks (scenarioLocations . toAttrs)
+    let
+      locations' :: HashMap LocationId LocationName =
+        mapFromList
+          . concatMap (\(a, bs) -> map (, a) bs)
+          . mapToList
+          $ locations
+    case lookup (unSetAsideLocationId saLocationId) locations' of
+      Nothing ->
+        error
+          $ "could not lookup location name"
+          <> show saLocationId
+          <> ": "
+          <> show locations'
+      Just name -> pure $ unLocationName name
 
 newtype BaseScenario = BaseScenario ScenarioAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)

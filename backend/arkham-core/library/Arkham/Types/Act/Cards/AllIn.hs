@@ -1,12 +1,15 @@
 module Arkham.Types.Act.Cards.AllIn
   ( AllIn(..)
   , allIn
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Act.Attrs
+import Arkham.Types.Act.Helpers
+import Arkham.Types.Act.Runner
+import Arkham.Types.Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -21,13 +24,9 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Act.Attrs
-import Arkham.Types.Act.Helpers
-import Arkham.Types.Act.Runner
-import Arkham.Types.Action
 
 newtype AllIn = AllIn ActAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 allIn :: AllIn
 allIn = AllIn $ baseAttrs "02068" "All In" (Act 3 A) Nothing

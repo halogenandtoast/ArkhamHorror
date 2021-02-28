@@ -29,19 +29,18 @@ newtype DestroyedPath = DestroyedPath LocationAttrs
 destroyedPath :: DestroyedPath
 destroyedPath =
   DestroyedPath
-    $ base
+    $ baseAttrs
+        "02287"
+        (Name "Destroyed Path" Nothing)
+        EncounterSet.WhereDoomAwaits
+        3
+        (Static 0)
+        NoSymbol
+        []
+        [Dunwich, Woods]
     & (revealedSymbolL .~ Squiggle)
     & (revealedConnectedSymbolsL .~ setFromList [Triangle, Equals])
- where
-  base = baseAttrs
-    "02287"
-    (Name "Destroyed Path" Nothing)
-    EncounterSet.WhereDoomAwaits
-    3
-    (Static 0)
-    NoSymbol
-    []
-    [Dunwich, Woods]
+    & (unrevealedNameL .~ LocationName (mkName "Diverging Path"))
 
 instance HasModifiersFor env DestroyedPath where
   getModifiersFor = noModifiersFor

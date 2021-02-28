@@ -15,7 +15,7 @@ import Arkham.Types.Message
 import Arkham.Types.ScenarioId
 
 newtype CampusSafety = CampusSafety ActAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 campusSafety :: CampusSafety
 campusSafety =

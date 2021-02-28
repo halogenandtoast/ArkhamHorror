@@ -72,12 +72,18 @@ instance LocationRunner env => RunMessage env BaseOfTheHill where
         )
     SuccessfulInvestigation _ _ (AbilitySource source 1)
       | isSource attrs source -> do
-        locations <- map unSetAsideLocationId <$> getSetList ()
+        locations <- getSetList @SetAsideLocationId ()
         alteredPaths <- filterM
           (fmap (== mkName "Diverging Path") . getName)
           locations
         case nonEmpty alteredPaths of
-          Just ne -> l <$ (unshiftMessage . PlaceLocation =<< sample ne)
+          Just ne ->
+            l
+              <$ (unshiftMessage
+                 . PlaceLocation
+                 . unSetAsideLocationId
+                 =<< sample ne
+                 )
           Nothing -> pure l
     AddConnection lid _ | toId attrs /= lid -> do
       isDivergingPath <- (== mkName "Diverging Path") <$> getName lid

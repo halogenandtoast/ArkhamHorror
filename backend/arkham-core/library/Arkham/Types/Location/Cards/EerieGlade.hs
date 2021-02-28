@@ -24,19 +24,18 @@ newtype EerieGlade = EerieGlade LocationAttrs
 eerieGlade :: EerieGlade
 eerieGlade =
   EerieGlade
-    $ base
+    $ baseAttrs
+        "02286"
+        (Name "Eerie Glade" Nothing)
+        EncounterSet.WhereDoomAwaits
+        4
+        (PerPlayer 1)
+        NoSymbol
+        []
+        [Dunwich, Woods]
     & (revealedSymbolL .~ Hourglass)
     & (revealedConnectedSymbolsL .~ setFromList [Triangle, Plus])
- where
-  base = baseAttrs
-    "02286"
-    (Name "Eerie Glade" Nothing)
-    EncounterSet.WhereDoomAwaits
-    4
-    (PerPlayer 1)
-    NoSymbol
-    []
-    [Dunwich, Woods]
+    & (unrevealedNameL .~ LocationName (mkName "Diverging Path"))
 
 instance HasModifiersFor env EerieGlade where
   getModifiersFor = noModifiersFor

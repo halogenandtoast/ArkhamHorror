@@ -118,10 +118,12 @@ data Location
   | WhateleyRuins_251' WhateleyRuins_251
   | DevilsHopYard_252' DevilsHopYard_252
   | DevilsHopYard_253' DevilsHopYard_253
+  | BaseOfTheHill' BaseOfTheHill
   | AscendingPath' AscendingPath
   | SentinelPeak' SentinelPeak
   | SlaughteredWoods' SlaughteredWoods
   | EerieGlade' EerieGlade
+  | DestroyedPath' DestroyedPath
   | FrozenSpring' FrozenSpring
   | DimensionalGap' DimensionalGap
   | ATearInThePath' ATearInThePath
@@ -276,7 +278,10 @@ instance HasId (Maybe LocationId) env (Direction, Location) where
   getId (dir, location) = getId (dir, toAttrs location)
 
 getLocationName :: Location -> LocationName
-getLocationName = locationName . toAttrs
+getLocationName l = if locationRevealed attrs
+  then locationName attrs
+  else locationUnrevealedName attrs
+  where attrs = toAttrs l
 
 lookupLocation :: LocationId -> Location
 lookupLocation lid =
@@ -375,10 +380,12 @@ allLocations = mapFrom
   , WhateleyRuins_251' whateleyRuins_251
   , DevilsHopYard_252' devilsHopYard_252
   , DevilsHopYard_253' devilsHopYard_253
+  , BaseOfTheHill' baseOfTheHill
   , AscendingPath' ascendingPath
   , SentinelPeak' sentinelPeak
   , SlaughteredWoods' slaugteredWoods
   , EerieGlade' eerieGlade
+  , DestroyedPath' destroyedPath
   , FrozenSpring' frozenSpring
   , DimensionalGap' dimensionalGap
   , ATearInThePath' aTearInThePath

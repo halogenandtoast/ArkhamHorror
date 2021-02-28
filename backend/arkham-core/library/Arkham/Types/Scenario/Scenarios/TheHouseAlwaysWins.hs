@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.TheHouseAlwaysWins
   ( TheHouseAlwaysWins(..)
   , theHouseAlwaysWins
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -86,7 +85,7 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
         , PlaceLocation "02073"
         , RevealLocation Nothing "02070"
         , MoveAllTo "02070"
-        , CreateEnemyAt cloverClubPitBoss "02071"
+        , CreateEnemyAt cloverClubPitBoss "02071" Nothing
         , AskMap
         . mapFromList
         $ [ ( iid

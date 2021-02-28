@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.BeginnersLuck
   ( BeginnersLuck(..)
   , beginnersLuck
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -23,7 +22,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype BeginnersLuck = BeginnersLuck ActAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 beginnersLuck :: BeginnersLuck
 beginnersLuck = BeginnersLuck $ baseAttrs

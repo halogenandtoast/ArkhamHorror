@@ -20,7 +20,7 @@ import Arkham.Types.ScenarioId
 import Arkham.Types.Trait
 
 newtype SkinGame = SkinGame ActAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 skinGame :: SkinGame
 skinGame = SkinGame $ baseAttrs

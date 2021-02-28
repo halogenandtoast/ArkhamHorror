@@ -2,17 +2,17 @@ module Arkham.Types.Act.Cards.IntoTheDarkness where
 
 import Arkham.Prelude
 
-import Arkham.Types.Card
-import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.Source
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
+import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCardMatcher
+import Arkham.Types.Classes
+import Arkham.Types.Message
+import Arkham.Types.Source
 
 newtype IntoTheDarkness = IntoTheDarkness ActAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 intoTheDarkness :: IntoTheDarkness
 intoTheDarkness =

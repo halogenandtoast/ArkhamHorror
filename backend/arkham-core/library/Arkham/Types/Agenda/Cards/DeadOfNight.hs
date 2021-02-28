@@ -45,7 +45,7 @@ instance AgendaRunner env => RunMessage env DeadOfNight where
         <> [ MoveToward (EnemyTarget eid) (LocationWithTitle "Dormitories")
            | eid <- maybeToList mExperimentId
            ]
-        <> [ CreateEnemyAt theExperiment scienceBuildingId
+        <> [ CreateEnemyAt theExperiment scienceBuildingId Nothing
            | isNothing mExperimentId
            ]
         <> [NextAgenda agendaId "02044"]

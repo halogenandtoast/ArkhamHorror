@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.SaracenicScript
   ( SaracenicScript(..)
   , saracenicScript
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -19,7 +18,7 @@ import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 
 newtype SaracenicScript = SaracenicScript ActAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 saracenicScript :: SaracenicScript
 saracenicScript = SaracenicScript $ baseAttrs

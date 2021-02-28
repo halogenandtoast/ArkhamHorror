@@ -143,7 +143,7 @@ instance ScenarioRunner env => RunMessage env ReturnToTheDevourerBelow where
         ReturnToTheDevourerBelow . TheDevourerBelow <$> runMessage
           msg
           (attrs & locationsL .~ locations')
-      CreateEnemyAt card "01156" | getCardCode card == "01157" -> do
+      CreateEnemyAt card "01156" _ | getCardCode card == "01157" -> do
         vaultOfEarthlyDemise <- EncounterCard <$> genEncounterCard "50032b"
         s <$ unshiftMessage
           (AttachStoryTreacheryTo vaultOfEarthlyDemise (CardCodeTarget "00157"))

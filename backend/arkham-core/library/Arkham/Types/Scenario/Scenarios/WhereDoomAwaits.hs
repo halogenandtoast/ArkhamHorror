@@ -208,8 +208,10 @@ instance
       let
         inPlayLocations = ["02282", "02283", "02284"]
         locations = inPlayLocations <> divergingPaths <> alteredPaths
-        locations' = mapFromList $ map
-          (second pure . toFst (getLocationName . lookupLocation))
+        locations' = unionsWith (<>) $ map
+          (uncurry singletonMap . second pure . toFst
+            (getLocationName . lookupLocation)
+          )
           locations
         token = case scenarioDifficulty attrs of
           Easy -> MinusThree
@@ -233,7 +235,11 @@ instance
         <> silasMsgs
         <> [RevealLocation Nothing "02282", MoveAllTo "02282"]
 
-      WhereDoomAwaits <$> runMessage msg (attrs & locationsL .~ locations')
+      WhereDoomAwaits <$> runMessage
+        msg
+        (attrs & locationsL .~ locations' & setAsideLocationsL .~ setFromList
+          (divergingPaths <> alteredPaths)
+        )
     ResolveToken drawnToken Cultist iid -> s <$ unshiftMessages
       [ CreateWindowModifierEffect
         EffectSkillTestWindow

@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.UncoveringTheConspiracy
   ( UncoveringTheConspiracy(..)
   , uncoveringTheConspiracy
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -21,7 +20,7 @@ import Arkham.Types.Window
 import qualified Data.HashSet as HashSet
 
 newtype UncoveringTheConspiracy = UncoveringTheConspiracy ActAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 uncoveringTheConspiracy :: UncoveringTheConspiracy
 uncoveringTheConspiracy = UncoveringTheConspiracy

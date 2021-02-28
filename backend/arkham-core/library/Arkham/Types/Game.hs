@@ -344,6 +344,13 @@ instance HasId (Maybe OwnerId) (Game queue) AssetId where
 instance HasName (Game queue) LocationId where
   getName = getName <=< getLocation
 
+instance HasName (Game queue) SetAsideLocationId where
+  getName saLocationId = do
+    mScenario <- modeScenario <$> view modeL
+    case mScenario of
+      Just scenario -> runReaderT (getName saLocationId) scenario
+      Nothing -> error "missing scenario"
+
 instance HasName (Game queue) AssetId where
   getName = getName <=< getAsset
 
@@ -673,6 +680,8 @@ instance HasModifiersFor (Game queue) () where
         <$> traverse (getModifiersFor source target) (g ^. assetsL . to toList)
       , concat
         <$> traverse (getModifiersFor source target) (g ^. agendasL . to toList)
+      , concat
+        <$> traverse (getModifiersFor source target) (g ^. actsL . to toList)
       , concat <$> traverse
         (getModifiersFor source target)
         (g ^. locationsL . to toList)
@@ -2290,16 +2299,16 @@ runGameMessage msg g = case msg of
     pure $ g & enemiesL . at enemyId ?~ enemy
   CreateEnemyAtLocationMatching cardCode locationMatcher -> do
     lid <- fromJustNote "missing location" <$> getId locationMatcher
-    g <$ unshiftMessage (CreateEnemyAt cardCode lid)
-  CreateEnemyAt card lid -> do
+    g <$ unshiftMessage (CreateEnemyAt cardCode lid Nothing)
+  CreateEnemyAt card lid mtarget -> do
     let
       enemy = createEnemy card
       enemyId = toId enemy
-    unshiftMessages
+    unshiftMessages $
       [ Will (EnemySpawn Nothing lid enemyId)
       , When (EnemySpawn Nothing lid enemyId)
       , EnemySpawn Nothing lid enemyId
-      ]
+      ] <> [CreatedEnemyAt enemyId lid target | target <- maybeToList mtarget]
     pure $ g & enemiesL . at enemyId ?~ enemy
   CreateEnemyEngagedWithPrey card -> do
     let

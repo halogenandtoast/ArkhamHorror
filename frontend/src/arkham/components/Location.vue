@@ -83,7 +83,7 @@
 import { defineComponent, computed } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
-import { MessageType } from '@/arkham/types/Message';
+import { Message, MessageType } from '@/arkham/types/Message';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
@@ -170,7 +170,25 @@ export default defineComponent({
         .findIndex((c) => c.tag === MessageType.MOVE && c.contents[1] === id.value);
     })
 
+    function findForcedAbility(c: Message): boolean {
+      switch (c.tag) {
+        case MessageType.ACTIVATE_ABILITY:
+          return c.contents[1].source.contents === id.value
+            && (c.contents[1].type.tag === 'ForcedAbility')
+        case MessageType.RUN:
+          return c.contents.some((c1: Message) => findForcedAbility(c1));
+        default:
+          return false;
+      }
+    }
+
+    const forcedAbility = computed(() => choices.value.findIndex(findForcedAbility));
+
     const cardAction = computed(() => {
+      if (forcedAbility.value !== -1) {
+        return forcedAbility.value;
+      }
+
       if (attachTreacheryToLocationAction.value !== -1) {
         return attachTreacheryToLocationAction.value;
       }

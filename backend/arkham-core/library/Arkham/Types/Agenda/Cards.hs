@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards
 import Arkham.Types.Agenda.Cards.ACreatureOfTheBayou as X
 import Arkham.Types.Agenda.Cards.ATearInReality as X
 import Arkham.Types.Agenda.Cards.BidingItsTime as X
+import Arkham.Types.Agenda.Cards.CallingForthTheOldOnes as X
 import Arkham.Types.Agenda.Cards.ChaosInTheCloverClub as X
 import Arkham.Types.Agenda.Cards.DeadOfNight as X
 import Arkham.Types.Agenda.Cards.DrawnIn as X

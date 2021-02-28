@@ -52,6 +52,7 @@ allAgendas = mapFrom
   , BidingItsTime' bidingItsTime
   , HorrorsUnleashed' horrorsUnleashed
   , CallingForthTheOldOnes' callingForthTheOldOnes
+  , BeckoningForPower' beckoningForPower
   , ReturnToPredatorOrPrey' returnToPredatorOrPrey
   , ACreatureOfTheBayou' aCreatureOfTheBayou
   , TheRougarouFeeds' theRougarouFeeds
@@ -97,6 +98,7 @@ data Agenda
   | BidingItsTime' BidingItsTime
   | HorrorsUnleashed' HorrorsUnleashed
   | CallingForthTheOldOnes' CallingForthTheOldOnes
+  | BeckoningForPower' BeckoningForPower
   | ReturnToPredatorOrPrey' ReturnToPredatorOrPrey
   | ACreatureOfTheBayou' ACreatureOfTheBayou
   | TheRougarouFeeds' TheRougarouFeeds

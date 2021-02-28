@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 201f86c2b4773b3a0020d6272e595270dc0d59add7a75604cec82f33c0766823
+-- hash: 1c0166ae62e1e9d8ca87f5b37c4af2a3f63e498a59bb337eb64c11f22af02d98
 
 name:           arkham-core
 version:        0.0.0
@@ -61,6 +61,7 @@ library
       Arkham.Types.Agenda.Cards
       Arkham.Types.Agenda.Cards.ACreatureOfTheBayou
       Arkham.Types.Agenda.Cards.ATearInReality
+      Arkham.Types.Agenda.Cards.BeckoningForPower
       Arkham.Types.Agenda.Cards.BidingItsTime
       Arkham.Types.Agenda.Cards.CallingForthTheOldOnes
       Arkham.Types.Agenda.Cards.ChaosInTheCloverClub

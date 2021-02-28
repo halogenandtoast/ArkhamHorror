@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
+import Arkham.Types.ActId
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
@@ -32,6 +33,13 @@ instance ActionRunner env => HasActions env ThePathToTheHill where
 
 instance ActRunner env => RunMessage env ThePathToTheHill where
   runMessage msg a@(ThePathToTheHill attrs@ActAttrs {..}) = case msg of
+    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
+      investigatorIds <- getInvestigatorIds
+      unshiftMessages =<< advanceActSideA investigatorIds (PerPlayer 2) attrs
+      pure
+        . ThePathToTheHill
+        $ attrs
+        & (sequenceL .~ Act (unActStep $ actStep actSequence) B)
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       locationIds <- getSetList ()
       ascendingPathId <- fromJustNote "must exist"

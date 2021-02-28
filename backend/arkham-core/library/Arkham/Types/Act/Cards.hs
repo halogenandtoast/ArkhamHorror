@@ -6,6 +6,7 @@ import Arkham.Types.Act.Cards.AfterHours as X
 import Arkham.Types.Act.Cards.AllIn as X
 import Arkham.Types.Act.Cards.AscendingTheHillV1 as X
 import Arkham.Types.Act.Cards.AscendingTheHillV2 as X
+import Arkham.Types.Act.Cards.AscendingTheHillV3 as X
 import Arkham.Types.Act.Cards.BeginnersLuck as X
 import Arkham.Types.Act.Cards.BreakingAndEntering as X
 import Arkham.Types.Act.Cards.CampusSafety as X

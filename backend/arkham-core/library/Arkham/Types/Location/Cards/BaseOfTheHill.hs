@@ -50,7 +50,7 @@ ability attrs =
     & (abilityLimitL .~ PlayerLimit PerRound 1)
 
 instance ActionRunner env => HasActions env BaseOfTheHill where
-  getActions iid NonFast (BaseOfTheHill attrs) =
+  getActions iid NonFast (BaseOfTheHill attrs) | iid `on` attrs =
     withBaseActions iid NonFast attrs
       $ pure
       $ [ ActivateCardAbilityAction iid (ability attrs)

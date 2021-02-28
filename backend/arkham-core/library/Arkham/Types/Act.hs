@@ -40,6 +40,7 @@ data Act
   | ThePathToTheHill' ThePathToTheHill
   | AscendingTheHillV1' AscendingTheHillV1
   | AscendingTheHillV2' AscendingTheHillV2
+  | AscendingTheHillV3' AscendingTheHillV3
   | MysteriousGateway' MysteriousGateway
   | FindingLadyEsprit' FindingLadyEsprit
   | HuntingTheRougarou' HuntingTheRougarou
@@ -101,6 +102,7 @@ allActs = mapFrom
   , ThePathToTheHill' thePathToTheHill
   , AscendingTheHillV1' ascendingTheHillV1
   , AscendingTheHillV2' ascendingTheHillV2
+  , AscendingTheHillV3' ascendingTheHillV3
   , MysteriousGateway' mysteriousGateway
   , FindingLadyEsprit' findingLadyEsprit
   , HuntingTheRougarou' huntingTheRougarou

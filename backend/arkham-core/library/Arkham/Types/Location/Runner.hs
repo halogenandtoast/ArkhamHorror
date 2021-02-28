@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.ActId
+import Arkham.Types.Asset.Uses
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
@@ -13,12 +14,10 @@ import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
+import Arkham.Types.LocationSymbol
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Source
-
-
-import Arkham.Types.Asset.Uses
 import Arkham.Types.Trait
 
 type LocationRunner env
@@ -54,6 +53,7 @@ type LocationRunner env
     , HasSet InvestigatorId env ()
     , HasSet LocationId env ()
     , HasSet LocationId env LocationMatcher
+    , HasSet LocationId env (HashSet LocationSymbol)
     , HasSet LocationId env [Trait]
     , HasSet SetAsideLocationId env ()
     , HasSet Trait env Source

@@ -40,7 +40,10 @@ instance HasModifiersFor env FrozenSpring where
   getModifiersFor = noModifiersFor
 
 forcedAbility :: LocationAttrs -> Ability
-forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
+forcedAbility a =
+  mkAbility (toSource a) 1 ForcedAbility & abilityLimitL .~ PlayerLimit
+    PerTestOrAbility
+    1
 
 instance ActionRunner env => HasActions env FrozenSpring where
   getActions iid (AfterRevealLocation You) (FrozenSpring attrs)

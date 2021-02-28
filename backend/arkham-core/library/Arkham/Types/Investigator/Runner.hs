@@ -18,6 +18,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
+import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Prey
@@ -137,6 +138,7 @@ type InvestigatorRunner env
         , HasSet Keyword env EnemyId
         , HasSet LocationId env LocationMatcher
         , HasSet LocationId env TreacheryCardCode
+        , HasSet LocationId env (HashSet LocationSymbol)
         , HasSet LocationId env [Trait]
         , HasSet LocationId env ()
         , HasSet PreyId env Prey

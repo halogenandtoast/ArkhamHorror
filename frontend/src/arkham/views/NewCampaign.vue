@@ -103,6 +103,10 @@ const scenarios = [
     name: 'Undimensioned and Unseen',
   },
   {
+    id: '02274',
+    name: 'Where Doom Awaits',
+  },
+  {
     id: '81001',
     name: 'Curse of the Rougarou',
   },

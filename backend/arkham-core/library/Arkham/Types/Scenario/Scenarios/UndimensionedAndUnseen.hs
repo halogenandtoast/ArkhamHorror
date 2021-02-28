@@ -217,17 +217,17 @@ instance
       (msgs, setAsideCount) <- case sacrificedToYogSothoth of
         2 -> do
           broodOfYogSothoth <- EncounterCard <$> genEncounterCard "02255"
-          pure ([CreateEnemyAt broodOfYogSothoth coldSpringGlen], 3)
+          pure ([CreateEnemyAt broodOfYogSothoth coldSpringGlen Nothing], 3)
         3 -> do
           broodOfYogSothoth <- EncounterCard <$> genEncounterCard "02255"
-          pure ([CreateEnemyAt broodOfYogSothoth coldSpringGlen], 2)
+          pure ([CreateEnemyAt broodOfYogSothoth coldSpringGlen Nothing], 2)
         x -> if x <= 2
           then do
             broodOfYogSothoth1 <- EncounterCard <$> genEncounterCard "02255"
             broodOfYogSothoth2 <- EncounterCard <$> genEncounterCard "02255"
             pure
-              ( [ CreateEnemyAt broodOfYogSothoth1 coldSpringGlen
-                , CreateEnemyAt broodOfYogSothoth2 blastedHeath
+              ( [ CreateEnemyAt broodOfYogSothoth1 coldSpringGlen Nothing
+                , CreateEnemyAt broodOfYogSothoth2 blastedHeath Nothing
                 ]
               , 3
               )
@@ -373,7 +373,7 @@ instance
       case scenarioSetAsideCards attrs of
         [] -> error "should not call when empty"
         (x : xs) -> do
-          unshiftMessage (CreateEnemyAt x lid)
+          unshiftMessage (CreateEnemyAt x lid Nothing)
           pure . UndimensionedAndUnseen $ attrs & setAsideCardsL .~ xs
     ChosenRandomLocation target randomLocationId | isTarget attrs target -> do
       leadInvestigatorId <- getLeadInvestigatorId

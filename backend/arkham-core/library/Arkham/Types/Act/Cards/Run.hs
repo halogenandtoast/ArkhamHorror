@@ -1,21 +1,20 @@
 module Arkham.Types.Act.Cards.Run
   ( Run(..)
   , run
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
+import Arkham.Types.Act.Attrs
+import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Message hiding (Run)
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Act.Attrs
-import Arkham.Types.Act.Runner
 
 newtype Run = Run ActAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 run :: Run
 run = Run $ baseAttrs "02165" "Run!" (Act 1 A) Nothing

@@ -2,15 +2,15 @@ module Arkham.Types.Act.Cards.WhatHaveYouDone where
 
 import Arkham.Prelude
 
-import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.Resolution
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
+import Arkham.Types.Classes
+import Arkham.Types.Message
+import Arkham.Types.Resolution
 
 newtype WhatHaveYouDone = WhatHaveYouDone ActAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 whatHaveYouDone :: WhatHaveYouDone
 whatHaveYouDone =

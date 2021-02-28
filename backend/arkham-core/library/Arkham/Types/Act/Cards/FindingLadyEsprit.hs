@@ -23,7 +23,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype FindingLadyEsprit = FindingLadyEsprit ActAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 findingLadyEsprit :: FindingLadyEsprit
 findingLadyEsprit =
@@ -89,7 +89,9 @@ instance ActRunner env => RunMessage env FindingLadyEsprit where
       a <$ unshiftMessages
         ([ chooseOne
              leadInvestigatorId
-             [ CreateEnemyAt theRougarou lid | lid <- rougarouSpawnLocations ]
+             [ CreateEnemyAt theRougarou lid Nothing
+             | lid <- rougarouSpawnLocations
+             ]
          ]
         <> [ ShuffleEncounterDiscardBackIn
            , ShuffleIntoEncounterDeck curseOfTheRougarouSet

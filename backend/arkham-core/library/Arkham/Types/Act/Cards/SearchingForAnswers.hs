@@ -16,7 +16,7 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype SearchingForAnswers = SearchingForAnswers ActAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 searchingForAnswers :: SearchingForAnswers
 searchingForAnswers = SearchingForAnswers
@@ -38,7 +38,7 @@ instance ActRunner env => RunMessage env SearchingForAnswers where
       a <$ unshiftMessages
         ([ RevealLocation Nothing lid | lid <- unrevealedLocationIds ]
         <> [ MoveAllCluesTo (LocationTarget hiddenChamber)
-           , CreateEnemyAt silasBishop hiddenChamber
+           , CreateEnemyAt silasBishop hiddenChamber Nothing
            , NextAct aid "02200"
            ]
         )

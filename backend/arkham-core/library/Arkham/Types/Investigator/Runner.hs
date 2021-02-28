@@ -79,7 +79,10 @@ type InvestigatorRunner env
       , HasList UsedAbility env ()
       )
     , HasModifiersFor env ()
-    , (HasName env AssetId, HasName env LocationId)
+    , ( HasName env AssetId
+      , HasName env LocationId
+      , HasName env SetAsideLocationId
+      )
     , HasPhaseHistory env
     , HasPlayerCard env AssetId
     , HasQueue env

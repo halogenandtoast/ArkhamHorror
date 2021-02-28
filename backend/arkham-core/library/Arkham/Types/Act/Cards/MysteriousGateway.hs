@@ -2,6 +2,9 @@ module Arkham.Types.Act.Cards.MysteriousGateway where
 
 import Arkham.Prelude
 
+import Arkham.Types.Act.Attrs
+import Arkham.Types.Act.Helpers
+import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
@@ -11,12 +14,9 @@ import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Act.Attrs
-import Arkham.Types.Act.Helpers
-import Arkham.Types.Act.Runner
 
 newtype MysteriousGateway = MysteriousGateway ActAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 mysteriousGateway :: MysteriousGateway
 mysteriousGateway = MysteriousGateway $ baseAttrs

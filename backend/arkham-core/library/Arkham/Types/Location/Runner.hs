@@ -41,6 +41,7 @@ type LocationRunner env
     , HasList UsedAbility env ()
     , HasModifiersFor env ()
     , HasName env LocationId
+    , HasName env SetAsideLocationId
     , HasSet ActId env ()
     , HasSet AssetId env (InvestigatorId, UseType)
     , HasSet AssetId env InvestigatorId

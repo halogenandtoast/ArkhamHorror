@@ -188,7 +188,8 @@ data Message
   | CompleteObjective
   | Continue Text
   | CreateEffect CardCode (Maybe (EffectMetadata Message)) Source Target
-  | CreateEnemyAt Card LocationId
+  | CreateEnemyAt Card LocationId (Maybe Target)
+  | CreatedEnemyAt EnemyId LocationId Target
   | CreateEnemyAtLocationMatching Card LocationMatcher
   | CreateEnemyEngagedWithPrey Card
   | CreateEnemyRequest Source Card
@@ -241,6 +242,7 @@ data Message
   | EnemyAttacks [Message]
   | EnemyCheckEngagement EnemyId
   | EnemyDamage EnemyId InvestigatorId Source Int
+  | EnemySetDamage EnemyId Source Int
   | EnemyDefeated EnemyId InvestigatorId LocationId CardCode Source [Trait]
   | EnemyEngageInvestigator EnemyId InvestigatorId
   | EnemyEvaded InvestigatorId EnemyId

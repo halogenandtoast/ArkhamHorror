@@ -23,19 +23,18 @@ newtype FrozenSpring = FrozenSpring LocationAttrs
 frozenSpring :: FrozenSpring
 frozenSpring =
   FrozenSpring
-    $ base
+    $ baseAttrs
+        "02288"
+        (Name "Frozen Spring" Nothing)
+        EncounterSet.WhereDoomAwaits
+        3
+        (PerPlayer 1)
+        NoSymbol
+        []
+        [Dunwich, Woods]
     & (revealedSymbolL .~ Plus)
     & (revealedConnectedSymbolsL .~ setFromList [Triangle, Hourglass])
- where
-  base = baseAttrs
-    "02288"
-    (Name "Frozen Spring" Nothing)
-    EncounterSet.WhereDoomAwaits
-    3
-    (PerPlayer 1)
-    NoSymbol
-    []
-    [Dunwich, Woods]
+    & (unrevealedNameL .~ LocationName (mkName "Diverging Path"))
 
 instance HasModifiersFor env FrozenSpring where
   getModifiersFor = noModifiersFor

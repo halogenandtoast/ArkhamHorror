@@ -22,6 +22,7 @@ import Arkham.Types.Location.Cards.ATearInThePath as X
 import Arkham.Types.Location.Cards.Attic as X
 import Arkham.Types.Location.Cards.AudubonPark as X
 import Arkham.Types.Location.Cards.BackAlley as X
+import Arkham.Types.Location.Cards.BaseOfTheHill as X
 import Arkham.Types.Location.Cards.Bathroom as X
 import Arkham.Types.Location.Cards.Bedroom as X
 import Arkham.Types.Location.Cards.BishopsBrook_202 as X
@@ -43,6 +44,7 @@ import Arkham.Types.Location.Cards.CongregationalChurch_209 as X
 import Arkham.Types.Location.Cards.CursedShores as X
 import Arkham.Types.Location.Cards.DarkenedHall as X
 import Arkham.Types.Location.Cards.DeepBelowYourHouse as X
+import Arkham.Types.Location.Cards.DestroyedPath as X
 import Arkham.Types.Location.Cards.DevilsHopYard_252 as X
 import Arkham.Types.Location.Cards.DevilsHopYard_253 as X
 import Arkham.Types.Location.Cards.DimensionalGap as X

@@ -13,7 +13,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Message
 
 newtype InvestigatingTheTrail = InvestigatingTheTrail ActAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 investigatingTheTrail :: InvestigatingTheTrail
 investigatingTheTrail = InvestigatingTheTrail $ baseAttrs
@@ -44,7 +44,7 @@ instance ActRunner env => RunMessage env InvestigatingTheTrail where
       cultistsWhoGotAwayCardCodes <- asks (hasRecordSet CultistsWhoGotAway)
       cultistsWhoGotAway <- for cultistsWhoGotAwayCardCodes genEncounterCard
       a <$ unshiftMessages
-        ([ CreateEnemyAt (EncounterCard card) "01149"
+        ([ CreateEnemyAt (EncounterCard card) "01149" Nothing
          | card <- cultistsWhoGotAway
          ]
         <> [NextAct aid "01147"]

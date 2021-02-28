@@ -24,7 +24,7 @@ sentinelPeak :: SentinelPeak
 sentinelPeak =
   SentinelPeak
     $ baseAttrs
-        "002284"
+        "02284"
         (Name "Sentinel Peak" Nothing)
         EncounterSet.WhereDoomAwaits
         4

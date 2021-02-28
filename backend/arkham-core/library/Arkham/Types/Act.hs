@@ -1,8 +1,7 @@
 module Arkham.Types.Act
   ( Act(..)
   , lookupAct
-  )
-where
+  ) where
 
 import Arkham.Prelude hiding (fold)
 
@@ -11,6 +10,8 @@ import Arkham.Types.Act.Cards
 import Arkham.Types.Act.Runner
 import Arkham.Types.ActId
 import Arkham.Types.Classes
+import Arkham.Types.LocationId
+import Arkham.Types.Trait
 
 data Act
   = Trapped' Trapped
@@ -36,6 +37,9 @@ data Act
   | SearchingForAnswers' SearchingForAnswers
   | TheChamberOfTheBeast' TheChamberOfTheBeast
   | SaracenicScript' SaracenicScript
+  | ThePathToTheHill' ThePathToTheHill
+  | AscendingTheHillV1' AscendingTheHillV1
+  | AscendingTheHillV2' AscendingTheHillV2
   | MysteriousGateway' MysteriousGateway
   | FindingLadyEsprit' FindingLadyEsprit
   | HuntingTheRougarou' HuntingTheRougarou
@@ -44,6 +48,7 @@ data Act
 
 deriving anyclass instance ActionRunner env => HasActions env Act
 deriving anyclass instance ActRunner env => RunMessage env Act
+deriving anyclass instance HasSet Trait env LocationId => HasModifiersFor env Act
 
 instance HasStep ActStep Act where
   getStep = getStep . toAttrs
@@ -93,6 +98,9 @@ allActs = mapFrom
   , SearchingForAnswers' searchingForAnswers
   , TheChamberOfTheBeast' theChamberOfTheBeast
   , SaracenicScript' saracenicScript
+  , ThePathToTheHill' thePathToTheHill
+  , AscendingTheHillV1' ascendingTheHillV1
+  , AscendingTheHillV2' ascendingTheHillV2
   , MysteriousGateway' mysteriousGateway
   , FindingLadyEsprit' findingLadyEsprit
   , HuntingTheRougarou' huntingTheRougarou

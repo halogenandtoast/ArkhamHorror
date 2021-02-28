@@ -16,7 +16,7 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype FindingAWayInside = FindingAWayInside ActAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 findingAWayInside :: FindingAWayInside
 findingAWayInside = FindingAWayInside $ baseAttrs

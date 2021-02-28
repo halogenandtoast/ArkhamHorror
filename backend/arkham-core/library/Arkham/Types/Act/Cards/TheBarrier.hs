@@ -15,7 +15,7 @@ import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 
 newtype TheBarrier = TheBarrier ActAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 theBarrier :: TheBarrier
 theBarrier = TheBarrier $ baseAttrs "01109" "The Barrier" (Act 2 A) Nothing
@@ -45,7 +45,7 @@ instance ActRunner env => RunMessage env TheBarrier where
       a <$ unshiftMessages
         [ RevealLocation Nothing "01115"
         , CreateStoryAssetAt litaChantler "01115"
-        , CreateEnemyAt ghoulPriest hallwayId
+        , CreateEnemyAt ghoulPriest hallwayId Nothing
         , NextAct aid "01110"
         ]
     EndRoundWindow -> do

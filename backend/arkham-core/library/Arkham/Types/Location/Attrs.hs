@@ -499,14 +499,21 @@ instance LocationRunner env => RunMessage env LocationAttrs where
         (locationClues > 0)
         (unshiftMessage $ PlaceClues target locationClues)
       pure $ a & cluesL .~ 0
-    PlaceClues (LocationTarget lid) n | lid == locationId ->
-      pure $ a & cluesL +~ n
+    PlaceClues (LocationTarget lid) n | lid == locationId -> do
+      modifiers' <-
+        map modifierType <$> getModifiersFor (toSource a) (toTarget a) ()
+      if CannotPlaceClues `elem` modifiers'
+        then pure a
+        else pure $ a & cluesL +~ n
     RemoveClues (LocationTarget lid) n | lid == locationId ->
       pure $ a & cluesL %~ max 0 . subtract n
     RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0
     RevealLocation miid lid | lid == locationId -> do
-      locationClueCount <-
-        fromGameValue locationRevealClues . unPlayerCount <$> getCount ()
+      modifiers' <-
+        map modifierType <$> getModifiersFor (toSource a) (toTarget a) ()
+      locationClueCount <- if CannotPlaceClues `elem` modifiers'
+        then pure 0
+        else fromGameValue locationRevealClues . unPlayerCount <$> getCount ()
       unshiftMessages
         $ AddConnection lid locationRevealedSymbol
         : [ CheckWindow iid [AfterRevealLocation You]

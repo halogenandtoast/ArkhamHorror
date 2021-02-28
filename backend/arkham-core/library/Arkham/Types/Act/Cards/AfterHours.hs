@@ -9,7 +9,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Message
 
 newtype AfterHours = AfterHours ActAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 afterHours :: AfterHours
 afterHours = AfterHours $ baseAttrs

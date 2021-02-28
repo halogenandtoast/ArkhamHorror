@@ -1,12 +1,15 @@
 module Arkham.Types.Act.Cards.Fold
   ( Fold(..)
   , fold
-  )
-where
+  ) where
 
 import Arkham.Prelude hiding (fold)
 
 import Arkham.Types.Ability
+import Arkham.Types.Act.Attrs
+import Arkham.Types.Act.Helpers
+import Arkham.Types.Act.Runner
+import Arkham.Types.Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -21,13 +24,9 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Act.Attrs
-import Arkham.Types.Act.Helpers
-import Arkham.Types.Act.Runner
-import Arkham.Types.Action
 
 newtype Fold = Fold ActAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 fold :: Fold
 fold = Fold $ baseAttrs "02069" "Fold" (Act 3 A) Nothing

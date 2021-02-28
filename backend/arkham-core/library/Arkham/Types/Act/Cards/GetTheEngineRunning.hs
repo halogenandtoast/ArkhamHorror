@@ -13,7 +13,7 @@ import Arkham.Types.Query
 import Arkham.Types.Resolution
 
 newtype GetTheEngineRunning = GetTheEngineRunning ActAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 getTheEngineRunning :: GetTheEngineRunning
 getTheEngineRunning = GetTheEngineRunning

@@ -3,6 +3,9 @@ module Arkham.Types.Act.Cards.DisruptingTheRitual where
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Act.Attrs
+import Arkham.Types.Act.Helpers
+import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.GameValue
@@ -12,12 +15,9 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Act.Attrs
-import Arkham.Types.Act.Helpers
-import Arkham.Types.Act.Runner
 
 newtype DisruptingTheRitual = DisruptingTheRitual ActAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 disruptingTheRitual :: DisruptingTheRitual
 disruptingTheRitual =

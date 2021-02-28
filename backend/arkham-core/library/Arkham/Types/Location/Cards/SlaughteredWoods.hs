@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.SlaughteredWoods
   ( slaugteredWoods
   , SlaughteredWoods(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -25,19 +24,18 @@ newtype SlaughteredWoods = SlaughteredWoods LocationAttrs
 slaugteredWoods :: SlaughteredWoods
 slaugteredWoods =
   SlaughteredWoods
-    $ base
+    $ baseAttrs
+        "02285"
+        (Name "Slaughtered Woods" Nothing)
+        EncounterSet.WhereDoomAwaits
+        2
+        (PerPlayer 1)
+        NoSymbol
+        []
+        [Dunwich, Woods]
     & (revealedSymbolL .~ Plus)
     & (revealedConnectedSymbolsL .~ setFromList [Triangle, Hourglass])
- where
-  base = baseAttrs
-    "02285"
-    (Name "Slaughtered Woods" Nothing)
-    EncounterSet.WhereDoomAwaits
-    2
-    (PerPlayer 1)
-    NoSymbol
-    []
-    [Dunwich, Woods]
+    & (unrevealedNameL .~ LocationName (mkName "Diverging Path"))
 
 instance HasModifiersFor env SlaughteredWoods where
   getModifiersFor = noModifiersFor

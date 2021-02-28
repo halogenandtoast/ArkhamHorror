@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.AscendingTheHillV3
   ( AscendingTheHillV3(..)
   , ascendingTheHillV3
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -47,4 +48,6 @@ instance ActRunner env => RunMessage env AscendingTheHillV3 where
     CreatedEnemyAt eid _ target | isTarget attrs target -> do
       damage <- getPlayerCountValue (PerPlayer 1)
       a <$ unshiftMessage (EnemySetDamage eid (toSource attrs) damage)
+    WhenEnterLocation _ "02284" ->
+      a <$ unshiftMessage (AdvanceAct actId (toSource attrs))
     _ -> AscendingTheHillV3 <$> runMessage msg attrs

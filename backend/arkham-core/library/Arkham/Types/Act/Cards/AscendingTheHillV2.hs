@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.AscendingTheHillV2
   ( AscendingTheHillV2(..)
   , ascendingTheHillV2
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -41,4 +42,6 @@ instance ActRunner env => RunMessage env AscendingTheHillV2 where
       sethBishop <- EncounterCard <$> genEncounterCard "02293"
       a <$ unshiftMessages
         [CreateEnemyAt sethBishop sentinelPeak Nothing, NextAct actId "02281"]
+    WhenEnterLocation _ "02284" ->
+      a <$ unshiftMessage (AdvanceAct actId (toSource attrs))
     _ -> AscendingTheHillV2 <$> runMessage msg attrs

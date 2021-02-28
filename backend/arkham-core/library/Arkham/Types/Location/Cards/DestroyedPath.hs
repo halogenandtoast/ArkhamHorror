@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.DestroyedPath
   ( destroyedPath
   , DestroyedPath(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -84,6 +85,6 @@ instance LocationRunner env => RunMessage env DestroyedPath where
           False
         )
     SuccessfulInvestigation _ _ (AbilitySource source 2)
-      | isSource attrs source -> do
-        l <$ unshiftMessage (RemoveDoom (toTarget attrs) 1)
+      | isSource attrs source -> l
+      <$ unshiftMessage (RemoveDoom (toTarget attrs) 1)
     _ -> DestroyedPath <$> runMessage msg attrs

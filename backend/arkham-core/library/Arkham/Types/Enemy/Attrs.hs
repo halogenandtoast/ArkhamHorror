@@ -692,6 +692,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
       pure $ a & engagedInvestigatorsL %~ deleteSet iid
     EnemySetBearer eid bid | eid == enemyId -> pure $ a & preyL .~ Bearer bid
     AdvanceAgenda{} -> pure $ a & doomL .~ 0
+    RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0
     PlaceDoom (CardIdTarget cid) amount | cid == unEnemyId enemyId ->
       pure $ a & doomL +~ amount
     PlaceDoom (EnemyTarget eid) amount | eid == enemyId ->

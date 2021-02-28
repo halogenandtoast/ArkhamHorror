@@ -503,6 +503,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       pure $ a & cluesL +~ n
     RemoveClues (LocationTarget lid) n | lid == locationId ->
       pure $ a & cluesL %~ max 0 . subtract n
+    RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0
     RevealLocation miid lid | lid == locationId -> do
       locationClueCount <-
         fromGameValue locationRevealClues . unPlayerCount <$> getCount ()

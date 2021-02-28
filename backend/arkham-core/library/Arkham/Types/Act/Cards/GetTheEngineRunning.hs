@@ -5,13 +5,12 @@ module Arkham.Types.Act.Cards.GetTheEngineRunning
 
 import Arkham.Prelude
 
+import Arkham.Types.Act.Attrs
+import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
-import Arkham.Types.Act.Attrs
-import Arkham.Types.Act.Helpers
-import Arkham.Types.Act.Runner
 
 newtype GetTheEngineRunning = GetTheEngineRunning ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -33,11 +32,6 @@ instance ActionRunner env => HasActions env GetTheEngineRunning where
 
 instance ActRunner env => RunMessage env GetTheEngineRunning where
   runMessage msg a@(GetTheEngineRunning attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      unshiftMessage
-        (chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)])
-      pure . GetTheEngineRunning $ attrs & sequenceL .~ Act 2 B
     AdvanceAct aid _ | aid == actId && onSide B attrs ->
       a <$ unshiftMessage (ScenarioResolution $ Resolution 1)
     _ -> GetTheEngineRunning <$> runMessage msg attrs

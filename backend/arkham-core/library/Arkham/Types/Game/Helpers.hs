@@ -259,7 +259,9 @@ instance
               getCanAffordCost iid (LocationSource lid) (Just Action.Move) cost
             _ -> pure True
         filterM canAffordAction actions''
-      else pure forcedActions'
+      else do
+        error $ show forcedActions'
+        pure forcedActions'
 
 enemyAtInvestigatorLocation
   :: ( MonadReader env m

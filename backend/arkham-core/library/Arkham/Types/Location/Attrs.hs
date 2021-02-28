@@ -496,12 +496,14 @@ instance LocationRunner env => RunMessage env LocationAttrs where
         (locationClues > 0)
         (unshiftMessage $ PlaceClues target locationClues)
       pure $ a & cluesL .~ 0
-    PlaceClues (LocationTarget lid) n | lid == locationId -> do
+    PlaceClues target n | isTarget a target -> do
       modifiers' <-
         map modifierType <$> getModifiersFor (toSource a) (toTarget a) ()
       if CannotPlaceClues `elem` modifiers'
         then pure a
         else pure $ a & cluesL +~ n
+    PlaceDoom target n | isTarget a target ->
+      pure $ a & doomL +~ n
     RemoveClues (LocationTarget lid) n | lid == locationId ->
       pure $ a & cluesL %~ max 0 . subtract n
     RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0

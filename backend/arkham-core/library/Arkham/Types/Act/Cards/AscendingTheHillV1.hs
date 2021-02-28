@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.AscendingTheHillV1
   ( AscendingTheHillV1(..)
   , ascendingTheHillV1
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -35,4 +36,6 @@ instance ActRunner env => RunMessage env AscendingTheHillV1 where
   runMessage msg a@(AscendingTheHillV1 attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide B attrs ->
       a <$ unshiftMessage (NextAct actId "02281")
+    WhenEnterLocation _ "02284" ->
+      a <$ unshiftMessage (AdvanceAct actId (toSource attrs))
     _ -> AscendingTheHillV1 <$> runMessage msg attrs

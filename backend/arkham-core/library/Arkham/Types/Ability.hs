@@ -1,7 +1,8 @@
 module Arkham.Types.Ability
   ( module Arkham.Types.Ability
   , module X
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -47,7 +48,9 @@ mkAbility source idx type' = Ability
   { abilitySource = source
   , abilityIndex = idx
   , abilityType = type'
-  , abilityLimit = NoLimit
+  , abilityLimit = if type' == ForcedAbility
+    then PlayerLimit PerWindow 1
+    else NoLimit
   , abilityMetadata = Nothing
   }
 

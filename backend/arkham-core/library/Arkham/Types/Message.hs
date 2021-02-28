@@ -110,7 +110,6 @@ data Message
   | AddCampaignCardToDeck InvestigatorId CardCode
   | AddCampaignCardToEncounterDeck CardCode
   | AddConnection LocationId LocationSymbol
-  | AddConnectionBack LocationId LocationSymbol
   | AddDirectConnection LocationId LocationId
   | AddFocusedToHand InvestigatorId Target CardId
   | AddFocusedToTopOfDeck InvestigatorId Target CardId

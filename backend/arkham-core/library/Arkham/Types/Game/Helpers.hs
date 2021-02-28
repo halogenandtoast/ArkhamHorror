@@ -242,15 +242,24 @@ instance
         Force msg -> Just msg
         _ -> Nothing
       forcedActions = mapMaybe fromForcedAction actions''
-    if null forcedActions
+    forcedActions' <- filterM
+      (\case
+        ActivateCardAbilityAction iid' ability ->
+          getCanAffordAbility iid' ability
+        _ -> pure True
+      )
+      forcedActions
+    if null forcedActions'
       then do
         let
           canAffordAction = \case
             ActivateCardAbilityAction _ ability ->
               getCanAffordAbility iid ability
+            MoveAction _ lid cost _ ->
+              getCanAffordCost iid (LocationSource lid) (Just Action.Move) cost
             _ -> pure True
         filterM canAffordAction actions''
-      else pure forcedActions
+      else pure forcedActions'
 
 enemyAtInvestigatorLocation
   :: ( MonadReader env m

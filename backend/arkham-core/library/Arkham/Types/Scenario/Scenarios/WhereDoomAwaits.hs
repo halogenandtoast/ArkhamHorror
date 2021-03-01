@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Scenarios.WhereDoomAwaits
   ( WhereDoomAwaits(..)
   , whereDoomAwaits
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -19,6 +20,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
@@ -156,7 +158,7 @@ instance
   ( HasCount XPCount env ()
   , HasSet InvestigatorId env ()
   , HasSet LocationId env [Trait]
-  , HasSet Trait env LocationId
+  , HasName env LocationId
   , HasRecord env
   , ScenarioAttrsRunner env
   )
@@ -321,14 +323,14 @@ instance
         <> [GameOver]
         )
     PlacedLocation lid -> do
-      traits <- getSet lid
-      when (Woods `member` traits) $ do
+      name <- getName lid
+      when (name == mkName "Altered Path") $ do
+        alteredCount <- length <$> getSetList @LocationId [Woods]
+        unshiftMessage
+          (SetLocationLabel lid $ "alteredPath" <> tshow alteredCount)
+      when (name == mkName "Diverging Path") $ do
         woodsCount <- length <$> getSetList @LocationId [Woods]
         unshiftMessage
           (SetLocationLabel lid $ "divergingPath" <> tshow woodsCount)
-      when (Altered `member` traits) $ do
-        alteredCount <- length <$> getSetList @LocationId [Woods]
-        unshiftMessage
-          (SetLocationLabel lid $ "alteredPathPath" <> tshow alteredCount)
       pure s
     _ -> WhereDoomAwaits <$> runMessage msg attrs

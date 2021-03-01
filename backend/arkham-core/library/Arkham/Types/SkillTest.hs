@@ -33,6 +33,7 @@ data SkillTest = SkillTest
   , skillTestDifficulty :: Int
   , skillTestSetAsideTokens :: [Token]
   , skillTestRevealedTokens :: [DrawnToken] -- tokens may change from physical representation
+  , skillTestResolvedTokens :: [DrawnToken]
   , skillTestValueModifier :: Int
   , skillTestResult :: SkillTestResult
   , skillTestCommittedCards :: HashMap CardId (InvestigatorId, Card)
@@ -103,6 +104,7 @@ initSkillTest iid source target maction skillType' _skillValue' difficulty' =
     , skillTestDifficulty = difficulty'
     , skillTestSetAsideTokens = mempty
     , skillTestRevealedTokens = mempty
+    , skillTestResolvedTokens = mempty
     , skillTestValueModifier = 0
     , skillTestResult = Unrun
     , skillTestCommittedCards = mempty
@@ -206,8 +208,13 @@ instance SkillTestRunner env => RunMessage env SkillTest where
           [RunSkillTestSourceNotification iid skillTestSource, RunSkillTest iid]
         else s <$ unshiftMessages
           [RequestTokens (toSource s) (Just iid) 1 SetAside, RunSkillTest iid]
-    DrawAnotherToken iid -> s <$ unshiftMessages
-      [RequestTokens (toSource s) (Just iid) 1 SetAside, RunSkillTest iid]
+    DrawAnotherToken iid -> do
+      unshiftMessages
+        [RequestTokens (toSource s) (Just iid) 1 SetAside, RunSkillTest iid]
+      pure
+        $ s
+        & (resolvedTokensL %~ (<> skillTestRevealedTokens))
+        & (revealedTokensL .~ mempty)
     RequestedTokens (SkillTestSource siid skillType source target maction) (Just iid) tokenFaces
       -> do
         unshiftMessage (RevealSkillTestTokens iid)
@@ -297,7 +304,11 @@ instance SkillTestRunner env => RunMessage env SkillTest where
       -- Rex's Curse timing keeps effects on stack so we do
       -- not want to remove them as subscribers from the stack
       unshiftMessage $ ResetTokens (toSource s)
-      pure $ s & setAsideTokensL .~ mempty & revealedTokensL .~ mempty
+      pure
+        $ s
+        & (setAsideTokensL .~ mempty)
+        & (revealedTokensL .~ mempty)
+        & (resolvedTokensL .~ mempty)
     SkillTestEnds _ -> do
       -- Skill Cards are in the environment and will be discarded normally
       -- However, all other cards need to be discarded here.
@@ -496,14 +507,16 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         -- doubling. However, we need to keep any existing value modifier on
         -- the stack (such as a token no longer visible who effect still
         -- persists)
-        tokenValues <- sum
-          <$> for skillTestRevealedTokens (getModifiedTokenValue s)
+        tokenValues <- sum <$> for
+          (skillTestRevealedTokens <> skillTestResolvedTokens)
+          (getModifiedTokenValue s)
         pure $ s & valueModifierL %~ subtract tokenValues
     RunSkillTest _ -> do
       modifiers' <-
         map modifierType <$> getModifiersFor (toSource s) SkillTestTarget ()
-      tokenValues <- sum
-        <$> for skillTestRevealedTokens (getModifiedTokenValue s)
+      tokenValues <- sum <$> for
+        (skillTestRevealedTokens <> skillTestResolvedTokens)
+        (getModifiedTokenValue s)
       stats <- getStats (skillTestInvestigator, skillTestAction) (toSource s)
       modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
       let

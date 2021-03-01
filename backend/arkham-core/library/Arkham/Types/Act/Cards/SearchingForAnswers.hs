@@ -1,15 +1,18 @@
 module Arkham.Types.Act.Cards.SearchingForAnswers
   ( SearchingForAnswers(..)
   , searchingForAnswers
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
 import Arkham.EncounterCard
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
+import Arkham.Types.ActId
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
@@ -30,6 +33,14 @@ instance ActRunner env => RunMessage env SearchingForAnswers where
   runMessage msg a@(SearchingForAnswers attrs@ActAttrs {..}) = case msg of
     WhenEnterLocation _ "02214" ->
       a <$ unshiftMessage (AdvanceAct actId (toSource attrs))
+    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      unshiftMessage
+        $ chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
+      pure
+        . SearchingForAnswers
+        $ attrs
+        & (sequenceL .~ Act (unActStep $ actStep actSequence) B)
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       unrevealedLocationIds <- map unUnrevealedLocationId <$> getSetList ()
       hiddenChamber <- fromJustNote "must exist"

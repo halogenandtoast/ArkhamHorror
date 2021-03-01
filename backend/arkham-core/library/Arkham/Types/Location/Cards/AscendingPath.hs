@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.AscendingPath
   ( ascendingPath
   , AscendingPath(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -53,12 +54,12 @@ ability attrs =
     & (abilityLimitL .~ PlayerLimit PerRound 1)
 
 instance ActionRunner env => HasActions env AscendingPath where
-  getActions iid NonFast (AscendingPath attrs) =
-    withBaseActions iid NonFast attrs $ do
-      pure
-        [ ActivateCardAbilityAction iid (ability attrs)
-        | locationRevealed attrs
-        ]
+  getActions iid NonFast (AscendingPath attrs) | iid `on` attrs =
+    withBaseActions iid NonFast attrs
+      $ pure
+          [ ActivateCardAbilityAction iid (ability attrs)
+          | locationRevealed attrs
+          ]
   getActions iid window (AscendingPath attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env AscendingPath where

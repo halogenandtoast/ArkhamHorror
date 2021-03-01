@@ -8,6 +8,7 @@ import Arkham.Prelude
 
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
+import Arkham.Types.ActId
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.LocationId
@@ -34,6 +35,14 @@ instance ActionRunner env => HasActions env AscendingTheHillV1 where
 
 instance ActRunner env => RunMessage env AscendingTheHillV1 where
   runMessage msg a@(AscendingTheHillV1 attrs@ActAttrs {..}) = case msg of
+    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      unshiftMessage
+        $ chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
+      pure
+        . AscendingTheHillV1
+        $ attrs
+        & (sequenceL .~ Act (unActStep $ actStep actSequence) B)
     AdvanceAct aid _ | aid == actId && onSide B attrs ->
       a <$ unshiftMessage (NextAct actId "02281")
     WhenEnterLocation _ "02284" ->

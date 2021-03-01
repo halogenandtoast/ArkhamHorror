@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.WhereDoomAwaits
   ( WhereDoomAwaits(..)
   , whereDoomAwaits
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -151,7 +150,7 @@ instance
           then NegativeModifier (if agendaStep == 2 then 4 else 2)
           else if agendaStep == 2 then AutoFailModifier else NegativeModifier 3
         )
-    ElderThing -> pure $ TokenValue Tablet (NegativeModifier 0) -- determined by an effect
+    ElderThing -> pure $ TokenValue ElderThing (NegativeModifier 0) -- determined by an effect
     otherFace -> getTokenValue attrs iid otherFace
 
 instance

@@ -12,6 +12,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Card
+import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
@@ -25,13 +26,43 @@ import Arkham.Types.Query
 import Arkham.Types.TreacheryId
 
 createLocation :: IsCard a => a -> Location
-createLocation a = lookupLocation (LocationId $ getCardCode a)
+createLocation a = CardLocation' . CardLocation $ With base (toCard a)
+  where base = lookupLocation (LocationId $ getCardCode a)
 
 toLocationSymbol :: Location -> LocationSymbol
 toLocationSymbol = locationSymbol . toAttrs
 
+newtype CardLocation = CardLocation (Location `With` Card)
+  deriving newtype (Show, Eq, ToJSON, FromJSON)
+
+instance Entity CardLocation where
+  type EntityId CardLocation = LocationId
+  type EntityAttrs CardLocation = LocationAttrs
+  toId (CardLocation (_ `With` card)) =
+    LocationId . CardCode . tshow . unCardId $ getCardId card
+  toAttrs (CardLocation (base `With` _)) = toAttrs base
+
+instance LocationRunner env => RunMessage env CardLocation where
+  runMessage msg (CardLocation (a `With` card)) =
+    CardLocation . (`With` card) <$> runMessage msg a
+
+instance
+  ( HasPhase env
+  , HasCount CardCount env InvestigatorId
+  , HasCount ClueCount env LocationId
+  , HasCount ResourceCount env InvestigatorId
+  , HasId (Maybe StoryEnemyId) env CardCode
+  , HasId (Maybe StoryAssetId) env CardCode
+  )
+  => HasModifiersFor env CardLocation where
+  getModifiersFor s t (CardLocation (a `With` _)) = getModifiersFor s t a
+
+instance ActionRunner env => HasActions env CardLocation where
+  getActions iid window (CardLocation (a `With` _)) = getActions iid window a
+
 data Location
-  = Study' Study
+  = CardLocation' CardLocation
+  | Study' Study
   | Hallway' Hallway
   | Attic' Attic
   | Cellar' Cellar

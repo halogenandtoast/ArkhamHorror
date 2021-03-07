@@ -9,6 +9,7 @@ import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.EnemyId
 import Arkham.Types.EnemyMatcher
 import Arkham.Types.Exception
 import Arkham.Types.Game.Helpers
@@ -61,14 +62,20 @@ instance AgendaRunner env => RunMessage env BidingItsTime where
       when
         (getCardCode card /= CardCode "02255")
         (throwIO $ InvalidState "wrong card")
-      a <$ unshiftMessage (CreateEnemyRequest source card)
-    RequestedEnemy source eid | isSource attrs source -> do
+      let enemyId = EnemyId $ getCardId card
       leadInvestigatorId <- getLeadInvestigatorId
       locationId <- getId leadInvestigatorId
       investigatorIds <- getSetList locationId
       a <$ unshiftMessages
-        (EnemySpawn Nothing locationId eid
-        : [ BeginSkillTest iid source (EnemyTarget eid) Nothing SkillAgility 4
+        (CreateEnemy card
+        : EnemySpawn Nothing locationId enemyId
+        : [ BeginSkillTest
+              iid
+              source
+              (EnemyTarget enemyId)
+              Nothing
+              SkillAgility
+              4
           | iid <- investigatorIds
           ]
         )

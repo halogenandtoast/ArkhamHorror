@@ -187,11 +187,11 @@ data Message
   | CompleteObjective
   | Continue Text
   | CreateEffect CardCode (Maybe (EffectMetadata Message)) Source Target
+  | CreateEnemy Card
   | CreateEnemyAt Card LocationId (Maybe Target)
   | CreatedEnemyAt EnemyId LocationId Target
   | CreateEnemyAtLocationMatching Card LocationMatcher
   | CreateEnemyEngagedWithPrey Card
-  | CreateEnemyRequest Source Card
   | CreatePayAbilityCostEffect (Maybe Ability) Source Target
   | CreateWindowModifierEffect EffectWindow (EffectMetadata Message) Source Target
   | CreateStoryAssetAt Card LocationId
@@ -396,7 +396,6 @@ data Message
   | RequestTokens Source (Maybe InvestigatorId) Int RequestedTokenStrategy
   | RequestedEncounterCard Source (Maybe EncounterCard)
   | RequestedEncounterCards Target [EncounterCard]
-  | RequestedEnemy Source EnemyId
   | RequestedPlayerCard InvestigatorId Source (Maybe PlayerCard)
   | RequestedSetAsideCard Source Card
   | RequestedTokens Source (Maybe InvestigatorId) [Token]

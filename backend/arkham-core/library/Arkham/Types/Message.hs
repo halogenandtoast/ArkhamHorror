@@ -192,7 +192,6 @@ data Message
   | CreateEnemyAtLocationMatching Card LocationMatcher
   | CreateEnemyEngagedWithPrey Card
   | CreateEnemyRequest Source Card
-  | CreateLocationRequest Source Card
   | CreatePayAbilityCostEffect (Maybe Ability) Source Target
   | CreateWindowModifierEffect EffectWindow (EffectMetadata Message) Source Target
   | CreateStoryAssetAt Card LocationId
@@ -398,7 +397,6 @@ data Message
   | RequestedEncounterCard Source (Maybe EncounterCard)
   | RequestedEncounterCards Target [EncounterCard]
   | RequestedEnemy Source EnemyId
-  | RequestedLocation Source LocationId
   | RequestedPlayerCard InvestigatorId Source (Maybe PlayerCard)
   | RequestedSetAsideCard Source Card
   | RequestedTokens Source (Maybe InvestigatorId) [Token]

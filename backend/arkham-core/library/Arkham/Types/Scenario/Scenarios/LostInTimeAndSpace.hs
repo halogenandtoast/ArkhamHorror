@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Scenarios.LostInTimeAndSpace
   ( LostInTimeAndSpace(..)
   , lostInTimeAndSpace
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -158,7 +159,7 @@ instance
         & (locationsL .~ locations')
         & (setAsideLocationsL .~ ["02321", "02322"])
         )
-    After (PassedSkillTest iid _ _ (DrawnTokenTarget token) _ _) -> do
+    After (PassedSkillTest iid _ _ (DrawnTokenTarget token) _ _) ->
       s <$ case (isHardExpert attrs, drawnTokenFace token) of
         (True, Cultist) -> unshiftMessage
           (DiscardEncounterUntilFirst
@@ -171,7 +172,7 @@ instance
             Nothing -> pure ()
             Just eid -> unshiftMessage (EnemyAttack iid eid)
         _ -> pure ()
-    After (FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _) -> do
+    After (FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _) ->
       s <$ case drawnTokenFace token of
         Cultist -> unshiftMessage
           (DiscardEncounterUntilFirst

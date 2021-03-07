@@ -230,6 +230,11 @@ getLocationsMatching = \case
     matchingLocationIds <- map toId <$> getLocationsMatching matcher
     let matches = getLongestPath g start (`elem` matchingLocationIds)
     filter ((`elem` matches) . toId) . toList <$> view locationsL
+  LocationWithTrait trait ->
+    filter hasMatchingTrait . toList <$> view locationsL
+   where
+    hasMatchingTrait = (trait `member`) . getTraits
+
   LocationMatchers (x :| xs) -> do
     matches :: HashSet LocationId <- foldl' intersection
       <$> (setFromList . map toId <$> getLocationsMatching x)

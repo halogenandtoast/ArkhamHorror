@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 47e4cbe4cb6792c2e5417beab49cc0109a4066441fb865db8c0dfc31564d6704
+-- hash: 9ee7711ad8440186e3b2a01e61afc57d67dfb010dde2a31686ae4b8640164cf2
 
 name:           arkham-core
 version:        0.0.0
@@ -322,6 +322,7 @@ library
       Arkham.Types.Enemy.Cards.HuntingHorror
       Arkham.Types.Enemy.Cards.HuntingNightgaunt
       Arkham.Types.Enemy.Cards.IcyGhoul
+      Arkham.Types.Enemy.Cards.InterstellarTraveler
       Arkham.Types.Enemy.Cards.JeremiahPierce
       Arkham.Types.Enemy.Cards.LupineThrall
       Arkham.Types.Enemy.Cards.MarshGug
@@ -354,6 +355,7 @@ library
       Arkham.Types.Enemy.Cards.WizardOfYogSothoth
       Arkham.Types.Enemy.Cards.WolfManDrew
       Arkham.Types.Enemy.Cards.YithianObserver
+      Arkham.Types.Enemy.Cards.YithianStarseeker
       Arkham.Types.Enemy.Cards.YoungDeepOne
       Arkham.Types.Enemy.Helpers
       Arkham.Types.Enemy.Runner
@@ -700,6 +702,7 @@ library
       Arkham.Types.Treachery.Cards.ChillFromBelow
       Arkham.Types.Treachery.Cards.Chronophobia
       Arkham.Types.Treachery.Cards.ClawsOfSteam
+      Arkham.Types.Treachery.Cards.CollapsingReality
       Arkham.Types.Treachery.Cards.CoverUp
       Arkham.Types.Treachery.Cards.CryptChill
       Arkham.Types.Treachery.Cards.CursedLuck

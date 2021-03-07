@@ -63,8 +63,7 @@ data EnemyAttrs = EnemyAttrs
 makeLensesWith suffixedFields ''EnemyAttrs
 
 spawned :: EnemyAttrs -> Bool
-spawned EnemyAttrs { enemyLocation } =
-  enemyLocation /= LocationId (CardId nil)
+spawned EnemyAttrs { enemyLocation } = enemyLocation /= LocationId (CardId nil)
 
 instance ToJSON EnemyAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "enemy"
@@ -484,10 +483,11 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
             ]
     EnemyMove eid _ lid | eid == enemyId -> do
       willMove <- canEnterLocation eid lid
-      unshiftMessage $ EnemyCheckEngagement eid
       if willMove
-        then pure $ a & locationL .~ lid & engagedInvestigatorsL .~ mempty
-        else pure a
+        then do
+          unshiftMessages [EnemyEntered eid lid, EnemyCheckEngagement eid]
+          pure $ a & locationL .~ lid & engagedInvestigatorsL .~ mempty
+        else a <$ unshiftMessage (EnemyCheckEngagement eid)
     EnemyCheckEngagement eid | eid == enemyId -> do
       keywords <- getModifiedKeywords a
       investigatorIds <- getSetList enemyLocation

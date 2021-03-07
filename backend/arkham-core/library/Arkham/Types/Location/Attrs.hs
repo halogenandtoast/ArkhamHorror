@@ -389,6 +389,8 @@ instance LocationRunner env => RunMessage env LocationAttrs where
     Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
     Discard (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
     Discard (EnemyTarget eid) -> pure $ a & enemiesL %~ deleteSet eid
+    Discard target | isTarget a target ->
+      a <$ unshiftMessages (resolve (RemoveLocation $ toId a))
     AttachAsset aid (LocationTarget lid) | lid == locationId ->
       pure $ a & assetsL %~ insertSet aid
     AttachAsset aid _ -> pure $ a & assetsL %~ deleteSet aid

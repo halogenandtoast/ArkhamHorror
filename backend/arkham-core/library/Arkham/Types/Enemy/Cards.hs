@@ -1,6 +1,7 @@
 module Arkham.Types.Enemy.Cards
   ( module X
-  ) where
+  )
+where
 
 import Arkham.Types.Enemy.Cards.Acolyte as X
 import Arkham.Types.Enemy.Cards.AcolyteOfUmordhoth as X
@@ -29,6 +30,7 @@ import Arkham.Types.Enemy.Cards.HermanCollins as X
 import Arkham.Types.Enemy.Cards.HuntingHorror as X
 import Arkham.Types.Enemy.Cards.HuntingNightgaunt as X
 import Arkham.Types.Enemy.Cards.IcyGhoul as X
+import Arkham.Types.Enemy.Cards.InterstellarTraveler as X
 import Arkham.Types.Enemy.Cards.JeremiahPierce as X
 import Arkham.Types.Enemy.Cards.LupineThrall as X
 import Arkham.Types.Enemy.Cards.MarshGug as X
@@ -61,4 +63,5 @@ import Arkham.Types.Enemy.Cards.WizardOfTheOrder as X
 import Arkham.Types.Enemy.Cards.WizardOfYogSothoth as X
 import Arkham.Types.Enemy.Cards.WolfManDrew as X
 import Arkham.Types.Enemy.Cards.YithianObserver as X
+import Arkham.Types.Enemy.Cards.YithianStarseeker as X
 import Arkham.Types.Enemy.Cards.YoungDeepOne as X

@@ -3,7 +3,8 @@
 module Arkham.Types.Scenario.Attrs
   ( module Arkham.Types.Scenario.Attrs
   , module X
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -164,6 +165,7 @@ findLocationKey locationMatcher locations = fst
     EmptyLocation -> error "needs to find a singular location"
     FarthestLocationFromYou _ -> error "needs to find a singular location"
     LocationMatchers _ -> error "not implemented"
+    LocationWithTrait _ -> error "not implemented"
 
 type ScenarioAttrsRunner env
   = ( HasSet InScenarioInvestigatorId env ()

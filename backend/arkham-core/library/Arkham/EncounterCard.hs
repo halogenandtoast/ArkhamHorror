@@ -148,6 +148,17 @@ allEncounterCards = mapFromList
   , ("02296", ritesHowled)
   , ("02297", spacesBetween)
   , ("02298", vortexOfTime)
+  , ("02323", yogSothoth)
+  , ("02324", tearThroughSpace)
+  , ("02325", prismaticCascade)
+  , ("02326", endlessBridge)
+  , ("02327", stepsOfYhagharl)
+  , ("02328", dimensionalDoorway)
+  , ("02329", interstellarTraveler)
+  , ("02330", yithianStarseeker)
+  , ("02331", collapsingReality)
+  , ("02332", wormhole)
+  , ("02333", vastExpanse)
   , ("50022", corpseHungryGhoul)
   , ("50023", ghoulFromTheDepths)
   , ("50024", theZealotsSeal)
@@ -756,6 +767,81 @@ vortexOfTime :: CardId -> EncounterCard
 vortexOfTime cardId = (treachery cardId "02298" (Name "Vortex of Time" Nothing)
                       )
   { ecTraits = setFromList [Hex, Hazard]
+  }
+
+yogSothoth :: CardId -> EncounterCard
+yogSothoth cardId = (enemy
+                      cardId
+                      "02323"
+                      (Name
+                        "Yog-Sothoth"
+                        (Just "The Lurker Beyond the Threshold")
+                      )
+                    )
+  { ecTraits = setFromList [AncientOne, Elite]
+  , ecKeywords = setFromList
+    [Keyword.Massive, Keyword.Hunter, Keyword.Retaliate]
+  }
+
+tearThroughSpace :: CardId -> EncounterCard
+tearThroughSpace cardId =
+  (location cardId "02324" (Name "Tear Through Space" Nothing))
+    { ecTraits = setFromList [Otherworld, Extradimensional]
+    , ecKeywords = setFromList [Keyword.Surge]
+    }
+
+prismaticCascade :: CardId -> EncounterCard
+prismaticCascade cardId =
+  (location cardId "02325" (Name "Prismatic Cascade" Nothing))
+    { ecTraits = setFromList [Otherworld, Extradimensional]
+    }
+
+endlessBridge :: CardId -> EncounterCard
+endlessBridge cardId = (location cardId "02326" (Name "Endless Bridge" Nothing)
+                       )
+  { ecTraits = setFromList [Otherworld, Extradimensional]
+  }
+
+stepsOfYhagharl :: CardId -> EncounterCard
+stepsOfYhagharl cardId =
+  (location cardId "02327" (Name "Steps of Y'hagharl" Nothing))
+    { ecTraits = setFromList [Otherworld, Extradimensional]
+    }
+
+dimensionalDoorway :: CardId -> EncounterCard
+dimensionalDoorway cardId =
+  (location cardId "02328" (Name "Dimensional Doorway" Nothing))
+    { ecTraits = setFromList [Otherworld, Extradimensional]
+    }
+
+interstellarTraveler :: CardId -> EncounterCard
+interstellarTraveler cardId =
+  (enemy cardId "02329" (Name "Interstellar Traveler" Nothing))
+    { ecTraits = setFromList [Monster, Yithian]
+    , ecKeywords = setFromList [Keyword.Hunter]
+    }
+
+yithianStarseeker :: CardId -> EncounterCard
+yithianStarseeker cardId =
+  (enemy cardId "02330" (Name "Yithian Starseeker" Nothing))
+    { ecTraits = setFromList [Monster, Yithian]
+    , ecKeywords = setFromList [Keyword.Retaliate]
+    }
+
+collapsingReality :: CardId -> EncounterCard
+collapsingReality cardId =
+  (treachery cardId "02331" (Name "Collapsing Reality" Nothing))
+    { ecTraits = setFromList [Hazard]
+    }
+
+wormhole :: CardId -> EncounterCard
+wormhole cardId = (treachery cardId "02332" (Name "Wormhole" Nothing))
+  { ecTraits = setFromList [Hazard]
+  }
+
+vastExpanse :: CardId -> EncounterCard
+vastExpanse cardId = (treachery cardId "02333" (Name "Vast Expanse" Nothing))
+  { ecTraits = setFromList [Terror]
   }
 
 corpseHungryGhoul :: CardId -> EncounterCard

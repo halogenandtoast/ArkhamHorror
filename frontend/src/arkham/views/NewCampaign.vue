@@ -107,6 +107,10 @@ const scenarios = [
     name: 'Where Doom Awaits',
   },
   {
+    id: '02311',
+    name: 'Lost in Time and Space',
+  },
+  {
     id: '81001',
     name: 'Curse of the Rougarou',
   },

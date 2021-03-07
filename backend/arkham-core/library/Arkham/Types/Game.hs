@@ -2304,11 +2304,10 @@ runGameMessage msg g = case msg of
       , EnemySpawn (Just iid) lid eid
       ]
     pure $ g & enemiesL . at eid ?~ enemy
-  CreateEnemyRequest source card -> do
+  CreateEnemy card -> do
     let
       enemy = createEnemy card
       enemyId = toId enemy
-    unshiftMessage (RequestedEnemy source enemyId)
     pure $ g & enemiesL . at enemyId ?~ enemy
   CreateEnemyAtLocationMatching cardCode locationMatcher -> do
     lid <- fromJustNote "missing location" <$> getId locationMatcher

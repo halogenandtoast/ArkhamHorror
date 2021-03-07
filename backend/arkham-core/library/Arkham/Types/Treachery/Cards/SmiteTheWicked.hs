@@ -3,18 +3,17 @@ module Arkham.Types.Treachery.Cards.SmiteTheWicked where
 import Arkham.Prelude
 
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
+import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.TreacheryId
 
 newtype SmiteTheWicked = SmiteTheWicked TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -38,17 +37,20 @@ instance TreacheryRunner env => RunMessage env SmiteTheWicked where
     RequestedEncounterCard (TreacherySource tid) mcard | tid == treacheryId ->
       case mcard of
         Nothing -> t <$ unshiftMessage (Discard $ toTarget attrs)
-        Just card -> t <$ unshiftMessage
-          (CreateEnemyRequest (TreacherySource tid) (EncounterCard card))
-    RequestedEnemy (TreacherySource tid) eid | tid == treacheryId -> do
-      let ownerId = fromJustNote "has to be set" treacheryOwner
-      farthestLocations <- map unFarthestLocationId <$> getSetList ownerId
-      t <$ unshiftMessages
-        [ AttachTreachery treacheryId (EnemyTarget eid)
-        , chooseOne
-          ownerId
-          [ EnemySpawn (Just ownerId) lid eid | lid <- farthestLocations ]
-        ]
+        Just card -> do
+          let
+            ownerId = fromJustNote "has to be set" treacheryOwner
+            enemyId = EnemyId $ getCardId card
+          farthestLocations <- map unFarthestLocationId <$> getSetList ownerId
+          t <$ unshiftMessages
+            [ CreateEnemy (EncounterCard card)
+            , AttachTreachery treacheryId (EnemyTarget enemyId)
+            , chooseOne
+              ownerId
+              [ EnemySpawn (Just ownerId) lid enemyId
+              | lid <- farthestLocations
+              ]
+            ]
     InvestigatorEliminated iid | treacheryOwner == Just iid ->
       runMessage EndOfGame t >>= \case
         SmiteTheWicked attrs' -> SmiteTheWicked <$> runMessage msg attrs'

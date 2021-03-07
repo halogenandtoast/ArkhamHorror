@@ -1,6 +1,7 @@
 module Arkham.Types.Message
   ( module Arkham.Types.Message
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -201,7 +202,7 @@ data Message
   | CreatedEffect EffectId (Maybe (EffectMetadata Message)) Source Target
   | CrossOutRecord CampaignLogKey
   | Damage Target Source Int
-  | DeckHasNoCards InvestigatorId
+  | DeckHasNoCards InvestigatorId (Maybe Target)
   | DisableEffect EffectId
   | Discard Target
   | DiscardCard InvestigatorId CardId
@@ -482,6 +483,7 @@ data Message
   | WhenEnterLocation InvestigatorId LocationId
   | WhenEvadeEnemy InvestigatorId EnemyId
   | Will Message
+  | WithCount Int Message
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

@@ -260,8 +260,7 @@ getModifiedSanity attrs@InvestigatorAttrs {..} = do
   applyModifier (SanityModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-removeFromSlots
-  :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
+removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = fmap (map (removeIfMatches aid))
 
 fitsAvailableSlots :: [SlotType] -> [Trait] -> InvestigatorAttrs -> Bool
@@ -1234,7 +1233,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (handL %~ filter ((/= cardCode) . getCardCode))
   InvestigatorDamage iid _ health sanity | iid == investigatorId ->
     pure $ a & healthDamageL +~ health & sanityDamageL +~ sanity
-  DrivenInsane iid | iid == investigatorId -> do
+  DrivenInsane iid | iid == investigatorId ->
     pure $ a & mentalTraumaL .~ investigatorSanity
   CheckDefeated source -> do
     facingDefeat <- getFacingDefeat a
@@ -1327,7 +1326,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   DiscardTopOfDeck iid n mTarget | iid == investigatorId -> do
     let (cs, deck') = splitAt n (unDeck investigatorDeck)
     unshiftMessages
-      $ [ DeckHasNoCards investigatorId | null deck' ]
+      $ [ DeckHasNoCards investigatorId mTarget | null deck' ]
       <> [ DiscardedTopOfDeck iid cs target | target <- maybeToList mTarget ]
     pure $ a & deckL .~ Deck deck' & discardL %~ (reverse cs <>)
   DrawCards iid n True | iid == investigatorId -> a <$ unshiftMessages
@@ -1356,7 +1355,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   (Revelation iid (PlayerCardSource $ getCardId card))
           Nothing -> pure ()
         unshiftMessages
-          $ [ DeckHasNoCards iid | null deck ]
+          $ [ DeckHasNoCards iid Nothing | null deck ]
           <> [ InvestigatorDrewPlayerCard iid card | card <- maybeToList mcard ]
           <> [DrawCards iid (n - 1) False]
         pure $ a & handL %~ handUpdate & deckL .~ Deck deck

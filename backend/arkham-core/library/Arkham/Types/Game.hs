@@ -2,7 +2,8 @@
 
 module Arkham.Types.Game
   ( module Arkham.Types.Game
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -211,17 +212,13 @@ getLocationsMatching
   :: MonadReader (Game queue) m => LocationMatcher -> m [Location]
 getLocationsMatching = \case
   LocationWithTitle title ->
-    filter ((== title) . nameTitle . toName)
-      . toList
-      <$> view locationsL
+    filter ((== title) . nameTitle . toName) . toList <$> view locationsL
   LocationWithFullTitle title subtitle ->
     filter ((== Name title (Just subtitle)) . toName)
       . toList
       <$> view locationsL
   LocationWithId locationId ->
-    filter ((== locationId) . toId)
-      . toList
-      <$> view locationsL
+    filter ((== locationId) . toId) . toList <$> view locationsL
   AnyLocation -> toList <$> view locationsL
   EmptyLocation -> filter isEmptyLocation . toList <$> view locationsL
   FarthestLocationFromYou matcher -> do
@@ -232,15 +229,13 @@ getLocationsMatching = \case
     filter ((`elem` matches) . toId) . toList <$> view locationsL
   LocationWithTrait trait ->
     filter hasMatchingTrait . toList <$> view locationsL
-   where
-    hasMatchingTrait = (trait `member`) . getTraits
+    where hasMatchingTrait = (trait `member`) . getTraits
   LocationMatchers (x :| xs) -> do
-    matches :: HashSet LocationId <- foldl' intersection
+    matches :: HashSet LocationId <-
+      foldl' intersection
       <$> (setFromList . map toId <$> getLocationsMatching x)
       <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
-    filter ((`member` matches) . toId)
-      . toList
-      <$> view locationsL
+    filter ((`member` matches) . toId) . toList <$> view locationsL
 
 getEnemy :: (HasCallStack, MonadReader (Game queue) m) => EnemyId -> m Enemy
 getEnemy eid = fromJustNote missingEnemy <$> preview (enemiesL . ix eid)
@@ -250,21 +245,14 @@ getEnemyMatching
   :: MonadReader (Game queue) m => EnemyMatcher -> m (Maybe Enemy)
 getEnemyMatching = (listToMaybe <$>) . getEnemiesMatching
 
-getEnemiesMatching
-  :: MonadReader (Game queue) m => EnemyMatcher -> m [Enemy]
+getEnemiesMatching :: MonadReader (Game queue) m => EnemyMatcher -> m [Enemy]
 getEnemiesMatching = \case
   EnemyWithTitle title ->
-    filter ((== title) . nameTitle . toName)
-      . toList
-      <$> view enemiesL
+    filter ((== title) . nameTitle . toName) . toList <$> view enemiesL
   EnemyWithFullTitle title subtitle ->
-    filter ((== Name title (Just subtitle)) . toName)
-      . toList
-      <$> view enemiesL
+    filter ((== Name title (Just subtitle)) . toName) . toList <$> view enemiesL
   EnemyWithId enemyId ->
-    filter ((== enemyId) . toId)
-      . toList
-      <$> view enemiesL
+    filter ((== enemyId) . toId) . toList <$> view enemiesL
 
 getAgenda :: (HasCallStack, MonadReader (Game queue) m) => AgendaId -> m Agenda
 getAgenda aid = fromJustNote missingAgenda <$> preview (agendasL . ix aid)
@@ -297,18 +285,18 @@ instance CanBeWeakness (Game queue) TreacheryId where
 instance HasRecord (Game queue) where
   hasRecord key g = case modeCampaign $ g ^. modeL of
     Nothing -> case modeScenario $ g ^. modeL of
-                 Just s -> hasRecord key s
-                 Nothing -> False
+      Just s -> hasRecord key s
+      Nothing -> False
     Just c -> hasRecord key c
   hasRecordSet key g = case modeCampaign $ g ^. modeL of
     Nothing -> case modeScenario $ g ^. modeL of
-                 Just s -> hasRecordSet key s
-                 Nothing -> []
+      Just s -> hasRecordSet key s
+      Nothing -> []
     Just c -> hasRecordSet key c
   hasRecordCount key g = case modeCampaign $ g ^. modeL of
     Nothing -> case modeScenario $ g ^. modeL of
-                 Just s -> hasRecordCount key s
-                 Nothing -> 0
+      Just s -> hasRecordCount key s
+      Nothing -> 0
     Just c -> hasRecordCount key c
 
 instance HasCard InvestigatorId (Game queue) where
@@ -341,10 +329,19 @@ instance HasId CardCode (Game queue) AssetId where
   getId = (getCardCode <$>) . getAsset
 
 instance HasCount ScenarioDeckCount (Game queue) () where
-  getCount _ = getCount . fromJustNote "scenario has to be set" . modeScenario =<< view modeL
+  getCount _ =
+    getCount
+      . fromJustNote "scenario has to be set"
+      . modeScenario
+      =<< view modeL
 
 instance HasCount SetAsideCount (Game queue) CardCode where
-  getCount cardCode = getCount . (,cardCode) . fromJustNote "scenario has to be set" . modeScenario =<< view modeL
+  getCount cardCode =
+    getCount
+      . (, cardCode)
+      . fromJustNote "scenario has to be set"
+      . modeScenario
+      =<< view modeL
 
 instance HasCount UsesCount (Game queue) AssetId where
   getCount = getCount <=< getAsset
@@ -388,15 +385,22 @@ instance HasSet FightableEnemyId (Game queue) (InvestigatorId, Source) where
     enemyIds <- getSet @EnemyId locationId
     investigatorEnemyIds <- getSet @EnemyId iid
     aloofEnemyIds <- mapSet unAloofEnemyId <$> getSet locationId
-    let potentials = setToList (investigatorEnemyIds `union` (enemyIds `difference` aloofEnemyIds))
+    let
+      potentials = setToList
+        (investigatorEnemyIds `union` (enemyIds `difference` aloofEnemyIds))
     fightableEnemyIds <- flip filterM potentials $ \eid -> do
-      modifiers' <- map modifierType <$> getModifiersFor source (EnemyTarget eid) ()
-      not <$> anyM (\case
-        CanOnlyBeAttackedByAbilityOn cardCodes ->
-          case source of
-            (AssetSource aid) -> (`member` cardCodes) <$> getId @CardCode aid
-            _ -> pure True
-        _ -> pure False) modifiers'
+      modifiers' <-
+        map modifierType <$> getModifiersFor source (EnemyTarget eid) ()
+      not
+        <$> anyM
+              (\case
+                CanOnlyBeAttackedByAbilityOn cardCodes -> case source of
+                  (AssetSource aid) ->
+                    (`member` cardCodes) <$> getId @CardCode aid
+                  _ -> pure True
+                _ -> pure False
+              )
+              modifiers'
     pure . setFromList . coerce $ fightableEnemyIds
 
 instance HasSet SetAsideLocationCardCode (Game queue) () where
@@ -795,8 +799,7 @@ instance HasSet HandCardId (Game queue) (InvestigatorId, PlayerCardType) where
   getSet (iid, cardType) =
     setFromList
       . map (coerce . getCardId)
-      . filter
-          (maybe False (playerCardMatch (cardType, mempty)) . toPlayerCard)
+      . filter (maybe False (playerCardMatch (cardType, mempty)) . toPlayerCard)
       . handOf
       <$> getInvestigator iid
 
@@ -905,10 +908,7 @@ instance HasSet AgendaId (Game queue) () where
   getSet _ = keysSet <$> view agendasL
 
 instance HasSet VictoryDisplayCardCode (Game queue) () where
-  getSet _ =
-    setFromList
-      . map (coerce . getCardCode)
-      <$> view victoryDisplayL
+  getSet _ = setFromList . map (coerce . getCardCode) <$> view victoryDisplayL
 
 instance HasSet ClueCount (Game queue) () where
   getSet _ = do
@@ -956,7 +956,10 @@ instance HasSet LocationId (Game queue) () where
   getSet _ = keysSet <$> view locationsL
 
 instance HasSet LocationId (Game queue) (HashSet LocationSymbol) where
-  getSet locationSymbols = keysSet . filterMap ((`member` locationSymbols) .  toLocationSymbol) <$> view locationsL
+  getSet locationSymbols =
+    keysSet
+      . filterMap ((`member` locationSymbols) . toLocationSymbol)
+      <$> view locationsL
 
 instance HasSet LocationId (Game queue) LocationMatcher where
   getSet = (setFromList . map toId <$>) . getLocationsMatching
@@ -1143,10 +1146,7 @@ instance HasSet ClosestPathLocationId (Game queue) (LocationId, Prey) where
   getSet (start, prey) = do
     g <- ask
     let matcher lid = notNull $ getSet @PreyId (prey, lid) g
-    pure . setFromList . coerce $ getShortestPath
-      g
-      start
-      matcher
+    pure . setFromList . coerce $ getShortestPath g start matcher
 
 instance HasSet ClosestEnemyId (Game queue) LocationId where
   getSet start = do
@@ -1238,10 +1238,7 @@ instance HasSet FarthestLocationId (Game queue) InvestigatorId where
   getSet iid = do
     g <- ask
     start <- locationFor iid
-    pure . setFromList . coerce $ getLongestPath
-      g
-      start
-      (const True)
+    pure . setFromList . coerce $ getLongestPath g start (const True)
 
 instance HasSet FarthestLocationId (Game queue) (InvestigatorId, LocationMatcher) where
   getSet (iid, matcher) = do
@@ -1353,11 +1350,11 @@ instance HasSet EnemyAccessibleLocationId (Game queue) (EnemyId, LocationId) whe
     let
       enemyIsElite = Elite `member` getTraits enemy
       unblocked lid' = do
-        modifiers' <- map modifierType <$> getModifiersFor (EnemySource eid) (LocationTarget lid') ()
+        modifiers' <-
+          map modifierType
+            <$> getModifiersFor (EnemySource eid) (LocationTarget lid') ()
         pure $ enemyIsElite || CannotBeAttackedByNonElite `notElem` modifiers'
-    setFromList
-      . coerce
-      <$> filterM unblocked connectedLocationIds
+    setFromList . coerce <$> filterM unblocked connectedLocationIds
 
 instance HasSet AssetId (Game queue) InvestigatorId where
   getSet = getSet <=< getInvestigator
@@ -1380,9 +1377,7 @@ instance HasSet DiscardableAssetId (Game queue) InvestigatorId where
   getSet iid = do
     investigator <- getInvestigator iid
     assetIds <- getSetList @AssetId investigator
-    setFromList
-      . coerce
-      <$> filterM ((canBeDiscarded <$>) . getAsset) assetIds
+    setFromList . coerce <$> filterM ((canBeDiscarded <$>) . getAsset) assetIds
 
 instance HasSet AssetId (Game queue) EnemyId where
   getSet = getSet <=< getEnemy
@@ -1550,11 +1545,8 @@ instance HasActions GameInternal ActionType where
         concatMapM' (getActions iid window) (g ^. investigatorsL)
 
 instance HasId Difficulty (Game queue) () where
-  getId _ =
-      these
-        difficultyOf
-        difficultyOfScenario
-        (const . difficultyOf) <$> view modeL
+  getId _ = these difficultyOf difficultyOfScenario (const . difficultyOf)
+    <$> view modeL
 
 instance HasActions GameInternal (ActionType, Trait) where
   getActions iid window (actionType, trait) = do
@@ -1830,10 +1822,12 @@ runGameMessage msg g = case msg of
           )
         )
   EndSearch _ ->
-      pure $ g & (usedAbilitiesL %~ filter
+    pure
+      $ g
+      & (usedAbilitiesL %~ filter
           (\(_, Ability {..}) -> case abilityLimitType abilityLimit of
-                                   Just (PerSearch _) -> False
-                                   _ -> True
+            Just (PerSearch _) -> False
+            _ -> True
           )
         )
   ReturnToHand iid (SkillTarget skillId) -> do
@@ -1949,22 +1943,21 @@ runGameMessage msg g = case msg of
         _ -> error "this should definitely be a player card"
     unshiftMessages
       (bearerMessage
-      : [RemoveCardFromHand iid (getCardCode card), InvestigatorDrawEnemy iid lid eid]
+      : [ RemoveCardFromHand iid (getCardCode card)
+        , InvestigatorDrawEnemy iid lid eid
+        ]
       )
     pure $ g & enemiesL %~ insertMap eid enemy
   CancelNext msgType -> do
-    withQueue_ $ \queue -> do
+    withQueue_ $ \queue ->
       let
         (before, after) = break ((== Just msgType) . messageType) queue
         remaining = case after of
           [] -> []
           (_ : xs) -> xs
-       in before <> remaining
+      in before <> remaining
     pure g
-  EnemyAttack iid eid -> do
-    unshiftMessages
-      [PerformEnemyAttack iid eid, After (PerformEnemyAttack iid eid)]
-    g <$ broadcastWindow Fast.WhenEnemyAttacks iid g
+  EnemyAttack iid _ -> g <$ broadcastWindow Fast.WhenEnemyAttacks iid g
   EnemyEngageInvestigator eid iid ->
     g <$ broadcastWindow (`Fast.AfterEnemyEngageInvestigator` eid) iid g
   SkillTestAsk (Ask iid1 (ChooseOne c1)) -> do
@@ -2083,7 +2076,8 @@ runGameMessage msg g = case msg of
       then do
         unshiftMessages $ [After msg] <> afterMsgs <> [RemoveEnemy eid]
         pure $ g & (victoryDisplayL %~ (card :))
-      else g <$ unshiftMessages ([When msg, After msg] <> afterMsgs <> [Discard (EnemyTarget eid)])
+      else g <$ unshiftMessages
+        ([When msg, After msg] <> afterMsgs <> [Discard (EnemyTarget eid)])
   Discard (SearchedCardTarget iid cardId) -> do
     let
       card = fromJustNote "must exist"
@@ -2320,11 +2314,12 @@ runGameMessage msg g = case msg of
     let
       enemy = createEnemy card
       enemyId = toId enemy
-    unshiftMessages $
-      [ Will (EnemySpawn Nothing lid enemyId)
-      , When (EnemySpawn Nothing lid enemyId)
-      , EnemySpawn Nothing lid enemyId
-      ] <> [CreatedEnemyAt enemyId lid target | target <- maybeToList mtarget]
+    unshiftMessages
+      $ [ Will (EnemySpawn Nothing lid enemyId)
+        , When (EnemySpawn Nothing lid enemyId)
+        , EnemySpawn Nothing lid enemyId
+        ]
+      <> [ CreatedEnemyAt enemyId lid target | target <- maybeToList mtarget ]
     pure $ g & enemiesL . at enemyId ?~ enemy
   CreateEnemyEngagedWithPrey card -> do
     let
@@ -2514,7 +2509,8 @@ runGameMessage msg g = case msg of
         $ g
         & (enemiesL . at (toId enemy) ?~ enemy)
         & (activeCardL ?~ EncounterCard card)
-    TreacheryType -> g <$ unshiftMessage (DrewTreachery iid $ EncounterCard card)
+    TreacheryType ->
+      g <$ unshiftMessage (DrewTreachery iid $ EncounterCard card)
     EncounterAssetType -> do
       let
         asset = createAsset card
@@ -2565,8 +2561,7 @@ runGameMessage msg g = case msg of
          , AfterRevelation iid treacheryId
          ]
     pure $ g & treacheriesL %~ insertMap treacheryId treachery
-  AfterRevelation{} ->
-    pure $ g & activeCardL .~ Nothing
+  AfterRevelation{} -> pure $ g & activeCardL .~ Nothing
   ResignWith (AssetTarget aid) -> do
     let asset = getAsset aid g
     pure $ g & resignedCardCodesL %~ (getCardCode asset :)
@@ -2625,6 +2620,11 @@ instance RunMessage GameInternal GameInternal where
       >>= traverseOf (skillTestL . traverse) (runMessage msg)
       >>= traverseOf (skillsL . traverse) (runMessage msg)
       >>= traverseOf (investigatorsL . traverse) (runMessage msg)
-      >>= traverseOf (discardL . traverse) (\c -> c <$ runMessage (maskedMsg (InDiscard (gameLeadInvestigatorId g))) (toCardInstance (gameLeadInvestigatorId g) (EncounterCard c)))
+      >>= traverseOf
+            (discardL . traverse)
+            (\c -> c <$ runMessage
+              (maskedMsg (InDiscard (gameLeadInvestigatorId g)))
+              (toCardInstance (gameLeadInvestigatorId g) (EncounterCard c))
+            )
       >>= runGameMessage msg
-   where maskedMsg f = if doNotMask msg then msg else f msg
+    where maskedMsg f = if doNotMask msg then msg else f msg

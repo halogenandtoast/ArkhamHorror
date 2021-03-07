@@ -616,6 +616,8 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
         a <$ when
           (Keyword.Alert `elem` keywords)
           (unshiftMessage $ EnemyAttack iid enemyId)
+    EnemyAttack iid eid | eid == enemyId -> a <$ unshiftMessages
+      [PerformEnemyAttack iid eid, After (PerformEnemyAttack iid eid)]
     PerformEnemyAttack iid eid | eid == enemyId -> a <$ unshiftMessages
       [ InvestigatorAssignDamage
         iid

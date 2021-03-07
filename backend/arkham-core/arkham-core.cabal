@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9ee7711ad8440186e3b2a01e61afc57d67dfb010dde2a31686ae4b8640164cf2
+-- hash: 230317090733d6771fab5df2985881450367f04b0cbda215d9f359c0759bfc7d
 
 name:           arkham-core
 version:        0.0.0
@@ -356,6 +356,7 @@ library
       Arkham.Types.Enemy.Cards.WolfManDrew
       Arkham.Types.Enemy.Cards.YithianObserver
       Arkham.Types.Enemy.Cards.YithianStarseeker
+      Arkham.Types.Enemy.Cards.YogSothoth
       Arkham.Types.Enemy.Cards.YoungDeepOne
       Arkham.Types.Enemy.Helpers
       Arkham.Types.Enemy.Runner

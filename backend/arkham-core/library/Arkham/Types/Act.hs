@@ -1,7 +1,8 @@
 module Arkham.Types.Act
   ( Act(..)
   , lookupAct
-  ) where
+  )
+where
 
 import Arkham.Prelude hiding (fold)
 
@@ -42,6 +43,7 @@ data Act
   | AscendingTheHillV2' AscendingTheHillV2
   | AscendingTheHillV3' AscendingTheHillV3
   | TheGateOpens' TheGateOpens
+  | OutOfThisWorld' OutOfThisWorld
   | MysteriousGateway' MysteriousGateway
   | FindingLadyEsprit' FindingLadyEsprit
   | HuntingTheRougarou' HuntingTheRougarou
@@ -105,6 +107,7 @@ allActs = mapFrom
   , AscendingTheHillV2' ascendingTheHillV2
   , AscendingTheHillV3' ascendingTheHillV3
   , TheGateOpens' theGateOpens
+  , OutOfThisWorld' outOfThisWorld
   , MysteriousGateway' mysteriousGateway
   , FindingLadyEsprit' findingLadyEsprit
   , HuntingTheRougarou' huntingTheRougarou

@@ -1,6 +1,7 @@
 module Arkham.Types.Agenda
   ( module Arkham.Types.Agenda
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -53,6 +54,7 @@ allAgendas = mapFrom
   , HorrorsUnleashed' horrorsUnleashed
   , CallingForthTheOldOnes' callingForthTheOldOnes
   , BeckoningForPower' beckoningForPower
+  , AllIsOne' allIsOne
   , ReturnToPredatorOrPrey' returnToPredatorOrPrey
   , ACreatureOfTheBayou' aCreatureOfTheBayou
   , TheRougarouFeeds' theRougarouFeeds
@@ -99,6 +101,7 @@ data Agenda
   | HorrorsUnleashed' HorrorsUnleashed
   | CallingForthTheOldOnes' CallingForthTheOldOnes
   | BeckoningForPower' BeckoningForPower
+  | AllIsOne' AllIsOne
   | ReturnToPredatorOrPrey' ReturnToPredatorOrPrey
   | ACreatureOfTheBayou' ACreatureOfTheBayou
   | TheRougarouFeeds' TheRougarouFeeds

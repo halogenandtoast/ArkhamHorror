@@ -32,6 +32,8 @@ instance ActionRunner env => HasActions env GetTheEngineRunning where
 
 instance ActRunner env => RunMessage env GetTheEngineRunning where
   runMessage msg a@(GetTheEngineRunning attrs@ActAttrs {..}) = case msg of
+    AdvanceAct aid _ | aid == actId && onSide A attrs ->
+      pure . GetTheEngineRunning $ attrs & (sequenceL .~ Act 2 B)
     AdvanceAct aid _ | aid == actId && onSide B attrs ->
       a <$ unshiftMessage (ScenarioResolution $ Resolution 1)
     _ -> GetTheEngineRunning <$> runMessage msg attrs

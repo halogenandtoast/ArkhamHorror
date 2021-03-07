@@ -234,7 +234,6 @@ getLocationsMatching = \case
     filter hasMatchingTrait . toList <$> view locationsL
    where
     hasMatchingTrait = (trait `member`) . getTraits
-
   LocationMatchers (x :| xs) -> do
     matches :: HashSet LocationId <- foldl' intersection
       <$> (setFromList . map toId <$> getLocationsMatching x)

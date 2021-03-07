@@ -72,6 +72,7 @@ data Enemy
   | SethBishop' SethBishop
   | DevoteeOfTheKey' DevoteeOfTheKey
   | CrazedShoggoth' CrazedShoggoth
+  | YogSothoth' YogSothoth
   | InterstellarTraveler' InterstellarTraveler
   | YithianStarseeker' YithianStarseeker
   | CorpseHungryGhoul' CorpseHungryGhoul
@@ -264,6 +265,7 @@ allEnemies = mapFromList
   , ("02293", SethBishop' . sethBishop)
   , ("02294", DevoteeOfTheKey' . devoteeOfTheKey)
   , ("02295", CrazedShoggoth' . crazedShoggoth)
+  , ("02323", YogSothoth' . yogSothoth)
   , ("02329", InterstellarTraveler' . interstellarTraveler)
   , ("02330", YithianStarseeker' . yithianStarseeker)
   , ("50022", CorpseHungryGhoul' . corpseHungryGhoul)

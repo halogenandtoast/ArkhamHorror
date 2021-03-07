@@ -64,4 +64,5 @@ import Arkham.Types.Enemy.Cards.WizardOfYogSothoth as X
 import Arkham.Types.Enemy.Cards.WolfManDrew as X
 import Arkham.Types.Enemy.Cards.YithianObserver as X
 import Arkham.Types.Enemy.Cards.YithianStarseeker as X
+import Arkham.Types.Enemy.Cards.YogSothoth as X
 import Arkham.Types.Enemy.Cards.YoungDeepOne as X

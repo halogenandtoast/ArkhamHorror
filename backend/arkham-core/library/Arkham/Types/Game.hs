@@ -2310,12 +2310,6 @@ runGameMessage msg g = case msg of
       enemyId = toId enemy
     unshiftMessage (RequestedEnemy source enemyId)
     pure $ g & enemiesL . at enemyId ?~ enemy
-  CreateLocationRequest source card -> do
-    let
-      location = createLocation card
-      locationId = toId location
-    unshiftMessage (RequestedLocation source locationId)
-    pure $ g & locationsL . at locationId ?~ location
   CreateEnemyAtLocationMatching cardCode locationMatcher -> do
     lid <- fromJustNote "missing location" <$> getId locationMatcher
     g <$ unshiftMessage (CreateEnemyAt cardCode lid Nothing)

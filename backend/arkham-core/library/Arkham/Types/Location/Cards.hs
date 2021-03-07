@@ -1,11 +1,13 @@
 module Arkham.Types.Location.Cards
   ( module X
-  ) where
+  )
+where
 
 import Arkham.Types.Location.Cards.AdministrationBuilding as X
 import Arkham.Types.Location.Cards.AdministrationOffice_130 as X
 import Arkham.Types.Location.Cards.AdministrationOffice_131 as X
 import Arkham.Types.Location.Cards.AlchemyLabs as X
+import Arkham.Types.Location.Cards.AnotherDimension as X
 import Arkham.Types.Location.Cards.ArkhamWoodsCliffside as X
 import Arkham.Types.Location.Cards.ArkhamWoodsCorpseRiddenClearing as X
 import Arkham.Types.Location.Cards.ArkhamWoodsGreatWillow as X

@@ -1,6 +1,7 @@
 module Arkham.Types.Location
   ( module Arkham.Types.Location
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -134,6 +135,7 @@ data Location
   | ATearInThePath' ATearInThePath
   | UprootedWoods' UprootedWoods
   | LostMemories' LostMemories
+  | AnotherDimension' AnotherDimension
   | StudyAberrantGateway' StudyAberrantGateway
   | GuestHall' GuestHall
   | Bedroom' Bedroom
@@ -406,6 +408,7 @@ allLocations = mapFromList
   , ("02290", ATearInThePath' . aTearInThePath)
   , ("02291", UprootedWoods' . uprootedWoods)
   , ("02292", LostMemories' . lostMemories)
+  , ("02320", AnotherDimension' . anotherDimension)
   , ("50013", StudyAberrantGateway' . studyAberrantGateway)
   , ("50014", GuestHall' . guestHall)
   , ("50015", Bedroom' . bedroom)

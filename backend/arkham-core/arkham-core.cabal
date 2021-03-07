@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6fe5bc533785f10d52ffe1a3c4d863660b44be91e3ed4cae6e59470611dcb9c4
+-- hash: 4634de38ea8023782633cb792f9642309e3785ada7e624879ef2fc14d2ac5224
 
 name:           arkham-core
 version:        0.0.0
@@ -478,6 +478,7 @@ library
       Arkham.Types.Location.Cards.AdministrationOffice_130
       Arkham.Types.Location.Cards.AdministrationOffice_131
       Arkham.Types.Location.Cards.AlchemyLabs
+      Arkham.Types.Location.Cards.AnotherDimension
       Arkham.Types.Location.Cards.ArkhamWoodsCliffside
       Arkham.Types.Location.Cards.ArkhamWoodsCorpseRiddenClearing
       Arkham.Types.Location.Cards.ArkhamWoodsGreatWillow

@@ -1,6 +1,7 @@
 module Arkham.Types.Enemy
   ( module Arkham.Types.Enemy
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -71,6 +72,8 @@ data Enemy
   | SethBishop' SethBishop
   | DevoteeOfTheKey' DevoteeOfTheKey
   | CrazedShoggoth' CrazedShoggoth
+  | InterstellarTraveler' InterstellarTraveler
+  | YithianStarseeker' YithianStarseeker
   | CorpseHungryGhoul' CorpseHungryGhoul
   | GhoulFromTheDepths' GhoulFromTheDepths
   | Narogath' Narogath
@@ -169,6 +172,7 @@ instance
   ( EnemyRunner env
   , HasName env AssetId
   , HasSet ClosestLocationId env (LocationId, [Trait])
+  , HasCount DiscardCount env InvestigatorId
   )
   => RunMessage env Enemy where
   runMessage msg e = do
@@ -260,6 +264,8 @@ allEnemies = mapFromList
   , ("02293", SethBishop' . sethBishop)
   , ("02294", DevoteeOfTheKey' . devoteeOfTheKey)
   , ("02295", CrazedShoggoth' . crazedShoggoth)
+  , ("02329", InterstellarTraveler' . interstellarTraveler)
+  , ("02330", YithianStarseeker' . yithianStarseeker)
   , ("50022", CorpseHungryGhoul' . corpseHungryGhoul)
   , ("50023", GhoulFromTheDepths' . ghoulFromTheDepths)
   , ("50026b", Narogath' . narogath)

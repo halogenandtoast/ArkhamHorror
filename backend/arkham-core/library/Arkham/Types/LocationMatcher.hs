@@ -3,6 +3,7 @@ module Arkham.Types.LocationMatcher where
 import Arkham.Prelude
 
 import Arkham.Types.LocationId
+import Arkham.Types.Trait
 
 data LocationMatcher
   = LocationWithTitle Text
@@ -16,7 +17,7 @@ data LocationMatcher
   -- | LocationWithMostClues
   -- | LocationToYourRight
   -- | LocationToYourLeft
-  -- | LocationWithTrait Trait
+  | LocationWithTrait Trait
   -- | Revealed LocationMatcher
   -- | Unrevealed LocationMatcher
   | LocationMatchers (NonEmpty LocationMatcher)

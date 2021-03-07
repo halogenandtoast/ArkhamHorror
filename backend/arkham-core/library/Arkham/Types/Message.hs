@@ -246,6 +246,7 @@ data Message
   | EnemyEngageInvestigator EnemyId InvestigatorId
   | EnemyEvaded InvestigatorId EnemyId
   | EnemyMove EnemyId LocationId LocationId
+  | EnemyEntered EnemyId LocationId
   | EnemySetBearer EnemyId BearerId
   | EnemySpawn (Maybe InvestigatorId) LocationId EnemyId
   | EnemySpawnAtLocationMatching (Maybe InvestigatorId) LocationMatcher EnemyId

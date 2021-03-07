@@ -8,7 +8,6 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.SkillType
@@ -32,7 +31,8 @@ instance ActRunner env => RunMessage env MysteriousGateway where
   runMessage msg a@(MysteriousGateway attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getSetList @InvestigatorId (LocationId "50014")
+      investigatorIds <- getSetList @InvestigatorId
+        (LocationWithTitle "Guest Hall")
       requiredClues <- getPlayerCountValue (PerPlayer 3)
       unshiftMessages
         [ SpendClues requiredClues investigatorIds
@@ -41,14 +41,16 @@ instance ActRunner env => RunMessage env MysteriousGateway where
       pure $ MysteriousGateway $ attrs & (sequenceL .~ Act 1 B)
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getSetList @InvestigatorId (LocationId "50014")
+      investigatorIds <- getSetList @InvestigatorId
+        (LocationWithTitle "Guest Hall")
+      holeInTheWallId <- getRandom
       a <$ unshiftMessages
-        ([PlaceLocation "50017"]
+        ([PlaceLocation "50017" holeInTheWallId]
         <> [ chooseOne
              leadInvestigatorId
              [ TargetLabel
                  (InvestigatorTarget iid')
-                 [ MoveTo iid' "50017"
+                 [ MoveTo iid' holeInTheWallId
                  , BeginSkillTest
                    iid'
                    (ActSource aid)

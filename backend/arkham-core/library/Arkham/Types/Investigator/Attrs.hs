@@ -8,15 +8,19 @@ import Arkham.Prelude
 import Arkham.Json
 import Arkham.PlayerCard
 import Arkham.Types.Ability
+import Arkham.Types.Action (Action)
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
-import Arkham.Types.Classes hiding (discard)
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes hiding (discard)
+import Arkham.Types.CommitRestriction
 import Arkham.Types.Cost
 import Arkham.Types.EnemyId
+import Arkham.Types.EntityInstance
 import Arkham.Types.Helpers
+import Arkham.Types.Investigator.Runner
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
@@ -26,17 +30,14 @@ import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Source
+import Arkham.Types.Stats
 import Arkham.Types.Target
+import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window
-import Arkham.Types.Action (Action)
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.CommitRestriction
-import Arkham.Types.Investigator.Runner
-import Arkham.Types.Stats
-import Arkham.Types.Trait
-import Arkham.Types.EntityInstance
 import Control.Monad.Fail
+import Data.UUID (nil)
+import qualified Arkham.Types.Action as Action
 import qualified Data.HashSet as HashSet
 
 data InvestigatorAttrs = InvestigatorAttrs
@@ -324,7 +325,7 @@ baseAttrs iid name classSymbol Stats {..} traits = InvestigatorAttrs
   , investigatorSanityDamage = 0
   , investigatorClues = 0
   , investigatorResources = 0
-  , investigatorLocation = "00000"
+  , investigatorLocation = LocationId $ CardId nil
   , investigatorActionsTaken = mempty
   , investigatorRemainingActions = 3
   , investigatorEndedTurn = False

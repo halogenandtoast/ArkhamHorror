@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.DestroyedPath
   ( destroyedPath
   , DestroyedPath(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -15,6 +14,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
@@ -27,10 +27,11 @@ import Arkham.Types.Window
 newtype DestroyedPath = DestroyedPath LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-destroyedPath :: DestroyedPath
-destroyedPath =
+destroyedPath :: LocationId -> DestroyedPath
+destroyedPath lid =
   DestroyedPath
     $ baseAttrs
+        lid
         "02287"
         (Name "Destroyed Path" Nothing)
         EncounterSet.WhereDoomAwaits

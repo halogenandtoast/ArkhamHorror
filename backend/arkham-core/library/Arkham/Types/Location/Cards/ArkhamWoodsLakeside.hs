@@ -10,6 +10,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
@@ -19,13 +20,14 @@ import Arkham.Types.Trait
 newtype ArkhamWoodsLakeside = ArkhamWoodsLakeside LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-arkhamWoodsLakeside :: ArkhamWoodsLakeside
-arkhamWoodsLakeside = ArkhamWoodsLakeside $ base
+arkhamWoodsLakeside :: LocationId -> ArkhamWoodsLakeside
+arkhamWoodsLakeside lid = ArkhamWoodsLakeside $ base
   { locationRevealedConnectedSymbols = setFromList [Squiggle, Heart]
   , locationRevealedSymbol = Star
   }
  where
   base = baseAttrs
+    lid
     "50034"
     (Name "Arkham Woods" $ Just "Lakeside")
     EncounterSet.ReturnToTheDevourerBelow

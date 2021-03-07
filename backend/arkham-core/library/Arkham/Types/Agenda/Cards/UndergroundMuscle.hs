@@ -6,6 +6,7 @@ module Arkham.Types.Agenda.Cards.UndergroundMuscle
 import Arkham.Prelude
 
 import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -14,7 +15,6 @@ import Arkham.Types.EncounterSet
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 
@@ -34,8 +34,8 @@ instance HasModifiersFor env UndergroundMuscle where
 instance AgendaRunner env => RunMessage env UndergroundMuscle where
   runMessage msg (UndergroundMuscle attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
-      laBellaLunaId <- fromJustNote "La Bella Luna is missing"
-        <$> getLocationIdWithTitle "La Bella Luna"
+      laBellaLunaId <- getJustLocationIdByName "La Bella Luna"
+      cloverClubLoungeId <- getJustLocationIdByName "Clover Club Lounge"
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       (enemy : rest) <- shuffleM =<< gatherEncounterSet HideousAbominations
       strikingFear <- gatherEncounterSet StrikingFear
@@ -49,16 +49,14 @@ instance AgendaRunner env => RunMessage env UndergroundMuscle where
           leadInvestigatorId
           [ Label
               "Continue"
-              ([ CreateEnemyAtLocationMatching
-                 (EncounterCard enemy)
-                 (LocationWithTitle "Clover Club Lounge")
+              ([ CreateEnemyAt (EncounterCard enemy) cloverClubLoungeId Nothing
                , ShuffleEncounterDiscardBackIn
                , ShuffleIntoEncounterDeck $ rest <> strikingFear
                ]
-              <> [ MoveAction iid "02070" Free False
+              <> [ MoveAction iid cloverClubLoungeId Free False
                  | iid <- laBellaLunaInvestigators
                  ]
-              <> [ EnemyMove eid laBellaLunaId "02070"
+              <> [ EnemyMove eid laBellaLunaId cloverClubLoungeId
                  | eid <- unEngagedEnemiesAtLaBellaLuna
                  ]
               <> [RemoveLocation laBellaLunaId, NextAgenda agendaId "02065"]
@@ -68,8 +66,6 @@ instance AgendaRunner env => RunMessage env UndergroundMuscle where
       pure
         $ UndergroundMuscle
         $ attrs
-        & sequenceL
-        .~ Agenda 1 B
-        & flippedL
-        .~ True
+        & (sequenceL .~ Agenda 1 B)
+        & (flippedL .~ True)
     _ -> UndergroundMuscle <$> runMessage msg attrs

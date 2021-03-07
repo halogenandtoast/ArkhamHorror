@@ -9,6 +9,8 @@ import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Scenario.Attrs
@@ -40,7 +42,7 @@ instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env [Trait]) => 
   getTokenValue (ReturnToTheDevourerBelow theDevourerBelow') iid =
     getTokenValue theDevourerBelow' iid
 
-instance ScenarioRunner env => RunMessage env ReturnToTheDevourerBelow where
+instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env ReturnToTheDevourerBelow where
   runMessage msg s@(ReturnToTheDevourerBelow theDevourerBelow'@(TheDevourerBelow attrs@ScenarioAttrs {..}))
     = case msg of
       Setup -> do
@@ -49,6 +51,7 @@ instance ScenarioRunner env => RunMessage env ReturnToTheDevourerBelow where
         ghoulPriestAlive <- getHasRecord GhoulPriestIsStillAlive
         cultistsWhoGotAway <- getRecordSet CultistsWhoGotAway
         ghoulPriestCard <- lookupEncounterCard "01116" <$> getRandom
+        mainPathId <- getRandom
         let
           arkhamWoods =
             [ "01150"
@@ -70,7 +73,8 @@ instance ScenarioRunner env => RunMessage env ReturnToTheDevourerBelow where
           cultistsWhoGotAwayMessages = replicate
             ((length cultistsWhoGotAway + 1) `div` 2)
             PlaceDoomOnAgenda
-        woodsLocations <- take 4 <$> shuffleM arkhamWoods
+        woodsLocations <-
+          zip <$> getRandoms <*> (take 4 <$> shuffleM arkhamWoods)
         randomSet <-
           sample
           $ EncounterSet.AgentsOfYogSothoth
@@ -126,25 +130,34 @@ instance ScenarioRunner env => RunMessage env ReturnToTheDevourerBelow where
             , AddToken ElderThing
             , AddAgenda "01143"
             , AddAct "01146"
-            , PlaceLocation "01149"
+            , PlaceLocation "01149" mainPathId
             ]
-          <> [ PlaceLocation location | location <- woodsLocations ]
-          <> [ SetLocationLabel location label
-             | (location, label) <- zip woodsLocations woodsLabels
+          <> [ PlaceLocation cardCode locationId
+             | (locationId, cardCode) <- woodsLocations
              ]
-          <> [RevealLocation Nothing "01149", MoveAllTo "01149"]
+          <> [ SetLocationLabel locationId label
+             | (label, (locationId, _)) <- zip woodsLabels woodsLocations
+             ]
+          <> [RevealLocation Nothing mainPathId, MoveAllTo mainPathId]
           <> ghoulPriestMessages
           <> cultistsWhoGotAwayMessages
           <> pastMidnightMessages
         let
           locations' = mapFromList $ map
-            (second pure . toFst (getLocationName . lookupLocation))
-            (["01149", "01156"] <> woodsLocations)
+            (second pure . toFst (getLocationName . lookupLocationStub))
+            (["01149", "01156"] <> map snd woodsLocations)
         ReturnToTheDevourerBelow . TheDevourerBelow <$> runMessage
           msg
           (attrs & locationsL .~ locations')
-      CreateEnemyAt card "01156" _ | getCardCode card == "01157" -> do
-        vaultOfEarthlyDemise <- EncounterCard <$> genEncounterCard "50032b"
-        s <$ unshiftMessage
-          (AttachStoryTreacheryTo vaultOfEarthlyDemise (CardCodeTarget "00157"))
+      CreateEnemyAt card lid _ | getCardCode card == "01157" -> do
+        name <- getName lid
+        if name == "Ritual Site"
+          then do
+            vaultOfEarthlyDemise <- EncounterCard <$> genEncounterCard "50032b"
+            s <$ unshiftMessage
+              (AttachStoryTreacheryTo
+                vaultOfEarthlyDemise
+                (CardCodeTarget "00157")
+              )
+          else pure s
       _ -> ReturnToTheDevourerBelow <$> runMessage msg theDevourerBelow'

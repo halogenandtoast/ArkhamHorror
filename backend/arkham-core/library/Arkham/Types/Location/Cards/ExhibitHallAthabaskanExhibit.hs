@@ -6,24 +6,26 @@ module Arkham.Types.Location.Cards.ExhibitHallAthabaskanExhibit
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype ExhibitHallAthabaskanExhibit = ExhibitHallAthabaskanExhibit LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-exhibitHallAthabaskanExhibit :: ExhibitHallAthabaskanExhibit
-exhibitHallAthabaskanExhibit = ExhibitHallAthabaskanExhibit $ baseAttrs
+exhibitHallAthabaskanExhibit :: LocationId -> ExhibitHallAthabaskanExhibit
+exhibitHallAthabaskanExhibit lid = ExhibitHallAthabaskanExhibit $ baseAttrs
+  lid
   "02132"
   (Name "Exhibit Hall" $ Just "Athabaskan Exhibit")
   EncounterSet.TheMiskatonicMuseum

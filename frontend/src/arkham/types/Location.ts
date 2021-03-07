@@ -38,6 +38,7 @@ export const locationNameDecoder = JsonDecoder.object<LocationName>(
 
 export interface LocationContents {
   name: LocationName;
+  cardCode: string;
   label: string;
   id: string;
   clues: number;
@@ -58,6 +59,7 @@ export const locationContentsDecoder = JsonDecoder.object<LocationContents>(
     name: locationNameDecoder,
     label: JsonDecoder.string,
     id: JsonDecoder.string,
+    cardCode: JsonDecoder.string,
     clues: JsonDecoder.number,
     doom: JsonDecoder.number,
     shroud: JsonDecoder.number,

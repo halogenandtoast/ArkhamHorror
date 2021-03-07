@@ -52,9 +52,11 @@ instance ActRunner env => RunMessage env SkinGame where
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       peterClover <- PlayerCard <$> genPlayerCard "02079"
       drFrancisMorgan <- PlayerCard <$> genPlayerCard "02080"
+      cloverClubBarId <- getJustLocationIdByName "Clover Club Bar"
+      vipAreaId <- getJustLocationIdByName "VIP Area"
       a <$ if completedExtracurricularActivity
         then unshiftMessages
-          [ CreateStoryAssetAt peterClover "02072"
+          [ CreateStoryAssetAt peterClover cloverClubBarId
           , FindEncounterCard
             leadInvestigatorId
             (toTarget attrs)
@@ -62,7 +64,8 @@ instance ActRunner env => RunMessage env SkinGame where
           , NextAct actId "02068"
           ]
         else unshiftMessages
-          [CreateStoryAssetAt drFrancisMorgan "02076", NextAct actId "02068"]
-    FoundEncounterCard _ target ec | isTarget attrs target ->
-      a <$ unshiftMessage (SpawnEnemyAt (EncounterCard ec) "02072")
+          [CreateStoryAssetAt drFrancisMorgan vipAreaId, NextAct actId "02068"]
+    FoundEncounterCard _ target ec | isTarget attrs target -> do
+      cloverClubBarId <- getJustLocationIdByName "Clover Club Bar"
+      a <$ unshiftMessage (SpawnEnemyAt (EncounterCard ec) cloverClubBarId)
     _ -> SkinGame <$> runMessage msg attrs

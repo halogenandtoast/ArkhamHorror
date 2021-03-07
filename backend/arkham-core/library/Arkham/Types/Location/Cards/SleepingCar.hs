@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.SleepingCar
   ( sleepingCar
   , SleepingCar(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -10,29 +9,30 @@ import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Direction
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Query
-import Arkham.Types.Window
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype SleepingCar = SleepingCar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-sleepingCar :: SleepingCar
-sleepingCar = SleepingCar
+sleepingCar :: LocationId -> SleepingCar
+sleepingCar lid = SleepingCar
   $ base { locationConnectsTo = setFromList [LeftOf, RightOf] }
  where
   base = baseAttrs
+    lid
     "02172"
     (Name "Sleeping Car" Nothing)
     EncounterSet.TheEssexCountyExpress

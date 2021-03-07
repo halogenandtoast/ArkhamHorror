@@ -6,29 +6,31 @@ module Arkham.Types.Location.Cards.AlchemyLabs
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.SkillType
-import Arkham.Types.Window
-import qualified Arkham.Types.Action as Action
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype AlchemyLabs = AlchemyLabs LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-alchemyLabs :: AlchemyLabs
-alchemyLabs = AlchemyLabs $ baseAttrs
+alchemyLabs :: LocationId -> AlchemyLabs
+alchemyLabs lid = AlchemyLabs $ baseAttrs
+  lid
   "02057"
   (Name "Alchemy Labs" Nothing)
   EncounterSet.ExtracurricularActivity
@@ -44,8 +46,8 @@ instance HasModifiersFor env AlchemyLabs where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env AlchemyLabs where
-  getActions iid NonFast (AlchemyLabs attrs@LocationAttrs {..}) | locationRevealed =
-    withBaseActions iid NonFast attrs $ do
+  getActions iid NonFast (AlchemyLabs attrs@LocationAttrs {..})
+    | locationRevealed = withBaseActions iid NonFast attrs $ do
       let
         ability = mkAbility
           (toSource attrs)

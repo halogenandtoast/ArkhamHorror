@@ -38,13 +38,13 @@ instance ActRunner env => RunMessage env TheBarrier where
         )
       pure $ TheBarrier $ attrs & sequenceL .~ Act 2 B
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
-      hallwayId <- fromJustNote "must exist"
-        <$> getLocationIdWithTitle "Hallway"
+      hallwayId <- getJustLocationIdByName "Hallway"
       ghoulPriest <- EncounterCard <$> genEncounterCard "01116"
       litaChantler <- PlayerCard <$> genPlayerCard "01117"
+      parlorId <- getJustLocationIdByName "Parlor"
       a <$ unshiftMessages
-        [ RevealLocation Nothing "01115"
-        , CreateStoryAssetAt litaChantler "01115"
+        [ RevealLocation Nothing parlorId
+        , CreateStoryAssetAt litaChantler parlorId
         , CreateEnemyAt ghoulPriest hallwayId Nothing
         , NextAct aid "01110"
         ]

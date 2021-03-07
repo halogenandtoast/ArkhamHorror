@@ -19,8 +19,10 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
@@ -578,3 +580,21 @@ addCampaignCardToDeckChoice leadInvestigatorId investigatorIds cardCode =
     , Label ("Do not add " <> tshow name <> " to any deck") []
     ]
   where name = lookupPlayerCardName cardCode
+
+
+getJustLocationIdByName
+  :: (MonadReader env m, HasId (Maybe LocationId) env LocationMatcher)
+  => Name
+  -> m LocationId
+getJustLocationIdByName name =
+  fromJustNote ("Missing " <> show name) <$> getLocationIdByName name
+
+getLocationIdByName
+  :: (MonadReader env m, HasId (Maybe LocationId) env LocationMatcher)
+  => Name
+  -> m (Maybe LocationId)
+getLocationIdByName name = getId matcher
+ where
+  matcher = case (nameTitle name, nameSubtitle name) of
+    (title, Just subtitle) -> LocationWithFullTitle title subtitle
+    (title, Nothing) -> LocationWithTitle title

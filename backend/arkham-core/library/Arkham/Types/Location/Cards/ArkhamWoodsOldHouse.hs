@@ -3,26 +3,28 @@ module Arkham.Types.Location.Cards.ArkhamWoodsOldHouse where
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.SkillType
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype ArkhamWoodsOldHouse = ArkhamWoodsOldHouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-arkhamWoodsOldHouse :: ArkhamWoodsOldHouse
-arkhamWoodsOldHouse = ArkhamWoodsOldHouse $ base
+arkhamWoodsOldHouse :: LocationId -> ArkhamWoodsOldHouse
+arkhamWoodsOldHouse lid = ArkhamWoodsOldHouse $ base
   { locationRevealedConnectedSymbols = setFromList [Squiggle, Triangle, T]
   , locationRevealedSymbol = Diamond
   }
  where
   base = baseAttrs
+    lid
     "01152"
     (Name "Arkham Woods" (Just "Old House"))
     EncounterSet.TheDevourerBelow

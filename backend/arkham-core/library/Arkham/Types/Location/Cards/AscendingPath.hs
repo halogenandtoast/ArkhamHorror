@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.AscendingPath
   ( ascendingPath
   , AscendingPath(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -28,8 +27,9 @@ import Arkham.Types.Window
 newtype AscendingPath = AscendingPath LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-ascendingPath :: AscendingPath
-ascendingPath = AscendingPath $ baseAttrs
+ascendingPath :: LocationId -> AscendingPath
+ascendingPath lid = AscendingPath $ baseAttrs
+  lid
   "02283"
   (Name "Ascending Path" Nothing)
   EncounterSet.WhereDoomAwaits
@@ -75,16 +75,17 @@ instance LocationRunner env => RunMessage env AscendingPath where
         )
     SuccessfulInvestigation _ _ (AbilitySource source 1)
       | isSource attrs source -> do
-        locations <- getSetList @SetAsideLocationId ()
+        locations <- getSetList @SetAsideLocationCardCode ()
         alteredPaths <- filterM
           (fmap (== mkName "Altered Path") . getName)
           locations
         case nonEmpty alteredPaths of
-          Just ne ->
+          Just ne -> do
+            newLocationId <- getRandom
             l
               <$ (unshiftMessage
-                 . PlaceLocation
-                 . unSetAsideLocationId
+                 . (`PlaceLocation` newLocationId)
+                 . unSetAsideLocationCardCode
                  =<< sample ne
                  )
           Nothing -> pure l

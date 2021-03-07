@@ -9,6 +9,8 @@ import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
@@ -61,7 +63,7 @@ instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env (Investigato
     Tablet -> pure $ toTokenValue attrs Tablet 2 4
     otherFace -> getTokenValue attrs iid otherFace
 
-instance ScenarioRunner env => RunMessage env TheGathering where
+instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env TheGathering where
   runMessage msg s@(TheGathering attrs@ScenarioAttrs {..}) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds
@@ -73,13 +75,14 @@ instance ScenarioRunner env => RunMessage env TheGathering where
         , EncounterSet.AncientEvils
         , EncounterSet.ChillingCold
         ]
+      studyId <- getRandom
       pushMessages
         [ SetEncounterDeck encounterDeck
         , AddAgenda "01105"
         , AddAct "01108"
-        , PlaceLocation "01111"
-        , RevealLocation Nothing "01111"
-        , MoveAllTo "01111"
+        , PlaceLocation "01111" studyId
+        , RevealLocation Nothing studyId
+        , MoveAllTo studyId
         , AskMap
         . mapFromList
         $ [ (iid, ChooseOne [Run [Continue "Continue", theGatheringIntro]])
@@ -88,7 +91,7 @@ instance ScenarioRunner env => RunMessage env TheGathering where
         ]
       let
         locations' = mapFromList $ map
-          (second pure . toFst (getLocationName . lookupLocation))
+          (second pure . toFst (getLocationName . lookupLocationStub))
           ["01111", "01112", "01113", "01114", "01115"]
       TheGathering <$> runMessage msg (attrs & locationsL .~ locations')
     ResolveToken _ Cultist iid ->

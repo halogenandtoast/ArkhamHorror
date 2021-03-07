@@ -1,33 +1,35 @@
 module Arkham.Types.Location.Cards.DowntownArkhamAsylum
   ( DowntownArkhamAsylum(..)
   , downtownArkhamAsylum
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Target
-import Arkham.Types.Window
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype DowntownArkhamAsylum = DowntownArkhamAsylum LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-downtownArkhamAsylum :: DowntownArkhamAsylum
-downtownArkhamAsylum = DowntownArkhamAsylum $ base { locationVictory = Just 1 }
+downtownArkhamAsylum :: LocationId -> DowntownArkhamAsylum
+downtownArkhamAsylum lid = DowntownArkhamAsylum
+  $ base { locationVictory = Just 1 }
  where
   base = baseAttrs
+    lid
     "01131"
     (Name "Downtown" $ Just "Arkham Asylum")
     EncounterSet.TheMidnightMasks

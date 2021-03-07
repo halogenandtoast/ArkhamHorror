@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.TheEssexCountyExpress
   ( TheEssexCountyExpress(..)
   , theEssexCountyExpress
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -18,6 +17,8 @@ import Arkham.Types.EffectMetadata
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
@@ -187,7 +188,7 @@ investigatorDefeat ScenarioAttrs {..} = do
          ]
       <> [ AddCampaignCardToDeck iid "02178" | iid <- defeatedInvestigatorIds ]
 
-instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
+instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env TheEssexCountyExpress where
   runMessage msg s@(TheEssexCountyExpress attrs@ScenarioAttrs {..}) =
     case msg of
       SetTokensForScenario -> do
@@ -198,16 +199,20 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
       Setup -> do
         investigatorIds <- getInvestigatorIds
         engineCar <- sample $ "02175" :| ["02176", "02177"]
-        trainCars <- take 6 <$> shuffleM
-          [ "02167"
-          , "02168"
-          , "02169"
-          , "02170"
-          , "02171"
-          , "02172"
-          , "02173"
-          , "02174"
-          ]
+        trainCars <-
+          zip
+          <$> getRandoms
+          <*> (take 6 <$> shuffleM
+                [ "02167"
+                , "02168"
+                , "02169"
+                , "02170"
+                , "02171"
+                , "02172"
+                , "02173"
+                , "02174"
+                ]
+              )
         encounterDeck <- buildEncounterDeck
           [ EncounterSet.TheEssexCountyExpress
           , EncounterSet.TheBeyond
@@ -216,15 +221,19 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
           , EncounterSet.DarkCult
           ]
 
+        engineCarId <- getRandom
+
         let
-          start = fromJustNote "No train cars?" $ headMay trainCars
-          end = fromJustNote "No train cars?" $ headMay $ reverse trainCars
-          allCars = trainCars <> [engineCar]
+          start = fromJustNote "No train cars?" $ headMay (map fst trainCars)
+          end = fromJustNote "No train cars?" $ headMay $ reverse
+            (map fst trainCars)
+          allCars = map fst trainCars <> [engineCarId]
           token = case scenarioDifficulty of
             Easy -> MinusTwo
             Standard -> MinusThree
             Hard -> MinusFour
             Expert -> MinusFive
+
 
         unshiftMessages
           $ [ story investigatorIds theEssexCountyExpressIntro
@@ -234,16 +243,16 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
             , AddAct "02165"
             ]
           <> concat
-               [ [ PlaceLocation location
-                 , SetLocationLabel location ("trainCar" <> tshow @Int n)
+               [ [ PlaceLocation cardCode locationId
+                 , SetLocationLabel locationId ("trainCar" <> tshow @Int n)
                  ]
-               | (n, location) <- zip [6, 5 ..] trainCars
+               | (n, (locationId, cardCode)) <- zip [6, 5 ..] trainCars
                ]
           <> [ PlacedLocationDirection lid1 LeftOf lid2
              | (lid1, lid2) <- zip allCars (drop 1 allCars)
              ]
-          <> [ PlaceLocation engineCar
-             , PlacedLocationDirection engineCar RightOf end
+          <> [ PlaceLocation engineCar engineCarId
+             , PlacedLocationDirection engineCarId RightOf end
              , CreateWindowModifierEffect
                EffectSetupWindow
                (EffectModifiers [Modifier (ScenarioSource scenarioId) Blank])
@@ -255,8 +264,8 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
 
         let
           locations' = mapFromList $ map
-            (second pure . toFst (getLocationName . lookupLocation))
-            (engineCar : trainCars)
+            (second pure . toFst (getLocationName . lookupLocationStub))
+            (engineCar : map snd trainCars)
         TheEssexCountyExpress
           <$> runMessage msg (attrs & locationsL .~ locations')
       ResolveToken _ Tablet iid | isEasyStandard attrs -> do

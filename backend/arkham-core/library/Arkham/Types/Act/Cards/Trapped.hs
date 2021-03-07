@@ -7,7 +7,6 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
-import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Target
 
@@ -36,17 +35,22 @@ instance ActRunner env => RunMessage env Trapped where
         ]
       pure $ Trapped $ attrs & sequenceL .~ Act 1 B
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
-      enemyIds <- getSetList (LocationId "01111")
+      studyId <- getJustLocationIdByName "Study"
+      enemyIds <- getSetList studyId
+      hallwayId <- getRandom
+      atticId <- getRandom
+      cellarId <- getRandom
+      parlorId <- getRandom
       a <$ unshiftMessages
-        ([ PlaceLocation "01112"
-         , PlaceLocation "01114"
-         , PlaceLocation "01113"
-         , PlaceLocation "01115"
+        ([ PlaceLocation "01112" hallwayId
+         , PlaceLocation "01114" cellarId
+         , PlaceLocation "01113" atticId
+         , PlaceLocation "01115" parlorId
          ]
         <> map (Discard . EnemyTarget) enemyIds
-        <> [ RevealLocation Nothing "01112"
-           , MoveAllTo "01112"
-           , RemoveLocation "01111"
+        <> [ RevealLocation Nothing hallwayId
+           , MoveAllTo hallwayId
+           , RemoveLocation studyId
            , NextAct aid "01109"
            ]
         )

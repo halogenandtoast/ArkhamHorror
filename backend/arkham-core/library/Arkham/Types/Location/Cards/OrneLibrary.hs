@@ -2,26 +2,28 @@ module Arkham.Types.Location.Cards.OrneLibrary where
 
 import Arkham.Prelude
 
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Target
-import qualified Arkham.Types.Action as Action
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype OrneLibrary = OrneLibrary LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-orneLibrary :: OrneLibrary
-orneLibrary = OrneLibrary $ base { locationVictory = Just 1 }
+orneLibrary :: LocationId -> OrneLibrary
+orneLibrary lid = OrneLibrary $ base { locationVictory = Just 1 }
  where
   base = baseAttrs
+    lid
     "02050"
     (Name "Orne Library" Nothing)
     EncounterSet.ExtracurricularActivity

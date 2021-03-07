@@ -45,6 +45,7 @@ pattern UseDrawCardUnderneath iid source <- UseCardAbility iid source _ 100 _
 
 data LocationAttrs = LocationAttrs
   { locationName :: LocationName
+  , locationCardCode :: CardCode
   , locationUnrevealedName :: LocationName
   , locationLabel :: Text
   , locationId :: LocationId
@@ -106,7 +107,7 @@ instance SourceEntity LocationAttrs where
 
 instance IsCard LocationAttrs where
   getCardId = error "locations are not treated like cards"
-  getCardCode = unLocationId . locationId
+  getCardCode = locationCardCode
   getTraits = locationTraits
   getKeywords = mempty
 
@@ -133,6 +134,7 @@ revealed = locationRevealed
 
 baseAttrs
   :: LocationId
+  -> CardCode
   -> Name
   -> EncounterSet
   -> Int
@@ -141,12 +143,13 @@ baseAttrs
   -> [LocationSymbol]
   -> [Trait]
   -> LocationAttrs
-baseAttrs lid name encounterSet shroud' revealClues symbol' connectedSymbols' traits'
+baseAttrs lid cardCode name encounterSet shroud' revealClues symbol' connectedSymbols' traits'
   = LocationAttrs
     { locationName = LocationName name
     , locationUnrevealedName = LocationName name
     , locationLabel = nameToLabel name
     , locationId = lid
+    , locationCardCode = cardCode
     , locationRevealClues = revealClues
     , locationClues = 0
     , locationDoom = 0
@@ -331,7 +334,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       pure $ a & cardsUnderneathL %~ (<> cards)
     SetLocationLabel lid label' | lid == locationId ->
       pure $ a & labelL .~ label'
-    PlacedLocation lid | lid == locationId ->
+    PlacedLocation _ lid | lid == locationId ->
       a <$ unshiftMessage (AddConnection lid locationSymbol)
     PlacedLocationDirection lid direction lid2 | lid == locationId ->
       case direction of
@@ -502,8 +505,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       if CannotPlaceClues `elem` modifiers'
         then pure a
         else pure $ a & cluesL +~ n
-    PlaceDoom target n | isTarget a target ->
-      pure $ a & doomL +~ n
+    PlaceDoom target n | isTarget a target -> pure $ a & doomL +~ n
     RemoveClues (LocationTarget lid) n | lid == locationId ->
       pure $ a & cluesL %~ max 0 . subtract n
     RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0

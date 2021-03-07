@@ -1,35 +1,35 @@
 module Arkham.Types.Location.Cards.DiningCar
   ( diningCar
   , DiningCar(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
+import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.Direction
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Query
-import Arkham.Types.Card.EncounterCardMatcher
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype DiningCar = DiningCar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-diningCar :: DiningCar
-diningCar = DiningCar
+diningCar :: LocationId -> DiningCar
+diningCar lid = DiningCar
   $ base { locationConnectsTo = setFromList [LeftOf, RightOf] }
  where
   base = baseAttrs
+    lid
     "02173"
     (Name "Dining Car" Nothing)
     EncounterSet.TheEssexCountyExpress

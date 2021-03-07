@@ -10,6 +10,7 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
@@ -18,8 +19,9 @@ import Arkham.Types.Trait
 newtype BlastedHeath_249 = BlastedHeath_249 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-blastedHeath_249 :: BlastedHeath_249
-blastedHeath_249 = BlastedHeath_249 $ baseAttrs
+blastedHeath_249 :: LocationId -> BlastedHeath_249
+blastedHeath_249 lid = BlastedHeath_249 $ baseAttrs
+  lid
   "02249"
   (Name "Blasted Heath" Nothing)
   EncounterSet.UndimensionedAndUnseen

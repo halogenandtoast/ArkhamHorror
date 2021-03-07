@@ -17,6 +17,7 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
@@ -155,6 +156,7 @@ instance
 
 instance
   ( HasCount XPCount env ()
+  , HasId (Maybe LocationId) env LocationMatcher
   , HasSet InvestigatorId env ()
   , HasSet LocationId env [Trait]
   , HasName env LocationId
@@ -193,12 +195,18 @@ instance
       silasBishopPutOutOfMisery <- getHasRecord
         TheInvestigatorsPutSilasBishopOutOfHisMisery
 
+      baseOfTheHillId <- getRandom
+      ascendingPathId <- getRandom
+      sentinelPeakId <- getRandom
+
       silasMsgs <- if silasBishopPutOutOfMisery
         then do
           (conglomerationOfSpheres : rest) <- EncounterSet.gatherEncounterSet
             EncounterSet.HideousAbominations
           pure
-            [ SpawnEnemyAt (EncounterCard conglomerationOfSpheres) "02283"
+            [ SpawnEnemyAt
+              (EncounterCard conglomerationOfSpheres)
+              ascendingPathId
             , ShuffleIntoEncounterDeck rest
             ]
         else pure []
@@ -207,11 +215,15 @@ instance
       alteredPaths <- take 3 <$> shuffleM ["02289", "02290", "02291", "02292"]
 
       let
-        inPlayLocations = ["02282", "02283", "02284"]
-        locations = inPlayLocations <> divergingPaths <> alteredPaths
+        inPlayLocations =
+          [ (baseOfTheHillId, "02282")
+          , (ascendingPathId, "02283")
+          , (sentinelPeakId, "02284")
+          ]
+        locations = map snd inPlayLocations <> divergingPaths <> alteredPaths
         locations' = unionsWith (<>) $ map
           (uncurry singletonMap . second pure . toFst
-            (getLocationName . lookupLocation)
+            (getLocationName . lookupLocationStub)
           )
           locations
         token = case scenarioDifficulty attrs of
@@ -232,14 +244,17 @@ instance
            , AddAct "02277"
            ]
         <> replicate broodEscapedCount PlaceDoomOnAgenda
-        <> map PlaceLocation inPlayLocations
+        <> [ PlaceLocation cardCode locationId
+           | (locationId, cardCode) <- inPlayLocations
+           ]
         <> silasMsgs
-        <> [RevealLocation Nothing "02282", MoveAllTo "02282"]
+        <> [RevealLocation Nothing baseOfTheHillId, MoveAllTo baseOfTheHillId]
 
       WhereDoomAwaits <$> runMessage
         msg
-        (attrs & locationsL .~ locations' & setAsideLocationsL .~ setFromList
-          (divergingPaths <> alteredPaths)
+        (attrs
+        & (locationsL .~ locations')
+        & (setAsideLocationsL .~ (divergingPaths <> alteredPaths))
         )
     ResolveToken drawnToken Cultist iid -> s <$ unshiftMessages
       [ CreateWindowModifierEffect
@@ -321,7 +336,7 @@ instance
         <> [ DrivenInsane iid | iid <- investigatorIds ]
         <> [GameOver]
         )
-    PlacedLocation lid -> do
+    PlacedLocation _ lid -> do
       name <- getName lid
       when (name == mkName "Altered Path") $ do
         alteredCount <- length <$> getSetList @LocationId [Woods]

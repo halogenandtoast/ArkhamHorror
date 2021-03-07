@@ -44,9 +44,9 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioLocationLayout :: Maybe [GridTemplateRow]
   , scenarioDeck :: Maybe ScenarioDeck
   , scenarioLog :: HashSet ScenarioLogKey
-  , scenarioLocations :: HashMap LocationName [LocationId]
+  , scenarioLocations :: HashMap LocationName [CardCode]
   , scenarioSetAsideCards :: [Card]
-  , scenarioSetAsideLocations :: HashSet LocationId
+  , scenarioSetAsideLocations :: [CardCode]
   }
   deriving stock (Show, Generic, Eq)
 
@@ -76,8 +76,12 @@ instance HasCount SetAsideCount env (ScenarioAttrs, CardCode) where
     ((== cardCode) . getCardCode)
     (attrs ^. setAsideCardsL)
 
-instance HasSet SetAsideLocationId env ScenarioAttrs where
-  getSet = pure . mapSet SetAsideLocationId . scenarioSetAsideLocations
+instance HasSet SetAsideLocationCardCode env ScenarioAttrs where
+  getSet =
+    pure
+      . setFromList
+      . map SetAsideLocationCardCode
+      . scenarioSetAsideLocations
 
 toTokenValue :: ScenarioAttrs -> Token -> Int -> Int -> TokenValue
 toTokenValue attrs t esVal heVal = TokenValue
@@ -146,21 +150,20 @@ instance HasTokenValue env InvestigatorId => HasTokenValue env ScenarioAttrs whe
     otherFace -> pure $ TokenValue otherFace NoModifier
 
 findLocationKey
-  :: LocationMatcher -> HashMap LocationName [LocationId] -> Maybe LocationName
+  :: LocationMatcher -> HashMap LocationName [CardCode] -> Maybe LocationName
 findLocationKey locationMatcher locations = fst
   <$> find match (mapToList locations)
  where
-  match (LocationName (Name title msubtitle), locationIds) =
-    case locationMatcher of
-      LocationWithTitle title' -> title == title'
-      LocationWithFullTitle title' subtitle' ->
-        title == title' && Just subtitle' == msubtitle
-      LocationWithId lid -> lid `elem` locationIds
-      AnyLocation -> True
-      -- TODO: Encode these into an either?
-      EmptyLocation -> error "needs to find a singular location"
-      FarthestLocationFromYou _ -> error "needs to find a singular location"
-      LocationMatchers _ -> error "not implemented"
+  match (LocationName (Name title msubtitle), _) = case locationMatcher of
+    LocationWithTitle title' -> title == title'
+    LocationWithFullTitle title' subtitle' ->
+      title == title' && Just subtitle' == msubtitle
+    LocationWithId _ -> error "can not use id"
+    AnyLocation -> True
+    -- TODO: Encode these into an either?
+    EmptyLocation -> error "needs to find a singular location"
+    FarthestLocationFromYou _ -> error "needs to find a singular location"
+    LocationMatchers _ -> error "not implemented"
 
 type ScenarioAttrsRunner env
   = ( HasSet InScenarioInvestigatorId env ()
@@ -175,7 +178,7 @@ getIsStandalone
   :: (MonadReader env m, HasId (Maybe CampaignId) env ()) => m Bool
 getIsStandalone = isNothing <$> getId @(Maybe CampaignId) ()
 
-instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
+instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioAttrsRunner env) => RunMessage env ScenarioAttrs where
   runMessage msg a@ScenarioAttrs {..} = case msg of
     Setup -> a <$ pushMessage BeginInvestigation
     StartCampaign -> do
@@ -194,20 +197,16 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
             >>= flip lookup scenarioLocations
       a <$ case locations of
         [] -> error "There were no locations with that name"
-        [lid] -> unshiftMessage (PlaceLocation lid)
+        [cardCode] -> do
+          lid <- getRandom
+          unshiftMessage (PlaceLocation cardCode lid)
         _ ->
           error "We want there to be only one location when targetting names"
     EnemySpawnAtLocationMatching miid locationMatcher eid -> do
-      let
-        locations =
-          fromMaybe []
-            $ findLocationKey locationMatcher scenarioLocations
-            >>= flip lookup scenarioLocations
-      a <$ case locations of
-        [] -> error "There were no locations with that name"
-        [lid] -> unshiftMessage (EnemySpawn miid lid eid)
-        _ ->
-          error "We want there to be only one location when targetting names"
+      mlid <- getId locationMatcher
+      a <$ case mlid of
+        Nothing -> error "There were no locations with that name"
+        Just lid -> unshiftMessage (EnemySpawn miid lid eid)
     PlaceDoomOnAgenda -> do
       agendaIds <- getSetList @AgendaId ()
       case agendaIds of
@@ -257,7 +256,8 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
               [WhenChosenRandomLocation randomLocationId]
             , ChosenRandomLocation target randomLocationId
             ]
-    PlaceLocation lid -> pure $ a & setAsideLocationsL %~ deleteSet lid
+    PlaceLocation cardCode _ ->
+      pure $ a & setAsideLocationsL %~ deleteFirst cardCode
     RequestSetAsideCard target cardCode -> do
       let
         (before, rest) =

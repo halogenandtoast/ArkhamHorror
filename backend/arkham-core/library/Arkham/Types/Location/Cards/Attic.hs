@@ -4,21 +4,23 @@ import Arkham.Prelude
 
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Source
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 
 newtype Attic = Attic LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-attic :: Attic
-attic = Attic $ base { locationVictory = Just 1 }
+attic :: LocationId -> Attic
+attic lid = Attic $ base { locationVictory = Just 1 }
  where
   base = baseAttrs
+    lid
     "01113"
     (Name "Attic" Nothing)
     EncounterSet.TheGathering

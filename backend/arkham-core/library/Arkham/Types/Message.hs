@@ -192,6 +192,7 @@ data Message
   | CreateEnemyAtLocationMatching Card LocationMatcher
   | CreateEnemyEngagedWithPrey Card
   | CreateEnemyRequest Source Card
+  | CreateLocationRequest Source Card
   | CreatePayAbilityCostEffect (Maybe Ability) Source Target
   | CreateWindowModifierEffect EffectWindow (EffectMetadata Message) Source Target
   | CreateStoryAssetAt Card LocationId
@@ -352,11 +353,11 @@ data Message
   | PlaceDoom Target Int
   | PlaceDoomOnAgenda
   | PlaceEnemyInVoid EnemyId
-  | PlaceLocation LocationId
+  | PlaceLocation CardCode LocationId
   | PlaceLocationMatching LocationMatcher
   | PlaceResources Target Int
   | PlaceUnderneath Target [Card]
-  | PlacedLocation LocationId
+  | PlacedLocation CardCode LocationId
   | PlacedLocationDirection LocationId Direction LocationId
   | PlayCard InvestigatorId CardId (Maybe Target) Bool
   | PlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
@@ -397,6 +398,7 @@ data Message
   | RequestedEncounterCard Source (Maybe EncounterCard)
   | RequestedEncounterCards Target [EncounterCard]
   | RequestedEnemy Source EnemyId
+  | RequestedLocation Source LocationId
   | RequestedPlayerCard InvestigatorId Source (Maybe PlayerCard)
   | RequestedSetAsideCard Source Card
   | RequestedTokens Source (Maybe InvestigatorId) [Token]

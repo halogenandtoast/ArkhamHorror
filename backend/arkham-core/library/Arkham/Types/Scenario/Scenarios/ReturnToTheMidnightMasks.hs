@@ -11,6 +11,8 @@ import Arkham.Types.EncounterSet (gatherEncounterSet)
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Scenario.Attrs
@@ -39,7 +41,7 @@ instance (HasTokenValue env InvestigatorId, HasCount DoomCount env (), HasCount 
   getTokenValue (ReturnToTheMidnightMasks theMidnightMasks') iid =
     getTokenValue theMidnightMasks' iid
 
-instance (ScenarioRunner env) => RunMessage env ReturnToTheMidnightMasks where
+instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env ReturnToTheMidnightMasks where
   runMessage msg (ReturnToTheMidnightMasks theMidnightMasks'@(TheMidnightMasks attrs@ScenarioAttrs {..}))
     = case msg of
       Setup -> do
@@ -56,6 +58,16 @@ instance (ScenarioRunner env) => RunMessage env ReturnToTheMidnightMasks where
         rivertown <- sample $ "01125" :| ["50030"]
         miskatonicUniversity <- sample $ "01129" :| ["50029"]
         predatorOrPrey <- sample $ "01121" :| ["50026"]
+
+        yourHouseId <- getRandom
+        rivertownId <- getRandom
+        southsideId <- getRandom
+        stMarysHospitalId <- getRandom
+        miskatonicUniversityId <- getRandom
+        downtownId <- getRandom
+        easttownId <- getRandom
+        graveyardId <- getRandom
+        northsideId <- getRandom
 
         houseBurnedDown <- getHasRecord YourHouseHasBurnedToTheGround
         ghoulPriestAlive <- getHasRecord GhoulPriestIsStillAlive
@@ -77,17 +89,17 @@ instance (ScenarioRunner env) => RunMessage env ReturnToTheMidnightMasks where
         cultistDeck' <- drop 3 <$> shuffleM cultistCards
         let
           startingLocationMessages = if houseBurnedDown
-            then [RevealLocation Nothing rivertown, MoveAllTo rivertown]
+            then [RevealLocation Nothing rivertownId, MoveAllTo rivertownId]
             else
-              [ PlaceLocation "01124"
-              , RevealLocation Nothing "01124"
-              , MoveAllTo "01124"
+              [ PlaceLocation "01124" yourHouseId
+              , RevealLocation Nothing yourHouseId
+              , MoveAllTo yourHouseId
               ]
           ghoulPriestMessages =
             [ AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive ]
           spawnAcolyteMessages =
             [ CreateEnemyAt (EncounterCard c) l Nothing
-            | (c, l) <- zip acolytes [southside, downtown, "01133"]
+            | (c, l) <- zip acolytes [southsideId, downtownId, graveyardId]
             ]
           intro1or2 = if litaForcedToFindOthersToHelpHerCause
             then TheMidnightMasksIntroOne
@@ -106,21 +118,21 @@ instance (ScenarioRunner env) => RunMessage env ReturnToTheMidnightMasks where
             , SetEncounterDeck encounterDeck
             , AddAgenda predatorOrPrey
             , AddAct "01123"
-            , PlaceLocation rivertown
-            , PlaceLocation southside
-            , PlaceLocation "01128"
-            , PlaceLocation miskatonicUniversity
-            , PlaceLocation downtown
-            , PlaceLocation easttown
-            , PlaceLocation "01133"
-            , PlaceLocation northside
+            , PlaceLocation rivertown rivertownId
+            , PlaceLocation southside southsideId
+            , PlaceLocation "01128" stMarysHospitalId
+            , PlaceLocation miskatonicUniversity miskatonicUniversityId
+            , PlaceLocation downtown downtownId
+            , PlaceLocation easttown easttownId
+            , PlaceLocation "01133" graveyardId
+            , PlaceLocation northside northsideId
             ]
           <> startingLocationMessages
           <> ghoulPriestMessages
           <> spawnAcolyteMessages
         let
           locations' = mapFromList $ map
-            (second pure . toFst (getLocationName . lookupLocation))
+            (second pure . toFst (getLocationName . lookupLocationStub))
             [ "01124"
             , rivertown
             , southside

@@ -6,21 +6,23 @@ module Arkham.Types.Location.Cards.Broadmoor
 import Arkham.Prelude
 
 import Arkham.Types.Classes
-import Arkham.Types.GameValue
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Name
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Name
 import Arkham.Types.Trait
 
 newtype Broadmoor = Broadmoor LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-broadmoor :: Broadmoor
-broadmoor = Broadmoor $ base { locationVictory = Just 1 }
+broadmoor :: LocationId -> Broadmoor
+broadmoor lid = Broadmoor $ base { locationVictory = Just 1 }
  where
   base = baseAttrs
+    lid
     "81009"
     (Name "Broadmoor" Nothing)
     EncounterSet.CurseOfTheRougarou

@@ -3,19 +3,21 @@ module Arkham.Types.Location.Cards.Rivertown where
 import Arkham.Prelude
 
 import Arkham.Types.Classes
-import Arkham.Types.GameValue
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Name
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Name
 import Arkham.Types.Trait
 
 newtype Rivertown = Rivertown LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-rivertown :: Rivertown
-rivertown = Rivertown $ baseAttrs
+rivertown :: LocationId -> Rivertown
+rivertown lid = Rivertown $ baseAttrs
+  lid
   "01125"
   (Name "Rivertown" Nothing)
   EncounterSet.TheMidnightMasks

@@ -32,6 +32,7 @@ data EncounterSet
   | BloodOnTheAltar
   | UndimensionedAndUnseen
   | WhereDoomAwaits
+  | LostInTimeAndSpace
   | Sorcery
   | BishopsThralls
   | Dunwich
@@ -112,6 +113,17 @@ setCards = \case
       <> ["02295"]
       <> replicate 3 "02296"
       <> replicate 3 "02297"
+  LostInTimeAndSpace ->
+    "02323"
+      : replicate 4 "02324"
+      <> replicate 2 "02325"
+      <> replicate 2 "02326"
+      <> ["02327", "02328"]
+      <> replicate 3 "02329"
+      <> replicate 2 "02330"
+      <> replicate 3 "02331"
+      <> replicate 2 "02332"
+      <> replicate 3 "02333"
       <> replicate 3 "02298"
   Sorcery -> replicate 3 "02083" <> replicate 3 "02084"
   BishopsThralls -> replicate 2 "02085" <> replicate 3 "02086" <> ["02087"]

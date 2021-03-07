@@ -3,9 +3,10 @@ module Arkham.Types.LocationId where
 import Arkham.Prelude
 
 import Arkham.Types.Card.CardCode
+import Arkham.Types.Card.Id
 
-newtype LocationId = LocationId { unLocationId :: CardCode }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
+newtype LocationId = LocationId { unLocationId :: CardId }
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, Random)
 
 newtype ConnectedLocationId = ConnectedLocationId { unConnectedLocationId :: LocationId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
@@ -38,5 +39,5 @@ newtype RevealedLocationId = RevealedLocationId { unRevealedLocationId :: Locati
 newtype UnrevealedLocationId = UnrevealedLocationId { unUnrevealedLocationId :: LocationId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 
-newtype SetAsideLocationId = SetAsideLocationId { unSetAsideLocationId :: LocationId }
+newtype SetAsideLocationCardCode = SetAsideLocationCardCode { unSetAsideLocationCardCode :: CardCode }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

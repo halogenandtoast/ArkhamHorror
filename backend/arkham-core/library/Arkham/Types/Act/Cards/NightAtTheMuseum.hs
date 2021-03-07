@@ -14,6 +14,7 @@ import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Target
 
 newtype NightAtTheMuseum = NightAtTheMuseum ActAttrs
@@ -52,15 +53,19 @@ instance ActRunner env => RunMessage env NightAtTheMuseum where
             (EncounterCardMatchByCardCode "02141")
           )
     FoundEnemyInVoid _ target eid | isTarget attrs target -> do
-      lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
-        <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
+      lid <- getJustLocationIdByName
+        (mkFullName "Exhibit Hall" "Restricted Hall")
       a <$ unshiftMessages
         [EnemySpawnFromVoid Nothing lid eid, NextAct actId "02125"]
     FoundEncounterCard _ target ec | isTarget attrs target -> do
-      lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
-        <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
+      lid <- getJustLocationIdByName
+        (mkFullName "Exhibit Hall" "Restricted Hall")
       a <$ unshiftMessages
         [SpawnEnemyAt (EncounterCard ec) lid, NextAct actId "02125"]
-    WhenEnterLocation _ "02137" ->
-      a <$ unshiftMessage (AdvanceAct actId (toSource attrs))
+    WhenEnterLocation _ lid -> do
+      mRestrictedHallId <- getLocationIdByName
+        (mkFullName "Exhibit Hall" "Restricted Hall")
+      a <$ when
+        (Just lid == mRestrictedHallId)
+        (unshiftMessage $ AdvanceAct actId (toSource attrs))
     _ -> NightAtTheMuseum <$> runMessage msg attrs

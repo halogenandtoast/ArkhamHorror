@@ -4,6 +4,7 @@ module Arkham.Types.Location
 
 import Arkham.Prelude
 
+import Data.UUID (nil)
 import Arkham.Types.Modifier
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.AssetId
@@ -26,43 +27,13 @@ import Arkham.Types.Query
 import Arkham.Types.TreacheryId
 
 createLocation :: IsCard a => a -> Location
-createLocation a = CardLocation' . CardLocation $ With base (toCard a)
-  where base = lookupLocation (LocationId $ getCardCode a)
+createLocation a = lookupLocation (getCardCode a) (LocationId $ getCardId a)
 
 toLocationSymbol :: Location -> LocationSymbol
 toLocationSymbol = locationSymbol . toAttrs
 
-newtype CardLocation = CardLocation (Location `With` Card)
-  deriving newtype (Show, Eq, ToJSON, FromJSON)
-
-instance Entity CardLocation where
-  type EntityId CardLocation = LocationId
-  type EntityAttrs CardLocation = LocationAttrs
-  toId (CardLocation (_ `With` card)) =
-    LocationId . CardCode . tshow . unCardId $ getCardId card
-  toAttrs (CardLocation (base `With` _)) = toAttrs base
-
-instance LocationRunner env => RunMessage env CardLocation where
-  runMessage msg (CardLocation (a `With` card)) =
-    CardLocation . (`With` card) <$> runMessage msg a
-
-instance
-  ( HasPhase env
-  , HasCount CardCount env InvestigatorId
-  , HasCount ClueCount env LocationId
-  , HasCount ResourceCount env InvestigatorId
-  , HasId (Maybe StoryEnemyId) env CardCode
-  , HasId (Maybe StoryAssetId) env CardCode
-  )
-  => HasModifiersFor env CardLocation where
-  getModifiersFor s t (CardLocation (a `With` _)) = getModifiersFor s t a
-
-instance ActionRunner env => HasActions env CardLocation where
-  getActions iid window (CardLocation (a `With` _)) = getActions iid window a
-
 data Location
-  = CardLocation' CardLocation
-  | Study' Study
+  = Study' Study
   | Hallway' Hallway
   | Attic' Attic
   | Cellar' Cellar
@@ -246,6 +217,7 @@ instance LocationRunner env => RunMessage env BaseLocation where
 
 baseLocation
   :: LocationId
+  -> CardCode
   -> Name
   -> Int
   -> GameValue Int
@@ -253,15 +225,17 @@ baseLocation
   -> [LocationSymbol]
   -> (LocationAttrs -> LocationAttrs)
   -> Location
-baseLocation a b c d e f func = BaseLocation' . BaseLocation . func $ baseAttrs
-  a
-  b
-  EncounterSet.TheGathering
-  c
-  d
-  e
-  f
-  []
+baseLocation a b c d e f g func =
+  BaseLocation' . BaseLocation . func $ baseAttrs
+    a
+    b
+    c
+    EncounterSet.TheGathering
+    d
+    e
+    f
+    g
+    []
 
 instance IsCard Location where
   getCardId = getCardId . toAttrs
@@ -320,144 +294,153 @@ getLocationName l = if locationRevealed attrs
   else locationUnrevealedName attrs
   where attrs = toAttrs l
 
-lookupLocation :: LocationId -> Location
+lookupLocationStub :: CardCode -> Location
+lookupLocationStub = ($ LocationId (CardId nil)) . lookupLocation
+
+lookupLocation :: CardCode -> (LocationId -> Location)
 lookupLocation lid =
   fromJustNote ("Unknown location: " <> show lid) $ lookup lid allLocations
 
-allLocations :: HashMap LocationId Location
-allLocations = mapFrom
-  toId
-  [ Study' study
-  , Hallway' hallway
-  , Attic' attic
-  , Cellar' cellar
-  , Parlor' parlor
-  , YourHouse' yourHouse
-  , Rivertown' rivertown
-  , SouthsideHistoricalSociety' southsideHistoricalSociety
-  , SouthsideMasBoardingHouse' southsideMasBoardingHouse
-  , StMarysHospital' stMarysHospital
-  , MiskatonicUniversity' miskatonicUniversity
-  , DowntownFirstBankOfArkham' downtownFirstBankOfArkham
-  , DowntownArkhamAsylum' downtownArkhamAsylum
-  , Easttown' easttown
-  , Graveyard' graveyard
-  , Northside' northside
-  , MainPath' mainPath
-  , ArkhamWoodsUnhallowedGround' arkhamWoodsUnhallowedGround
-  , ArkhamWoodsTwistingPaths' arkhamWoodsTwistingPaths
-  , ArkhamWoodsOldHouse' arkhamWoodsOldHouse
-  , ArkhamWoodsCliffside' arkhamWoodsCliffside
-  , ArkhamWoodsTangledThicket' arkhamWoodsTangledThicket
-  , ArkhamWoodsQuietGlade' arkhamWoodsQuietGlade
-  , MiskatonicQuad' miskatonicQuad
-  , HumanitiesBuilding' humanitiesBuilding
-  , OrneLibrary' orneLibrary
-  , StudentUnion' studentUnion
-  , Dormitories' dormitories
-  , AdministrationBuilding' administrationBuilding
-  , FacultyOfficesTheNightIsStillYoung' facultyOfficesTheNightIsStillYoung
-  , FacultyOfficesTheHourIsLate' facultyOfficesTheHourIsLate
-  , ScienceBuilding' scienceBuilding
-  , AlchemyLabs' alchemyLabs
-  , LaBellaLuna' laBellaLuna
-  , CloverClubLounge' cloverClubLounge
-  , CloverClubBar' cloverClubBar
-  , CloverClubCardroom' cloverClubCardroom
-  , DarkenedHall' darkenedHall
-  , ArtGallery' artGallery
-  , VipArea' vipArea
-  , BackAlley' backAlley
-  , MuseumEntrance' museumEntrance
-  , MuseumHalls' museumHalls
-  , SecurityOffice_128' securityOffice_128
-  , SecurityOffice_129' securityOffice_129
-  , AdministrationOffice_130' administrationOffice_130
-  , AdministrationOffice_131' administrationOffice_131
-  , ExhibitHallAthabaskanExhibit' exhibitHallAthabaskanExhibit
-  , ExhibitHallMedusaExhibit' exhibitHallMedusaExhibit
-  , ExhibitHallNatureExhibit' exhibitHallNatureExhibit
-  , ExhibitHallEgyptianExhibit' exhibitHallEgyptianExhibit
-  , ExhibitHallHallOfTheDead' exhibitHallHallOfTheDead
-  , ExhibitHallRestrictedHall' exhibitHallRestrictedHall
-  , PassengerCar_167' passengerCar_167
-  , PassengerCar_168' passengerCar_168
-  , PassengerCar_169' passengerCar_169
-  , PassengerCar_170' passengerCar_170
-  , PassengerCar_171' passengerCar_171
-  , SleepingCar' sleepingCar
-  , DiningCar' diningCar
-  , ParlorCar' parlorCar
-  , EngineCar_175' engineCar_175
-  , EngineCar_176' engineCar_176
-  , EngineCar_177' engineCar_177
-  , VillageCommons' villageCommons
-  , BishopsBrook_202' bishopsBrook_202
-  , BishopsBrook_203' bishopsBrook_203
-  , BurnedRuins_204' burnedRuins_204
-  , BurnedRuins_205' burnedRuins_205
-  , OsbornsGeneralStore_206' osbornsGeneralStore_206
-  , OsbornsGeneralStore_207' osbornsGeneralStore_207
-  , CongregationalChurch_208' congregationalChurch_208
-  , CongregationalChurch_209' congregationalChurch_209
-  , HouseInTheReeds_210' houseInTheReeds_210
-  , HouseInTheReeds_211' houseInTheReeds_211
-  , Schoolhouse_212' schoolhouse_212
-  , Schoolhouse_213' schoolhouse_213
-  , TheHiddenChamber' theHiddenChamber
-  , DunwichVillage_242' dunwichVillage_242
-  , DunwichVillage_243' dunwichVillage_243
-  , ColdSpringGlen_244' coldSpringGlen_244
-  , ColdSpringGlen_245' coldSpringGlen_245
-  , TenAcreMeadow_246' tenAcreMeadow_246
-  , TenAcreMeadow_247' tenAcreMeadow_247
-  , BlastedHeath_248' blastedHeath_248
-  , BlastedHeath_249' blastedHeath_249
-  , WhateleyRuins_250' whateleyRuins_250
-  , WhateleyRuins_251' whateleyRuins_251
-  , DevilsHopYard_252' devilsHopYard_252
-  , DevilsHopYard_253' devilsHopYard_253
-  , BaseOfTheHill' baseOfTheHill
-  , AscendingPath' ascendingPath
-  , SentinelPeak' sentinelPeak
-  , SlaughteredWoods' slaugteredWoods
-  , EerieGlade' eerieGlade
-  , DestroyedPath' destroyedPath
-  , FrozenSpring' frozenSpring
-  , DimensionalGap' dimensionalGap
-  , ATearInThePath' aTearInThePath
-  , UprootedWoods' uprootedWoods
-  , LostMemories' lostMemories
-  , StudyAberrantGateway' studyAberrantGateway
-  , GuestHall' guestHall
-  , Bedroom' bedroom
-  , Bathroom' bathroom
-  , HoleInTheWall' holeInTheWall
-  , ReturnToAttic' returnToAttic
-  , FarAboveYourHouse' farAboveYourHouse
-  , ReturnToCellar' returnToCellar
-  , DeepBelowYourHouse' deepBelowYourHouse
-  , EasttownArkhamPoliceStation' easttownArkhamPoliceStation
-  , NorthsideTrainStation' northsideTrainStation
-  , MiskatonicUniversityMiskatonicMuseum' miskatonicUniversityMiskatonicMuseum
-  , RivertownAbandonedWarehouse' rivertownAbandonedWarehouse
-  , ArkhamWoodsGreatWillow' arkhamWoodsGreatWillow
-  , ArkhamWoodsLakeside' arkhamWoodsLakeside
-  , ArkhamWoodsCorpseRiddenClearing' arkhamWoodsCorpseRiddenClearing
-  , ArkhamWoodsWoodenBridge' arkhamWoodsWoodenBridge
-  , RitualSite' ritualSite
-  , CursedShores' cursedShores
-  , GardenDistrict' gardenDistrict
-  , Broadmoor' broadmoor
-  , BrackishWaters' brackishWaters
-  , AudubonPark' audubonPark
-  , FauborgMarigny' fauborgMarigny
-  , ForgottenMarsh' forgottenMarsh
-  , TrappersCabin' trappersCabin
-  , TwistedUnderbrush' twistedUnderbrush
-  , FoulSwamp' foulSwamp
-  , RitualGrounds' ritualGrounds
-  , OvergrownCairns' overgrownCairns
+allLocations :: HashMap CardCode (LocationId -> Location)
+allLocations = mapFromList
+  [ ("01111", Study' . study)
+  , ("01112", Hallway' . hallway)
+  , ("01113", Attic' . attic)
+  , ("01114", Cellar' . cellar)
+  , ("01115", Parlor' . parlor)
+  , ("01124", YourHouse' . yourHouse)
+  , ("01125", Rivertown' . rivertown)
+  , ("01126", SouthsideHistoricalSociety' . southsideHistoricalSociety)
+  , ("01127", SouthsideMasBoardingHouse' . southsideMasBoardingHouse)
+  , ("01128", StMarysHospital' . stMarysHospital)
+  , ("01129", MiskatonicUniversity' . miskatonicUniversity)
+  , ("01130", DowntownFirstBankOfArkham' . downtownFirstBankOfArkham)
+  , ("01131", DowntownArkhamAsylum' . downtownArkhamAsylum)
+  , ("01132", Easttown' . easttown)
+  , ("01133", Graveyard' . graveyard)
+  , ("01134", Northside' . northside)
+  , ("01149", MainPath' . mainPath)
+  , ("01150", ArkhamWoodsUnhallowedGround' . arkhamWoodsUnhallowedGround)
+  , ("01151", ArkhamWoodsTwistingPaths' . arkhamWoodsTwistingPaths)
+  , ("01152", ArkhamWoodsOldHouse' . arkhamWoodsOldHouse)
+  , ("01153", ArkhamWoodsCliffside' . arkhamWoodsCliffside)
+  , ("01154", ArkhamWoodsTangledThicket' . arkhamWoodsTangledThicket)
+  , ("01155", ArkhamWoodsQuietGlade' . arkhamWoodsQuietGlade)
+  , ("02048", MiskatonicQuad' . miskatonicQuad)
+  , ("02049", HumanitiesBuilding' . humanitiesBuilding)
+  , ("02050", OrneLibrary' . orneLibrary)
+  , ("02051", StudentUnion' . studentUnion)
+  , ("02052", Dormitories' . dormitories)
+  , ("02053", AdministrationBuilding' . administrationBuilding)
+  , ( "02054"
+    , FacultyOfficesTheNightIsStillYoung' . facultyOfficesTheNightIsStillYoung
+    )
+  , ("02055", FacultyOfficesTheHourIsLate' . facultyOfficesTheHourIsLate)
+  , ("02056", ScienceBuilding' . scienceBuilding)
+  , ("02057", AlchemyLabs' . alchemyLabs)
+  , ("02070", LaBellaLuna' . laBellaLuna)
+  , ("02071", CloverClubLounge' . cloverClubLounge)
+  , ("02072", CloverClubBar' . cloverClubBar)
+  , ("02073", CloverClubCardroom' . cloverClubCardroom)
+  , ("02074", DarkenedHall' . darkenedHall)
+  , ("02075", ArtGallery' . artGallery)
+  , ("02076", VipArea' . vipArea)
+  , ("02077", BackAlley' . backAlley)
+  , ("02126", MuseumEntrance' . museumEntrance)
+  , ("02127", MuseumHalls' . museumHalls)
+  , ("02128", SecurityOffice_128' . securityOffice_128)
+  , ("02129", SecurityOffice_129' . securityOffice_129)
+  , ("02130", AdministrationOffice_130' . administrationOffice_130)
+  , ("02131", AdministrationOffice_131' . administrationOffice_131)
+  , ("02132", ExhibitHallAthabaskanExhibit' . exhibitHallAthabaskanExhibit)
+  , ("02133", ExhibitHallMedusaExhibit' . exhibitHallMedusaExhibit)
+  , ("02134", ExhibitHallNatureExhibit' . exhibitHallNatureExhibit)
+  , ("02135", ExhibitHallEgyptianExhibit' . exhibitHallEgyptianExhibit)
+  , ("02136", ExhibitHallHallOfTheDead' . exhibitHallHallOfTheDead)
+  , ("02137", ExhibitHallRestrictedHall' . exhibitHallRestrictedHall)
+  , ("02167", PassengerCar_167' . passengerCar_167)
+  , ("02168", PassengerCar_168' . passengerCar_168)
+  , ("02169", PassengerCar_169' . passengerCar_169)
+  , ("02170", PassengerCar_170' . passengerCar_170)
+  , ("02171", PassengerCar_171' . passengerCar_171)
+  , ("02172", SleepingCar' . sleepingCar)
+  , ("02173", DiningCar' . diningCar)
+  , ("02174", ParlorCar' . parlorCar)
+  , ("02175", EngineCar_175' . engineCar_175)
+  , ("02176", EngineCar_176' . engineCar_176)
+  , ("02177", EngineCar_177' . engineCar_177)
+  , ("02201", VillageCommons' . villageCommons)
+  , ("02202", BishopsBrook_202' . bishopsBrook_202)
+  , ("02203", BishopsBrook_203' . bishopsBrook_203)
+  , ("02204", BurnedRuins_204' . burnedRuins_204)
+  , ("02205", BurnedRuins_205' . burnedRuins_205)
+  , ("02206", OsbornsGeneralStore_206' . osbornsGeneralStore_206)
+  , ("02207", OsbornsGeneralStore_207' . osbornsGeneralStore_207)
+  , ("02208", CongregationalChurch_208' . congregationalChurch_208)
+  , ("02209", CongregationalChurch_209' . congregationalChurch_209)
+  , ("02210", HouseInTheReeds_210' . houseInTheReeds_210)
+  , ("02211", HouseInTheReeds_211' . houseInTheReeds_211)
+  , ("02212", Schoolhouse_212' . schoolhouse_212)
+  , ("02213", Schoolhouse_213' . schoolhouse_213)
+  , ("02214", TheHiddenChamber' . theHiddenChamber)
+  , ("02242", DunwichVillage_242' . dunwichVillage_242)
+  , ("02243", DunwichVillage_243' . dunwichVillage_243)
+  , ("02244", ColdSpringGlen_244' . coldSpringGlen_244)
+  , ("02245", ColdSpringGlen_245' . coldSpringGlen_245)
+  , ("02246", TenAcreMeadow_246' . tenAcreMeadow_246)
+  , ("02247", TenAcreMeadow_247' . tenAcreMeadow_247)
+  , ("02248", BlastedHeath_248' . blastedHeath_248)
+  , ("02249", BlastedHeath_249' . blastedHeath_249)
+  , ("02250", WhateleyRuins_250' . whateleyRuins_250)
+  , ("02251", WhateleyRuins_251' . whateleyRuins_251)
+  , ("02252", DevilsHopYard_252' . devilsHopYard_252)
+  , ("02253", DevilsHopYard_253' . devilsHopYard_253)
+  , ("02282", BaseOfTheHill' . baseOfTheHill)
+  , ("02283", AscendingPath' . ascendingPath)
+  , ("02284", SentinelPeak' . sentinelPeak)
+  , ("02285", SlaughteredWoods' . slaugteredWoods)
+  , ("02286", EerieGlade' . eerieGlade)
+  , ("02287", DestroyedPath' . destroyedPath)
+  , ("02288", FrozenSpring' . frozenSpring)
+  , ("02289", DimensionalGap' . dimensionalGap)
+  , ("02290", ATearInThePath' . aTearInThePath)
+  , ("02291", UprootedWoods' . uprootedWoods)
+  , ("02292", LostMemories' . lostMemories)
+  , ("50013", StudyAberrantGateway' . studyAberrantGateway)
+  , ("50014", GuestHall' . guestHall)
+  , ("50015", Bedroom' . bedroom)
+  , ("50016", Bathroom' . bathroom)
+  , ("50017", HoleInTheWall' . holeInTheWall)
+  , ("50018", ReturnToAttic' . returnToAttic)
+  , ("50019", FarAboveYourHouse' . farAboveYourHouse)
+  , ("50020", ReturnToCellar' . returnToCellar)
+  , ("50021", DeepBelowYourHouse' . deepBelowYourHouse)
+  , ("50027", EasttownArkhamPoliceStation' . easttownArkhamPoliceStation)
+  , ("50028", NorthsideTrainStation' . northsideTrainStation)
+  , ( "50029"
+    , MiskatonicUniversityMiskatonicMuseum'
+      . miskatonicUniversityMiskatonicMuseum
+    )
+  , ("50030", RivertownAbandonedWarehouse' . rivertownAbandonedWarehouse)
+  , ("50033", ArkhamWoodsGreatWillow' . arkhamWoodsGreatWillow)
+  , ("50034", ArkhamWoodsLakeside' . arkhamWoodsLakeside)
+  , ( "50035"
+    , ArkhamWoodsCorpseRiddenClearing' . arkhamWoodsCorpseRiddenClearing
+    )
+  , ("50036", ArkhamWoodsWoodenBridge' . arkhamWoodsWoodenBridge)
+  , ("50037", RitualSite' . ritualSite)
+  , ("81007", CursedShores' . cursedShores)
+  , ("81008", GardenDistrict' . gardenDistrict)
+  , ("81009", Broadmoor' . broadmoor)
+  , ("81010", BrackishWaters' . brackishWaters)
+  , ("81011", AudubonPark' . audubonPark)
+  , ("81012", FauborgMarigny' . fauborgMarigny)
+  , ("81013", ForgottenMarsh' . forgottenMarsh)
+  , ("81014", TrappersCabin' . trappersCabin)
+  , ("81015", TwistedUnderbrush' . twistedUnderbrush)
+  , ("81016", FoulSwamp' . foulSwamp)
+  , ("81017", RitualGrounds' . ritualGrounds)
+  , ("81018", OvergrownCairns' . overgrownCairns)
   ]
 
 isEmptyLocation :: Location -> Bool

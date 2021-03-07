@@ -1,31 +1,32 @@
 module Arkham.Types.Location.Cards.NorthsideTrainStation
   ( NorthsideTrainStation(..)
   , northsideTrainStation
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.GameValue
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
-import Arkham.Types.Name
-import Arkham.Types.Window
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype NorthsideTrainStation = NorthsideTrainStation LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-northsideTrainStation :: NorthsideTrainStation
-northsideTrainStation = NorthsideTrainStation
+northsideTrainStation :: LocationId -> NorthsideTrainStation
+northsideTrainStation lid = NorthsideTrainStation
   (baseAttrs
+    lid
     "50028"
     (Name "Northside" $ Just "Train Station")
     EncounterSet.TheMidnightMasks
@@ -55,9 +56,10 @@ instance ActionRunner env => HasActions env NorthsideTrainStation where
     getActions iid window attrs
 
 instance LocationRunner env => RunMessage env NorthsideTrainStation where
-  runMessage msg l@(NorthsideTrainStation attrs@LocationAttrs {..}) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      locationIds <- getSetList [Arkham]
-      l <$ unshiftMessage
-        (chooseOne iid [ MoveTo iid lid | lid <- locationIds ])
-    _ -> NorthsideTrainStation <$> runMessage msg attrs
+  runMessage msg l@(NorthsideTrainStation attrs@LocationAttrs {..}) =
+    case msg of
+      UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+        locationIds <- getSetList [Arkham]
+        l <$ unshiftMessage
+          (chooseOne iid [ MoveTo iid lid | lid <- locationIds ])
+      _ -> NorthsideTrainStation <$> runMessage msg attrs

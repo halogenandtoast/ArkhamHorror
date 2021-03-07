@@ -16,6 +16,8 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Game.Helpers
 import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Scenario.Attrs
@@ -153,6 +155,7 @@ instance
 
 instance
   ( HasId CardCode env EnemyId
+  , HasId (Maybe LocationId) env LocationMatcher
   , HasSource ForSkillTest env
   , HasCount XPCount env ()
   , HasSet InvestigatorId env ()
@@ -202,6 +205,13 @@ instance
       whateleyRuins <- sample $ "02250" :| ["02251"]
       devilsHopYard <- sample $ "00252" :| ["02253"]
 
+      dunwichVillageId <- getRandom
+      coldSpringGlenId <- getRandom
+      tenAcreMeadowId <- getRandom
+      blastedHeathId <- getRandom
+      whateleyRuinsId <- getRandom
+      devilsHopYardId <- getRandom
+
       sacrificedToYogSothoth <- if standalone
         then pure 3
         else length <$> asks (hasRecordSet SacrificedToYogSothoth)
@@ -217,17 +227,17 @@ instance
       (msgs, setAsideCount) <- case sacrificedToYogSothoth of
         2 -> do
           broodOfYogSothoth <- EncounterCard <$> genEncounterCard "02255"
-          pure ([CreateEnemyAt broodOfYogSothoth coldSpringGlen Nothing], 3)
+          pure ([CreateEnemyAt broodOfYogSothoth coldSpringGlenId Nothing], 3)
         3 -> do
           broodOfYogSothoth <- EncounterCard <$> genEncounterCard "02255"
-          pure ([CreateEnemyAt broodOfYogSothoth coldSpringGlen Nothing], 2)
+          pure ([CreateEnemyAt broodOfYogSothoth coldSpringGlenId Nothing], 2)
         x -> if x <= 2
           then do
             broodOfYogSothoth1 <- EncounterCard <$> genEncounterCard "02255"
             broodOfYogSothoth2 <- EncounterCard <$> genEncounterCard "02255"
             pure
-              ( [ CreateEnemyAt broodOfYogSothoth1 coldSpringGlen Nothing
-                , CreateEnemyAt broodOfYogSothoth2 blastedHeath Nothing
+              ( [ CreateEnemyAt broodOfYogSothoth1 coldSpringGlenId Nothing
+                , CreateEnemyAt broodOfYogSothoth2 blastedHeathId Nothing
                 ]
               , 3
               )
@@ -239,15 +249,15 @@ instance
 
       let
         locations =
-          [ dunwichVillage
-          , coldSpringGlen
-          , tenAcreMeadow
-          , blastedHeath
-          , whateleyRuins
-          , devilsHopYard
+          [ (dunwichVillageId, dunwichVillage)
+          , (coldSpringGlenId, coldSpringGlen)
+          , (tenAcreMeadowId, tenAcreMeadow)
+          , (blastedHeathId, blastedHeath)
+          , (whateleyRuinsId, whateleyRuins)
+          , (devilsHopYardId, devilsHopYard)
           ]
         locations' = mapFromList $ map
-          (second pure . toFst (getLocationName . lookupLocation))
+          ((second pure . toFst (getLocationName . lookupLocationStub)) . snd)
           locations
 
       unshiftMessages
@@ -263,8 +273,10 @@ instance
           , AddAgenda "02237"
           , AddAct "02240"
           ]
-        <> map PlaceLocation locations
-        <> [RevealLocation Nothing dunwichVillage, MoveAllTo dunwichVillage]
+        <> [ PlaceLocation cardCode locationId
+           | (locationId, cardCode) <- locations
+           ]
+        <> [RevealLocation Nothing dunwichVillageId, MoveAllTo dunwichVillageId]
         <> [ chooseOne
                iid
                [ Label

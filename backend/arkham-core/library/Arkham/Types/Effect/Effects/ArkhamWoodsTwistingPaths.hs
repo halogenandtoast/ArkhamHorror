@@ -8,7 +8,11 @@ import Arkham.Prelude
 import Arkham.Types.Classes
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.EffectMetadata
+import Arkham.Types.Game.Helpers
+import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Source
 import Arkham.Types.Target
 
@@ -22,14 +26,24 @@ arkhamWoodsTwistingPaths =
 instance HasModifiersFor env ArkhamWoodsTwistingPaths where
   getModifiersFor = noModifiersFor
 
-instance HasQueue env => RunMessage env ArkhamWoodsTwistingPaths where
+instance (HasId (Maybe LocationId) env LocationMatcher, HasQueue env) => RunMessage env ArkhamWoodsTwistingPaths where
   runMessage msg e@(ArkhamWoodsTwistingPaths attrs) = case msg of
-    PassedSkillTest _ _ (LocationSource "01151") SkillTestInitiatorTarget{} _ _
-      -> do
+    PassedSkillTest _ _ (LocationSource lid) SkillTestInitiatorTarget{} _ _ ->
+      do
+        arkhamWoodsTwistingPathsId <- getJustLocationIdByName
+          (mkFullName "Arkham Woods" "Twisting Paths")
         let disable = DisableEffect (effectId attrs)
-        e <$ case effectMetadata attrs of
-          Just (EffectMessages msgs) -> unshiftMessages (msgs <> [disable])
-          _ -> unshiftMessage disable
-    FailedSkillTest _ _ (LocationSource "01151") SkillTestInitiatorTarget{} _ _
-      -> e <$ unshiftMessage (DisableEffect $ effectId attrs)
+        e <$ when
+          (lid == arkhamWoodsTwistingPathsId)
+          (case effectMetadata attrs of
+            Just (EffectMessages msgs) -> unshiftMessages (msgs <> [disable])
+            _ -> unshiftMessage disable
+          )
+    FailedSkillTest _ _ (LocationSource lid) SkillTestInitiatorTarget{} _ _ ->
+      do
+        arkhamWoodsTwistingPathsId <- getJustLocationIdByName
+          (mkFullName "Arkham Woods" "Twisting Paths")
+        e <$ when
+          (lid == arkhamWoodsTwistingPathsId)
+          (unshiftMessage $ DisableEffect $ effectId attrs)
     _ -> ArkhamWoodsTwistingPaths <$> runMessage msg attrs

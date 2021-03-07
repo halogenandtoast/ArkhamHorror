@@ -3,25 +3,28 @@ module Arkham.Types.Location.Cards.Graveyard where
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype Graveyard = Graveyard LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-graveyard :: Graveyard
-graveyard = Graveyard $ base { locationVictory = Just 1 }
+graveyard :: LocationId -> Graveyard
+graveyard lid = Graveyard $ base { locationVictory = Just 1 }
  where
   base = baseAttrs
+    lid
     "01133"
     (Name "Graveyard" Nothing)
     EncounterSet.TheMidnightMasks
@@ -50,12 +53,13 @@ instance (LocationRunner env) => RunMessage env Graveyard where
           3
         )
       Graveyard <$> runMessage msg attrs
-    FailedSkillTest iid _ source _ _ _ | isSource attrs source ->
+    FailedSkillTest iid _ source _ _ _ | isSource attrs source -> do
+      rivertownId <- getJustLocationIdByName "Rivertown"
       l <$ unshiftMessage
         (chooseOne
           iid
           [ InvestigatorAssignDamage iid source DamageAny 0 2
-          , MoveTo iid "01125"
+          , MoveTo iid rivertownId
           ]
         )
     _ -> Graveyard <$> runMessage msg attrs

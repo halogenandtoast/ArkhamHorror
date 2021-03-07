@@ -7,22 +7,24 @@ import Arkham.Prelude
 
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Target
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype FauborgMarigny = FauborgMarigny LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-fauborgMarigny :: FauborgMarigny
-fauborgMarigny = FauborgMarigny $ baseAttrs
+fauborgMarigny :: LocationId -> FauborgMarigny
+fauborgMarigny lid = FauborgMarigny $ baseAttrs
+  lid
   "81012"
   (Name "Faurborg Marigny" Nothing)
   EncounterSet.CurseOfTheRougarou

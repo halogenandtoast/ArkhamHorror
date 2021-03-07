@@ -1,15 +1,18 @@
 module Arkham.Types.Location.Cards.PassengerCar_170
   ( passengerCar_170
   , PassengerCar_170(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Direction
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
@@ -17,20 +20,17 @@ import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.SkillType
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype PassengerCar_170 = PassengerCar_170 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-passengerCar_170 :: PassengerCar_170
-passengerCar_170 = PassengerCar_170
+passengerCar_170 :: LocationId -> PassengerCar_170
+passengerCar_170 lid = PassengerCar_170
   $ base { locationConnectsTo = setFromList [LeftOf, RightOf] }
  where
   base = baseAttrs
+    lid
     "02170"
     (Name "Passenger Car" Nothing)
     EncounterSet.TheEssexCountyExpress

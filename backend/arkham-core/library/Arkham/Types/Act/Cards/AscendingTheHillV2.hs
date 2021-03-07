@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.AscendingTheHillV2
   ( AscendingTheHillV2(..)
   , ascendingTheHillV2
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -35,7 +34,7 @@ instance HasSet Trait env LocationId => HasModifiersFor env AscendingTheHillV2 w
 instance ActionRunner env => HasActions env AscendingTheHillV2 where
   getActions i window (AscendingTheHillV2 x) = getActions i window x
 
-instance ActRunner env => RunMessage env AscendingTheHillV2 where
+instance (HasName env LocationId, ActRunner env) => RunMessage env AscendingTheHillV2 where
   runMessage msg a@(AscendingTheHillV2 attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -51,6 +50,9 @@ instance ActRunner env => RunMessage env AscendingTheHillV2 where
       sethBishop <- EncounterCard <$> genEncounterCard "02293"
       a <$ unshiftMessages
         [CreateEnemyAt sethBishop sentinelPeak Nothing, NextAct actId "02281"]
-    WhenEnterLocation _ "02284" ->
-      a <$ unshiftMessage (AdvanceAct actId (toSource attrs))
+    WhenEnterLocation _ lid -> do
+      name <- getName lid
+      a <$ when
+        (name == "Sentinel Hill")
+        (unshiftMessage $ AdvanceAct actId (toSource attrs))
     _ -> AscendingTheHillV2 <$> runMessage msg attrs

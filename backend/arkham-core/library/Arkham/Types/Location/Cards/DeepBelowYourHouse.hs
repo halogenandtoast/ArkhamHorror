@@ -2,25 +2,27 @@ module Arkham.Types.Location.Cards.DeepBelowYourHouse where
 
 import Arkham.Prelude
 
+import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Card.EncounterCardMatcher
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 
 newtype DeepBelowYourHouse = DeepBelowYourHouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-deepBelowYourHouse :: DeepBelowYourHouse
-deepBelowYourHouse = DeepBelowYourHouse $ base { locationVictory = Just 1 }
+deepBelowYourHouse :: LocationId -> DeepBelowYourHouse
+deepBelowYourHouse lid = DeepBelowYourHouse $ base { locationVictory = Just 1 }
  where
   base = baseAttrs
+    lid
     "50021"
     (Name "Ghoul Pits" Nothing)
     EncounterSet.ReturnToTheGathering

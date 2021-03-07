@@ -10,6 +10,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
@@ -19,13 +20,14 @@ import Arkham.Types.Trait
 newtype ArkhamWoodsWoodenBridge = ArkhamWoodsWoodenBridge LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-arkhamWoodsWoodenBridge :: ArkhamWoodsWoodenBridge
-arkhamWoodsWoodenBridge = ArkhamWoodsWoodenBridge $ base
+arkhamWoodsWoodenBridge :: LocationId -> ArkhamWoodsWoodenBridge
+arkhamWoodsWoodenBridge lid = ArkhamWoodsWoodenBridge $ base
   { locationRevealedConnectedSymbols = setFromList [Squiggle, Droplet]
   , locationRevealedSymbol = Circle
   }
  where
   base = baseAttrs
+    lid
     "50036"
     (Name "Arkham Woods" $ Just "Wooden Bridge")
     EncounterSet.ReturnToTheDevourerBelow

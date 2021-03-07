@@ -1,31 +1,31 @@
 module Arkham.Types.Location.Cards.StudyAberrantGateway
   ( StudyAberrantGateway(..)
   , studyAberrantGateway
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Source
 import Arkham.Types.Window
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Game.Helpers
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 
 newtype StudyAberrantGateway = StudyAberrantGateway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-studyAberrantGateway :: StudyAberrantGateway
-studyAberrantGateway = StudyAberrantGateway $ baseAttrs
+studyAberrantGateway :: LocationId -> StudyAberrantGateway
+studyAberrantGateway lid = StudyAberrantGateway $ baseAttrs
+  lid
   "50013"
   (Name "Study" (Just "Aberrant Gateway"))
   EncounterSet.ReturnToTheGathering
@@ -54,12 +54,13 @@ instance ActionRunner env => HasActions env StudyAberrantGateway where
     getActions iid window attrs
 
 instance LocationRunner env => RunMessage env StudyAberrantGateway where
-  runMessage msg l@(StudyAberrantGateway attrs@LocationAttrs {..}) = case msg of
-    UseCardAbility iid (LocationSource lid) _ 1 _ | lid == locationId ->
-      l <$ unshiftMessage (DrawCards iid 3 False)
-    When (EnemySpawnAtLocationMatching _ locationMatcher _) -> do
-      inPlay <- isJust <$> getId @(Maybe LocationId) locationMatcher
-      l <$ unless
-        inPlay
-        (unshiftMessage (PlaceLocationMatching locationMatcher))
-    _ -> StudyAberrantGateway <$> runMessage msg attrs
+  runMessage msg l@(StudyAberrantGateway attrs@LocationAttrs {..}) =
+    case msg of
+      UseCardAbility iid (LocationSource lid) _ 1 _ | lid == locationId ->
+        l <$ unshiftMessage (DrawCards iid 3 False)
+      When (EnemySpawnAtLocationMatching _ locationMatcher _) -> do
+        inPlay <- isJust <$> getId @(Maybe LocationId) locationMatcher
+        l <$ unless
+          inPlay
+          (unshiftMessage (PlaceLocationMatching locationMatcher))
+      _ -> StudyAberrantGateway <$> runMessage msg attrs

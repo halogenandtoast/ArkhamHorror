@@ -6,20 +6,22 @@ module Arkham.Types.Location.Cards.MainPath
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype MainPath = MainPath LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-mainPath :: MainPath
-mainPath = MainPath $ baseAttrs
+mainPath :: LocationId -> MainPath
+mainPath lid = MainPath $ baseAttrs
+  lid
   "01149"
   (Name "Main Path" Nothing)
   EncounterSet.TheDevourerBelow

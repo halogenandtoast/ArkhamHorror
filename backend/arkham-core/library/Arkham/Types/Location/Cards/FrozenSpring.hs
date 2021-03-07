@@ -11,6 +11,7 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
@@ -20,10 +21,11 @@ import Arkham.Types.Window
 newtype FrozenSpring = FrozenSpring LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-frozenSpring :: FrozenSpring
-frozenSpring =
+frozenSpring :: LocationId -> FrozenSpring
+frozenSpring lid =
   FrozenSpring
     $ baseAttrs
+        lid
         "02288"
         (Name "Frozen Spring" Nothing)
         EncounterSet.WhereDoomAwaits

@@ -8,23 +8,25 @@ import Arkham.Prelude
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Target
-import Arkham.Types.Window
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype StMarysHospital = StMarysHospital LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-stMarysHospital :: StMarysHospital
-stMarysHospital = StMarysHospital $ baseAttrs
+stMarysHospital :: LocationId -> StMarysHospital
+stMarysHospital lid = StMarysHospital $ baseAttrs
+  lid
   "01128"
   (Name "St. Mary's Hospital" Nothing)
   EncounterSet.TheMidnightMasks
@@ -44,8 +46,8 @@ ability attrs =
     }
 
 instance ActionRunner env => HasActions env StMarysHospital where
-  getActions iid NonFast (StMarysHospital attrs@LocationAttrs {..}) | locationRevealed =
-    withBaseActions iid NonFast attrs $ pure
+  getActions iid NonFast (StMarysHospital attrs@LocationAttrs {..})
+    | locationRevealed = withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction iid (ability attrs)
       | iid `member` locationInvestigators
       ]

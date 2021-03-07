@@ -13,6 +13,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
@@ -27,12 +28,13 @@ import Arkham.Types.Window
 newtype MuseumHalls = MuseumHalls LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-museumHalls :: MuseumHalls
-museumHalls = MuseumHalls $ base
+museumHalls :: LocationId -> MuseumHalls
+museumHalls lid = MuseumHalls $ base
   { locationConnectedSymbols = setFromList [Circle, Diamond, Triangle]
   }
  where
   base = baseAttrs
+    lid
     "02127"
     (Name "Museum Halls" Nothing)
     EncounterSet.TheMiskatonicMuseum

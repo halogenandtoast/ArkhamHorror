@@ -134,7 +134,7 @@ standaloneTokens =
   , ElderSign
   ]
 
-instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
+instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env TheMiskatonicMuseum where
   runMessage msg s@(TheMiskatonicMuseum attrs@ScenarioAttrs {..}) = case msg of
     SetTokensForScenario -> do
       standalone <- isNothing <$> getId @(Maybe CampaignId) ()
@@ -145,13 +145,14 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
       case fromJustNote "must be set" scenarioDeck of
         ExhibitDeck [] -> pure s
         ExhibitDeck (x : xs) -> do
-          unshiftMessage (PlaceLocation x)
+          locationId <- getRandom
+          unshiftMessage (PlaceLocation x locationId)
           pure $ TheMiskatonicMuseum $ attrs & deckL ?~ ExhibitDeck xs
         _ -> error "Wrong deck"
     LookAtTopOfDeck _ ScenarioDeckTarget n ->
       case fromJustNote "must be set" scenarioDeck of
         ExhibitDeck xs -> do
-          let lids = map LocationTarget $ take n xs
+          let lids = map CardCodeTarget $ take n xs
           s <$ unshiftMessages
             [FocusTargets lids, Label "Continue" [UnfocusTargets]]
         _ -> error "Wrong deck"
@@ -183,23 +184,28 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
         , EncounterSet.LockedDoors
         ]
 
+      museumEntranceId <- getRandom
+      museumHallsId <- getRandom
+      securityOfficeId <- getRandom
+      administrationOfficeId <- getRandom
+
       pushMessages
         [ story investigatorIds theMiskatonicMuseumIntro1
         , story investigatorIds (theMiskatonicMuseumIntro2 armitageKidnapped)
         , SetEncounterDeck encounterDeck
         , AddAgenda "02119"
         , AddAct "02122"
-        , PlaceLocation securityOffice
-        , PlaceLocation administrationOffice
-        , PlaceLocation "02126"
-        , PlaceLocation "02127"
-        , RevealLocation Nothing "02126"
-        , MoveAllTo "02126"
+        , PlaceLocation securityOffice securityOfficeId
+        , PlaceLocation administrationOffice administrationOfficeId
+        , PlaceLocation "02126" museumEntranceId
+        , PlaceLocation "02127" museumHallsId
+        , RevealLocation Nothing museumEntranceId
+        , MoveAllTo museumEntranceId
         ]
 
       let
         locations' = mapFromList $ map
-          (second pure . toFst (getLocationName . lookupLocation))
+          (second pure . toFst (getLocationName . lookupLocationStub))
           [ "02126"
           , "02127"
           , securityOffice
@@ -214,7 +220,7 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
       TheMiskatonicMuseum <$> runMessage
         msg
         (attrs & locationsL .~ locations' & deckL ?~ ExhibitDeck exhibitDeck)
-    PlacedLocation lid -> do
+    PlacedLocation _ lid -> do
       name <- nameTitle <$> getName lid
       s <$ if name == "Exhibit Hall"
         then do

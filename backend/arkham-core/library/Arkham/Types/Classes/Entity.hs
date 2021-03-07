@@ -1,7 +1,7 @@
 {-# LANGUAGE DefaultSignatures #-}
 module Arkham.Types.Classes.Entity where
 
-import Arkham.Prelude
+import Arkham.Prelude hiding (to)
 
 import Arkham.Types.Message
 import Arkham.Types.Name

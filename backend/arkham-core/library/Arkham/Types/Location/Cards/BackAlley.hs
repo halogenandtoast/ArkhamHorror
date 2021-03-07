@@ -6,22 +6,24 @@ module Arkham.Types.Location.Cards.BackAlley
 import Arkham.Prelude
 
 import Arkham.Types.Classes
-import Arkham.Types.GameValue
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Name
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Name
 import Arkham.Types.Trait hiding (Cultist)
 
 newtype BackAlley = BackAlley LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-backAlley :: BackAlley
-backAlley = BackAlley
+backAlley :: LocationId -> BackAlley
+backAlley lid = BackAlley
   $ base { locationVictory = Just 1, locationRevealedSymbol = Squiggle }
  where
   base = baseAttrs
+    lid
     "02077"
     (Name "Back Alley" Nothing)
     EncounterSet.TheHouseAlwaysWins

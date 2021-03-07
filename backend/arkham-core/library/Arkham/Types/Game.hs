@@ -330,6 +330,9 @@ instance HasId (Maybe CampaignId) (Game queue) () where
 instance HasId CardCode (Game queue) EnemyId where
   getId = (getCardCode <$>) . getEnemy
 
+instance HasId CardCode (Game queue) LocationId where
+  getId = (getCardCode <$>) . getLocation
+
 instance HasId CardCode (Game queue) AssetId where
   getId = (getCardCode <$>) . getAsset
 
@@ -348,7 +351,7 @@ instance HasId (Maybe OwnerId) (Game queue) AssetId where
 instance HasName (Game queue) LocationId where
   getName = getName <=< getLocation
 
-instance HasName (Game queue) SetAsideLocationId where
+instance HasName (Game queue) SetAsideLocationCardCode where
   getName saLocationId = do
     mScenario <- modeScenario <$> view modeL
     case mScenario of
@@ -392,7 +395,7 @@ instance HasSet FightableEnemyId (Game queue) (InvestigatorId, Source) where
         _ -> pure False) modifiers'
     pure . setFromList . coerce $ fightableEnemyIds
 
-instance HasSet SetAsideLocationId (Game queue) () where
+instance HasSet SetAsideLocationCardCode (Game queue) () where
   getSet _ = do
     mScenario <- modeScenario <$> view modeL
     case mScenario of
@@ -956,6 +959,9 @@ instance HasSet LocationId (Game queue) LocationMatcher where
 
 instance HasSet EnemyId (Game queue) EnemyMatcher where
   getSet = (setFromList . map toId <$>) . getEnemiesMatching
+
+instance HasId (Maybe EnemyId) (Game queue) EnemyMatcher where
+  getId = fmap (fmap toId) . getEnemyMatching
 
 instance HasList LocationName (Game queue) () where
   getList _ = map getLocationName . toList <$> view locationsL
@@ -1732,10 +1738,10 @@ runGameMessage msg g = case msg of
   GameOver -> do
     clearQueue
     pure $ g & gameStateL .~ IsOver
-  PlaceLocation lid -> if isNothing $ g ^. locationsL . at lid
+  PlaceLocation cardCode lid -> if isNothing $ g ^. locationsL . at lid
     then do
-      unshiftMessage (PlacedLocation lid)
-      pure $ g & locationsL . at lid ?~ lookupLocation lid
+      unshiftMessage (PlacedLocation cardCode lid)
+      pure $ g & locationsL . at lid ?~ lookupLocation cardCode lid
     else pure g
   SetEncounterDeck encounterDeck ->
     pure $ g & encounterDeckL .~ Deck encounterDeck
@@ -2304,6 +2310,12 @@ runGameMessage msg g = case msg of
       enemyId = toId enemy
     unshiftMessage (RequestedEnemy source enemyId)
     pure $ g & enemiesL . at enemyId ?~ enemy
+  CreateLocationRequest source card -> do
+    let
+      location = createLocation card
+      locationId = toId location
+    unshiftMessage (RequestedLocation source locationId)
+    pure $ g & locationsL . at locationId ?~ location
   CreateEnemyAtLocationMatching cardCode locationMatcher -> do
     lid <- fromJustNote "missing location" <$> getId locationMatcher
     g <$ unshiftMessage (CreateEnemyAt cardCode lid Nothing)

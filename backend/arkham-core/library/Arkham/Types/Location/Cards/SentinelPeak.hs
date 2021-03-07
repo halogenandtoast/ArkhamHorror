@@ -12,6 +12,7 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
@@ -20,10 +21,11 @@ import Arkham.Types.Trait
 newtype SentinelPeak = SentinelPeak LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-sentinelPeak :: SentinelPeak
-sentinelPeak =
+sentinelPeak :: LocationId -> SentinelPeak
+sentinelPeak lid =
   SentinelPeak
     $ baseAttrs
+        lid
         "02284"
         (Name "Sentinel Peak" Nothing)
         EncounterSet.WhereDoomAwaits

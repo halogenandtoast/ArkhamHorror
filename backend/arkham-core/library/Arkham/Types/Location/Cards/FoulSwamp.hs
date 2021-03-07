@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.FoulSwamp
   ( FoulSwamp(..)
   , foulSwamp
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -11,27 +10,29 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
+import Arkham.Types.ScenarioLogKey
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
-import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype FoulSwamp = FoulSwamp LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-foulSwamp :: FoulSwamp
-foulSwamp = FoulSwamp $ baseAttrs
+foulSwamp :: LocationId -> FoulSwamp
+foulSwamp lid = FoulSwamp $ baseAttrs
+  lid
   "81016"
   (Name "Foul Swamp" Nothing)
   EncounterSet.CurseOfTheRougarou
@@ -60,8 +61,8 @@ ability iid attrs = base { abilityMetadata = Just (IntMetadata 0) }
     )
 
 instance ActionRunner env => HasActions env FoulSwamp where
-  getActions iid NonFast (FoulSwamp attrs@LocationAttrs {..}) | locationRevealed =
-    withBaseActions iid NonFast attrs $ pure
+  getActions iid NonFast (FoulSwamp attrs@LocationAttrs {..})
+    | locationRevealed = withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction iid (ability iid attrs)
       | iid `member` locationInvestigators
       ]

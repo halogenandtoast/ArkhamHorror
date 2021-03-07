@@ -1,31 +1,32 @@
 module Arkham.Types.Location.Cards.SouthsideMasBoardingHouse
   ( SouthsideMasBoardingHouse(..)
   , southsideMasBoardingHouse
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Target
-import Arkham.Types.Window
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype SouthsideMasBoardingHouse = SouthsideMasBoardingHouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-southsideMasBoardingHouse :: SouthsideMasBoardingHouse
-southsideMasBoardingHouse = SouthsideMasBoardingHouse $ baseAttrs
+southsideMasBoardingHouse :: LocationId -> SouthsideMasBoardingHouse
+southsideMasBoardingHouse lid = SouthsideMasBoardingHouse $ baseAttrs
+  lid
   "01127"
   (Name "Southside" $ Just "Ma's Boarding House")
   EncounterSet.TheMidnightMasks

@@ -38,13 +38,15 @@ instance ActRunner env => RunMessage env InvestigatingTheTrail where
         )
       pure $ InvestigatingTheTrail $ attrs & (sequenceL .~ Act 1 B)
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
-      locationIds <- setToList <$> getLocationSet
-      when ("01156" `notElem` locationIds)
-        $ unshiftMessage (PlaceLocation "01156")
+      mRitualSiteId <- getLocationIdByName "Ritual Site"
+      mainPathId <- getJustLocationIdByName "Main Path"
+      when (isNothing mRitualSiteId) $ do
+        ritualSiteId <- getRandom
+        unshiftMessage (PlaceLocation "01156" ritualSiteId)
       cultistsWhoGotAwayCardCodes <- asks (hasRecordSet CultistsWhoGotAway)
       cultistsWhoGotAway <- for cultistsWhoGotAwayCardCodes genEncounterCard
       a <$ unshiftMessages
-        ([ CreateEnemyAt (EncounterCard card) "01149" Nothing
+        ([ CreateEnemyAt (EncounterCard card) mainPathId Nothing
          | card <- cultistsWhoGotAway
          ]
         <> [NextAct aid "01147"]

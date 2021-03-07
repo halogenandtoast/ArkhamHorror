@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.ATearInThePath
   ( aTearInThePath
   , ATearInThePath(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -12,6 +11,7 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
@@ -22,10 +22,11 @@ import Arkham.Types.Window
 newtype ATearInThePath = ATearInThePath LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-aTearInThePath :: ATearInThePath
-aTearInThePath =
+aTearInThePath :: LocationId -> ATearInThePath
+aTearInThePath lid =
   ATearInThePath
     $ baseAttrs
+        lid
         "02290"
         (Name "A Tear in the Path" Nothing)
         EncounterSet.WhereDoomAwaits

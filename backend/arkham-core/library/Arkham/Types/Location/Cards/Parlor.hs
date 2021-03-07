@@ -3,12 +3,17 @@ module Arkham.Types.Location.Cards.Parlor where
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
@@ -18,17 +23,13 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Window
-import qualified Arkham.Types.Action as Action
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
 
 newtype Parlor = Parlor LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-parlor :: Parlor
-parlor = Parlor $ baseAttrs
+parlor :: LocationId -> Parlor
+parlor lid = Parlor $ baseAttrs
+  lid
   "01115"
   (Name "Parlor" Nothing)
   EncounterSet.TheGathering
@@ -58,7 +59,7 @@ instance ActionRunner env => HasActions env Parlor where
             <> [ ActivateCardAbilityAction
                    iid
                    (mkAbility
-                     (ProxySource (AssetSource aid) (LocationSource "01115"))
+                     (ProxySource (AssetSource aid) (toSource attrs))
                      1
                      (ActionAbility (Just Action.Parley) $ ActionCost 1)
                    )

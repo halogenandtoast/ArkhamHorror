@@ -3,19 +3,21 @@ module Arkham.Types.Location.Cards.ReturnToAttic where
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 
 newtype ReturnToAttic = ReturnToAttic LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-returnToAttic :: ReturnToAttic
-returnToAttic = ReturnToAttic $ baseAttrs
+returnToAttic :: LocationId -> ReturnToAttic
+returnToAttic lid = ReturnToAttic $ baseAttrs
+  lid
   "50018"
   (Name "Attic" Nothing)
   EncounterSet.ReturnToTheGathering
@@ -34,6 +36,7 @@ instance ActionRunner env => HasActions env ReturnToAttic where
 instance (LocationRunner env) => RunMessage env ReturnToAttic where
   runMessage msg (ReturnToAttic attrs) = case msg of
     RevealLocation _ lid | lid == locationId attrs -> do
-      unshiftMessage (PlaceLocation "50019")
+      farAboveYourHouseId <- getRandom
+      unshiftMessage (PlaceLocation "50019" farAboveYourHouseId)
       ReturnToAttic <$> runMessage msg attrs
     _ -> ReturnToAttic <$> runMessage msg attrs

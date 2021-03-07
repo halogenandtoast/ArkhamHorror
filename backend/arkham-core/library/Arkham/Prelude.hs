@@ -29,7 +29,7 @@ import Control.Lens as X
 import Control.Lens.TH as X
 import Control.Monad.Extra as X (concatMapM)
 import Control.Monad.Random as X (MonadRandom)
-import Control.Monad.Random.Class as X (getRandom, getRandomR)
+import Control.Monad.Random.Class as X (getRandom, getRandomR, getRandoms)
 import Control.Monad.Random.Strict as X (Random)
 import Data.Aeson as X
 import qualified Data.Char as C
@@ -130,6 +130,11 @@ uncurry4 f ~(a, b, c, d) = f a b c d
 
 cycleN :: Int -> [a] -> [a]
 cycleN n as = take (length as * n) $ L.cycle as
+
+deleteFirst :: Eq a => a -> [a] -> [a]
+deleteFirst _ [] = []
+deleteFirst a (a' : as) | a == a' = as
+deleteFirst a (b' : as) = b' : deleteFirst a as
 
 data With a b = With a b
 

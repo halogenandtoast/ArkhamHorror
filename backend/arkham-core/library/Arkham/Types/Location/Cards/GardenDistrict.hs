@@ -13,6 +13,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
@@ -26,8 +27,9 @@ import Arkham.Types.Window
 newtype GardenDistrict = GardenDistrict LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-gardenDistrict :: GardenDistrict
-gardenDistrict = GardenDistrict $ baseAttrs
+gardenDistrict :: LocationId -> GardenDistrict
+gardenDistrict lid = GardenDistrict $ baseAttrs
+  lid
   "81008"
   (Name "Garden District" Nothing)
   EncounterSet.CurseOfTheRougarou

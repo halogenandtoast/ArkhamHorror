@@ -13,8 +13,10 @@ import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
+import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Target
 
 newtype BreakingAndEntering = BreakingAndEntering ActAttrs
@@ -27,7 +29,7 @@ breakingAndEntering = BreakingAndEntering
 instance ActionRunner env => HasActions env BreakingAndEntering where
   getActions i window (BreakingAndEntering x) = getActions i window x
 
-instance ActRunner env => RunMessage env BreakingAndEntering where
+instance (HasName env LocationId, ActRunner env) => RunMessage env BreakingAndEntering where
   runMessage msg a@(BreakingAndEntering attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -73,6 +75,9 @@ instance ActRunner env => RunMessage env BreakingAndEntering where
         <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
       a <$ unshiftMessages
         [SpawnEnemyAt (EncounterCard ec) lid, NextAct actId "02125"]
-    WhenEnterLocation _ "02137" ->
-      a <$ unshiftMessage (AdvanceAct actId (toSource attrs))
+    WhenEnterLocation _ lid -> do
+      name <- getName lid
+      a <$ when
+        (name == mkFullName "Exhibit Hall" "Restricted Hall")
+        (unshiftMessage $ AdvanceAct actId (toSource attrs))
     _ -> BreakingAndEntering <$> runMessage msg attrs

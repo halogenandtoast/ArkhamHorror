@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.BloodOnTheAltar
   ( BloodOnTheAltar(..)
   , bloodOnTheAltar
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -14,6 +13,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Exception
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Resolution
@@ -158,7 +158,7 @@ getRemoveNecronomicon = do
     , owner `elem` defeatedInvestigatorIds
     ]
 
-instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
+instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env BloodOnTheAltar where
   runMessage msg s@(BloodOnTheAltar (attrs@ScenarioAttrs {..} `With` metadata@(BloodOnTheAltarMetadata sacrificed)))
     = case msg of
       SetTokensForScenario -> do
@@ -236,6 +236,9 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
           , schoolhouse
           ]
 
+        villageCommonsId <- getRandom
+        locationIds <- getRandoms
+
         let
           locationCardPairs = zip locations cardsToPutUnderneath
           potentialSacrifices = [zebulonWhateley, earlSawyer] <> catMaybes
@@ -247,18 +250,22 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
             , AddAgenda "02196"
             ]
           <> [ PlaceDoomOnAgenda | delayedOnTheirWayToDunwich ]
-          <> [AddAct "02199", PlaceLocation "02201"]
+          <> [AddAct "02199", PlaceLocation "02201" villageCommonsId]
           <> concat
-               [ [ PlaceLocation location
-                 , PlaceUnderneath (LocationTarget location) [card]
+               [ [ PlaceLocation location locationId
+                 , PlaceUnderneath (LocationTarget locationId) [card]
                  ]
-               | (location, card) <- locationCardPairs
+               | (locationId, (location, card)) <- zip
+                 locationIds
+                 locationCardPairs
                ]
-          <> [RevealLocation Nothing "02201", MoveAllTo "02201"]
+          <> [ RevealLocation Nothing villageCommonsId
+             , MoveAllTo villageCommonsId
+             ]
 
         let
           locations' = mapFromList $ map
-            (second pure . toFst (getLocationName . lookupLocation))
+            (second pure . toFst (getLocationName . lookupLocationStub))
             [ "02201"
             , bishopsBrook
             , burnedRuins

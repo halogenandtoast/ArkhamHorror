@@ -1,6 +1,7 @@
 module Arkham.Types.Treachery
   ( module Arkham.Types.Treachery
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -89,6 +90,7 @@ data Treachery
   | RitesHowled' RitesHowled
   | SpacesBetween' SpacesBetween
   | VortexOfTime' VortexOfTime
+  | VastExpanse' VastExpanse
   | TheZealotsSeal' TheZealotsSeal
   | MaskedHorrors' MaskedHorrors
   | VaultOfEarthlyDemise' VaultOfEarthlyDemise
@@ -231,6 +233,7 @@ allTreacheries = mapFromList
   , ("02296", (RitesHowled' .) . ritesHowled)
   , ("02297", (SpacesBetween' .) . spacesBetween)
   , ("02298", (VortexOfTime' .) . vortexOfTime)
+  , ("02333", (VastExpanse' .) . vastExpanse)
   , ("50024", (TheZealotsSeal' .) . theZealotsSeal)
   , ("50031", (MaskedHorrors' .) . maskedHorrors)
   , ("50032b", (VaultOfEarthlyDemise' .) . vaultOfEarthlyDemise)

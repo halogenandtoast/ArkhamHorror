@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a1d4c831630e22ee412108ee6e4ddc4e75c2afbaed8356074610c822b03bf595
+-- hash: 47e4cbe4cb6792c2e5417beab49cc0109a4066441fb865db8c0dfc31564d6704
 
 name:           arkham-core
 version:        0.0.0
@@ -766,6 +766,7 @@ library
       Arkham.Types.Treachery.Cards.VaultOfEarthlyDemise
       Arkham.Types.Treachery.Cards.VisionsOfFuturesPast
       Arkham.Types.Treachery.Cards.VortexOfTime
+      Arkham.Types.Treachery.Cards.Wormhole
       Arkham.Types.Treachery.Cards.WrackedByNightmares
       Arkham.Types.Treachery.Helpers
       Arkham.Types.Treachery.Runner

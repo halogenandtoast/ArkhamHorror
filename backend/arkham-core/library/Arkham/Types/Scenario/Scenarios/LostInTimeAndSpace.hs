@@ -188,9 +188,9 @@ instance
     RequestedEncounterCard (ProxySource source (InvestigatorSource iid)) mcard
       | isSource attrs source -> s <$ case mcard of
         Nothing -> pure ()
-        Just card -> do
-          locationId <- getRandom
-          unshiftMessages
-            [PlaceLocation (ecCardCode card) locationId, MoveTo iid locationId]
+        Just card -> unshiftMessages
+          [ PlaceLocation (ecCardCode card) (LocationId $ getCardId card)
+          , MoveTo iid (LocationId $ getCardId card)
+          ]
     ScenarioResolution NoResolution -> pure s
     _ -> LostInTimeAndSpace <$> runMessage msg attrs

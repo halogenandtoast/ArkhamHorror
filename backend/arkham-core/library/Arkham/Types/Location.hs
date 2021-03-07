@@ -136,6 +136,13 @@ data Location
   | UprootedWoods' UprootedWoods
   | LostMemories' LostMemories
   | AnotherDimension' AnotherDimension
+  | TheEdgeOfTheUniverse' TheEdgeOfTheUniverse
+  | TearThroughTime' TearThroughTime
+  | TearThroughSpace' TearThroughSpace
+  | PrismaticCascade' PrismaticCascade
+  | EndlessBridge' EndlessBridge
+  | StepsOfYhagharl' StepsOfYhagharl
+  | DimensionalDoorway' DimensionalDoorway
   | StudyAberrantGateway' StudyAberrantGateway
   | GuestHall' GuestHall
   | Bedroom' Bedroom
@@ -409,6 +416,13 @@ allLocations = mapFromList
   , ("02291", UprootedWoods' . uprootedWoods)
   , ("02292", LostMemories' . lostMemories)
   , ("02320", AnotherDimension' . anotherDimension)
+  , ("02321", TheEdgeOfTheUniverse' . theEdgeOfTheUniverse)
+  , ("02322", TearThroughTime' . tearThroughTime)
+  , ("02324", TearThroughSpace' . tearThroughSpace)
+  , ("02325", PrismaticCascade' . prismaticCascade)
+  , ("02326", EndlessBridge' . endlessBridge)
+  , ("02327", StepsOfYhagharl' . stepsOfYhagharl)
+  , ("02328", DimensionalDoorway' . dimensionalDoorway)
   , ("50013", StudyAberrantGateway' . studyAberrantGateway)
   , ("50014", GuestHall' . guestHall)
   , ("50015", Bedroom' . bedroom)

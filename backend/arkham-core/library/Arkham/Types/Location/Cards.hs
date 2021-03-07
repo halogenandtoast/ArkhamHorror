@@ -49,6 +49,7 @@ import Arkham.Types.Location.Cards.DeepBelowYourHouse as X
 import Arkham.Types.Location.Cards.DestroyedPath as X
 import Arkham.Types.Location.Cards.DevilsHopYard_252 as X
 import Arkham.Types.Location.Cards.DevilsHopYard_253 as X
+import Arkham.Types.Location.Cards.DimensionalDoorway as X
 import Arkham.Types.Location.Cards.DimensionalGap as X
 import Arkham.Types.Location.Cards.DiningCar as X
 import Arkham.Types.Location.Cards.Dormitories as X
@@ -59,6 +60,7 @@ import Arkham.Types.Location.Cards.DunwichVillage_243 as X
 import Arkham.Types.Location.Cards.Easttown as X
 import Arkham.Types.Location.Cards.EasttownArkhamPoliceStation as X
 import Arkham.Types.Location.Cards.EerieGlade as X
+import Arkham.Types.Location.Cards.EndlessBridge as X
 import Arkham.Types.Location.Cards.EngineCar_175 as X
 import Arkham.Types.Location.Cards.EngineCar_176 as X
 import Arkham.Types.Location.Cards.EngineCar_177 as X
@@ -104,6 +106,7 @@ import Arkham.Types.Location.Cards.PassengerCar_168 as X
 import Arkham.Types.Location.Cards.PassengerCar_169 as X
 import Arkham.Types.Location.Cards.PassengerCar_170 as X
 import Arkham.Types.Location.Cards.PassengerCar_171 as X
+import Arkham.Types.Location.Cards.PrismaticCascade as X
 import Arkham.Types.Location.Cards.ReturnToAttic as X
 import Arkham.Types.Location.Cards.ReturnToCellar as X
 import Arkham.Types.Location.Cards.RitualGrounds as X
@@ -120,12 +123,16 @@ import Arkham.Types.Location.Cards.SlaughteredWoods as X
 import Arkham.Types.Location.Cards.SleepingCar as X
 import Arkham.Types.Location.Cards.SouthsideHistoricalSociety as X
 import Arkham.Types.Location.Cards.SouthsideMasBoardingHouse as X
+import Arkham.Types.Location.Cards.StepsOfYhagharl as X
 import Arkham.Types.Location.Cards.StMarysHospital as X
 import Arkham.Types.Location.Cards.StudentUnion as X
 import Arkham.Types.Location.Cards.Study as X
 import Arkham.Types.Location.Cards.StudyAberrantGateway as X
+import Arkham.Types.Location.Cards.TearThroughSpace as X
+import Arkham.Types.Location.Cards.TearThroughTime as X
 import Arkham.Types.Location.Cards.TenAcreMeadow_246 as X
 import Arkham.Types.Location.Cards.TenAcreMeadow_247 as X
+import Arkham.Types.Location.Cards.TheEdgeOfTheUniverse as X
 import Arkham.Types.Location.Cards.TheHiddenChamber as X
 import Arkham.Types.Location.Cards.TrappersCabin as X
 import Arkham.Types.Location.Cards.TwistedUnderbrush as X

@@ -6,20 +6,22 @@ module Arkham.Types.Location.Cards.Schoolhouse_213
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype Schoolhouse_213 = Schoolhouse_213 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-schoolhouse_213 :: Schoolhouse_213
-schoolhouse_213 = Schoolhouse_213 $ baseAttrs
+schoolhouse_213 :: LocationId -> Schoolhouse_213
+schoolhouse_213 lid = Schoolhouse_213 $ baseAttrs
+  lid
   "02213"
   (Name "Schoolhouse" Nothing)
   EncounterSet.BloodOnTheAltar

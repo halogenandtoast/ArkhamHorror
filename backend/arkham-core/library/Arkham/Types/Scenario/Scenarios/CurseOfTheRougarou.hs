@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
   ( CurseOfTheRougarou(..)
   , curseOfTheRougarou
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -15,6 +14,7 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
@@ -52,7 +52,7 @@ curseOfTheRougarou difficulty =
           ]
         }
 
-locationsByTrait :: HashMap Trait [LocationId]
+locationsByTrait :: HashMap Trait [CardCode]
 locationsByTrait = mapFromList
   [ (NewOrleans, ["81007", "81008", "81009"])
   , (Riverside, ["81010", "81011", "81012"])
@@ -60,7 +60,7 @@ locationsByTrait = mapFromList
   , (Unhallowed, ["81016", "81017", "81018"])
   ]
 
-locationsWithLabels :: MonadRandom m => Trait -> m [(Text, LocationId)]
+locationsWithLabels :: MonadRandom m => Trait -> m [(Text, CardCode)]
 locationsWithLabels trait = do
   shuffled <- shuffleM (before <> after)
   pure $ zip labels (bayou : shuffled)
@@ -72,7 +72,7 @@ locationsWithLabels trait = do
     , pack (camelCase $ show trait) <> "2"
     ]
   (before, bayou : after) =
-    break (elem Bayou . getTraits . lookupLocation) locationSet
+    break (elem Bayou . getTraits . lookupLocationStub) locationSet
 
 instance (HasTokenValue env InvestigatorId, HasSet Trait env LocationId, HasId LocationId env InvestigatorId) => HasTokenValue env CurseOfTheRougarou where
   getTokenValue (CurseOfTheRougarou (attrs `With` _)) iid = \case
@@ -87,26 +87,29 @@ instance (HasTokenValue env InvestigatorId, HasSet Trait env LocationId, HasId L
     ElderThing -> pure $ TokenValue ElderThing (NegativeModifier 4)
     otherFace -> getTokenValue attrs iid otherFace
 
-instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
+instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env CurseOfTheRougarou where
   runMessage msg s@(CurseOfTheRougarou (attrs@ScenarioAttrs {..} `With` metadata))
     = case msg of
       Setup -> do
         investigatorIds <- getInvestigatorIds
         encounterDeck <- buildEncounterDeck [EncounterSet.TheBayou]
         (_ : trait : rest) <- shuffleM $ keys locationsByTrait
-        startingLocationsWithLabel <- locationsWithLabels trait
+        startingLocationsWithLabel <-
+          zip <$> getRandoms <*> locationsWithLabels trait
         let
-          (_, bayou : _) = break
-            (elem Bayou . getTraits . lookupLocation)
-            (map snd startingLocationsWithLabel)
+          (_, (bayouId, _) : _) = break
+            (elem Bayou . getTraits . lookupLocationStub . snd . snd)
+            startingLocationsWithLabel
         pushMessages
           $ [SetEncounterDeck encounterDeck, AddAgenda "81002", AddAct "81005"]
-          <> [ PlaceLocation lid | (_, lid) <- startingLocationsWithLabel ]
-          <> [ SetLocationLabel lid label
-             | (label, lid) <- startingLocationsWithLabel
-             ]
-          <> [ RevealLocation Nothing bayou
-             , MoveAllTo bayou
+          <> concat
+               [ [ PlaceLocation cardCode locationId
+                 , SetLocationLabel locationId label
+                 ]
+               | (locationId, (label, cardCode)) <- startingLocationsWithLabel
+               ]
+          <> [ RevealLocation Nothing bayouId
+             , MoveAllTo bayouId
              , AskMap
              . mapFromList
              $ [ ( iid
@@ -142,7 +145,7 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
 
         let
           locations' = mapFromList $ map
-            (second pure . toFst (getLocationName . lookupLocation))
+            (second pure . toFst (getLocationName . lookupLocationStub))
             [ "81007"
             , "81008"
             , "81009"
@@ -163,11 +166,15 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
         setAsideLocationsWithLabels <- concat <$> traverse
           locationsWithLabels
           (setToList $ setAsideLocationTraits metadata)
-        unshiftMessages
-          $ [ PlaceLocation lid | (_, lid) <- setAsideLocationsWithLabels ]
-          <> [ SetLocationLabel lid label
-             | (label, lid) <- setAsideLocationsWithLabels
-             ]
+        locationIds <- getRandoms
+        unshiftMessages $ concat
+          [ [ PlaceLocation cardCode locationId
+            , SetLocationLabel locationId label
+            ]
+          | (locationId, (label, cardCode)) <- zip
+            locationIds
+            setAsideLocationsWithLabels
+          ]
         CurseOfTheRougarou
           . (`with` metadata { setAsideLocationTraits = mempty })
           <$> runMessage msg attrs

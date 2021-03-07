@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.CloverClubBar
   ( cloverClubBar
   , CloverClubBar(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -10,23 +9,25 @@ import Arkham.Types.Ability
 import Arkham.Types.ActId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
-import Arkham.Types.Window
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Game.Helpers
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype CloverClubBar = CloverClubBar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-cloverClubBar :: CloverClubBar
-cloverClubBar = CloverClubBar $ baseAttrs
+cloverClubBar :: LocationId -> CloverClubBar
+cloverClubBar lid = CloverClubBar $ baseAttrs
+  lid
   "02072"
   (Name "Clover Club Bar" Nothing)
   EncounterSet.TheHouseAlwaysWins
@@ -50,8 +51,8 @@ ability attrs = (mkAbility
   }
 
 instance ActionRunner env => HasActions env CloverClubBar where
-  getActions iid NonFast (CloverClubBar attrs@LocationAttrs {..}) | locationRevealed =
-    withBaseActions iid NonFast attrs $ do
+  getActions iid NonFast (CloverClubBar attrs@LocationAttrs {..})
+    | locationRevealed = withBaseActions iid NonFast attrs $ do
       step <- unActStep . getStep <$> ask
       pure
         [ ActivateCardAbilityAction iid (ability attrs)
@@ -61,7 +62,7 @@ instance ActionRunner env => HasActions env CloverClubBar where
 
 instance LocationRunner env => RunMessage env CloverClubBar where
   runMessage msg l@(CloverClubBar attrs@LocationAttrs {..}) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source && locationRevealed ->
-      l <$ unshiftMessages
+    UseCardAbility iid source _ 1 _
+      | isSource attrs source && locationRevealed -> l <$ unshiftMessages
         [GainClues iid 2, DrawCards iid 2 False, Remember $ HadADrink iid]
     _ -> CloverClubBar <$> runMessage msg attrs

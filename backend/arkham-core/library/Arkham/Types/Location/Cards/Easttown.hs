@@ -3,22 +3,24 @@ module Arkham.Types.Location.Cards.Easttown where
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Target
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype Easttown = Easttown LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-easttown :: Easttown
-easttown = Easttown $ baseAttrs
+easttown :: LocationId -> Easttown
+easttown lid = Easttown $ baseAttrs
+  lid
   "01132"
   (Name "Easttown" Nothing)
   EncounterSet.TheMidnightMasks

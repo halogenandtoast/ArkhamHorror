@@ -27,8 +27,9 @@ import Arkham.Types.Window
 newtype BaseOfTheHill = BaseOfTheHill LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-baseOfTheHill :: BaseOfTheHill
-baseOfTheHill = BaseOfTheHill $ baseAttrs
+baseOfTheHill :: LocationId -> BaseOfTheHill
+baseOfTheHill lid = BaseOfTheHill $ baseAttrs
+  lid
   "02282"
   (Name "Base of the Hill" Nothing)
   EncounterSet.WhereDoomAwaits
@@ -72,16 +73,17 @@ instance LocationRunner env => RunMessage env BaseOfTheHill where
         )
     SuccessfulInvestigation _ _ (AbilitySource source 1)
       | isSource attrs source -> do
-        locations <- getSetList @SetAsideLocationId ()
+        locations <- getSetList @SetAsideLocationCardCode ()
         alteredPaths <- filterM
           (fmap (== mkName "Diverging Path") . getName)
           locations
         case nonEmpty alteredPaths of
-          Just ne ->
+          Just ne -> do
+            newLocationId <- getRandom
             l
               <$ (unshiftMessage
-                 . PlaceLocation
-                 . unSetAsideLocationId
+                 . (`PlaceLocation` newLocationId)
+                 . unSetAsideLocationCardCode
                  =<< sample ne
                  )
           Nothing -> pure l

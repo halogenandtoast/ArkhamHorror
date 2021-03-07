@@ -1,8 +1,7 @@
 module Arkham.Types.Act
   ( Act(..)
   , lookupAct
-  )
-where
+  ) where
 
 import Arkham.Prelude hiding (fold)
 
@@ -50,7 +49,7 @@ data Act
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance ActionRunner env => HasActions env Act
-deriving anyclass instance ActRunner env => RunMessage env Act
+deriving anyclass instance (HasName env LocationId, ActRunner env) => RunMessage env Act
 deriving anyclass instance HasSet Trait env LocationId => HasModifiersFor env Act
 
 instance HasStep ActStep Act where

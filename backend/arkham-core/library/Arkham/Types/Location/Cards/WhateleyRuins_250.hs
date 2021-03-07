@@ -14,6 +14,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -27,8 +28,9 @@ import Arkham.Types.Window
 newtype WhateleyRuins_250 = WhateleyRuins_250 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-whateleyRuins_250 :: WhateleyRuins_250
-whateleyRuins_250 = WhateleyRuins_250 $ baseAttrs
+whateleyRuins_250 :: LocationId -> WhateleyRuins_250
+whateleyRuins_250 lid = WhateleyRuins_250 $ baseAttrs
+  lid
   "02250"
   (Name "Whateley Ruins" Nothing)
   EncounterSet.UndimensionedAndUnseen

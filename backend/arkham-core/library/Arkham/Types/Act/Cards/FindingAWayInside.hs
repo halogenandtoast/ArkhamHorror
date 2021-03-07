@@ -12,6 +12,7 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 
@@ -43,6 +44,8 @@ instance ActRunner env => RunMessage env FindingAWayInside where
         leadInvestigatorId <- getLeadInvestigatorId
         investigatorIds <- getInvestigatorIds
         adamLynch <- PlayerCard <$> genPlayerCard "02139"
+        museumHallsId <- fromJustNote "missing museum halls"
+          <$> getId (LocationWithTitle "Museum Halls")
         a <$ unshiftMessages
           [ chooseOne
             leadInvestigatorId
@@ -51,9 +54,12 @@ instance ActRunner env => RunMessage env FindingAWayInside where
                 [TakeControlOfSetAsideAsset iid adamLynch]
             | iid <- investigatorIds
             ]
-          , RevealLocation Nothing "02127"
+          , RevealLocation Nothing museumHallsId
           , NextAct aid "02123"
           ]
-    AdvanceAct aid _ | aid == actId && onSide B attrs ->
-      a <$ unshiftMessages [RevealLocation Nothing "02127", NextAct aid "02124"]
+    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+      museumHallsId <- fromJustNote "missing museum halls"
+        <$> getId (LocationWithTitle "Museum Halls")
+      a <$ unshiftMessages
+        [RevealLocation Nothing museumHallsId, NextAct aid "02124"]
     _ -> FindingAWayInside <$> runMessage msg attrs

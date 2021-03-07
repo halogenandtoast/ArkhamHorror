@@ -68,6 +68,7 @@ type InvestigatorRunner env
       , HasId ActiveInvestigatorId env ()
       , HasId CardCode env AssetId
       , HasId CardCode env EnemyId
+      , HasId CardCode env LocationId
       , HasId LeadInvestigatorId env ()
       , HasId LocationId env EnemyId
       , HasId LocationId env InvestigatorId
@@ -82,7 +83,7 @@ type InvestigatorRunner env
     , HasModifiersFor env ()
     , ( HasName env AssetId
       , HasName env LocationId
-      , HasName env SetAsideLocationId
+      , HasName env SetAsideLocationCardCode
       )
     , HasPhaseHistory env
     , HasPlayerCard env AssetId
@@ -145,7 +146,7 @@ type InvestigatorRunner env
         , HasSet PreyId env (Prey, LocationId)
         , HasSet RevealedLocationId env ()
         , HasSet SanityDamageableAssetId env InvestigatorId
-        , HasSet SetAsideLocationId env ()
+        , HasSet SetAsideLocationCardCode env ()
         , HasSet ScenarioLogKey env ()
         , HasSet StoryAssetId env InvestigatorId
         , HasSet StoryEnemyId env CardCode

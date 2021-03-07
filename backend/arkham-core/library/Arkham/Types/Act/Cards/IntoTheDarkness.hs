@@ -50,8 +50,12 @@ instance ActRunner env => RunMessage env IntoTheDarkness where
           ]
     RequestedEncounterCard (ActSource aid) mcard | aid == actId -> case mcard of
       Nothing -> pure a
-      Just card ->
-        a <$ unshiftMessages [SpawnEnemyAt (EncounterCard card) "01156"]
-    WhenEnterLocation _ "01156" ->
-      a <$ unshiftMessage (AdvanceAct actId (toSource attrs))
+      Just card -> do
+        ritualSiteId <- getJustLocationIdByName "Ritual Site"
+        a <$ unshiftMessages [SpawnEnemyAt (EncounterCard card) ritualSiteId]
+    WhenEnterLocation _ lid -> do
+      mRitualSiteId <- getLocationIdByName "Ritual Site"
+      a <$ when
+        (mRitualSiteId == Just lid)
+        (unshiftMessage $ AdvanceAct actId (toSource attrs))
     _ -> IntoTheDarkness <$> runMessage msg attrs

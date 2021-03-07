@@ -1,32 +1,33 @@
 module Arkham.Types.Location.Cards.VipArea
   ( vipArea
   , VipArea(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.Name
-import Arkham.Types.Target
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Game.Helpers
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 import Arkham.Types.Phase
+import Arkham.Types.Target
 import Arkham.Types.Trait hiding (Cultist)
 
 newtype VipArea = VipArea LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-vipArea :: VipArea
-vipArea = VipArea
+vipArea :: LocationId -> VipArea
+vipArea lid = VipArea
   $ base { locationVictory = Just 1, locationRevealedSymbol = Plus }
  where
   base = baseAttrs
+    lid
     "02076"
     (Name "VIP Area" Nothing)
     EncounterSet.TheHouseAlwaysWins
@@ -49,4 +50,5 @@ instance ActionRunner env => HasActions env VipArea where
   getActions iid window (VipArea attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env VipArea where
-  runMessage msg (VipArea attrs@LocationAttrs {..}) = VipArea <$> runMessage msg attrs
+  runMessage msg (VipArea attrs@LocationAttrs {..}) =
+    VipArea <$> runMessage msg attrs

@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
+import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
@@ -18,8 +19,9 @@ import Arkham.Types.Trait
 newtype AdministrationBuilding = AdministrationBuilding LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-administrationBuilding :: AdministrationBuilding
-administrationBuilding = AdministrationBuilding $ baseAttrs
+administrationBuilding :: LocationId -> AdministrationBuilding
+administrationBuilding lid = AdministrationBuilding $ baseAttrs
+  lid
   "02053"
   (Name "Administration Building" Nothing)
   EncounterSet.ExtracurricularActivity

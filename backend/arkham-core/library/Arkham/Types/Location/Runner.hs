@@ -40,7 +40,7 @@ type LocationRunner env
     , HasList UsedAbility env ()
     , HasModifiersFor env ()
     , HasName env LocationId
-    , HasName env SetAsideLocationId
+    , HasName env SetAsideLocationCardCode
     , HasSet ActId env ()
     , HasSet AssetId env (InvestigatorId, UseType)
     , HasSet AssetId env InvestigatorId
@@ -55,7 +55,7 @@ type LocationRunner env
     , HasSet LocationId env LocationMatcher
     , HasSet LocationId env (HashSet LocationSymbol)
     , HasSet LocationId env [Trait]
-    , HasSet SetAsideLocationId env ()
+    , HasSet SetAsideLocationCardCode env ()
     , HasSet Trait env Source
     , HasSet Trait env EnemyId
     , HasSet Trait env LocationId

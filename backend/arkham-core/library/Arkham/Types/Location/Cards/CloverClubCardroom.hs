@@ -9,24 +9,26 @@ import Arkham.Types.Ability
 import Arkham.Types.ActId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
-import Arkham.Types.Token
-import Arkham.Types.Window
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Game.Helpers
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 import Arkham.Types.RequestedTokenStrategy
+import Arkham.Types.Token
 import Arkham.Types.Trait hiding (Cultist)
+import Arkham.Types.Window
 
 newtype CloverClubCardroom = CloverClubCardroom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-cloverClubCardroom :: CloverClubCardroom
-cloverClubCardroom = CloverClubCardroom $ baseAttrs
+cloverClubCardroom :: LocationId -> CloverClubCardroom
+cloverClubCardroom lid = CloverClubCardroom $ baseAttrs
+  lid
   "02073"
   (Name "Clover Club Cardroom" Nothing)
   EncounterSet.TheHouseAlwaysWins

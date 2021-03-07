@@ -9,6 +9,8 @@ import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
@@ -61,7 +63,7 @@ instance (HasTokenValue env InvestigatorId, HasCount DiscardCount env Investigat
     ElderThing -> pure $ TokenValue Tablet (NegativeModifier 0) -- determined by an effect
     otherFace -> getTokenValue attrs iid otherFace
 
-instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
+instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env ExtracurricularActivity where
   runMessage msg s@(ExtracurricularActivity attrs@ScenarioAttrs {..}) =
     case msg of
       Setup -> do
@@ -78,18 +80,24 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
           , EncounterSet.LockedDoors
           , EncounterSet.AgentsOfYogSothoth
           ]
+        miskatonicQuadId <- getRandom
+        humanitiesBuildingId <- getRandom
+        orneLibraryId <- getRandom
+        studentUnionId <- getRandom
+        scienceBuildingId <- getRandom
+        administrationBuildingId <- getRandom
         pushMessages
           [ SetEncounterDeck encounterDeck
           , AddAgenda "02042"
           , AddAct "02045"
-          , PlaceLocation "02048"
-          , PlaceLocation "02050"
-          , PlaceLocation "02049"
-          , PlaceLocation "02051"
-          , PlaceLocation "02056"
-          , PlaceLocation "02053"
-          , RevealLocation Nothing "02048"
-          , MoveAllTo "02048"
+          , PlaceLocation "02048" miskatonicQuadId
+          , PlaceLocation "02050" orneLibraryId
+          , PlaceLocation "02049" humanitiesBuildingId
+          , PlaceLocation "02051" studentUnionId
+          , PlaceLocation "02056" scienceBuildingId
+          , PlaceLocation "02053" administrationBuildingId
+          , RevealLocation Nothing miskatonicQuadId
+          , MoveAllTo miskatonicQuadId
           , AskMap
           . mapFromList
           $ [ ( iid
@@ -101,7 +109,7 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
           ]
         let
           locations' = mapFromList $ map
-            (second pure . toFst (getLocationName . lookupLocation))
+            (second pure . toFst (getLocationName . lookupLocationStub))
             [ "02048"
             , "02049"
             , "02050"

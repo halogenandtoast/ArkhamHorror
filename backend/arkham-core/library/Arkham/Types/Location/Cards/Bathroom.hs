@@ -8,6 +8,7 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
@@ -17,8 +18,9 @@ import Arkham.Types.Token
 newtype Bathroom = Bathroom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-bathroom :: Bathroom
-bathroom = Bathroom $ baseAttrs
+bathroom :: LocationId -> Bathroom
+bathroom lid = Bathroom $ baseAttrs
+  lid
   "50016"
   (Name "Bathroom" Nothing)
   EncounterSet.CurseOfTheRougarou

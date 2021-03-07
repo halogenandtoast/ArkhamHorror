@@ -8,25 +8,26 @@ import Arkham.Prelude
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Target
-import Arkham.Types.Window
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype SecurityOffice_129 = SecurityOffice_129 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-securityOffice_129 :: SecurityOffice_129
-securityOffice_129 = SecurityOffice_129 $ baseAttrs
+securityOffice_129 :: LocationId -> SecurityOffice_129
+securityOffice_129 lid = SecurityOffice_129 $ baseAttrs
+  lid
   "02129"
   (Name "Security Office" Nothing)
   EncounterSet.TheMiskatonicMuseum

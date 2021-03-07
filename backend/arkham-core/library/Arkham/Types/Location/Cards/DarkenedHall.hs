@@ -1,31 +1,32 @@
 module Arkham.Types.Location.Cards.DarkenedHall
   ( darkenedHall
   , DarkenedHall(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait hiding (Cultist)
 
 newtype DarkenedHall = DarkenedHall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-darkenedHall :: DarkenedHall
-darkenedHall = DarkenedHall $ base
+darkenedHall :: LocationId -> DarkenedHall
+darkenedHall lid = DarkenedHall $ base
   { locationRevealedConnectedSymbols = setFromList
     [Triangle, T, Hourglass, Plus, Squiggle]
   }
  where
   base = baseAttrs
+    lid
     "02074"
     (Name "Darkened Hall" Nothing)
     EncounterSet.TheHouseAlwaysWins
@@ -45,9 +46,12 @@ instance LocationRunner env => RunMessage env DarkenedHall where
   runMessage msg (DarkenedHall attrs@LocationAttrs {..}) = case msg of
     RevealLocation _ lid | lid == locationId -> do
       locations <- shuffleM ["02075", "02076", "02077"]
+      randomIds <- replicateM 3 getRandom
       unshiftMessages $ concat
-        [ [PlaceLocation location, SetLocationLabel location label']
-        | (label', location) <- zip
+        [ [ PlaceLocation location locationId'
+          , SetLocationLabel locationId' label'
+          ]
+        | (locationId', (label', location)) <- zip randomIds $ zip
           ["backHallDoorway1", "backHallDoorway2", "backHallDoorway3"]
           locations
         ]

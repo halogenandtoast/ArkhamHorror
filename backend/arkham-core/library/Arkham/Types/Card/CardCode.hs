@@ -6,6 +6,9 @@ import Data.Aeson
 newtype CardCode = CardCode { unCardCode :: Text }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
 
+newtype LocationCardCode = LocationCardCode { unLocationCardCode :: CardCode }
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
+
 newtype ResignedCardCode = ResignedCardCode { unResignedCardCode :: CardCode }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
 

@@ -8,24 +8,26 @@ import Arkham.Prelude
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype TheHiddenChamber = TheHiddenChamber LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-theHiddenChamber :: TheHiddenChamber
-theHiddenChamber = TheHiddenChamber $ base { locationVictory = Just 2 }
+theHiddenChamber :: LocationId -> TheHiddenChamber
+theHiddenChamber lid = TheHiddenChamber $ base { locationVictory = Just 2 }
  where
   base = baseAttrs
+    lid
     "02214"
     (Name "The Hidden Chamber" (Just "Prison of the Beast"))
     EncounterSet.BloodOnTheAltar
@@ -56,7 +58,7 @@ instance LocationRunner env => RunMessage env TheHiddenChamber where
       connectedLocation <- getId iid
       name <- getName connectedLocation
       unshiftMessages
-        [ PlaceLocation (toId attrs)
+        [ PlaceLocation (locationCardCode attrs) (toId attrs)
         , AddDirectConnection (toId attrs) connectedLocation
         , AddDirectConnection connectedLocation (toId attrs)
         , SetLocationLabel (toId attrs) $ nameToLabel name <> "HiddenChamber"

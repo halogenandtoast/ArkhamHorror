@@ -1,31 +1,32 @@
 module Arkham.Types.Location.Cards.OvergrownCairns
   ( OvergrownCairns(..)
   , overgrownCairns
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Target
-import Arkham.Types.Window
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype OvergrownCairns = OvergrownCairns LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-overgrownCairns :: OvergrownCairns
-overgrownCairns = OvergrownCairns $ baseAttrs
+overgrownCairns :: LocationId -> OvergrownCairns
+overgrownCairns lid = OvergrownCairns $ baseAttrs
+  lid
   "81018"
   (Name "Overgrown Cairns" Nothing)
   EncounterSet.CurseOfTheRougarou
@@ -47,8 +48,8 @@ ability attrs = base { abilityLimit = PlayerLimit PerGame 1 }
     (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
 
 instance ActionRunner env => HasActions env OvergrownCairns where
-  getActions iid NonFast (OvergrownCairns attrs@LocationAttrs {..}) | locationRevealed =
-    withBaseActions iid NonFast attrs $ pure
+  getActions iid NonFast (OvergrownCairns attrs@LocationAttrs {..})
+    | locationRevealed = withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction iid (ability attrs)
       | iid `member` locationInvestigators
       ]

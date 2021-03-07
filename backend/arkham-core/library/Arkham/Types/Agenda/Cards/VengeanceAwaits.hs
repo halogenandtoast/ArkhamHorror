@@ -4,11 +4,11 @@ import Arkham.Prelude
 
 import Arkham.EncounterCard
 import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
-import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Resolution
 import Arkham.Types.Target
@@ -34,14 +34,18 @@ instance AgendaRunner env => RunMessage env VengeanceAwaits where
       actIds <- getSetList ()
       umordhoth <- EncounterCard <$> genEncounterCard "01157"
       a <$ if "01146" `elem` actIds
-        then
+        then do
+          ritualSiteId <- getRandom
           unshiftMessages
-          $ [PlaceLocation "01156", CreateEnemyAt umordhoth "01156" Nothing]
-          <> [ Discard (ActTarget actId) | actId <- actIds ]
+            $ [ PlaceLocation "01156" ritualSiteId
+              , CreateEnemyAt umordhoth ritualSiteId Nothing
+              ]
+            <> [ Discard (ActTarget actId) | actId <- actIds ]
         else do
-          enemyIds <- getSetList (LocationId "01156")
+          ritualSiteId <- getJustLocationIdByName "Ritual Site"
+          enemyIds <- getSetList ritualSiteId
           unshiftMessages
             $ [ Discard (EnemyTarget eid) | eid <- enemyIds ]
-            <> [CreateEnemyAt umordhoth "01156" Nothing]
+            <> [CreateEnemyAt umordhoth ritualSiteId Nothing]
             <> [ Discard (ActTarget actId) | actId <- actIds ]
     _ -> VengeanceAwaits <$> runMessage msg attrs

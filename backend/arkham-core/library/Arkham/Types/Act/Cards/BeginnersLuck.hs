@@ -13,6 +13,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.ScenarioLogKey
@@ -48,15 +49,19 @@ instance
   )
   => RunMessage env BeginnersLuck where
   runMessage msg a@(BeginnersLuck attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> a <$ unshiftMessages
-      [ PlaceLocation "02074"
-      , DiscardEncounterUntilFirst
-        (toSource attrs)
-        (EncounterCardMatchByType (EnemyType, Just Criminal))
-      , NextAct aid "02067"
-      ]
-    RequestedEncounterCard source (Just ec) | isSource attrs source ->
-      a <$ unshiftMessage (SpawnEnemyAt (EncounterCard ec) "02074")
+    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+      lid <- getRandom
+      a <$ unshiftMessages
+        [ PlaceLocation "02074" lid
+        , DiscardEncounterUntilFirst
+          (toSource attrs)
+          (EncounterCardMatchByType (EnemyType, Just Criminal))
+        , NextAct aid "02067"
+        ]
+    RequestedEncounterCard source (Just ec) | isSource attrs source -> do
+      darkenedHallId <- fromJustNote "missing darkened hall"
+        <$> getId (LocationWithTitle "Darkened Hall")
+      a <$ unshiftMessage (SpawnEnemyAt (EncounterCard ec) darkenedHallId)
     UseCardAbility iid source Nothing 1 payments | isSource attrs source -> do
       tokensInBag <- getList @Token ()
       a <$ unshiftMessages

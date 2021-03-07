@@ -109,7 +109,7 @@ data Treachery
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance ActionRunner env => HasActions env Treachery
-deriving anyclass instance TreacheryRunner env => RunMessage env Treachery
+deriving anyclass instance (HasId CardCode env LocationId, TreacheryRunner env) => RunMessage env Treachery
 deriving anyclass instance
   ( HasCount PlayerCount env ()
   , HasId LocationId env InvestigatorId

@@ -1,30 +1,31 @@
 module Arkham.Types.Location.Cards.ExhibitHallNatureExhibit
   ( exhibitHallNatureExhibit
   , ExhibitHallNatureExhibit(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
-import qualified Arkham.Types.Action as Action
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype ExhibitHallNatureExhibit = ExhibitHallNatureExhibit LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-exhibitHallNatureExhibit :: ExhibitHallNatureExhibit
-exhibitHallNatureExhibit = ExhibitHallNatureExhibit
+exhibitHallNatureExhibit :: LocationId -> ExhibitHallNatureExhibit
+exhibitHallNatureExhibit lid = ExhibitHallNatureExhibit
   $ base { locationVictory = Just 1 }
  where
   base = baseAttrs
+    lid
     "02134"
     (Name "Exhibit Hall" $ Just "Nature Exhibit")
     EncounterSet.TheMiskatonicMuseum

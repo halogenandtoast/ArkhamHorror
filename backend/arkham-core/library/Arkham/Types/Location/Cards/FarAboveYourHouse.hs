@@ -3,24 +3,26 @@ module Arkham.Types.Location.Cards.FarAboveYourHouse where
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Game.Helpers
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 
 newtype FarAboveYourHouse = FarAboveYourHouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-farAboveYourHouse :: FarAboveYourHouse
-farAboveYourHouse = FarAboveYourHouse $ base { locationVictory = Just 1 }
+farAboveYourHouse :: LocationId -> FarAboveYourHouse
+farAboveYourHouse lid = FarAboveYourHouse $ base { locationVictory = Just 1 }
  where
   base = baseAttrs
+    lid
     "50019"
     (Name "Field of Graves" Nothing)
     EncounterSet.ReturnToTheGathering

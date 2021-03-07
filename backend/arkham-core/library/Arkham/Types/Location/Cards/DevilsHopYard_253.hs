@@ -14,6 +14,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
@@ -24,8 +25,9 @@ import Arkham.Types.Window
 newtype DevilsHopYard_253 = DevilsHopYard_253 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-devilsHopYard_253 :: DevilsHopYard_253
-devilsHopYard_253 = DevilsHopYard_253 $ baseAttrs
+devilsHopYard_253 :: LocationId -> DevilsHopYard_253
+devilsHopYard_253 lid = DevilsHopYard_253 $ baseAttrs
+  lid
   "02253"
   (Name "Devil's Hop Yard" Nothing)
   EncounterSet.UndimensionedAndUnseen

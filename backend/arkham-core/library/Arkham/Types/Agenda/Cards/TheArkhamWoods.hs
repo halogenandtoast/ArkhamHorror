@@ -2,15 +2,16 @@ module Arkham.Types.Agenda.Cards.TheArkhamWoods where
 
 import Arkham.Prelude
 
+import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Helpers
+import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Agenda.Attrs
-import Arkham.Types.Agenda.Runner
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Trait
 
 newtype TheArkhamWoods = TheArkhamWoods AgendaAttrs
@@ -40,9 +41,11 @@ instance AgendaRunner env => RunMessage env TheArkhamWoods where
     RequestedEncounterCard (AgendaSource aid) mcard | aid == agendaId ->
       case mcard of
         Nothing -> a <$ unshiftMessage (NextAgenda aid "01144")
-        Just card -> a <$ unshiftMessages
-          [ SpawnEnemyAt (EncounterCard card) "01149"
-          , PlaceDoom (CardIdTarget $ getCardId card) 1
-          , NextAgenda aid "01144"
-          ]
+        Just card -> do
+          mainPathId <- getJustLocationIdByName "Main Path"
+          a <$ unshiftMessages
+            [ SpawnEnemyAt (EncounterCard card) mainPathId
+            , PlaceDoom (CardIdTarget $ getCardId card) 1
+            , NextAgenda aid "01144"
+            ]
     _ -> TheArkhamWoods <$> runMessage msg attrs

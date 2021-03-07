@@ -1,30 +1,31 @@
 module Arkham.Types.Location.Cards.CongregationalChurch_209
   ( congregationalChurch_209
   , CongregationalChurch_209(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.GameValue
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
-import Arkham.Types.Name
-import Arkham.Types.Window
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype CongregationalChurch_209 = CongregationalChurch_209 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-congregationalChurch_209 :: CongregationalChurch_209
-congregationalChurch_209 = CongregationalChurch_209 $ baseAttrs
+congregationalChurch_209 :: LocationId -> CongregationalChurch_209
+congregationalChurch_209 lid = CongregationalChurch_209 $ baseAttrs
+  lid
   "02209"
   (Name "Congregational Church" Nothing)
   EncounterSet.BloodOnTheAltar

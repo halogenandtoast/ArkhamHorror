@@ -8,24 +8,26 @@ import Arkham.Prelude
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.GameValue
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
-import Arkham.Types.Name
-import Arkham.Types.Window
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype Northside = Northside LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-northside :: Northside
-northside = Northside $ base { locationVictory = Just 1 }
+northside :: LocationId -> Northside
+northside lid = Northside $ base { locationVictory = Just 1 }
  where
   base = baseAttrs
+    lid
     "01134"
     (Name "Northside" Nothing)
     EncounterSet.TheMidnightMasks
@@ -47,8 +49,8 @@ ability attrs = base { abilityLimit = GroupLimit PerGame 1 }
     (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 5])
 
 instance ActionRunner env => HasActions env Northside where
-  getActions iid NonFast (Northside attrs@LocationAttrs {..}) | locationRevealed =
-    withBaseActions iid NonFast attrs $ pure
+  getActions iid NonFast (Northside attrs@LocationAttrs {..})
+    | locationRevealed = withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction iid (ability attrs)
       | iid `member` locationInvestigators
       ]

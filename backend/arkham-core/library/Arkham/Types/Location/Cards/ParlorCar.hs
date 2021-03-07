@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.ParlorCar
   ( parlorCar
   , ParlorCar(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -10,30 +9,31 @@ import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Direction
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Query
-import Arkham.Types.Window
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype ParlorCar = ParlorCar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-parlorCar :: ParlorCar
-parlorCar = ParlorCar $ base
+parlorCar :: LocationId -> ParlorCar
+parlorCar lid = ParlorCar $ base
   { locationConnectsTo = setFromList [LeftOf, RightOf]
   , locationVictory = Just 1
   }
  where
   base = baseAttrs
+    lid
     "02174"
     (Name "Parlor Car" Nothing)
     EncounterSet.TheEssexCountyExpress

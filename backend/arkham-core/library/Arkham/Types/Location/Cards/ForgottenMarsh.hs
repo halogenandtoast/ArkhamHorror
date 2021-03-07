@@ -3,20 +3,22 @@ module Arkham.Types.Location.Cards.ForgottenMarsh where
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype ForgottenMarsh = ForgottenMarsh LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-forgottenMarsh :: ForgottenMarsh
-forgottenMarsh = ForgottenMarsh $ baseAttrs
+forgottenMarsh :: LocationId -> ForgottenMarsh
+forgottenMarsh lid = ForgottenMarsh $ baseAttrs
+  lid
   "81013"
   (Name "Forgotten Marsh" Nothing)
   EncounterSet.CurseOfTheRougarou

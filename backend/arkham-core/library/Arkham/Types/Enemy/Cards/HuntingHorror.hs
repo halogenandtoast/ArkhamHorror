@@ -2,16 +2,17 @@ module Arkham.Types.Enemy.Cards.HuntingHorror where
 
 import Arkham.Prelude
 
-import Arkham.Types.Card
+import Arkham.Types.Card.Id
 import Arkham.Types.Classes
+import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
 import Arkham.Types.LocationId
 import Arkham.Types.Message
-import Arkham.Types.Token
-import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Runner
 import Arkham.Types.RequestedTokenStrategy
+import Arkham.Types.Token
+import Data.UUID (nil)
 
 newtype HuntingHorror = HuntingHorror EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -57,5 +58,5 @@ instance EnemyRunner env => RunMessage env HuntingHorror where
         & (doomL .~ 0)
         & (cluesL .~ 0)
         & (engagedInvestigatorsL .~ mempty)
-        & (locationL .~ LocationId (CardCode "void"))
+        & (locationL .~ LocationId (CardId nil))
     _ -> HuntingHorror <$> runMessage msg attrs

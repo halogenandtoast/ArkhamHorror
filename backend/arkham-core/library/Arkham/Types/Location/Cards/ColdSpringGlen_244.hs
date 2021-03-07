@@ -14,6 +14,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -26,8 +27,9 @@ import Arkham.Types.Window
 newtype ColdSpringGlen_244 = ColdSpringGlen_244 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-coldSpringGlen_244 :: ColdSpringGlen_244
-coldSpringGlen_244 = ColdSpringGlen_244 $ baseAttrs
+coldSpringGlen_244 :: LocationId -> ColdSpringGlen_244
+coldSpringGlen_244 lid = ColdSpringGlen_244 $ baseAttrs
+  lid
   "02244"
   (Name "Cold Spring Glen" Nothing)
   EncounterSet.UndimensionedAndUnseen

@@ -14,6 +14,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
@@ -24,8 +25,9 @@ import Arkham.Types.Window
 newtype TenAcreMeadow_247 = TenAcreMeadow_247 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-tenAcreMeadow_247 :: TenAcreMeadow_247
-tenAcreMeadow_247 = TenAcreMeadow_247 $ baseAttrs
+tenAcreMeadow_247 :: LocationId -> TenAcreMeadow_247
+tenAcreMeadow_247 lid = TenAcreMeadow_247 $ baseAttrs
+  lid
   "02247"
   (Name "Ten-Acre Meadow" Nothing)
   EncounterSet.UndimensionedAndUnseen

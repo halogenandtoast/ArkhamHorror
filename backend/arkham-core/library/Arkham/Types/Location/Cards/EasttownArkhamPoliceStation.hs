@@ -9,6 +9,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.GameValue
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
@@ -24,11 +25,12 @@ import Arkham.Types.Trait hiding (Supply)
 newtype EasttownArkhamPoliceStation = EasttownArkhamPoliceStation LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-easttownArkhamPoliceStation :: EasttownArkhamPoliceStation
-easttownArkhamPoliceStation = EasttownArkhamPoliceStation
+easttownArkhamPoliceStation :: LocationId -> EasttownArkhamPoliceStation
+easttownArkhamPoliceStation lid = EasttownArkhamPoliceStation
   $ base { locationVictory = Just 1 }
  where
   base = baseAttrs
+    lid
     "50027"
     (Name "Easttown" (Just "Arkham Police Station"))
     EncounterSet.ReturnToTheMidnightMasks

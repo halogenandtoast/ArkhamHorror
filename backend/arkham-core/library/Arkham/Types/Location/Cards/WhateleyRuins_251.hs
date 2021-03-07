@@ -28,8 +28,9 @@ import Arkham.Types.Window
 newtype WhateleyRuins_251 = WhateleyRuins_251 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-whateleyRuins_251 :: WhateleyRuins_251
-whateleyRuins_251 = WhateleyRuins_251 $ baseAttrs
+whateleyRuins_251 :: LocationId -> WhateleyRuins_251
+whateleyRuins_251 lid = WhateleyRuins_251 $ baseAttrs
+  lid
   "02251"
   (Name "Whateley Ruins" Nothing)
   EncounterSet.UndimensionedAndUnseen

@@ -1,7 +1,6 @@
 module Arkham.Types.Name
   ( module Arkham.Types.Name
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -14,6 +13,9 @@ data Name = Name
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSONKey, FromJSONKey, Hashable)
+
+instance IsString Name where
+  fromString = mkName . fromString
 
 mkName :: Text -> Name
 mkName = flip Name Nothing

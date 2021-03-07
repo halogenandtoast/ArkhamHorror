@@ -6,22 +6,24 @@ module Arkham.Types.Location.Cards.BishopsBrook_203
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Source
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Game.Helpers
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype BishopsBrook_203 = BishopsBrook_203 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-bishopsBrook_203 :: BishopsBrook_203
-bishopsBrook_203 = BishopsBrook_203 $ baseAttrs
+bishopsBrook_203 :: LocationId -> BishopsBrook_203
+bishopsBrook_203 lid = BishopsBrook_203 $ baseAttrs
+  lid
   "02203"
   (Name "Bishop's Brook" Nothing)
   EncounterSet.BloodOnTheAltar

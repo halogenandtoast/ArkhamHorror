@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.SearchingForAnswers
   ( SearchingForAnswers(..)
   , searchingForAnswers
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -31,8 +30,11 @@ instance ActionRunner env => HasActions env SearchingForAnswers where
 
 instance ActRunner env => RunMessage env SearchingForAnswers where
   runMessage msg a@(SearchingForAnswers attrs@ActAttrs {..}) = case msg of
-    WhenEnterLocation _ "02214" ->
-      a <$ unshiftMessage (AdvanceAct actId (toSource attrs))
+    WhenEnterLocation _ lid -> do
+      mHiddenChamberId <- getLocationIdByName "Hidden Chamber"
+      a <$ when
+        (Just lid == mHiddenChamberId)
+        (unshiftMessage $ AdvanceAct actId (toSource attrs))
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage

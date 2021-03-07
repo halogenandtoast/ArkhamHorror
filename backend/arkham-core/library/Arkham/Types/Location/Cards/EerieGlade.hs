@@ -11,6 +11,7 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
@@ -21,10 +22,11 @@ import Arkham.Types.Window
 newtype EerieGlade = EerieGlade LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-eerieGlade :: EerieGlade
-eerieGlade =
+eerieGlade :: LocationId -> EerieGlade
+eerieGlade lid =
   EerieGlade
     $ baseAttrs
+        lid
         "02286"
         (Name "Eerie Glade" Nothing)
         EncounterSet.WhereDoomAwaits

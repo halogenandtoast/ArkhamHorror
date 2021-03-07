@@ -1,31 +1,32 @@
 module Arkham.Types.Location.Cards.OsbornsGeneralStore_207
   ( osbornsGeneralStore_207
   , OsbornsGeneralStore_207(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Target
-import Arkham.Types.Window
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype OsbornsGeneralStore_207 = OsbornsGeneralStore_207 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-osbornsGeneralStore_207 :: OsbornsGeneralStore_207
-osbornsGeneralStore_207 = OsbornsGeneralStore_207 $ baseAttrs
+osbornsGeneralStore_207 :: LocationId -> OsbornsGeneralStore_207
+osbornsGeneralStore_207 lid = OsbornsGeneralStore_207 $ baseAttrs
+  lid
   "02207"
   (Name "Osborn's General Store" Nothing)
   EncounterSet.BloodOnTheAltar

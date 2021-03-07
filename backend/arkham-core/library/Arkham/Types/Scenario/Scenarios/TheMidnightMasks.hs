@@ -11,6 +11,8 @@ import Arkham.Types.EncounterSet (gatherEncounterSet)
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
@@ -98,7 +100,7 @@ introPart2 = FlavorText
     \ cultists we find before midnight, the better.”"
   ]
 
-instance ScenarioRunner env => RunMessage env TheMidnightMasks where
+instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env TheMidnightMasks where
   runMessage msg s@(TheMidnightMasks attrs@ScenarioAttrs {..}) = case msg of
     Setup -> do
       count' <- getPlayerCount
@@ -108,6 +110,17 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
       -- we will spawn these acolytes
       southside <- sample $ "01126" :| ["01127"]
       downtown <- sample $ "01130" :| ["01131"]
+
+      yourHouseId <- getRandom
+      rivertownId <- getRandom
+      southsideId <- getRandom
+      stMarysHospitalId <- getRandom
+      miskatonicUniversityId <- getRandom
+      downtownId <- getRandom
+      easttownId <- getRandom
+      graveyardId <- getRandom
+      northsideId <- getRandom
+
       houseBurnedDown <- getHasRecord YourHouseHasBurnedToTheGround
       ghoulPriestAlive <- getHasRecord GhoulPriestIsStillAlive
       litaForcedToFindOthersToHelpHerCause <- getHasRecord
@@ -118,17 +131,17 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
       cultistDeck' <- shuffleM cultistCards
       let
         startingLocationMessages = if houseBurnedDown
-          then [RevealLocation Nothing "01125", MoveAllTo "01125"]
+          then [RevealLocation Nothing rivertownId, MoveAllTo rivertownId]
           else
-            [ PlaceLocation "01124"
-            , RevealLocation Nothing "01124"
-            , MoveAllTo "01124"
+            [ PlaceLocation "01124" yourHouseId
+            , RevealLocation Nothing yourHouseId
+            , MoveAllTo yourHouseId
             ]
         ghoulPriestMessages =
           [ AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive ]
         spawnAcolyteMessages =
           [ CreateEnemyAt (EncounterCard c) l Nothing
-          | (c, l) <- zip acolytes [southside, downtown, "01133"]
+          | (c, l) <- zip acolytes [southsideId, downtownId, graveyardId]
           ]
       encounterDeck <- buildEncounterDeckWith
         (<> darkCult)
@@ -147,21 +160,21 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
           , SetEncounterDeck encounterDeck
           , AddAgenda "01121"
           , AddAct "01123"
-          , PlaceLocation "01125"
-          , PlaceLocation southside
-          , PlaceLocation "01128"
-          , PlaceLocation "01129"
-          , PlaceLocation downtown
-          , PlaceLocation "01132"
-          , PlaceLocation "01133"
-          , PlaceLocation "01134"
+          , PlaceLocation "01125" rivertownId
+          , PlaceLocation southside southsideId
+          , PlaceLocation "01128" stMarysHospitalId
+          , PlaceLocation "01129" miskatonicUniversityId
+          , PlaceLocation downtown downtownId
+          , PlaceLocation "01132" easttownId
+          , PlaceLocation "01133" graveyardId
+          , PlaceLocation "01134" northsideId
           ]
         <> startingLocationMessages
         <> ghoulPriestMessages
         <> spawnAcolyteMessages
       let
         locations' = mapFromList $ map
-          (second pure . toFst (getLocationName . lookupLocation))
+          (second pure . toFst (getLocationName . lookupLocationStub))
           [ "01124"
           , "01124"
           , southside

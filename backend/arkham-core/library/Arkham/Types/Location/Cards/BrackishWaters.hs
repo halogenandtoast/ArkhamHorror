@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.BrackishWaters
   ( BrackishWaters(..)
   , brackishWaters
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -18,6 +17,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -30,8 +30,9 @@ import Arkham.Types.Window
 newtype BrackishWaters = BrackishWaters LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-brackishWaters :: BrackishWaters
-brackishWaters = BrackishWaters $ baseAttrs
+brackishWaters :: LocationId -> BrackishWaters
+brackishWaters lid = BrackishWaters $ baseAttrs
+  lid
   "81010"
   (Name "Brackish Waters" Nothing)
   EncounterSet.CurseOfTheRougarou

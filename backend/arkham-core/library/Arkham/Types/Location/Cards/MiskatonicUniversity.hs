@@ -1,33 +1,35 @@
 module Arkham.Types.Location.Cards.MiskatonicUniversity
   ( MiskatonicUniversity(..)
   , miskatonicUniversity
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Target
-import Arkham.Types.Window
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype MiskatonicUniversity = MiskatonicUniversity LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-miskatonicUniversity :: MiskatonicUniversity
-miskatonicUniversity = MiskatonicUniversity $ base { locationVictory = Just 1 }
+miskatonicUniversity :: LocationId -> MiskatonicUniversity
+miskatonicUniversity lid = MiskatonicUniversity
+  $ base { locationVictory = Just 1 }
  where
   base = baseAttrs
+    lid
     "01129"
     (Name "Miskatonic University" Nothing)
     EncounterSet.TheMidnightMasks
@@ -52,13 +54,15 @@ instance ActionRunner env => HasActions env MiskatonicUniversity where
     getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env MiskatonicUniversity where
-  runMessage msg l@(MiskatonicUniversity attrs@LocationAttrs {..}) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ unshiftMessage
-      (SearchTopOfDeck
-        iid
-        (InvestigatorTarget iid)
-        6
-        [Tome, Spell]
-        ShuffleBackIn
-      )
-    _ -> MiskatonicUniversity <$> runMessage msg attrs
+  runMessage msg l@(MiskatonicUniversity attrs@LocationAttrs {..}) =
+    case msg of
+      UseCardAbility iid source _ 1 _ | isSource attrs source ->
+        l <$ unshiftMessage
+          (SearchTopOfDeck
+            iid
+            (InvestigatorTarget iid)
+            6
+            [Tome, Spell]
+            ShuffleBackIn
+          )
+      _ -> MiskatonicUniversity <$> runMessage msg attrs

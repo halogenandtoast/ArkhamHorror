@@ -1,11 +1,11 @@
 module Arkham.Types.Scenario.Scenarios
   ( module X
-  )
-where
+  ) where
 
 import Arkham.Types.Scenario.Scenarios.BloodOnTheAltar as X
 import Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou as X
 import Arkham.Types.Scenario.Scenarios.ExtracurricularActivity as X
+import Arkham.Types.Scenario.Scenarios.LostInTimeAndSpace as X
 import Arkham.Types.Scenario.Scenarios.ReturnToTheDevourerBelow as X
 import Arkham.Types.Scenario.Scenarios.ReturnToTheGathering as X
 import Arkham.Types.Scenario.Scenarios.ReturnToTheMidnightMasks as X

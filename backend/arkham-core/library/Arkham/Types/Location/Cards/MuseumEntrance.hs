@@ -6,22 +6,24 @@ module Arkham.Types.Location.Cards.MuseumEntrance
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Target
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype MuseumEntrance = MuseumEntrance LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-museumEntrance :: MuseumEntrance
-museumEntrance = MuseumEntrance $ baseAttrs
+museumEntrance :: LocationId -> MuseumEntrance
+museumEntrance lid = MuseumEntrance $ baseAttrs
+  lid
   "02126"
   (Name "Museum Entrance" Nothing)
   EncounterSet.TheMiskatonicMuseum

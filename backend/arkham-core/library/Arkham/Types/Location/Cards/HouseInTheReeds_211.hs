@@ -6,24 +6,26 @@ module Arkham.Types.Location.Cards.HouseInTheReeds_211
 import Arkham.Prelude
 
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
-import Arkham.Types.Card.EncounterCardMatcher
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype HouseInTheReeds_211 = HouseInTheReeds_211 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-houseInTheReeds_211 :: HouseInTheReeds_211
-houseInTheReeds_211 = HouseInTheReeds_211 $ baseAttrs
+houseInTheReeds_211 :: LocationId -> HouseInTheReeds_211
+houseInTheReeds_211 lid = HouseInTheReeds_211 $ baseAttrs
+  lid
   "02211"
   (Name "House in the Reeds" Nothing)
   EncounterSet.BloodOnTheAltar

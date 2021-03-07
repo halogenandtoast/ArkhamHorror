@@ -3,18 +3,20 @@ module Arkham.Types.Location.Cards.Hallway where
 import Arkham.Prelude
 
 import Arkham.Types.Classes
-import Arkham.Types.GameValue
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Name
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Name
 
 newtype Hallway = Hallway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-hallway :: Hallway
-hallway = Hallway $ baseAttrs
+hallway :: LocationId -> Hallway
+hallway lid = Hallway $ baseAttrs
+  lid
   "01112"
   (Name "Hallway" Nothing)
   EncounterSet.TheGathering

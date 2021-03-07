@@ -7,25 +7,27 @@ import Arkham.Prelude
 
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Modifier
-import Arkham.Types.Name
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Modifier
+import Arkham.Types.Name
 import Arkham.Types.Trait
 
 newtype ExhibitHallRestrictedHall = ExhibitHallRestrictedHall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-exhibitHallRestrictedHall :: ExhibitHallRestrictedHall
-exhibitHallRestrictedHall = ExhibitHallRestrictedHall
+exhibitHallRestrictedHall :: LocationId -> ExhibitHallRestrictedHall
+exhibitHallRestrictedHall lid = ExhibitHallRestrictedHall
   $ base { locationVictory = Just 1 }
  where
   base = baseAttrs
+    lid
     "02137"
     (Name "Exhibit Hall" $ Just "Restricted Hall")
     EncounterSet.TheMiskatonicMuseum

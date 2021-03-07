@@ -9,22 +9,24 @@ import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.GameValue
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
-import Arkham.Types.Name
-import Arkham.Types.Window
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype YourHouse = YourHouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-yourHouse :: YourHouse
-yourHouse = YourHouse $ baseAttrs
+yourHouse :: LocationId -> YourHouse
+yourHouse lid = YourHouse $ baseAttrs
+  lid
   "01124"
   (Name "Your House" Nothing)
   EncounterSet.TheMidnightMasks

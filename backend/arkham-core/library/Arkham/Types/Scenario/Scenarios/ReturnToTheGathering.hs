@@ -6,6 +6,8 @@ import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Scenario.Attrs
@@ -39,7 +41,7 @@ instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env (Investigato
   getTokenValue (ReturnToTheGathering theGathering') iid =
     getTokenValue theGathering' iid
 
-instance ScenarioRunner env => RunMessage env ReturnToTheGathering where
+instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env ReturnToTheGathering where
   runMessage msg (ReturnToTheGathering theGathering'@(TheGathering attrs@ScenarioAttrs {..}))
     = case msg of
       Setup -> do
@@ -53,16 +55,20 @@ instance ScenarioRunner env => RunMessage env ReturnToTheGathering where
           , EncounterSet.AncientEvils
           , EncounterSet.ChillingCold
           ]
+        studyId <- getRandom
+        guestHallId <- getRandom
+        bedroomId <- getRandom
+        bathroomId <- getRandom
         pushMessages
           [ SetEncounterDeck encounterDeck
           , AddAgenda "01105"
           , AddAct "50012"
-          , PlaceLocation "50013"
-          , PlaceLocation "50014"
-          , PlaceLocation "50015"
-          , PlaceLocation "50016"
-          , RevealLocation Nothing "50013"
-          , MoveAllTo "50013"
+          , PlaceLocation "50013" studyId
+          , PlaceLocation "50014" guestHallId
+          , PlaceLocation "50015" bedroomId
+          , PlaceLocation "50016" bathroomId
+          , RevealLocation Nothing studyId
+          , MoveAllTo studyId
           , AskMap
           . mapFromList
           $ [ (iid, ChooseOne [Run [Continue "Continue", theGatheringIntro]])
@@ -73,7 +79,7 @@ instance ScenarioRunner env => RunMessage env ReturnToTheGathering where
         cellar <- sample $ "50020" :| ["01114"]
         let
           locations' = mapFromList $ map
-            (second pure . toFst (getLocationName . lookupLocation))
+            (second pure . toFst (getLocationName . lookupLocationStub))
             [ "50013"
             , "50014"
             , "50015"

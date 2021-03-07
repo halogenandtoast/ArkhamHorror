@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.AscendingTheHillV3
   ( AscendingTheHillV3(..)
   , ascendingTheHillV3
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -36,7 +35,7 @@ instance HasSet Trait env LocationId => HasModifiersFor env AscendingTheHillV3 w
 instance ActionRunner env => HasActions env AscendingTheHillV3 where
   getActions i window (AscendingTheHillV3 x) = getActions i window x
 
-instance ActRunner env => RunMessage env AscendingTheHillV3 where
+instance (HasName env LocationId, ActRunner env) => RunMessage env AscendingTheHillV3 where
   runMessage msg a@(AscendingTheHillV3 attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -57,6 +56,9 @@ instance ActRunner env => RunMessage env AscendingTheHillV3 where
     CreatedEnemyAt eid _ target | isTarget attrs target -> do
       damage <- getPlayerCountValue (PerPlayer 1)
       a <$ unshiftMessage (EnemySetDamage eid (toSource attrs) damage)
-    WhenEnterLocation _ "02284" ->
-      a <$ unshiftMessage (AdvanceAct actId (toSource attrs))
+    WhenEnterLocation _ lid -> do
+      name <- getName lid
+      a <$ when
+        (name == "Sentinel Hill")
+        (unshiftMessage $ AdvanceAct actId (toSource attrs))
     _ -> AscendingTheHillV3 <$> runMessage msg attrs

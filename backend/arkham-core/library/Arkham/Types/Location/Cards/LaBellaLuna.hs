@@ -6,19 +6,21 @@ module Arkham.Types.Location.Cards.LaBellaLuna
 import Arkham.Prelude
 
 import Arkham.Types.Classes
-import Arkham.Types.GameValue
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Name
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Name
 import Arkham.Types.Trait
 
 newtype LaBellaLuna = LaBellaLuna LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-laBellaLuna :: LaBellaLuna
-laBellaLuna = LaBellaLuna $ baseAttrs
+laBellaLuna :: LocationId -> LaBellaLuna
+laBellaLuna lid = LaBellaLuna $ baseAttrs
+  lid
   "02070"
   (Name "La Bella Luna" Nothing)
   EncounterSet.TheHouseAlwaysWins

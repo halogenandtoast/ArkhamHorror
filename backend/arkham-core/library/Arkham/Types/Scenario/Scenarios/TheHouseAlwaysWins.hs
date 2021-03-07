@@ -11,6 +11,8 @@ import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
@@ -64,7 +66,7 @@ instance HasTokenValue env InvestigatorId => HasTokenValue env TheHouseAlwaysWin
     Tablet -> pure $ TokenValue Tablet (NegativeModifier 2)
     otherFace -> getTokenValue attrs iid otherFace
 
-instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
+instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env TheHouseAlwaysWins where
   runMessage msg s@(TheHouseAlwaysWins attrs@ScenarioAttrs {..}) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds
@@ -75,17 +77,21 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
         , EncounterSet.Rats
         ]
       cloverClubPitBoss <- buildCard "02078"
+      laBellaLunaId <- getRandom
+      cloverClubLoungeId <- getRandom
+      cloverClubBarId <- getRandom
+      cloverClubCardroomId <- getRandom
       pushMessages
         [ SetEncounterDeck encounterDeck
         , AddAgenda "02063"
         , AddAct "02066"
-        , PlaceLocation "02070"
-        , PlaceLocation "02071"
-        , PlaceLocation "02072"
-        , PlaceLocation "02073"
-        , RevealLocation Nothing "02070"
-        , MoveAllTo "02070"
-        , CreateEnemyAt cloverClubPitBoss "02071" Nothing
+        , PlaceLocation "02070" laBellaLunaId
+        , PlaceLocation "02071" cloverClubLoungeId
+        , PlaceLocation "02072" cloverClubBarId
+        , PlaceLocation "02073" cloverClubCardroomId
+        , RevealLocation Nothing laBellaLunaId
+        , MoveAllTo laBellaLunaId
+        , CreateEnemyAt cloverClubPitBoss cloverClubLoungeId Nothing
         , AskMap
         . mapFromList
         $ [ ( iid
@@ -96,7 +102,7 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
         ]
       let
         locations' = mapFromList $ map
-          (second pure . toFst (getLocationName . lookupLocation))
+          (second pure . toFst (getLocationName . lookupLocationStub))
           [ "02070"
           , "02071"
           , "02072"

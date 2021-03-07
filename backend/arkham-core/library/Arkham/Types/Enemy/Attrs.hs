@@ -4,11 +4,13 @@ module Arkham.Types.Enemy.Attrs where
 
 import Arkham.Prelude
 
+import Data.UUID (nil)
 import Arkham.Json
 import Arkham.EncounterCard
 import Arkham.PlayerCard
 import Arkham.Types.AssetId
 import Arkham.Types.Card
+import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
@@ -61,7 +63,8 @@ data EnemyAttrs = EnemyAttrs
 makeLensesWith suffixedFields ''EnemyAttrs
 
 spawned :: EnemyAttrs -> Bool
-spawned EnemyAttrs { enemyLocation } = enemyLocation /= "unknown"
+spawned EnemyAttrs { enemyLocation } =
+  enemyLocation /= LocationId (CardId nil)
 
 instance ToJSON EnemyAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "enemy"
@@ -90,7 +93,7 @@ baseAttrs eid cardCode f =
       , enemyId = eid
       , enemyCardCode = cardCode
       , enemyEngagedInvestigators = mempty
-      , enemyLocation = "unknown" -- no known location
+      , enemyLocation = LocationId $ CardId nil
       , enemyFight = 1
       , enemyHealth = Static 1
       , enemyEvade = 1
@@ -125,7 +128,7 @@ weaknessBaseAttrs eid cardCode =
       , enemyId = eid
       , enemyCardCode = cardCode
       , enemyEngagedInvestigators = mempty
-      , enemyLocation = "unknown" -- no known location
+      , enemyLocation = LocationId $ CardId nil -- no known location
       , enemyFight = 1
       , enemyHealth = Static 1
       , enemyEvade = 1

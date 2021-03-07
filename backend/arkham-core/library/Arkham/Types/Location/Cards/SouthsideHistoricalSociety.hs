@@ -1,30 +1,31 @@
 module Arkham.Types.Location.Cards.SouthsideHistoricalSociety
   ( SouthsideHistoricalSociety(..)
   , southsideHistoricalSociety
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.GameValue
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
-import Arkham.Types.Name
-import Arkham.Types.Window
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype SouthsideHistoricalSociety = SouthsideHistoricalSociety LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-southsideHistoricalSociety :: SouthsideHistoricalSociety
-southsideHistoricalSociety = SouthsideHistoricalSociety $ baseAttrs
+southsideHistoricalSociety :: LocationId -> SouthsideHistoricalSociety
+southsideHistoricalSociety lid = SouthsideHistoricalSociety $ baseAttrs
+  lid
   "01126"
   (Name "Southside" $ Just "Historical Society")
   EncounterSet.TheMidnightMasks

@@ -3,21 +3,23 @@ module Arkham.Types.Location.Cards.FacultyOfficesTheHourIsLate where
 import Arkham.Prelude
 
 import Arkham.Types.Classes
-import Arkham.Types.GameValue
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Modifier
-import Arkham.Types.Name
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Modifier
+import Arkham.Types.Name
 import Arkham.Types.Trait
 
 newtype FacultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-facultyOfficesTheHourIsLate :: FacultyOfficesTheHourIsLate
-facultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate $ baseAttrs
+facultyOfficesTheHourIsLate :: LocationId -> FacultyOfficesTheHourIsLate
+facultyOfficesTheHourIsLate lid = FacultyOfficesTheHourIsLate $ baseAttrs
+  lid
   "02055"
   (Name "Faculty Offices" $ Just "The House is Late")
   EncounterSet.ExtracurricularActivity

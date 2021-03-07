@@ -10,6 +10,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
@@ -22,10 +23,11 @@ import Arkham.Types.Window
 newtype Dormitories = Dormitories LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-dormitories :: Dormitories
-dormitories = Dormitories $ base { locationVictory = Just 1 }
+dormitories :: LocationId -> Dormitories
+dormitories lid = Dormitories $ base { locationVictory = Just 1 }
  where
   base = baseAttrs
+    lid
     "02052"
     (Name "Dormitories" Nothing)
     EncounterSet.ExtracurricularActivity

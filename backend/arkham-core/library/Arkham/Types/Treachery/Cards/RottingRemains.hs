@@ -5,7 +5,6 @@ import Arkham.Prelude
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.SkillType
-import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.TreacheryId
 
@@ -31,13 +30,7 @@ instance TreacheryRunner env => RunMessage env RottingRemains where
       [ RevelationSkillTest iid source SkillWillpower 3
       , Discard (TreacheryTarget treacheryId)
       ]
-    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
-      | tid == treacheryId -> t <$ unshiftMessage
-        (InvestigatorAssignDamage
-          iid
-          (TreacherySource treacheryId)
-          DamageAny
-          0
-          n
-        )
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
+      | isSource attrs source -> t
+      <$ unshiftMessage (InvestigatorAssignDamage iid source DamageAny 0 n)
     _ -> RottingRemains <$> runMessage msg attrs

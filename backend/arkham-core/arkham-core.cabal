@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 04c2ce0e829af297028a5c0d46c599c223f506d163c6c2be6453e7e690a85c59
+-- hash: a1d4c831630e22ee412108ee6e4ddc4e75c2afbaed8356074610c822b03bf595
 
 name:           arkham-core
 version:        0.0.0
@@ -762,6 +762,7 @@ library
       Arkham.Types.Treachery.Cards.UmordhothsHunger
       Arkham.Types.Treachery.Cards.UmordhothsWrath
       Arkham.Types.Treachery.Cards.UnhallowedCountry
+      Arkham.Types.Treachery.Cards.VastExpanse
       Arkham.Types.Treachery.Cards.VaultOfEarthlyDemise
       Arkham.Types.Treachery.Cards.VisionsOfFuturesPast
       Arkham.Types.Treachery.Cards.VortexOfTime

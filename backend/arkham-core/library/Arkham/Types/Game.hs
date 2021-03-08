@@ -2474,6 +2474,16 @@ runGameMessage msg g = case msg of
     unshiftMessage $ RemoveEnemy eid
     encounterDeck <- shuffleM $ card : unDeck (view encounterDeckL g)
     pure $ g & encounterDeckL .~ Deck encounterDeck
+  ShuffleBackIntoEncounterDeck (LocationTarget lid) -> do
+    let
+      location = getLocation lid g
+      card = fromJustNote
+        "missing card"
+        (lookup (getCardCode location) allEncounterCards)
+        (unLocationId lid)
+    unshiftMessages $ resolve (RemoveLocation lid)
+    encounterDeck <- shuffleM $ card : unDeck (view encounterDeckL g)
+    pure $ g & encounterDeckL .~ Deck encounterDeck
   ShuffleEncounterDiscardBackIn -> do
     encounterDeck <-
       shuffleM $ unDeck (view encounterDeckL g) <> view discardL g

@@ -2,8 +2,7 @@
 
 module Arkham.Types.Game
   ( module Arkham.Types.Game
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -19,6 +18,7 @@ import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
 import Arkham.Types.CampaignId
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes hiding (discard)
 import Arkham.Types.Direction
@@ -44,7 +44,6 @@ import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Act
 import Arkham.Types.ModifierData
 import Arkham.Types.Action (Action, TakenAction)
@@ -490,6 +489,9 @@ instance HasCount ActionTakenCount (Game queue) InvestigatorId where
 
 instance HasCount DiscardCount (Game queue) InvestigatorId where
   getCount = getCount <=< getInvestigator
+
+instance HasList DiscardedEncounterCard (Game queue) () where
+  getList _ = map DiscardedEncounterCard <$> view discardL
 
 instance HasList TakenAction (Game queue) InvestigatorId where
   getList = getList <=< getInvestigator

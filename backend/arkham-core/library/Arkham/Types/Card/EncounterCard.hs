@@ -2,8 +2,7 @@ module Arkham.Types.Card.EncounterCard
   ( module Arkham.Types.Card.EncounterCard
   , module Arkham.Types.Card.EncounterCardMatcher
   , module Arkham.Types.Card.EncounterCardType
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -15,6 +14,8 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Keyword (Keyword)
 import Arkham.Types.Name
 import Arkham.Types.Trait
+
+newtype DiscardedEncounterCard = DiscardedEncounterCard { unDiscardedEncounterCard :: EncounterCard }
 
 data EncounterCard = MkEncounterCard
   { ecCardCode :: CardCode

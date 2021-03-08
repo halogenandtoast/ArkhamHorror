@@ -75,7 +75,19 @@ instance LocationRunner env => RunMessage env StepsOfYhagharl where
           SkillWillpower
           2
         )
-    FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> l
-      <$ unshiftMessage (ShuffleBackIntoEncounterDeck $ toTarget attrs)
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
+      | isSource attrs source -> do
+        replaceMessageMatching (== MoveFrom iid (toId attrs)) (const [])
+        replaceMessageMatching
+          (\case
+            Will (MoveTo iid' _) | iid == iid' -> True
+            _ -> False
+          )
+          (const [])
+        l <$ replaceMessageMatching
+          (\case
+            MoveTo iid' _ | iid == iid' -> True
+            _ -> False
+          )
+          (const [ShuffleBackIntoEncounterDeck $ toTarget attrs])
     _ -> StepsOfYhagharl <$> runMessage msg attrs

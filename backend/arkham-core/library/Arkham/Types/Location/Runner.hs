@@ -7,6 +7,7 @@ import Arkham.Types.ActId
 import Arkham.Types.Asset.Uses
 import Arkham.Types.AssetId
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
@@ -35,6 +36,7 @@ type LocationRunner env
     , HasId LeadInvestigatorId env ()
     , HasId LocationId env EnemyId
     , HasId LocationId env InvestigatorId
+    , HasList DiscardedEncounterCard env ()
     , HasList HandCard env InvestigatorId
     , HasList LocationName env ()
     , HasList UsedAbility env ()

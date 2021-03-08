@@ -9,6 +9,7 @@ import Arkham.Types.AgendaId
 import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.AssetId
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Direction
@@ -74,7 +75,8 @@ type InvestigatorRunner env
       , HasId LocationId env EnemyId
       , HasId LocationId env InvestigatorId
       )
-    , ( HasList DiscardableHandCard env InvestigatorId
+    , ( HasList DiscardedEncounterCard env ()
+      , HasList DiscardableHandCard env InvestigatorId
       , HasList DiscardedPlayerCard env InvestigatorId
       , HasList HandCard env InvestigatorId
       , HasList InPlayCard env InvestigatorId

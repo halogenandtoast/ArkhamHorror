@@ -1,11 +1,12 @@
 module Arkham.Types.Location.Cards.StepsOfYhagharl
   ( stepsOfYhagharl
   , StepsOfYhagharl(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
+import Arkham.Types.Ability
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
@@ -13,8 +14,12 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
 import Arkham.Types.Name
+import Arkham.Types.SkillType
+import Arkham.Types.Target
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype StepsOfYhagharl = StepsOfYhagharl LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -35,8 +40,42 @@ instance HasModifiersFor env StepsOfYhagharl where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env StepsOfYhagharl where
+  getActions iid (WhenWouldLeave You lid) (StepsOfYhagharl attrs)
+    | iid `on` attrs = pure
+      [ ActivateCardAbilityAction
+          iid
+          (mkAbility (toSource attrs) 1 ForcedAbility)
+      | lid == locationId attrs
+      ]
   getActions iid window (StepsOfYhagharl attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env StepsOfYhagharl where
-  runMessage msg (StepsOfYhagharl attrs) =
-    StepsOfYhagharl <$> runMessage msg attrs
+  runMessage msg l@(StepsOfYhagharl attrs) = case msg of
+    Revelation iid source | isSource attrs source -> do
+      encounterDiscard <- map unDiscardedEncounterCard <$> getList ()
+      let
+        mMadnessCard = find (member Madness . getTraits) encounterDiscard
+        revelationMsgs = case mMadnessCard of
+          Nothing -> []
+          Just madnessCard ->
+            [ RemoveFromEncounterDiscard madnessCard
+            , InvestigatorDrewEncounterCard iid madnessCard
+            ]
+      unshiftMessages
+        $ PlaceLocation (locationCardCode attrs) (toId attrs)
+        : revelationMsgs
+      StepsOfYhagharl <$> runMessage msg attrs
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      l <$ unshiftMessage
+        (BeginSkillTest
+          iid
+          source
+          (InvestigatorTarget iid)
+          Nothing
+          SkillWillpower
+          2
+        )
+    FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+      | isSource attrs source -> l
+      <$ unshiftMessage (ShuffleBackIntoEncounterDeck $ toTarget attrs)
+    _ -> StepsOfYhagharl <$> runMessage msg attrs

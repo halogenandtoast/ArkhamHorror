@@ -260,7 +260,8 @@ getModifiedSanity attrs@InvestigatorAttrs {..} = do
   applyModifier (SanityModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
+removeFromSlots
+  :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = fmap (map (removeIfMatches aid))
 
 fitsAvailableSlots :: [SlotType] -> [Trait] -> InvestigatorAttrs -> Bool
@@ -909,7 +910,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     a <$ unshiftMessages (resolve $ Move iid investigatorLocation lid)
   Move iid fromLocationId toLocationId | iid == investigatorId ->
     a <$ unshiftMessages
-      [ Will (MoveTo iid toLocationId)
+      [ Will (MoveFrom iid fromLocationId)
+      , Will (MoveTo iid toLocationId)
       , MoveFrom iid fromLocationId
       , MoveTo iid toLocationId
       ]

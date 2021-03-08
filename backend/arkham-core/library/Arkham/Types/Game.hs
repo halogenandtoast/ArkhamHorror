@@ -1636,6 +1636,9 @@ runGameMessage msg g = case msg of
       $ g
       & (modeL %~ setScenario (lookupScenario sid difficulty))
       & (phaseL .~ InvestigationPhase)
+  Will (MoveFrom iid lid) -> do
+    msgs <- checkWindows iid (\who -> pure [WhenWouldLeave who lid])
+    g <$ unshiftMessages msgs
   CreateEffect cardCode meffectMetadata source target -> do
     (effectId, effect) <- createEffect cardCode meffectMetadata source target
     unshiftMessage (CreatedEffect effectId meffectMetadata source target)

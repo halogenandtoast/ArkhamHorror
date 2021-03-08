@@ -23,19 +23,21 @@ data Window
   | AfterEnemyDefeated Who EnemyId
   | AfterEnemyEngageInvestigator Who EnemyId
   | AfterEnemyEvaded Who EnemyId
-  | AfterFailSkillTest Who Int
   | AfterFailInvestigationSkillTest Who Int
+  | AfterFailSkillTest Who Int
   | AfterFailSkillTestAtOrLess Who Int
   | AfterPassSkillTest (Maybe Action) Source Who Int
   | AfterPlayCard Who [Trait]
   | AfterPutLocationIntoPlay Who
   | AfterRevealLocation Who
-  | AfterSuccessfulInvestigation Who Where
   | AfterSuccessfulAttackEnemy Who EnemyId
+  | AfterSuccessfulInvestigation Who Where
   | AfterTurnBegins Who
-  | FastPlayerWindow
   | AnyPhaseBegins
   | DuringTurn Who
+  | FastPlayerWindow
+  | InDiscardWindow InvestigatorId Window
+  | InHandWindow InvestigatorId Window
   | NonFast
   | WhenActAdvance ActId
   | WhenAgendaAdvance AgendaId
@@ -46,27 +48,26 @@ data Window
   | WhenDealtHorror Source Target
   | WhenDefeated Source
   | WhenDiscoverClues Who Where
+  | WhenDrawNonPerilTreachery Who TreacheryId
   | WhenDrawToken Who Token
   | WhenDrawTreachery Who
-  | WhenDrawNonPerilTreachery Who TreacheryId
   | WhenEnemyAttacks Who
-  | WhenEnemySpawns Where [Trait]
   | WhenEnemyDefeated Who
   | WhenEnemyEvaded Who
+  | WhenEnemySpawns Where [Trait]
   | WhenEnterPlay Target
-  | WhenWouldReady Target
   | WhenPlayCard Who CardId
-  | WhenRevealTokenWithNegativeModifier Who TokenId
   | WhenRevealToken Who Token
+  | WhenRevealTokenWithNegativeModifier Who TokenId
   | WhenSkillTest SkillType
   | WhenSuccessfulAttackEnemy Who EnemyId
   | WhenSuccessfulInvestigation Who Where
   | WhenWouldFailSkillTest Who
+  | WhenWouldLeave Who LocationId
+  | WhenWouldReady Target
   | WhenWouldRevealChaosToken Source Who
   | WhenWouldTakeDamage Source Target
   | WhenWouldTakeHorror Source Target
-  | InHandWindow InvestigatorId Window
-  | InDiscardWindow InvestigatorId Window
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

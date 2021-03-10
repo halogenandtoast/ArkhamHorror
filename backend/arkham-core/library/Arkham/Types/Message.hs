@@ -1,7 +1,6 @@
 module Arkham.Types.Message
   ( module Arkham.Types.Message
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -326,6 +325,7 @@ data Message
   | LookAtRevealed LocationId
   | LookAtTopOfDeck InvestigatorId Target Int
   | LoseActions InvestigatorId Source Int
+  | LoseResources InvestigatorId Int
   | SpendActions InvestigatorId Source Int
   | Move InvestigatorId LocationId LocationId
   | MoveAction InvestigatorId LocationId Cost Bool

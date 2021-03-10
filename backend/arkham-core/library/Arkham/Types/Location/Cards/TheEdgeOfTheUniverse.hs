@@ -1,19 +1,24 @@
 module Arkham.Types.Location.Cards.TheEdgeOfTheUniverse
   ( theEdgeOfTheUniverse
   , TheEdgeOfTheUniverse(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Classes
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.Name
+import Arkham.Types.Phase
+import Arkham.Types.Query
+import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype TheEdgeOfTheUniverse = TheEdgeOfTheUniverse LocationAttrs
@@ -31,12 +36,25 @@ theEdgeOfTheUniverse lid = TheEdgeOfTheUniverse $ baseAttrs
   [Plus, Squiggle]
   [Otherworld]
 
-instance HasModifiersFor env TheEdgeOfTheUniverse where
-  getModifiersFor = noModifiersFor
+instance HasPhase env => HasModifiersFor env TheEdgeOfTheUniverse where
+  getModifiersFor _ (InvestigatorTarget iid) (TheEdgeOfTheUniverse attrs)
+    | iid `on` attrs = do
+      phase <- asks getPhase
+      pure $ toModifiers attrs [ CannotDrawCards | phase == UpkeepPhase ]
+  getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env TheEdgeOfTheUniverse where
-  getActions iid window (TheEdgeOfTheUniverse attrs) =
-    getActions iid window attrs
+  getActions iid window (TheEdgeOfTheUniverse attrs) = do
+    actions <- getActions iid window attrs
+    clueCount <- unClueCount <$> getCount iid
+    pure $ if clueCount >= 2
+      then actions
+      else filter
+        (\case
+          MoveAction{} -> False
+          _ -> True
+        )
+        actions
 
 instance LocationRunner env => RunMessage env TheEdgeOfTheUniverse where
   runMessage msg (TheEdgeOfTheUniverse attrs) =

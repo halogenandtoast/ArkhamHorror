@@ -26,6 +26,7 @@ data Window
   | AfterFailInvestigationSkillTest Who Int
   | AfterFailSkillTest Who Int
   | AfterFailSkillTestAtOrLess Who Int
+  | AfterLeaving Who LocationId
   | AfterPassSkillTest (Maybe Action) Source Who Int
   | AfterPlayCard Who [Trait]
   | AfterPutLocationIntoPlay Who
@@ -34,6 +35,7 @@ data Window
   | AfterSuccessfulInvestigation Who Where
   | AfterTurnBegins Who
   | AnyPhaseBegins
+  | AtEndOfRound
   | DuringTurn Who
   | FastPlayerWindow
   | InDiscardWindow InvestigatorId Window
@@ -56,6 +58,7 @@ data Window
   | WhenEnemyEvaded Who
   | WhenEnemySpawns Where [Trait]
   | WhenEnterPlay Target
+  | WhenLocationLeavesPlay LocationId
   | WhenPlayCard Who CardId
   | WhenRevealToken Who Token
   | WhenRevealTokenWithNegativeModifier Who TokenId

@@ -1364,6 +1364,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   InvestigatorSpendClues iid n | iid == investigatorId -> pure $ a & cluesL -~ n
   SpendResources iid n | iid == investigatorId ->
     pure $ a & resourcesL %~ max 0 . subtract n
+  LoseResources iid n | iid == investigatorId ->
+    pure $ a & resourcesL %~ max 0 . subtract n
   TakeResources iid n True | iid == investigatorId -> do
     unlessM (hasModifier a CannotGainResources) $ unshiftMessages
       [ TakeAction iid (Just Action.Resource) (ActionCost 1)

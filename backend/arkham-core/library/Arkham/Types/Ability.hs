@@ -1,8 +1,7 @@
 module Arkham.Types.Ability
   ( module Arkham.Types.Ability
   , module X
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -25,6 +24,9 @@ data Ability = Ability
 
 abilityLimitL :: Lens' Ability AbilityLimit
 abilityLimitL = lens abilityLimit $ \m x -> m { abilityLimit = x }
+
+abilityMetadataL :: Lens' Ability (Maybe AbilityMetadata)
+abilityMetadataL = lens abilityMetadata $ \m x -> m { abilityMetadata = x }
 
 instance Eq Ability where
   a == b =

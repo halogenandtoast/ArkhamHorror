@@ -1057,6 +1057,14 @@ instance HasSet UnengagedEnemyId (Game queue) () where
       . filterMap (not . isEngaged)
       <$> view enemiesL
 
+instance HasSet UnengagedEnemyId (Game queue) LocationId where
+  getSet lid = do
+    enemyIds <- getSet =<< getLocation lid
+    mapSet UnengagedEnemyId
+      . keysSet
+      . filterMap (and . sequence [not . isEngaged, (`member` enemyIds) . toId])
+      <$> view enemiesL
+
 instance HasSet EnemyId (Game queue) Trait where
   getSet trait =
     keysSet . filterMap ((trait `elem`) . getTraits) <$> view enemiesL
@@ -1639,6 +1647,9 @@ runGameMessage msg g = case msg of
   Will (MoveFrom iid lid) -> do
     msgs <- checkWindows iid (\who -> pure [WhenWouldLeave who lid])
     g <$ unshiftMessages msgs
+  After (MoveFrom iid lid) -> do
+    msgs <- checkWindows iid (\who -> pure [AfterLeaving who lid])
+    g <$ unshiftMessages msgs
   CreateEffect cardCode meffectMetadata source target -> do
     (effectId, effect) <- createEffect cardCode meffectMetadata source target
     unshiftMessage (CreatedEffect effectId meffectMetadata source target)
@@ -1747,6 +1758,8 @@ runGameMessage msg g = case msg of
   SetEncounterDeck encounterDeck ->
     pure $ g & encounterDeckL .~ Deck encounterDeck
   RemoveEnemy eid -> pure $ g & enemiesL %~ deleteMap eid
+  Will (RemoveLocation lid) -> g <$ unshiftMessage
+    (CheckWindow (g ^. leadInvestigatorIdL) [WhenLocationLeavesPlay lid])
   RemoveLocation lid -> do
     treacheryIds <- getSetList lid
     unshiftMessages
@@ -2196,6 +2209,8 @@ runGameMessage msg g = case msg of
     pushMessages [EndRoundWindow, EndRound]
     pure $ g & usedAbilitiesL %~ filter
       (\(_, Ability {..}) -> abilityLimitType abilityLimit /= Just PerPhase)
+  EndRoundWindow ->
+    g <$ unshiftMessage (CheckWindow (g ^. leadInvestigatorIdL) [AtEndOfRound])
   EndRound -> do
     pushMessage BeginRound
     atomicWriteIORef (gameRoundMessageHistory g) []

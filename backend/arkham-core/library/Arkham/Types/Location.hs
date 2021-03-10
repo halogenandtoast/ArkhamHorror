@@ -1,7 +1,6 @@
 module Arkham.Types.Location
   ( module Arkham.Types.Location
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -188,7 +187,7 @@ deriving anyclass instance
   )
   => HasModifiersFor env Location
 
-instance LocationRunner env => RunMessage env Location where
+instance (HasSet UnengagedEnemyId env LocationId, LocationRunner env) => RunMessage env Location where
   runMessage msg l = do
     modifiers' <- getModifiersFor (toSource l) (toTarget l) ()
     let msg' = if any isBlank modifiers' then Blanked msg else msg

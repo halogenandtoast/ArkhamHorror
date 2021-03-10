@@ -1,20 +1,23 @@
 module Arkham.Types.Location.Cards.TearThroughSpace
   ( tearThroughSpace
   , TearThroughSpace(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype TearThroughSpace = TearThroughSpace LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -34,9 +37,31 @@ tearThroughSpace lid = TearThroughSpace $ baseAttrs
 instance HasModifiersFor env TearThroughSpace where
   getModifiersFor = noModifiersFor
 
+forcedAbility :: LocationAttrs -> Ability
+forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
+
 instance ActionRunner env => HasActions env TearThroughSpace where
+  getActions iid AtEndOfRound (TearThroughSpace attrs) = do
+    leadInvestigator <- getLeadInvestigatorId
+    pure
+      [ ActivateCardAbilityAction leadInvestigator (forcedAbility attrs)
+      | iid == leadInvestigator
+      ]
   getActions iid window (TearThroughSpace attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env TearThroughSpace where
-  runMessage msg (TearThroughSpace attrs) =
-    TearThroughSpace <$> runMessage msg attrs
+  runMessage msg l@(TearThroughSpace attrs) = case msg of
+    Revelation _ source | isSource attrs source -> do
+      unshiftMessage $ PlaceLocation (locationCardCode attrs) (toId attrs)
+      TearThroughSpace <$> runMessage msg attrs
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      l <$ unshiftMessage
+        (chooseOne
+          iid
+          [ Label
+            "Place 1 doom on Tear through Space"
+            [PlaceDoom (toTarget attrs) 1]
+          , Label "Discard Tear through Space" [Discard (toTarget attrs)]
+          ]
+        )
+    _ -> TearThroughSpace <$> runMessage msg attrs

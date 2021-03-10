@@ -160,6 +160,7 @@ type InvestigatorRunner env
         , HasSet Trait env (InvestigatorId, CardId)
         , HasSet TreacheryId env LocationId
         , HasSet UnengagedEnemyId env ()
+        , HasSet UnengagedEnemyId env LocationId
         , HasSet UniqueEnemyId env ()
         , HasSet UnrevealedLocationId env ()
         , HasSet UnrevealedLocationId env LocationMatcher

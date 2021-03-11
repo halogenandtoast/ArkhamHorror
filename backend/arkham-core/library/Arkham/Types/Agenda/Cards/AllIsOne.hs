@@ -1,14 +1,17 @@
 module Arkham.Types.Agenda.Cards.AllIsOne
   ( AllIsOne
   , allIsOne
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
+import Arkham.Types.CampaignLogKey
+import Arkham.Types.Card.EncounterCardMatcher
+import Arkham.Types.Card.EncounterCardType
 import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 
@@ -24,8 +27,25 @@ instance HasModifiersFor env AllIsOne where
 instance HasActions env AllIsOne where
   getActions i window (AllIsOne x) = getActions i window x
 
-instance AgendaRunner env => RunMessage env AllIsOne where
+instance (HasRecord env, AgendaRunner env) => RunMessage env AllIsOne where
   runMessage msg a@(AllIsOne attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B ->
-      a <$ unshiftMessages [NextAgenda aid "02313"]
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
+      failedToSaveStudents <- getHasRecord
+        TheInvestigatorsFailedToSaveTheStudents
+      investigatorIds <- getInvestigatorIds
+      a <$ unshiftMessages
+        ([ ShuffleEncounterDiscardBackIn
+         , DiscardEncounterUntilFirst
+           (toSource attrs)
+           (EncounterCardMatchByType (LocationType, Nothing))
+         ]
+        <> [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
+           | failedToSaveStudents
+           , iid <- investigatorIds
+           ]
+        <> [NextAgenda aid "02313"]
+        )
+    RequestedEncounterCard source (Just card) | isSource attrs source -> do
+      leadInvestigator <- getLeadInvestigatorId
+      a <$ unshiftMessage (InvestigatorDrewEncounterCard leadInvestigator card)
     _ -> AllIsOne <$> runMessage msg attrs

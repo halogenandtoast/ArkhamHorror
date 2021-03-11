@@ -1,7 +1,6 @@
 module Arkham.Types.Act.Cards
   ( module X
-  )
-where
+  ) where
 
 import Arkham.Types.Act.Cards.AfterHours as X
 import Arkham.Types.Act.Cards.AllIn as X
@@ -11,12 +10,15 @@ import Arkham.Types.Act.Cards.AscendingTheHillV3 as X
 import Arkham.Types.Act.Cards.BeginnersLuck as X
 import Arkham.Types.Act.Cards.BreakingAndEntering as X
 import Arkham.Types.Act.Cards.CampusSafety as X
+import Arkham.Types.Act.Cards.CloseTheRift as X
 import Arkham.Types.Act.Cards.DisruptingTheRitual as X
+import Arkham.Types.Act.Cards.FindingANewWay as X
 import Arkham.Types.Act.Cards.FindingAWayInside as X
 import Arkham.Types.Act.Cards.FindingLadyEsprit as X
 import Arkham.Types.Act.Cards.Fold as X
 import Arkham.Types.Act.Cards.GetTheEngineRunning as X
 import Arkham.Types.Act.Cards.HuntingTheRougarou as X
+import Arkham.Types.Act.Cards.IntoTheBeyond as X
 import Arkham.Types.Act.Cards.IntoTheDarkness as X
 import Arkham.Types.Act.Cards.InvestigatingTheTrail as X
 import Arkham.Types.Act.Cards.MysteriousGateway as X

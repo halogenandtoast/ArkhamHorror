@@ -1,6 +1,6 @@
-module Arkham.Types.Act.Cards.OutOfThisWorld
-  ( OutOfThisWorld(..)
-  , outOfThisWorld
+module Arkham.Types.Act.Cards.FindingANewWay
+  ( FindingANewWay(..)
+  , findingANewWay
   ) where
 
 import Arkham.Prelude
@@ -12,37 +12,38 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
-import Arkham.Types.GameValue
+import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
+import Arkham.Types.Resolution
 import Arkham.Types.Target
 import Arkham.Types.Window
 
-newtype OutOfThisWorld = OutOfThisWorld ActAttrs
+newtype FindingANewWay = FindingANewWay ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-outOfThisWorld :: OutOfThisWorld
-outOfThisWorld = OutOfThisWorld $ baseAttrs
-  "02316"
-  "Out of this World"
-  (Act 1 A)
-  (Just $ RequiredClues (PerPlayer 2) Nothing)
+findingANewWay :: FindingANewWay
+findingANewWay =
+  FindingANewWay $ baseAttrs "02319" "Finding a New Way" (Act 4 A) Nothing
 
-instance ActionRunner env => HasActions env OutOfThisWorld where
-  getActions iid NonFast (OutOfThisWorld x) =
+instance ActionRunner env => HasActions env FindingANewWay where
+  getActions iid NonFast (FindingANewWay x) =
     withBaseActions iid NonFast x $ do
       pure
         [ ActivateCardAbilityAction
             iid
             (mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1))
         ]
-  getActions iid window (OutOfThisWorld x) = getActions iid window x
+  getActions iid window (FindingANewWay x) = getActions iid window x
 
-instance ActRunner env => RunMessage env OutOfThisWorld where
-  runMessage msg a@(OutOfThisWorld attrs@ActAttrs {..}) = case msg of
+instance ActRunner env => RunMessage env FindingANewWay where
+  runMessage msg a@(FindingANewWay attrs@ActAttrs {..}) = case msg of
+    InvestigatorResigned _ -> do
+      investigatorIds <- getSet @InScenarioInvestigatorId ()
+      a <$ when
+        (null investigatorIds)
+        (unshiftMessage $ AdvanceAct actId (toSource attrs))
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
-      theEdgeOfTheUniverseId <- getRandom
-      a <$ unshiftMessages
-        [PlaceLocation "02321" theEdgeOfTheUniverseId, NextAct actId "02317"]
+      a <$ unshiftMessage (ScenarioResolution $ Resolution 1)
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage
         (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))
@@ -61,4 +62,4 @@ instance ActRunner env => RunMessage env OutOfThisWorld where
             ]
           ]
         )
-    _ -> OutOfThisWorld <$> runMessage msg attrs
+    _ -> FindingANewWay <$> runMessage msg attrs

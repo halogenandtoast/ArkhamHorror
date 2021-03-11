@@ -1,7 +1,6 @@
 module Arkham.Types.Agenda
   ( module Arkham.Types.Agenda
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -111,7 +110,7 @@ data Agenda
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance ActionRunner env => HasActions env Agenda
-deriving anyclass instance AgendaRunner env => RunMessage env Agenda
+deriving anyclass instance (HasRecord env, AgendaRunner env) => RunMessage env Agenda
 deriving anyclass instance HasSet Trait env EnemyId => HasModifiersFor env Agenda
 
 instance Entity Agenda where

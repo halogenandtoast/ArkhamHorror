@@ -2352,14 +2352,23 @@ runGameMessage msg g = case msg of
     pure $ g & enemiesL . at enemyId ?~ enemy
   EnemySpawnEngagedWithPrey eid ->
     pure $ g & activeCardL .~ Nothing & enemiesInVoidL %~ deleteMap eid
-  DiscardTopOfEncounterDeck _ 0 _ -> pure g
-  DiscardTopOfEncounterDeck iid n mtarget -> do
-    let (card : cards) = unDeck $ g ^. encounterDeckL
-    unshiftMessages
-      $ Discarded (InvestigatorTarget iid) (EncounterCard card)
-      : [ ShuffleEncounterDiscardBackIn | null cards ]
-      <> [DiscardTopOfEncounterDeck iid (n - 1) mtarget]
-    pure $ g & discardL %~ (card :) & encounterDeckL .~ Deck cards
+  DiscardTopOfEncounterDeck iid n mtarget -> g <$ unshiftMessage
+    (DiscardTopOfEncounterDeckWithDiscardedCards iid n mtarget [])
+  DiscardTopOfEncounterDeckWithDiscardedCards iid 0 (Just target) cards ->
+    g <$ unshiftMessage (DiscardedTopOfEncounterDeck iid cards target)
+  DiscardTopOfEncounterDeckWithDiscardedCards iid n mtarget discardedCards ->
+    do
+      let (card : cards) = unDeck $ g ^. encounterDeckL
+      unshiftMessages
+        $ Discarded (InvestigatorTarget iid) (EncounterCard card)
+        : [ ShuffleEncounterDiscardBackIn | null cards ]
+        <> [ DiscardTopOfEncounterDeckWithDiscardedCards
+               iid
+               (n - 1)
+               mtarget
+               (card : discardedCards)
+           ]
+      pure $ g & discardL %~ (card :) & encounterDeckL .~ Deck cards
   DrawEncounterCards target n -> do
     let (cards, encounterDeck) = splitAt n (unDeck $ g ^. encounterDeckL)
     unshiftMessage (RequestedEncounterCards target cards)

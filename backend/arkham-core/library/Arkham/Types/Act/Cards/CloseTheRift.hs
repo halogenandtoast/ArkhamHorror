@@ -1,6 +1,6 @@
-module Arkham.Types.Act.Cards.OutOfThisWorld
-  ( OutOfThisWorld(..)
-  , outOfThisWorld
+module Arkham.Types.Act.Cards.CloseTheRift
+  ( CloseTheRift(..)
+  , closeTheRift
   ) where
 
 import Arkham.Prelude
@@ -13,36 +13,43 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Window
 
-newtype OutOfThisWorld = OutOfThisWorld ActAttrs
+newtype CloseTheRift = CloseTheRift ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-outOfThisWorld :: OutOfThisWorld
-outOfThisWorld = OutOfThisWorld $ baseAttrs
-  "02316"
-  "Out of this World"
-  (Act 1 A)
-  (Just $ RequiredClues (PerPlayer 2) Nothing)
+closeTheRift :: CloseTheRift
+closeTheRift = CloseTheRift $ baseAttrs
+  "02318"
+  "Close the Rift"
+  (Act 3 A)
+  (Just $ RequiredClues
+    (PerPlayer 3)
+    (Just $ LocationWithTitle "The Edge of the Universe")
+  )
 
-instance ActionRunner env => HasActions env OutOfThisWorld where
-  getActions iid NonFast (OutOfThisWorld x) =
-    withBaseActions iid NonFast x $ do
-      pure
-        [ ActivateCardAbilityAction
-            iid
-            (mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1))
-        ]
-  getActions iid window (OutOfThisWorld x) = getActions iid window x
+instance ActionRunner env => HasActions env CloseTheRift where
+  getActions iid NonFast (CloseTheRift x) = withBaseActions iid NonFast x $ do
+    pure
+      [ ActivateCardAbilityAction
+          iid
+          (mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1))
+      ]
+  getActions iid window (CloseTheRift x) = getActions iid window x
 
-instance ActRunner env => RunMessage env OutOfThisWorld where
-  runMessage msg a@(OutOfThisWorld attrs@ActAttrs {..}) = case msg of
+instance ActRunner env => RunMessage env CloseTheRift where
+  runMessage msg a@(CloseTheRift attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
-      theEdgeOfTheUniverseId <- getRandom
+      theEdgeOfTheUniverseId <- getJustLocationIdByName
+        "The Edge of the Universe"
+      tearThroughTimeId <- getRandom
       a <$ unshiftMessages
-        [PlaceLocation "02321" theEdgeOfTheUniverseId, NextAct actId "02317"]
+        (resolve (RemoveLocation theEdgeOfTheUniverseId)
+        <> [PlaceLocation "02322" tearThroughTimeId, NextAct actId "02319"]
+        )
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage
         (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))
@@ -61,4 +68,4 @@ instance ActRunner env => RunMessage env OutOfThisWorld where
             ]
           ]
         )
-    _ -> OutOfThisWorld <$> runMessage msg attrs
+    _ -> CloseTheRift <$> runMessage msg attrs

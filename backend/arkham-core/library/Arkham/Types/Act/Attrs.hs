@@ -131,10 +131,11 @@ advanceActSideA investigatorIds requiredClues attrs = do
   leadInvestigatorId <- getLeadInvestigatorId
   totalRequiredClues <- getPlayerCountValue requiredClues
   pure
-    [ SpendClues totalRequiredClues investigatorIds
-    , CheckWindow leadInvestigatorId [WhenActAdvance (toId attrs)]
-    , chooseOne leadInvestigatorId [AdvanceAct (toId attrs) (toSource attrs)]
-    ]
+    ([ SpendClues totalRequiredClues investigatorIds | totalRequiredClues > 0 ]
+    <> [ CheckWindow leadInvestigatorId [WhenActAdvance (toId attrs)]
+       , chooseOne leadInvestigatorId [AdvanceAct (toId attrs) (toSource attrs)]
+       ]
+    )
 
 instance ActAttrsRunner env => RunMessage env ActAttrs where
   runMessage msg a@ActAttrs {..} = case msg of
@@ -153,7 +154,9 @@ instance ActAttrsRunner env => RunMessage env ActAttrs where
             Nothing ->
               throwIO $ InvalidState
                 "Should not have advanced if locaiton does not exists"
-        Nothing -> throwIO $ InvalidState "Should be handled by the act"
+        Nothing -> do
+          investigatorIds <- getInvestigatorIds
+          unshiftMessages =<< advanceActSideA investigatorIds (Static 0) a
       pure $ a & (sequenceL .~ Act (unActStep $ actStep actSequence) B)
     AttachTreachery tid (ActTarget aid) | aid == actId ->
       pure $ a & treacheriesL %~ insertSet tid

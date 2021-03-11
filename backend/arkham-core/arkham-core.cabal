@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 230317090733d6771fab5df2985881450367f04b0cbda215d9f359c0759bfc7d
+-- hash: c8503de2d00b9a847948937c34990424c3118b24331a68859c178b555dbb7714
 
 name:           arkham-core
 version:        0.0.0
@@ -32,12 +32,15 @@ library
       Arkham.Types.Act.Cards.BeginnersLuck
       Arkham.Types.Act.Cards.BreakingAndEntering
       Arkham.Types.Act.Cards.CampusSafety
+      Arkham.Types.Act.Cards.CloseTheRift
       Arkham.Types.Act.Cards.DisruptingTheRitual
+      Arkham.Types.Act.Cards.FindingANewWay
       Arkham.Types.Act.Cards.FindingAWayInside
       Arkham.Types.Act.Cards.FindingLadyEsprit
       Arkham.Types.Act.Cards.Fold
       Arkham.Types.Act.Cards.GetTheEngineRunning
       Arkham.Types.Act.Cards.HuntingTheRougarou
+      Arkham.Types.Act.Cards.IntoTheBeyond
       Arkham.Types.Act.Cards.IntoTheDarkness
       Arkham.Types.Act.Cards.InvestigatingTheTrail
       Arkham.Types.Act.Cards.MysteriousGateway

@@ -208,7 +208,9 @@ data Message
   | DiscardEncounterUntilFirst Source EncounterCardMatcher
   | DiscardTopOfDeck InvestigatorId Int (Maybe Target)
   | DiscardTopOfEncounterDeck InvestigatorId Int (Maybe Target)
+  | DiscardTopOfEncounterDeckWithDiscardedCards InvestigatorId Int (Maybe Target) [EncounterCard]
   | Discarded Target Card
+  | DiscardedTopOfEncounterDeck InvestigatorId [EncounterCard] Target
   | DiscardedTopOfDeck InvestigatorId [PlayerCard] Target
   | DiscoverClues InvestigatorId LocationId Int (Maybe Action)
   | DiscoverCluesAtLocation InvestigatorId LocationId Int (Maybe Action)

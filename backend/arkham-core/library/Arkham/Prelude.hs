@@ -27,7 +27,7 @@ import Control.Lens as X
   , (^?)
   )
 import Control.Lens.TH as X
-import Control.Monad.Extra as X (concatMapM)
+import Control.Monad.Extra as X (concatMapM, fromMaybeM)
 import Control.Monad.Random as X (MonadRandom)
 import Control.Monad.Random.Class as X (getRandom, getRandomR, getRandoms)
 import Control.Monad.Random.Strict as X (Random)

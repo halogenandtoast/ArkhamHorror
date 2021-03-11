@@ -29,7 +29,7 @@ instance HasActions env AllIsOne where
 
 instance (HasRecord env, AgendaRunner env) => RunMessage env AllIsOne where
   runMessage msg a@(AllIsOne attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
+    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       failedToSaveStudents <- getHasRecord
         TheInvestigatorsFailedToSaveTheStudents
       investigatorIds <- getInvestigatorIds

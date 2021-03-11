@@ -420,6 +420,7 @@ data Message
   | Revelation InvestigatorId Source
   | RevelationSkillTest InvestigatorId Source SkillType Int
   | RevertAct ActId
+  | RevertAgenda AgendaId
   | Run [Message]
   | RunBag Source (Maybe InvestigatorId) RequestedTokenStrategy
   | RunDrawFromBag Source (Maybe InvestigatorId) RequestedTokenStrategy

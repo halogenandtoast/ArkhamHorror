@@ -119,4 +119,8 @@ instance
       a <$ when
         (totalDoom >= perPlayerDoomThreshold)
         (unshiftMessages [AdvanceAgenda agendaId, RemoveAllDoom])
+    RevertAgenda aid | aid == agendaId && onSide B a ->
+      pure
+        $ a
+        & (sequenceL .~ Agenda (unAgendaStep $ agendaStep agendaSequence) A)
     _ -> pure a

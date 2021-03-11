@@ -47,6 +47,8 @@ data CampaignLogKey
   | NoBroodEscapedIntoTheWild
   | TheInvestigatorsEnteredTheGate
   | YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality
+  | TheInvestigatorsClosedTheTearInReality
+  | YogSothothHasFledToAnotherDimension
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
   | TheRougarouEscapedAndYouEmbracedTheCurse

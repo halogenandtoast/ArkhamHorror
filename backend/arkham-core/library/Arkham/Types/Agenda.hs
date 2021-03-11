@@ -11,6 +11,7 @@ import Arkham.Types.AgendaId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
+import Arkham.Types.EnemyMatcher
 import Arkham.Types.GameValue
 import Arkham.Types.Query
 import Arkham.Types.Trait (Trait)
@@ -54,6 +55,9 @@ allAgendas = mapFrom
   , CallingForthTheOldOnes' callingForthTheOldOnes
   , BeckoningForPower' beckoningForPower
   , AllIsOne' allIsOne
+  , PastPresentAndFuture' pastPresentAndFuture
+  , BreakingThrough' breakingThrough
+  , TheEndOfAllThings' theEndOfAllThings
   , ReturnToPredatorOrPrey' returnToPredatorOrPrey
   , ACreatureOfTheBayou' aCreatureOfTheBayou
   , TheRougarouFeeds' theRougarouFeeds
@@ -101,6 +105,9 @@ data Agenda
   | CallingForthTheOldOnes' CallingForthTheOldOnes
   | BeckoningForPower' BeckoningForPower
   | AllIsOne' AllIsOne
+  | PastPresentAndFuture' PastPresentAndFuture
+  | BreakingThrough' BreakingThrough
+  | TheEndOfAllThings' TheEndOfAllThings
   | ReturnToPredatorOrPrey' ReturnToPredatorOrPrey
   | ACreatureOfTheBayou' ACreatureOfTheBayou
   | TheRougarouFeeds' TheRougarouFeeds
@@ -110,7 +117,7 @@ data Agenda
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance ActionRunner env => HasActions env Agenda
-deriving anyclass instance (HasRecord env, AgendaRunner env) => RunMessage env Agenda
+deriving anyclass instance (HasId (Maybe EnemyId) env EnemyMatcher, HasRecord env, AgendaRunner env) => RunMessage env Agenda
 deriving anyclass instance HasSet Trait env EnemyId => HasModifiersFor env Agenda
 
 instance Entity Agenda where

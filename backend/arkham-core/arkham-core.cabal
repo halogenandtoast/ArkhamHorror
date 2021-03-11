@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c8503de2d00b9a847948937c34990424c3118b24331a68859c178b555dbb7714
+-- hash: daaccae4f1870a949964a2af39999fbf02ff51aa80bf4b9525ad23f9ebd275b1
 
 name:           arkham-core
 version:        0.0.0
@@ -73,6 +73,7 @@ library
       Arkham.Types.Agenda.Cards.ATearInReality
       Arkham.Types.Agenda.Cards.BeckoningForPower
       Arkham.Types.Agenda.Cards.BidingItsTime
+      Arkham.Types.Agenda.Cards.BreakingThrough
       Arkham.Types.Agenda.Cards.CallingForthTheOldOnes
       Arkham.Types.Agenda.Cards.ChaosInTheCloverClub
       Arkham.Types.Agenda.Cards.DeadOfNight
@@ -81,6 +82,7 @@ library
       Arkham.Types.Agenda.Cards.HorrorsUnleashed
       Arkham.Types.Agenda.Cards.InEveryShadow
       Arkham.Types.Agenda.Cards.OutOfTime
+      Arkham.Types.Agenda.Cards.PastPresentAndFuture
       Arkham.Types.Agenda.Cards.PredatorOrPrey
       Arkham.Types.Agenda.Cards.QuietHalls
       Arkham.Types.Agenda.Cards.RampagingCreatures
@@ -94,6 +96,7 @@ library
       Arkham.Types.Agenda.Cards.TheBeastUnleashed
       Arkham.Types.Agenda.Cards.TheCloverClub
       Arkham.Types.Agenda.Cards.TheCurseSpreads
+      Arkham.Types.Agenda.Cards.TheEndOfAllThings
       Arkham.Types.Agenda.Cards.TheMawWidens
       Arkham.Types.Agenda.Cards.TheOldOnesHunger
       Arkham.Types.Agenda.Cards.TheRitualBegins

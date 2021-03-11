@@ -45,7 +45,12 @@ data Scenario
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, HasRecord)
 
-deriving anyclass instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env Scenario
+deriving anyclass instance
+  (HasId (Maybe LocationId) env LocationMatcher
+  , HasStep ActStep env
+  , ScenarioRunner env
+  )
+  => RunMessage env Scenario
 deriving anyclass instance
   ( HasCount DiscardCount env InvestigatorId
   , HasCount DoomCount env ()

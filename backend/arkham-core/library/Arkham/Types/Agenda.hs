@@ -118,7 +118,7 @@ data Agenda
 
 deriving anyclass instance ActionRunner env => HasActions env Agenda
 deriving anyclass instance (HasId (Maybe EnemyId) env EnemyMatcher, HasRecord env, AgendaRunner env) => RunMessage env Agenda
-deriving anyclass instance HasSet Trait env EnemyId => HasModifiersFor env Agenda
+deriving anyclass instance (HasSet EnemyId env (), HasSet Trait env EnemyId) => HasModifiersFor env Agenda
 
 instance Entity Agenda where
   type EntityId Agenda = AgendaId

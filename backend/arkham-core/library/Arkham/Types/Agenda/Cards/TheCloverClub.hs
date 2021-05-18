@@ -1,23 +1,22 @@
 module Arkham.Types.Agenda.Cards.TheCloverClub
   ( TheCloverClub(..)
   , theCloverClub
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
+import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Keyword
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.ScenarioId
 import Arkham.Types.Target
-import Arkham.Types.Agenda.Attrs
-import Arkham.Types.Agenda.Runner
-import Arkham.Types.Game.Helpers
-import Arkham.Types.Keyword
 import Arkham.Types.Trait
 
 newtype TheCloverClub = TheCloverClub AgendaAttrs
@@ -30,11 +29,17 @@ theCloverClub =
 instance HasActions env TheCloverClub where
   getActions i window (TheCloverClub x) = getActions i window x
 
-instance HasSet Trait env EnemyId => HasModifiersFor env TheCloverClub where
+instance (HasSet EnemyId env (), HasSet Trait env EnemyId) => HasModifiersFor env TheCloverClub where
   getModifiersFor _ (EnemyTarget eid) (TheCloverClub attrs) | onSide A attrs =
     do
-      traits <- getSet eid
-      pure $ toModifiers attrs [ AddKeyword Aloof | Criminal `member` traits ]
+      enemyIds <- getSet ()
+      if eid `member` enemyIds
+        then do
+          traits <- getSet eid
+          pure $ toModifiers
+            attrs
+            [ AddKeyword Aloof | Criminal `member` traits ]
+        else pure []
   getModifiersFor _ _ _ = pure []
 
 instance AgendaRunner env => RunMessage env TheCloverClub where

@@ -1,6 +1,7 @@
 module Arkham.Types.Event.Cards.BaitAndSwitchSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport
 
@@ -18,8 +19,8 @@ spec = describe "Bait and Switch" $ do
     game <-
       runGameTest
         investigator
-        [ PlacedLocation (toId location1)
-        , PlacedLocation (toId location2)
+        [ placedLocation location1
+        , placedLocation location2
         , SetTokens [Zero]
         , enemySpawn location1 enemy
         , moveTo investigator location1

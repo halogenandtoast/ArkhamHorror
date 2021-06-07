@@ -67,8 +67,8 @@ spec = describe "Duke" $ do
             $ \attrs -> attrs { locationShroud = 4, locationClues = 1 }
           game <- runGameTest
             investigator
-            [ PlacedLocation (toId location1)
-            , PlacedLocation (toId location2)
+            [ placedLocation location1
+            , placedLocation location2
             , SetTokens [Zero]
             , playAsset investigator duke
             ]

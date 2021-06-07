@@ -5,7 +5,8 @@
 module TestImport
   ( module X
   , module TestImport
-  ) where
+  )
+where
 
 import Arkham.Prelude as X
 
@@ -129,12 +130,11 @@ testAgenda cardCode f =
   pure $ baseAgenda (AgendaId cardCode) "Agenda" (Agenda 1 A) (Static 1) f
 
 testLocation
-  :: MonadIO m => CardCode -> (LocationAttrs -> LocationAttrs) -> m Location
-testLocation cardCode f =
-  let
-    locationId = LocationId cardCode
-    name = Name (unCardCode cardCode) Nothing
-  in pure $ baseLocation locationId name 0 (Static 0) Square [] f
+  :: MonadRandom m => CardCode -> (LocationAttrs -> LocationAttrs) -> m Location
+testLocation cardCode f = do
+  locationId <- getRandom
+  let name = Name (unCardCode cardCode) Nothing
+  pure $ baseLocation locationId cardCode name 0 (Static 0) Square [] f
 
 testInvestigator
   :: MonadIO m
@@ -149,7 +149,7 @@ testInvestigator cardCode f =
   in pure $ baseInvestigator investigatorId name Neutral stats [] f
 
 testConnectedLocations
-  :: MonadIO m
+  :: MonadRandom m
   => (LocationAttrs -> LocationAttrs)
   -> (LocationAttrs -> LocationAttrs)
   -> m (Location, Location)
@@ -173,7 +173,7 @@ testConnectedLocations f1 f2 = do
   pure (location1, location2)
 
 testUnconnectedLocations
-  :: MonadIO m
+  :: MonadRandom m
   => (LocationAttrs -> LocationAttrs)
   -> (LocationAttrs -> LocationAttrs)
   -> m (Location, Location)

@@ -1,6 +1,7 @@
 module Arkham.Types.Investigator.Cards.AgnesBakerSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport
 
@@ -16,7 +17,7 @@ spec = describe "Agnes Baker" $ do
       game <-
         runGameTest
           agnesBaker
-          [ PlacedLocation (toId location)
+          [ placedLocation location
           , enemySpawn location enemy
           , moveTo agnesBaker location
           , InvestigatorDirectDamage (toId agnesBaker) (TestSource mempty) 0 1
@@ -42,7 +43,7 @@ spec = describe "Agnes Baker" $ do
         $ runGameTest
             agnesBaker
             [ SetTokens [ElderSign]
-            , PlacedLocation (toId location)
+            , placedLocation location
             , moveTo agnesBaker location
             , InvestigatorDirectDamage (toId agnesBaker) (TestSource mempty) 0 2
             , beginSkillTest agnesBaker SkillIntellect 4

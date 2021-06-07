@@ -28,8 +28,8 @@ spec = describe "Drawn to the flame" $ do
             investigator
             [ SetEncounterDeck [onWingsOfDarkness]
             , SetTokens [Zero]
-            , PlacedLocation (toId startLocation)
-            , PlacedLocation (toId centralLocation)
+            , placedLocation startLocation
+            , placedLocation centralLocation
             , moveTo investigator startLocation
             , playEvent investigator drawnToTheFlame
             ]

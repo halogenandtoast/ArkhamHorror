@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5be962deec308c50248b4b48a5440f44454486e0de46cd9cb9a5787a9e9378b0
+-- hash: e7f3a5beb123bb8eef729da6bca8ad2de4577151f55e6d7861764f1b36eb35f5
 
 name:           arkham-api
 version:        0.0.0
@@ -50,7 +50,32 @@ library
       Paths_arkham_api
   hs-source-dirs:
       library
-  default-extensions: BangPatterns DataKinds DeriveAnyClass DeriveFoldable DeriveFunctor DeriveGeneric DeriveLift DeriveTraversable DerivingStrategies DerivingVia FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NoImplicitPrelude NoMonomorphismRestriction OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TypeApplications TypeFamilies
+  default-extensions:
+      BangPatterns
+      DataKinds
+      DeriveAnyClass
+      DeriveFoldable
+      DeriveFunctor
+      DeriveGeneric
+      DeriveLift
+      DeriveTraversable
+      DerivingStrategies
+      DerivingVia
+      FlexibleContexts
+      FlexibleInstances
+      GADTs
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      MultiParamTypeClasses
+      NoImplicitPrelude
+      NoMonomorphismRestriction
+      OverloadedStrings
+      RankNTypes
+      RecordWildCards
+      ScopedTypeVariables
+      StandaloneDeriving
+      TypeApplications
+      TypeFamilies
   build-depends:
       aeson
     , aeson-casing
@@ -114,7 +139,32 @@ executable arkham-api
       Paths_arkham_api
   hs-source-dirs:
       app
-  default-extensions: BangPatterns DataKinds DeriveAnyClass DeriveFoldable DeriveFunctor DeriveGeneric DeriveLift DeriveTraversable DerivingStrategies DerivingVia FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NoImplicitPrelude NoMonomorphismRestriction OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TypeApplications TypeFamilies
+  default-extensions:
+      BangPatterns
+      DataKinds
+      DeriveAnyClass
+      DeriveFoldable
+      DeriveFunctor
+      DeriveGeneric
+      DeriveLift
+      DeriveTraversable
+      DerivingStrategies
+      DerivingVia
+      FlexibleContexts
+      FlexibleInstances
+      GADTs
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      MultiParamTypeClasses
+      NoImplicitPrelude
+      NoMonomorphismRestriction
+      OverloadedStrings
+      RankNTypes
+      RecordWildCards
+      ScopedTypeVariables
+      StandaloneDeriving
+      TypeApplications
+      TypeFamilies
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       arkham-api

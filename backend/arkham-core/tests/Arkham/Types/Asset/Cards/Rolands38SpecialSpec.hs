@@ -1,6 +1,7 @@
 module Arkham.Types.Asset.Cards.Rolands38SpecialSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport
 
@@ -20,7 +21,7 @@ spec = describe "Roland's .39 Special" $ do
     game <- runGameTest
       investigator
       [ SetTokens [Zero]
-      , PlacedLocation (toId location)
+      , placedLocation location
       , enemySpawn location enemy
       , playAsset investigator rolands38Special
       , moveTo investigator location
@@ -51,7 +52,7 @@ spec = describe "Roland's .39 Special" $ do
         game <- runGameTest
           investigator
           [ SetTokens [Zero]
-          , PlacedLocation (toId location)
+          , placedLocation location
           , enemySpawn location enemy
           , playAsset investigator rolands38Special
           , moveTo investigator location

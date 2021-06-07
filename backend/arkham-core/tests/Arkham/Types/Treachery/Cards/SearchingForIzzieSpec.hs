@@ -1,6 +1,7 @@
 module Arkham.Types.Treachery.Cards.SearchingForIzzieSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport
 
@@ -12,8 +13,8 @@ spec = describe "Searching for Izzie" $ do
     (location1, location2) <- testConnectedLocations id id
     game <- runGameTest
       investigator
-      [ PlacedLocation (toId location1)
-      , PlacedLocation (toId location2)
+      [ placedLocation location1
+      , placedLocation location2
       , loadDeck investigator [searchingForIzzie]
       , drawCards investigator 1
       ]

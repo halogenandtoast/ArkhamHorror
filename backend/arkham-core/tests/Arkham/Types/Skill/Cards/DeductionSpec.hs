@@ -1,6 +1,7 @@
 module Arkham.Types.Skill.Cards.DeductionSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport
 
@@ -19,6 +20,7 @@ spec = describe "Deduction" $ do
       runGameTest
         investigator
         [ SetTokens [Zero]
+        , moveTo investigator location
         , addToHand investigator (PlayerCard deduction)
         , investigate investigator location
         ]

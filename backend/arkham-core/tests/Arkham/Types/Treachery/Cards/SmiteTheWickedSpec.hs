@@ -20,6 +20,7 @@ spec = describe "Smite the Wicked" $ do
           , placedLocation location2
           , SetEncounterDeck [treachery, enemy]
           , loadDeck investigator [smiteTheWicked]
+          , moveTo investigator location1
           , drawCards investigator 1
           ]
           ((locationsL %~ insertEntity location1)
@@ -42,6 +43,7 @@ spec = describe "Smite the Wicked" $ do
           investigator
           [ SetEncounterDeck [enemy]
           , loadDeck investigator [smiteTheWicked]
+          , moveTo investigator location
           , drawCards investigator 1
           , EndOfGame
           ]
@@ -60,6 +62,7 @@ spec = describe "Smite the Wicked" $ do
           [ placedLocation location
           , SetEncounterDeck [enemy]
           , loadDeck investigator [smiteTheWicked]
+          , moveTo investigator location
           , drawCards investigator 1
           ]
           (locationsL %~ insertEntity location)
@@ -92,6 +95,7 @@ spec = describe "Smite the Wicked" $ do
           [ placedLocation location
           , SetEncounterDeck [enemy]
           , loadDeck investigator [smiteTheWicked]
+          , moveTo investigator location
           , drawCards investigator 1
           , Resign (toId investigator)
           ]

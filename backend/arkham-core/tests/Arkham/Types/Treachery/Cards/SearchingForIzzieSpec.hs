@@ -16,6 +16,7 @@ spec = describe "Searching for Izzie" $ do
       [ placedLocation location1
       , placedLocation location2
       , loadDeck investigator [searchingForIzzie]
+      , moveTo investigator location1
       , drawCards investigator 1
       ]
       ((locationsL %~ insertEntity location1)
@@ -33,6 +34,7 @@ spec = describe "Searching for Izzie" $ do
       investigator
       [ SetTokens [Zero]
       , loadDeck investigator [searchingForIzzie]
+      , moveTo investigator location
       , drawCards investigator 1
       , moveTo investigator location
       ]
@@ -63,6 +65,7 @@ spec = describe "Searching for Izzie" $ do
     game <- runGameTest
       investigator
       [ loadDeck investigator [searchingForIzzie]
+      , moveTo investigator location
       , drawCards investigator 1
       , EndOfGame
       ]

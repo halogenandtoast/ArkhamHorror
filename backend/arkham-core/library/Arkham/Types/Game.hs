@@ -1,82 +1,84 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 
 module Arkham.Types.Game
   ( module Arkham.Types.Game
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
-import Arkham.Types.LocationSymbol
-import Control.Monad.Extra (anyM)
-import Arkham.Json
 import Arkham.EncounterCard
+import Arkham.Json
 import Arkham.PlayerCard
 import Arkham.Types.Ability
-import Arkham.Types.Difficulty
+import Arkham.Types.Act
 import Arkham.Types.ActId
+import Arkham.Types.Action (Action, TakenAction)
+import Arkham.Types.Agenda
 import Arkham.Types.AgendaId
+import Arkham.Types.Asset
+import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.AssetId
+import Arkham.Types.Campaign
 import Arkham.Types.CampaignId
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
+import Arkham.Types.ChaosBag
 import Arkham.Types.Classes hiding (discard)
+import Arkham.Types.Difficulty
 import Arkham.Types.Direction
+import Arkham.Types.Effect
 import Arkham.Types.EffectId
 import Arkham.Types.EffectMetadata
+import Arkham.Types.Enemy
 import Arkham.Types.EnemyId
+import Arkham.Types.EnemyMatcher
+import Arkham.Types.EntityInstance
+import Arkham.Types.Event
 import Arkham.Types.EventId
+import Arkham.Types.Game.Helpers
+import Arkham.Types.GameRunner
 import Arkham.Types.Helpers
+import Arkham.Types.Investigator
 import Arkham.Types.InvestigatorId
+import Arkham.Types.Keyword (Keyword)
+import qualified Arkham.Types.Keyword as Keyword
+import Arkham.Types.Location
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
-import Arkham.Types.EnemyMatcher
+import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.ModifierData
 import Arkham.Types.Name
+import Arkham.Types.Phase
 import Arkham.Types.Prey
 import Arkham.Types.Query
+import Arkham.Types.Scenario
 import Arkham.Types.ScenarioId
+import Arkham.Types.ScenarioLogKey
+import Arkham.Types.Skill
 import Arkham.Types.SkillId
+import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
-import Arkham.Types.Act
-import Arkham.Types.ModifierData
-import Arkham.Types.Action (Action, TakenAction)
-import Arkham.Types.Agenda
-import Arkham.Types.Asset
-import Arkham.Types.EntityInstance
-import Arkham.Types.Asset.Uses (UseType)
-import Arkham.Types.Campaign
-import Arkham.Types.ChaosBag
-import Arkham.Types.Effect
-import Arkham.Types.Enemy
-import Arkham.Types.Event
-import Arkham.Types.GameRunner
-import Arkham.Types.Investigator
-import Arkham.Types.Keyword (Keyword)
-import qualified Arkham.Types.Keyword as Keyword
-import Arkham.Types.Location
-import Arkham.Types.Phase
-import Arkham.Types.Scenario
-import Arkham.Types.ScenarioLogKey
-import Arkham.Types.Skill
-import Arkham.Types.SkillTest
 import Arkham.Types.Trait
 import Arkham.Types.Treachery
-import Arkham.Types.Game.Helpers
+import Arkham.Types.TreacheryId
+import Arkham.Types.Window
 import qualified Arkham.Types.Window as Fast
+import Control.Monad.Extra (anyM)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (filterM)
+import qualified Data.HashMap.Strict as HashMap
+import Data.List.Extra (cycle, groupOn)
+import qualified Data.Sequence as Seq
 import Data.These
 import Data.These.Lens
-import Data.List.Extra (groupOn, cycle)
-import qualified Data.HashMap.Strict as HashMap
-import qualified Data.Sequence as Seq
 
 type GameInternal = Game (IORef [Message])
 type GameExternal = Game [Message]
@@ -1247,7 +1249,7 @@ instance HasSet ClosestPathLocationId (Game queue) (LocationId, LocationId) wher
 instance HasSet FarthestLocationId (Game queue) InvestigatorId where
   getSet iid = do
     g <- ask
-    start <- locationFor iid
+    start <- traceShowId <$> locationFor iid
     pure . setFromList . coerce $ getLongestPath g start (const True)
 
 instance HasSet FarthestLocationId (Game queue) (InvestigatorId, LocationMatcher) where

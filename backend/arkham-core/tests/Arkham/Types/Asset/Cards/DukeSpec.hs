@@ -47,7 +47,10 @@ spec = describe "Duke" $ do
         (\attrs -> attrs { locationShroud = 4, locationClues = 1 })
       game <- runGameTest
         investigator
-        [SetTokens [Zero], playAsset investigator duke]
+        [ SetTokens [Zero]
+        , moveTo investigator location
+        , playAsset investigator duke
+        ]
         ((locationsL %~ insertEntity location) . (assetsL %~ insertEntity duke))
       let dukeAsset = game ^?! assetsL . to toList . ix 0
       [investigateAction] <- getActionsOf game investigator NonFast dukeAsset
@@ -70,6 +73,7 @@ spec = describe "Duke" $ do
             [ placedLocation location1
             , placedLocation location2
             , SetTokens [Zero]
+            , moveTo investigator location1
             , playAsset investigator duke
             ]
             ((locationsL %~ insertEntity location1)

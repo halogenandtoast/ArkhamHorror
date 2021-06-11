@@ -8,7 +8,7 @@ http {
 
   server {
     listen 8082;
-    server_name .arkham-horror-lcg.com;
+    server_name .arkham-horror-api.com;
 
     location / {
       proxy_pass http://localhost:8081;

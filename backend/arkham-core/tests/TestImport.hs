@@ -382,9 +382,9 @@ runGameTestOnlyOptionWithLogger _reason logger = do
   questionMap <- gameQuestion <$> getTestGame
   case mapToList questionMap of
     [(_, question)] -> case question of
-      ChooseOne [msg] -> pushMessage msg <* runMessages logger
-      ChooseOneAtATime [msg] -> pushMessage msg <* runMessages logger
-      ChooseN _ [msg] -> pushMessage msg <* runMessages logger
+      ChooseOne [msg] -> unshiftMessage msg <* runMessages logger
+      ChooseOneAtATime [msg] -> unshiftMessage msg <* runMessages logger
+      ChooseN _ [msg] -> unshiftMessage msg <* runMessages logger
       _ -> error "spec expectation mismatch"
     _ -> error "There must be only one choice to use this function"
 
@@ -407,8 +407,8 @@ runGameTestFirstOption _reason = do
   questionMap <- gameQuestion <$> getTestGame
   case mapToList questionMap of
     [(_, question)] -> case question of
-      ChooseOne (msg : _) -> pushMessage msg >> runMessagesNoLogging
-      ChooseOneAtATime (msg : _) -> pushMessage msg >> runMessagesNoLogging
+      ChooseOne (msg : _) -> unshiftMessage msg >> runMessagesNoLogging
+      ChooseOneAtATime (msg : _) -> unshiftMessage msg >> runMessagesNoLogging
       _ -> error "spec expectation mismatch"
     _ -> error "There must be at least one option"
 
@@ -422,7 +422,7 @@ runGameTestMessages
      )
   => [Message]
   -> m ()
-runGameTestMessages msgs = pushMessages msgs >> runMessagesNoLogging
+runGameTestMessages msgs = unshiftMessages msgs >> runMessagesNoLogging
 
 runGameTestOptionMatching
   :: ( MonadFail m
@@ -455,7 +455,7 @@ runGameTestOptionMatchingWithLogger _reason logger f = do
   case mapToList questionMap of
     [(_, question)] -> case question of
       ChooseOne msgs -> case find f msgs of
-        Just msg -> pushMessage msg <* runMessages logger
+        Just msg -> unshiftMessage msg <* runMessages logger
         Nothing -> error "could not find a matching message"
       _ -> error "unsupported questions type"
     _ -> error "There must be only one question to use this function"

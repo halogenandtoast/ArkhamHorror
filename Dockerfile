@@ -17,7 +17,7 @@ RUN yarn global add @vue/cli
 
 RUN mkdir -p /opt/arkham/src/frontend
 
-ENV VUE_APP_API_HOST "https://arkham-horror-lcg.herokuapp.com"
+ENV VUE_APP_API_HOST "https://arkham-horror-api.herokuapp.com"
 
 WORKDIR /opt/arkham/src/frontend
 COPY ./frontend/package.json /opt/arkham/src/frontend/package.json

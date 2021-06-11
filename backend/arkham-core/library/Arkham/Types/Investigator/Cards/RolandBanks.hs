@@ -44,7 +44,7 @@ ability :: InvestigatorAttrs -> Ability
 ability attrs = base { abilityLimit = PlayerLimit PerRound 1 }
   where base = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
-instance ActionRunner env => HasActions env RolandBanks where
+instance InvestigatorRunner env => HasActions env RolandBanks where
   getActions iid (WhenEnemyDefeated You) (RolandBanks a) | iid == toId a = do
     clueCount <- unClueCount <$> getCount (investigatorLocation a)
     pure [ ActivateCardAbilityAction iid (ability a) | clueCount > 0 ]

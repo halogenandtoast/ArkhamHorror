@@ -4,17 +4,20 @@ module Arkham.Types.Enemy.Attrs where
 
 import Arkham.Prelude
 
-import Data.UUID (nil)
-import Arkham.Json
 import Arkham.EncounterCard
+import Arkham.Json
 import Arkham.PlayerCard
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
+import Arkham.Types.Keyword (Keyword)
+import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
@@ -22,16 +25,14 @@ import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Prey
 import Arkham.Types.Query
+import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.Game.Helpers
-import Arkham.Types.Keyword (Keyword)
-import qualified Arkham.Types.Keyword as Keyword
-import Arkham.Types.Trait
+import Data.UUID (nil)
 
 data EnemyAttrs = EnemyAttrs
   { enemyName :: EnemyName
@@ -185,11 +186,11 @@ spawnAtOneOf iid eid targetLids = do
       (chooseOne iid [ EnemySpawn (Just iid) lid eid | lid <- lids ])
 
 modifiedEnemyFight
-  :: (MonadReader env m, HasModifiersFor env (), HasSource ForSkillTest env)
+  :: (MonadReader env m, HasModifiersFor env (), HasSkillTest env)
   => EnemyAttrs
   -> m Int
 modifiedEnemyFight EnemyAttrs {..} = do
-  msource <- asks $ getSource ForSkillTest
+  msource <- getSkillTestSource
   let source = fromMaybe (EnemySource enemyId) msource
   modifiers' <-
     map modifierType <$> getModifiersFor source (EnemyTarget enemyId) ()
@@ -199,11 +200,11 @@ modifiedEnemyFight EnemyAttrs {..} = do
   applyModifier _ n = n
 
 modifiedEnemyEvade
-  :: (MonadReader env m, HasModifiersFor env (), HasSource ForSkillTest env)
+  :: (MonadReader env m, HasModifiersFor env (), HasSkillTest env)
   => EnemyAttrs
   -> m Int
 modifiedEnemyEvade EnemyAttrs {..} = do
-  msource <- asks $ getSource ForSkillTest
+  msource <- getSkillTestSource
   let source = fromMaybe (EnemySource enemyId) msource
   modifiers' <-
     map modifierType <$> getModifiersFor source (EnemyTarget enemyId) ()
@@ -213,12 +214,12 @@ modifiedEnemyEvade EnemyAttrs {..} = do
   applyModifier _ n = n
 
 getModifiedDamageAmount
-  :: (MonadReader env m, HasModifiersFor env (), HasSource ForSkillTest env)
+  :: (MonadReader env m, HasModifiersFor env (), HasSkillTest env)
   => EnemyAttrs
   -> Int
   -> m Int
 getModifiedDamageAmount EnemyAttrs {..} baseAmount = do
-  msource <- asks $ getSource ForSkillTest
+  msource <- getSkillTestSource
   let source = fromMaybe (EnemySource enemyId) msource
   modifiers' <-
     map modifierType <$> getModifiersFor source (EnemyTarget enemyId) ()
@@ -231,11 +232,11 @@ getModifiedDamageAmount EnemyAttrs {..} baseAmount = do
   applyModifierCaps _ n = n
 
 getModifiedKeywords
-  :: (MonadReader env m, HasModifiersFor env (), HasSource ForSkillTest env)
+  :: (MonadReader env m, HasModifiersFor env (), HasSkillTest env)
   => EnemyAttrs
   -> m (HashSet Keyword)
 getModifiedKeywords EnemyAttrs {..} = do
-  msource <- asks $ getSource ForSkillTest
+  msource <- getSkillTestSource
   let source = fromMaybe (EnemySource enemyId) msource
   modifiers' <-
     map modifierType <$> getModifiersFor source (EnemyTarget enemyId) ()
@@ -343,7 +344,7 @@ type EnemyAttrsRunMessage env
     , HasSet PreyId env (Prey, LocationId)
     , HasSet PreyId env Prey
     , HasSet Trait env EnemyId
-    , HasSource ForSkillTest env
+    , HasSkillTest env
     )
 
 instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where

@@ -31,7 +31,7 @@ carolynFern = CarolynFern $ baseAttrs
     }
   [Medic]
 
-instance ActionRunner env => HasActions env CarolynFern where
+instance InvestigatorRunner env => HasActions env CarolynFern where
   getActions i window (CarolynFern attrs) = getActions i window attrs
 
 instance InvestigatorRunner env => RunMessage env CarolynFern where

@@ -1,7 +1,8 @@
 module Arkham.Types.Investigator.Cards.AgnesBaker
   ( AgnesBaker(..)
   , agnesBaker
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -10,13 +11,13 @@ import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Cost
 import Arkham.Types.EnemyId
-import Arkham.Types.Message
-import Arkham.Types.Token
-import Arkham.Types.Window
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
+import Arkham.Types.Message
 import Arkham.Types.Stats
+import Arkham.Types.Token
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype AgnesBaker = AgnesBaker InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
@@ -42,7 +43,7 @@ ability :: InvestigatorAttrs -> Ability
 ability attrs = base { abilityLimit = PlayerLimit PerPhase 1 }
   where base = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
-instance ActionRunner env => HasActions env AgnesBaker where
+instance InvestigatorRunner env => HasActions env AgnesBaker where
   getActions iid (WhenDealtHorror _ target) (AgnesBaker attrs)
     | isTarget attrs target = do
       enemyIds <- getSet @EnemyId $ investigatorLocation attrs

@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Scenarios.LostInTimeAndSpace
   ( LostInTimeAndSpace(..)
   , lostInTimeAndSpace
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -40,9 +41,9 @@ lostInTimeAndSpace difficulty = LostInTimeAndSpace $ baseAttrs
   difficulty
 
 instance HasRecord LostInTimeAndSpace where
-  hasRecord _ _ = False
-  hasRecordSet _ _ = []
-  hasRecordCount _ _ = 0
+  hasRecord _ = pure False
+  hasRecordSet _ = pure []
+  hasRecordCount _ = pure 0
 
 instance
   ( HasSet LocationId env [Trait]
@@ -145,7 +146,7 @@ instance
   ( HasSet InvestigatorId env ()
   , HasSet DefeatedInvestigatorId env ()
   , ScenarioAttrsRunner env
-  , HasStep ActStep env
+  , HasStep env ActStep
   , HasId (Maybe EnemyId) env EnemyMatcher
   , HasId (Maybe LocationId) env LocationMatcher
   , HasCount XPCount env ()
@@ -230,7 +231,7 @@ instance
           , MoveTo iid (LocationId $ getCardId card)
           ]
     ScenarioResolution NoResolution -> do
-      step <- asks $ unActStep . getStep
+      step <- unActStep <$> getStep
       s <$ unshiftMessage
         (ScenarioResolution . Resolution $ if step == 4 then 2 else 4)
     ScenarioResolution (Resolution 1) -> do

@@ -1,8 +1,9 @@
 module Arkham.Types.Event.Cards.Lucky2Spec
   ( spec
-  ) where
+  )
+where
 
-import TestImport
+import TestImport.Lifted
 
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 
@@ -16,25 +17,29 @@ spec = describe "Lucky! (2)" $ do
       , investigatorDeck = Deck [cardToDraw]
       }
     lucky2 <- buildPlayerCard "01084"
-    (didPassTest, logger) <- didPassSkillTestBy investigator SkillIntellect 0
-    game <-
-      runGameTest
+    runGameTest
         investigator
         [ SetTokens [Zero]
         , addToHand investigator (PlayerCard lucky2)
         , beginSkillTest investigator SkillIntellect 3
         ]
         id
-      >>= runGameTestOnlyOption "start skill test"
-      >>= runGameTestOptionMatching
+      $ do
+          (didPassTest, logger) <- didPassSkillTestBy
+            investigator
+            SkillIntellect
+            0
+          runMessagesNoLogging
+          runGameTestOnlyOption "start skill test"
+          runGameTestOptionMatching
             "play lucky!"
             (\case
               Run{} -> True
               _ -> False
             )
-      >>= runGameTestOnlyOptionWithLogger "apply results" logger
-    readIORef didPassTest `shouldReturn` True
-    updated game investigator `shouldSatisfy` handIs [PlayerCard cardToDraw]
+          runGameTestOnlyOptionWithLogger "apply results" logger
+          didPassTest `refShouldBe` True
+          updated investigator `shouldSatisfyM` handIs [PlayerCard cardToDraw]
 
   it "does not cause an autofail to pass" $ do
     cardToDraw <- testPlayerCard id
@@ -44,22 +49,26 @@ spec = describe "Lucky! (2)" $ do
       , investigatorDeck = Deck [cardToDraw]
       }
     lucky <- buildPlayerCard "01084"
-    (didFailTest, logger) <- didFailSkillTestBy investigator SkillIntellect 2
-    game <-
-      runGameTest
+    runGameTest
         investigator
         [ SetTokens [AutoFail]
         , addToHand investigator (PlayerCard lucky)
         , beginSkillTest investigator SkillIntellect 2
         ]
         id
-      >>= runGameTestOnlyOption "start skill test"
-      >>= runGameTestOptionMatching
+      $ do
+          (didFailTest, logger) <- didFailSkillTestBy
+            investigator
+            SkillIntellect
+            2
+          runMessagesNoLogging
+          runGameTestOnlyOption "start skill test"
+          runGameTestOptionMatching
             "play lucky!"
             (\case
               Run{} -> True
               _ -> False
             )
-      >>= runGameTestOnlyOptionWithLogger "apply results" logger
-    readIORef didFailTest `shouldReturn` True
-    updated game investigator `shouldSatisfy` handIs [PlayerCard cardToDraw]
+          runGameTestOnlyOptionWithLogger "apply results" logger
+          didFailTest `refShouldBe` True
+          updated investigator `shouldSatisfyM` handIs [PlayerCard cardToDraw]

@@ -1,7 +1,8 @@
 module Arkham.Types.Act
   ( Act(..)
   , lookupAct
-  ) where
+  )
+where
 
 import Arkham.Prelude hiding (fold)
 
@@ -56,8 +57,8 @@ deriving anyclass instance ActionRunner env => HasActions env Act
 deriving anyclass instance (HasName env LocationId, ActRunner env) => RunMessage env Act
 deriving anyclass instance HasSet Trait env LocationId => HasModifiersFor env Act
 
-instance HasStep ActStep Act where
-  getStep = getStep . toAttrs
+instance HasStep Act ActStep where
+  getStep = ask >>= runReaderT getStep . toAttrs
 
 instance Entity Act where
   type EntityId Act = ActId

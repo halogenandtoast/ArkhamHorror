@@ -1,8 +1,9 @@
 module Arkham.Types.Event.Cards.DarkMemorySpec
   ( spec
-  ) where
+  )
+where
 
-import TestImport
+import TestImport.Lifted
 
 spec :: Spec
 spec = do
@@ -11,34 +12,36 @@ spec = do
       investigator <- testInvestigator "00000" id
       agenda <- testAgenda "00000" id
       darkMemory <- buildEvent "01013" investigator
-      (didAdvanceAgenda, logger) <- createMessageMatcher (AdvanceAgenda "00000")
 
-      game <-
-        runGameTestWithLogger
-            logger
-            investigator
-            [playEvent investigator darkMemory]
-            ((eventsL %~ insertEntity darkMemory)
-            . (agendasL %~ insertEntity agenda)
-            )
-          >>= runGameTestOnlyOption "Advance agenda"
-      agenda `shouldSatisfy` hasDoom game 1
-      darkMemory `shouldSatisfy` isInDiscardOf game investigator
-      readIORef didAdvanceAgenda `shouldReturn` True
+      runGameTest
+          investigator
+          [playEvent investigator darkMemory]
+          ((eventsL %~ insertEntity darkMemory)
+          . (agendasL %~ insertEntity agenda)
+          )
+        $ do
+            (didAdvanceAgenda, logger) <- createMessageMatcher
+              (AdvanceAgenda "00000")
+            void $ runMessages logger
+            runGameTestOnlyOption "Advance agenda"
+            getDoom agenda `shouldReturn` 1
+            isInDiscardOf investigator darkMemory `shouldReturn` True
+            didAdvanceAgenda `refShouldBe` True
+
     it "is revealed and deals 2 horror if in hand at end of turn" $ do
       investigator <- testInvestigator "00000" id
       darkMemory <- buildPlayerCard "01013"
-      (didReveal, logger) <- createMessageMatcher
-        (RevealInHand $ getCardId darkMemory)
-      game <-
-        runGameTestWithLogger
-          logger
+      runGameTest
           investigator
           [ addToHand investigator (PlayerCard darkMemory)
           , chooseEndTurn investigator
           ]
           id
-        >>= runGameTestOnlyOption "assign first horror"
-        >>= runGameTestOnlyOption "assign second horror"
-      updated game investigator `shouldSatisfy` hasDamage (0, 2)
-      readIORef didReveal `shouldReturn` True
+        $ do
+            (didReveal, logger) <- createMessageMatcher
+              (RevealInHand $ getCardId darkMemory)
+            void $ runMessages logger
+            runGameTestOnlyOption "assign first horror"
+            runGameTestOnlyOption "assign second horror"
+            updated investigator `shouldSatisfyM` hasDamage (0, 2)
+            didReveal `refShouldBe` True

@@ -31,7 +31,7 @@ import Arkham.Types.Token
 import Arkham.Types.Trait (Trait)
 import Arkham.Types.Window
 
-cancelToken :: (HasQueue env, MonadReader env m, MonadIO m) => Token -> m ()
+cancelToken :: (HasQueue env, MonadIO m, MonadReader env m) => Token -> m ()
 cancelToken token = withQueue $ \queue ->
   ( filter
     (\case
@@ -46,7 +46,7 @@ cancelToken token = withQueue $ \queue ->
   , ()
   )
 
-replaceToken :: (HasQueue env, MonadReader env m, MonadIO m) => Token -> m ()
+replaceToken :: (HasQueue env, MonadIO m, MonadReader env m) => Token -> m ()
 replaceToken token = withQueue $ \queue ->
   ( map
     (\case
@@ -278,14 +278,14 @@ enemyAtInvestigatorLocation cardCode iid = do
   elem cardCode <$> for enemyIds (getId @CardCode)
 
 getHasRecord :: (HasRecord env, MonadReader env m) => CampaignLogKey -> m Bool
-getHasRecord = asks . hasRecord
+getHasRecord = hasRecord
 
 getRecordCount :: (HasRecord env, MonadReader env m) => CampaignLogKey -> m Int
-getRecordCount = asks . hasRecordCount
+getRecordCount = hasRecordCount
 
 getRecordSet
   :: (HasRecord env, MonadReader env m) => CampaignLogKey -> m [CardCode]
-getRecordSet = asks . hasRecordSet
+getRecordSet = hasRecordSet
 
 getIsUnused'
   :: (HasList UsedAbility env (), MonadReader env m)

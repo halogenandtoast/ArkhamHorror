@@ -1,8 +1,9 @@
 module Arkham.Types.Investigator.Cards.JimCulverSpec
   ( spec
-  ) where
+  )
+where
 
-import TestImport
+import TestImport.Lifted
 
 spec :: Spec
 spec = describe "Jim Culver" $ do
@@ -16,73 +17,82 @@ spec = describe "Jim Culver" $ do
             then atomicWriteIORef didResolveSkull True
             else pure ()
           _ -> pure ()
-      void
-        $ runGameTest
-            jimCulver
-            [ SetTokens [ElderSign]
-            , BeginSkillTest
-              (toId jimCulver)
-              (TestSource mempty)
-              TestTarget
-              Nothing
-              SkillIntellect
-              2
-            ]
-            id
-        >>= runGameTestOnlyOption "start skill test"
-        >>= runGameTestOptionMatchingWithLogger
+      runGameTest
+          jimCulver
+          [ SetTokens [ElderSign]
+          , BeginSkillTest
+            (toId jimCulver)
+            (TestSource mempty)
+            TestTarget
+            Nothing
+            SkillIntellect
+            2
+          ]
+          id
+        $ do
+            runMessagesNoLogging
+            runGameTestOnlyOption "start skill test"
+            runGameTestOptionMatchingWithLogger
               "change to skull"
               logger
               (\case
                 Label "Resolve as Skull" _ -> True
                 _ -> False
               )
-        >>= runGameTestOnlyOption "apply results"
-      readIORef didResolveSkull `shouldReturn` True
+            runGameTestOnlyOption "apply results"
+            didResolveSkull `refShouldBe` True
 
     it "is a +1" $ do
       let jimCulver = lookupInvestigator "02004"
-      (didPassTest, logger) <- didPassSkillTestBy jimCulver SkillIntellect 2
-      void
-        $ runGameTest
-            jimCulver
-            [ SetTokens [ElderSign]
-            , BeginSkillTest
-              (toId jimCulver)
-              (TestSource mempty)
-              TestTarget
-              Nothing
+      runGameTest
+          jimCulver
+          [ SetTokens [ElderSign]
+          , BeginSkillTest
+            (toId jimCulver)
+            (TestSource mempty)
+            TestTarget
+            Nothing
+            SkillIntellect
+            2
+          ]
+          id
+        $ do
+            (didPassTest, logger) <- didPassSkillTestBy
+              jimCulver
               SkillIntellect
               2
-            ]
-            id
-        >>= runGameTestOnlyOption "start skill test"
-        >>= runGameTestOptionMatching
+            runMessagesNoLogging
+            runGameTestOnlyOption "start skill test"
+            runGameTestOptionMatching
               "resolve elder sign"
               (\case
                 Label "Resolve as Elder Sign" _ -> True
                 _ -> False
               )
-        >>= runGameTestOnlyOptionWithLogger "apply results" logger
-      readIORef didPassTest `shouldReturn` True
+            runGameTestOnlyOptionWithLogger "apply results" logger
+            didPassTest `refShouldBe` True
 
   context "ability" $ do
     it "changes skull modifier to 0" $ do
       let jimCulver = lookupInvestigator "02004"
-      (didPassTest, logger) <- didPassSkillTestBy jimCulver SkillIntellect 1
-      void
-        $ runGameTest
-            jimCulver
-            [ SetTokens [Skull]
-            , BeginSkillTest
-              (toId jimCulver)
-              (TestSource mempty)
-              TestTarget
-              Nothing
+      runGameTest
+          jimCulver
+          [ SetTokens [Skull]
+          , BeginSkillTest
+            (toId jimCulver)
+            (TestSource mempty)
+            TestTarget
+            Nothing
+            SkillIntellect
+            2
+          ]
+          id
+        $ do
+            (didPassTest, logger) <- didPassSkillTestBy
+              jimCulver
               SkillIntellect
-              2
-            ]
-            id
-        >>= runGameTestOnlyOption "start skill test"
-        >>= runGameTestOnlyOptionWithLogger "apply results" logger
-      readIORef didPassTest `shouldReturn` True
+              1
+            runMessagesNoLogging
+            runGameTestOnlyOption "start skill test"
+            runGameTestOnlyOptionWithLogger "apply results" logger
+            didPassTest `refShouldBe` True

@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Scenarios.WhereDoomAwaits
   ( WhereDoomAwaits(..)
   , whereDoomAwaits
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -29,6 +30,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait hiding (Cultist, Expert)
+import Data.Maybe (fromJust)
 
 newtype WhereDoomAwaits = WhereDoomAwaits ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -121,16 +123,16 @@ standaloneTokens =
   ]
 
 instance HasRecord WhereDoomAwaits where
-  hasRecord NaomiHasTheInvestigatorsBacks _ = False
-  hasRecord TheInvestigatorsPutSilasBishopOutOfHisMisery _ = False
-  hasRecord NoBroodEscapedIntoTheWild _ = True
-  hasRecord _ _ = False
-  hasRecordSet _ _ = []
-  hasRecordCount _ _ = 0
+  hasRecord NaomiHasTheInvestigatorsBacks = pure False
+  hasRecord TheInvestigatorsPutSilasBishopOutOfHisMisery = pure False
+  hasRecord NoBroodEscapedIntoTheWild = pure True
+  hasRecord _ = pure False
+  hasRecordSet _ = pure []
+  hasRecordCount _ = pure 0
 
 instance
   ( HasTokenValue env InvestigatorId
-  , HasStep AgendaStep env
+  , HasStep env AgendaStep
   , HasSet Trait env LocationId
   , HasId LocationId env InvestigatorId
   )
@@ -144,7 +146,7 @@ instance
         else pure $ toTokenValue attrs Skull 1 2
     Cultist -> pure $ TokenValue Cultist NoModifier
     Tablet -> do
-      agendaStep <- asks $ unAgendaStep . getStep
+      agendaStep <- unAgendaStep <$> getStep
       pure $ TokenValue
         Tablet
         (if isEasyStandard attrs
@@ -201,8 +203,11 @@ instance
 
       silasMsgs <- if silasBishopPutOutOfMisery
         then do
-          (conglomerationOfSpheres : rest) <- EncounterSet.gatherEncounterSet
+          result <- EncounterSet.gatherEncounterSet
             EncounterSet.HideousAbominations
+          let
+            conglomerationOfSpheres = fromJust . headMay $ result
+            rest = drop 1 result
           pure
             [ SpawnEnemyAt
               (EncounterCard conglomerationOfSpheres)

@@ -3,14 +3,17 @@
 module Arkham.Types.Act.Attrs
   ( module Arkham.Types.Act.Attrs
   , module X
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
 import Arkham.Json
+import Arkham.Types.Act.Sequence as X
 import Arkham.Types.ActId
 import Arkham.Types.Classes
 import Arkham.Types.Exception
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
@@ -18,13 +21,11 @@ import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Query
+import Arkham.Types.RequiredClues as X
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window
-import Arkham.Types.Act.Sequence as X
-import Arkham.Types.Game.Helpers
-import Arkham.Types.RequiredClues as X
 
 data ActAttrs = ActAttrs
   { actId :: ActId
@@ -48,8 +49,8 @@ instance FromJSON ActAttrs where
 instance HasModifiersFor env ActAttrs where
   getModifiersFor = noModifiersFor
 
-instance HasStep ActStep ActAttrs where
-  getStep = actStep . actSequence
+instance HasStep ActAttrs ActStep where
+  getStep = asks $ actStep . actSequence
 
 instance Entity ActAttrs where
   type EntityId ActAttrs = ActId
@@ -133,7 +134,9 @@ advanceActSideA investigatorIds requiredClues attrs = do
   pure
     ([ SpendClues totalRequiredClues investigatorIds | totalRequiredClues > 0 ]
     <> [ CheckWindow leadInvestigatorId [WhenActAdvance (toId attrs)]
-       , chooseOne leadInvestigatorId [AdvanceAct (toId attrs) (toSource attrs)]
+       , chooseOne
+         leadInvestigatorId
+         [AdvanceAct (toId attrs) (toSource attrs)]
        ]
     )
 

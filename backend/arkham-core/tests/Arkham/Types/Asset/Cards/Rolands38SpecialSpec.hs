@@ -18,28 +18,28 @@ spec = describe "Roland's .39 Special" $ do
     enemy <- testEnemy
       $ \attrs -> attrs { enemyFight = 2, enemyHealth = Static 3 }
     location <- testLocation "00000" id
-    game <- runGameTest
-      investigator
-      [ SetTokens [Zero]
-      , placedLocation location
-      , enemySpawn location enemy
-      , playAsset investigator rolands38Special
-      , moveTo investigator location
-      ]
-      ((assetsL %~ insertEntity rolands38Special)
-      . (enemiesL %~ insertEntity enemy)
-      . (locationsL %~ insertEntity location)
-      )
+    runGameTest
+        investigator
+        [ SetTokens [Zero]
+        , placedLocation location
+        , enemySpawn location enemy
+        , playAsset investigator rolands38Special
+        , moveTo investigator location
+        ]
+        ((assetsL %~ insertEntity rolands38Special)
+        . (enemiesL %~ insertEntity enemy)
+        . (locationsL %~ insertEntity location)
+        )
+      $ do
+          runMessagesNoLogging
+          [fightAction] <- getActionsOf investigator NonFast rolands38Special
+          runGameTestMessages [fightAction]
+          runGameTestOnlyOption "choose enemy"
+          runGameTestOnlyOption "start skill test"
+          runGameTestOnlyOption "apply results"
 
-    [fightAction] <- getActionsOf game investigator NonFast rolands38Special
+          updated enemy `shouldSatisfyM` hasDamage (2, 0)
 
-    game' <-
-      runGameTestMessages game [fightAction]
-      >>= runGameTestOnlyOption "choose enemy"
-      >>= runGameTestOnlyOption "start skill test"
-      >>= runGameTestOnlyOption "apply results"
-
-    updated game' enemy `shouldSatisfy` hasDamage (2, 0)
   it
       "gives +3 combat and +1 damage if there are 1 or more clues on your location"
     $ do
@@ -49,25 +49,27 @@ spec = describe "Roland's .39 Special" $ do
         enemy <- testEnemy
           $ \attrs -> attrs { enemyFight = 4, enemyHealth = Static 3 }
         location <- testLocation "00000" $ \attrs -> attrs { locationClues = 1 }
-        game <- runGameTest
-          investigator
-          [ SetTokens [Zero]
-          , placedLocation location
-          , enemySpawn location enemy
-          , playAsset investigator rolands38Special
-          , moveTo investigator location
-          ]
-          ((assetsL %~ insertEntity rolands38Special)
-          . (enemiesL %~ insertEntity enemy)
-          . (locationsL %~ insertEntity location)
-          )
+        runGameTest
+            investigator
+            [ SetTokens [Zero]
+            , placedLocation location
+            , enemySpawn location enemy
+            , playAsset investigator rolands38Special
+            , moveTo investigator location
+            ]
+            ((assetsL %~ insertEntity rolands38Special)
+            . (enemiesL %~ insertEntity enemy)
+            . (locationsL %~ insertEntity location)
+            )
+          $ do
+              runMessagesNoLogging
+              [fightAction] <- getActionsOf
+                investigator
+                NonFast
+                rolands38Special
+              runGameTestMessages [fightAction]
+              runGameTestOnlyOption "choose enemy"
+              runGameTestOnlyOption "start skill test"
+              runGameTestOnlyOption "apply results"
 
-        [fightAction] <- getActionsOf game investigator NonFast rolands38Special
-
-        game' <-
-          runGameTestMessages game [fightAction]
-          >>= runGameTestOnlyOption "choose enemy"
-          >>= runGameTestOnlyOption "start skill test"
-          >>= runGameTestOnlyOption "apply results"
-
-        updated game' enemy `shouldSatisfy` hasDamage (2, 0)
+              updated enemy `shouldSatisfyM` hasDamage (2, 0)

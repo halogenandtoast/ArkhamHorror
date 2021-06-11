@@ -2,18 +2,18 @@ module Arkham.Types.Campaign.Campaigns.TheDunwichLegacy where
 
 import Arkham.Prelude
 
+import Arkham.Types.Campaign.Attrs
+import Arkham.Types.Campaign.Runner
 import Arkham.Types.CampaignId
+import Arkham.Types.CampaignLogKey
+import Arkham.Types.CampaignStep
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Difficulty
+import Arkham.Types.Game.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Resolution
-import Arkham.Types.Campaign.Attrs
-import Arkham.Types.Campaign.Runner
-import Arkham.Types.CampaignLogKey
-import Arkham.Types.CampaignStep
-import Arkham.Types.Difficulty
-import Arkham.Types.Game.Helpers
 import qualified Arkham.Types.Token as Token
 
 newtype TheDunwichLegacy = TheDunwichLegacy CampaignAttrs
@@ -164,8 +164,8 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
           ]
         ]
     CampaignStep (Just (InterludeStep 1)) -> do
-      unconsciousForSeveralHours <- asks
-        $ hasRecord InvestigatorsWereUnconsciousForSeveralHours
+      unconsciousForSeveralHours <- hasRecord
+        InvestigatorsWereUnconsciousForSeveralHours
       investigatorIds <- getSetList ()
       leadInvestigatorId <- getLeadInvestigatorId
       if unconsciousForSeveralHours
@@ -233,7 +233,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
           , NextCampaignStep Nothing
           ]
     CampaignStep (Just (InterludeStep 2)) -> do
-      sacrificedToYogSothoth <- asks $ hasRecordSet SacrificedToYogSothoth
+      sacrificedToYogSothoth <- hasRecordSet SacrificedToYogSothoth
       investigatorIds <- getSetList ()
       leadInvestigatorId <- getLeadInvestigatorId
       drHenryArmitageUnowned <- isNothing <$> findOwner "02040"

@@ -21,7 +21,7 @@ import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
-import Arkham.Types.Target
+import Arkham.Types.SkillTest
 import Arkham.Types.Trait (Trait)
 
 createAsset :: IsCard a => a -> Asset
@@ -142,7 +142,7 @@ data Asset
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-instance ActionRunner env => HasActions env Asset where
+instance (ActionRunner env, HasSkillTest env) => HasActions env Asset where
   getActions iid window asset = do
     inPlay <- member (toId asset) <$> getSet ()
     modifiers' <- if inPlay
@@ -161,7 +161,7 @@ deriving anyclass instance
   , HasCount ClueCount env EnemyId
   , HasCount AssetCount env (InvestigatorId, [Trait])
   , HasSet Trait env LocationId
-  , HasTarget ForSkillTest env
+  , HasSkillTest env
   , HasModifiersFor env ()
   )
   => HasModifiersFor env Asset

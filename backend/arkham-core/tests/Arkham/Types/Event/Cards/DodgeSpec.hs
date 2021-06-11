@@ -1,6 +1,7 @@
 module Arkham.Types.Event.Cards.DodgeSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport
 
@@ -15,22 +16,23 @@ spec = do
       enemy <- testEnemy id
       location <- testLocation "00000" id
       dodge <- buildPlayerCard "01023"
-      (didRunMessage, logger) <- createMessageMatcher
-        (PerformEnemyAttack "00000" (toId enemy))
-      void
-        $ runGameTest
-            investigator
-            [ addToHand investigator (PlayerCard dodge)
-            , enemyAttack investigator enemy
-            ]
-            ((enemiesL %~ insertEntity enemy)
-            . (locationsL %~ insertEntity location)
-            )
-        >>= runGameTestOptionMatchingWithLogger
+      runGameTest
+          investigator
+          [ addToHand investigator (PlayerCard dodge)
+          , enemyAttack investigator enemy
+          ]
+          ((enemiesL %~ insertEntity enemy)
+          . (locationsL %~ insertEntity location)
+          )
+        $ do
+            (didRunMessage, logger) <- createMessageMatcher
+              (PerformEnemyAttack "00000" (toId enemy))
+            runMessagesNoLogging
+            runGameTestOptionMatchingWithLogger
               "Play Dodge"
               logger
               (\case
                 Run{} -> True
                 _ -> False
               )
-      readIORef didRunMessage `shouldReturn` False
+            didRunMessage `refShouldBe` False

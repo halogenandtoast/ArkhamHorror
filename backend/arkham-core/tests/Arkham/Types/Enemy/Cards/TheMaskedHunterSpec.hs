@@ -1,8 +1,9 @@
 module Arkham.Types.Enemy.Cards.TheMaskedHunterSpec
   ( spec
-  ) where
+  )
+where
 
-import TestImport
+import TestImport.Lifted
 
 import Arkham.Types.Modifier
 
@@ -12,29 +13,29 @@ spec = describe "The Masked Hunter" $ do
     it "prevents engaged investigators from discovering or spending clues" $ do
       theMaskedHunter <- buildEnemy "01121b"
       investigator <- testInvestigator "00000" id
-      game <- runGameTest
-        investigator
-        [engageEnemy investigator theMaskedHunter]
-        (enemiesL %~ insertEntity theMaskedHunter)
-      withGame
-          game
-          (map modifierType
-          <$> getModifiersFor (TestSource mempty) (toTarget investigator) ()
-          )
-        `shouldReturn` [CannotDiscoverClues, CannotSpendClues]
+      runGameTest
+          investigator
+          [engageEnemy investigator theMaskedHunter]
+          (enemiesL %~ insertEntity theMaskedHunter)
+        $ do
+            runMessagesNoLogging
+            (map modifierType
+              <$> getModifiersFor (TestSource mempty) (toTarget investigator) ()
+              )
+              `shouldReturn` [CannotDiscoverClues, CannotSpendClues]
 
     it
         "does not prevent unengaged investigators from discovering or spending clues"
       $ do
           theMaskedHunter <- buildEnemy "01121b"
           investigator <- testInvestigator "00000" id
-          game <- runGameTest
-            investigator
-            [ engageEnemy investigator theMaskedHunter
-            , disengageEnemy investigator theMaskedHunter
-            ]
-            (enemiesL %~ insertEntity theMaskedHunter)
-          withGame
-              game
-              (getModifiersFor (TestSource mempty) (toTarget investigator) ())
-            `shouldReturn` []
+          runGameTest
+              investigator
+              [ engageEnemy investigator theMaskedHunter
+              , disengageEnemy investigator theMaskedHunter
+              ]
+              (enemiesL %~ insertEntity theMaskedHunter)
+            $ do
+                runMessagesNoLogging
+                getModifiersFor (TestSource mempty) (toTarget investigator) ()
+                  `shouldReturn` []

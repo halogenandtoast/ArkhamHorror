@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.FindingLadyEsprit
   ( FindingLadyEsprit(..)
   , findingLadyEsprit
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -21,6 +22,7 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window
+import Data.Maybe (fromJust)
 
 newtype FindingLadyEsprit = FindingLadyEsprit ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
@@ -72,7 +74,8 @@ instance ActRunner env => RunMessage env FindingLadyEsprit where
         )
       pure $ FindingLadyEsprit $ attrs & (sequenceL .~ Act 1 B)
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
-      [ladyEspritSpawnLocation] <- setToList <$> bayouLocations
+      ladyEspritSpawnLocation <-
+        fromJust . headMay . setToList <$> bayouLocations
       ladyEsprit <- PlayerCard <$> genPlayerCard "81019"
       a <$ unshiftMessages
         [ CreateStoryAssetAt ladyEsprit ladyEspritSpawnLocation

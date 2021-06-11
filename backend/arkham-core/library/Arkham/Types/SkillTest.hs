@@ -2,11 +2,13 @@
 
 module Arkham.Types.SkillTest
   ( module Arkham.Types.SkillTest
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
 import Arkham.Json
+import Arkham.Types.Action (Action)
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
@@ -14,18 +16,26 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.RequestedTokenStrategy
+import Arkham.Types.SkillTestResult
 import Arkham.Types.SkillType
 import Arkham.Types.Source
+import Arkham.Types.Stats
 import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Window
-import Arkham.Types.Action (Action)
-import Arkham.Types.RequestedTokenStrategy
-import Arkham.Types.SkillTestResult
-import Arkham.Types.Stats
 import qualified Data.HashMap.Strict as HashMap
 import Data.Semigroup
 import System.Environment
+
+class HasSkillTest env where
+  getSkillTest :: MonadReader env m => m (Maybe SkillTest)
+
+getSkillTestTarget :: (MonadReader env m, HasSkillTest env) => m (Maybe Target)
+getSkillTestTarget = fmap skillTestTarget <$> getSkillTest
+
+getSkillTestSource :: (MonadReader env m, HasSkillTest env) => m (Maybe Source)
+getSkillTestSource = fmap toSource <$> getSkillTest
 
 data SkillTest = SkillTest
   { skillTestInvestigator :: InvestigatorId
@@ -137,9 +147,9 @@ getModifiedSkillTestDifficulty s = do
 
 type SkillTestRunner env
   = ( HasQueue env
-    , HasCard InvestigatorId env
+    , HasCard env InvestigatorId
     , HasStats env (InvestigatorId, Maybe Action)
-    , HasSource ForSkillTest env
+    , HasSkillTest env
     , HasModifiersFor env ()
     , HasTokenValue env ()
     , HasId LocationId env InvestigatorId
@@ -150,7 +160,11 @@ type SkillTestRunner env
 -- per the FAQ the double negative modifier ceases to be active
 -- when Sure Gamble is used so we overwrite both Negative and DoubleNegative
 getModifiedTokenValue
-  :: (MonadReader env m, HasModifiersFor env (), HasTokenValue env ())
+  :: ( MonadReader env m
+     , HasModifiersFor env ()
+     , HasTokenValue env ()
+     , MonadIO m
+     )
   => SkillTest
   -> DrawnToken
   -> m Int
@@ -296,7 +310,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
     InvestigatorCommittedSkill _ skillId ->
       pure $ s & subscribersL %~ (SkillTarget skillId :)
     SkillTestCommitCard iid cardId -> do
-      card <- asks (getCard iid cardId)
+      card <- getCard cardId iid
       pure $ s & committedCardsL %~ insertMap cardId (iid, card)
     SkillTestUncommitCard _ cardId ->
       pure $ s & committedCardsL %~ deleteMap cardId

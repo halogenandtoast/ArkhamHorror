@@ -45,7 +45,7 @@ ability :: InvestigatorAttrs -> Ability
 ability attrs = base { abilityLimit = PlayerLimit PerTurn 1 }
   where base = mkAbility (toSource attrs) 1 (FastAbility $ ResourceCost 2)
 
-instance ActionRunner env => HasActions env SkidsOToole where
+instance InvestigatorRunner env => HasActions env SkidsOToole where
   getActions iid (DuringTurn You) (SkidsOToole a@InvestigatorAttrs {..})
     | iid == investigatorId = pure [ActivateCardAbilityAction iid (ability a)]
   getActions _ _ _ = pure []

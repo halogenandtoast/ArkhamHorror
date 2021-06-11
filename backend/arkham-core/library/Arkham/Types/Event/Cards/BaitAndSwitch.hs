@@ -3,15 +3,16 @@ module Arkham.Types.Event.Cards.BaitAndSwitch where
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import Arkham.Types.Event.Attrs
+import Arkham.Types.Event.Runner
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
+import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Event.Attrs
-import Arkham.Types.Event.Runner
 
 newtype BaitAndSwitch = BaitAndSwitch EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -35,20 +36,22 @@ instance (EventRunner env) => RunMessage env BaitAndSwitch where
       | eid == eventId -> do
         lid <- getId iid
         connectedLocationIds <- map unConnectedLocationId <$> getSetList lid
-        EnemyTarget enemyId <- fromMaybe (error "missing target")
-          <$> asks (getTarget ForSkillTest)
-        unless (null connectedLocationIds) $ withQueue_ $ \queue ->
-          let
-            enemyMoves = map (EnemyMove enemyId lid) connectedLocationIds
-            (before, rest) = break
-              (\case
-                AfterEvadeEnemy{} -> True
-                _ -> False
-              )
-              queue
-          in case rest of
-            (x : xs) -> before <> [x, chooseOne iid enemyMoves] <> xs
-            _ -> error "evade missing"
+        target <- fromMaybe (error "missing target") <$> getSkillTestTarget
+        case target of
+          EnemyTarget enemyId -> do
+            unless (null connectedLocationIds) $ withQueue_ $ \queue ->
+              let
+                enemyMoves = map (EnemyMove enemyId lid) connectedLocationIds
+                (before, rest) = break
+                  (\case
+                    AfterEvadeEnemy{} -> True
+                    _ -> False
+                  )
+                  queue
+              in case rest of
+                (x : xs) -> before <> [x, chooseOne iid enemyMoves] <> xs
+                _ -> error "evade missing"
 
-        pure e
+            pure e
+          _ -> error "wrong target type"
     _ -> BaitAndSwitch <$> runMessage msg attrs

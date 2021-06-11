@@ -60,7 +60,7 @@ ability attrs token = base
     1
     (ReactionAbility $ HandDiscardCost 1 Nothing mempty mempty)
 
-instance ActionRunner env => HasActions env WendyAdams where
+instance InvestigatorRunner env => HasActions env WendyAdams where
   getActions iid (WhenRevealToken You token) (WendyAdams attrs@InvestigatorAttrs {..})
     | iid == investigatorId
     = pure [ActivateCardAbilityAction investigatorId $ ability attrs token]

@@ -107,26 +107,32 @@ postApiV1ArkhamGamesR = do
       HashMap.singleton hashKey (lookupInvestigator iid, decklist)
   case campaignId of
     Just cid -> do
-      ge <-
-        liftIO
-        $ runMessages noLogger
-        =<< newCampaign cid playerCount investigators difficulty
+      game <- liftIO $ newCampaign cid playerCount investigators difficulty
+      gameRef <- newIORef game
+      queueRef <- newIORef []
+      runGameApp (GameApp gameRef queueRef) $ do
+        runMessages (pure . const ())
+      ge <- readIORef gameRef
+      updatedQueue <- readIORef queueRef
       key <- runDB $ do
-        gameId <- insert $ ArkhamGame campaignName ge
+        gameId <- insert $ ArkhamGame campaignName ge updatedQueue
         insert_ $ ArkhamPlayer userId gameId
         pure gameId
-      pure $ Entity key (ArkhamGame campaignName ge)
+      pure $ Entity key (ArkhamGame campaignName ge updatedQueue)
     Nothing -> case scenarioId of
       Just sid -> do
-        ge <-
-          liftIO
-          $ runMessages noLogger
-          =<< newScenario sid playerCount investigators difficulty
+        game <- liftIO $ newScenario sid playerCount investigators difficulty
+        gameRef <- newIORef game
+        queueRef <- newIORef []
+        runGameApp (GameApp gameRef queueRef) $ do
+          runMessages (pure . const ())
+        ge <- readIORef gameRef
+        updatedQueue <- readIORef queueRef
         key <- runDB $ do
-          gameId <- insert $ ArkhamGame campaignName ge
+          gameId <- insert $ ArkhamGame campaignName ge updatedQueue
           insert_ $ ArkhamPlayer userId gameId
           pure gameId
-        pure $ Entity key (ArkhamGame campaignName ge)
+        pure $ Entity key (ArkhamGame campaignName ge updatedQueue)
       Nothing -> error "missing either campaign id or scenario id"
 
 data QuestionReponse = QuestionResponse
@@ -183,20 +189,22 @@ putApiV1ArkhamGameR gameId = do
 
   if gameHash == qrGameHash response
     then do
-      ge <- liftIO $ runMessages noLogger =<< toInternalGame
-        (gameJson { gameMessages = messages <> gameMessages })
-
+      gameRef <- newIORef gameJson
+      queueRef <- newIORef (messages <> arkhamGameQueue)
+      runGameApp (GameApp gameRef queueRef) $ runMessages (pure . const ())
+      ge <- readIORef gameRef
+      updatedQueue <- readIORef queueRef
       writeChannel <- getChannel gameId
       liftIO $ atomically $ writeTChan
         writeChannel
-        (encode (Entity gameId (ArkhamGame arkhamGameName ge)))
-      Entity gameId (ArkhamGame arkhamGameName ge)
-        <$ runDB (replace gameId (ArkhamGame arkhamGameName ge))
+        (encode (Entity gameId (ArkhamGame arkhamGameName ge updatedQueue)))
+      Entity gameId (ArkhamGame arkhamGameName ge updatedQueue)
+        <$ runDB (replace gameId (ArkhamGame arkhamGameName ge updatedQueue))
     else invalidArgs ["Hash mismatch"]
 
 
 data RawGameJsonPut = RawGameJsonPut
-  { gameJson :: GameExternal
+  { gameJson :: Game
   , gameMessage :: Maybe Message
   }
   deriving stock (Show, Generic)
@@ -208,16 +216,17 @@ putApiV1ArkhamGameRawR gameId = do
   ArkhamGame {..} <- runDB $ get404 gameId
   response <- requireCheckJsonBody
   let message = fromMaybe (Continue "edited") (gameMessage response)
-  ge <- liftIO $ runMessages noLogger =<< toInternalGame
-    ((gameJson response)
-      { gameMessages = message : gameMessages (gameJson response)
-      }
-    )
+  gameRef <- newIORef (gameJson response)
+  queueRef <- newIORef (message : arkhamGameQueue)
+  runGameApp (GameApp gameRef queueRef) $ do
+    runMessages (pure . const ())
+  ge <- readIORef gameRef
+  updatedQueue <- readIORef queueRef
   writeChannel <- getChannel gameId
   liftIO $ atomically $ writeTChan
     writeChannel
-    (encode (Entity gameId (ArkhamGame arkhamGameName ge)))
-  runDB (replace gameId (ArkhamGame arkhamGameName ge))
+    (encode (Entity gameId (ArkhamGame arkhamGameName ge updatedQueue)))
+  runDB (replace gameId (ArkhamGame arkhamGameName ge updatedQueue))
 
 deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 deleteApiV1ArkhamGameR gameId = void $ runDB $ do

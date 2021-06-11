@@ -1,15 +1,16 @@
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE PatternSynonyms #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module Arkham.Types.Location.Attrs where
 
 import Arkham.Prelude
 
 import Arkham.Json
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
-import Arkham.Types.Cost
 import Arkham.Types.Classes
+import Arkham.Types.Cost
 import Arkham.Types.Direction
 import Arkham.Types.EncounterSet (EncounterSet)
 import Arkham.Types.EnemyId
@@ -17,6 +18,8 @@ import Arkham.Types.EventId
 import Arkham.Types.Exception
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
@@ -26,12 +29,9 @@ import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.Location.Runner
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Trait
 
 pattern AfterFailedInvestigate :: InvestigatorId -> Target -> Message
 pattern AfterFailedInvestigate iid target <-

@@ -53,7 +53,7 @@ ability attrs = base { abilityLimit = PlayerLimit PerRound 1 }
     1
     (FastAbility $ HandDiscardCost 1 Nothing mempty mempty)
 
-instance ActionRunner env => HasActions env AshcanPete where
+instance InvestigatorRunner env => HasActions env AshcanPete where
   getActions iid FastPlayerWindow (AshcanPete attrs@InvestigatorAttrs {..})
     | iid == investigatorId = do
       exhaustedAssetIds <- map unExhaustedAssetId <$> getSetList investigatorId

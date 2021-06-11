@@ -1,6 +1,7 @@
 module Api.Handler.Arkham.PendingGames
   ( putApiV1ArkhamPendingGameR
-  ) where
+  )
+where
 
 import Import hiding (on, (==.))
 
@@ -32,16 +33,22 @@ putApiV1ArkhamPendingGameR gameId = do
   when (iid `HashMap.member` gameInvestigators arkhamGameCurrentData)
     $ invalidArgs ["Investigator already taken"]
 
-  ge <-
-    liftIO
-    $ addInvestigator userId' (lookupInvestigator iid) decklist
-    =<< toInternalGame arkhamGameCurrentData
+  gameRef <- newIORef arkhamGameCurrentData
+  queueRef <- newIORef arkhamGameQueue
+  runGameApp (GameApp gameRef queueRef) $ do
+    addInvestigator userId' (lookupInvestigator iid) decklist
+
   runDB $ insert_ $ ArkhamPlayer userId gameId
+
+  updatedGame <- readIORef gameRef
+  updatedQueue <- readIORef queueRef
 
   writeChannel <- getChannel gameId
   liftIO $ atomically $ writeTChan
     writeChannel
-    (encode (Entity gameId (ArkhamGame arkhamGameName ge)))
+    (encode (Entity gameId (ArkhamGame arkhamGameName updatedGame updatedQueue))
+    )
 
-  Entity gameId (ArkhamGame arkhamGameName ge)
-    <$ runDB (replace gameId (ArkhamGame arkhamGameName ge))
+  Entity gameId (ArkhamGame arkhamGameName updatedGame updatedQueue)
+    <$ runDB
+         (replace gameId (ArkhamGame arkhamGameName updatedGame updatedQueue))

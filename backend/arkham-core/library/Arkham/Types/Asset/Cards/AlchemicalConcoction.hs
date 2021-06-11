@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.AlchemicalConcoction
   ( alchemicalConcoction
   , AlchemicalConcoction(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -18,6 +19,7 @@ import Arkham.Types.EffectMetadata
 import Arkham.Types.EnemyId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -43,12 +45,11 @@ instance ActionRunner env => HasActions env AlchemicalConcoction where
       ]
   getActions _ _ _ = pure []
 
-instance (HasId CardCode env EnemyId, HasTarget ForSkillTest env) => HasModifiersFor env AlchemicalConcoction where
+instance (HasId CardCode env EnemyId, HasSkillTest env) => HasModifiersFor env AlchemicalConcoction where
   getModifiersFor (SkillTestSource _ _ source _ (Just Action.Fight)) _ (AlchemicalConcoction a)
     | isSource a source
     = do
-      skillTestTarget <-
-        asks $ fromJustNote "not a skilltest" . getTarget ForSkillTest
+      skillTestTarget <- fromJustNote "not a skilltest" <$> getSkillTestTarget
       case skillTestTarget of
         EnemyTarget eid -> do
           cardCode <- getId eid

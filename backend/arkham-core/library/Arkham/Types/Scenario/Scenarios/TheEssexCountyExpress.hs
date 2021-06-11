@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Scenarios.TheEssexCountyExpress
   ( TheEssexCountyExpress(..)
   , theEssexCountyExpress
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -32,7 +33,9 @@ import Arkham.Types.Token
 import qualified Arkham.Types.Trait as Trait
 
 newtype TheEssexCountyExpress = TheEssexCountyExpress ScenarioAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
+  deriving stock Generic
+  deriving anyclass HasRecord
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 theEssexCountyExpress :: Difficulty -> TheEssexCountyExpress
 theEssexCountyExpress difficulty = TheEssexCountyExpress $ base
@@ -87,12 +90,12 @@ theEssexCountyExpressIntro = FlavorText
 
 instance
   ( HasTokenValue env InvestigatorId
-  , HasStep AgendaStep env
+  , HasStep env AgendaStep
   )
   => HasTokenValue env TheEssexCountyExpress where
   getTokenValue (TheEssexCountyExpress attrs) iid = \case
     Skull -> do
-      step <- unAgendaStep . getStep <$> ask
+      step <- unAgendaStep <$> getStep
       pure $ toTokenValue attrs Skull step (step + 1)
     Cultist -> pure $ toTokenValue attrs Cultist 1 0
     Tablet -> pure $ toTokenValue attrs Tablet 2 4

@@ -3,7 +3,7 @@ module Arkham.Types.Event.Cards.CrypticResearch4Spec
   )
 where
 
-import TestImport
+import TestImport.Lifted
 
 spec :: Spec
 spec = do
@@ -13,19 +13,21 @@ spec = do
       cards <- testPlayerCards 3
       location <- testLocation "00000" id
       crypticResearch4 <- buildEvent "01043" investigator
-      game <-
-        runGameTest
-            investigator
-            [ loadDeck investigator cards
-            , moveTo investigator location
-            , playEvent investigator crypticResearch4
-            ]
-            ((eventsL %~ insertEntity crypticResearch4)
-            . (locationsL %~ insertEntity location)
-            )
-          >>= runGameTestOnlyOption "choose self"
-      crypticResearch4 `shouldSatisfy` isInDiscardOf game investigator
-      updated game investigator `shouldSatisfy` handIs (map PlayerCard cards)
+      runGameTest
+          investigator
+          [ loadDeck investigator cards
+          , moveTo investigator location
+          , playEvent investigator crypticResearch4
+          ]
+          ((eventsL %~ insertEntity crypticResearch4)
+          . (locationsL %~ insertEntity location)
+          )
+        $ do
+            runMessagesNoLogging
+            runGameTestOnlyOption "choose self"
+
+            isInDiscardOf investigator crypticResearch4 `shouldReturn` True
+            updated investigator `shouldSatisfyM` handIs (map PlayerCard cards)
 
     it "can select any investigator at the same location" $ do
       investigator <- testInvestigator "00000" id
@@ -33,22 +35,23 @@ spec = do
       cards <- testPlayerCards 3
       location <- testLocation "00000" id
       crypticResearch4 <- buildEvent "01043" investigator
-      game <-
-        runGameTest
-            investigator
-            [ loadDeck investigator2 cards
-            , moveAllTo location
-            , playEvent investigator crypticResearch4
-            ]
-            ((eventsL %~ insertEntity crypticResearch4)
-            . (locationsL %~ insertEntity location)
-            . (investigatorsL %~ insertEntity investigator2)
-            )
-          >>= runGameTestOptionMatching
-                "choose other investigator"
-                (\case
-                  TargetLabel (InvestigatorTarget "00001") _ -> True
-                  _ -> False
-                )
-      crypticResearch4 `shouldSatisfy` isInDiscardOf game investigator
-      updated game investigator2 `shouldSatisfy` handIs (map PlayerCard cards)
+      runGameTest
+          investigator
+          [ loadDeck investigator2 cards
+          , moveAllTo location
+          , playEvent investigator crypticResearch4
+          ]
+          ((eventsL %~ insertEntity crypticResearch4)
+          . (locationsL %~ insertEntity location)
+          . (investigatorsL %~ insertEntity investigator2)
+          )
+        $ do
+            runMessagesNoLogging
+            runGameTestOptionMatching
+              "choose other investigator"
+              (\case
+                TargetLabel (InvestigatorTarget "00001") _ -> True
+                _ -> False
+              )
+            isInDiscardOf investigator crypticResearch4 `shouldReturn` True
+            updated investigator2 `shouldSatisfyM` handIs (map PlayerCard cards)

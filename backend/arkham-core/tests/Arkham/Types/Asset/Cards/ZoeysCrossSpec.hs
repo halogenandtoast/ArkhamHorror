@@ -17,21 +17,22 @@ spec = do
         enemy <- testEnemy (Enemy.healthL .~ Static 2)
         location <- testLocation "00000" id
         zoeysCross <- buildAsset "02006"
-        game <-
-          runGameTest
-              investigator
-              [ playAsset investigator zoeysCross
-              , enemySpawn location enemy
-              , moveTo investigator location
-              ]
-              ((assetsL %~ insertEntity zoeysCross)
-              . (enemiesL %~ insertEntity enemy)
-              . (locationsL %~ insertEntity location)
-              )
-            >>= runGameTestOptionMatching
-                  "use ability"
-                  (\case
-                    Run{} -> True
-                    _ -> False
-                  )
-        updated game enemy `shouldSatisfy` hasDamage (1, 0)
+        runGameTest
+            investigator
+            [ playAsset investigator zoeysCross
+            , enemySpawn location enemy
+            , moveTo investigator location
+            ]
+            ((assetsL %~ insertEntity zoeysCross)
+            . (enemiesL %~ insertEntity enemy)
+            . (locationsL %~ insertEntity location)
+            )
+          $ do
+              runMessagesNoLogging
+              runGameTestOptionMatching
+                "use ability"
+                (\case
+                  Run{} -> True
+                  _ -> False
+                )
+              updated enemy `shouldSatisfyM` hasDamage (1, 0)

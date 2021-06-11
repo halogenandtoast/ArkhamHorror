@@ -3,7 +3,7 @@ module Arkham.Types.Event.Cards.CunningDistractionSpec
   )
 where
 
-import TestImport
+import TestImport.Lifted
 
 import qualified Arkham.Types.Enemy.Attrs as EnemyAttrs
 import Arkham.Types.Keyword
@@ -16,18 +16,20 @@ spec = do
       location <- testLocation "00000" id
       enemy <- testEnemy id
       cunningDistraction <- buildEvent "01078" investigator
-      game <- runGameTest
-        investigator
-        [ enemySpawn location enemy
-        , moveTo investigator location
-        , playEvent investigator cunningDistraction
-        ]
-        ((eventsL %~ insertEntity cunningDistraction)
-        . (locationsL %~ insertEntity location)
-        . (enemiesL %~ insertEntity enemy)
-        )
-      cunningDistraction `shouldSatisfy` isInDiscardOf game investigator
-      enemy `shouldSatisfy` evadedBy game investigator
+      runGameTest
+          investigator
+          [ enemySpawn location enemy
+          , moveTo investigator location
+          , playEvent investigator cunningDistraction
+          ]
+          ((eventsL %~ insertEntity cunningDistraction)
+          . (locationsL %~ insertEntity location)
+          . (enemiesL %~ insertEntity enemy)
+          )
+        $ do
+            runMessagesNoLogging
+            isInDiscardOf investigator cunningDistraction `shouldReturn` True
+            evadedBy investigator enemy `shouldReturn` True
 
     it "Evades enemies engaged with other investigators at your location" $ do
       investigator <- testInvestigator "00000" id
@@ -35,34 +37,38 @@ spec = do
       location <- testLocation "00000" id
       enemy <- testEnemy id
       cunningDistraction <- buildEvent "01078" investigator
-      game <- runGameTest
-        investigator
-        [ enemySpawn location enemy
-        , moveTo investigator2 location -- move investigator 2 first to engage
-        , moveTo investigator location
-        , playEvent investigator cunningDistraction
-        ]
-        ((eventsL %~ insertEntity cunningDistraction)
-        . (locationsL %~ insertEntity location)
-        . (enemiesL %~ insertEntity enemy)
-        )
-      cunningDistraction `shouldSatisfy` isInDiscardOf game investigator
-      enemy `shouldSatisfy` evadedBy game investigator2
+      runGameTest
+          investigator
+          [ enemySpawn location enemy
+          , moveTo investigator2 location -- move investigator 2 first to engage
+          , moveTo investigator location
+          , playEvent investigator cunningDistraction
+          ]
+          ((eventsL %~ insertEntity cunningDistraction)
+          . (locationsL %~ insertEntity location)
+          . (enemiesL %~ insertEntity enemy)
+          )
+        $ do
+            runMessagesNoLogging
+            isInDiscardOf investigator cunningDistraction `shouldReturn` True
+            evadedBy investigator2 enemy `shouldReturn` True
 
     it "Evades aloof enemies at your location" $ do
       investigator <- testInvestigator "00000" id
       location <- testLocation "00000" id
       enemy <- testEnemy (EnemyAttrs.keywordsL .~ setFromList [Aloof])
       cunningDistraction <- buildEvent "01078" investigator
-      game <- runGameTest
-        investigator
-        [ enemySpawn location enemy
-        , moveTo investigator location
-        , playEvent investigator cunningDistraction
-        ]
-        ((eventsL %~ insertEntity cunningDistraction)
-        . (locationsL %~ insertEntity location)
-        . (enemiesL %~ insertEntity enemy)
-        )
-      cunningDistraction `shouldSatisfy` isInDiscardOf game investigator
-      enemy `shouldSatisfy` evadedBy game investigator
+      runGameTest
+          investigator
+          [ enemySpawn location enemy
+          , moveTo investigator location
+          , playEvent investigator cunningDistraction
+          ]
+          ((eventsL %~ insertEntity cunningDistraction)
+          . (locationsL %~ insertEntity location)
+          . (enemiesL %~ insertEntity enemy)
+          )
+        $ do
+            runMessagesNoLogging
+            isInDiscardOf investigator cunningDistraction `shouldReturn` True
+            evadedBy investigator enemy `shouldReturn` True

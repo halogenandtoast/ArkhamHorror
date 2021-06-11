@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.TheEdgeOfTheUniverse
   ( theEdgeOfTheUniverse
   , TheEdgeOfTheUniverse(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -39,7 +40,7 @@ theEdgeOfTheUniverse lid = TheEdgeOfTheUniverse $ baseAttrs
 instance HasPhase env => HasModifiersFor env TheEdgeOfTheUniverse where
   getModifiersFor _ (InvestigatorTarget iid) (TheEdgeOfTheUniverse attrs)
     | iid `on` attrs = do
-      phase <- asks getPhase
+      phase <- getPhase
       pure $ toModifiers attrs [ CannotDrawCards | phase == UpkeepPhase ]
   getModifiersFor _ _ _ = pure []
 

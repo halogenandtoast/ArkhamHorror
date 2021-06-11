@@ -4,15 +4,15 @@ import Arkham.Prelude
 
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.Source
-import Arkham.Types.Target
-import Arkham.Types.Token
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Source
 import Arkham.Types.Stats
+import Arkham.Types.Target
+import Arkham.Types.Token
 import Arkham.Types.Trait
 
 newtype JimCulver = JimCulver InvestigatorAttrs
@@ -40,7 +40,7 @@ jimCulver = JimCulver $ baseAttrs
     }
   [Performer]
 
-instance ActionRunner env => HasActions env JimCulver where
+instance InvestigatorRunner env => HasActions env JimCulver where
   getActions i window (JimCulver attrs) = getActions i window attrs
 
 instance HasTokenValue env JimCulver where
@@ -51,12 +51,14 @@ instance HasTokenValue env JimCulver where
 instance InvestigatorRunner env => RunMessage env JimCulver where
   runMessage msg i@(JimCulver attrs@InvestigatorAttrs {..}) = case msg of
     When (RevealToken source iid ElderSign) | iid == investigatorId -> do
-      Just RevealToken{} <- popMessage
-      i <$ unshiftMessage
-        (chooseOne
-          iid
-          [ Label "Resolve as Elder Sign" [RevealToken source iid ElderSign]
-          , Label "Resolve as Skull" [RevealToken source iid Skull]
-          ]
-        )
+      mmsg <- popMessage
+      case mmsg of
+        Just RevealToken{} -> i <$ unshiftMessage
+          (chooseOne
+            iid
+            [ Label "Resolve as Elder Sign" [RevealToken source iid ElderSign]
+            , Label "Resolve as Skull" [RevealToken source iid Skull]
+            ]
+          )
+        _ -> error "wrong message type"
     _ -> JimCulver <$> runMessage msg attrs

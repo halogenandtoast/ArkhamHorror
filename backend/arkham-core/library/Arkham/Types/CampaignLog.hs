@@ -33,9 +33,9 @@ instance FromJSON CampaignLog where
   parseJSON = genericParseJSON $ aesonOptions $ Just "campaignLog"
 
 instance HasRecord CampaignLog where
-  hasRecord key = member key . campaignLogRecorded
-  hasRecordSet key = findWithDefault [] key . campaignLogRecordedSets
-  hasRecordCount key = findWithDefault 0 key . campaignLogRecordedCounts
+  hasRecord key = asks $ member key . campaignLogRecorded
+  hasRecordSet key = asks $ findWithDefault [] key . campaignLogRecordedSets
+  hasRecordCount key = asks $ findWithDefault 0 key . campaignLogRecordedCounts
 
 mkCampaignLog :: CampaignLog
 mkCampaignLog = CampaignLog

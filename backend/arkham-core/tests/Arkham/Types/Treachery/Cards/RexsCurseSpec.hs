@@ -1,29 +1,30 @@
 module Arkham.Types.Treachery.Cards.RexsCurseSpec
   ( spec
-  ) where
+  )
+where
 
-import TestImport
+import TestImport.Lifted
 
 spec :: Spec
 spec = describe "Rex's Curse" $ do
   it "is put into play into your threat area" $ do
     investigator <- testInvestigator "00000" id
     rexsCurse <- buildPlayerCard "02009"
-    game <- runGameTest
-      investigator
-      [loadDeck investigator [rexsCurse], drawCards investigator 1]
-      id
-    updated game investigator
-      `shouldSatisfy` hasTreacheryWithMatchingCardCode
-                        game
-                        (PlayerCard rexsCurse)
+    runGameTest
+        investigator
+        [loadDeck investigator [rexsCurse], drawCards investigator 1]
+        id
+      $ do
+          runMessagesNoLogging
+          investigator' <- updated investigator
+          hasTreacheryWithMatchingCardCode (PlayerCard rexsCurse) investigator'
+            `shouldReturn` True
+
   it "causes you to reveal another token" $ do
     investigator <- testInvestigator "00000" id
     rexsCurse <- buildPlayerCard "02009"
 
-    (didRunMessage, logger) <- didPassSkillTestBy investigator SkillIntellect 2
-    game <-
-      runGameTest
+    runGameTest
         investigator
         [ SetTokens [PlusOne]
         , loadDeck investigator [rexsCurse]
@@ -37,18 +38,23 @@ spec = describe "Rex's Curse" $ do
           5
         ]
         id
-      >>= runGameTestOnlyOption "start skill test"
-      >>= runGameTestOnlyOptionWithLogger "apply results" logger
-    updated game investigator
-      `shouldSatisfy` hasTreacheryWithMatchingCardCode
-                        game
-                        (PlayerCard rexsCurse)
-    readIORef didRunMessage `shouldReturn` True
+      $ do
+          (didRunMessage, logger) <- didPassSkillTestBy
+            investigator
+            SkillIntellect
+            2
+          runMessagesNoLogging
+          runGameTestOnlyOption "start skill test"
+          runGameTestOnlyOptionWithLogger "apply results" logger
+          investigator' <- updated investigator
+          hasTreacheryWithMatchingCardCode (PlayerCard rexsCurse) investigator'
+            `shouldReturn` True
+          didRunMessage `refShouldBe` True
+
   it "is shuffled back into your deck if you fail the test" $ do
     investigator <- testInvestigator "00000" id
     rexsCurse <- buildPlayerCard "02009"
-    game <-
-      runGameTest
+    runGameTest
         investigator
         [ SetTokens [MinusOne]
         , loadDeck investigator [rexsCurse]
@@ -56,9 +62,11 @@ spec = describe "Rex's Curse" $ do
         , beginSkillTest investigator SkillIntellect 4
         ]
         id
-      >>= runGameTestOnlyOption "start skill test"
-      >>= runGameTestOnlyOption "apply results"
-    updated game investigator
-      `shouldSatisfy` not
-      . hasTreacheryWithMatchingCardCode game (PlayerCard rexsCurse)
-    updated game investigator `shouldSatisfy` deckMatches ((== 1) . length)
+      $ do
+          runMessagesNoLogging
+          runGameTestOnlyOption "start skill test"
+          runGameTestOnlyOption "apply results"
+          investigator' <- updated investigator
+          hasTreacheryWithMatchingCardCode (PlayerCard rexsCurse) investigator'
+            `shouldReturn` True
+          updated investigator `shouldSatisfyM` deckMatches ((== 1) . length)

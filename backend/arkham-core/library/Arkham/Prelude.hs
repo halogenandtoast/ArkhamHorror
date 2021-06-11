@@ -1,7 +1,8 @@
 module Arkham.Prelude
   ( module X
   , module Arkham.Prelude
-  ) where
+  )
+where
 
 import ClassyPrelude as X hiding (on, (\\))
 
@@ -45,8 +46,8 @@ import System.Random.Shuffle as X
 import Data.Aeson.Text
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
-import qualified Data.List.NonEmpty as NE
 import qualified Data.List as L
+import qualified Data.List.NonEmpty as NE
 import qualified Data.Text.Lazy as TL
 import Data.Text.Lazy.Builder
 
@@ -165,3 +166,6 @@ instance (Show a, Show b) => Show (a `With` b) where
 
 with :: a -> b -> a `With`  b
 with a b = With a b
+
+withBase :: a `With` b -> a
+withBase (a `With` _) = a

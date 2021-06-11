@@ -3,7 +3,7 @@ module Arkham.Types.Treachery.Cards.WrackedByNightmaresSpec
   )
 where
 
-import TestImport
+import TestImport.Lifted
 
 import qualified Arkham.Types.Asset.Attrs as Asset
 
@@ -14,39 +14,47 @@ spec = describe "Wracked by Nightmares" $ do
     wrackedByNightmares <- buildPlayerCard "02015"
     asset <- testAsset
       ((Asset.exhaustedL .~ True) . (Asset.investigatorL ?~ toId investigator))
-    game <- runGameTest
-      investigator
-      [ loadDeck investigator [wrackedByNightmares]
-      , drawCards investigator 1
-      , ReadyExhausted
-      ]
-      (assetsL %~ insertEntity asset)
-    updated game investigator `shouldSatisfy` hasTreacheryWithMatchingCardCode
-      game
-      (PlayerCard wrackedByNightmares)
-    updated game asset `shouldSatisfy` isExhausted
+    runGameTest
+        investigator
+        [ loadDeck investigator [wrackedByNightmares]
+        , drawCards investigator 1
+        , ReadyExhausted
+        ]
+        (assetsL %~ insertEntity asset)
+      $ do
+          runMessagesNoLogging
+          investigator' <- updated investigator
+          hasTreacheryWithMatchingCardCode
+              (PlayerCard wrackedByNightmares)
+              investigator'
+            `shouldReturn` True
+          updated asset `shouldSatisfyM` isExhausted
 
   it "trigger actions removes restriction and takes two actions" $ do
     investigator <- testInvestigator "00000" id
     wrackedByNightmares <- buildPlayerCard "02015"
     asset <- testAsset
       ((Asset.exhaustedL .~ True) . (Asset.investigatorL ?~ toId investigator))
-    game <- runGameTest
-      investigator
-      [loadDeck investigator [wrackedByNightmares], drawCards investigator 1]
-      (assetsL %~ insertEntity asset)
-    let wrackedByNightmaresTreachery = game ^?! treacheriesL . to toList . ix 0
-    [discardWrackedByNightmares] <- getActionsOf
-      game
-      investigator
-      NonFast
-      wrackedByNightmaresTreachery
-    game' <- runGameTestMessages
-      game
-      [discardWrackedByNightmares, ReadyExhausted]
-    updated game' investigator
-      `shouldSatisfy` not
-      . hasTreacheryWithMatchingCardCode game (PlayerCard wrackedByNightmares)
-    updated game' asset `shouldSatisfy` isReady
-    wrackedByNightmares `shouldSatisfy` isInDiscardOf game' investigator
-    investigator `shouldSatisfy` hasRemainingActions game' 1
+    runGameTest
+        investigator
+        [loadDeck investigator [wrackedByNightmares], drawCards investigator 1]
+        (assetsL %~ insertEntity asset)
+      $ do
+          runMessagesNoLogging
+          game <- getTestGame
+          let
+            wrackedByNightmaresTreachery =
+              game ^?! treacheriesL . to toList . ix 0
+          [discardWrackedByNightmares] <- getActionsOf
+            investigator
+            NonFast
+            wrackedByNightmaresTreachery
+          runGameTestMessages [discardWrackedByNightmares, ReadyExhausted]
+          investigator' <- updated investigator
+          hasTreacheryWithMatchingCardCode
+              (PlayerCard wrackedByNightmares)
+              investigator'
+            `shouldReturn` False
+          updated asset `shouldSatisfyM` isReady
+          isInDiscardOf investigator wrackedByNightmares `shouldReturn` True
+          getRemainingActions investigator `shouldReturn` 1

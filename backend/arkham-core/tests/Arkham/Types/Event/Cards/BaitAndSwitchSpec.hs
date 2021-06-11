@@ -3,7 +3,7 @@ module Arkham.Types.Event.Cards.BaitAndSwitchSpec
   )
 where
 
-import TestImport
+import TestImport.Lifted
 
 import qualified Arkham.Types.Enemy.Attrs as EnemyAttrs
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
@@ -16,8 +16,7 @@ spec = describe "Bait and Switch" $ do
     enemy <- testEnemy (EnemyAttrs.evadeL .~ 3)
     baitAndSwitch <- buildEvent "02034" investigator
     (location1, location2) <- testConnectedLocations id id
-    game <-
-      runGameTest
+    runGameTest
         investigator
         [ placedLocation location1
         , placedLocation location2
@@ -31,11 +30,14 @@ spec = describe "Bait and Switch" $ do
         . (locationsL %~ insertEntity location1)
         . (locationsL %~ insertEntity location2)
         )
-      >>= runGameTestOnlyOption "Evade enemy"
-      >>= runGameTestOnlyOption "Run skill check"
-      >>= runGameTestOnlyOption "Apply results"
-      >>= runGameTestOnlyOption "Move enemy"
-    baitAndSwitch `shouldSatisfy` isInDiscardOf game investigator
-    enemy `shouldSatisfy` evadedBy game investigator
-    enemyLocation <- withGame game (getId @LocationId (toId enemy))
-    enemyLocation `shouldBe` toId location2
+      $ do
+          runMessagesNoLogging
+          runGameTestOnlyOption "Evade enemy"
+          runGameTestOnlyOption "Run skill check"
+          runGameTestOnlyOption "Apply results"
+          runGameTestOnlyOption "Move enemy"
+
+          isInDiscardOf investigator baitAndSwitch `shouldReturn` True
+          evadedBy investigator enemy `shouldReturn` True
+          enemyLocation <- getId @LocationId (toId enemy)
+          enemyLocation `shouldBe` toId location2

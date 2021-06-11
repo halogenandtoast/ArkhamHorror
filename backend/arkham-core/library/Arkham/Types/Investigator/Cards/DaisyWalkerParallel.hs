@@ -66,7 +66,7 @@ instance HasTokenValue env DaisyWalkerParallel where
   getTokenValue (DaisyWalkerParallel attrs) iid token =
     getTokenValue attrs iid token
 
-instance ActionRunner env => HasActions env DaisyWalkerParallel where
+instance InvestigatorRunner env => HasActions env DaisyWalkerParallel where
   getActions iid FastPlayerWindow (DaisyWalkerParallel attrs)
     | iid == investigatorId attrs = withBaseActions iid FastPlayerWindow attrs
     $ do

@@ -22,9 +22,11 @@ data Campaign
 deriving anyclass instance CampaignRunner env => RunMessage env Campaign
 
 instance HasRecord Campaign where
-  hasRecord key = hasRecord key . campaignLog . toAttrs
-  hasRecordSet key = hasRecordSet key . campaignLog . toAttrs
-  hasRecordCount key = hasRecordCount key . campaignLog . toAttrs
+  hasRecord key = ask >>= runReaderT (hasRecord key) . campaignLog . toAttrs
+  hasRecordSet key =
+    ask >>= runReaderT (hasRecordSet key) . campaignLog . toAttrs
+  hasRecordCount key =
+    ask >>= runReaderT (hasRecordCount key) . campaignLog . toAttrs
 
 instance HasSet CompletedScenarioId env Campaign where
   getSet = getSet . toAttrs

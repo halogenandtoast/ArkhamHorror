@@ -22,7 +22,9 @@ import Arkham.Types.Token
 import Arkham.Types.Trait hiding (Cultist)
 
 newtype ReturnToTheDevourerBelow = ReturnToTheDevourerBelow TheDevourerBelow
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
+  deriving stock Generic
+  deriving anyclass HasRecord
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 returnToTheDevourerBelow :: Difficulty -> ReturnToTheDevourerBelow
 returnToTheDevourerBelow difficulty =

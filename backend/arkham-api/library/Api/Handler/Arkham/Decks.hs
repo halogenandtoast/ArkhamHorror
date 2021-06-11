@@ -3,7 +3,8 @@ module Api.Handler.Arkham.Decks
   , postApiV1ArkhamDecksR
   , deleteApiV1ArkhamDeckR
   , putApiV1ArkhamGameDecksR
-  ) where
+  )
+where
 
 import Import hiding (delete, on, (==.))
 
@@ -69,13 +70,16 @@ putApiV1ArkhamGameDecksR gameId = do
           cards <- liftIO $ loadDecklistCards decklist
           pure $ UpgradeDeck investigatorId cards
 
-  ge <- liftIO $ runMessages noLogger =<< toInternalGame
-    (arkhamGameCurrentData { gameMessages = msg : gameMessages })
+  gameRef <- newIORef arkhamGameCurrentData
+  queueRef <- newIORef (msg : arkhamGameQueue)
+  runGameApp (GameApp gameRef queueRef) $ runMessages (pure . const ())
+  ge <- readIORef gameRef
+  updatedQueue <- readIORef queueRef
   writeChannel <- getChannel gameId
   liftIO $ atomically $ writeTChan
     writeChannel
-    (encode (Entity gameId (ArkhamGame arkhamGameName ge)))
-  void $ runDB (replace gameId (ArkhamGame arkhamGameName ge))
+    (encode (Entity gameId (ArkhamGame arkhamGameName ge updatedQueue)))
+  void $ runDB (replace gameId (ArkhamGame arkhamGameName ge updatedQueue))
 
 fromPostData
   :: (MonadIO m) => UserId -> CreateDeckPost -> m (Either String ArkhamDeck)

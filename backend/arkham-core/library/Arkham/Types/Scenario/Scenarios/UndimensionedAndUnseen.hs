@@ -1,30 +1,32 @@
 module Arkham.Types.Scenario.Scenarios.UndimensionedAndUnseen
   ( UndimensionedAndUnseen(..)
   , undimensionedAndUnseen
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
-import Arkham.Types.Resolution
 import Arkham.EncounterCard
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Query
+import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
-import Arkham.Types.Token
+import Arkham.Types.SkillTest
 import Arkham.Types.Source
 import Arkham.Types.Target
+import Arkham.Types.Token
 import Arkham.Types.Trait hiding (Cultist)
 
 newtype UndimensionedAndUnseen = UndimensionedAndUnseen ScenarioAttrs
@@ -134,10 +136,10 @@ standaloneTokens =
   ]
 
 instance HasRecord UndimensionedAndUnseen where
-  hasRecord _ _ = False
-  hasRecordSet SacrificedToYogSothoth _ = ["02040"]
-  hasRecordSet _ _ = []
-  hasRecordCount _ _ = 0
+  hasRecord _ = pure False
+  hasRecordSet SacrificedToYogSothoth = pure ["02040"]
+  hasRecordSet _ = pure []
+  hasRecordCount _ = pure 0
 
 instance
   ( HasSet StoryEnemyId env CardCode
@@ -156,7 +158,7 @@ instance
 instance
   ( HasId CardCode env EnemyId
   , HasId (Maybe LocationId) env LocationMatcher
-  , HasSource ForSkillTest env
+  , HasSkillTest env
   , HasCount XPCount env ()
   , HasSet InvestigatorId env ()
   , HasSet StoryEnemyId env CardCode
@@ -214,7 +216,7 @@ instance
 
       sacrificedToYogSothoth <- if standalone
         then pure 3
-        else length <$> asks (hasRecordSet SacrificedToYogSothoth)
+        else length <$> hasRecordSet SacrificedToYogSothoth
 
       investigatorsWithPowderOfIbnGhazi <- catMaybes <$> for
         investigatorIds
@@ -311,7 +313,7 @@ instance
         (DrawnTokenTarget drawnToken)
       )
     ResolveToken _ ElderThing iid -> do
-      msource <- asks $ getSource ForSkillTest
+      msource <- getSkillTestSource
       case msource of
         Just (SkillTestSource _ _ _ (EnemyTarget eid) (Just action)) -> do
           enemyCardCode <- getId @CardCode eid

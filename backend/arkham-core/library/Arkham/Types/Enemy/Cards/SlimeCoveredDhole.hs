@@ -7,15 +7,15 @@ where
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Prey
-import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Helpers
-import Arkham.Types.Enemy.Runner
 import Arkham.Types.Trait
 
 newtype SlimeCoveredDhole = SlimeCoveredDhole EnemyAttrs

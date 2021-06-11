@@ -29,7 +29,7 @@ newCampaign
   -> Int
   -> HashMap Int (Investigator, [PlayerCard])
   -> Difficulty
-  -> m Game
+  -> m (IORef [Message], Game)
 newCampaign = newGame . Right
 
 newScenario
@@ -38,7 +38,7 @@ newScenario
   -> Int
   -> HashMap Int (Investigator, [PlayerCard])
   -> Difficulty
-  -> m Game
+  -> m (IORef [Message], Game)
 newScenario = newGame . Left
 
 newGame
@@ -47,57 +47,60 @@ newGame
   -> Int
   -> HashMap Int (Investigator, [PlayerCard])
   -> Difficulty
-  -> m Game
+  -> m (IORef [Message], Game)
 newGame scenarioOrCampaignId playerCount investigatorsList difficulty = do
   hash' <- getRandom
   mseed <- liftIO $ fmap readMaybe <$> lookupEnv "SEED"
   seed <- maybe getRandom (pure . fromJustNote "invalid seed") mseed
   liftIO $ setStdGen (mkStdGen seed)
-  -- ref <-
-  --   newIORef
-  --   $ map (uncurry (InitDeck . toId)) (toList investigatorsList)
-  --   <> [StartCampaign]
+  ref <-
+    newIORef
+    $ map (uncurry (InitDeck . toId)) (toList investigatorsList)
+    <> [StartCampaign]
 
-  pure $ Game
-    { gameRoundMessageHistory = []
-    , gamePhaseMessageHistory = []
-    , gameSeed = seed
-    , gameMode = mode
-    , gamePlayerCount = playerCount
-    , gameLocations = mempty
-    , gameEnemies = mempty
-    , gameEnemiesInVoid = mempty
-    , gameAssets = mempty
-    , gameInvestigators = investigatorsMap
-    , gamePlayers = playersMap
-    , gameActiveInvestigatorId = initialInvestigatorId
-    , gameLeadInvestigatorId = initialInvestigatorId
-    , gamePhase = CampaignPhase
-    , gameEncounterDeck = mempty
-    , gameDiscard = mempty
-    , gameSkillTest = Nothing
-    , gameAgendas = mempty
-    , gameTreacheries = mempty
-    , gameEvents = mempty
-    , gameEffects = mempty
-    , gameSkills = mempty
-    , gameActs = mempty
-    , gameChaosBag = emptyChaosBag
-    , gameGameState = if length investigatorsMap /= playerCount
-      then IsPending
-      else IsActive
-    , gameUsedAbilities = mempty
-    , gameResignedCardCodes = mempty
-    , gameFocusedCards = mempty
-    , gameFocusedTargets = mempty
-    , gameFocusedTokens = mempty
-    , gameActiveCard = Nothing
-    , gamePlayerOrder = toList playersMap
-    , gamePlayerTurnOrder = toList playersMap
-    , gameVictoryDisplay = mempty
-    , gameQuestion = mempty
-    , gameHash = hash'
-    }
+  pure
+    ( ref
+    , Game
+      { gameRoundMessageHistory = []
+      , gamePhaseMessageHistory = []
+      , gameSeed = seed
+      , gameMode = mode
+      , gamePlayerCount = playerCount
+      , gameLocations = mempty
+      , gameEnemies = mempty
+      , gameEnemiesInVoid = mempty
+      , gameAssets = mempty
+      , gameInvestigators = investigatorsMap
+      , gamePlayers = playersMap
+      , gameActiveInvestigatorId = initialInvestigatorId
+      , gameLeadInvestigatorId = initialInvestigatorId
+      , gamePhase = CampaignPhase
+      , gameEncounterDeck = mempty
+      , gameDiscard = mempty
+      , gameSkillTest = Nothing
+      , gameAgendas = mempty
+      , gameTreacheries = mempty
+      , gameEvents = mempty
+      , gameEffects = mempty
+      , gameSkills = mempty
+      , gameActs = mempty
+      , gameChaosBag = emptyChaosBag
+      , gameGameState = if length investigatorsMap /= playerCount
+        then IsPending
+        else IsActive
+      , gameUsedAbilities = mempty
+      , gameResignedCardCodes = mempty
+      , gameFocusedCards = mempty
+      , gameFocusedTargets = mempty
+      , gameFocusedTokens = mempty
+      , gameActiveCard = Nothing
+      , gamePlayerOrder = toList playersMap
+      , gamePlayerTurnOrder = toList playersMap
+      , gameVictoryDisplay = mempty
+      , gameQuestion = mempty
+      , gameHash = hash'
+      }
+    )
  where
   initialInvestigatorId = headNote "No investigators" $ keys investigatorsMap
   playersMap = map (toId . fst) investigatorsList

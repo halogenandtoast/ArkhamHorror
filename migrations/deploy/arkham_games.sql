@@ -8,6 +8,7 @@ CREATE TABLE arkham_games (
   id uuid DEFAULT uuid_generate_v4(),
   name text NOT NULL,
   current_data jsonb NOT NULL,
+  queue jsonb NOT NULL,
   PRIMARY KEY (id)
 );
 

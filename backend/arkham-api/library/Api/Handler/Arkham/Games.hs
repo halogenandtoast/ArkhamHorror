@@ -107,9 +107,9 @@ postApiV1ArkhamGamesR = do
       HashMap.singleton hashKey (lookupInvestigator iid, decklist)
   case campaignId of
     Just cid -> do
-      game <- liftIO $ newCampaign cid playerCount investigators difficulty
+      (queueRef, game) <- liftIO
+        $ newCampaign cid playerCount investigators difficulty
       gameRef <- newIORef game
-      queueRef <- newIORef []
       runGameApp (GameApp gameRef queueRef) $ do
         runMessages (pure . const ())
       ge <- readIORef gameRef
@@ -121,9 +121,9 @@ postApiV1ArkhamGamesR = do
       pure $ Entity key (ArkhamGame campaignName ge updatedQueue)
     Nothing -> case scenarioId of
       Just sid -> do
-        game <- liftIO $ newScenario sid playerCount investigators difficulty
+        (queueRef, game) <- liftIO
+          $ newScenario sid playerCount investigators difficulty
         gameRef <- newIORef game
-        queueRef <- newIORef []
         runGameApp (GameApp gameRef queueRef) $ do
           runMessages (pure . const ())
         ge <- readIORef gameRef

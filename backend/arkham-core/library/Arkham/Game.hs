@@ -15,7 +15,6 @@ import Arkham.Types.Message
 import Arkham.Types.Phase
 import Arkham.Types.Scenario
 import Arkham.Types.ScenarioId
-import Control.Monad
 import Data.Align
 import Data.UUID.V4
 import Safe (headNote)
@@ -30,7 +29,7 @@ newCampaign
   -> Int
   -> HashMap Int (Investigator, [PlayerCard])
   -> Difficulty
-  -> m GameInternal
+  -> m Game
 newCampaign = newGame . Right
 
 newScenario
@@ -39,7 +38,7 @@ newScenario
   -> Int
   -> HashMap Int (Investigator, [PlayerCard])
   -> Difficulty
-  -> m GameInternal
+  -> m Game
 newScenario = newGame . Left
 
 newGame
@@ -48,23 +47,20 @@ newGame
   -> Int
   -> HashMap Int (Investigator, [PlayerCard])
   -> Difficulty
-  -> m GameInternal
+  -> m Game
 newGame scenarioOrCampaignId playerCount investigatorsList difficulty = do
   hash' <- getRandom
   mseed <- liftIO $ fmap readMaybe <$> lookupEnv "SEED"
   seed <- maybe getRandom (pure . fromJustNote "invalid seed") mseed
   liftIO $ setStdGen (mkStdGen seed)
-  ref <-
-    newIORef
-    $ map (uncurry (InitDeck . toId)) (toList investigatorsList)
-    <> [StartCampaign]
+  -- ref <-
+  --   newIORef
+  --   $ map (uncurry (InitDeck . toId)) (toList investigatorsList)
+  --   <> [StartCampaign]
 
-  roundHistory <- newIORef []
-  phaseHistory <- newIORef []
   pure $ Game
-    { gameMessages = ref
-    , gameRoundMessageHistory = roundHistory
-    , gamePhaseMessageHistory = phaseHistory
+    { gameRoundMessageHistory = []
+    , gamePhaseMessageHistory = []
     , gameSeed = seed
     , gameMode = mode
     , gamePlayerCount = playerCount
@@ -118,20 +114,20 @@ newGame scenarioOrCampaignId playerCount investigatorsList difficulty = do
   mode = fromJustNote "Need campaign or scenario" $ align campaign scenario
 
 addInvestigator
-  :: (MonadIO m, MonadFail m, MonadRandom m)
+  :: (MonadIO m, MonadRandom m, MonadReader env m, HasQueue env, HasGameRef env)
   => Int
   -> Investigator
   -> [PlayerCard]
-  -> GameInternal
-  -> m GameExternal
-addInvestigator uid i d g = do
-  atomicModifyIORef'
-    (g ^. messageQueue)
-    (\queue -> (InitDeck (toId i) d : queue, ()))
+  -> m ()
+addInvestigator uid i d = do
+  gameRef <- view gameRefL
+  game <- liftIO $ readIORef gameRef
+  queueRef <- view messageQueue
+  atomicModifyIORef' queueRef (\queue -> (InitDeck (toId i) d : queue, ()))
   let
     iid = toId i
     g' =
-      g
+      game
         & (investigatorsL %~ insertMap iid i)
         & (playersL %~ insertMap uid iid)
         & (playerOrderL %~ (<> [iid]))
@@ -139,90 +135,80 @@ addInvestigator uid i d g = do
     gameState = if length (g' ^. playersL) < g' ^. playerCountL
       then IsPending
       else IsActive
-  runMessages (const $ pure ()) $ g' & gameStateL .~ gameState
+  atomicWriteIORef gameRef (g' & gameStateL .~ gameState)
+  void $ runMessages (const $ pure ())
 
-startGame :: MonadIO m => Game queue -> m (Game queue)
+startGame :: MonadIO m => Game -> m Game
 startGame g =
   pure
     $ g
     & (gameStateL .~ IsActive)
     & (playerCountL .~ length (g ^. investigatorsL))
 
-toInternalGame :: MonadIO m => GameExternal -> m GameInternal
-toInternalGame g@Game {..} = do
-  ref <- newIORef gameMessages
-  roundHistory <- newIORef gameRoundMessageHistory
-  phaseHistory <- newIORef gamePhaseMessageHistory
-  pure $ g
-    { gameMessages = ref
-    , gameRoundMessageHistory = roundHistory
-    , gamePhaseMessageHistory = phaseHistory
-    }
-
-toExternalGame
-  :: MonadIO m
-  => GameInternal
-  -> HashMap InvestigatorId Question
-  -> m GameExternal
+-- TODO: Rename this
+toExternalGame :: MonadIO m => Game -> HashMap InvestigatorId Question -> m Game
 toExternalGame g@Game {..} mq = do
-  queue <- readIORef gameMessages
-  roundHistory <- readIORef gameRoundMessageHistory
-  phaseHistory <- readIORef gamePhaseMessageHistory
   hash' <- liftIO nextRandom
-  pure $ g
-    { gameMessages = queue
-    , gameRoundMessageHistory = roundHistory
-    , gamePhaseMessageHistory = phaseHistory
-    , gameHash = hash'
-    , gameQuestion = mq
-    }
+  pure $ g { gameHash = hash', gameQuestion = mq }
 
 runMessages
-  :: (MonadIO m, MonadFail m, MonadRandom m)
+  :: (MonadIO m, MonadRandom m, HasGameRef env, HasQueue env, MonadReader env m)
   => (Message -> m ())
-  -> GameInternal
-  -> m GameExternal
-runMessages logger g = if g ^. gameStateL /= IsActive
-  then toExternalGame g mempty
-  else flip runReaderT g $ do
-    liftIO $ whenM
-      (isJust <$> lookupEnv "DEBUG")
-      (readIORef (gameMessages g) >>= pPrint >> putStrLn "\n")
-    mmsg <- popMessage
-    for_ mmsg $ \msg -> do
-      atomicModifyIORef'
-        (gameRoundMessageHistory g)
-        (\queue -> (msg : queue, ()))
-      atomicModifyIORef'
-        (gamePhaseMessageHistory g)
-        (\queue -> (msg : queue, ()))
-    case mmsg of
-      Nothing -> case gamePhase g of
-        CampaignPhase -> toExternalGame g mempty
-        ResolutionPhase -> toExternalGame g mempty
-        MythosPhase -> toExternalGame g mempty
-        EnemyPhase -> toExternalGame g mempty
-        UpkeepPhase -> toExternalGame g mempty
-        InvestigationPhase -> if hasEndedTurn (activeInvestigator g)
-          then
-            case
-              filter
-                (not
-                . (\i -> hasEndedTurn i || hasResigned i || isDefeated i)
-                . flip getInvestigator g
+  -> m ()
+runMessages logger = do
+  gameRef <- view gameRefL
+  g <- liftIO $ readIORef gameRef
+  if g ^. gameStateL /= IsActive
+    then toExternalGame g mempty >>= atomicWriteIORef gameRef
+    else do
+      queueRef <- view messageQueue
+      liftIO $ whenM
+        (isJust <$> lookupEnv "DEBUG")
+        (readIORef queueRef >>= pPrint >> putStrLn "\n")
+      mmsg <- popMessage
+      case mmsg of
+        Nothing -> case gamePhase g of
+          CampaignPhase -> pure ()
+          ResolutionPhase -> pure ()
+          MythosPhase -> pure ()
+          EnemyPhase -> pure ()
+          UpkeepPhase -> pure ()
+          InvestigationPhase -> do
+            activeInvestigator <- runReaderT getActiveInvestigator g
+            if hasEndedTurn activeInvestigator
+              then do
+                playingInvestigators <- filterM
+                  (fmap
+                      (not
+                      . (\i -> hasEndedTurn i || hasResigned i || isDefeated i
+                        )
+                      )
+                  . flip runReaderT g
+                  . getInvestigator
+                  )
+                  (gamePlayerOrder g)
+                case playingInvestigators of
+                  [] -> do
+                    pushMessage EndInvestigation
+                    runMessages logger
+                  (x : _) -> do
+                    atomicWriteIORef gameRef (g & activeInvestigatorIdL .~ x)
+                    runMessages logger
+              else pushMessages [PlayerWindow (g ^. activeInvestigatorIdL) []]
+                >> runMessages logger
+        Just msg -> case msg of
+          Ask iid q ->
+            toExternalGame g (singletonMap iid q) >>= atomicWriteIORef gameRef
+          AskMap askMap -> toExternalGame g askMap >>= atomicWriteIORef gameRef
+          _ -> do
+            g' <- toGameEnv >>= runReaderT
+              (runMessage
+                msg
+                (g
+                & (phaseMessageHistoryL %~ (msg :))
+                & (roundMessageHistoryL %~ (msg :))
                 )
-                (gamePlayerOrder g)
-            of
-              [] -> do
-                pushMessage EndInvestigation
-                runMessages (lift . logger) g
-              (x : _) ->
-                runMessages (lift . logger) $ g & activeInvestigatorIdL .~ x
-          else
-            pushMessages [PlayerWindow (g ^. activeInvestigatorIdL) []]
-              >> runMessages (lift . logger) g
-      Just msg -> case msg of
-        Ask iid q -> toExternalGame g (singletonMap iid q)
-        AskMap askMap -> toExternalGame g askMap
-        _ ->
-          lift (logger msg) >> runMessage msg g >>= runMessages (lift . logger)
+              )
+            atomicWriteIORef gameRef g'
+            logger msg
+            runMessages logger

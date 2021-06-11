@@ -5,16 +5,17 @@ where
 
 import Arkham.Prelude
 
+import Arkham.Types.Asset
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Asset
 import Arkham.Types.Enemy
 import Arkham.Types.Event
 import Arkham.Types.Investigator.Runner
+import Arkham.Types.InvestigatorId
 import Arkham.Types.Location
+import Arkham.Types.Message
 import Arkham.Types.Skill
+import Arkham.Types.SkillTest
 import Arkham.Types.Treachery
 
 data EntityInstance
@@ -33,7 +34,7 @@ instance InvestigatorRunner env => RunMessage env EntityInstance where
   runMessage msg (SkillInstance x) = SkillInstance <$> runMessage msg x
   runMessage msg (TreacheryInstance x) = TreacheryInstance <$> runMessage msg x
 
-instance ActionRunner env => HasActions env EntityInstance where
+instance (ActionRunner env, HasSkillTest env) => HasActions env EntityInstance where
   getActions iid window (AssetInstance x) = getActions iid window x
   getActions iid window (EnemyInstance x) = getActions iid window x
   getActions iid window (EventInstance x) = getActions iid window x

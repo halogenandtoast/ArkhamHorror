@@ -1,8 +1,9 @@
 module Arkham.Types.Investigator.Cards.RexMurphySpec
   ( spec
-  ) where
+  )
+where
 
-import TestImport
+import TestImport.Lifted
 
 import Arkham.Types.Location.Attrs as Location
 
@@ -12,31 +13,31 @@ spec = describe "Rex Murphy" $ do
     it "discovers a clue if succeed a skill test by 2 or more" $ do
       let rexMurphy = lookupInvestigator "02002"
       location <- testLocation "00000" (Location.cluesL .~ 1)
-      game <-
-        runGameTest
+      runGameTest
           rexMurphy
           [ SetTokens [Zero]
           , moveTo rexMurphy location
           , beginSkillTest rexMurphy SkillIntellect 2
           ]
           (locationsL %~ insertEntity location)
-        >>= runGameTestOnlyOption "start skill test"
-        >>= runGameTestOnlyOption "apply results"
-        >>= runGameTestOptionMatching
+        $ do
+            runMessagesNoLogging
+            runGameTestOnlyOption "start skill test"
+            runGameTestOnlyOption "apply results"
+            runGameTestOptionMatching
               "use ability"
               (\case
                 Run{} -> True
                 _ -> False
               )
-      updated game rexMurphy `shouldSatisfy` hasClueCount 1
-      updated game location `shouldSatisfy` hasClueCount 0
+            updated rexMurphy `shouldSatisfyM` hasClueCount 1
+            updated location `shouldSatisfyM` hasClueCount 0
 
   context "elder sign token" $ do
     it "can autofail to draw 3 cards" $ do
       let rexMurphy = lookupInvestigator "02002"
       cards <- testPlayerCards 3
-      game <-
-        runGameTest
+      runGameTest
           rexMurphy
           [ SetTokens [ElderSign]
           , loadDeck rexMurphy cards
@@ -49,23 +50,23 @@ spec = describe "Rex Murphy" $ do
             2
           ]
           id
-        >>= runGameTestOnlyOption "start skill test"
-        >>= runGameTestOptionMatching
+        $ do
+            runMessagesNoLogging
+            runGameTestOnlyOption "start skill test"
+            runGameTestOptionMatching
               "automatically fail"
               (\case
                 Label "Automatically fail to draw 3" _ -> True
                 _ -> False
               )
 
-        >>= runGameTestOnlyOption "apply results"
-      updated game rexMurphy `shouldSatisfy` handIs (map PlayerCard cards)
+            runGameTestOnlyOption "apply results"
+            updated rexMurphy `shouldSatisfyM` handIs (map PlayerCard cards)
 
     it "can resolve normally with +2" $ do
       let rexMurphy = lookupInvestigator "02002"
       cards <- testPlayerCards 3
-      (didPassTest, logger) <- didPassSkillTestBy rexMurphy SkillIntellect 0
-      game <-
-        runGameTest
+      runGameTest
           rexMurphy
           [ SetTokens [ElderSign]
           , loadDeck rexMurphy cards
@@ -78,14 +79,20 @@ spec = describe "Rex Murphy" $ do
             6 -- two higher
           ]
           id
-        >>= runGameTestOnlyOption "start skill test"
-        >>= runGameTestOptionMatching
+        $ do
+            (didPassTest, logger) <- didPassSkillTestBy
+              rexMurphy
+              SkillIntellect
+              0
+            runMessagesNoLogging
+            runGameTestOnlyOption "start skill test"
+            runGameTestOptionMatching
               "resolve normally"
               (\case
                 Label "Automatically fail to draw 3" _ -> False
                 _ -> True
               )
 
-        >>= runGameTestOnlyOptionWithLogger "apply results" logger
-      updated game rexMurphy `shouldSatisfy` handIs []
-      readIORef didPassTest `shouldReturn` True
+            runGameTestOnlyOptionWithLogger "apply results" logger
+            updated rexMurphy `shouldSatisfyM` handIs []
+            didPassTest `refShouldBe` True

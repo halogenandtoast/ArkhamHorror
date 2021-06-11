@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Scenarios.TheHouseAlwaysWins
   ( TheHouseAlwaysWins(..)
   , theHouseAlwaysWins
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -25,7 +26,9 @@ import Arkham.Types.Target
 import Arkham.Types.Token
 
 newtype TheHouseAlwaysWins = TheHouseAlwaysWins ScenarioAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
+  deriving stock Generic
+  deriving anyclass HasRecord
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 theHouseAlwaysWins :: Difficulty -> TheHouseAlwaysWins
 theHouseAlwaysWins difficulty =

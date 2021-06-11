@@ -14,8 +14,7 @@ spec = describe "Agnes Baker" $ do
       let agnesBaker = lookupInvestigator "01004"
       enemy <- testEnemy $ \attrs -> attrs { enemyHealth = Static 2 }
       location <- testLocation "00000" id
-      game <-
-        runGameTest
+      runGameTest
           agnesBaker
           [ placedLocation location
           , enemySpawn location enemy
@@ -25,31 +24,37 @@ spec = describe "Agnes Baker" $ do
           ((enemiesL %~ insertEntity enemy)
           . (locationsL %~ insertEntity location)
           )
-        >>= runGameTestOptionMatching
+        $ do
+            runMessagesNoLogging
+            runGameTestOptionMatching
               "use ability"
               (\case
                 Run{} -> True
                 _ -> False
               )
-        >>= runGameTestOnlyOption "damage enemy"
-      updated game enemy `shouldSatisfy` hasDamage (1, 0)
+            runGameTestOnlyOption "damage enemy"
+            updated enemy `shouldSatisfyM` hasDamage (1, 0)
 
   context "elder sign" $ do
     it "gives +1 for each horror on Agnes" $ do
       let agnesBaker = lookupInvestigator "01004"
       location <- testLocation "00000" id
-      (didPassTest, logger) <- didPassSkillTestBy agnesBaker SkillIntellect 0
-      void
-        $ runGameTest
-            agnesBaker
-            [ SetTokens [ElderSign]
-            , placedLocation location
-            , moveTo agnesBaker location
-            , InvestigatorDirectDamage (toId agnesBaker) (TestSource mempty) 0 2
-            , beginSkillTest agnesBaker SkillIntellect 4
-            ]
-            (locationsL %~ insertEntity location)
-        >>= runGameTestOnlyOption "start skill test"
-        >>= runGameTestOnlyOptionWithLogger "apply results" logger
+      runGameTest
+          agnesBaker
+          [ SetTokens [ElderSign]
+          , placedLocation location
+          , moveTo agnesBaker location
+          , InvestigatorDirectDamage (toId agnesBaker) (TestSource mempty) 0 2
+          , beginSkillTest agnesBaker SkillIntellect 4
+          ]
+          (locationsL %~ insertEntity location)
+        $ do
+            (didPassTest, logger) <- didPassSkillTestBy
+              agnesBaker
+              SkillIntellect
+              0
+            runMessagesNoLogging
+            runGameTestOnlyOption "start skill test"
+            runGameTestOnlyOptionWithLogger "apply results" logger
 
-      readIORef didPassTest `shouldReturn` True
+            didPassTest `refShouldBe` True

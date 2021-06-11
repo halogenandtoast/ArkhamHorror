@@ -24,7 +24,9 @@ import Arkham.Types.Trait (Trait)
 import qualified Arkham.Types.Trait as Trait
 
 newtype TheGathering = TheGathering ScenarioAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
+  deriving stock Generic
+  deriving anyclass HasRecord
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 theGathering :: Difficulty -> TheGathering
 theGathering difficulty = TheGathering $ base

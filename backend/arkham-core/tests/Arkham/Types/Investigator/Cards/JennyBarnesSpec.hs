@@ -3,22 +3,22 @@ module Arkham.Types.Investigator.Cards.JennyBarnesSpec
   )
 where
 
-import TestImport
+import TestImport.Lifted
 
 spec :: Spec
 spec = describe "Jenny Barnes" $ do
   context "ability" $ do
     it "collects 2 resources during the upkeep phase" $ do
       let jennyBarnes = lookupInvestigator "02003"
-      game <- runGameTest jennyBarnes [AllDrawCardAndResource] id
-      updatedResourceCount game jennyBarnes `shouldBe` 2
+      runGameTest jennyBarnes [AllDrawCardAndResource] id $ do
+        runMessagesNoLogging
+        updatedResourceCount jennyBarnes `shouldReturn` 2
+
   context "elder sign token" $ do
     it "modifier is number of resources" $ do
       let jennyBarnes = lookupInvestigator "02003"
-      game <- runGameTest
-        jennyBarnes
-        [TakeResources (toId jennyBarnes) 5 False]
-        id
-      token <- withGame game
-        $ getTokenValue (updated game jennyBarnes) (toId jennyBarnes) ElderSign
-      tokenValue token `shouldBe` Just 5
+      runGameTest jennyBarnes [TakeResources (toId jennyBarnes) 5 False] id $ do
+        runMessagesNoLogging
+        jennyBarnes' <- updated jennyBarnes
+        token <- getTokenValue jennyBarnes' (toId jennyBarnes') ElderSign
+        tokenValue token `shouldBe` Just 5

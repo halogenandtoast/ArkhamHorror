@@ -5,12 +5,16 @@ where
 
 import Arkham.Prelude
 
+import Arkham.Types.Action (Action, TakenAction)
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
 import Arkham.Types.EnemyId
 import Arkham.Types.Helpers
+import Arkham.Types.Investigator.Attrs
+import Arkham.Types.Investigator.Cards
+import Arkham.Types.Investigator.Runner
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
@@ -19,13 +23,9 @@ import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
-import Arkham.Types.TreacheryId
-import Arkham.Types.Action (Action, TakenAction)
-import Arkham.Types.Investigator.Attrs
-import Arkham.Types.Investigator.Cards
-import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
 import Arkham.Types.Trait
+import Arkham.Types.TreacheryId
 
 data Investigator
   = AgnesBaker' AgnesBaker
@@ -77,14 +77,14 @@ instance HasModifiersFor env BaseInvestigator where
   getModifiersFor source target (BaseInvestigator attrs) =
     getModifiersFor source target attrs
 
-instance ActionRunner env => HasActions env BaseInvestigator where
+instance InvestigatorRunner env => HasActions env BaseInvestigator where
   getActions iid window (BaseInvestigator attrs) = getActions iid window attrs
 
 instance InvestigatorRunner env => RunMessage env BaseInvestigator where
   runMessage msg (BaseInvestigator attrs) =
     BaseInvestigator <$> runMessage msg attrs
 
-instance ActionRunner env => HasActions env Investigator where
+instance InvestigatorRunner env => HasActions env Investigator where
   getActions iid window investigator = do
     modifiers' <- getModifiersFor
       (toSource investigator)
@@ -115,9 +115,10 @@ instance HasList HandCard env Investigator where
 instance HasList DeckCard env Investigator where
   getList = pure . map DeckCard . unDeck . investigatorDeck . toAttrs
 
-instance HasCard () Investigator where
-  getCard _ cardId =
-    fromJustNote "player does not have this card"
+instance HasCard Investigator () where
+  getCard cardId _ =
+    asks
+      $ fromJustNote "player does not have this card"
       . find ((== cardId) . getCardId)
       . investigatorHand
       . toAttrs

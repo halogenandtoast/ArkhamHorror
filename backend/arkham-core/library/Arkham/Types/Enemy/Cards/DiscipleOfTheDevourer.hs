@@ -36,7 +36,7 @@ instance EnemyRunner env => RunMessage env DiscipleOfTheDevourer where
       let
         messages =
           [PlaceDoom (toTarget attrs) 1, InvestigatorPlaceCluesOnLocation iid 1]
-      step <- asks $ unAgendaStep . getStep
+      step <- unAgendaStep <$> getStep
       if step == 1
         then unshiftMessage (chooseOne iid messages)
         else unshiftMessages messages

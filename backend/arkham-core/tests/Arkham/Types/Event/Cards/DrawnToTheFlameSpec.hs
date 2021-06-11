@@ -3,7 +3,7 @@ module Arkham.Types.Event.Cards.DrawnToTheFlameSpec
   )
 where
 
-import TestImport
+import TestImport.Lifted
 
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 import Arkham.Types.Location.Attrs (LocationAttrs(..))
@@ -23,8 +23,7 @@ spec = describe "Drawn to the flame" $ do
             attrs { locationTraits = setFromList [Central], locationClues = 2 }
         drawnToTheFlame <- buildEvent "01064" investigator
         onWingsOfDarkness <- buildEncounterCard "01173"
-        game <-
-          runGameTest
+        runGameTest
             investigator
             [ SetEncounterDeck [onWingsOfDarkness]
             , SetTokens [Zero]
@@ -37,10 +36,12 @@ spec = describe "Drawn to the flame" $ do
             . (locationsL %~ insertEntity startLocation)
             . (locationsL %~ insertEntity centralLocation)
             )
-          >>= runGameTestOnlyOption "start skill test"
-          >>= runGameTestOnlyOption "apply results"
-          >>= runGameTestFirstOption "apply horror/damage"
-          >>= runGameTestFirstOption "apply horror/damage"
-          >>= runGameTestOnlyOption "move to central location"
-        updated game investigator `shouldSatisfy` hasClueCount 2
-        drawnToTheFlame `shouldSatisfy` isInDiscardOf game investigator
+          $ do
+              runMessagesNoLogging
+              runGameTestOnlyOption "start skill test"
+              runGameTestOnlyOption "apply results"
+              runGameTestFirstOption "apply horror/damage"
+              runGameTestFirstOption "apply horror/damage"
+              runGameTestOnlyOption "move to central location"
+              updated investigator `shouldSatisfyM` hasClueCount 2
+              isInDiscardOf investigator drawnToTheFlame `shouldReturn` True

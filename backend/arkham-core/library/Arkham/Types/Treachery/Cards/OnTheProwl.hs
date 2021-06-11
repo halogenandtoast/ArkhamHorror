@@ -16,10 +16,10 @@ import Arkham.Types.Target
 import Arkham.Types.TreacheryId
 
 
+import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.Trait
 
 newtype OnTheProwl = OnTheProwl TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

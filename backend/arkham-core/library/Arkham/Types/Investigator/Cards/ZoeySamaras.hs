@@ -42,7 +42,7 @@ zoeySamaras = ZoeySamaras $ baseAttrs
     }
   [Believer, Hunter]
 
-instance ActionRunner env => HasActions env ZoeySamaras where
+instance InvestigatorRunner env => HasActions env ZoeySamaras where
   getActions iid (AfterEnemyEngageInvestigator You _) (ZoeySamaras InvestigatorAttrs {..})
     | iid == investigatorId
     = do

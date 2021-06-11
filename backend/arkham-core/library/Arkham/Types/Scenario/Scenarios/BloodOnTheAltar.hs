@@ -1,15 +1,19 @@
 module Arkham.Types.Scenario.Scenarios.BloodOnTheAltar
   ( BloodOnTheAltar(..)
   , bloodOnTheAltar
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
 import Arkham.EncounterCard
 import Arkham.PlayerCard
 import Arkham.Types.AgendaId
+import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Difficulty
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Exception
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
@@ -17,21 +21,21 @@ import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Resolution
-import Arkham.Types.Target
-import Arkham.Types.Token
-import Arkham.Types.CampaignLogKey
-import Arkham.Types.Difficulty
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
+import Arkham.Types.Target
+import Arkham.Types.Token
+import Data.Maybe (fromJust)
 
 newtype BloodOnTheAltarMetadata = BloodOnTheAltarMetadata { sacrifices :: [Card]}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 newtype BloodOnTheAltar = BloodOnTheAltar (ScenarioAttrs `With` BloodOnTheAltarMetadata)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
+  deriving stock Generic
+  deriving anyclass HasRecord
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 bloodOnTheAltar :: Difficulty -> BloodOnTheAltar
 bloodOnTheAltar difficulty =
@@ -458,7 +462,10 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       UseScenarioSpecificAbility _ _ 1 -> case scenarioDeck of
         Just (PotentialSacrifices []) -> pure s
         Just (PotentialSacrifices cards) -> do
-          c : cards' <- shuffleM cards
+          result <- shuffleM cards
+          let
+            c = fromJust . headMay $ result
+            cards' = drop 1 result
           pure
             . BloodOnTheAltar
             . (`with` BloodOnTheAltarMetadata (c : sacrificed))

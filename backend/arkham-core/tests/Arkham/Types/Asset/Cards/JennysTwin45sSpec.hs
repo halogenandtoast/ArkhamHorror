@@ -3,8 +3,9 @@ module Arkham.Types.Asset.Cards.JennysTwin45sSpec
   )
 where
 
-import TestImport
+import TestImport.Lifted
 
+import Arkham.Types.AssetId
 import qualified Arkham.Types.Enemy.Attrs as Enemy
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 
@@ -24,18 +25,19 @@ spec = describe "Jenny's Twin .45s" $ do
       { investigatorResources = 5
       , investigatorHand = [PlayerCard jennysTwin45s]
       }
-    game <-
-      runGameTest
+    runGameTest
         investigator
         [playDynamicCard investigator (PlayerCard jennysTwin45s)]
         id
-      >>= payResource
-      >>= payResource
-      >>= payResource
-      >>= payResource
-      >>= payResource
-    let updatedJennysTwin45s = game ^?! assetsL . to toList . ix 0
-    updatedJennysTwin45s `shouldSatisfy` hasUses 5
+      $ do
+          runMessagesNoLogging
+          payResource
+          payResource
+          payResource
+          payResource
+          payResource
+          updatedJennysTwin45s <- getAsset (AssetId $ pcId jennysTwin45s)
+          updatedJennysTwin45s `shouldSatisfy` hasUses 5
   it "gives +2 combat and does +1 damage" $ do
     jennysTwin45s <- buildPlayerCard "02010"
     investigator <- testInvestigator "00000" $ \attrs -> attrs
@@ -45,30 +47,28 @@ spec = describe "Jenny's Twin .45s" $ do
       }
     enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 5))
     location <- testLocation "00000" id
-    game <-
-      runGameTest
-          investigator
-          [ SetTokens [Zero]
-          , playDynamicCard investigator (PlayerCard jennysTwin45s)
-          ]
-          ((enemiesL %~ insertEntity enemy)
-          . (locationsL %~ insertEntity location)
-          )
-        >>= payResource
-    let jennysTwin45sAsset = game ^?! assetsL . to toList . ix 0
-    game' <-
-      runGameTestMessages
-        game
-        [ enemySpawn location enemy
-        , moveTo investigator location
-        , UseCardAbility
-          (toId investigator)
-          (toSource jennysTwin45sAsset)
-          Nothing
-          1
-          (UsesPayment 1)
+    runGameTest
+        investigator
+        [ SetTokens [Zero]
+        , playDynamicCard investigator (PlayerCard jennysTwin45s)
         ]
-      >>= runGameTestOnlyOption "choose enemy"
-      >>= runGameTestOnlyOption "start skill test"
-      >>= runGameTestOnlyOption "apply results"
-    updated game' enemy `shouldSatisfy` hasDamage (2, 0)
+        ((enemiesL %~ insertEntity enemy)
+        . (locationsL %~ insertEntity location)
+        )
+      $ do
+          runMessagesNoLogging
+          payResource
+          runGameTestMessages
+            [ enemySpawn location enemy
+            , moveTo investigator location
+            , UseCardAbility
+              (toId investigator)
+              (AssetSource . AssetId $ pcId jennysTwin45s)
+              Nothing
+              1
+              (UsesPayment 1)
+            ]
+          runGameTestOnlyOption "choose enemy"
+          runGameTestOnlyOption "start skill test"
+          runGameTestOnlyOption "apply results"
+          updated enemy `shouldSatisfyM` hasDamage (2, 0)

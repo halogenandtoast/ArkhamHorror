@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e7f3a5beb123bb8eef729da6bca8ad2de4577151f55e6d7861764f1b36eb35f5
+-- hash: 224416134c7fe9558db38dde745d796e50f3478b3f9ae0c8182b7c07ff4af083
 
 name:           arkham-api
 version:        0.0.0
@@ -77,7 +77,8 @@ library
       TypeApplications
       TypeFamilies
   build-depends:
-      aeson
+      MonadRandom
+    , aeson
     , aeson-casing
     , arkham-core
     , base
@@ -97,6 +98,7 @@ library
     , http-conduit
     , http-types
     , jwt
+    , lens
     , monad-logger
     , path-pieces
     , persistent
@@ -124,6 +126,7 @@ library
     , yesod
     , yesod-core
     , yesod-static
+    , yesod-test
     , yesod-websockets
   if (flag(dev)) || (flag(library-only))
     ghc-options: -Wall -fwarn-tabs -O0

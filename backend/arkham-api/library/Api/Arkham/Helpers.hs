@@ -4,14 +4,48 @@ module Api.Arkham.Helpers where
 import Arkham.PlayerCard
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
+import Arkham.Types.Classes.HasQueue
+import Arkham.Types.Game
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
+import Control.Lens
+import Control.Monad.Fail
+import Control.Monad.Random (MonadRandom(..))
 import qualified Data.ByteString.Lazy as BSL
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Map.Strict as Map
 import Data.UUID.V4
 import Import
 import Json
+
+newtype GameAppT a = GameAppT { unGameAppT :: ReaderT GameApp IO a }
+  deriving newtype (MonadReader GameApp, Functor, Applicative, Monad, MonadFail, MonadIO, MonadRandom)
+
+data GameApp = GameApp
+  { appGame :: IORef Game
+  , appQueue :: IORef [Message]
+  }
+
+-- instance MonadRandom m => MonadRandom (GameAppT m) where
+--   getRandomR = lift . getRandomR
+--   getRandom = lift getRandom
+--   getRandomRs = lift . getRandomRs
+--   getRandoms = lift getRandoms
+
+newApp :: MonadIO m => Game -> [Message] -> m GameApp
+newApp g msgs = do
+  gameRef <- newIORef g
+  queueRef <- newIORef msgs
+  pure $ GameApp gameRef queueRef
+
+instance HasGameRef GameApp where
+  gameRefL = lens appGame $ \m x -> m { appGame = x }
+
+instance HasQueue GameApp where
+  messageQueue = lens appQueue $ \m x -> m { appQueue = x }
+
+runGameApp :: MonadIO m => GameApp -> GameAppT a -> m a
+runGameApp gameApp = liftIO . flip runReaderT gameApp . unGameAppT
 
 noLogger :: Applicative m => Message -> m ()
 noLogger = const (pure ())

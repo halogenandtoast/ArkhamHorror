@@ -20,7 +20,7 @@ import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Prey
 import Arkham.Types.Query
-import Arkham.Types.Target
+import Arkham.Types.SkillTest
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 
@@ -114,7 +114,7 @@ type GameRunner env
       , HasSet UniqueEnemyId env ()
       , HasSet VictoryDisplayCardCode env ()
       )
-    , HasSource ForSkillTest env
+    , HasSkillTest env
     , HasActions env ()
     , HasActions env AssetId
     , HasActions env (ActionType, Trait)
@@ -122,5 +122,5 @@ type GameRunner env
     , HasRecord env
     , HasTokenValue env InvestigatorId
     , CanBeWeakness env TreacheryId
-    , HasStep AgendaStep env
+    , HasStep env AgendaStep
     )

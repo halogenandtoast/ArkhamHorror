@@ -1,8 +1,9 @@
 module Arkham.Types.Investigator.Cards.AshcanPeteSpec
   ( spec
-  ) where
+  )
+where
 
-import TestImport
+import TestImport.Lifted
 
 spec :: Spec
 spec = describe "\"Ashcan\" Pete" $ do
@@ -11,18 +12,21 @@ spec = describe "\"Ashcan\" Pete" $ do
     duke <- buildPlayerCard "02014"
     placeholders <- replicateM 5 (buildPlayerCard "01088") -- need to fill deck for setup
 
-    game <- runGameTest
-      ashcanPete
-      [loadDeck ashcanPete (duke : placeholders), SetupInvestigators]
-      id
-    updated game ashcanPete `shouldSatisfy` hasCardInPlay game (PlayerCard duke)
+    runGameTest
+        ashcanPete
+        [loadDeck ashcanPete (duke : placeholders), SetupInvestigators]
+        id
+      $ do
+          runMessagesNoLogging
+          ashcanPete' <- updated ashcanPete
+          hasCardInPlay (PlayerCard duke) ashcanPete' `shouldReturn` True
+
   context "Ability" $ do
     it "allows to discard to ready an asset" $ do
       let ashcanPete = lookupInvestigator "02005"
       asset <- testAsset id
       card <- testPlayerCard id
-      game <-
-        runGameTest
+      runGameTest
           ashcanPete
           [ loadDeck ashcanPete [card]
           , drawCards ashcanPete 1
@@ -31,29 +35,36 @@ spec = describe "\"Ashcan\" Pete" $ do
           , CheckWindow (toId ashcanPete) [FastPlayerWindow]
           ]
           (assetsL %~ insertEntity asset)
-        >>= runGameTestOptionMatching
+        $ do
+            runMessagesNoLogging
+            runGameTestOptionMatching
               "activate ability"
               (\case
                 Run{} -> True
                 _ -> False
               )
-        >>= runGameTestOnlyOption "discard card"
-        >>= runGameTestOnlyOption "ready asset"
-      updated game asset `shouldSatisfy` isReady
+            runGameTestOnlyOption "discard card"
+            runGameTestOnlyOption "ready asset"
+            updated asset `shouldSatisfyM` isReady
+
   context "Elder Sign" $ do
     it "gives +2 and readies duke" $ do
       let ashcanPete = lookupInvestigator "02005"
       duke <- buildAsset "02014"
-      (didPassTest, logger) <- didPassSkillTestBy ashcanPete SkillIntellect 2
-      game <-
-        runGameTest
+      runGameTest
           ashcanPete
           [ SetTokens [ElderSign]
           , Exhaust (toTarget duke)
           , beginSkillTest ashcanPete SkillIntellect 2
           ]
           (assetsL %~ insertEntity duke)
-        >>= runGameTestOnlyOption "start skill test"
-        >>= runGameTestOnlyOptionWithLogger "apply results" logger
-      updated game duke `shouldSatisfy` isReady
-      readIORef didPassTest `shouldReturn` True
+        $ do
+            (didPassTest, logger) <- didPassSkillTestBy
+              ashcanPete
+              SkillIntellect
+              2
+            runMessagesNoLogging
+            runGameTestOnlyOption "start skill test"
+            runGameTestOnlyOptionWithLogger "apply results" logger
+            updated duke `shouldSatisfyM` isReady
+            didPassTest `refShouldBe` True

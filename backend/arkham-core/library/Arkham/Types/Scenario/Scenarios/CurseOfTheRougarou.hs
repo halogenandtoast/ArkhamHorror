@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
   ( CurseOfTheRougarou(..)
   , curseOfTheRougarou
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -25,13 +26,16 @@ import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait hiding (Cultist)
 import Control.Monad.Extra (findM)
+import Data.Maybe (fromJust)
 
 newtype CurseOfTheRougarouMetadata = CurseOfTheRougarouMetadata { setAsideLocationTraits :: HashSet Trait }
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 
 newtype CurseOfTheRougarou = CurseOfTheRougarou (ScenarioAttrs `With` CurseOfTheRougarouMetadata)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
+  deriving stock Generic
+  deriving anyclass HasRecord
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 curseOfTheRougarou :: Difficulty -> CurseOfTheRougarou
 curseOfTheRougarou difficulty =
@@ -93,7 +97,10 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       Setup -> do
         investigatorIds <- getInvestigatorIds
         encounterDeck <- buildEncounterDeck [EncounterSet.TheBayou]
-        (_ : trait : rest) <- shuffleM $ keys locationsByTrait
+        result <- shuffleM $ keys locationsByTrait
+        let
+          trait = fromJust . headMay . drop 1 $ result
+          rest = drop 2 result
         startingLocationsWithLabel <-
           zip <$> getRandoms <*> locationsWithLabels trait
         let

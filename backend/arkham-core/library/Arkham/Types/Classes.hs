@@ -2,7 +2,8 @@
 module Arkham.Types.Classes
   ( module Arkham.Types.Classes
   , module X
-  ) where
+  )
+where
 
 import Arkham.Prelude hiding (to)
 
@@ -76,23 +77,17 @@ checkWindows iid f = do
   windowPairings <- pairInvestigatorIdsForWindow iid
   sequence [ CheckWindow iid' <$> f who | (iid', who) <- windowPairings ]
 
-class HasPhase a where
-  getPhase :: a -> Phase
+class HasPhase env where
+  getPhase :: MonadReader env m => m Phase
 
-class HasStep c a where
-  getStep ::  a -> c
+class HasStep env a where
+  getStep :: MonadReader env m => m a
 
-class HasSource b a where
-  getSource :: b -> a -> Maybe Source
+class HasRoundHistory env where
+  getRoundHistory :: MonadReader env m => m [Message]
 
-class HasRoundHistory a where
-  getRoundHistory :: MonadIO m => a -> m [Message]
-
-class HasPhaseHistory a where
-  getPhaseHistory :: MonadIO m => a -> m [Message]
-
-class HasTarget b a where
-  getTarget :: b -> a -> Maybe Target
+class HasPhaseHistory env where
+  getPhaseHistory :: MonadReader env m => m [Message]
 
 class (Hashable set, Eq set) => HasSet set env a where
   getSet :: (HasCallStack, MonadReader env m) => a -> m (HashSet set)
@@ -100,10 +95,10 @@ class (Hashable set, Eq set) => HasSet set env a where
   getSetList a = setToList <$> getSet a
 
 class HasList list env a where
-  getList :: (MonadReader env m) => a -> m [list]
+  getList :: MonadReader env m => a -> m [list]
 
 class HasId id env a where
-  getId :: (MonadReader env m) => a -> m id
+  getId :: MonadReader env m => a -> m id
 
 getLocationIdWithTitle
   :: (MonadReader env m, HasId (Maybe LocationId) env LocationMatcher)
@@ -112,13 +107,13 @@ getLocationIdWithTitle
 getLocationIdWithTitle = getId . LocationWithTitle
 
 class HasCount count env a where
-  getCount :: (MonadReader env m) => a -> m count
+  getCount :: MonadReader env m => a -> m count
 
 class HasName env a where
-  getName :: (MonadReader env m) => a -> m Name
+  getName :: MonadReader env m => a -> m Name
 
 class HasPlayerCard env a where
-  getPlayerCard :: (MonadReader env m) => a -> m (Maybe PlayerCard)
+  getPlayerCard :: MonadReader env m => a -> m (Maybe PlayerCard)
 
 type HasCostPayment env
   = ( HasCount SpendableClueCount env InvestigatorId
@@ -134,7 +129,7 @@ type HasCostPayment env
     )
 
 class HasStats env a where
-  getStats :: (MonadReader env m) => a -> Source -> m Stats
+  getStats :: MonadReader env m => a -> Source -> m Stats
 
 class HasSkill a where
   getSkill :: SkillType -> a -> Int
@@ -212,12 +207,11 @@ type ActionRunner env
     , HasSet Trait env LocationId
     , HasSet Trait env Source
     , HasSet Trait env (InvestigatorId, CardId)
-    , HasSource ForSkillTest env
-    , HasStep ActStep env
+    , HasStep env ActStep
     )
 
 class HasActions1 env f where
-  getActions1 :: (MonadIO m, MonadReader env m) => InvestigatorId -> Window -> f p -> m [Message]
+  getActions1 :: (MonadReader env m, MonadIO m) => InvestigatorId -> Window -> f p -> m [Message]
 
 instance HasActions1 env f => HasActions1 env (M1 i c f) where
   getActions1 iid window (M1 x) = getActions1 iid window x
@@ -230,7 +224,7 @@ instance (HasActions env p) => HasActions1 env (K1 R p) where
   getActions1 iid window (K1 x) = getActions iid window x
 
 defaultGetActions
-  :: (Generic a, HasActions1 env (Rep a), MonadIO m, MonadReader env m)
+  :: (Generic a, HasActions1 env (Rep a), MonadReader env m, MonadIO m)
   => InvestigatorId
   -> Window
   -> a
@@ -239,11 +233,11 @@ defaultGetActions iid window = getActions1 iid window . from
 
 class HasActions env a where
   getActions :: (MonadReader env m, MonadIO m) => InvestigatorId -> Window -> a -> m [Message]
-  default getActions :: (Generic a, HasActions1 env (Rep a), MonadIO m, MonadReader env m) => InvestigatorId -> Window -> a -> m [Message]
+  default getActions :: (Generic a, HasActions1 env (Rep a), MonadReader env m, MonadIO m) => InvestigatorId -> Window -> a -> m [Message]
   getActions = defaultGetActions
 
 class HasModifiersFor1 env f where
-  getModifiersFor1 :: (MonadReader env m) => Source -> Target -> f p -> m [Modifier]
+  getModifiersFor1 :: MonadReader env m => Source -> Target -> f p -> m [Modifier]
 
 instance HasModifiersFor1 env f => HasModifiersFor1 env (M1 i c f) where
   getModifiersFor1 source target (M1 x) = getModifiersFor1 source target x
@@ -264,7 +258,7 @@ defaultGetModifiersFor
 defaultGetModifiersFor source target = getModifiersFor1 source target . from
 
 class HasModifiersFor env a where
-  getModifiersFor :: (MonadReader env m) => Source -> Target -> a -> m [Modifier]
+  getModifiersFor :: MonadReader env m => Source -> Target -> a -> m [Modifier]
   default getModifiersFor :: (Generic a, HasModifiersFor1 env (Rep a), MonadReader env m) => Source -> Target -> a -> m [Modifier]
   getModifiersFor = defaultGetModifiersFor
 
@@ -278,7 +272,7 @@ class Discardable a where
   canBeDiscarded :: a -> Bool
 
 class CanBeWeakness env a where
-  getIsWeakness :: (MonadReader env m) => a -> m Bool
+  getIsWeakness :: MonadReader env m => a -> m Bool
 
 class Exhaustable a where
   isExhausted :: a -> Bool

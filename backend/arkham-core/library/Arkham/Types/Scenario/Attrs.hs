@@ -9,28 +9,28 @@ where
 import Arkham.Prelude
 
 import Arkham.Json
-import Arkham.Types.Game.Helpers
 import Arkham.Types.ActId
-import Arkham.Types.Window
 import Arkham.Types.AgendaId
 import Arkham.Types.CampaignId
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Difficulty
+import Arkham.Types.Game.Helpers
 import Arkham.Types.InvestigatorId
+import Arkham.Types.Location as X
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
+import Arkham.Types.Scenario.Deck as X
 import Arkham.Types.ScenarioId
+import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
-import Arkham.Types.ScenarioLogKey
-import Arkham.Types.Difficulty
-import Arkham.Types.Scenario.Deck as X
-import Arkham.Types.Location as X
+import Arkham.Types.Window
 
 newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
   deriving newtype (Show, IsString, ToJSON, FromJSON, Eq)

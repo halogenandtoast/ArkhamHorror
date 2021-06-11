@@ -13,24 +13,30 @@ import Arkham.Prelude as X
 import Arkham.EncounterCard
 import Arkham.Game as X hiding (newGame)
 import Arkham.PlayerCard
+import Arkham.Types.Action
 import Arkham.Types.Agenda as X
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.AgendaId
 import Arkham.Types.Asset as X
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.AssetId
 import Arkham.Types.Card as X
 import Arkham.Types.Card.Id
 import Arkham.Types.ChaosBag as X
 import qualified Arkham.Types.ChaosBag as ChaosBag
-import Arkham.Types.Classes as X
+import Arkham.Types.Classes as X hiding
+  (getCount, getId, getModifiersFor, getTokenValue)
+import qualified Arkham.Types.Classes as Arkham
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Cost as X
 import Arkham.Types.Difficulty
 import Arkham.Types.Enemy as X
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Event as X
-import Arkham.Types.Game as X
-import Arkham.Types.Game.Helpers as X
+import Arkham.Types.Game as X hiding (getAsset)
+import qualified Arkham.Types.Game as Game
+import Arkham.Types.Game.Helpers as X hiding (getCanAffordCost)
+import qualified Arkham.Types.Game.Helpers as Helpers
 import Arkham.Types.GameValue as X
 import Arkham.Types.Helpers as X
 import Arkham.Types.Investigator as X
@@ -41,6 +47,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.LocationId as X
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message as X
+import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Phase
 import Arkham.Types.Query as X
@@ -54,6 +61,7 @@ import Arkham.Types.Token as X
 import Arkham.Types.Window as X
 import Control.Lens as X (set, (^?!))
 import Control.Monad.Fail as X
+import Control.Monad.Random (MonadRandom(..))
 import Control.Monad.State as X (get)
 import Control.Monad.State hiding (replicateM)
 import qualified Data.HashMap.Strict as HashMap
@@ -63,6 +71,107 @@ import Data.UUID.V4 as X
 import Helpers.Matchers as X
 import Helpers.Message as X
 import Test.Hspec as X
+
+shouldSatisfyM
+  :: (HasCallStack, Show a, MonadIO m) => m a -> (a -> Bool) -> m ()
+x `shouldSatisfyM` y = liftIO . (`shouldSatisfy` y) =<< x
+
+shouldMatchListM
+  :: (HasCallStack, Show a, Eq a, MonadIO m) => m [a] -> [a] -> m ()
+x `shouldMatchListM` y = liftIO . (`shouldMatchList` y) =<< x
+
+refShouldBe :: (HasCallStack, Show a, Eq a, MonadIO m) => IORef a -> a -> m ()
+ref `refShouldBe` y = do
+  result <- liftIO $ readIORef ref
+  liftIO $ result `shouldBe` y
+
+getId
+  :: ( HasId id GameEnv a
+     , HasGameRef env
+     , HasQueue env
+     , MonadReader env m
+     , MonadIO m
+     )
+  => a
+  -> m id
+getId a = toGameEnv >>= runReaderT (Arkham.getId a)
+
+getCount
+  :: ( HasCount count GameEnv a
+     , HasGameRef env
+     , HasQueue env
+     , MonadReader env m
+     , MonadIO m
+     )
+  => a
+  -> m count
+getCount a = toGameEnv >>= runReaderT (Arkham.getCount a)
+
+getAsset
+  :: (HasCallStack, MonadReader env m, HasGameRef env, MonadIO m, HasQueue env)
+  => AssetId
+  -> m Asset
+getAsset aid = toGameEnv >>= runReaderT (Game.getAsset aid)
+
+getTokenValue
+  :: ( MonadReader env m
+     , MonadIO m
+     , HasGameRef env
+     , HasQueue env
+     , HasTokenValue GameEnv a
+     )
+  => a
+  -> InvestigatorId
+  -> Token
+  -> m TokenValue
+getTokenValue a iid token =
+  toGameEnv >>= runReaderT (Arkham.getTokenValue a iid token)
+
+getCanAffordCost
+  :: (MonadReader env m, HasGameRef env, HasQueue env, MonadIO m)
+  => InvestigatorId
+  -> Source
+  -> Maybe Action
+  -> Cost
+  -> m Bool
+getCanAffordCost iid source maction cost =
+  toGameEnv >>= runReaderT (Helpers.getCanAffordCost iid source maction cost)
+
+getModifiersFor
+  :: ( MonadReader env m
+     , HasGameRef env
+     , MonadIO m
+     , HasQueue env
+     , HasModifiersFor GameEnv a
+     )
+  => Source
+  -> Target
+  -> a
+  -> m [Modifier]
+getModifiersFor s t a = toGameEnv >>= runReaderT (Arkham.getModifiersFor s t a)
+
+data TestApp = TestApp
+  { game :: IORef Game
+  , messageQueueRef :: IORef [Message]
+  }
+
+newtype TestAppT m a = TestAppT { unTestAppT :: ReaderT TestApp m a }
+  deriving newtype (MonadReader TestApp, Functor, Applicative, Monad, MonadTrans, MonadFail, MonadIO)
+
+instance MonadRandom m => MonadRandom (TestAppT m) where
+  getRandomR = lift . getRandomR
+  getRandom = lift getRandom
+  getRandomRs = lift . getRandomRs
+  getRandoms = lift getRandoms
+
+runTestApp :: TestApp -> TestAppT m a -> m a
+runTestApp testApp = flip runReaderT testApp . unTestAppT
+
+instance HasGameRef TestApp where
+  gameRefL = lens game $ \m x -> m { game = x }
+
+instance HasQueue TestApp where
+  messageQueue = lens messageQueueRef $ \m x -> m { messageQueueRef = x }
 
 testScenario
   :: MonadIO m => CardCode -> (ScenarioAttrs -> ScenarioAttrs) -> m Scenario
@@ -187,17 +296,23 @@ testUnconnectedLocations f1 f2 = do
   pure (location1, location2)
 
 getActionsOf
-  :: (HasActions GameInternal a, TestEntity a, MonadIO m)
-  => GameExternal
-  -> Investigator
+  :: ( HasActions GameEnv a
+     , TestEntity a
+     , MonadIO m
+     , MonadReader env m
+     , HasGameRef env
+     , HasQueue env
+     )
+  => Investigator
   -> Window
   -> a
   -> m [Message]
-getActionsOf game investigator window e =
-  withGame game (getActions (toId investigator) window (updated game e))
+getActionsOf investigator window e = do
+  e' <- updated e
+  toGameEnv >>= runReaderT (getActions (toId investigator) window e')
 
-chaosBagTokensOf :: Game queue -> [Token]
-chaosBagTokensOf g = g ^. chaosBagL . ChaosBag.tokensL
+getChaosBagTokens :: (HasGameRef env, MonadIO m, MonadReader env m) => m [Token]
+getChaosBagTokens = view (chaosBagL . ChaosBag.tokensL) <$> getTestGame
 
 createMessageMatcher :: MonadIO m => Message -> m (IORef Bool, Message -> m ())
 createMessageMatcher msg = do
@@ -236,119 +351,129 @@ didFailSkillTestBy investigator skillType n = createMessageMatcher
     n
   )
 
-withGame :: MonadIO m => GameExternal -> ReaderT GameInternal m b -> m b
-withGame game f = toInternalGame game >>= runReaderT f
+withGame :: Game -> ReaderT Game m b -> m b
+withGame = flip runReaderT
 
 runGameTestOnlyOption
-  :: (MonadFail m, MonadIO m, MonadRandom m)
+  :: ( MonadFail m
+     , MonadIO m
+     , MonadRandom m
+     , HasQueue env
+     , MonadReader env m
+     , HasGameRef env
+     )
   => String
-  -> Game [Message]
-  -> m (Game [Message])
-runGameTestOnlyOption reason game =
-  runGameTestOnlyOptionWithLogger reason (pure . const ()) game
+  -> m ()
+runGameTestOnlyOption reason =
+  runGameTestOnlyOptionWithLogger reason (pure . const ())
 
 runGameTestOnlyOptionWithLogger
-  :: (MonadFail m, MonadIO m, MonadRandom m)
+  :: ( MonadFail m
+     , MonadIO m
+     , MonadRandom m
+     , HasQueue env
+     , MonadReader env m
+     , HasGameRef env
+     )
   => String
   -> (Message -> m ())
-  -> Game [Message]
-  -> m (Game [Message])
-runGameTestOnlyOptionWithLogger _reason logger game =
-  case mapToList (gameQuestion game) of
+  -> m ()
+runGameTestOnlyOptionWithLogger _reason logger = do
+  questionMap <- gameQuestion <$> getTestGame
+  case mapToList questionMap of
     [(_, question)] -> case question of
-      ChooseOne [msg] ->
-        toInternalGame (game { gameMessages = msg : gameMessages game })
-          >>= runMessages logger
-      ChooseOneAtATime [msg] ->
-        toInternalGame (game { gameMessages = msg : gameMessages game })
-          >>= runMessages logger
-      ChooseN _ [msg] ->
-        toInternalGame (game { gameMessages = msg : gameMessages game })
-          >>= runMessages logger
+      ChooseOne [msg] -> pushMessage msg <* runMessages logger
+      ChooseOneAtATime [msg] -> pushMessage msg <* runMessages logger
+      ChooseN _ [msg] -> pushMessage msg <* runMessages logger
       _ -> error "spec expectation mismatch"
     _ -> error "There must be only one choice to use this function"
 
+runMessagesNoLogging
+  :: (MonadIO m, MonadRandom m, HasGameRef env, HasQueue env, MonadReader env m)
+  => m ()
+runMessagesNoLogging = void $ runMessages (pure . const ())
+
 runGameTestFirstOption
-  :: (MonadFail m, MonadIO m, MonadRandom m)
+  :: ( MonadFail m
+     , MonadIO m
+     , MonadRandom m
+     , MonadReader env m
+     , HasGameRef env
+     , HasQueue env
+     )
   => String
-  -> Game [Message]
-  -> m (Game [Message])
-runGameTestFirstOption _reason game = case mapToList (gameQuestion game) of
-  [(_, question)] -> case question of
-    ChooseOne (msg : _) ->
-      toInternalGame (game { gameMessages = msg : gameMessages game })
-        >>= runMessages (pure . const ())
-    ChooseOneAtATime (msg : _) ->
-      toInternalGame (game { gameMessages = msg : gameMessages game })
-        >>= runMessages (pure . const ())
-    _ -> error "spec expectation mismatch"
-  _ -> error "There must be at least one option"
+  -> m ()
+runGameTestFirstOption _reason = do
+  questionMap <- gameQuestion <$> getTestGame
+  case mapToList questionMap of
+    [(_, question)] -> case question of
+      ChooseOne (msg : _) -> pushMessage msg >> runMessagesNoLogging
+      ChooseOneAtATime (msg : _) -> pushMessage msg >> runMessagesNoLogging
+      _ -> error "spec expectation mismatch"
+    _ -> error "There must be at least one option"
 
 runGameTestMessages
-  :: (MonadFail m, MonadIO m, MonadRandom m)
-  => Game [Message]
-  -> [Message]
-  -> m (Game [Message])
-runGameTestMessages game msgs =
-  toInternalGame (game { gameMessages = msgs <> gameMessages game })
-    >>= runMessages (pure . const ())
+  :: ( MonadFail m
+     , MonadIO m
+     , MonadRandom m
+     , MonadReader env m
+     , HasGameRef env
+     , HasQueue env
+     )
+  => [Message]
+  -> m ()
+runGameTestMessages msgs = pushMessages msgs >> runMessagesNoLogging
 
 runGameTestOptionMatching
-  :: (MonadFail m, MonadIO m, MonadRandom m)
+  :: ( MonadFail m
+     , MonadIO m
+     , MonadRandom m
+     , MonadReader env m
+     , HasGameRef env
+     , HasQueue env
+     )
   => String
   -> (Message -> Bool)
-  -> Game [Message]
-  -> m (Game [Message])
-runGameTestOptionMatching reason f game =
-  runGameTestOptionMatchingWithLogger reason (pure . const ()) f game
+  -> m ()
+runGameTestOptionMatching reason f =
+  runGameTestOptionMatchingWithLogger reason (pure . const ()) f
 
 runGameTestOptionMatchingWithLogger
-  :: (MonadFail m, MonadIO m, MonadRandom m)
+  :: ( MonadFail m
+     , MonadIO m
+     , MonadRandom m
+     , MonadReader env m
+     , HasGameRef env
+     , HasQueue env
+     )
   => String
   -> (Message -> m ())
   -> (Message -> Bool)
-  -> Game [Message]
-  -> m (Game [Message])
-runGameTestOptionMatchingWithLogger _reason logger f game =
-  case mapToList (gameQuestion game) of
+  -> m ()
+runGameTestOptionMatchingWithLogger _reason logger f = do
+  questionMap <- gameQuestion <$> getTestGame
+  case mapToList questionMap of
     [(_, question)] -> case question of
       ChooseOne msgs -> case find f msgs of
-        Just msg ->
-          toInternalGame (game { gameMessages = msg : gameMessages game })
-            >>= runMessages logger
+        Just msg -> pushMessage msg <* runMessages logger
         Nothing -> error "could not find a matching message"
       _ -> error "unsupported questions type"
     _ -> error "There must be only one question to use this function"
 
 runGameTest
-  :: (MonadIO m, MonadFail m, MonadRandom m)
-  => Investigator
-  -> [Message]
-  -> (GameInternal -> GameInternal)
-  -> m GameExternal
-runGameTest investigator queue f =
-  runGameTestWithLogger (pure . const ()) investigator queue f
+  :: Investigator -> [Message] -> (Game -> Game) -> TestAppT IO () -> IO ()
+runGameTest investigator queue f body = do
+  g <- newGame investigator
+  gameRef <- newIORef (f g)
+  queueRef <- newIORef queue
+  runTestApp (TestApp gameRef queueRef) body
 
-runGameTestWithLogger
-  :: (MonadIO m, MonadFail m, MonadRandom m)
-  => (Message -> m ())
-  -> Investigator
-  -> [Message]
-  -> (GameInternal -> GameInternal)
-  -> m GameExternal
-runGameTestWithLogger logger investigator queue f =
-  newGame investigator queue >>= runMessages logger . f
-
-newGame :: MonadIO m => Investigator -> [Message] -> m GameInternal
-newGame investigator queue = do
-  ref <- newIORef queue
-  roundHistory <- newIORef []
-  phaseHistory <- newIORef []
+newGame :: MonadIO m => Investigator -> m Game
+newGame investigator = do
   scenario' <- testScenario "00000" id
   pure $ Game
-    { gameMessages = ref
-    , gameRoundMessageHistory = roundHistory
-    , gamePhaseMessageHistory = phaseHistory
+    { gameRoundMessageHistory = []
+    , gamePhaseMessageHistory = []
     , gameSeed = 1
     , gameMode = That scenario'
     , gamePlayerCount = 1

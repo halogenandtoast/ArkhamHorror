@@ -64,9 +64,11 @@ tests:
       - hspec
       - hspec-core
       - hspec-expectations
+      - hspec-expectations-lifted
       - lens
       - these
       - uuid
       - unordered-containers >= 0.2.12.0
       - mtl
       - safe
+      - MonadRandom

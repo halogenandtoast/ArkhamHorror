@@ -1,8 +1,9 @@
 module Arkham.Types.Event.Cards.Barricade3Spec
   ( spec
-  ) where
+  )
+where
 
-import TestImport
+import TestImport.Lifted
 
 import Arkham.Types.Modifier
 
@@ -15,38 +16,40 @@ spec = do
           location <- testLocation "00000" id
           investigator <- testInvestigator "00000" id
           barricade3 <- buildEvent "50004" investigator
-          game <-
-            runGameTest
+          runGameTest
               investigator
               [moveTo investigator location, playEvent investigator barricade3]
-            $ (eventsL %~ insertEntity barricade3)
-            . (locationsL %~ insertEntity location)
-          withGame
-              game
-              (map modifierType
-              <$> getModifiersFor (TestSource mempty) (toTarget location) ()
+              ((eventsL %~ insertEntity barricade3)
+              . (locationsL %~ insertEntity location)
               )
-            `shouldReturn` [ CannotBeEnteredByNonElite
-                           , SpawnNonEliteAtConnectingInstead
-                           ]
-          barricade3 `shouldSatisfy` isAttachedTo game location
+            $ do
+                runMessagesNoLogging
+                (map modifierType
+                  <$> getModifiersFor (TestSource mempty) (toTarget location) ()
+                  )
+                  `shouldReturn` [ CannotBeEnteredByNonElite
+                                 , SpawnNonEliteAtConnectingInstead
+                                 ]
+                isAttachedTo location barricade3 `shouldReturn` True
 
     it "should be discarded if an investigator leaves the location" $ do
       location <- testLocation "00000" id
       investigator <- testInvestigator "00000" id
       investigator2 <- testInvestigator "00001" id
       barricade3 <- buildEvent "01038" investigator
-      game <-
-        runGameTest
+      runGameTest
           investigator
           [ moveAllTo location
           , playEvent investigator barricade3
           , moveFrom investigator2 location
           ]
-        $ (eventsL %~ insertEntity barricade3)
-        . (locationsL %~ insertEntity location)
-        . (investigatorsL %~ insertEntity investigator2)
-      withGame game (getModifiersFor (TestSource mempty) (toTarget location) ())
-        `shouldReturn` []
-      barricade3 `shouldSatisfy` not . isAttachedTo game location
-      barricade3 `shouldSatisfy` isInDiscardOf game investigator
+          ((eventsL %~ insertEntity barricade3)
+          . (locationsL %~ insertEntity location)
+          . (investigatorsL %~ insertEntity investigator2)
+          )
+        $ do
+            runMessagesNoLogging
+            getModifiersFor (TestSource mempty) (toTarget location) ()
+              `shouldReturn` []
+            isAttachedTo location barricade3 `shouldReturn` False
+            isInDiscardOf investigator barricade3 `shouldReturn` True

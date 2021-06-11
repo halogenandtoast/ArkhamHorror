@@ -17,7 +17,9 @@ import Arkham.Types.Scenario.Scenarios.TheGathering
 import Arkham.Types.Trait (Trait)
 
 newtype ReturnToTheGathering = ReturnToTheGathering TheGathering
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
+  deriving stock Generic
+  deriving anyclass HasRecord
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 returnToTheGathering :: Difficulty -> ReturnToTheGathering
 returnToTheGathering difficulty = ReturnToTheGathering . TheGathering $ base

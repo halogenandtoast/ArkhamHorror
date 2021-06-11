@@ -1,8 +1,9 @@
 module Arkham.Types.Event.Cards.BlindingLight2Spec
   ( spec
-  ) where
+  )
+where
 
-import TestImport
+import TestImport.Lifted
 
 import qualified Arkham.Types.Enemy.Attrs as EnemyAttrs
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
@@ -11,14 +12,13 @@ spec :: Spec
 spec = do
   describe "Blinding Light 2" $ do
     it "Uses willpower to evade an enemy" $ do
-      investigator <- testInvestigator "00000" $ \attrs ->
-        attrs { investigatorWillpower = 5, investigatorAgility = 3 }
+      investigator <- testInvestigator "00000"
+        $ \attrs -> attrs { investigatorWillpower = 5, investigatorAgility = 3 }
       enemy <- testEnemy
         (set EnemyAttrs.evadeL 4 . set EnemyAttrs.healthL (Static 3))
       blindingLight2 <- buildEvent "01069" investigator
       location <- testLocation "00000" id
-      game <-
-        runGameTest
+      runGameTest
           investigator
           [ SetTokens [MinusOne]
           , enemySpawn location enemy
@@ -29,11 +29,13 @@ spec = do
           . (enemiesL %~ insertEntity enemy)
           . (locationsL %~ insertEntity location)
           )
-        >>= runGameTestOnlyOption "Evade enemy"
-        >>= runGameTestOnlyOption "Run skill check"
-        >>= runGameTestOnlyOption "Apply results"
-      blindingLight2 `shouldSatisfy` isInDiscardOf game investigator
-      enemy `shouldSatisfy` evadedBy game investigator
+        $ do
+            runMessagesNoLogging
+            runGameTestOnlyOption "Evade enemy"
+            runGameTestOnlyOption "Run skill check"
+            runGameTestOnlyOption "Apply results"
+            isInDiscardOf investigator blindingLight2 `shouldReturn` True
+            evadedBy investigator enemy `shouldReturn` True
 
     it "deals 2 damage to the evaded enemy" $ do
       investigator <- testInvestigator "00000" id
@@ -41,8 +43,7 @@ spec = do
         (set EnemyAttrs.evadeL 4 . set EnemyAttrs.healthL (Static 3))
       blindingLight2 <- buildEvent "01069" investigator
       location <- testLocation "00000" id
-      game <-
-        runGameTest
+      runGameTest
           investigator
           [ SetTokens [MinusOne]
           , enemySpawn location enemy
@@ -53,11 +54,13 @@ spec = do
           . (enemiesL %~ insertEntity enemy)
           . (locationsL %~ insertEntity location)
           )
-        >>= runGameTestOnlyOption "Evade enemy"
-        >>= runGameTestOnlyOption "Run skill check"
-        >>= runGameTestOnlyOption "Apply results"
-      blindingLight2 `shouldSatisfy` isInDiscardOf game investigator
-      updated game enemy `shouldSatisfy` hasDamage (2, 0)
+        $ do
+            runMessagesNoLogging
+            runGameTestOnlyOption "Evade enemy"
+            runGameTestOnlyOption "Run skill check"
+            runGameTestOnlyOption "Apply results"
+            isInDiscardOf investigator blindingLight2 `shouldReturn` True
+            updated enemy `shouldSatisfyM` hasDamage (2, 0)
 
     it
         "On Skull, Cultist, Tablet, ElderThing, or AutoFail the investigator loses an action and takes 1 horror"
@@ -68,8 +71,7 @@ spec = do
             ((EnemyAttrs.evadeL .~ 4) . (EnemyAttrs.healthL .~ Static 3))
           blindingLight2 <- buildEvent "01069" investigator
           location <- testLocation "00000" id
-          game <-
-            runGameTest
+          runGameTest
               investigator
               [ SetTokens [token]
               , enemySpawn location enemy
@@ -80,10 +82,12 @@ spec = do
               . (enemiesL %~ insertEntity enemy)
               . (locationsL %~ insertEntity location)
               )
-            >>= runGameTestOnlyOption "Evade enemy"
-            >>= runGameTestOnlyOption "Run skill check"
-            >>= runGameTestOnlyOption "Apply results"
-            >>= runGameTestOnlyOption "take event damage"
-          blindingLight2 `shouldSatisfy` isInDiscardOf game investigator
-          investigator `shouldSatisfy` hasRemainingActions game 2
-          updated game investigator `shouldSatisfy` hasDamage (0, 1)
+            $ do
+                runMessagesNoLogging
+                runGameTestOnlyOption "Evade enemy"
+                runGameTestOnlyOption "Run skill check"
+                runGameTestOnlyOption "Apply results"
+                runGameTestOnlyOption "take event damage"
+                isInDiscardOf investigator blindingLight2 `shouldReturn` True
+                getRemainingActions investigator `shouldReturn` 2
+                updated investigator `shouldSatisfyM` hasDamage (0, 1)

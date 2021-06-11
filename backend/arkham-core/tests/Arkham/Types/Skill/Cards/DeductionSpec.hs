@@ -3,7 +3,7 @@ module Arkham.Types.Skill.Cards.DeductionSpec
   )
 where
 
-import TestImport
+import TestImport.Lifted
 
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 import Arkham.Types.Location.Attrs (LocationAttrs(..))
@@ -16,8 +16,7 @@ spec = describe "Deduction" $ do
     location <- testLocation "00000"
       $ \attrs -> attrs { locationClues = 2, locationShroud = 2 }
     deduction <- buildPlayerCard "01039"
-    game <-
-      runGameTest
+    runGameTest
         investigator
         [ SetTokens [Zero]
         , moveTo investigator location
@@ -25,18 +24,19 @@ spec = describe "Deduction" $ do
         , investigate investigator location
         ]
         (locationsL %~ insertEntity location)
-      >>= runGameTestOptionMatching
+      $ do
+          runMessagesNoLogging
+          runGameTestOptionMatching
             "commit skill card"
             (\case
               Run{} -> True
               _ -> False
             )
-      >>= runGameTestOptionMatching
+          runGameTestOptionMatching
             "start skill test"
             (\case
               StartSkillTest{} -> True
               _ -> False
             )
-      >>= runGameTestOnlyOption "apply results"
-    withGame game (asks $ unClueCount . getCount (toId investigator))
-      `shouldReturn` 2
+          runGameTestOnlyOption "apply results"
+          getCount (toId investigator) `shouldReturn` ClueCount 2

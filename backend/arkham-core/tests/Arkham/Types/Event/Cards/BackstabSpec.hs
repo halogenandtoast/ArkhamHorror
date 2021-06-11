@@ -1,8 +1,9 @@
 module Arkham.Types.Event.Cards.BackstabSpec
   ( spec
-  ) where
+  )
+where
 
-import TestImport
+import TestImport.Lifted
 
 import qualified Arkham.Types.Enemy.Attrs as EnemyAttrs
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
@@ -17,8 +18,7 @@ spec = do
       backstab <- buildEvent "01051" investigator
       enemy <- testEnemy
         ((EnemyAttrs.fightL .~ 3) . (EnemyAttrs.healthL .~ Static 4))
-      game <-
-        runGameTest
+      runGameTest
           investigator
           [ SetTokens [MinusOne]
           , enemySpawn location enemy
@@ -29,8 +29,11 @@ spec = do
           . (locationsL %~ insertEntity location)
           . (enemiesL %~ insertEntity enemy)
           )
-        >>= runGameTestOnlyOption "Fight enemy"
-        >>= runGameTestOnlyOption "Run skill check"
-        >>= runGameTestOnlyOption "Apply results"
-      updated game enemy `shouldSatisfy` hasDamage (3, 0)
-      backstab `shouldSatisfy` isInDiscardOf game investigator
+        $ do
+            runMessagesNoLogging
+            runGameTestOnlyOption "Fight enemy"
+            runGameTestOnlyOption "Run skill check"
+            runGameTestOnlyOption "Apply results"
+
+            updated enemy `shouldSatisfyM` hasDamage (3, 0)
+            isInDiscardOf investigator backstab `shouldReturn` True

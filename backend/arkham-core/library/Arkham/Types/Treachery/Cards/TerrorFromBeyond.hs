@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.TerrorFromBeyond
   ( TerrorFromBeyond(..)
   , terrorFromBeyond
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -10,9 +11,9 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.TreacheryId
 
 newtype TerrorFromBeyond = TerrorFromBeyond TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -30,7 +31,7 @@ instance TreacheryRunner env => RunMessage env TerrorFromBeyond where
   runMessage msg t@(TerrorFromBeyond attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       iids <- getSetList ()
-      phaseHistory <- getPhaseHistory =<< ask
+      phaseHistory <- getPhaseHistory
       let
         secondCopy =
           count

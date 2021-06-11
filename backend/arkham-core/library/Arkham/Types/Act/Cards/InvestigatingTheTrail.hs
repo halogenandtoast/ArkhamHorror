@@ -43,7 +43,7 @@ instance ActRunner env => RunMessage env InvestigatingTheTrail where
       when (isNothing mRitualSiteId) $ do
         ritualSiteId <- getRandom
         unshiftMessage (PlaceLocation "01156" ritualSiteId)
-      cultistsWhoGotAwayCardCodes <- asks (hasRecordSet CultistsWhoGotAway)
+      cultistsWhoGotAwayCardCodes <- hasRecordSet CultistsWhoGotAway
       cultistsWhoGotAway <- for cultistsWhoGotAwayCardCodes genEncounterCard
       a <$ unshiftMessages
         ([ CreateEnemyAt (EncounterCard card) mainPathId Nothing

@@ -1,7 +1,8 @@
 module Arkham.Types.Card
   ( module Arkham.Types.Card
   , module X
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -58,8 +59,8 @@ newtype InPlayCard = InPlayCard { unInPlayCard ::Card }
   deriving stock (Show, Generic)
   deriving newtype (ToJSON, FromJSON)
 
-class HasCard b a where
-  getCard :: b -> CardId -> a -> Card
+class HasCard env a where
+  getCard :: (MonadReader env m, MonadIO m) => CardId -> a -> m Card
 
 instance HasSkillIcons Card where
   getSkillIcons (PlayerCard card) = getSkillIcons card

@@ -12,10 +12,8 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Prey
 import Arkham.Types.Query
+import Arkham.Types.SkillTest
 import Arkham.Types.Source
-import Arkham.Types.Target
-
-
 import Arkham.Types.Trait
 
 type EnemyRunner env
@@ -45,6 +43,6 @@ type EnemyRunner env
     , HasSet Trait env EnemyId
     , HasSet Trait env LocationId
     , HasSet Trait env Source
-    , HasSource ForSkillTest env
-    , HasStep AgendaStep env
+    , HasSkillTest env
+    , HasStep env AgendaStep
     )

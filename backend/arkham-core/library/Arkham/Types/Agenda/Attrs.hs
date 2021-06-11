@@ -80,8 +80,8 @@ baseAttrs aid name seq' threshold = AgendaAttrs
 instance HasActions env AgendaAttrs where
   getActions _ _ _ = pure []
 
-instance HasStep AgendaStep AgendaAttrs where
-  getStep = agendaStep . agendaSequence
+instance HasStep AgendaAttrs AgendaStep where
+  getStep = asks $ agendaStep . agendaSequence
 
 instance HasList UnderneathCard env AgendaAttrs where
   getList = pure . map UnderneathCard . agendaCardsUnderneath

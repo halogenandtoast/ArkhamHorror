@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.PayForAbilityEffect
   ( payForAbilityEffect
   , PayForAbilityEffect(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

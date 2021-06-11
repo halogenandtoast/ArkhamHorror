@@ -5,8 +5,10 @@
 module Orphans where
 
 import Arkham.Types.Game
+import Arkham.Types.Message
 import ClassyPrelude
 import Control.Error.Util (hush)
+import qualified Control.Monad.Fail as Fail
 import Data.Aeson
 import Data.Aeson.Types
 import qualified Data.ByteString.Char8 as BS8
@@ -18,15 +20,24 @@ import Database.Persist.Sql
 import Web.HttpApiData
 import Web.PathPieces
 import Yesod.Core.Content
+import Yesod.Test (SIO)
 
 fmapLeft :: (a -> b) -> Either a c -> Either b c
 fmapLeft f (Left a) = Left (f a)
 fmapLeft _ (Right a) = Right a -- Rewrap to fix types.
 
-instance PersistFieldSql GameExternal where
+instance PersistFieldSql Game where
   sqlType _ = SqlString
 
-instance PersistField GameExternal where
+instance PersistField Game where
+  toPersistValue = toPersistValue . toJSON
+  fromPersistValue val =
+    fromPersistValue val >>= fmapLeft pack . parseEither parseJSON
+
+instance PersistFieldSql [Message] where
+  sqlType _ = SqlString
+
+instance PersistField [Message] where
   toPersistValue = toPersistValue . toJSON
   fromPersistValue val =
     fromPersistValue val >>= fmapLeft pack . parseEither parseJSON
@@ -72,3 +83,6 @@ instance (ToBackendKey SqlBackend a) => FromJSONKey (Key a) where
 instance (ToBackendKey SqlBackend a) => Hashable (Key a) where
   hash = hash . fromSqlKey
   hashWithSalt n = hashWithSalt n . fromSqlKey
+
+instance Fail.MonadFail (SIO s) where
+  fail = liftIO . Fail.fail

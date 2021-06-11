@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.CloverClubBar
   ( cloverClubBar
   , CloverClubBar(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -53,7 +54,7 @@ ability attrs = (mkAbility
 instance ActionRunner env => HasActions env CloverClubBar where
   getActions iid NonFast (CloverClubBar attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ do
-      step <- unActStep . getStep <$> ask
+      step <- unActStep <$> getStep
       pure
         [ ActivateCardAbilityAction iid (ability attrs)
         | iid `member` locationInvestigators && step == 1

@@ -1,6 +1,7 @@
 module Arkham.Types.Agenda
   ( module Arkham.Types.Agenda
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -70,8 +71,8 @@ instance HasList UnderneathCard env Agenda where
 instance HasCount DoomCount env Agenda where
   getCount = getCount . toAttrs
 
-instance HasStep AgendaStep Agenda where
-  getStep = getStep . toAttrs
+instance HasStep Agenda AgendaStep where
+  getStep = ask >>= runReaderT getStep . toAttrs
 
 data Agenda
   = WhatsGoingOn' WhatsGoingOn

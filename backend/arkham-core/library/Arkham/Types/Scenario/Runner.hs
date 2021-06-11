@@ -14,7 +14,7 @@ import Arkham.Types.LocationMatcher
 import Arkham.Types.Query
 import Arkham.Types.ScenarioId
 import Arkham.Types.ScenarioLogKey
-import Arkham.Types.Target
+import Arkham.Types.SkillTest
 import Arkham.Types.Trait
 
 type ScenarioRunner env
@@ -54,6 +54,6 @@ type ScenarioRunner env
     , HasSet StoryEnemyId env CardCode
     , HasSet Trait env LocationId
     , HasSet VictoryDisplayCardCode env ()
-    , HasSource ForSkillTest env
+    , HasSkillTest env
     )
 

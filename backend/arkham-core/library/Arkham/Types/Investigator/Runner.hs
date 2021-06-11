@@ -25,8 +25,8 @@ import Arkham.Types.Name
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.ScenarioLogKey
+import Arkham.Types.SkillTest
 import Arkham.Types.Source
-import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 
@@ -166,7 +166,6 @@ type InvestigatorRunner env
         , HasSet UnrevealedLocationId env LocationMatcher
         )
       )
-    , HasSource ForSkillTest env
-    , (HasStep ActStep env, HasStep AgendaStep env)
-    , HasTarget ForSkillTest env
+    , (HasStep env ActStep, HasStep env AgendaStep)
+    , HasSkillTest env
     )

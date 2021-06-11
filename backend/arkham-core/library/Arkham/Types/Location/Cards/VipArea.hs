@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.VipArea
   ( vipArea
   , VipArea(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -40,7 +41,7 @@ vipArea lid = VipArea
 instance HasPhase env => HasModifiersFor env VipArea where
   getModifiersFor _ (InvestigatorTarget iid) (VipArea attrs)
     | iid `member` locationInvestigators attrs = do
-      phase <- getPhase <$> ask
+      phase <- getPhase
       if phase == UpkeepPhase
         then pure $ toModifiers attrs [CannotDrawCards, CannotGainResources]
         else pure []

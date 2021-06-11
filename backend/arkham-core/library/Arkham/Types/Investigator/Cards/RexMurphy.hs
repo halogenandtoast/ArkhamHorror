@@ -42,7 +42,7 @@ rexMurphy = RexMurphy $ baseAttrs
     }
   [Reporter]
 
-instance ActionRunner env => HasActions env RexMurphy where
+instance InvestigatorRunner env => HasActions env RexMurphy where
   getActions iid (AfterPassSkillTest _ _ You n) (RexMurphy attrs@InvestigatorAttrs {..})
     | iid == investigatorId && n >= 2
     = do

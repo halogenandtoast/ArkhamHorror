@@ -3,7 +3,7 @@ module Arkham.Types.Investigator.Cards.ZoeySamarasSpec
   )
 where
 
-import TestImport
+import TestImport.Lifted
 
 import qualified Arkham.Types.Enemy.Attrs as Enemy
 
@@ -12,17 +12,16 @@ spec = do
   describe "Zoey Samaras" $ do
     it "elder sign token gives +1" $ do
       let zoeySamaras = lookupInvestigator "02001"
-      game <- runGameTest zoeySamaras [] id
-      token <- withGame
-        game
-        (getTokenValue zoeySamaras (toId zoeySamaras) ElderSign)
-      tokenValue token `shouldBe` Just 1
+      runGameTest zoeySamaras [] id $ do
+        runMessagesNoLogging
+        token <- getTokenValue zoeySamaras (toId zoeySamaras) ElderSign
+        tokenValue token `shouldBe` Just 1
+
     it "elder sign token gives +1 and does +1 damage for attacks" $ do
       let zoeySamaras = lookupInvestigator "02001" -- combat is 4
       enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 5))
       location <- testLocation "00000" id
-      game <-
-        runGameTest
+      runGameTest
           zoeySamaras
           [ SetTokens [ElderSign]
           , enemySpawn location enemy
@@ -32,23 +31,25 @@ spec = do
           ((enemiesL %~ insertEntity enemy)
           . (locationsL %~ insertEntity location)
           )
-        >>= runGameTestOptionMatching
+        $ do
+            runMessagesNoLogging
+            runGameTestOptionMatching
               "skip ability"
               (\case
                 Continue{} -> True
                 _ -> False
               )
-        >>= runGameTestOnlyOption "start skill test"
-        >>= runGameTestOnlyOption "apply results"
-      updated game enemy `shouldSatisfy` hasDamage (2, 0)
+            runGameTestOnlyOption "start skill test"
+            runGameTestOnlyOption "apply results"
+            updated enemy `shouldSatisfyM` hasDamage (2, 0)
+
     it "allows you to gain a resource each time you are engaged by an enemy"
       $ do
           let zoeySamaras = lookupInvestigator "02001"
           location <- testLocation "00000" id
           enemy1 <- testEnemy id
           enemy2 <- testEnemy id
-          game <-
-            runGameTest
+          runGameTest
               zoeySamaras
               [ enemySpawn location enemy1
               , moveTo zoeySamaras location
@@ -58,16 +59,18 @@ spec = do
               . (enemiesL %~ insertEntity enemy1)
               . (enemiesL %~ insertEntity enemy2)
               )
-            >>= runGameTestOptionMatching
+            $ do
+                runMessagesNoLogging
+                runGameTestOptionMatching
                   "use ability"
                   (\case
                     Run{} -> True
                     _ -> False
                   )
-            >>= runGameTestOptionMatching
+                runGameTestOptionMatching
                   "use ability again"
                   (\case
                     Run{} -> True
                     _ -> False
                   )
-          updatedResourceCount game zoeySamaras `shouldBe` 2
+                updatedResourceCount zoeySamaras `shouldReturn` 2

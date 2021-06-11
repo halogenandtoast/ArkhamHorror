@@ -1,6 +1,7 @@
 module Arkham.Types.Asset.Cards.GrotesqueStatue4Spec
   ( spec
-  ) where
+  )
+where
 
 import TestImport
 
@@ -12,32 +13,33 @@ spec = describe "Grotesque Statue (4)" $ do
     it "reveals 2 tokens and let's you choose one" $ do
       investigator <- testInvestigator "00000" id
       grotestqueStatue <- buildAsset "01071"
-      (didRunMessage, logger) <- didPassSkillTestBy
-        investigator
-        SkillIntellect
-        5
-      game <-
-        runGameTest
+      runGameTest
           investigator
           [ SetTokens [AutoFail, Zero]
           , playAsset investigator grotestqueStatue
           , beginSkillTest investigator SkillIntellect 0
           ]
           (assetsL %~ insertEntity grotestqueStatue)
-        >>= runGameTestOnlyOption "start skill test"
-        >>= runGameTestOptionMatching
+        $ do
+            (didRunMessage, logger) <- didPassSkillTestBy
+              investigator
+              SkillIntellect
+              5
+            runMessagesNoLogging
+            runGameTestOnlyOption "start skill test"
+            runGameTestOptionMatching
               "use ability"
               (\case
                 Run{} -> True
                 _ -> False
               )
-        >>= runGameTestOptionMatching
+            runGameTestOptionMatching
               "choose zero token"
               (\case
                 ChooseTokenGroups _ _ (Choose 1 _ [[Zero]]) -> True
                 _ -> False
               )
-        >>= runGameTestOnlyOptionWithLogger "apply results" logger
+            runGameTestOnlyOptionWithLogger "apply results" logger
 
-      readIORef didRunMessage `shouldReturn` True
-      chaosBagTokensOf game `shouldMatchList` [Zero, AutoFail]
+            didRunMessage `refShouldBe` True
+            getChaosBagTokens `shouldMatchListM` [Zero, AutoFail]

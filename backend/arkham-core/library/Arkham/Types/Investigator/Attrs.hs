@@ -1,5 +1,5 @@
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module Arkham.Types.Investigator.Attrs where
 
@@ -9,12 +9,13 @@ import Arkham.Json
 import Arkham.PlayerCard
 import Arkham.Types.Ability
 import Arkham.Types.Action (Action)
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes hiding (discard)
+import Arkham.Types.ClassSymbol
 import Arkham.Types.CommitRestriction
 import Arkham.Types.Cost
 import Arkham.Types.EnemyId
@@ -27,6 +28,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Query
+import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Source
@@ -35,10 +37,8 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window
-import Control.Monad.Fail
-import Data.UUID (nil)
-import qualified Arkham.Types.Action as Action
 import qualified Data.HashSet as HashSet
+import Data.UUID (nil)
 
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorName :: Text
@@ -162,13 +162,12 @@ baseSkillValueFor skill _maction tempModifiers attrs = foldr
     SkillWild -> error "investigators do not have wild skills"
 
 damageValueFor
-  :: (MonadReader env m, HasModifiersFor env (), HasSource ForSkillTest env)
+  :: (MonadReader env m, HasModifiersFor env (), HasSkillTest env)
   => Int
   -> InvestigatorAttrs
   -> m Int
 damageValueFor baseValue attrs = do
-  source <-
-    asks $ fromJustNote "damage outside skill test" . getSource ForSkillTest
+  source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
   modifiers <-
     map modifierType
       <$> getModifiersFor source (InvestigatorTarget $ investigatorId attrs) ()
@@ -178,14 +177,10 @@ damageValueFor baseValue attrs = do
   applyModifier _ n = n
 
 getIsScenarioAbility
-  :: ( HasSource ForSkillTest env
-     , MonadReader env m
-     , CanBeWeakness env TreacheryId
-     )
+  :: (HasSkillTest env, MonadReader env m, CanBeWeakness env TreacheryId)
   => m Bool
 getIsScenarioAbility = do
-  source <-
-    asks $ fromJustNote "damage outside skill test" . getSource ForSkillTest
+  source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
   case source of
     SkillTestSource _ _ source' _ _ -> case source' of
       EnemySource _ -> pure True
@@ -197,11 +192,11 @@ getIsScenarioAbility = do
     _ -> pure False
 
 getHandSize
-  :: (MonadReader env m, HasModifiersFor env (), HasSource ForSkillTest env)
+  :: (MonadReader env m, HasModifiersFor env (), HasSkillTest env)
   => InvestigatorAttrs
   -> m Int
 getHandSize attrs = do
-  source <- asks $ fromMaybe (toSource attrs) . getSource ForSkillTest
+  source <- fromMaybe (toSource attrs) <$> getSkillTestSource
   modifiers <-
     map modifierType
       <$> getModifiersFor source (InvestigatorTarget $ investigatorId attrs) ()
@@ -260,8 +255,7 @@ getModifiedSanity attrs@InvestigatorAttrs {..} = do
   applyModifier (SanityModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-removeFromSlots
-  :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
+removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = fmap (map (removeIfMatches aid))
 
 fitsAvailableSlots :: [SlotType] -> [Trait] -> InvestigatorAttrs -> Bool
@@ -402,13 +396,12 @@ getSpendableClueCount a = do
   pure $ if canSpendClues then investigatorClues a else 0
 
 cluesToDiscover
-  :: (MonadReader env m, HasModifiersFor env (), HasSource ForSkillTest env)
+  :: (MonadReader env m, HasModifiersFor env (), HasSkillTest env)
   => InvestigatorAttrs
   -> Int
   -> m Int
 cluesToDiscover attrs startValue = do
-  source <-
-    asks $ fromJustNote "damage outside skill test" . getSource ForSkillTest
+  source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
   modifiers <-
     map modifierType
       <$> getModifiersFor source (InvestigatorTarget $ investigatorId attrs) ()
@@ -569,7 +562,7 @@ getPossibleSkillTypeChoices skillType attrs = do
 instance HasModifiersFor env InvestigatorAttrs where
   getModifiersFor = noModifiersFor
 
-instance ActionRunner env => HasActions env InvestigatorAttrs where
+instance (ActionRunner env, HasSkillTest env) => HasActions env InvestigatorAttrs where
   getActions iid window attrs | iid == investigatorId attrs = concat <$> for
     (attrs ^.. handL . traverse . _PlayerCard)
     (getActions iid (InHandWindow iid window) . toCardInstance iid . PlayerCard)
@@ -622,12 +615,7 @@ isForced (ActivateCardAbilityAction _ Ability { abilityType }) =
 isForced _ = False
 
 runInvestigatorMessage
-  :: ( InvestigatorRunner env
-     , MonadReader env m
-     , MonadRandom m
-     , MonadIO m
-     , MonadFail m
-     )
+  :: (InvestigatorRunner env, MonadReader env m, MonadRandom m, MonadIO m)
   => Message
   -> InvestigatorAttrs
   -> m InvestigatorAttrs
@@ -1272,7 +1260,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   MoveAllTo lid | not (a ^. defeatedL || a ^. resignedL) ->
     a <$ unshiftMessage (MoveTo investigatorId lid)
   MoveTo iid lid | iid == investigatorId -> do
-    connectedLocations <- asks $ mapSet unConnectedLocationId . getSet lid
+    connectedLocations <- mapSet unConnectedLocationId <$> getSet lid
     unshiftMessages [WhenEnterLocation iid lid, AfterEnterLocation iid lid]
     pure $ a & locationL .~ lid & connectedLocationsL .~ connectedLocations
   AddedConnection lid1 lid2 | lid1 == investigatorLocation ->
@@ -1401,8 +1389,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     committedCardCodes <- mapSet unCommittedCardCode <$> getSet ()
     actions <- getActions iid (WhenSkillTest skillType) ()
     isScenarioAbility <- getIsScenarioAbility
-    source <-
-      asks $ fromJustNote "damage outside skill test" . getSource ForSkillTest
+    source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
     cannotCommitCards <-
       elem CannotCommitCards
       . map modifierType

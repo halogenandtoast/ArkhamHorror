@@ -7,6 +7,7 @@ module Entity.Arkham.Game
 where
 
 import Arkham.Types.Game
+import Arkham.Types.Message
 import ClassyPrelude
 import Data.UUID
 import Database.Persist.Postgresql.JSON ()
@@ -18,7 +19,8 @@ share [mkPersist sqlSettings, mkDeleteCascade sqlSettings] [persistLowerCase|
 ArkhamGame sql=arkham_games
   Id UUID default=uuid_generate_v4()
   name Text
-  currentData GameExternal
+  currentData Game
+  queue [Message]
   deriving Generic Show
 |]
 

@@ -6,15 +6,15 @@ where
 
 import Arkham.Prelude
 
+import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Helpers
+import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Direction
 import Arkham.Types.GameValue
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Query
-import Arkham.Types.Agenda.Attrs
-import Arkham.Types.Agenda.Helpers
-import Arkham.Types.Agenda.Runner
 
 newtype ATearInReality = ATearInReality AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -30,7 +30,10 @@ instance HasActions env ATearInReality where
   getActions i window (ATearInReality x) = getActions i window x
 
 leftmostLocation
-  :: (MonadReader env m, HasId (Maybe LocationId) env (Direction, LocationId))
+  :: ( MonadReader env m
+     , HasId (Maybe LocationId) env (Direction, LocationId)
+     , MonadIO m
+     )
   => LocationId
   -> m LocationId
 leftmostLocation lid = do

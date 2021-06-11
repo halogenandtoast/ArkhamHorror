@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.UndergroundMuscle
   ( UndergroundMuscle(..)
   , undergroundMuscle
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -17,6 +18,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Query
+import Data.Maybe (fromJust)
 
 newtype UndergroundMuscle = UndergroundMuscle AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -37,7 +39,10 @@ instance AgendaRunner env => RunMessage env UndergroundMuscle where
       laBellaLunaId <- getJustLocationIdByName "La Bella Luna"
       cloverClubLoungeId <- getJustLocationIdByName "Clover Club Lounge"
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
-      (enemy : rest) <- shuffleM =<< gatherEncounterSet HideousAbominations
+      result <- shuffleM =<< gatherEncounterSet HideousAbominations
+      let
+        enemy = fromJust . headMay $ result
+        rest = drop 1 result
       strikingFear <- gatherEncounterSet StrikingFear
       laBellaLunaInvestigators <- getSetList laBellaLunaId
       laBellaLunaEnemies <- getSetList @EnemyId laBellaLunaId

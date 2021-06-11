@@ -66,6 +66,8 @@ library:
     - http-conduit
     - http-types
     - jwt
+    - lens
+    - MonadRandom
     - monad-logger
     - path-pieces
     - persistent
@@ -92,6 +94,7 @@ library:
     - yaml
     - yesod
     - yesod-core
+    - yesod-test
     - yesod-static
     - yesod-websockets
 

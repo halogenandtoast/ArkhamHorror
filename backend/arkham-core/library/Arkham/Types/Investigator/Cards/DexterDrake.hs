@@ -31,7 +31,7 @@ dexterDrake = DexterDrake $ baseAttrs
     }
   [Sorcerer, Veteran]
 
-instance ActionRunner env => HasActions env DexterDrake where
+instance InvestigatorRunner env => HasActions env DexterDrake where
   getActions i window (DexterDrake attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env DexterDrake where

@@ -31,7 +31,7 @@ patriceHathaway = PatriceHathaway $ baseAttrs
     }
   [Performer, Cursed]
 
-instance ActionRunner env => HasActions env PatriceHathaway where
+instance InvestigatorRunner env => HasActions env PatriceHathaway where
   getActions i window (PatriceHathaway attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env PatriceHathaway where

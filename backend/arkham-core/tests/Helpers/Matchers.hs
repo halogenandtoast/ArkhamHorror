@@ -22,13 +22,22 @@ import Arkham.Types.Treachery
 import Arkham.Types.TreacheryId
 import Control.Lens
 import qualified Data.List as L
+import Data.Maybe (fromJust)
+
+getTestGame :: (MonadIO m, MonadReader env m, HasGameRef env) => m Game
+getTestGame = readIORef =<< view gameRefL
 
 isInDiscardOf
-  :: (ToPlayerCard entity) => Game queue -> Investigator -> entity -> Bool
-isInDiscardOf game investigator entity = card `elem` discard'
- where
-  discard' = game ^?! investigatorsL . ix (toId investigator) . to discardOf
-  card = asPlayerCard entity
+  :: (ToPlayerCard entity, HasGameRef env, MonadIO m, MonadReader env m)
+  => Investigator
+  -> entity
+  -> m Bool
+isInDiscardOf investigator entity = do
+  game <- getTestGame
+  let
+    discard' = game ^?! investigatorsL . ix (toId investigator) . to discardOf
+  pure $ card `elem` discard'
+  where card = asPlayerCard entity
 
 class ToPlayerCard a where
   asPlayerCard :: a -> PlayerCard
@@ -47,62 +56,80 @@ instance ToPlayerCard Treachery where
     lookupPlayerCard (getCardCode treachery) (getCardId treachery)
 
 class (Entity a, TargetEntity a) => TestEntity a where
-  updated :: Game queue -> a -> a
+  updated :: (MonadReader env m, HasGameRef env, MonadIO m) => a -> m a
 
 instance TestEntity Agenda where
-  updated g a = g ^?! agendasL . ix (toId a)
+  updated a = fromJust . preview (agendasL . ix (toId a)) <$> getTestGame
 
 instance TestEntity Treachery where
-  updated g t = g ^?! treacheriesL . ix (toId t)
+  updated t = fromJust . preview (treacheriesL . ix (toId t)) <$> getTestGame
 
 instance TestEntity Asset where
-  updated g a = g ^?! assetsL . ix (toId a)
+  updated a = fromJust . preview (assetsL . ix (toId a)) <$> getTestGame
 
 instance TestEntity Location where
-  updated g l = g ^?! locationsL . ix (toId l)
+  updated l = fromJust . preview (locationsL . ix (toId l)) <$> getTestGame
 
 instance TestEntity Event where
-  updated g e = g ^?! eventsL . ix (toId e)
+  updated e = fromJust . preview (eventsL . ix (toId e)) <$> getTestGame
 
 instance TestEntity Enemy where
-  updated g e = g ^?! enemiesL . ix (toId e)
+  updated e = fromJust . preview (enemiesL . ix (toId e)) <$> getTestGame
 
 instance TestEntity Investigator where
-  updated g i = g ^?! investigatorsL . ix (toId i)
+  updated i = fromJust . preview (investigatorsL . ix (toId i)) <$> getTestGame
 
-isAttachedTo :: (TestEntity a, TestEntity b) => Game queue -> a -> b -> Bool
-isAttachedTo game x y = case toTarget x of
+isAttachedTo
+  :: (TestEntity a, TestEntity b, MonadReader env m, HasGameRef env, MonadIO m)
+  => a
+  -> b
+  -> m Bool
+isAttachedTo x y = case toTarget x of
   LocationTarget locId -> case toTarget y of
-    EventTarget eventId ->
-      eventId `member` (game ^. locationsL . ix locId . to (`getSet` game))
-    _ -> False
-  _ -> False
+    EventTarget eventId -> do
+      game <- getTestGame
+      pure
+        $ eventId
+        `member` (game ^. locationsL . ix locId . to (`getSet` game))
+    _ -> pure False
+  _ -> pure False
 
 instance ToEncounterCard Enemy where
   asEncounterCard enemy =
     lookupEncounterCard (getCardCode enemy) (getCardId enemy)
 
 isInEncounterDiscard
-  :: (ToEncounterCard entity) => Game queue -> entity -> Bool
-isInEncounterDiscard game entity = card `elem` discard'
- where
-  discard' = game ^. discardL
-  card = asEncounterCard entity
+  :: (ToEncounterCard entity, HasGameRef env, MonadIO m, MonadReader env m)
+  => entity
+  -> m Bool
+isInEncounterDiscard entity = do
+  game <- getTestGame
+  pure $ card `elem` (game ^. discardL)
+  where card = asEncounterCard entity
 
-updatedResourceCount :: Game queue -> Investigator -> Int
-updatedResourceCount game investigator =
-  game ^?! investigatorsL . ix (toId investigator) . to
+updatedResourceCount
+  :: (HasGameRef env, MonadIO m, MonadReader env m) => Investigator -> m Int
+updatedResourceCount investigator = do
+  game <- getTestGame
+  pure $ game ^?! investigatorsL . ix (toId investigator) . to
     (Investigator.investigatorResources . toAttrs)
 
-evadedBy :: Game queue -> Investigator -> Enemy -> Bool
-evadedBy game _investigator enemy =
+evadedBy
+  :: (MonadReader env m, HasGameRef env, MonadIO m)
+  => Investigator
+  -> Enemy
+  -> m Bool
+evadedBy _investigator enemy = do
+  game <- getTestGame
   let enemy' = game ^?! enemiesL . ix (toId enemy)
-  in not (isEngaged enemy') && isExhausted enemy'
+  pure $ not (isEngaged enemy') && isExhausted enemy'
 
-hasRemainingActions :: Game queue -> Int -> Investigator -> Bool
-hasRemainingActions game n investigator =
+getRemainingActions
+  :: (HasGameRef env, MonadReader env m, MonadIO m) => Investigator -> m Int
+getRemainingActions investigator = do
+  game <- getTestGame
   let investigator' = game ^?! investigatorsL . ix (toId investigator)
-  in actionsRemaining investigator' == n
+  pure $ actionsRemaining investigator'
 
 hasDamage :: (HasDamage a) => (Int, Int) -> a -> Bool
 hasDamage n a = getDamage a == n
@@ -110,9 +137,17 @@ hasDamage n a = getDamage a == n
 hasTrauma :: (HasTrauma a) => (Int, Int) -> a -> Bool
 hasTrauma n a = getTrauma a == n
 
-hasDoom :: (TargetEntity a) => Game queue -> Int -> a -> Bool
-hasDoom game n a = case toTarget a of
-  AgendaTarget aid -> getCount aid game == DoomCount n
+getDoom
+  :: ( TargetEntity a
+     , HasGameRef env
+     , HasQueue env
+     , MonadIO m
+     , MonadReader env m
+     )
+  => a
+  -> m Int
+getDoom a = case toTarget a of
+  AgendaTarget aid -> toGameEnv >>= runReaderT (unDoomCount <$> getCount aid)
   _ -> error "Not implemented"
 
 handIs :: [Card] -> Investigator -> Bool
@@ -125,28 +160,29 @@ handMatches f i = f (handOf i)
 deckMatches :: ([PlayerCard] -> Bool) -> Investigator -> Bool
 deckMatches f i = f (deckOf i)
 
-hasEnemy :: Game queue -> Enemy -> Location -> Bool
-hasEnemy g e l = toId e `member` getSet @EnemyId l g
+hasEnemy :: (MonadReader env m) => Enemy -> Location -> m Bool
+hasEnemy e l = (toId e `member`) <$> getSet @EnemyId l
 
-hasCardInPlay :: Game queue -> Card -> Investigator -> Bool
-hasCardInPlay g c i = case c of
+hasCardInPlay :: (MonadReader env m) => Card -> Investigator -> m Bool
+hasCardInPlay c i = case c of
   PlayerCard pc -> case pcCardType pc of
-    AssetType -> AssetId (pcId pc) `member` getSet i g
+    AssetType -> (AssetId (pcId pc) `member`) <$> getSet i
     _ -> error "not implemented"
   _ -> error "not implemented"
 
 hasTreacheryWithMatchingCardCode
-  :: (HasSet TreacheryId env a, env ~ Game queue)
-  => Game queue
-  -> Card
+  :: (HasSet TreacheryId env a, HasGameRef env, MonadIO m, MonadReader env m)
+  => Card
   -> a
-  -> Bool
-hasTreacheryWithMatchingCardCode g c a = maybe
-  False
-  (\treachery -> toId treachery `member` getSet a g)
-  mtreachery
+  -> m Bool
+hasTreacheryWithMatchingCardCode c a = do
+  game <- getTestGame
+  maybe
+    (pure False)
+    (\treachery -> (toId treachery `member`) <$> getSet a)
+    (mtreachery game)
  where
-  mtreachery =
+  mtreachery g =
     find ((== getCardCode c) . getCardCode) $ toList (g ^. treacheriesL)
 
 hasClueCount :: HasCount ClueCount () a => Int -> a -> Bool

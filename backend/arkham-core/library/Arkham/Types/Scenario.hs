@@ -1,10 +1,10 @@
 module Arkham.Types.Scenario
   ( module Arkham.Types.Scenario
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
-import Arkham.Types.Name
 import Arkham.Types.ActId
 import Arkham.Types.AgendaId
 import Arkham.Types.Card
@@ -15,6 +15,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
@@ -47,7 +48,7 @@ data Scenario
 
 deriving anyclass instance
   (HasId (Maybe LocationId) env LocationMatcher
-  , HasStep ActStep env
+  , HasStep env ActStep
   , ScenarioRunner env
   )
   => RunMessage env Scenario
@@ -68,7 +69,7 @@ deriving anyclass instance
   , HasTokenValue env InvestigatorId
   , HasId LocationId env InvestigatorId
   , HasId CardCode env EnemyId
-  , HasStep AgendaStep env
+  , HasStep env AgendaStep
   )
   => HasTokenValue env Scenario
 
@@ -107,7 +108,9 @@ instance HasName Scenario SetAsideLocationCardCode where
       Just name -> pure $ unLocationName name
 
 newtype BaseScenario = BaseScenario ScenarioAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
+  deriving stock Generic
+  deriving anyclass HasRecord
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 instance HasTokenValue env InvestigatorId => HasTokenValue env BaseScenario where
   getTokenValue (BaseScenario attrs) iid = \case

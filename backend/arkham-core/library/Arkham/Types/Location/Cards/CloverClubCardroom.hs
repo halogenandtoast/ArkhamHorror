@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.CloverClubCardroom
   ( cloverClubCardroom
   , CloverClubCardroom(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -52,7 +53,7 @@ ability attrs = base { abilityLimit = GroupLimit PerRound 1 }
 instance ActionRunner env => HasActions env CloverClubCardroom where
   getActions iid NonFast (CloverClubCardroom attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ do
-      step <- unActStep . getStep <$> ask
+      step <- unActStep <$> getStep
       pure
         [ ActivateCardAbilityAction iid (ability attrs)
         | iid `member` locationInvestigators && step == 1

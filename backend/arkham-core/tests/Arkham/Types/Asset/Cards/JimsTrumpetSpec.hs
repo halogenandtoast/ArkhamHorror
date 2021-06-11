@@ -14,8 +14,7 @@ spec = describe "Jim's Trumpet" $ do
       investigator <- testInvestigator "00000" (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
       location <- testLocation "00000" id
-      game <-
-        runGameTest
+      runGameTest
           investigator
           [ SetTokens [Skull]
           , playAsset investigator jimsTrumpet
@@ -25,15 +24,17 @@ spec = describe "Jim's Trumpet" $ do
           ((assetsL %~ insertEntity jimsTrumpet)
           . (locationsL %~ insertEntity location)
           )
-        >>= runGameTestOnlyOption "start skill test"
-        >>= runGameTestOptionMatching
+        $ do
+            runMessagesNoLogging
+            runGameTestOnlyOption "start skill test"
+            runGameTestOptionMatching
               "use ability"
               (\case
                 Run{} -> True
                 _ -> False
               )
-        >>= runGameTestOnlyOption "choose self"
-      updated game investigator `shouldSatisfy` hasDamage (0, 0)
+            runGameTestOnlyOption "choose self"
+            updated investigator `shouldSatisfyM` hasDamage (0, 0)
 
     it "on an investigator at your location" $ do
       investigator <- testInvestigator "00000" id
@@ -42,8 +43,7 @@ spec = describe "Jim's Trumpet" $ do
         (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
       location <- testLocation "00000" id
-      game <-
-        runGameTest
+      runGameTest
           investigator
           [ SetTokens [Skull]
           , playAsset investigator jimsTrumpet
@@ -54,15 +54,17 @@ spec = describe "Jim's Trumpet" $ do
           . (locationsL %~ insertEntity location)
           . (investigatorsL %~ insertEntity investigator2)
           )
-        >>= runGameTestOnlyOption "start skill test"
-        >>= runGameTestOptionMatching
+        $ do
+            runMessagesNoLogging
+            runGameTestOnlyOption "start skill test"
+            runGameTestOptionMatching
               "use ability"
               (\case
                 Run{} -> True
                 _ -> False
               )
-        >>= runGameTestOnlyOption "choose investigator at same location"
-      updated game investigator2 `shouldSatisfy` hasDamage (0, 0)
+            runGameTestOnlyOption "choose investigator at same location"
+            updated investigator2 `shouldSatisfyM` hasDamage (0, 0)
 
     it "even when another player draws token" $ do
       investigator <- testInvestigator "00000" id
@@ -71,8 +73,7 @@ spec = describe "Jim's Trumpet" $ do
         (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
       location <- testLocation "00000" id
-      game <-
-        runGameTest
+      runGameTest
           investigator
           [ SetTokens [Skull]
           , playAsset investigator jimsTrumpet
@@ -83,15 +84,17 @@ spec = describe "Jim's Trumpet" $ do
           . (locationsL %~ insertEntity location)
           . (investigatorsL %~ insertEntity investigator2)
           )
-        >>= runGameTestOnlyOption "start skill test"
-        >>= runGameTestOptionMatching
+        $ do
+            runMessagesNoLogging
+            runGameTestOnlyOption "start skill test"
+            runGameTestOptionMatching
               "use ability"
               (\case
                 Run{} -> True
                 _ -> False
               )
-        >>= runGameTestOnlyOption "choose investigator at same location"
-      updated game investigator2 `shouldSatisfy` hasDamage (0, 0)
+            runGameTestOnlyOption "choose investigator at same location"
+            updated investigator2 `shouldSatisfyM` hasDamage (0, 0)
 
     it "on an investigator at a connected location" $ do
       investigator <- testInvestigator "00000" id
@@ -100,8 +103,7 @@ spec = describe "Jim's Trumpet" $ do
         (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
       (location1, location2) <- testConnectedLocations id id
-      game <-
-        runGameTest
+      runGameTest
           investigator
           [ SetTokens [Skull]
           , placedLocation location1
@@ -116,15 +118,17 @@ spec = describe "Jim's Trumpet" $ do
           . (locationsL %~ insertEntity location2)
           . (investigatorsL %~ insertEntity investigator2)
           )
-        >>= runGameTestOnlyOption "start skill test"
-        >>= runGameTestOptionMatching
+        $ do
+            runMessagesNoLogging
+            runGameTestOnlyOption "start skill test"
+            runGameTestOptionMatching
               "use ability"
               (\case
                 Run{} -> True
                 _ -> False
               )
-        >>= runGameTestOnlyOption "choose investigator at connected location"
-      updated game investigator2 `shouldSatisfy` hasDamage (0, 0)
+            runGameTestOnlyOption "choose investigator at connected location"
+            updated investigator2 `shouldSatisfyM` hasDamage (0, 0)
 
     it "cannot target an investigator at an unconnected location" $ do
       investigator <- testInvestigator "00000" id
@@ -133,8 +137,7 @@ spec = describe "Jim's Trumpet" $ do
         (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
       (location1, location2) <- testUnconnectedLocations id id
-      game <-
-        runGameTest
+      runGameTest
           investigator
           [ SetTokens [Skull]
           , placedLocation location1
@@ -149,6 +152,8 @@ spec = describe "Jim's Trumpet" $ do
           . (locationsL %~ insertEntity location2)
           . (investigatorsL %~ insertEntity investigator2)
           )
-        >>= runGameTestOnlyOption "start skill test"
-        >>= runGameTestOnlyOption "apply results"
-      updated game investigator2 `shouldSatisfy` hasDamage (0, 1)
+        $ do
+            runMessagesNoLogging
+            runGameTestOnlyOption "start skill test"
+            runGameTestOnlyOption "apply results"
+            updated investigator2 `shouldSatisfyM` hasDamage (0, 1)

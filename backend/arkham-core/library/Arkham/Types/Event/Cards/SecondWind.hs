@@ -1,18 +1,19 @@
 module Arkham.Types.Event.Cards.SecondWind
   ( secondWind
   , SecondWind(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import Arkham.Types.Event.Attrs
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Event.Attrs
 
 newtype SecondWind = SecondWind EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -36,7 +37,7 @@ instance HasModifiersFor env SecondWind where
 instance (HasQueue env, HasRoundHistory env) => RunMessage env SecondWind where
   runMessage msg e@(SecondWind attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
-      roundHistory <- getRoundHistory =<< ask
+      roundHistory <- getRoundHistory
       let
         didDrawTreachery = \case
           DrewTreachery iid' _ -> iid == iid'

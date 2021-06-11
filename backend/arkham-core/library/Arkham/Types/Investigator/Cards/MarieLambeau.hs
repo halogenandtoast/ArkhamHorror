@@ -31,7 +31,7 @@ marieLambeau = MarieLambeau $ baseAttrs
     }
   [Performer, Sorcerer]
 
-instance ActionRunner env => HasActions env MarieLambeau where
+instance InvestigatorRunner env => HasActions env MarieLambeau where
   getActions i window (MarieLambeau attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env MarieLambeau where

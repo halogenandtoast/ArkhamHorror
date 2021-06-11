@@ -68,5 +68,5 @@ spec = describe "Rex's Curse" $ do
           runGameTestOnlyOption "apply results"
           investigator' <- updated investigator
           hasTreacheryWithMatchingCardCode (PlayerCard rexsCurse) investigator'
-            `shouldReturn` True
+            `shouldReturn` False
           updated investigator `shouldSatisfyM` deckMatches ((== 1) . length)

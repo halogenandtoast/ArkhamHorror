@@ -1357,7 +1357,7 @@ instance HasGame env => HasSet ClosestPathLocationId env (LocationId, LocationId
 
 instance HasGame env => HasSet FarthestLocationId env InvestigatorId where
   getSet iid = do
-    start <- traceShowId <$> locationFor iid
+    start <- locationFor iid
     setFromList . coerce <$> getLongestPath start (pure . const True)
 
 instance HasGame env => HasSet FarthestLocationId env (InvestigatorId, LocationMatcher) where

@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Types.Treachery.Cards.CoverUp
   ( CoverUp(..)
   , coverUp

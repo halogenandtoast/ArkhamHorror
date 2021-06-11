@@ -18,6 +18,7 @@ spec = describe "Arcane Initiate" $ do
         [playAsset investigator arcaneInitiate]
         (assetsL %~ insertEntity arcaneInitiate)
       $ do
+          runMessagesNoLogging
           doomCount <- getCount =<< updated arcaneInitiate
           doomCount `shouldBe` DoomCount 1
 
@@ -34,6 +35,7 @@ spec = describe "Arcane Initiate" $ do
             ]
             (assetsL %~ insertEntity arcaneInitiate)
           $ do
+              runMessagesNoLogging
               [ability] <- getActionsOf
                 investigator
                 FastPlayerWindow
@@ -52,6 +54,7 @@ spec = describe "Arcane Initiate" $ do
         [playAsset investigator arcaneInitiate, loadDeck investigator cards]
         (assetsL %~ insertEntity arcaneInitiate)
       $ do
+          runMessagesNoLogging
           [ability] <- getActionsOf investigator FastPlayerWindow arcaneInitiate
           runGameTestMessages [ability]
           runGameTestOnlyOption "search top of deck"

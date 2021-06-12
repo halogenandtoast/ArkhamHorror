@@ -1,35 +1,32 @@
 module Arkham.Types.Location.Cards.AdministrationOffice_131
   ( administrationOffice_131
   , AdministrationOffice_131(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Modifier
-import Arkham.Types.Name
-import Arkham.Types.Query
-import Arkham.Types.Source
-
-
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Modifier
+import Arkham.Types.Query
+import Arkham.Types.Source
 import Arkham.Types.Trait
 
 newtype AdministrationOffice_131 = AdministrationOffice_131 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 administrationOffice_131 :: LocationId -> AdministrationOffice_131
-administrationOffice_131 lid = AdministrationOffice_131 $ baseAttrs
-  lid
+administrationOffice_131 = AdministrationOffice_131 . baseAttrs
   "02131"
-  (Name "Administration Office" Nothing)
+  "Administration Office"
   EncounterSet.TheMiskatonicMuseum
   2
   (PerPlayer 2)

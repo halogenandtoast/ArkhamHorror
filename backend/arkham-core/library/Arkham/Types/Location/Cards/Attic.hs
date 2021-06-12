@@ -3,32 +3,31 @@ module Arkham.Types.Location.Cards.Attic where
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Source
-import qualified Arkham.Types.EncounterSet as EncounterSet
 
 newtype Attic = Attic LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 attic :: LocationId -> Attic
-attic lid = Attic $ base { locationVictory = Just 1 }
- where
-  base = baseAttrs
-    lid
-    "01113"
-    (Name "Attic" Nothing)
-    EncounterSet.TheGathering
-    1
-    (PerPlayer 2)
-    Triangle
-    [Square]
-    []
+attic =
+  Attic
+    . (victoryL ?~ 1)
+    . baseAttrs
+        "01113"
+        "Attic"
+        EncounterSet.TheGathering
+        1
+        (PerPlayer 2)
+        Triangle
+        [Square]
+        []
 
 instance HasModifiersFor env Attic where
   getModifiersFor = noModifiersFor

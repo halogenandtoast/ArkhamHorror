@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.ExhibitHallMedusaExhibit
   ( exhibitHallMedusaExhibit
   , ExhibitHallMedusaExhibit(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -21,13 +22,10 @@ newtype ExhibitHallMedusaExhibit = ExhibitHallMedusaExhibit LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallMedusaExhibit :: LocationId -> ExhibitHallMedusaExhibit
-exhibitHallMedusaExhibit lid = ExhibitHallMedusaExhibit
-  $ base { locationVictory = Just 1 }
- where
-  base = baseAttrs
-    lid
+exhibitHallMedusaExhibit =
+  ExhibitHallMedusaExhibit . (victoryL ?~ 1) . baseAttrs
     "02133"
-    (Name "Exhibit Hall" $ Just "Medusa Exhibit")
+    ("Exhibit Hall" `subtitled` "Medusa Exhibit")
     EncounterSet.TheMiskatonicMuseum
     2
     (PerPlayer 1)

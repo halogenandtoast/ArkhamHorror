@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.VillageCommons
   ( villageCommons
   , VillageCommons(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -12,17 +13,15 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Name
 import Arkham.Types.Trait
 
 newtype VillageCommons = VillageCommons LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 villageCommons :: LocationId -> VillageCommons
-villageCommons lid = VillageCommons $ baseAttrs
-  lid
+villageCommons = VillageCommons . baseAttrs
   "02201"
-  (Name "Village Commons" Nothing)
+  "Village Commons"
   EncounterSet.BloodOnTheAltar
   3
   (Static 0)

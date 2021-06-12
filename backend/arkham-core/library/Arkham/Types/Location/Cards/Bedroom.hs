@@ -11,22 +11,22 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 
 newtype Bedroom = Bedroom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bedroom :: LocationId -> Bedroom
-bedroom lid = Bedroom $ baseAttrs
-  lid
-  "50015"
-  (Name "Bedroom" Nothing)
-  EncounterSet.ReturnToTheGathering
-  2
-  (PerPlayer 1)
-  Heart
-  [T]
-  mempty
+bedroom =
+  Bedroom
+    . baseAttrs
+        "50015"
+        "Bedroom"
+        EncounterSet.ReturnToTheGathering
+        2
+        (PerPlayer 1)
+        Heart
+        [T]
+        mempty
 
 instance HasModifiersFor env Bedroom where
   getModifiersFor = noModifiersFor

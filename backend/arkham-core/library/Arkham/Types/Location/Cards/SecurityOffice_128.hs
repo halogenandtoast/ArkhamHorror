@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.SecurityOffice_128
   ( securityOffice_128
   , SecurityOffice_128(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -16,7 +17,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -25,16 +25,15 @@ newtype SecurityOffice_128 = SecurityOffice_128 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 securityOffice_128 :: LocationId -> SecurityOffice_128
-securityOffice_128 lid = SecurityOffice_128 $ baseAttrs
-  lid
+securityOffice_128 = SecurityOffice_128 . baseAttrs
   "02128"
-  (Name "Security Office" Nothing)
+  "Security Office"
   EncounterSet.TheMiskatonicMuseum
   2
   (PerPlayer 1)
   Diamond
   [Square]
-  (singleton Miskatonic)
+  [Miskatonic]
 
 instance HasModifiersFor env SecurityOffice_128 where
   getModifiersFor = noModifiersFor

@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.DarkenedHall
   ( darkenedHall
   , DarkenedHall(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -13,28 +14,26 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Trait hiding (Cultist)
 
 newtype DarkenedHall = DarkenedHall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 darkenedHall :: LocationId -> DarkenedHall
-darkenedHall lid = DarkenedHall $ base
-  { locationRevealedConnectedSymbols = setFromList
-    [Triangle, T, Hourglass, Plus, Squiggle]
-  }
- where
-  base = baseAttrs
-    lid
-    "02074"
-    (Name "Darkened Hall" Nothing)
-    EncounterSet.TheHouseAlwaysWins
-    4
-    (Static 0)
-    Diamond
-    [Triangle]
-    [CloverClub]
+darkenedHall =
+  DarkenedHall
+    . (revealedConnectedSymbolsL
+      .~ setFromList [Triangle, T, Hourglass, Plus, Squiggle]
+      )
+    . baseAttrs
+        "02074"
+        "Darkened Hall"
+        EncounterSet.TheHouseAlwaysWins
+        4
+        (Static 0)
+        Diamond
+        [Triangle]
+        [CloverClub]
 
 instance HasModifiersFor env DarkenedHall where
   getModifiersFor = noModifiersFor

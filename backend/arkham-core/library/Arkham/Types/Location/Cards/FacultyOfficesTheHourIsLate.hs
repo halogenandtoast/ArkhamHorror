@@ -18,10 +18,9 @@ newtype FacultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 facultyOfficesTheHourIsLate :: LocationId -> FacultyOfficesTheHourIsLate
-facultyOfficesTheHourIsLate lid = FacultyOfficesTheHourIsLate $ baseAttrs
-  lid
+facultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate . baseAttrs
   "02055"
-  (Name "Faculty Offices" $ Just "The House is Late")
+  ("Faculty Offices" `subtitled` "The House is Late")
   EncounterSet.ExtracurricularActivity
   2
   (Static 0)

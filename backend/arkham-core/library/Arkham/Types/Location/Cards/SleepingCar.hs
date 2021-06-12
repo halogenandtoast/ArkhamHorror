@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.SleepingCar
   ( sleepingCar
   , SleepingCar(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -18,7 +19,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
@@ -28,19 +28,16 @@ newtype SleepingCar = SleepingCar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sleepingCar :: LocationId -> SleepingCar
-sleepingCar lid = SleepingCar
-  $ base { locationConnectsTo = setFromList [LeftOf, RightOf] }
- where
-  base = baseAttrs
-    lid
+sleepingCar =
+  SleepingCar . (connectsToL .~ setFromList [LeftOf, RightOf]) . baseAttrs
     "02172"
-    (Name "Sleeping Car" Nothing)
+    "Sleeping Car"
     EncounterSet.TheEssexCountyExpress
     4
     (Static 1)
     NoSymbol
     []
-    (singleton Train)
+    [Train]
 
 instance HasCount ClueCount env LocationId => HasModifiersFor env SleepingCar where
   getModifiersFor _ target (SleepingCar location@LocationAttrs {..})

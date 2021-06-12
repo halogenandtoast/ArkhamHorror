@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.DunwichVillage_243
   ( dunwichVillage_243
   , DunwichVillage_243(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -20,7 +21,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -29,10 +29,9 @@ newtype DunwichVillage_243 = DunwichVillage_243 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dunwichVillage_243 :: LocationId -> DunwichVillage_243
-dunwichVillage_243 lid = DunwichVillage_243 $ baseAttrs
-  lid
+dunwichVillage_243 = DunwichVillage_243 . baseAttrs
   "02243"
-  (Name "Dunwich Village" Nothing)
+  "Dunwich Village"
   EncounterSet.UndimensionedAndUnseen
   3
   (Static 1)

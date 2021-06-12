@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.RivertownAbandonedWarehouse
   ( RivertownAbandonedWarehouse(..)
   , rivertownAbandonedWarehouse
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -27,10 +28,9 @@ newtype RivertownAbandonedWarehouse = RivertownAbandonedWarehouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rivertownAbandonedWarehouse :: LocationId -> RivertownAbandonedWarehouse
-rivertownAbandonedWarehouse lid = RivertownAbandonedWarehouse $ baseAttrs
-  lid
+rivertownAbandonedWarehouse = RivertownAbandonedWarehouse . baseAttrs
   "50030"
-  (Name "Rivertown" (Just "Abandoned Warehouse"))
+  ("Rivertown" `subtitled` "Abandoned Warehouse")
   EncounterSet.ReturnToTheMidnightMasks
   4
   (PerPlayer 1)

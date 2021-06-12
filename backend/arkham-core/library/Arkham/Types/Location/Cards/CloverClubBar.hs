@@ -18,7 +18,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -27,10 +26,9 @@ newtype CloverClubBar = CloverClubBar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cloverClubBar :: LocationId -> CloverClubBar
-cloverClubBar lid = CloverClubBar $ baseAttrs
-  lid
+cloverClubBar = CloverClubBar . baseAttrs
   "02072"
-  (Name "Clover Club Bar" Nothing)
+  "Clover Club Bar"
   EncounterSet.TheHouseAlwaysWins
   3
   (Static 0)

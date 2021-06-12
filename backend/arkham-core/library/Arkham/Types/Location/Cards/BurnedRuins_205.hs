@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.BurnedRuins_205
   ( burnedRuins_205
   , BurnedRuins_205(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -12,17 +13,15 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Name
 import Arkham.Types.Trait
 
 newtype BurnedRuins_205 = BurnedRuins_205 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 burnedRuins_205 :: LocationId -> BurnedRuins_205
-burnedRuins_205 lid = BurnedRuins_205 $ baseAttrs
-  lid
+burnedRuins_205 = BurnedRuins_205 . baseAttrs
   "02205"
-  (Name "Burned Ruins" Nothing)
+  "Burned Ruins"
   EncounterSet.BloodOnTheAltar
   2
   (Static 3)

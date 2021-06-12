@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.StMarysHospital
   ( StMarysHospital(..)
   , stMarysHospital
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -16,7 +17,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -25,10 +25,9 @@ newtype StMarysHospital = StMarysHospital LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stMarysHospital :: LocationId -> StMarysHospital
-stMarysHospital lid = StMarysHospital $ baseAttrs
-  lid
+stMarysHospital = StMarysHospital . baseAttrs
   "01128"
-  (Name "St. Mary's Hospital" Nothing)
+  "St. Mary's Hospital"
   EncounterSet.TheMidnightMasks
   2
   (PerPlayer 1)

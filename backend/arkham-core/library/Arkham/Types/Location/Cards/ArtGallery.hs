@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.ArtGallery
   ( artGallery
   , ArtGallery(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -14,7 +15,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Target
 import Arkham.Types.Trait hiding (Cultist)
 
@@ -22,13 +22,10 @@ newtype ArtGallery = ArtGallery LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 artGallery :: LocationId -> ArtGallery
-artGallery lid = ArtGallery
-  $ base { locationVictory = Just 1, locationRevealedSymbol = Hourglass }
- where
-  base = baseAttrs
-    lid
+artGallery =
+  ArtGallery . (victoryL ?~ 1) . (revealedSymbolL .~ Hourglass) . baseAttrs
     "02075"
-    (Name "Art Gallery" Nothing)
+    "Art Gallery"
     EncounterSet.TheHouseAlwaysWins
     2
     (PerPlayer 1)

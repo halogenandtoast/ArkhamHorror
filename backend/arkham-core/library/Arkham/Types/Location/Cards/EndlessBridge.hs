@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.EndlessBridge
   ( endlessBridge
   , EndlessBridge(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -15,7 +16,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
@@ -23,10 +23,9 @@ newtype EndlessBridge = EndlessBridge LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 endlessBridge :: LocationId -> EndlessBridge
-endlessBridge lid = EndlessBridge $ baseAttrs
-  lid
+endlessBridge = EndlessBridge . baseAttrs
   "02326"
-  (Name "Endless Bridge" Nothing)
+  "Endless Bridge"
   EncounterSet.LostInTimeAndSpace
   4
   (Static 2)

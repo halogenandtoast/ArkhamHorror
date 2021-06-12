@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.FrozenSpring
   ( frozenSpring
   , FrozenSpring(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -14,7 +15,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
@@ -22,21 +22,20 @@ newtype FrozenSpring = FrozenSpring LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 frozenSpring :: LocationId -> FrozenSpring
-frozenSpring lid =
+frozenSpring =
   FrozenSpring
-    $ baseAttrs
-        lid
+    . (revealedSymbolL .~ Plus)
+    . (revealedConnectedSymbolsL .~ setFromList [Triangle, Hourglass])
+    . (unrevealedNameL .~ "Diverging Path")
+    . baseAttrs
         "02288"
-        (Name "Frozen Spring" Nothing)
+        "Frozen Spring"
         EncounterSet.WhereDoomAwaits
         3
         (PerPlayer 1)
         NoSymbol
         []
         [Dunwich, Woods]
-    & (revealedSymbolL .~ Plus)
-    & (revealedConnectedSymbolsL .~ setFromList [Triangle, Hourglass])
-    & (unrevealedNameL .~ LocationName (mkName "Diverging Path"))
 
 instance HasModifiersFor env FrozenSpring where
   getModifiersFor = noModifiersFor

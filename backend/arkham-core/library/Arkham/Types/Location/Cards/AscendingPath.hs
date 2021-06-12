@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.AscendingPath
   ( ascendingPath
   , AscendingPath(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -28,10 +29,9 @@ newtype AscendingPath = AscendingPath LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ascendingPath :: LocationId -> AscendingPath
-ascendingPath lid = AscendingPath $ baseAttrs
-  lid
+ascendingPath = AscendingPath . baseAttrs
   "02283"
-  (Name "Ascending Path" Nothing)
+  "Ascending Path"
   EncounterSet.WhereDoomAwaits
   3
   (Static 0)

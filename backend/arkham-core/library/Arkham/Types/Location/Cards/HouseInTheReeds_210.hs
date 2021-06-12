@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.HouseInTheReeds_210
   ( houseInTheReeds_210
   , HouseInTheReeds_210(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -15,7 +16,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Target
 import Arkham.Types.Trait
 
@@ -23,10 +23,9 @@ newtype HouseInTheReeds_210 = HouseInTheReeds_210 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 houseInTheReeds_210 :: LocationId -> HouseInTheReeds_210
-houseInTheReeds_210 lid = HouseInTheReeds_210 $ baseAttrs
-  lid
+houseInTheReeds_210 = HouseInTheReeds_210 . baseAttrs
   "02210"
-  (Name "House in the Reeds" Nothing)
+  "House in the Reeds"
   EncounterSet.BloodOnTheAltar
   2
   (PerPlayer 1)

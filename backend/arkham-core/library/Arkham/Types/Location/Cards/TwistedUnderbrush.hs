@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.TwistedUnderbrush
   ( TwistedUnderbrush(..)
   , twistedUnderbrush
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -16,7 +17,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
@@ -24,18 +24,15 @@ newtype TwistedUnderbrush = TwistedUnderbrush LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 twistedUnderbrush :: LocationId -> TwistedUnderbrush
-twistedUnderbrush lid = TwistedUnderbrush $ base { locationVictory = Just 1 }
- where
-  base = baseAttrs
-    lid
-    "81015"
-    (Name "Twisted Underbrush" Nothing)
-    EncounterSet.CurseOfTheRougarou
-    3
-    (PerPlayer 1)
-    Moon
-    [Diamond, Moon]
-    [Wilderness]
+twistedUnderbrush = TwistedUnderbrush . (victoryL ?~ 1) . baseAttrs
+  "81015"
+  "Twisted Underbrush"
+  EncounterSet.CurseOfTheRougarou
+  3
+  (PerPlayer 1)
+  Moon
+  [Diamond, Moon]
+  [Wilderness]
 
 instance HasModifiersFor env TwistedUnderbrush where
   getModifiersFor = noModifiersFor

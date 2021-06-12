@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.BlastedHeath_248
   ( blastedHeath_248
   , BlastedHeath_248(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -17,7 +18,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -27,10 +27,9 @@ newtype BlastedHeath_248 = BlastedHeath_248 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blastedHeath_248 :: LocationId -> BlastedHeath_248
-blastedHeath_248 lid = BlastedHeath_248 $ baseAttrs
-  lid
+blastedHeath_248 = BlastedHeath_248 . baseAttrs
   "02248"
-  (Name "Blasted Heath" Nothing)
+  "Blasted Heath"
   EncounterSet.UndimensionedAndUnseen
   4
   (Static 3)

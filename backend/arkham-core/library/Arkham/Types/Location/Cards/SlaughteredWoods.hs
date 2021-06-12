@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.SlaughteredWoods
   ( slaugteredWoods
   , SlaughteredWoods(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -14,7 +15,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -23,21 +23,20 @@ newtype SlaughteredWoods = SlaughteredWoods LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 slaugteredWoods :: LocationId -> SlaughteredWoods
-slaugteredWoods lid =
+slaugteredWoods =
   SlaughteredWoods
-    $ baseAttrs
-        lid
+    . (revealedSymbolL .~ Plus)
+    . (revealedConnectedSymbolsL .~ setFromList [Triangle, Hourglass])
+    . (unrevealedNameL .~ "Diverging Path")
+    . baseAttrs
         "02285"
-        (Name "Slaughtered Woods" Nothing)
+        "Slaughtered Woods"
         EncounterSet.WhereDoomAwaits
         2
         (PerPlayer 1)
         NoSymbol
         []
         [Dunwich, Woods]
-    & (revealedSymbolL .~ Plus)
-    & (revealedConnectedSymbolsL .~ setFromList [Triangle, Hourglass])
-    & (unrevealedNameL .~ LocationName (mkName "Diverging Path"))
 
 instance HasModifiersFor env SlaughteredWoods where
   getModifiersFor = noModifiersFor

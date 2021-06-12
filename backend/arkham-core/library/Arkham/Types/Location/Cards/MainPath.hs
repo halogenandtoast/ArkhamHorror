@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.MainPath
   ( MainPath(..)
   , mainPath
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -13,17 +14,15 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Trait
 
 newtype MainPath = MainPath LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mainPath :: LocationId -> MainPath
-mainPath lid = MainPath $ baseAttrs
-  lid
+mainPath = MainPath . baseAttrs
   "01149"
-  (Name "Main Path" Nothing)
+  "Main Path"
   EncounterSet.TheDevourerBelow
   2
   (Static 0)

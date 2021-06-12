@@ -11,22 +11,22 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 
 newtype HoleInTheWall = HoleInTheWall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 holeInTheWall :: LocationId -> HoleInTheWall
-holeInTheWall lid = HoleInTheWall $ baseAttrs
-  lid
-  "50017"
-  (Name "Hallway" Nothing)
-  EncounterSet.ReturnToTheGathering
-  1
-  (Static 0)
-  Square
-  [T, Triangle, Plus, Diamond]
-  mempty
+holeInTheWall =
+  HoleInTheWall
+    . baseAttrs
+        "50017"
+        "Hallway"
+        EncounterSet.ReturnToTheGathering
+        1
+        (Static 0)
+        Square
+        [T, Triangle, Plus, Diamond]
+        mempty
 
 instance HasModifiersFor env HoleInTheWall where
   getModifiersFor = noModifiersFor

@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.DevilsHopYard_252
   ( devilsHopYard_252
   , DevilsHopYard_252(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -17,7 +18,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -27,10 +27,9 @@ newtype DevilsHopYard_252 = DevilsHopYard_252 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 devilsHopYard_252 :: LocationId -> DevilsHopYard_252
-devilsHopYard_252 lid = DevilsHopYard_252 $ baseAttrs
-  lid
+devilsHopYard_252 = DevilsHopYard_252 . baseAttrs
   "02252"
-  (Name "Devil's Hop Yard" Nothing)
+  "Devil's Hop Yard"
   EncounterSet.UndimensionedAndUnseen
   1
   (Static 2)

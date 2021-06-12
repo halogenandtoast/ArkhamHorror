@@ -1,25 +1,25 @@
 module Arkham.Types.Location.Cards.WhateleyRuins_251
   ( whateleyRuins_251
   , WhateleyRuins_251(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.EnemyId
 import Arkham.Types.Card.CardCode
-import Arkham.Types.LocationId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -29,10 +29,9 @@ newtype WhateleyRuins_251 = WhateleyRuins_251 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 whateleyRuins_251 :: LocationId -> WhateleyRuins_251
-whateleyRuins_251 lid = WhateleyRuins_251 $ baseAttrs
-  lid
+whateleyRuins_251 = WhateleyRuins_251 . baseAttrs
   "02251"
-  (Name "Whateley Ruins" Nothing)
+  "Whateley Ruins"
   EncounterSet.UndimensionedAndUnseen
   3
   (PerPlayer 2)

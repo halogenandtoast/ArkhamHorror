@@ -9,22 +9,22 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Name
 
 newtype Hallway = Hallway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hallway :: LocationId -> Hallway
-hallway lid = Hallway $ baseAttrs
-  lid
-  "01112"
-  (Name "Hallway" Nothing)
-  EncounterSet.TheGathering
-  1
-  (Static 0)
-  Square
-  [Triangle, Plus, Diamond]
-  mempty
+hallway =
+  Hallway
+    . baseAttrs
+        "01112"
+        "Hallway"
+        EncounterSet.TheGathering
+        1
+        (Static 0)
+        Square
+        [Triangle, Plus, Diamond]
+        mempty
 
 instance HasModifiersFor env Hallway where
   getModifiersFor = noModifiersFor

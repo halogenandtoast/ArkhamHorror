@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.SentinelPeak
   ( sentinelPeak
   , SentinelPeak(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -15,29 +16,27 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Trait
 
 newtype SentinelPeak = SentinelPeak LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sentinelPeak :: LocationId -> SentinelPeak
-sentinelPeak lid =
+sentinelPeak =
   SentinelPeak
-    $ baseAttrs
-        lid
+    . (costToEnterUnrevealedL
+      .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 2) Nothing]
+      )
+    . (victoryL ?~ 2)
+    . baseAttrs
         "02284"
-        (Name "Sentinel Peak" Nothing)
+        "Sentinel Peak"
         EncounterSet.WhereDoomAwaits
         4
         (PerPlayer 2)
         Diamond
         [Square]
         [Dunwich, SentinelHill]
-    & (costToEnterUnrevealedL
-      .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 2) Nothing]
-      )
-    & (victoryL ?~ 2)
 
 instance HasModifiersFor env SentinelPeak where
   getModifiersFor = noModifiersFor

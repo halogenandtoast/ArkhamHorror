@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.PrismaticCascade
   ( prismaticCascade
   , PrismaticCascade(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -15,7 +16,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
@@ -23,10 +23,9 @@ newtype PrismaticCascade = PrismaticCascade LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 prismaticCascade :: LocationId -> PrismaticCascade
-prismaticCascade lid = PrismaticCascade $ baseAttrs
-  lid
+prismaticCascade = PrismaticCascade . baseAttrs
   "02325"
-  (Name "Prismatic Cascade" Nothing)
+  "Prismatic Cascade"
   EncounterSet.LostInTimeAndSpace
   2
   (Static 3)

@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.CursedShores
   ( CursedShores(..)
   , cursedShores
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -18,7 +19,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -27,10 +27,9 @@ newtype CursedShores = CursedShores LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cursedShores :: LocationId -> CursedShores
-cursedShores lid = CursedShores $ baseAttrs
-  lid
+cursedShores = CursedShores . baseAttrs
   "81007"
-  (Name "Cursed Shores" Nothing)
+  "Cursed Shores"
   EncounterSet.CurseOfTheRougarou
   1
   (Static 0)

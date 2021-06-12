@@ -11,7 +11,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Source
 import Arkham.Types.Token
 
@@ -19,16 +18,17 @@ newtype Bathroom = Bathroom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bathroom :: LocationId -> Bathroom
-bathroom lid = Bathroom $ baseAttrs
-  lid
-  "50016"
-  (Name "Bathroom" Nothing)
-  EncounterSet.CurseOfTheRougarou
-  1
-  (PerPlayer 1)
-  Star
-  [T]
-  mempty
+bathroom =
+  Bathroom
+    . baseAttrs
+        "50016"
+        "Bathroom"
+        EncounterSet.CurseOfTheRougarou
+        1
+        (PerPlayer 1)
+        Star
+        [T]
+        mempty
 
 instance HasModifiersFor env Bathroom where
   getModifiersFor = noModifiersFor

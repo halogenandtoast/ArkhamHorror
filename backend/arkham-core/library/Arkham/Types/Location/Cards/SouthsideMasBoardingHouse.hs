@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.SouthsideMasBoardingHouse
   ( SouthsideMasBoardingHouse(..)
   , southsideMasBoardingHouse
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -25,10 +26,9 @@ newtype SouthsideMasBoardingHouse = SouthsideMasBoardingHouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 southsideMasBoardingHouse :: LocationId -> SouthsideMasBoardingHouse
-southsideMasBoardingHouse lid = SouthsideMasBoardingHouse $ baseAttrs
-  lid
+southsideMasBoardingHouse = SouthsideMasBoardingHouse . baseAttrs
   "01127"
-  (Name "Southside" $ Just "Ma's Boarding House")
+  ("Southside" `subtitled` "Ma's Boarding House")
   EncounterSet.TheMidnightMasks
   2
   (PerPlayer 1)

@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.TrappersCabin
   ( TrappersCabin(..)
   , trappersCabin
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -20,7 +21,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -30,10 +30,9 @@ newtype TrappersCabin = TrappersCabin LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 trappersCabin :: LocationId -> TrappersCabin
-trappersCabin lid = TrappersCabin $ baseAttrs
-  lid
+trappersCabin = TrappersCabin . baseAttrs
   "81014"
-  (Name "Trapper's Cabin" Nothing)
+  "Trapper's Cabin"
   EncounterSet.CurseOfTheRougarou
   3
   (Static 0)

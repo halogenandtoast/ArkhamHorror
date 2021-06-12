@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.SouthsideHistoricalSociety
   ( SouthsideHistoricalSociety(..)
   , southsideHistoricalSociety
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -24,10 +25,9 @@ newtype SouthsideHistoricalSociety = SouthsideHistoricalSociety LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 southsideHistoricalSociety :: LocationId -> SouthsideHistoricalSociety
-southsideHistoricalSociety lid = SouthsideHistoricalSociety $ baseAttrs
-  lid
+southsideHistoricalSociety = SouthsideHistoricalSociety . baseAttrs
   "01126"
-  (Name "Southside" $ Just "Historical Society")
+  ("Southside" `subtitled` "Historical Society")
   EncounterSet.TheMidnightMasks
   3
   (PerPlayer 1)

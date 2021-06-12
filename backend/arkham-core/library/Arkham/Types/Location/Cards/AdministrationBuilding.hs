@@ -3,27 +3,23 @@ module Arkham.Types.Location.Cards.AdministrationBuilding where
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
-
-
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype AdministrationBuilding = AdministrationBuilding LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 administrationBuilding :: LocationId -> AdministrationBuilding
-administrationBuilding lid = AdministrationBuilding $ baseAttrs
-  lid
+administrationBuilding = AdministrationBuilding . baseAttrs
   "02053"
-  (Name "Administration Building" Nothing)
+  "Administration Building"
   EncounterSet.ExtracurricularActivity
   4
   (PerPlayer 1)

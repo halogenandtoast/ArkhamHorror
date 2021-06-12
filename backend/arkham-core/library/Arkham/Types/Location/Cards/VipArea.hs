@@ -15,7 +15,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Phase
 import Arkham.Types.Target
 import Arkham.Types.Trait hiding (Cultist)
@@ -24,19 +23,15 @@ newtype VipArea = VipArea LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 vipArea :: LocationId -> VipArea
-vipArea lid = VipArea
-  $ base { locationVictory = Just 1, locationRevealedSymbol = Plus }
- where
-  base = baseAttrs
-    lid
-    "02076"
-    (Name "VIP Area" Nothing)
-    EncounterSet.TheHouseAlwaysWins
-    3
-    (PerPlayer 1)
-    T
-    [Diamond]
-    [CloverClub]
+vipArea = VipArea . (victoryL ?~ 1) . (revealedSymbolL .~ Plus) . baseAttrs
+  "02076"
+  "VIP Area"
+  EncounterSet.TheHouseAlwaysWins
+  3
+  (PerPlayer 1)
+  T
+  [Diamond]
+  [CloverClub]
 
 instance HasPhase env => HasModifiersFor env VipArea where
   getModifiersFor _ (InvestigatorTarget iid) (VipArea attrs)

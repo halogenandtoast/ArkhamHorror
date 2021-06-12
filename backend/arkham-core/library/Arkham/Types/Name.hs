@@ -1,6 +1,7 @@
 module Arkham.Types.Name
   ( module Arkham.Types.Name
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -23,6 +24,9 @@ mkName = flip Name Nothing
 mkFullName :: Text -> Text -> Name
 mkFullName = (. Just) . Name
 
+subtitled :: Text -> Text -> Name
+subtitled = mkFullName
+
 instance ToJSON Name where
   toJSON = genericToJSON $ aesonOptions $ Just "name"
   toEncoding = genericToEncoding $ aesonOptions $ Just "name"
@@ -31,7 +35,7 @@ instance FromJSON Name where
   parseJSON = genericParseJSON $ aesonOptions $ Just "name"
 
 newtype LocationName = LocationName { unLocationName :: Name }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
 
 newtype EnemyName = EnemyName { unEnemyName :: Name }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

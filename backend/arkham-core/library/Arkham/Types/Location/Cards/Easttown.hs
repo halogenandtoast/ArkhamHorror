@@ -11,7 +11,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Target
 import Arkham.Types.Trait
 
@@ -19,10 +18,9 @@ newtype Easttown = Easttown LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 easttown :: LocationId -> Easttown
-easttown lid = Easttown $ baseAttrs
-  lid
+easttown = Easttown . baseAttrs
   "01132"
-  (Name "Easttown" Nothing)
+  "Easttown"
   EncounterSet.TheMidnightMasks
   2
   (PerPlayer 1)

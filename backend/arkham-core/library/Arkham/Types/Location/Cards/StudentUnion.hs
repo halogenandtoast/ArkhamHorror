@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.StudentUnion
   ( StudentUnion(..)
   , studentUnion
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -17,7 +18,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -26,10 +26,9 @@ newtype StudentUnion = StudentUnion LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 studentUnion :: LocationId -> StudentUnion
-studentUnion lid = StudentUnion $ baseAttrs
-  lid
+studentUnion = StudentUnion . baseAttrs
   "02051"
-  (Name "Student Union" Nothing)
+  "Student Union"
   EncounterSet.ExtracurricularActivity
   1
   (Static 2)

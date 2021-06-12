@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.ArkhamWoodsQuietGlade
   ( ArkhamWoodsQuietGlade(..)
   , arkhamWoodsQuietGlade
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -26,21 +27,19 @@ newtype ArkhamWoodsQuietGlade = ArkhamWoodsQuietGlade LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsQuietGlade :: LocationId -> ArkhamWoodsQuietGlade
-arkhamWoodsQuietGlade lid = ArkhamWoodsQuietGlade $ base
-  { locationRevealedConnectedSymbols = setFromList [Squiggle, Equals, Hourglass]
-  , locationRevealedSymbol = Moon
-  }
- where
-  base = baseAttrs
-    lid
-    "01155"
-    (Name "Arkham Woods" (Just "Quiet Glade"))
-    EncounterSet.TheDevourerBelow
-    1
-    (Static 0)
-    Square
-    [Squiggle]
-    [Woods]
+arkhamWoodsQuietGlade =
+  ArkhamWoodsQuietGlade
+    . (revealedConnectedSymbolsL .~ setFromList [Squiggle, Equals, Hourglass])
+    . (revealedSymbolL .~ Moon)
+    . baseAttrs
+        "01155"
+        ("Arkham Woods" `subtitled` "Quiet Glade")
+        EncounterSet.TheDevourerBelow
+        1
+        (Static 0)
+        Square
+        [Squiggle]
+        [Woods]
 
 instance HasModifiersFor env ArkhamWoodsQuietGlade where
   getModifiersFor = noModifiersFor

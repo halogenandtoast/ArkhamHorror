@@ -10,25 +10,21 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Trait
 
 newtype RitualGrounds = RitualGrounds LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ritualGrounds :: LocationId -> RitualGrounds
-ritualGrounds lid = RitualGrounds $ base { locationVictory = Just 1 }
- where
-  base = baseAttrs
-    lid
-    "81017"
-    (Name "Ritual Grounds" Nothing)
-    EncounterSet.CurseOfTheRougarou
-    2
-    (PerPlayer 1)
-    Equals
-    [Hourglass, Equals]
-    [Unhallowed]
+ritualGrounds = RitualGrounds . (victoryL ?~ 1) . baseAttrs
+  "81017"
+  "Ritual Grounds"
+  EncounterSet.CurseOfTheRougarou
+  2
+  (PerPlayer 1)
+  Equals
+  [Hourglass, Equals]
+  [Unhallowed]
 
 instance HasModifiersFor env RitualGrounds where
   getModifiersFor = noModifiersFor

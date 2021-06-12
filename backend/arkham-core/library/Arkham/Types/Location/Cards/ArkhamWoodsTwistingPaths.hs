@@ -20,21 +20,19 @@ newtype ArkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsTwistingPaths :: LocationId -> ArkhamWoodsTwistingPaths
-arkhamWoodsTwistingPaths lid = ArkhamWoodsTwistingPaths $ base
-  { locationRevealedConnectedSymbols = setFromList [Squiggle, Diamond, Equals]
-  , locationRevealedSymbol = T
-  }
- where
-  base = baseAttrs
-    lid
-    "01151"
-    (Name "Arkham Woods" (Just "Twisting Paths"))
-    EncounterSet.TheDevourerBelow
-    3
-    (PerPlayer 1)
-    Square
-    [Squiggle]
-    [Woods]
+arkhamWoodsTwistingPaths =
+  ArkhamWoodsTwistingPaths
+    . (revealedConnectedSymbolsL .~ setFromList [Squiggle, Diamond, Equals])
+    . (revealedSymbolL .~ T)
+    . baseAttrs
+        "01151"
+        ("Arkham Woods" `subtitled` "Twisting Paths")
+        EncounterSet.TheDevourerBelow
+        3
+        (PerPlayer 1)
+        Square
+        [Squiggle]
+        [Woods]
 
 instance HasModifiersFor env ArkhamWoodsTwistingPaths where
   getModifiersFor = noModifiersFor

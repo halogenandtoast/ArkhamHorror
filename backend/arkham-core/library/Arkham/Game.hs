@@ -164,10 +164,6 @@ runMessages logger = do
   if g ^. gameStateL /= IsActive
     then toExternalGame g mempty >>= atomicWriteIORef gameRef
     else do
-      queueRef <- view messageQueue
-      liftIO $ whenM
-        (isJust <$> lookupEnv "DEBUG")
-        (readIORef queueRef >>= pPrint >> putStrLn "\n")
       mmsg <- popMessage
       case mmsg of
         Nothing -> case gamePhase g of
@@ -199,19 +195,24 @@ runMessages logger = do
                     runMessages logger
               else pushMessages [PlayerWindow (g ^. activeInvestigatorIdL) []]
                 >> runMessages logger
-        Just msg -> case msg of
-          Ask iid q ->
-            toExternalGame g (singletonMap iid q) >>= atomicWriteIORef gameRef
-          AskMap askMap -> toExternalGame g askMap >>= atomicWriteIORef gameRef
-          _ -> do
-            g' <- toGameEnv >>= runReaderT
-              (runMessage
-                msg
-                (g
-                & (phaseMessageHistoryL %~ (msg :))
-                & (roundMessageHistoryL %~ (msg :))
+        Just msg -> do
+          liftIO $ whenM
+            (isJust <$> lookupEnv "DEBUG")
+            (pPrint msg >> putStrLn "\n")
+          case msg of
+            Ask iid q -> do
+              toExternalGame g (singletonMap iid q) >>= atomicWriteIORef gameRef
+            AskMap askMap -> do
+              toExternalGame g askMap >>= atomicWriteIORef gameRef
+            _ -> do
+              g' <- toGameEnv >>= runReaderT
+                (runMessage
+                  msg
+                  (g
+                  & (phaseMessageHistoryL %~ (msg :))
+                  & (roundMessageHistoryL %~ (msg :))
+                  )
                 )
-              )
-            atomicWriteIORef gameRef g'
-            logger msg
-            runMessages logger
+              atomicWriteIORef gameRef g'
+              logger msg
+              runMessages logger

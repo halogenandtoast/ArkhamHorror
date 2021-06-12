@@ -386,19 +386,29 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
                 leadInvestigatorId <- getLeadInvestigatorId
                 case preyIds <> investigatorIds of
                   [] -> pure ()
-                  [iid] -> unshiftMessage (EnemyEngageInvestigator eid iid)
+                  [iid] -> unshiftMessages
+                    [EnemyEntered eid lid, EnemyEngageInvestigator eid iid]
                   iids -> unshiftMessage
                     (chooseOne
                       leadInvestigatorId
-                      [ EnemyEngageInvestigator eid iid | iid <- iids ]
+                      [ TargetLabel
+                          (InvestigatorTarget iid)
+                          [ EnemyEntered eid lid
+                          , EnemyEngageInvestigator eid iid
+                          ]
+                      | iid <- iids
+                      ]
                     )
 
           when (Keyword.Massive `elem` keywords) $ do
             investigatorIds <- getSetList @InvestigatorId lid
             unshiftMessages
-              [ EnemyEngageInvestigator eid iid | iid <- investigatorIds ]
+              $ EnemyEntered eid lid
+              : [ EnemyEngageInvestigator eid iid | iid <- investigatorIds ]
           pure $ a & locationL .~ lid
-    EnemySpawnedAt lid eid | eid == enemyId -> pure $ a & locationL .~ lid
+    EnemySpawnedAt lid eid | eid == enemyId -> do
+      unshiftMessage $ EnemyEntered eid lid
+      pure $ a & locationL .~ lid
     Ready target | isTarget a target -> do
       leadInvestigatorId <- getLeadInvestigatorId
       iids <- getSetList enemyLocation

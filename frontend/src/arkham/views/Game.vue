@@ -7,6 +7,7 @@
       <Campaign
         v-if="game.currentData.campaign"
         :game="game"
+        :gameLog="gameLog"
         :investigatorId="investigatorId"
         @choose="choose"
         @update="update"
@@ -14,6 +15,7 @@
       <Scenario
         v-else-if="!game.currentData.gameOver"
         :game="game"
+        :gameLog="gameLog"
         :investigatorId="investigatorId"
         @choose="choose"
         @update="update"
@@ -50,6 +52,7 @@ export default defineComponent({
     const socket = ref<WebSocket | null>(null)
     const game = ref<Arkham.Game | null>(null)
     const investigatorId = ref<string | null>(null)
+    const gameLog = ref<string[]>([])
 
     function connect() {
       const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`;
@@ -59,8 +62,16 @@ export default defineComponent({
         socketError.value = false;
       });
       socket.value.addEventListener('message', (event: MessageEvent) => {
-        Arkham.gameDecoder.decodePromise(JSON.parse(event.data))
-          .then((updatedGame) => { game.value = updatedGame; });
+        const data = JSON.parse(event.data)
+
+        if (data.tag === "GameMessage") {
+          gameLog.value.push(data.contents)
+        }
+
+        if (data.tag === "GameUpdate") {
+          Arkham.gameDecoder.decodePromise(data.contents)
+            .then((updatedGame) => { game.value = updatedGame; });
+        }
       });
       socket.value.addEventListener('error', () => {
         socketError.value = true;
@@ -92,7 +103,7 @@ export default defineComponent({
 
     onBeforeRouteLeave(() => { if (socket.value) { socket.value.close() } })
 
-    return { socketError, ready, game, investigatorId, choose, update }
+    return { socketError, ready, game, investigatorId, choose, update, gameLog }
   }
 })
 </script>

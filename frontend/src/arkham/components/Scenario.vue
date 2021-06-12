@@ -90,6 +90,8 @@
       :activePlayerId="activePlayerId"
       @choose="$emit('choose', $event)"
     />
+
+    <GameLog :gameLog="gameLog" />
   </div>
 </template>
 
@@ -97,6 +99,7 @@
 import { defineComponent, computed } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import Act from '@/arkham/components/Act.vue';
+import GameLog from '@/arkham/components/GameLog.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
 import StatusBar from '@/arkham/components/StatusBar.vue';
@@ -123,9 +126,11 @@ export default defineComponent({
     CardOverlay,
     VictoryDisplay,
     Enemy,
+    GameLog,
   },
   props: {
     game: { type: Object as () => Game, required: true },
+    gameLog: { type: Array, required: true },
     investigatorId: { type: String, required: true },
   },
   setup(props, { emit }) {

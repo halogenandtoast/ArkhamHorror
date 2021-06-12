@@ -20,6 +20,10 @@
         @choose="choose"
         @update="update"
       />
+      <div class="sidebar">
+        <CardOverlay />
+        <GameLog :gameLog="gameLog" />
+      </div>
       <div v-if="game.currentData.gameOver">
         <p>Game over</p>
 
@@ -39,12 +43,14 @@
 import { defineComponent, ref } from 'vue'
 import * as Arkham from '@/arkham/types/Game'
 import { fetchGame, updateGame } from '@/arkham/api'
+import GameLog from '@/arkham/components/GameLog.vue'
+import CardOverlay from '@/arkham/components/CardOverlay.vue';
 import Scenario from '@/arkham/components/Scenario.vue'
 import Campaign from '@/arkham/components/Campaign.vue'
 import { onBeforeRouteLeave } from 'vue-router'
 
 export default defineComponent({
-  components: { Scenario, Campaign },
+  components: { Scenario, Campaign, GameLog, CardOverlay },
   props: { gameId: { type: String, required: true } },
   setup(props) {
     const ready = ref(false)
@@ -114,6 +120,7 @@ export default defineComponent({
 .game {
   width: 100vw;
   height: calc(100vh - 40px);
+  display: flex;
 }
 
 .socketWarning  {
@@ -137,5 +144,11 @@ export default defineComponent({
     background: #FFF;
     border-radius: 4px;
   }
+}
+
+.sidebar {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 </style>

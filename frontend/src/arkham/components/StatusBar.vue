@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="status-bar">
     <div class="choices" v-for="(choice, index) in choices" :key="index">
       <div v-if="choice.tag === MessageType.AFTER_DISCOVER_CLUES">
         <span>You got some clues</span> <button @click="$emit('choose', index)">Continue</button>

@@ -109,8 +109,7 @@ export default defineComponent({
   props: {
     game: { type: Object as () => Game, required: true },
     player: { type: Object as () => Arkham.Investigator, required: true },
-    investigatorId: { type: String, required: true },
-    canTakeActions: { type: Boolean, required: true },
+    investigatorId: { type: String, required: true }
   },
   setup(props) {
 
@@ -203,7 +202,6 @@ export default defineComponent({
 }
 
 .player-cards {
-  width: 100vw;
   box-sizing: border-box;
 }
 

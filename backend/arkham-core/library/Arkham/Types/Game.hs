@@ -2684,7 +2684,8 @@ runGameMessage msg g = case msg of
     EnemyType -> do
       let enemy = createEnemy card
       lid <- locationFor iid
-      unshiftMessage (InvestigatorDrawEnemy iid lid $ toId enemy)
+      unshiftMessages
+        [InvestigatorDrawEnemy iid lid $ toId enemy, UnsetActiveCard]
       pure
         $ g
         & (enemiesL . at (toId enemy) ?~ enemy)
@@ -2745,6 +2746,7 @@ runGameMessage msg g = case msg of
          , AfterRevelation iid treacheryId
          ]
     pure $ g & treacheriesL %~ insertMap treacheryId treachery
+  UnsetActiveCard -> pure $ g & activeCardL .~ Nothing
   AfterRevelation{} -> pure $ g & activeCardL .~ Nothing
   ResignWith (AssetTarget aid) -> do
     asset <- getAsset aid

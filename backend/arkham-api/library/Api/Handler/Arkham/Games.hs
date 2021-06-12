@@ -216,17 +216,16 @@ data RawGameJsonPut = RawGameJsonPut
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
 
-data ApiResponse = GameUpdate (Entity ArkhamGame) | GameMessage Message
+data ApiResponse = GameUpdate (Entity ArkhamGame) | GameMessage Text
   deriving stock Generic
   deriving anyclass ToJSON
 
 handleMessageLog :: MonadIO m => TChan BSL.ByteString -> Message -> m ()
-handleMessageLog writeChannel msg = do
-  liftIO $ do
-    putStrLn $ replicate 80 '-'
-    print msg
-    putStrLn $ replicate 80 '-'
-    atomically $ writeTChan writeChannel (encode $ GameMessage msg)
+handleMessageLog writeChannel msg = case toHumanReadable msg of
+  Nothing -> pure ()
+  Just readableMsg -> liftIO $ atomically $ writeTChan
+    writeChannel
+    (encode $ GameMessage readableMsg)
 
 putApiV1ArkhamGameRawR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameRawR gameId = do

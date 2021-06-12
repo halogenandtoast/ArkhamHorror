@@ -1,5 +1,5 @@
 <template lang="html">
-  <div>
+  <div class="player-info">
     <ul class='tabs__header'>
       <li v-for='(player, index) in players'
         :key='player.contents.name'
@@ -121,5 +121,9 @@ ul.tabs__header > li.tab--selected {
     content: "\0058";
     margin-right: 5px;
   }
+}
+
+.player-info {
+  flex-grow: 1;
 }
 </style>

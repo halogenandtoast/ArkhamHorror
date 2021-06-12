@@ -85,3 +85,11 @@ loadDecklist arkhamDeck = (investigatorId, ) <$> loadDecklistCards decklist
       case decode @ArkhamDBDecklistMeta (encodeUtf8 $ fromStrict meta') of
         Nothing -> investigator_code decklist
         Just ArkhamDBDecklistMeta {..} -> alternate_front
+
+toHumanReadable :: Message -> Maybe Text
+toHumanReadable = \case
+  BeginEnemy -> Just "Begin enemy phase"
+  BeginInvestigation -> Just "Begin investigation phase"
+  BeginMythos -> Just "Begin mythos phase"
+  BeginUpkeep -> Just "Begin upkeep phase"
+  msg -> Just $ tshow msg

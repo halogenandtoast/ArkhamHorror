@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.OutOfThisWorld
   ( OutOfThisWorld(..)
   , outOfThisWorld
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -56,9 +57,12 @@ instance ActRunner env => RunMessage env OutOfThisWorld where
             iid
             [ TargetLabel
                 (EncounterCardTarget location)
-                [InvestigatorDrewEncounterCard iid location]
+                [ RemoveFromEncounterDiscard location
+                , InvestigatorDrewEncounterCard iid location
+                ]
             | location <- locationCards
             ]
+          , UnfocusCards
           ]
         )
     _ -> OutOfThisWorld <$> runMessage msg attrs

@@ -60,9 +60,7 @@ instance LocationRunner env => RunMessage env StepsOfYhagharl where
             [ RemoveFromEncounterDiscard madnessCard
             , InvestigatorDrewEncounterCard iid madnessCard
             ]
-      unshiftMessages
-        $ PlaceLocation (locationCardCode attrs) (toId attrs)
-        : revelationMsgs
+      unshiftMessages revelationMsgs
       StepsOfYhagharl <$> runMessage msg attrs
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       l <$ unshiftMessage

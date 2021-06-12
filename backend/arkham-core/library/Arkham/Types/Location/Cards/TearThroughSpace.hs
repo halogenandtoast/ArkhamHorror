@@ -50,9 +50,6 @@ instance ActionRunner env => HasActions env TearThroughSpace where
 
 instance LocationRunner env => RunMessage env TearThroughSpace where
   runMessage msg l@(TearThroughSpace attrs) = case msg of
-    Revelation _ source | isSource attrs source -> do
-      unshiftMessage $ PlaceLocation (locationCardCode attrs) (toId attrs)
-      TearThroughSpace <$> runMessage msg attrs
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ unshiftMessage
         (chooseOne

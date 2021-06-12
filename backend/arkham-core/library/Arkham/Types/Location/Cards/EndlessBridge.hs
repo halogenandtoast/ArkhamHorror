@@ -49,10 +49,7 @@ instance ActionRunner env => HasActions env EndlessBridge where
 instance LocationRunner env => RunMessage env EndlessBridge where
   runMessage msg l@(EndlessBridge attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      unshiftMessages
-        [ PlaceLocation (locationCardCode attrs) (toId attrs)
-        , LoseResources iid 2
-        ]
+      unshiftMessage $ LoseResources iid 2
       EndlessBridge <$> runMessage msg attrs
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ unshiftMessage

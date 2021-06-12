@@ -59,11 +59,8 @@ instance LocationRunner env => RunMessage env DimensionalDoorway where
             [ RemoveFromEncounterDiscard hexCard
             , InvestigatorDrewEncounterCard iid hexCard
             ]
-      unshiftMessages
-        $ PlaceLocation (locationCardCode attrs) (toId attrs)
-        : revelationMsgs
+      unshiftMessages revelationMsgs
       DimensionalDoorway <$> runMessage msg attrs
-
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       resourceCount <- unResourceCount <$> getCount iid
       if resourceCount >= 2

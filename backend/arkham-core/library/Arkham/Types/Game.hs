@@ -1870,7 +1870,7 @@ runGameMessage msg g = case msg of
   SetEncounterDeck encounterDeck ->
     pure $ g & encounterDeckL .~ Deck encounterDeck
   RemoveEnemy eid -> pure $ g & enemiesL %~ deleteMap eid
-  Will (RemoveLocation lid) -> g <$ unshiftMessage
+  When (RemoveLocation lid) -> g <$ unshiftMessage
     (CheckWindow (g ^. leadInvestigatorIdL) [WhenLocationLeavesPlay lid])
   RemoveLocation lid -> do
     treacheryIds <- getSetList lid
@@ -2706,7 +2706,11 @@ runGameMessage msg g = case msg of
       let
         location = createLocation card
         locationId = toId location
-      unshiftMessage $ Revelation iid (LocationSource locationId)
+      unshiftMessages
+        [ PlacedLocation (getCardCode card) locationId
+        , RevealLocation (Just iid) locationId
+        , Revelation iid (LocationSource locationId)
+        ]
       pure $ g & (locationsL . at locationId ?~ location)
   DrewTreachery iid (EncounterCard card) -> do
     let

@@ -90,6 +90,8 @@ data Treachery
   | RitesHowled' RitesHowled
   | SpacesBetween' SpacesBetween
   | VortexOfTime' VortexOfTime
+  | CollapsingReality' CollapsingReality
+  | Wormhole' Wormhole
   | VastExpanse' VastExpanse
   | TheZealotsSeal' TheZealotsSeal
   | MaskedHorrors' MaskedHorrors
@@ -233,6 +235,8 @@ allTreacheries = mapFromList
   , ("02296", (RitesHowled' .) . ritesHowled)
   , ("02297", (SpacesBetween' .) . spacesBetween)
   , ("02298", (VortexOfTime' .) . vortexOfTime)
+  , ("02331", (CollapsingReality' .) . collapsingReality)
+  , ("02332", (Wormhole' .) . wormhole)
   , ("02333", (VastExpanse' .) . vastExpanse)
   , ("50024", (TheZealotsSeal' .) . theZealotsSeal)
   , ("50031", (MaskedHorrors' .) . maskedHorrors)

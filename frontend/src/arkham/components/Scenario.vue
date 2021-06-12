@@ -1,6 +1,5 @@
 <template>
   <div v-if="!game.currentData.gameOver" id="scenario" class="scenario">
-    <CardOverlay />
     <StatusBar :game="game" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
     <PlayerOrder :game="game" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
     <PlayerSelector
@@ -90,8 +89,6 @@
       :activePlayerId="activePlayerId"
       @choose="$emit('choose', $event)"
     />
-
-    <GameLog :gameLog="gameLog" />
   </div>
 </template>
 
@@ -99,7 +96,6 @@
 import { defineComponent, computed } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import Act from '@/arkham/components/Act.vue';
-import GameLog from '@/arkham/components/GameLog.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
 import StatusBar from '@/arkham/components/StatusBar.vue';
@@ -108,7 +104,6 @@ import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
 import PlayerOrder from '@/arkham/components/PlayerOrder.vue';
 import PlayerSelector from '@/arkham/components/PlayerSelector.vue';
 import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
-import CardOverlay from '@/arkham/components/CardOverlay.vue';
 import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
 import Location from '@/arkham/components/Location.vue';
 
@@ -123,14 +118,11 @@ export default defineComponent({
     EncounterDeck,
     PlayerOrder,
     PlayerSelector,
-    CardOverlay,
     VictoryDisplay,
     Enemy,
-    GameLog,
   },
   props: {
     game: { type: Object as () => Game, required: true },
-    gameLog: { type: Array, required: true },
     investigatorId: { type: String, required: true },
   },
   setup(props, { emit }) {

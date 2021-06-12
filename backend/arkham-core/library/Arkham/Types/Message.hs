@@ -137,6 +137,7 @@ data Message
   | AfterEnterLocation InvestigatorId LocationId
   | AfterEvadeEnemy InvestigatorId EnemyId
   | AfterRevelation InvestigatorId TreacheryId
+  | UnsetActiveCard
   | AllCheckHandSize
   | AllDrawCardAndResource
   | AllDrawEncounterCard

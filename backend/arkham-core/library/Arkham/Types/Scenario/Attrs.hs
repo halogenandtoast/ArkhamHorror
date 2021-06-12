@@ -207,7 +207,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioAttrsRunner env)
     EnemySpawnAtLocationMatching miid locationMatcher eid -> do
       mlid <- getId locationMatcher
       a <$ case mlid of
-        Nothing -> error "There were no locations with that name"
+        Nothing -> unshiftMessage (Discard (EnemyTarget eid))
         Just lid -> unshiftMessage (EnemySpawn miid lid eid)
     PlaceDoomOnAgenda -> do
       agendaIds <- getSetList @AgendaId ()

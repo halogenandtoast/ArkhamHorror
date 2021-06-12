@@ -11,20 +11,20 @@ import { defineComponent, watch, ref, toRefs } from 'vue';
 
 export default defineComponent({
   props: {
-    gameLog: { type: Array as string[], required: true },
+    gameLog: { type: Array as () => string[], required: true },
   },
   setup(props) {
-    const messages = ref(null)
+    const messages = ref<Element | null>(null)
     const { gameLog } = toRefs(props)
 
     watch(gameLog, () => {
-      console.log("HERE")
-      if (messages.value !== null) {
-        messages.value.scrollIntoView({ behavior: 'smooth', block: 'end' })
+      const el = messages.value
+      if (el !== null) {
+        el.scrollTop = el.scrollHeight
       }
-    })
+    }, { deep: true })
 
-    return {}
+    return { messages }
   }
 })
 </script>
@@ -33,7 +33,13 @@ export default defineComponent({
 .game-log {
   background: white;
   padding: 10px 0;
-  height: 200px;
+  max-width: 500px;
+  width: 25vw;
+  height: calc(100vh - 40px);
   overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 </style>

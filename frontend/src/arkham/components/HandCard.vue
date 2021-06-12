@@ -21,8 +21,7 @@ export default defineComponent({
   props: {
     game: { type: Object as () => Game, required: true },
     card: { type: Object as () => Card, required: true },
-    investigatorId: { type: String, required: true },
-    isCommited: { type: Boolean, required: true },
+    investigatorId: { type: String, required: true }
   },
   setup(props) {
     const id = computed(() => props.card.contents.id)

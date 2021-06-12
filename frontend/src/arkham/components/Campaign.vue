@@ -8,6 +8,7 @@
       v-if="game.currentData.scenario"
 
       :game="game"
+      :gameLog="gameLog"
       :investigatorId="investigatorId"
       @choose="$emit('choose', $event)"
       @update="update"
@@ -58,6 +59,7 @@ export default defineComponent({
   },
   props: {
     game: { type: Object as () => Game, required: true },
+    gameLog: { type: Array, required: true },
     investigatorId: { type: String, required: true }
   },
   setup(props, { emit }) {

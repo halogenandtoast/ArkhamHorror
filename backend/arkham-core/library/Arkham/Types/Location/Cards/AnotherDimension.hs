@@ -48,9 +48,10 @@ forcedAbility a lid =
 instance ActionRunner env => HasActions env AnotherDimension where
   getActions iid (WhenLocationLeavesPlay lid) (AnotherDimension attrs) = do
     leadInvestigator <- getLeadInvestigatorId
+    investigatorIds <- getSet @InvestigatorId lid
     pure
       [ ActivateCardAbilityAction iid (forcedAbility attrs lid)
-      | iid == leadInvestigator
+      | iid == leadInvestigator && notNull (traceShowId investigatorIds)
       ]
   getActions iid window (AnotherDimension attrs) = getActions iid window attrs
 

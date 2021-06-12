@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.IntoTheBeyond
   ( IntoTheBeyond(..)
   , intoTheBeyond
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -55,9 +56,12 @@ instance (HasName env LocationId, ActRunner env) => RunMessage env IntoTheBeyond
             iid
             [ TargetLabel
                 (EncounterCardTarget location)
-                [InvestigatorDrewEncounterCard iid location]
+                [ RemoveFromEncounterDiscard location
+                , InvestigatorDrewEncounterCard iid location
+                ]
             | location <- locationCards
             ]
+          , UnfocusCards
           ]
         )
     _ -> IntoTheBeyond <$> runMessage msg attrs

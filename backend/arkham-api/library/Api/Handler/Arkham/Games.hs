@@ -19,6 +19,7 @@ import Arkham.Types.Investigator
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.ScenarioId
+import qualified Data.ByteString.Lazy as BSL
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Map.Strict as Map
 import Data.UUID
@@ -191,13 +192,18 @@ putApiV1ArkhamGameR gameId = do
     then do
       gameRef <- newIORef gameJson
       queueRef <- newIORef (messages <> arkhamGameQueue)
-      runGameApp (GameApp gameRef queueRef) $ runMessages (pure . const ())
+      writeChannel <- getChannel gameId
+      runGameApp (GameApp gameRef queueRef)
+        $ runMessages (handleMessageLog writeChannel)
       ge <- readIORef gameRef
       updatedQueue <- readIORef queueRef
-      writeChannel <- getChannel gameId
       liftIO $ atomically $ writeTChan
         writeChannel
-        (encode (Entity gameId (ArkhamGame arkhamGameName ge updatedQueue)))
+        (encode
+          (GameUpdate
+          $ Entity gameId (ArkhamGame arkhamGameName ge updatedQueue)
+          )
+        )
       Entity gameId (ArkhamGame arkhamGameName ge updatedQueue)
         <$ runDB (replace gameId (ArkhamGame arkhamGameName ge updatedQueue))
     else invalidArgs ["Hash mismatch"]
@@ -210,6 +216,18 @@ data RawGameJsonPut = RawGameJsonPut
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
 
+data ApiResponse = GameUpdate (Entity ArkhamGame) | GameMessage Message
+  deriving stock Generic
+  deriving anyclass ToJSON
+
+handleMessageLog :: MonadIO m => TChan BSL.ByteString -> Message -> m ()
+handleMessageLog writeChannel msg = do
+  liftIO $ do
+    putStrLn $ replicate 80 '-'
+    print msg
+    putStrLn $ replicate 80 '-'
+    atomically $ writeTChan writeChannel (encode $ GameMessage msg)
+
 putApiV1ArkhamGameRawR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameRawR gameId = do
   void $ fromJustNote "Not authenticated" <$> getRequestUserId
@@ -218,14 +236,17 @@ putApiV1ArkhamGameRawR gameId = do
   let message = fromMaybe (Continue "edited") (gameMessage response)
   gameRef <- newIORef (gameJson response)
   queueRef <- newIORef (message : arkhamGameQueue)
+  writeChannel <- getChannel gameId
   runGameApp (GameApp gameRef queueRef) $ do
-    runMessages (pure . const ())
+    runMessages (handleMessageLog writeChannel)
   ge <- readIORef gameRef
   updatedQueue <- readIORef queueRef
-  writeChannel <- getChannel gameId
   liftIO $ atomically $ writeTChan
     writeChannel
-    (encode (Entity gameId (ArkhamGame arkhamGameName ge updatedQueue)))
+    (encode $ GameUpdate $ Entity
+      gameId
+      (ArkhamGame arkhamGameName ge updatedQueue)
+    )
   runDB (replace gameId (ArkhamGame arkhamGameName ge updatedQueue))
 
 deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()

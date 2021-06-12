@@ -1,6 +1,7 @@
 module Arkham.Types.Message
   ( module Arkham.Types.Message
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -95,7 +96,7 @@ data ActionType
   | ActActionType
   | AgendaActionType
   | InvestigatorActionType
-  deriving stock (Bounded, Enum)
+  deriving stock (Bounded, Enum, Show)
 
 -- TODO: Better handle in play and out of play
 -- Out of play refers to player's hand, in any deck,

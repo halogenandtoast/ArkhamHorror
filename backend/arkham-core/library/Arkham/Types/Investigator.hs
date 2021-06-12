@@ -178,7 +178,7 @@ instance HasCount ActionRemainingCount env (Maybe Action, [Trait], Investigator)
 instance HasCount ActionRemainingCount env Investigator where
   getCount = getCount . toAttrs
 
-instance HasSet EnemyId env Investigator => HasCount EnemyCount env Investigator where
+instance HasCount EnemyCount env Investigator where
   getCount = (EnemyCount . length <$>) . getSet @EnemyId
 
 instance HasCount ResourceCount env Investigator where

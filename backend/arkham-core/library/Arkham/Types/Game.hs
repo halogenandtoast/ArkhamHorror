@@ -1274,51 +1274,62 @@ instance HasGame env => HasSet ClosestPathLocationId env (LocationId, Prey) wher
 
 instance HasGame env => HasSet ClosestEnemyId env LocationId where
   getSet start = do
-    locations <- coerce <$> getShortestPath start matcher
-    case locations of
-      [] -> pure mempty
-      lids -> do
-        theSet <-
-          unions
-            <$> traverse
-                  (\lid ->
-                    mapSet ClosestEnemyId <$> getSet (unClosestLocationId lid)
-                  )
-                  lids
-        if null theSet
-          then unions <$> traverse (getSet . unClosestLocationId) lids
-          else pure theSet
+    currentEnemies <- map ClosestEnemyId <$> getSetList @EnemyId start
+    if notNull currentEnemies
+      then pure $ setFromList currentEnemies
+      else do
+        locations <- coerce <$> getShortestPath start matcher
+        case locations of
+          [] -> pure mempty
+          lids -> do
+            theSet <-
+              unions
+                <$> traverse
+                      (\lid -> mapSet ClosestEnemyId
+                        <$> getSet (unClosestLocationId lid)
+                      )
+                      lids
+            if null theSet
+              then unions <$> traverse (getSet . unClosestLocationId) lids
+              else pure theSet
     where matcher lid = notNull <$> getSet @EnemyId lid
 
 instance HasGame env => HasSet ClosestEnemyId env InvestigatorId where
   getSet = getSet <=< locationFor
 
 instance HasGame env => HasSet ClosestLocationId env (LocationId, [Trait]) where
-  getSet (start, traits) =
-    setFromList . coerce <$> getShortestPath start matcher
+  getSet (start, traits) = do
+    currentTraits <- getSet start
+    if null (setFromList traits `intersect` currentTraits)
+      then setFromList . coerce <$> getShortestPath start matcher
+      else pure $ singleton (ClosestLocationId start)
    where
     matcher lid = notNull . (setFromList traits `intersect`) <$> getSet lid
 
 instance HasGame env => HasSet ClosestEnemyId env (LocationId, [Trait]) where
   getSet (start, traits) = do
-    locations <- coerce <$> getShortestPath start matcher
-    case locations of
-      [] -> pure mempty
-      lids -> do
-        theSet <-
-          unions
-            <$> traverse
-                  (\lid -> mapSet ClosestEnemyId
-                    <$> getSet (traits, unClosestLocationId lid)
-                  )
-                  lids
-        if null theSet
-          then
-            unions
-              <$> traverse
-                    (\lid -> getSet (unClosestLocationId lid, traits))
-                    lids
-          else pure theSet
+    currentEnemies <- map ClosestEnemyId <$> getSetList @EnemyId (traits, start)
+    if notNull currentEnemies
+      then pure $ setFromList currentEnemies
+      else do
+        locations <- coerce <$> getShortestPath start matcher
+        case locations of
+          [] -> pure mempty
+          lids -> do
+            theSet <-
+              unions
+                <$> traverse
+                      (\lid -> mapSet ClosestEnemyId
+                        <$> getSet (traits, unClosestLocationId lid)
+                      )
+                      lids
+            if null theSet
+              then
+                unions
+                  <$> traverse
+                        (\lid -> getSet (unClosestLocationId lid, traits))
+                        lids
+              else pure theSet
     where matcher lid = notNull <$> getSet @EnemyId (traits, lid)
 
 instance HasGame env => HasSet ClosestEnemyId env (InvestigatorId, [Trait]) where

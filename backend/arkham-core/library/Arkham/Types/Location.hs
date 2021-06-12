@@ -1,30 +1,31 @@
 module Arkham.Types.Location
   ( module Arkham.Types.Location
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
-import Data.UUID (nil)
-import Arkham.Types.Modifier
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.AssetId
-import Arkham.Types.Direction
-import Arkham.Types.GameValue
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Classes
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
+import Arkham.Types.Classes
+import Arkham.Types.Direction
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
+import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Cards
-import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.TreacheryId
+import Data.UUID (nil)
 
 createLocation :: IsCard a => a -> Location
 createLocation a = lookupLocation (getCardCode a) (LocationId $ getCardId a)
@@ -334,6 +335,7 @@ allLocations = mapFromList
   , ("01153", ArkhamWoodsCliffside' . arkhamWoodsCliffside)
   , ("01154", ArkhamWoodsTangledThicket' . arkhamWoodsTangledThicket)
   , ("01155", ArkhamWoodsQuietGlade' . arkhamWoodsQuietGlade)
+  , ("01156", RitualSite' . ritualSite)
   , ("02048", MiskatonicQuad' . miskatonicQuad)
   , ("02049", HumanitiesBuilding' . humanitiesBuilding)
   , ("02050", OrneLibrary' . orneLibrary)

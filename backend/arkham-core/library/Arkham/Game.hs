@@ -160,7 +160,13 @@ runMessages
   -> m ()
 runMessages logger = do
   gameRef <- view gameRefL
+  queueRef <- view messageQueue
   g <- liftIO $ readIORef gameRef
+
+  liftIO $ whenM
+    (isJust <$> lookupEnv "DEBUG")
+    (readIORef queueRef >>= pPrint >> putStrLn "\n")
+
   if g ^. gameStateL /= IsActive
     then toExternalGame g mempty >>= atomicWriteIORef gameRef
     else do
@@ -196,9 +202,6 @@ runMessages logger = do
               else pushMessages [PlayerWindow (g ^. activeInvestigatorIdL) []]
                 >> runMessages logger
         Just msg -> do
-          liftIO $ whenM
-            (isJust <$> lookupEnv "DEBUG")
-            (pPrint msg >> putStrLn "\n")
           case msg of
             Ask iid q -> do
               toExternalGame g (singletonMap iid q) >>= atomicWriteIORef gameRef

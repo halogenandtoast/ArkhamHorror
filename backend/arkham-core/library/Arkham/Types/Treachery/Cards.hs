@@ -18,6 +18,7 @@ import Arkham.Types.Treachery.Cards.BrokenRails as X
 import Arkham.Types.Treachery.Cards.ChillFromBelow as X
 import Arkham.Types.Treachery.Cards.Chronophobia as X
 import Arkham.Types.Treachery.Cards.ClawsOfSteam as X
+import Arkham.Types.Treachery.Cards.CollapsingReality as X
 import Arkham.Types.Treachery.Cards.CoverUp as X
 import Arkham.Types.Treachery.Cards.CryptChill as X
 import Arkham.Types.Treachery.Cards.CursedLuck as X
@@ -84,4 +85,5 @@ import Arkham.Types.Treachery.Cards.VastExpanse as X
 import Arkham.Types.Treachery.Cards.VaultOfEarthlyDemise as X
 import Arkham.Types.Treachery.Cards.VisionsOfFuturesPast as X
 import Arkham.Types.Treachery.Cards.VortexOfTime as X
+import Arkham.Types.Treachery.Cards.Wormhole as X
 import Arkham.Types.Treachery.Cards.WrackedByNightmares as X

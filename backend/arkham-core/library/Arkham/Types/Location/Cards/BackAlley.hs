@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.BackAlley
   ( backAlley
   , BackAlley(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -12,20 +13,16 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Name
 import Arkham.Types.Trait hiding (Cultist)
 
 newtype BackAlley = BackAlley LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 backAlley :: LocationId -> BackAlley
-backAlley lid = BackAlley
-  $ base { locationVictory = Just 1, locationRevealedSymbol = Squiggle }
- where
-  base = baseAttrs
-    lid
+backAlley =
+  BackAlley . (victoryL ?~ 1) . (revealedSymbolL .~ Squiggle) . baseAttrs
     "02077"
-    (Name "Back Alley" Nothing)
+    "Back Alley"
     EncounterSet.TheHouseAlwaysWins
     1
     (PerPlayer 1)

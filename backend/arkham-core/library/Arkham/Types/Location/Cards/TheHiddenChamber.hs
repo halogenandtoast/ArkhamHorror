@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.TheHiddenChamber
   ( theHiddenChamber
   , TheHiddenChamber(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -24,18 +25,15 @@ newtype TheHiddenChamber = TheHiddenChamber LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theHiddenChamber :: LocationId -> TheHiddenChamber
-theHiddenChamber lid = TheHiddenChamber $ base { locationVictory = Just 2 }
- where
-  base = baseAttrs
-    lid
-    "02214"
-    (Name "The Hidden Chamber" (Just "Prison of the Beast"))
-    EncounterSet.BloodOnTheAltar
-    3
-    (Static 0)
-    NoSymbol
-    []
-    [Dunwich]
+theHiddenChamber = TheHiddenChamber . (victoryL ?~ 2) . baseAttrs
+  "02214"
+  ("The Hidden Chamber" `subtitled` "Prison of the Beast")
+  EncounterSet.BloodOnTheAltar
+  3
+  (Static 0)
+  NoSymbol
+  []
+  [Dunwich]
 
 instance HasId (Maybe StoryAssetId) env CardCode => HasModifiersFor env TheHiddenChamber where
   getModifiersFor _ target (TheHiddenChamber attrs) | isTarget attrs target = do

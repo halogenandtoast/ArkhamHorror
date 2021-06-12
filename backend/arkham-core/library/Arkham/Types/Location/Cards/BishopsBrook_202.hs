@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.BishopsBrook_202
   ( bishopsBrook_202
   , BishopsBrook_202(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -14,7 +15,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Target
 import Arkham.Types.Trait
 
@@ -22,10 +22,9 @@ newtype BishopsBrook_202 = BishopsBrook_202 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bishopsBrook_202 :: LocationId -> BishopsBrook_202
-bishopsBrook_202 lid = BishopsBrook_202 $ baseAttrs
-  lid
+bishopsBrook_202 = BishopsBrook_202 . baseAttrs
   "02202"
-  (Name "Bishop's Brook" Nothing)
+  "Bishop's Brook"
   EncounterSet.BloodOnTheAltar
   3
   (Static 2)

@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.LaBellaLuna
   ( laBellaLuna
   , LaBellaLuna(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -12,17 +13,15 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Name
 import Arkham.Types.Trait
 
 newtype LaBellaLuna = LaBellaLuna LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 laBellaLuna :: LocationId -> LaBellaLuna
-laBellaLuna lid = LaBellaLuna $ baseAttrs
-  lid
+laBellaLuna = LaBellaLuna . baseAttrs
   "02070"
-  (Name "La Bella Luna" Nothing)
+  "La Bella Luna"
   EncounterSet.TheHouseAlwaysWins
   2
   (PerPlayer 1)

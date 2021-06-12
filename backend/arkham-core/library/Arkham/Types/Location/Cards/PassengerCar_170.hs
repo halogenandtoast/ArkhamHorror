@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.PassengerCar_170
   ( passengerCar_170
   , PassengerCar_170(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -17,7 +18,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
@@ -26,19 +26,16 @@ newtype PassengerCar_170 = PassengerCar_170 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 passengerCar_170 :: LocationId -> PassengerCar_170
-passengerCar_170 lid = PassengerCar_170
-  $ base { locationConnectsTo = setFromList [LeftOf, RightOf] }
- where
-  base = baseAttrs
-    lid
+passengerCar_170 =
+  PassengerCar_170 . (connectsToL .~ setFromList [LeftOf, RightOf]) . baseAttrs
     "02170"
-    (Name "Passenger Car" Nothing)
+    "Passenger Car"
     EncounterSet.TheEssexCountyExpress
     3
     (PerPlayer 2)
     NoSymbol
     []
-    (singleton Train)
+    [Train]
 
 instance HasCount ClueCount env LocationId => HasModifiersFor env PassengerCar_170 where
   getModifiersFor _ target (PassengerCar_170 location@LocationAttrs {..})

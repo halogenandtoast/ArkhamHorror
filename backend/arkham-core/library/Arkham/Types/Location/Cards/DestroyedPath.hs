@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.DestroyedPath
   ( destroyedPath
   , DestroyedPath(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -17,7 +18,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
@@ -28,21 +28,20 @@ newtype DestroyedPath = DestroyedPath LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 destroyedPath :: LocationId -> DestroyedPath
-destroyedPath lid =
+destroyedPath =
   DestroyedPath
-    $ baseAttrs
-        lid
+    . (revealedSymbolL .~ Squiggle)
+    . (revealedConnectedSymbolsL .~ setFromList [Triangle, Equals])
+    . (unrevealedNameL .~ "Diverging Path")
+    . baseAttrs
         "02287"
-        (Name "Destroyed Path" Nothing)
+        "Destroyed Path"
         EncounterSet.WhereDoomAwaits
         3
         (Static 0)
         NoSymbol
         []
         [Dunwich, Woods]
-    & (revealedSymbolL .~ Squiggle)
-    & (revealedConnectedSymbolsL .~ setFromList [Triangle, Equals])
-    & (unrevealedNameL .~ LocationName (mkName "Diverging Path"))
 
 instance HasModifiersFor env DestroyedPath where
   getModifiersFor = noModifiersFor

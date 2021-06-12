@@ -21,21 +21,19 @@ newtype ArkhamWoodsLakeside = ArkhamWoodsLakeside LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsLakeside :: LocationId -> ArkhamWoodsLakeside
-arkhamWoodsLakeside lid = ArkhamWoodsLakeside $ base
-  { locationRevealedConnectedSymbols = setFromList [Squiggle, Heart]
-  , locationRevealedSymbol = Star
-  }
- where
-  base = baseAttrs
-    lid
-    "50034"
-    (Name "Arkham Woods" $ Just "Lakeside")
-    EncounterSet.ReturnToTheDevourerBelow
-    4
-    (PerPlayer 1)
-    Square
-    [Squiggle]
-    [Woods]
+arkhamWoodsLakeside =
+  ArkhamWoodsLakeside
+    . (revealedConnectedSymbolsL .~ setFromList [Squiggle, Heart])
+    . (revealedSymbolL .~ Star)
+    . baseAttrs
+        "50034"
+        ("Arkham Woods" `subtitled` "Lakeside")
+        EncounterSet.ReturnToTheDevourerBelow
+        4
+        (PerPlayer 1)
+        Square
+        [Squiggle]
+        [Woods]
 
 instance HasModifiersFor env ArkhamWoodsLakeside where
   getModifiersFor = noModifiersFor

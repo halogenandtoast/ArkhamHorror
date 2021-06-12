@@ -9,17 +9,15 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Name
 import Arkham.Types.Trait
 
 newtype Rivertown = Rivertown LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rivertown :: LocationId -> Rivertown
-rivertown lid = Rivertown $ baseAttrs
-  lid
+rivertown = Rivertown . baseAttrs
   "01125"
-  (Name "Rivertown" Nothing)
+  "Rivertown"
   EncounterSet.TheMidnightMasks
   1
   (PerPlayer 1)

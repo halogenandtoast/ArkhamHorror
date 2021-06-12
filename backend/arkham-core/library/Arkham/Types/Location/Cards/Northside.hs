@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.Northside
   ( Northside(..)
   , northside
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -16,7 +17,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
@@ -24,18 +24,15 @@ newtype Northside = Northside LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 northside :: LocationId -> Northside
-northside lid = Northside $ base { locationVictory = Just 1 }
- where
-  base = baseAttrs
-    lid
-    "01134"
-    (Name "Northside" Nothing)
-    EncounterSet.TheMidnightMasks
-    3
-    (PerPlayer 2)
-    T
-    [Diamond, Triangle]
-    [Arkham]
+northside = Northside . (victoryL ?~ 1) . baseAttrs
+  "01134"
+  "Northside"
+  EncounterSet.TheMidnightMasks
+  3
+  (PerPlayer 2)
+  T
+  [Diamond, Triangle]
+  [Arkham]
 
 instance HasModifiersFor env Northside where
   getModifiersFor = noModifiersFor

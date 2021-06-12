@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.ColdSpringGlen_245
   ( coldSpringGlen_245
   , ColdSpringGlen_245(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -17,7 +18,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -27,10 +27,9 @@ newtype ColdSpringGlen_245 = ColdSpringGlen_245 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 coldSpringGlen_245 :: LocationId -> ColdSpringGlen_245
-coldSpringGlen_245 lid = ColdSpringGlen_245 $ baseAttrs
-  lid
+coldSpringGlen_245 = ColdSpringGlen_245 . baseAttrs
   "02245"
-  (Name "Cold Spring Glen" Nothing)
+  "Cold Spring Glen"
   EncounterSet.UndimensionedAndUnseen
   2
   (Static 0)

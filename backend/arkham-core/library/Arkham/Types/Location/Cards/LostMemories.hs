@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.LostMemories
   ( lostMemories
   , LostMemories(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -14,7 +15,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -23,21 +23,20 @@ newtype LostMemories = LostMemories LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lostMemories :: LocationId -> LostMemories
-lostMemories lid =
+lostMemories =
   LostMemories
-    $ baseAttrs
-        lid
+    . (revealedSymbolL .~ T)
+    . (revealedConnectedSymbolsL .~ setFromList [Square, Moon])
+    . (unrevealedNameL .~ "Altered Path")
+    . baseAttrs
         "02292"
-        (Name "Lost Memories" Nothing)
+        "Lost Memories"
         EncounterSet.WhereDoomAwaits
         2
         (PerPlayer 1)
         NoSymbol
         []
         [Dunwich, Woods, Altered]
-    & (revealedSymbolL .~ T)
-    & (revealedConnectedSymbolsL .~ setFromList [Square, Moon])
-    & (unrevealedNameL .~ LocationName (mkName "Altered Path"))
 
 instance HasModifiersFor env LostMemories where
   getModifiersFor = noModifiersFor

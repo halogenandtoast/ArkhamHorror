@@ -11,7 +11,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -21,10 +20,9 @@ newtype ScienceBuilding = ScienceBuilding LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 scienceBuilding :: LocationId -> ScienceBuilding
-scienceBuilding lid = ScienceBuilding $ baseAttrs
-  lid
+scienceBuilding = ScienceBuilding . baseAttrs
   "02056"
-  (Name "Science Building" Nothing)
+  "Science Building"
   EncounterSet.ExtracurricularActivity
   2
   (PerPlayer 1)

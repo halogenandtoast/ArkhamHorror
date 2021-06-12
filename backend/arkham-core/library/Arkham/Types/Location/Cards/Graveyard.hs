@@ -11,7 +11,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -21,18 +20,15 @@ newtype Graveyard = Graveyard LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 graveyard :: LocationId -> Graveyard
-graveyard lid = Graveyard $ base { locationVictory = Just 1 }
- where
-  base = baseAttrs
-    lid
-    "01133"
-    (Name "Graveyard" Nothing)
-    EncounterSet.TheMidnightMasks
-    1
-    (PerPlayer 2)
-    Hourglass
-    [Circle]
-    [Arkham]
+graveyard = Graveyard . (victoryL ?~ 1) . baseAttrs
+  "01133"
+  "Graveyard"
+  EncounterSet.TheMidnightMasks
+  1
+  (PerPlayer 2)
+  Hourglass
+  [Circle]
+  [Arkham]
 
 instance HasModifiersFor env Graveyard where
   getModifiersFor = noModifiersFor

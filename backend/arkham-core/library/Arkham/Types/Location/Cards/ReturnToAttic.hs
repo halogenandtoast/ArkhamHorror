@@ -10,22 +10,22 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 
 newtype ReturnToAttic = ReturnToAttic LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 returnToAttic :: LocationId -> ReturnToAttic
-returnToAttic lid = ReturnToAttic $ baseAttrs
-  lid
-  "50018"
-  (Name "Attic" Nothing)
-  EncounterSet.ReturnToTheGathering
-  3
-  (PerPlayer 1)
-  Triangle
-  [Square, Moon]
-  mempty
+returnToAttic =
+  ReturnToAttic
+    . baseAttrs
+        "50018"
+        "Attic"
+        EncounterSet.ReturnToTheGathering
+        3
+        (PerPlayer 1)
+        Triangle
+        [Square, Moon]
+        []
 
 instance HasModifiersFor env ReturnToAttic where
   getModifiersFor = noModifiersFor

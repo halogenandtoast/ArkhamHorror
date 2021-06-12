@@ -11,7 +11,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 
@@ -19,18 +18,18 @@ newtype FarAboveYourHouse = FarAboveYourHouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 farAboveYourHouse :: LocationId -> FarAboveYourHouse
-farAboveYourHouse lid = FarAboveYourHouse $ base { locationVictory = Just 1 }
- where
-  base = baseAttrs
-    lid
-    "50019"
-    (Name "Field of Graves" Nothing)
-    EncounterSet.ReturnToTheGathering
-    2
-    (PerPlayer 1)
-    Moon
-    [Triangle]
-    mempty
+farAboveYourHouse =
+  FarAboveYourHouse
+    . (victoryL ?~ 1)
+    . baseAttrs
+        "50019"
+        "Field of Graves"
+        EncounterSet.ReturnToTheGathering
+        2
+        (PerPlayer 1)
+        Moon
+        [Triangle]
+        mempty
 
 instance HasModifiersFor env FarAboveYourHouse where
   getModifiersFor = noModifiersFor

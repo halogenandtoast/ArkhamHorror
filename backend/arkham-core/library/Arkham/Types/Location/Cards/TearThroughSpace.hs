@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.TearThroughSpace
   ( tearThroughSpace
   , TearThroughSpace(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -15,7 +16,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
@@ -23,10 +23,9 @@ newtype TearThroughSpace = TearThroughSpace LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tearThroughSpace :: LocationId -> TearThroughSpace
-tearThroughSpace lid = TearThroughSpace $ baseAttrs
-  lid
+tearThroughSpace = TearThroughSpace . baseAttrs
   "02324"
-  (Name "Tear Through Space" Nothing)
+  "Tear Through Space"
   EncounterSet.LostInTimeAndSpace
   1
   (Static 1)

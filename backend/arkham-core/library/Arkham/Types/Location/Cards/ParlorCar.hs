@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.ParlorCar
   ( parlorCar
   , ParlorCar(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -18,7 +19,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -27,21 +27,19 @@ newtype ParlorCar = ParlorCar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 parlorCar :: LocationId -> ParlorCar
-parlorCar lid = ParlorCar $ base
-  { locationConnectsTo = setFromList [LeftOf, RightOf]
-  , locationVictory = Just 1
-  }
- where
-  base = baseAttrs
-    lid
-    "02174"
-    (Name "Parlor Car" Nothing)
-    EncounterSet.TheEssexCountyExpress
-    3
-    (PerPlayer 1)
-    NoSymbol
-    []
-    (singleton Train)
+parlorCar =
+  ParlorCar
+    . (connectsToL .~ setFromList [LeftOf, RightOf])
+    . (victoryL ?~ 1)
+    . baseAttrs
+        "02174"
+        "Parlor Car"
+        EncounterSet.TheEssexCountyExpress
+        3
+        (PerPlayer 1)
+        NoSymbol
+        []
+        (singleton Train)
 
 instance HasCount ClueCount env LocationId => HasModifiersFor env ParlorCar where
   getModifiersFor _ target (ParlorCar location@LocationAttrs {..})

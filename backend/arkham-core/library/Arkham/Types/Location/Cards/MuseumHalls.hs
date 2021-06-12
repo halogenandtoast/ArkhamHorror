@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.MuseumHalls
   ( museumHalls
   , MuseumHalls(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -29,20 +30,18 @@ newtype MuseumHalls = MuseumHalls LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 museumHalls :: LocationId -> MuseumHalls
-museumHalls lid = MuseumHalls $ base
-  { locationConnectedSymbols = setFromList [Circle, Diamond, Triangle]
-  }
- where
-  base = baseAttrs
-    lid
-    "02127"
-    (Name "Museum Halls" Nothing)
-    EncounterSet.TheMiskatonicMuseum
-    2
-    (Static 0)
-    Square
-    [Circle]
-    (singleton Miskatonic)
+museumHalls =
+  MuseumHalls
+    . (connectedSymbolsL .~ setFromList [Circle, Diamond, Triangle])
+    . baseAttrs
+        "02127"
+        "Museum Halls"
+        EncounterSet.TheMiskatonicMuseum
+        2
+        (Static 0)
+        Square
+        [Circle]
+        (singleton Miskatonic)
 
 instance HasModifiersFor env MuseumHalls where
   getModifiersFor _ target (MuseumHalls location) | isTarget location target =

@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.FoulSwamp
   ( FoulSwamp(..)
   , foulSwamp
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -20,7 +21,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.SkillType
 import Arkham.Types.Target
@@ -31,10 +31,9 @@ newtype FoulSwamp = FoulSwamp LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 foulSwamp :: LocationId -> FoulSwamp
-foulSwamp lid = FoulSwamp $ baseAttrs
-  lid
+foulSwamp = FoulSwamp . baseAttrs
   "81016"
-  (Name "Foul Swamp" Nothing)
+  "Foul Swamp"
   EncounterSet.CurseOfTheRougarou
   2
   (Static 0)

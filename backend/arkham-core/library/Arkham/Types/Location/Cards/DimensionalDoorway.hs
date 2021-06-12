@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.DimensionalDoorway
   ( dimensionalDoorway
   , DimensionalDoorway(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -15,7 +16,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -24,10 +24,9 @@ newtype DimensionalDoorway = DimensionalDoorway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dimensionalDoorway :: LocationId -> DimensionalDoorway
-dimensionalDoorway lid = DimensionalDoorway $ baseAttrs
-  lid
+dimensionalDoorway = DimensionalDoorway . baseAttrs
   "02328"
-  (Name "Dimensional Doorway" Nothing)
+  "Dimensional Doorway"
   EncounterSet.LostInTimeAndSpace
   2
   (PerPlayer 1)

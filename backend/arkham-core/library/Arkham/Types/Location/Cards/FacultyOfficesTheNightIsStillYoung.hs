@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.FacultyOfficesTheNightIsStillYoung
   ( facultyOfficesTheNightIsStillYoung
   , FacultyOfficesTheNightIsStillYoung(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -30,13 +31,10 @@ newtype FacultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung 
 
 facultyOfficesTheNightIsStillYoung
   :: LocationId -> FacultyOfficesTheNightIsStillYoung
-facultyOfficesTheNightIsStillYoung lid =
-  FacultyOfficesTheNightIsStillYoung $ base { locationVictory = Just 1 }
- where
-  base = baseAttrs
-    lid
+facultyOfficesTheNightIsStillYoung =
+  FacultyOfficesTheNightIsStillYoung . (victoryL ?~ 1) . baseAttrs
     "02054"
-    (Name "Faculty Offices" (Just "The Night is Still Young"))
+    ("Faculty Offices" `subtitled` "The Night is Still Young")
     EncounterSet.ExtracurricularActivity
     2
     (PerPlayer 2)

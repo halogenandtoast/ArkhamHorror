@@ -9,22 +9,22 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Name
 
 newtype Study = Study LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 study :: LocationId -> Study
-study lid = Study $ baseAttrs
-  lid
-  "01111"
-  (Name "Study" Nothing)
-  EncounterSet.TheGathering
-  2
-  (PerPlayer 2)
-  Circle
-  mempty
-  mempty
+study =
+  Study
+    . baseAttrs
+        "01111"
+        "Study"
+        EncounterSet.TheGathering
+        2
+        (PerPlayer 2)
+        Circle
+        []
+        []
 
 instance HasModifiersFor env Study where
   getModifiersFor = noModifiersFor

@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.Schoolhouse_212
   ( schoolhouse_212
   , Schoolhouse_212(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -14,7 +15,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Target
 import Arkham.Types.Trait
 
@@ -22,10 +22,9 @@ newtype Schoolhouse_212 = Schoolhouse_212 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 schoolhouse_212 :: LocationId -> Schoolhouse_212
-schoolhouse_212 lid = Schoolhouse_212 $ baseAttrs
-  lid
+schoolhouse_212 = Schoolhouse_212 . baseAttrs
   "02212"
-  (Name "Schoolhouse" Nothing)
+  "Schoolhouse"
   EncounterSet.BloodOnTheAltar
   4
   (Static 1)

@@ -1,38 +1,36 @@
 module Arkham.Types.Location.Cards.EasttownArkhamPoliceStation
   ( EasttownArkhamPoliceStation(..)
   , easttownArkhamPoliceStation
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Target
-import Arkham.Types.Window
-import Arkham.Types.Asset.Uses
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Game.Helpers
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
 import Arkham.Types.Trait hiding (Supply)
+import Arkham.Types.Window
 
 newtype EasttownArkhamPoliceStation = EasttownArkhamPoliceStation LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 easttownArkhamPoliceStation :: LocationId -> EasttownArkhamPoliceStation
-easttownArkhamPoliceStation lid = EasttownArkhamPoliceStation
-  $ base { locationVictory = Just 1 }
- where
-  base = baseAttrs
-    lid
+easttownArkhamPoliceStation =
+  EasttownArkhamPoliceStation . (victoryL ?~ 1) . baseAttrs
     "50027"
-    (Name "Easttown" (Just "Arkham Police Station"))
+    ("Easttown" `subtitled` "Arkham Police Station")
     EncounterSet.ReturnToTheMidnightMasks
     4
     (PerPlayer 2)

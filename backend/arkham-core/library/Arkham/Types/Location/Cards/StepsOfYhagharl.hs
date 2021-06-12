@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.StepsOfYhagharl
   ( stepsOfYhagharl
   , StepsOfYhagharl(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -15,7 +16,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -25,10 +25,9 @@ newtype StepsOfYhagharl = StepsOfYhagharl LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stepsOfYhagharl :: LocationId -> StepsOfYhagharl
-stepsOfYhagharl lid = StepsOfYhagharl $ baseAttrs
-  lid
+stepsOfYhagharl = StepsOfYhagharl . baseAttrs
   "02327"
-  (Name "Steps of Y'hagharl" Nothing)
+  "Steps of Y'hagharl"
   EncounterSet.LostInTimeAndSpace
   3
   (PerPlayer 1)

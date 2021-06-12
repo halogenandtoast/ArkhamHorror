@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.CongregationalChurch_209
   ( congregationalChurch_209
   , CongregationalChurch_209(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -16,7 +17,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
@@ -24,10 +24,9 @@ newtype CongregationalChurch_209 = CongregationalChurch_209 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 congregationalChurch_209 :: LocationId -> CongregationalChurch_209
-congregationalChurch_209 lid = CongregationalChurch_209 $ baseAttrs
-  lid
+congregationalChurch_209 = CongregationalChurch_209 . baseAttrs
   "02209"
-  (Name "Congregational Church" Nothing)
+  "Congregational Church"
   EncounterSet.BloodOnTheAltar
   2
   (PerPlayer 1)

@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.DowntownArkhamAsylum
   ( DowntownArkhamAsylum(..)
   , downtownArkhamAsylum
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -25,19 +26,15 @@ newtype DowntownArkhamAsylum = DowntownArkhamAsylum LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 downtownArkhamAsylum :: LocationId -> DowntownArkhamAsylum
-downtownArkhamAsylum lid = DowntownArkhamAsylum
-  $ base { locationVictory = Just 1 }
- where
-  base = baseAttrs
-    lid
-    "01131"
-    (Name "Downtown" $ Just "Arkham Asylum")
-    EncounterSet.TheMidnightMasks
-    4
-    (PerPlayer 2)
-    Triangle
-    [Moon, T]
-    [Arkham]
+downtownArkhamAsylum = DowntownArkhamAsylum . (victoryL ?~ 1) . baseAttrs
+  "01131"
+  ("Downtown" `subtitled` "Arkham Asylum")
+  EncounterSet.TheMidnightMasks
+  4
+  (PerPlayer 2)
+  Triangle
+  [Moon, T]
+  [Arkham]
 
 instance HasModifiersFor env DowntownArkhamAsylum where
   getModifiersFor = noModifiersFor

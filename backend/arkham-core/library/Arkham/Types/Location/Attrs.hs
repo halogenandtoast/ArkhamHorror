@@ -133,8 +133,7 @@ revealed :: LocationAttrs -> Bool
 revealed = locationRevealed
 
 baseAttrs
-  :: LocationId
-  -> CardCode
+  :: CardCode
   -> Name
   -> EncounterSet
   -> Int
@@ -142,8 +141,9 @@ baseAttrs
   -> LocationSymbol
   -> [LocationSymbol]
   -> [Trait]
+  -> LocationId
   -> LocationAttrs
-baseAttrs lid cardCode name encounterSet shroud' revealClues symbol' connectedSymbols' traits'
+baseAttrs cardCode name encounterSet shroud' revealClues symbol' connectedSymbols' traits' lid
   = LocationAttrs
     { locationName = LocationName name
     , locationUnrevealedName = LocationName name

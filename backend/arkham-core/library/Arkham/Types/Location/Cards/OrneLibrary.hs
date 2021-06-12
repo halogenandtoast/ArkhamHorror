@@ -12,7 +12,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Target
 import Arkham.Types.Trait
 
@@ -20,18 +19,15 @@ newtype OrneLibrary = OrneLibrary LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 orneLibrary :: LocationId -> OrneLibrary
-orneLibrary lid = OrneLibrary $ base { locationVictory = Just 1 }
- where
-  base = baseAttrs
-    lid
-    "02050"
-    (Name "Orne Library" Nothing)
-    EncounterSet.ExtracurricularActivity
-    3
-    (PerPlayer 1)
-    Triangle
-    [Plus, Square]
-    [Miskatonic]
+orneLibrary = OrneLibrary . (victoryL ?~ 1) . baseAttrs
+  "02050"
+  "Orne Library"
+  EncounterSet.ExtracurricularActivity
+  3
+  (PerPlayer 1)
+  Triangle
+  [Plus, Square]
+  [Miskatonic]
 
 instance HasModifiersFor env OrneLibrary where
   getModifiersFor _ target (OrneLibrary attrs) | isTarget attrs target =

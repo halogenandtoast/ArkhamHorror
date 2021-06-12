@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.MiskatonicUniversity
   ( MiskatonicUniversity(..)
   , miskatonicUniversity
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -16,7 +17,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -25,19 +25,15 @@ newtype MiskatonicUniversity = MiskatonicUniversity LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miskatonicUniversity :: LocationId -> MiskatonicUniversity
-miskatonicUniversity lid = MiskatonicUniversity
-  $ base { locationVictory = Just 1 }
- where
-  base = baseAttrs
-    lid
-    "01129"
-    (Name "Miskatonic University" Nothing)
-    EncounterSet.TheMidnightMasks
-    4
-    (PerPlayer 2)
-    Diamond
-    [T, Plus, Circle, Square]
-    [Arkham]
+miskatonicUniversity = MiskatonicUniversity . (victoryL ?~ 1) . baseAttrs
+  "01129"
+  "Miskatonic University"
+  EncounterSet.TheMidnightMasks
+  4
+  (PerPlayer 2)
+  Diamond
+  [T, Plus, Circle, Square]
+  [Arkham]
 
 instance HasModifiersFor env MiskatonicUniversity where
   getModifiersFor = noModifiersFor

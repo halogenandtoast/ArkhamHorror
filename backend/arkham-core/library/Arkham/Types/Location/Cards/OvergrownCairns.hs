@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.OvergrownCairns
   ( OvergrownCairns(..)
   , overgrownCairns
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -16,7 +17,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -25,10 +25,9 @@ newtype OvergrownCairns = OvergrownCairns LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 overgrownCairns :: LocationId -> OvergrownCairns
-overgrownCairns lid = OvergrownCairns $ baseAttrs
-  lid
+overgrownCairns = OvergrownCairns . baseAttrs
   "81018"
-  (Name "Overgrown Cairns" Nothing)
+  "Overgrown Cairns"
   EncounterSet.CurseOfTheRougarou
   4
   (Static 0)

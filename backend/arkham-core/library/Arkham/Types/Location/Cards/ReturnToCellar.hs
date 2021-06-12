@@ -10,22 +10,22 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 
 newtype ReturnToCellar = ReturnToCellar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 returnToCellar :: LocationId -> ReturnToCellar
-returnToCellar lid = ReturnToCellar $ baseAttrs
-  lid
-  "50020"
-  (Name "Cellar" Nothing)
-  EncounterSet.ReturnToTheGathering
-  2
-  (PerPlayer 1)
-  Plus
-  [Square, Squiggle]
-  mempty
+returnToCellar =
+  ReturnToCellar
+    . baseAttrs
+        "50020"
+        "Cellar"
+        EncounterSet.ReturnToTheGathering
+        2
+        (PerPlayer 1)
+        Plus
+        [Square, Squiggle]
+        []
 
 instance HasModifiersFor env ReturnToCellar where
   getModifiersFor = noModifiersFor

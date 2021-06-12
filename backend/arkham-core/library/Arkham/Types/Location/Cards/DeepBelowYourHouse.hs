@@ -11,7 +11,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 
@@ -19,18 +18,18 @@ newtype DeepBelowYourHouse = DeepBelowYourHouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deepBelowYourHouse :: LocationId -> DeepBelowYourHouse
-deepBelowYourHouse lid = DeepBelowYourHouse $ base { locationVictory = Just 1 }
- where
-  base = baseAttrs
-    lid
-    "50021"
-    (Name "Ghoul Pits" Nothing)
-    EncounterSet.ReturnToTheGathering
-    4
-    (PerPlayer 1)
-    Squiggle
-    [Plus]
-    mempty
+deepBelowYourHouse =
+  DeepBelowYourHouse
+    . (victoryL ?~ 1)
+    . baseAttrs
+        "50021"
+        "Ghoul Pits"
+        EncounterSet.ReturnToTheGathering
+        4
+        (PerPlayer 1)
+        Squiggle
+        [Plus]
+        mempty
 
 instance HasModifiersFor env DeepBelowYourHouse where
   getModifiersFor = noModifiersFor

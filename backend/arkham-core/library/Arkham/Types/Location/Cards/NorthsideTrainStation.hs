@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.NorthsideTrainStation
   ( NorthsideTrainStation(..)
   , northsideTrainStation
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -24,18 +25,15 @@ newtype NorthsideTrainStation = NorthsideTrainStation LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 northsideTrainStation :: LocationId -> NorthsideTrainStation
-northsideTrainStation lid = NorthsideTrainStation
-  (baseAttrs
-    lid
-    "50028"
-    (Name "Northside" $ Just "Train Station")
-    EncounterSet.TheMidnightMasks
-    2
-    (PerPlayer 1)
-    T
-    [Diamond, Triangle]
-    [Arkham]
-  )
+northsideTrainStation = NorthsideTrainStation . baseAttrs
+  "50028"
+  ("Northside" `subtitled` "Train Station")
+  EncounterSet.TheMidnightMasks
+  2
+  (PerPlayer 1)
+  T
+  [Diamond, Triangle]
+  [Arkham]
 
 instance HasModifiersFor env NorthsideTrainStation where
   getModifiersFor = noModifiersFor

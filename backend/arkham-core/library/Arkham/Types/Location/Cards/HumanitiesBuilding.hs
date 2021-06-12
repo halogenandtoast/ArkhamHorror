@@ -10,7 +10,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Trait
 
@@ -18,10 +17,9 @@ newtype HumanitiesBuilding = HumanitiesBuilding LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 humanitiesBuilding :: LocationId -> HumanitiesBuilding
-humanitiesBuilding lid = HumanitiesBuilding $ baseAttrs
-  lid
+humanitiesBuilding = HumanitiesBuilding . baseAttrs
   "02049"
-  (Name "Humanities Building" Nothing)
+  "Humanities Building"
   EncounterSet.ExtracurricularActivity
   3
   (PerPlayer 2)

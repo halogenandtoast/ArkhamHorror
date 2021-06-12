@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.AlchemyLabs
   ( alchemyLabs
   , AlchemyLabs(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -20,7 +21,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -29,10 +29,9 @@ newtype AlchemyLabs = AlchemyLabs LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alchemyLabs :: LocationId -> AlchemyLabs
-alchemyLabs lid = AlchemyLabs $ baseAttrs
-  lid
+alchemyLabs = AlchemyLabs . baseAttrs
   "02057"
-  (Name "Alchemy Labs" Nothing)
+  "Alchemy Labs"
   EncounterSet.ExtracurricularActivity
   5
   (Static 0)

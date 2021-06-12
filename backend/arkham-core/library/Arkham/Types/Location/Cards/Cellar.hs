@@ -10,25 +10,23 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 
 newtype Cellar = Cellar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cellar :: LocationId -> Cellar
-cellar lid = Cellar $ (baseAttrs
-                        lid
-                        "01114"
-                        (Name "Cellar" Nothing)
-                        EncounterSet.TheGathering
-                        4
-                        (PerPlayer 2)
-                        Plus
-                        [Square]
-                        []
-                      )
-  { locationVictory = Just 1
-  }
+cellar =
+  Cellar
+    . (victoryL ?~ 1)
+    . baseAttrs
+        "01114"
+        "Cellar"
+        EncounterSet.TheGathering
+        4
+        (PerPlayer 2)
+        Plus
+        [Square]
+        []
 
 instance HasModifiersFor env Cellar where
   getModifiersFor = noModifiersFor

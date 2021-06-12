@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.GardenDistrict
   ( GardenDistrict(..)
   , gardenDistrict
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -16,7 +17,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.SkillType
 import Arkham.Types.Source
@@ -28,10 +28,9 @@ newtype GardenDistrict = GardenDistrict LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 gardenDistrict :: LocationId -> GardenDistrict
-gardenDistrict lid = GardenDistrict $ baseAttrs
-  lid
+gardenDistrict = GardenDistrict . baseAttrs
   "81008"
-  (Name "Garden District" Nothing)
+  "Garden District"
   EncounterSet.CurseOfTheRougarou
   1
   (Static 0)

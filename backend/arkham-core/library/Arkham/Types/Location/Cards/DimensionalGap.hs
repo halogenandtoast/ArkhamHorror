@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.DimensionalGap
   ( dimensionalGap
   , DimensionalGap(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -16,7 +17,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
@@ -24,21 +24,20 @@ newtype DimensionalGap = DimensionalGap LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dimensionalGap :: LocationId -> DimensionalGap
-dimensionalGap lid =
+dimensionalGap =
   DimensionalGap
-    $ baseAttrs
-        lid
+    . (revealedSymbolL .~ T)
+    . (revealedConnectedSymbolsL .~ setFromList [Square, Moon])
+    . (unrevealedNameL .~ "Altered Path")
+    . baseAttrs
         "02289"
-        (Name "Dimensional Gap" Nothing)
+        "Dimensional Gap"
         EncounterSet.WhereDoomAwaits
         3
         (PerPlayer 1)
         NoSymbol
         []
         [Dunwich, Woods, Altered]
-    & (revealedSymbolL .~ T)
-    & (revealedConnectedSymbolsL .~ setFromList [Square, Moon])
-    & (unrevealedNameL .~ LocationName (mkName "Altered Path"))
 
 instance HasModifiersFor env DimensionalGap where
   getModifiersFor = noModifiersFor

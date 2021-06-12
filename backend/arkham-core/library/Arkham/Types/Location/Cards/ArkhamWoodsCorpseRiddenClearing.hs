@@ -18,23 +18,20 @@ import Arkham.Types.Trait
 newtype ArkhamWoodsCorpseRiddenClearing = ArkhamWoodsCorpseRiddenClearing LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-arkhamWoodsCorpseRiddenClearing
-  :: LocationId -> ArkhamWoodsCorpseRiddenClearing
-arkhamWoodsCorpseRiddenClearing lid = ArkhamWoodsCorpseRiddenClearing $ base
-  { locationRevealedConnectedSymbols = setFromList [Squiggle, Circle]
-  , locationRevealedSymbol = Droplet
-  }
- where
-  base = baseAttrs
-    lid
-    "50035"
-    (Name "Arkham Woods" (Just "Corpse-Ridden Clearing"))
-    EncounterSet.ReturnToTheDevourerBelow
-    3
-    (PerPlayer 1)
-    Square
-    [Squiggle]
-    [Woods]
+arkhamWoodsCorpseRiddenClearing :: LocationId -> ArkhamWoodsCorpseRiddenClearing
+arkhamWoodsCorpseRiddenClearing =
+  ArkhamWoodsCorpseRiddenClearing
+    . (revealedConnectedSymbolsL .~ setFromList [Squiggle, Circle])
+    . (revealedSymbolL .~ Droplet)
+    . baseAttrs
+        "50035"
+        ("Arkham Woods" `subtitled` "Corpse-Ridden Clearing")
+        EncounterSet.ReturnToTheDevourerBelow
+        3
+        (PerPlayer 1)
+        Square
+        [Squiggle]
+        [Woods]
 
 instance HasModifiersFor env ArkhamWoodsCorpseRiddenClearing where
   getModifiersFor _ (EnemyTarget eid) (ArkhamWoodsCorpseRiddenClearing attrs) =

@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.BaseOfTheHill
   ( baseOfTheHill
   , BaseOfTheHill(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -28,10 +29,9 @@ newtype BaseOfTheHill = BaseOfTheHill LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 baseOfTheHill :: LocationId -> BaseOfTheHill
-baseOfTheHill lid = BaseOfTheHill $ baseAttrs
-  lid
+baseOfTheHill = BaseOfTheHill . baseAttrs
   "02282"
-  (Name "Base of the Hill" Nothing)
+  "Base of the Hill"
   EncounterSet.WhereDoomAwaits
   3
   (Static 0)

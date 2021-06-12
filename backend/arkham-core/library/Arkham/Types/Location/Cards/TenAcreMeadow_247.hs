@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.TenAcreMeadow_247
   ( tenAcreMeadow_247
   , TenAcreMeadow_247(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -17,7 +18,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -26,10 +26,9 @@ newtype TenAcreMeadow_247 = TenAcreMeadow_247 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tenAcreMeadow_247 :: LocationId -> TenAcreMeadow_247
-tenAcreMeadow_247 lid = TenAcreMeadow_247 $ baseAttrs
-  lid
+tenAcreMeadow_247 = TenAcreMeadow_247 . baseAttrs
   "02247"
-  (Name "Ten-Acre Meadow" Nothing)
+  "Ten-Acre Meadow"
   EncounterSet.UndimensionedAndUnseen
   2
   (Static 3)

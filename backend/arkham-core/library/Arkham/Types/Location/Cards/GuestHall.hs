@@ -12,23 +12,23 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Target
 
 newtype GuestHall = GuestHall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 guestHall :: LocationId -> GuestHall
-guestHall lid = GuestHall $ baseAttrs
-  lid
-  "50014"
-  (Name "Guest Hall" Nothing)
-  EncounterSet.ReturnToTheGathering
-  1
-  (Static 0)
-  T
-  [Circle, Heart, Star, Square]
-  mempty
+guestHall =
+  GuestHall
+    . baseAttrs
+        "50014"
+        "Guest Hall"
+        EncounterSet.ReturnToTheGathering
+        1
+        (Static 0)
+        T
+        [Circle, Heart, Star, Square]
+        mempty
 
 instance HasModifiersFor env GuestHall where
   getModifiersFor _ (InvestigatorTarget iid) (GuestHall attrs) =

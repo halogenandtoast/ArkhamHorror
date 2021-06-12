@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.YourHouse
   ( YourHouse(..)
   , yourHouse
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -17,7 +18,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
@@ -25,10 +25,9 @@ newtype YourHouse = YourHouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yourHouse :: LocationId -> YourHouse
-yourHouse lid = YourHouse $ baseAttrs
-  lid
+yourHouse = YourHouse . baseAttrs
   "01124"
-  (Name "Your House" Nothing)
+  "Your House"
   EncounterSet.TheMidnightMasks
   2
   (PerPlayer 1)

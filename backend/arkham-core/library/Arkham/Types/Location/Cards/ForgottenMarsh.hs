@@ -10,17 +10,15 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Trait
 
 newtype ForgottenMarsh = ForgottenMarsh LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 forgottenMarsh :: LocationId -> ForgottenMarsh
-forgottenMarsh lid = ForgottenMarsh $ baseAttrs
-  lid
+forgottenMarsh = ForgottenMarsh . baseAttrs
   "81013"
-  (Name "Forgotten Marsh" Nothing)
+  "Forgotten Marsh"
   EncounterSet.CurseOfTheRougarou
   2
   (Static 0)

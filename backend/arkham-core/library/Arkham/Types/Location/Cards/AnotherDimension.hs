@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.AnotherDimension
   ( anotherDimension
   , AnotherDimension(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -26,10 +27,9 @@ newtype AnotherDimension = AnotherDimension LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 anotherDimension :: LocationId -> AnotherDimension
-anotherDimension lid = AnotherDimension $ baseAttrs
-  lid
+anotherDimension = AnotherDimension . baseAttrs
   "02320"
-  (Name "Another Dimension" (Just "Unfettered by Reality"))
+  ("Another Dimension" `subtitled` "Unfettered by Reality")
   EncounterSet.LostInTimeAndSpace
   6
   (Static 0)

@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.OsbornsGeneralStore_206
   ( osbornsGeneralStore_206
   , OsbornsGeneralStore_206(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -14,7 +15,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Target
 import Arkham.Types.Trait
 
@@ -22,10 +22,9 @@ newtype OsbornsGeneralStore_206 = OsbornsGeneralStore_206 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 osbornsGeneralStore_206 :: LocationId -> OsbornsGeneralStore_206
-osbornsGeneralStore_206 lid = OsbornsGeneralStore_206 $ baseAttrs
-  lid
+osbornsGeneralStore_206 = OsbornsGeneralStore_206 . baseAttrs
   "02206"
-  (Name "Osborn's General Store" Nothing)
+  "Osborn's General Store"
   EncounterSet.BloodOnTheAltar
   2
   (PerPlayer 1)

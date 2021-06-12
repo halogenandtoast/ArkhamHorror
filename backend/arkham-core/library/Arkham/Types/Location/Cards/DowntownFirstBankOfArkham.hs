@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.DowntownFirstBankOfArkham
   ( DowntownFirstBankOfArkham(..)
   , downtownFirstBankOfArkham
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -25,10 +26,9 @@ newtype DowntownFirstBankOfArkham = DowntownFirstBankOfArkham LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 downtownFirstBankOfArkham :: LocationId -> DowntownFirstBankOfArkham
-downtownFirstBankOfArkham lid = DowntownFirstBankOfArkham $ baseAttrs
-  lid
+downtownFirstBankOfArkham = DowntownFirstBankOfArkham . baseAttrs
   "01130"
-  (Name "Downtown" $ Just "First Bank of Arkham")
+  ("Downtown" `subtitled` "First Bank of Arkham")
   EncounterSet.TheMidnightMasks
   3
   (PerPlayer 1)

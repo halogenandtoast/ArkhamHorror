@@ -236,7 +236,6 @@ baseLocation
   -> Location
 baseLocation a b c d e f g func =
   BaseLocation' . BaseLocation . func $ baseAttrs
-    a
     b
     c
     EncounterSet.TheGathering
@@ -245,6 +244,7 @@ baseLocation a b c d e f g func =
     f
     g
     []
+    a
 
 instance IsCard Location where
   getCardId = getCardId . toAttrs

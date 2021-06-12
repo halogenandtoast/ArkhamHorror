@@ -18,7 +18,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -28,16 +27,17 @@ newtype Parlor = Parlor LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 parlor :: LocationId -> Parlor
-parlor lid = Parlor $ baseAttrs
-  lid
-  "01115"
-  (Name "Parlor" Nothing)
-  EncounterSet.TheGathering
-  2
-  (Static 0)
-  Diamond
-  [Square]
-  mempty
+parlor =
+  Parlor
+    . baseAttrs
+        "01115"
+        "Parlor"
+        EncounterSet.TheGathering
+        2
+        (Static 0)
+        Diamond
+        [Square]
+        []
 
 instance HasModifiersFor env Parlor where
   getModifiersFor _ target (Parlor attrs) | isTarget attrs target =

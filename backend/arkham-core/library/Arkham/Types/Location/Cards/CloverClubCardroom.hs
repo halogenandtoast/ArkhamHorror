@@ -18,7 +18,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Token
 import Arkham.Types.Trait hiding (Cultist)
@@ -28,10 +27,9 @@ newtype CloverClubCardroom = CloverClubCardroom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cloverClubCardroom :: LocationId -> CloverClubCardroom
-cloverClubCardroom lid = CloverClubCardroom $ baseAttrs
-  lid
+cloverClubCardroom = CloverClubCardroom . baseAttrs
   "02073"
-  (Name "Clover Club Cardroom" Nothing)
+  "Clover Club Cardroom"
   EncounterSet.TheHouseAlwaysWins
   3
   (Static 0)

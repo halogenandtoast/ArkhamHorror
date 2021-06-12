@@ -16,7 +16,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Phase
 import Arkham.Types.Query
 import Arkham.Types.Target
@@ -26,10 +25,9 @@ newtype TheEdgeOfTheUniverse = TheEdgeOfTheUniverse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theEdgeOfTheUniverse :: LocationId -> TheEdgeOfTheUniverse
-theEdgeOfTheUniverse lid = TheEdgeOfTheUniverse $ baseAttrs
-  lid
+theEdgeOfTheUniverse = TheEdgeOfTheUniverse . baseAttrs
   "02321"
-  (Name "The Edge of the Universe" Nothing)
+  "The Edge of the Universe"
   EncounterSet.LostInTimeAndSpace
   2
   (PerPlayer 2)

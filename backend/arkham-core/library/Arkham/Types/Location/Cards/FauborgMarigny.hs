@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.FauborgMarigny
   ( FauborgMarigny(..)
   , fauborgMarigny
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -15,7 +16,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Target
 import Arkham.Types.Trait
 
@@ -23,10 +23,9 @@ newtype FauborgMarigny = FauborgMarigny LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fauborgMarigny :: LocationId -> FauborgMarigny
-fauborgMarigny lid = FauborgMarigny $ baseAttrs
-  lid
+fauborgMarigny = FauborgMarigny . baseAttrs
   "81012"
-  (Name "Faurborg Marigny" Nothing)
+  "Faurborg Marigny"
   EncounterSet.CurseOfTheRougarou
   4
   (Static 0)

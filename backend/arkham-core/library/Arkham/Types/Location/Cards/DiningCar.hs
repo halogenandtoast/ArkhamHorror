@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.DiningCar
   ( diningCar
   , DiningCar(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -17,7 +18,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Trait
 
@@ -25,13 +25,10 @@ newtype DiningCar = DiningCar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 diningCar :: LocationId -> DiningCar
-diningCar lid = DiningCar
-  $ base { locationConnectsTo = setFromList [LeftOf, RightOf] }
- where
-  base = baseAttrs
-    lid
+diningCar =
+  DiningCar . (connectsToL .~ setFromList [LeftOf, RightOf]) . baseAttrs
     "02173"
-    (Name "Dining Car" Nothing)
+    "Dining Car"
     EncounterSet.TheEssexCountyExpress
     2
     (Static 0)

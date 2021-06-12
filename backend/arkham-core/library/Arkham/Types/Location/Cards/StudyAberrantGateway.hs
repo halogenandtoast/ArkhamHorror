@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.StudyAberrantGateway
   ( StudyAberrantGateway(..)
   , studyAberrantGateway
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -24,16 +25,17 @@ newtype StudyAberrantGateway = StudyAberrantGateway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 studyAberrantGateway :: LocationId -> StudyAberrantGateway
-studyAberrantGateway lid = StudyAberrantGateway $ baseAttrs
-  lid
-  "50013"
-  (Name "Study" (Just "Aberrant Gateway"))
-  EncounterSet.ReturnToTheGathering
-  3
-  (PerPlayer 1)
-  Circle
-  [T]
-  mempty
+studyAberrantGateway =
+  StudyAberrantGateway
+    . baseAttrs
+        "50013"
+        ("Study" `subtitled` "Aberrant Gateway")
+        EncounterSet.ReturnToTheGathering
+        3
+        (PerPlayer 1)
+        Circle
+        [T]
+        mempty
 
 instance HasModifiersFor env StudyAberrantGateway where
   getModifiersFor = noModifiersFor

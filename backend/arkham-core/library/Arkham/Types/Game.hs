@@ -496,10 +496,10 @@ instance HasGame env => HasSet StoryAssetId env InvestigatorId where
       <$> getGame
 
 instance HasGame env => HasId (Maybe StoryAssetId) env CardCode where
-  getId cardCode = coerce @(Maybe StoryAssetId) <$> getId cardCode
+  getId cardCode = fmap StoryAssetId <$> getId cardCode
 
 instance HasGame env => HasId (Maybe StoryTreacheryId) env CardCode where
-  getId cardCode = coerce @(Maybe StoryTreacheryId) <$> getId cardCode
+  getId cardCode = fmap StoryTreacheryId <$> getId cardCode
 
 instance HasGame env => HasId (Maybe AssetId) env CardCode where
   getId cardCode =
@@ -518,7 +518,7 @@ instance HasGame env => HasId (Maybe TreacheryId) env CardCode where
       <$> getGame
 
 instance HasGame env => HasId (Maybe StoryEnemyId) env CardCode where
-  getId cardCode = coerce @(Maybe StoryEnemyId) <$> getId cardCode
+  getId cardCode = fmap StoryEnemyId <$> getId cardCode
 
 instance HasGame env => HasSet StoryEnemyId env CardCode where
   getSet cardCode = mapSet StoryEnemyId <$> getSet cardCode

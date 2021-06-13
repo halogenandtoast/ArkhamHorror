@@ -51,7 +51,7 @@ instance ActionRunner env => HasActions env AnotherDimension where
     investigatorIds <- getSet @InvestigatorId lid
     pure
       [ ActivateCardAbilityAction iid (forcedAbility attrs lid)
-      | iid == leadInvestigator && notNull (traceShowId investigatorIds)
+      | iid == leadInvestigator && notNull investigatorIds
       ]
   getActions iid window (AnotherDimension attrs) = getActions iid window attrs
 

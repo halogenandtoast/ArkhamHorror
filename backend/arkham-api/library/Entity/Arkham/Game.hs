@@ -21,6 +21,7 @@ ArkhamGame sql=arkham_games
   name Text
   currentData Game
   queue [Message]
+  log [Text]
   deriving Generic Show
 |]
 

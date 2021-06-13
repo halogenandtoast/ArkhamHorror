@@ -29,6 +29,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Name
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Resolution
 import Arkham.Types.ScenarioId
@@ -137,7 +138,6 @@ data Message
   | AfterEnterLocation InvestigatorId LocationId
   | AfterEvadeEnemy InvestigatorId EnemyId
   | AfterRevelation InvestigatorId TreacheryId
-  | UnsetActiveCard
   | AllCheckHandSize
   | AllDrawCardAndResource
   | AllDrawEncounterCard
@@ -362,11 +362,11 @@ data Message
   | PlaceLocationMatching LocationMatcher
   | PlaceResources Target Int
   | PlaceUnderneath Target [Card]
-  | PlacedLocation CardCode LocationId
+  | PlacedLocation Name CardCode LocationId
   | PlacedLocationDirection LocationId Direction LocationId
   | PlayCard InvestigatorId CardId (Maybe Target) Bool
   | PlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
-  | PlayedCard InvestigatorId CardId
+  | PlayedCard InvestigatorId CardId Name CardCode
   | PlayerWindow InvestigatorId [Message]
   | PutCardIntoPlay InvestigatorId Card (Maybe Target)
   | PutOnTopOfDeck InvestigatorId PlayerCard
@@ -462,7 +462,7 @@ data Message
   | SpendResources InvestigatorId Int
   | SpendUses Target UseType Int
   | StartCampaign
-  | StartScenario ScenarioId
+  | StartScenario Name ScenarioId
   | StartSkillTest InvestigatorId
   | SuccessfulInvestigation InvestigatorId LocationId Source
   | SufferTrauma InvestigatorId Int Int
@@ -480,6 +480,7 @@ data Message
   | UnfocusCards
   | UnfocusTargets
   | UnfocusTokens
+  | UnsetActiveCard
   | UseCardAbility InvestigatorId Source (Maybe AbilityMetadata) Int Payment
   | UseLimitedAbility InvestigatorId Ability
   | UseScenarioSpecificAbility InvestigatorId (Maybe Target) Int

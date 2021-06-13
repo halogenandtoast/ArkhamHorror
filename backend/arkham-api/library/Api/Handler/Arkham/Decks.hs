@@ -75,11 +75,16 @@ putApiV1ArkhamGameDecksR gameId = do
   runGameApp (GameApp gameRef queueRef) $ runMessages (pure . const ())
   ge <- readIORef gameRef
   updatedQueue <- readIORef queueRef
+  let updatedMessages = []
   writeChannel <- getChannel gameId
   liftIO $ atomically $ writeTChan
     writeChannel
-    (encode (Entity gameId (ArkhamGame arkhamGameName ge updatedQueue)))
-  void $ runDB (replace gameId (ArkhamGame arkhamGameName ge updatedQueue))
+    (encode
+      (Entity gameId (ArkhamGame arkhamGameName ge updatedQueue updatedMessages)
+      )
+    )
+  void $ runDB
+    (replace gameId (ArkhamGame arkhamGameName ge updatedQueue updatedMessages))
 
 fromPostData
   :: (MonadIO m) => UserId -> CreateDeckPost -> m (Either String ArkhamDeck)

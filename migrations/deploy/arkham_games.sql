@@ -9,6 +9,7 @@ CREATE TABLE arkham_games (
   name text NOT NULL,
   current_data jsonb NOT NULL,
   queue jsonb NOT NULL,
+  log jsonb NOT NULL,
   PRIMARY KEY (id)
 );
 

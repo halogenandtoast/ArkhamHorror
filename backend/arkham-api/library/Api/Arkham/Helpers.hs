@@ -8,6 +8,7 @@ import Arkham.Types.Classes.HasQueue
 import Arkham.Types.Game
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Control.Lens
 import Control.Monad.Fail
 import Control.Monad.Random (MonadRandom(..))
@@ -25,12 +26,6 @@ data GameApp = GameApp
   { appGame :: IORef Game
   , appQueue :: IORef [Message]
   }
-
--- instance MonadRandom m => MonadRandom (GameAppT m) where
---   getRandomR = lift . getRandomR
---   getRandom = lift getRandom
---   getRandomRs = lift . getRandomRs
---   getRandoms = lift getRandoms
 
 newApp :: MonadIO m => Game -> [Message] -> m GameApp
 newApp g msgs = do
@@ -86,10 +81,70 @@ loadDecklist arkhamDeck = (investigatorId, ) <$> loadDecklistCards decklist
         Nothing -> investigator_code decklist
         Just ArkhamDBDecklistMeta {..} -> alternate_front
 
+displayName :: Name -> Text
+displayName (Name title Nothing) = title
+displayName (Name title (Just subtitle)) = title <> ": " <> subtitle
+
+displayCardType :: PlayerCardType -> Text
+displayCardType = \case
+  AssetType -> "asset"
+  EventType -> "event"
+  SkillType -> "skill"
+  PlayerTreacheryType -> "treachery"
+  PlayerEnemyType -> "enemy"
+
 toHumanReadable :: Message -> Maybe Text
 toHumanReadable = \case
   BeginEnemy -> Just "Begin enemy phase"
   BeginInvestigation -> Just "Begin investigation phase"
   BeginMythos -> Just "Begin mythos phase"
   BeginUpkeep -> Just "Begin upkeep phase"
+  StartScenario name _ -> Just $ "Begin scenario " <> displayName name
+  PlayedCard iid cardId name cardCode ->
+    Just $ investigator iid <> " played " <> card name cardCode cardId
+  InvestigatorMulligan iid ->
+    Just $ investigator iid <> " deciding on mulligan"
+  FinishedWithMulligan iid -> Just $ investigator iid <> " done with mulligan"
+  TakeStartingResources iid ->
+    Just $ investigator iid <> " took starting resources"
+  ShuffleDiscardBackIn iid ->
+    Just $ investigator iid <> " shuffles discarded cards back into deck"
+  PlacedLocation name cardCode cardId ->
+    Just $ card name cardCode cardId <> " was placed"
+  BeginTurn iid -> Just $ "Begin " <> investigator iid <> "'s turn"
+  After _ -> Nothing
+  FlavorText{} -> Nothing
+  CheckWindow{} -> Nothing
+  EndCheckWindow{} -> Nothing
+  ChoosePlayerOrder{} -> Nothing
+  Continue{} -> Nothing
+  NextCampaignStep{} -> Nothing
+  CampaignStep{} -> Nothing
+  ResetGame -> Nothing
+  LoadDeck{} -> Nothing
+  Run{} -> Nothing
+  ChooseLeadInvestigator{} -> Nothing
+  SetupInvestigators{} -> Nothing
+  PutCardIntoPlay{} -> Nothing
+  InvestigatorPlayAsset{} -> Nothing
+  SetTokensForScenario{} -> Nothing
+  SetTokens{} -> Nothing
+  Setup{} -> Nothing
+  EndSetup{} -> Nothing
+  SetEncounterDeck{} -> Nothing
+  AddAgenda{} -> Nothing
+  AddAct{} -> Nothing
+  PlaceLocation{} -> Nothing
+  AddConnection{} -> Nothing
+  RevealLocation{} -> Nothing
   msg -> Just $ tshow msg
+ where
+  investigator iid = "{investigator:" <> tshow iid <> "}"
+  card name cardCode cardId =
+    "{card:\""
+      <> displayName name
+      <> "\":"
+      <> tshow cardCode
+      <> ":\""
+      <> tshow cardId
+      <> "\"}"

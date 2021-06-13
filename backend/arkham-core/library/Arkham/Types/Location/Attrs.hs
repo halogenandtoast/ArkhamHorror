@@ -334,7 +334,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       pure $ a & cardsUnderneathL %~ (<> cards)
     SetLocationLabel lid label' | lid == locationId ->
       pure $ a & labelL .~ label'
-    PlacedLocation _ lid | lid == locationId ->
+    PlacedLocation _ _ lid | lid == locationId ->
       a <$ unshiftMessage (AddConnection lid locationSymbol)
     PlacedLocationDirection lid direction lid2 | lid == locationId ->
       case direction of

@@ -76,8 +76,9 @@ instance CampaignRunner env => RunMessage env CampaignAttrs where
   runMessage msg a@CampaignAttrs {..} = case msg of
     StartCampaign -> a <$ unshiftMessage (CampaignStep campaignStep)
     CampaignStep Nothing -> a <$ unshiftMessage GameOver -- TODO: move to generic
-    CampaignStep (Just (ScenarioStep sid)) ->
-      a <$ unshiftMessages [ResetGame, StartScenario sid]
+    CampaignStep (Just (ScenarioStep sid)) -> do
+      scenarioName <- getName sid
+      a <$ unshiftMessages [ResetGame, StartScenario scenarioName sid]
     CampaignStep (Just (UpgradeDeckStep _)) -> do
       investigatorIds <- getInvestigatorIds
       a <$ unshiftMessages

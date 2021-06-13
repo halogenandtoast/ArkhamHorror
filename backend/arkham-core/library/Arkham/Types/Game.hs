@@ -423,6 +423,9 @@ instance HasGame env => HasId (Maybe OwnerId) env AssetId where
 instance HasGame env => HasName env LocationId where
   getName = getName <=< getLocation
 
+instance HasName env ScenarioId where
+  getName = getName . flip lookupScenario Easy
+
 instance {-# OVERLAPPABLE #-} HasGame env => HasName env SetAsideLocationCardCode where
   getName saLocationId = do
     mScenario <- modeScenario . view modeL <$> getGame
@@ -1738,7 +1741,7 @@ runGameMessage msg g = case msg of
       & (activeCardL .~ Nothing)
       & (victoryDisplayL .~ mempty)
       & (playerOrderL .~ (g ^. playersL . to toList))
-  StartScenario sid -> do
+  StartScenario _ sid -> do
     let
       difficulty = these
         difficultyOf
@@ -1864,8 +1867,9 @@ runGameMessage msg g = case msg of
     pure $ g & gameStateL .~ IsOver
   PlaceLocation cardCode lid -> if isNothing $ g ^. locationsL . at lid
     then do
-      unshiftMessage (PlacedLocation cardCode lid)
-      pure $ g & locationsL . at lid ?~ lookupLocation cardCode lid
+      let location = lookupLocation cardCode lid
+      unshiftMessage (PlacedLocation (toName location) cardCode lid)
+      pure $ g & locationsL . at lid ?~ location
     else pure g
   SetEncounterDeck encounterDeck ->
     pure $ g & encounterDeckL .~ Deck encounterDeck
@@ -1999,7 +2003,7 @@ runGameMessage msg g = case msg of
               (lookup (pcCardCode pc) allAssets)
               aid
           unshiftMessages
-            [ PlayedCard iid cardId
+            [ PlayedCard iid cardId (toName asset) (pcCardCode pc)
             , InvestigatorPlayDynamicAsset
               iid
               aid
@@ -2013,7 +2017,9 @@ runGameMessage msg g = case msg of
             event = createEvent pc iid
             eid = toId event
           unshiftMessages
-            [PlayedCard iid cardId, InvestigatorPlayDynamicEvent iid eid n]
+            [ PlayedCard iid cardId (toName event) (pcCardCode pc)
+            , InvestigatorPlayDynamicEvent iid eid n
+            ]
           pure $ g & eventsL %~ insertMap eid event
         _ -> pure g
       EncounterCard _ -> pure g
@@ -2040,7 +2046,7 @@ runGameMessage msg g = case msg of
               (lookup (pcCardCode pc) allAssets)
               aid
           unshiftMessages
-            [ PlayedCard iid cardId
+            [ PlayedCard iid cardId (toName asset) (pcCardCode pc)
             , InvestigatorPlayAsset
               iid
               aid
@@ -2053,7 +2059,9 @@ runGameMessage msg g = case msg of
             event = createEvent pc iid
             eid = toId event
           unshiftMessages
-            [PlayedCard iid cardId, InvestigatorPlayEvent iid eid mtarget]
+            [ PlayedCard iid cardId (toName event) (pcCardCode pc)
+            , InvestigatorPlayEvent iid eid mtarget
+            ]
           pure $ g & eventsL %~ insertMap eid event
         _ -> pure g
       EncounterCard _ -> pure g
@@ -2708,7 +2716,7 @@ runGameMessage msg g = case msg of
         location = createLocation card
         locationId = toId location
       unshiftMessages
-        [ PlacedLocation (getCardCode card) locationId
+        [ PlacedLocation (toName location) (getCardCode card) locationId
         , RevealLocation (Just iid) locationId
         , Revelation iid (LocationSource locationId)
         ]

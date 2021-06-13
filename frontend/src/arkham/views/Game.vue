@@ -22,7 +22,7 @@
       />
       <div class="sidebar">
         <CardOverlay />
-        <GameLog :gameLog="gameLog" />
+        <GameLog :game="game" :gameLog="gameLog" />
       </div>
       <div v-if="game.currentData.gameOver">
         <p>Game over</p>
@@ -93,6 +93,7 @@ export default defineComponent({
 
     fetchGame(props.gameId).then(({ game: newGame, investigatorId: newInvestigatorId }) => {
       game.value = newGame;
+      gameLog.value = newGame.log;
       investigatorId.value = newInvestigatorId;
       connect();
     });
@@ -148,7 +149,11 @@ export default defineComponent({
 
 .sidebar {
   height: 100%;
+  width: 25vw;
+  max-width: 500px;
   display: flex;
   flex-direction: column;
+  background: #d0d9dc;
+  box-sizing: border-box;
 }
 </style>

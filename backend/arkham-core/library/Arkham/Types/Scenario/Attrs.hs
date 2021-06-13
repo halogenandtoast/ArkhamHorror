@@ -36,7 +36,7 @@ newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
   deriving newtype (Show, IsString, ToJSON, FromJSON, Eq)
 
 data ScenarioAttrs = ScenarioAttrs
-  { scenarioName :: Text
+  { scenarioName :: Name
   , scenarioId :: ScenarioId
   , scenarioDifficulty :: Difficulty
   -- These types are to handle complex scenarios with multiple stacks
@@ -64,6 +64,9 @@ instance HasRecord ScenarioAttrs where
   hasRecord _ = pure False
   hasRecordSet _ = pure []
   hasRecordCount _ = pure 0
+
+instance HasName env ScenarioAttrs where
+  getName = pure . scenarioName
 
 instance HasCount ScenarioDeckCount env ScenarioAttrs where
   getCount ScenarioAttrs { scenarioDeck } = case scenarioDeck of
@@ -98,7 +101,7 @@ isHardExpert ScenarioAttrs { scenarioDifficulty } =
   scenarioDifficulty `elem` [Hard, Expert]
 
 baseAttrs
-  :: CardCode -> Text -> [AgendaId] -> [ActId] -> Difficulty -> ScenarioAttrs
+  :: CardCode -> Name -> [AgendaId] -> [ActId] -> Difficulty -> ScenarioAttrs
 baseAttrs cardCode name agendaStack actStack' difficulty = ScenarioAttrs
   { scenarioId = ScenarioId cardCode
   , scenarioName = name
@@ -120,7 +123,7 @@ instance Entity ScenarioAttrs where
   toAttrs = id
 
 instance NamedEntity ScenarioAttrs where
-  toName = mkName . scenarioName
+  toName = scenarioName
 
 instance TargetEntity ScenarioAttrs where
   toTarget = ScenarioTarget . toId
@@ -186,7 +189,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioAttrsRunner env)
     StartCampaign -> do
       standalone <- getIsStandalone
       a <$ if standalone
-        then unshiftMessage $ StartScenario scenarioId
+        then unshiftMessage $ StartScenario scenarioName scenarioId
         else pure ()
     InitDeck iid deck -> do
       standalone <- getIsStandalone

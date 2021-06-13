@@ -21,7 +21,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
@@ -161,7 +160,6 @@ instance
   , HasId (Maybe LocationId) env LocationMatcher
   , HasSet InvestigatorId env ()
   , HasSet LocationId env [Trait]
-  , HasName env LocationId
   , HasRecord env
   , ScenarioAttrsRunner env
   )
@@ -341,13 +339,12 @@ instance
         <> [ DrivenInsane iid | iid <- investigatorIds ]
         <> [GameOver]
         )
-    PlacedLocation _ lid -> do
-      name <- getName lid
-      when (name == mkName "Altered Path") $ do
+    PlacedLocation name _ lid -> do
+      when (name == "Altered Path") $ do
         alteredCount <- length <$> getSetList @LocationId [Woods]
         unshiftMessage
           (SetLocationLabel lid $ "alteredPath" <> tshow alteredCount)
-      when (name == mkName "Diverging Path") $ do
+      when (name == "Diverging Path") $ do
         woodsCount <- length <$> getSetList @LocationId [Woods]
         unshiftMessage
           (SetLocationLabel lid $ "divergingPath" <> tshow woodsCount)

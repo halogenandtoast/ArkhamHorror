@@ -222,9 +222,8 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       TheMiskatonicMuseum <$> runMessage
         msg
         (attrs & locationsL .~ locations' & deckL ?~ ExhibitDeck exhibitDeck)
-    PlacedLocation _ lid -> do
-      name <- nameTitle <$> getName lid
-      s <$ if name == "Exhibit Hall"
+    PlacedLocation name _ lid -> do
+      s <$ if nameTitle name == "Exhibit Hall"
         then do
           hallCount <- length
             <$> getSet @LocationId (LocationWithTitle "Exhibit Hall")

@@ -1,5 +1,18 @@
 import { JsonDecoder } from 'ts.data.json';
 
+export interface ScenarioName {
+  title: string;
+  subtitle: string | null;
+}
+
+export const scenarioNameDecoder = JsonDecoder.object<ScenarioName>(
+  {
+    title: JsonDecoder.string,
+    subtitle: JsonDecoder.nullable(JsonDecoder.string),
+  },
+  'ScenarioName'
+);
+
 export interface Scenario {
   tag: string;
   contents: ScenarioContents;
@@ -10,7 +23,7 @@ export interface ScenarioDeck {
 }
 
 export interface ScenarioContents {
-  name: string;
+  name: ScenarioName;
   id: string;
   difficulty: string;
   locationLayout: string[] | null;
@@ -22,7 +35,7 @@ export const scenarioDeckDecoder = JsonDecoder.object<ScenarioDeck>({
 }, 'ScenarioDeck');
 
 export const scenarioContentsDecoder = JsonDecoder.object<ScenarioContents>({
-  name: JsonDecoder.string,
+  name: scenarioNameDecoder,
   id: JsonDecoder.string,
   difficulty: JsonDecoder.string,
   locationLayout: JsonDecoder.nullable(JsonDecoder.array<string>(JsonDecoder.string, 'GridLayout[]')),

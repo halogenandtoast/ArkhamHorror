@@ -12,13 +12,23 @@ export default defineComponent({
     const els = splits.map(split => {
       if (/{card:"([^"]+)":"([^"]+)":"([^"]+)"}/.test(split)) {
         const found = split.match(/{card:"([^"]+)":"([^"]+)":"([^"]+)"}/)
-        return h('span', { 'data-image-id': found[2] }, found[1])
+        if (found) {
+          const [, cardName, cardId] = found
+          if (cardName && cardId) {
+            return h('span', { 'data-image-id': cardId }, cardName)
+          }
+        }
       } else if (/{investigator:"([^"]+)"}/.test(split)) {
         const found = split.match(/{investigator:"([^"]+)"}/)
-        return h('span', { 'data-image-id': found[1] }, this.game.currentData.investigators[found[1]].contents.name)
-      } else {
-        return split
+        if (found) {
+          const [, investigatorId ] = found
+          if (investigatorId) {
+            const name = this.game.currentData.investigators[investigatorId]?.contents?.name
+            return name ? h('span', { 'data-image-id': investigatorId }, name) : split
+          }
+        }
       }
+      return split
     })
 
     return h('div', { className: 'message-body' }, els)

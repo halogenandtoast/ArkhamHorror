@@ -58,7 +58,7 @@ export default defineComponent({
     const socket = ref<WebSocket | null>(null)
     const game = ref<Arkham.Game | null>(null)
     const investigatorId = ref<string | null>(null)
-    const gameLog = ref<string[]>([])
+    const gameLog = ref<readonly string[]>(Object.freeze([]))
 
     function connect() {
       const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`;
@@ -71,7 +71,7 @@ export default defineComponent({
         const data = JSON.parse(event.data)
 
         if (data.tag === "GameMessage") {
-          gameLog.value.push(data.contents)
+          gameLog.value = Object.freeze([...gameLog.value, data.contents])
         }
 
         if (data.tag === "GameUpdate") {
@@ -93,7 +93,7 @@ export default defineComponent({
 
     fetchGame(props.gameId).then(({ game: newGame, investigatorId: newInvestigatorId }) => {
       game.value = newGame;
-      gameLog.value = newGame.log;
+      gameLog.value = Object.freeze(newGame.log);
       investigatorId.value = newInvestigatorId;
       connect();
     });

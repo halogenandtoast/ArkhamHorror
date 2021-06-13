@@ -15,6 +15,7 @@ import Arkham.Types.Message
 import Arkham.Types.Phase
 import Arkham.Types.Scenario
 import Arkham.Types.ScenarioId
+import Control.Monad.Random.Lazy (evalRandT)
 import Data.Align
 import Data.UUID.V4
 import Safe (headNote)
@@ -52,7 +53,7 @@ newGame scenarioOrCampaignId playerCount investigatorsList difficulty = do
   hash' <- getRandom
   mseed <- liftIO $ fmap readMaybe <$> lookupEnv "SEED"
   seed <- maybe getRandom (pure . fromJustNote "invalid seed") mseed
-  liftIO $ setStdGen (mkStdGen seed)
+  -- liftIO $ setStdGen (mkStdGen seed)
   ref <-
     newIORef
     $ map (uncurry (InitDeck . toId)) (toList investigatorsList)
@@ -63,6 +64,7 @@ newGame scenarioOrCampaignId playerCount investigatorsList difficulty = do
     , Game
       { gameRoundMessageHistory = []
       , gamePhaseMessageHistory = []
+      , gameInitialSeed = seed
       , gameSeed = seed
       , gameMode = mode
       , gamePlayerCount = playerCount
@@ -117,7 +119,7 @@ newGame scenarioOrCampaignId playerCount investigatorsList difficulty = do
   mode = fromJustNote "Need campaign or scenario" $ align campaign scenario
 
 addInvestigator
-  :: (MonadIO m, MonadRandom m, MonadReader env m, HasQueue env, HasGameRef env)
+  :: (MonadIO m, MonadReader env m, HasQueue env, HasGameRef env)
   => Int
   -> Investigator
   -> [PlayerCard]
@@ -155,13 +157,14 @@ toExternalGame g@Game {..} mq = do
   pure $ g { gameHash = hash', gameQuestion = mq }
 
 runMessages
-  :: (MonadIO m, MonadRandom m, HasGameRef env, HasQueue env, MonadReader env m)
+  :: (MonadIO m, HasGameRef env, HasQueue env, MonadReader env m)
   => (Message -> m ())
   -> m ()
 runMessages logger = do
   gameRef <- view gameRefL
   queueRef <- view messageQueue
   g <- liftIO $ readIORef gameRef
+  let gen = mkStdGen (gameSeed g)
 
   liftIO $ whenM
     (isJust <$> lookupEnv "DEBUG")
@@ -208,7 +211,7 @@ runMessages logger = do
             AskMap askMap -> do
               toExternalGame g askMap >>= atomicWriteIORef gameRef
             _ -> do
-              g' <- toGameEnv >>= runReaderT
+              g' <- toGameEnv >>= flip evalRandT gen . runReaderT
                 (runMessage
                   msg
                   (g

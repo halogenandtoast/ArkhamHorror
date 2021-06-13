@@ -61,7 +61,6 @@ import Arkham.Types.Token as X
 import Arkham.Types.Window as X
 import Control.Lens as X (set, (^?!))
 import Control.Monad.Fail as X
-import Control.Monad.Random (MonadRandom(..))
 import Control.Monad.State as X (get)
 import Control.Monad.State hiding (replicateM)
 import qualified Data.HashMap.Strict as HashMap
@@ -158,12 +157,6 @@ data TestApp = TestApp
 newtype TestAppT m a = TestAppT { unTestAppT :: ReaderT TestApp m a }
   deriving newtype (MonadReader TestApp, Functor, Applicative, Monad, MonadTrans, MonadFail, MonadIO)
 
-instance MonadRandom m => MonadRandom (TestAppT m) where
-  getRandomR = lift . getRandomR
-  getRandom = lift getRandom
-  getRandomRs = lift . getRandomRs
-  getRandoms = lift getRandoms
-
 runTestApp :: TestApp -> TestAppT m a -> m a
 runTestApp testApp = flip runReaderT testApp . unTestAppT
 
@@ -176,7 +169,7 @@ instance HasQueue TestApp where
 testScenario
   :: MonadIO m => CardCode -> (ScenarioAttrs -> ScenarioAttrs) -> m Scenario
 testScenario cardCode f =
-  let name = unCardCode cardCode
+  let name = mkName $ unCardCode cardCode
   in pure $ baseScenario cardCode name [] [] Easy f
 
 insertEntity
@@ -355,26 +348,14 @@ withGame :: Game -> ReaderT Game m b -> m b
 withGame = flip runReaderT
 
 runGameTestOnlyOption
-  :: ( MonadFail m
-     , MonadIO m
-     , MonadRandom m
-     , HasQueue env
-     , MonadReader env m
-     , HasGameRef env
-     )
+  :: (MonadFail m, MonadIO m, HasQueue env, MonadReader env m, HasGameRef env)
   => String
   -> m ()
 runGameTestOnlyOption reason =
   runGameTestOnlyOptionWithLogger reason (pure . const ())
 
 runGameTestOnlyOptionWithLogger
-  :: ( MonadFail m
-     , MonadIO m
-     , MonadRandom m
-     , HasQueue env
-     , MonadReader env m
-     , HasGameRef env
-     )
+  :: (MonadFail m, MonadIO m, HasQueue env, MonadReader env m, HasGameRef env)
   => String
   -> (Message -> m ())
   -> m ()
@@ -389,18 +370,11 @@ runGameTestOnlyOptionWithLogger _reason logger = do
     _ -> error "There must be only one choice to use this function"
 
 runMessagesNoLogging
-  :: (MonadIO m, MonadRandom m, HasGameRef env, HasQueue env, MonadReader env m)
-  => m ()
+  :: (MonadIO m, HasGameRef env, HasQueue env, MonadReader env m) => m ()
 runMessagesNoLogging = void $ runMessages (pure . const ())
 
 runGameTestFirstOption
-  :: ( MonadFail m
-     , MonadIO m
-     , MonadRandom m
-     , MonadReader env m
-     , HasGameRef env
-     , HasQueue env
-     )
+  :: (MonadFail m, MonadIO m, MonadReader env m, HasGameRef env, HasQueue env)
   => String
   -> m ()
 runGameTestFirstOption _reason = do
@@ -413,25 +387,13 @@ runGameTestFirstOption _reason = do
     _ -> error "There must be at least one option"
 
 runGameTestMessages
-  :: ( MonadFail m
-     , MonadIO m
-     , MonadRandom m
-     , MonadReader env m
-     , HasGameRef env
-     , HasQueue env
-     )
+  :: (MonadFail m, MonadIO m, MonadReader env m, HasGameRef env, HasQueue env)
   => [Message]
   -> m ()
 runGameTestMessages msgs = unshiftMessages msgs >> runMessagesNoLogging
 
 runGameTestOptionMatching
-  :: ( MonadFail m
-     , MonadIO m
-     , MonadRandom m
-     , MonadReader env m
-     , HasGameRef env
-     , HasQueue env
-     )
+  :: (MonadFail m, MonadIO m, MonadReader env m, HasGameRef env, HasQueue env)
   => String
   -> (Message -> Bool)
   -> m ()
@@ -439,13 +401,7 @@ runGameTestOptionMatching reason f =
   runGameTestOptionMatchingWithLogger reason (pure . const ()) f
 
 runGameTestOptionMatchingWithLogger
-  :: ( MonadFail m
-     , MonadIO m
-     , MonadRandom m
-     , MonadReader env m
-     , HasGameRef env
-     , HasQueue env
-     )
+  :: (MonadFail m, MonadIO m, MonadReader env m, HasGameRef env, HasQueue env)
   => String
   -> (Message -> m ())
   -> (Message -> Bool)
@@ -475,6 +431,7 @@ newGame investigator = do
     { gameRoundMessageHistory = []
     , gamePhaseMessageHistory = []
     , gameSeed = 1
+    , gameInitialSeed = 1
     , gameMode = That scenario'
     , gamePlayerCount = 1
     , gameLocations = mempty

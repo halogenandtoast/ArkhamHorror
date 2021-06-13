@@ -12,6 +12,7 @@ import Api.Arkham.Helpers
 import Arkham.Game
 import Arkham.Types.Game
 import Arkham.Types.Message
+import Control.Monad.Random (mkStdGen)
 import Database.Esqueleto
 import Json
 import Network.HTTP.Conduit (simpleHttp)
@@ -72,7 +73,8 @@ putApiV1ArkhamGameDecksR gameId = do
 
   gameRef <- newIORef arkhamGameCurrentData
   queueRef <- newIORef (msg : arkhamGameQueue)
-  runGameApp (GameApp gameRef queueRef) $ runMessages (pure . const ())
+  genRef <- newIORef (mkStdGen gameSeed)
+  runGameApp (GameApp gameRef queueRef genRef) $ runMessages (pure . const ())
   ge <- readIORef gameRef
   updatedQueue <- readIORef queueRef
   let updatedMessages = []

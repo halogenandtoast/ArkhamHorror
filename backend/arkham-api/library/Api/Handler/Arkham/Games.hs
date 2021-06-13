@@ -19,6 +19,7 @@ import Arkham.Types.Investigator
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.ScenarioId
+import Control.Monad.Random (mkStdGen)
 import qualified Data.ByteString.Lazy as BSL
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Map.Strict as Map
@@ -111,7 +112,8 @@ postApiV1ArkhamGamesR = do
       (queueRef, game) <- liftIO
         $ newCampaign cid playerCount investigators difficulty
       gameRef <- newIORef game
-      runGameApp (GameApp gameRef queueRef) $ do
+      genRef <- newIORef (mkStdGen (gameSeed game))
+      runGameApp (GameApp gameRef queueRef genRef) $ do
         runMessages (pure . const ())
       ge <- readIORef gameRef
       updatedQueue <- readIORef queueRef
@@ -125,7 +127,8 @@ postApiV1ArkhamGamesR = do
         (queueRef, game) <- liftIO
           $ newScenario sid playerCount investigators difficulty
         gameRef <- newIORef game
-        runGameApp (GameApp gameRef queueRef) $ do
+        genRef <- newIORef (mkStdGen (gameSeed game))
+        runGameApp (GameApp gameRef queueRef genRef) $ do
           runMessages (pure . const ())
         ge <- readIORef gameRef
         updatedQueue <- readIORef queueRef
@@ -193,8 +196,9 @@ putApiV1ArkhamGameR gameId = do
       gameRef <- newIORef gameJson
       queueRef <- newIORef (messages <> arkhamGameQueue)
       logRef <- newIORef []
+      genRef <- newIORef (mkStdGen gameSeed)
       writeChannel <- getChannel gameId
-      runGameApp (GameApp gameRef queueRef)
+      runGameApp (GameApp gameRef queueRef genRef)
         $ runMessages (handleMessageLog logRef writeChannel)
       ge <- readIORef gameRef
       updatedQueue <- readIORef queueRef
@@ -243,9 +247,10 @@ putApiV1ArkhamGameRawR gameId = do
   let message = fromMaybe (Continue "edited") (gameMessage response)
   gameRef <- newIORef (gameJson response)
   queueRef <- newIORef (message : arkhamGameQueue)
+  genRef <- newIORef (mkStdGen (gameSeed arkhamGameCurrentData))
   logRef <- newIORef []
   writeChannel <- getChannel gameId
-  runGameApp (GameApp gameRef queueRef) $ do
+  runGameApp (GameApp gameRef queueRef genRef) $ do
     runMessages (handleMessageLog logRef writeChannel)
   ge <- readIORef gameRef
   updatedMessages <- (arkhamGameLog <>) <$> readIORef logRef

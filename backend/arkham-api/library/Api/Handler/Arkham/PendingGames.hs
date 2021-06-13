@@ -9,6 +9,7 @@ import Api.Arkham.Helpers
 import Arkham.Game
 import Arkham.Types.Game
 import Arkham.Types.Investigator
+import Control.Monad.Random (mkStdGen)
 import Data.Aeson
 import qualified Data.HashMap.Strict as HashMap
 import Database.Esqueleto
@@ -35,7 +36,8 @@ putApiV1ArkhamPendingGameR gameId = do
 
   gameRef <- newIORef arkhamGameCurrentData
   queueRef <- newIORef arkhamGameQueue
-  runGameApp (GameApp gameRef queueRef) $ do
+  genRef <- newIORef (mkStdGen (gameSeed arkhamGameCurrentData))
+  runGameApp (GameApp gameRef queueRef genRef) $ do
     addInvestigator userId' (lookupInvestigator iid) decklist
 
   runDB $ insert_ $ ArkhamPlayer userId gameId

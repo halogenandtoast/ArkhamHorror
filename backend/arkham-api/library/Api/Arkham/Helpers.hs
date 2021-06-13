@@ -11,7 +11,7 @@ import Arkham.Types.Message
 import Arkham.Types.Name
 import Control.Lens
 import Control.Monad.Fail
-import Control.Monad.Random (MonadRandom(..))
+import Control.Monad.Random (MonadRandom(..), StdGen, mkStdGen)
 import qualified Data.ByteString.Lazy as BSL
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Map.Strict as Map
@@ -23,15 +23,20 @@ newtype GameAppT a = GameAppT { unGameAppT :: ReaderT GameApp IO a }
   deriving newtype (MonadReader GameApp, Functor, Applicative, Monad, MonadFail, MonadIO, MonadRandom)
 
 data GameApp = GameApp
-  { appGame :: IORef Game
+  { appGame  :: IORef Game
   , appQueue :: IORef [Message]
+  , appGen   :: IORef StdGen
   }
 
 newApp :: MonadIO m => Game -> [Message] -> m GameApp
 newApp g msgs = do
   gameRef <- newIORef g
   queueRef <- newIORef msgs
-  pure $ GameApp gameRef queueRef
+  genRef <- newIORef (mkStdGen (gameSeed g))
+  pure $ GameApp gameRef queueRef genRef
+
+instance HasStdGen GameApp where
+  genL = lens appGen $ \m x -> m { appGen = x }
 
 instance HasGameRef GameApp where
   gameRefL = lens appGame $ \m x -> m { appGame = x }
@@ -76,10 +81,9 @@ loadDecklist arkhamDeck = (investigatorId, ) <$> loadDecklistCards decklist
   decklist = arkhamDeckList arkhamDeck
   investigatorId = case meta decklist of
     Nothing -> investigator_code decklist
-    Just meta' ->
-      case decode @ArkhamDBDecklistMeta (encodeUtf8 $ fromStrict meta') of
-        Nothing -> investigator_code decklist
-        Just ArkhamDBDecklistMeta {..} -> alternate_front
+    Just meta' -> case decode (encodeUtf8 $ fromStrict meta') of
+      Nothing -> investigator_code decklist
+      Just ArkhamDBDecklistMeta {..} -> alternate_front
 
 displayName :: Name -> Text
 displayName (Name title Nothing) = title

@@ -50,7 +50,6 @@ newGame scenarioOrCampaignId playerCount investigatorsList difficulty = do
   hash' <- getRandom
   mseed <- liftIO $ fmap readMaybe <$> lookupEnv "SEED"
   seed <- maybe getRandom (pure . fromJustNote "invalid seed") mseed
-  -- liftIO $ setStdGen (mkStdGen seed)
   ref <-
     newIORef
     $ map (uncurry (InitDeck . toId)) (toList investigatorsList)

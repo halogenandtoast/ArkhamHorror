@@ -88,7 +88,7 @@ instance ActRunner env => RunMessage env FindingLadyEsprit where
         EncounterSet.CurseOfTheRougarou
       rougarouSpawnLocations <- setToList <$> nonBayouLocations
       theRougarou <- EncounterCard <$> genEncounterCard "81028"
-      curseOfTheRougarou <- EncounterCard <$> genEncounterCard "81029"
+      curseOfTheRougarou <- PlayerCard <$> genPlayerCard "81029"
       a <$ unshiftMessages
         ([ chooseOne
              leadInvestigatorId

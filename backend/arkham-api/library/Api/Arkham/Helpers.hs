@@ -141,6 +141,21 @@ toHumanReadable = \case
   PlaceLocation{} -> Nothing
   AddConnection{} -> Nothing
   RevealLocation{} -> Nothing
+  RunBag{} -> Nothing
+  NextChaosBagStep{} -> Nothing
+  TriggerSkillTest{} -> Nothing
+  RequestTokens{} -> Nothing
+  FocusTokens{} -> Nothing
+  UnfocusTokens{} -> Nothing
+  When{} -> Nothing
+  RevealSkillTestTokens{} -> Nothing
+  RevealToken{} -> Nothing
+  Will{} -> Nothing
+  AddedConnection{} -> Nothing
+  SetLocationLabel{} -> Nothing
+  CreateStoryAssetAt{} -> Nothing
+  ShuffleIntoEncounterDeck{} -> Nothing
+  CreateEnemyAt{} -> Nothing
   msg -> Just $ tshow msg
  where
   investigator iid = "{investigator:" <> tshow iid <> "}"

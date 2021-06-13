@@ -122,6 +122,7 @@ getGame = view gameL
 data Game = Game
   { gameRoundMessageHistory :: [Message]
   , gamePhaseMessageHistory :: [Message]
+  , gameInitialSeed :: Int
   , gameSeed :: Int
   , gameHash :: UUID
 
@@ -188,6 +189,7 @@ instance ToJSON Game where
   toJSON g@Game {..} = object
     [ "roundMessageHistory" .= toJSON gameRoundMessageHistory
     , "phaseMessageHistory" .= toJSON gamePhaseMessageHistory
+    , "initialSeed" .= toJSON gameInitialSeed
     , "seed" .= toJSON gameSeed
     , "hash" .= toJSON gameHash
     , "mode" .= toJSON gameMode

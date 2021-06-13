@@ -56,7 +56,7 @@ playAsset i a =
   InvestigatorPlayAsset (toId i) (toId a) (slotsOf a) (toList $ getTraits a)
 
 placedLocation :: Location -> Message
-placedLocation l = PlacedLocation (getCardCode l) (toId l)
+placedLocation l = PlacedLocation (toName l) (getCardCode l) (toId l)
 
 playDynamicCard :: Investigator -> Card -> Message
 playDynamicCard i c = PlayDynamicCard (toId i) (getCardId c) 0 Nothing True

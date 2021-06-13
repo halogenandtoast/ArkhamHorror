@@ -10,6 +10,7 @@ where
 
 import Arkham.Prelude
 
+import Control.Monad.Random.Lazy hiding (filterM)
 import Arkham.EncounterCard
 import Arkham.Json
 import Arkham.PlayerCard
@@ -89,10 +90,20 @@ data GameState = IsPending | IsActive | IsOver
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+newtype GameEnvT a = GameEnvT { unGameEnvT :: ReaderT GameEnv IO a }
+  deriving newtype (MonadReader GameEnv, Functor, Applicative, Monad, MonadIO)
+
+runGameEnvT :: (MonadIO m) => GameEnv -> GameEnvT a -> m a
+runGameEnvT gameEnv = liftIO . flip runReaderT gameEnv . unGameEnvT
+
 data GameEnv = GameEnv
   { gameEnvGame :: Game
   , gameEnvQueue :: IORef [Message]
+  , gameRandomGen :: IORef StdGen
   }
+
+instance HasStdGen GameEnv where
+  genL = lens gameRandomGen $ \m x -> m { gameRandomGen = x }
 
 instance HasGame GameEnv where
   gameL = lens gameEnvGame $ \m x -> m { gameEnvGame = x }
@@ -104,17 +115,38 @@ instance HasGame Game where
   gameL = lens id $ \_ x -> x
 
 toGameEnv
-  :: (HasGameRef env, HasQueue env, MonadReader env m, MonadIO m) => m GameEnv
+  :: (HasGameRef env, HasQueue env, HasStdGen env, MonadReader env m, MonadIO m)
+  => m GameEnv
 toGameEnv = do
   game <- readIORef =<< view gameRefL
+  gen <- view genL
   queueRef <- view messageQueue
-  pure $ GameEnv game queueRef
+  pure $ GameEnv game queueRef gen
+
+instance MonadRandom GameEnvT where
+  getRandomR lohi = do
+    ref <- view genL
+    atomicModifyIORef' ref (swap . randomR lohi)
+  getRandom = do
+    ref <- view genL
+    atomicModifyIORef' ref (swap . random)
+  getRandomRs lohi = do
+    ref <- view genL
+    gen <- atomicModifyIORef' ref split
+    pure $ randomRs lohi gen
+  getRandoms = do
+    ref <- view genL
+    gen <- atomicModifyIORef' ref split
+    pure $ randoms gen
 
 class HasGameRef a where
   gameRefL :: Lens' a (IORef Game)
 
 class HasGame a where
   gameL :: Lens' a Game
+
+class HasStdGen a where
+  genL :: Lens' a (IORef StdGen)
 
 getGame :: (HasGame env, MonadReader env m) => m Game
 getGame = view gameL
@@ -2800,7 +2832,7 @@ runGameMessage msg g = case msg of
   _ -> pure g
 
 instance (HasQueue env, HasGame env) => RunMessage env Game where
-  runMessage msg g =
+  runMessage msg g = do
     runPreGameMessage msg g
       >>= traverseOf chaosBagL (runMessage msg)
       >>= traverseOf (modeL . here) (runMessage msg)

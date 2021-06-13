@@ -116,10 +116,10 @@ postApiV1ArkhamGamesR = do
       ge <- readIORef gameRef
       updatedQueue <- readIORef queueRef
       key <- runDB $ do
-        gameId <- insert $ ArkhamGame campaignName ge updatedQueue
+        gameId <- insert $ ArkhamGame campaignName ge updatedQueue []
         insert_ $ ArkhamPlayer userId gameId
         pure gameId
-      pure $ Entity key (ArkhamGame campaignName ge updatedQueue)
+      pure $ Entity key (ArkhamGame campaignName ge updatedQueue [])
     Nothing -> case scenarioId of
       Just sid -> do
         (queueRef, game) <- liftIO
@@ -130,10 +130,10 @@ postApiV1ArkhamGamesR = do
         ge <- readIORef gameRef
         updatedQueue <- readIORef queueRef
         key <- runDB $ do
-          gameId <- insert $ ArkhamGame campaignName ge updatedQueue
+          gameId <- insert $ ArkhamGame campaignName ge updatedQueue []
           insert_ $ ArkhamPlayer userId gameId
           pure gameId
-        pure $ Entity key (ArkhamGame campaignName ge updatedQueue)
+        pure $ Entity key (ArkhamGame campaignName ge updatedQueue [])
       Nothing -> error "missing either campaign id or scenario id"
 
 data QuestionReponse = QuestionResponse
@@ -192,20 +192,27 @@ putApiV1ArkhamGameR gameId = do
     then do
       gameRef <- newIORef gameJson
       queueRef <- newIORef (messages <> arkhamGameQueue)
+      logRef <- newIORef []
       writeChannel <- getChannel gameId
       runGameApp (GameApp gameRef queueRef)
-        $ runMessages (handleMessageLog writeChannel)
+        $ runMessages (handleMessageLog logRef writeChannel)
       ge <- readIORef gameRef
       updatedQueue <- readIORef queueRef
+      updatedLog <- (arkhamGameLog <>) <$> readIORef logRef
       liftIO $ atomically $ writeTChan
         writeChannel
         (encode
-          (GameUpdate
-          $ Entity gameId (ArkhamGame arkhamGameName ge updatedQueue)
+          (GameUpdate $ Entity
+            gameId
+            (ArkhamGame arkhamGameName ge updatedQueue updatedLog)
           )
         )
-      Entity gameId (ArkhamGame arkhamGameName ge updatedQueue)
-        <$ runDB (replace gameId (ArkhamGame arkhamGameName ge updatedQueue))
+      Entity gameId (ArkhamGame arkhamGameName ge updatedQueue updatedLog)
+        <$ runDB
+             (replace
+               gameId
+               (ArkhamGame arkhamGameName ge updatedQueue updatedLog)
+             )
     else invalidArgs ["Hash mismatch"]
 
 
@@ -220,12 +227,13 @@ data ApiResponse = GameUpdate (Entity ArkhamGame) | GameMessage Text
   deriving stock Generic
   deriving anyclass ToJSON
 
-handleMessageLog :: MonadIO m => TChan BSL.ByteString -> Message -> m ()
-handleMessageLog writeChannel msg = case toHumanReadable msg of
+handleMessageLog
+  :: MonadIO m => IORef [Text] -> TChan BSL.ByteString -> Message -> m ()
+handleMessageLog logRef writeChannel msg = case toHumanReadable msg of
   Nothing -> pure ()
-  Just readableMsg -> liftIO $ atomically $ writeTChan
-    writeChannel
-    (encode $ GameMessage readableMsg)
+  Just readableMsg -> liftIO $ do
+    atomicModifyIORef' logRef (\logs -> (logs <> [readableMsg], ()))
+    atomically $ writeTChan writeChannel (encode $ GameMessage readableMsg)
 
 putApiV1ArkhamGameRawR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameRawR gameId = do
@@ -235,18 +243,21 @@ putApiV1ArkhamGameRawR gameId = do
   let message = fromMaybe (Continue "edited") (gameMessage response)
   gameRef <- newIORef (gameJson response)
   queueRef <- newIORef (message : arkhamGameQueue)
+  logRef <- newIORef []
   writeChannel <- getChannel gameId
   runGameApp (GameApp gameRef queueRef) $ do
-    runMessages (handleMessageLog writeChannel)
+    runMessages (handleMessageLog logRef writeChannel)
   ge <- readIORef gameRef
+  updatedMessages <- (arkhamGameLog <>) <$> readIORef logRef
   updatedQueue <- readIORef queueRef
   liftIO $ atomically $ writeTChan
     writeChannel
     (encode $ GameUpdate $ Entity
       gameId
-      (ArkhamGame arkhamGameName ge updatedQueue)
+      (ArkhamGame arkhamGameName ge updatedQueue updatedMessages)
     )
-  runDB (replace gameId (ArkhamGame arkhamGameName ge updatedQueue))
+  runDB
+    (replace gameId (ArkhamGame arkhamGameName ge updatedQueue updatedMessages))
 
 deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 deleteApiV1ArkhamGameR gameId = void $ runDB $ do

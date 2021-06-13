@@ -20,6 +20,10 @@ export default defineComponent({
         if (event.target.classList.contains('card')) {
           card.value = event.target.style.backgroundImage.slice(4, -1).replace(/"/g, "")
         }
+      } else if (event.target instanceof HTMLSpanElement) {
+        if(event.target.dataset.imageId) {
+          card.value = `/img/arkham/cards/${event.target.dataset.imageId}.jpg`
+        }
       }
     })
 
@@ -31,14 +35,17 @@ export default defineComponent({
 <style lang="scss">
 .card-overlay {
   width: 100%;
-  height: 25%;
+  flex: 1 1 50%;
+  position: relative;
   img {
-    border-radius: 20px;
-    height: 100%;
-    width: 100%;
+    position: absolute;
     object-fit: contain;
+    border-radius: 50px;
+    height: 100%;
+    width: calc(100% - 20px);
+    top: 0px;
+    left: 10px;
     margin: 0 auto;
   }
-  pointer-events: none;
 }
 </style>

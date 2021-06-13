@@ -89,6 +89,9 @@ instance HasCount SetAsideCount env (Scenario, CardCode) where
 instance HasSet SetAsideLocationCardCode env Scenario where
   getSet = getSet . toAttrs
 
+instance HasName env Scenario where
+  getName = getName . toAttrs
+
 instance HasName Scenario SetAsideLocationCardCode where
   getName saLocationCardCode = do
     locations <- asks (scenarioLocations . toAttrs)
@@ -127,7 +130,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
 
 baseScenario
   :: CardCode
-  -> Text
+  -> Name
   -> [AgendaId]
   -> [ActId]
   -> Difficulty

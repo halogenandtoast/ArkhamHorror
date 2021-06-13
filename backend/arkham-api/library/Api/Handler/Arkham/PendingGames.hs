@@ -42,13 +42,23 @@ putApiV1ArkhamPendingGameR gameId = do
 
   updatedGame <- readIORef gameRef
   updatedQueue <- readIORef queueRef
+  let updatedMessages = []
 
   writeChannel <- getChannel gameId
   liftIO $ atomically $ writeTChan
     writeChannel
-    (encode (Entity gameId (ArkhamGame arkhamGameName updatedGame updatedQueue))
+    (encode
+      (Entity
+        gameId
+        (ArkhamGame arkhamGameName updatedGame updatedQueue updatedMessages)
+      )
     )
 
-  Entity gameId (ArkhamGame arkhamGameName updatedGame updatedQueue)
+  Entity
+      gameId
+      (ArkhamGame arkhamGameName updatedGame updatedQueue updatedMessages)
     <$ runDB
-         (replace gameId (ArkhamGame arkhamGameName updatedGame updatedQueue))
+         (replace
+           gameId
+           (ArkhamGame arkhamGameName updatedGame updatedQueue updatedMessages)
+         )

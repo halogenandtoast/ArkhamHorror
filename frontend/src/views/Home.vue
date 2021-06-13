@@ -17,7 +17,7 @@
         <router-link class="title" :to="`/games/${game.id}`">{{game.name}}</router-link>
         <div v-if="game.currentData.scenario" class="scenario-details">
           <img class="scenario-icon" :src="`/img/arkham/sets/${game.currentData.scenario.contents.id}.png`" />
-          <span>{{game.currentData.scenario.contents.name}}</span>
+          <span>{{game.currentData.scenario.contents.name.title}}</span>
         </div>
         <div>
           <span>Investigators: </span>

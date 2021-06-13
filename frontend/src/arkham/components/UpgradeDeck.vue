@@ -24,7 +24,7 @@
 
   <Prompt
     v-if="skipping"
-    prompt="Are you sure you want to delete this deck?"
+    prompt="Are you sure you want to skip upgrading this deck?"
     :yes="skip"
     :no="() => skipping = false"
   />

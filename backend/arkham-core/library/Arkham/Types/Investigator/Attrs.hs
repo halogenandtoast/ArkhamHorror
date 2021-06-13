@@ -1174,7 +1174,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         <> [PlayCard iid cardId mtarget False]
         )
       else pure a
-  PlayedCard iid cardId | iid == investigatorId ->
+  PlayedCard iid cardId _ _ | iid == investigatorId ->
     pure $ a & handL %~ filter ((/= cardId) . getCardId)
   InvestigatorPlayAsset iid aid slotTypes traits | iid == investigatorId -> do
     let assetsUpdate = assetsL %~ insertSet aid

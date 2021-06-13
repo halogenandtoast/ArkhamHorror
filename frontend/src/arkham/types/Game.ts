@@ -23,6 +23,7 @@ export interface Game {
   id: string;
   name: string;
   currentData: GameState;
+  log: string[];
 }
 
 export function choices(game: Game, investigatorId: string) {
@@ -146,6 +147,7 @@ export const gameDecoder = JsonDecoder.object<Game>(
     id: JsonDecoder.string,
     name: JsonDecoder.string,
     currentData: gameStateDecoder,
+    log: JsonDecoder.array(JsonDecoder.string, 'LogEntry[]')
   },
   'Game',
 );

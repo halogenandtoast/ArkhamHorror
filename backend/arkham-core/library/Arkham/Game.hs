@@ -15,12 +15,9 @@ import Arkham.Types.Message
 import Arkham.Types.Phase
 import Arkham.Types.Scenario
 import Arkham.Types.ScenarioId
-import Control.Monad.Random.Lazy (evalRandT)
 import Data.Align
-import Data.UUID.V4
 import Safe (headNote)
 import System.Environment
-import System.Random
 import Text.Pretty.Simple
 import Text.Read hiding (get, lift)
 
@@ -119,7 +116,7 @@ newGame scenarioOrCampaignId playerCount investigatorsList difficulty = do
   mode = fromJustNote "Need campaign or scenario" $ align campaign scenario
 
 addInvestigator
-  :: (MonadIO m, MonadReader env m, HasQueue env, HasGameRef env)
+  :: (MonadIO m, HasStdGen env, MonadReader env m, HasQueue env, HasGameRef env)
   => Int
   -> Investigator
   -> [PlayerCard]
@@ -151,27 +148,30 @@ startGame g =
     & (playerCountL .~ length (g ^. investigatorsL))
 
 -- TODO: Rename this
-toExternalGame :: MonadIO m => Game -> HashMap InvestigatorId Question -> m Game
+toExternalGame
+  :: MonadRandom m => Game -> HashMap InvestigatorId Question -> m Game
 toExternalGame g@Game {..} mq = do
-  hash' <- liftIO nextRandom
-  pure $ g { gameHash = hash', gameQuestion = mq }
+  hash' <- getRandom
+  newGameSeed <- getRandom
+  pure $ g { gameHash = hash', gameQuestion = mq, gameSeed = newGameSeed }
 
 runMessages
-  :: (MonadIO m, HasGameRef env, HasQueue env, MonadReader env m)
+  :: (MonadIO m, HasGameRef env, HasStdGen env, HasQueue env, MonadReader env m)
   => (Message -> m ())
   -> m ()
 runMessages logger = do
   gameRef <- view gameRefL
   queueRef <- view messageQueue
   g <- liftIO $ readIORef gameRef
-  let gen = mkStdGen (gameSeed g)
 
   liftIO $ whenM
     (isJust <$> lookupEnv "DEBUG")
     (readIORef queueRef >>= pPrint >> putStrLn "\n")
 
   if g ^. gameStateL /= IsActive
-    then toExternalGame g mempty >>= atomicWriteIORef gameRef
+    then toGameEnv >>= flip
+      runGameEnvT
+      (toExternalGame g mempty >>= atomicWriteIORef gameRef)
     else do
       mmsg <- popMessage
       case mmsg of
@@ -207,11 +207,18 @@ runMessages logger = do
         Just msg -> do
           case msg of
             Ask iid q -> do
-              toExternalGame g (singletonMap iid q) >>= atomicWriteIORef gameRef
+              toGameEnv >>= flip
+                runGameEnvT
+                (toExternalGame g (singletonMap iid q)
+                >>= atomicWriteIORef gameRef
+                )
             AskMap askMap -> do
-              toExternalGame g askMap >>= atomicWriteIORef gameRef
+              toGameEnv >>= flip
+                runGameEnvT
+                (toExternalGame g askMap >>= atomicWriteIORef gameRef)
             _ -> do
-              g' <- toGameEnv >>= flip evalRandT gen . runReaderT
+              g' <- toGameEnv >>= flip
+                runGameEnvT
                 (runMessage
                   msg
                   (g

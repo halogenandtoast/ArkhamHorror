@@ -72,3 +72,4 @@ tests:
       - mtl
       - safe
       - MonadRandom
+      - random

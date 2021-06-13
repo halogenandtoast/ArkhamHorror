@@ -69,6 +69,7 @@ import qualified Data.UUID as UUID
 import Data.UUID.V4 as X
 import Helpers.Matchers as X
 import Helpers.Message as X
+import System.Random (StdGen, mkStdGen)
 import Test.Hspec as X
 
 shouldSatisfyM
@@ -88,6 +89,7 @@ getId
   :: ( HasId id GameEnv a
      , HasGameRef env
      , HasQueue env
+     , HasStdGen env
      , MonadReader env m
      , MonadIO m
      )
@@ -99,6 +101,7 @@ getCount
   :: ( HasCount count GameEnv a
      , HasGameRef env
      , HasQueue env
+     , HasStdGen env
      , MonadReader env m
      , MonadIO m
      )
@@ -107,7 +110,13 @@ getCount
 getCount a = toGameEnv >>= runReaderT (Arkham.getCount a)
 
 getAsset
-  :: (HasCallStack, MonadReader env m, HasGameRef env, MonadIO m, HasQueue env)
+  :: ( HasCallStack
+     , MonadReader env m
+     , HasGameRef env
+     , MonadIO m
+     , HasQueue env
+     , HasStdGen env
+     )
   => AssetId
   -> m Asset
 getAsset aid = toGameEnv >>= runReaderT (Game.getAsset aid)
@@ -117,6 +126,7 @@ getTokenValue
      , MonadIO m
      , HasGameRef env
      , HasQueue env
+     , HasStdGen env
      , HasTokenValue GameEnv a
      )
   => a
@@ -127,7 +137,7 @@ getTokenValue a iid token =
   toGameEnv >>= runReaderT (Arkham.getTokenValue a iid token)
 
 getCanAffordCost
-  :: (MonadReader env m, HasGameRef env, HasQueue env, MonadIO m)
+  :: (MonadReader env m, HasGameRef env, HasQueue env, MonadIO m, HasStdGen env)
   => InvestigatorId
   -> Source
   -> Maybe Action
@@ -141,6 +151,7 @@ getModifiersFor
      , HasGameRef env
      , MonadIO m
      , HasQueue env
+     , HasStdGen env
      , HasModifiersFor GameEnv a
      )
   => Source
@@ -152,6 +163,7 @@ getModifiersFor s t a = toGameEnv >>= runReaderT (Arkham.getModifiersFor s t a)
 data TestApp = TestApp
   { game :: IORef Game
   , messageQueueRef :: IORef [Message]
+  , gen :: IORef StdGen
   }
 
 newtype TestAppT m a = TestAppT { unTestAppT :: ReaderT TestApp m a }
@@ -162,6 +174,9 @@ runTestApp testApp = flip runReaderT testApp . unTestAppT
 
 instance HasGameRef TestApp where
   gameRefL = lens game $ \m x -> m { game = x }
+
+instance HasStdGen TestApp where
+  genL = lens gen $ \m x -> m { gen = x }
 
 instance HasQueue TestApp where
   messageQueue = lens messageQueueRef $ \m x -> m { messageQueueRef = x }
@@ -293,6 +308,7 @@ getActionsOf
      , TestEntity a
      , MonadIO m
      , MonadReader env m
+     , HasStdGen env
      , HasGameRef env
      , HasQueue env
      )
@@ -348,14 +364,26 @@ withGame :: Game -> ReaderT Game m b -> m b
 withGame = flip runReaderT
 
 runGameTestOnlyOption
-  :: (MonadFail m, MonadIO m, HasQueue env, MonadReader env m, HasGameRef env)
+  :: ( MonadFail m
+     , MonadIO m
+     , HasQueue env
+     , MonadReader env m
+     , HasGameRef env
+     , HasStdGen env
+     )
   => String
   -> m ()
 runGameTestOnlyOption reason =
   runGameTestOnlyOptionWithLogger reason (pure . const ())
 
 runGameTestOnlyOptionWithLogger
-  :: (MonadFail m, MonadIO m, HasQueue env, MonadReader env m, HasGameRef env)
+  :: ( MonadFail m
+     , MonadIO m
+     , HasQueue env
+     , MonadReader env m
+     , HasGameRef env
+     , HasStdGen env
+     )
   => String
   -> (Message -> m ())
   -> m ()
@@ -370,11 +398,18 @@ runGameTestOnlyOptionWithLogger _reason logger = do
     _ -> error "There must be only one choice to use this function"
 
 runMessagesNoLogging
-  :: (MonadIO m, HasGameRef env, HasQueue env, MonadReader env m) => m ()
+  :: (MonadIO m, HasGameRef env, HasQueue env, MonadReader env m, HasStdGen env)
+  => m ()
 runMessagesNoLogging = void $ runMessages (pure . const ())
 
 runGameTestFirstOption
-  :: (MonadFail m, MonadIO m, MonadReader env m, HasGameRef env, HasQueue env)
+  :: ( MonadFail m
+     , MonadIO m
+     , MonadReader env m
+     , HasGameRef env
+     , HasQueue env
+     , HasStdGen env
+     )
   => String
   -> m ()
 runGameTestFirstOption _reason = do
@@ -387,13 +422,25 @@ runGameTestFirstOption _reason = do
     _ -> error "There must be at least one option"
 
 runGameTestMessages
-  :: (MonadFail m, MonadIO m, MonadReader env m, HasGameRef env, HasQueue env)
+  :: ( MonadFail m
+     , MonadIO m
+     , MonadReader env m
+     , HasGameRef env
+     , HasQueue env
+     , HasStdGen env
+     )
   => [Message]
   -> m ()
 runGameTestMessages msgs = unshiftMessages msgs >> runMessagesNoLogging
 
 runGameTestOptionMatching
-  :: (MonadFail m, MonadIO m, MonadReader env m, HasGameRef env, HasQueue env)
+  :: ( MonadFail m
+     , MonadIO m
+     , MonadReader env m
+     , HasGameRef env
+     , HasQueue env
+     , HasStdGen env
+     )
   => String
   -> (Message -> Bool)
   -> m ()
@@ -401,7 +448,13 @@ runGameTestOptionMatching reason f =
   runGameTestOptionMatchingWithLogger reason (pure . const ()) f
 
 runGameTestOptionMatchingWithLogger
-  :: (MonadFail m, MonadIO m, MonadReader env m, HasGameRef env, HasQueue env)
+  :: ( MonadFail m
+     , MonadIO m
+     , MonadReader env m
+     , HasGameRef env
+     , HasQueue env
+     , HasStdGen env
+     )
   => String
   -> (Message -> m ())
   -> (Message -> Bool)
@@ -422,16 +475,18 @@ runGameTest investigator queue f body = do
   g <- newGame investigator
   gameRef <- newIORef (f g)
   queueRef <- newIORef queue
-  runTestApp (TestApp gameRef queueRef) body
+  genRef <- newIORef $ mkStdGen (gameSeed g)
+  runTestApp (TestApp gameRef queueRef genRef) body
 
 newGame :: MonadIO m => Investigator -> m Game
 newGame investigator = do
   scenario' <- testScenario "00000" id
+  seed <- liftIO getRandom
   pure $ Game
     { gameRoundMessageHistory = []
     , gamePhaseMessageHistory = []
-    , gameSeed = 1
-    , gameInitialSeed = 1
+    , gameSeed = seed
+    , gameInitialSeed = seed
     , gameMode = That scenario'
     , gamePlayerCount = 1
     , gameLocations = mempty

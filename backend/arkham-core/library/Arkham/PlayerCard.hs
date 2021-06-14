@@ -4,7 +4,8 @@ module Arkham.PlayerCard
   , lookupPlayerCardName
   , allPlayerCards
   , basePlayerCard
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -183,6 +184,7 @@ allPlayerCards = mapFromList
   , ("02109", contraband)
   , ("02110", adaptable1)
   , ("02111", delveTooDeep)
+  , ("02112", songOfTheDead2)
   , ("02139", adamLynch)
   , ("02140", theNecronomiconOlausWormiusTranslation)
   , ("02147", bandolier)
@@ -1250,6 +1252,12 @@ delveTooDeep :: CardId -> PlayerCard
 delveTooDeep cardId = (event cardId "02111" "Delve Too Deep" 1 Mystic)
   { pcTraits = setFromList [Insight]
   , pcVictoryPoints = Just 1
+  }
+
+songOfTheDead2 :: CardId -> PlayerCard
+songOfTheDead2 cardId = (asset cardId "92112" "Song of the Dead" 2 Mystic)
+  { pcTraits = setFromList [Spell, Song]
+  , pcSkills = [SkillWillpower]
   }
 
 adamLynch :: CardId -> PlayerCard

@@ -1,6 +1,7 @@
 module Arkham.Types.Asset.Cards
   ( module X
-  ) where
+  )
+where
 
 import Arkham.Types.Asset.Cards.AdamLynch as X
 import Arkham.Types.Asset.Cards.Adaptable1 as X
@@ -100,6 +101,7 @@ import Arkham.Types.Asset.Cards.ScrollOfProphecies as X
 import Arkham.Types.Asset.Cards.Scrying as X
 import Arkham.Types.Asset.Cards.Shotgun4 as X
 import Arkham.Types.Asset.Cards.Shrivelling as X
+import Arkham.Types.Asset.Cards.SongOfTheDead2 as X
 import Arkham.Types.Asset.Cards.SpringfieldM19034 as X
 import Arkham.Types.Asset.Cards.StrangeSolution as X
 import Arkham.Types.Asset.Cards.StrayCat as X

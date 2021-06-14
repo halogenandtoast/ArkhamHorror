@@ -104,6 +104,7 @@ data Asset
   | BrotherXavier1' BrotherXavier1
   | Pathfinder1' Pathfinder1
   | Adaptable1' Adaptable1
+  | SongOfTheDead2' SongOfTheDead2
   | HaroldWalsted' HaroldWalsted
   | AdamLynch' AdamLynch
   | TheNecronomiconOlausWormiusTranslation' TheNecronomiconOlausWormiusTranslation
@@ -325,6 +326,7 @@ allAssets = mapFromList
   , ("02106", BrotherXavier1' . brotherXavier1)
   , ("02108", Pathfinder1' . pathfinder1)
   , ("02110", Adaptable1' . adaptable1)
+  , ("02112", SongOfTheDead2' . songOfTheDead2)
   , ("02138", HaroldWalsted' . haroldWalsted)
   , ("02139", AdamLynch' . adamLynch)
   , ( "02140"

@@ -13,7 +13,11 @@ spec = describe "Lucky!" $ do
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorIntellect = 1, investigatorResources = 1 }
     lucky <- buildPlayerCard "01080"
-    runGameTest
+
+    (didPassTest, logger) <- didPassSkillTestBy investigator SkillIntellect 0
+
+    gameTestWithLogger
+        logger
         investigator
         [ SetTokens [MinusOne]
         , addToHand investigator (PlayerCard lucky)
@@ -21,26 +25,26 @@ spec = describe "Lucky!" $ do
         ]
         id
       $ do
-          (didPassTest, logger) <- didPassSkillTestBy
-            investigator
-            SkillIntellect
-            0
-          runMessagesNoLogging
-          runGameTestOnlyOption "start skill test"
-          runGameTestOptionMatching
+          runMessages
+          chooseOnlyOption "start skill test"
+          chooseOptionMatching
             "play lucky!"
             (\case
               Run{} -> True
               _ -> False
             )
-          runGameTestOnlyOptionWithLogger "apply results" logger
+          chooseOnlyOption "apply results"
           didPassTest `refShouldBe` True
 
   it "does not cause an autofail to pass" $ do
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorIntellect = 1, investigatorResources = 1 }
     lucky <- buildPlayerCard "01080"
-    runGameTest
+
+    (didFailTest, logger) <- didFailSkillTestBy investigator SkillIntellect 2
+
+    gameTestWithLogger
+        logger
         investigator
         [ SetTokens [AutoFail]
         , addToHand investigator (PlayerCard lucky)
@@ -48,17 +52,13 @@ spec = describe "Lucky!" $ do
         ]
         id
       $ do
-          (didFailTest, logger) <- didFailSkillTestBy
-            investigator
-            SkillIntellect
-            2
-          runMessagesNoLogging
-          runGameTestOnlyOption "start skill test"
-          runGameTestOptionMatching
+          runMessages
+          chooseOnlyOption "start skill test"
+          chooseOptionMatching
             "play lucky!"
             (\case
               Run{} -> True
               _ -> False
             )
-          runGameTestOnlyOptionWithLogger "apply results" logger
+          chooseOnlyOption "apply results"
           didFailTest `refShouldBe` True

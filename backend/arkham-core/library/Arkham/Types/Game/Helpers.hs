@@ -13,6 +13,8 @@ import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Effect.Window
+import Arkham.Types.EffectMetadata
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
@@ -581,6 +583,26 @@ addCampaignCardToDeckChoice leadInvestigatorId investigatorIds cardCode =
     ]
   where name = lookupPlayerCardName cardCode
 
+skillTestModifier
+  :: (SourceEntity source, TargetEntity target)
+  => source
+  -> target
+  -> ModifierType
+  -> Message
+skillTestModifier source target modifier =
+  skillTestModifiers source target [modifier]
+
+skillTestModifiers
+  :: (SourceEntity source, TargetEntity target)
+  => source
+  -> target
+  -> [ModifierType]
+  -> Message
+skillTestModifiers source target modifiers = CreateWindowModifierEffect
+  EffectSkillTestWindow
+  (EffectModifiers $ toModifiers source modifiers)
+  (toSource source)
+  (toTarget target)
 
 getJustLocationIdByName
   :: (MonadReader env m, HasId (Maybe LocationId) env LocationMatcher)
@@ -598,3 +620,13 @@ getLocationIdByName name = getId matcher
   matcher = case (nameTitle name, nameSubtitle name) of
     (title, Just subtitle) -> LocationWithFullTitle title subtitle
     (title, Nothing) -> LocationWithTitle title
+
+fightAction
+  :: SourceEntity source => InvestigatorId -> source -> Int -> [Cost] -> Message
+fightAction iid source n costs = ActivateCardAbilityAction
+  iid
+  (mkAbility
+    (toSource source)
+    n
+    (ActionAbility (Just Action.Fight) (Costs costs))
+  )

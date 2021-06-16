@@ -12,12 +12,12 @@ spec = describe "Cover Up" $ do
   it "starts with 3 clues on it" $ do
     investigator <- testInvestigator "00000" id
     coverUp <- buildPlayerCard "01007"
-    runGameTest
+    gameTest
         investigator
         [loadDeck investigator [coverUp], drawCards investigator 1]
         id
       $ do
-          runMessagesNoLogging
+          runMessages
           game <- getTestGame
           let coverUpTreachery = game ^?! treacheriesL . to toList . ix 0
           getCount coverUpTreachery `shouldReturn` Just (ClueCount 3)
@@ -26,7 +26,7 @@ spec = describe "Cover Up" $ do
     investigator <- testInvestigator "00000" id
     coverUp <- buildPlayerCard "01007"
     location <- testLocation "00000" $ Location.cluesL .~ 1
-    runGameTest
+    gameTest
         investigator
         [ loadDeck investigator [coverUp]
         , drawCards investigator 1
@@ -35,8 +35,8 @@ spec = describe "Cover Up" $ do
         ]
         (locationsL %~ insertEntity location)
       $ do
-          runMessagesNoLogging
-          runGameTestOptionMatching
+          runMessages
+          chooseOptionMatching
             "Use ability"
             (\case
               Run{} -> True
@@ -51,7 +51,7 @@ spec = describe "Cover Up" $ do
     $ do
         investigator <- testInvestigator "00000" id
         coverUp <- buildPlayerCard "01007"
-        runGameTest
+        gameTest
             investigator
             [ loadDeck investigator [coverUp]
             , drawCards investigator 1
@@ -59,14 +59,14 @@ spec = describe "Cover Up" $ do
             ]
             id
           $ do
-              runMessagesNoLogging
+              runMessages
               getCount (toId investigator) `shouldReturn` MentalTraumaCount 1
 
   it "does not cause trauma when the game ends if there are no clues on it" $ do
     investigator <- testInvestigator "00000" id
     coverUp <- buildPlayerCard "01007"
     location <- testLocation "00000" $ Location.cluesL .~ 3
-    runGameTest
+    gameTest
         investigator
         [ loadDeck investigator [coverUp]
         , drawCards investigator 1
@@ -76,8 +76,8 @@ spec = describe "Cover Up" $ do
         ]
         (locationsL %~ insertEntity location)
       $ do
-          runMessagesNoLogging
-          runGameTestOptionMatching
+          runMessages
+          chooseOptionMatching
             "Use ability"
             (\case
               Run{} -> True

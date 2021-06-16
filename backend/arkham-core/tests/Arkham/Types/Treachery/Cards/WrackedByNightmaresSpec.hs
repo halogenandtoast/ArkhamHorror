@@ -14,7 +14,7 @@ spec = describe "Wracked by Nightmares" $ do
     wrackedByNightmares <- buildPlayerCard "02015"
     asset <- testAsset
       ((Asset.exhaustedL .~ True) . (Asset.investigatorL ?~ toId investigator))
-    runGameTest
+    gameTest
         investigator
         [ loadDeck investigator [wrackedByNightmares]
         , drawCards investigator 1
@@ -22,7 +22,7 @@ spec = describe "Wracked by Nightmares" $ do
         ]
         (assetsL %~ insertEntity asset)
       $ do
-          runMessagesNoLogging
+          runMessages
           investigator' <- updated investigator
           hasTreacheryWithMatchingCardCode
               (PlayerCard wrackedByNightmares)
@@ -35,12 +35,12 @@ spec = describe "Wracked by Nightmares" $ do
     wrackedByNightmares <- buildPlayerCard "02015"
     asset <- testAsset
       ((Asset.exhaustedL .~ True) . (Asset.investigatorL ?~ toId investigator))
-    runGameTest
+    gameTest
         investigator
         [loadDeck investigator [wrackedByNightmares], drawCards investigator 1]
         (assetsL %~ insertEntity asset)
       $ do
-          runMessagesNoLogging
+          runMessages
           game <- getTestGame
           let
             wrackedByNightmaresTreachery =
@@ -49,7 +49,8 @@ spec = describe "Wracked by Nightmares" $ do
             investigator
             NonFast
             wrackedByNightmaresTreachery
-          runGameTestMessages [discardWrackedByNightmares, ReadyExhausted]
+          unshiftMessages [discardWrackedByNightmares, ReadyExhausted]
+          runMessages
           investigator' <- updated investigator
           hasTreacheryWithMatchingCardCode
               (PlayerCard wrackedByNightmares)

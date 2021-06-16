@@ -16,7 +16,7 @@ spec = describe "Deduction" $ do
     location <- testLocation "00000"
       $ \attrs -> attrs { locationClues = 2, locationShroud = 2 }
     deduction <- buildPlayerCard "01039"
-    runGameTest
+    gameTest
         investigator
         [ SetTokens [Zero]
         , moveTo investigator location
@@ -25,18 +25,18 @@ spec = describe "Deduction" $ do
         ]
         (locationsL %~ insertEntity location)
       $ do
-          runMessagesNoLogging
-          runGameTestOptionMatching
+          runMessages
+          chooseOptionMatching
             "commit skill card"
             (\case
               Run{} -> True
               _ -> False
             )
-          runGameTestOptionMatching
+          chooseOptionMatching
             "start skill test"
             (\case
               StartSkillTest{} -> True
               _ -> False
             )
-          runGameTestOnlyOption "apply results"
+          chooseOnlyOption "apply results"
           getCount (toId investigator) `shouldReturn` ClueCount 2

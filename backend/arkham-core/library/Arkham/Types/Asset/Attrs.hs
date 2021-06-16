@@ -127,6 +127,10 @@ instance SourceEntity AssetAttrs where
 ownedBy :: AssetAttrs -> InvestigatorId -> Bool
 ownedBy AssetAttrs {..} = (== assetInvestigator) . Just
 
+whenOwnedBy
+  :: Applicative m => AssetAttrs -> InvestigatorId -> m [Message] -> m [Message]
+whenOwnedBy a iid f = if ownedBy a iid then f else pure []
+
 assetAction
   :: InvestigatorId -> AssetAttrs -> Int -> Maybe Action -> Cost -> Message
 assetAction iid attrs idx mAction cost =

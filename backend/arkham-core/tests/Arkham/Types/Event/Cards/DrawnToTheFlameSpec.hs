@@ -23,7 +23,7 @@ spec = describe "Drawn to the flame" $ do
             attrs { locationTraits = setFromList [Central], locationClues = 2 }
         drawnToTheFlame <- buildEvent "01064" investigator
         onWingsOfDarkness <- buildEncounterCard "01173"
-        runGameTest
+        gameTest
             investigator
             [ SetEncounterDeck [onWingsOfDarkness]
             , SetTokens [Zero]
@@ -37,11 +37,11 @@ spec = describe "Drawn to the flame" $ do
             . (locationsL %~ insertEntity centralLocation)
             )
           $ do
-              runMessagesNoLogging
-              runGameTestOnlyOption "start skill test"
-              runGameTestOnlyOption "apply results"
-              runGameTestFirstOption "apply horror/damage"
-              runGameTestFirstOption "apply horror/damage"
-              runGameTestOnlyOption "move to central location"
+              runMessages
+              chooseOnlyOption "start skill test"
+              chooseOnlyOption "apply results"
+              chooseFirstOption "apply horror/damage"
+              chooseFirstOption "apply horror/damage"
+              chooseOnlyOption "move to central location"
               updated investigator `shouldSatisfyM` hasClueCount 2
               isInDiscardOf investigator drawnToTheFlame `shouldReturn` True

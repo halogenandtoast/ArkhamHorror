@@ -17,7 +17,7 @@ spec = do
         enemy <- testEnemy (Enemy.healthL .~ Static 2)
         location <- testLocation "00000" id
         zoeysCross <- buildAsset "02006"
-        runGameTest
+        gameTest
             investigator
             [ playAsset investigator zoeysCross
             , enemySpawn location enemy
@@ -28,8 +28,8 @@ spec = do
             . (locationsL %~ insertEntity location)
             )
           $ do
-              runMessagesNoLogging
-              runGameTestOptionMatching
+              runMessages
+              chooseOptionMatching
                 "use ability"
                 (\case
                   Run{} -> True

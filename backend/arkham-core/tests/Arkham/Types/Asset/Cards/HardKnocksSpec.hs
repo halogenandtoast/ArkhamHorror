@@ -13,7 +13,11 @@ spec = describe "Hard Knocks" $ do
     hardKnocks <- buildAsset "01049"
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorCombat = 1, investigatorResources = 2 }
-    runGameTest
+
+    (didPassTest, logger) <- didPassSkillTestBy investigator SkillCombat 0
+
+    gameTestWithLogger
+        logger
         investigator
         [ SetTokens [Zero]
         , playAsset investigator hardKnocks
@@ -21,34 +25,37 @@ spec = describe "Hard Knocks" $ do
         ]
         (assetsL %~ insertEntity hardKnocks)
       $ do
-          (didPassTest, logger) <- didPassSkillTestBy investigator SkillCombat 0
-          runMessagesNoLogging
-          runGameTestOptionMatching
+          runMessages
+          chooseOptionMatching
             "use ability"
             (\case
               Run{} -> True
               _ -> False
             )
-          runGameTestOptionMatching
+          chooseOptionMatching
             "use ability"
             (\case
               Run{} -> True
               _ -> False
             )
-          runGameTestOptionMatching
+          chooseOptionMatching
             "start skill test"
             (\case
               StartSkillTest{} -> True
               _ -> False
             )
-          runGameTestOnlyOptionWithLogger "apply results" logger
+          chooseOnlyOption "apply results"
           didPassTest `refShouldBe` True
 
   it "Adds 1 to agility check for each resource spent" $ do
     hardKnocks <- buildAsset "01049"
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorAgility = 1, investigatorResources = 2 }
-    runGameTest
+
+    (didPassTest, logger) <- didPassSkillTestBy investigator SkillAgility 0
+
+    gameTestWithLogger
+        logger
         investigator
         [ SetTokens [Zero]
         , playAsset investigator hardKnocks
@@ -56,28 +63,24 @@ spec = describe "Hard Knocks" $ do
         ]
         (assetsL %~ insertEntity hardKnocks)
       $ do
-          (didPassTest, logger) <- didPassSkillTestBy
-            investigator
-            SkillAgility
-            0
-          runMessagesNoLogging
-          runGameTestOptionMatching
+          runMessages
+          chooseOptionMatching
             "use ability"
             (\case
               Run{} -> True
               _ -> False
             )
-          runGameTestOptionMatching
+          chooseOptionMatching
             "use ability"
             (\case
               Run{} -> True
               _ -> False
             )
-          runGameTestOptionMatching
+          chooseOptionMatching
             "start skill test"
             (\case
               StartSkillTest{} -> True
               _ -> False
             )
-          runGameTestOnlyOptionWithLogger "apply results" logger
+          chooseOnlyOption "apply results"
           didPassTest `refShouldBe` True

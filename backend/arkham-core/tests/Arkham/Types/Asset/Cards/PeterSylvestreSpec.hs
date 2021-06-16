@@ -12,12 +12,12 @@ spec = describe "Peter Sylvestre" $ do
   it "gives you +1 agility" $ do
     investigator <- testInvestigator "00000" id
     peterSylvestre <- buildAsset "02033"
-    runGameTest
+    gameTest
         investigator
         [playAsset investigator peterSylvestre]
         (assetsL %~ insertEntity peterSylvestre)
       $ do
-          runMessagesNoLogging
+          runMessages
           (map modifierType
             <$> getModifiersFor (TestSource mempty) (toTarget investigator) ()
             )
@@ -26,7 +26,7 @@ spec = describe "Peter Sylvestre" $ do
   it "removes one horror at the end of your turn" $ do
     investigator <- testInvestigator "00000" id
     peterSylvestre <- buildAsset "02033"
-    runGameTest
+    gameTest
         investigator
         [ playAsset investigator peterSylvestre
         , AssetDamage (toId peterSylvestre) (TestSource mempty) 0 2
@@ -34,8 +34,8 @@ spec = describe "Peter Sylvestre" $ do
         ]
         (assetsL %~ insertEntity peterSylvestre)
       $ do
-          runMessagesNoLogging
-          runGameTestOptionMatching
+          runMessages
+          chooseOptionMatching
             "use ability"
             (\case
               Run{} -> True

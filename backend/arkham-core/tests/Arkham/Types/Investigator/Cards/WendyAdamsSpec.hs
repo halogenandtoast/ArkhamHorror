@@ -11,7 +11,11 @@ spec = describe "Wendy Adams" $ do
     it "allows you to discard a card to redraw a chaos token" $ do
       let wendyAdams = lookupInvestigator "01005"
       card <- testPlayerCard id
-      runGameTest
+
+      (didPassTest, logger) <- didPassSkillTestBy wendyAdams SkillWillpower 0
+
+      gameTestWithLogger
+          logger
           wendyAdams
           [ SetTokens [MinusOne]
           , AddToHand (toId wendyAdams) (PlayerCard card)
@@ -19,43 +23,43 @@ spec = describe "Wendy Adams" $ do
           ]
           id
         $ do
-            (didPassTest, logger) <- didPassSkillTestBy
-              wendyAdams
-              SkillWillpower
-              0
-            runMessagesNoLogging
-            runGameTestOnlyOption "start skill test"
-            runGameTestOptionMatching
+            runMessages
+            chooseOnlyOption "start skill test"
+            chooseOptionMatching
               "use ability"
               (\case
                 Run{} -> True
                 _ -> False
               )
-            runGameTestOnlyOption "discard card"
-            runGameTestOnlyOptionWithLogger "apply results" logger
+            chooseOnlyOption "discard card"
+            chooseOnlyOption "apply results"
             didPassTest `refShouldBe` True
 
   context "elder sign" $ do
     it "gives +0" $ do
       let wendyAdams = lookupInvestigator "01005"
-      runGameTest
+
+      (didPassTest, logger) <- didPassSkillTestBy wendyAdams SkillWillpower 0
+
+      gameTestWithLogger
+          logger
           wendyAdams
           [SetTokens [ElderSign], beginSkillTest wendyAdams SkillWillpower 4]
           id
         $ do
-            (didPassTest, logger) <- didPassSkillTestBy
-              wendyAdams
-              SkillWillpower
-              0
-            runMessagesNoLogging
-            runGameTestOnlyOption "start skill test"
-            runGameTestOnlyOptionWithLogger "apply results" logger
+            runMessages
+            chooseOnlyOption "start skill test"
+            chooseOnlyOption "apply results"
             didPassTest `refShouldBe` True
 
     it "automatically succeeds if Wendy's Amulet is in play" $ do
       let wendyAdams = lookupInvestigator "01005"
       wendysAmulet <- buildAsset "01014"
-      runGameTest
+
+      (didPassTest, logger) <- didPassSkillTestBy wendyAdams SkillWillpower 4
+
+      gameTestWithLogger
+          logger
           wendyAdams
           [ SetTokens [ElderSign]
           , playAsset wendyAdams wendysAmulet
@@ -63,11 +67,7 @@ spec = describe "Wendy Adams" $ do
           ]
           (assetsL %~ insertEntity wendysAmulet)
         $ do
-            (didPassTest, logger) <- didPassSkillTestBy
-              wendyAdams
-              SkillWillpower
-              4
-            runMessagesNoLogging
-            runGameTestOnlyOption "start skill test"
-            runGameTestOnlyOptionWithLogger "apply results" logger
+            runMessages
+            chooseOnlyOption "start skill test"
+            chooseOnlyOption "apply results"
             didPassTest `refShouldBe` True

@@ -13,7 +13,11 @@ spec = describe "Will to Survive (4)" $ do
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorIntellect = 3 }
     willToSurvive4 <- buildEvent "01085" investigator
-    runGameTest
+
+    (didPassTest, logger) <- didPassSkillTestBy investigator SkillIntellect 0
+
+    gameTestWithLogger
+        logger
         investigator
         [ SetTokens [AutoFail]
         , playEvent investigator willToSurvive4
@@ -21,20 +25,20 @@ spec = describe "Will to Survive (4)" $ do
         ]
         (eventsL %~ insertEntity willToSurvive4)
       $ do
-          (didPassTest, logger) <- didPassSkillTestBy
-            investigator
-            SkillIntellect
-            0
-          runMessagesNoLogging
-          runGameTestOnlyOption "start skill test"
-          runGameTestOnlyOptionWithLogger "apply results" logger
+          runMessages
+          chooseOnlyOption "start skill test"
+          chooseOnlyOption "apply results"
           didPassTest `refShouldBe` True
 
   it "it is cancelled at the end of the turn" $ do
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorIntellect = 3 }
     willToSurvive4 <- buildEvent "01085" investigator
-    runGameTest
+
+    (didFailTest, logger) <- didFailSkillTestBy investigator SkillIntellect 3
+
+    gameTestWithLogger
+        logger
         investigator
         [ SetTokens [AutoFail]
         , playEvent investigator willToSurvive4
@@ -43,11 +47,7 @@ spec = describe "Will to Survive (4)" $ do
         ]
         (eventsL %~ insertEntity willToSurvive4)
       $ do
-          (didFailTest, logger) <- didFailSkillTestBy
-            investigator
-            SkillIntellect
-            3
-          runMessagesNoLogging
-          runGameTestOnlyOption "start skill test"
-          runGameTestOnlyOptionWithLogger "apply results" logger
+          runMessages
+          chooseOnlyOption "start skill test"
+          chooseOnlyOption "apply results"
           didFailTest `refShouldBe` True

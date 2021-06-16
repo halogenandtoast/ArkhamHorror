@@ -14,15 +14,15 @@ spec = describe "Close Call (2)" $ do
     investigator <- testInvestigator "00000" id
     closeCall2 <- buildPlayerCard "01083"
     enemy <- testEnemy id
-    runGameTest
+    gameTest
         investigator
         [ addToHand investigator (PlayerCard closeCall2)
         , EnemyEvaded (toId investigator) (toId enemy)
         ]
         (enemiesL %~ insertEntity enemy)
       $ do
-          runMessagesNoLogging
-          runGameTestOptionMatching
+          runMessages
+          chooseOptionMatching
             "Play card"
             (\case
               Run{} -> True
@@ -36,14 +36,14 @@ spec = describe "Close Call (2)" $ do
     investigator <- testInvestigator "00000" id
     closeCall2 <- buildPlayerCard "01083"
     enemy <- testEnemy $ \attrs -> attrs { enemyTraits = setFromList [Elite] }
-    runGameTest
+    gameTest
         investigator
         [ addToHand investigator (PlayerCard closeCall2)
         , EnemyEvaded (toId investigator) (toId enemy)
         ]
         (enemiesL %~ insertEntity enemy)
       $ do
-          runMessagesNoLogging
+          runMessages
           queueRef <- view messageQueue
           queueRef `refShouldBe` []
 
@@ -51,13 +51,13 @@ spec = describe "Close Call (2)" $ do
     investigator <- testInvestigator "00000" id
     closeCall2 <- buildPlayerCard "01083"
     enemy <- testEnemy $ \attrs -> attrs { enemyCardCode = "01102" } -- uses a card code for a weakness
-    runGameTest
+    gameTest
         investigator
         [ addToHand investigator (PlayerCard closeCall2)
         , EnemyEvaded (toId investigator) (toId enemy)
         ]
         (enemiesL %~ insertEntity enemy)
       $ do
-          runMessagesNoLogging
+          runMessages
           queueRef <- view messageQueue
           queueRef `refShouldBe` []

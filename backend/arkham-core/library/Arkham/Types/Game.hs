@@ -148,6 +148,9 @@ class HasGame a where
 class HasStdGen a where
   genL :: Lens' a (IORef StdGen)
 
+class HasMessageLogger a where
+  messageLoggerL :: Lens' a (Message -> IO ())
+
 getGame :: (HasGame env, MonadReader env m) => m Game
 getGame = view gameL
 

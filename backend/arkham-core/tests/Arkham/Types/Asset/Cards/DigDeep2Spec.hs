@@ -13,7 +13,11 @@ spec = describe "Dig Deep (2)" $ do
     digDeep2 <- buildAsset "50009"
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorWillpower = 1, investigatorResources = 2 }
-    runGameTest
+
+    (didPassTest, logger) <- didPassSkillTestBy investigator SkillWillpower 0
+
+    gameTestWithLogger
+        logger
         investigator
         [ SetTokens [Zero]
         , playAsset investigator digDeep2
@@ -21,37 +25,37 @@ spec = describe "Dig Deep (2)" $ do
         ]
         (assetsL %~ insertEntity digDeep2)
       $ do
-          (didPassTest, logger) <- didPassSkillTestBy
-            investigator
-            SkillWillpower
-            0
-          runMessagesNoLogging
-          runGameTestOptionMatching
+          runMessages
+          chooseOptionMatching
             "use ability"
             (\case
               Run{} -> True
               _ -> False
             )
-          runGameTestOptionMatching
+          chooseOptionMatching
             "use ability"
             (\case
               Run{} -> True
               _ -> False
             )
-          runGameTestOptionMatching
+          chooseOptionMatching
             "start skill test"
             (\case
               StartSkillTest{} -> True
               _ -> False
             )
-          runGameTestOnlyOptionWithLogger "apply results" logger
+          chooseOnlyOption "apply results"
           didPassTest `refShouldBe` True
 
   it "Adds 1 to agility check for each resource spent" $ do
     digDeep2 <- buildAsset "50009"
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorAgility = 1, investigatorResources = 2 }
-    runGameTest
+
+    (didPassTest, logger) <- didPassSkillTestBy investigator SkillAgility 0
+
+    gameTestWithLogger
+        logger
         investigator
         [ SetTokens [Zero]
         , playAsset investigator digDeep2
@@ -59,28 +63,24 @@ spec = describe "Dig Deep (2)" $ do
         ]
         (assetsL %~ insertEntity digDeep2)
       $ do
-          (didPassTest, logger) <- didPassSkillTestBy
-            investigator
-            SkillAgility
-            0
-          runMessagesNoLogging
-          runGameTestOptionMatching
+          runMessages
+          chooseOptionMatching
             "use ability"
             (\case
               Run{} -> True
               _ -> False
             )
-          runGameTestOptionMatching
+          chooseOptionMatching
             "use ability"
             (\case
               Run{} -> True
               _ -> False
             )
-          runGameTestOptionMatching
+          chooseOptionMatching
             "start skill test"
             (\case
               StartSkillTest{} -> True
               _ -> False
             )
-          runGameTestOnlyOptionWithLogger "apply results" logger
+          chooseOnlyOption "apply results"
           didPassTest `refShouldBe` True

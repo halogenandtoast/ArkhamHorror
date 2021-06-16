@@ -18,7 +18,7 @@ spec = describe "Roland's .39 Special" $ do
     enemy <- testEnemy
       $ \attrs -> attrs { enemyFight = 2, enemyHealth = Static 3 }
     location <- testLocation "00000" id
-    runGameTest
+    gameTest
         investigator
         [ SetTokens [Zero]
         , placedLocation location
@@ -31,12 +31,13 @@ spec = describe "Roland's .39 Special" $ do
         . (locationsL %~ insertEntity location)
         )
       $ do
-          runMessagesNoLogging
-          [fightAction] <- getActionsOf investigator NonFast rolands38Special
-          runGameTestMessages [fightAction]
-          runGameTestOnlyOption "choose enemy"
-          runGameTestOnlyOption "start skill test"
-          runGameTestOnlyOption "apply results"
+          runMessages
+          [doFight] <- getActionsOf investigator NonFast rolands38Special
+          unshiftMessage doFight
+          runMessages
+          chooseOnlyOption "choose enemy"
+          chooseOnlyOption "start skill test"
+          chooseOnlyOption "apply results"
 
           updated enemy `shouldSatisfyM` hasDamage (2, 0)
 
@@ -49,7 +50,7 @@ spec = describe "Roland's .39 Special" $ do
         enemy <- testEnemy
           $ \attrs -> attrs { enemyFight = 4, enemyHealth = Static 3 }
         location <- testLocation "00000" $ \attrs -> attrs { locationClues = 1 }
-        runGameTest
+        gameTest
             investigator
             [ SetTokens [Zero]
             , placedLocation location
@@ -62,14 +63,12 @@ spec = describe "Roland's .39 Special" $ do
             . (locationsL %~ insertEntity location)
             )
           $ do
-              runMessagesNoLogging
-              [fightAction] <- getActionsOf
-                investigator
-                NonFast
-                rolands38Special
-              runGameTestMessages [fightAction]
-              runGameTestOnlyOption "choose enemy"
-              runGameTestOnlyOption "start skill test"
-              runGameTestOnlyOption "apply results"
+              runMessages
+              [doFight] <- getActionsOf investigator NonFast rolands38Special
+              unshiftMessage doFight
+              runMessages
+              chooseOnlyOption "choose enemy"
+              chooseOnlyOption "start skill test"
+              chooseOnlyOption "apply results"
 
               updated enemy `shouldSatisfyM` hasDamage (2, 0)

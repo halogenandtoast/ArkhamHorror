@@ -14,7 +14,7 @@ spec = describe "Agnes Baker" $ do
       let agnesBaker = lookupInvestigator "01004"
       enemy <- testEnemy $ \attrs -> attrs { enemyHealth = Static 2 }
       location <- testLocation "00000" id
-      runGameTest
+      gameTest
           agnesBaker
           [ placedLocation location
           , enemySpawn location enemy
@@ -25,21 +25,25 @@ spec = describe "Agnes Baker" $ do
           . (locationsL %~ insertEntity location)
           )
         $ do
-            runMessagesNoLogging
-            runGameTestOptionMatching
+            runMessages
+            chooseOptionMatching
               "use ability"
               (\case
                 Run{} -> True
                 _ -> False
               )
-            runGameTestOnlyOption "damage enemy"
+            chooseOnlyOption "damage enemy"
             updated enemy `shouldSatisfyM` hasDamage (1, 0)
 
   context "elder sign" $ do
     it "gives +1 for each horror on Agnes" $ do
       let agnesBaker = lookupInvestigator "01004"
       location <- testLocation "00000" id
-      runGameTest
+
+      (didPassTest, logger) <- didPassSkillTestBy agnesBaker SkillIntellect 0
+
+      gameTestWithLogger
+          logger
           agnesBaker
           [ SetTokens [ElderSign]
           , placedLocation location
@@ -49,12 +53,8 @@ spec = describe "Agnes Baker" $ do
           ]
           (locationsL %~ insertEntity location)
         $ do
-            (didPassTest, logger) <- didPassSkillTestBy
-              agnesBaker
-              SkillIntellect
-              0
-            runMessagesNoLogging
-            runGameTestOnlyOption "start skill test"
-            runGameTestOnlyOptionWithLogger "apply results" logger
+            runMessages
+            chooseOnlyOption "start skill test"
+            chooseOnlyOption "apply results"
 
             didPassTest `refShouldBe` True

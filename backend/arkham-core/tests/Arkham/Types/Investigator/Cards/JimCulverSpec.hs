@@ -17,7 +17,8 @@ spec = describe "Jim Culver" $ do
             then atomicWriteIORef didResolveSkull True
             else pure ()
           _ -> pure ()
-      runGameTest
+      gameTestWithLogger
+          logger
           jimCulver
           [ SetTokens [ElderSign]
           , BeginSkillTest
@@ -30,21 +31,24 @@ spec = describe "Jim Culver" $ do
           ]
           id
         $ do
-            runMessagesNoLogging
-            runGameTestOnlyOption "start skill test"
-            runGameTestOptionMatchingWithLogger
+            runMessages
+            chooseOnlyOption "start skill test"
+            chooseOptionMatching
               "change to skull"
-              logger
               (\case
                 Label "Resolve as Skull" _ -> True
                 _ -> False
               )
-            runGameTestOnlyOption "apply results"
+            chooseOnlyOption "apply results"
             didResolveSkull `refShouldBe` True
 
     it "is a +1" $ do
       let jimCulver = lookupInvestigator "02004"
-      runGameTest
+
+      (didPassTest, logger) <- didPassSkillTestBy jimCulver SkillIntellect 2
+
+      gameTestWithLogger
+          logger
           jimCulver
           [ SetTokens [ElderSign]
           , BeginSkillTest
@@ -57,25 +61,25 @@ spec = describe "Jim Culver" $ do
           ]
           id
         $ do
-            (didPassTest, logger) <- didPassSkillTestBy
-              jimCulver
-              SkillIntellect
-              2
-            runMessagesNoLogging
-            runGameTestOnlyOption "start skill test"
-            runGameTestOptionMatching
+            runMessages
+            chooseOnlyOption "start skill test"
+            chooseOptionMatching
               "resolve elder sign"
               (\case
                 Label "Resolve as Elder Sign" _ -> True
                 _ -> False
               )
-            runGameTestOnlyOptionWithLogger "apply results" logger
+            chooseOnlyOption "apply results"
             didPassTest `refShouldBe` True
 
   context "ability" $ do
     it "changes skull modifier to 0" $ do
       let jimCulver = lookupInvestigator "02004"
-      runGameTest
+
+      (didPassTest, logger) <- didPassSkillTestBy jimCulver SkillIntellect 1
+
+      gameTestWithLogger
+          logger
           jimCulver
           [ SetTokens [Skull]
           , BeginSkillTest
@@ -88,11 +92,7 @@ spec = describe "Jim Culver" $ do
           ]
           id
         $ do
-            (didPassTest, logger) <- didPassSkillTestBy
-              jimCulver
-              SkillIntellect
-              1
-            runMessagesNoLogging
-            runGameTestOnlyOption "start skill test"
-            runGameTestOnlyOptionWithLogger "apply results" logger
+            runMessages
+            chooseOnlyOption "start skill test"
+            chooseOnlyOption "apply results"
             didPassTest `refShouldBe` True

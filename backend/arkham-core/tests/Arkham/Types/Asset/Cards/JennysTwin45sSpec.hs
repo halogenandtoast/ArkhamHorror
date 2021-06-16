@@ -12,7 +12,7 @@ import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 spec :: Spec
 spec = describe "Jenny's Twin .45s" $ do
   let
-    payResource = runGameTestOptionMatching
+    payResource = chooseOptionMatching
       "pay 1 resource"
       (\case
         Label "Increase spent resources" _ -> True
@@ -25,12 +25,12 @@ spec = describe "Jenny's Twin .45s" $ do
       { investigatorResources = 5
       , investigatorHand = [PlayerCard jennysTwin45s]
       }
-    runGameTest
+    gameTest
         investigator
         [playDynamicCard investigator (PlayerCard jennysTwin45s)]
         id
       $ do
-          runMessagesNoLogging
+          runMessages
           payResource
           payResource
           payResource
@@ -47,7 +47,7 @@ spec = describe "Jenny's Twin .45s" $ do
       }
     enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 5))
     location <- testLocation "00000" id
-    runGameTest
+    gameTest
         investigator
         [ SetTokens [Zero]
         , playDynamicCard investigator (PlayerCard jennysTwin45s)
@@ -56,9 +56,9 @@ spec = describe "Jenny's Twin .45s" $ do
         . (locationsL %~ insertEntity location)
         )
       $ do
-          runMessagesNoLogging
+          runMessages
           payResource
-          runGameTestMessages
+          unshiftMessages
             [ enemySpawn location enemy
             , moveTo investigator location
             , UseCardAbility
@@ -68,7 +68,8 @@ spec = describe "Jenny's Twin .45s" $ do
               1
               (UsesPayment 1)
             ]
-          runGameTestOnlyOption "choose enemy"
-          runGameTestOnlyOption "start skill test"
-          runGameTestOnlyOption "apply results"
+          runMessages
+          chooseOnlyOption "choose enemy"
+          chooseOnlyOption "start skill test"
+          chooseOnlyOption "apply results"
           updated enemy `shouldSatisfyM` hasDamage (2, 0)

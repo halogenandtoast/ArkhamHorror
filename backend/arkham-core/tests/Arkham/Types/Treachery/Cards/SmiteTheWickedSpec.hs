@@ -13,7 +13,7 @@ spec = describe "Smite the Wicked" $ do
     enemy <- buildTestEnemyEncounterCard
     treachery <- buildTestTreacheryEncounterCard
     (location1, location2) <- testConnectedLocations id id
-    runGameTest
+    gameTest
         investigator
         [ placedLocation location1
         , placedLocation location2
@@ -26,8 +26,8 @@ spec = describe "Smite the Wicked" $ do
         . (locationsL %~ insertEntity location2)
         )
       $ do
-          runMessagesNoLogging
-          runGameTestOnlyOption "place enemy"
+          runMessages
+          chooseOnlyOption "place enemy"
           game <- getTestGame
           let enemy' = game ^?! enemiesL . to toList . ix 0
           location2' <- updated location2
@@ -40,7 +40,7 @@ spec = describe "Smite the Wicked" $ do
     smiteTheWicked <- buildPlayerCard "02007"
     enemy <- buildTestEnemyEncounterCard
     location <- testLocation "00000" id
-    runGameTest
+    gameTest
         investigator
         [ SetEncounterDeck [enemy]
         , loadDeck investigator [smiteTheWicked]
@@ -50,8 +50,8 @@ spec = describe "Smite the Wicked" $ do
         ]
         (locationsL %~ insertEntity location)
       $ do
-          runMessagesNoLogging
-          runGameTestOnlyOption "place enemy"
+          runMessages
+          chooseOnlyOption "place enemy"
           updated investigator `shouldSatisfyM` hasTrauma (0, 1)
 
   it "won't cause trauma if enemy is defeated" $ do
@@ -59,7 +59,7 @@ spec = describe "Smite the Wicked" $ do
     smiteTheWicked <- buildPlayerCard "02007"
     enemy <- buildTestEnemyEncounterCard
     location <- testLocation "00000" id
-    runGameTest
+    gameTest
         investigator
         [ placedLocation location
         , SetEncounterDeck [enemy]
@@ -69,12 +69,11 @@ spec = describe "Smite the Wicked" $ do
         ]
         (locationsL %~ insertEntity location)
       $ do
-          runMessagesNoLogging
-          runGameTestOnlyOption "place enemy"
+          runMessages
+          chooseOnlyOption "place enemy"
           game <- getTestGame
           let updatedEnemy = game ^?! enemiesL . to toList . ix 0
-
-          runGameTestMessages
+          unshiftMessages
             [ EnemyDefeated
               (toId updatedEnemy)
               (toId investigator)
@@ -84,6 +83,7 @@ spec = describe "Smite the Wicked" $ do
               []
             , EndOfGame
             ]
+          runMessages
 
           updated investigator `shouldSatisfyM` hasTrauma (0, 0)
           isInDiscardOf investigator smiteTheWicked `shouldReturn` True
@@ -93,7 +93,7 @@ spec = describe "Smite the Wicked" $ do
     smiteTheWicked <- buildPlayerCard "02007"
     enemy <- buildTestEnemyEncounterCard
     location <- testLocation "00000" id
-    runGameTest
+    gameTest
         investigator
         [ placedLocation location
         , SetEncounterDeck [enemy]
@@ -104,6 +104,6 @@ spec = describe "Smite the Wicked" $ do
         ]
         (locationsL %~ insertEntity location)
       $ do
-          runMessagesNoLogging
-          runGameTestOnlyOption "place enemy"
+          runMessages
+          chooseOnlyOption "place enemy"
           updated investigator `shouldSatisfyM` hasTrauma (0, 1)

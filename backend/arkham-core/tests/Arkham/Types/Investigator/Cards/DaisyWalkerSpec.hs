@@ -13,12 +13,12 @@ spec = describe "Daisy Walker" $ do
   context "ability" $ do
     it "provides an extra Tome action" $ do
       let daisyWalker = lookupInvestigator "01002"
-      runGameTest
+      gameTest
           daisyWalker
           [LoseActions (toId daisyWalker) (TestSource mempty) 3]
           id
         $ do
-            runMessagesNoLogging
+            runMessages
             getCanAffordCost
                 (toId daisyWalker)
                 (TestSource $ singleton Tome)
@@ -32,7 +32,7 @@ spec = describe "Daisy Walker" $ do
       deckCards <- testPlayerCards 2
       tome1 <- testAsset $ \attrs -> attrs { assetTraits = singleton Tome }
       tome2 <- testAsset $ \attrs -> attrs { assetTraits = singleton Tome }
-      runGameTest
+      gameTest
           daisyWalker
           [ SetTokens [ElderSign]
           , LoadDeck (toId daisyWalker) deckCards
@@ -42,10 +42,10 @@ spec = describe "Daisy Walker" $ do
           ]
           ((assetsL %~ insertEntity tome1) . (assetsL %~ insertEntity tome2))
         $ do
-            runMessagesNoLogging
-            runGameTestOnlyOption "start skill test"
-            runGameTestOnlyOption "apply results"
-            runGameTestOptionMatching
+            runMessages
+            chooseOnlyOption "start skill test"
+            chooseOnlyOption "apply results"
+            chooseOptionMatching
               "draw cards"
               (\case
                 DrawCards{} -> True

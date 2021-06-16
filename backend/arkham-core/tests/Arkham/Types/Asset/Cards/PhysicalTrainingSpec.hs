@@ -13,7 +13,11 @@ spec = describe "Physical Training" $ do
     physicalTraining <- buildAsset "01017"
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorWillpower = 1, investigatorResources = 2 }
-    runGameTest
+
+    (didPassTest, logger) <- didPassSkillTestBy investigator SkillWillpower 0
+
+    gameTestWithLogger
+        logger
         investigator
         [ SetTokens [Zero]
         , playAsset investigator physicalTraining
@@ -21,37 +25,37 @@ spec = describe "Physical Training" $ do
         ]
         (assetsL %~ insertEntity physicalTraining)
       $ do
-          (didPassTest, logger) <- didPassSkillTestBy
-            investigator
-            SkillWillpower
-            0
-          runMessagesNoLogging
-          runGameTestOptionMatching
+          runMessages
+          chooseOptionMatching
             "use ability"
             (\case
               Run{} -> True
               _ -> False
             )
-          runGameTestOptionMatching
+          chooseOptionMatching
             "use ability"
             (\case
               Run{} -> True
               _ -> False
             )
-          runGameTestOptionMatching
+          chooseOptionMatching
             "start skill test"
             (\case
               StartSkillTest{} -> True
               _ -> False
             )
-          runGameTestOnlyOptionWithLogger "apply results" logger
+          chooseOnlyOption "apply results"
           didPassTest `refShouldBe` True
 
   it "Adds 1 to combat check for each resource spent" $ do
     physicalTraining <- buildAsset "01017"
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorCombat = 1, investigatorResources = 2 }
-    runGameTest
+
+    (didPassTest, logger) <- didPassSkillTestBy investigator SkillCombat 0
+
+    gameTestWithLogger
+        logger
         investigator
         [ SetTokens [Zero]
         , playAsset investigator physicalTraining
@@ -59,25 +63,24 @@ spec = describe "Physical Training" $ do
         ]
         (assetsL %~ insertEntity physicalTraining)
       $ do
-          (didPassTest, logger) <- didPassSkillTestBy investigator SkillCombat 0
-          runMessagesNoLogging
-          runGameTestOptionMatching
+          runMessages
+          chooseOptionMatching
             "use ability"
             (\case
               Run{} -> True
               _ -> False
             )
-          runGameTestOptionMatching
+          chooseOptionMatching
             "use ability"
             (\case
               Run{} -> True
               _ -> False
             )
-          runGameTestOptionMatching
+          chooseOptionMatching
             "start skill test"
             (\case
               StartSkillTest{} -> True
               _ -> False
             )
-          runGameTestOnlyOptionWithLogger "apply results" logger
+          chooseOnlyOption "apply results"
           didPassTest `refShouldBe` True

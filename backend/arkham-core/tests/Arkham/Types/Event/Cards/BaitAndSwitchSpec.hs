@@ -16,7 +16,7 @@ spec = describe "Bait and Switch" $ do
     enemy <- testEnemy (EnemyAttrs.evadeL .~ 3)
     baitAndSwitch <- buildEvent "02034" investigator
     (location1, location2) <- testConnectedLocations id id
-    runGameTest
+    gameTest
         investigator
         [ placedLocation location1
         , placedLocation location2
@@ -31,11 +31,11 @@ spec = describe "Bait and Switch" $ do
         . (locationsL %~ insertEntity location2)
         )
       $ do
-          runMessagesNoLogging
-          runGameTestOnlyOption "Evade enemy"
-          runGameTestOnlyOption "Run skill check"
-          runGameTestOnlyOption "Apply results"
-          runGameTestOnlyOption "Move enemy"
+          runMessages
+          chooseOnlyOption "Evade enemy"
+          chooseOnlyOption "Run skill check"
+          chooseOnlyOption "Apply results"
+          chooseOnlyOption "Move enemy"
 
           isInDiscardOf investigator baitAndSwitch `shouldReturn` True
           evadedBy investigator enemy `shouldReturn` True

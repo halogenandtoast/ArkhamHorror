@@ -12,8 +12,8 @@ spec = do
   describe "Zoey Samaras" $ do
     it "elder sign token gives +1" $ do
       let zoeySamaras = lookupInvestigator "02001"
-      runGameTest zoeySamaras [] id $ do
-        runMessagesNoLogging
+      gameTest zoeySamaras [] id $ do
+        runMessages
         token <- getTokenValue zoeySamaras (toId zoeySamaras) ElderSign
         tokenValue token `shouldBe` Just 1
 
@@ -21,7 +21,7 @@ spec = do
       let zoeySamaras = lookupInvestigator "02001" -- combat is 4
       enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 5))
       location <- testLocation "00000" id
-      runGameTest
+      gameTest
           zoeySamaras
           [ SetTokens [ElderSign]
           , enemySpawn location enemy
@@ -32,15 +32,15 @@ spec = do
           . (locationsL %~ insertEntity location)
           )
         $ do
-            runMessagesNoLogging
-            runGameTestOptionMatching
+            runMessages
+            chooseOptionMatching
               "skip ability"
               (\case
                 Continue{} -> True
                 _ -> False
               )
-            runGameTestOnlyOption "start skill test"
-            runGameTestOnlyOption "apply results"
+            chooseOnlyOption "start skill test"
+            chooseOnlyOption "apply results"
             updated enemy `shouldSatisfyM` hasDamage (2, 0)
 
     it "allows you to gain a resource each time you are engaged by an enemy"
@@ -49,7 +49,7 @@ spec = do
           location <- testLocation "00000" id
           enemy1 <- testEnemy id
           enemy2 <- testEnemy id
-          runGameTest
+          gameTest
               zoeySamaras
               [ enemySpawn location enemy1
               , moveTo zoeySamaras location
@@ -60,14 +60,14 @@ spec = do
               . (enemiesL %~ insertEntity enemy2)
               )
             $ do
-                runMessagesNoLogging
-                runGameTestOptionMatching
+                runMessages
+                chooseOptionMatching
                   "use ability"
                   (\case
                     Run{} -> True
                     _ -> False
                   )
-                runGameTestOptionMatching
+                chooseOptionMatching
                   "use ability again"
                   (\case
                     Run{} -> True

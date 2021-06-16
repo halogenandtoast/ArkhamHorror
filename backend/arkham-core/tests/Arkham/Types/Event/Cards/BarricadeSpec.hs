@@ -14,14 +14,14 @@ spec = do
       location <- testLocation "00000" id
       investigator <- testInvestigator "00000" id
       barricade <- buildEvent "01038" investigator
-      runGameTest
+      gameTest
           investigator
           [moveTo investigator location, playEvent investigator barricade]
           ((eventsL %~ insertEntity barricade)
           . (locationsL %~ insertEntity location)
           )
         $ do
-            runMessagesNoLogging
+            runMessages
             (map modifierType
               <$> getModifiersFor (TestSource mempty) (toTarget location) ()
               )
@@ -33,7 +33,7 @@ spec = do
       investigator <- testInvestigator "00000" id
       investigator2 <- testInvestigator "00001" id
       barricade <- buildEvent "01038" investigator
-      runGameTest
+      gameTest
           investigator
           [ moveAllTo location
           , playEvent investigator barricade
@@ -44,7 +44,7 @@ spec = do
           . (investigatorsL %~ insertEntity investigator2)
           )
         $ do
-            runMessagesNoLogging
+            runMessages
             getModifiersFor (TestSource mempty) (toTarget location) ()
               `shouldReturn` []
             isAttachedTo location barricade `shouldReturn` False

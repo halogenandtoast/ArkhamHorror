@@ -13,7 +13,14 @@ spec = describe "Grotesque Statue (4)" $ do
     it "reveals 2 tokens and let's you choose one" $ do
       investigator <- testInvestigator "00000" id
       grotestqueStatue <- buildAsset "01071"
-      runGameTest
+
+      (didRunMessage, logger) <- didPassSkillTestBy
+        investigator
+        SkillIntellect
+        5
+
+      gameTestWithLogger
+          logger
           investigator
           [ SetTokens [AutoFail, Zero]
           , playAsset investigator grotestqueStatue
@@ -21,25 +28,21 @@ spec = describe "Grotesque Statue (4)" $ do
           ]
           (assetsL %~ insertEntity grotestqueStatue)
         $ do
-            (didRunMessage, logger) <- didPassSkillTestBy
-              investigator
-              SkillIntellect
-              5
-            runMessagesNoLogging
-            runGameTestOnlyOption "start skill test"
-            runGameTestOptionMatching
+            runMessages
+            chooseOnlyOption "start skill test"
+            chooseOptionMatching
               "use ability"
               (\case
                 Run{} -> True
                 _ -> False
               )
-            runGameTestOptionMatching
+            chooseOptionMatching
               "choose zero token"
               (\case
                 ChooseTokenGroups _ _ (Choose 1 _ [[Zero]]) -> True
                 _ -> False
               )
-            runGameTestOnlyOptionWithLogger "apply results" logger
+            chooseOnlyOption "apply results"
 
             didRunMessage `refShouldBe` True
             getChaosBagTokens `shouldMatchListM` [Zero, AutoFail]

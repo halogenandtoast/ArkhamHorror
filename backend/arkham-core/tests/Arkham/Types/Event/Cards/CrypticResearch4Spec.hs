@@ -13,7 +13,7 @@ spec = do
       cards <- testPlayerCards 3
       location <- testLocation "00000" id
       crypticResearch4 <- buildEvent "01043" investigator
-      runGameTest
+      gameTest
           investigator
           [ loadDeck investigator cards
           , moveTo investigator location
@@ -23,8 +23,8 @@ spec = do
           . (locationsL %~ insertEntity location)
           )
         $ do
-            runMessagesNoLogging
-            runGameTestOnlyOption "choose self"
+            runMessages
+            chooseOnlyOption "choose self"
 
             isInDiscardOf investigator crypticResearch4 `shouldReturn` True
             updated investigator `shouldSatisfyM` handIs (map PlayerCard cards)
@@ -35,7 +35,7 @@ spec = do
       cards <- testPlayerCards 3
       location <- testLocation "00000" id
       crypticResearch4 <- buildEvent "01043" investigator
-      runGameTest
+      gameTest
           investigator
           [ loadDeck investigator2 cards
           , moveAllTo location
@@ -46,8 +46,8 @@ spec = do
           . (investigatorsL %~ insertEntity investigator2)
           )
         $ do
-            runMessagesNoLogging
-            runGameTestOptionMatching
+            runMessages
+            chooseOptionMatching
               "choose other investigator"
               (\case
                 TargetLabel (InvestigatorTarget "00001") _ -> True

@@ -13,14 +13,14 @@ spec = describe "Search for the Truth" $ do
     investigator <- testInvestigator "00000" (Investigator.cluesL .~ 3)
     playerCards <- testPlayerCards 3
     searchForTheTruth <- buildEvent "02008" investigator
-    runGameTest
+    gameTest
         investigator
         [ loadDeck investigator playerCards
         , playEvent investigator searchForTheTruth
         ]
         (eventsL %~ insertEntity searchForTheTruth)
       $ do
-          runMessagesNoLogging
+          runMessages
           updated investigator
             `shouldSatisfyM` handIs (map PlayerCard playerCards)
 
@@ -28,12 +28,12 @@ spec = describe "Search for the Truth" $ do
     investigator <- testInvestigator "00000" (Investigator.cluesL .~ 6)
     playerCards <- testPlayerCards 6
     searchForTheTruth <- buildEvent "02008" investigator
-    runGameTest
+    gameTest
         investigator
         [ loadDeck investigator playerCards
         , playEvent investigator searchForTheTruth
         ]
         (eventsL %~ insertEntity searchForTheTruth)
       $ do
-          runMessagesNoLogging
+          runMessages
           updated investigator `shouldSatisfyM` handMatches ((== 5) . length)

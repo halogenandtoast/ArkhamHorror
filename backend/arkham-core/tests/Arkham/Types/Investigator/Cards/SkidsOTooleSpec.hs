@@ -10,20 +10,21 @@ spec = describe "\"Skids\" O'Toole" $ do
   context "ability" $ do
     it "allows you to spend two resources to buy an additional action" $ do
       let skidsOToole = lookupInvestigator "01003"
-      runGameTest
+      gameTest
           skidsOToole
           [ TakeResources (toId skidsOToole) 2 False
           , LoseActions (toId skidsOToole) (TestSource mempty) 3
           ]
           id
         $ do
-            runMessagesNoLogging
+            runMessages
             skidsOToole' <- updated skidsOToole
             [buyAction] <- getActionsOf
               skidsOToole'
               (DuringTurn You)
               skidsOToole'
-            runGameTestMessages [buyAction]
+            unshiftMessage buyAction
+            runMessages
             getCanAffordCost
                 (toId skidsOToole')
                 (TestSource mempty)
@@ -34,12 +35,12 @@ spec = describe "\"Skids\" O'Toole" $ do
   context "elder sign" $ do
     it "gains 2 resources on success" $ do
       let skidsOToole = lookupInvestigator "01003"
-      runGameTest
+      gameTest
           skidsOToole
           [SetTokens [ElderSign], beginSkillTest skidsOToole SkillAgility 4]
           id
         $ do
-            runMessagesNoLogging
-            runGameTestOnlyOption "start skill test"
-            runGameTestOnlyOption "apply results"
+            runMessages
+            chooseOnlyOption "start skill test"
+            chooseOnlyOption "apply results"
             updatedResourceCount skidsOToole `shouldReturn` 2

@@ -13,12 +13,12 @@ spec = describe "Arcane Initiate" $ do
   it "enters play with 1 doom" $ do
     arcaneInitiate <- buildAsset "01063"
     investigator <- testInvestigator "00000" id
-    runGameTest
+    gameTest
         investigator
         [playAsset investigator arcaneInitiate]
         (assetsL %~ insertEntity arcaneInitiate)
       $ do
-          runMessagesNoLogging
+          runMessages
           doomCount <- getCount =<< updated arcaneInitiate
           doomCount `shouldBe` DoomCount 1
 
@@ -28,37 +28,39 @@ spec = describe "Arcane Initiate" $ do
         investigator <- testInvestigator "00000" id
         card <- testPlayerCard $ set PlayerCard.traitsL (setFromList [Spell])
         otherCards <- testPlayerCards 2
-        runGameTest
+        gameTest
             investigator
             [ playAsset investigator arcaneInitiate
             , loadDeck investigator (card : otherCards)
             ]
             (assetsL %~ insertEntity arcaneInitiate)
           $ do
-              runMessagesNoLogging
+              runMessages
               [ability] <- getActionsOf
                 investigator
                 FastPlayerWindow
                 arcaneInitiate
-              runGameTestMessages [ability]
-              runGameTestOnlyOption "search top of deck"
-              runGameTestOnlyOption "take spell card"
+              unshiftMessage ability
+              runMessages
+              chooseOnlyOption "search top of deck"
+              chooseOnlyOption "take spell card"
               updated investigator `shouldSatisfyM` handIs [PlayerCard card]
 
   it "should continue if no Spell card is found" $ do
     arcaneInitiate <- buildAsset "01063"
     investigator <- testInvestigator "00000" id
     cards <- testPlayerCards 3
-    runGameTest
+    gameTest
         investigator
         [playAsset investigator arcaneInitiate, loadDeck investigator cards]
         (assetsL %~ insertEntity arcaneInitiate)
       $ do
-          runMessagesNoLogging
+          runMessages
           [ability] <- getActionsOf investigator FastPlayerWindow arcaneInitiate
-          runGameTestMessages [ability]
-          runGameTestOnlyOption "search top of deck"
-          runGameTestOptionMatching
+          unshiftMessage ability
+          runMessages
+          chooseOnlyOption "search top of deck"
+          chooseOptionMatching
             "no cards found"
             (\case
               Label{} -> True

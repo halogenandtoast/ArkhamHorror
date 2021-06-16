@@ -13,7 +13,7 @@ spec = describe "Rex Murphy" $ do
     it "discovers a clue if succeed a skill test by 2 or more" $ do
       let rexMurphy = lookupInvestigator "02002"
       location <- testLocation "00000" (Location.cluesL .~ 1)
-      runGameTest
+      gameTest
           rexMurphy
           [ SetTokens [Zero]
           , moveTo rexMurphy location
@@ -21,10 +21,10 @@ spec = describe "Rex Murphy" $ do
           ]
           (locationsL %~ insertEntity location)
         $ do
-            runMessagesNoLogging
-            runGameTestOnlyOption "start skill test"
-            runGameTestOnlyOption "apply results"
-            runGameTestOptionMatching
+            runMessages
+            chooseOnlyOption "start skill test"
+            chooseOnlyOption "apply results"
+            chooseOptionMatching
               "use ability"
               (\case
                 Run{} -> True
@@ -37,7 +37,7 @@ spec = describe "Rex Murphy" $ do
     it "can autofail to draw 3 cards" $ do
       let rexMurphy = lookupInvestigator "02002"
       cards <- testPlayerCards 3
-      runGameTest
+      gameTest
           rexMurphy
           [ SetTokens [ElderSign]
           , loadDeck rexMurphy cards
@@ -51,22 +51,26 @@ spec = describe "Rex Murphy" $ do
           ]
           id
         $ do
-            runMessagesNoLogging
-            runGameTestOnlyOption "start skill test"
-            runGameTestOptionMatching
+            runMessages
+            chooseOnlyOption "start skill test"
+            chooseOptionMatching
               "automatically fail"
               (\case
                 Label "Automatically fail to draw 3" _ -> True
                 _ -> False
               )
 
-            runGameTestOnlyOption "apply results"
+            chooseOnlyOption "apply results"
             updated rexMurphy `shouldSatisfyM` handIs (map PlayerCard cards)
 
     it "can resolve normally with +2" $ do
       let rexMurphy = lookupInvestigator "02002"
       cards <- testPlayerCards 3
-      runGameTest
+
+      (didPassTest, logger) <- didPassSkillTestBy rexMurphy SkillIntellect 0
+
+      gameTestWithLogger
+          logger
           rexMurphy
           [ SetTokens [ElderSign]
           , loadDeck rexMurphy cards
@@ -80,19 +84,15 @@ spec = describe "Rex Murphy" $ do
           ]
           id
         $ do
-            (didPassTest, logger) <- didPassSkillTestBy
-              rexMurphy
-              SkillIntellect
-              0
-            runMessagesNoLogging
-            runGameTestOnlyOption "start skill test"
-            runGameTestOptionMatching
+            runMessages
+            chooseOnlyOption "start skill test"
+            chooseOptionMatching
               "resolve normally"
               (\case
                 Label "Automatically fail to draw 3" _ -> False
                 _ -> True
               )
 
-            runGameTestOnlyOptionWithLogger "apply results" logger
+            chooseOnlyOption "apply results"
             updated rexMurphy `shouldSatisfyM` handIs []
             didPassTest `refShouldBe` True

@@ -16,7 +16,7 @@ spec = describe "Mysterious Chanting" $ do
     cultist <- testEnemy $ EnemyAttrs.traitsL .~ singleton Trait.Cultist
     mysteriousChanting <- lookupEncounterCard "01171" <$> getRandom
     (location1, location2) <- testConnectedLocations id id
-    runGameTest
+    gameTest
         investigator
         [ SetEncounterDeck [mysteriousChanting, mysteriousChanting]
         , placedLocation location1
@@ -30,6 +30,6 @@ spec = describe "Mysterious Chanting" $ do
         . (locationsL %~ insertEntity location2)
         )
       $ do
-          runMessagesNoLogging
-          runGameTestOnlyOption "choose cultist"
+          runMessages
+          chooseOnlyOption "choose cultist"
           getCount (toId cultist) `shouldReturn` DoomCount 2

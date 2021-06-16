@@ -11,7 +11,7 @@ spec = describe "Searching for Izzie" $ do
     investigator <- testInvestigator "00000" id
     searchingForIzzie <- buildPlayerCard "02011"
     (location1, location2) <- testConnectedLocations id id
-    runGameTest
+    gameTest
         investigator
         [ placedLocation location1
         , placedLocation location2
@@ -23,7 +23,7 @@ spec = describe "Searching for Izzie" $ do
         . (locationsL %~ insertEntity location2)
         )
       $ do
-          runMessagesNoLogging
+          runMessages
           location2' <- updated location2
           hasTreacheryWithMatchingCardCode
               (PlayerCard searchingForIzzie)
@@ -34,7 +34,7 @@ spec = describe "Searching for Izzie" $ do
     investigator <- testInvestigator "00000" id
     searchingForIzzie <- buildPlayerCard "02011"
     location <- testLocation "00000" id
-    runGameTest
+    gameTest
         investigator
         [ SetTokens [Zero]
         , loadDeck investigator [searchingForIzzie]
@@ -44,7 +44,7 @@ spec = describe "Searching for Izzie" $ do
         ]
         (locationsL %~ insertEntity location)
       $ do
-          runMessagesNoLogging
+          runMessages
           game <- getTestGame
           let
             updatedSearchingForIzzie = game ^?! treacheriesL . to toList . ix 0
@@ -54,9 +54,10 @@ spec = describe "Searching for Izzie" $ do
             NonFast
             updatedSearchingForIzzie
 
-          runGameTestMessages [searchingForIzzieAction]
-          runGameTestOnlyOption "start skill test"
-          runGameTestOnlyOption "apply results"
+          unshiftMessage searchingForIzzieAction
+          runMessages
+          chooseOnlyOption "start skill test"
+          chooseOnlyOption "apply results"
           location' <- updated location
           hasTreacheryWithMatchingCardCode
               (PlayerCard searchingForIzzie)
@@ -72,7 +73,7 @@ spec = describe "Searching for Izzie" $ do
     investigator <- testInvestigator "00000" id
     searchingForIzzie <- buildPlayerCard "02011"
     location <- testLocation "00000" id
-    runGameTest
+    gameTest
         investigator
         [ loadDeck investigator [searchingForIzzie]
         , moveTo investigator location
@@ -81,5 +82,5 @@ spec = describe "Searching for Izzie" $ do
         ]
         (locationsL %~ insertEntity location)
       $ do
-          runMessagesNoLogging
+          runMessages
           updated investigator `shouldSatisfyM` hasTrauma (0, 1)

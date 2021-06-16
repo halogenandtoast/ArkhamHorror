@@ -31,10 +31,18 @@ class TargetEntity a where
   isTarget :: a -> Target -> Bool
   isTarget = (==) . toTarget
 
+instance TargetEntity Target where
+  toTarget = id
+  isTarget = (==)
+
 class SourceEntity a where
   toSource :: a -> Source
   isSource :: a -> Source -> Bool
   isSource = (==) . toSource
+
+instance SourceEntity Source where
+  toSource = id
+  isSource = (==)
 
 defaultToId
   :: (EntityId a ~ EntityId (EntityAttrs a), Entity a, Entity (EntityAttrs a))

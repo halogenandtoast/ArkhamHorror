@@ -164,6 +164,7 @@ data TestApp = TestApp
   { game :: IORef Game
   , messageQueueRef :: IORef [Message]
   , gen :: IORef StdGen
+  , messageLogger :: Message -> IO ()
   }
 
 newtype TestAppT m a = TestAppT { unTestAppT :: ReaderT TestApp m a }
@@ -180,6 +181,9 @@ instance HasStdGen TestApp where
 
 instance HasQueue TestApp where
   messageQueue = lens messageQueueRef $ \m x -> m { messageQueueRef = x }
+
+instance HasMessageLogger TestApp where
+  messageLoggerL = lens messageLogger $ \m x -> m { messageLogger = x }
 
 testScenario
   :: MonadIO m => CardCode -> (ScenarioAttrs -> ScenarioAttrs) -> m Scenario
@@ -363,120 +367,86 @@ didFailSkillTestBy investigator skillType n = createMessageMatcher
 withGame :: Game -> ReaderT Game m b -> m b
 withGame = flip runReaderT
 
-runGameTestOnlyOption
+chooseOnlyOption
   :: ( MonadFail m
      , MonadIO m
      , HasQueue env
      , MonadReader env m
      , HasGameRef env
      , HasStdGen env
+     , HasMessageLogger env
      )
   => String
   -> m ()
-runGameTestOnlyOption reason =
-  runGameTestOnlyOptionWithLogger reason (pure . const ())
-
-runGameTestOnlyOptionWithLogger
-  :: ( MonadFail m
-     , MonadIO m
-     , HasQueue env
-     , MonadReader env m
-     , HasGameRef env
-     , HasStdGen env
-     )
-  => String
-  -> (Message -> m ())
-  -> m ()
-runGameTestOnlyOptionWithLogger _reason logger = do
+chooseOnlyOption _reason = do
   questionMap <- gameQuestion <$> getTestGame
   case mapToList questionMap of
     [(_, question)] -> case question of
-      ChooseOne [msg] -> unshiftMessage msg <* runMessages logger
-      ChooseOneAtATime [msg] -> unshiftMessage msg <* runMessages logger
-      ChooseN _ [msg] -> unshiftMessage msg <* runMessages logger
+      ChooseOne [msg] -> unshiftMessage msg <* runMessages
+      ChooseOneAtATime [msg] -> unshiftMessage msg <* runMessages
+      ChooseN _ [msg] -> unshiftMessage msg <* runMessages
       _ -> error "spec expectation mismatch"
     _ -> error "There must be only one choice to use this function"
 
-runMessagesNoLogging
-  :: (MonadIO m, HasGameRef env, HasQueue env, MonadReader env m, HasStdGen env)
-  => m ()
-runMessagesNoLogging = void $ runMessages (pure . const ())
-
-runGameTestFirstOption
+chooseFirstOption
   :: ( MonadFail m
      , MonadIO m
      , MonadReader env m
      , HasGameRef env
      , HasQueue env
      , HasStdGen env
+     , HasMessageLogger env
      )
   => String
   -> m ()
-runGameTestFirstOption _reason = do
+chooseFirstOption _reason = do
   questionMap <- gameQuestion <$> getTestGame
   case mapToList questionMap of
     [(_, question)] -> case question of
-      ChooseOne (msg : _) -> unshiftMessage msg >> runMessagesNoLogging
-      ChooseOneAtATime (msg : _) -> unshiftMessage msg >> runMessagesNoLogging
+      ChooseOne (msg : _) -> unshiftMessage msg >> runMessages
+      ChooseOneAtATime (msg : _) -> unshiftMessage msg >> runMessages
       _ -> error "spec expectation mismatch"
     _ -> error "There must be at least one option"
 
-runGameTestMessages
+chooseOptionMatching
   :: ( MonadFail m
      , MonadIO m
      , MonadReader env m
      , HasGameRef env
      , HasQueue env
      , HasStdGen env
-     )
-  => [Message]
-  -> m ()
-runGameTestMessages msgs = unshiftMessages msgs >> runMessagesNoLogging
-
-runGameTestOptionMatching
-  :: ( MonadFail m
-     , MonadIO m
-     , MonadReader env m
-     , HasGameRef env
-     , HasQueue env
-     , HasStdGen env
+     , HasMessageLogger env
      )
   => String
   -> (Message -> Bool)
   -> m ()
-runGameTestOptionMatching reason f =
-  runGameTestOptionMatchingWithLogger reason (pure . const ()) f
-
-runGameTestOptionMatchingWithLogger
-  :: ( MonadFail m
-     , MonadIO m
-     , MonadReader env m
-     , HasGameRef env
-     , HasQueue env
-     , HasStdGen env
-     )
-  => String
-  -> (Message -> m ())
-  -> (Message -> Bool)
-  -> m ()
-runGameTestOptionMatchingWithLogger _reason logger f = do
+chooseOptionMatching _reason f = do
   questionMap <- gameQuestion <$> getTestGame
   case mapToList questionMap of
     [(_, question)] -> case question of
       ChooseOne msgs -> case find f msgs of
-        Just msg -> unshiftMessage msg <* runMessages logger
+        Just msg -> unshiftMessage msg <* runMessages
         Nothing -> error "could not find a matching message"
       _ -> error "unsupported questions type"
     _ -> error "There must be only one question to use this function"
 
-runGameTest
+gameTest
   :: Investigator -> [Message] -> (Game -> Game) -> TestAppT IO () -> IO ()
-runGameTest investigator queue f body = do
+gameTest = gameTestWithLogger (pure . const ())
+
+gameTestWithLogger
+  :: (Message -> IO ())
+  -> Investigator
+  -> [Message]
+  -> (Game -> Game)
+  -> TestAppT IO ()
+  -> IO ()
+gameTestWithLogger logger investigator queue f body = do
   g <- newGame investigator
   gameRef <- newIORef (f g)
   queueRef <- newIORef queue
   genRef <- newIORef $ mkStdGen (gameSeed g)
-  runTestApp (TestApp gameRef queueRef genRef) body
+  runTestApp (TestApp gameRef queueRef genRef logger) body
 
 newGame :: MonadIO m => Investigator -> m Game
 newGame investigator = do

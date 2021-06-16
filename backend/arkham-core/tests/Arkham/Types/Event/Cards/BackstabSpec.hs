@@ -18,7 +18,7 @@ spec = do
       backstab <- buildEvent "01051" investigator
       enemy <- testEnemy
         ((EnemyAttrs.fightL .~ 3) . (EnemyAttrs.healthL .~ Static 4))
-      runGameTest
+      gameTest
           investigator
           [ SetTokens [MinusOne]
           , enemySpawn location enemy
@@ -30,10 +30,10 @@ spec = do
           . (enemiesL %~ insertEntity enemy)
           )
         $ do
-            runMessagesNoLogging
-            runGameTestOnlyOption "Fight enemy"
-            runGameTestOnlyOption "Run skill check"
-            runGameTestOnlyOption "Apply results"
+            runMessages
+            chooseOnlyOption "Fight enemy"
+            chooseOnlyOption "Run skill check"
+            chooseOnlyOption "Apply results"
 
             updated enemy `shouldSatisfyM` hasDamage (3, 0)
             isInDiscardOf investigator backstab `shouldReturn` True

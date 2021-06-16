@@ -12,12 +12,12 @@ spec = describe "\"Ashcan\" Pete" $ do
     duke <- buildPlayerCard "02014"
     placeholders <- replicateM 5 (buildPlayerCard "01088") -- need to fill deck for setup
 
-    runGameTest
+    gameTest
         ashcanPete
         [loadDeck ashcanPete (duke : placeholders), SetupInvestigators]
         id
       $ do
-          runMessagesNoLogging
+          runMessages
           ashcanPete' <- updated ashcanPete
           hasCardInPlay (PlayerCard duke) ashcanPete' `shouldReturn` True
 
@@ -26,7 +26,7 @@ spec = describe "\"Ashcan\" Pete" $ do
       let ashcanPete = lookupInvestigator "02005"
       asset <- testAsset id
       card <- testPlayerCard id
-      runGameTest
+      gameTest
           ashcanPete
           [ loadDeck ashcanPete [card]
           , drawCards ashcanPete 1
@@ -36,22 +36,26 @@ spec = describe "\"Ashcan\" Pete" $ do
           ]
           (assetsL %~ insertEntity asset)
         $ do
-            runMessagesNoLogging
-            runGameTestOptionMatching
+            runMessages
+            chooseOptionMatching
               "activate ability"
               (\case
                 Run{} -> True
                 _ -> False
               )
-            runGameTestOnlyOption "discard card"
-            runGameTestOnlyOption "ready asset"
+            chooseOnlyOption "discard card"
+            chooseOnlyOption "ready asset"
             updated asset `shouldSatisfyM` isReady
 
   context "Elder Sign" $ do
     it "gives +2 and readies duke" $ do
       let ashcanPete = lookupInvestigator "02005"
       duke <- buildAsset "02014"
-      runGameTest
+
+      (didPassTest, logger) <- didPassSkillTestBy ashcanPete SkillIntellect 2
+
+      gameTestWithLogger
+          logger
           ashcanPete
           [ SetTokens [ElderSign]
           , Exhaust (toTarget duke)
@@ -59,12 +63,8 @@ spec = describe "\"Ashcan\" Pete" $ do
           ]
           (assetsL %~ insertEntity duke)
         $ do
-            (didPassTest, logger) <- didPassSkillTestBy
-              ashcanPete
-              SkillIntellect
-              2
-            runMessagesNoLogging
-            runGameTestOnlyOption "start skill test"
-            runGameTestOnlyOptionWithLogger "apply results" logger
+            runMessages
+            chooseOnlyOption "start skill test"
+            chooseOnlyOption "apply results"
             updated duke `shouldSatisfyM` isReady
             didPassTest `refShouldBe` True

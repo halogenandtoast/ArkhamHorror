@@ -18,7 +18,7 @@ spec = describe "Duke" $ do
       investigator <- testInvestigator "00000"
         $ \attrs -> attrs { investigatorCombat = 1 }
       location <- testLocation "00000" id
-      runGameTest
+      gameTest
           investigator
           [ SetTokens [Zero]
           , playAsset investigator duke
@@ -30,13 +30,14 @@ spec = describe "Duke" $ do
           . (assetsL %~ insertEntity duke)
           )
         $ do
-            runMessagesNoLogging
+            runMessages
             duke' <- updated duke
-            [fightAction, _] <- getActionsOf investigator NonFast duke'
-            runGameTestMessages [fightAction]
-            runGameTestOnlyOption "Fight enemy"
-            runGameTestOnlyOption "Start skill test"
-            runGameTestOnlyOption "Apply Results"
+            [doFight, _] <- getActionsOf investigator NonFast duke'
+            unshiftMessage doFight
+            runMessages
+            chooseOnlyOption "Fight enemy"
+            chooseOnlyOption "Start skill test"
+            chooseOnlyOption "Apply Results"
             updated enemy `shouldSatisfyM` hasDamage (2, 0)
   context "investigate action" $ do
     it "uses a base intellect skill of 4" $ do
@@ -46,7 +47,7 @@ spec = describe "Duke" $ do
       location <- testLocation
         "00000"
         (\attrs -> attrs { locationShroud = 4, locationClues = 1 })
-      runGameTest
+      gameTest
           investigator
           [ SetTokens [Zero]
           , moveTo investigator location
@@ -56,13 +57,13 @@ spec = describe "Duke" $ do
           . (assetsL %~ insertEntity duke)
           )
         $ do
-            runMessagesNoLogging
+            runMessages
             duke' <- updated duke
             [investigateAction] <- getActionsOf investigator NonFast duke'
-            runGameTestMessages
-              [moveTo investigator location, investigateAction]
-            runGameTestOnlyOption "Start skill test"
-            runGameTestOnlyOption "Apply results"
+            unshiftMessages [moveTo investigator location, investigateAction]
+            runMessages
+            chooseOnlyOption "Start skill test"
+            chooseOnlyOption "Apply results"
             updated investigator `shouldSatisfyM` hasClueCount 1
     it "you may move to a connecting location immediately before investigating"
       $ do
@@ -71,7 +72,7 @@ spec = describe "Duke" $ do
             $ \attrs -> attrs { investigatorIntellect = 1 }
           (location1, location2) <- testConnectedLocations id
             $ \attrs -> attrs { locationShroud = 4, locationClues = 1 }
-          runGameTest
+          gameTest
               investigator
               [ placedLocation location1
               , placedLocation location2
@@ -84,17 +85,17 @@ spec = describe "Duke" $ do
               . (assetsL %~ insertEntity duke)
               )
             $ do
-                runMessagesNoLogging
+                runMessages
                 duke' <- updated duke
                 [investigateAction] <- getActionsOf investigator NonFast duke'
-                runGameTestMessages
-                  [moveTo investigator location1, investigateAction]
-                runGameTestOptionMatching
+                unshiftMessages [moveTo investigator location1, investigateAction]
+                runMessages
+                chooseOptionMatching
                   "move first"
                   (\case
                     Run{} -> True
                     _ -> False
                   )
-                runGameTestOnlyOption "Start skill test"
-                runGameTestOnlyOption "Apply results"
+                chooseOnlyOption "Start skill test"
+                chooseOnlyOption "Apply results"
                 updated investigator `shouldSatisfyM` hasClueCount 1

@@ -16,7 +16,12 @@ spec = do
       enemy <- testEnemy id
       location <- testLocation "00000" id
       dodge <- buildPlayerCard "01023"
-      runGameTest
+
+      (didRunMessage, logger) <- createMessageMatcher
+        (PerformEnemyAttack "00000" (toId enemy))
+
+      gameTestWithLogger
+          logger
           investigator
           [ addToHand investigator (PlayerCard dodge)
           , enemyAttack investigator enemy
@@ -25,12 +30,9 @@ spec = do
           . (locationsL %~ insertEntity location)
           )
         $ do
-            (didRunMessage, logger) <- createMessageMatcher
-              (PerformEnemyAttack "00000" (toId enemy))
-            runMessagesNoLogging
-            runGameTestOptionMatchingWithLogger
+            runMessages
+            chooseOptionMatching
               "Play Dodge"
-              logger
               (\case
                 Run{} -> True
                 _ -> False

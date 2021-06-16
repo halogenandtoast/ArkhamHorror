@@ -14,12 +14,12 @@ spec = describe "Bandolier" $ do
   it "adds a weapon hand slot" $ do
     investigator <- testInvestigator "00000" id
     bandolier <- buildAsset "02147"
-    runGameTest
+    gameTest
         investigator
         [playAsset investigator bandolier]
         (assetsL %~ insertEntity bandolier)
       $ do
-          runMessagesNoLogging
+          runMessages
           investigator' <- updated investigator
           let
             slots =

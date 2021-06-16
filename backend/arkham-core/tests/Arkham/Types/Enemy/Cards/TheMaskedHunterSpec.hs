@@ -13,12 +13,12 @@ spec = describe "The Masked Hunter" $ do
     it "prevents engaged investigators from discovering or spending clues" $ do
       theMaskedHunter <- buildEnemy "01121b"
       investigator <- testInvestigator "00000" id
-      runGameTest
+      gameTest
           investigator
           [engageEnemy investigator theMaskedHunter]
           (enemiesL %~ insertEntity theMaskedHunter)
         $ do
-            runMessagesNoLogging
+            runMessages
             (map modifierType
               <$> getModifiersFor (TestSource mempty) (toTarget investigator) ()
               )
@@ -29,13 +29,13 @@ spec = describe "The Masked Hunter" $ do
       $ do
           theMaskedHunter <- buildEnemy "01121b"
           investigator <- testInvestigator "00000" id
-          runGameTest
+          gameTest
               investigator
               [ engageEnemy investigator theMaskedHunter
               , disengageEnemy investigator theMaskedHunter
               ]
               (enemiesL %~ insertEntity theMaskedHunter)
             $ do
-                runMessagesNoLogging
+                runMessages
                 getModifiersFor (TestSource mempty) (toTarget investigator) ()
                   `shouldReturn` []

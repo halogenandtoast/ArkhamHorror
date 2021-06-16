@@ -18,7 +18,7 @@ spec = describe "Aquinnah (1)" $ do
       )
     enemy2 <- testEnemy (Enemy.healthL .~ Static 3)
     location <- testLocation "00000" id
-    runGameTest
+    gameTest
         investigator
         [ playAsset investigator aquinnah
         , enemySpawn location enemy1
@@ -32,15 +32,15 @@ spec = describe "Aquinnah (1)" $ do
         . (assetsL %~ insertEntity aquinnah)
         )
       $ do
-          runMessagesNoLogging
-          runGameTestOptionMatching
+          runMessages
+          chooseOptionMatching
             "use ability"
             (\case
               Run{} -> True
               _ -> False
             )
-          runGameTestOnlyOption "damage enemy2"
-          runGameTestOptionMatching
+          chooseOnlyOption "damage enemy2"
+          chooseOptionMatching
             "assign sanity damage to investigator"
             (\case
               Run (InvestigatorDamage{} : _) -> True

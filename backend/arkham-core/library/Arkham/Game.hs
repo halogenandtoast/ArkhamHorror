@@ -115,7 +115,13 @@ newGame scenarioOrCampaignId playerCount investigatorsList difficulty = do
   mode = fromJustNote "Need campaign or scenario" $ align campaign scenario
 
 addInvestigator
-  :: (MonadIO m, HasStdGen env, MonadReader env m, HasQueue env, HasGameRef env)
+  :: ( MonadIO m
+     , HasStdGen env
+     , MonadReader env m
+     , HasQueue env
+     , HasGameRef env
+     , HasMessageLogger env
+     )
   => Int
   -> Investigator
   -> [PlayerCard]
@@ -137,7 +143,7 @@ addInvestigator uid i d = do
       then IsPending
       else IsActive
   atomicWriteIORef gameRef (g' & gameStateL .~ gameState)
-  void $ runMessages (const $ pure ())
+  void runMessages
 
 startGame :: MonadIO m => Game -> m Game
 startGame g =
@@ -155,10 +161,16 @@ toExternalGame g@Game {..} mq = do
   pure $ g { gameHash = hash', gameQuestion = mq, gameSeed = newGameSeed }
 
 runMessages
-  :: (MonadIO m, HasGameRef env, HasStdGen env, HasQueue env, MonadReader env m)
-  => (Message -> m ())
-  -> m ()
-runMessages logger = do
+  :: ( MonadIO m
+     , HasGameRef env
+     , HasStdGen env
+     , HasQueue env
+     , MonadReader env m
+     , HasMessageLogger env
+     )
+  => m ()
+runMessages = do
+  logger <- view messageLoggerL
   gameRef <- view gameRefL
   queueRef <- view messageQueue
   g <- liftIO $ readIORef gameRef
@@ -197,12 +209,13 @@ runMessages logger = do
                 case playingInvestigators of
                   [] -> do
                     pushMessage EndInvestigation
-                    runMessages logger
+                    runMessages
                   (x : _) -> do
                     atomicWriteIORef gameRef (g & activeInvestigatorIdL .~ x)
-                    runMessages logger
-              else pushMessages [PlayerWindow (g ^. activeInvestigatorIdL) []]
-                >> runMessages logger
+                    runMessages
+              else
+                pushMessages [PlayerWindow (g ^. activeInvestigatorIdL) []]
+                  >> runMessages
         Just msg -> do
           case msg of
             Ask iid q -> do
@@ -226,5 +239,5 @@ runMessages logger = do
                   )
                 )
               atomicWriteIORef gameRef g'
-              logger msg
-              runMessages logger
+              liftIO $ logger msg
+              runMessages

@@ -16,7 +16,7 @@ spec = do
       location <- testLocation "00000" id
       enemy <- testEnemy id
       cunningDistraction <- buildEvent "01078" investigator
-      runGameTest
+      gameTest
           investigator
           [ enemySpawn location enemy
           , moveTo investigator location
@@ -27,7 +27,7 @@ spec = do
           . (enemiesL %~ insertEntity enemy)
           )
         $ do
-            runMessagesNoLogging
+            runMessages
             isInDiscardOf investigator cunningDistraction `shouldReturn` True
             evadedBy investigator enemy `shouldReturn` True
 
@@ -37,7 +37,7 @@ spec = do
       location <- testLocation "00000" id
       enemy <- testEnemy id
       cunningDistraction <- buildEvent "01078" investigator
-      runGameTest
+      gameTest
           investigator
           [ enemySpawn location enemy
           , moveTo investigator2 location -- move investigator 2 first to engage
@@ -49,7 +49,7 @@ spec = do
           . (enemiesL %~ insertEntity enemy)
           )
         $ do
-            runMessagesNoLogging
+            runMessages
             isInDiscardOf investigator cunningDistraction `shouldReturn` True
             evadedBy investigator2 enemy `shouldReturn` True
 
@@ -58,7 +58,7 @@ spec = do
       location <- testLocation "00000" id
       enemy <- testEnemy (EnemyAttrs.keywordsL .~ setFromList [Aloof])
       cunningDistraction <- buildEvent "01078" investigator
-      runGameTest
+      gameTest
           investigator
           [ enemySpawn location enemy
           , moveTo investigator location
@@ -69,6 +69,6 @@ spec = do
           . (enemiesL %~ insertEntity enemy)
           )
         $ do
-            runMessagesNoLogging
+            runMessages
             isInDiscardOf investigator cunningDistraction `shouldReturn` True
             evadedBy investigator enemy `shouldReturn` True

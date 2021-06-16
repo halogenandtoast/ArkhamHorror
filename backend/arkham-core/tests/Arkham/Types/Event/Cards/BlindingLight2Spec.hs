@@ -18,7 +18,7 @@ spec = do
         (set EnemyAttrs.evadeL 4 . set EnemyAttrs.healthL (Static 3))
       blindingLight2 <- buildEvent "01069" investigator
       location <- testLocation "00000" id
-      runGameTest
+      gameTest
           investigator
           [ SetTokens [MinusOne]
           , enemySpawn location enemy
@@ -30,10 +30,10 @@ spec = do
           . (locationsL %~ insertEntity location)
           )
         $ do
-            runMessagesNoLogging
-            runGameTestOnlyOption "Evade enemy"
-            runGameTestOnlyOption "Run skill check"
-            runGameTestOnlyOption "Apply results"
+            runMessages
+            chooseOnlyOption "Evade enemy"
+            chooseOnlyOption "Run skill check"
+            chooseOnlyOption "Apply results"
             isInDiscardOf investigator blindingLight2 `shouldReturn` True
             evadedBy investigator enemy `shouldReturn` True
 
@@ -43,7 +43,7 @@ spec = do
         (set EnemyAttrs.evadeL 4 . set EnemyAttrs.healthL (Static 3))
       blindingLight2 <- buildEvent "01069" investigator
       location <- testLocation "00000" id
-      runGameTest
+      gameTest
           investigator
           [ SetTokens [MinusOne]
           , enemySpawn location enemy
@@ -55,10 +55,10 @@ spec = do
           . (locationsL %~ insertEntity location)
           )
         $ do
-            runMessagesNoLogging
-            runGameTestOnlyOption "Evade enemy"
-            runGameTestOnlyOption "Run skill check"
-            runGameTestOnlyOption "Apply results"
+            runMessages
+            chooseOnlyOption "Evade enemy"
+            chooseOnlyOption "Run skill check"
+            chooseOnlyOption "Apply results"
             isInDiscardOf investigator blindingLight2 `shouldReturn` True
             updated enemy `shouldSatisfyM` hasDamage (2, 0)
 
@@ -71,7 +71,7 @@ spec = do
             ((EnemyAttrs.evadeL .~ 4) . (EnemyAttrs.healthL .~ Static 3))
           blindingLight2 <- buildEvent "01069" investigator
           location <- testLocation "00000" id
-          runGameTest
+          gameTest
               investigator
               [ SetTokens [token]
               , enemySpawn location enemy
@@ -83,11 +83,11 @@ spec = do
               . (locationsL %~ insertEntity location)
               )
             $ do
-                runMessagesNoLogging
-                runGameTestOnlyOption "Evade enemy"
-                runGameTestOnlyOption "Run skill check"
-                runGameTestOnlyOption "Apply results"
-                runGameTestOnlyOption "take event damage"
+                runMessages
+                chooseOnlyOption "Evade enemy"
+                chooseOnlyOption "Run skill check"
+                chooseOnlyOption "Apply results"
+                chooseOnlyOption "take event damage"
                 isInDiscardOf investigator blindingLight2 `shouldReturn` True
                 getRemainingActions investigator `shouldReturn` 2
                 updated investigator `shouldSatisfyM` hasDamage (0, 1)

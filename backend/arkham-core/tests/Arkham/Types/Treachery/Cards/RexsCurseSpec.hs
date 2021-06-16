@@ -10,12 +10,12 @@ spec = describe "Rex's Curse" $ do
   it "is put into play into your threat area" $ do
     investigator <- testInvestigator "00000" id
     rexsCurse <- buildPlayerCard "02009"
-    runGameTest
+    gameTest
         investigator
         [loadDeck investigator [rexsCurse], drawCards investigator 1]
         id
       $ do
-          runMessagesNoLogging
+          runMessages
           investigator' <- updated investigator
           hasTreacheryWithMatchingCardCode (PlayerCard rexsCurse) investigator'
             `shouldReturn` True
@@ -24,7 +24,10 @@ spec = describe "Rex's Curse" $ do
     investigator <- testInvestigator "00000" id
     rexsCurse <- buildPlayerCard "02009"
 
-    runGameTest
+    (didRunMessage, logger) <- didPassSkillTestBy investigator SkillIntellect 2
+
+    gameTestWithLogger
+        logger
         investigator
         [ SetTokens [PlusOne]
         , loadDeck investigator [rexsCurse]
@@ -39,13 +42,9 @@ spec = describe "Rex's Curse" $ do
         ]
         id
       $ do
-          (didRunMessage, logger) <- didPassSkillTestBy
-            investigator
-            SkillIntellect
-            2
-          runMessagesNoLogging
-          runGameTestOnlyOption "start skill test"
-          runGameTestOnlyOptionWithLogger "apply results" logger
+          runMessages
+          chooseOnlyOption "start skill test"
+          chooseOnlyOption "apply results"
           investigator' <- updated investigator
           hasTreacheryWithMatchingCardCode (PlayerCard rexsCurse) investigator'
             `shouldReturn` True
@@ -54,7 +53,7 @@ spec = describe "Rex's Curse" $ do
   it "is shuffled back into your deck if you fail the test" $ do
     investigator <- testInvestigator "00000" id
     rexsCurse <- buildPlayerCard "02009"
-    runGameTest
+    gameTest
         investigator
         [ SetTokens [MinusOne]
         , loadDeck investigator [rexsCurse]
@@ -63,9 +62,9 @@ spec = describe "Rex's Curse" $ do
         ]
         id
       $ do
-          runMessagesNoLogging
-          runGameTestOnlyOption "start skill test"
-          runGameTestOnlyOption "apply results"
+          runMessages
+          chooseOnlyOption "start skill test"
+          chooseOnlyOption "apply results"
           investigator' <- updated investigator
           hasTreacheryWithMatchingCardCode (PlayerCard rexsCurse) investigator'
             `shouldReturn` False

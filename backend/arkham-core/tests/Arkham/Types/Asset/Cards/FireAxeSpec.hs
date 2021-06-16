@@ -17,7 +17,7 @@ spec = describe "Fire Axe" $ do
     enemy <- testEnemy
       $ \attrs -> attrs { enemyHealth = Static 3, enemyFight = 3 }
     location <- testLocation "00000" id
-    runGameTest
+    gameTest
         investigator
         [ SetTokens [Zero]
         , playAsset investigator fireAxe
@@ -29,12 +29,13 @@ spec = describe "Fire Axe" $ do
         . (locationsL %~ insertEntity location)
         )
       $ do
-          runMessagesNoLogging
-          [fightAction] <- getActionsOf investigator NonFast fireAxe
-          runGameTestMessages [fightAction]
-          runGameTestOnlyOption "Fight enemy"
-          runGameTestOnlyOption "Start skill test"
-          runGameTestOnlyOption "Apply Results"
+          runMessages
+          [doFight] <- getActionsOf investigator NonFast fireAxe
+          unshiftMessage doFight
+          runMessages
+          chooseOnlyOption "Fight enemy"
+          chooseOnlyOption "Start skill test"
+          chooseOnlyOption "Apply Results"
           updated enemy `shouldSatisfyM` hasDamage (2, 0)
 
   it "allows you to spend 1 resource to get +2 combat" $ do
@@ -44,7 +45,7 @@ spec = describe "Fire Axe" $ do
     enemy <- testEnemy
       $ \attrs -> attrs { enemyHealth = Static 3, enemyFight = 3 }
     location <- testLocation "00000" id
-    runGameTest
+    gameTest
         investigator
         [ SetTokens [Zero]
         , playAsset investigator fireAxe
@@ -56,23 +57,24 @@ spec = describe "Fire Axe" $ do
         . (locationsL %~ insertEntity location)
         )
       $ do
-          runMessagesNoLogging
-          [fightAction] <- getActionsOf investigator NonFast fireAxe
-          runGameTestMessages [fightAction]
-          runGameTestOnlyOption "Fight enemy"
-          runGameTestOptionMatching
+          runMessages
+          [doFight] <- getActionsOf investigator NonFast fireAxe
+          unshiftMessage doFight
+          runMessages
+          chooseOnlyOption "Fight enemy"
+          chooseOptionMatching
             "spend resource"
             (\case
               Run{} -> True
               _ -> False
             )
-          runGameTestOptionMatching
+          chooseOptionMatching
             "Start Skill Test"
             (\case
               StartSkillTest{} -> True
               _ -> False
             )
-          runGameTestOnlyOption "Apply Results"
+          chooseOnlyOption "Apply Results"
           updated enemy `shouldSatisfyM` hasDamage (1, 0)
 
   it "if you spend your resources before tokens, you stil get +1 damage" $ do
@@ -82,7 +84,7 @@ spec = describe "Fire Axe" $ do
     enemy <- testEnemy
       $ \attrs -> attrs { enemyHealth = Static 3, enemyFight = 3 }
     location <- testLocation "00000" id
-    runGameTest
+    gameTest
         investigator
         [ SetTokens [Zero]
         , playAsset investigator fireAxe
@@ -94,23 +96,24 @@ spec = describe "Fire Axe" $ do
         . (locationsL %~ insertEntity location)
         )
       $ do
-          runMessagesNoLogging
-          [fightAction] <- getActionsOf investigator NonFast fireAxe
-          runGameTestMessages [fightAction]
-          runGameTestOnlyOption "Fight enemy"
-          runGameTestOptionMatching
+          runMessages
+          [doFight] <- getActionsOf investigator NonFast fireAxe
+          unshiftMessage doFight
+          runMessages
+          chooseOnlyOption "Fight enemy"
+          chooseOptionMatching
             "spend resource"
             (\case
               Run{} -> True
               _ -> False
             )
-          runGameTestOptionMatching
+          chooseOptionMatching
             "Start Skill Test"
             (\case
               StartSkillTest{} -> True
               _ -> False
             )
-          runGameTestOnlyOption "Apply Results"
+          chooseOnlyOption "Apply Results"
           updated enemy `shouldSatisfyM` hasDamage (2, 0)
 
   it "limit of 3 resources can be spent" $ do
@@ -120,7 +123,7 @@ spec = describe "Fire Axe" $ do
     enemy <- testEnemy
       $ \attrs -> attrs { enemyHealth = Static 3, enemyFight = 3 }
     location <- testLocation "00000" id
-    runGameTest
+    gameTest
         investigator
         [ SetTokens [Zero]
         , playAsset investigator fireAxe
@@ -132,28 +135,29 @@ spec = describe "Fire Axe" $ do
         . (locationsL %~ insertEntity location)
         )
       $ do
-          runMessagesNoLogging
-          [fightAction] <- getActionsOf investigator NonFast fireAxe
-          runGameTestMessages [fightAction]
-          runGameTestOnlyOption "Fight enemy"
-          runGameTestOptionMatching
+          runMessages
+          [doFight] <- getActionsOf investigator NonFast fireAxe
+          unshiftMessage doFight
+          runMessages
+          chooseOnlyOption "Fight enemy"
+          chooseOptionMatching
             "spend resource"
             (\case
               Run{} -> True
               _ -> False
             )
-          runGameTestOptionMatching
+          chooseOptionMatching
             "spend resource"
             (\case
               Run{} -> True
               _ -> False
             )
-          runGameTestOptionMatching
+          chooseOptionMatching
             "spend resource"
             (\case
               Run{} -> True
               _ -> False
             )
-          runGameTestOnlyOption "Start skill test"
-          runGameTestOnlyOption "Apply Results"
+          chooseOnlyOption "Start skill test"
+          chooseOnlyOption "Apply Results"
           updated enemy `shouldSatisfyM` hasDamage (1, 0)

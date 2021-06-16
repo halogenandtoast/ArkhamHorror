@@ -19,7 +19,7 @@ spec = describe "Roland Banks" $ do
             $ \attrs -> attrs { enemyFight = 4, enemyHealth = Static 1 }
           location <- testLocation "00000"
             $ \attrs -> attrs { locationClues = 1 }
-          runGameTest
+          gameTest
               rolandBanks
               [ SetTokens [Zero]
               , enemySpawn location enemy
@@ -30,10 +30,10 @@ spec = describe "Roland Banks" $ do
               . (locationsL %~ insertEntity location)
               )
             $ do
-                runMessagesNoLogging
-                runGameTestOnlyOption "start skill test"
-                runGameTestOnlyOption "apply results"
-                runGameTestOptionMatching
+                runMessages
+                chooseOnlyOption "start skill test"
+                chooseOnlyOption "apply results"
+                chooseOptionMatching
                   "use ability"
                   (\case
                     Run{} -> True
@@ -47,7 +47,7 @@ spec = describe "Roland Banks" $ do
       let rolandBanks = lookupInvestigator "01001"
       location <- testLocation "00000"
         $ \attrs -> attrs { locationClues = 1, locationShroud = 4 }
-      runGameTest
+      gameTest
           rolandBanks
           [ SetTokens [ElderSign]
           , moveTo rolandBanks location
@@ -55,8 +55,8 @@ spec = describe "Roland Banks" $ do
           ]
           (locationsL %~ insertEntity location)
         $ do
-            runMessagesNoLogging
-            runGameTestOnlyOption "start skill test"
-            runGameTestOnlyOption "apply results"
+            runMessages
+            chooseOnlyOption "start skill test"
+            chooseOnlyOption "apply results"
             rolandBanks' <- updated rolandBanks
             getCount rolandBanks' `shouldReturn` ClueCount 1

@@ -198,8 +198,14 @@ putApiV1ArkhamGameR gameId = do
       logRef <- newIORef []
       genRef <- newIORef (mkStdGen gameSeed)
       writeChannel <- getChannel gameId
-      runGameApp (GameApp gameRef queueRef genRef)
-        $ runMessages (handleMessageLog logRef writeChannel)
+      runGameApp
+          (GameApp
+            gameRef
+            queueRef
+            genRef
+            (handleMessageLog logRef writeChannel)
+          )
+        $ runMessages
       ge <- readIORef gameRef
       updatedQueue <- readIORef queueRef
       updatedLog <- (arkhamGameLog <>) <$> readIORef logRef

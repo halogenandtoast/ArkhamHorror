@@ -1,6 +1,8 @@
 {-# LANGUAGE TupleSections #-}
 module Api.Arkham.Helpers where
 
+import Import hiding (appLogger)
+
 import Arkham.PlayerCard
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
@@ -16,7 +18,6 @@ import qualified Data.ByteString.Lazy as BSL
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Map.Strict as Map
 import Data.UUID.V4
-import Import
 import Json
 
 newtype GameAppT a = GameAppT { unGameAppT :: ReaderT GameApp IO a }
@@ -26,14 +27,15 @@ data GameApp = GameApp
   { appGame  :: IORef Game
   , appQueue :: IORef [Message]
   , appGen   :: IORef StdGen
+  , appLogger :: Message -> IO ()
   }
 
-newApp :: MonadIO m => Game -> [Message] -> m GameApp
-newApp g msgs = do
+newApp :: MonadIO m => Game -> (Message -> IO ()) -> [Message] -> m GameApp
+newApp g logger msgs = do
   gameRef <- newIORef g
   queueRef <- newIORef msgs
   genRef <- newIORef (mkStdGen (gameSeed g))
-  pure $ GameApp gameRef queueRef genRef
+  pure $ GameApp gameRef queueRef genRef logger
 
 instance HasStdGen GameApp where
   genL = lens appGen $ \m x -> m { appGen = x }
@@ -43,6 +45,9 @@ instance HasGameRef GameApp where
 
 instance HasQueue GameApp where
   messageQueue = lens appQueue $ \m x -> m { appQueue = x }
+
+instance HasMessageLogger GameApp where
+  messageLoggerL = lens appLogger $ \m x -> m { appLogger = x }
 
 runGameApp :: MonadIO m => GameApp -> GameAppT a -> m a
 runGameApp gameApp = liftIO . flip runReaderT gameApp . unGameAppT

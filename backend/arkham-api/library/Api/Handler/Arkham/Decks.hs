@@ -74,7 +74,7 @@ putApiV1ArkhamGameDecksR gameId = do
   gameRef <- newIORef arkhamGameCurrentData
   queueRef <- newIORef (msg : arkhamGameQueue)
   genRef <- newIORef (mkStdGen gameSeed)
-  runGameApp (GameApp gameRef queueRef genRef) $ runMessages (pure . const ())
+  runGameApp (GameApp gameRef queueRef genRef $ pure . const ()) runMessages
   ge <- readIORef gameRef
   updatedQueue <- readIORef queueRef
   let updatedMessages = []

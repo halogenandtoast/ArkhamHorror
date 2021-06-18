@@ -113,8 +113,7 @@ postApiV1ArkhamGamesR = do
         $ newCampaign cid playerCount investigators difficulty
       gameRef <- newIORef game
       genRef <- newIORef (mkStdGen (gameSeed game))
-      runGameApp (GameApp gameRef queueRef genRef) $ do
-        runMessages (pure . const ())
+      runGameApp (GameApp gameRef queueRef genRef $ pure . const ()) runMessages
       ge <- readIORef gameRef
       updatedQueue <- readIORef queueRef
       key <- runDB $ do
@@ -128,8 +127,9 @@ postApiV1ArkhamGamesR = do
           $ newScenario sid playerCount investigators difficulty
         gameRef <- newIORef game
         genRef <- newIORef (mkStdGen (gameSeed game))
-        runGameApp (GameApp gameRef queueRef genRef) $ do
-          runMessages (pure . const ())
+        runGameApp
+          (GameApp gameRef queueRef genRef $ pure . const ())
+          runMessages
         ge <- readIORef gameRef
         updatedQueue <- readIORef queueRef
         key <- runDB $ do
@@ -199,13 +199,8 @@ putApiV1ArkhamGameR gameId = do
       genRef <- newIORef (mkStdGen gameSeed)
       writeChannel <- getChannel gameId
       runGameApp
-          (GameApp
-            gameRef
-            queueRef
-            genRef
-            (handleMessageLog logRef writeChannel)
-          )
-        $ runMessages
+        (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel))
+        runMessages
       ge <- readIORef gameRef
       updatedQueue <- readIORef queueRef
       updatedLog <- (arkhamGameLog <>) <$> readIORef logRef
@@ -256,8 +251,9 @@ putApiV1ArkhamGameRawR gameId = do
   genRef <- newIORef (mkStdGen (gameSeed arkhamGameCurrentData))
   logRef <- newIORef []
   writeChannel <- getChannel gameId
-  runGameApp (GameApp gameRef queueRef genRef) $ do
-    runMessages (handleMessageLog logRef writeChannel)
+  runGameApp
+    (GameApp gameRef queueRef genRef $ handleMessageLog logRef writeChannel)
+    runMessages
   ge <- readIORef gameRef
   updatedMessages <- (arkhamGameLog <>) <$> readIORef logRef
   updatedQueue <- readIORef queueRef

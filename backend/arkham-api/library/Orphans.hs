@@ -47,8 +47,8 @@ instance PathPiece UUID where
   fromPathPiece = hush . parseUrlPiece
 
 instance PersistField UUID where
-  toPersistValue u = PersistLiteral . BS8.pack . UUID.toString $ u
-  fromPersistValue (PersistLiteral t) = case UUID.fromString $ BS8.unpack t of
+  toPersistValue u = PersistLiteral_ Escaped . BS8.pack . UUID.toString $ u
+  fromPersistValue (PersistLiteral_ _ t) = case UUID.fromString $ BS8.unpack t of
     Just x -> Right x
     Nothing -> Left "Invalid UUID"
   fromPersistValue _ = Left "Not PersistDBSpecific"

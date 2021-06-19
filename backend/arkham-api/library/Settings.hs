@@ -18,8 +18,8 @@ import qualified Data.ByteString.Char8 as BS8
 import Data.FileEmbed (embedFile)
 import Data.String.Conversions.Monomorphic (toStrictByteString)
 import Data.Yaml (decodeEither')
+import Data.Yaml.Config (applyEnvValue)
 import Database.Persist.Postgresql (PostgresConf(..))
-import Language.Haskell.TH.Syntax (Exp, Name, Q)
 import Network.Wai.Handler.Warp (HostPreference)
 import URI.ByteString
   ( Authority(..)
@@ -31,9 +31,6 @@ import URI.ByteString
   , parseURI
   , strictURIParserOptions
   )
-import Yesod.Default.Config2 (applyEnvValue, configSettingsYml)
-import Yesod.Default.Util
-  (WidgetFileSettings, widgetFileNoReload, widgetFileReload)
 
 abortLeft :: (MonadFail m, Show e) => Either e b -> m b
 abortLeft = either (fail . ("DATABASE_URL failed to parse: " <>) . show) pure
@@ -118,31 +115,9 @@ instance FromJSON AppSettings where
 
         pure AppSettings {..}
 
--- | Settings for 'widgetFile', such as which template languages to support and
--- default Hamlet settings.
---
--- For more information on modifying behavior, see:
---
--- https://github.com/yesodweb/yesod/wiki/Overriding-widgetFile
-widgetFileSettings :: WidgetFileSettings
-widgetFileSettings = def
-
--- | How static files should be combined.
-combineSettings :: CombineSettings
-combineSettings = def
-
--- The rest of this file contains settings which rarely need changing by a
--- user.
-
-widgetFile :: String -> Q Exp
-widgetFile = (if appReloadTemplates compileTimeAppSettings
-                then widgetFileReload
-                else widgetFileNoReload)
-              widgetFileSettings
-
 -- | Raw bytes at compile time of @config/settings.yml@
 configSettingsYmlBS :: ByteString
-configSettingsYmlBS = $(embedFile configSettingsYml)
+configSettingsYmlBS = $(embedFile "config/settings.yml")
 
 -- | @config/settings.yml@, parsed to a @Value@.
 configSettingsYmlValue :: Value
@@ -155,20 +130,3 @@ compileTimeAppSettings =
     case fromJSON $ applyEnvValue False mempty configSettingsYmlValue of
         Error e -> error e
         Success settings -> settings
-
--- The following two functions can be used to combine multiple CSS or JS files
--- at compile time to decrease the number of http requests.
--- Sample usage (inside a Widget):
---
--- > $(combineStylesheets 'StaticR [style1_css, style2_css])
-
-combineStylesheets :: Name -> [Route Static] -> Q Exp
-combineStylesheets = combineStylesheets'
-    (appSkipCombining compileTimeAppSettings)
-    combineSettings
-
-combineScripts :: Name -> [Route Static] -> Q Exp
-combineScripts = combineScripts'
-    (appSkipCombining compileTimeAppSettings)
-    combineSettings
-

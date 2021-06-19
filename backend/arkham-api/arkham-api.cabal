@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5e54a57e9e69f3943d1e316493225cbeaae5ccae891d30a5f3f20cf0e055e168
+-- hash: eb858869e03e7b8eef48145ac6a50a3fd5c21fa1114935bb56cc7215bdf9f62d
 
 name:           arkham-api
 version:        0.0.0
@@ -32,6 +32,7 @@ library
       Base.Api.Handler.CurrentUser
       Base.Api.Handler.Registration
       Base.Util
+      Config
       Entity.Arkham.ArkhamDBDecklist
       Entity.Arkham.Deck
       Entity.Arkham.Game
@@ -89,6 +90,7 @@ library
     , classy-prelude-yesod
     , conduit
     , containers
+    , directory
     , errors
     , esqueleto
     , fast-logger
@@ -110,6 +112,7 @@ library
     , text
     , time
     , transformers
+    , unix
     , unliftio
     , unordered-containers
     , uri-bytestring
@@ -122,7 +125,6 @@ library
     , warp
     , websockets
     , yaml
-    , yesod
     , yesod-core
     , yesod-static
     , yesod-test

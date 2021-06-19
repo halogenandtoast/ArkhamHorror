@@ -18,6 +18,7 @@ module Application
     , db
     ) where
 
+import Config
 import Control.Monad.Logger (liftLoc, runLoggingT)
 import Data.CaseInsensitive (mk)
 import Database.Persist.Postgresql (createPostgresqlPool, pgConnStr, pgPoolSize)
@@ -189,7 +190,7 @@ getApplicationDev = do
     pure (wsettings, app)
 
 getAppSettings :: IO AppSettings
-getAppSettings = loadYamlSettings [configSettingsYml] [] useEnv
+getAppSettings = loadYamlSettings ["config/settings.yml"] [] useEnv
 
 -- | main function for use by yesod devel
 develMain :: IO ()

@@ -1,7 +1,6 @@
 module Api.Handler.Arkham.PendingGames
   ( putApiV1ArkhamPendingGameR
-  )
-where
+  ) where
 
 import Import hiding (on, (==.))
 
@@ -12,7 +11,7 @@ import Arkham.Types.Investigator
 import Control.Monad.Random (mkStdGen)
 import Data.Aeson
 import qualified Data.HashMap.Strict as HashMap
-import Database.Esqueleto
+import Database.Esqueleto.Experimental
 import Safe (fromJustNote)
 
 newtype JoinGameJson = JoinGameJson { deckId :: ArkhamDeckId }

@@ -28,7 +28,7 @@ instance HasActions env HuntedDown where
   getActions i window (HuntedDown attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env HuntedDown where
-  runMessage msg t@(HuntedDown attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(HuntedDown attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       destinationId <- getId @LocationId iid
       unengagedEnemyIds <- mapSet unUnengagedEnemyId <$> getSet ()

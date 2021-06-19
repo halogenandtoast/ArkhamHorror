@@ -6,6 +6,10 @@ module Arkham.Types.Asset.Cards.BaseballBat
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -17,10 +21,6 @@ import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 
 newtype BaseballBat = BaseballBat AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
@@ -42,7 +42,7 @@ fightAbility AssetAttrs { assetId } = mkAbility
   (ActionAbility (Just Action.Fight) (ActionCost 1))
 
 instance ActionRunner env  => HasActions env BaseballBat where
-  getActions iid window (BaseballBat a@AssetAttrs {..}) | ownedBy a iid = do
+  getActions iid window (BaseballBat a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid window
     pure [ ActivateCardAbilityAction iid (fightAbility a) | fightAvailable ]
   getActions _ _ _ = pure []

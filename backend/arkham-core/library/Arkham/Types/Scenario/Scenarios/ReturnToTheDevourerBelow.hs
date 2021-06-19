@@ -45,7 +45,7 @@ instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env [Trait]) => 
     getTokenValue theDevourerBelow' iid
 
 instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env ReturnToTheDevourerBelow where
-  runMessage msg s@(ReturnToTheDevourerBelow theDevourerBelow'@(TheDevourerBelow attrs@ScenarioAttrs {..}))
+  runMessage msg s@(ReturnToTheDevourerBelow theDevourerBelow'@(TheDevourerBelow attrs))
     = case msg of
       Setup -> do
         investigatorIds <- getInvestigatorIds

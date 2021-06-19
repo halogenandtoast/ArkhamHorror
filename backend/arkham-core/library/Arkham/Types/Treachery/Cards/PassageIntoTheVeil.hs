@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.PassageIntoTheVeil
   ( passageIntoTheVeil
   , PassageIntoTheVeil(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -31,7 +30,7 @@ instance HasActions env PassageIntoTheVeil where
   getActions i window (PassageIntoTheVeil attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env PassageIntoTheVeil where
-  runMessage msg t@(PassageIntoTheVeil attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(PassageIntoTheVeil attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       huntingHorrorAtYourLocation <- enemyAtInvestigatorLocation "02141" iid
       t <$ unshiftMessage

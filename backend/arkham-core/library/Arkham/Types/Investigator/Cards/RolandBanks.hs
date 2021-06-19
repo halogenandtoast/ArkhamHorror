@@ -1,24 +1,23 @@
 module Arkham.Types.Investigator.Cards.RolandBanks
   ( RolandBanks(..)
   , rolandBanks
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Investigator.Attrs
+import Arkham.Types.Investigator.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Query
-import Arkham.Types.Token
-import Arkham.Types.Window
-import Arkham.Types.Investigator.Attrs
-import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
+import Arkham.Types.Token
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype RolandBanks = RolandBanks InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)

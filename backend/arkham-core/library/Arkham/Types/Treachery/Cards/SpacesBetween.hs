@@ -5,8 +5,8 @@ module Arkham.Types.Treachery.Cards.SpacesBetween
 
 import Arkham.Prelude
 
-import Arkham.Types.Classes
 import Arkham.Types.Card.CardCode
+import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
@@ -29,7 +29,7 @@ instance HasActions env SpacesBetween where
   getActions i window (SpacesBetween attrs) = getActions i window attrs
 
 instance (HasId CardCode env LocationId, TreacheryRunner env) => RunMessage env SpacesBetween where
-  runMessage msg t@(SpacesBetween attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(SpacesBetween attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
       sentinelHillLocations <- getSet @LocationId [SentinelHill]
       nonSentinelHillLocations <-

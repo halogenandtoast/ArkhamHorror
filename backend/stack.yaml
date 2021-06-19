@@ -2,7 +2,7 @@
 require-stack-version: ">= 2.3.1"
 concurrent-tests: false
 
-resolver: lts-16.18
+resolver: lts-18.0
 
 # NB. -fignore-optim-changes can get in the way of profiling projects. To
 # build for profiling, consider using a separate .stack-work directory or
@@ -33,6 +33,8 @@ ghc-options:
     -Wno-missing-monadfail-instances
     -fignore-optim-changes
     -fwrite-ide-info
+    -Wno-missing-safe-haskell-mode
+    -Wno-prepositive-qualified-module
 
 packages:
   - arkham-core
@@ -44,3 +46,4 @@ extra-deps:
 - aeson-1.5.4.1@sha256:6e4da18b16c1a9fb399f5544a357be7c82fe7c4300197de64928cb527b67957a,6906
 - data-fix-0.3.0@sha256:058a266d1e658500e0ffb8babe68195b0ce06a081dcfc3814afc784b083fd9a5,1645
 - strict-0.4@sha256:1b50c7c9c636c3a1bbc7f8873b9be48f6ca0faca4df6eec6a014de6208fb1c0e,4200
+- classy-prelude-yesod-1.5.0@sha256:8f7e183bdfd6d2ea9674284c4f285294ab086aff60d9be4e5d7d2f3c1a2b05b7,1330

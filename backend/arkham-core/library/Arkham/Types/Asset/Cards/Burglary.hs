@@ -5,15 +5,15 @@ module Arkham.Types.Asset.Cards.Burglary
 
 import Arkham.Prelude
 
+import qualified Arkham.Types.Action as Action
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Window
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
 
 newtype Burglary = Burglary AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -32,7 +32,7 @@ instance HasActions env Burglary where
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Burglary where
-  runMessage msg a@(Burglary attrs@AssetAttrs {..}) = case msg of
+  runMessage msg a@(Burglary attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId iid
       a <$ unshiftMessage

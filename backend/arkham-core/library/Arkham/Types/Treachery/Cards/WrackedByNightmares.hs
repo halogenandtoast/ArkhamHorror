@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.WrackedByNightmares
   ( WrackedByNightmares(..)
   , wrackedByNightmares
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -39,7 +38,7 @@ instance HasModifiersFor env WrackedByNightmares where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env WrackedByNightmares where
-  getActions iid NonFast (WrackedByNightmares a@TreacheryAttrs {..}) =
+  getActions iid NonFast (WrackedByNightmares a) =
     withTreacheryInvestigator a $ \tormented -> do
       treacheryLocation <- getId tormented
       investigatorLocationId <- getId @LocationId iid
@@ -52,13 +51,15 @@ instance ActionRunner env => HasActions env WrackedByNightmares where
   getActions _ _ _ = pure []
 
 instance TreacheryRunner env => RunMessage env WrackedByNightmares where
-  runMessage msg t@(WrackedByNightmares attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source ->
-      t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
-    AttachTreachery tid (InvestigatorTarget iid) | tid == treacheryId -> do
-      assetIds <- getSetList iid
-      unshiftMessages [ Exhaust (AssetTarget aid) | aid <- assetIds ]
-      WrackedByNightmares <$> runMessage msg attrs
-    UseCardAbility _ (TreacherySource tid) _ 1 _ | tid == treacheryId ->
-      t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
-    _ -> WrackedByNightmares <$> runMessage msg attrs
+  runMessage msg t@(WrackedByNightmares attrs@TreacheryAttrs {..}) =
+    case msg of
+      Revelation iid source | isSource attrs source ->
+        t <$ unshiftMessage
+          (AttachTreachery treacheryId $ InvestigatorTarget iid)
+      AttachTreachery tid (InvestigatorTarget iid) | tid == treacheryId -> do
+        assetIds <- getSetList iid
+        unshiftMessages [ Exhaust (AssetTarget aid) | aid <- assetIds ]
+        WrackedByNightmares <$> runMessage msg attrs
+      UseCardAbility _ (TreacherySource tid) _ 1 _ | tid == treacheryId ->
+        t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
+      _ -> WrackedByNightmares <$> runMessage msg attrs

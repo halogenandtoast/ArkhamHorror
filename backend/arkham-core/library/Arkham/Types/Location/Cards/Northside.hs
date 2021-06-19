@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.Northside
   ( Northside(..)
   , northside
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -54,7 +53,7 @@ instance ActionRunner env => HasActions env Northside where
   getActions iid window (Northside attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env Northside where
-  runMessage msg l@(Northside attrs@LocationAttrs {..}) = case msg of
+  runMessage msg l@(Northside attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ unshiftMessage (GainClues iid 2)
     _ -> Northside <$> runMessage msg attrs

@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.ArtGallery
   ( artGallery
   , ArtGallery(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -40,7 +39,7 @@ instance ActionRunner env => HasActions env ArtGallery where
   getActions iid window (ArtGallery attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env ArtGallery where
-  runMessage msg l@(ArtGallery attrs@LocationAttrs {..}) = case msg of
+  runMessage msg l@(ArtGallery attrs) = case msg of
     After (FailedSkillTest iid (Just Action.Investigate) _ (SkillTestInitiatorTarget _) _ _)
       -> l <$ unshiftMessage (SpendResources iid 2)
     _ -> ArtGallery <$> runMessage msg attrs

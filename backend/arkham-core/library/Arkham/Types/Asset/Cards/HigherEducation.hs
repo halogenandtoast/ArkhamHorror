@@ -6,6 +6,9 @@ module Arkham.Types.Asset.Cards.HigherEducation
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -18,9 +21,6 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 
 newtype HigherEducation = HigherEducation AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -53,11 +53,12 @@ instance HasModifiersFor env HigherEducation where
   getModifiersFor = noModifiersFor
 
 instance AssetRunner env => RunMessage env HigherEducation where
-  runMessage msg a@(HigherEducation attrs@AssetAttrs {..}) = case msg of
+  runMessage msg a@(HigherEducation attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
         [ SpendResources iid 1
-        , CreateWindowModifierEffect EffectSkillTestWindow
+        , CreateWindowModifierEffect
+          EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillWillpower 1])
           source
           (InvestigatorTarget iid)
@@ -65,7 +66,8 @@ instance AssetRunner env => RunMessage env HigherEducation where
     UseCardAbility iid source _ 2 _ | isSource attrs source ->
       a <$ unshiftMessages
         [ SpendResources iid 1
-        , CreateWindowModifierEffect EffectSkillTestWindow
+        , CreateWindowModifierEffect
+          EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillIntellect 1])
           source
           (InvestigatorTarget iid)

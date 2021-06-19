@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.Atychiphobia
   ( atychiphobia
   , Atychiphobia(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -31,7 +30,7 @@ instance HasModifiersFor env Atychiphobia where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Atychiphobia where
-  getActions iid NonFast (Atychiphobia a@TreacheryAttrs {..}) =
+  getActions iid NonFast (Atychiphobia a) =
     withTreacheryInvestigator a $ \tormented -> do
       investigatorLocationId <- getId @LocationId iid
       treacheryLocation <- getId tormented

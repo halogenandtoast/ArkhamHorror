@@ -28,7 +28,7 @@ instance HasActions env MysteriousChanting where
   getActions i window (MysteriousChanting attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env MysteriousChanting where
-  runMessage msg t@(MysteriousChanting attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(MysteriousChanting attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid
       enemies <- map unClosestEnemyId <$> getSetList (lid, [Cultist])

@@ -28,7 +28,7 @@ instance HasActions env TwistOfFate where
   getActions i window (TwistOfFate attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env TwistOfFate where
-  runMessage msg t@(TwistOfFate attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(TwistOfFate attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (RequestTokens source (Just iid) 1 SetAside)
     RequestedTokens source (Just iid) tokens | isSource attrs source -> do

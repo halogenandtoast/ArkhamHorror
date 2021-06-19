@@ -1,12 +1,14 @@
 module Arkham.Types.Asset.Cards.WhittonGreene
   ( whittonGreene
   , WhittonGreene(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -17,11 +19,8 @@ import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
-import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype WhittonGreene = WhittonGreene AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -56,13 +55,14 @@ instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor en
   getModifiersFor _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env WhittonGreene where
-  runMessage msg a@(WhittonGreene attrs@AssetAttrs {..}) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ unshiftMessage
-      (SearchTopOfDeck
-        iid
-        (InvestigatorTarget iid)
-        6
-        [Tome, Relic]
-        ShuffleBackIn
-      )
+  runMessage msg a@(WhittonGreene attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      a <$ unshiftMessage
+        (SearchTopOfDeck
+          iid
+          (InvestigatorTarget iid)
+          6
+          [Tome, Relic]
+          ShuffleBackIn
+        )
     _ -> WhittonGreene <$> runMessage msg attrs

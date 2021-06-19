@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.TheCreaturesTracks
   ( theCreaturesTracks
   , TheCreaturesTracks(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -27,7 +26,7 @@ instance HasActions env TheCreaturesTracks where
   getActions i window (TheCreaturesTracks attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env TheCreaturesTracks where
-  runMessage msg t@(TheCreaturesTracks attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(TheCreaturesTracks attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       broodOfYogSothothCount <- unSetAsideCount
         <$> getCount @SetAsideCount (CardCode "02255")

@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.YogSothoth
   ( yogSothoth
   , YogSothoth(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -31,15 +30,14 @@ yogSothoth uuid =
     . (uniqueL .~ True)
 
 instance HasCount PlayerCount env () => HasModifiersFor env YogSothoth where
-  getModifiersFor _ target (YogSothoth a@EnemyAttrs {..}) | isTarget a target =
-    do
-      healthModifier <- getPlayerCountValue (PerPlayer 6)
-      pure $ toModifiers
-        a
-        [ HealthModifier healthModifier
-        , CannotMakeAttacksOfOpportunity
-        , CannotBeEvaded
-        ]
+  getModifiersFor _ target (YogSothoth a) | isTarget a target = do
+    healthModifier <- getPlayerCountValue (PerPlayer 6)
+    pure $ toModifiers
+      a
+      [ HealthModifier healthModifier
+      , CannotMakeAttacksOfOpportunity
+      , CannotBeEvaded
+      ]
   getModifiersFor _ _ _ = pure []
 
 instance EnemyAttrsHasActions env => HasActions env YogSothoth where

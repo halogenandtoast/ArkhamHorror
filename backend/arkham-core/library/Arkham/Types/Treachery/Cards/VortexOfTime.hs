@@ -28,7 +28,7 @@ instance HasActions env VortexOfTime where
   getActions i window (VortexOfTime attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env VortexOfTime where
-  runMessage msg t@(VortexOfTime attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(VortexOfTime attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
       sentinelHills <- getSetList @LocationId [SentinelHill]
       investigatorsAtSentinelHills <- concatMapM' getSetList sentinelHills

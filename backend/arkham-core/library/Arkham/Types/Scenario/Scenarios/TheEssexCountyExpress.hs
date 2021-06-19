@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.TheEssexCountyExpress
   ( TheEssexCountyExpress(..)
   , theEssexCountyExpress
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -130,9 +129,8 @@ investigatorDefeat
      , HasId LeadInvestigatorId env ()
      , HasList CampaignStoryCard env ()
      )
-  => ScenarioAttrs
-  -> m [Message]
-investigatorDefeat ScenarioAttrs {..} = do
+  => m [Message]
+investigatorDefeat = do
   campaignStoryCards <- getList ()
   leadInvestigatorId <- getLeadInvestigatorId
   defeatedInvestigatorIds <- map unDefeatedInvestigatorId <$> getSetList ()
@@ -294,7 +292,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       ScenarioResolution NoResolution ->
         s <$ unshiftMessages [ScenarioResolution $ Resolution 2]
       ScenarioResolution (Resolution 1) -> do
-        msgs <- investigatorDefeat attrs
+        msgs <- investigatorDefeat
         leadInvestigatorId <- getLeadInvestigatorId
         investigatorIds <- getInvestigatorIds
         defeatedInvestigatorIds <- map unDefeatedInvestigatorId
@@ -328,7 +326,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           <> [EndOfGame]
           )
       ScenarioResolution (Resolution 2) -> do
-        msgs <- investigatorDefeat attrs
+        msgs <- investigatorDefeat
         leadInvestigatorId <- getLeadInvestigatorId
         investigatorIds <- getInvestigatorIds
         defeatedInvestigatorIds <- map unDefeatedInvestigatorId

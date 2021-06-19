@@ -66,7 +66,7 @@ instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env (Investigato
     otherFace -> getTokenValue attrs iid otherFace
 
 instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env TheGathering where
-  runMessage msg s@(TheGathering attrs@ScenarioAttrs {..}) = case msg of
+  runMessage msg s@(TheGathering attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds
       encounterDeck <- buildEncounterDeck

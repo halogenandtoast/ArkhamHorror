@@ -36,7 +36,7 @@ instance HasModifiersFor env Haunted where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env Haunted where
-  getActions iid NonFast (Haunted a@TreacheryAttrs {..}) =
+  getActions iid NonFast (Haunted a) =
     withTreacheryInvestigator a $ \tormented -> do
       investigatorLocationId <- getId @LocationId iid
       treacheryLocation <- getId tormented

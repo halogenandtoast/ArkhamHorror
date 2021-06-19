@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.TheHouseAlwaysWins
   ( TheHouseAlwaysWins(..)
   , theHouseAlwaysWins
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -70,7 +69,7 @@ instance HasTokenValue env InvestigatorId => HasTokenValue env TheHouseAlwaysWin
     otherFace -> getTokenValue attrs iid otherFace
 
 instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env TheHouseAlwaysWins where
-  runMessage msg s@(TheHouseAlwaysWins attrs@ScenarioAttrs {..}) = case msg of
+  runMessage msg s@(TheHouseAlwaysWins attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds
       encounterDeck <- buildEncounterDeck

@@ -3,8 +3,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Entity.Arkham.Deck
   ( module Entity.Arkham.Deck
-  )
-where
+  ) where
 
 import ClassyPrelude
 import Data.UUID
@@ -15,10 +14,10 @@ import Entity.User
 import Json
 import Orphans ()
 
-share [mkPersist sqlSettings, mkDeleteCascade sqlSettings] [persistLowerCase|
+share [mkPersist sqlSettings] [persistLowerCase|
 ArkhamDeck sql=arkham_decks
   Id UUID default=uuid_generate_v4()
-  userId UserId
+  userId UserId OnDeleteCascade
   name Text
   investigatorName Text
   list ArkhamDBDecklist

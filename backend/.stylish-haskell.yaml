@@ -45,3 +45,4 @@ language_extensions:
   - StandaloneDeriving
   - TypeApplications
   - TypeFamilies
+  - ImportQualifiedPost

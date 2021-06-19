@@ -47,7 +47,7 @@ instance ActionRunner env => HasActions env Machete where
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Machete where
-  runMessage msg a@(Machete attrs@AssetAttrs {..}) = case msg of
+  runMessage msg a@(Machete attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       criteriaMet <- (== 1) . unEnemyCount <$> getCount iid
       a <$ unshiftMessages

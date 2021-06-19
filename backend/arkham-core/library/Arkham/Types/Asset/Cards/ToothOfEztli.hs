@@ -45,7 +45,7 @@ instance HasActions env ToothOfEztli where
   getActions i window (ToothOfEztli a) = getActions i window a
 
 instance AssetRunner env => RunMessage env ToothOfEztli where
-  runMessage msg a@(ToothOfEztli attrs@AssetAttrs {..}) = case msg of
+  runMessage msg a@(ToothOfEztli attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage (DrawCards iid 1 False)
     _ -> ToothOfEztli <$> runMessage msg attrs

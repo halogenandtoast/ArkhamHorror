@@ -155,7 +155,7 @@ startGame g =
 -- TODO: Rename this
 toExternalGame
   :: MonadRandom m => Game -> HashMap InvestigatorId Question -> m Game
-toExternalGame g@Game {..} mq = do
+toExternalGame g mq = do
   hash' <- getRandom
   newGameSeed <- getRandom
   pure $ g { gameHash = hash', gameQuestion = mq, gameSeed = newGameSeed }

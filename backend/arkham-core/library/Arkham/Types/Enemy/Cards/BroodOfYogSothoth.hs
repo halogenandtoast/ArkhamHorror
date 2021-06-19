@@ -33,14 +33,13 @@ broodOfYogSothoth uuid =
     . (evadeL .~ 3)
 
 instance HasCount PlayerCount env () => HasModifiersFor env BroodOfYogSothoth where
-  getModifiersFor _ target (BroodOfYogSothoth a@EnemyAttrs {..})
-    | isTarget a target = do
-      healthModifier <- getPlayerCountValue (PerPlayer 1)
-      pure $ toModifiers
-        a
-        [ HealthModifier healthModifier
-        , CanOnlyBeAttackedByAbilityOn (singleton $ CardCode "02219")
-        ]
+  getModifiersFor _ target (BroodOfYogSothoth a) | isTarget a target = do
+    healthModifier <- getPlayerCountValue (PerPlayer 1)
+    pure $ toModifiers
+      a
+      [ HealthModifier healthModifier
+      , CanOnlyBeAttackedByAbilityOn (singleton $ CardCode "02219")
+      ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env BroodOfYogSothoth where

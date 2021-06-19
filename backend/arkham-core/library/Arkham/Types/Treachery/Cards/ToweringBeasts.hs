@@ -5,15 +5,15 @@ module Arkham.Types.Treachery.Cards.ToweringBeasts
 
 import Arkham.Prelude
 
-import Arkham.Types.Game.Helpers
-import Arkham.Types.Modifier
-import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.Treachery.Attrs
-import Arkham.Types.Target
-import Arkham.Types.LocationId
-import Arkham.Types.EnemyId
 import Arkham.Types.Card.CardCode
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
+import Arkham.Types.Game.Helpers
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Target
+import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
 
@@ -33,7 +33,7 @@ instance HasActions env ToweringBeasts where
   getActions i window (ToweringBeasts attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env ToweringBeasts where
-  runMessage msg t@(ToweringBeasts attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(ToweringBeasts attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       broodOfYogSothoth <- getSetList @EnemyId (CardCode "02255")
       case broodOfYogSothoth of

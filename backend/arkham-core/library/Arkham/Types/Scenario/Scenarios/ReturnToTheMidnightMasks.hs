@@ -44,7 +44,7 @@ instance (HasTokenValue env InvestigatorId, HasCount DoomCount env (), HasCount 
     getTokenValue theMidnightMasks' iid
 
 instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env ReturnToTheMidnightMasks where
-  runMessage msg (ReturnToTheMidnightMasks theMidnightMasks'@(TheMidnightMasks attrs@ScenarioAttrs {..}))
+  runMessage msg (ReturnToTheMidnightMasks theMidnightMasks'@(TheMidnightMasks attrs))
     = case msg of
       Setup -> do
         count' <- getPlayerCount

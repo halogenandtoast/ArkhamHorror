@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.StalkedInTheDark
   ( stalkedInTheDark
   , StalkedInTheDark(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -32,7 +31,7 @@ instance HasActions env StalkedInTheDark where
   getActions i window (StalkedInTheDark attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env StalkedInTheDark where
-  runMessage msg t@(StalkedInTheDark attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(StalkedInTheDark attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       mHuntingHorrorId <- fmap unStoryEnemyId <$> getId (CardCode "02141")
       case mHuntingHorrorId of

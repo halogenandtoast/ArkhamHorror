@@ -1,12 +1,13 @@
 module Arkham.Types.Asset.Cards.ZoeysCross
   ( ZoeysCross(..)
   , zoeysCross
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -15,8 +16,6 @@ import Arkham.Types.Message
 import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
 
 newtype ZoeysCross = ZoeysCross AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -39,9 +38,8 @@ ability attrs eid = base
     (ReactionAbility $ Costs [ExhaustCost (toTarget attrs), ResourceCost 1])
 
 instance HasActions env ZoeysCross where
-  getActions iid (AfterEnemyEngageInvestigator You eid) (ZoeysCross a@AssetAttrs {..})
-    | ownedBy a iid
-    = pure [ActivateCardAbilityAction iid (ability a eid)]
+  getActions iid (AfterEnemyEngageInvestigator You eid) (ZoeysCross a)
+    | ownedBy a iid = pure [ActivateCardAbilityAction iid (ability a eid)]
   getActions i window (ZoeysCross x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env ZoeysCross where

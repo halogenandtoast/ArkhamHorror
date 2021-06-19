@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.MiskatonicUniversity
   ( MiskatonicUniversity(..)
   , miskatonicUniversity
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -50,15 +49,14 @@ instance ActionRunner env => HasActions env MiskatonicUniversity where
     getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env MiskatonicUniversity where
-  runMessage msg l@(MiskatonicUniversity attrs@LocationAttrs {..}) =
-    case msg of
-      UseCardAbility iid source _ 1 _ | isSource attrs source ->
-        l <$ unshiftMessage
-          (SearchTopOfDeck
-            iid
-            (InvestigatorTarget iid)
-            6
-            [Tome, Spell]
-            ShuffleBackIn
-          )
-      _ -> MiskatonicUniversity <$> runMessage msg attrs
+  runMessage msg l@(MiskatonicUniversity attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      l <$ unshiftMessage
+        (SearchTopOfDeck
+          iid
+          (InvestigatorTarget iid)
+          6
+          [Tome, Spell]
+          ShuffleBackIn
+        )
+    _ -> MiskatonicUniversity <$> runMessage msg attrs

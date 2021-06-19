@@ -31,7 +31,7 @@ instance HasActions env SlitheringBehindYou where
   getActions i window (SlitheringBehindYou attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env SlitheringBehindYou where
-  runMessage msg t@(SlitheringBehindYou attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(SlitheringBehindYou attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       mHuntingHorrorId <- fmap unStoryEnemyId <$> getId (CardCode "02141")
       case mHuntingHorrorId of

@@ -30,7 +30,7 @@ instance HasActions env RuinAndDestruction where
   getActions i window (RuinAndDestruction attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env RuinAndDestruction where
-  runMessage msg t@(RuinAndDestruction attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(RuinAndDestruction attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       broodOfYogSothoth <- getSetList @EnemyId (CardCode "02255")
       broodOfYogSothothLocations <- traverse

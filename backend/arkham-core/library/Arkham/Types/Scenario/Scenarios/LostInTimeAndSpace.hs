@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.LostInTimeAndSpace
   ( LostInTimeAndSpace(..)
   , lostInTimeAndSpace
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -114,9 +113,8 @@ investigatorDefeat
      , HasSet DefeatedInvestigatorId env ()
      , HasId LeadInvestigatorId env ()
      )
-  => ScenarioAttrs
-  -> m [Message]
-investigatorDefeat ScenarioAttrs {..} = do
+  => m [Message]
+investigatorDefeat = do
   leadInvestigatorId <- getLeadInvestigatorId
   defeatedInvestigatorIds <- map unDefeatedInvestigatorId <$> getSetList ()
   if null defeatedInvestigatorIds
@@ -235,7 +233,7 @@ instance
       s <$ unshiftMessage
         (ScenarioResolution . Resolution $ if step == 4 then 2 else 4)
     ScenarioResolution (Resolution 1) -> do
-      msgs <- investigatorDefeat attrs
+      msgs <- investigatorDefeat
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
@@ -270,7 +268,7 @@ instance
         <> [EndOfGame]
         )
     ScenarioResolution (Resolution 2) -> do
-      msgs <- investigatorDefeat attrs
+      msgs <- investigatorDefeat
       leadInvestigatorId <- getLeadInvestigatorId
       s <$ unshiftMessages
         (msgs
@@ -304,7 +302,7 @@ instance
            ]
         )
     ScenarioResolution (Resolution 3) -> do
-      msgs <- investigatorDefeat attrs
+      msgs <- investigatorDefeat
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       s <$ unshiftMessages
@@ -332,7 +330,7 @@ instance
         <> [EndOfGame]
         )
     ScenarioResolution (Resolution 4) -> do
-      msgs <- investigatorDefeat attrs
+      msgs <- investigatorDefeat
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       s <$ unshiftMessages

@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.InternalInjury
   ( internalInjury
   , InternalInjury(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -31,7 +30,7 @@ instance HasModifiersFor env InternalInjury where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env InternalInjury where
-  getActions iid NonFast (InternalInjury a@TreacheryAttrs {..}) =
+  getActions iid NonFast (InternalInjury a) =
     withTreacheryInvestigator a $ \tormented -> do
       investigatorLocationId <- getId @LocationId iid
       treacheryLocation <- getId tormented

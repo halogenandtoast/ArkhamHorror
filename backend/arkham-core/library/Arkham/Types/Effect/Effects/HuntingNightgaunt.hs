@@ -21,7 +21,7 @@ huntingNightgaunt :: EffectArgs -> HuntingNightgaunt
 huntingNightgaunt = HuntingNightgaunt . uncurry4 (baseAttrs "01172")
 
 instance HasModifiersFor env HuntingNightgaunt where
-  getModifiersFor (SkillTestSource _ _ _ _ (Just Evade)) (DrawnTokenTarget _) (HuntingNightgaunt a@EffectAttrs {..})
+  getModifiersFor (SkillTestSource _ _ _ _ (Just Evade)) (DrawnTokenTarget _) (HuntingNightgaunt a)
     = pure $ toModifiers a [DoubleNegativeModifiersOnTokens]
   getModifiersFor _ _ _ = pure []
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.DreamsOfRlyeh
   ( DreamsOfRlyeh(..)
   , dreamsOfRlyeh
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -36,7 +35,7 @@ instance HasModifiersFor env DreamsOfRlyeh where
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env DreamsOfRlyeh where
-  getActions iid NonFast (DreamsOfRlyeh a@TreacheryAttrs {..}) = pure
+  getActions iid NonFast (DreamsOfRlyeh a) = pure
     [ ActivateCardAbilityAction
         iid
         (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))

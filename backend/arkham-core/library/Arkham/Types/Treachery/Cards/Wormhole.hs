@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.Wormhole
   ( wormhole
   , Wormhole(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -29,7 +28,7 @@ instance HasActions env Wormhole where
   getActions i window (Wormhole attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env Wormhole where
-  runMessage msg t@(Wormhole attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(Wormhole attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ unshiftMessages
       [ DiscardEncounterUntilFirst
         (ProxySource source (InvestigatorSource iid))

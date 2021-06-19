@@ -72,7 +72,6 @@ library:
     - path-pieces
     - persistent
     - persistent-postgresql
-    - persistent-template
     - regex-posix
     - safe
     - string-conversions

@@ -52,7 +52,7 @@ instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env [Trait]) => 
     otherFace -> getTokenValue attrs iid otherFace
 
 instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env TheDevourerBelow where
-  runMessage msg s@(TheDevourerBelow attrs@ScenarioAttrs {..}) = case msg of
+  runMessage msg s@(TheDevourerBelow attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds
       pastMidnight <- getHasRecord ItIsPastMidnight

@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Api.Handler.Arkham.Games
   ( getApiV1ArkhamGameR
   , getApiV1ArkhamGamesR
@@ -6,8 +7,7 @@ module Api.Handler.Arkham.Games
   , putApiV1ArkhamGameR
   , deleteApiV1ArkhamGameR
   , putApiV1ArkhamGameRawR
-  )
-where
+  ) where
 
 import Api.Arkham.Helpers
 import Arkham.Game
@@ -24,7 +24,7 @@ import qualified Data.ByteString.Lazy as BSL
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Map.Strict as Map
 import Data.UUID
-import Database.Esqueleto
+import Database.Esqueleto.Experimental
 import Entity.Arkham.Player
 import Import hiding (delete, on, (==.))
 import Json
@@ -80,8 +80,14 @@ getApiV1ArkhamGameR gameId = do
 getApiV1ArkhamGamesR :: Handler [Entity ArkhamGame]
 getApiV1ArkhamGamesR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
-  runDB $ select $ from $ \(players `InnerJoin` games) -> do
-    on (players ^. ArkhamPlayerArkhamGameId ==. games ^. persistIdField)
+  runDB $ select $ do
+    (players :& games) <-
+      from
+      $ table @ArkhamPlayer
+      `InnerJoin` table @ArkhamGame
+      `on` (\(players :& games) ->
+             players ^. ArkhamPlayerArkhamGameId ==. games ^. persistIdField
+           )
     where_ (players ^. ArkhamPlayerUserId ==. val userId)
     pure games
 
@@ -268,6 +274,9 @@ putApiV1ArkhamGameRawR gameId = do
 
 deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 deleteApiV1ArkhamGameR gameId = void $ runDB $ do
-  delete $ from $ \players ->
+  delete $ do
+    players <- from $ table @ArkhamPlayer
     where_ $ players ^. ArkhamPlayerArkhamGameId ==. val gameId
-  delete $ from $ \games -> where_ $ games ^. persistIdField ==. val gameId
+  delete $ do
+    games <- from $ table @ArkhamGame
+    where_ $ games ^. persistIdField ==. val gameId

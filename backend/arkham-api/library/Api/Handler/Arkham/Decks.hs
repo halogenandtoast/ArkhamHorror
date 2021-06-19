@@ -3,8 +3,7 @@ module Api.Handler.Arkham.Decks
   , postApiV1ArkhamDecksR
   , deleteApiV1ArkhamDeckR
   , putApiV1ArkhamGameDecksR
-  )
-where
+  ) where
 
 import Import hiding (delete, on, (==.))
 
@@ -13,7 +12,7 @@ import Arkham.Game
 import Arkham.Types.Game
 import Arkham.Types.Message
 import Control.Monad.Random (mkStdGen)
-import Database.Esqueleto
+import Database.Esqueleto.Experimental
 import Json
 import Network.HTTP.Conduit (simpleHttp)
 import Safe (fromJustNote)
@@ -21,7 +20,8 @@ import Safe (fromJustNote)
 getApiV1ArkhamDecksR :: Handler [Entity ArkhamDeck]
 getApiV1ArkhamDecksR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
-  runDB $ select $ from $ \decks -> do
+  runDB $ select $ do
+    decks <- from $ table @ArkhamDeck
     where_ (decks ^. ArkhamDeckUserId ==. val userId)
     pure decks
 
@@ -108,6 +108,7 @@ deleteApiV1ArkhamDeckR :: ArkhamDeckId -> Handler ()
 deleteApiV1ArkhamDeckR deckId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   void $ runDB $ do
-    delete $ from $ \decks -> do
+    delete $ do
+      decks <- from $ table @ArkhamDeck
       where_ $ decks ^. persistIdField ==. val deckId
       where_ $ decks ^. ArkhamDeckUserId ==. val userId

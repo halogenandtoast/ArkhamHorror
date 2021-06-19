@@ -48,6 +48,7 @@ library:
         - -O2
   dependencies:
     - arkham-core
+    - MonadRandom
     - aeson
     - aeson-casing
     - bcrypt
@@ -57,6 +58,7 @@ library:
     - classy-prelude-yesod
     - conduit
     - containers
+    - directory
     - errors
     - esqueleto
     - fast-logger
@@ -67,7 +69,6 @@ library:
     - http-types
     - jwt
     - lens
-    - MonadRandom
     - monad-logger
     - path-pieces
     - persistent
@@ -79,6 +80,7 @@ library:
     - text
     - time
     - transformers
+    - unix
     - unliftio
     - unordered-containers
     - uri-bytestring
@@ -92,11 +94,9 @@ library:
     - websockets
     - yaml
     - yesod-core
-    - yesod-test
     - yesod-static
+    - yesod-test
     - yesod-websockets
-    - directory
-    - unix
 
 executables:
   arkham-api:

@@ -2,8 +2,7 @@
 module Arkham.Types.Treachery.Cards.CoverUp
   ( CoverUp(..)
   , coverUp
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -36,8 +35,8 @@ instance HasModifiersFor env CoverUp where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env CoverUp where
-  getActions iid (WhenDiscoverClues You YourLocation) (CoverUp a@TreacheryAttrs {..})
-    = withTreacheryInvestigator a $ \tormented -> do
+  getActions iid (WhenDiscoverClues You YourLocation) (CoverUp a) =
+    withTreacheryInvestigator a $ \tormented -> do
       treacheryLocationId <- getId @LocationId tormented
       investigatorLocationId <- getId @LocationId iid
       cluesToDiscover <- fromQueue $ \queue -> do

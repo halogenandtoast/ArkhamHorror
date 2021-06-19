@@ -55,6 +55,8 @@ fromDatabaseUrl size url = do
         <> " port=" <> BS8.pack (show $ portNumber port)
         <> " dbname=" <> dbName
     , pgPoolSize = size
+    , pgPoolStripes = 1
+    , pgPoolIdleTimeout = 60
     }
 
 -- | Runtime settings to configure this application. These settings can be

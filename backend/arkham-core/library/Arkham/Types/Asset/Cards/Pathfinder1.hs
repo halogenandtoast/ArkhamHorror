@@ -42,7 +42,7 @@ instance
   , HasId LocationId env InvestigatorId
   )
   => RunMessage env Pathfinder1 where
-  runMessage msg a@(Pathfinder1 attrs@AssetAttrs {..}) = case msg of
+  runMessage msg a@(Pathfinder1 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       accessibleLocationIds <-
         map unAccessibleLocationId <$> (getSetList =<< getId @LocationId iid)

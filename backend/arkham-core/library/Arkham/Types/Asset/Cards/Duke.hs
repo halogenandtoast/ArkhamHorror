@@ -72,7 +72,7 @@ dukeInvestigate attrs iid lid =
   Investigate iid lid (toSource attrs) SkillIntellect False
 
 instance AssetRunner env => RunMessage env Duke where
-  runMessage msg a@(Duke attrs@AssetAttrs {..}) = case msg of
+  runMessage msg a@(Duke attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ unshiftMessage (ChooseFightEnemy iid source SkillCombat mempty False)
     UseCardAbility iid source _ 2 _ | isSource attrs source -> do

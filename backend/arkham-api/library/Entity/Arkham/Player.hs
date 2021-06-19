@@ -3,8 +3,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Entity.Arkham.Player
   ( module Entity.Arkham.Player
-  )
-where
+  ) where
 
 import ClassyPrelude
 import Database.Persist.TH
@@ -15,8 +14,8 @@ import Orphans ()
 
 mkPersist sqlSettings [persistLowerCase|
 ArkhamPlayer sql=arkham_players
-  userId UserId
-  arkhamGameId ArkhamGameId
+  userId UserId OnDeleteCascade
+  arkhamGameId ArkhamGameId OnDeleteCascade
   deriving Generic Show
 |]
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.ArousingSuspicions
   ( ArousingSuspicions(..)
   , arousingSuspicions
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -31,7 +30,7 @@ instance HasActions env ArousingSuspicions where
   getActions i window (ArousingSuspicions attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env ArousingSuspicions where
-  runMessage msg t@(ArousingSuspicions attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(ArousingSuspicions attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid
       criminals <- getSetList @EnemyId ([Criminal], lid)

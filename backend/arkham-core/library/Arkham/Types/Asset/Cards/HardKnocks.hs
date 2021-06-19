@@ -6,6 +6,9 @@ module Arkham.Types.Asset.Cards.HardKnocks
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -16,9 +19,6 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 
 newtype HardKnocks = HardKnocks AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -40,7 +40,7 @@ instance HasActions env HardKnocks where
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env HardKnocks where
-  runMessage msg a@(HardKnocks attrs@AssetAttrs {..}) = case msg of
+  runMessage msg a@(HardKnocks attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage
         (CreateWindowModifierEffect
@@ -51,7 +51,8 @@ instance (AssetRunner env) => RunMessage env HardKnocks where
         )
     UseCardAbility iid source _ 2 _ | isSource attrs source ->
       a <$ unshiftMessage
-        (CreateWindowModifierEffect EffectSkillTestWindow
+        (CreateWindowModifierEffect
+          EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillAgility 1])
           source
           (InvestigatorTarget iid)

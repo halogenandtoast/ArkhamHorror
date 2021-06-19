@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.VipArea
   ( vipArea
   , VipArea(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -46,5 +45,4 @@ instance ActionRunner env => HasActions env VipArea where
   getActions iid window (VipArea attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env VipArea where
-  runMessage msg (VipArea attrs@LocationAttrs {..}) =
-    VipArea <$> runMessage msg attrs
+  runMessage msg (VipArea attrs) = VipArea <$> runMessage msg attrs

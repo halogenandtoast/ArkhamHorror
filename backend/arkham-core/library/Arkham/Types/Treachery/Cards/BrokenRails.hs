@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.BrokenRails
   ( brokenRails
   , BrokenRails(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -29,7 +28,7 @@ instance HasActions env BrokenRails where
   getActions i window (BrokenRails attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env BrokenRails where
-  runMessage msg t@(BrokenRails attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(BrokenRails attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid
       investigatorIds <- getSetList lid

@@ -3,6 +3,9 @@ module Arkham.Types.Asset.Cards.ProfessorWarrenRice where
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -14,9 +17,6 @@ import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 
 newtype ProfessorWarrenRice = ProfessorWarrenRice AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -34,7 +34,7 @@ instance HasModifiersFor env ProfessorWarrenRice where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env ProfessorWarrenRice where
-  getActions iid (AfterDiscoveringClues You YourLocation) (ProfessorWarrenRice a@AssetAttrs {..})
+  getActions iid (AfterDiscoveringClues You YourLocation) (ProfessorWarrenRice a)
     = do
       lid <- getId @LocationId iid
       lastClue <- (== 0) . unClueCount <$> getCount lid

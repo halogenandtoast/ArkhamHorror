@@ -33,7 +33,7 @@ instance HasModifiersFor env SearchingForIzzie where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env SearchingForIzzie where
-  getActions iid NonFast (SearchingForIzzie attrs@TreacheryAttrs {..}) = do
+  getActions iid NonFast (SearchingForIzzie attrs) = do
     investigatorLocationId <- getId @LocationId iid
     pure
       [ ActivateCardAbilityAction

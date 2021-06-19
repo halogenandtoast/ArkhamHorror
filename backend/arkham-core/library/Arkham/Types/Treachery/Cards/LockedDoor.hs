@@ -36,7 +36,7 @@ instance HasModifiersFor env LockedDoor where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env LockedDoor where
-  getActions iid NonFast (LockedDoor a@TreacheryAttrs {..}) = do
+  getActions iid NonFast (LockedDoor a) = do
     investigatorLocationId <- getId @LocationId iid
     pure
       [ ActivateCardAbilityAction

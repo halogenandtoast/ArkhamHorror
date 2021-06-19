@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.CollapsingReality
   ( collapsingReality
   , CollapsingReality(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -28,7 +27,7 @@ instance HasActions env CollapsingReality where
   getActions i window (CollapsingReality attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env CollapsingReality where
-  runMessage msg t@(CollapsingReality attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(CollapsingReality attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid
       isExtradimensional <- member Extradimensional <$> getSet lid

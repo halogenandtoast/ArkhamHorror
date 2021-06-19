@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c9f941d274706dab881e625ef8b440f94e7f0a337beec8719330233a306721c5
+-- hash: fb5ae2595aa824e8215efc03fcdf2f2f7ccc57b7bb2a46c0fdaaa824f86d914c
 
 name:           arkham-core
 version:        0.0.0
@@ -943,7 +943,6 @@ test-suite spec
     , lens
     , mtl
     , random
-    , safe
     , these
     , unordered-containers >=0.2.12.0
     , uuid

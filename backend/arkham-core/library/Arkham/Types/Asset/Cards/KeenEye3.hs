@@ -6,6 +6,9 @@ module Arkham.Types.Asset.Cards.KeenEye3
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -16,9 +19,6 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 
 newtype KeenEye3 = KeenEye3 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -40,7 +40,7 @@ instance HasModifiersFor env KeenEye3 where
   getModifiersFor = noModifiersFor
 
 instance AssetRunner env => RunMessage env KeenEye3 where
-  runMessage msg a@(KeenEye3 attrs@AssetAttrs {..}) = case msg of
+  runMessage msg a@(KeenEye3 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage
         (CreateWindowModifierEffect

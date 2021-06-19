@@ -28,7 +28,7 @@ instance HasActions env RitesHowled where
   getActions i window (RitesHowled attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env RitesHowled where
-  runMessage msg t@(RitesHowled attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(RitesHowled attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
       t <$ unshiftMessages

@@ -38,7 +38,7 @@ instance HasId LocationId env InvestigatorId => HasModifiersFor env SpectralMist
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env SpectralMist where
-  getActions iid NonFast (SpectralMist a@TreacheryAttrs {..}) = do
+  getActions iid NonFast (SpectralMist a) = do
     investigatorLocationId <- getId @LocationId iid
     pure
       [ ActivateCardAbilityAction

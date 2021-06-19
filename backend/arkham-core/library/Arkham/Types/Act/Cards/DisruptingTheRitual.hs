@@ -27,7 +27,7 @@ disruptingTheRitual =
         }
 
 instance ActionRunner env => HasActions env DisruptingTheRitual where
-  getActions iid NonFast (DisruptingTheRitual a@ActAttrs {..}) = pure
+  getActions iid NonFast (DisruptingTheRitual a) = pure
     [ ActivateCardAbilityAction
         iid
         (mkAbility

@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.SomethingInTheDrinks
   ( SomethingInTheDrinks(..)
   , somethingInTheDrinks
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -29,7 +28,7 @@ instance HasActions env SomethingInTheDrinks where
   getActions i window (SomethingInTheDrinks attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env SomethingInTheDrinks where
-  runMessage msg t@(SomethingInTheDrinks attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(SomethingInTheDrinks attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
       scenarioLogs <- getSet ()
       investigatorIds <- getInvestigatorIds

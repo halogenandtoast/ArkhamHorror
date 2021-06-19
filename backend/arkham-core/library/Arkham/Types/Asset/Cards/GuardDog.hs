@@ -1,12 +1,13 @@
 module Arkham.Types.Asset.Cards.GuardDog
   ( GuardDog(..)
   , guardDog
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -14,8 +15,6 @@ import Arkham.Types.Message
 import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
 
 newtype GuardDog = GuardDog AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -47,7 +46,7 @@ instance HasActions env GuardDog where
   getActions i window (GuardDog attrs) = getActions i window attrs
 
 instance (AssetRunner env) => RunMessage env GuardDog where
-  runMessage msg a@(GuardDog attrs@AssetAttrs {..}) = case msg of
+  runMessage msg a@(GuardDog attrs) = case msg of
     UseCardAbility _ source (Just (SourceMetadata (EnemySource eid))) 1 _
       | isSource attrs source -> a <$ unshiftMessage
         (chooseOne

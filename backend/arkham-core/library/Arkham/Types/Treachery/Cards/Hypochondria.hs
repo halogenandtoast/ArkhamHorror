@@ -30,7 +30,7 @@ instance HasModifiersFor env Hypochondria where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Hypochondria where
-  getActions iid NonFast (Hypochondria a@TreacheryAttrs {..}) =
+  getActions iid NonFast (Hypochondria a) =
     withTreacheryInvestigator a $ \tormented -> do
       treacheryLocation <- getId tormented
       investigatorLocationId <- getId @LocationId iid

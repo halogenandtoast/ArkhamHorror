@@ -26,7 +26,7 @@ instance HasActions env OnWingsOfDarkness where
   getActions i window (OnWingsOfDarkness attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env OnWingsOfDarkness where
-  runMessage msg t@(OnWingsOfDarkness attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(OnWingsOfDarkness attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ unshiftMessages
       [RevelationSkillTest iid source SkillAgility 4, Discard (toTarget attrs)]
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _

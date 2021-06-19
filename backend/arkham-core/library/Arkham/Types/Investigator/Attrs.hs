@@ -14,8 +14,8 @@ import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
-import Arkham.Types.Classes hiding (discard)
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes hiding (discard)
 import Arkham.Types.CommitRestriction
 import Arkham.Types.Cost
 import Arkham.Types.EnemyId
@@ -207,7 +207,7 @@ getHandSize attrs = do
 
 getActionsForTurn
   :: (MonadReader env m, HasModifiersFor env ()) => InvestigatorAttrs -> m Int
-getActionsForTurn attrs@InvestigatorAttrs {..} = do
+getActionsForTurn attrs = do
   modifiers <-
     map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
   pure $ foldr applyModifier 3 modifiers
@@ -217,7 +217,7 @@ getActionsForTurn attrs@InvestigatorAttrs {..} = do
 
 getCanDiscoverClues
   :: (MonadReader env m, HasModifiersFor env ()) => InvestigatorAttrs -> m Bool
-getCanDiscoverClues attrs@InvestigatorAttrs {..} = do
+getCanDiscoverClues attrs = do
   modifiers <-
     map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
   pure $ not (any match modifiers)
@@ -227,7 +227,7 @@ getCanDiscoverClues attrs@InvestigatorAttrs {..} = do
 
 getCanSpendClues
   :: (MonadReader env m, HasModifiersFor env ()) => InvestigatorAttrs -> m Bool
-getCanSpendClues attrs@InvestigatorAttrs {..} = do
+getCanSpendClues attrs = do
   modifiers <-
     map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
   pure $ not (any match modifiers)
@@ -255,7 +255,8 @@ getModifiedSanity attrs@InvestigatorAttrs {..} = do
   applyModifier (SanityModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
+removeFromSlots
+  :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = fmap (map (removeIfMatches aid))
 
 fitsAvailableSlots :: [SlotType] -> [Trait] -> InvestigatorAttrs -> Bool

@@ -27,7 +27,7 @@ instance HasActions env UmordhothsHunger where
   getActions i window (UmordhothsHunger attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env UmordhothsHunger where
-  runMessage msg t@(UmordhothsHunger attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(UmordhothsHunger attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
       msgs <- for investigatorIds $ \iid -> do

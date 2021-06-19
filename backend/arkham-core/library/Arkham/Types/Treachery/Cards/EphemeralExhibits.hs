@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.EphemeralExhibits
   ( ephemeralExhibits
   , EphemeralExhibits(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -29,7 +28,7 @@ instance HasActions env EphemeralExhibits where
   getActions i window (EphemeralExhibits attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env EphemeralExhibits where
-  runMessage msg t@(EphemeralExhibits attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(EphemeralExhibits attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ unshiftMessage
       (BeginSkillTest
         iid

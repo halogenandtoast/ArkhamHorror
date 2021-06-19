@@ -29,10 +29,9 @@ theMaskedHunter uuid =
     . (uniqueL .~ True)
 
 instance HasCount PlayerCount env () => HasModifiersFor env TheMaskedHunter where
-  getModifiersFor _ target (TheMaskedHunter a@EnemyAttrs {..})
-    | isTarget a target = do
-      healthModifier <- getPlayerCountValue (PerPlayer 2)
-      pure $ toModifiers a [HealthModifier healthModifier]
+  getModifiersFor _ target (TheMaskedHunter a) | isTarget a target = do
+    healthModifier <- getPlayerCountValue (PerPlayer 2)
+    pure $ toModifiers a [HealthModifier healthModifier]
   getModifiersFor _ (InvestigatorTarget iid) (TheMaskedHunter a@EnemyAttrs {..})
     = if iid `elem` enemyEngagedInvestigators
       then pure $ toModifiers a [CannotDiscoverClues, CannotSpendClues]

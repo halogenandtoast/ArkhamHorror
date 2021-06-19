@@ -29,7 +29,7 @@ instance HasActions env VastExpanse where
   getActions i window (VastExpanse attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env VastExpanse where
-  runMessage msg t@(VastExpanse attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(VastExpanse attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       extradimensionalCount <- length
         <$> getSetList @LocationId [Extradimensional]

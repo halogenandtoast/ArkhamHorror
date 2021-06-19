@@ -1,22 +1,21 @@
 module Arkham.Types.Enemy.Cards.AvianThrall
   ( AvianThrall(..)
   , avianThrall
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
+import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Modifier
 import Arkham.Types.Prey
 import Arkham.Types.SkillType
 import Arkham.Types.Source
-import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Runner
-import Arkham.Types.Game.Helpers
 import Arkham.Types.Trait
 
 newtype AvianThrall = AvianThrall EnemyAttrs
@@ -46,5 +45,4 @@ instance ActionRunner env => HasActions env AvianThrall where
   getActions i window (AvianThrall attrs) = getActions i window attrs
 
 instance EnemyRunner env => RunMessage env AvianThrall where
-  runMessage msg (AvianThrall attrs@EnemyAttrs {..}) =
-    AvianThrall <$> runMessage msg attrs
+  runMessage msg (AvianThrall attrs) = AvianThrall <$> runMessage msg attrs

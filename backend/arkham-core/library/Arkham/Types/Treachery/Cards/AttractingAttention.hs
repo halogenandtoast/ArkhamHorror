@@ -27,18 +27,17 @@ instance HasActions env AttractingAttention where
   getActions i window (AttractingAttention attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env AttractingAttention where
-  runMessage msg t@(AttractingAttention attrs@TreacheryAttrs {..}) =
-    case msg of
-      Revelation iid source | isSource attrs source -> do
-        lid <- getId iid
-        broodOfYogSothoth <- getSetList (CardCode "02255")
+  runMessage msg t@(AttractingAttention attrs) = case msg of
+    Revelation iid source | isSource attrs source -> do
+      lid <- getId iid
+      broodOfYogSothoth <- getSetList (CardCode "02255")
 
-        t <$ unshiftMessages
-          (chooseOneAtATime
-              iid
-              [ MoveToward (EnemyTarget eid) (LocationWithId lid)
-              | eid <- broodOfYogSothoth
-              ]
-          : [Discard (toTarget attrs)]
-          )
-      _ -> AttractingAttention <$> runMessage msg attrs
+      t <$ unshiftMessages
+        (chooseOneAtATime
+            iid
+            [ MoveToward (EnemyTarget eid) (LocationWithId lid)
+            | eid <- broodOfYogSothoth
+            ]
+        : [Discard (toTarget attrs)]
+        )
+    _ -> AttractingAttention <$> runMessage msg attrs

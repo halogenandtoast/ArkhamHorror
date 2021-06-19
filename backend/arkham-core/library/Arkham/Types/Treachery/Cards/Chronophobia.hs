@@ -30,7 +30,7 @@ instance HasModifiersFor env Chronophobia where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Chronophobia where
-  getActions iid NonFast (Chronophobia a@TreacheryAttrs {..}) =
+  getActions iid NonFast (Chronophobia a) =
     withTreacheryInvestigator a $ \tormented -> do
       investigatorLocationId <- getId @LocationId iid
       treacheryLocation <- getId tormented

@@ -3,8 +3,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Entity.Arkham.Game
   ( module Entity.Arkham.Game
-  )
-where
+  ) where
 
 import Arkham.Types.Game
 import Arkham.Types.Message
@@ -15,7 +14,7 @@ import Database.Persist.TH
 import Json
 import Orphans ()
 
-share [mkPersist sqlSettings, mkDeleteCascade sqlSettings] [persistLowerCase|
+share [mkPersist sqlSettings] [persistLowerCase|
 ArkhamGame sql=arkham_games
   Id UUID default=uuid_generate_v4()
   name Text

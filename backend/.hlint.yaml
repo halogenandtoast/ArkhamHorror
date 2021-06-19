@@ -42,6 +42,7 @@
   - -XStandaloneDeriving
   - -XTypeApplications
   - -XTypeFamilies
+  - -XImportQualifiedPost
 
 - modules:
   - {name: [Data.Set], as: Set}

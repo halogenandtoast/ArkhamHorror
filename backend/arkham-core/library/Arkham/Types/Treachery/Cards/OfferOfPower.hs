@@ -23,7 +23,7 @@ instance HasActions env OfferOfPower where
   getActions i window (OfferOfPower attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env OfferOfPower where
-  runMessage msg t@(OfferOfPower attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(OfferOfPower attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       t <$ unshiftMessages
         [ chooseOne
@@ -35,7 +35,9 @@ instance TreacheryRunner env => RunMessage env OfferOfPower where
             , PlaceDoomOnAgenda
             , AdvanceAgendaIfThresholdSatisfied
             ]
-          , Label "Take 2 horror" [InvestigatorAssignDamage iid source DamageAny 0 2]
+          , Label
+            "Take 2 horror"
+            [InvestigatorAssignDamage iid source DamageAny 0 2]
           ]
         , Discard $ toTarget attrs
         ]

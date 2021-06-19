@@ -32,17 +32,12 @@ library:
   source-dirs: library
   dependencies:
     - aeson >= 1.5.4.1
-    - aeson-casing
-    - mtl
     - lens
     - unordered-containers >= 0.2.12.0
     - hashable
     - safe
-    - semialign
     - these
-    - these-lens
     - classy-prelude
-    - pretty-simple
     - uuid
     - random
     - random-shuffle
@@ -52,6 +47,11 @@ library:
     - MonadRandom
     - extra
     - template-haskell
+    - aeson-casing
+    - mtl
+    - these-lens
+    - semialign
+    - pretty-simple
 
 tests:
   spec:
@@ -70,6 +70,5 @@ tests:
       - uuid
       - unordered-containers >= 0.2.12.0
       - mtl
-      - safe
       - MonadRandom
       - random

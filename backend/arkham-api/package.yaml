@@ -91,11 +91,12 @@ library:
     - warp
     - websockets
     - yaml
-    - yesod
     - yesod-core
     - yesod-test
     - yesod-static
     - yesod-websockets
+    - directory
+    - unix
 
 executables:
   arkham-api:

@@ -57,13 +57,8 @@ WORKDIR /opt/arkham/src/backend
 COPY ./backend/stack.yaml /opt/arkham/src/backend/stack.yaml
 COPY ./backend/arkham-api/package.yaml /opt/arkham/src/backend/arkham-api/package.yaml
 COPY ./backend/arkham-core/package.yaml /opt/arkham/src/backend/arkham-core/package.yaml
-RUN sed -i -e '/nix:/,+3d' stack.yaml
 RUN stack --no-terminal setup
-
-WORKDIR /opt/arkham/src/backend/arkham-api
-RUN sed -i '/arkham-core/d' package.yaml
 RUN stack install yesod-bin --install-ghc --ghc-options '-j4 +RTS -A64m -n2m -RTS'
-RUN stack --no-terminal test --only-dependencies --ghc-options '-j4 +RTS -A64m -n2m -RTS'
 
 FROM heroku/heroku:18 as api
 
@@ -90,9 +85,6 @@ RUN mkdir -p /opt/arkham/bin
 COPY ./backend /opt/arkham/src/backend
 COPY --from=frontend /opt/arkham/src/frontend/dist /opt/arkham/src/frontend/dist
 COPY --from=dependencies /root/.stack /root/.stack
-
-WORKDIR /opt/arkham/src/backend
-RUN sed -i -e '/nix:/,+3d' stack.yaml
 
 WORKDIR /opt/arkham/src/backend/arkham-api
 RUN stack --no-terminal build --ghc-options '-j4 +RTS -A64m -n2m -RTS'

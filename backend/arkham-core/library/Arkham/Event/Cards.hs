@@ -37,8 +37,8 @@ event cardCode name cost classSymbol = CardDef
   , cdUnique = False
   }
 
-allEventCards :: HashMap CardCode CardDef
-allEventCards = mapFromList
+allPlayerEventCards :: HashMap CardCode CardDef
+allPlayerEventCards = mapFromList
   [ ("01010", onTheLam)
   , ("01013", darkMemory)
   , ("01022", evidence)
@@ -79,6 +79,7 @@ allEventCards = mapFromList
   , ("02107", iveGotAPlan)
   , ("02109", contraband)
   , ("02111", delveTooDeep)
+  , ("02113", oops)
   , ("03022", letMeHandleThis)
   , ("04149", secondWind)
   , ("05317", bloodRite)
@@ -384,6 +385,13 @@ delveTooDeep :: CardDef
 delveTooDeep = (event "02111" "Delve Too Deep" 1 Mystic)
   { cdCardTraits = setFromList [Insight]
   , cdVictoryPoints = Just 1
+  }
+
+oops :: CardDef
+oops = (event "02113" "Oops" 2 Survivor)
+  { cdCardTraits = singleton Fortune
+  , cdFast = True
+  , cdWindows = mempty -- We handle this via behavior
   }
 
 letMeHandleThis :: CardDef

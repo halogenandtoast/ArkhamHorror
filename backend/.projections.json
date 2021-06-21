@@ -221,7 +221,9 @@
       "",
       "import Arkham.Prelude",
       "",
+      "import Arkham.Types.Classes",
       "import Arkham.Types.Event.Attrs",
+      "import Arkham.Types.Id",
       "",
       "newtype {dot} = {dot} EventAttrs",
       "  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)",
@@ -236,7 +238,7 @@
       "instance HasModifiersFor env {dot} where",
       "  getModifiersFor = noModifiersFor",
       "",
-      "instance HasQueue env => RunMessage env {dot} where",
+      "instance RunMessage env {dot} where",
       "  runMessage msg ({dot} attrs) = {dot} <$> runMessage msg attrs"
     ]
   },

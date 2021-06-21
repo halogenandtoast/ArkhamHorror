@@ -5,14 +5,13 @@ module Arkham.PlayerCard
   , lookupPlayerCardName
   , allPlayerCards
   , basePlayerCard
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Asset.Cards (allPlayerAssetCards)
 import Arkham.Enemy.Cards (allPlayerEnemyCards)
-import Arkham.Event.Cards (allEventCards)
+import Arkham.Event.Cards (allPlayerEventCards)
 import Arkham.Skill.Cards (allPlayerSkillCards)
 import Arkham.Treachery.Cards (allPlayerTreacheryCards)
 import Arkham.Types.Card.CardCode
@@ -43,15 +42,14 @@ lookupPlayerCardDef cardCode =
     $ lookup cardCode allPlayerCards
 
 allPlayerCards :: HashMap CardCode CardDef
-allPlayerCards = allPlayerEnemyCards <> allPlayerTreacheryCards <> allPlayerAssetCards <> allEventCards <> allPlayerSkillCards
+allPlayerCards =
+  allPlayerEnemyCards
+    <> allPlayerTreacheryCards
+    <> allPlayerAssetCards
+    <> allPlayerEventCards
+    <> allPlayerSkillCards
 
-basePlayerCard
-  :: CardCode
-  -> Name
-  -> Int
-  -> CardType
-  -> ClassSymbol
-  -> CardDef
+basePlayerCard :: CardCode -> Name -> Int -> CardType -> ClassSymbol -> CardDef
 basePlayerCard cardCode name cost cardType classSymbol = CardDef
   { cdCardCode = cardCode
   , cdName = name

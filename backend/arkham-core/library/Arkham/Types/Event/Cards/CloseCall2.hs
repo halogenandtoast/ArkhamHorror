@@ -33,10 +33,10 @@ instance (GetCardDef env EnemyId, HasSet Trait env EnemyId) => HasActions env Cl
         ]
   getActions i window (CloseCall2 attrs) = getActions i window attrs
 
-instance HasQueue env => RunMessage env CloseCall2 where
-  runMessage msg e@(CloseCall2 attrs@EventAttrs {..}) = case msg of
+instance RunMessage env CloseCall2 where
+  runMessage msg e@(CloseCall2 attrs) = case msg of
     InvestigatorPlayEvent _iid eid (Just (EnemyTarget enemyId))
-      | eid == eventId -> e <$ unshiftMessages
+      | eid == toId attrs -> e <$ unshiftMessages
         [ ShuffleBackIntoEncounterDeck (EnemyTarget enemyId)
         , Discard (toTarget attrs)
         ]

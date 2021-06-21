@@ -5,16 +5,14 @@ module Arkham.Types.Event
 import Arkham.Prelude
 
 import Arkham.Types.Asset.Uses (UseType)
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Cards
 import Arkham.Types.Event.Runner
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Query
+import Arkham.Types.SkillTest
 import Arkham.Types.Trait
 
 createEvent :: IsCard a => a -> InvestigatorId -> Event
@@ -61,6 +59,7 @@ data Event
   | IveGotAPlan' IveGotAPlan
   | Contraband' Contraband
   | DelveTooDeep' DelveTooDeep
+  | Oops' Oops
   | LetMeHandleThis' LetMeHandleThis
   | SecondWind' SecondWind
   | BloodRite' BloodRite
@@ -84,6 +83,10 @@ deriving anyclass instance
   , GetCardDef env EnemyId
   , HasSet Trait env EnemyId
   , HasSet AssetId env (InvestigatorId, UseType)
+  , HasId LocationId env InvestigatorId
+  , HasSet EnemyId env LocationId
+  , HasSet EnemyId env InvestigatorId
+  , HasSkillTest env
   )
   => HasActions env Event
 deriving anyclass instance HasCount ClueCount env InvestigatorId => HasModifiersFor env Event
@@ -156,6 +159,7 @@ allEvents = mapFromList
   , ("02107", (IveGotAPlan' .) . iveGotAPlan)
   , ("02109", (Contraband' .) . contraband)
   , ("02111", (DelveTooDeep' .) . delveTooDeep)
+  , ("02113", (Oops' .) . oops)
   , ("03022", (LetMeHandleThis' .) . letMeHandleThis)
   , ("04149", (SecondWind' .) . secondWind)
   , ("05317", (BloodRite' .) . bloodRite)

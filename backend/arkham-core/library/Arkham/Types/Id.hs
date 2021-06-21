@@ -1,7 +1,6 @@
 module Arkham.Types.Id
   ( module X
-  )
-where
+  ) where
 
 import Arkham.Types.ActId as X
 import Arkham.Types.AgendaId as X

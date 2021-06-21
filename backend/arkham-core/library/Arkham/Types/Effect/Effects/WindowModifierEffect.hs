@@ -39,9 +39,13 @@ instance HasModifiersFor env WindowModifierEffect where
   getModifiersFor _ target (WindowModifierEffect EffectAttrs {..})
     | target == effectTarget = case effectMetadata of
       Just (EffectModifiers modifiers) -> pure modifiers
+      Just (FailedByEffectModifiers modifiers) -> pure modifiers
       _ -> pure []
   getModifiersFor _ _ _ = pure []
 
 instance HasQueue env => RunMessage env WindowModifierEffect where
-  runMessage msg (WindowModifierEffect attrs) =
-    WindowModifierEffect <$> runMessage msg attrs
+  runMessage msg e@(WindowModifierEffect attrs) = case msg of
+    CancelFailedByModifierEffects -> case effectMetadata attrs of
+      Just (FailedByEffectModifiers _) -> e <$ unshiftMessage (DisableEffect $ toId attrs)
+      _ -> pure e
+    _ -> WindowModifierEffect <$> runMessage msg attrs

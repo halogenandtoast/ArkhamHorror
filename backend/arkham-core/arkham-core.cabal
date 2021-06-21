@@ -3,8 +3,6 @@ cabal-version: 1.12
 -- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: 1b0c5e5849166150bae9c813c2d2e1a9ae593a83a3e1671a8bac05dfb27de8e5
 
 name:           arkham-core
 version:        0.0.0
@@ -420,6 +418,7 @@ library
       Arkham.Types.Event.Cards.MindWipe1
       Arkham.Types.Event.Cards.MindWipe3
       Arkham.Types.Event.Cards.OnTheLam
+      Arkham.Types.Event.Cards.Oops
       Arkham.Types.Event.Cards.SearchForTheTruth
       Arkham.Types.Event.Cards.SecondWind
       Arkham.Types.Event.Cards.SeekingAnswers
@@ -887,6 +886,7 @@ test-suite spec
       Arkham.Types.Event.Cards.EmergencyCacheSpec
       Arkham.Types.Event.Cards.Lucky2Spec
       Arkham.Types.Event.Cards.LuckySpec
+      Arkham.Types.Event.Cards.OopsSpec
       Arkham.Types.Event.Cards.SearchForTheTruthSpec
       Arkham.Types.Event.Cards.WillToSurvive4Spec
       Arkham.Types.GameSpec

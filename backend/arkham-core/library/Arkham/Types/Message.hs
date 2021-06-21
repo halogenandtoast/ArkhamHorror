@@ -166,6 +166,7 @@ data Message
   | CampaignStep (Maybe CampaignStep)
   | CancelNext MessageType
   | CancelSkillEffects
+  | CancelFailedByModifierEffects
   | ChangeCardToFast InvestigatorId CardId
   | CheckAttackOfOpportunity InvestigatorId Bool
   | CheckDefeated Source

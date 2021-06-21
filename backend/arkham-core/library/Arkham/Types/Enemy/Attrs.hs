@@ -526,7 +526,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
           skillType
           enemyFight'
         )
-    PassedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ _
+    After (PassedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ _)
       | isTarget a target
       -> do
         whenWindows <- checkWindows
@@ -537,7 +537,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
           (\who -> pure [AfterSuccessfulAttackEnemy who enemyId])
         a <$ unshiftMessages
           (whenWindows <> [InvestigatorDamageEnemy iid enemyId] <> afterWindows)
-    FailedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ _
+    After (FailedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ _)
       | isTarget a target
       -> do
         keywords <- getModifiedKeywords a

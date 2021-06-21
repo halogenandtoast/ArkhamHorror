@@ -69,7 +69,7 @@ instance (AssetRunner env) => RunMessage env Shotgun4 where
            a <$ unshiftMessage
              (CreateWindowModifierEffect
                EffectSkillTestWindow
-               (EffectModifiers $ toModifiers attrs [DamageDealt val])
+               (FailedByEffectModifiers $ toModifiers attrs [DamageDealt val])
                source
                (InvestigatorTarget iid)
              )

@@ -1,6 +1,5 @@
 module Arkham.Types.Source
   ( Source(..)
-  , sourceIsAsset
   ) where
 
 import Arkham.Prelude
@@ -53,7 +52,3 @@ data Source
   | AbilitySource Source Int
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
-
-sourceIsAsset :: Source -> Bool
-sourceIsAsset (AssetSource _) = True
-sourceIsAsset _ = False

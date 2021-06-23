@@ -44,9 +44,6 @@ tokenModifierToInt = \case
   NoModifier -> Just 0
   ZeroModifier -> Just 0
 
-tokenModifier :: TokenValue -> TokenModifier
-tokenModifier (TokenValue _ x) = x
-
 data DrawnToken = DrawnToken
   { drawnTokenId :: TokenId
   , drawnTokenFace :: Token

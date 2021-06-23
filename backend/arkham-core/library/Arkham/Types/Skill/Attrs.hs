@@ -13,9 +13,6 @@ import Arkham.Types.Name
 import Arkham.Types.SkillId
 import Arkham.Types.Source
 import Arkham.Types.Target
-
-
-import Arkham.Types.Skill.Runner
 import Arkham.Types.Trait
 import qualified Data.HashMap.Strict as HashMap
 
@@ -102,5 +99,5 @@ weaknessAttrs iid eid cardCode =
 instance HasActions env SkillAttrs where
   getActions _ _ _ = pure []
 
-instance (SkillRunner env) => RunMessage env SkillAttrs where
+instance RunMessage env SkillAttrs where
   runMessage _ a = pure a

@@ -595,9 +595,9 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
       | isTarget a target
       -> do
         keywords <- getModifiedKeywords a
-        if Keyword.Retaliate `elem` keywords
-          then a <$ unshiftMessage (EnemyAttack iid enemyId)
-          else a <$ unshiftMessage (FailedAttackEnemy iid enemyId)
+        a <$ if Keyword.Retaliate `elem` keywords
+          then unshiftMessage (EnemyAttack iid enemyId)
+          else unshiftMessage (FailedAttackEnemy iid enemyId)
     EnemyAttackIfEngaged eid miid | eid == enemyId -> a <$ case miid of
       Just iid | iid `elem` enemyEngagedInvestigators ->
         unshiftMessage (EnemyAttack iid enemyId)

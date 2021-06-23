@@ -53,11 +53,6 @@ slotItem = \case
   Slot _ masset -> masset
   TraitRestrictedSlot _ _ masset -> masset
 
-sourceOfSlot :: Slot -> Source
-sourceOfSlot = \case
-  Slot source _ -> source
-  TraitRestrictedSlot source _ _ -> source
-
 removeIfMatches :: AssetId -> Slot -> Slot
 removeIfMatches aid = \case
   Slot source masset ->

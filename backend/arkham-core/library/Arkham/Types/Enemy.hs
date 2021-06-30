@@ -304,5 +304,5 @@ getEnemyVictory = enemyVictory . toAttrs
 
 getBearer :: Enemy -> Maybe InvestigatorId
 getBearer enemy = case enemyPrey (toAttrs enemy) of
-  Bearer iid -> Just (InvestigatorId $ unBearerId iid)
+  Bearer iid -> Just (unBearerId iid)
   _ -> Nothing

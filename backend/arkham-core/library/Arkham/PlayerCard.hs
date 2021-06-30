@@ -29,6 +29,7 @@ genPlayerCard cardCode = do
   pure $ MkPlayerCard
     { pcId = cardId
     , pcDef = lookupPlayerCardDef cardCode
+    , pcBearer = Nothing
     }
 
 lookupPlayerCardName :: CardCode -> Name
@@ -39,6 +40,7 @@ lookupPlayerCard :: CardCode -> CardId -> PlayerCard
 lookupPlayerCard cardCode cardId = MkPlayerCard
   { pcId = cardId
   , pcDef = lookupPlayerCardDef cardCode
+  , pcBearer = Nothing
   }
 
 lookupPlayerCardDef :: CardCode -> PlayerCardDef
@@ -261,7 +263,6 @@ basePlayerCard cardCode name cost cardType classSymbol = PlayerCardDef
   , pcLevel = 0
   , pcCardType = cardType
   , pcWeakness = False
-  , pcBearer = Nothing
   , pcClassSymbol = classSymbol
   , pcSkills = mempty
   , pcTraits = mempty

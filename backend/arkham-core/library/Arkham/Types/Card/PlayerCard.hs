@@ -8,6 +8,7 @@ import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Class
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
+import Arkham.Types.InvestigatorId
 import Arkham.Types.ClassSymbol
 import Arkham.Types.CommitRestriction
 import Arkham.Types.Keyword (Keyword)
@@ -24,7 +25,7 @@ data PlayerCardType
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-newtype BearerId = BearerId { unBearerId :: CardCode }
+newtype BearerId = BearerId { unBearerId :: InvestigatorId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
 
 newtype DiscardedPlayerCard = DiscardedPlayerCard { unDiscardedPlayerCard :: PlayerCard }
@@ -35,6 +36,7 @@ data AttackOfOpportunityModifier = DoesNotProvokeAttacksOfOpportunity
 
 data PlayerCard = MkPlayerCard
   { pcId :: CardId
+  , pcBearer :: Maybe InvestigatorId
   , pcDef :: PlayerCardDef
   }
   deriving stock (Show, Eq, Generic)
@@ -47,7 +49,6 @@ data PlayerCardDef = PlayerCardDef
   , pcLevel :: Int
   , pcCardType :: PlayerCardType
   , pcWeakness :: Bool
-  , pcBearer :: Maybe BearerId
   , pcClassSymbol :: ClassSymbol
   , pcSkills :: [SkillType]
   , pcTraits :: HashSet Trait

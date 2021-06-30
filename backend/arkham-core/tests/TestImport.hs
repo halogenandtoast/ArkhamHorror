@@ -211,6 +211,7 @@ testPlayerCard f = do
   pure $ MkPlayerCard
     { pcId = cardId
     , pcDef = f $ basePlayerCard "00000" "Test" 0 AssetType Guardian
+    , pcBearer = Nothing
     }
 
 buildPlayerCard :: MonadIO m => CardCode -> m PlayerCard

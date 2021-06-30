@@ -18,6 +18,7 @@ import Control.Lens as X
   , traverseOf_
   , view
   , (%~)
+  , (<>~)
   , (&)
   , (+~)
   , (-~)

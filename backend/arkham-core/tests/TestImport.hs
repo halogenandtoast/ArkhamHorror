@@ -191,13 +191,6 @@ testScenario cardCode f =
   let name = mkName $ unCardCode cardCode
   in pure $ baseScenario cardCode name [] [] Easy f
 
-insertEntity
-  :: (Entity v, EntityId v ~ k, Eq k, Hashable k)
-  => v
-  -> HashMap k v
-  -> HashMap k v
-insertEntity a = insertMap (toId a) a
-
 buildEvent :: MonadRandom m => CardCode -> Investigator -> m Event
 buildEvent cardCode investigator =
   lookupEvent cardCode (toId investigator) <$> getRandom

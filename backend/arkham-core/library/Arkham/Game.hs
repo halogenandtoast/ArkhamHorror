@@ -19,7 +19,7 @@ import Data.Align
 import Safe (headNote)
 import System.Environment
 import Text.Pretty.Simple
-import Text.Read hiding (get, lift)
+import Text.Read (readMaybe)
 
 newCampaign
   :: (MonadIO m, MonadRandom m)
@@ -135,9 +135,9 @@ addInvestigator uid i d = do
     iid = toId i
     g' =
       game
-        & (investigatorsL %~ insertMap iid i)
+        & (investigatorsL %~ insertEntity i)
         & (playersL %~ insertMap uid iid)
-        & (playerOrderL %~ (<> [iid]))
+        & (playerOrderL <>~ [iid])
         & (playerTurnOrderL %~ (<> [iid]))
     gameState = if length (g' ^. playersL) < g' ^. playerCountL
       then IsPending

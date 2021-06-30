@@ -83,3 +83,10 @@ instance SourceEntity a => SourceEntity (a `With` b) where
 
 instance NamedEntity a => NamedEntity (a `With` b) where
   toName (a `With` _) = toName a
+
+insertEntity
+  :: (Entity v, EntityId v ~ k, Eq k, Hashable k)
+  => v
+  -> HashMap k v
+  -> HashMap k v
+insertEntity a = insertMap (toId a) a

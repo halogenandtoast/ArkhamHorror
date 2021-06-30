@@ -9,6 +9,7 @@ import Arkham.PlayerCard
 import Arkham.EncounterCard
 import Arkham.Types.AgendaId
 import Arkham.Types.Card
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.Exception
@@ -160,11 +161,10 @@ weaknessAttrs
   -> TreacheryAttrs
 weaknessAttrs tid iid cardCode =
   let
-    MkPlayerCard {..} =
+    PlayerCardDef {..} =
       fromJustNote
           ("missing weakness card: " <> show cardCode)
           (HashMap.lookup cardCode allPlayerCards)
-        $ unTreacheryId tid
   in
     TreacheryAttrs
       { treacheryName = TreacheryName (mkName pcName)

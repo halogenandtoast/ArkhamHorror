@@ -10,6 +10,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Action hiding (Ability, TakenAction)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Card
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Attrs
@@ -168,14 +169,15 @@ instance
         let
           cards = filter
             (and . sequence
-              [ maybe (const True) (==) mPlayerCardType . pcCardType
-              , (|| null traits) . notNull . intersection traits . pcTraits
+              [ maybe (const True) (==) mPlayerCardType . pcCardType . pcDef
+              , (|| null traits) . notNull . intersection traits . pcTraits . pcDef
               , (|| null skillTypes)
               . not
               . null
               . intersection (insertSet SkillWild skillTypes)
               . setFromList
               . pcSkills
+              . pcDef
               ]
             )
             handCards
@@ -185,7 +187,7 @@ instance
         handCards <- mapMaybe (preview _PlayerCard . unHandCard) <$> getList iid
         let
           cards = filter ((> 0) . fst) $ map
-            (toFst (count (`member` insertSet SkillWild skillTypes) . pcSkills))
+            (toFst (count (`member` insertSet SkillWild skillTypes) . pcSkills . pcDef))
             handCards
           cardMsgs = map
             (\(n, card) -> if n >= x

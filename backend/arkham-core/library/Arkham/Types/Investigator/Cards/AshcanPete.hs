@@ -9,6 +9,7 @@ import Arkham.Prelude
 import Arkham.Types.Ability
 import Arkham.Types.AssetId
 import Arkham.Types.Card
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Cost
@@ -84,7 +85,7 @@ instance (InvestigatorRunner env) => RunMessage env AshcanPete where
     SetupInvestigators -> do
       let
         (before, after) =
-          break ((== "02014") . pcCardCode) (unDeck investigatorDeck)
+          break ((== "02014") . pcCardCode . pcDef) (unDeck investigatorDeck)
       case after of
         (card : rest) -> do
           unshiftMessage

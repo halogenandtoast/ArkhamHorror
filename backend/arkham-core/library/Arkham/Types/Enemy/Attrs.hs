@@ -11,6 +11,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
@@ -117,11 +118,10 @@ baseAttrs eid cardCode f =
 weaknessBaseAttrs :: EnemyId -> CardCode -> EnemyAttrs
 weaknessBaseAttrs eid cardCode =
   let
-    MkPlayerCard {..} =
+    PlayerCardDef {..} =
       fromJustNote
           ("missing player enemy weakness card: " <> show cardCode)
           (lookup cardCode allPlayerCards)
-        $ unEnemyId eid
   in
     EnemyAttrs
       { enemyName = EnemyName (mkName pcName)

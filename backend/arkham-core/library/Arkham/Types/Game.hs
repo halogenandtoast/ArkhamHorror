@@ -26,6 +26,7 @@ import Arkham.Types.AssetId
 import Arkham.Types.Campaign
 import Arkham.Types.CampaignId
 import Arkham.Types.Card
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.ChaosBag
@@ -926,7 +927,7 @@ instance HasGame env => HasSet HandCardId env (InvestigatorId, PlayerCardType) w
   getSet (iid, cardType) =
     setFromList
       . map (coerce . getCardId)
-      . filter (maybe False (playerCardMatch (cardType, mempty)) . toPlayerCard)
+      . filter (maybe False (playerCardMatch (cardType, mempty) . pcDef) . toPlayerCard)
       . handOf
       <$> getInvestigator iid
 
@@ -1962,7 +1963,7 @@ runGameMessage msg g = case msg of
         $ find ((== cardId) . getCardId) (handOf investigator)
     unshiftMessage (InvestigatorCommittedCard iid cardId)
     case card of
-      PlayerCard pc -> case pcCardType pc of
+      PlayerCard pc -> case pcCardType (pcDef pc) of
         SkillType -> do
           let
             skill = createSkill pc iid
@@ -1975,10 +1976,7 @@ runGameMessage msg g = case msg of
     let
       skillCardsWithOwner =
         flip map (mapToList $ g ^. skillsL) $ \(skillId, skill) ->
-          ( fromJustNote
-            "missing skill"
-            (lookup (getCardCode skill) allPlayerCards)
-            (unSkillId skillId)
+          ( lookupPlayerCard (getCardCode skill) (unSkillId skillId)
           , ownerOfSkill skill
           )
     unshiftMessages
@@ -2007,10 +2005,7 @@ runGameMessage msg g = case msg of
         fromJustNote ("No such skill: " <> show skillId)
           $ g
           ^? (skillsL . ix skillId)
-      card = fromJustNote
-        "no such skill"
-        (lookup (getCardCode skill) allPlayerCards)
-        (unSkillId skillId)
+      card = lookupPlayerCard (getCardCode skill) (unSkillId skillId)
     unshiftMessage (AddToHand iid (PlayerCard card))
     pure $ g & skillsL %~ deleteMap skillId
   After (ShuffleIntoDeck _ (AssetTarget aid)) ->
@@ -2018,10 +2013,7 @@ runGameMessage msg g = case msg of
   ShuffleIntoDeck iid (TreacheryTarget treacheryId) -> do
     treachery <- getTreachery treacheryId
     let
-      card = fromJustNote
-        "no such treachery"
-        (lookup (getCardCode treachery) allPlayerCards)
-        (unTreacheryId treacheryId)
+      card = lookupPlayerCard (getCardCode treachery) (unTreacheryId treacheryId)
     unshiftMessage (ShuffleCardsIntoDeck iid [card])
     pure $ g & treacheriesL %~ deleteMap treacheryId
   PlayDynamicCard iid cardId n _mtarget False -> do
@@ -2030,17 +2022,17 @@ runGameMessage msg g = case msg of
       card = fromJustNote "could not find card in hand"
         $ find ((== cardId) . getCardId) (handOf investigator)
     case card of
-      PlayerCard pc -> case pcCardType pc of
+      PlayerCard pc -> case pcCardType (pcDef pc) of
         PlayerTreacheryType -> error "unhandled"
         AssetType -> do
           let
             aid = AssetId cardId
             asset = fromJustNote
               "could not find asset"
-              (lookup (pcCardCode pc) allAssets)
+              (lookup (pcCardCode (pcDef pc)) allAssets)
               aid
           unshiftMessages
-            [ PlayedCard iid cardId (toName asset) (pcCardCode pc)
+            [ PlayedCard iid cardId (toName asset) (pcCardCode (pcDef pc))
             , InvestigatorPlayDynamicAsset
               iid
               aid
@@ -2054,7 +2046,7 @@ runGameMessage msg g = case msg of
             event = createEvent pc iid
             eid = toId event
           unshiftMessages
-            [ PlayedCard iid cardId (toName event) (pcCardCode pc)
+            [ PlayedCard iid cardId (toName event) (pcCardCode (pcDef pc))
             , InvestigatorPlayDynamicEvent iid eid n
             ]
           pure $ g & eventsL %~ insertMap eid event
@@ -2068,11 +2060,11 @@ runGameMessage msg g = case msg of
   PutCardIntoPlay iid card mtarget -> do
     let cardId = getCardId card
     case card of
-      PlayerCard pc -> case pcCardType pc of
+      PlayerCard pc -> case pcCardType (pcDef pc) of
         PlayerTreacheryType -> do
           let
             tid = TreacheryId cardId
-            treachery = lookupTreachery (pcCardCode pc) tid Nothing
+            treachery = lookupTreachery (pcCardCode (pcDef pc)) tid Nothing
           unshiftMessages [Revelation iid (TreacherySource tid)]
           pure $ g & treacheriesL %~ insertMap tid treachery
         AssetType -> do
@@ -2080,10 +2072,10 @@ runGameMessage msg g = case msg of
             aid = AssetId cardId
             asset = fromJustNote
               "could not find asset"
-              (lookup (pcCardCode pc) allAssets)
+              (lookup (pcCardCode (pcDef pc)) allAssets)
               aid
           unshiftMessages
-            [ PlayedCard iid cardId (toName asset) (pcCardCode pc)
+            [ PlayedCard iid cardId (toName asset) (pcCardCode (pcDef pc))
             , InvestigatorPlayAsset
               iid
               aid
@@ -2096,7 +2088,7 @@ runGameMessage msg g = case msg of
             event = createEvent pc iid
             eid = toId event
           unshiftMessages
-            [ PlayedCard iid cardId (toName event) (pcCardCode pc)
+            [ PlayedCard iid cardId (toName event) (pcCardCode (pcDef pc))
             , InvestigatorPlayEvent iid eid mtarget
             ]
           pure $ g & eventsL %~ insertMap eid event
@@ -2112,7 +2104,7 @@ runGameMessage msg g = case msg of
       enemy = createEnemy card
       eid = toId enemy
       bearerMessage = case card of
-        PlayerCard MkPlayerCard {..} -> case pcBearer of
+        PlayerCard MkPlayerCard {..} -> case pcBearer pcDef of
           Just bid -> EnemySetBearer eid bid
           Nothing -> error "The bearer was not set for a player enemy"
         _ -> error "this should definitely be a player card"
@@ -2293,7 +2285,7 @@ runGameMessage msg g = case msg of
       cardId = unEventId eid
       playerCard = do
         f <- lookup (getCardCode event) allPlayerCards
-        pure $ PlayerCard $ f cardId
+        pure $ PlayerCard $ MkPlayerCard cardId f
     case playerCard of
       Nothing -> error "missing"
       Just (PlayerCard pc) ->
@@ -2646,10 +2638,10 @@ runGameMessage msg g = case msg of
     newCardId <- getRandom
     let
       matches =
-        filter (playerCardMatch matcher . ($ newCardId)) (toList allPlayerCards)
+        filter (playerCardMatch matcher) (toList allPlayerCards)
     mcard <- case matches of
       [] -> pure Nothing
-      (x : xs) -> Just . ($ newCardId) <$> sample (x :| xs)
+      (x : xs) -> Just . MkPlayerCard newCardId <$> sample (x :| xs)
     g <$ unshiftMessage (RequestedPlayerCard iid source mcard)
   DiscardEncounterUntilFirst source matcher -> do
     let
@@ -2786,7 +2778,7 @@ runGameMessage msg g = case msg of
       treacheryId = toId treachery
     -- player treacheries will not trigger draw treachery windows
     unshiftMessages
-      $ [ RemoveCardFromHand iid (getCardCode card) | pcRevelation card ]
+      $ [ RemoveCardFromHand iid (getCardCode card) | pcRevelation (pcDef card) ]
       <> [ Revelation iid (TreacherySource treacheryId)
          , AfterRevelation iid treacheryId
          ]
@@ -2800,14 +2792,9 @@ runGameMessage msg g = case msg of
   Discard (EventTarget eid) -> do
     event <- getEvent eid
     let
-      mPlayerCard = do
-        f <- lookup (getCardCode event) allPlayerCards
-        pure $ f (unEventId eid)
-    case mPlayerCard of
-      Nothing -> error "missing"
-      Just pc -> do
-        unshiftMessage (AddToDiscard (ownerOfEvent event) pc)
-        pure $ g & eventsL %~ deleteMap eid
+      playerCard = lookupPlayerCard (getCardCode event) (unEventId eid)
+    unshiftMessage (AddToDiscard (ownerOfEvent event) playerCard)
+    pure $ g & eventsL %~ deleteMap eid
   Discard (TreacheryTarget tid) -> do
     withQueue_ $ filter (/= msg)
     treachery <- getTreachery tid
@@ -2817,7 +2804,10 @@ runGameMessage msg g = case msg of
         pure $ EncounterCard $ f (unTreacheryId tid)
       playerCard = do
         f <- lookup (getCardCode treachery) allPlayerCards
-        pure $ PlayerCard $ f (unTreacheryId tid)
+        pure $ PlayerCard $ MkPlayerCard
+          { pcId = unTreacheryId tid
+          , pcDef = f
+          }
     case encounterCard <|> playerCard of
       Nothing -> error "missing"
       Just (PlayerCard card) -> do

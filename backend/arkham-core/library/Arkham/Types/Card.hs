@@ -71,7 +71,7 @@ instance HasCost Card where
   getCost (EncounterCard _) = 0
 
 isDynamic :: Card -> Bool
-isDynamic (PlayerCard card) = case pcCost card of
+isDynamic (PlayerCard card) = case pcCost (pcDef card) of
   DynamicCost -> True
   _ -> False
 isDynamic (EncounterCard _) = False
@@ -86,4 +86,4 @@ toEncounterCard (PlayerCard _) = Nothing
 
 cardIsWeakness :: Card -> Bool
 cardIsWeakness (EncounterCard _) = False
-cardIsWeakness (PlayerCard pc) = pcWeakness pc
+cardIsWeakness (PlayerCard pc) = pcWeakness (pcDef pc)

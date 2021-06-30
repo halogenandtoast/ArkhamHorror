@@ -10,6 +10,7 @@ import Arkham.Types.Ability
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.EnemyId
@@ -70,11 +71,7 @@ instance IsCard AssetAttrs where
 baseAttrs :: AssetId -> CardCode -> AssetAttrs
 baseAttrs aid cardCode =
   let
-    MkPlayerCard {..} =
-      fromJustNote
-          ("missing player card" <> unpack (unCardCode cardCode))
-          (lookup cardCode allPlayerCards)
-        $ unAssetId aid
+    PlayerCardDef {..} = lookupPlayerCardDef cardCode
   in
     AssetAttrs
       { assetName = pcName

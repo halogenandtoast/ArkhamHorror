@@ -7,6 +7,7 @@ import Arkham.Prelude
 import Arkham.Json
 import Arkham.PlayerCard
 import Arkham.Types.Card
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
@@ -14,10 +15,7 @@ import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Source
 import Arkham.Types.Target
-
-
 import Arkham.Types.Trait
-import qualified Data.HashMap.Strict as HashMap
 
 data EventAttrs = EventAttrs
   { eventName :: Text
@@ -59,11 +57,7 @@ unshiftEffect attrs target = unshiftMessages
 baseAttrs :: InvestigatorId -> EventId -> CardCode -> EventAttrs
 baseAttrs iid eid cardCode =
   let
-    MkPlayerCard {..} =
-      fromJustNote
-          ("missing player card: " <> unpack (unCardCode cardCode))
-          (HashMap.lookup cardCode allPlayerCards)
-        $ unEventId eid
+    PlayerCardDef {..} = lookupPlayerCardDef cardCode
   in
     EventAttrs
       { eventName = pcName
@@ -79,11 +73,7 @@ baseAttrs iid eid cardCode =
 weaknessAttrs :: InvestigatorId -> EventId -> CardCode -> EventAttrs
 weaknessAttrs iid eid cardCode =
   let
-    MkPlayerCard {..} =
-      fromJustNote
-          "missing weakness card"
-          (HashMap.lookup cardCode allPlayerCards)
-        $ unEventId eid
+    PlayerCardDef {..} = lookupPlayerCardDef cardCode
   in
     EventAttrs
       { eventName = pcName

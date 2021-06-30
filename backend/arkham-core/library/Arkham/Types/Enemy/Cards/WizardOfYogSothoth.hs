@@ -7,6 +7,7 @@ where
 import Arkham.Prelude
 
 import Arkham.Types.Card
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
@@ -43,6 +44,6 @@ instance (EnemyRunner env) => RunMessage env WizardOfYogSothoth where
         (any (`member` ecTraits card) [Hex, Pact])
         (unshiftMessage (EnemyAttack iid enemyId))
     InvestigatorDrewPlayerCard iid card -> e <$ when
-      (any (`member` pcTraits card) [Hex, Pact])
+      (any (`member` pcTraits (pcDef card)) [Hex, Pact])
       (unshiftMessage (EnemyAttack iid enemyId))
     _ -> WizardOfYogSothoth <$> runMessage msg attrs

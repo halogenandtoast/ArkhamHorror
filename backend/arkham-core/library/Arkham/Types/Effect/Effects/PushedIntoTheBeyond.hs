@@ -6,6 +6,7 @@ module Arkham.Types.Effect.Effects.PushedIntoTheBeyond
 import Arkham.Prelude
 
 import Arkham.Types.Card
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.EffectMetadata
@@ -29,7 +30,7 @@ instance HasQueue env => RunMessage env PushedIntoTheBeyond where
     DiscardedTopOfDeck iid cards (EffectTarget eid) | eid == effectId ->
       case effectMetadata of
         Just (EffectCardCode x) -> e <$ when
-          (x `elem` map pcCardCode cards)
+          (x `elem` map (pcCardCode . pcDef) cards)
           (unshiftMessage
             (InvestigatorAssignDamage iid effectSource DamageAny 0 2)
           )

@@ -18,7 +18,10 @@ lookupCard cardCode =
       pure $ EncounterCard . f
     playerCard = do
       f <- lookup cardCode allPlayerCards
-      pure $ PlayerCard . f
+      pure $ \cardId -> PlayerCard $ MkPlayerCard
+        { pcId = cardId
+        , pcDef = f
+        }
   in
     fromJustNote ("Missing card " <> show cardCode)
     $ encounterCard

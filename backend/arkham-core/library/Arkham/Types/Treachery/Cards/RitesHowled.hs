@@ -44,6 +44,6 @@ instance TreacheryRunner env => RunMessage env RitesHowled where
         (do
           discardPile <- map unDiscardedPlayerCard <$> getList iid
           unshiftMessage
-            $ ShuffleCardsIntoDeck iid (filter pcWeakness discardPile)
+            $ ShuffleCardsIntoDeck iid (filter (pcWeakness . pcDef) discardPile)
         )
     _ -> RitesHowled <$> runMessage msg attrs

@@ -15,6 +15,7 @@ import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes.Entity as X
 import Arkham.Types.Classes.HasQueue as X
 import Arkham.Types.Classes.HasRecord as X
@@ -151,7 +152,7 @@ instance HasVictoryPoints EncounterCard where
   getVictoryPoints MkEncounterCard {..} = ecVictoryPoints
 
 instance HasVictoryPoints PlayerCard where
-  getVictoryPoints MkPlayerCard {..} = pcVictoryPoints
+  getVictoryPoints MkPlayerCard {..} = pcVictoryPoints pcDef
 
 type ActionRunner env
   = ( HasQueue env
@@ -305,10 +306,10 @@ instance IsCard Card where
     EncounterCard ec -> getKeywords ec
 
 instance IsCard PlayerCard where
-  getCardCode = pcCardCode
+  getCardCode = pcCardCode . pcDef
   getCardId = pcId
-  getTraits = pcTraits
-  getKeywords = pcKeywords
+  getTraits = pcTraits . pcDef
+  getKeywords = pcKeywords . pcDef
 
 instance IsCard EncounterCard where
   getCardCode = ecCardCode

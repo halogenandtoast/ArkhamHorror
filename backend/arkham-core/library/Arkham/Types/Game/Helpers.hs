@@ -11,6 +11,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -191,7 +192,7 @@ getCanAffordCost iid source mAction = \case
     handCards <- mapMaybe (preview _PlayerCard) <$> getHandOf iid
     let
       total = sum $ map
-        (count (`member` insertSet SkillWild skillTypes) . pcSkills)
+        (count (`member` insertSet SkillWild skillTypes) . pcSkills . pcDef)
         handCards
     pure $ total >= n
   HandDiscardCost n mCardType traits skillTypes -> do
@@ -199,10 +200,10 @@ getCanAffordCost iid source mAction = \case
     let
       cardTypeFilter = case mCardType of
         Nothing -> const True
-        Just cardType -> (== cardType) . pcCardType
+        Just cardType -> (== cardType) . pcCardType . pcDef
       traitFilter = if null traits
         then const True
-        else notNull . intersect traits . pcTraits
+        else notNull . intersect traits . pcTraits . pcDef
       skillTypeFilter = if null skillTypes
         then const True
         else
@@ -211,6 +212,7 @@ getCanAffordCost iid source mAction = \case
           . intersect (insertSet SkillWild skillTypes)
           . setFromList
           . pcSkills
+          . pcDef
     pure
       $ length
           (filter

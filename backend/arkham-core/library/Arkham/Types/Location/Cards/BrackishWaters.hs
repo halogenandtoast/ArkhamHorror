@@ -10,6 +10,7 @@ import Arkham.PlayerCard (genPlayerCard)
 import Arkham.Types.Ability
 import Arkham.Types.AssetId
 import Arkham.Types.Card
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -60,13 +61,13 @@ instance ActionRunner env => HasActions env BrackishWaters where
       hand <- getHandOf iid
       inPlayAssetsCount <- getInPlayOf iid <&> count
         (\case
-          PlayerCard pc -> pcCardType pc == AssetType
+          PlayerCard pc -> pcCardType (pcDef pc) == AssetType
           EncounterCard _ -> False
         )
       let
         assetsCount =
           count
-              (maybe False (playerCardMatch (AssetType, mempty)) . toPlayerCard)
+              (maybe False (playerCardMatch (AssetType, mempty) . pcDef) . toPlayerCard)
               hand
             + inPlayAssetsCount
       pure

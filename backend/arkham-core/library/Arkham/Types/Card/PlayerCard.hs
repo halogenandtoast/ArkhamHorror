@@ -34,6 +34,13 @@ data AttackOfOpportunityModifier = DoesNotProvokeAttacksOfOpportunity
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 data PlayerCard = MkPlayerCard
+  { pcId :: CardId
+  , pcDef :: PlayerCardDef
+  }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass Hashable
+
+data PlayerCardDef = PlayerCardDef
   { pcCardCode :: CardCode
   , pcName :: Text
   , pcCost :: CardCost
@@ -47,7 +54,6 @@ data PlayerCard = MkPlayerCard
   , pcKeywords :: HashSet Keyword
   , pcFast :: Bool
   , pcWindows :: HashSet Window
-  , pcId :: CardId
   , pcAction :: Maybe Action
   , pcRevelation :: Bool
   , pcVictoryPoints :: Maybe Int
@@ -62,22 +68,39 @@ instance ToJSON PlayerCard where
   toJSON = genericToJSON $ aesonOptions $ Just "pc"
   toEncoding = genericToEncoding $ aesonOptions $ Just "pc"
 
+instance ToJSON PlayerCardDef where
+  toJSON = genericToJSON $ aesonOptions $ Just "pc"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "pc"
+
 instance FromJSON PlayerCard where
   parseJSON = genericParseJSON $ aesonOptions $ Just "pc"
 
+instance FromJSON PlayerCardDef where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "pc"
+
 instance HasSkillIcons PlayerCard where
-  getSkillIcons = pcSkills
+  getSkillIcons = pcSkills . pcDef
 
 instance HasCost PlayerCard where
-  getCost c = case pcCost c of
+  getCost c = case pcCost (pcDef c) of
     StaticCost n -> n
     DynamicCost -> 0
 
-traitsL :: Lens' PlayerCard (HashSet Trait)
-traitsL = lens pcTraits $ \m x -> m { pcTraits = x }
+class HasCardTraits a where
+  traitsL :: Lens' a (HashSet Trait)
 
-playerCardMatch :: (PlayerCardType, HashSet Trait) -> PlayerCard -> Bool
-playerCardMatch (cardType, traits) MkPlayerCard {..} =
+instance HasCardTraits PlayerCardDef where
+  traitsL = lens pcTraits $ \m x -> m { pcTraits = x }
+
+defL :: Lens' PlayerCard PlayerCardDef
+defL = lens pcDef $ \m x -> m { pcDef = x }
+
+
+instance HasCardTraits PlayerCard where
+  traitsL = defL . traitsL
+
+playerCardMatch :: (PlayerCardType, HashSet Trait) -> PlayerCardDef -> Bool
+playerCardMatch (cardType, traits) PlayerCardDef {..} =
   pcCardType
     == cardType
-    && (null traits || not (null (intersection pcTraits traits)))
+    && (null traits || notNull (intersection pcTraits traits))

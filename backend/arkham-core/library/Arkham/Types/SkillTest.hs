@@ -11,6 +11,7 @@ import Arkham.Json
 import Arkham.Types.Action (Action)
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
@@ -129,7 +130,7 @@ skillIconCount SkillTest {..} = length . filter matches $ concatMap
   (iconsForCard . snd)
   (toList skillTestCommittedCards)
  where
-  iconsForCard (PlayerCard MkPlayerCard {..}) = pcSkills
+  iconsForCard (PlayerCard MkPlayerCard {..}) = pcSkills pcDef
   iconsForCard _ = []
   matches SkillWild = True
   matches s = s == skillTestSkillType
@@ -330,7 +331,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         discards = mapMaybe
           (\case
             (iid, PlayerCard pc) ->
-              (iid, pc) <$ guard (pcCardType pc /= SkillType)
+              (iid, pc) <$ guard (pcCardType (pcDef pc) /= SkillType)
             (_, EncounterCard _) -> Nothing
           )
           (s ^. committedCardsL . to toList)

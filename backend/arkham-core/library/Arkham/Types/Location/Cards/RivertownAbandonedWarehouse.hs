@@ -8,6 +8,7 @@ import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Card
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import qualified Arkham.Types.EncounterSet as EncounterSet
@@ -62,7 +63,7 @@ instance ActionRunner env => HasActions env RivertownAbandonedWarehouse where
 
 willpowerCount :: Payment -> Int
 willpowerCount (DiscardPayment cards) =
-  sum $ map (count (== SkillWillpower) . pcSkills) cards
+  sum $ map (count (== SkillWillpower) . pcSkills . pcDef) cards
 willpowerCount (Payments xs) = sum $ map willpowerCount xs
 willpowerCount _ = 0
 

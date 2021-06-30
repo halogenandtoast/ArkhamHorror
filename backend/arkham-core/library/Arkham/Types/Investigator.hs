@@ -286,7 +286,7 @@ getIsPrey LowestRemainingSanity i = do
     <$> getSetList ()
   pure $ lowestRemainingSanity == remainingSanity
 getIsPrey (Bearer bid) i =
-  pure $ unBearerId bid == unInvestigatorId (investigatorId $ toAttrs i)
+  pure $ unBearerId bid == toId i
 getIsPrey MostClues i = do
   clueCount <- unClueCount <$> getCount i
   mostClueCount <- fromMaybe 0 . maximumMay . map unClueCount <$> getSetList ()

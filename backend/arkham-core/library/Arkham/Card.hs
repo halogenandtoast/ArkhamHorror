@@ -21,6 +21,7 @@ lookupCard cardCode =
       pure $ \cardId -> PlayerCard $ MkPlayerCard
         { pcId = cardId
         , pcDef = f
+        , pcBearer = Nothing
         }
   in
     fromJustNote ("Missing card " <> show cardCode)

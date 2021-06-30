@@ -1381,7 +1381,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & resourcesL +~ 1
   LoadDeck iid deck | iid == investigatorId -> do
     shuffled <- shuffleM $ flip map deck $ \card -> if pcWeakness (pcDef card)
-      then card { pcDef = (pcDef card) { pcBearer = Just $ BearerId $ unInvestigatorId iid } }
+      then card { pcBearer = Just iid }
       else card
     pure $ a & deckL .~ Deck shuffled
   InvestigatorCommittedCard iid cardId | iid == investigatorId ->

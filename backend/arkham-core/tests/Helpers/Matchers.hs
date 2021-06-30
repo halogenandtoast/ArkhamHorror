@@ -37,7 +37,7 @@ isInDiscardOf investigator entity = do
   game <- getTestGame
   let
     discard' = game ^?! investigatorsL . ix (toId investigator) . to discardOf
-  pure $ card `elem` discard'
+  pure $ pcId card `elem` map pcId discard'
   where card = asPlayerCard entity
 
 class ToPlayerCard a where

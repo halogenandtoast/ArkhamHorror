@@ -16,6 +16,7 @@ import Arkham.Json
 import Arkham.PlayerCard
 import Arkham.Types.Ability
 import Arkham.Types.Act
+import Arkham.Types.Treachery.Attrs (treacheryOwner)
 import Arkham.Types.ActId
 import Arkham.Types.Action (Action, TakenAction)
 import Arkham.Types.Agenda
@@ -2104,8 +2105,8 @@ runGameMessage msg g = case msg of
       enemy = createEnemy card
       eid = toId enemy
       bearerMessage = case card of
-        PlayerCard MkPlayerCard {..} -> case pcBearer pcDef of
-          Just bid -> EnemySetBearer eid bid
+        PlayerCard MkPlayerCard {..} -> case pcBearer of
+          Just iid' -> EnemySetBearer eid (BearerId iid')
           Nothing -> error "The bearer was not set for a player enemy"
         _ -> error "this should definitely be a player card"
     unshiftMessages
@@ -2285,7 +2286,7 @@ runGameMessage msg g = case msg of
       cardId = unEventId eid
       playerCard = do
         f <- lookup (getCardCode event) allPlayerCards
-        pure $ PlayerCard $ MkPlayerCard cardId f
+        pure $ PlayerCard $ MkPlayerCard cardId Nothing f
     case playerCard of
       Nothing -> error "missing"
       Just (PlayerCard pc) ->
@@ -2641,7 +2642,7 @@ runGameMessage msg g = case msg of
         filter (playerCardMatch matcher) (toList allPlayerCards)
     mcard <- case matches of
       [] -> pure Nothing
-      (x : xs) -> Just . MkPlayerCard newCardId <$> sample (x :| xs)
+      (x : xs) -> Just . MkPlayerCard newCardId (Just iid) <$> sample (x :| xs)
     g <$ unshiftMessage (RequestedPlayerCard iid source mcard)
   DiscardEncounterUntilFirst source matcher -> do
     let
@@ -2806,6 +2807,7 @@ runGameMessage msg g = case msg of
         f <- lookup (getCardCode treachery) allPlayerCards
         pure $ PlayerCard $ MkPlayerCard
           { pcId = unTreacheryId tid
+          , pcBearer = treacheryOwner (toAttrs treachery)
           , pcDef = f
           }
     case encounterCard <|> playerCard of

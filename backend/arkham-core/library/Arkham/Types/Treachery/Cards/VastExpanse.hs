@@ -6,21 +6,21 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
 
 newtype VastExpanse = VastExpanse TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-vastExpanse :: TreacheryId -> a -> VastExpanse
-vastExpanse uuid _ = VastExpanse $ baseAttrs uuid "02333"
+vastExpanse :: TreacheryCard VastExpanse
+vastExpanse = treachery VastExpanse Cards.vastExpanse
 
 instance HasModifiersFor env VastExpanse where
   getModifiersFor = noModifiersFor

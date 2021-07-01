@@ -6,14 +6,13 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Prey
 import Arkham.Types.Trait
@@ -21,16 +20,14 @@ import Arkham.Types.Trait
 newtype SlimeCoveredDhole = SlimeCoveredDhole EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-slimeCoveredDhole :: EnemyId -> SlimeCoveredDhole
-slimeCoveredDhole uuid =
-  SlimeCoveredDhole
-    $ baseAttrs uuid "81031"
-    $ (healthDamageL .~ 1)
-    . (sanityDamageL .~ 1)
-    . (fightL .~ 2)
-    . (healthL .~ Static 3)
-    . (evadeL .~ 3)
-    . (preyL .~ LowestRemainingHealth)
+slimeCoveredDhole :: EnemyCard SlimeCoveredDhole
+slimeCoveredDhole = enemy SlimeCoveredDhole Cards.slimeCoveredDhole
+  $ (healthDamageL .~ 1)
+  . (sanityDamageL .~ 1)
+  . (fightL .~ 2)
+  . (healthL .~ Static 3)
+  . (evadeL .~ 3)
+  . (preyL .~ LowestRemainingHealth)
 
 instance HasModifiersFor env SlimeCoveredDhole where
   getModifiersFor = noModifiersFor

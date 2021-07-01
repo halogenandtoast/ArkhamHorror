@@ -2,9 +2,9 @@ module Arkham.Types.Location.Cards.GuestHall where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (guestHall)
 import Arkham.Types.Action
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -18,17 +18,12 @@ newtype GuestHall = GuestHall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 guestHall :: LocationId -> GuestHall
-guestHall =
-  GuestHall
-    . baseAttrs
-        "50014"
-        "Guest Hall"
-        EncounterSet.ReturnToTheGathering
-        1
-        (Static 0)
-        T
-        [Circle, Heart, Star, Square]
-        mempty
+guestHall = GuestHall . baseAttrs
+  Cards.guestHall
+  1
+  (Static 0)
+  T
+  [Circle, Heart, Star, Square]
 
 instance HasModifiersFor env GuestHall where
   getModifiersFor _ (InvestigatorTarget iid) (GuestHall attrs) =

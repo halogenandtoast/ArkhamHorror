@@ -1,19 +1,17 @@
 module Arkham.Types.Skill.Cards.UnexpectedCourage where
 
-import ClassyPrelude
+import Arkham.Prelude
 
-import Arkham.Json
+import qualified Arkham.Skill.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
-import Arkham.Types.SkillId
 
 newtype UnexpectedCourage = UnexpectedCourage SkillAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-unexpectedCourage :: InvestigatorId -> SkillId -> UnexpectedCourage
-unexpectedCourage iid uuid = UnexpectedCourage $ baseAttrs iid uuid "01093"
+unexpectedCourage :: SkillCard UnexpectedCourage
+unexpectedCourage = skill UnexpectedCourage Cards.unexpectedCourage
 
 instance HasModifiersFor env UnexpectedCourage where
   getModifiersFor = noModifiersFor

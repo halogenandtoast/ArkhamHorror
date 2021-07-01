@@ -2,19 +2,17 @@ module Arkham.Types.Location.Cards.ArkhamWoodsTwistingPaths where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (arkhamWoodsTwistingPaths)
 import Arkham.Types.Classes
 import Arkham.Types.EffectMetadata
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Trait
 
 newtype ArkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -25,14 +23,11 @@ arkhamWoodsTwistingPaths =
     . (revealedConnectedSymbolsL .~ setFromList [Squiggle, Diamond, Equals])
     . (revealedSymbolL .~ T)
     . baseAttrs
-        "01151"
-        ("Arkham Woods" `subtitled` "Twisting Paths")
-        EncounterSet.TheDevourerBelow
+        Cards.arkhamWoodsTwistingPaths
         3
         (PerPlayer 1)
         Square
         [Squiggle]
-        [Woods]
 
 instance HasModifiersFor env ArkhamWoodsTwistingPaths where
   getModifiersFor = noModifiersFor

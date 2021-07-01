@@ -6,8 +6,11 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -17,15 +20,12 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 
 newtype ArcaneStudies = ArcaneStudies AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-arcaneStudies :: AssetId -> ArcaneStudies
-arcaneStudies uuid = ArcaneStudies $ baseAttrs uuid "01062"
+arcaneStudies :: AssetCard ArcaneStudies
+arcaneStudies = asset ArcaneStudies Cards.arcaneStudies
 
 instance HasModifiersFor env ArcaneStudies where
   getModifiersFor = noModifiersFor

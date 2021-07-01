@@ -15,7 +15,6 @@ import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
-import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes.Entity as X
 import Arkham.Types.Classes.HasQueue as X
 import Arkham.Types.Classes.HasRecord as X
@@ -149,10 +148,10 @@ instance HasVictoryPoints Card where
   getVictoryPoints (EncounterCard card) = getVictoryPoints card
 
 instance HasVictoryPoints EncounterCard where
-  getVictoryPoints MkEncounterCard {..} = ecVictoryPoints
+  getVictoryPoints MkEncounterCard {..} = cdVictoryPoints ecDef
 
 instance HasVictoryPoints PlayerCard where
-  getVictoryPoints MkPlayerCard {..} = pcVictoryPoints pcDef
+  getVictoryPoints MkPlayerCard {..} = cdVictoryPoints pcDef
 
 type ActionRunner env
   = ( HasQueue env
@@ -209,6 +208,7 @@ type ActionRunner env
     , HasSet Trait env Source
     , HasSet Trait env (InvestigatorId, CardId)
     , HasStep env ActStep
+    , GetCardDef env EnemyId
     )
 
 class HasActions1 env f where
@@ -283,39 +283,21 @@ class Exhaustable a where
   isReady = not . isExhausted
   {-# MINIMAL isExhausted | isReady #-}
 
-class IsCard a where
+class (HasTraits a, HasCardDef a) => IsCard a where
   toCard :: a -> Card
-  toCard a = lookupCard (getCardCode a) (getCardId a)
-  getCardId :: a -> CardId
-  getCardCode :: a -> CardCode
-  getTraits :: a -> HashSet Trait
-  getKeywords :: a -> HashSet Keyword
+  toCard a = lookupCard (cdCardCode $ toCardDef a) (toCardId a)
+  toCardId :: a -> CardId
 
 instance IsCard Card where
-  getCardCode = \case
-    PlayerCard pc -> getCardCode pc
-    EncounterCard ec -> getCardCode ec
-  getCardId = \case
-    PlayerCard pc -> getCardId pc
-    EncounterCard ec -> getCardId ec
-  getTraits = \case
-    PlayerCard pc -> getTraits pc
-    EncounterCard ec -> getTraits ec
-  getKeywords = \case
-    PlayerCard pc -> getKeywords pc
-    EncounterCard ec -> getKeywords ec
+  toCardId = \case
+    PlayerCard pc -> toCardId pc
+    EncounterCard ec -> toCardId ec
 
 instance IsCard PlayerCard where
-  getCardCode = pcCardCode . pcDef
-  getCardId = pcId
-  getTraits = pcTraits . pcDef
-  getKeywords = pcKeywords . pcDef
+  toCardId = pcId
 
 instance IsCard EncounterCard where
-  getCardCode = ecCardCode
-  getCardId = ecId
-  getTraits = ecTraits
-  getKeywords = ecKeywords
+  toCardId = ecId
 
 class IsInvestigator a where
   isResigned :: a -> Bool

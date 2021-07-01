@@ -6,19 +6,18 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Event.Attrs
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Event.Attrs
 
 newtype Shortcut = Shortcut EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-shortcut :: InvestigatorId -> EventId -> Shortcut
-shortcut iid uuid = Shortcut $ baseAttrs iid uuid "02022"
+shortcut :: EventCard Shortcut
+shortcut = event Shortcut Cards.shortcut
 
 instance HasActions env Shortcut where
   getActions iid window (Shortcut attrs) = getActions iid window attrs

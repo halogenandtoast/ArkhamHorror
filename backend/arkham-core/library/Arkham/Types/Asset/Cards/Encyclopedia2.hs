@@ -5,7 +5,10 @@ module Arkham.Types.Asset.Cards.Encyclopedia2
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
+import qualified Arkham.Asset.Cards as Cards
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -14,19 +17,14 @@ import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 
 newtype Encyclopedia2 = Encyclopedia2 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-encyclopedia2 :: AssetId -> Encyclopedia2
-encyclopedia2 uuid =
-  Encyclopedia2 $ (baseAttrs uuid "01042") { assetSlots = [HandSlot] }
+encyclopedia2 :: AssetCard Encyclopedia2
+encyclopedia2 = hand Encyclopedia2 Cards.encyclopedia2
 
 instance HasModifiersFor env Encyclopedia2 where
   getModifiersFor = noModifiersFor

@@ -6,9 +6,9 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
-import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationMatcher
@@ -18,16 +18,14 @@ import Arkham.Types.Query
 newtype YithianStarseeker = YithianStarseeker EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-yithianStarseeker :: EnemyId -> YithianStarseeker
-yithianStarseeker uuid =
-  YithianStarseeker
-    $ baseAttrs uuid "02330"
-    $ (healthDamageL .~ 2)
-    . (sanityDamageL .~ 1)
-    . (fightL .~ 3)
-    . (healthL .~ Static 4)
-    . (evadeL .~ 5)
-    . (spawnAtL ?~ LocationWithTitle "Another Dimension")
+yithianStarseeker :: EnemyCard YithianStarseeker
+yithianStarseeker = enemy YithianStarseeker Cards.yithianStarseeker
+  $ (healthDamageL .~ 2)
+  . (sanityDamageL .~ 1)
+  . (fightL .~ 3)
+  . (healthL .~ Static 4)
+  . (evadeL .~ 5)
+  . (spawnAtL ?~ LocationWithTitle "Another Dimension")
 
 instance HasModifiersFor env YithianStarseeker where
   getModifiersFor = noModifiersFor

@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (studentUnion)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -19,7 +19,6 @@ import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype StudentUnion = StudentUnion LocationAttrs
@@ -27,14 +26,11 @@ newtype StudentUnion = StudentUnion LocationAttrs
 
 studentUnion :: LocationId -> StudentUnion
 studentUnion = StudentUnion . baseAttrs
-  "02051"
-  "Student Union"
-  EncounterSet.ExtracurricularActivity
+  Cards.studentUnion
   1
   (Static 2)
   Diamond
   [Plus, Equals]
-  [Miskatonic]
 
 instance HasModifiersFor env StudentUnion where
   getModifiersFor = noModifiersFor

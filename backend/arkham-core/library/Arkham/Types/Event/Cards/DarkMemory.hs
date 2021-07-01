@@ -2,20 +2,21 @@ module Arkham.Types.Event.Cards.DarkMemory where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
+import Arkham.Types.Event.Attrs
+import Arkham.Types.Event.Runner
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Event.Attrs
-import Arkham.Types.Event.Runner
 
 newtype DarkMemory = DarkMemory EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 darkMemory :: InvestigatorId -> EventId -> DarkMemory
-darkMemory iid uuid = DarkMemory $ weaknessAttrs iid uuid "01013"
+darkMemory = event DarkMemory Cards.darkMemory
 
 instance HasModifiersFor env DarkMemory where
   getModifiersFor = noModifiersFor
@@ -26,10 +27,10 @@ instance HasActions env DarkMemory where
 instance (EventRunner env) => RunMessage env DarkMemory where
   runMessage msg e@(DarkMemory attrs@EventAttrs {..}) = case msg of
     InHand ownerId (EndTurn iid) | ownerId == iid -> e <$ unshiftMessages
-      [ RevealInHand $ getCardId attrs
+      [ RevealInHand $ toCardId attrs
       , InvestigatorAssignDamage
         iid
-        (PlayerCardSource $ getCardId attrs)
+        (PlayerCardSource $ toCardId attrs)
         DamageAny
         0
         2

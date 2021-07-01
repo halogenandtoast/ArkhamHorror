@@ -6,22 +6,20 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype EagerForDeath = EagerForDeath TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-eagerForDeath :: TreacheryId -> a -> EagerForDeath
-eagerForDeath uuid _ = EagerForDeath $ baseAttrs uuid "02091"
+eagerForDeath :: TreacheryCard EagerForDeath
+eagerForDeath = treachery EagerForDeath Cards.eagerForDeath
 
 instance HasModifiersFor env EagerForDeath where
   getModifiersFor = noModifiersFor

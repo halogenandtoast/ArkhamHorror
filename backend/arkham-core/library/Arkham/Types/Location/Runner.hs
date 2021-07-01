@@ -51,7 +51,7 @@ type LocationRunner env
     , HasSet EnemyId env CardCode
     , HasSet EnemyAccessibleLocationId env (EnemyId, LocationId)
     , HasSet EventId env ()
-    , HasSet HandCardId env (InvestigatorId, PlayerCardType)
+    , HasSet HandCardId env (InvestigatorId, CardType)
     , HasSet InvestigatorId env ()
     , HasSet LocationId env ()
     , HasSet LocationId env LocationMatcher

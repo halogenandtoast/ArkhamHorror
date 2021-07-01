@@ -2,20 +2,19 @@ module Arkham.Types.Event.Cards.WardOfProtection where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Event.Attrs
+import Arkham.Types.Event.Runner
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Event.Attrs
-import Arkham.Types.Event.Runner
 
 newtype WardOfProtection = WardOfProtection EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-wardOfProtection :: InvestigatorId -> EventId -> WardOfProtection
-wardOfProtection iid uuid = WardOfProtection $ baseAttrs iid uuid "01065"
+wardOfProtection :: EventCard WardOfProtection
+wardOfProtection = event WardOfProtection Cards.wardOfProtection
 
 instance HasModifiersFor env WardOfProtection where
   getModifiersFor = noModifiersFor

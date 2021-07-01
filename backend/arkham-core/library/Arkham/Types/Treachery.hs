@@ -5,23 +5,19 @@ where
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Query
 import Arkham.Types.Target
 import Arkham.Types.Trait (Trait)
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Cards
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
 
-createTreachery :: IsCard a => a -> Maybe InvestigatorId -> Treachery
-createTreachery a miid =
-  lookupTreachery (getCardCode a) (TreacheryId $ getCardId a) miid
+createTreachery :: IsCard a => a -> InvestigatorId -> Treachery
+createTreachery a iid =
+  lookupTreachery (toCardCode a) iid (TreacheryId $ toCardId a)
 
 data Treachery
   = CoverUp' CoverUp
@@ -76,7 +72,7 @@ data Treachery
   | PassageIntoTheVeil' PassageIntoTheVeil
   | EphemeralExhibits' EphemeralExhibits
   | SlitheringBehindYou' SlitheringBehindYou
-  | AcrossTimeAndSpace' AcrossTimeAndSpace
+  | AcrossSpaceAndTime' AcrossSpaceAndTime
   | ClawsOfSteam' ClawsOfSteam
   | BrokenRails' BrokenRails
   | Kidnapped' Kidnapped
@@ -112,6 +108,9 @@ data Treachery
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+instance HasCardDef Treachery where
+  toCardDef = toCardDef . toAttrs
+
 deriving anyclass instance ActionRunner env => HasActions env Treachery
 deriving anyclass instance (HasId CardCode env LocationId, TreacheryRunner env) => RunMessage env Treachery
 deriving anyclass instance
@@ -141,10 +140,7 @@ instance SourceEntity Treachery where
   isSource = isSource . toAttrs
 
 instance IsCard Treachery where
-  getCardId = getCardId . toAttrs
-  getCardCode = getCardCode . toAttrs
-  getTraits = getTraits . toAttrs
-  getKeywords = getKeywords . toAttrs
+  toCardId = toCardId . toAttrs
 
 instance HasCount DoomCount env Treachery where
   getCount = pure . DoomCount . treacheryDoom . toAttrs
@@ -159,13 +155,13 @@ instance HasId (Maybe OwnerId) env Treachery where
   getId = pure . (OwnerId <$>) . treacheryOwner . toAttrs
 
 lookupTreachery
-  :: CardCode -> (TreacheryId -> Maybe InvestigatorId -> Treachery)
+  :: CardCode -> (InvestigatorId -> TreacheryId -> Treachery)
 lookupTreachery cardCode =
   fromJustNote ("Unknown treachery: " <> pack (show cardCode))
     $ lookup cardCode allTreacheries
 
 allTreacheries
-  :: HashMap CardCode (TreacheryId -> Maybe InvestigatorId -> Treachery)
+  :: HashMap CardCode (InvestigatorId -> TreacheryId -> Treachery)
 allTreacheries = mapFromList
   [ ("01007", (CoverUp' .) . coverUp)
   , ("01011", (HospitalDebts' .) . hospitalDebts)
@@ -219,7 +215,7 @@ allTreacheries = mapFromList
   , ("02144", (PassageIntoTheVeil' .) . passageIntoTheVeil)
   , ("02145", (EphemeralExhibits' .) . ephemeralExhibits)
   , ("02146", (SlitheringBehindYou' .) . slitheringBehindYou)
-  , ("02178", (AcrossTimeAndSpace' .) . acrossTimeAndSpace)
+  , ("02178", (AcrossSpaceAndTime' .) . acrossSpaceAndTime)
   , ("02180", (ClawsOfSteam' .) . clawsOfSteam)
   , ("02181", (BrokenRails' .) . brokenRails)
   , ("02220", (Kidnapped' .) . kidnapped)
@@ -253,18 +249,18 @@ allTreacheries = mapFromList
   , ("81034", (OnTheProwl' .) . onTheProwl)
   , ("81035", (BeastOfTheBayou' .) . beastOfTheBayou)
   , ("81036", (InsatiableBloodlust' .) . insatiableBloodlust)
-  , ("treachery", const . (`baseTreachery` "treachery"))
+  , ("treachery", baseTreachery "treachery")
   ]
 
 newtype BaseTreachery = BaseTreachery TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-baseTreachery :: TreacheryId -> CardCode -> Treachery
-baseTreachery a b = BaseTreachery' . BaseTreachery $ baseAttrs a b
+baseTreachery :: CardCode -> InvestigatorId -> TreacheryId -> Treachery
+baseTreachery cardCode iid tid = BaseTreachery' $ treachery BaseTreachery (testCardDef TreacheryType cardCode) iid tid
 
 instance HasActions env BaseTreachery where
-  getActions treachery window (BaseTreachery attrs) =
-    getActions treachery window attrs
+  getActions x window (BaseTreachery attrs) =
+    getActions x window attrs
 
 instance HasModifiersFor env BaseTreachery where
   getModifiersFor = noModifiersFor
@@ -273,7 +269,7 @@ instance (TreacheryRunner env) => RunMessage env BaseTreachery where
   runMessage msg (BaseTreachery attrs) = BaseTreachery <$> runMessage msg attrs
 
 isWeakness :: Treachery -> Bool
-isWeakness = treacheryWeakness . toAttrs
+isWeakness = cdWeakness . toCardDef
 
 instance CanBeWeakness env Treachery where
   getIsWeakness = pure . isWeakness

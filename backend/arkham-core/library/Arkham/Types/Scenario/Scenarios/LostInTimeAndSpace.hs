@@ -5,18 +5,14 @@ module Arkham.Types.Scenario.Scenarios.LostInTimeAndSpace
 
 import Arkham.Prelude
 
-import Arkham.Types.ActId
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.EnemyId
 import Arkham.Types.EnemyMatcher
 import Arkham.Types.Game.Helpers
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Query
@@ -200,7 +196,7 @@ instance
         (True, Cultist) -> unshiftMessage
           (DiscardEncounterUntilFirst
             (toSource attrs)
-            (EncounterCardMatchByType (LocationType, Nothing))
+            (CardMatchByType (LocationType, mempty))
           )
         (_, Tablet) -> do
           mYogSothothId <- getId (EnemyWithTitle "Yog-Sothoth")
@@ -213,7 +209,7 @@ instance
         Cultist -> unshiftMessage
           (DiscardEncounterUntilFirst
             (ProxySource (toSource attrs) (InvestigatorSource iid))
-            (EncounterCardMatchByType (LocationType, Nothing))
+            (CardMatchByType (LocationType, mempty))
           )
         Tablet -> do
           mYogSothothId <- getId (EnemyWithTitle "Yog-Sothoth")
@@ -225,8 +221,8 @@ instance
       | isSource attrs source -> s <$ case mcard of
         Nothing -> pure ()
         Just card -> unshiftMessages
-          [ PlaceLocation (ecCardCode card) (LocationId $ getCardId card)
-          , MoveTo iid (LocationId $ getCardId card)
+          [ PlaceLocation (toCardCode card) (LocationId $ toCardId card)
+          , MoveTo iid (LocationId $ toCardId card)
           ]
     ScenarioResolution NoResolution -> do
       step <- unActStep <$> getStep

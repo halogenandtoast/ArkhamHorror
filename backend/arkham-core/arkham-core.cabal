@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: fb5ae2595aa824e8215efc03fcdf2f2f7ccc57b7bb2a46c0fdaaa824f86d914c
+-- hash: 1b0c5e5849166150bae9c813c2d2e1a9ae593a83a3e1671a8bac05dfb27de8e5
 
 name:           arkham-core
 version:        0.0.0
@@ -12,12 +12,19 @@ build-type:     Simple
 
 library
   exposed-modules:
+      Arkham.Asset.Cards
       Arkham.Card
       Arkham.EncounterCard
+      Arkham.EncounterSet
+      Arkham.Enemy.Cards
+      Arkham.Event.Cards
       Arkham.Game
       Arkham.Json
+      Arkham.Location.Cards
       Arkham.PlayerCard
       Arkham.Prelude
+      Arkham.Skill.Cards
+      Arkham.Treachery.Cards
       Arkham.Types.Ability
       Arkham.Types.Ability.Limit
       Arkham.Types.Ability.Type
@@ -242,11 +249,12 @@ library
       Arkham.Types.CampaignStep
       Arkham.Types.Card
       Arkham.Types.Card.CardCode
+      Arkham.Types.Card.CardDef
+      Arkham.Types.Card.CardMatcher
+      Arkham.Types.Card.CardType
       Arkham.Types.Card.Class
       Arkham.Types.Card.Cost
       Arkham.Types.Card.EncounterCard
-      Arkham.Types.Card.EncounterCardMatcher
-      Arkham.Types.Card.EncounterCardType
       Arkham.Types.Card.Id
       Arkham.Types.Card.PlayerCard
       Arkham.Types.ChaosBag
@@ -435,6 +443,7 @@ library
       Arkham.Types.GameRunner
       Arkham.Types.GameValue
       Arkham.Types.Helpers
+      Arkham.Types.Id
       Arkham.Types.Investigator
       Arkham.Types.Investigator.Attrs
       Arkham.Types.Investigator.Cards
@@ -697,7 +706,7 @@ library
       Arkham.Types.Treachery.Attrs
       Arkham.Types.Treachery.Cards
       Arkham.Types.Treachery.Cards.AbandonedAndAlone
-      Arkham.Types.Treachery.Cards.AcrossTimeAndSpace
+      Arkham.Types.Treachery.Cards.AcrossSpaceAndTime
       Arkham.Types.Treachery.Cards.AlteredBeast
       Arkham.Types.Treachery.Cards.Amnesia
       Arkham.Types.Treachery.Cards.AncientEvils

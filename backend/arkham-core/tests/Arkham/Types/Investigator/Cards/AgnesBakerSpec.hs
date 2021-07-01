@@ -13,7 +13,7 @@ spec = describe "Agnes Baker" $ do
     it "can deal 1 damage to an enemy at your location when taking horror" $ do
       let agnesBaker = lookupInvestigator "01004"
       enemy <- testEnemy $ \attrs -> attrs { enemyHealth = Static 2 }
-      location <- testLocation "00000" id
+      location <- testLocation id
       gameTest
           agnesBaker
           [ placedLocation location
@@ -38,7 +38,7 @@ spec = describe "Agnes Baker" $ do
   context "elder sign" $ do
     it "gives +1 for each horror on Agnes" $ do
       let agnesBaker = lookupInvestigator "01004"
-      location <- testLocation "00000" id
+      location <- testLocation id
 
       (didPassTest, logger) <- didPassSkillTestBy agnesBaker SkillIntellect 0
 

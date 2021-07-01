@@ -6,25 +6,22 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.Cost
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Slot
-import Arkham.Types.Target
-import Arkham.Types.Window
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Uses
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.Id
+import Arkham.Types.Message
+import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype ClarityOfMind = ClarityOfMind AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-clarityOfMind :: AssetId -> ClarityOfMind
-clarityOfMind uuid =
-  ClarityOfMind $ (baseAttrs uuid "02030") { assetSlots = [ArcaneSlot] }
+clarityOfMind :: AssetCard ClarityOfMind
+clarityOfMind = arcane ClarityOfMind Cards.clarityOfMind
 
 instance HasActions env ClarityOfMind where
   getActions iid NonFast (ClarityOfMind a) = pure

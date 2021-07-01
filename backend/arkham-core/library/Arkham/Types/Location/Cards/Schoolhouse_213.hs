@@ -6,29 +6,25 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (schoolhouse_213)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Trait
 
 newtype Schoolhouse_213 = Schoolhouse_213 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 schoolhouse_213 :: LocationId -> Schoolhouse_213
 schoolhouse_213 = Schoolhouse_213 . baseAttrs
-  "02213"
-  "Schoolhouse"
-  EncounterSet.BloodOnTheAltar
+  Cards.schoolhouse_213
   4
   (Static 1)
   Moon
   [Plus, Squiggle, Circle]
-  [Dunwich]
 
 instance HasModifiersFor env Schoolhouse_213 where
   getModifiersFor = noModifiersFor

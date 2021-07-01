@@ -2,26 +2,24 @@ module Arkham.Types.Enemy.Cards.RavenousGhoul where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.Prey
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
+import Arkham.Types.GameValue
+import Arkham.Types.Prey
 
 newtype RavenousGhoul = RavenousGhoul EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-ravenousGhoul :: EnemyId -> RavenousGhoul
-ravenousGhoul uuid =
-  RavenousGhoul
-    $ baseAttrs uuid "01161"
-    $ (healthDamageL .~ 1)
-    . (sanityDamageL .~ 1)
-    . (fightL .~ 3)
-    . (healthL .~ Static 3)
-    . (evadeL .~ 3)
-    . (preyL .~ LowestRemainingHealth)
+ravenousGhoul :: EnemyCard RavenousGhoul
+ravenousGhoul = enemy RavenousGhoul Cards.ravenousGhoul
+  $ (healthDamageL .~ 1)
+  . (sanityDamageL .~ 1)
+  . (fightL .~ 3)
+  . (healthL .~ Static 3)
+  . (evadeL .~ 3)
+  . (preyL .~ LowestRemainingHealth)
 
 instance HasModifiersFor env RavenousGhoul where
   getModifiersFor = noModifiersFor

@@ -2,26 +2,21 @@ module Arkham.Types.Asset.Cards.LeoDeLuca1 where
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.Slot
-import Arkham.Types.Source
-import Arkham.Types.Target
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
+import Arkham.Types.Classes
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Source
+import Arkham.Types.Target
 
 newtype LeoDeLuca1 = LeoDeLuca1 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-leoDeLuca1 :: AssetId -> LeoDeLuca1
-leoDeLuca1 uuid = LeoDeLuca1 $ (baseAttrs uuid "01054")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 2
-  , assetSanity = Just 2
-  }
+leoDeLuca1 :: AssetCard LeoDeLuca1
+leoDeLuca1 = ally LeoDeLuca1 Cards.leoDeLuca1 (2, 2)
 
 instance HasModifiersFor env LeoDeLuca1 where
   getModifiersFor _ (InvestigatorTarget iid) (LeoDeLuca1 a) =

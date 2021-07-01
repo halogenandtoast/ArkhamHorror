@@ -5,12 +5,12 @@ module Arkham.Types.Asset.Cards.Duke
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.InvestigatorId
@@ -25,9 +25,8 @@ import Arkham.Types.Window
 newtype Duke = Duke AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
-duke :: AssetId -> Duke
-duke uuid =
-  Duke $ (baseAttrs uuid "02014") { assetHealth = Just 2, assetSanity = Just 3 }
+duke :: AssetCard Duke
+duke = allyWith Duke Cards.duke (2, 3) (slotsL .~ mempty)
 
 instance HasModifiersFor env Duke where
   getModifiersFor (SkillTestSource _ _ source _ (Just Action.Fight)) (InvestigatorTarget iid) (Duke a)

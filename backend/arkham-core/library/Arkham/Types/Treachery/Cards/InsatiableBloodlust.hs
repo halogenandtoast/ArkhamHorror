@@ -2,15 +2,13 @@ module Arkham.Types.Treachery.Cards.InsatiableBloodlust where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
@@ -18,8 +16,8 @@ import Arkham.Types.Treachery.Runner
 newtype InsatiableBloodlust = InsatiableBloodlust TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-insatiableBloodlust :: TreacheryId -> a -> InsatiableBloodlust
-insatiableBloodlust uuid _ = InsatiableBloodlust $ baseAttrs uuid "81036"
+insatiableBloodlust :: TreacheryCard InsatiableBloodlust
+insatiableBloodlust = treachery InsatiableBloodlust Cards.insatiableBloodlust
 
 instance HasModifiersFor env InsatiableBloodlust where
   getModifiersFor _ (EnemyTarget eid) (InsatiableBloodlust attrs)

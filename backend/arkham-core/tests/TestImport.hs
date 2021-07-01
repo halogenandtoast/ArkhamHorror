@@ -18,11 +18,11 @@ import Arkham.Types.Agenda as X
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.AgendaId
 import Arkham.Types.Asset as X
-import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Attrs hiding (body)
 import Arkham.Types.AssetId
-import Arkham.Types.Card as X
+import Arkham.Types.Card as X hiding (skillsL)
+import qualified Arkham.Types.Card.CardDef as CardDef
 import Arkham.Types.Card.Id
-import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ChaosBag as X
 import qualified Arkham.Types.ChaosBag as ChaosBag
 import Arkham.Types.Classes as X hiding
@@ -44,7 +44,7 @@ import Arkham.Types.Investigator as X
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location as X
-import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Attrs hiding (skillsL)
 import Arkham.Types.LocationId as X
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message as X
@@ -205,12 +205,12 @@ buildAsset cardCode = lookupAsset cardCode <$> getRandom
 testPlayerCards :: MonadIO m => Int -> m [PlayerCard]
 testPlayerCards count' = replicateM count' (testPlayerCard id)
 
-testPlayerCard :: MonadIO m => (PlayerCardDef -> PlayerCardDef) -> m PlayerCard
+testPlayerCard :: MonadIO m => (CardDef -> CardDef) -> m PlayerCard
 testPlayerCard f = do
   cardId <- CardId <$> liftIO nextRandom
   pure $ MkPlayerCard
     { pcId = cardId
-    , pcDef = f $ basePlayerCard "00000" "Test" 0 AssetType Guardian
+    , pcDef = f $ basePlayerCard "asset" "Test" 0 AssetType Guardian
     , pcBearer = Nothing
     }
 
@@ -235,25 +235,37 @@ buildTestTreacheryEncounterCard = do
   pure $ lookupEncounterCard "treachery" cardId
 
 testEnemy :: MonadRandom m => (EnemyAttrs -> EnemyAttrs) -> m Enemy
-testEnemy f = do
+testEnemy = testEnemyWithDef id
+
+testWeaknessEnemy :: MonadRandom m => (EnemyAttrs -> EnemyAttrs) -> m Enemy
+testWeaknessEnemy = testEnemyWithDef (CardDef.weaknessL .~ True)
+
+testEnemyWithDef :: MonadRandom m => (CardDef -> CardDef) -> (EnemyAttrs -> EnemyAttrs) -> m Enemy
+testEnemyWithDef defF attrsF = do
   enemyId <- getRandom
-  pure $ baseEnemy enemyId "enemy" f
+  pure $ baseEnemy enemyId "enemy" attrsF defF
 
 testAsset :: MonadRandom m => (AssetAttrs -> AssetAttrs) -> m Asset
-testAsset f = do
+testAsset = testAssetWithDef id
+
+testAssetWithDef :: MonadRandom m => (CardDef -> CardDef) -> (AssetAttrs -> AssetAttrs) -> m Asset
+testAssetWithDef defF attrsF = do
   assetId <- getRandom
-  pure $ baseAsset assetId "asset" f
+  pure $ baseAsset assetId "asset" attrsF defF
 
 testAgenda :: MonadIO m => CardCode -> (AgendaAttrs -> AgendaAttrs) -> m Agenda
 testAgenda cardCode f =
   pure $ baseAgenda (AgendaId cardCode) "Agenda" (Agenda 1 A) (Static 1) f
 
 testLocation
-  :: MonadRandom m => CardCode -> (LocationAttrs -> LocationAttrs) -> m Location
-testLocation cardCode f = do
+  :: MonadRandom m => (LocationAttrs -> LocationAttrs) -> m Location
+testLocation = testLocationWithDef id
+
+testLocationWithDef
+  :: MonadRandom m => (CardDef -> CardDef) -> (LocationAttrs -> LocationAttrs) -> m Location
+testLocationWithDef defF attrsF = do
   locationId <- getRandom
-  let name = Name (unCardCode cardCode) Nothing
-  pure $ baseLocation locationId cardCode name 0 (Static 0) Square [] f
+  pure $ baseLocation locationId "location" 0 (Static 0) Square [] attrsF defF
 
 testInvestigator
   :: MonadIO m
@@ -272,18 +284,25 @@ testConnectedLocations
   => (LocationAttrs -> LocationAttrs)
   -> (LocationAttrs -> LocationAttrs)
   -> m (Location, Location)
-testConnectedLocations f1 f2 = do
-  location1 <- testLocation
-    "00000"
-    (f1
+testConnectedLocations f1 f2 = testConnectedLocationsWithDef (id, f1) (id, f2)
+
+testConnectedLocationsWithDef
+  :: MonadRandom m
+  => (CardDef -> CardDef, LocationAttrs -> LocationAttrs)
+  -> (CardDef -> CardDef, LocationAttrs -> LocationAttrs)
+  -> m (Location, Location)
+testConnectedLocationsWithDef (defF1, attrsF1) (defF2, attrsF2) = do
+  location1 <- testLocationWithDef
+    defF1
+    (attrsF1
     . (symbolL .~ Square)
     . (revealedSymbolL .~ Square)
     . (connectedSymbolsL .~ setFromList [Triangle])
     . (revealedConnectedSymbolsL .~ setFromList [Triangle])
     )
-  location2 <- testLocation
-    "00001"
-    (f2
+  location2 <- testLocationWithDef
+    defF2
+    (attrsF2
     . (symbolL .~ Triangle)
     . (revealedSymbolL .~ Triangle)
     . (connectedSymbolsL .~ setFromList [Square])
@@ -298,10 +317,8 @@ testUnconnectedLocations
   -> m (Location, Location)
 testUnconnectedLocations f1 f2 = do
   location1 <- testLocation
-    "00000"
     (f1 . (symbolL .~ Square) . (revealedSymbolL .~ Square))
   location2 <- testLocation
-    "00001"
     (f2 . (symbolL .~ Triangle) . (revealedSymbolL .~ Triangle))
   pure (location1, location2)
 

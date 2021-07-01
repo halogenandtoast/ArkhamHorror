@@ -6,12 +6,12 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (foulSwamp)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
@@ -24,7 +24,6 @@ import Arkham.Types.Modifier
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype FoulSwamp = FoulSwamp LocationAttrs
@@ -32,14 +31,11 @@ newtype FoulSwamp = FoulSwamp LocationAttrs
 
 foulSwamp :: LocationId -> FoulSwamp
 foulSwamp = FoulSwamp . baseAttrs
-  "81016"
-  "Foul Swamp"
-  EncounterSet.CurseOfTheRougarou
+  Cards.foulSwamp
   2
   (Static 0)
   Hourglass
   [Equals, Square, Triangle, Diamond]
-  [Unhallowed, Bayou]
 
 instance HasModifiersFor env FoulSwamp where
   getModifiersFor _ (InvestigatorTarget iid) (FoulSwamp attrs)

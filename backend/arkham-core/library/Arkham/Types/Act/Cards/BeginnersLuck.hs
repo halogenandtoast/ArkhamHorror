@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
@@ -55,7 +54,7 @@ instance
         [ PlaceLocation "02074" lid
         , DiscardEncounterUntilFirst
           (toSource attrs)
-          (EncounterCardMatchByType (EnemyType, Just Criminal))
+          (CardMatchByType (EnemyType, singleton Criminal))
         , NextAct aid "02067"
         ]
     RequestedEncounterCard source (Just ec) | isSource attrs source -> do

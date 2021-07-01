@@ -6,11 +6,11 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
-import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Query
@@ -20,16 +20,14 @@ import Arkham.Types.Trait
 newtype InterstellarTraveler = InterstellarTraveler EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-interstellarTraveler :: EnemyId -> InterstellarTraveler
-interstellarTraveler uuid =
-  InterstellarTraveler
-    $ baseAttrs uuid "02329"
-    $ (healthDamageL .~ 1)
-    . (sanityDamageL .~ 2)
-    . (fightL .~ 4)
-    . (healthL .~ Static 3)
-    . (evadeL .~ 2)
-    . (spawnAtL ?~ LocationWithTrait Extradimensional)
+interstellarTraveler :: EnemyCard InterstellarTraveler
+interstellarTraveler = enemy InterstellarTraveler Cards.interstellarTraveler
+  $ (healthDamageL .~ 1)
+  . (sanityDamageL .~ 2)
+  . (fightL .~ 4)
+  . (healthL .~ Static 3)
+  . (evadeL .~ 2)
+  . (spawnAtL ?~ LocationWithTrait Extradimensional)
 
 instance HasModifiersFor env InterstellarTraveler where
   getModifiersFor = noModifiersFor

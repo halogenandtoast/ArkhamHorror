@@ -2,9 +2,9 @@ module Arkham.Types.Location.Cards.ArkhamWoodsGreatWillow where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (arkhamWoodsGreatWillow)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -12,9 +12,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Source
-import Arkham.Types.Trait
 
 newtype ArkhamWoodsGreatWillow = ArkhamWoodsGreatWillow LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -25,14 +23,11 @@ arkhamWoodsGreatWillow =
     . (revealedConnectedSymbolsL .~ setFromList [Squiggle, Star])
     . (revealedSymbolL .~ Heart)
     . baseAttrs
-        "50033"
-        ("Arkham Woods" `subtitled` "Great Willow")
-        EncounterSet.ReturnToTheDevourerBelow
+        Cards.arkhamWoodsGreatWillow
         4
         (PerPlayer 1)
         Square
         [Squiggle]
-        [Woods]
 
 instance HasModifiersFor env ArkhamWoodsGreatWillow where
   getModifiersFor = noModifiersFor

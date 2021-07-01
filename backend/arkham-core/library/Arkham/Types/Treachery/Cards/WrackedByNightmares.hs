@@ -5,30 +5,25 @@ module Arkham.Types.Treachery.Cards.WrackedByNightmares
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.Window
 
 newtype WrackedByNightmares = WrackedByNightmares TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-wrackedByNightmares
-  :: TreacheryId -> Maybe InvestigatorId -> WrackedByNightmares
-wrackedByNightmares uuid iid =
-  WrackedByNightmares $ weaknessAttrs uuid iid "02015"
+wrackedByNightmares :: TreacheryCard WrackedByNightmares
+wrackedByNightmares = treachery WrackedByNightmares Cards.wrackedByNightmares
 
 instance HasModifiersFor env WrackedByNightmares where
   getModifiersFor _ (InvestigatorTarget iid) (WrackedByNightmares attrs) =

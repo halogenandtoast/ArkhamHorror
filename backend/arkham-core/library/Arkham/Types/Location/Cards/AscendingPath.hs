@@ -6,11 +6,11 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (ascendingPath)
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -19,10 +19,8 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Source
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype AscendingPath = AscendingPath LocationAttrs
@@ -30,14 +28,11 @@ newtype AscendingPath = AscendingPath LocationAttrs
 
 ascendingPath :: LocationId -> AscendingPath
 ascendingPath = AscendingPath . baseAttrs
-  "02283"
-  "Ascending Path"
-  EncounterSet.WhereDoomAwaits
+  Cards.ascendingPath
   3
   (Static 0)
   Square
   [Triangle, Diamond, T, Equals, Moon]
-  [Dunwich, SentinelHill]
 
 instance HasModifiersFor env AscendingPath where
   getModifiersFor _ target (AscendingPath location@LocationAttrs {..})
@@ -77,7 +72,7 @@ instance LocationRunner env => RunMessage env AscendingPath where
       | isSource attrs source -> do
         locations <- getSetList @SetAsideLocationCardCode ()
         alteredPaths <- filterM
-          (fmap (== mkName "Altered Path") . getName)
+          (fmap (== "Altered Path") . getName)
           locations
         case nonEmpty alteredPaths of
           Just ne -> do
@@ -90,7 +85,7 @@ instance LocationRunner env => RunMessage env AscendingPath where
                  )
           Nothing -> pure l
     AddConnection lid _ | toId attrs /= lid -> do
-      isAlteredPath <- (== mkName "Altered Path") <$> getName lid
+      isAlteredPath <- (== "Altered Path") <$> getName lid
       if isAlteredPath
         then AscendingPath
           <$> runMessage msg (attrs & connectedLocationsL %~ insertSet lid)

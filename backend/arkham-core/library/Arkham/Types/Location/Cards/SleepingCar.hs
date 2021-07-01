@@ -6,11 +6,11 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (sleepingCar)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Direction
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -21,7 +21,6 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.ScenarioLogKey
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype SleepingCar = SleepingCar LocationAttrs
@@ -30,14 +29,11 @@ newtype SleepingCar = SleepingCar LocationAttrs
 sleepingCar :: LocationId -> SleepingCar
 sleepingCar =
   SleepingCar . (connectsToL .~ setFromList [LeftOf, RightOf]) . baseAttrs
-    "02172"
-    "Sleeping Car"
-    EncounterSet.TheEssexCountyExpress
+    Cards.sleepingCar
     4
     (Static 1)
     NoSymbol
     []
-    [Train]
 
 instance HasCount ClueCount env LocationId => HasModifiersFor env SleepingCar where
   getModifiersFor _ target (SleepingCar location@LocationAttrs {..})

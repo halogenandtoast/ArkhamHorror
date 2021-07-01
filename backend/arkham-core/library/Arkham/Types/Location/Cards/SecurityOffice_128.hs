@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (securityOffice_128)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -18,7 +18,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype SecurityOffice_128 = SecurityOffice_128 LocationAttrs
@@ -26,14 +25,11 @@ newtype SecurityOffice_128 = SecurityOffice_128 LocationAttrs
 
 securityOffice_128 :: LocationId -> SecurityOffice_128
 securityOffice_128 = SecurityOffice_128 . baseAttrs
-  "02128"
-  "Security Office"
-  EncounterSet.TheMiskatonicMuseum
+  Cards.securityOffice_128
   2
   (PerPlayer 1)
   Diamond
   [Square]
-  [Miskatonic]
 
 instance HasModifiersFor env SecurityOffice_128 where
   getModifiersFor = noModifiersFor

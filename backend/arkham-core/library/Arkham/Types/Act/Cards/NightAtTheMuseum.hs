@@ -9,7 +9,6 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.LocationMatcher
@@ -50,7 +49,7 @@ instance ActRunner env => RunMessage env NightAtTheMuseum where
           (FindEncounterCard
             leadInvestigatorId
             (toTarget attrs)
-            (EncounterCardMatchByCardCode "02141")
+            (CardMatchByCardCode "02141")
           )
     FoundEnemyInVoid _ target eid | isTarget attrs target -> do
       lid <- getJustLocationIdByName

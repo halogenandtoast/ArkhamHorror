@@ -2,11 +2,11 @@ module Arkham.Types.Asset.Cards.ProfessorWarrenRice where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.LocationId
@@ -14,19 +14,14 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype ProfessorWarrenRice = ProfessorWarrenRice AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-professorWarrenRice :: AssetId -> ProfessorWarrenRice
-professorWarrenRice uuid = ProfessorWarrenRice $ (baseAttrs uuid "02061")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 2
-  , assetSanity = Just 3
-  }
+professorWarrenRice :: AssetCard ProfessorWarrenRice
+professorWarrenRice = allyWith ProfessorWarrenRice Cards.professorWarrenRice (2, 3) (isStoryL .~ True)
 
 instance HasModifiersFor env ProfessorWarrenRice where
   getModifiersFor _ (InvestigatorTarget iid) (ProfessorWarrenRice a) =

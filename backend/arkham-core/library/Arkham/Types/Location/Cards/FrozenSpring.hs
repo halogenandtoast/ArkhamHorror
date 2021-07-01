@@ -6,16 +6,15 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (frozenSpring)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype FrozenSpring = FrozenSpring LocationAttrs
@@ -28,14 +27,11 @@ frozenSpring =
     . (revealedConnectedSymbolsL .~ setFromList [Triangle, Hourglass])
     . (unrevealedNameL .~ "Diverging Path")
     . baseAttrs
-        "02288"
-        "Frozen Spring"
-        EncounterSet.WhereDoomAwaits
+        Cards.frozenSpring
         3
         (PerPlayer 1)
         NoSymbol
         []
-        [Dunwich, Woods]
 
 instance HasModifiersFor env FrozenSpring where
   getModifiersFor = noModifiersFor

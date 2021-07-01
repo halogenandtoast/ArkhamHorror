@@ -5,22 +5,20 @@ module Arkham.Types.Treachery.Cards.SpacesBetween
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
 
 newtype SpacesBetween = SpacesBetween TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-spacesBetween :: TreacheryId -> a -> SpacesBetween
-spacesBetween uuid _ = SpacesBetween $ baseAttrs uuid "02297"
+spacesBetween :: TreacheryCard SpacesBetween
+spacesBetween = treachery SpacesBetween Cards.spacesBetween
 
 instance HasModifiersFor env SpacesBetween where
   getModifiersFor = noModifiersFor

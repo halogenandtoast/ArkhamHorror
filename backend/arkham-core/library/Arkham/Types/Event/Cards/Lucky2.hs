@@ -2,20 +2,19 @@ module Arkham.Types.Event.Cards.Lucky2 where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Event.Attrs
+import Arkham.Types.Event.Runner
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Event.Attrs
-import Arkham.Types.Event.Runner
 
 newtype Lucky2 = Lucky2 EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-lucky2 :: InvestigatorId -> EventId -> Lucky2
-lucky2 iid uuid = Lucky2 $ baseAttrs iid uuid "01084"
+lucky2 :: EventCard Lucky2
+lucky2 = event Lucky2 Cards.lucky2
 
 instance HasModifiersFor env Lucky2 where
   getModifiersFor = noModifiersFor

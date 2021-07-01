@@ -47,7 +47,7 @@ instance (HasName env LocationId, ActRunner env) => RunMessage env IntoTheBeyond
       a <$ unshiftMessage
         (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))
     DiscardedTopOfEncounterDeck iid cards target | isTarget attrs target -> do
-      let locationCards = filter ((== LocationType) . ecCardType) cards
+      let locationCards = filterLocations cards
       a <$ unless
         (null locationCards)
         (unshiftMessages
@@ -55,7 +55,7 @@ instance (HasName env LocationId, ActRunner env) => RunMessage env IntoTheBeyond
           , chooseOne
             iid
             [ TargetLabel
-                (EncounterCardTarget location)
+                (CardIdTarget $ toCardId location)
                 [ RemoveFromEncounterDiscard location
                 , InvestigatorDrewEncounterCard iid location
                 ]

@@ -19,13 +19,13 @@ import Arkham.Types.Query
 import Arkham.Types.Target
 import Arkham.Types.TreacheryId
 import Arkham.Types.Action
-import Arkham.Types.Trait (Trait)
+import Arkham.Types.Trait (Trait, toTraits)
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Cards
 import Arkham.Types.Enemy.Runner
 
 createEnemy :: IsCard a => a -> Enemy
-createEnemy a = lookupEnemy (getCardCode a) (EnemyId $ getCardId a)
+createEnemy a = lookupEnemy (toCardCode a) (EnemyId $ toCardId a)
 
 data Enemy
   = MobEnforcer' MobEnforcer
@@ -98,8 +98,11 @@ data Enemy
 newtype BaseEnemy = BaseEnemy EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-baseEnemy :: EnemyId -> CardCode -> (EnemyAttrs -> EnemyAttrs) -> Enemy
-baseEnemy a b f = BaseEnemy' . BaseEnemy $ baseAttrs a b f
+instance HasCardDef Enemy where
+  toCardDef = toCardDef . toAttrs
+
+baseEnemy :: EnemyId -> CardCode -> (EnemyAttrs -> EnemyAttrs) -> (CardDef -> CardDef) -> Enemy
+baseEnemy eid cardCode attrsF defF = BaseEnemy' $ enemy BaseEnemy (defF $ testCardDef EnemyType cardCode) attrsF eid
 
 instance ActionRunner env => HasActions env BaseEnemy where
   getActions investigator window (BaseEnemy attrs) =
@@ -124,21 +127,21 @@ preventedByModifier EnemyAttrs {..} msg (Modifier _ (CannotTakeAction matcher))
     Just action -> case matcher of
       IsAction a -> a == action
       EnemyAction a traits ->
-        a == action && notNull (setFromList traits `intersect` enemyTraits)
+        a == action && notNull (setFromList traits `intersect` toTraits enemyCardDef)
       FirstOneOf _ -> False -- TODO: We can't tell here
     Nothing -> False
 preventedByModifier _ _ _ = False
 
 instance ActionRunner env => HasActions env Enemy where
-  getActions investigator window enemy = do
+  getActions investigator window x = do
     modifiers' <- getModifiersFor
-      (toSource enemy)
+      (toSource x)
       (InvestigatorTarget investigator)
       ()
-    actions <- defaultGetActions investigator window enemy
+    actions <- defaultGetActions investigator window x
     pure $ filter
       (\action ->
-        not $ any (preventedByModifier (toAttrs enemy) action) modifiers'
+        not $ any (preventedByModifier (toAttrs x) action) modifiers'
       )
       actions
 
@@ -182,7 +185,7 @@ instance
     defaultRunMessage msg' e
 
 instance HasVictoryPoints Enemy where
-  getVictoryPoints = enemyVictory . toAttrs
+  getVictoryPoints = getEnemyVictory
 
 instance HasCount DoomCount env Enemy where
   getCount = pure . DoomCount . enemyDoom . toAttrs
@@ -206,10 +209,7 @@ instance HasSet AssetId env Enemy where
   getSet = pure . enemyAssets . toAttrs
 
 instance IsCard Enemy where
-  getCardId = getCardId . toAttrs
-  getCardCode = getCardCode . toAttrs
-  getTraits = getTraits . toAttrs
-  getKeywords = getKeywords . toAttrs
+  toCardId = toCardId . toAttrs
 
 instance HasDamage Enemy where
   getDamage = (, 0) . enemyDamage . toAttrs
@@ -284,14 +284,14 @@ allEnemies = mapFromList
   , ("81031", SlimeCoveredDhole' . slimeCoveredDhole)
   , ("81032", MarshGug' . marshGug)
   , ("81033", DarkYoungHost' . darkYoungHost)
-  , ("enemy", \eid -> baseEnemy eid "enemy" id)
+  , ("enemy", \eid -> baseEnemy eid "enemy" id id)
   ]
 
 isEngaged :: Enemy -> Bool
 isEngaged = notNull . enemyEngagedInvestigators . toAttrs
 
 isUnique :: Enemy -> Bool
-isUnique = enemyUnique . toAttrs
+isUnique = cdUnique . toCardDef
 
 instance Exhaustable Enemy where
   isExhausted = enemyExhausted . toAttrs
@@ -300,9 +300,9 @@ getEngagedInvestigators :: Enemy -> HashSet InvestigatorId
 getEngagedInvestigators = enemyEngagedInvestigators . toAttrs
 
 getEnemyVictory :: Enemy -> Maybe Int
-getEnemyVictory = enemyVictory . toAttrs
+getEnemyVictory = cdVictoryPoints . toCardDef
 
 getBearer :: Enemy -> Maybe InvestigatorId
-getBearer enemy = case enemyPrey (toAttrs enemy) of
+getBearer x = case enemyPrey (toAttrs x) of
   Bearer iid -> Just (unBearerId iid)
   _ -> Nothing

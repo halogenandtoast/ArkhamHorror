@@ -6,10 +6,8 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Cards.RottingRemains
 import Arkham.Types.Treachery.Runner
@@ -18,9 +16,10 @@ newtype RottingRemainsBloodOnTheAltar = RottingRemainsBloodOnTheAltar RottingRem
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env, HasActions env)
 
 rottingRemainsBloodOnTheAltar
-  :: TreacheryId -> a -> RottingRemainsBloodOnTheAltar
-rottingRemainsBloodOnTheAltar uuid _ =
-  RottingRemainsBloodOnTheAltar . RottingRemains $ baseAttrs uuid "02223"
+  :: TreacheryCard RottingRemainsBloodOnTheAltar
+rottingRemainsBloodOnTheAltar = treachery
+  (RottingRemainsBloodOnTheAltar . RottingRemains)
+  Cards.rottingRemainsBloodOnTheAltar
 
 instance TreacheryRunner env => RunMessage env RottingRemainsBloodOnTheAltar where
   runMessage msg (RottingRemainsBloodOnTheAltar inner) =

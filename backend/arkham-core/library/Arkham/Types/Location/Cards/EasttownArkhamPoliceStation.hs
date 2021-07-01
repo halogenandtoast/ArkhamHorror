@@ -6,11 +6,11 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (easttownArkhamPoliceStation)
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -18,9 +18,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Target
-import Arkham.Types.Trait hiding (Supply)
 import Arkham.Types.Window
 
 newtype EasttownArkhamPoliceStation = EasttownArkhamPoliceStation LocationAttrs
@@ -28,15 +26,12 @@ newtype EasttownArkhamPoliceStation = EasttownArkhamPoliceStation LocationAttrs
 
 easttownArkhamPoliceStation :: LocationId -> EasttownArkhamPoliceStation
 easttownArkhamPoliceStation =
-  EasttownArkhamPoliceStation . (victoryL ?~ 1) . baseAttrs
-    "50027"
-    ("Easttown" `subtitled` "Arkham Police Station")
-    EncounterSet.ReturnToTheMidnightMasks
+  EasttownArkhamPoliceStation . baseAttrs
+    Cards.easttownArkhamPoliceStation
     4
     (PerPlayer 2)
     Moon
     [Circle, Triangle]
-    [Arkham]
 
 instance HasModifiersFor env EasttownArkhamPoliceStation where
   getModifiersFor _ _ _ = pure []

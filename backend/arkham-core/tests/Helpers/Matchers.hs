@@ -8,7 +8,6 @@ import Arkham.Types.Agenda
 import Arkham.Types.Asset
 import Arkham.Types.AssetId
 import Arkham.Types.Card
-import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Enemy
 import Arkham.Types.EnemyId
@@ -50,11 +49,11 @@ instance ToPlayerCard PlayerCard where
   asPlayerCard = id
 
 instance ToPlayerCard Event where
-  asPlayerCard event = lookupPlayerCard (getCardCode event) (getCardId event)
+  asPlayerCard event = lookupPlayerCard (toCardCode event) (toCardId event)
 
 instance ToPlayerCard Treachery where
   asPlayerCard treachery =
-    lookupPlayerCard (getCardCode treachery) (getCardId treachery)
+    lookupPlayerCard (toCardCode treachery) (toCardId treachery)
 
 class (Entity a, TargetEntity a) => TestEntity a where
   updated :: (MonadReader env m, HasGameRef env, MonadIO m) => a -> m a
@@ -97,7 +96,7 @@ isAttachedTo x y = case toTarget x of
 
 instance ToEncounterCard Enemy where
   asEncounterCard enemy =
-    lookupEncounterCard (getCardCode enemy) (getCardId enemy)
+    lookupEncounterCard (toCardCode enemy) (toCardId enemy)
 
 isInEncounterDiscard
   :: (ToEncounterCard entity, HasGameRef env, MonadIO m, MonadReader env m)
@@ -167,7 +166,7 @@ hasEnemy e l = (toId e `member`) <$> getSet @EnemyId l
 
 hasCardInPlay :: (MonadReader env m) => Card -> Investigator -> m Bool
 hasCardInPlay c i = case c of
-  PlayerCard pc -> case pcCardType (pcDef pc) of
+  PlayerCard pc -> case cdCardType (pcDef pc) of
     AssetType -> (AssetId (pcId pc) `member`) <$> getSet i
     _ -> error "not implemented"
   _ -> error "not implemented"
@@ -185,7 +184,7 @@ hasTreacheryWithMatchingCardCode c a = do
     (mtreachery game)
  where
   mtreachery g =
-    find ((== getCardCode c) . getCardCode) $ toList (g ^. treacheriesL)
+    find ((== toCardCode c) . toCardCode) $ toList (g ^. treacheriesL)
 
 hasClueCount :: HasCount ClueCount () a => Int -> a -> Bool
 hasClueCount n a = n == unClueCount (getCount a ())

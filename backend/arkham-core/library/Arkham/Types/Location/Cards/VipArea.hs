@@ -5,8 +5,8 @@ module Arkham.Types.Location.Cards.VipArea
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (vipArea)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -16,21 +16,17 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.Phase
 import Arkham.Types.Target
-import Arkham.Types.Trait hiding (Cultist)
 
 newtype VipArea = VipArea LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 vipArea :: LocationId -> VipArea
-vipArea = VipArea . (victoryL ?~ 1) . (revealedSymbolL .~ Plus) . baseAttrs
-  "02076"
-  "VIP Area"
-  EncounterSet.TheHouseAlwaysWins
+vipArea = VipArea . (revealedSymbolL .~ Plus) . baseAttrs
+  Cards.vipArea
   3
   (PerPlayer 1)
   T
   [Diamond]
-  [CloverClub]
 
 instance HasPhase env => HasModifiersFor env VipArea where
   getModifiersFor _ (InvestigatorTarget iid) (VipArea attrs)

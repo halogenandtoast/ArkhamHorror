@@ -6,14 +6,11 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
@@ -21,8 +18,8 @@ import Arkham.Types.Treachery.Runner
 newtype Indebted = Indebted TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-indebted :: TreacheryId -> Maybe InvestigatorId -> Indebted
-indebted uuid iid = Indebted $ weaknessAttrs uuid iid "02037"
+indebted :: TreacheryCard Indebted
+indebted = treachery Indebted Cards.indebted
 
 instance HasModifiersFor env Indebted where
   getModifiersFor _ (InvestigatorTarget iid) (Indebted attrs) =

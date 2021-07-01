@@ -5,22 +5,20 @@ module Arkham.Types.Asset.Cards.Pathfinder1
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Window
 
 newtype Pathfinder1 = Pathfinder1 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-pathfinder1 :: AssetId -> Pathfinder1
-pathfinder1 uuid = Pathfinder1 $ baseAttrs uuid "02108"
+pathfinder1 :: AssetCard Pathfinder1
+pathfinder1 = asset Pathfinder1 Cards.pathfinder1
 
 ability :: AssetAttrs -> Ability
 ability attrs =

@@ -6,15 +6,14 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Window
 import Arkham.Types.Asset.Attrs
@@ -24,9 +23,8 @@ import Arkham.Types.Asset.Runner
 newtype PoliceBadge2 = PoliceBadge2 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-policeBadge2 :: AssetId -> PoliceBadge2
-policeBadge2 uuid =
-  PoliceBadge2 $ (baseAttrs uuid "01027") { assetSlots = [AccessorySlot] }
+policeBadge2 :: AssetCard PoliceBadge2
+policeBadge2 = accessory PoliceBadge2 Cards.policeBadge2
 
 instance HasModifiersFor env PoliceBadge2 where
   getModifiersFor _ (InvestigatorTarget iid) (PoliceBadge2 a) =

@@ -5,29 +5,26 @@ module Arkham.Types.Asset.Cards.TheNecronomicon
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Slot
 import Arkham.Types.Target
-import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 import qualified Arkham.Types.Token as Token
+import Arkham.Types.Window
 
 newtype TheNecronomicon = TheNecronomicon AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
-theNecronomicon :: AssetId -> TheNecronomicon
-theNecronomicon uuid = TheNecronomicon $ (baseAttrs uuid "01009")
-  { assetSlots = [HandSlot]
-  , assetHorror = Just 3
-  , assetCanLeavePlayByNormalMeans = False
-  }
+theNecronomicon :: AssetCard TheNecronomicon
+theNecronomicon = handWith TheNecronomicon Cards.theNecronomicon
+  $ (horrorL ?~ 3)
+  . (canLeavePlayByNormalMeansL .~ False)
 
 instance HasModifiersFor env TheNecronomicon where
   getModifiersFor _ (InvestigatorTarget iid) (TheNecronomicon a) = pure
@@ -48,7 +45,7 @@ instance HasActions env TheNecronomicon where
 instance (AssetRunner env) => RunMessage env TheNecronomicon where
   runMessage msg a@(TheNecronomicon attrs) = case msg of
     Revelation iid source | isSource attrs source ->
-      a <$ unshiftMessage (PlayCard iid (getCardId attrs) Nothing False)
+      a <$ unshiftMessage (PlayCard iid (toCardId attrs) Nothing False)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       unshiftMessage $ InvestigatorDamage iid source 0 1
       if fromJustNote "Must be set" (assetHorror attrs) == 1

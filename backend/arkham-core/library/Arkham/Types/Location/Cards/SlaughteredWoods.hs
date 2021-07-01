@@ -6,9 +6,9 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (slaugteredWoods)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -16,7 +16,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Query
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype SlaughteredWoods = SlaughteredWoods LocationAttrs
@@ -29,14 +28,11 @@ slaugteredWoods =
     . (revealedConnectedSymbolsL .~ setFromList [Triangle, Hourglass])
     . (unrevealedNameL .~ "Diverging Path")
     . baseAttrs
-        "02285"
-        "Slaughtered Woods"
-        EncounterSet.WhereDoomAwaits
+        Cards.slaugteredWoods
         2
         (PerPlayer 1)
         NoSymbol
         []
-        [Dunwich, Woods]
 
 instance HasModifiersFor env SlaughteredWoods where
   getModifiersFor = noModifiersFor

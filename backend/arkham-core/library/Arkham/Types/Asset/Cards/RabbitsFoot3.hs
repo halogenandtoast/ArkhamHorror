@@ -6,12 +6,11 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
-import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Window
 import Arkham.Types.Asset.Attrs
@@ -20,9 +19,8 @@ import Arkham.Types.Asset.Runner
 newtype RabbitsFoot3 = RabbitsFoot3 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-rabbitsFoot3 :: AssetId -> RabbitsFoot3
-rabbitsFoot3 uuid =
-  RabbitsFoot3 $ (baseAttrs uuid "50010") { assetSlots = [AccessorySlot] }
+rabbitsFoot3 :: AssetCard RabbitsFoot3
+rabbitsFoot3 = accessory RabbitsFoot3 Cards.rabbitsFoot3
 
 instance HasModifiersFor env RabbitsFoot3 where
   getModifiersFor = noModifiersFor

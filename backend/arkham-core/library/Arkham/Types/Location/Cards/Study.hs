@@ -2,8 +2,8 @@ module Arkham.Types.Location.Cards.Study where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (study)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -14,17 +14,12 @@ newtype Study = Study LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 study :: LocationId -> Study
-study =
-  Study
-    . baseAttrs
-        "01111"
-        "Study"
-        EncounterSet.TheGathering
-        2
-        (PerPlayer 2)
-        Circle
-        []
-        []
+study = Study . baseAttrs
+  Cards.study
+  2
+  (PerPlayer 2)
+  Circle
+  []
 
 instance HasModifiersFor env Study where
   getModifiersFor = noModifiersFor

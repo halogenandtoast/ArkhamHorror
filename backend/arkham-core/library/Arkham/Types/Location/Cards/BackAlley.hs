@@ -6,29 +6,25 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (backAlley)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Trait hiding (Cultist)
 
 newtype BackAlley = BackAlley LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 backAlley :: LocationId -> BackAlley
 backAlley =
-  BackAlley . (victoryL ?~ 1) . (revealedSymbolL .~ Squiggle) . baseAttrs
-    "02077"
-    "Back Alley"
-    EncounterSet.TheHouseAlwaysWins
+  BackAlley . (revealedSymbolL .~ Squiggle) . baseAttrs
+    Cards.backAlley
     1
     (PerPlayer 1)
     T
     [Diamond]
-    [CloverClub]
 
 instance HasModifiersFor env BackAlley where
   getModifiersFor = noModifiersFor

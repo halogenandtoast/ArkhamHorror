@@ -6,13 +6,13 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (trappersCabin)
 import Arkham.PlayerCard (genPlayerCard)
 import Arkham.Types.Ability
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -23,7 +23,6 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype TrappersCabin = TrappersCabin LocationAttrs
@@ -31,14 +30,11 @@ newtype TrappersCabin = TrappersCabin LocationAttrs
 
 trappersCabin :: LocationId -> TrappersCabin
 trappersCabin = TrappersCabin . baseAttrs
-  "81014"
-  "Trapper's Cabin"
-  EncounterSet.CurseOfTheRougarou
+  Cards.trappersCabin
   3
   (Static 0)
   Moon
   [Diamond, Moon]
-  [Wilderness]
 
 instance HasModifiersFor env TrappersCabin where
   getModifiersFor _ (InvestigatorTarget iid) (TrappersCabin attrs) =

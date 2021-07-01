@@ -5,10 +5,11 @@ module Arkham.Types.Location.Cards.MiskatonicUniversityMiskatonicMuseum
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards
+  (miskatonicUniversityMiskatonicMuseum)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -16,8 +17,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype MiskatonicUniversityMiskatonicMuseum = MiskatonicUniversityMiskatonicMuseum LocationAttrs
@@ -26,15 +25,12 @@ newtype MiskatonicUniversityMiskatonicMuseum = MiskatonicUniversityMiskatonicMus
 miskatonicUniversityMiskatonicMuseum
   :: LocationId -> MiskatonicUniversityMiskatonicMuseum
 miskatonicUniversityMiskatonicMuseum =
-  MiskatonicUniversityMiskatonicMuseum . (victoryL ?~ 1) . baseAttrs
-    "50029"
-    ("Miskatonic University" `subtitled` "Miskatonic Museum")
-    EncounterSet.ReturnToTheMidnightMasks
+  MiskatonicUniversityMiskatonicMuseum . baseAttrs
+    Cards.miskatonicUniversityMiskatonicMuseum
     3
     (PerPlayer 1)
     Diamond
     [T, Plus, Circle, Square]
-    [Arkham]
 
 instance HasModifiersFor env MiskatonicUniversityMiskatonicMuseum where
   getModifiersFor = noModifiersFor

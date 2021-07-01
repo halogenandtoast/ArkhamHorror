@@ -6,29 +6,23 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
 
 newtype EarlSawyer = EarlSawyer AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-earlSawyer :: AssetId -> EarlSawyer
-earlSawyer uuid =
-  EarlSawyer
-    $ baseAttrs uuid "02218"
-    & (healthL ?~ 3)
-    & (sanityL ?~ 2)
-    & (slotsL .~ [AllySlot])
+earlSawyer :: AssetCard EarlSawyer
+earlSawyer = ally EarlSawyer Cards.earlSawyer (3, 2)
 
 ability :: AssetAttrs -> Ability
 ability attrs =

@@ -6,7 +6,7 @@ where
 import TestImport.Lifted
 
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
-import Arkham.Types.Location.Attrs (LocationAttrs(..))
+import Arkham.Types.Location.Attrs (cluesL)
 import Arkham.Types.Trait
 
 spec :: Spec
@@ -19,8 +19,7 @@ spec = describe "Drawn to the flame" $ do
         investigator <- testInvestigator "00000"
           $ \attrs -> attrs { investigatorAgility = 3 }
         (startLocation, centralLocation) <-
-          testConnectedLocations id $ \attrs ->
-            attrs { locationTraits = setFromList [Central], locationClues = 2 }
+          testConnectedLocationsWithDef (id, id) (cardTraitsL .~ singleton Central, cluesL .~ 2)
         drawnToTheFlame <- buildEvent "01064" investigator
         onWingsOfDarkness <- buildEncounterCard "01173"
         gameTest

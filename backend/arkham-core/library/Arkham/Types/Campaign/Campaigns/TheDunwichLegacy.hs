@@ -28,7 +28,7 @@ findOwner cardCode = do
   pure
     $ campaignStoryCardInvestigatorId
     <$> find
-          ((== cardCode) . getCardCode . campaignStoryCardPlayerCard)
+          ((== cardCode) . toCardCode . campaignStoryCardPlayerCard)
           campaignStoryCards
 
 theDunwichLegacy :: Difficulty -> TheDunwichLegacy

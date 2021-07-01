@@ -5,28 +5,23 @@ module Arkham.Types.Asset.Cards.LaboratoryAssistant
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 
 newtype LaboratoryAssistant = LaboratoryAssistant AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-laboratoryAssistant :: AssetId -> LaboratoryAssistant
-laboratoryAssistant uuid = LaboratoryAssistant $ (baseAttrs uuid "02020")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 1
-  , assetSanity = Just 2
-  }
+laboratoryAssistant :: AssetCard LaboratoryAssistant
+laboratoryAssistant = ally LaboratoryAssistant Cards.laboratoryAssistant (1, 2)
 
 instance HasModifiersFor env LaboratoryAssistant where
   getModifiersFor _ (InvestigatorTarget iid) (LaboratoryAssistant attrs) =

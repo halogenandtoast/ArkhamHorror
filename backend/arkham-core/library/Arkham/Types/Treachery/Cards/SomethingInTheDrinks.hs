@@ -5,12 +5,10 @@ module Arkham.Types.Treachery.Cards.SomethingInTheDrinks
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Game.Helpers
+import Arkham.Types.Message
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
@@ -18,8 +16,8 @@ import Arkham.Types.Treachery.Runner
 newtype SomethingInTheDrinks = SomethingInTheDrinks TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-somethingInTheDrinks :: TreacheryId -> a -> SomethingInTheDrinks
-somethingInTheDrinks uuid _ = SomethingInTheDrinks $ baseAttrs uuid "02081"
+somethingInTheDrinks :: TreacheryCard SomethingInTheDrinks
+somethingInTheDrinks = treachery SomethingInTheDrinks Cards.somethingInTheDrinks
 
 instance HasModifiersFor env SomethingInTheDrinks where
   getModifiersFor = noModifiersFor

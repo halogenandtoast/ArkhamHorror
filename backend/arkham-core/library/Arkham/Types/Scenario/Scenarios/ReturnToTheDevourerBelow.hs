@@ -151,7 +151,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         ReturnToTheDevourerBelow . TheDevourerBelow <$> runMessage
           msg
           (attrs & locationsL .~ locations')
-      CreateEnemyAt card lid _ | getCardCode card == "01157" -> do
+      CreateEnemyAt card lid _ | toCardCode card == "01157" -> do
         name <- getName lid
         if name == "Ritual Site"
           then do

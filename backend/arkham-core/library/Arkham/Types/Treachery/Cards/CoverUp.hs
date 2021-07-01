@@ -6,26 +6,22 @@ module Arkham.Types.Treachery.Cards.CoverUp
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
 import Arkham.Types.Window
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype CoverUp = CoverUp TreacheryAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
-coverUp :: TreacheryId -> Maybe InvestigatorId -> CoverUp
-coverUp uuid iid =
-  CoverUp $ (weaknessAttrs uuid iid "01007") { treacheryClues = Just 3 }
+coverUp :: TreacheryCard CoverUp
+coverUp = treachery (CoverUp . (cluesL ?~ 3)) Cards.coverUp
 
 coverUpClues :: TreacheryAttrs -> Int
 coverUpClues TreacheryAttrs { treacheryClues } =

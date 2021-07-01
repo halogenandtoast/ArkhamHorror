@@ -12,7 +12,7 @@ spec = describe "Rex Murphy" $ do
   context "special ability" $ do
     it "discovers a clue if succeed a skill test by 2 or more" $ do
       let rexMurphy = lookupInvestigator "02002"
-      location <- testLocation "00000" (Location.cluesL .~ 1)
+      location <- testLocation (Location.cluesL .~ 1)
       gameTest
           rexMurphy
           [ SetTokens [Zero]

@@ -10,7 +10,6 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.LocationMatcher
@@ -60,7 +59,7 @@ instance ActRunner env => RunMessage env SkinGame where
           , FindEncounterCard
             leadInvestigatorId
             (toTarget attrs)
-            (EncounterCardMatchByType (EnemyType, Just Abomination))
+            (CardMatchByType (EnemyType, singleton Abomination))
           , NextAct actId "02068"
           ]
         else unshiftMessages

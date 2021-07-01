@@ -5,6 +5,7 @@ module Arkham.Types.Event.Cards.BindMonster2
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards (bindMonster2)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -22,7 +23,7 @@ newtype BindMonster2 = BindMonster2 EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bindMonster2 :: InvestigatorId -> EventId -> BindMonster2
-bindMonster2 iid uuid = BindMonster2 $ baseAttrs iid uuid "02031"
+bindMonster2 = event BindMonster2 Cards.bindMonster2
 
 ability :: Target -> EventAttrs -> Ability
 ability target attrs = (mkAbility (toSource attrs) 1 (ReactionAbility Free))

@@ -2,19 +2,18 @@ module Arkham.Types.Event.Cards.HotStreak2 where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Target
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
+import Arkham.Types.Message
+import Arkham.Types.Target
 
 newtype HotStreak2 = HotStreak2 EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-hotStreak2 :: InvestigatorId -> EventId -> HotStreak2
-hotStreak2 iid uuid = HotStreak2 $ baseAttrs iid uuid "50006"
+hotStreak2 :: EventCard HotStreak2
+hotStreak2 = event HotStreak2 Cards.hotStreak2
 
 instance HasModifiersFor env HotStreak2 where
   getModifiersFor = noModifiersFor

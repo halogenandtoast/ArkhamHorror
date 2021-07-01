@@ -5,27 +5,25 @@ module Arkham.Types.Enemy.Cards.EmergentMonstrosity
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Direction
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.LocationId
-import Arkham.Types.Message
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
+import Arkham.Types.GameValue
+import Arkham.Types.Id
+import Arkham.Types.Message
 
 newtype EmergentMonstrosity = EmergentMonstrosity EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-emergentMonstrosity :: EnemyId -> EmergentMonstrosity
-emergentMonstrosity uuid =
-  EmergentMonstrosity
-    $ baseAttrs uuid "02183"
-    $ (healthDamageL .~ 2)
-    . (sanityDamageL .~ 2)
-    . (fightL .~ 4)
-    . (healthL .~ Static 5)
-    . (evadeL .~ 4)
+emergentMonstrosity :: EnemyCard EmergentMonstrosity
+emergentMonstrosity = enemy EmergentMonstrosity Cards.emergentMonstrosity
+  $ (healthDamageL .~ 2)
+  . (sanityDamageL .~ 2)
+  . (fightL .~ 4)
+  . (healthL .~ Static 5)
+  . (evadeL .~ 4)
 
 instance HasModifiersFor env EmergentMonstrosity where
   getModifiersFor = noModifiersFor

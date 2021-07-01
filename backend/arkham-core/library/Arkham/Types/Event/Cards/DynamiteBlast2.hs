@@ -2,21 +2,20 @@ module Arkham.Types.Event.Cards.DynamiteBlast2 where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Event.Attrs
+import Arkham.Types.Event.Runner
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Event.Attrs
-import Arkham.Types.Event.Runner
 
 newtype DynamiteBlast2 = DynamiteBlast2 EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-dynamiteBlast2 :: InvestigatorId -> EventId -> DynamiteBlast2
-dynamiteBlast2 iid uuid = DynamiteBlast2 $ baseAttrs iid uuid "01023"
+dynamiteBlast2 :: EventCard DynamiteBlast2
+dynamiteBlast2 = event DynamiteBlast2 Cards.dynamiteBlast2
 
 instance HasModifiersFor env DynamiteBlast2 where
   getModifiersFor = noModifiersFor

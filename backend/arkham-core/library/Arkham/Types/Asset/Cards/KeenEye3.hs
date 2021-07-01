@@ -5,11 +5,11 @@ module Arkham.Types.Asset.Cards.KeenEye3
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -23,8 +23,8 @@ import Arkham.Types.Window
 newtype KeenEye3 = KeenEye3 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-keenEye3 :: AssetId -> KeenEye3
-keenEye3 uuid = KeenEye3 $ baseAttrs uuid "02185"
+keenEye3 :: AssetCard KeenEye3
+keenEye3 = asset KeenEye3 Cards.keenEye3
 
 instance HasActions env KeenEye3 where
   getActions iid FastPlayerWindow (KeenEye3 a) | ownedBy a iid = do

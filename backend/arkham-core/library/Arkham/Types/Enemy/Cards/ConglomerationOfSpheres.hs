@@ -2,30 +2,28 @@ module Arkham.Types.Enemy.Cards.ConglomerationOfSpheres where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
+import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Runner
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Prey
 import Arkham.Types.SkillType
-import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Runner
-import Arkham.Types.Game.Helpers
 import Arkham.Types.Trait
 
 newtype ConglomerationOfSpheres = ConglomerationOfSpheres EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-conglomerationOfSpheres :: EnemyId -> ConglomerationOfSpheres
-conglomerationOfSpheres uuid =
-  ConglomerationOfSpheres
-    $ baseAttrs uuid "02103"
-    $ (healthDamageL .~ 1)
-    . (sanityDamageL .~ 1)
-    . (fightL .~ 1)
-    . (healthL .~ Static 6)
-    . (evadeL .~ 4)
-    . (preyL .~ LowestSkill SkillWillpower)
+conglomerationOfSpheres :: EnemyCard ConglomerationOfSpheres
+conglomerationOfSpheres = enemy ConglomerationOfSpheres Cards.conglomerationOfSpheres
+  $ (healthDamageL .~ 1)
+  . (sanityDamageL .~ 1)
+  . (fightL .~ 1)
+  . (healthL .~ Static 6)
+  . (evadeL .~ 4)
+  . (preyL .~ LowestSkill SkillWillpower)
 
 instance HasModifiersFor env ConglomerationOfSpheres where
   getModifiersFor = noModifiersFor

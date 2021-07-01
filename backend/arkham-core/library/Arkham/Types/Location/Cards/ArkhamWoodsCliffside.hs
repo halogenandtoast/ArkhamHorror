@@ -2,17 +2,15 @@ module Arkham.Types.Location.Cards.ArkhamWoodsCliffside where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (arkhamWoodsCliffside)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.SkillType
-import Arkham.Types.Trait
 
 newtype ArkhamWoodsCliffside = ArkhamWoodsCliffside LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -23,14 +21,11 @@ arkhamWoodsCliffside =
     . (revealedConnectedSymbolsL .~ setFromList [Squiggle, Moon, Triangle])
     . (revealedSymbolL .~ Hourglass)
     . baseAttrs
-        "01153"
-        ("Arkham Woods" `subtitled` "Cliffside")
-        EncounterSet.TheDevourerBelow
+        Cards.arkhamWoodsCliffside
         2
         (PerPlayer 1)
         Square
         [Squiggle]
-        [Woods]
 
 instance HasModifiersFor env ArkhamWoodsCliffside where
   getModifiersFor = noModifiersFor

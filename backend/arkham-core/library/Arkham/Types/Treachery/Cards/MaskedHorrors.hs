@@ -2,22 +2,20 @@ module Arkham.Types.Treachery.Cards.MaskedHorrors where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
-import Arkham.Types.Game.Helpers
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype MaskedHorrors = MaskedHorrors TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-maskedHorrors :: TreacheryId -> a -> MaskedHorrors
-maskedHorrors uuid _ = MaskedHorrors $ baseAttrs uuid "50031"
+maskedHorrors :: TreacheryCard MaskedHorrors
+maskedHorrors = treachery MaskedHorrors Cards.maskedHorrors
 
 instance HasModifiersFor env MaskedHorrors where
   getModifiersFor = noModifiersFor

@@ -6,22 +6,20 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
-import Arkham.Types.Game.Helpers
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype StrangeSigns = StrangeSigns TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-strangeSigns :: TreacheryId -> a -> StrangeSigns
-strangeSigns uuid _ = StrangeSigns $ baseAttrs uuid "02222"
+strangeSigns :: TreacheryCard StrangeSigns
+strangeSigns = treachery StrangeSigns Cards.strangeSigns
 
 instance HasModifiersFor env StrangeSigns where
   getModifiersFor = noModifiersFor

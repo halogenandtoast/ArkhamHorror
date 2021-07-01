@@ -5,26 +5,23 @@ module Arkham.Types.Treachery.Cards.Psychosis
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.Window
 
 newtype Psychosis = Psychosis TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-psychosis :: TreacheryId -> Maybe InvestigatorId -> Psychosis
-psychosis uuid iid = Psychosis $ weaknessAttrs uuid iid "01099"
+psychosis :: TreacheryCard Psychosis
+psychosis = treachery Psychosis Cards.psychosis
 
 instance HasModifiersFor env Psychosis where
   getModifiersFor = noModifiersFor

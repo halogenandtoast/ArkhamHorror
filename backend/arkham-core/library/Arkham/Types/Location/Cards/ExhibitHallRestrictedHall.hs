@@ -6,9 +6,9 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (exhibitHallRestrictedHall)
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -17,23 +17,18 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
-import Arkham.Types.Name
-import Arkham.Types.Trait
 
 newtype ExhibitHallRestrictedHall = ExhibitHallRestrictedHall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallRestrictedHall :: LocationId -> ExhibitHallRestrictedHall
 exhibitHallRestrictedHall =
-  ExhibitHallRestrictedHall . (victoryL ?~ 1) . baseAttrs
-    "02137"
-    ("Exhibit Hall" `subtitled` "Restricted Hall")
-    EncounterSet.TheMiskatonicMuseum
+  ExhibitHallRestrictedHall . baseAttrs
+    Cards.exhibitHallRestrictedHall
     3
     (PerPlayer 2)
     Equals
     [Square]
-    [Miskatonic, Exhibit]
 
 instance HasId (Maybe StoryEnemyId) env CardCode => HasModifiersFor env ExhibitHallRestrictedHall where
   getModifiersFor _ target (ExhibitHallRestrictedHall attrs)

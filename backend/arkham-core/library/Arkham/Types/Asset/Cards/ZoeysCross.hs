@@ -5,24 +5,22 @@ module Arkham.Types.Asset.Cards.ZoeysCross
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.EnemyId
 import Arkham.Types.Message
-import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype ZoeysCross = ZoeysCross AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-zoeysCross :: AssetId -> ZoeysCross
-zoeysCross uuid =
-  ZoeysCross $ (baseAttrs uuid "02006") { assetSlots = [AccessorySlot] }
+zoeysCross :: AssetCard ZoeysCross
+zoeysCross = accessory ZoeysCross Cards.zoeysCross
 
 instance HasModifiersFor env ZoeysCross where
   getModifiersFor = noModifiersFor

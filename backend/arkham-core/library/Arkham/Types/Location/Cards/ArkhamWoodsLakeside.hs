@@ -2,10 +2,10 @@ module Arkham.Types.Location.Cards.ArkhamWoodsLakeside where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (arkhamWoodsLakeside)
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -13,9 +13,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Source
-import Arkham.Types.Trait
 
 newtype ArkhamWoodsLakeside = ArkhamWoodsLakeside LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -26,14 +24,11 @@ arkhamWoodsLakeside =
     . (revealedConnectedSymbolsL .~ setFromList [Squiggle, Heart])
     . (revealedSymbolL .~ Star)
     . baseAttrs
-        "50034"
-        ("Arkham Woods" `subtitled` "Lakeside")
-        EncounterSet.ReturnToTheDevourerBelow
+        Cards.arkhamWoodsLakeside
         4
         (PerPlayer 1)
         Square
         [Squiggle]
-        [Woods]
 
 instance HasModifiersFor env ArkhamWoodsLakeside where
   getModifiersFor = noModifiersFor

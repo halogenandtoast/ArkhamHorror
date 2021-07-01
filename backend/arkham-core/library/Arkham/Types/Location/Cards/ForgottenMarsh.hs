@@ -2,29 +2,25 @@ module Arkham.Types.Location.Cards.ForgottenMarsh where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (forgottenMarsh)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Trait
 
 newtype ForgottenMarsh = ForgottenMarsh LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 forgottenMarsh :: LocationId -> ForgottenMarsh
 forgottenMarsh = ForgottenMarsh . baseAttrs
-  "81013"
-  "Forgotten Marsh"
-  EncounterSet.CurseOfTheRougarou
+  Cards.forgottenMarsh
   2
   (Static 0)
   Diamond
   [Moon, Square, Triangle, Hourglass]
-  [Wilderness, Bayou]
 
 instance HasModifiersFor env ForgottenMarsh where
   getModifiersFor = noModifiersFor

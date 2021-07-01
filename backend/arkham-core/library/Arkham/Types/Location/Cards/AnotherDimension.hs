@@ -6,9 +6,9 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (anotherDimension)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
@@ -18,9 +18,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Target
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype AnotherDimension = AnotherDimension LocationAttrs
@@ -28,14 +26,11 @@ newtype AnotherDimension = AnotherDimension LocationAttrs
 
 anotherDimension :: LocationId -> AnotherDimension
 anotherDimension = AnotherDimension . baseAttrs
-  "02320"
-  ("Another Dimension" `subtitled` "Unfettered by Reality")
-  EncounterSet.LostInTimeAndSpace
+  Cards.anotherDimension
   6
   (Static 0)
   Circle
   [Square, Diamond, Triangle]
-  [Otherworld]
 
 instance HasModifiersFor env AnotherDimension where
   getModifiersFor = noModifiersFor

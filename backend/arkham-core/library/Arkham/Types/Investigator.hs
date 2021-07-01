@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Types.Action (Action, TakenAction)
 import Arkham.Types.AssetId
 import Arkham.Types.Card
-import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
 import Arkham.Types.EnemyId
@@ -67,6 +66,9 @@ instance IsInvestigator Investigator where
   hasEndedTurn = view endedTurnL . toAttrs
   hasResigned = view resignedL . toAttrs
 
+instance {-# OVERLAPPING #-} HasTraits Investigator where
+  toTraits = toTraits . toAttrs
+
 instance HasTokenValue env BaseInvestigator where
   getTokenValue (BaseInvestigator attrs) iid token =
     getTokenValue attrs iid token
@@ -120,15 +122,9 @@ instance HasCard Investigator () where
   getCard cardId _ =
     asks
       $ fromJustNote "player does not have this card"
-      . find ((== cardId) . getCardId)
+      . find ((== cardId) . toCardId)
       . investigatorHand
       . toAttrs
-
-instance IsCard Investigator where
-  getCardId = getCardId . toAttrs
-  getCardCode = getCardCode . toAttrs
-  getTraits = getTraits . toAttrs
-  getKeywords = getKeywords . toAttrs
 
 instance HasDamage Investigator where
   getDamage i = (investigatorHealthDamage, investigatorSanityDamage)
@@ -153,7 +149,7 @@ instance HasList DiscardableHandCard env Investigator where
       . toAttrs
    where
     isWeakness = \case
-      PlayerCard pc -> pcWeakness (pcDef pc)
+      PlayerCard pc -> cdWeakness (pcDef pc)
       EncounterCard _ -> True -- maybe?
 
 instance HasCount MentalTraumaCount env Investigator where

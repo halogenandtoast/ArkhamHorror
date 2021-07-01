@@ -2,14 +2,13 @@ module Arkham.Types.Treachery.Cards.ObscuringFog where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Types.Card.CardDef
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
@@ -17,8 +16,8 @@ import Arkham.Types.Treachery.Runner
 newtype ObscuringFog = ObscuringFog TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-obscuringFog :: TreacheryId -> a -> ObscuringFog
-obscuringFog uuid _ = ObscuringFog $ baseAttrs uuid "01168"
+obscuringFog :: TreacheryCard ObscuringFog
+obscuringFog = treachery ObscuringFog Cards.obscuringFog
 
 instance HasModifiersFor env ObscuringFog where
   getModifiersFor _ (LocationTarget lid) (ObscuringFog attrs) =
@@ -34,7 +33,7 @@ instance TreacheryRunner env => RunMessage env ObscuringFog where
     Revelation iid source | isSource attrs source -> do
       currentLocationId <- getId iid
       obscuringFogCount <- unTreacheryCount
-        <$> getCount (currentLocationId, treacheryCardCode)
+        <$> getCount (currentLocationId, toCardCode attrs)
       if obscuringFogCount > 0
         then t <$ unshiftMessage (Discard $ toTarget attrs)
         else do

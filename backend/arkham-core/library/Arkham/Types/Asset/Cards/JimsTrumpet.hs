@@ -5,15 +5,13 @@ module Arkham.Types.Asset.Cards.JimsTrumpet
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query
-import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Window
@@ -23,9 +21,8 @@ import Arkham.Types.Asset.Runner
 newtype JimsTrumpet = JimsTrumpet AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
-jimsTrumpet :: AssetId -> JimsTrumpet
-jimsTrumpet uuid =
-  JimsTrumpet $ (baseAttrs uuid "02012") { assetSlots = [HandSlot] }
+jimsTrumpet :: AssetCard JimsTrumpet
+jimsTrumpet = hand JimsTrumpet Cards.jimsTrumpet
 
 instance HasModifiersFor env JimsTrumpet where
   getModifiersFor = noModifiersFor

@@ -5,17 +5,16 @@ module Arkham.Types.Event.Cards.DelveTooDeep
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
 import Arkham.Types.Event.Attrs
+import Arkham.Types.Message
 
 newtype DelveTooDeep = DelveTooDeep EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-delveTooDeep :: InvestigatorId -> EventId -> DelveTooDeep
-delveTooDeep iid uuid = DelveTooDeep $ baseAttrs iid uuid "02111"
+delveTooDeep :: EventCard DelveTooDeep
+delveTooDeep = event DelveTooDeep Cards.delveTooDeep
 
 instance HasActions env DelveTooDeep where
   getActions iid window (DelveTooDeep attrs) = getActions iid window attrs

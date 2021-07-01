@@ -4,7 +4,7 @@ module Arkham.Types.Treachery.Cards
 where
 
 import Arkham.Types.Treachery.Cards.AbandonedAndAlone as X
-import Arkham.Types.Treachery.Cards.AcrossTimeAndSpace as X
+import Arkham.Types.Treachery.Cards.AcrossSpaceAndTime as X
 import Arkham.Types.Treachery.Cards.AlteredBeast as X
 import Arkham.Types.Treachery.Cards.Amnesia as X
 import Arkham.Types.Treachery.Cards.AncientEvils as X

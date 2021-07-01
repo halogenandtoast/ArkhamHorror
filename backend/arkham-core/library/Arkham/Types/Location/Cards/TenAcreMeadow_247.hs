@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (tenAcreMeadow_247)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Exception
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
@@ -27,14 +27,11 @@ newtype TenAcreMeadow_247 = TenAcreMeadow_247 LocationAttrs
 
 tenAcreMeadow_247 :: LocationId -> TenAcreMeadow_247
 tenAcreMeadow_247 = TenAcreMeadow_247 . baseAttrs
-  "02247"
-  "Ten-Acre Meadow"
-  EncounterSet.UndimensionedAndUnseen
+  Cards.tenAcreMeadow_247
   2
   (Static 3)
   Diamond
   [Circle, Triangle, Plus]
-  [Dunwich]
 
 instance HasModifiersFor env TenAcreMeadow_247 where
   getModifiersFor = noModifiersFor

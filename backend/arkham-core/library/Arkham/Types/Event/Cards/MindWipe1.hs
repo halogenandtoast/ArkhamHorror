@@ -1,23 +1,22 @@
-module Arkham.Types.Event.Cards.MindWipe1 where
+module Arkham.Types.Event.Cards.MindWipe1 (mindWipe1, MindWipe1(..)) where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Event.Attrs
+import Arkham.Types.Event.Runner
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Event.Attrs
-import Arkham.Types.Event.Runner
 import Arkham.Types.Trait
 
 newtype MindWipe1 = MindWipe1 EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-mindWipe1 :: InvestigatorId -> EventId -> MindWipe1
-mindWipe1 iid uuid = MindWipe1 $ baseAttrs iid uuid "01068"
+mindWipe1 :: EventCard MindWipe1
+mindWipe1 = event MindWipe1 Cards.mindWipe1
 
 instance HasModifiersFor env MindWipe1 where
   getModifiersFor = noModifiersFor

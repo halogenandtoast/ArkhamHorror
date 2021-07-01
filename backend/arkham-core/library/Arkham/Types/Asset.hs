@@ -25,7 +25,7 @@ import Arkham.Types.SkillTest
 import Arkham.Types.Trait (Trait)
 
 createAsset :: IsCard a => a -> Asset
-createAsset a = lookupAsset (getCardCode a) (AssetId $ getCardId a)
+createAsset a = lookupAsset (toCardCode a) (AssetId $ toCardId a)
 
 data Asset
   = Rolands38Special' Rolands38Special
@@ -144,14 +144,14 @@ data Asset
   deriving anyclass (ToJSON, FromJSON)
 
 instance (ActionRunner env, HasSkillTest env) => HasActions env Asset where
-  getActions iid window asset = do
-    inPlay <- member (toId asset) <$> getSet ()
+  getActions iid window x = do
+    inPlay <- member (toId x) <$> getSet ()
     modifiers' <- if inPlay
-      then getModifiersFor (toSource asset) (toTarget asset) ()
+      then getModifiersFor (toSource x) (toTarget x) ()
       else pure []
     if any isBlank modifiers'
-      then getActions iid window (toAttrs asset)
-      else defaultGetActions iid window asset
+      then getActions iid window (toAttrs x)
+      else defaultGetActions iid window x
 
 deriving anyclass instance
   ( HasId LocationId env InvestigatorId
@@ -168,13 +168,13 @@ deriving anyclass instance
   => HasModifiersFor env Asset
 
 instance AssetRunner env => RunMessage env Asset where
-  runMessage msg asset = do
-    inPlay <- member (toId asset) <$> getSet ()
+  runMessage msg x = do
+    inPlay <- member (toId x) <$> getSet ()
     modifiers' <- if inPlay
-      then getModifiersFor (toSource asset) (toTarget asset) ()
+      then getModifiersFor (toSource x) (toTarget x) ()
       else pure []
     let msg' = if any isBlank modifiers' then Blanked msg else msg
-    defaultRunMessage msg' asset
+    defaultRunMessage msg' x
 
 instance Entity Asset where
   type EntityId Asset = AssetId
@@ -194,18 +194,17 @@ instance SourceEntity Asset where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 
+instance HasCardDef Asset where
+  toCardDef = toCardDef . toAttrs
+
 instance IsCard Asset where
-  toCard = toCard . toAttrs
-  getCardId = getCardId . toAttrs
-  getCardCode = getCardCode . toAttrs
-  getTraits = getTraits . toAttrs
-  getKeywords = getKeywords . toAttrs
+  toCardId = toCardId . toAttrs
 
 newtype BaseAsset = BaseAsset AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-baseAsset :: AssetId -> CardCode -> (AssetAttrs -> AssetAttrs) -> Asset
-baseAsset a b f = BaseAsset' . BaseAsset . f $ baseAttrs a b
+baseAsset :: AssetId -> CardCode -> (AssetAttrs -> AssetAttrs) -> (CardDef -> CardDef) -> Asset
+baseAsset aid cardCode attrsF defF = BaseAsset' $ assetWith BaseAsset (defF $ testCardDef AssetType cardCode) attrsF aid
 
 instance HasDamage Asset where
   getDamage a =
@@ -239,10 +238,10 @@ instance HasCount ClueCount env Asset where
   getCount = pure . ClueCount . assetClues . toAttrs
 
 instance HasCount UsesCount env Asset where
-  getCount asset = pure $ case uses' of
+  getCount x = pure $ case uses' of
     NoUses -> UsesCount 0
     Uses _ n -> UsesCount n
-    where uses' = assetUses (toAttrs asset)
+    where uses' = assetUses (toAttrs x)
 
 lookupAsset :: CardCode -> (AssetId -> Asset)
 lookupAsset cardCode =
@@ -364,7 +363,7 @@ allAssets = mapFromList
   , ("81030", MonstrousTransformation' . monstrousTransformation)
   , ("90002", DaisysToteBagAdvanced' . daisysToteBagAdvanced)
   , ("90003", TheNecronomiconAdvanced' . theNecronomiconAdvanced)
-  , ("00000", \aid -> baseAsset aid "00000" id)
+  , ("asset", \aid -> baseAsset aid "asset" id id)
   ]
 
 instance IsAsset Asset where

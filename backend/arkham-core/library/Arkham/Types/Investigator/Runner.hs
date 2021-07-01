@@ -129,7 +129,7 @@ type InvestigatorRunner env
         , HasSet FarthestLocationId env InvestigatorId
         , HasSet FarthestLocationId env [InvestigatorId]
         , HasSet FightableEnemyId env (InvestigatorId, Source)
-        , HasSet HandCardId env (InvestigatorId, PlayerCardType)
+        , HasSet HandCardId env (InvestigatorId, CardType)
         , HasSet HandCardId env InvestigatorId
         , HasSet HealthDamageableAssetId env InvestigatorId
         , HasSet InScenarioInvestigatorId env ()
@@ -168,4 +168,5 @@ type InvestigatorRunner env
       )
     , (HasStep env ActStep, HasStep env AgendaStep)
     , HasSkillTest env
+    , GetCardDef env EnemyId
     )

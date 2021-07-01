@@ -6,30 +6,24 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
 
 newtype ZebulonWhateley = ZebulonWhateley AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-zebulonWhateley :: AssetId -> ZebulonWhateley
-zebulonWhateley uuid =
-  ZebulonWhateley
-    $ baseAttrs uuid "02217"
-    & (healthL ?~ 1)
-    & (sanityL ?~ 4)
-    & (slotsL .~ [AllySlot])
+zebulonWhateley :: AssetCard ZebulonWhateley
+zebulonWhateley = allyWith ZebulonWhateley Cards.zebulonWhateley (1, 4) (isStoryL .~ True)
 
 ability :: AssetAttrs -> Ability
 ability attrs =

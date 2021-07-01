@@ -5,11 +5,11 @@ module Arkham.Types.Asset.Cards.WhittonGreene
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.InvestigatorId
@@ -17,7 +17,6 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -25,12 +24,8 @@ import Arkham.Types.Window
 newtype WhittonGreene = WhittonGreene AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-whittonGreene :: AssetId -> WhittonGreene
-whittonGreene uuid = WhittonGreene $ (baseAttrs uuid "60213")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 2
-  , assetSanity = Just 2
-  }
+whittonGreene :: AssetCard WhittonGreene
+whittonGreene = ally WhittonGreene Cards.whittonGreene (2, 2)
 
 instance HasActions env WhittonGreene where
   getActions iid (AfterRevealLocation You) (WhittonGreene a) | ownedBy a iid =

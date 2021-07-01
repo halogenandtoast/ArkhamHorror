@@ -5,29 +5,27 @@ module Arkham.Types.Enemy.Cards.ServantOfManyMouths
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EnemyId
+import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Runner
 
 newtype ServantOfManyMouths = ServantOfManyMouths EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-servantOfManyMouths :: EnemyId -> ServantOfManyMouths
-servantOfManyMouths uuid =
-  ServantOfManyMouths
-    $ baseAttrs uuid "02224"
-    $ (healthDamageL .~ 2)
-    . (fightL .~ 3)
-    . (healthL .~ Static 2)
-    . (evadeL .~ 1)
+servantOfManyMouths :: EnemyCard ServantOfManyMouths
+servantOfManyMouths = enemy ServantOfManyMouths Cards.servantOfManyMouths
+  $ (healthDamageL .~ 2)
+  . (fightL .~ 3)
+  . (healthL .~ Static 2)
+  . (evadeL .~ 1)
 
 instance HasModifiersFor env ServantOfManyMouths where
   getModifiersFor = noModifiersFor

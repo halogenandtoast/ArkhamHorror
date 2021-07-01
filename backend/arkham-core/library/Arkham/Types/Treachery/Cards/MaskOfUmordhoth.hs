@@ -1,27 +1,25 @@
 module Arkham.Types.Treachery.Cards.MaskOfUmordhoth where
 
-import           Arkham.Json
+import Arkham.Prelude
 
-import           Arkham.Prelude
-import           Arkham.Types.Card
-import           Arkham.Types.Card.EncounterCardMatcher
-import           Arkham.Types.Classes
-import           Arkham.Types.EnemyId
+import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.Id
 import qualified Arkham.Types.Keyword as Keyword
-import           Arkham.Types.Message
-import           Arkham.Types.Modifier
-import           Arkham.Types.Target
-import           Arkham.Types.Trait
-import           Arkham.Types.Treachery.Attrs
-import           Arkham.Types.Treachery.Helpers
-import           Arkham.Types.Treachery.Runner
-import           Arkham.Types.TreacheryId
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Target
+import Arkham.Types.Trait
+import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Helpers
+import Arkham.Types.Treachery.Runner
 
 newtype MaskOfUmordhoth = MaskOfUmordhoth TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-maskOfUmordhoth :: TreacheryId -> a -> MaskOfUmordhoth
-maskOfUmordhoth uuid _ = MaskOfUmordhoth $ baseAttrs uuid "50043"
+maskOfUmordhoth :: TreacheryCard MaskOfUmordhoth
+maskOfUmordhoth = treachery MaskOfUmordhoth Cards.maskOfUmordhoth
 
 instance HasSet UniqueEnemyId env () => HasModifiersFor env MaskOfUmordhoth where
   getModifiersFor _ (EnemyTarget eid) (MaskOfUmordhoth attrs)
@@ -44,7 +42,7 @@ instance TreacheryRunner env => RunMessage env MaskOfUmordhoth where
         [] -> unshiftMessages
           [ FindAndDrawEncounterCard
             iid
-            (EncounterCardMatchByType (EnemyType, Just Cultist))
+            (CardMatchByType (EnemyType, singleton Cultist))
           , Revelation iid source
           ]
         [eid] -> unshiftMessage (AttachTreachery treacheryId (EnemyTarget eid))

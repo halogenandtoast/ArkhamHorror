@@ -6,8 +6,8 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (administrationOffice_130)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
@@ -18,21 +18,17 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.Source
-import Arkham.Types.Trait
 
 newtype AdministrationOffice_130 = AdministrationOffice_130 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 administrationOffice_130 :: LocationId -> AdministrationOffice_130
 administrationOffice_130 = AdministrationOffice_130 . baseAttrs
-  "02130"
-  "Administration Office"
-  EncounterSet.TheMiskatonicMuseum
+  Cards.administrationOffice_130
   1
   (PerPlayer 1)
   Triangle
   [Square]
-  (singleton Miskatonic)
 
 instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env AdministrationOffice_130 where
   getModifiersFor (InvestigatorSource iid) target (AdministrationOffice_130 attrs)

@@ -139,7 +139,7 @@ investigatorDefeat = do
       (\iid -> iid <$ guard (iid `elem` defeatedInvestigatorIds))
         . campaignStoryCardInvestigatorId
         =<< find
-              ((== cardCode) . getCardCode . campaignStoryCardPlayerCard)
+              ((== cardCode) . toCardCode . campaignStoryCardPlayerCard)
               campaignStoryCards
     mNecronomiconOwner = findOwner "02140"
     mDrHenryArmitageOwner = findOwner "02040"

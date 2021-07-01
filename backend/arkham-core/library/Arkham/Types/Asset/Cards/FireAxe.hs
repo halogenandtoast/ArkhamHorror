@@ -6,23 +6,22 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Window
@@ -30,8 +29,8 @@ import Arkham.Types.Window
 newtype FireAxe = FireAxe AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-fireAxe :: AssetId -> FireAxe
-fireAxe uuid = FireAxe $ (baseAttrs uuid "02032") { assetSlots = [HandSlot] }
+fireAxe :: AssetCard FireAxe
+fireAxe = hand FireAxe Cards.fireAxe
 
 fightAbility :: AssetAttrs -> Ability
 fightAbility attrs = mkAbility

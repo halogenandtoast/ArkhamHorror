@@ -2,19 +2,17 @@ module Arkham.Types.Treachery.Cards.OfferOfPower where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Message
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype OfferOfPower = OfferOfPower TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-offerOfPower :: TreacheryId -> a -> OfferOfPower
-offerOfPower uuid _ = OfferOfPower $ baseAttrs uuid "01178"
+offerOfPower :: TreacheryCard OfferOfPower
+offerOfPower = treachery OfferOfPower Cards.offerOfPower
 
 instance HasModifiersFor env OfferOfPower where
   getModifiersFor = noModifiersFor

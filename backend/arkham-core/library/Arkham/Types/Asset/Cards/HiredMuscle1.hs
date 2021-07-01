@@ -6,25 +6,20 @@ where
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
+import qualified Arkham.Asset.Cards as Cards
+import Arkham.Types.Asset.Attrs
 import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Game.Helpers
 
 newtype HiredMuscle1 = HiredMuscle1 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-hiredMuscle1 :: AssetId -> HiredMuscle1
-hiredMuscle1 uuid = HiredMuscle1 $ (baseAttrs uuid "02027")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 3
-  , assetSanity = Just 1
-  }
+hiredMuscle1 :: AssetCard HiredMuscle1
+hiredMuscle1 = ally HiredMuscle1 Cards.hiredMuscle1 (3, 1)
 
 instance HasActions env HiredMuscle1 where
   getActions iid window (HiredMuscle1 attrs) = getActions iid window attrs

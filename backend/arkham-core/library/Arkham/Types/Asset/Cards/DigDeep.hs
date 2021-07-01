@@ -5,8 +5,11 @@ module Arkham.Types.Asset.Cards.DigDeep
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -16,15 +19,12 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 
 newtype DigDeep = DigDeep AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-digDeep :: AssetId -> DigDeep
-digDeep uuid = DigDeep $ baseAttrs uuid "01077"
+digDeep :: AssetCard DigDeep
+digDeep = asset DigDeep Cards.digDeep
 
 instance HasModifiersFor env DigDeep where
   getModifiersFor = noModifiersFor

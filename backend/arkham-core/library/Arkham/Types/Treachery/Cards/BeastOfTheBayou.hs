@@ -2,25 +2,21 @@ module Arkham.Types.Treachery.Cards.BeastOfTheBayou where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype BeastOfTheBayou = BeastOfTheBayou TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-beastOfTheBayou :: TreacheryId -> a -> BeastOfTheBayou
-beastOfTheBayou uuid _ = BeastOfTheBayou $ baseAttrs uuid "81035"
+beastOfTheBayou :: TreacheryCard BeastOfTheBayou
+beastOfTheBayou = treachery BeastOfTheBayou Cards.beastOfTheBayou
 
 instance HasModifiersFor env BeastOfTheBayou where
   getModifiersFor = noModifiersFor

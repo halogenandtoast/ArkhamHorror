@@ -5,13 +5,13 @@ module Arkham.Types.Enemy.Cards.TheRougarou
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
 
@@ -22,17 +22,13 @@ newtype TheRougarouMetadata = TheRougarouMetadata { damagePerPhase :: Int }
 newtype TheRougarou = TheRougarou (EnemyAttrs `With` TheRougarouMetadata)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-theRougarou :: EnemyId -> TheRougarou
-theRougarou uuid =
-  TheRougarou
-    . (`with` TheRougarouMetadata 0)
-    $ baseAttrs uuid "81028"
-    $ (healthDamageL .~ 2)
-    . (sanityDamageL .~ 2)
-    . (fightL .~ 3)
-    . (healthL .~ PerPlayer 5)
-    . (evadeL .~ 3)
-    . (uniqueL .~ True)
+theRougarou :: EnemyCard TheRougarou
+theRougarou = enemy (TheRougarou . (`with` TheRougarouMetadata 0)) Cards.theRougarou
+  $ (healthDamageL .~ 2)
+  . (sanityDamageL .~ 2)
+  . (fightL .~ 3)
+  . (healthL .~ PerPlayer 5)
+  . (evadeL .~ 3)
 
 instance HasModifiersFor env TheRougarou where
   getModifiersFor = noModifiersFor

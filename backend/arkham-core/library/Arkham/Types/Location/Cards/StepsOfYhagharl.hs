@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (stepsOfYhagharl)
 import Arkham.Types.Ability
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -26,14 +26,11 @@ newtype StepsOfYhagharl = StepsOfYhagharl LocationAttrs
 
 stepsOfYhagharl :: LocationId -> StepsOfYhagharl
 stepsOfYhagharl = StepsOfYhagharl . baseAttrs
-  "02327"
-  "Steps of Y'hagharl"
-  EncounterSet.LostInTimeAndSpace
+  Cards.stepsOfYhagharl
   3
   (PerPlayer 1)
   Plus
   [Diamond, Moon]
-  [Otherworld, Extradimensional]
 
 instance HasModifiersFor env StepsOfYhagharl where
   getModifiersFor = noModifiersFor
@@ -53,7 +50,7 @@ instance LocationRunner env => RunMessage env StepsOfYhagharl where
     Revelation iid source | isSource attrs source -> do
       encounterDiscard <- map unDiscardedEncounterCard <$> getList ()
       let
-        mMadnessCard = find (member Madness . getTraits) encounterDiscard
+        mMadnessCard = find (member Madness . toTraits) encounterDiscard
         revelationMsgs = case mMadnessCard of
           Nothing -> []
           Just madnessCard ->

@@ -5,17 +5,16 @@ module Arkham.Types.Asset.Cards.ToothOfEztli
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Window
@@ -23,9 +22,8 @@ import Arkham.Types.Window
 newtype ToothOfEztli = ToothOfEztli AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-toothOfEztli :: AssetId -> ToothOfEztli
-toothOfEztli uuid =
-  ToothOfEztli $ (baseAttrs uuid "04023") { assetSlots = [AccessorySlot] }
+toothOfEztli :: AssetCard ToothOfEztli
+toothOfEztli = accessory ToothOfEztli Cards.toothOfEztli
 
 instance HasModifiersFor env ToothOfEztli where
   getModifiersFor (SkillTestSource _ _ (TreacherySource _) _ _) (InvestigatorTarget iid) (ToothOfEztli a)

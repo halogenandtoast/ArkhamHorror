@@ -2,8 +2,8 @@ module Arkham.Types.Location.Cards.HoleInTheWall where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (holeInTheWall)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -16,17 +16,12 @@ newtype HoleInTheWall = HoleInTheWall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 holeInTheWall :: LocationId -> HoleInTheWall
-holeInTheWall =
-  HoleInTheWall
-    . baseAttrs
-        "50017"
-        "Hallway"
-        EncounterSet.ReturnToTheGathering
-        1
-        (Static 0)
-        Square
-        [T, Triangle, Plus, Diamond]
-        mempty
+holeInTheWall = HoleInTheWall . baseAttrs
+  Cards.holeInTheWall
+  1
+  (Static 0)
+  Square
+  [T, Triangle, Plus, Diamond]
 
 instance HasModifiersFor env HoleInTheWall where
   getModifiersFor = noModifiersFor

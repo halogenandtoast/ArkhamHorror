@@ -6,25 +6,23 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.Cost
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.SkillType
-import Arkham.Types.Slot
-import Arkham.Types.Target
-import Arkham.Types.Window
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.Id
+import Arkham.Types.Message
+import Arkham.Types.SkillType
+import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype MedicalTexts = MedicalTexts AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-medicalTexts :: AssetId -> MedicalTexts
-medicalTexts uuid =
-  MedicalTexts $ (baseAttrs uuid "01035") { assetSlots = [HandSlot] }
+medicalTexts :: AssetCard MedicalTexts
+medicalTexts = hand MedicalTexts Cards.medicalTexts
 
 instance HasModifiersFor env MedicalTexts where
   getModifiersFor = noModifiersFor

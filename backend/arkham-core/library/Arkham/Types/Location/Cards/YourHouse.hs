@@ -6,11 +6,11 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (yourHouse)
 import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -18,7 +18,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype YourHouse = YourHouse LocationAttrs
@@ -26,14 +25,11 @@ newtype YourHouse = YourHouse LocationAttrs
 
 yourHouse :: LocationId -> YourHouse
 yourHouse = YourHouse . baseAttrs
-  "01124"
-  "Your House"
-  EncounterSet.TheMidnightMasks
+  Cards.yourHouse
   2
   (PerPlayer 1)
   Squiggle
   [Circle]
-  [Arkham]
 
 instance HasModifiersFor env YourHouse where
   getModifiersFor = noModifiersFor

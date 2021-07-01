@@ -13,7 +13,7 @@ import Arkham.Types.Skill.Runner
 import Arkham.Types.SkillId
 
 createSkill :: IsCard a => a -> InvestigatorId -> Skill
-createSkill a iid = lookupSkill (getCardCode a) iid (SkillId $ getCardId a)
+createSkill a iid = lookupSkill (toCardCode a) iid (SkillId $ toCardId a)
 
 data Skill
   = ViciousBlow' ViciousBlow
@@ -30,6 +30,9 @@ data Skill
   | TrueUnderstanding' TrueUnderstanding
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
+
+instance HasCardDef Skill where
+  toCardDef = toCardDef . toAttrs
 
 deriving anyclass instance ActionRunner env => HasActions env Skill
 deriving anyclass instance SkillRunner env => RunMessage env Skill
@@ -51,10 +54,7 @@ instance SourceEntity Skill where
   isSource = isSource . toAttrs
 
 instance IsCard Skill where
-  getCardId = getCardId . toAttrs
-  getCardCode = getCardCode . toAttrs
-  getTraits = getTraits . toAttrs
-  getKeywords = getKeywords . toAttrs
+  toCardId = toCardId . toAttrs
 
 lookupSkill :: CardCode -> (InvestigatorId -> SkillId -> Skill)
 lookupSkill cardCode =

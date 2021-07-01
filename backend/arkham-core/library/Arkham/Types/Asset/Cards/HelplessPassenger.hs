@@ -5,28 +5,23 @@ module Arkham.Types.Asset.Cards.HelplessPassenger
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Action
+import Arkham.Types.Asset.Attrs
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Direction
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Action
-import Arkham.Types.Asset.Attrs
 
 newtype HelplessPassenger = HelplessPassenger AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-helplessPassenger :: AssetId -> HelplessPassenger
-helplessPassenger uuid = HelplessPassenger $ (baseAttrs uuid "02179")
-  { assetHealth = Just 1
-  , assetSanity = Just 1
-  , assetIsStory = True
-  }
+helplessPassenger :: AssetCard HelplessPassenger
+helplessPassenger = allyWith HelplessPassenger Cards.helplessPassenger (1, 1) (isStoryL .~ True)
 
 ability :: AssetAttrs -> Ability
 ability attrs =

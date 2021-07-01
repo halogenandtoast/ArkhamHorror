@@ -5,12 +5,12 @@ module Arkham.Types.Asset.Cards.Machete
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -19,14 +19,13 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 
 newtype Machete = Machete AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-machete :: AssetId -> Machete
-machete uuid = Machete $ (baseAttrs uuid "01020") { assetSlots = [HandSlot] }
+machete :: AssetCard Machete
+machete = hand Machete Cards.machete
 
 instance HasModifiersFor env Machete where
   getModifiersFor = noModifiersFor

@@ -2,24 +2,21 @@ module Arkham.Types.Skill.Cards.Deduction where
 
 import Arkham.Prelude
 
+import qualified Arkham.Skill.Cards as Cards
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
 import Arkham.Types.EffectMetadata
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
-import Arkham.Types.SkillId
-import Arkham.Types.Target
-
-
-import qualified Arkham.Types.Action as Action
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
+import Arkham.Types.Target
 
 newtype Deduction = Deduction SkillAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-deduction :: InvestigatorId -> SkillId -> Deduction
-deduction iid uuid = Deduction $ baseAttrs iid uuid "01039"
+deduction :: SkillCard Deduction
+deduction = skill Deduction Cards.deduction
 
 instance HasModifiersFor env Deduction where
   getModifiersFor = noModifiersFor

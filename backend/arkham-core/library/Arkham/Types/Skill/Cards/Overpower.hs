@@ -1,21 +1,19 @@
 module Arkham.Types.Skill.Cards.Overpower where
 
-import ClassyPrelude
+import Arkham.Prelude
 
-import Arkham.Json
+import qualified Arkham.Skill.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
-import Arkham.Types.SkillId
 import Arkham.Types.Target
 
 newtype Overpower = Overpower SkillAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-overpower :: InvestigatorId -> SkillId -> Overpower
-overpower iid uuid = Overpower $ baseAttrs iid uuid "01091"
+overpower :: SkillCard Overpower
+overpower = skill Overpower Cards.overpower
 
 instance HasModifiersFor env Overpower where
   getModifiersFor = noModifiersFor

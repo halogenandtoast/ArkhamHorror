@@ -5,10 +5,10 @@ module Arkham.Types.Location.Cards.NorthsideTrainStation
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (northsideTrainStation)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -16,7 +16,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
@@ -25,14 +24,11 @@ newtype NorthsideTrainStation = NorthsideTrainStation LocationAttrs
 
 northsideTrainStation :: LocationId -> NorthsideTrainStation
 northsideTrainStation = NorthsideTrainStation . baseAttrs
-  "50028"
-  ("Northside" `subtitled` "Train Station")
-  EncounterSet.TheMidnightMasks
+  Cards.northsideTrainStation
   2
   (PerPlayer 1)
   T
   [Diamond, Triangle]
-  [Arkham]
 
 instance HasModifiersFor env NorthsideTrainStation where
   getModifiersFor = noModifiersFor

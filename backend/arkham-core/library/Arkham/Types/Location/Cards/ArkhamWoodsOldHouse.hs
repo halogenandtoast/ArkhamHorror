@@ -2,17 +2,15 @@ module Arkham.Types.Location.Cards.ArkhamWoodsOldHouse where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (arkhamWoodsOldHouse)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.SkillType
-import Arkham.Types.Trait
 
 newtype ArkhamWoodsOldHouse = ArkhamWoodsOldHouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -23,14 +21,11 @@ arkhamWoodsOldHouse =
     . (revealedConnectedSymbolsL .~ setFromList [Squiggle, Triangle, T])
     . (revealedSymbolL .~ Diamond)
     . baseAttrs
-        "01152"
-        ("Arkham Woods" `subtitled` "Old House")
-        EncounterSet.TheDevourerBelow
+        Cards.arkhamWoodsOldHouse
         2
         (PerPlayer 1)
         Square
         [Squiggle]
-        [Woods]
 
 instance HasModifiersFor env ArkhamWoodsOldHouse where
   getModifiersFor = noModifiersFor

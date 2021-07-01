@@ -6,13 +6,13 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (alchemyLabs)
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -22,7 +22,6 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype AlchemyLabs = AlchemyLabs LocationAttrs
@@ -30,14 +29,11 @@ newtype AlchemyLabs = AlchemyLabs LocationAttrs
 
 alchemyLabs :: LocationId -> AlchemyLabs
 alchemyLabs = AlchemyLabs . baseAttrs
-  "02057"
-  "Alchemy Labs"
-  EncounterSet.ExtracurricularActivity
+  Cards.alchemyLabs
   5
   (Static 0)
   Squiggle
   [Hourglass]
-  [Miskatonic]
 
 instance HasModifiersFor env AlchemyLabs where
   getModifiersFor _ target (AlchemyLabs attrs) | isTarget attrs target =

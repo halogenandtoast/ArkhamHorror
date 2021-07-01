@@ -2,22 +2,20 @@ module Arkham.Types.Asset.Cards.RabbitsFoot where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
-import Arkham.Types.Slot
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
 
 newtype RabbitsFoot = RabbitsFoot AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-rabbitsFoot :: AssetId -> RabbitsFoot
-rabbitsFoot uuid =
-  RabbitsFoot $ (baseAttrs uuid "01075") { assetSlots = [AccessorySlot] }
+rabbitsFoot :: AssetCard RabbitsFoot
+rabbitsFoot = accessory RabbitsFoot Cards.rabbitsFoot
 
 instance HasModifiersFor env RabbitsFoot where
   getModifiersFor = noModifiersFor

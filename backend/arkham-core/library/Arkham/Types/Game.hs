@@ -1,6 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# OPTIONS_GHC -Wno-deprecations #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Types.Game
@@ -11,7 +10,7 @@ where
 import Arkham.Prelude
 
 import Control.Monad.Random.Lazy hiding (filterM)
-import Arkham.EncounterCard
+import Arkham.Card (lookupCard)
 import Arkham.Json
 import Arkham.PlayerCard
 import Arkham.Types.Ability
@@ -20,14 +19,11 @@ import Arkham.Types.Treachery.Attrs (treacheryOwner)
 import Arkham.Types.ActId
 import Arkham.Types.Action (Action, TakenAction)
 import Arkham.Types.Agenda
-import Arkham.Types.AgendaId
+import Arkham.Types.Id
 import Arkham.Types.Asset
 import Arkham.Types.Asset.Uses (UseType)
-import Arkham.Types.AssetId
 import Arkham.Types.Campaign
-import Arkham.Types.CampaignId
-import Arkham.Types.Card
-import Arkham.Types.Card.PlayerCard
+import Arkham.Types.Card hiding (skillsL)
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.ChaosBag
@@ -35,23 +31,18 @@ import Arkham.Types.Classes hiding (discard)
 import Arkham.Types.Difficulty
 import Arkham.Types.Direction
 import Arkham.Types.Effect
-import Arkham.Types.EffectId
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Enemy
-import Arkham.Types.EnemyId
 import Arkham.Types.EnemyMatcher
 import Arkham.Types.EntityInstance
 import Arkham.Types.Event
-import Arkham.Types.EventId
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameRunner
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Keyword (Keyword)
+import Arkham.Types.Keyword (Keyword, HasKeywords(..))
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Location
-import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
@@ -62,10 +53,8 @@ import Arkham.Types.Phase
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.Scenario
-import Arkham.Types.ScenarioId
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Skill
-import Arkham.Types.SkillId
 import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
 import Arkham.Types.Source
@@ -73,7 +62,6 @@ import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.Treachery
-import Arkham.Types.TreacheryId
 import Arkham.Types.Window
 import qualified Arkham.Types.Window as Fast
 import Control.Monad.Extra (anyM, mapMaybeM)
@@ -314,7 +302,7 @@ getLocationsMatching = \case
     filter ((`elem` matches) . toId) . toList . view locationsL <$> getGame
   LocationWithTrait trait ->
     filter hasMatchingTrait . toList . view locationsL <$> getGame
-    where hasMatchingTrait = (trait `member`) . getTraits
+    where hasMatchingTrait = (trait `member`) . toTraits
   LocationMatchers (x :| xs) -> do
     matches :: HashSet LocationId <-
       foldl' intersection
@@ -427,14 +415,17 @@ instance HasGame env => HasId (Maybe CampaignId) env () where
       These campaign _ -> Just $ toId campaign
       That _ -> Nothing
 
+instance HasGame env => GetCardDef env EnemyId where
+  getCardDef = (toCardDef <$>) . getEnemy
+
 instance HasGame env => HasId CardCode env EnemyId where
-  getId = (getCardCode <$>) . getEnemy
+  getId = (toCardCode <$>) . getEnemy
 
 instance HasGame env => HasId CardCode env LocationId where
-  getId = (getCardCode <$>) . getLocation
+  getId = (toCardCode <$>) . getLocation
 
 instance HasGame env => HasId CardCode env AssetId where
-  getId = (getCardCode <$>) . getAsset
+  getId = (toCardCode <$>) . getAsset
 
 instance HasGame env => HasCount ScenarioDeckCount env () where
   getCount _ =
@@ -546,7 +537,7 @@ instance HasGame env => HasId (Maybe StoryTreacheryId) env CardCode where
 instance HasGame env => HasId (Maybe AssetId) env CardCode where
   getId cardCode =
     (fst <$>)
-      . find ((cardCode ==) . getCardCode . snd)
+      . find ((cardCode ==) . toCardCode . snd)
       . mapToList
       . view assetsL
       <$> getGame
@@ -554,7 +545,7 @@ instance HasGame env => HasId (Maybe AssetId) env CardCode where
 instance HasGame env => HasId (Maybe TreacheryId) env CardCode where
   getId cardCode =
     (fst <$>)
-      . find ((cardCode ==) . getCardCode . snd)
+      . find ((cardCode ==) . toCardCode . snd)
       . mapToList
       . view treacheriesL
       <$> getGame
@@ -569,7 +560,7 @@ instance HasGame env => HasSet EnemyId env CardCode where
   getSet cardCode =
     setFromList
       . map fst
-      . filter ((cardCode ==) . getCardCode . snd)
+      . filter ((cardCode ==) . toCardCode . snd)
       . mapToList
       . view enemiesL
       <$> getGame
@@ -577,7 +568,7 @@ instance HasGame env => HasSet EnemyId env CardCode where
 instance HasGame env => HasId (Maybe EnemyId) env CardCode where
   getId cardCode =
     (fst <$>)
-      . find ((cardCode ==) . getCardCode . snd)
+      . find ((cardCode ==) . toCardCode . snd)
       . mapToList
       . view enemiesL
       <$> getGame
@@ -646,7 +637,7 @@ instance HasGame env => HasCount TreacheryCount env (LocationId, CardCode) where
     pure . TreacheryCount $ count (== cardCode) (cardCodes g treacheries)
    where
     cardCodes g treacheries =
-      [ getCardCode c
+      [ toCardCode c
       | (i, c) <- mapToList (g ^. treacheriesL)
       , i `member` treacheries
       ]
@@ -738,12 +729,12 @@ instance HasGame env => HasCount AssetCount env (InvestigatorId, [Trait]) where
     AssetCount <$> countM assetMatcher investigatorAssets
    where
     assetMatcher aid =
-      anyM (\trait -> (trait `member`) . getTraits <$> getAsset aid) traits
+      anyM (\trait -> (trait `member`) . toTraits <$> getAsset aid) traits
 
 instance HasGame env => HasCount EnemyCount env [Trait] where
   getCount traits =
     EnemyCount . length . filterMap enemyMatcher . view enemiesL <$> getGame
-    where enemyMatcher enemy = any (`member` getTraits enemy) traits
+    where enemyMatcher enemy = any (`member` toTraits enemy) traits
 
 instance HasGame env => HasCount EnemyCount env (LocationMatcher, [Trait]) where
   getCount (locationMatcher, traits) =
@@ -760,7 +751,7 @@ instance HasGame env => HasCount EnemyCount env (LocationId, [Trait]) where
       Nothing -> pure $ EnemyCount 0
    where
     enemyMatcher eid =
-      anyM (\trait -> (trait `member`) . getTraits <$> getEnemy eid) traits
+      anyM (\trait -> (trait `member`) . toTraits <$> getEnemy eid) traits
 
 instance HasGame env => HasCount EnemyCount env (InvestigatorLocation, [Trait]) where
   getCount (InvestigatorLocation iid, traits) = do
@@ -869,8 +860,8 @@ instance HasGame env => HasList InPlayCard env InvestigatorId where
     assets <- traverse getAsset assetIds
     pure $ map
       (\asset -> InPlayCard . PlayerCard $ lookupPlayerCard
-        (getCardCode asset)
-        (getCardId asset)
+        (toCardCode asset)
+        (toCardId asset)
       )
       assets
 
@@ -922,13 +913,13 @@ instance HasGame env => HasSet CompletedScenarioId env () where
 
 instance HasGame env => HasSet HandCardId env InvestigatorId where
   getSet iid =
-    setFromList . map (coerce . getCardId) . handOf <$> getInvestigator iid
+    setFromList . map (coerce . toCardId) . handOf <$> getInvestigator iid
 
-instance HasGame env => HasSet HandCardId env (InvestigatorId, PlayerCardType) where
+instance HasGame env => HasSet HandCardId env (InvestigatorId, CardType) where
   getSet (iid, cardType) =
     setFromList
-      . map (coerce . getCardId)
-      . filter (maybe False (playerCardMatch (cardType, mempty) . pcDef) . toPlayerCard)
+      . map (coerce . toCardId)
+      . filter (maybe False (cardMatch (CardMatchByType (cardType, mempty))) . toPlayerCard)
       . handOf
       <$> getInvestigator iid
 
@@ -951,7 +942,7 @@ instance HasGame env => HasSet Keyword env EnemyId where
         modifiers'
     (`difference` removedKeywords)
       . union addedKeywords
-      . getKeywords
+      . toKeywords
       <$> getEnemy eid
 
 instance HasGame env => HasList UnderneathCard env LocationId where
@@ -961,25 +952,25 @@ instance HasGame env => HasList UnderneathCard env AgendaId where
   getList = getList <=< getAgenda
 
 instance HasGame env => HasSet Trait env LocationId where
-  getSet lid = getTraits <$> getLocation lid
+  getSet lid = toTraits <$> getLocation lid
 
 instance HasGame env => HasSet Trait env Source where
   getSet = \case
     AbilitySource{} -> pure mempty
-    AssetSource aid -> getTraits <$> getAsset aid
-    EventSource eid -> getTraits <$> getEvent eid
+    AssetSource aid -> toTraits <$> getAsset aid
+    EventSource eid -> toTraits <$> getEvent eid
     EffectSource eid -> getSet =<< getEffect eid
-    EnemySource eid -> getTraits <$> getEnemy eid
+    EnemySource eid -> toTraits <$> getEnemy eid
     ScenarioSource _ -> pure mempty
-    InvestigatorSource iid -> getTraits <$> getInvestigator iid
+    InvestigatorSource iid -> toTraits <$> getInvestigator iid
     CardCodeSource _ -> pure mempty
     TokenSource _ -> pure mempty
     TokenEffectSource _ -> pure mempty
     AgendaSource _ -> pure mempty
-    LocationSource lid -> getTraits <$> getLocation lid
+    LocationSource lid -> toTraits <$> getLocation lid
     SkillTestSource{} -> pure mempty
     AfterSkillTestSource -> pure mempty
-    TreacherySource tid -> getTraits <$> getTreachery tid
+    TreacherySource tid -> toTraits <$> getTreachery tid
     SkillSource _ -> pure mempty -- TODO: should this return traits
     EmptyDeckSource -> pure mempty
     DeckSource -> pure mempty
@@ -994,16 +985,16 @@ instance HasGame env => HasSet Trait env Source where
 
 instance HasGame env => HasSet Trait env (InvestigatorId, CardId) where
   getSet (iid, cid) =
-    maybe mempty getTraits
-      . find ((== cid) . getCardId)
+    maybe mempty toTraits
+      . find ((== cid) . toCardId)
       . handOf
       <$> getInvestigator iid
 
 instance HasGame env => HasSet Trait env AssetId where
-  getSet aid = getTraits <$> getAsset aid
+  getSet aid = toTraits <$> getAsset aid
 
 instance HasGame env => HasSet Trait env EnemyId where
-  getSet eid = getTraits <$> getEnemy eid
+  getSet eid = toTraits <$> getEnemy eid
 
 instance HasGame env => HasSet InvestigatorId env EnemyId where
   getSet eid = getEngagedInvestigators <$> getEnemy eid
@@ -1039,7 +1030,7 @@ instance HasGame env => HasSet AgendaId env () where
 
 instance HasGame env => HasSet VictoryDisplayCardCode env () where
   getSet _ =
-    setFromList . map (coerce . getCardCode) . view victoryDisplayL <$> getGame
+    setFromList . map (coerce . toCardCode) . view victoryDisplayL <$> getGame
 
 instance HasGame env => HasSet ClueCount env () where
   getSet _ = do
@@ -1140,7 +1131,7 @@ findTreacheries f (TreacheryCardCode cc) =
   setFromList
     . mapMaybe (f <=< treacheryTarget)
     . toList
-    . filterMap ((== cc) . getCardCode)
+    . filterMap ((== cc) . toCardCode)
     . view treacheriesL
     <$> getGame
 
@@ -1169,7 +1160,7 @@ instance HasGame env => HasSet LocationId env [Trait] where
     keysSet . filterMap hasMatchingTrait . view locationsL <$> getGame
    where
     hasMatchingTrait =
-      notNull . (setFromList traits `intersection`) . getTraits
+      notNull . (setFromList traits `intersection`) . toTraits
 
 instance HasGame env => HasSet ActId env () where
   getSet _ = keysSet . view actsL <$> getGame
@@ -1201,7 +1192,7 @@ instance HasGame env => HasSet UnengagedEnemyId env LocationId where
 
 instance HasGame env => HasSet EnemyId env Trait where
   getSet trait =
-    keysSet . filterMap ((trait `elem`) . getTraits) . view enemiesL <$> getGame
+    keysSet . filterMap ((trait `elem`) . toTraits) . view enemiesL <$> getGame
 
 instance HasGame env => HasSet CommittedCardId env InvestigatorId where
   getSet iid =
@@ -1426,7 +1417,7 @@ instance HasGame env => HasSet FarthestEnemyId env (InvestigatorId, EnemyTrait) 
     start <- locationFor iid
     let
       enemyMatches eid =
-        elem (unEnemyTrait enemyTrait) . getTraits <$> getEnemy eid
+        elem (unEnemyTrait enemyTrait) . toTraits <$> getEnemy eid
       enemyIdsForLocation = getSetList @EnemyId <=< getLocation
     setFromList
       . coerce
@@ -1440,7 +1431,7 @@ instance HasGame env => HasList (InvestigatorId, Distance) env EnemyTrait where
     for iids $ \iid -> (iid, ) <$> (getDistance =<< locationFor iid)
    where
     hasMatchingEnemy lid =
-      anyM (\eid -> elem (unEnemyTrait enemyTrait) . getTraits <$> getEnemy eid)
+      anyM (\eid -> elem (unEnemyTrait enemyTrait) . toTraits <$> getEnemy eid)
         =<< (getSetList =<< getLocation lid)
     getDistance start =
       Distance . fromJustNote "error" . minimumMay . keys <$> evalStateT
@@ -1517,7 +1508,7 @@ instance HasGame env => HasSet EnemyAccessibleLocationId env (EnemyId, LocationI
     location <- getLocation lid
     connectedLocationIds <- map unConnectedLocationId <$> getSetList location
     let
-      enemyIsElite = Elite `member` getTraits enemy
+      enemyIsElite = Elite `member` toTraits enemy
       unblocked lid' = do
         modifiers' <-
           map modifierType
@@ -1630,7 +1621,7 @@ instance HasGame env => HasSet EnemyId env ([Trait], LocationId) where
     enemyIds <- getSetList =<< getLocation lid
     setFromList
       <$> filterM
-            ((notNull . (setFromList traits `intersection`) . getTraits <$>)
+            ((notNull . (setFromList traits `intersection`) . toTraits <$>)
             . getEnemy
             )
             enemyIds
@@ -1726,16 +1717,16 @@ instance (HasQueue env, HasGame env) => HasActions env (ActionType, Trait) where
     case actionType of
       EnemyActionType -> concatMapM'
         (getActions iid window)
-        (filterMap ((trait `elem`) . getTraits) $ g ^. enemiesL)
+        (filterMap ((trait `elem`) . toTraits) $ g ^. enemiesL)
       LocationActionType -> concatMapM'
         (getActions iid window)
-        (filterMap ((trait `elem`) . getTraits) $ g ^. locationsL)
+        (filterMap ((trait `elem`) . toTraits) $ g ^. locationsL)
       AssetActionType -> concatMapM'
         (getActions iid window)
-        (filterMap ((trait `elem`) . getTraits) $ g ^. assetsL)
+        (filterMap ((trait `elem`) . toTraits) $ g ^. assetsL)
       TreacheryActionType -> concatMapM'
         (getActions iid window)
-        (filterMap ((trait `elem`) . getTraits) $ g ^. treacheriesL)
+        (filterMap ((trait `elem`) . toTraits) $ g ^. treacheriesL)
       InvestigatorActionType -> pure [] -- do we need these
       ActActionType -> pure [] -- acts do not have traits
       AgendaActionType -> pure [] -- agendas do not have traits
@@ -1864,7 +1855,7 @@ runGameMessage msg g = case msg of
           [ FocusCards (map EncounterCard cards)
           , chooseOneAtATime
             iid
-            [ AddFocusedToTopOfDeck iid EncounterDeckTarget (getCardId card)
+            [ AddFocusedToTopOfDeck iid EncounterDeckTarget (toCardId card)
             | card <- cards
             ]
           ]
@@ -1878,9 +1869,9 @@ runGameMessage msg g = case msg of
     let
       card =
         fromJustNote "missing card"
-          $ find ((== cardId) . getCardId) (g ^. focusedCardsL)
+          $ find ((== cardId) . toCardId) (g ^. focusedCardsL)
           >>= toEncounterCard
-      focusedCards = filter ((/= cardId) . getCardId) (g ^. focusedCardsL)
+      focusedCards = filter ((/= cardId) . toCardId) (g ^. focusedCardsL)
     pure
       $ g
       & (focusedCardsL .~ focusedCards)
@@ -1889,16 +1880,16 @@ runGameMessage msg g = case msg of
     let
       card =
         fromJustNote "missing card"
-          $ find ((== cardId) . getCardId) (g ^. focusedCardsL)
+          $ find ((== cardId) . toCardId) (g ^. focusedCardsL)
           >>= toPlayerCard
-      focusedCards = filter ((/= cardId) . getCardId) (g ^. focusedCardsL)
+      focusedCards = filter ((/= cardId) . toCardId) (g ^. focusedCardsL)
     unshiftMessage (PutOnTopOfDeck iid' card)
     pure $ g & focusedCardsL .~ focusedCards
   AddFocusedToHand _ (InvestigatorTarget iid') cardId -> do
     let
       card = fromJustNote "missing card"
-        $ find ((== cardId) . getCardId) (g ^. focusedCardsL)
-      focusedCards = filter ((/= cardId) . getCardId) (g ^. focusedCardsL)
+        $ find ((== cardId) . toCardId) (g ^. focusedCardsL)
+      focusedCards = filter ((/= cardId) . toCardId) (g ^. focusedCardsL)
     unshiftMessage (AddToHand iid' card)
     pure $ g & focusedCardsL .~ focusedCards
   GameOver -> do
@@ -1961,10 +1952,10 @@ runGameMessage msg g = case msg of
     investigator <- getInvestigator iid
     let
       card = fromJustNote "could not find card in hand"
-        $ find ((== cardId) . getCardId) (handOf investigator)
+        $ find ((== cardId) . toCardId) (handOf investigator)
     unshiftMessage (InvestigatorCommittedCard iid cardId)
     case card of
-      PlayerCard pc -> case pcCardType (pcDef pc) of
+      PlayerCard pc -> case cdCardType (pcDef pc) of
         SkillType -> do
           let
             skill = createSkill pc iid
@@ -1977,7 +1968,7 @@ runGameMessage msg g = case msg of
     let
       skillCardsWithOwner =
         flip map (mapToList $ g ^. skillsL) $ \(skillId, skill) ->
-          ( lookupPlayerCard (getCardCode skill) (unSkillId skillId)
+          ( lookupPlayerCard (toCardCode skill) (unSkillId skillId)
           , ownerOfSkill skill
           )
     unshiftMessages
@@ -2006,7 +1997,7 @@ runGameMessage msg g = case msg of
         fromJustNote ("No such skill: " <> show skillId)
           $ g
           ^? (skillsL . ix skillId)
-      card = lookupPlayerCard (getCardCode skill) (unSkillId skillId)
+      card = lookupPlayerCard (toCardCode skill) (unSkillId skillId)
     unshiftMessage (AddToHand iid (PlayerCard card))
     pure $ g & skillsL %~ deleteMap skillId
   After (ShuffleIntoDeck _ (AssetTarget aid)) ->
@@ -2014,31 +2005,31 @@ runGameMessage msg g = case msg of
   ShuffleIntoDeck iid (TreacheryTarget treacheryId) -> do
     treachery <- getTreachery treacheryId
     let
-      card = lookupPlayerCard (getCardCode treachery) (unTreacheryId treacheryId)
+      card = lookupPlayerCard (toCardCode treachery) (unTreacheryId treacheryId)
     unshiftMessage (ShuffleCardsIntoDeck iid [card])
     pure $ g & treacheriesL %~ deleteMap treacheryId
   PlayDynamicCard iid cardId n _mtarget False -> do
     investigator <- getInvestigator iid
     let
       card = fromJustNote "could not find card in hand"
-        $ find ((== cardId) . getCardId) (handOf investigator)
+        $ find ((== cardId) . toCardId) (handOf investigator)
     case card of
-      PlayerCard pc -> case pcCardType (pcDef pc) of
+      PlayerCard pc -> case cdCardType (pcDef pc) of
         PlayerTreacheryType -> error "unhandled"
         AssetType -> do
           let
             aid = AssetId cardId
             asset = fromJustNote
               "could not find asset"
-              (lookup (pcCardCode (pcDef pc)) allAssets)
+              (lookup (cdCardCode (pcDef pc)) allAssets)
               aid
           unshiftMessages
-            [ PlayedCard iid cardId (toName asset) (pcCardCode (pcDef pc))
+            [ PlayedCard iid cardId (toName asset) (cdCardCode (pcDef pc))
             , InvestigatorPlayDynamicAsset
               iid
               aid
               (slotsOf asset)
-              (toList $ getTraits asset)
+              (toList $ toTraits asset)
               n
             ]
           pure $ g & assetsL %~ insertMap aid asset
@@ -2047,7 +2038,7 @@ runGameMessage msg g = case msg of
             event = createEvent pc iid
             eid = toId event
           unshiftMessages
-            [ PlayedCard iid cardId (toName event) (pcCardCode (pcDef pc))
+            [ PlayedCard iid cardId (toName event) (cdCardCode (pcDef pc))
             , InvestigatorPlayDynamicEvent iid eid n
             ]
           pure $ g & eventsL %~ insertMap eid event
@@ -2055,17 +2046,17 @@ runGameMessage msg g = case msg of
       EncounterCard _ -> pure g
   PlayCard iid cardId mtarget False -> do
     investigator <- getInvestigator iid
-    case find ((== cardId) . getCardId) (handOf investigator) of
+    case find ((== cardId) . toCardId) (handOf investigator) of
       Nothing -> pure g -- card was discarded before playing
       Just card -> runGameMessage (PutCardIntoPlay iid card mtarget) g
   PutCardIntoPlay iid card mtarget -> do
-    let cardId = getCardId card
+    let cardId = toCardId card
     case card of
-      PlayerCard pc -> case pcCardType (pcDef pc) of
+      PlayerCard pc -> case cdCardType (pcDef pc) of
         PlayerTreacheryType -> do
           let
             tid = TreacheryId cardId
-            treachery = lookupTreachery (pcCardCode (pcDef pc)) tid Nothing
+            treachery = lookupTreachery (cdCardCode (pcDef pc)) iid tid
           unshiftMessages [Revelation iid (TreacherySource tid)]
           pure $ g & treacheriesL %~ insertMap tid treachery
         AssetType -> do
@@ -2073,15 +2064,15 @@ runGameMessage msg g = case msg of
             aid = AssetId cardId
             asset = fromJustNote
               "could not find asset"
-              (lookup (pcCardCode (pcDef pc)) allAssets)
+              (lookup (cdCardCode (pcDef pc)) allAssets)
               aid
           unshiftMessages
-            [ PlayedCard iid cardId (toName asset) (pcCardCode (pcDef pc))
+            [ PlayedCard iid cardId (toName asset) (cdCardCode (pcDef pc))
             , InvestigatorPlayAsset
               iid
               aid
               (slotsOf asset)
-              (toList $ getTraits asset)
+              (toList $ toTraits asset)
             ]
           pure $ g & assetsL %~ insertMap aid asset
         EventType -> do
@@ -2089,7 +2080,7 @@ runGameMessage msg g = case msg of
             event = createEvent pc iid
             eid = toId event
           unshiftMessages
-            [ PlayedCard iid cardId (toName event) (pcCardCode (pcDef pc))
+            [ PlayedCard iid cardId (toName event) (cdCardCode (pcDef pc))
             , InvestigatorPlayEvent iid eid mtarget
             ]
           pure $ g & eventsL %~ insertMap eid event
@@ -2111,7 +2102,7 @@ runGameMessage msg g = case msg of
         _ -> error "this should definitely be a player card"
     unshiftMessages
       (bearerMessage
-      : [ RemoveCardFromHand iid (getCardCode card)
+      : [ RemoveCardFromHand iid (toCardCode card)
         , InvestigatorDrawEnemy iid lid eid
         ]
       )
@@ -2165,7 +2156,7 @@ runGameMessage msg g = case msg of
         CannotBeAttackedByNonElite{} -> True
         _ -> False
       canAttack =
-        not cannotBeAttackedByNonElites || (Elite `elem` getTraits enemy)
+        not cannotBeAttackedByNonElites || (Elite `elem` toTraits enemy)
     if canAttack
       then do
         mNextMessage <- peekMessage
@@ -2192,7 +2183,7 @@ runGameMessage msg g = case msg of
                 _ -> False
               canAttack2 =
                 not cannotBeAttackedByNonElites2
-                  || (Elite `elem` getTraits enemy2)
+                  || (Elite `elem` toTraits enemy2)
             if canAttack2
               then unshiftMessage
                 (EnemyAttacks [EnemyAttack iid eid, EnemyAttack iid2 eid2])
@@ -2248,7 +2239,7 @@ runGameMessage msg g = case msg of
   Discard (SearchedCardTarget iid cardId) -> do
     let
       card = fromJustNote "must exist"
-        $ find ((== cardId) . getCardId) (g ^. focusedCardsL)
+        $ find ((== cardId) . toCardId) (g ^. focusedCardsL)
     case card of
       PlayerCard pc -> do
         unshiftMessage (AddToDiscard iid pc)
@@ -2269,13 +2260,10 @@ runGameMessage msg g = case msg of
     enemy <- getEnemy eid
     let
       cardId = unEnemyId eid
-      encounterCard = do
-        f <- lookup (getCardCode enemy) allEncounterCards
-        pure $ EncounterCard $ f cardId
-    case encounterCard of
-      Nothing -> error "missing"
-      Just (PlayerCard _) -> error "can not be player card"
-      Just (EncounterCard ec) ->
+      card = lookupCard (toCardCode enemy) cardId
+    case card of
+      PlayerCard _ -> error "can not be player card yet?"
+      EncounterCard ec ->
         pure
           $ g
           & (enemiesL %~ deleteMap eid)
@@ -2285,7 +2273,7 @@ runGameMessage msg g = case msg of
     let
       cardId = unEventId eid
       playerCard = do
-        f <- lookup (getCardCode event) allPlayerCards
+        f <- lookup (toCardCode event) allPlayerCards
         pure $ PlayerCard $ MkPlayerCard cardId Nothing f
     case playerCard of
       Nothing -> error "missing"
@@ -2466,13 +2454,13 @@ runGameMessage msg g = case msg of
     pure $ g & assetsL . at assetId ?~ asset
   CreateWeaknessInThreatArea card iid -> do
     let
-      treachery = createTreachery card (Just iid)
+      treachery = createTreachery card iid
       treacheryId = toId treachery
     unshiftMessage (AttachTreachery treacheryId (InvestigatorTarget iid))
     pure $ g & treacheriesL . at treacheryId ?~ treachery
   AttachStoryTreacheryTo card target -> do
     let
-      treachery = createTreachery card Nothing
+      treachery = createTreachery card (g ^. leadInvestigatorIdL)
       treacheryId = toId treachery
     unshiftMessage (AttachTreachery treacheryId target)
     pure $ g & treacheriesL . at treacheryId ?~ treachery
@@ -2555,9 +2543,9 @@ runGameMessage msg g = case msg of
     pure $ g & encounterDeckL .~ Deck encounterDeck
   FindAndDrawEncounterCard iid matcher -> do
     let
-      matchingDiscards = filter (encounterCardMatch matcher) (g ^. discardL)
+      matchingDiscards = filter (cardMatch matcher) (g ^. discardL)
       matchingDeckCards =
-        filter (encounterCardMatch matcher) (unDeck $ g ^. encounterDeckL)
+        filter (cardMatch matcher) (unDeck $ g ^. encounterDeckL)
 
     unshiftMessage
       (chooseOne iid
@@ -2575,12 +2563,12 @@ runGameMessage msg g = case msg of
          )
   FindEncounterCard iid target matcher -> do
     let
-      matchingDiscards = filter (encounterCardMatch matcher) (g ^. discardL)
+      matchingDiscards = filter (cardMatch matcher) (g ^. discardL)
       matchingDeckCards =
-        filter (encounterCardMatch matcher) (unDeck $ g ^. encounterDeckL)
+        filter (cardMatch matcher) (unDeck $ g ^. encounterDeckL)
       matchingVoidEnemies = case matcher of
-        EncounterCardMatchByCardCode cardCode ->
-          filter ((== cardCode) . getCardCode) . toList $ g ^. enemiesInVoidL
+        CardMatchByCardCode cardCode ->
+          filter ((== cardCode) . toCardCode) . toList $ g ^. enemiesInVoidL
         _ -> []
 
     unshiftMessage
@@ -2603,13 +2591,13 @@ runGameMessage msg g = case msg of
          )
   FoundEncounterCardFrom iid target cardSource card -> do
     let
-      cardId = getCardId card
+      cardId = toCardId card
       discard = case cardSource of
-        FromDiscard -> filter ((/= cardId) . getCardId) (g ^. discardL)
+        FromDiscard -> filter ((/= cardId) . toCardId) (g ^. discardL)
         _ -> g ^. discardL
       encounterDeck = case cardSource of
         FromEncounterDeck ->
-          filter ((/= cardId) . getCardId) (unDeck $ g ^. encounterDeckL)
+          filter ((/= cardId) . toCardId) (unDeck $ g ^. encounterDeckL)
         _ -> unDeck (g ^. encounterDeckL)
     shuffled <- shuffleM encounterDeck
     unshiftMessage (FoundEncounterCard iid target card)
@@ -2620,13 +2608,13 @@ runGameMessage msg g = case msg of
       & (focusedCardsL .~ mempty)
   FoundAndDrewEncounterCard iid cardSource card -> do
     let
-      cardId = getCardId card
+      cardId = toCardId card
       discard = case cardSource of
-        FromDiscard -> filter ((/= cardId) . getCardId) (g ^. discardL)
+        FromDiscard -> filter ((/= cardId) . toCardId) (g ^. discardL)
         _ -> g ^. discardL
       encounterDeck = case cardSource of
         FromEncounterDeck ->
-          filter ((/= cardId) . getCardId) (unDeck $ g ^. encounterDeckL)
+          filter ((/= cardId) . toCardId) (unDeck $ g ^. encounterDeckL)
         _ -> unDeck (g ^. encounterDeckL)
     shuffled <- shuffleM encounterDeck
     unshiftMessage (InvestigatorDrewEncounterCard iid card)
@@ -2639,7 +2627,7 @@ runGameMessage msg g = case msg of
     newCardId <- getRandom
     let
       matches =
-        filter (playerCardMatch matcher) (toList allPlayerCards)
+        filter (cardMatch matcher) (toList allPlayerCards)
     mcard <- case matches of
       [] -> pure Nothing
       (x : xs) -> Just . MkPlayerCard newCardId (Just iid) <$> sample (x :| xs)
@@ -2647,7 +2635,7 @@ runGameMessage msg g = case msg of
   DiscardEncounterUntilFirst source matcher -> do
     let
       (discards, remainingDeck) =
-        break (encounterCardMatch matcher) (unDeck $ g ^. encounterDeckL)
+        break (cardMatch matcher) (unDeck $ g ^. encounterDeckL)
     case remainingDeck of
       [] -> do
         unshiftMessage (RequestedEncounterCard source Nothing)
@@ -2672,24 +2660,20 @@ runGameMessage msg g = case msg of
     pure $ g & encounterDeckL .~ Deck encounterDeck
   ShuffleBackIntoEncounterDeck (EnemyTarget eid) -> do
     enemy <- getEnemy eid
-    let
-      card = fromJustNote
-        "missing card"
-        (lookup (getCardCode enemy) allEncounterCards)
-        (unEnemyId eid)
-    unshiftMessage $ RemoveEnemy eid
-    encounterDeck <- shuffleM $ card : unDeck (view encounterDeckL g)
-    pure $ g & encounterDeckL .~ Deck encounterDeck
+    case toCard enemy of
+      EncounterCard card -> do
+        unshiftMessage $ RemoveEnemy eid
+        encounterDeck <- shuffleM $ card : unDeck (view encounterDeckL g)
+        pure $ g & encounterDeckL .~ Deck encounterDeck
+      _ -> error "must be encounter card"
   ShuffleBackIntoEncounterDeck (LocationTarget lid) -> do
     location <- getLocation lid
-    let
-      card = fromJustNote
-        "missing card"
-        (lookup (getCardCode location) allEncounterCards)
-        (unLocationId lid)
-    unshiftMessages $ resolve (RemoveLocation lid)
-    encounterDeck <- shuffleM $ card : unDeck (view encounterDeckL g)
-    pure $ g & encounterDeckL .~ Deck encounterDeck
+    case toCard location of
+      EncounterCard card -> do
+        unshiftMessages $ resolve (RemoveLocation lid)
+        encounterDeck <- shuffleM $ card : unDeck (view encounterDeckL g)
+        pure $ g & encounterDeckL .~ Deck encounterDeck
+      _ -> error "must be encounter card"
   ShuffleEncounterDiscardBackIn -> do
     encounterDeck <-
       shuffleM $ unDeck (view encounterDeckL g) <> view discardL g
@@ -2697,17 +2681,14 @@ runGameMessage msg g = case msg of
   ShuffleAllInEncounterDiscardBackIn cardCode -> do
     let
       (toShuffleBackIn, discard) =
-        partition ((== cardCode) . getCardCode) (g ^. discardL)
+        partition ((== cardCode) . toCardCode) (g ^. discardL)
     encounterDeck <-
       shuffleM $ unDeck (view encounterDeckL g) <> toShuffleBackIn
     pure $ g & encounterDeckL .~ Deck encounterDeck & discardL .~ discard
   RevelationSkillTest iid (TreacherySource tid) skillType difficulty -> do
     treachery <- getTreachery tid
     let
-      card = fromJustNote
-        "missing card"
-        (lookup (getCardCode treachery) allEncounterCards)
-        (unTreacheryId tid)
+      card = toCard treachery
 
     unshiftMessage $ BeginSkillTest
       iid
@@ -2716,9 +2697,9 @@ runGameMessage msg g = case msg of
       Nothing
       skillType
       difficulty
-    pure $ g & (activeCardL ?~ EncounterCard card)
+    pure $ g & (activeCardL ?~ card)
   RemoveFromEncounterDiscard ec -> pure $ g & discardL %~ filter (/= ec)
-  InvestigatorDrewEncounterCard iid card -> case ecCardType card of
+  InvestigatorDrewEncounterCard iid card -> case toCardType card of
     EnemyType -> do
       let enemy = createEnemy card
       lid <- locationFor iid
@@ -2738,7 +2719,7 @@ runGameMessage msg g = case msg of
       unshiftMessages
         $ Revelation iid (AssetSource assetId)
         : [ Surge iid (AssetSource assetId)
-          | Keyword.Surge `member` ecKeywords card
+          | Keyword.Surge `member` toKeywords card
           ]
       pure $ g & (assetsL . at assetId ?~ asset)
     LocationType -> do
@@ -2746,20 +2727,21 @@ runGameMessage msg g = case msg of
         location = createLocation card
         locationId = toId location
       unshiftMessages
-        [ PlacedLocation (toName location) (getCardCode card) locationId
+        [ PlacedLocation (toName location) (toCardCode card) locationId
         , RevealLocation (Just iid) locationId
         , Revelation iid (LocationSource locationId)
         ]
       pure $ g & (locationsL . at locationId ?~ location)
+    _ -> error "Unhandled card type"
   DrewTreachery iid (EncounterCard card) -> do
     let
-      treachery = createTreachery card (Just iid)
+      treachery = createTreachery card iid
       treacheryId = toId treachery
     checkWindowMessages <- checkWindows iid $ \who ->
       pure
         $ [Fast.WhenDrawTreachery who]
         <> [ Fast.WhenDrawNonPerilTreachery who treacheryId
-           | Keyword.Peril `notMember` getKeywords treachery
+           | Keyword.Peril `notMember` toKeywords treachery
            ]
     unshiftMessages
       $ checkWindowMessages
@@ -2767,7 +2749,7 @@ runGameMessage msg g = case msg of
          , AfterRevelation iid treacheryId
          ]
       <> [ Surge iid (TreacherySource treacheryId)
-         | Keyword.Surge `member` getKeywords treachery
+         | Keyword.Surge `member` toKeywords treachery
          ]
     pure
       $ g
@@ -2775,11 +2757,11 @@ runGameMessage msg g = case msg of
       & (activeCardL ?~ EncounterCard card)
   DrewTreachery iid (PlayerCard card) -> do
     let
-      treachery = createTreachery card (Just iid)
+      treachery = createTreachery card iid
       treacheryId = toId treachery
     -- player treacheries will not trigger draw treachery windows
     unshiftMessages
-      $ [ RemoveCardFromHand iid (getCardCode card) | pcRevelation (pcDef card) ]
+      $ [ RemoveCardFromHand iid (toCardCode card) | cdRevelation (pcDef card) ]
       <> [ Revelation iid (TreacherySource treacheryId)
          , AfterRevelation iid treacheryId
          ]
@@ -2788,39 +2770,28 @@ runGameMessage msg g = case msg of
   AfterRevelation{} -> pure $ g & activeCardL .~ Nothing
   ResignWith (AssetTarget aid) -> do
     asset <- getAsset aid
-    pure $ g & resignedCardCodesL %~ (getCardCode asset :)
+    pure $ g & resignedCardCodesL %~ (toCardCode asset :)
   Discarded (AssetTarget aid) _ -> pure $ g & assetsL %~ deleteMap aid
   Discard (EventTarget eid) -> do
     event <- getEvent eid
     let
-      playerCard = lookupPlayerCard (getCardCode event) (unEventId eid)
+      playerCard = lookupPlayerCard (toCardCode event) (unEventId eid)
     unshiftMessage (AddToDiscard (ownerOfEvent event) playerCard)
     pure $ g & eventsL %~ deleteMap eid
   Discard (TreacheryTarget tid) -> do
     withQueue_ $ filter (/= msg)
     treachery <- getTreachery tid
-    let
-      encounterCard = do
-        f <- lookup (getCardCode treachery) allEncounterCards
-        pure $ EncounterCard $ f (unTreacheryId tid)
-      playerCard = do
-        f <- lookup (getCardCode treachery) allPlayerCards
-        pure $ PlayerCard $ MkPlayerCard
-          { pcId = unTreacheryId tid
-          , pcBearer = treacheryOwner (toAttrs treachery)
-          , pcDef = f
-          }
-    case encounterCard <|> playerCard of
-      Nothing -> error "missing"
-      Just (PlayerCard card) -> do
-        treacheryId <- getId treachery
+    let card = lookupCard (toCardCode treachery) (unTreacheryId tid)
+    case card of
+      PlayerCard pc -> do
+        let ownerId = fromJustNote "owner was not set" $ treacheryOwner (toAttrs treachery)
         unshiftMessage
           (AddToDiscard
-            (unOwnerId . fromJustNote "owner was not set" $ treacheryId)
-            card
+            ownerId
+            pc { pcBearer = Just ownerId }
           )
         pure $ g & treacheriesL %~ deleteMap tid
-      Just (EncounterCard ec) ->
+      EncounterCard ec ->
         pure $ g & treacheriesL %~ deleteMap tid & discardL %~ (ec :)
   EndCheckWindow -> pure $ g & usedAbilitiesL %~ filter
     (\(_, Ability {..}) -> abilityLimit /= NoLimit)

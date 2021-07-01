@@ -5,17 +5,14 @@ module Arkham.Types.Treachery.Cards.RipplesOnTheSurface
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
@@ -24,8 +21,8 @@ import Arkham.Types.Treachery.Runner
 newtype RipplesOnTheSurface = RipplesOnTheSurface TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-ripplesOnTheSurface :: TreacheryId -> a -> RipplesOnTheSurface
-ripplesOnTheSurface uuid _ = RipplesOnTheSurface $ baseAttrs uuid "81027"
+ripplesOnTheSurface :: TreacheryCard RipplesOnTheSurface
+ripplesOnTheSurface = treachery RipplesOnTheSurface Cards.ripplesOnTheSurface
 
 instance
   ( HasId LocationId env InvestigatorId

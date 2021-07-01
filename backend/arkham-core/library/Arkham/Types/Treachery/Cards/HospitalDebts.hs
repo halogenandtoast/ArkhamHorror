@@ -5,29 +5,25 @@ module Arkham.Types.Treachery.Cards.HospitalDebts
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.Window
 
 newtype HospitalDebts = HospitalDebts TreacheryAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
-hospitalDebts :: TreacheryId -> Maybe InvestigatorId -> HospitalDebts
-hospitalDebts uuid iid = HospitalDebts
-  $ (weaknessAttrs uuid iid "01011") { treacheryResources = Just 0 }
+hospitalDebts :: TreacheryCard HospitalDebts
+hospitalDebts = treachery (HospitalDebts . (resourcesL ?~ 0)) Cards.hospitalDebts
 
 instance HasModifiersFor env HospitalDebts where
   getModifiersFor _ (InvestigatorTarget iid) (HospitalDebts attrs) = do

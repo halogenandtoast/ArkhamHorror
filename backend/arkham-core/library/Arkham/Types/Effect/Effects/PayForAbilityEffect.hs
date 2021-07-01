@@ -10,7 +10,6 @@ import Arkham.Types.Ability
 import Arkham.Types.Action hiding (Ability, TakenAction)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Card
-import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Attrs
@@ -169,31 +168,31 @@ instance
         let
           cards = filter
             (and . sequence
-              [ maybe (const True) (==) mPlayerCardType . pcCardType . pcDef
-              , (|| null traits) . notNull . intersection traits . pcTraits . pcDef
+              [ maybe (const True) (==) mPlayerCardType . cdCardType . pcDef
+              , (|| null traits) . notNull . intersection traits . toTraits
               , (|| null skillTypes)
               . not
               . null
               . intersection (insertSet SkillWild skillTypes)
               . setFromList
-              . pcSkills
+              . cdSkills
               . pcDef
               ]
             )
             handCards
         e <$ unshiftMessage
-          (chooseN iid x [ DiscardCard iid (getCardId card) | card <- cards ])
+          (chooseN iid x [ DiscardCard iid (toCardId card) | card <- cards ])
       SkillIconCost x skillTypes -> do
         handCards <- mapMaybe (preview _PlayerCard . unHandCard) <$> getList iid
         let
           cards = filter ((> 0) . fst) $ map
-            (toFst (count (`member` insertSet SkillWild skillTypes) . pcSkills . pcDef))
+            (toFst (count (`member` insertSet SkillWild skillTypes) . cdSkills . pcDef))
             handCards
           cardMsgs = map
             (\(n, card) -> if n >= x
-              then DiscardCard iid (getCardId card)
+              then DiscardCard iid (toCardId card)
               else Run
-                [ DiscardCard iid (getCardId card)
+                [ DiscardCard iid (toCardId card)
                 , PayAbilityCost
                   source
                   iid

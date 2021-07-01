@@ -5,12 +5,12 @@ module Arkham.Types.Asset.Cards.Switchblade
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -18,15 +18,13 @@ import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 
 newtype Switchblade = Switchblade AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-switchblade :: AssetId -> Switchblade
-switchblade uuid =
-  Switchblade $ (baseAttrs uuid "01044") { assetSlots = [HandSlot] }
+switchblade :: AssetCard Switchblade
+switchblade = hand Switchblade Cards.switchblade
 
 instance HasModifiersFor env Switchblade where
   getModifiersFor = noModifiersFor

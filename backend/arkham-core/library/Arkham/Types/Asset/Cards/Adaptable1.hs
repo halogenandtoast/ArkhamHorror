@@ -5,15 +5,15 @@ module Arkham.Types.Asset.Cards.Adaptable1
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Classes
 
 newtype Adaptable1 = Adaptable1 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-adaptable1 :: AssetId -> Adaptable1
-adaptable1 uuid = Adaptable1 $ baseAttrs uuid "02110"
+adaptable1 :: AssetCard Adaptable1
+adaptable1 = asset Adaptable1 Cards.adaptable1
 
 instance HasActions env Adaptable1 where
   getActions iid window (Adaptable1 attrs) = getActions iid window attrs

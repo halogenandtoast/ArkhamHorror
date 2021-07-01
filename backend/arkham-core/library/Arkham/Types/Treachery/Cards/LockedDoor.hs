@@ -5,11 +5,12 @@ module Arkham.Types.Treachery.Cards.LockedDoor
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
@@ -19,14 +20,13 @@ import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
 import Arkham.Types.Window
 
 newtype LockedDoor = LockedDoor TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-lockedDoor :: TreacheryId -> a -> LockedDoor
-lockedDoor uuid _ = LockedDoor $ baseAttrs uuid "01174"
+lockedDoor :: TreacheryCard LockedDoor
+lockedDoor = treachery LockedDoor Cards.lockedDoor
 
 instance HasModifiersFor env LockedDoor where
   getModifiersFor _ (LocationTarget lid) (LockedDoor attrs) =
@@ -50,7 +50,7 @@ instance (TreacheryRunner env) => RunMessage env LockedDoor where
   runMessage msg t@(LockedDoor attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       exemptLocations <- getSet @LocationId
-        (TreacheryCardCode treacheryCardCode)
+        (TreacheryCardCode $ toCardCode attrs)
       targetLocations <-
         setToList . (`difference` exemptLocations) <$> getSet @LocationId ()
       locations <- for

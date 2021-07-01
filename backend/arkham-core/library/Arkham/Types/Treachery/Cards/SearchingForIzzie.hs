@@ -5,29 +5,26 @@ module Arkham.Types.Treachery.Cards.SearchingForIzzie
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
-
-
-import qualified Arkham.Types.Action as Action
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.Window
 
 newtype SearchingForIzzie = SearchingForIzzie TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-searchingForIzzie :: TreacheryId -> Maybe InvestigatorId -> SearchingForIzzie
-searchingForIzzie uuid iid = SearchingForIzzie $ weaknessAttrs uuid iid "02011"
+searchingForIzzie :: TreacheryCard SearchingForIzzie
+searchingForIzzie = treachery SearchingForIzzie Cards.searchingForIzzie
 
 instance HasModifiersFor env SearchingForIzzie where
   getModifiersFor = noModifiersFor

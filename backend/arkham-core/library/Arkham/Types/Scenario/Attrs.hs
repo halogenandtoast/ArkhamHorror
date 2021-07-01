@@ -77,7 +77,7 @@ instance HasCount ScenarioDeckCount env ScenarioAttrs where
 
 instance HasCount SetAsideCount env (ScenarioAttrs, CardCode) where
   getCount (attrs, cardCode) = pure . SetAsideCount $ count
-    ((== cardCode) . getCardCode)
+    ((== cardCode) . toCardCode)
     (attrs ^. setAsideCardsL)
 
 instance HasSet SetAsideLocationCardCode env ScenarioAttrs where
@@ -266,7 +266,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioAttrsRunner env)
     RequestSetAsideCard target cardCode -> do
       let
         (before, rest) =
-          span ((== cardCode) . getCardCode) scenarioSetAsideCards
+          span ((== cardCode) . toCardCode) scenarioSetAsideCards
       case rest of
         [] -> error "requested a card that is not set aside"
         (x : xs) -> do

@@ -11,7 +11,7 @@ spec = do
     it "causes the selected investigator to draw 3 cards" $ do
       investigator <- testInvestigator "00000" id
       cards <- testPlayerCards 3
-      location <- testLocation "00000" id
+      location <- testLocation id
       crypticResearch4 <- buildEvent "01043" investigator
       gameTest
           investigator
@@ -33,7 +33,7 @@ spec = do
       investigator <- testInvestigator "00000" id
       investigator2 <- testInvestigator "00001" id
       cards <- testPlayerCards 3
-      location <- testLocation "00000" id
+      location <- testLocation id
       crypticResearch4 <- buildEvent "01043" investigator
       gameTest
           investigator

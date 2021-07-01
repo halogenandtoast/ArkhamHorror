@@ -2,21 +2,21 @@ module Arkham.Types.Asset.Cards.Pickpocketing where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 
 newtype Pickpocketing = Pickpocketing AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-pickpoketing :: AssetId -> Pickpocketing
-pickpoketing uuid = Pickpocketing $ baseAttrs uuid "01046"
+pickpoketing :: AssetCard Pickpocketing
+pickpoketing = asset Pickpocketing Cards.pickpoketing
 
 instance HasModifiersFor env Pickpocketing where
   getModifiersFor = noModifiersFor

@@ -6,24 +6,24 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
+import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
-import Arkham.Types.Asset.Uses
 
 newtype FirstAid = FirstAid AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-firstAid :: AssetId -> FirstAid
-firstAid uuid = FirstAid $ baseAttrs uuid "01019"
+firstAid :: AssetCard FirstAid
+firstAid = asset FirstAid Cards.firstAid
 
 instance HasModifiersFor env FirstAid where
   getModifiersFor = noModifiersFor

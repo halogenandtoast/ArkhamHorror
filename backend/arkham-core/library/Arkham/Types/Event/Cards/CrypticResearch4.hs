@@ -2,20 +2,19 @@ module Arkham.Types.Event.Cards.CrypticResearch4 where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Target
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
+import Arkham.Types.Id
+import Arkham.Types.Message
+import Arkham.Types.Target
 
 newtype CrypticResearch4 = CrypticResearch4 EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-crypticResearch4 :: InvestigatorId -> EventId -> CrypticResearch4
-crypticResearch4 iid uuid = CrypticResearch4 $ baseAttrs iid uuid "01043"
+crypticResearch4 :: EventCard CrypticResearch4
+crypticResearch4 = event CrypticResearch4 Cards.crypticResearch4
 
 instance HasModifiersFor env CrypticResearch4 where
   getModifiersFor = noModifiersFor

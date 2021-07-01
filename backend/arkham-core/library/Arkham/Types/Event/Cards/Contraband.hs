@@ -5,11 +5,9 @@ module Arkham.Types.Event.Cards.Contraband
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
@@ -19,8 +17,8 @@ import Arkham.Types.Event.Attrs
 newtype Contraband = Contraband EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-contraband :: InvestigatorId -> EventId -> Contraband
-contraband iid uuid = Contraband $ baseAttrs iid uuid "02109"
+contraband :: EventCard Contraband
+contraband = event Contraband Cards.contraband
 
 instance HasActions env Contraband where
   getActions iid window (Contraband attrs) = getActions iid window attrs

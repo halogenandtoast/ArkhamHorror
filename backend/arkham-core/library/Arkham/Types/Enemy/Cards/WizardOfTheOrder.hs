@@ -6,24 +6,22 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.Message
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
+import Arkham.Types.GameValue
+import Arkham.Types.Message
 
 newtype WizardOfTheOrder = WizardOfTheOrder EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-wizardOfTheOrder :: EnemyId -> WizardOfTheOrder
-wizardOfTheOrder uuid =
-  WizardOfTheOrder
-    $ baseAttrs uuid "01170"
-    $ (healthDamageL .~ 1)
-    . (fightL .~ 4)
-    . (healthL .~ Static 2)
-    . (evadeL .~ 2)
+wizardOfTheOrder :: EnemyCard WizardOfTheOrder
+wizardOfTheOrder = enemy WizardOfTheOrder Cards.wizardOfTheOrder
+  $ (healthDamageL .~ 1)
+  . (fightL .~ 4)
+  . (healthL .~ Static 2)
+  . (evadeL .~ 2)
 
 instance HasModifiersFor env WizardOfTheOrder where
   getModifiersFor = noModifiersFor

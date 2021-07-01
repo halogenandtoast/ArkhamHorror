@@ -2,14 +2,12 @@ module Arkham.Types.Treachery.Cards.TheYellowSign where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
@@ -17,8 +15,8 @@ import Arkham.Types.Treachery.Runner
 newtype TheYellowSign = TheYellowSign TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-theYellowSign :: TreacheryId -> a -> TheYellowSign
-theYellowSign uuid _ = TheYellowSign $ baseAttrs uuid "01176"
+theYellowSign :: TreacheryCard TheYellowSign
+theYellowSign = treachery TheYellowSign Cards.theYellowSign
 
 instance HasModifiersFor env TheYellowSign where
   getModifiersFor = noModifiersFor

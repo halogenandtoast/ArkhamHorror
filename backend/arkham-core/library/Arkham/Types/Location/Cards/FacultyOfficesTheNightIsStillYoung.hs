@@ -6,12 +6,12 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards
+  (facultyOfficesTheNightIsStillYoung)
 import Arkham.Types.Ability
 import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -21,7 +21,6 @@ import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Resolution
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -32,15 +31,12 @@ newtype FacultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung 
 facultyOfficesTheNightIsStillYoung
   :: LocationId -> FacultyOfficesTheNightIsStillYoung
 facultyOfficesTheNightIsStillYoung =
-  FacultyOfficesTheNightIsStillYoung . (victoryL ?~ 1) . baseAttrs
-    "02054"
-    ("Faculty Offices" `subtitled` "The Night is Still Young")
-    EncounterSet.ExtracurricularActivity
+  FacultyOfficesTheNightIsStillYoung . baseAttrs
+    Cards.facultyOfficesTheNightIsStillYoung
     2
     (PerPlayer 2)
     T
     [Circle]
-    [Miskatonic]
 
 instance HasModifiersFor env FacultyOfficesTheNightIsStillYoung where
   getModifiersFor _ target (FacultyOfficesTheNightIsStillYoung attrs)
@@ -75,7 +71,7 @@ instance LocationRunner env => RunMessage env FacultyOfficesTheNightIsStillYoung
       unshiftMessage $ FindEncounterCard
         iid
         (toTarget attrs)
-        (EncounterCardMatchByType (EnemyType, Just Humanoid))
+        (CardMatchByType (EnemyType, singleton Humanoid))
       FacultyOfficesTheNightIsStillYoung <$> runMessage msg attrs
     FoundEncounterCard _iid target card | isTarget attrs target ->
       l <$ unshiftMessage (SpawnEnemyAt (EncounterCard card) (toId attrs))

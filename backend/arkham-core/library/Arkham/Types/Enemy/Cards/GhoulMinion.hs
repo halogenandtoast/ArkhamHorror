@@ -2,24 +2,22 @@ module Arkham.Types.Enemy.Cards.GhoulMinion where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
+import Arkham.Types.GameValue
 
 newtype GhoulMinion = GhoulMinion EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-ghoulMinion :: EnemyId -> GhoulMinion
-ghoulMinion uuid =
-  GhoulMinion
-    $ baseAttrs uuid "01160"
-    $ (healthDamageL .~ 1)
-    . (sanityDamageL .~ 1)
-    . (fightL .~ 2)
-    . (healthL .~ Static 2)
-    . (evadeL .~ 2)
+ghoulMinion :: EnemyCard GhoulMinion
+ghoulMinion = enemy GhoulMinion Cards.ghoulMinion
+  $ (healthDamageL .~ 1)
+  . (sanityDamageL .~ 1)
+  . (fightL .~ 2)
+  . (healthL .~ Static 2)
+  . (evadeL .~ 2)
 
 instance HasModifiersFor env GhoulMinion where
   getModifiersFor = noModifiersFor

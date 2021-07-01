@@ -5,12 +5,12 @@ module Arkham.Types.Asset.Cards.Knife
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -18,15 +18,14 @@ import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype Knife = Knife AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-knife :: AssetId -> Knife
-knife uuid = Knife $ (baseAttrs uuid "01086") { assetSlots = [HandSlot] }
+knife :: AssetCard Knife
+knife = hand Knife Cards.knife
 
 instance HasModifiersFor env Knife where
   getModifiersFor = noModifiersFor

@@ -5,13 +5,13 @@ module Arkham.Types.Asset.Cards.Shotgun4
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -25,9 +25,8 @@ import Arkham.Types.Target
 newtype Shotgun4 = Shotgun4 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-shotgun4 :: AssetId -> Shotgun4
-shotgun4 uuid =
-  Shotgun4 $ (baseAttrs uuid "01029") { assetSlots = [HandSlot, HandSlot] }
+shotgun4 :: AssetCard Shotgun4
+shotgun4 = assetWith Shotgun4 Cards.shotgun4 (slotsL .~ [HandSlot, HandSlot])
 
 instance HasModifiersFor env Shotgun4 where
   getModifiersFor = noModifiersFor

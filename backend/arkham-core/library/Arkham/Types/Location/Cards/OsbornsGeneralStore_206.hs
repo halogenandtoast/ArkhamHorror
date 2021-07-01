@@ -6,8 +6,8 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (osbornsGeneralStore_206)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -16,21 +16,17 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.Target
-import Arkham.Types.Trait
 
 newtype OsbornsGeneralStore_206 = OsbornsGeneralStore_206 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 osbornsGeneralStore_206 :: LocationId -> OsbornsGeneralStore_206
 osbornsGeneralStore_206 = OsbornsGeneralStore_206 . baseAttrs
-  "02206"
-  "Osborn's General Store"
-  EncounterSet.BloodOnTheAltar
+  Cards.osbornsGeneralStore_206
   2
   (PerPlayer 1)
   Circle
   [Moon, Square]
-  [Dunwich]
 
 instance HasModifiersFor env OsbornsGeneralStore_206 where
   getModifiersFor _ (InvestigatorTarget iid) (OsbornsGeneralStore_206 attrs) =

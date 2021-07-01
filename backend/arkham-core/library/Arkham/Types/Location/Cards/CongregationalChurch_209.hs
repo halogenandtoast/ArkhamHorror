@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (congregationalChurch_209)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -17,7 +17,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype CongregationalChurch_209 = CongregationalChurch_209 LocationAttrs
@@ -25,14 +24,11 @@ newtype CongregationalChurch_209 = CongregationalChurch_209 LocationAttrs
 
 congregationalChurch_209 :: LocationId -> CongregationalChurch_209
 congregationalChurch_209 = CongregationalChurch_209 . baseAttrs
-  "02209"
-  "Congregational Church"
-  EncounterSet.BloodOnTheAltar
+  Cards.congregationalChurch_209
   2
   (PerPlayer 1)
   Diamond
   [Plus, Triangle, Squiggle]
-  [Dunwich]
 
 instance HasModifiersFor env CongregationalChurch_209 where
   getModifiersFor = noModifiersFor

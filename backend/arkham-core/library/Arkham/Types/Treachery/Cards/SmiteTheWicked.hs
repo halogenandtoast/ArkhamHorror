@@ -2,24 +2,21 @@ module Arkham.Types.Treachery.Cards.SmiteTheWicked where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
 
 newtype SmiteTheWicked = SmiteTheWicked TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-smiteTheWicked :: TreacheryId -> Maybe InvestigatorId -> SmiteTheWicked
-smiteTheWicked uuid iid = SmiteTheWicked $ weaknessAttrs uuid iid "02007"
+smiteTheWicked :: TreacheryCard SmiteTheWicked
+smiteTheWicked = treachery SmiteTheWicked Cards.smiteTheWicked
 
 instance HasModifiersFor env SmiteTheWicked where
   getModifiersFor = noModifiersFor
@@ -32,7 +29,7 @@ instance TreacheryRunner env => RunMessage env SmiteTheWicked where
     Revelation _iid source | isSource attrs source -> t <$ unshiftMessage
       (DiscardEncounterUntilFirst
         source
-        (EncounterCardMatchByType (EnemyType, Nothing))
+        (CardMatchByType (EnemyType, mempty))
       )
     RequestedEncounterCard (TreacherySource tid) mcard | tid == treacheryId ->
       case mcard of
@@ -40,7 +37,7 @@ instance TreacheryRunner env => RunMessage env SmiteTheWicked where
         Just card -> do
           let
             ownerId = fromJustNote "has to be set" treacheryOwner
-            enemyId = EnemyId $ getCardId card
+            enemyId = EnemyId $ toCardId card
           farthestLocations <- map unFarthestLocationId <$> getSetList ownerId
           t <$ unshiftMessages
             [ CreateEnemy (EncounterCard card)

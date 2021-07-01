@@ -5,12 +5,12 @@ where
 
 import Arkham.Prelude
 
+import Arkham.EncounterCard
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Direction
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
 import Arkham.Types.GameValue
@@ -28,7 +28,7 @@ import Arkham.Types.TreacheryId
 import Data.UUID (nil)
 
 createLocation :: IsCard a => a -> Location
-createLocation a = lookupLocation (getCardCode a) (LocationId $ getCardId a)
+createLocation a = lookupLocation (toCardCode a) (LocationId $ toCardId a)
 
 toLocationSymbol :: Location -> LocationSymbol
 toLocationSymbol = locationSymbol . toAttrs
@@ -177,6 +177,9 @@ data Location
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 
+instance IsCard Location where
+  toCardId = toCardId . toAttrs
+
 deriving anyclass instance ActionRunner env => HasActions env Location
 deriving anyclass instance
   ( HasPhase env
@@ -212,6 +215,9 @@ instance SourceEntity Location where
 newtype BaseLocation = BaseLocation LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
+instance HasCardDef Location where
+  toCardDef = toCardDef . toAttrs
+
 instance HasModifiersFor env BaseLocation where
   getModifiersFor = noModifiersFor
 
@@ -227,35 +233,26 @@ instance LocationRunner env => RunMessage env BaseLocation where
 baseLocation
   :: LocationId
   -> CardCode
-  -> Name
   -> Int
   -> GameValue Int
   -> LocationSymbol
   -> [LocationSymbol]
   -> (LocationAttrs -> LocationAttrs)
+  -> (CardDef -> CardDef)
   -> Location
-baseLocation a b c d e f g func =
-  BaseLocation' . BaseLocation . func $ baseAttrs
-    b
+baseLocation a b c d e f attrsF defF =
+  BaseLocation' . BaseLocation . attrsF $ baseAttrs
+    (defF $ lookupEncounterCardDef b)
     c
-    EncounterSet.TheGathering
     d
     e
     f
-    g
-    []
     a
-
-instance IsCard Location where
-  getCardId = getCardId . toAttrs
-  getCardCode = getCardCode . toAttrs
-  getTraits = getTraits . toAttrs
-  getKeywords = getKeywords . toAttrs
 
 instance HasVictoryPoints Location where
   getVictoryPoints l =
-    let LocationAttrs { locationClues, locationVictory } = toAttrs l
-    in if locationClues == 0 then locationVictory else Nothing
+    let LocationAttrs { locationClues } = toAttrs l
+    in if locationClues == 0 then cdVictoryPoints (toCardDef l) else Nothing
 
 instance HasCount ClueCount env Location where
   getCount = pure . ClueCount . locationClues . toAttrs
@@ -299,7 +296,7 @@ instance HasId (Maybe LocationId) env (Direction, Location) where
 
 getLocationName :: Location -> LocationName
 getLocationName l = if locationRevealed attrs
-  then locationName attrs
+  then LocationName $ cdName (toCardDef l)
   else locationUnrevealedName attrs
   where attrs = toAttrs l
 
@@ -459,6 +456,7 @@ allLocations = mapFromList
   , ("81016", FoulSwamp' . foulSwamp)
   , ("81017", RitualGrounds' . ritualGrounds)
   , ("81018", OvergrownCairns' . overgrownCairns)
+  , ("location", \lid -> baseLocation lid "location" 0 (Static 0) NoSymbol [] id id)
   ]
 
 isEmptyLocation :: Location -> Bool

@@ -2,20 +2,18 @@ module Arkham.Types.Treachery.Cards.AncientEvils where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype AncientEvils = AncientEvils TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-ancientEvils :: TreacheryId -> a -> AncientEvils
-ancientEvils uuid _ = AncientEvils $ baseAttrs uuid "01166"
+ancientEvils :: TreacheryCard AncientEvils
+ancientEvils = treachery AncientEvils Cards.ancientEvils
 
 instance HasModifiersFor env AncientEvils where
   getModifiersFor = noModifiersFor

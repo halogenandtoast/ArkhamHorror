@@ -6,11 +6,11 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (parlorCar)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Direction
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -20,7 +20,6 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype ParlorCar = ParlorCar LocationAttrs
@@ -30,16 +29,12 @@ parlorCar :: LocationId -> ParlorCar
 parlorCar =
   ParlorCar
     . (connectsToL .~ setFromList [LeftOf, RightOf])
-    . (victoryL ?~ 1)
     . baseAttrs
-        "02174"
-        "Parlor Car"
-        EncounterSet.TheEssexCountyExpress
+        Cards.parlorCar
         3
         (PerPlayer 1)
         NoSymbol
         []
-        (singleton Train)
 
 instance HasCount ClueCount env LocationId => HasModifiersFor env ParlorCar where
   getModifiersFor _ target (ParlorCar location@LocationAttrs {..})

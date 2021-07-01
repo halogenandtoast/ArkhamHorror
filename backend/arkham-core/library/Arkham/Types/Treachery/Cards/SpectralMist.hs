@@ -5,31 +5,28 @@ module Arkham.Types.Treachery.Cards.SpectralMist
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
-
-
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.Window
 
 newtype SpectralMist = SpectralMist TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-spectralMist :: TreacheryId -> a -> SpectralMist
-spectralMist uuid _ = SpectralMist $ baseAttrs uuid "81025"
+spectralMist :: TreacheryCard SpectralMist
+spectralMist = treachery SpectralMist Cards.spectralMist
 
 instance HasId LocationId env InvestigatorId => HasModifiersFor env SpectralMist where
   getModifiersFor (SkillTestSource iid _ _ _ _) _ (SpectralMist a) = do

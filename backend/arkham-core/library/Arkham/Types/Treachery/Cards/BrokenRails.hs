@@ -5,21 +5,19 @@ module Arkham.Types.Treachery.Cards.BrokenRails
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype BrokenRails = BrokenRails TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-brokenRails :: TreacheryId -> a -> BrokenRails
-brokenRails uuid _ = BrokenRails $ baseAttrs uuid "02181"
+brokenRails :: TreacheryCard BrokenRails
+brokenRails = treachery BrokenRails Cards.brokenRails
 
 instance HasModifiersFor env BrokenRails where
   getModifiersFor = noModifiersFor

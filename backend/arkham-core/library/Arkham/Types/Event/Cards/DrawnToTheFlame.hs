@@ -2,19 +2,18 @@ module Arkham.Types.Event.Cards.DrawnToTheFlame where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Target
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
+import Arkham.Types.Message
+import Arkham.Types.Target
 
 newtype DrawnToTheFlame = DrawnToTheFlame EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-drawnToTheFlame :: InvestigatorId -> EventId -> DrawnToTheFlame
-drawnToTheFlame iid uuid = DrawnToTheFlame $ baseAttrs iid uuid "01064"
+drawnToTheFlame :: EventCard DrawnToTheFlame
+drawnToTheFlame = event DrawnToTheFlame Cards.drawnToTheFlame
 
 instance HasModifiersFor env DrawnToTheFlame where
   getModifiersFor = noModifiersFor

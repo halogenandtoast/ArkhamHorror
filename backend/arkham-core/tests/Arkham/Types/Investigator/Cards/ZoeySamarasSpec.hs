@@ -20,7 +20,7 @@ spec = do
     it "elder sign token gives +1 and does +1 damage for attacks" $ do
       let zoeySamaras = lookupInvestigator "02001" -- combat is 4
       enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 5))
-      location <- testLocation "00000" id
+      location <- testLocation id
       gameTest
           zoeySamaras
           [ SetTokens [ElderSign]
@@ -46,7 +46,7 @@ spec = do
     it "allows you to gain a resource each time you are engaged by an enemy"
       $ do
           let zoeySamaras = lookupInvestigator "02001"
-          location <- testLocation "00000" id
+          location <- testLocation id
           enemy1 <- testEnemy id
           enemy2 <- testEnemy id
           gameTest

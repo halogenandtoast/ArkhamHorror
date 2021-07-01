@@ -5,11 +5,11 @@ module Arkham.Types.Asset.Cards.ArcaneStudies2
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -23,8 +23,8 @@ import Arkham.Types.Window
 newtype ArcaneStudies2 = ArcaneStudies2 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-arcaneStudies2 :: AssetId -> ArcaneStudies2
-arcaneStudies2 uuid = ArcaneStudies2 $ baseAttrs uuid "50007"
+arcaneStudies2 :: AssetCard ArcaneStudies2
+arcaneStudies2 = asset ArcaneStudies2 Cards.arcaneStudies2
 
 instance HasModifiersFor env ArcaneStudies2 where
   getModifiersFor = noModifiersFor

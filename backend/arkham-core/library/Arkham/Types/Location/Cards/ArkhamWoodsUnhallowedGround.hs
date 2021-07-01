@@ -2,18 +2,16 @@ module Arkham.Types.Location.Cards.ArkhamWoodsUnhallowedGround where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (arkhamWoodsUnhallowedGround)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Trait
 
 newtype ArkhamWoodsUnhallowedGround = ArkhamWoodsUnhallowedGround LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -24,14 +22,11 @@ arkhamWoodsUnhallowedGround =
     . (revealedConnectedSymbolsL .~ setFromList [Squiggle, Hourglass, Diamond])
     . (revealedSymbolL .~ Triangle)
     . baseAttrs
-        "01150"
-        ("Arkham Woods" `subtitled` "Unhallowed Ground")
-        EncounterSet.TheDevourerBelow
+        Cards.arkhamWoodsUnhallowedGround
         4
         (PerPlayer 1)
         Square
         [Squiggle]
-        [Woods]
 
 instance HasModifiersFor env ArkhamWoodsUnhallowedGround where
   getModifiersFor = noModifiersFor

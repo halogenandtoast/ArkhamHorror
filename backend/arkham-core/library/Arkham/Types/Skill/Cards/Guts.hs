@@ -1,21 +1,19 @@
 module Arkham.Types.Skill.Cards.Guts where
 
-import ClassyPrelude
+import Arkham.Prelude
 
-import Arkham.Json
+import qualified Arkham.Skill.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
-import Arkham.Types.SkillId
 import Arkham.Types.Target
 
 newtype Guts = Guts SkillAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-guts :: InvestigatorId -> SkillId -> Guts
-guts iid uuid = Guts $ baseAttrs iid uuid "01089"
+guts :: SkillCard Guts
+guts = skill Guts Cards.guts
 
 instance HasModifiersFor env Guts where
   getModifiersFor = noModifiersFor

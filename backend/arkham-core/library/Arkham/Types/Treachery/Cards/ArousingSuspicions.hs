@@ -5,14 +5,11 @@ module Arkham.Types.Treachery.Cards.ArousingSuspicions
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
@@ -20,8 +17,8 @@ import Arkham.Types.Treachery.Runner
 newtype ArousingSuspicions = ArousingSuspicions TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-arousingSuspicions :: TreacheryId -> a -> ArousingSuspicions
-arousingSuspicions uuid _ = ArousingSuspicions $ baseAttrs uuid "02082"
+arousingSuspicions :: TreacheryCard ArousingSuspicions
+arousingSuspicions = treachery ArousingSuspicions Cards.arousingSuspicions
 
 instance HasModifiersFor env ArousingSuspicions where
   getModifiersFor = noModifiersFor

@@ -1,21 +1,19 @@
 module Arkham.Types.Skill.Cards.Perception where
 
-import ClassyPrelude
+import Arkham.Prelude
 
-import Arkham.Json
+import qualified Arkham.Skill.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
-import Arkham.Types.SkillId
 import Arkham.Types.Target
 
 newtype Perception = Perception SkillAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-perception :: InvestigatorId -> SkillId -> Perception
-perception iid uuid = Perception $ baseAttrs iid uuid "01090"
+perception :: SkillCard Perception
+perception = skill Perception Cards.perception
 
 instance HasModifiersFor env Perception where
   getModifiersFor = noModifiersFor

@@ -6,18 +6,16 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
@@ -27,16 +25,13 @@ import Arkham.Types.Window
 newtype Umordhoth = Umordhoth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-umordhoth :: EnemyId -> Umordhoth
-umordhoth uuid =
-  Umordhoth
-    $ baseAttrs uuid "01157"
-    $ (healthDamageL .~ 3)
-    . (sanityDamageL .~ 3)
-    . (fightL .~ 5)
-    . (healthL .~ Static 6)
-    . (evadeL .~ 6)
-    . (uniqueL .~ True)
+umordhoth :: EnemyCard Umordhoth
+umordhoth = enemy Umordhoth Cards.umordhoth
+  $ (healthDamageL .~ 3)
+  . (sanityDamageL .~ 3)
+  . (fightL .~ 5)
+  . (healthL .~ Static 6)
+  . (evadeL .~ 6)
 
 instance HasModifiersFor env Umordhoth where
   getModifiersFor = noModifiersFor

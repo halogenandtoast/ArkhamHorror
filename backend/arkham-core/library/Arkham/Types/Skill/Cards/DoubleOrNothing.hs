@@ -6,22 +6,19 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Skill.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Modifier
-import Arkham.Types.SkillId
-import Arkham.Types.Target
-
-
 import Arkham.Types.Game.Helpers
+import Arkham.Types.Modifier
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
+import Arkham.Types.Target
 
 newtype DoubleOrNothing = DoubleOrNothing SkillAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-doubleOrNothing :: InvestigatorId -> SkillId -> DoubleOrNothing
-doubleOrNothing iid uuid = DoubleOrNothing $ baseAttrs iid uuid "02026"
+doubleOrNothing :: SkillCard DoubleOrNothing
+doubleOrNothing = skill DoubleOrNothing Cards.doubleOrNothing
 
 instance HasModifiersFor env DoubleOrNothing where
   getModifiersFor _ SkillTestTarget (DoubleOrNothing attrs) =

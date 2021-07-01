@@ -5,23 +5,22 @@ module Arkham.Types.Asset.Cards.Scrying
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.Cost
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Slot
-import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.Id
+import Arkham.Types.Message
+import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype Scrying = Scrying AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
-scrying :: AssetId -> Scrying
-scrying uuid = Scrying $ (baseAttrs uuid "01061") { assetSlots = [ArcaneSlot] }
+scrying :: AssetCard Scrying
+scrying = arcane Scrying Cards.scrying
 
 instance HasModifiersFor env Scrying where
   getModifiersFor = noModifiersFor

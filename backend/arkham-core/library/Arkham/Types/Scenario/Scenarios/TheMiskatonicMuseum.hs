@@ -2,16 +2,12 @@ module Arkham.Types.Scenario.Scenarios.TheMiskatonicMuseum where
 
 import Arkham.Prelude
 
-import Arkham.Types.CampaignId
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Name
@@ -245,7 +241,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         Cultist -> unshiftMessage $ FindEncounterCard
           iid
           (toTarget attrs)
-          (EncounterCardMatchByCardCode "02141")
+          (CardMatchByCardCode "02141")
         ElderThing -> unshiftMessage $ ChooseAndDiscardAsset iid
         _ -> pure ()
     FoundEncounterCard iid target ec | isTarget attrs target -> do

@@ -2,30 +2,28 @@ module Arkham.Types.Enemy.Cards.ScreechingByakhee where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Modifier
-import Arkham.Types.Prey
-import Arkham.Types.Query
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
+import Arkham.Types.GameValue
+import Arkham.Types.Id
+import Arkham.Types.Modifier
+import Arkham.Types.Prey
+import Arkham.Types.Query
 
 newtype ScreechingByakhee = ScreechingByakhee EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-screechingByakhee :: EnemyId -> ScreechingByakhee
-screechingByakhee uuid =
-  ScreechingByakhee
-    $ baseAttrs uuid "01175"
-    $ (healthDamageL .~ 1)
-    . (sanityDamageL .~ 2)
-    . (fightL .~ 3)
-    . (healthL .~ Static 4)
-    . (evadeL .~ 3)
-    . (preyL .~ LowestRemainingSanity)
+screechingByakhee :: EnemyCard ScreechingByakhee
+screechingByakhee = enemy ScreechingByakhee Cards.screechingByakhee
+  $ (healthDamageL .~ 1)
+  . (sanityDamageL .~ 2)
+  . (fightL .~ 3)
+  . (healthL .~ Static 4)
+  . (evadeL .~ 3)
+  . (preyL .~ LowestRemainingSanity)
 
 instance HasCount RemainingSanity env InvestigatorId => HasModifiersFor env ScreechingByakhee where
   getModifiersFor _ target (ScreechingByakhee attrs) | isTarget attrs target =

@@ -5,6 +5,7 @@ module Arkham.Types.Treachery.Cards.AttractingAttention
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.LocationMatcher
@@ -12,13 +13,12 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
 
 newtype AttractingAttention = AttractingAttention TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-attractingAttention :: TreacheryId -> a -> AttractingAttention
-attractingAttention uuid _ = AttractingAttention $ baseAttrs uuid "02258"
+attractingAttention :: TreacheryCard AttractingAttention
+attractingAttention = treachery AttractingAttention Cards.attractingAttention
 
 instance HasModifiersFor env AttractingAttention where
   getModifiersFor = noModifiersFor

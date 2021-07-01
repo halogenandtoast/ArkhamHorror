@@ -2,26 +2,24 @@ module Arkham.Types.Enemy.Cards.OBannionsThug where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.Modifier
-import Arkham.Types.Target
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
+import Arkham.Types.GameValue
+import Arkham.Types.Modifier
+import Arkham.Types.Target
 
 newtype OBannionsThug = OBannionsThug EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-oBannionsThug :: EnemyId -> OBannionsThug
-oBannionsThug uuid =
-  OBannionsThug
-    $ baseAttrs uuid "02097"
-    $ (healthDamageL .~ 2)
-    . (fightL .~ 4)
-    . (healthL .~ Static 2)
-    . (evadeL .~ 2)
+oBannionsThug :: EnemyCard OBannionsThug
+oBannionsThug = enemy OBannionsThug Cards.oBannionsThug
+  $ (healthDamageL .~ 2)
+  . (fightL .~ 4)
+  . (healthL .~ Static 2)
+  . (evadeL .~ 2)
 
 instance HasModifiersFor env OBannionsThug where
   getModifiersFor _ (InvestigatorTarget iid) (OBannionsThug a@EnemyAttrs {..})

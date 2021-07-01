@@ -6,10 +6,9 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (congregationalChurch_208)
 import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -25,14 +24,11 @@ newtype CongregationalChurch_208 = CongregationalChurch_208 LocationAttrs
 
 congregationalChurch_208 :: LocationId -> CongregationalChurch_208
 congregationalChurch_208 = CongregationalChurch_208 . baseAttrs
-  "02208"
-  "Congregational Church"
-  EncounterSet.BloodOnTheAltar
+  Cards.congregationalChurch_208
   1
   (PerPlayer 1)
   Diamond
   [Plus, Triangle, Squiggle]
-  [Dunwich]
 
 instance HasModifiersFor env CongregationalChurch_208 where
   getModifiersFor = noModifiersFor
@@ -47,7 +43,7 @@ instance LocationRunner env => RunMessage env CongregationalChurch_208 where
       unshiftMessage $ FindEncounterCard
         iid
         (toTarget attrs)
-        (EncounterCardMatchByType (EnemyType, Just Humanoid))
+        (CardMatchByType (EnemyType, singleton Humanoid))
       CongregationalChurch_208 <$> runMessage msg attrs
     FoundEncounterCard _iid target card | isTarget attrs target -> do
       villageCommonsId <- fromJustNote "missing village commons"

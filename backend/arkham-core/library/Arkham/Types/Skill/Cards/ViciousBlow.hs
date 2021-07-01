@@ -2,25 +2,24 @@ module Arkham.Types.Skill.Cards.ViciousBlow where
 
 import Arkham.Prelude
 
+import qualified Arkham.Skill.Cards as Cards
+import Arkham.Types.Action
 import Arkham.Types.Classes
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.SkillId
-import Arkham.Types.Source
-import Arkham.Types.Target
-import Arkham.Types.Action
-import Arkham.Types.Game.Helpers
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
+import Arkham.Types.Source
+import Arkham.Types.Target
 
 newtype ViciousBlow = ViciousBlow SkillAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-viciousBlow :: InvestigatorId -> SkillId -> ViciousBlow
-viciousBlow iid uuid = ViciousBlow $ baseAttrs iid uuid "01025"
+viciousBlow :: SkillCard ViciousBlow
+viciousBlow = skill ViciousBlow Cards.viciousBlow
 
 instance HasModifiersFor env ViciousBlow where
   getModifiersFor = noModifiersFor

@@ -5,26 +5,21 @@ module Arkham.Types.Asset.Cards.GuardDog
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
-import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Window
 
 newtype GuardDog = GuardDog AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-guardDog :: AssetId -> GuardDog
-guardDog uuid = GuardDog $ (baseAttrs uuid "01021")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 3
-  , assetSanity = Just 1
-  }
+guardDog :: AssetCard GuardDog
+guardDog = ally GuardDog Cards.guardDog (3, 1)
 
 instance HasModifiersFor env GuardDog where
   getModifiersFor = noModifiersFor

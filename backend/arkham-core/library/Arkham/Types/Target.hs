@@ -8,7 +8,6 @@ import Arkham.Types.ActId
 import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
 import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.EffectId
 import Arkham.Types.EnemyId
@@ -48,7 +47,6 @@ data Target
   | TokenFaceTarget Token
   | DrawnTokenTarget DrawnToken
   | TestTarget
-  | EncounterCardTarget EncounterCard
   | ResourceTarget
   | InvestigationTarget InvestigatorId LocationId
   deriving stock (Show, Eq, Generic)

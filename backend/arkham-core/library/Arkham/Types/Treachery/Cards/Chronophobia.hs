@@ -5,26 +5,23 @@ module Arkham.Types.Treachery.Cards.Chronophobia
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.Window
 
 newtype Chronophobia = Chronophobia TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-chronophobia :: TreacheryId -> Maybe InvestigatorId -> Chronophobia
-chronophobia uuid iid = Chronophobia $ weaknessAttrs uuid iid "02039"
+chronophobia :: TreacheryCard Chronophobia
+chronophobia = treachery Chronophobia Cards.chronophobia
 
 instance HasModifiersFor env Chronophobia where
   getModifiersFor = noModifiersFor

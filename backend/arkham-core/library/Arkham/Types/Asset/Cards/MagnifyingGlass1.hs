@@ -2,28 +2,26 @@ module Arkham.Types.Asset.Cards.MagnifyingGlass1 where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.Cost
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.Query
-import Arkham.Types.SkillType
-import Arkham.Types.Slot
-import Arkham.Types.Target
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.Id
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Query
+import Arkham.Types.SkillType
+import Arkham.Types.Target
 
 newtype MagnifyingGlass1 = MagnifyingGlass1 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-magnifyingGlass1 :: AssetId -> MagnifyingGlass1
-magnifyingGlass1 uuid =
-  MagnifyingGlass1 $ (baseAttrs uuid "01040") { assetSlots = [HandSlot] }
+magnifyingGlass1 :: AssetCard MagnifyingGlass1
+magnifyingGlass1 = hand MagnifyingGlass1 Cards.magnifyingGlass1
 
 instance HasModifiersFor env MagnifyingGlass1 where
   getModifiersFor _ (InvestigatorTarget iid) (MagnifyingGlass1 a) = pure

@@ -2,11 +2,11 @@ module Arkham.Types.Enemy.Cards.TheMaskedHunter where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
 import Arkham.Types.Modifier
 import Arkham.Types.Prey
@@ -16,17 +16,14 @@ import Arkham.Types.Target
 newtype TheMaskedHunter = TheMaskedHunter EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-theMaskedHunter :: EnemyId -> TheMaskedHunter
-theMaskedHunter uuid =
-  TheMaskedHunter
-    $ baseAttrs uuid "01121b"
-    $ (healthDamageL .~ 2)
-    . (sanityDamageL .~ 1)
-    . (fightL .~ 4)
-    . (healthL .~ Static 4)
-    . (evadeL .~ 2)
-    . (preyL .~ MostClues)
-    . (uniqueL .~ True)
+theMaskedHunter :: EnemyCard TheMaskedHunter
+theMaskedHunter = enemy TheMaskedHunter Cards.theMaskedHunter
+  $ (healthDamageL .~ 2)
+  . (sanityDamageL .~ 1)
+  . (fightL .~ 4)
+  . (healthL .~ Static 4)
+  . (evadeL .~ 2)
+  . (preyL .~ MostClues)
 
 instance HasCount PlayerCount env () => HasModifiersFor env TheMaskedHunter where
   getModifiersFor _ target (TheMaskedHunter a) | isTarget a target = do

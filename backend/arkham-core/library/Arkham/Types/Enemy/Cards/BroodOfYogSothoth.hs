@@ -5,14 +5,14 @@ module Arkham.Types.Enemy.Cards.BroodOfYogSothoth
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
@@ -22,15 +22,13 @@ import Arkham.Types.Source
 newtype BroodOfYogSothoth = BroodOfYogSothoth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-broodOfYogSothoth :: EnemyId -> BroodOfYogSothoth
-broodOfYogSothoth uuid =
-  BroodOfYogSothoth
-    $ baseAttrs uuid "02255"
-    $ (healthDamageL .~ 2)
-    . (sanityDamageL .~ 2)
-    . (fightL .~ 6)
-    . (healthL .~ Static 1)
-    . (evadeL .~ 3)
+broodOfYogSothoth :: EnemyCard BroodOfYogSothoth
+broodOfYogSothoth = enemy BroodOfYogSothoth Cards.broodOfYogSothoth
+  $ (healthDamageL .~ 2)
+  . (sanityDamageL .~ 2)
+  . (fightL .~ 6)
+  . (healthL .~ Static 1)
+  . (evadeL .~ 3)
 
 instance HasCount PlayerCount env () => HasModifiersFor env BroodOfYogSothoth where
   getModifiersFor _ target (BroodOfYogSothoth a) | isTarget a target = do

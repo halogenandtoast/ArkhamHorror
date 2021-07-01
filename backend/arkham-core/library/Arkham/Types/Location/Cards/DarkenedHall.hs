@@ -6,15 +6,14 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (darkenedHall)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Trait hiding (Cultist)
 
 newtype DarkenedHall = DarkenedHall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -26,14 +25,11 @@ darkenedHall =
       .~ setFromList [Triangle, T, Hourglass, Plus, Squiggle]
       )
     . baseAttrs
-        "02074"
-        "Darkened Hall"
-        EncounterSet.TheHouseAlwaysWins
+        Cards.darkenedHall
         4
         (Static 0)
         Diamond
         [Triangle]
-        [CloverClub]
 
 instance HasModifiersFor env DarkenedHall where
   getModifiersFor = noModifiersFor

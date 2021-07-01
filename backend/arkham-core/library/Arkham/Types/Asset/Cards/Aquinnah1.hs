@@ -6,28 +6,23 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.Cost
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Query
-import Arkham.Types.Slot
-import Arkham.Types.Source
-import Arkham.Types.Window
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.Id
+import Arkham.Types.Message
+import Arkham.Types.Query
+import Arkham.Types.Source
+import Arkham.Types.Window
 
 newtype Aquinnah1 = Aquinnah1 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-aquinnah1 :: AssetId -> Aquinnah1
-aquinnah1 uuid = Aquinnah1 $ (baseAttrs uuid "01082")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 1
-  , assetSanity = Just 4
-  }
+aquinnah1 :: AssetCard Aquinnah1
+aquinnah1 = ally Aquinnah1 Cards.aquinnah1 (1, 4)
 
 reactionAbility :: AssetAttrs -> Ability
 reactionAbility attrs = mkAbility

@@ -75,7 +75,7 @@ locationsWithLabels trait = do
     , pack (camelCase $ show trait) <> "2"
     ]
   (before, bayou : after) =
-    break (elem Bayou . getTraits . lookupLocationStub) locationSet
+    break (elem Bayou . toTraits . lookupLocationStub) locationSet
 
 instance (HasTokenValue env InvestigatorId, HasSet Trait env LocationId, HasId LocationId env InvestigatorId) => HasTokenValue env CurseOfTheRougarou where
   getTokenValue (CurseOfTheRougarou (attrs `With` _)) iid = \case
@@ -103,7 +103,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         zip <$> getRandoms <*> locationsWithLabels trait
       let
         (_, (bayouId, _) : _) = break
-          (elem Bayou . getTraits . lookupLocationStub . snd . snd)
+          (elem Bayou . toTraits . lookupLocationStub . snd . snd)
           startingLocationsWithLabel
       pushMessages
         $ [SetEncounterDeck encounterDeck, AddAgenda "81002", AddAct "81005"]

@@ -5,29 +5,24 @@ module Arkham.Types.Asset.Cards.PeterSylvestre
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 
 newtype PeterSylvestre = PeterSylvestre AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-peterSylvestre :: AssetId -> PeterSylvestre
-peterSylvestre uuid = PeterSylvestre $ (baseAttrs uuid "02033")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 1
-  , assetSanity = Just 2
-  }
+peterSylvestre :: AssetCard PeterSylvestre
+peterSylvestre = ally PeterSylvestre Cards.peterSylvestre (1, 2)
 
 instance HasModifiersFor env PeterSylvestre where
   getModifiersFor _ (InvestigatorTarget iid) (PeterSylvestre a) =

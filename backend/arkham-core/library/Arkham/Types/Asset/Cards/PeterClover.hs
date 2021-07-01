@@ -6,24 +6,23 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
-import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype PeterClover = PeterClover AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-peterClover :: AssetId -> PeterClover
-peterClover uuid = PeterClover
-  $ (baseAttrs uuid "02079") { assetHealth = Just 3, assetSanity = Just 2 }
+peterClover :: AssetCard PeterClover
+peterClover = allyWith PeterClover Cards.peterClover (3, 2)
+  $ (slotsL .~ [])
+  . (isStoryL .~ True)
 
 ability :: AssetAttrs -> Ability
 ability attrs =

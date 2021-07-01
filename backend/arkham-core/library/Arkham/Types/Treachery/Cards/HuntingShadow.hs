@@ -2,20 +2,18 @@ module Arkham.Types.Treachery.Cards.HuntingShadow where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Query
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype HuntingShadow = HuntingShadow TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-huntingShadow :: TreacheryId -> a -> HuntingShadow
-huntingShadow uuid _ = HuntingShadow $ baseAttrs uuid "01135"
+huntingShadow :: TreacheryCard HuntingShadow
+huntingShadow = treachery HuntingShadow Cards.huntingShadow
 
 instance HasModifiersFor env HuntingShadow where
   getModifiersFor = noModifiersFor

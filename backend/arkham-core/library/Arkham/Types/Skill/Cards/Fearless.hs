@@ -1,21 +1,19 @@
 module Arkham.Types.Skill.Cards.Fearless where
 
-import ClassyPrelude
+import Arkham.Prelude
 
-import Arkham.Json
+import qualified Arkham.Skill.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
-import Arkham.Types.SkillId
 import Arkham.Types.Target
 
 newtype Fearless = Fearless SkillAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-fearless :: InvestigatorId -> SkillId -> Fearless
-fearless iid uuid = Fearless $ baseAttrs iid uuid "01067"
+fearless :: SkillCard Fearless
+fearless = skill Fearless Cards.fearless
 
 instance HasModifiersFor env Fearless where
   getModifiersFor = noModifiersFor

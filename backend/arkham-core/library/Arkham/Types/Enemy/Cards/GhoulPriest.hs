@@ -2,27 +2,25 @@ module Arkham.Types.Enemy.Cards.GhoulPriest where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
+import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.GameValue
 import Arkham.Types.Prey
 import Arkham.Types.SkillType
-import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Runner
 
 newtype GhoulPriest = GhoulPriest EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-ghoulPriest :: EnemyId -> GhoulPriest
-ghoulPriest uuid =
-  GhoulPriest
-    $ baseAttrs uuid "01116"
-    $ (healthDamageL .~ 2)
-    . (sanityDamageL .~ 2)
-    . (fightL .~ 4)
-    . (healthL .~ PerPlayer 5)
-    . (evadeL .~ 4)
-    . (preyL .~ HighestSkill SkillCombat)
+ghoulPriest :: EnemyCard GhoulPriest
+ghoulPriest = enemy GhoulPriest Cards.ghoulPriest
+  $ (healthDamageL .~ 2)
+  . (sanityDamageL .~ 2)
+  . (fightL .~ 4)
+  . (healthL .~ PerPlayer 5)
+  . (evadeL .~ 4)
+  . (preyL .~ HighestSkill SkillCombat)
 
 instance HasModifiersFor env GhoulPriest where
   getModifiersFor = noModifiersFor

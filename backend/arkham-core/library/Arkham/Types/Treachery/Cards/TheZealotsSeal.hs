@@ -2,24 +2,22 @@ module Arkham.Types.Treachery.Cards.TheZealotsSeal where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
-import Arkham.Types.Game.Helpers
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype TheZealotsSeal = TheZealotsSeal TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-theZealotsSeal :: TreacheryId -> a -> TheZealotsSeal
-theZealotsSeal uuid _ = TheZealotsSeal $ baseAttrs uuid "50024"
+theZealotsSeal :: TreacheryCard TheZealotsSeal
+theZealotsSeal = treachery TheZealotsSeal Cards.theZealotsSeal
 
 instance HasModifiersFor env TheZealotsSeal where
   getModifiersFor = noModifiersFor

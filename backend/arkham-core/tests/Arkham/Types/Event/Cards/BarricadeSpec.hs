@@ -11,7 +11,7 @@ spec :: Spec
 spec = do
   describe "Barricade" $ do
     it "should make the current location unenterable by non elites" $ do
-      location <- testLocation "00000" id
+      location <- testLocation id
       investigator <- testInvestigator "00000" id
       barricade <- buildEvent "01038" investigator
       gameTest
@@ -29,7 +29,7 @@ spec = do
             isAttachedTo location barricade `shouldReturn` True
 
     it "should be discarded if an investigator leaves the location" $ do
-      location <- testLocation "00000" id
+      location <- testLocation id
       investigator <- testInvestigator "00000" id
       investigator2 <- testInvestigator "00001" id
       barricade <- buildEvent "01038" investigator

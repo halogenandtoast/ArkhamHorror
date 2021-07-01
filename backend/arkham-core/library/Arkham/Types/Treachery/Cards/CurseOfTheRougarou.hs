@@ -5,14 +5,13 @@ module Arkham.Types.Treachery.Cards.CurseOfTheRougarou
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
 
 newtype Metadata = Metadata { dealtDamageThisTurn :: Bool }
   deriving stock (Show, Eq, Generic)
@@ -21,9 +20,8 @@ newtype Metadata = Metadata { dealtDamageThisTurn :: Bool }
 newtype CurseOfTheRougarou = CurseOfTheRougarou (TreacheryAttrs `With` Metadata)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-curseOfTheRougarou :: TreacheryId -> Maybe InvestigatorId -> CurseOfTheRougarou
-curseOfTheRougarou uuid iid =
-  CurseOfTheRougarou . (`with` Metadata False) $ weaknessAttrs uuid iid "81029"
+curseOfTheRougarou :: TreacheryCard CurseOfTheRougarou
+curseOfTheRougarou = treachery (CurseOfTheRougarou . (`with` Metadata False)) Cards.curseOfTheRougarou
 
 instance HasModifiersFor env CurseOfTheRougarou where
   getModifiersFor = noModifiersFor

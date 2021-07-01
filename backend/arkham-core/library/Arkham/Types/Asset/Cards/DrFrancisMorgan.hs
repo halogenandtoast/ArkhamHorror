@@ -5,28 +5,23 @@ module Arkham.Types.Asset.Cards.DrFrancisMorgan
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
 
 newtype DrFrancisMorgan = DrFrancisMorgan AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-drFrancisMorgan :: AssetId -> DrFrancisMorgan
-drFrancisMorgan uuid = DrFrancisMorgan $ (baseAttrs uuid "02080")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 4
-  , assetSanity = Just 1
-  }
+drFrancisMorgan :: AssetCard DrFrancisMorgan
+drFrancisMorgan = ally DrFrancisMorgan Cards.drFrancisMorgan (4, 1)
 
 ability :: AssetAttrs -> Ability
 ability attrs =

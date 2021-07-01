@@ -6,28 +6,25 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Modifier
-import Arkham.Types.Target
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
+import Arkham.Types.GameValue
+import Arkham.Types.Id
+import Arkham.Types.Modifier
+import Arkham.Types.Target
 
 newtype Whippoorwill = Whippoorwill EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-whippoorwill :: EnemyId -> Whippoorwill
-whippoorwill uuid =
-  Whippoorwill
-    $ baseAttrs uuid "02090"
-    $ (sanityDamageL .~ 1)
-    . (fightL .~ 1)
-    . (healthL .~ Static 1)
-    . (evadeL .~ 4)
+whippoorwill :: EnemyCard Whippoorwill
+whippoorwill = enemy Whippoorwill Cards.whippoorwill
+  $ (sanityDamageL .~ 1)
+  . (fightL .~ 1)
+  . (healthL .~ Static 1)
+  . (evadeL .~ 4)
 
 instance HasId LocationId env InvestigatorId => HasModifiersFor env Whippoorwill where
   getModifiersFor _ (InvestigatorTarget iid) (Whippoorwill attrs) = do

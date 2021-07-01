@@ -6,9 +6,9 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (aTearInThePath)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -16,7 +16,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Query
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype ATearInThePath = ATearInThePath LocationAttrs
@@ -29,14 +28,11 @@ aTearInThePath =
     . (revealedConnectedSymbolsL .~ setFromList [Square, Squiggle])
     . (unrevealedNameL .~ "Altered Path")
     . baseAttrs
-        "02290"
-        "A Tear in the Path"
-        EncounterSet.WhereDoomAwaits
+        Cards.aTearInThePath
         3
         (PerPlayer 1)
         NoSymbol
         []
-        [Dunwich, Woods, Altered]
 
 instance HasModifiersFor env ATearInThePath where
   getModifiersFor = noModifiersFor

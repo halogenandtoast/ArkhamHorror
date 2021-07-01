@@ -5,23 +5,21 @@ module Arkham.Types.Treachery.Cards.PassageIntoTheVeil
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
-import Arkham.Types.Game.Helpers
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype PassageIntoTheVeil = PassageIntoTheVeil TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-passageIntoTheVeil :: TreacheryId -> a -> PassageIntoTheVeil
-passageIntoTheVeil uuid _ = PassageIntoTheVeil $ baseAttrs uuid "02144"
+passageIntoTheVeil :: TreacheryCard PassageIntoTheVeil
+passageIntoTheVeil = treachery PassageIntoTheVeil Cards.passageIntoTheVeil
 
 instance HasModifiersFor env PassageIntoTheVeil where
   getModifiersFor = noModifiersFor

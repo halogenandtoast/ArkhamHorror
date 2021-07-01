@@ -2,15 +2,14 @@ module Arkham.Types.Agenda.Cards.RiseOfTheGhouls where
 
 import Arkham.Prelude
 
+import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Helpers
+import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Source
-import Arkham.Types.Agenda.Attrs
-import Arkham.Types.Agenda.Helpers
-import Arkham.Types.Agenda.Runner
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Trait
 
 newtype RiseOfTheGhouls = RiseOfTheGhouls AgendaAttrs
@@ -34,7 +33,7 @@ instance AgendaRunner env => RunMessage env RiseOfTheGhouls where
           [ ShuffleEncounterDiscardBackIn
           , DiscardEncounterUntilFirst
             (AgendaSource aid)
-            (EncounterCardMatchByType (EnemyType, Just Ghoul))
+            (CardMatchByType (EnemyType, singleton Ghoul))
           ]
         )
     RequestedEncounterCard (AgendaSource aid) mcard | aid == agendaId ->

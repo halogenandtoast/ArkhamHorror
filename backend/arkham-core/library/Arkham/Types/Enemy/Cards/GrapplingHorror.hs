@@ -5,27 +5,25 @@ module Arkham.Types.Enemy.Cards.GrapplingHorror
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.Modifier
-import Arkham.Types.Target
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
+import Arkham.Types.GameValue
+import Arkham.Types.Modifier
+import Arkham.Types.Target
 
 newtype GrapplingHorror = GrapplingHorror EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-grapplingHorror :: EnemyId -> GrapplingHorror
-grapplingHorror uuid =
-  GrapplingHorror
-    $ baseAttrs uuid "02182"
-    $ (healthDamageL .~ 1)
-    . (sanityDamageL .~ 1)
-    . (fightL .~ 3)
-    . (healthL .~ Static 3)
-    . (evadeL .~ 2)
+grapplingHorror :: EnemyCard GrapplingHorror
+grapplingHorror = enemy GrapplingHorror Cards.grapplingHorror
+  $ (healthDamageL .~ 1)
+  . (sanityDamageL .~ 1)
+  . (fightL .~ 3)
+  . (healthL .~ Static 3)
+  . (evadeL .~ 2)
 
 instance HasModifiersFor env GrapplingHorror where
   getModifiersFor _ (InvestigatorTarget iid) (GrapplingHorror a@EnemyAttrs {..}) =

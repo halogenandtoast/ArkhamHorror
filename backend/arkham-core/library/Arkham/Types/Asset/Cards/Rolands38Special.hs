@@ -5,31 +5,29 @@ module Arkham.Types.Asset.Cards.Rolands38Special
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 
 newtype Rolands38Special = Rolands38Special AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-rolands38Special :: AssetId -> Rolands38Special
-rolands38Special uuid =
-  Rolands38Special $ (baseAttrs uuid "01006") { assetSlots = [HandSlot] }
+rolands38Special :: AssetCard Rolands38Special
+rolands38Special = hand Rolands38Special Cards.rolands38Special
 
 instance HasModifiersFor env Rolands38Special where
   getModifiersFor = noModifiersFor

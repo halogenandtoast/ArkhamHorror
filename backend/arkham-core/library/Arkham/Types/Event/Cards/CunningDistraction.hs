@@ -2,20 +2,19 @@ module Arkham.Types.Event.Cards.CunningDistraction where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Target
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
+import Arkham.Types.Id
+import Arkham.Types.Message
+import Arkham.Types.Target
 
 newtype CunningDistraction = CunningDistraction EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-cunningDistraction :: InvestigatorId -> EventId -> CunningDistraction
-cunningDistraction iid uuid = CunningDistraction $ baseAttrs iid uuid "01078"
+cunningDistraction :: EventCard CunningDistraction
+cunningDistraction = event CunningDistraction Cards.cunningDistraction
 
 instance HasModifiersFor env CunningDistraction where
   getModifiersFor = noModifiersFor

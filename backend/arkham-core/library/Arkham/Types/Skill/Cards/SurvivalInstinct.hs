@@ -2,22 +2,21 @@ module Arkham.Types.Skill.Cards.SurvivalInstinct where
 
 import Arkham.Prelude
 
+import qualified Arkham.Skill.Cards as Cards
 import Arkham.Types.Action
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
-import Arkham.Types.SkillId
 import Arkham.Types.Target
 
 newtype SurvivalInstinct = SurvivalInstinct SkillAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-survivalInstinct :: InvestigatorId -> SkillId -> SurvivalInstinct
-survivalInstinct iid uuid = SurvivalInstinct $ baseAttrs iid uuid "01081"
+survivalInstinct :: SkillCard SurvivalInstinct
+survivalInstinct = skill SurvivalInstinct Cards.survivalInstinct
 
 instance HasModifiersFor env SurvivalInstinct where
   getModifiersFor = noModifiersFor

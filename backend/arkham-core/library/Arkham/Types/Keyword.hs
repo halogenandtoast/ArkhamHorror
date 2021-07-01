@@ -14,3 +14,6 @@ data Keyword
   | Uses Int
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+class HasKeywords a where
+  toKeywords :: a -> HashSet Keyword

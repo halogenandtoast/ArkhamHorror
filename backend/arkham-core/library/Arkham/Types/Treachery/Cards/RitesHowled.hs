@@ -5,21 +5,21 @@ module Arkham.Types.Treachery.Cards.RitesHowled
 
 import Arkham.Prelude
 
-import Arkham.Types.Card.PlayerCard
+import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
 
 newtype RitesHowled = RitesHowled TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-ritesHowled :: TreacheryId -> a -> RitesHowled
-ritesHowled uuid _ = RitesHowled $ baseAttrs uuid "02296"
+ritesHowled :: TreacheryCard RitesHowled
+ritesHowled = treachery RitesHowled Cards.ritesHowled
 
 instance HasModifiersFor env RitesHowled where
   getModifiersFor = noModifiersFor
@@ -44,6 +44,6 @@ instance TreacheryRunner env => RunMessage env RitesHowled where
         (do
           discardPile <- map unDiscardedPlayerCard <$> getList iid
           unshiftMessage
-            $ ShuffleCardsIntoDeck iid (filter (pcWeakness . pcDef) discardPile)
+            $ ShuffleCardsIntoDeck iid (filter (cdWeakness . pcDef) discardPile)
         )
     _ -> RitesHowled <$> runMessage msg attrs

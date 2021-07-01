@@ -2,9 +2,8 @@ module Arkham.Types.Event.Cards.Dodge where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Event.Attrs
@@ -13,8 +12,8 @@ import Arkham.Types.Event.Runner
 newtype Dodge = Dodge EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-dodge :: InvestigatorId -> EventId -> Dodge
-dodge iid uuid = Dodge $ baseAttrs iid uuid "01023"
+dodge :: EventCard Dodge
+dodge = event Dodge Cards.dodge
 
 instance HasModifiersFor env Dodge where
   getModifiersFor = noModifiersFor

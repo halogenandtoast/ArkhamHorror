@@ -5,13 +5,13 @@ module Arkham.Types.Asset.Cards.FortyFiveAutomatic
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -19,15 +19,13 @@ import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 
 newtype FortyFiveAutomatic = FortyFiveAutomatic AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-fortyFiveAutomatic :: AssetId -> FortyFiveAutomatic
-fortyFiveAutomatic uuid =
-  FortyFiveAutomatic $ (baseAttrs uuid "01016") { assetSlots = [HandSlot] }
+fortyFiveAutomatic :: AssetCard FortyFiveAutomatic
+fortyFiveAutomatic = hand FortyFiveAutomatic Cards.fortyFiveAutomatic
 
 instance HasModifiersFor env FortyFiveAutomatic where
   getModifiersFor = noModifiersFor

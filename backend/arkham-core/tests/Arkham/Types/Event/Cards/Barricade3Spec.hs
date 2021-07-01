@@ -13,7 +13,7 @@ spec = do
     it
         "should make the current location unenterable by non elites and non elites cannot spawn there"
       $ do
-          location <- testLocation "00000" id
+          location <- testLocation id
           investigator <- testInvestigator "00000" id
           barricade3 <- buildEvent "50004" investigator
           gameTest
@@ -33,7 +33,7 @@ spec = do
                 isAttachedTo location barricade3 `shouldReturn` True
 
     it "should be discarded if an investigator leaves the location" $ do
-      location <- testLocation "00000" id
+      location <- testLocation id
       investigator <- testInvestigator "00000" id
       investigator2 <- testInvestigator "00001" id
       barricade3 <- buildEvent "01038" investigator

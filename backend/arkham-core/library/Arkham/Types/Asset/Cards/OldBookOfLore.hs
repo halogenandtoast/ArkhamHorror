@@ -5,23 +5,21 @@ module Arkham.Types.Asset.Cards.OldBookOfLore
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
-import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype OldBookOfLore = OldBookOfLore AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-oldBookOfLore :: AssetId -> OldBookOfLore
-oldBookOfLore uuid =
-  OldBookOfLore $ (baseAttrs uuid "01031") { assetSlots = [HandSlot] }
+oldBookOfLore :: AssetCard OldBookOfLore
+oldBookOfLore = hand OldBookOfLore Cards.oldBookOfLore
 
 instance HasModifiersFor env OldBookOfLore where
   getModifiersFor = noModifiersFor

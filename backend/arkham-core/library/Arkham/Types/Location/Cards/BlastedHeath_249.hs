@@ -6,29 +6,25 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (blastedHeath_249)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Trait
 
 newtype BlastedHeath_249 = BlastedHeath_249 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blastedHeath_249 :: LocationId -> BlastedHeath_249
 blastedHeath_249 = BlastedHeath_249 . baseAttrs
-  "02249"
-  "Blasted Heath"
-  EncounterSet.UndimensionedAndUnseen
+  Cards.blastedHeath_249
   3
   (Static 2)
   Square
   [Circle, Hourglass]
-  [Dunwich]
 
 instance HasModifiersFor env BlastedHeath_249 where
   getModifiersFor = noModifiersFor

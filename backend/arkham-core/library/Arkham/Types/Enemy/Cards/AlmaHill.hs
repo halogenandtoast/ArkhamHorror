@@ -6,33 +6,30 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Ability
+import Arkham.Types.Action
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EnemyId
+import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Runner
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Window
-import Arkham.Types.Action
-import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Runner
-import Arkham.Types.Game.Helpers
 
 newtype AlmaHill = AlmaHill EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-almaHill :: EnemyId -> AlmaHill
-almaHill uuid =
-  AlmaHill
-    $ baseAttrs uuid "50046"
-    $ (sanityDamageL .~ 2)
-    . (fightL .~ 3)
-    . (healthL .~ Static 3)
-    . (evadeL .~ 3)
-    . (uniqueL .~ True)
+almaHill :: EnemyCard AlmaHill
+almaHill = enemy AlmaHill Cards.almaHill
+  $ (sanityDamageL .~ 2)
+  . (fightL .~ 3)
+  . (healthL .~ Static 3)
+  . (evadeL .~ 3)
 
 instance HasModifiersFor env AlmaHill where
   getModifiersFor = noModifiersFor

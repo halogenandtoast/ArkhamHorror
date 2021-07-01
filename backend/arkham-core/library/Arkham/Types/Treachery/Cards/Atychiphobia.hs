@@ -5,26 +5,23 @@ module Arkham.Types.Treachery.Cards.Atychiphobia
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.Window
 
 newtype Atychiphobia = Atychiphobia TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-atychiphobia :: TreacheryId -> Maybe InvestigatorId -> Atychiphobia
-atychiphobia uuid iid = Atychiphobia $ weaknessAttrs uuid iid "60504"
+atychiphobia :: TreacheryCard Atychiphobia
+atychiphobia = treachery Atychiphobia Cards.atychiphobia
 
 instance HasModifiersFor env Atychiphobia where
   getModifiersFor = noModifiersFor

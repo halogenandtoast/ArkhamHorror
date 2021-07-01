@@ -2,8 +2,8 @@ module Arkham.Types.Location.Cards.Cellar where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (cellar)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -15,18 +15,12 @@ newtype Cellar = Cellar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cellar :: LocationId -> Cellar
-cellar =
-  Cellar
-    . (victoryL ?~ 1)
-    . baseAttrs
-        "01114"
-        "Cellar"
-        EncounterSet.TheGathering
-        4
-        (PerPlayer 2)
-        Plus
-        [Square]
-        []
+cellar = Cellar . baseAttrs
+  Cards.cellar
+  4
+  (PerPlayer 2)
+  Plus
+  [Square]
 
 instance HasModifiersFor env Cellar where
   getModifiersFor = noModifiersFor

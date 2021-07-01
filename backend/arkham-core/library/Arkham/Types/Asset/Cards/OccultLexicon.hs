@@ -2,21 +2,19 @@ module Arkham.Types.Asset.Cards.OccultLexicon where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.PlayerCard
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Message
-import Arkham.Types.Slot
 
 newtype OccultLexicon = OccultLexicon AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-occultLexicon :: AssetId -> OccultLexicon
-occultLexicon uuid =
-  OccultLexicon $ (baseAttrs uuid "05316") { assetSlots = [HandSlot] }
+occultLexicon :: AssetCard OccultLexicon
+occultLexicon = hand OccultLexicon Cards.occultLexicon
 
 instance HasModifiersFor env OccultLexicon where
   getModifiersFor = noModifiersFor

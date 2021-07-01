@@ -6,28 +6,24 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (miskatonicQuad)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Trait
 
 newtype MiskatonicQuad = MiskatonicQuad LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miskatonicQuad :: LocationId -> MiskatonicQuad
 miskatonicQuad = MiskatonicQuad . baseAttrs
-  "02048"
-  "Miskatonic Quad"
-  EncounterSet.ExtracurricularActivity
+  Cards.miskatonicQuad
   3
   (Static 0)
   Plus
   [Triangle, Hourglass, Square, Diamond, Circle]
-  [Miskatonic]
 
 instance HasModifiersFor env MiskatonicQuad where
   getModifiersFor = noModifiersFor

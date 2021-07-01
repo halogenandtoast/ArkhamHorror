@@ -6,11 +6,11 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (baseOfTheHill)
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -19,10 +19,8 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Source
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype BaseOfTheHill = BaseOfTheHill LocationAttrs
@@ -30,14 +28,11 @@ newtype BaseOfTheHill = BaseOfTheHill LocationAttrs
 
 baseOfTheHill :: LocationId -> BaseOfTheHill
 baseOfTheHill = BaseOfTheHill . baseAttrs
-  "02282"
-  "Base of the Hill"
-  EncounterSet.WhereDoomAwaits
+  Cards.baseOfTheHill
   3
   (Static 0)
   Triangle
   [Square, Plus, Squiggle, Hourglass]
-  [Dunwich, SentinelHill]
 
 instance HasModifiersFor env BaseOfTheHill where
   getModifiersFor = noModifiersFor
@@ -75,7 +70,7 @@ instance LocationRunner env => RunMessage env BaseOfTheHill where
       | isSource attrs source -> do
         locations <- getSetList @SetAsideLocationCardCode ()
         alteredPaths <- filterM
-          (fmap (== mkName "Diverging Path") . getName)
+          (fmap (== "Diverging Path") . getName)
           locations
         case nonEmpty alteredPaths of
           Just ne -> do
@@ -88,7 +83,7 @@ instance LocationRunner env => RunMessage env BaseOfTheHill where
                  )
           Nothing -> pure l
     AddConnection lid _ | toId attrs /= lid -> do
-      isDivergingPath <- (== mkName "Diverging Path") <$> getName lid
+      isDivergingPath <- (== "Diverging Path") <$> getName lid
       if isDivergingPath
         then BaseOfTheHill
           <$> runMessage msg (attrs & connectedLocationsL %~ insertSet lid)

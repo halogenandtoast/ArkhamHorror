@@ -5,23 +5,21 @@ module Arkham.Types.Treachery.Cards.PsychopompsSong
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Exception
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.Window
 
 newtype PsychopompsSong = PsychopompsSong TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-psychopompsSong :: TreacheryId -> a -> PsychopompsSong
-psychopompsSong uuid _ = PsychopompsSong $ baseAttrs uuid "02221"
+psychopompsSong :: TreacheryCard PsychopompsSong
+psychopompsSong = treachery PsychopompsSong Cards.psychopompsSong
 
 instance HasModifiersFor env PsychopompsSong where
   getModifiersFor = noModifiersFor

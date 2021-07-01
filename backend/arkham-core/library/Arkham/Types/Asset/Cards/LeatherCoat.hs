@@ -2,18 +2,16 @@ module Arkham.Types.Asset.Cards.LeatherCoat where
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.Slot
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
+import Arkham.Types.Classes
 
 newtype LeatherCoat = LeatherCoat AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
-leatherCoat :: AssetId -> LeatherCoat
-leatherCoat uuid = LeatherCoat
-  $ (baseAttrs uuid "01072") { assetSlots = [BodySlot], assetHealth = Just 2 }
+leatherCoat :: AssetCard LeatherCoat
+leatherCoat = bodyWith LeatherCoat Cards.leatherCoat (healthL ?~ 2)
 
 instance HasModifiersFor env LeatherCoat where
   getModifiersFor = noModifiersFor

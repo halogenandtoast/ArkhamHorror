@@ -5,35 +5,33 @@ module Arkham.Types.Enemy.Cards.JeremiahPierce
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Ability
+import Arkham.Types.Action hiding (Ability)
+import Arkham.Types.Card.CardDef
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EnemyId
+import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Runner
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Action hiding (Ability)
-import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Runner
-import Arkham.Types.Game.Helpers
 
 newtype JeremiahPierce = JeremiahPierce EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-jeremiahPierce :: EnemyId -> JeremiahPierce
-jeremiahPierce uuid =
-  JeremiahPierce
-    $ baseAttrs uuid "50044"
-    $ (healthDamageL .~ 1)
-    . (sanityDamageL .~ 1)
-    . (fightL .~ 4)
-    . (healthL .~ Static 3)
-    . (evadeL .~ 4)
-    . (uniqueL .~ True)
+jeremiahPierce :: EnemyCard JeremiahPierce
+jeremiahPierce = enemy JeremiahPierce Cards.jeremiahPierce
+  $ (healthDamageL .~ 1)
+  . (sanityDamageL .~ 1)
+  . (fightL .~ 4)
+  . (healthL .~ Static 3)
+  . (evadeL .~ 4)
 
 instance HasModifiersFor env JeremiahPierce where
   getModifiersFor = noModifiersFor
@@ -66,7 +64,7 @@ instance (EnemyRunner env) => RunMessage env JeremiahPierce where
       e <$ unshiftMessages
         [ AddToVictory (EnemyTarget enemyId)
         , CreateEffect
-          enemyCardCode
+          (toCardCode attrs)
           Nothing
           (toSource attrs)
           (InvestigatorTarget iid)

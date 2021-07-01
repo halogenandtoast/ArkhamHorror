@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (devilsHopYard_252)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Exception
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
@@ -28,14 +28,11 @@ newtype DevilsHopYard_252 = DevilsHopYard_252 LocationAttrs
 
 devilsHopYard_252 :: LocationId -> DevilsHopYard_252
 devilsHopYard_252 = DevilsHopYard_252 . baseAttrs
-  "02252"
-  "Devil's Hop Yard"
-  EncounterSet.UndimensionedAndUnseen
+  Cards.devilsHopYard_252
   1
   (Static 2)
   Hourglass
   [Square, Plus]
-  [Dunwich]
 
 instance HasModifiersFor env DevilsHopYard_252 where
   getModifiersFor = noModifiersFor

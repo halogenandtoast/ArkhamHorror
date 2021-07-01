@@ -5,7 +5,7 @@ where
 
 import TestImport.Lifted
 
-import Arkham.Types.Enemy.Attrs (EnemyAttrs(..))
+import qualified Arkham.Types.Card.CardDef as CardDef
 import Arkham.Types.Trait
 
 spec :: Spec
@@ -35,7 +35,7 @@ spec = describe "Close Call (2)" $ do
   it "does not work on Elite enemies" $ do
     investigator <- testInvestigator "00000" id
     closeCall2 <- buildPlayerCard "01083"
-    enemy <- testEnemy $ \attrs -> attrs { enemyTraits = setFromList [Elite] }
+    enemy <- testEnemyWithDef (CardDef.cardTraitsL .~ setFromList [Elite]) id
     gameTest
         investigator
         [ addToHand investigator (PlayerCard closeCall2)
@@ -50,7 +50,7 @@ spec = describe "Close Call (2)" $ do
   it "does not work on weakness enemies" $ do
     investigator <- testInvestigator "00000" id
     closeCall2 <- buildPlayerCard "01083"
-    enemy <- testEnemy $ \attrs -> attrs { enemyCardCode = "01102" } -- uses a card code for a weakness
+    enemy <- testWeaknessEnemy id
     gameTest
         investigator
         [ addToHand investigator (PlayerCard closeCall2)

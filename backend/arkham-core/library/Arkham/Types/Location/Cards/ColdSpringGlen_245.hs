@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (coldSpringGlen_245)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -20,7 +20,6 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype ColdSpringGlen_245 = ColdSpringGlen_245 LocationAttrs
@@ -28,14 +27,11 @@ newtype ColdSpringGlen_245 = ColdSpringGlen_245 LocationAttrs
 
 coldSpringGlen_245 :: LocationId -> ColdSpringGlen_245
 coldSpringGlen_245 = ColdSpringGlen_245 . baseAttrs
-  "02245"
-  "Cold Spring Glen"
-  EncounterSet.UndimensionedAndUnseen
+  Cards.coldSpringGlen_245
   2
   (Static 0)
   Triangle
   [Circle, Diamond, Plus]
-  [Dunwich]
 
 instance HasModifiersFor env ColdSpringGlen_245 where
   getModifiersFor _ (EnemyTarget eid) (ColdSpringGlen_245 attrs) =

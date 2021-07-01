@@ -2,19 +2,18 @@ module Arkham.Types.Event.Cards.MindOverMatter where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Target
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
+import Arkham.Types.Message
+import Arkham.Types.Target
 
 newtype MindOverMatter = MindOverMatter EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-mindOverMatter :: InvestigatorId -> EventId -> MindOverMatter
-mindOverMatter iid uuid = MindOverMatter $ baseAttrs iid uuid "01036"
+mindOverMatter :: EventCard MindOverMatter
+mindOverMatter = event MindOverMatter Cards.mindOverMatter
 
 instance HasModifiersFor env MindOverMatter where
   getModifiersFor = noModifiersFor

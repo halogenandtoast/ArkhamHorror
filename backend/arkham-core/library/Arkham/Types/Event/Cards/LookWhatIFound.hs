@@ -2,19 +2,18 @@ module Arkham.Types.Event.Cards.LookWhatIFound where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Target
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
+import Arkham.Types.Message
+import Arkham.Types.Target
 
 newtype LookWhatIFound = LookWhatIFound EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-lookWhatIFound :: InvestigatorId -> EventId -> LookWhatIFound
-lookWhatIFound iid uuid = LookWhatIFound $ baseAttrs iid uuid "01079"
+lookWhatIFound :: EventCard LookWhatIFound
+lookWhatIFound = event LookWhatIFound Cards.lookWhatIFound
 
 instance HasModifiersFor env LookWhatIFound where
   getModifiersFor = noModifiersFor

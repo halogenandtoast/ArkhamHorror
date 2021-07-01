@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (gardenDistrict)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -21,7 +21,6 @@ import Arkham.Types.ScenarioLogKey
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype GardenDistrict = GardenDistrict LocationAttrs
@@ -29,14 +28,11 @@ newtype GardenDistrict = GardenDistrict LocationAttrs
 
 gardenDistrict :: LocationId -> GardenDistrict
 gardenDistrict = GardenDistrict . baseAttrs
-  "81008"
-  "Garden District"
-  EncounterSet.CurseOfTheRougarou
+  Cards.gardenDistrict
   1
   (Static 0)
   Plus
   [Square, Plus]
-  [NewOrleans]
 
 instance HasModifiersFor env GardenDistrict where
   getModifiersFor = noModifiersFor

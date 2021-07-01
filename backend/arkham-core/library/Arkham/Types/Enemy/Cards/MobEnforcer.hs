@@ -5,33 +5,32 @@ module Arkham.Types.Enemy.Cards.MobEnforcer
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Ability
+import Arkham.Types.Action
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EnemyId
+import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.GameValue
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Prey
 import Arkham.Types.Source
 import Arkham.Types.Window
-import Arkham.Types.Action
-import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Helpers
-import Arkham.Types.Enemy.Runner
 
 newtype MobEnforcer = MobEnforcer EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-mobEnforcer :: EnemyId -> MobEnforcer
-mobEnforcer uuid = MobEnforcer $ (weaknessBaseAttrs uuid "01101")
-  { enemyHealthDamage = 1
-  , enemySanityDamage = 0
-  , enemyFight = 4
-  , enemyHealth = Static 3
-  , enemyEvade = 3
-  , enemyPrey = SetToBearer
-  }
+mobEnforcer :: EnemyCard MobEnforcer
+mobEnforcer = enemy MobEnforcer Cards.mobEnforcer
+  $ (healthDamageL .~ 1)
+  . (sanityDamageL .~ 0)
+  . (fightL .~ 4)
+  . (healthL .~ Static 3)
+  . (evadeL .~ 3)
+  . (preyL .~ SetToBearer)
 
 instance HasModifiersFor env MobEnforcer where
   getModifiersFor = noModifiersFor

@@ -5,10 +5,10 @@ module Arkham.Types.Asset.Cards.CatBurgler1
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -17,19 +17,14 @@ import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype CatBurgler1 = CatBurgler1 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-catBurgler1 :: AssetId -> CatBurgler1
-catBurgler1 uuid = CatBurgler1 $ (baseAttrs uuid "01055")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 2
-  , assetSanity = Just 2
-  }
+catBurgler1 :: AssetCard CatBurgler1
+catBurgler1 = ally CatBurgler1 Cards.catBurgler1 (2, 2)
 
 instance HasModifiersFor env CatBurgler1 where
   getModifiersFor _ (InvestigatorTarget iid) (CatBurgler1 a) =

@@ -5,28 +5,22 @@ module Arkham.Types.Asset.Cards.LadyEsprit
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
-import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype LadyEsprit = LadyEsprit AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-ladyEsprit :: AssetId -> LadyEsprit
-ladyEsprit uuid = LadyEsprit $ (baseAttrs uuid "81019")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 2
-  , assetSanity = Just 4
-  , assetIsStory = True
-  }
+ladyEsprit :: AssetCard LadyEsprit
+ladyEsprit = allyWith LadyEsprit Cards.ladyEsprit (2, 4) (isStoryL .~ True)
 
 ability :: AssetAttrs -> Ability
 ability attrs =

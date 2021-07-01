@@ -2,21 +2,20 @@ module Arkham.Types.Event.Cards.Evidence where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Event.Attrs
+import Arkham.Types.Event.Runner
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
-import Arkham.Types.Event.Attrs
-import Arkham.Types.Event.Runner
 
 newtype Evidence = Evidence EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-evidence :: InvestigatorId -> EventId -> Evidence
-evidence iid uuid = Evidence $ baseAttrs iid uuid "01022"
+evidence :: EventCard Evidence
+evidence = event Evidence Cards.evidence
 
 instance HasModifiersFor env Evidence where
   getModifiersFor = noModifiersFor

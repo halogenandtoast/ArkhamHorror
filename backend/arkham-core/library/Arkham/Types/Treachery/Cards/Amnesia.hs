@@ -2,21 +2,18 @@ module Arkham.Types.Treachery.Cards.Amnesia where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Query
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype Amnesia = Amnesia TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-amnesia :: TreacheryId -> Maybe InvestigatorId -> Amnesia
-amnesia uuid iid = Amnesia $ weaknessAttrs uuid iid "01096"
+amnesia :: TreacheryCard Amnesia
+amnesia = treachery Amnesia Cards.amnesia
 
 instance HasModifiersFor env Amnesia where
   getModifiersFor = noModifiersFor

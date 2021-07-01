@@ -6,32 +6,27 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Action
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
-import Arkham.Types.Action
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype JazzMulligan = JazzMulligan AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-jazzMulligan :: AssetId -> JazzMulligan
-jazzMulligan uuid = JazzMulligan $ (baseAttrs uuid "02060")
-  { assetHealth = Just 2
-  , assetSanity = Just 2
-  , assetIsStory = True
-  }
+jazzMulligan :: AssetCard JazzMulligan
+jazzMulligan = allyWith JazzMulligan Cards.jazzMulligan (2, 2) (isStoryL .~ True)
 
 ability :: AssetAttrs -> Ability
 ability attrs =

@@ -2,27 +2,22 @@ module Arkham.Types.Asset.Cards.ArcaneInitiate where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
-import Arkham.Types.Slot
 import Arkham.Types.Target
-import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype ArcaneInitiate = ArcaneInitiate AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-arcaneInitiate :: AssetId -> ArcaneInitiate
-arcaneInitiate uuid = ArcaneInitiate $ (baseAttrs uuid "01063")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 1
-  , assetSanity = Just 2
-  }
+arcaneInitiate :: AssetCard ArcaneInitiate
+arcaneInitiate = ally ArcaneInitiate Cards.arcaneInitiate (1, 2)
 
 fastAbility :: AssetAttrs -> Ability
 fastAbility a =

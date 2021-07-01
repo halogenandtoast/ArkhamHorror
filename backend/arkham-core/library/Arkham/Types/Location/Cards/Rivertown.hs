@@ -2,28 +2,24 @@ module Arkham.Types.Location.Cards.Rivertown where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (rivertown)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Trait
 
 newtype Rivertown = Rivertown LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rivertown :: LocationId -> Rivertown
 rivertown = Rivertown . baseAttrs
-  "01125"
-  "Rivertown"
-  EncounterSet.TheMidnightMasks
+  Cards.rivertown
   1
   (PerPlayer 1)
   Circle
   [Moon, Diamond, Square, Squiggle, Hourglass]
-  [Arkham, Central]
 
 instance HasModifiersFor env Rivertown where
   getModifiersFor = noModifiersFor

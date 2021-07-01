@@ -2,10 +2,10 @@ module Arkham.Types.Location.Cards.Dormitories where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (dormitories)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -16,22 +16,18 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Resolution
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype Dormitories = Dormitories LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dormitories :: LocationId -> Dormitories
-dormitories = Dormitories . (victoryL ?~ 1) . baseAttrs
-  "02052"
-  "Dormitories"
-  EncounterSet.ExtracurricularActivity
+dormitories = Dormitories . baseAttrs
+  Cards.dormitories
   1
   (PerPlayer 3)
   Equals
   [Diamond]
-  [Miskatonic]
 
 instance HasModifiersFor env Dormitories where
   getModifiersFor _ target (Dormitories attrs) | isTarget attrs target =

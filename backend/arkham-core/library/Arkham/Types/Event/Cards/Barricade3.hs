@@ -1,22 +1,21 @@
-module Arkham.Types.Event.Cards.Barricade3 where
+module Arkham.Types.Event.Cards.Barricade3 (barricade3, Barricade3(..)) where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.Target
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Helpers
 import Arkham.Types.Event.Runner
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Target
 
 newtype Barricade3 = Barricade3 EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-barricade3 :: InvestigatorId -> EventId -> Barricade3
-barricade3 iid uuid = Barricade3 $ baseAttrs iid uuid "50004"
+barricade3 :: EventCard Barricade3
+barricade3 = event Barricade3 Cards.barricade3
 
 instance HasModifiersFor env Barricade3 where
   getModifiersFor _ (LocationTarget lid) (Barricade3 attrs) =

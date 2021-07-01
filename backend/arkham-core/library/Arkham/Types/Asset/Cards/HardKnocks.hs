@@ -5,11 +5,11 @@ module Arkham.Types.Asset.Cards.HardKnocks
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -23,8 +23,8 @@ import Arkham.Types.Window
 newtype HardKnocks = HardKnocks AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-hardKnocks :: AssetId -> HardKnocks
-hardKnocks uuid = HardKnocks $ baseAttrs uuid "01049"
+hardKnocks :: AssetCard HardKnocks
+hardKnocks = asset HardKnocks Cards.hardKnocks
 
 instance HasModifiersFor env HardKnocks where
   getModifiersFor = noModifiersFor

@@ -5,29 +5,24 @@ module Arkham.Types.Asset.Cards.BeatCop
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 
 newtype BeatCop = BeatCop AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-beatCop :: AssetId -> BeatCop
-beatCop uuid = BeatCop $ (baseAttrs uuid "01018")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 2
-  , assetSanity = Just 2
-  }
+beatCop :: AssetCard BeatCop
+beatCop = ally BeatCop Cards.beatCop (2, 2)
 
 instance HasModifiersFor env BeatCop where
   getModifiersFor _ (InvestigatorTarget iid) (BeatCop a) =

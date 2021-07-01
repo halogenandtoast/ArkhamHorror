@@ -2,26 +2,24 @@ module Arkham.Types.Enemy.Cards.IcyGhoul where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
 import Arkham.Types.LocationMatcher
 
 newtype IcyGhoul = IcyGhoul EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-icyGhoul :: EnemyId -> IcyGhoul
-icyGhoul uuid =
-  IcyGhoul
-    $ baseAttrs uuid "01119"
-    $ (healthDamageL .~ 2)
-    . (sanityDamageL .~ 1)
-    . (fightL .~ 3)
-    . (healthL .~ Static 4)
-    . (evadeL .~ 4)
-    . (spawnAtL ?~ LocationWithTitle "Cellar")
+icyGhoul :: EnemyCard IcyGhoul
+icyGhoul = enemy IcyGhoul Cards.icyGhoul
+  $ (healthDamageL .~ 2)
+  . (sanityDamageL .~ 1)
+  . (fightL .~ 3)
+  . (healthL .~ Static 4)
+  . (evadeL .~ 4)
+  . (spawnAtL ?~ LocationWithTitle "Cellar")
 
 instance HasModifiersFor env IcyGhoul where
   getModifiersFor = noModifiersFor

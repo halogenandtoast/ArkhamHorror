@@ -2,31 +2,29 @@ module Arkham.Types.Enemy.Cards.AcolyteOfUmordhoth where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
+import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Modifier
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.Target
-import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Helpers
-import Arkham.Types.Enemy.Runner
 
 newtype AcolyteOfUmordhoth = AcolyteOfUmordhoth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-acolyteOfUmordhoth :: EnemyId -> AcolyteOfUmordhoth
-acolyteOfUmordhoth uuid =
-  AcolyteOfUmordhoth
-    $ baseAttrs uuid "50039"
-    $ (healthDamageL .~ 1)
-    . (sanityDamageL .~ 1)
-    . (fightL .~ 3)
-    . (healthL .~ Static 3)
-    . (evadeL .~ 2)
-    . (preyL .~ FewestCards)
+acolyteOfUmordhoth :: EnemyCard AcolyteOfUmordhoth
+acolyteOfUmordhoth = enemy AcolyteOfUmordhoth Cards.acolyteOfUmordhoth
+  $ (healthDamageL .~ 1)
+  . (sanityDamageL .~ 1)
+  . (fightL .~ 3)
+  . (healthL .~ Static 3)
+  . (evadeL .~ 2)
+  . (preyL .~ FewestCards)
 
 instance HasCount CardCount env InvestigatorId => HasModifiersFor env AcolyteOfUmordhoth where
   getModifiersFor _ (EnemyTarget eid) (AcolyteOfUmordhoth a@EnemyAttrs {..})

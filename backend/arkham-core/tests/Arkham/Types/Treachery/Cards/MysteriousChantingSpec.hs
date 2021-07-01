@@ -6,14 +6,13 @@ where
 import TestImport.Lifted
 
 import Arkham.EncounterCard
-import qualified Arkham.Types.Enemy.Attrs as EnemyAttrs
 import qualified Arkham.Types.Trait as Trait
 
 spec :: Spec
 spec = describe "Mysterious Chanting" $ do
   it "will place a token on the nearest cultist" $ do
     investigator <- testInvestigator "00000" id
-    cultist <- testEnemy $ EnemyAttrs.traitsL .~ singleton Trait.Cultist
+    cultist <- testEnemyWithDef (cardTraitsL .~ singleton Trait.Cultist) id
     mysteriousChanting <- lookupEncounterCard "01171" <$> getRandom
     (location1, location2) <- testConnectedLocations id id
     gameTest

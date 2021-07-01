@@ -1,21 +1,19 @@
 module Arkham.Types.Skill.Cards.ManualDexterity where
 
-import ClassyPrelude
+import Arkham.Prelude
 
-import Arkham.Json
+import qualified Arkham.Skill.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
-import Arkham.Types.SkillId
 import Arkham.Types.Target
 
 newtype ManualDexterity = ManualDexterity SkillAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-manualDexterity :: InvestigatorId -> SkillId -> ManualDexterity
-manualDexterity iid uuid = ManualDexterity $ baseAttrs iid uuid "01092"
+manualDexterity :: SkillCard ManualDexterity
+manualDexterity = skill ManualDexterity Cards.manualDexterity
 
 instance HasModifiersFor env ManualDexterity where
   getModifiersFor = noModifiersFor

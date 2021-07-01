@@ -5,24 +5,23 @@ module Arkham.Types.Asset.Cards.KeyToTheChamber
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Exception
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
 
 newtype KeyToTheChamber = KeyToTheChamber AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-keyToTheChamber :: AssetId -> KeyToTheChamber
-keyToTheChamber uuid = KeyToTheChamber $ baseAttrs uuid "02215"
+keyToTheChamber :: AssetCard KeyToTheChamber
+keyToTheChamber = assetWith KeyToTheChamber Cards.keyToTheChamber (isStoryL .~ True)
 
 instance (HasId LocationId env InvestigatorId, HasSet ConnectedLocationId env LocationId, HasId (Maybe LocationId) env LocationMatcher) => HasActions env KeyToTheChamber where
   getActions iid FastPlayerWindow (KeyToTheChamber attrs) | ownedBy attrs iid =

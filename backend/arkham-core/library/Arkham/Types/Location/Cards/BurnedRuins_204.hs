@@ -6,8 +6,8 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (burnedRuins_204)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -16,21 +16,17 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.Target
-import Arkham.Types.Trait
 
 newtype BurnedRuins_204 = BurnedRuins_204 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 burnedRuins_204 :: LocationId -> BurnedRuins_204
 burnedRuins_204 = BurnedRuins_204 . baseAttrs
-  "02204"
-  "Burned Ruins"
-  EncounterSet.BloodOnTheAltar
+  Cards.burnedRuins_204
   3
   (Static 3)
   Triangle
   [Square, Diamond]
-  [Dunwich]
 
 instance HasModifiersFor env BurnedRuins_204 where
   getModifiersFor _ (EnemyTarget eid) (BurnedRuins_204 attrs@LocationAttrs {..})

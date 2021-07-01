@@ -222,7 +222,7 @@ instance
         investigatorIds
         (\iid -> do
           powderOfIbnGhazi <-
-            find ((== "02219") . getCardCode) . map unDeckCard <$> getList iid
+            find ((== "02219") . toCardCode) . map unDeckCard <$> getList iid
           pure $ (iid, ) <$> powderOfIbnGhazi
         )
 
@@ -291,7 +291,7 @@ instance
         <> [ SearchCollectionForRandom
                iid
                (toSource attrs)
-               (PlayerTreacheryType, setFromList [Madness, Injury, Pact])
+               (CardMatchByType (PlayerTreacheryType, setFromList [Madness, Injury, Pact]))
            | not standalone
            , iid <- investigatorIds
            ]
@@ -335,7 +335,7 @@ instance
       investigatorIds <- getInvestigatorIds
       xp <- getXp
       broodEscapedIntoTheWild <-
-        (+ count ((== "02255") . getCardCode) (scenarioSetAsideCards attrs))
+        (+ count ((== "02255") . toCardCode) (scenarioSetAsideCards attrs))
         . length
         <$> getSetList @StoryEnemyId (CardCode "02255")
       s <$ unshiftMessages

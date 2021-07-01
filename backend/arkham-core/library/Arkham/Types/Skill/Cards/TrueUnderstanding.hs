@@ -6,21 +6,18 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Skill.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
-import Arkham.Types.SkillId
-import Arkham.Types.Target
-
-
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
+import Arkham.Types.Target
 
 newtype TrueUnderstanding = TrueUnderstanding SkillAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-trueUnderstanding :: InvestigatorId -> SkillId -> TrueUnderstanding
-trueUnderstanding iid uuid = TrueUnderstanding $ baseAttrs iid uuid "04153"
+trueUnderstanding :: SkillCard TrueUnderstanding
+trueUnderstanding = skill TrueUnderstanding Cards.trueUnderstanding
 
 instance HasModifiersFor env TrueUnderstanding where
   getModifiersFor = noModifiersFor

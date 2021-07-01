@@ -2,13 +2,13 @@ module Arkham.Types.Enemy.Cards.HuntingHorror where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Token
@@ -17,15 +17,13 @@ import Data.UUID (nil)
 newtype HuntingHorror = HuntingHorror EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-huntingHorror :: EnemyId -> HuntingHorror
-huntingHorror uuid =
-  HuntingHorror
-    $ baseAttrs uuid "02141"
-    $ (healthDamageL .~ 1)
-    . (sanityDamageL .~ 1)
-    . (fightL .~ 2)
-    . (healthL .~ Static 3)
-    . (evadeL .~ 2)
+huntingHorror :: EnemyCard HuntingHorror
+huntingHorror = enemy HuntingHorror Cards.huntingHorror
+  $ (healthDamageL .~ 1)
+  . (sanityDamageL .~ 1)
+  . (fightL .~ 2)
+  . (healthL .~ Static 3)
+  . (evadeL .~ 2)
 
 instance HasModifiersFor env HuntingHorror where
   getModifiersFor = noModifiersFor

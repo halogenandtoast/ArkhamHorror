@@ -5,20 +5,20 @@ module Arkham.Types.Treachery.Cards.CollapsingReality
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
 
 newtype CollapsingReality = CollapsingReality TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-collapsingReality :: TreacheryId -> a -> CollapsingReality
-collapsingReality uuid _ = CollapsingReality $ baseAttrs uuid "02331"
+collapsingReality :: TreacheryCard CollapsingReality
+collapsingReality = treachery CollapsingReality Cards.collapsingReality
 
 instance HasModifiersFor env CollapsingReality where
   getModifiersFor = noModifiersFor

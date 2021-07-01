@@ -2,23 +2,21 @@ module Arkham.Types.Treachery.Cards.FalseLead where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype FalseLead = FalseLead TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-falseLead :: TreacheryId -> a -> FalseLead
-falseLead uuid _ = FalseLead $ baseAttrs uuid "01136"
+falseLead :: TreacheryCard FalseLead
+falseLead = treachery FalseLead Cards.falseLead
 
 instance HasModifiersFor env FalseLead where
   getModifiersFor = noModifiersFor

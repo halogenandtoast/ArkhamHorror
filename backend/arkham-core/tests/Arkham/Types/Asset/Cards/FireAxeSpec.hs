@@ -16,7 +16,7 @@ spec = describe "Fire Axe" $ do
     fireAxe <- buildAsset "02032"
     enemy <- testEnemy
       $ \attrs -> attrs { enemyHealth = Static 3, enemyFight = 3 }
-    location <- testLocation "00000" id
+    location <- testLocation id
     gameTest
         investigator
         [ SetTokens [Zero]
@@ -44,7 +44,7 @@ spec = describe "Fire Axe" $ do
     fireAxe <- buildAsset "02032"
     enemy <- testEnemy
       $ \attrs -> attrs { enemyHealth = Static 3, enemyFight = 3 }
-    location <- testLocation "00000" id
+    location <- testLocation id
     gameTest
         investigator
         [ SetTokens [Zero]
@@ -83,7 +83,7 @@ spec = describe "Fire Axe" $ do
     fireAxe <- buildAsset "02032"
     enemy <- testEnemy
       $ \attrs -> attrs { enemyHealth = Static 3, enemyFight = 3 }
-    location <- testLocation "00000" id
+    location <- testLocation id
     gameTest
         investigator
         [ SetTokens [Zero]
@@ -122,7 +122,7 @@ spec = describe "Fire Axe" $ do
     fireAxe <- buildAsset "02032"
     enemy <- testEnemy
       $ \attrs -> attrs { enemyHealth = Static 3, enemyFight = 3 }
-    location <- testLocation "00000" id
+    location <- testLocation id
     gameTest
         investigator
         [ SetTokens [Zero]

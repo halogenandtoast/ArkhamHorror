@@ -17,7 +17,7 @@ spec = do
       enemy <- testEnemy
         (set EnemyAttrs.evadeL 4 . set EnemyAttrs.healthL (Static 3))
       blindingLight2 <- buildEvent "01069" investigator
-      location <- testLocation "00000" id
+      location <- testLocation id
       gameTest
           investigator
           [ SetTokens [MinusOne]
@@ -42,7 +42,7 @@ spec = do
       enemy <- testEnemy
         (set EnemyAttrs.evadeL 4 . set EnemyAttrs.healthL (Static 3))
       blindingLight2 <- buildEvent "01069" investigator
-      location <- testLocation "00000" id
+      location <- testLocation id
       gameTest
           investigator
           [ SetTokens [MinusOne]
@@ -70,7 +70,7 @@ spec = do
           enemy <- testEnemy
             ((EnemyAttrs.evadeL .~ 4) . (EnemyAttrs.healthL .~ Static 3))
           blindingLight2 <- buildEvent "01069" investigator
-          location <- testLocation "00000" id
+          location <- testLocation id
           gameTest
               investigator
               [ SetTokens [token]

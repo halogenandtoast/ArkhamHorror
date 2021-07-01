@@ -5,13 +5,13 @@ module Arkham.Types.Asset.Cards.JennysTwin45s
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -25,9 +25,8 @@ import Arkham.Types.Target
 newtype JennysTwin45s = JennysTwin45s AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-jennysTwin45s :: AssetId -> JennysTwin45s
-jennysTwin45s uuid =
-  JennysTwin45s $ (baseAttrs uuid "02010") { assetSlots = [HandSlot, HandSlot] }
+jennysTwin45s :: AssetCard JennysTwin45s
+jennysTwin45s = assetWith JennysTwin45s Cards.jennysTwin45s (slotsL .~ [HandSlot, HandSlot])
 
 instance HasModifiersFor env JennysTwin45s where
   getModifiersFor = noModifiersFor

@@ -5,26 +5,23 @@ module Arkham.Types.Treachery.Cards.InternalInjury
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.Window
 
 newtype InternalInjury = InternalInjury TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-internalInjury :: TreacheryId -> Maybe InvestigatorId -> InternalInjury
-internalInjury uuid iid = InternalInjury $ weaknessAttrs uuid iid "02038"
+internalInjury :: TreacheryCard InternalInjury
+internalInjury = treachery InternalInjury Cards.internalInjury
 
 instance HasModifiersFor env InternalInjury where
   getModifiersFor = noModifiersFor

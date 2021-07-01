@@ -5,23 +5,22 @@ module Arkham.Types.Treachery.Cards.ToweringBeasts
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
+import Arkham.Types.Id
 import Arkham.Types.Game.Helpers
-import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
 
 newtype ToweringBeasts = ToweringBeasts TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-toweringBeasts :: TreacheryId -> a -> ToweringBeasts
-toweringBeasts uuid _ = ToweringBeasts $ baseAttrs uuid "02256"
+toweringBeasts :: TreacheryCard ToweringBeasts
+toweringBeasts = treachery ToweringBeasts Cards.toweringBeasts
 
 instance HasModifiersFor env ToweringBeasts where
   getModifiersFor _ (EnemyTarget eid) (ToweringBeasts attrs)

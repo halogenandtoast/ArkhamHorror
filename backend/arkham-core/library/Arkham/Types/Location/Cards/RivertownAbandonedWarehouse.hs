@@ -6,12 +6,11 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (rivertownAbandonedWarehouse)
 import Arkham.Types.Ability
 import Arkham.Types.Card
-import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -19,7 +18,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -30,14 +28,11 @@ newtype RivertownAbandonedWarehouse = RivertownAbandonedWarehouse LocationAttrs
 
 rivertownAbandonedWarehouse :: LocationId -> RivertownAbandonedWarehouse
 rivertownAbandonedWarehouse = RivertownAbandonedWarehouse . baseAttrs
-  "50030"
-  ("Rivertown" `subtitled` "Abandoned Warehouse")
-  EncounterSet.ReturnToTheMidnightMasks
+  Cards.rivertownAbandonedWarehouse
   4
   (PerPlayer 1)
   Circle
   [Moon, Diamond, Square, Squiggle, Hourglass]
-  [Arkham, Central]
 
 instance HasModifiersFor env RivertownAbandonedWarehouse where
   getModifiersFor _ _ _ = pure []
@@ -63,7 +58,7 @@ instance ActionRunner env => HasActions env RivertownAbandonedWarehouse where
 
 willpowerCount :: Payment -> Int
 willpowerCount (DiscardPayment cards) =
-  sum $ map (count (== SkillWillpower) . pcSkills . pcDef) cards
+  sum $ map (count (== SkillWillpower) . cdSkills . pcDef) cards
 willpowerCount (Payments xs) = sum $ map willpowerCount xs
 willpowerCount _ = 0
 

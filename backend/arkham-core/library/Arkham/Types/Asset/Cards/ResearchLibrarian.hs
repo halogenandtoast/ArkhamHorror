@@ -2,27 +2,22 @@ module Arkham.Types.Asset.Cards.ResearchLibrarian where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
-import Arkham.Types.Slot
 import Arkham.Types.Target
-import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype ResearchLibrarian = ResearchLibrarian AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-researchLibrarian :: AssetId -> ResearchLibrarian
-researchLibrarian uuid = ResearchLibrarian $ (baseAttrs uuid "01032")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 1
-  , assetSanity = Just 1
-  }
+researchLibrarian :: AssetCard ResearchLibrarian
+researchLibrarian = ally ResearchLibrarian Cards.researchLibrarian (1, 1)
 
 instance HasModifiersFor env ResearchLibrarian where
   getModifiersFor = noModifiersFor

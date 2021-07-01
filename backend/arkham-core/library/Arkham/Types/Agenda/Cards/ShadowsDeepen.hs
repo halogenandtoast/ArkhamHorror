@@ -9,7 +9,6 @@ import Arkham.EncounterCard
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
@@ -52,7 +51,7 @@ instance AgendaRunner env => RunMessage env ShadowsDeepen where
         Nothing -> unshiftMessage $ FindEncounterCard
           leadInvestigatorId
           (toTarget attrs)
-          (EncounterCardMatchByCardCode "02141")
+          (CardMatchByCardCode "02141")
     FoundEnemyInVoid _ target eid | isTarget attrs target -> do
       lid <- fromJustNote "Museum Halls missing"
         <$> getLocationIdWithTitle "Museum Halls"

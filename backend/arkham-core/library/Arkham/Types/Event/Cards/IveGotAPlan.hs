@@ -5,12 +5,12 @@ module Arkham.Types.Event.Cards.IveGotAPlan
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Action
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Helpers
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
@@ -21,8 +21,8 @@ import Arkham.Types.Target
 newtype IveGotAPlan = IveGotAPlan EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-iveGotAPlan :: InvestigatorId -> EventId -> IveGotAPlan
-iveGotAPlan iid uuid = IveGotAPlan $ baseAttrs iid uuid "02107"
+iveGotAPlan :: EventCard IveGotAPlan
+iveGotAPlan = event IveGotAPlan Cards.iveGotAPlan
 
 instance HasActions env IveGotAPlan where
   getActions iid window (IveGotAPlan attrs) = getActions iid window attrs

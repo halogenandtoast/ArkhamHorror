@@ -5,13 +5,13 @@ module Arkham.Types.Enemy.Cards.AvianThrall
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Id
 import Arkham.Types.Modifier
 import Arkham.Types.Prey
 import Arkham.Types.SkillType
@@ -21,16 +21,14 @@ import Arkham.Types.Trait
 newtype AvianThrall = AvianThrall EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-avianThrall :: EnemyId -> AvianThrall
-avianThrall uuid =
-  AvianThrall
-    $ baseAttrs uuid "02094"
-    $ (healthDamageL .~ 1)
-    . (sanityDamageL .~ 1)
-    . (fightL .~ 5)
-    . (healthL .~ Static 4)
-    . (evadeL .~ 3)
-    . (preyL .~ LowestSkill SkillIntellect)
+avianThrall :: EnemyCard AvianThrall
+avianThrall = enemy AvianThrall Cards.avianThrall
+  $ (healthDamageL .~ 1)
+  . (sanityDamageL .~ 1)
+  . (fightL .~ 5)
+  . (healthL .~ Static 4)
+  . (evadeL .~ 3)
+  . (preyL .~ LowestSkill SkillIntellect)
 
 instance HasSet Trait env AssetId => HasModifiersFor env AvianThrall where
   getModifiersFor (AssetSource aid) target (AvianThrall attrs)

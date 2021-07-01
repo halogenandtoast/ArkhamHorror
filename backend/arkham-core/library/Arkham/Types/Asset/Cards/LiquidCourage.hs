@@ -6,24 +6,23 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Uses
 
 newtype LiquidCourage = LiquidCourage AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-liquidCourage :: AssetId -> LiquidCourage
-liquidCourage uuid = LiquidCourage $ baseAttrs uuid "02024"
+liquidCourage :: AssetCard LiquidCourage
+liquidCourage = asset LiquidCourage Cards.liquidCourage
 
 instance HasActions env LiquidCourage where
   getActions iid NonFast (LiquidCourage a) = pure

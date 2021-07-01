@@ -12,7 +12,7 @@ spec :: Spec
 spec = do
   describe "Backstab" $ do
     it "should use agility and do +2 damage" $ do
-      location <- testLocation "00000" id
+      location <- testLocation id
       investigator <- testInvestigator "00000"
         $ \attrs -> attrs { investigatorCombat = 1, investigatorAgility = 4 }
       backstab <- buildEvent "01051" investigator

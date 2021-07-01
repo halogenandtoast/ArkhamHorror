@@ -5,19 +5,19 @@ module Arkham.Types.Treachery.Cards.TheCreaturesTracks
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
 
 newtype TheCreaturesTracks = TheCreaturesTracks TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-theCreaturesTracks :: TreacheryId -> a -> TheCreaturesTracks
-theCreaturesTracks uuid _ = TheCreaturesTracks $ baseAttrs uuid "02259"
+theCreaturesTracks :: TreacheryCard TheCreaturesTracks
+theCreaturesTracks = treachery TheCreaturesTracks Cards.theCreaturesTracks
 
 instance HasModifiersFor env TheCreaturesTracks where
   getModifiersFor = noModifiersFor

@@ -6,11 +6,11 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (cloverClubCardroom)
 import Arkham.Types.Ability
 import Arkham.Types.ActId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -20,7 +20,6 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Token
-import Arkham.Types.Trait hiding (Cultist)
 import Arkham.Types.Window
 
 newtype CloverClubCardroom = CloverClubCardroom LocationAttrs
@@ -28,14 +27,11 @@ newtype CloverClubCardroom = CloverClubCardroom LocationAttrs
 
 cloverClubCardroom :: LocationId -> CloverClubCardroom
 cloverClubCardroom = CloverClubCardroom . baseAttrs
-  "02073"
-  "Clover Club Cardroom"
-  EncounterSet.TheHouseAlwaysWins
+  Cards.cloverClubCardroom
   3
   (Static 0)
   Triangle
   [Circle, Square, Diamond]
-  [CloverClub]
 
 instance HasModifiersFor env CloverClubCardroom where
   getModifiersFor = noModifiersFor

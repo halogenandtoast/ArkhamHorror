@@ -2,8 +2,8 @@ module Arkham.Types.Location.Cards.Attic where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (attic)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -16,18 +16,12 @@ newtype Attic = Attic LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 attic :: LocationId -> Attic
-attic =
-  Attic
-    . (victoryL ?~ 1)
-    . baseAttrs
-        "01113"
-        "Attic"
-        EncounterSet.TheGathering
-        1
-        (PerPlayer 2)
-        Triangle
-        [Square]
-        []
+attic = Attic . baseAttrs
+  Cards.attic
+  1
+  (PerPlayer 2)
+  Triangle
+  [Square]
 
 instance HasModifiersFor env Attic where
   getModifiersFor = noModifiersFor

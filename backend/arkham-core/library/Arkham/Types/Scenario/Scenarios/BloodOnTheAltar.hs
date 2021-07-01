@@ -128,7 +128,7 @@ findOwner cardCode = do
   pure
     $ campaignStoryCardInvestigatorId
     <$> find
-          ((== cardCode) . getCardCode . campaignStoryCardPlayerCard)
+          ((== cardCode) . toCardCode . campaignStoryCardPlayerCard)
           campaignStoryCards
 
 getRemoveSacrificedMessages
@@ -318,7 +318,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
             Just (PotentialSacrifices xs) -> xs
             _ -> error "missing deck"
           sacrificedToYogSothoth =
-            map getCardCode potentialSacrifices <> map getCardCode sacrificed
+            map toCardCode potentialSacrifices <> map toCardCode sacrificed
         removeSacrificedMessages <- getRemoveSacrificedMessages
           sacrificedToYogSothoth
         removeNecronomicon <- getRemoveNecronomicon
@@ -349,7 +349,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         leadInvestigatorId <- getLeadInvestigatorId
         investigatorIds <- getInvestigatorIds
         xp <- getXp
-        let sacrificedToYogSothoth = map getCardCode sacrificed
+        let sacrificedToYogSothoth = map toCardCode sacrificed
         removeSacrificedMessages <- getRemoveSacrificedMessages
           sacrificedToYogSothoth
         removeNecronomicon <- getRemoveNecronomicon
@@ -380,7 +380,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         leadInvestigatorId <- getLeadInvestigatorId
         investigatorIds <- getInvestigatorIds
         xp <- getXp
-        let sacrificedToYogSothoth = map getCardCode sacrificed
+        let sacrificedToYogSothoth = map toCardCode sacrificed
         removeSacrificedMessages <- getRemoveSacrificedMessages
           sacrificedToYogSothoth
         s <$ unshiftMessages
@@ -416,7 +416,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         leadInvestigatorId <- getLeadInvestigatorId
         investigatorIds <- getInvestigatorIds
         xp <- getXp
-        let sacrificedToYogSothoth = map getCardCode sacrificed
+        let sacrificedToYogSothoth = map toCardCode sacrificed
         removeSacrificedMessages <- getRemoveSacrificedMessages
           sacrificedToYogSothoth
         removeNecronomicon <- getRemoveNecronomicon

@@ -2,9 +2,9 @@ module Arkham.Types.Location.Cards.DeepBelowYourHouse where
 
 import Arkham.Prelude
 
-import Arkham.Types.Card.EncounterCardMatcher
+import qualified Arkham.Location.Cards as Cards (deepBelowYourHouse)
+import Arkham.Types.Card.CardMatcher
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -18,18 +18,12 @@ newtype DeepBelowYourHouse = DeepBelowYourHouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deepBelowYourHouse :: LocationId -> DeepBelowYourHouse
-deepBelowYourHouse =
-  DeepBelowYourHouse
-    . (victoryL ?~ 1)
-    . baseAttrs
-        "50021"
-        "Ghoul Pits"
-        EncounterSet.ReturnToTheGathering
-        4
-        (PerPlayer 1)
-        Squiggle
-        [Plus]
-        mempty
+deepBelowYourHouse = DeepBelowYourHouse . baseAttrs
+  Cards.deepBelowYourHouse
+  4
+  (PerPlayer 1)
+  Squiggle
+  [Plus]
 
 instance HasModifiersFor env DeepBelowYourHouse where
   getModifiersFor = noModifiersFor
@@ -54,6 +48,6 @@ instance (LocationRunner env) => RunMessage env DeepBelowYourHouse where
       | isSource attrs source -> l <$ unshiftMessages
         (replicate
           n
-          (FindAndDrawEncounterCard iid (EncounterCardMatchByCardCode "01159"))
+          (FindAndDrawEncounterCard iid (CardMatchByCardCode "01159"))
         )
     _ -> DeepBelowYourHouse <$> runMessage msg attrs

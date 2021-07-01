@@ -1,9 +1,9 @@
-module Arkham.Types.Location.Cards.ReturnToAttic where
+module Arkham.Types.Location.Cards.ReturnToAttic (returnToAttic, ReturnToAttic(..)) where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (returnToAttic)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -15,17 +15,12 @@ newtype ReturnToAttic = ReturnToAttic LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 returnToAttic :: LocationId -> ReturnToAttic
-returnToAttic =
-  ReturnToAttic
-    . baseAttrs
-        "50018"
-        "Attic"
-        EncounterSet.ReturnToTheGathering
-        3
-        (PerPlayer 1)
-        Triangle
-        [Square, Moon]
-        []
+returnToAttic = ReturnToAttic . baseAttrs
+  Cards.returnToAttic
+  3
+  (PerPlayer 1)
+  Triangle
+  [Square, Moon]
 
 instance HasModifiersFor env ReturnToAttic where
   getModifiersFor = noModifiersFor

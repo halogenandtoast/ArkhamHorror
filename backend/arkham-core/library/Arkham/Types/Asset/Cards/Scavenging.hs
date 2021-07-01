@@ -5,12 +5,12 @@ module Arkham.Types.Asset.Cards.Scavenging
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
@@ -21,8 +21,8 @@ import Arkham.Types.Window
 newtype Scavenging = Scavenging AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-scavenging :: AssetId -> Scavenging
-scavenging uuid = Scavenging $ baseAttrs uuid "01073"
+scavenging :: AssetCard Scavenging
+scavenging = asset Scavenging Cards.scavenging
 
 instance HasModifiersFor env Scavenging where
   getModifiersFor = noModifiersFor
@@ -35,7 +35,7 @@ instance ActionRunner env => HasActions env Scavenging where
   getActions iid (AfterPassSkillTest (Just Action.Investigate) _ You n) (Scavenging a)
     | ownedBy a iid && n >= 2
     = do
-      hasItemInDiscard <- any ((Item `member`) . getTraits) <$> getDiscardOf iid
+      hasItemInDiscard <- any (member Item . toTraits) <$> getDiscardOf iid
       pure [ ActivateCardAbilityAction iid (ability a) | hasItemInDiscard ]
   getActions i window (Scavenging x) = getActions i window x
 

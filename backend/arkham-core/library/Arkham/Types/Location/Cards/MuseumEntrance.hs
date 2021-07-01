@@ -6,8 +6,8 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (museumEntrance)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -16,21 +16,17 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.Target
-import Arkham.Types.Trait
 
 newtype MuseumEntrance = MuseumEntrance LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 museumEntrance :: LocationId -> MuseumEntrance
 museumEntrance = MuseumEntrance . baseAttrs
-  "02126"
-  "Museum Entrance"
-  EncounterSet.TheMiskatonicMuseum
+  Cards.museumEntrance
   3
   (Static 2)
   Circle
   [Square]
-  [Miskatonic]
 
 instance HasModifiersFor env MuseumEntrance where
   getModifiersFor _ (InvestigatorTarget iid) (MuseumEntrance location) =

@@ -8,8 +8,8 @@ import Arkham.Prelude
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.CampaignLogKey
-import Arkham.Types.Card.EncounterCardMatcher
-import Arkham.Types.Card.EncounterCardType
+import Arkham.Types.Card.CardMatcher
+import Arkham.Types.Card.CardType
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
@@ -39,7 +39,7 @@ instance (HasRecord env, AgendaRunner env) => RunMessage env PastPresentAndFutur
         ([ ShuffleEncounterDiscardBackIn
          , DiscardEncounterUntilFirst
            (toSource attrs)
-           (EncounterCardMatchByType (LocationType, Nothing))
+           (CardMatchByType (LocationType, mempty))
          ]
         <> [ BeginSkillTest
                iid

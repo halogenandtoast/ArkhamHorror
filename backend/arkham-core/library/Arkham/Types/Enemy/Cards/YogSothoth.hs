@@ -5,9 +5,9 @@ module Arkham.Types.Enemy.Cards.YogSothoth
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
-import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Message
@@ -18,16 +18,13 @@ import Arkham.Types.Source
 newtype YogSothoth = YogSothoth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-yogSothoth :: EnemyId -> YogSothoth
-yogSothoth uuid =
-  YogSothoth
-    $ baseAttrs uuid "02323"
-    $ (healthDamageL .~ 1)
-    . (sanityDamageL .~ 5)
-    . (fightL .~ 4)
-    . (healthL .~ Static 4)
-    . (evadeL .~ 0)
-    . (uniqueL .~ True)
+yogSothoth :: EnemyCard YogSothoth
+yogSothoth = enemy YogSothoth Cards.yogSothoth
+  $ (healthDamageL .~ 1)
+  . (sanityDamageL .~ 5)
+  . (fightL .~ 4)
+  . (healthL .~ Static 4)
+  . (evadeL .~ 0)
 
 instance HasCount PlayerCount env () => HasModifiersFor env YogSothoth where
   getModifiersFor _ target (YogSothoth a) | isTarget a target = do

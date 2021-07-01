@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (dimensionalDoorway)
 import Arkham.Types.Ability
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -25,14 +25,11 @@ newtype DimensionalDoorway = DimensionalDoorway LocationAttrs
 
 dimensionalDoorway :: LocationId -> DimensionalDoorway
 dimensionalDoorway = DimensionalDoorway . baseAttrs
-  "02328"
-  "Dimensional Doorway"
-  EncounterSet.LostInTimeAndSpace
+  Cards.dimensionalDoorway
   2
   (PerPlayer 1)
   Squiggle
   [Triangle, Moon]
-  [Otherworld, Extradimensional]
 
 instance HasModifiersFor env DimensionalDoorway where
   getModifiersFor = noModifiersFor
@@ -52,7 +49,7 @@ instance LocationRunner env => RunMessage env DimensionalDoorway where
     Revelation iid source | isSource attrs source -> do
       encounterDiscard <- map unDiscardedEncounterCard <$> getList ()
       let
-        mHexCard = find (member Hex . getTraits) encounterDiscard
+        mHexCard = find (member Hex . toTraits) encounterDiscard
         revelationMsgs = case mHexCard of
           Nothing -> []
           Just hexCard ->

@@ -33,7 +33,7 @@ spec = describe "Searching for Izzie" $ do
   it "takes 2 actions and is discarded on a successful investigation" $ do
     investigator <- testInvestigator "00000" id
     searchingForIzzie <- buildPlayerCard "02011"
-    location <- testLocation "00000" id
+    location <- testLocation id
     gameTest
         investigator
         [ SetTokens [Zero]
@@ -72,7 +72,7 @@ spec = describe "Searching for Izzie" $ do
   it "causes 1 mental trauma if not discarded" $ do
     investigator <- testInvestigator "00000" id
     searchingForIzzie <- buildPlayerCard "02011"
-    location <- testLocation "00000" id
+    location <- testLocation id
     gameTest
         investigator
         [ loadDeck investigator [searchingForIzzie]

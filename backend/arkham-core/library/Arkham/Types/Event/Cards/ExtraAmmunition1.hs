@@ -2,23 +2,22 @@ module Arkham.Types.Event.Cards.ExtraAmmunition1 where
 
 import Arkham.Prelude
 
-import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Target
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Asset.Uses
+import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
+import Arkham.Types.Id
+import Arkham.Types.Message
+import Arkham.Types.Target
 import Arkham.Types.Trait
 import Control.Monad.Extra hiding (filterM)
 
 newtype ExtraAmmunition1 = ExtraAmmunition1 EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-extraAmmunition1 :: InvestigatorId -> EventId -> ExtraAmmunition1
-extraAmmunition1 iid uuid = ExtraAmmunition1 $ baseAttrs iid uuid "01026"
+extraAmmunition1 :: EventCard ExtraAmmunition1
+extraAmmunition1 = event ExtraAmmunition1 Cards.extraAmmunition1
 
 instance HasModifiersFor env ExtraAmmunition1 where
   getModifiersFor = noModifiersFor

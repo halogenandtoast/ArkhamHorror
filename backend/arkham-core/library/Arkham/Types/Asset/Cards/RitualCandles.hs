@@ -5,27 +5,25 @@ module Arkham.Types.Asset.Cards.RitualCandles
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
 
 newtype RitualCandles = RitualCandles AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-ritualCandles :: AssetId -> RitualCandles
-ritualCandles uuid =
-  RitualCandles $ (baseAttrs uuid "02029") { assetSlots = [HandSlot] }
+ritualCandles :: AssetCard RitualCandles
+ritualCandles = hand RitualCandles Cards.ritualCandles
 
 ability :: AssetAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)

@@ -2,21 +2,20 @@ module Arkham.Types.Event.Cards.WorkingAHunch where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Event.Attrs
+import Arkham.Types.Event.Runner
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
-import Arkham.Types.Event.Attrs
-import Arkham.Types.Event.Runner
 
 newtype WorkingAHunch = WorkingAHunch EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-workingAHunch :: InvestigatorId -> EventId -> WorkingAHunch
-workingAHunch iid uuid = WorkingAHunch $ baseAttrs iid uuid "01037"
+workingAHunch :: EventCard WorkingAHunch
+workingAHunch = event WorkingAHunch Cards.workingAHunch
 
 instance HasModifiersFor env WorkingAHunch where
   getModifiersFor = noModifiersFor

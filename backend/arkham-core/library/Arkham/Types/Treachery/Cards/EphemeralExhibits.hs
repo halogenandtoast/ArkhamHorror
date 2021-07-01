@@ -5,21 +5,19 @@ module Arkham.Types.Treachery.Cards.EphemeralExhibits
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype EphemeralExhibits = EphemeralExhibits TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-ephemeralExhibits :: TreacheryId -> a -> EphemeralExhibits
-ephemeralExhibits uuid _ = EphemeralExhibits $ baseAttrs uuid "02145"
+ephemeralExhibits :: TreacheryCard EphemeralExhibits
+ephemeralExhibits = treachery EphemeralExhibits Cards.ephemeralExhibits
 
 instance HasModifiersFor env EphemeralExhibits where
   getModifiersFor = noModifiersFor

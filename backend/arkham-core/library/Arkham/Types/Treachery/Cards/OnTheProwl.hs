@@ -6,16 +6,13 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
@@ -24,8 +21,8 @@ import Arkham.Types.Treachery.Runner
 newtype OnTheProwl = OnTheProwl TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-onTheProwl :: TreacheryId -> a -> OnTheProwl
-onTheProwl uuid _ = OnTheProwl $ baseAttrs uuid "81034"
+onTheProwl :: TreacheryCard OnTheProwl
+onTheProwl = treachery OnTheProwl Cards.onTheProwl
 
 instance HasModifiersFor env OnTheProwl where
   getModifiersFor = noModifiersFor

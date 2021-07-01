@@ -6,8 +6,8 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (theEdgeOfTheUniverse)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -19,21 +19,17 @@ import Arkham.Types.Modifier
 import Arkham.Types.Phase
 import Arkham.Types.Query
 import Arkham.Types.Target
-import Arkham.Types.Trait
 
 newtype TheEdgeOfTheUniverse = TheEdgeOfTheUniverse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theEdgeOfTheUniverse :: LocationId -> TheEdgeOfTheUniverse
 theEdgeOfTheUniverse = TheEdgeOfTheUniverse . baseAttrs
-  "02321"
-  "The Edge of the Universe"
-  EncounterSet.LostInTimeAndSpace
+  Cards.theEdgeOfTheUniverse
   2
   (PerPlayer 2)
   Moon
   [Plus, Squiggle]
-  [Otherworld]
 
 instance HasPhase env => HasModifiersFor env TheEdgeOfTheUniverse where
   getModifiersFor _ (InvestigatorTarget iid) (TheEdgeOfTheUniverse attrs)

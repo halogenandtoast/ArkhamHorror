@@ -2,22 +2,20 @@ module Arkham.Types.Asset.Cards.WendysAmulet where
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
-import Arkham.Types.Card
-import Arkham.Types.Classes
-import Arkham.Types.Modifier
-import Arkham.Types.Slot
-import Arkham.Types.Target
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
+import Arkham.Types.Card
+import Arkham.Types.Classes
+import Arkham.Types.Modifier
+import Arkham.Types.Target
 
 newtype WendysAmulet = WendysAmulet AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-wendysAmulet :: AssetId -> WendysAmulet
-wendysAmulet uuid =
-  WendysAmulet $ (baseAttrs uuid "01014") { assetSlots = [AccessorySlot] }
+wendysAmulet :: AssetCard WendysAmulet
+wendysAmulet = accessory WendysAmulet Cards.wendysAmulet
 
 instance HasModifiersFor env WendysAmulet where
   getModifiersFor _ (InvestigatorTarget iid) (WendysAmulet a) =

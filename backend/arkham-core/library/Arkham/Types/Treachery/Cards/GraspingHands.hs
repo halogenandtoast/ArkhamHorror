@@ -6,22 +6,20 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype GraspingHands = GraspingHands TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-graspingHands :: TreacheryId -> a -> GraspingHands
-graspingHands uuid _ = GraspingHands $ baseAttrs uuid "01162"
+graspingHands :: TreacheryCard GraspingHands
+graspingHands = treachery GraspingHands Cards.graspingHands
 
 instance HasModifiersFor env GraspingHands where
   getModifiersFor = noModifiersFor

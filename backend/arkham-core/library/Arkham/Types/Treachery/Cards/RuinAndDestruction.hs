@@ -5,23 +5,21 @@ module Arkham.Types.Treachery.Cards.RuinAndDestruction
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
 
 newtype RuinAndDestruction = RuinAndDestruction TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-ruinAndDestruction :: TreacheryId -> a -> RuinAndDestruction
-ruinAndDestruction uuid _ = RuinAndDestruction $ baseAttrs uuid "02257"
+ruinAndDestruction :: TreacheryCard RuinAndDestruction
+ruinAndDestruction = treachery RuinAndDestruction Cards.ruinAndDestruction
 
 instance HasModifiersFor env RuinAndDestruction where
   getModifiersFor = noModifiersFor

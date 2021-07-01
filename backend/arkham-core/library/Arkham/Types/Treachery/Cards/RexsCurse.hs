@@ -5,22 +5,19 @@ module Arkham.Types.Treachery.Cards.RexsCurse
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype RexsCurse = RexsCurse TreacheryAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
-rexsCurse :: TreacheryId -> Maybe InvestigatorId -> RexsCurse
-rexsCurse uuid iid = RexsCurse $ weaknessAttrs uuid iid "02009"
+rexsCurse :: TreacheryCard RexsCurse
+rexsCurse = treachery RexsCurse Cards.rexsCurse
 
 instance HasModifiersFor env RexsCurse where
   getModifiersFor = noModifiersFor

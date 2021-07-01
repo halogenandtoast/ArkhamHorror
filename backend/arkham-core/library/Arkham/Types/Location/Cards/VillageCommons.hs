@@ -6,28 +6,24 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (villageCommons)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Trait
 
 newtype VillageCommons = VillageCommons LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 villageCommons :: LocationId -> VillageCommons
 villageCommons = VillageCommons . baseAttrs
-  "02201"
-  "Village Commons"
-  EncounterSet.BloodOnTheAltar
+  Cards.villageCommons
   3
   (Static 0)
   Plus
   [Square, Circle, Moon]
-  [Dunwich, Central]
 
 instance HasModifiersFor env VillageCommons where
   getModifiersFor = noModifiersFor

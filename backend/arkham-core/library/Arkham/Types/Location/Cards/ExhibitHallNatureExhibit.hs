@@ -6,32 +6,27 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (exhibitHallNatureExhibit)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
-import Arkham.Types.Trait
 
 newtype ExhibitHallNatureExhibit = ExhibitHallNatureExhibit LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallNatureExhibit :: LocationId -> ExhibitHallNatureExhibit
 exhibitHallNatureExhibit =
-  ExhibitHallNatureExhibit . (victoryL ?~ 1) . baseAttrs
-    "02134"
-    ("Exhibit Hall" `subtitled` "Nature Exhibit")
-    EncounterSet.TheMiskatonicMuseum
+  ExhibitHallNatureExhibit . baseAttrs
+    Cards.exhibitHallNatureExhibit
     4
     (PerPlayer 1)
     Hourglass
     [Square, Squiggle]
-    [Miskatonic, Exhibit]
 
 instance HasModifiersFor env ExhibitHallNatureExhibit where
   getModifiersFor = noModifiersFor

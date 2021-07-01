@@ -6,12 +6,12 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (cloverClubLounge)
 import Arkham.Types.Ability
 import Arkham.Types.ActId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -27,14 +27,11 @@ newtype CloverClubLounge = CloverClubLounge LocationAttrs
 
 cloverClubLounge :: LocationId -> CloverClubLounge
 cloverClubLounge = CloverClubLounge . baseAttrs
-  "02071"
-  "Clover Club Lounge"
-  EncounterSet.TheHouseAlwaysWins
+  Cards.cloverClubLounge
   2
   (Static 0)
   Circle
   [Moon, Square, Triangle]
-  [CloverClub]
 
 instance HasModifiersFor env CloverClubLounge where
   getModifiersFor = noModifiersFor

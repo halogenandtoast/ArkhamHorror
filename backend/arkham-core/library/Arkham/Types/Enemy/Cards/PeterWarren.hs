@@ -5,6 +5,7 @@ module Arkham.Types.Enemy.Cards.PeterWarren
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Action hiding (Ability)
 import Arkham.Types.Classes
@@ -12,9 +13,8 @@ import Arkham.Types.Cost
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Source
@@ -23,16 +23,13 @@ import Arkham.Types.Window
 newtype PeterWarren = PeterWarren EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-peterWarren :: EnemyId -> PeterWarren
-peterWarren uuid =
-  PeterWarren
-    $ baseAttrs uuid "01139"
-    $ (healthDamageL .~ 1)
-    . (fightL .~ 2)
-    . (healthL .~ Static 3)
-    . (evadeL .~ 3)
-    . (uniqueL .~ True)
-    . (spawnAtL ?~ LocationWithTitle "Miskatonic University")
+peterWarren :: EnemyCard PeterWarren
+peterWarren = enemy PeterWarren Cards.peterWarren
+  $ (healthDamageL .~ 1)
+  . (fightL .~ 2)
+  . (healthL .~ Static 3)
+  . (evadeL .~ 3)
+  . (spawnAtL ?~ LocationWithTitle "Miskatonic University")
 
 instance HasModifiersFor env PeterWarren where
   getModifiersFor = noModifiersFor

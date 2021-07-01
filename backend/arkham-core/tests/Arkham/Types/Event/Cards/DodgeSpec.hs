@@ -14,7 +14,7 @@ spec = do
       investigator <- testInvestigator "00000"
         $ \attrs -> attrs { investigatorResources = 1 }
       enemy <- testEnemy id
-      location <- testLocation "00000" id
+      location <- testLocation id
       dodge <- buildPlayerCard "01023"
 
       (didRunMessage, logger) <- createMessageMatcher

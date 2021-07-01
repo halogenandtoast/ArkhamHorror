@@ -13,7 +13,7 @@ spec = describe "Deduction" $ do
   it "it allows you to discover another clue if you succeed" $ do
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorIntellect = 1 }
-    location <- testLocation "00000"
+    location <- testLocation
       $ \attrs -> attrs { locationClues = 2, locationShroud = 2 }
     deduction <- buildPlayerCard "01039"
     gameTest

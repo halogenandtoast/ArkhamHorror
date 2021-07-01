@@ -15,7 +15,10 @@ lookupCard cardCode =
   let
     encounterCard = do
       f <- lookup cardCode allEncounterCards
-      pure $ EncounterCard . f
+      pure $ \cardId -> EncounterCard $ MkEncounterCard
+        { ecId = cardId
+        , ecDef = f
+        }
     playerCard = do
       f <- lookup cardCode allPlayerCards
       pure $ \cardId -> PlayerCard $ MkPlayerCard

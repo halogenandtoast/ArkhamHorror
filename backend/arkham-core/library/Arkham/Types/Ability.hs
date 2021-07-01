@@ -6,6 +6,7 @@ module Arkham.Types.Ability
 import Arkham.Prelude
 
 import Arkham.Json
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Ability.Limit as X
 import Arkham.Types.Ability.Type as X
 import Arkham.Types.InvestigatorId
@@ -41,7 +42,7 @@ instance FromJSON Ability where
 
 newtype UsedAbility = UsedAbility { unUsedAbility :: (InvestigatorId, Ability) }
 
-data AbilityMetadata = IntMetadata Int | TargetMetadata Target | SourceMetadata Source
+data AbilityMetadata = IntMetadata Int | TargetMetadata Target | SourceMetadata Source | EncounterCardMetadata EncounterCard
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

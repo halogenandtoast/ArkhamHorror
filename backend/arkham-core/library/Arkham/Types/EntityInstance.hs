@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Types.Asset
 import Arkham.Types.Card
-import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Enemy
 import Arkham.Types.Event
@@ -44,7 +43,7 @@ instance (ActionRunner env, HasSkillTest env) => HasActions env EntityInstance w
   getActions iid window (TreacheryInstance x) = getActions iid window x
 
 toCardInstance :: InvestigatorId -> Card -> EntityInstance
-toCardInstance iid (PlayerCard card) = case pcCardType (pcDef card) of
+toCardInstance iid (PlayerCard card) = case cdCardType (pcDef card) of
   AssetType -> AssetInstance $ createAsset card
   PlayerEnemyType -> EnemyInstance $ createEnemy card
   EventType -> EventInstance $ createEvent card iid

@@ -12,7 +12,6 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Direction
-import Arkham.Types.EncounterSet (EncounterSet)
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
 import Arkham.Types.Exception
@@ -44,11 +43,10 @@ pattern UseDrawCardUnderneath :: InvestigatorId -> Source -> Message
 pattern UseDrawCardUnderneath iid source <- UseCardAbility iid source _ 100 _
 
 data LocationAttrs = LocationAttrs
-  { locationName :: LocationName
-  , locationCardCode :: CardCode
+  { locationId :: LocationId
+  , locationCardDef :: CardDef
   , locationUnrevealedName :: LocationName
   , locationLabel :: Text
-  , locationId :: LocationId
   , locationRevealClues :: GameValue Int
   , locationClues :: Int
   , locationDoom :: Int
@@ -56,17 +54,14 @@ data LocationAttrs = LocationAttrs
   , locationRevealed :: Bool
   , locationInvestigators :: HashSet InvestigatorId
   , locationEnemies :: HashSet EnemyId
-  , locationVictory :: Maybe Int
   , locationSymbol :: LocationSymbol
   , locationRevealedSymbol :: LocationSymbol
   , locationConnectedSymbols :: HashSet LocationSymbol
   , locationRevealedConnectedSymbols :: HashSet LocationSymbol
   , locationConnectedLocations :: HashSet LocationId
-  , locationTraits :: HashSet Trait
   , locationTreacheries :: HashSet TreacheryId
   , locationEvents :: HashSet EventId
   , locationAssets :: HashSet AssetId
-  , locationEncounterSet :: EncounterSet
   , locationDirections :: HashMap Direction LocationId
   , locationConnectsTo :: HashSet Direction
   , locationCardsUnderneath :: [Card]
@@ -75,6 +70,9 @@ data LocationAttrs = LocationAttrs
   deriving stock (Show, Eq, Generic)
 
 makeLensesWith suffixedFields ''LocationAttrs
+
+instance HasCardDef LocationAttrs where
+  defL = cardDefL
 
 instance ToJSON LocationAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "location"
@@ -90,7 +88,7 @@ instance Entity LocationAttrs where
   toAttrs = id
 
 instance NamedEntity LocationAttrs where
-  toName = unLocationName . locationName
+  toName = view (defL . nameL)
 
 instance TargetEntity LocationAttrs where
   toTarget = LocationTarget . toId
@@ -106,16 +104,13 @@ instance SourceEntity LocationAttrs where
   isSource _ _ = False
 
 instance IsCard LocationAttrs where
-  getCardId = error "locations are not treated like cards"
-  getCardCode = locationCardCode
-  getTraits = locationTraits
-  getKeywords = mempty
+  cardIdL =  lens (unLocationId . locationId) $ \m x -> m { locationId = LocationId x }
 
 instance HasName env LocationAttrs where
-  getName attrs = pure . unLocationName . locationNameFunc $ attrs
+  getName attrs = pure $ locationNameFunc attrs
    where
     locationNameFunc =
-      if locationRevealed attrs then locationName else locationUnrevealedName
+      if locationRevealed attrs then view (defL . nameL) else unLocationName . locationUnrevealedName
 
 instance HasId (Maybe LocationId) env (Direction, LocationAttrs) where
   getId (dir, LocationAttrs {..}) = pure $ lookup dir locationDirections
@@ -133,46 +128,39 @@ revealed :: LocationAttrs -> Bool
 revealed = locationRevealed
 
 baseAttrs
-  :: CardCode
-  -> Name
-  -> EncounterSet
+  :: CardDef
   -> Int
   -> GameValue Int
   -> LocationSymbol
   -> [LocationSymbol]
-  -> [Trait]
   -> LocationId
   -> LocationAttrs
-baseAttrs cardCode name encounterSet shroud' revealClues symbol' connectedSymbols' traits' lid
+baseAttrs def shroud' revealClues symbol' connectedSymbols' lid
   = LocationAttrs
-    { locationName = LocationName name
-    , locationUnrevealedName = LocationName name
-    , locationLabel = nameToLabel name
-    , locationId = lid
-    , locationCardCode = cardCode
-    , locationRevealClues = revealClues
-    , locationClues = 0
-    , locationDoom = 0
-    , locationShroud = shroud'
-    , locationRevealed = False
-    , locationInvestigators = mempty
-    , locationEnemies = mempty
-    , locationVictory = Nothing
-    , locationSymbol = symbol'
-    , locationRevealedSymbol = symbol'
-    , locationConnectedSymbols = setFromList connectedSymbols'
-    , locationRevealedConnectedSymbols = setFromList connectedSymbols'
-    , locationConnectedLocations = mempty
-    , locationTraits = setFromList traits'
-    , locationTreacheries = mempty
-    , locationEvents = mempty
-    , locationAssets = mempty
-    , locationEncounterSet = encounterSet
-    , locationDirections = mempty
-    , locationConnectsTo = mempty
-    , locationCardsUnderneath = mempty
-    , locationCostToEnterUnrevealed = ActionCost 1
-    }
+      { locationId = lid
+      , locationCardDef = def
+      , locationUnrevealedName = LocationName (cdName def)
+      , locationLabel = nameToLabel (cdName def)
+      , locationRevealClues = revealClues
+      , locationClues = 0
+      , locationDoom = 0
+      , locationShroud = shroud'
+      , locationRevealed = False
+      , locationInvestigators = mempty
+      , locationEnemies = mempty
+      , locationSymbol = symbol'
+      , locationRevealedSymbol = symbol'
+      , locationConnectedSymbols = setFromList connectedSymbols'
+      , locationRevealedConnectedSymbols = setFromList connectedSymbols'
+      , locationConnectedLocations = mempty
+      , locationTreacheries = mempty
+      , locationEvents = mempty
+      , locationAssets = mempty
+      , locationDirections = mempty
+      , locationConnectsTo = mempty
+      , locationCardsUnderneath = mempty
+      , locationCostToEnterUnrevealed = ActionCost 1
+      }
 
 locationEnemiesWithTrait
   :: (MonadReader env m, HasSet Trait env EnemyId)

@@ -6,9 +6,9 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (tearThroughSpace)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -16,7 +16,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype TearThroughSpace = TearThroughSpace LocationAttrs
@@ -24,14 +23,11 @@ newtype TearThroughSpace = TearThroughSpace LocationAttrs
 
 tearThroughSpace :: LocationId -> TearThroughSpace
 tearThroughSpace = TearThroughSpace . baseAttrs
-  "02324"
-  "Tear Through Space"
-  EncounterSet.LostInTimeAndSpace
+  Cards.tearThroughSpace
   1
   (Static 1)
   Square
   [Diamond, Triangle, Square]
-  [Otherworld, Extradimensional]
 
 instance HasModifiersFor env TearThroughSpace where
   getModifiersFor = noModifiersFor

@@ -5,7 +5,7 @@ where
 
 import TestImport.Lifted
 
-import qualified Arkham.Types.Card.PlayerCard as PlayerCard
+import qualified Arkham.Types.Card.CardDef as CardDef
 import Arkham.Types.Trait
 
 spec :: Spec
@@ -26,7 +26,7 @@ spec = describe "Arcane Initiate" $ do
     $ do
         arcaneInitiate <- buildAsset "01063"
         investigator <- testInvestigator "00000" id
-        card <- testPlayerCard $ set PlayerCard.traitsL (setFromList [Spell])
+        card <- testPlayerCard $ set CardDef.traitsL (setFromList [Spell])
         otherCards <- testPlayerCards 2
         gameTest
             investigator

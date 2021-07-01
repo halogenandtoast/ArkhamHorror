@@ -2,7 +2,7 @@ module Arkham.Types.Location.Cards.DeepBelowYourHouse where
 
 import Arkham.Prelude
 
-import Arkham.Types.Card.EncounterCardMatcher
+import Arkham.Types.Card.CardMatcher
 import Arkham.Types.Classes
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
@@ -54,6 +54,6 @@ instance (LocationRunner env) => RunMessage env DeepBelowYourHouse where
       | isSource attrs source -> l <$ unshiftMessages
         (replicate
           n
-          (FindAndDrawEncounterCard iid (EncounterCardMatchByCardCode "01159"))
+          (FindAndDrawEncounterCard iid (CardMatchByCardCode "01159"))
         )
     _ -> DeepBelowYourHouse <$> runMessage msg attrs

@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (overgrownCairns)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -18,7 +18,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype OvergrownCairns = OvergrownCairns LocationAttrs
@@ -26,14 +25,11 @@ newtype OvergrownCairns = OvergrownCairns LocationAttrs
 
 overgrownCairns :: LocationId -> OvergrownCairns
 overgrownCairns = OvergrownCairns . baseAttrs
-  "81018"
-  "Overgrown Cairns"
-  EncounterSet.CurseOfTheRougarou
+  Cards.overgrownCairns
   4
   (Static 0)
   Equals
   [Hourglass, Equals]
-  [Unhallowed]
 
 instance HasModifiersFor env OvergrownCairns where
   getModifiersFor = noModifiersFor

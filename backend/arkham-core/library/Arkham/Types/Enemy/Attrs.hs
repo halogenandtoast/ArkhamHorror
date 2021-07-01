@@ -11,7 +11,6 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
-import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
@@ -83,14 +82,10 @@ instance IsCard EnemyAttrs where
 baseAttrs :: EnemyId -> CardCode -> (EnemyAttrs -> EnemyAttrs) -> EnemyAttrs
 baseAttrs eid cardCode f =
   let
-    MkEncounterCard {..} =
-      fromJustNote
-          ("missing enemy encounter card: " <> show cardCode)
-          (lookup cardCode allEncounterCards)
-        $ unEnemyId eid
+    CardDef {..} = lookupEncounterCardDef cardCode
   in
     f $ EnemyAttrs
-      { enemyName = EnemyName ecName
+      { enemyName = EnemyName cdName
       , enemyId = eid
       , enemyCardCode = cardCode
       , enemyEngagedInvestigators = mempty
@@ -101,16 +96,16 @@ baseAttrs eid cardCode f =
       , enemyDamage = 0
       , enemyHealthDamage = 0
       , enemySanityDamage = 0
-      , enemyTraits = ecTraits
+      , enemyTraits = cdTraits
       , enemyTreacheries = mempty
       , enemyAssets = mempty
-      , enemyKeywords = ecKeywords
+      , enemyKeywords = cdKeywords
       , enemyPrey = AnyPrey
       , enemyModifiers = mempty
       , enemyExhausted = False
       , enemyDoom = 0
       , enemyClues = 0
-      , enemyVictory = ecVictoryPoints
+      , enemyVictory = cdVictoryPoints
       , enemyUnique = False
       , enemySpawnAt = Nothing
       }
@@ -118,13 +113,13 @@ baseAttrs eid cardCode f =
 weaknessBaseAttrs :: EnemyId -> CardCode -> EnemyAttrs
 weaknessBaseAttrs eid cardCode =
   let
-    PlayerCardDef {..} =
+    CardDef {..} =
       fromJustNote
           ("missing player enemy weakness card: " <> show cardCode)
           (lookup cardCode allPlayerCards)
   in
     EnemyAttrs
-      { enemyName = EnemyName (mkName pcName)
+      { enemyName = EnemyName cdName
       , enemyId = eid
       , enemyCardCode = cardCode
       , enemyEngagedInvestigators = mempty
@@ -135,11 +130,11 @@ weaknessBaseAttrs eid cardCode =
       , enemyDamage = 0
       , enemyHealthDamage = 0
       , enemySanityDamage = 0
-      , enemyTraits = pcTraits
+      , enemyTraits = cdTraits
       , enemyTreacheries = mempty
       , enemyAssets = mempty
-      , enemyVictory = pcVictoryPoints
-      , enemyKeywords = pcKeywords
+      , enemyVictory = cdVictoryPoints
+      , enemyKeywords = cdKeywords
       , enemyPrey = AnyPrey
       , enemyModifiers = mempty
       , enemyExhausted = False

@@ -27,6 +27,9 @@ mkFullName = (. Just) . Name
 subtitled :: Text -> Text -> Name
 subtitled = mkFullName
 
+(<:>) :: Text -> Text -> Name
+(<:>) = subtitled
+
 instance ToJSON Name where
   toJSON = genericToJSON $ aesonOptions $ Just "name"
   toEncoding = genericToEncoding $ aesonOptions $ Just "name"

@@ -6,6 +6,9 @@ module Arkham.Types.Asset.Cards.TheNecronomicon
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -13,11 +16,8 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Slot
 import Arkham.Types.Target
-import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 import qualified Arkham.Types.Token as Token
+import Arkham.Types.Window
 
 newtype TheNecronomicon = TheNecronomicon AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
@@ -48,7 +48,7 @@ instance HasActions env TheNecronomicon where
 instance (AssetRunner env) => RunMessage env TheNecronomicon where
   runMessage msg a@(TheNecronomicon attrs) = case msg of
     Revelation iid source | isSource attrs source ->
-      a <$ unshiftMessage (PlayCard iid (getCardId attrs) Nothing False)
+      a <$ unshiftMessage (PlayCard iid (attrs ^. cardIdL) Nothing False)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       unshiftMessage $ InvestigatorDamage iid source 0 1
       if fromJustNote "Must be set" (assetHorror attrs) == 1

@@ -11,7 +11,7 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
-import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Attrs hiding (traitsL)
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
@@ -52,7 +52,7 @@ instance LocationRunner env => RunMessage env DimensionalDoorway where
     Revelation iid source | isSource attrs source -> do
       encounterDiscard <- map unDiscardedEncounterCard <$> getList ()
       let
-        mHexCard = find (member Hex . getTraits) encounterDiscard
+        mHexCard = find (views traitsL $ member Hex) encounterDiscard
         revelationMsgs = case mHexCard of
           Nothing -> []
           Just hexCard ->

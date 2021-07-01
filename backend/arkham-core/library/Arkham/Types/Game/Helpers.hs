@@ -11,7 +11,6 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
-import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -31,7 +30,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
-import Arkham.Types.Trait (Trait)
+import Arkham.Types.Trait (Trait, traitsL)
 import Arkham.Types.Window
 
 cancelToken :: (HasQueue env, MonadIO m, MonadReader env m) => Token -> m ()
@@ -192,7 +191,7 @@ getCanAffordCost iid source mAction = \case
     handCards <- mapMaybe (preview _PlayerCard) <$> getHandOf iid
     let
       total = sum $ map
-        (count (`member` insertSet SkillWild skillTypes) . pcSkills . pcDef)
+        (count (`member` insertSet SkillWild skillTypes) . cdSkills . pcDef)
         handCards
     pure $ total >= n
   HandDiscardCost n mCardType traits skillTypes -> do
@@ -200,10 +199,10 @@ getCanAffordCost iid source mAction = \case
     let
       cardTypeFilter = case mCardType of
         Nothing -> const True
-        Just cardType -> (== cardType) . pcCardType . pcDef
+        Just cardType' -> views (defL . cardTypeL) (== cardType')
       traitFilter = if null traits
         then const True
-        else notNull . intersect traits . pcTraits . pcDef
+        else notNull . intersect traits . view traitsL
       skillTypeFilter = if null skillTypes
         then const True
         else
@@ -211,7 +210,7 @@ getCanAffordCost iid source mAction = \case
           . null
           . intersect (insertSet SkillWild skillTypes)
           . setFromList
-          . pcSkills
+          . cdSkills
           . pcDef
     pure
       $ length
@@ -533,7 +532,6 @@ targetToSource = \case
   TokenFaceTarget _ -> error "Not convertable"
   DrawnTokenTarget dt -> DrawnTokenSource dt
   TestTarget -> TestSource mempty
-  EncounterCardTarget _ -> error "can not convert"
   ResourceTarget -> ResourceSource
   InvestigationTarget{} -> error "not converted"
 

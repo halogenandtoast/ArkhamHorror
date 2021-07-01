@@ -1,33 +1,22 @@
-module Arkham.Types.Card.EncounterCard
-  ( module Arkham.Types.Card.EncounterCard
-  , module Arkham.Types.Card.EncounterCardMatcher
-  , module Arkham.Types.Card.EncounterCardType
-  ) where
+module Arkham.Types.Card.EncounterCard where
 
 import Arkham.Prelude
 
 import Arkham.Json
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.EncounterCardMatcher
-import Arkham.Types.Card.EncounterCardType
+import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.Id
-import Arkham.Types.Keyword (Keyword)
-import Arkham.Types.Name
-import Arkham.Types.Trait
 
 newtype DiscardedEncounterCard = DiscardedEncounterCard { unDiscardedEncounterCard :: EncounterCard }
 
 data EncounterCard = MkEncounterCard
-  { ecCardCode :: CardCode
-  , ecName :: Name
-  , ecCardType :: EncounterCardType
-  , ecTraits :: HashSet Trait
-  , ecKeywords :: HashSet Keyword
-  , ecId :: CardId
-  , ecVictoryPoints :: Maybe Int
+  { ecId :: CardId
+  , ecDef :: CardDef
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
+
+instance HasCardDef EncounterCard where
+  defL = lens ecDef $ \m x -> m { ecDef = x }
 
 instance ToJSON EncounterCard where
   toJSON = genericToJSON $ aesonOptions $ Just "ec"
@@ -35,9 +24,3 @@ instance ToJSON EncounterCard where
 
 instance FromJSON EncounterCard where
   parseJSON = genericParseJSON $ aesonOptions $ Just "ec"
-
-encounterCardMatch :: EncounterCardMatcher -> EncounterCard -> Bool
-encounterCardMatch (EncounterCardMatchByType (cardType, mtrait)) MkEncounterCard {..}
-  = ecCardType == cardType && maybe True (`elem` ecTraits) mtrait
-encounterCardMatch (EncounterCardMatchByCardCode cardCode) card =
-  ecCardCode card == cardCode

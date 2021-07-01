@@ -6,9 +6,9 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (endlessBridge)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -16,7 +16,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype EndlessBridge = EndlessBridge LocationAttrs
@@ -24,14 +23,11 @@ newtype EndlessBridge = EndlessBridge LocationAttrs
 
 endlessBridge :: LocationId -> EndlessBridge
 endlessBridge = EndlessBridge . baseAttrs
-  "02326"
-  "Endless Bridge"
-  EncounterSet.LostInTimeAndSpace
+  Cards.endlessBridge
   4
   (Static 2)
   Triangle
   [Square, Squiggle]
-  [Otherworld, Extradimensional]
 
 instance HasModifiersFor env EndlessBridge where
   getModifiersFor = noModifiersFor

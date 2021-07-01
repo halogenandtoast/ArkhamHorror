@@ -7,21 +7,17 @@ where
 import Arkham.Prelude
 
 import Arkham.Types.Card.CardCode as X
+import Arkham.Types.Card.CardDef as X
+import Arkham.Types.Card.CardMatcher as X
+import Arkham.Types.Card.CardType as X
 import Arkham.Types.Card.Class as X
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.EncounterCard
-import Arkham.Types.Card.EncounterCard as X
-  (EncounterCard(..), EncounterCardType(..), encounterCardMatch)
+import Arkham.Types.Card.EncounterCard as X (EncounterCard(..))
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Card.PlayerCard as X
-  ( AttackOfOpportunityModifier(..)
-  , BearerId(..)
-  , DiscardedPlayerCard(..)
-  , PlayerCard(..)
-  , PlayerCardType(..)
-  , playerCardMatch
-  )
+  (BearerId(..), DiscardedPlayerCard(..), PlayerCard(..))
 import Arkham.Types.InvestigatorId
 
 data Card
@@ -33,6 +29,11 @@ data Card
 _PlayerCard :: Traversal' Card PlayerCard
 _PlayerCard f (PlayerCard pc) = PlayerCard <$> f pc
 _PlayerCard _ other = pure other
+
+instance HasCardDef Card where
+  defL f = \case
+    PlayerCard pc -> PlayerCard <$> defL f pc
+    EncounterCard ec -> EncounterCard <$> defL f ec
 
 data CampaignStoryCard = CampaignStoryCard
   { campaignStoryCardInvestigatorId :: InvestigatorId
@@ -71,8 +72,8 @@ instance HasCost Card where
   getCost (EncounterCard _) = 0
 
 isDynamic :: Card -> Bool
-isDynamic (PlayerCard card) = case pcCost (pcDef card) of
-  DynamicCost -> True
+isDynamic (PlayerCard card) = case cdCost (pcDef card) of
+  Just DynamicCost -> True
   _ -> False
 isDynamic (EncounterCard _) = False
 
@@ -86,4 +87,10 @@ toEncounterCard (PlayerCard _) = Nothing
 
 cardIsWeakness :: Card -> Bool
 cardIsWeakness (EncounterCard _) = False
-cardIsWeakness (PlayerCard pc) = pcWeakness (pcDef pc)
+cardIsWeakness (PlayerCard pc) = cdWeakness (pcDef pc)
+
+filterCardType :: HasCardDef a => CardType -> [a] -> [a]
+filterCardType = filter . views (defL . cardTypeL) . (==)
+
+filterLocations :: HasCardDef a => [a] -> [a]
+filterLocations = filterCardType LocationType

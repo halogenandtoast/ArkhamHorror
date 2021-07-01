@@ -26,7 +26,7 @@ instance HasCount ActionTakenCount env InvestigatorId => HasActions env SecondWi
     | iid == ownerId = do
       actionsTaken <- unActionTakenCount <$> getCount iid
       pure
-        [ InitiatePlayCard iid (getCardId attrs) Nothing True
+        [ InitiatePlayCard iid (attrs ^. cardIdL) Nothing True
         | actionsTaken == 0
         ]
   getActions iid window (SecondWind attrs) = getActions iid window attrs

@@ -6,7 +6,6 @@ import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Message
@@ -35,7 +34,7 @@ instance AgendaRunner env => RunMessage env TheArkhamWoods where
           [ ShuffleEncounterDiscardBackIn
           , DiscardEncounterUntilFirst
             (AgendaSource aid)
-            (EncounterCardMatchByType (EnemyType, Just Monster))
+            (CardMatchByType (EnemyType, singleton Monster))
           ]
         )
     RequestedEncounterCard (AgendaSource aid) mcard | aid == agendaId ->
@@ -45,7 +44,7 @@ instance AgendaRunner env => RunMessage env TheArkhamWoods where
           mainPathId <- getJustLocationIdByName "Main Path"
           a <$ unshiftMessages
             [ SpawnEnemyAt (EncounterCard card) mainPathId
-            , PlaceDoom (CardIdTarget $ getCardId card) 1
+            , PlaceDoom (CardIdTarget $ card ^. cardIdL) 1
             , NextAgenda aid "01144"
             ]
     _ -> TheArkhamWoods <$> runMessage msg attrs

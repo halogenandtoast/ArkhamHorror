@@ -11,7 +11,7 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
-import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Attrs hiding (traitsL)
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
@@ -53,7 +53,7 @@ instance LocationRunner env => RunMessage env StepsOfYhagharl where
     Revelation iid source | isSource attrs source -> do
       encounterDiscard <- map unDiscardedEncounterCard <$> getList ()
       let
-        mMadnessCard = find (member Madness . getTraits) encounterDiscard
+        mMadnessCard = find (views traitsL (member Madness)) encounterDiscard
         revelationMsgs = case mMadnessCard of
           Nothing -> []
           Just madnessCard ->

@@ -2,29 +2,25 @@ module Arkham.Types.Location.Cards.RitualGrounds where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (ritualGrounds)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Trait
 
 newtype RitualGrounds = RitualGrounds LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ritualGrounds :: LocationId -> RitualGrounds
-ritualGrounds = RitualGrounds . (victoryL ?~ 1) . baseAttrs
-  "81017"
-  "Ritual Grounds"
-  EncounterSet.CurseOfTheRougarou
+ritualGrounds = RitualGrounds . baseAttrs
+  Cards.ritualGrounds
   2
   (PerPlayer 1)
   Equals
   [Hourglass, Equals]
-  [Unhallowed]
 
 instance HasModifiersFor env RitualGrounds where
   getModifiersFor = noModifiersFor

@@ -22,7 +22,6 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.AssetId
 import Arkham.Types.Card as X
 import Arkham.Types.Card.Id
-import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ChaosBag as X
 import qualified Arkham.Types.ChaosBag as ChaosBag
 import Arkham.Types.Classes as X hiding
@@ -205,7 +204,7 @@ buildAsset cardCode = lookupAsset cardCode <$> getRandom
 testPlayerCards :: MonadIO m => Int -> m [PlayerCard]
 testPlayerCards count' = replicateM count' (testPlayerCard id)
 
-testPlayerCard :: MonadIO m => (PlayerCardDef -> PlayerCardDef) -> m PlayerCard
+testPlayerCard :: MonadIO m => (CardDef -> CardDef) -> m PlayerCard
 testPlayerCard f = do
   cardId <- CardId <$> liftIO nextRandom
   pure $ MkPlayerCard

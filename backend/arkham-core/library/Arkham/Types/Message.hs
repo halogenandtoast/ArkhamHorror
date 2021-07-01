@@ -14,7 +14,6 @@ import Arkham.Types.AssetId
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.CampaignStep
 import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Card.Id
 import Arkham.Types.ChaosBagStepState
 import Arkham.Types.Cost
@@ -207,7 +206,7 @@ data Message
   | DisableEffect EffectId
   | Discard Target
   | DiscardCard InvestigatorId CardId
-  | DiscardEncounterUntilFirst Source EncounterCardMatcher
+  | DiscardEncounterUntilFirst Source CardMatcher
   | DiscardTopOfDeck InvestigatorId Int (Maybe Target)
   | DiscardTopOfEncounterDeck InvestigatorId Int (Maybe Target)
   | DiscardTopOfEncounterDeckWithDiscardedCards InvestigatorId Int (Maybe Target) [EncounterCard]
@@ -265,8 +264,8 @@ data Message
   | FailedAttackEnemy InvestigatorId EnemyId
   | FailedSkillTest InvestigatorId (Maybe Action) Source Target SkillType Int
   | FightEnemy InvestigatorId EnemyId Source SkillType Bool
-  | FindAndDrawEncounterCard InvestigatorId EncounterCardMatcher
-  | FindEncounterCard InvestigatorId Target EncounterCardMatcher
+  | FindAndDrawEncounterCard InvestigatorId CardMatcher
+  | FindEncounterCard InvestigatorId Target CardMatcher
   | FinishedWithMulligan InvestigatorId
   | FlavorText (Maybe Text) [Text]
   | FocusCards [Card]
@@ -428,7 +427,7 @@ data Message
   | RunDrawFromBag Source (Maybe InvestigatorId) RequestedTokenStrategy
   | RunSkillTest InvestigatorId
   | RunSkillTestSourceNotification InvestigatorId Source
-  | SearchCollectionForRandom InvestigatorId Source (PlayerCardType, HashSet Trait)
+  | SearchCollectionForRandom InvestigatorId Source (CardType, HashSet Trait)
   | SearchDeckForTraits InvestigatorId Target [Trait]
   | SearchDiscard InvestigatorId Target [Trait]
   | SearchTopOfDeck InvestigatorId Target Int [Trait] LeftoverCardStrategy

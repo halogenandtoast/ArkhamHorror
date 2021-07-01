@@ -7,7 +7,6 @@ import Arkham.Prelude
 import Arkham.Json
 import Arkham.PlayerCard
 import Arkham.Types.Card
-import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Name
@@ -64,16 +63,16 @@ instance IsCard SkillAttrs where
 baseAttrs :: InvestigatorId -> SkillId -> CardCode -> SkillAttrs
 baseAttrs iid eid cardCode =
   let
-    PlayerCardDef {..} =
+    CardDef {..} =
       fromJustNote
           ("missing player card: " <> unpack (unCardCode cardCode))
           (HashMap.lookup cardCode allPlayerCards)
   in
     SkillAttrs
-      { skillName = pcName
+      { skillName = cdName
       , skillId = eid
-      , skillCardCode = pcCardCode
-      , skillTraits = pcTraits
+      , skillCardCode = cardCode
+      , skillTraits = cdTraits
       , skillOwner = iid
       , skillWeakness = False
       }
@@ -81,16 +80,16 @@ baseAttrs iid eid cardCode =
 weaknessAttrs :: InvestigatorId -> SkillId -> CardCode -> SkillAttrs
 weaknessAttrs iid eid cardCode =
   let
-    PlayerCardDef {..} =
+    CardDef {..} =
       fromJustNote
           "missing weakness card"
           (HashMap.lookup cardCode allPlayerCards)
   in
     SkillAttrs
-      { skillName = pcName
+      { skillName = cdName
       , skillId = eid
-      , skillCardCode = pcCardCode
-      , skillTraits = pcTraits
+      , skillCardCode = cardCode
+      , skillTraits = cdTraits
       , skillOwner = iid
       , skillWeakness = True
       }

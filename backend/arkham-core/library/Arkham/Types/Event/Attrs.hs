@@ -7,29 +7,26 @@ import Arkham.Prelude
 import Arkham.Json
 import Arkham.PlayerCard
 import Arkham.Types.Card
-import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Trait
 
 data EventAttrs = EventAttrs
-  { eventName :: Text
+  { eventCardDef :: CardDef
   , eventId :: EventId
-  , eventCardCode :: CardCode
-  , eventTraits :: HashSet Trait
   , eventAttachedTarget :: Maybe Target
   , eventOwner :: InvestigatorId
-  , eventWeakness :: Bool
   , eventDoom :: Int
   }
   deriving stock (Show, Eq, Generic)
 
 makeLensesWith suffixedFields ''EventAttrs
+
+instance HasCardDef EventAttrs where
+  defL = cardDefL
 
 instance ToJSON EventAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "event"
@@ -39,10 +36,7 @@ instance FromJSON EventAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "event"
 
 instance IsCard EventAttrs where
-  getCardId = unEventId . eventId
-  getCardCode = eventCardCode
-  getTraits = eventTraits
-  getKeywords = mempty
+  cardIdL = lens (unEventId . eventId) $ \m x -> m { eventId = EventId x }
 
 unshiftEffect
   :: (HasQueue env, MonadReader env m, MonadIO m)
@@ -50,41 +44,18 @@ unshiftEffect
   -> Target
   -> m ()
 unshiftEffect attrs target = unshiftMessages
-  [ CreateEffect (eventCardCode attrs) Nothing (toSource attrs) target
+  [ CreateEffect (attrs ^. defL . cardCodeL) Nothing (toSource attrs) target
   , Discard $ toTarget attrs
   ]
 
 baseAttrs :: InvestigatorId -> EventId -> CardCode -> EventAttrs
-baseAttrs iid eid cardCode =
-  let
-    PlayerCardDef {..} = lookupPlayerCardDef cardCode
-  in
-    EventAttrs
-      { eventName = pcName
-      , eventId = eid
-      , eventCardCode = pcCardCode
-      , eventTraits = pcTraits
-      , eventAttachedTarget = Nothing
-      , eventWeakness = False
-      , eventOwner = iid
-      , eventDoom = 0
-      }
-
-weaknessAttrs :: InvestigatorId -> EventId -> CardCode -> EventAttrs
-weaknessAttrs iid eid cardCode =
-  let
-    PlayerCardDef {..} = lookupPlayerCardDef cardCode
-  in
-    EventAttrs
-      { eventName = pcName
-      , eventId = eid
-      , eventCardCode = pcCardCode
-      , eventTraits = pcTraits
-      , eventAttachedTarget = Nothing
-      , eventOwner = iid
-      , eventWeakness = True
-      , eventDoom = 0
-      }
+baseAttrs iid eid cardCode = EventAttrs
+  { eventCardDef = lookupPlayerCardDef cardCode
+  , eventId = eid
+  , eventAttachedTarget = Nothing
+  , eventOwner = iid
+  , eventDoom = 0
+  }
 
 instance Entity EventAttrs where
   type EntityId EventAttrs = EventId
@@ -93,7 +64,7 @@ instance Entity EventAttrs where
   toAttrs = id
 
 instance NamedEntity EventAttrs where
-  toName = mkName . eventName
+  toName = view (defL . nameL)
 
 instance TargetEntity EventAttrs where
   toTarget = EventTarget . toId

@@ -1,6 +1,7 @@
 module Arkham.Types.Trait
   ( Trait(..)
   , EnemyTrait(..)
+  , HasTraits(..)
   ) where
 
 import Arkham.Prelude
@@ -154,3 +155,6 @@ data Trait
   | Yithian
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+class HasTraits a where
+  traitsL :: Lens' a (HashSet Trait)

@@ -9,8 +9,6 @@ import Arkham.PlayerCard
 import Arkham.Types.Ability
 import Arkham.Types.AssetId
 import Arkham.Types.Card
-import Arkham.Types.Card.Cost
-import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.EnemyId
@@ -18,7 +16,6 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -26,13 +23,10 @@ import Arkham.Types.Window
 import Arkham.Types.Action
 import Arkham.Types.Asset.Class
 import Arkham.Types.Asset.Uses
-import Arkham.Types.Trait
 
 data AssetAttrs = AssetAttrs
-  { assetName :: Text
-  , assetId :: AssetId
-  , assetCardCode :: CardCode
-  , assetCost :: CardCost
+  { assetId :: AssetId
+  , assetCardDef :: CardDef
   , assetInvestigator :: Maybe InvestigatorId
   , assetLocation :: Maybe LocationId
   , assetEnemy :: Maybe EnemyId
@@ -42,7 +36,6 @@ data AssetAttrs = AssetAttrs
   , assetSanity :: Maybe Int
   , assetHealthDamage :: Int
   , assetSanityDamage :: Int
-  , assetTraits :: HashSet Trait
   , assetUses :: Uses
   , assetExhausted :: Bool
   , assetDoom :: Int
@@ -55,6 +48,9 @@ data AssetAttrs = AssetAttrs
 
 makeLensesWith suffixedFields ''AssetAttrs
 
+instance HasCardDef AssetAttrs where
+  defL = cardDefL
+
 instance ToJSON AssetAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "asset"
   toEncoding = genericToEncoding $ aesonOptions $ Just "asset"
@@ -63,21 +59,13 @@ instance FromJSON AssetAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "asset"
 
 instance IsCard AssetAttrs where
-  getCardId = unAssetId . assetId
-  getCardCode = assetCardCode
-  getTraits = assetTraits
-  getKeywords = mempty
+  cardIdL = lens (unAssetId . assetId) $ \m x -> m { assetId = AssetId x }
 
 baseAttrs :: AssetId -> CardCode -> AssetAttrs
 baseAttrs aid cardCode =
-  let
-    PlayerCardDef {..} = lookupPlayerCardDef cardCode
-  in
     AssetAttrs
-      { assetName = pcName
-      , assetId = aid
-      , assetCardCode = cardCode
-      , assetCost = pcCost
+      { assetId = aid
+      , assetCardDef = lookupPlayerCardDef cardCode
       , assetInvestigator = Nothing
       , assetLocation = Nothing
       , assetEnemy = Nothing
@@ -87,7 +75,6 @@ baseAttrs aid cardCode =
       , assetSanity = Nothing
       , assetHealthDamage = 0
       , assetSanityDamage = 0
-      , assetTraits = pcTraits
       , assetUses = NoUses
       , assetExhausted = False
       , assetDoom = 0
@@ -104,13 +91,13 @@ instance Entity AssetAttrs where
   toAttrs = id
 
 instance NamedEntity AssetAttrs where
-  toName = mkName . assetName
+  toName = view (defL . nameL)
 
 instance TargetEntity AssetAttrs where
   toTarget = AssetTarget . toId
   isTarget attrs@AssetAttrs {..} = \case
     AssetTarget aid -> aid == assetId
-    CardCodeTarget cardCode -> assetCardCode == cardCode
+    CardCodeTarget cardCode -> attrs ^. defL . cardCodeL == cardCode
     CardIdTarget cardId -> cardId == unAssetId assetId
     SkillTestInitiatorTarget target -> isTarget attrs target
     _ -> False
@@ -118,7 +105,7 @@ instance TargetEntity AssetAttrs where
 instance SourceEntity AssetAttrs where
   toSource = AssetSource . toId
   isSource AssetAttrs { assetId } (AssetSource aid) = assetId == aid
-  isSource attrs (PlayerCardSource cid) = getCardId attrs == cid
+  isSource attrs (PlayerCardSource cid) = attrs ^. cardIdL == cid
   isSource _ _ = False
 
 ownedBy :: AssetAttrs -> InvestigatorId -> Bool

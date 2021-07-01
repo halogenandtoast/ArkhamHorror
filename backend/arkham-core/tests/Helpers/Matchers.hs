@@ -8,7 +8,6 @@ import Arkham.Types.Agenda
 import Arkham.Types.Asset
 import Arkham.Types.AssetId
 import Arkham.Types.Card
-import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Enemy
 import Arkham.Types.EnemyId
@@ -167,7 +166,7 @@ hasEnemy e l = (toId e `member`) <$> getSet @EnemyId l
 
 hasCardInPlay :: (MonadReader env m) => Card -> Investigator -> m Bool
 hasCardInPlay c i = case c of
-  PlayerCard pc -> case pcCardType (pcDef pc) of
+  PlayerCard pc -> case cdCardType (pcDef pc) of
     AssetType -> (AssetId (pcId pc) `member`) <$> getSet i
     _ -> error "not implemented"
   _ -> error "not implemented"

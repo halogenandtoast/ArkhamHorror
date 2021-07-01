@@ -15,7 +15,6 @@ import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
-import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes.Entity as X
 import Arkham.Types.Classes.HasQueue as X
 import Arkham.Types.Classes.HasRecord as X
@@ -149,10 +148,10 @@ instance HasVictoryPoints Card where
   getVictoryPoints (EncounterCard card) = getVictoryPoints card
 
 instance HasVictoryPoints EncounterCard where
-  getVictoryPoints MkEncounterCard {..} = ecVictoryPoints
+  getVictoryPoints MkEncounterCard {..} = cdVictoryPoints ecDef
 
 instance HasVictoryPoints PlayerCard where
-  getVictoryPoints MkPlayerCard {..} = pcVictoryPoints pcDef
+  getVictoryPoints MkPlayerCard {..} = cdVictoryPoints pcDef
 
 type ActionRunner env
   = ( HasQueue env
@@ -283,39 +282,20 @@ class Exhaustable a where
   isReady = not . isExhausted
   {-# MINIMAL isExhausted | isReady #-}
 
-class IsCard a where
+class (HasTraits a, HasCardDef a) => IsCard a where
   toCard :: a -> Card
-  toCard a = lookupCard (getCardCode a) (getCardId a)
-  getCardId :: a -> CardId
-  getCardCode :: a -> CardCode
-  getTraits :: a -> HashSet Trait
-  getKeywords :: a -> HashSet Keyword
+  toCard a = lookupCard (a ^. defL . cardCodeL) (a ^. cardIdL)
+  cardIdL :: Lens' a CardId
 
 instance IsCard Card where
-  getCardCode = \case
-    PlayerCard pc -> getCardCode pc
-    EncounterCard ec -> getCardCode ec
-  getCardId = \case
-    PlayerCard pc -> getCardId pc
-    EncounterCard ec -> getCardId ec
-  getTraits = \case
-    PlayerCard pc -> getTraits pc
-    EncounterCard ec -> getTraits ec
-  getKeywords = \case
-    PlayerCard pc -> getKeywords pc
-    EncounterCard ec -> getKeywords ec
-
+  cardIdL f = \case
+    PlayerCard pc -> PlayerCard <$> cardIdL f pc
+    EncounterCard ec -> EncounterCard <$> cardIdL f ec
 instance IsCard PlayerCard where
-  getCardCode = pcCardCode . pcDef
-  getCardId = pcId
-  getTraits = pcTraits . pcDef
-  getKeywords = pcKeywords . pcDef
+  cardIdL = lens pcId $ \m x -> m { pcId = x }
 
 instance IsCard EncounterCard where
-  getCardCode = ecCardCode
-  getCardId = ecId
-  getTraits = ecTraits
-  getKeywords = ecKeywords
+  cardIdL = lens ecId $ \m x -> m { ecId = x }
 
 class IsInvestigator a where
   isResigned :: a -> Bool

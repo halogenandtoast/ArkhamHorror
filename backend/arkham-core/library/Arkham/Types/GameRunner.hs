@@ -94,7 +94,7 @@ type GameRunner env
       , HasSet FarthestLocationId env [InvestigatorId]
       , HasSet FarthestLocationId env InvestigatorId
       , HasSet HandCardId env InvestigatorId
-      , HasSet HandCardId env (InvestigatorId, PlayerCardType)
+      , HasSet HandCardId env (InvestigatorId, CardType)
       , HasSet InvestigatorId env ()
       , HasSet InScenarioInvestigatorId env ()
       , HasSet InvestigatorId env EnemyId

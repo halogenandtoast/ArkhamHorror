@@ -46,8 +46,8 @@ data ModifierType
   | Blocked
   | CancelSkills
   | CanBeAssignedDamage
-  | CanBecomeFast (Maybe PlayerCardType, [Trait])
-  | CanPlayTopOfDiscard (Maybe PlayerCardType, [Trait])
+  | CanBecomeFast (Maybe CardType, [Trait])
+  | CanPlayTopOfDiscard (Maybe CardType, [Trait])
   | CannotBeAttackedByNonElite
   | CannotBeDiscarded
   | CannotBeEnteredByNonElite
@@ -63,7 +63,7 @@ data ModifierType
   | CannotMakeAttacksOfOpportunity
   | CannotMove
   | CannotPlaceClues
-  | CannotPlay [(PlayerCardType, HashSet Trait)]
+  | CannotPlay [(CardType, HashSet Trait)]
   | CannotSpendClues
   | CanOnlyBeAttackedByAbilityOn (HashSet CardCode)
   | ControlledAssetsCannotReady
@@ -88,7 +88,7 @@ data ModifierType
   | NegativeToPositive
   | ChangeTokenModifier TokenModifier
   | ReduceCostOf [Trait] Int
-  | ReduceCostOfCardType PlayerCardType Int
+  | ReduceCostOfCardType CardType Int
   | RemoveKeyword Keyword
   | SanityModifier Int
   | ShroudModifier Int

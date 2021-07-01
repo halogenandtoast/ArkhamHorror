@@ -246,12 +246,6 @@ baseLocation a b c d e f g func =
     []
     a
 
-instance IsCard Location where
-  getCardId = getCardId . toAttrs
-  getCardCode = getCardCode . toAttrs
-  getTraits = getTraits . toAttrs
-  getKeywords = getKeywords . toAttrs
-
 instance HasVictoryPoints Location where
   getVictoryPoints l =
     let LocationAttrs { locationClues, locationVictory } = toAttrs l

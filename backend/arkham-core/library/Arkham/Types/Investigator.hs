@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Types.Action (Action, TakenAction)
 import Arkham.Types.AssetId
 import Arkham.Types.Card
-import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
 import Arkham.Types.EnemyId
@@ -153,7 +152,7 @@ instance HasList DiscardableHandCard env Investigator where
       . toAttrs
    where
     isWeakness = \case
-      PlayerCard pc -> pcWeakness (pcDef pc)
+      PlayerCard pc -> cdWeakness (pcDef pc)
       EncounterCard _ -> True -- maybe?
 
 instance HasCount MentalTraumaCount env Investigator where

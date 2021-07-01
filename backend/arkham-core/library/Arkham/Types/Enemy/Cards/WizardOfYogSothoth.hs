@@ -7,14 +7,13 @@ where
 import Arkham.Prelude
 
 import Arkham.Types.Card
-import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
+import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Prey
-import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Runner
 import Arkham.Types.Trait
 
 newtype WizardOfYogSothoth = WizardOfYogSothoth EnemyAttrs
@@ -41,9 +40,9 @@ instance (EnemyRunner env) => RunMessage env WizardOfYogSothoth where
   runMessage msg e@(WizardOfYogSothoth attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrewEncounterCard iid card
       | iid `elem` enemyEngagedInvestigators -> e <$ when
-        (any (`member` ecTraits card) [Hex, Pact])
+        (any (`member` card ^. traitsL) [Hex, Pact])
         (unshiftMessage (EnemyAttack iid enemyId))
     InvestigatorDrewPlayerCard iid card -> e <$ when
-      (any (`member` pcTraits (pcDef card)) [Hex, Pact])
+      (any (`member` cdTraits (pcDef card)) [Hex, Pact])
       (unshiftMessage (EnemyAttack iid enemyId))
     _ -> WizardOfYogSothoth <$> runMessage msg attrs

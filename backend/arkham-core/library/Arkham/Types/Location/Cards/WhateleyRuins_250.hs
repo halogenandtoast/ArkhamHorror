@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (whateleyRuins_250)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Exception
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
@@ -30,14 +30,11 @@ newtype WhateleyRuins_250 = WhateleyRuins_250 LocationAttrs
 
 whateleyRuins_250 :: LocationId -> WhateleyRuins_250
 whateleyRuins_250 = WhateleyRuins_250 . baseAttrs
-  "02250"
-  "Whateley Ruins"
-  EncounterSet.UndimensionedAndUnseen
+  Cards.whateleyRuins_250
   3
   (PerPlayer 2)
   Plus
   [Triangle, Diamond, Hourglass]
-  [Dunwich]
 
 instance HasModifiersFor env WhateleyRuins_250 where
   getModifiersFor _ (InvestigatorTarget iid) (WhateleyRuins_250 attrs) =

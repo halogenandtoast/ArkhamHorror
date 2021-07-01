@@ -35,7 +35,7 @@ instance ActionRunner env => HasActions env Scavenging where
   getActions iid (AfterPassSkillTest (Just Action.Investigate) _ You n) (Scavenging a)
     | ownedBy a iid && n >= 2
     = do
-      hasItemInDiscard <- any ((Item `member`) . getTraits) <$> getDiscardOf iid
+      hasItemInDiscard <- any (views traitsL (Item `member`)) <$> getDiscardOf iid
       pure [ ActivateCardAbilityAction iid (ability a) | hasItemInDiscard ]
   getActions i window (Scavenging x) = getActions i window x
 

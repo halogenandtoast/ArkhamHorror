@@ -5,7 +5,6 @@ import Arkham.Prelude
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
-import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
@@ -140,7 +139,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
     DiscardedTopOfDeck _iid cards target@(DrawnTokenTarget token) ->
       s <$ case drawnTokenFace token of
         ElderThing -> do
-          let n = sum $ map (toPrintedCost . pcCost . pcDef) cards
+          let n = sum $ map (toPrintedCost . cdCost . pcDef) cards
           unshiftMessage $ CreateTokenValueEffect (-n) (toSource attrs) target
         _ -> pure ()
     ScenarioResolution NoResolution -> do

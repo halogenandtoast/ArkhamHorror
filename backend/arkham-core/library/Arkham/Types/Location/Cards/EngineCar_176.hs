@@ -6,7 +6,7 @@ where
 
 import Arkham.Prelude
 
-import Arkham.Types.Card.EncounterCardMatcher
+import Arkham.Types.Card.CardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.Direction
 import qualified Arkham.Types.EncounterSet as EncounterSet
@@ -57,6 +57,6 @@ instance LocationRunner env => RunMessage env EngineCar_176 where
   runMessage msg (EngineCar_176 attrs) = case msg of
     RevealLocation (Just iid) lid | lid == locationId attrs -> do
       unshiftMessage
-        (FindAndDrawEncounterCard iid (EncounterCardMatchByCardCode "02182"))
+        (FindAndDrawEncounterCard iid (CardMatchByCardCode "02182"))
       EngineCar_176 <$> runMessage msg attrs
     _ -> EngineCar_176 <$> runMessage msg attrs

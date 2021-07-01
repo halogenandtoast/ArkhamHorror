@@ -10,7 +10,6 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.LocationId
@@ -63,7 +62,7 @@ instance (HasName env LocationId, ActRunner env) => RunMessage env BreakingAndEn
           , FindEncounterCard
             leadInvestigatorId
             (toTarget attrs)
-            (EncounterCardMatchByCardCode "02141")
+            (CardMatchByCardCode "02141")
           ]
     FoundEnemyInVoid _ target eid | isTarget attrs target -> do
       lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"

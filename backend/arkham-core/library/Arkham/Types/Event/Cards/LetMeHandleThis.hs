@@ -5,14 +5,15 @@ module Arkham.Types.Event.Cards.LetMeHandleThis
 
 import Arkham.Prelude
 
+import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Event.Attrs
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Event.Attrs
 
 newtype LetMeHandleThis = LetMeHandleThis EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -29,7 +30,7 @@ instance HasActions env LetMeHandleThis where
     = pure
       [ InitiatePlayCard
           iid
-          (getCardId attrs)
+          (attrs ^. cardIdL)
           (Just $ TreacheryTarget tid)
           False
       ]
@@ -48,7 +49,7 @@ instance HasQueue env => RunMessage env LetMeHandleThis where
           other -> other
         e <$ unshiftMessages
           [ CreateEffect
-            eventCardCode
+            (attrs ^. defL . cardCodeL)
             Nothing
             (toSource attrs)
             (InvestigatorTarget iid)

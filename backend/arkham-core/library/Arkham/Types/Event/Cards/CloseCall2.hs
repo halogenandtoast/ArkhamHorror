@@ -30,7 +30,7 @@ instance (HasId CardCode env EnemyId, HasSet Trait env EnemyId) => HasActions en
       traits' <- getSet eid
       cardCode <- getId eid
       pure
-        [ InitiatePlayCard iid (getCardId attrs) (Just $ EnemyTarget eid) False
+        [ InitiatePlayCard iid (attrs ^. cardIdL) (Just $ EnemyTarget eid) False
         | Elite `notMember` traits' && cardCode `elem` keys allEncounterCards
         ]
   getActions i window (CloseCall2 attrs) = getActions i window attrs

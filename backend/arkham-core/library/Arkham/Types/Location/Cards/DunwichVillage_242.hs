@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (dunwichVillage_242)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Exception
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
@@ -27,14 +27,11 @@ newtype DunwichVillage_242 = DunwichVillage_242 LocationAttrs
 
 dunwichVillage_242 :: LocationId -> DunwichVillage_242
 dunwichVillage_242 = DunwichVillage_242 . baseAttrs
-  "02242"
-  "Dunwich Village"
-  EncounterSet.UndimensionedAndUnseen
+  Cards.dunwichVillage_242
   3
   (Static 1)
   Circle
   [Triangle, Square, Diamond]
-  [Dunwich]
 
 instance HasModifiersFor env DunwichVillage_242 where
   getModifiersFor = noModifiersFor

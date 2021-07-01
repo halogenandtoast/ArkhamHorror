@@ -8,7 +8,6 @@ import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
@@ -56,7 +55,7 @@ instance LocationRunner env => RunMessage env DimensionalGap where
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       l <$ unshiftMessage
         (DiscardEncounterUntilFirst source
-        $ EncounterCardMatchByType (EnemyType, Nothing)
+        $ CardMatchByType (EnemyType, mempty)
         )
     RequestedEncounterCard source (Just ec) | isSource attrs source ->
       l <$ unshiftMessage (SpawnEnemyAt (EncounterCard ec) (toId attrs))

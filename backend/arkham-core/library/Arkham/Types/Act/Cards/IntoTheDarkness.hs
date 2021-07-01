@@ -6,7 +6,6 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Source
@@ -35,17 +34,17 @@ instance ActRunner env => RunMessage env IntoTheDarkness where
           [ ShuffleEncounterDiscardBackIn
           , DiscardEncounterUntilFirst
             (ActSource actId)
-            (EncounterCardMatchByType (EnemyType, Nothing))
+            (CardMatchByType (EnemyType, mempty))
           , DiscardEncounterUntilFirst
             (ActSource actId)
-            (EncounterCardMatchByType (EnemyType, Nothing))
+            (CardMatchByType (EnemyType, mempty))
           , NextAct actId "01148"
           ]
         else a <$ unshiftMessages
           [ ShuffleEncounterDiscardBackIn
           , DiscardEncounterUntilFirst
             (ActSource actId)
-            (EncounterCardMatchByType (EnemyType, Nothing))
+            (CardMatchByType (EnemyType, mempty))
           , NextAct actId "01148"
           ]
     RequestedEncounterCard (ActSource aid) mcard | aid == actId -> case mcard of

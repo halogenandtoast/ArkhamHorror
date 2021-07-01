@@ -6,8 +6,8 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (bishopsBrook_203)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -16,21 +16,17 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.Source
-import Arkham.Types.Trait
 
 newtype BishopsBrook_203 = BishopsBrook_203 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bishopsBrook_203 :: LocationId -> BishopsBrook_203
 bishopsBrook_203 = BishopsBrook_203 . baseAttrs
-  "02203"
-  "Bishop's Brook"
-  EncounterSet.BloodOnTheAltar
+  Cards.bishopsBrook_203
   3
   (Static 2)
   Square
   [Plus, Circle, Triangle]
-  [Dunwich]
 
 instance HasModifiersFor env BishopsBrook_203 where
   getModifiersFor (InvestigatorSource iid) target (BishopsBrook_203 attrs@LocationAttrs {..})

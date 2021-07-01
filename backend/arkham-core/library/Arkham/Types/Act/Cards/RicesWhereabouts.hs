@@ -49,7 +49,7 @@ instance ActRunner env => RunMessage env RicesWhereabouts where
         (cardCode == CardCode "02060")
         (unshiftMessage $ AdvanceAct actId (toSource attrs))
     Discarded (InvestigatorTarget iid) card
-      | getCardCode card == CardCode "02060" -> case card of
+      | card ^. defL . cardCodeL == CardCode "02060" -> case card of
         EncounterCard ec -> a <$ unshiftMessages
           [RemoveFromEncounterDiscard ec, InvestigatorDrewEncounterCard iid ec]
         PlayerCard _ -> throwIO $ InvalidState "not a player card"

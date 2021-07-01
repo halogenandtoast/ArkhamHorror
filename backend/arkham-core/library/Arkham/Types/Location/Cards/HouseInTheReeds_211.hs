@@ -7,7 +7,6 @@ where
 import Arkham.Prelude
 
 import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
@@ -47,7 +46,7 @@ instance LocationRunner env => RunMessage env HouseInTheReeds_211 where
       unshiftMessage $ FindEncounterCard
         iid
         (toTarget attrs)
-        (EncounterCardMatchByType (EnemyType, Just Nightgaunt))
+        (CardMatchByType (EnemyType, singleton Nightgaunt))
       HouseInTheReeds_211 <$> runMessage msg attrs
     FoundEncounterCard _iid target card | isTarget attrs target -> do
       villageCommonsId <- fromJustNote "missing village commons"

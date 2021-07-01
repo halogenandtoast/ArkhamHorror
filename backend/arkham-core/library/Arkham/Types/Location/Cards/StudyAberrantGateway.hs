@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (studyAberrantGateway)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -17,7 +17,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Source
 import Arkham.Types.Window
 
@@ -25,17 +24,12 @@ newtype StudyAberrantGateway = StudyAberrantGateway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 studyAberrantGateway :: LocationId -> StudyAberrantGateway
-studyAberrantGateway =
-  StudyAberrantGateway
-    . baseAttrs
-        "50013"
-        ("Study" `subtitled` "Aberrant Gateway")
-        EncounterSet.ReturnToTheGathering
-        3
-        (PerPlayer 1)
-        Circle
-        [T]
-        mempty
+studyAberrantGateway = StudyAberrantGateway . baseAttrs
+  Cards.studyAberrantGateway
+  3
+  (PerPlayer 1)
+  Circle
+  [T]
 
 instance HasModifiersFor env StudyAberrantGateway where
   getModifiersFor = noModifiersFor

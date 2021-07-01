@@ -6,6 +6,7 @@ import Arkham.Prelude
 
 import Arkham.Types.Asset.Uses
 import Arkham.Types.AssetId
+import Arkham.Types.Card.CardType
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.GameValue
@@ -62,7 +63,7 @@ data Cost
   | DamageCost Source Target Int
   | DiscardCost Target
   | DiscardCardCost CardId
-  | HandDiscardCost Int (Maybe PlayerCardType) (HashSet Trait) (HashSet SkillType)
+  | HandDiscardCost Int (Maybe CardType) (HashSet Trait) (HashSet SkillType)
   | SkillIconCost Int (HashSet SkillType)
   | HorrorCost Source Target Int
   | Free

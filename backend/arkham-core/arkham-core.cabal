@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: fb5ae2595aa824e8215efc03fcdf2f2f7ccc57b7bb2a46c0fdaaa824f86d914c
+-- hash: bc38d42ce277c56d2c4b4e47084c9a60e48e2f50dde22c605d27a66360d6b156
 
 name:           arkham-core
 version:        0.0.0
@@ -14,10 +14,14 @@ library
   exposed-modules:
       Arkham.Card
       Arkham.EncounterCard
+      Arkham.EncounterSet
+      Arkham.Enemy.Cards
       Arkham.Game
       Arkham.Json
+      Arkham.Location.Cards
       Arkham.PlayerCard
       Arkham.Prelude
+      Arkham.Treachery.Cards
       Arkham.Types.Ability
       Arkham.Types.Ability.Limit
       Arkham.Types.Ability.Type
@@ -242,11 +246,12 @@ library
       Arkham.Types.CampaignStep
       Arkham.Types.Card
       Arkham.Types.Card.CardCode
+      Arkham.Types.Card.CardDef
+      Arkham.Types.Card.CardMatcher
+      Arkham.Types.Card.CardType
       Arkham.Types.Card.Class
       Arkham.Types.Card.Cost
       Arkham.Types.Card.EncounterCard
-      Arkham.Types.Card.EncounterCardMatcher
-      Arkham.Types.Card.EncounterCardType
       Arkham.Types.Card.Id
       Arkham.Types.Card.PlayerCard
       Arkham.Types.ChaosBag

@@ -47,7 +47,7 @@ instance (HasQueue env, HasSet InvestigatorId env (), HasCount PlayerCount env (
           [ DrawEncounterCards (EventTarget eventId) playerCount
           , Discard (toTarget attrs)
           ]
-      UseCardAbility iid (EventSource eid) (Just (TargetMetadata (EncounterCardTarget card))) 1 _
+      UseCardAbility iid (EventSource eid) (Just (EncounterCardMetadata card)) 1 _
         | eid == eventId
         -> do
           investigatorIds <- getSet @InvestigatorId ()
@@ -66,14 +66,14 @@ instance (HasQueue env, HasSet InvestigatorId env (), HasCount PlayerCount env (
                   [ UseCardAbility
                       iid'
                       (EventSource eid)
-                      (Just (TargetMetadata (EncounterCardTarget card)))
+                      (Just (EncounterCardMetadata card))
                       2
                       NoPayment
                   ]
               | iid' <- remainingInvestigatorIds
               ]
             )
-      UseCardAbility iid (EventSource eid) (Just (TargetMetadata (EncounterCardTarget card))) 2 _
+      UseCardAbility iid (EventSource eid) (Just (EncounterCardMetadata card)) 2 _
         | eid == eventId
         -> pure $ FirstWatch
           (attrs `with` FirstWatchMetadata
@@ -90,11 +90,11 @@ instance (HasQueue env, HasSet InvestigatorId env (), HasCount PlayerCount env (
           [ chooseOneAtATime
             eventOwner
             [ TargetLabel
-                (EncounterCardTarget card)
+                (CardIdTarget $ card ^. cardIdL)
                 [ UseCardAbility
                     eventOwner
                     (EventSource eventId)
-                    (Just (TargetMetadata (EncounterCardTarget card)))
+                    (Just (EncounterCardMetadata card))
                     1
                     NoPayment
                 ]

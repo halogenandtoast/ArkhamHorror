@@ -6,9 +6,9 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (prismaticCascade)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -16,7 +16,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype PrismaticCascade = PrismaticCascade LocationAttrs
@@ -24,14 +23,11 @@ newtype PrismaticCascade = PrismaticCascade LocationAttrs
 
 prismaticCascade :: LocationId -> PrismaticCascade
 prismaticCascade = PrismaticCascade . baseAttrs
-  "02325"
-  "Prismatic Cascade"
-  EncounterSet.LostInTimeAndSpace
+  Cards.prismaticCascade
   2
   (Static 3)
   Diamond
   [Square, Plus]
-  [Otherworld, Extradimensional]
 
 instance HasModifiersFor env PrismaticCascade where
   getModifiersFor = noModifiersFor

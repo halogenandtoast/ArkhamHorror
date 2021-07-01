@@ -6,11 +6,11 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (destroyedPath)
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -21,7 +21,6 @@ import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype DestroyedPath = DestroyedPath LocationAttrs
@@ -34,14 +33,11 @@ destroyedPath =
     . (revealedConnectedSymbolsL .~ setFromList [Triangle, Equals])
     . (unrevealedNameL .~ "Diverging Path")
     . baseAttrs
-        "02287"
-        "Destroyed Path"
-        EncounterSet.WhereDoomAwaits
+        Cards.destroyedPath
         3
         (Static 0)
         NoSymbol
         []
-        [Dunwich, Woods]
 
 instance HasModifiersFor env DestroyedPath where
   getModifiersFor = noModifiersFor

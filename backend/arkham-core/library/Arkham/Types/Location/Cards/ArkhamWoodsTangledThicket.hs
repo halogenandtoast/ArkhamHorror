@@ -2,17 +2,15 @@ module Arkham.Types.Location.Cards.ArkhamWoodsTangledThicket where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (arkhamWoodsTangledThicket)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.SkillType
-import Arkham.Types.Trait
 
 newtype ArkhamWoodsTangledThicket = ArkhamWoodsTangledThicket LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -23,14 +21,11 @@ arkhamWoodsTangledThicket =
     . (revealedConnectedSymbolsL .~ setFromList [Squiggle, T, Moon])
     . (revealedSymbolL .~ Equals)
     . baseAttrs
-        "01154"
-        ("Arkham Woods" `subtitled` "Tangled Thicket")
-        EncounterSet.TheDevourerBelow
+        Cards.arkhamWoodsTangledThicket
         2
         (PerPlayer 1)
         Square
         [Squiggle]
-        [Woods]
 
 instance HasModifiersFor env ArkhamWoodsTangledThicket where
   getModifiersFor = noModifiersFor

@@ -2,8 +2,9 @@ module Arkham.Types.Location.Cards.ArkhamWoodsCorpseRiddenClearing where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards
+  (arkhamWoodsCorpseRiddenClearing)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -11,9 +12,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Target
-import Arkham.Types.Trait
 
 newtype ArkhamWoodsCorpseRiddenClearing = ArkhamWoodsCorpseRiddenClearing LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -24,14 +23,11 @@ arkhamWoodsCorpseRiddenClearing =
     . (revealedConnectedSymbolsL .~ setFromList [Squiggle, Circle])
     . (revealedSymbolL .~ Droplet)
     . baseAttrs
-        "50035"
-        ("Arkham Woods" `subtitled` "Corpse-Ridden Clearing")
-        EncounterSet.ReturnToTheDevourerBelow
+        Cards.arkhamWoodsCorpseRiddenClearing
         3
         (PerPlayer 1)
         Square
         [Squiggle]
-        [Woods]
 
 instance HasModifiersFor env ArkhamWoodsCorpseRiddenClearing where
   getModifiersFor _ (EnemyTarget eid) (ArkhamWoodsCorpseRiddenClearing attrs) =

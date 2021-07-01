@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (arkhamWoodsQuietGlade)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -17,10 +17,8 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype ArkhamWoodsQuietGlade = ArkhamWoodsQuietGlade LocationAttrs
@@ -32,14 +30,11 @@ arkhamWoodsQuietGlade =
     . (revealedConnectedSymbolsL .~ setFromList [Squiggle, Equals, Hourglass])
     . (revealedSymbolL .~ Moon)
     . baseAttrs
-        "01155"
-        ("Arkham Woods" `subtitled` "Quiet Glade")
-        EncounterSet.TheDevourerBelow
+        Cards.arkhamWoodsQuietGlade
         1
         (Static 0)
         Square
         [Squiggle]
-        [Woods]
 
 instance HasModifiersFor env ArkhamWoodsQuietGlade where
   getModifiersFor = noModifiersFor

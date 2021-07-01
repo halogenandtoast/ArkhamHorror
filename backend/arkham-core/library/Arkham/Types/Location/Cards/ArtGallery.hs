@@ -5,9 +5,9 @@ module Arkham.Types.Location.Cards.ArtGallery
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (artGallery)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -15,22 +15,18 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Trait hiding (Cultist)
 
 newtype ArtGallery = ArtGallery LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 artGallery :: LocationId -> ArtGallery
 artGallery =
-  ArtGallery . (victoryL ?~ 1) . (revealedSymbolL .~ Hourglass) . baseAttrs
-    "02075"
-    "Art Gallery"
-    EncounterSet.TheHouseAlwaysWins
+  ArtGallery . (revealedSymbolL .~ Hourglass) . baseAttrs
+    Cards.artGallery
     2
     (PerPlayer 1)
     T
     [Diamond]
-    [CloverClub]
 
 instance HasModifiersFor env ArtGallery where
   getModifiersFor = noModifiersFor

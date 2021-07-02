@@ -5,6 +5,7 @@ module Arkham.Types.Event.Cards.AstoundingRevelation
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards (astoundingRevelation)
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Uses (UseType(..))
 import Arkham.Types.AssetId
@@ -23,7 +24,7 @@ newtype AstoundingRevelation = AstoundingRevelation EventAttrs
 
 astoundingRevelation :: InvestigatorId -> EventId -> AstoundingRevelation
 astoundingRevelation iid uuid =
-  AstoundingRevelation $ baseAttrs iid uuid "06023"
+  AstoundingRevelation $ baseAttrs Cards.astoundingRevelation iid uuid
 
 ability :: InvestigatorId -> EventAttrs -> Ability
 ability iid a = base

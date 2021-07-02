@@ -5,6 +5,8 @@ where
 
 import Arkham.Prelude
 
+import Arkham.EncounterCard
+import Control.Lens.Wrapped
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
@@ -28,7 +30,7 @@ import Arkham.Types.TreacheryId
 import Data.UUID (nil)
 
 createLocation :: IsCard a => a -> Location
-createLocation a = lookupLocation (getCardCode a) (LocationId $ getCardId a)
+createLocation a = lookupLocation (a ^. defL . cardCodeL) (LocationId $ a ^. cardIdL)
 
 toLocationSymbol :: Location -> LocationSymbol
 toLocationSymbol = locationSymbol . toAttrs
@@ -212,6 +214,9 @@ instance SourceEntity Location where
 newtype BaseLocation = BaseLocation LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
+instance HasCardDef Location where
+  defL = genericDefL
+
 instance HasModifiersFor env BaseLocation where
   getModifiersFor = noModifiersFor
 
@@ -227,29 +232,25 @@ instance LocationRunner env => RunMessage env BaseLocation where
 baseLocation
   :: LocationId
   -> CardCode
-  -> Name
   -> Int
   -> GameValue Int
   -> LocationSymbol
   -> [LocationSymbol]
   -> (LocationAttrs -> LocationAttrs)
   -> Location
-baseLocation a b c d e f g func =
+baseLocation a b c d e f func =
   BaseLocation' . BaseLocation . func $ baseAttrs
-    b
+    (lookupEncounterCardDef b)
     c
-    EncounterSet.TheGathering
     d
     e
     f
-    g
-    []
     a
 
 instance HasVictoryPoints Location where
   getVictoryPoints l =
-    let LocationAttrs { locationClues, locationVictory } = toAttrs l
-    in if locationClues == 0 then locationVictory else Nothing
+    let LocationAttrs { locationClues } = toAttrs l
+    in if locationClues == 0 then l ^. defL . victoryPointsL  else Nothing
 
 instance HasCount ClueCount env Location where
   getCount = pure . ClueCount . locationClues . toAttrs
@@ -293,7 +294,7 @@ instance HasId (Maybe LocationId) env (Direction, Location) where
 
 getLocationName :: Location -> LocationName
 getLocationName l = if locationRevealed attrs
-  then locationName attrs
+  then LocationName $ l ^. defL . nameL
   else locationUnrevealedName attrs
   where attrs = toAttrs l
 

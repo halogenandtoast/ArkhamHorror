@@ -10,7 +10,7 @@ where
 
 import Arkham.Prelude
 
-import qualified Arkham.Types.Action as Action
+import Arkham.Event.Cards
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.CardType
@@ -44,16 +44,14 @@ lookupPlayerCardDef cardCode =
     $ lookup cardCode allPlayerCards
 
 allPlayerCards :: HashMap CardCode CardDef
-allPlayerCards = mapFromList
+allPlayerCards = allEventCards <> mapFromList
   [ ("asset", placeholderAsset)
   , ("01006", rolands38Special)
   , ("01007", coverUp)
   , ("01008", daisysToteBag)
   , ("01009", theNecronomicon)
-  , ("01010", onTheLam)
   , ("01011", hospitalDebts)
   , ("01012", heirloomOfHyperborea)
-  , ("01013", darkMemory)
   , ("01014", wendysAmulet)
   , ("01015", abandonedAndAlone)
   , ("01016", fortyFiveAutomatic)
@@ -62,11 +60,7 @@ allPlayerCards = mapFromList
   , ("01019", firstAid)
   , ("01020", machete)
   , ("01021", guardDog)
-  , ("01022", evidence)
-  , ("01023", dodge)
-  , ("01024", dynamiteBlast)
   , ("01025", viciousBlow)
-  , ("01026", extraAmmunition1)
   , ("01027", policeBadge2)
   , ("01028", beatCop2)
   , ("01029", shotgun4)
@@ -76,40 +70,27 @@ allPlayerCards = mapFromList
   , ("01033", drMilanChristopher)
   , ("01034", hyperawareness)
   , ("01035", medicalTexts)
-  , ("01036", mindOverMatter)
-  , ("01037", workingAHunch)
-  , ("01038", barricade)
   , ("01039", deduction)
   , ("01040", magnifyingGlass1)
   , ("01041", discOfItzamna2)
   , ("01042", encyclopedia2)
-  , ("01043", crypticResearch4)
   , ("01044", switchblade)
   , ("01045", burglary)
   , ("01046", pickpoketing)
   , ("01047", fortyOneDerringer)
   , ("01048", leoDeLuca)
   , ("01049", hardKnocks)
-  , ("01050", elusive)
-  , ("01051", backstab)
-  , ("01052", sneakAttack)
   , ("01053", opportunist)
   , ("01054", leoDeLuca1)
   , ("01055", catBurgler1)
   , ("01056", sureGamble3)
-  , ("01057", hotStreak4)
   , ("01058", forbiddenKnowledge)
   , ("01059", holyRosary)
   , ("01060", shrivelling)
   , ("01061", scrying)
   , ("01062", arcaneStudies)
   , ("01063", arcaneInitiate)
-  , ("01064", drawnToTheFlame)
-  , ("01065", wardOfProtection)
-  , ("01066", blindingLight)
   , ("01067", fearless)
-  , ("01068", mindWipe1)
-  , ("01069", blindingLight2)
   , ("01070", bookOfShadows3)
   , ("01071", grotesqueStatue4)
   , ("01072", leatherCoat)
@@ -118,17 +99,10 @@ allPlayerCards = mapFromList
   , ("01075", rabbitsFoot)
   , ("01076", strayCat)
   , ("01077", digDeep)
-  , ("01078", cunningDistraction)
-  , ("01079", lookWhatIFound)
-  , ("01080", lucky)
   , ("01081", survivalInstinct)
   , ("01082", aquinnah1)
-  , ("01083", closeCall2)
-  , ("01084", lucky2)
-  , ("01085", willToSurvive4)
   , ("01086", knife)
   , ("01087", flashlight)
-  , ("01088", emergencyCache)
   , ("01089", guts)
   , ("01090", perception)
   , ("01091", overpower)
@@ -147,7 +121,6 @@ allPlayerCards = mapFromList
   , ("01117", litaChantler)
   , ("02006", zoeysCross)
   , ("02007", smiteTheWicked)
-  , ("02008", searchForTheTruth)
   , ("02009", rexsCurse)
   , ("02010", jennysTwin45s)
   , ("02011", searchingForIzzie)
@@ -156,24 +129,16 @@ allPlayerCards = mapFromList
   , ("02014", duke)
   , ("02015", wrackedByNightmares)
   , ("02016", blackjack)
-  , ("02017", taunt)
-  , ("02018", teamwork)
-  , ("02019", taunt2)
   , ("02020", laboratoryAssistant)
   , ("02021", strangeSolution)
-  , ("02022", shortcut)
-  , ("02023", seekingAnswers)
   , ("02024", liquidCourage)
-  , ("02025", thinkOnYourFeet)
   , ("02026", doubleOrNothing)
   , ("02027", hiredMuscle1)
   , ("02028", riteOfSeeking)
   , ("02029", ritualCandles)
   , ("02030", clarityOfMind)
-  , ("02031", bindMonster)
   , ("02032", fireAxe)
   , ("02033", peterSylvestre)
-  , ("02034", baitAndSwitch)
   , ("02035", peterSylvestre2)
   , ("02036", kukri)
   , ("02037", indebted)
@@ -185,13 +150,9 @@ allPlayerCards = mapFromList
   , ("02061", professorWarrenRice)
   , ("02079", peterClover)
   , ("02080", drFrancisMorgan)
-  , ("02105", emergencyAid)
   , ("02106", brotherXavier1)
-  , ("02107", iveGotAPlan)
   , ("02108", pathfinder1)
-  , ("02109", contraband)
   , ("02110", adaptable1)
-  , ("02111", delveTooDeep)
   , ("02112", songOfTheDead2)
   , ("02139", adamLynch)
   , ("02140", theNecronomiconOlausWormiusTranslation)
@@ -206,34 +167,22 @@ allPlayerCards = mapFromList
   , ("02226", springfieldM19034)
   , ("02254", esotericFormula)
   , ("02301", lightningGun5)
-  , ("03022", letMeHandleThis)
   , ("04023", toothOfEztli)
-  , ("04149", secondWind)
   , ("04153", trueUnderstanding)
   , ("05316", occultLexicon)
-  , ("05317", bloodRite)
-  , ("06023", astoundingRevelation)
-  , ("06110", firstWatch)
   , ("06116", scrollOfProphecies)
   , ("07152", keenEye)
   , ("50001", physicalTraining2)
-  , ("50002", dynamiteBlast2)
   , ("50003", hyperawareness2)
-  , ("50004", barricade3)
   , ("50005", hardKnocks2)
-  , ("50006", hotStreak2)
   , ("50007", arcaneStudies2)
-  , ("50008", mindWipe3)
   , ("50009", digDeep2)
   , ("50010", rabbitsFoot3)
-  , ("51005", contraband2)
-  , ("60130", taunt3)
   , ("60205", arcaneEnlightenment)
   , ("60206", celaenoFragments)
   , ("60208", encyclopedia)
   , ("60211", higherEducation)
   , ("60213", whittonGreene)
-  , ("60225", iveGotAPlan2)
   , ("60504", atychiphobia)
   , ("81019", ladyEsprit)
   , ("81020", bearTrap)
@@ -276,10 +225,6 @@ basePlayerCard cardCode name cost cardType classSymbol = CardDef
 asset :: CardCode -> Name -> Int -> ClassSymbol -> CardDef
 asset cardCode name cost classSymbol =
   basePlayerCard cardCode name cost AssetType classSymbol
-
-event :: CardCode -> Name -> Int -> ClassSymbol -> CardDef
-event cardCode name cost classSymbol =
-  basePlayerCard cardCode name cost EventType classSymbol
 
 skill :: CardCode -> Name -> [SkillType] -> ClassSymbol -> CardDef
 skill cardCode name skills classSymbol =
@@ -328,14 +273,6 @@ theNecronomicon = (asset "01009" "The Necronomicon" 0 Neutral)
   , cdRevelation = True
   }
 
-onTheLam :: CardDef
-onTheLam = (event "01010" "On the Lam" 1 Neutral)
-  { cdCardTraits = setFromList [Tactic]
-  , cdSkills = [SkillIntellect, SkillAgility, SkillWild, SkillWild]
-  , cdFast = True
-  , cdWindows = setFromList [AfterTurnBegins You, DuringTurn You]
-  }
-
 hospitalDebts :: CardDef
 hospitalDebts = (treachery "01011" "Hospital Debts" 0)
   { cdCardTraits = setFromList [Task]
@@ -348,12 +285,6 @@ heirloomOfHyperborea =
     { cdSkills = [SkillWillpower, SkillCombat, SkillWild]
     , cdCardTraits = setFromList [Item, Relic]
     }
-
-darkMemory :: CardDef
-darkMemory = (event "01013" "Dark Memory" 2 Neutral)
-  { cdCardTraits = setFromList [Spell]
-  , cdWeakness = True
-  }
 
 wendysAmulet :: CardDef
 wendysAmulet = (asset "01014" "Wendy's Amulet" 2 Neutral)
@@ -403,40 +334,11 @@ guardDog = (asset "01021" "Guard Dog" 3 Guardian)
   , cdCardTraits = setFromList [Ally, Creature]
   }
 
-evidence :: CardDef
-evidence = (event "01022" "Evidence!" 1 Guardian)
-  { cdSkills = [SkillIntellect, SkillIntellect]
-  , cdCardTraits = setFromList [Insight]
-  , cdFast = True
-  , cdWindows = setFromList [WhenEnemyDefeated You]
-  }
-
-dodge :: CardDef
-dodge = (event "01023" "Dodge" 1 Guardian)
-  { cdSkills = [SkillWillpower, SkillAgility]
-  , cdCardTraits = setFromList [Tactic]
-  , cdFast = True
-  , cdWindows = setFromList [WhenEnemyAttacks InvestigatorAtYourLocation]
-  }
-
-dynamiteBlast :: CardDef
-dynamiteBlast = (event "01024" "Dynamite Blast" 5 Guardian)
-  { cdSkills = [SkillWillpower]
-  , cdCardTraits = setFromList [Tactic]
-  }
-
 viciousBlow :: CardDef
 viciousBlow =
   (skill "01025" "Vicious Blow" [SkillCombat] Guardian)
     { cdCardTraits = setFromList [Practiced]
     }
-
-extraAmmunition1 :: CardDef
-extraAmmunition1 = (event "01026" "Extra Ammunition" 2 Guardian)
-  { cdSkills = [SkillIntellect]
-  , cdCardTraits = setFromList [Supply]
-  , cdLevel = 1
-  }
 
 policeBadge2 :: CardDef
 policeBadge2 = (asset "01027" "Police Badge" 3 Guardian)
@@ -498,28 +400,6 @@ medicalTexts = (asset "01035" "Medical Texts" 2 Seeker)
   , cdCardTraits = setFromList [Item, Tome]
   }
 
-mindOverMatter :: CardDef
-mindOverMatter = (event "01036" "Mind over Matter" 1 Seeker)
-  { cdSkills = [SkillCombat, SkillAgility]
-  , cdCardTraits = setFromList [Insight]
-  , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
-  }
-
-workingAHunch :: CardDef
-workingAHunch = (event "01037" "Working a Hunch" 2 Seeker)
-  { cdSkills = [SkillIntellect, SkillIntellect]
-  , cdCardTraits = setFromList [Insight]
-  , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
-  }
-
-barricade :: CardDef
-barricade = (event "01038" "Barricade" 0 Seeker)
-  { cdSkills = [SkillWillpower, SkillIntellect, SkillAgility]
-  , cdCardTraits = setFromList [Insight, Tactic]
-  }
-
 deduction :: CardDef
 deduction = (skill "01039" "Deduction" [SkillIntellect] Seeker)
   { cdCardTraits = setFromList [Practiced]
@@ -546,14 +426,6 @@ encyclopedia2 = (asset "01042" "Encyclopedia" 2 Seeker)
   { cdSkills = [SkillWild]
   , cdCardTraits = setFromList [Item, Tome]
   , cdLevel = 2
-  }
-
-crypticResearch4 :: CardDef
-crypticResearch4 = (event "01043" "Cryptic Research" 0 Seeker)
-  { cdCardTraits = setFromList [Insight]
-  , cdLevel = 4
-  , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
   }
 
 switchblade :: CardDef
@@ -594,27 +466,6 @@ hardKnocks = (asset "01049" "Hard Knocks" 2 Rogue)
   , cdCardTraits = setFromList [Talent]
   }
 
-elusive :: CardDef
-elusive = (event "01050" "Elusive" 2 Rogue)
-  { cdSkills = [SkillIntellect, SkillAgility]
-  , cdCardTraits = setFromList [Tactic]
-  , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
-  }
-
-backstab :: CardDef
-backstab = (event "01051" "Backstab" 3 Rogue)
-  { cdSkills = [SkillCombat, SkillAgility]
-  , cdCardTraits = setFromList [Tactic]
-  , cdAction = Just Action.Fight
-  }
-
-sneakAttack :: CardDef
-sneakAttack = (event "01052" "Sneak Attack" 2 Rogue)
-  { cdSkills = [SkillIntellect, SkillCombat]
-  , cdCardTraits = setFromList [Tactic]
-  }
-
 opportunist :: CardDef
 opportunist = (skill "01053" "Opportunist" [SkillWild] Rogue)
   { cdCardTraits = setFromList [Innate]
@@ -641,13 +492,6 @@ sureGamble3 = (asset "01056" "Sure Gamble" 2 Rogue)
   , cdFast = True
   , cdWindows = mempty -- We handle this via behavior
   , cdLevel = 3
-  }
-
-hotStreak4 :: CardDef
-hotStreak4 = (event "01057" "Hot Streak" 2 Rogue)
-  { cdSkills = [SkillWild]
-  , cdCardTraits = setFromList [Fortune]
-  , cdLevel = 4
   }
 
 forbiddenKnowledge :: CardDef
@@ -687,47 +531,9 @@ arcaneInitiate = (asset "01063" "Arcane Initiate" 1 Mystic)
   , cdCardTraits = setFromList [Ally, Sorcerer]
   }
 
-drawnToTheFlame :: CardDef
-drawnToTheFlame = (event "01064" "Drawn to the Flame" 0 Mystic)
-  { cdSkills = [SkillWillpower, SkillIntellect]
-  , cdCardTraits = setFromList [Insight]
-  }
-
-wardOfProtection :: CardDef
-wardOfProtection = (event "01065" "Ward of Protection" 1 Mystic)
-  { cdSkills = [SkillWild]
-  , cdCardTraits = setFromList [Spell, Spirit]
-  , cdFast = True
-  , cdWindows = setFromList [WhenDrawTreachery You]
-  }
-
-blindingLight :: CardDef
-blindingLight = (event "01066" "Blinding Light" 2 Mystic)
-  { cdSkills = [SkillWillpower, SkillAgility]
-  , cdCardTraits = setFromList [Spell]
-  , cdAction = Just Action.Evade
-  }
-
 fearless :: CardDef
 fearless = (skill "01067" "Fearless" [SkillWillpower] Mystic)
   { cdCardTraits = setFromList [Innate]
-  }
-
-mindWipe1 :: CardDef
-mindWipe1 = (event "01068" "Mind Wipe" 1 Mystic)
-  { cdSkills = [SkillWillpower, SkillCombat]
-  , cdCardTraits = setFromList [Spell]
-  , cdLevel = 1
-  , cdFast = True
-  , cdWindows = setFromList [AnyPhaseBegins]
-  }
-
-blindingLight2 :: CardDef
-blindingLight2 = (event "01069" "Blinding Light" 1 Mystic)
-  { cdSkills = [SkillWillpower, SkillAgility]
-  , cdCardTraits = setFromList [Spell]
-  , cdAction = Just Action.Evade
-  , cdLevel = 2
   }
 
 bookOfShadows3 :: CardDef
@@ -780,31 +586,6 @@ digDeep = (asset "01077" "Dig Deep" 2 Survivor)
   , cdCardTraits = setFromList [Talent]
   }
 
-cunningDistraction :: CardDef
-cunningDistraction =
-  (event "01078" "Cunning Distraction" 5 Survivor)
-    { cdSkills = [SkillIntellect, SkillWild]
-    , cdCardTraits = setFromList [Tactic]
-    , cdAction = Just Action.Evade
-    }
-
-lookWhatIFound :: CardDef
-lookWhatIFound =
-  (event "01079" "\"Look what I found!\"" 2 Survivor)
-    { cdSkills = [SkillIntellect, SkillIntellect]
-    , cdCardTraits = setFromList [Fortune]
-    , cdFast = True
-    , cdWindows = setFromList
-      [ AfterFailInvestigationSkillTest You n | n <- [0 .. 2] ]
-    }
-
-lucky :: CardDef
-lucky = (event "01080" "Lucky!" 1 Survivor)
-  { cdCardTraits = setFromList [Fortune]
-  , cdFast = True
-  , cdWindows = setFromList [WhenWouldFailSkillTest You]
-  }
-
 survivalInstinct :: CardDef
 survivalInstinct =
   (skill "01081" "Survival Instrinct" [SkillAgility] Survivor)
@@ -818,32 +599,6 @@ aquinnah1 = (asset "01082" "Aquinnah" 5 Survivor)
   , cdLevel = 1
   }
 
-closeCall2 :: CardDef
-closeCall2 = (event "01083" "Close Call" 2 Survivor)
-  { cdSkills = [SkillCombat, SkillAgility]
-  , cdCardTraits = setFromList [Fortune]
-  , cdFast = True
-  , cdWindows = mempty -- We handle this via behavior
-  , cdLevel = 2
-  }
-
-lucky2 :: CardDef
-lucky2 = (event "01084" "Lucky!" 1 Survivor)
-  { cdCardTraits = setFromList [Fortune]
-  , cdFast = True
-  , cdWindows = setFromList [WhenWouldFailSkillTest You]
-  , cdLevel = 2
-  }
-
-willToSurvive4 :: CardDef
-willToSurvive4 = (event "01085" "Will to Survive" 4 Survivor)
-  { cdSkills = [SkillCombat, SkillWild]
-  , cdCardTraits = setFromList [Spirit]
-  , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
-  , cdLevel = 4
-  }
-
 knife :: CardDef
 knife = (asset "01086" "Knife" 1 Neutral)
   { cdSkills = [SkillCombat]
@@ -854,11 +609,6 @@ flashlight :: CardDef
 flashlight = (asset "01087" "Flashlight" 2 Neutral)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Item, Tool]
-  }
-
-emergencyCache :: CardDef
-emergencyCache = (event "01088" "Emergency Cache" 0 Neutral)
-  { cdCardTraits = setFromList [Supply]
   }
 
 guts :: CardDef
@@ -971,13 +721,6 @@ smiteTheWicked = (treachery "02007" "Smite the Wicked" 0)
   , cdRevelation = True
   }
 
-searchForTheTruth :: CardDef
-searchForTheTruth =
-  (event "02008" "Search for the Truth" 1 Neutral)
-    { cdSkills = [SkillIntellect, SkillIntellect, SkillWild]
-    , cdCardTraits = setFromList [Insight]
-    }
-
 rexsCurse :: CardDef
 rexsCurse = (treachery "02009" "Rex's Curse" 0)
   { cdCardTraits = setFromList [Curse]
@@ -1027,28 +770,6 @@ blackjack = (asset "02016" "Blackjack" 1 Guardian)
   , cdSkills = [SkillCombat]
   }
 
-taunt :: CardDef
-taunt = (event "02017" "Taunt" 1 Guardian)
-  { cdCardTraits = setFromList [Tactic]
-  , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
-  , cdSkills = [SkillWillpower, SkillCombat]
-  }
-
-teamwork :: CardDef
-teamwork = (event "02018" "Teamwork" 0 Guardian)
-  { cdCardTraits = setFromList [Tactic]
-  , cdSkills = [SkillWild]
-  }
-
-taunt2 :: CardDef
-taunt2 = (event "02019" "Taunt" 1 Guardian)
-  { cdCardTraits = setFromList [Tactic]
-  , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
-  , cdSkills = [SkillWillpower, SkillCombat, SkillAgility]
-  }
-
 laboratoryAssistant :: CardDef
 laboratoryAssistant =
   (asset "02020" "Laboratory Assistant" 2 Seeker)
@@ -1062,32 +783,10 @@ strangeSolution = (asset "02021" "Strange Solution" 1 Seeker)
   , cdCardTraits = setFromList [Item, Science]
   }
 
-shortcut :: CardDef
-shortcut = (event "02022" "Shortcut" 0 Seeker)
-  { cdSkills = [SkillWillpower, SkillAgility]
-  , cdCardTraits = setFromList [Insight, Tactic]
-  , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
-  }
-
-seekingAnswers :: CardDef
-seekingAnswers = (event "02023" "Seeking Answers" 1 Seeker)
-  { cdSkills = [SkillIntellect, SkillAgility]
-  , cdCardTraits = singleton Insight
-  }
-
 liquidCourage :: CardDef
 liquidCourage = (asset "02024" "Liquid Courage" 1 Rogue)
   { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Item, Illicit]
-  }
-
-thinkOnYourFeet :: CardDef
-thinkOnYourFeet = (event "02025" "Think on Your Feet" 1 Rogue)
-  { cdSkills = [SkillIntellect, SkillAgility]
-  , cdCardTraits = singleton Trick
-  , cdFast = True
-  , cdWindows = setFromList [WhenEnemySpawns YourLocation []]
   }
 
 doubleOrNothing :: CardDef
@@ -1122,14 +821,6 @@ clarityOfMind = (asset "02030" "Clarity of Mind" 2 Mystic)
   , cdCardTraits = singleton Spell
   }
 
-bindMonster :: CardDef
-bindMonster = (event "02031" "Bind Monster" 3 Mystic)
-  { cdSkills = [SkillWillpower, SkillIntellect]
-  , cdCardTraits = singleton Spell
-  , cdAction = Just Action.Evade
-  , cdLevel = 2
-  }
-
 fireAxe :: CardDef
 fireAxe = (asset "02032" "Fire Axe" 1 Survivor)
   { cdSkills = [SkillCombat]
@@ -1140,13 +831,6 @@ peterSylvestre :: CardDef
 peterSylvestre = (asset "02033" "Peter Sylvestre" 3 Survivor)
   { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Ally, Miskatonic]
-  }
-
-baitAndSwitch :: CardDef
-baitAndSwitch = (event "02034" "Bait and Switch" 1 Survivor)
-  { cdSkills = [SkillIntellect, SkillAgility]
-  , cdCardTraits = setFromList [Trick]
-  , cdAction = Just Action.Evade
   }
 
 peterSylvestre2 :: CardDef
@@ -1216,23 +900,11 @@ drFrancisMorgan = (asset "02080" "Dr. Francis Morgan" 3 Neutral)
   , cdCardTraits = setFromList [Ally, Miskatonic]
   }
 
-emergencyAid :: CardDef
-emergencyAid = (event "02105" "Emergency Aid" 2 Guardian)
-  { cdSkills = [SkillIntellect, SkillAgility]
-  , cdCardTraits = setFromList [Insight, Science]
-  }
-
 brotherXavier1 :: CardDef
 brotherXavier1 = (asset "02106" "Brother Xavier" 5 Guardian)
   { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Ally]
   , cdLevel = 1
-  }
-
-iveGotAPlan :: CardDef
-iveGotAPlan = (event "02107" "\"I've Got a Plan!\"" 3 Seeker)
-  { cdSkills = [SkillIntellect, SkillCombat]
-  , cdCardTraits = setFromList [Insight, Tactic]
   }
 
 pathfinder1 :: CardDef
@@ -1242,22 +914,10 @@ pathfinder1 = (asset "02108" "Pathfinder" 3 Seeker)
   , cdLevel = 1
   }
 
-contraband :: CardDef
-contraband = (event "02109" "Contraband" 4 Rogue)
-  { cdSkills = [SkillWillpower, SkillIntellect]
-  , cdCardTraits = setFromList [Supply, Illicit]
-  }
-
 adaptable1 :: CardDef
 adaptable1 = (asset "02110" "Adaptable" 0 Rogue)
   { cdPermanent = True
   , cdCardTraits = setFromList [Talent]
-  }
-
-delveTooDeep :: CardDef
-delveTooDeep = (event "02111" "Delve Too Deep" 1 Mystic)
-  { cdCardTraits = setFromList [Insight]
-  , cdVictoryPoints = Just 1
   }
 
 songOfTheDead2 :: CardDef
@@ -1354,27 +1014,10 @@ lightningGun5 = (asset "02301" "Lightning Gun" 6 Guardian)
   , cdSkills = [SkillIntellect, SkillCombat]
   }
 
-letMeHandleThis :: CardDef
-letMeHandleThis =
-  (event "03022" "\"Let me handle this!\"" 0 Guardian)
-    { cdSkills = [SkillWillpower, SkillCombat]
-    , cdCardTraits = setFromList [Spirit]
-    , cdFast = True
-    , cdWindows = mempty -- We handle this via behavior
-    }
-
 toothOfEztli :: CardDef
 toothOfEztli = (asset "04023" "Tooth of Eztli" 3 Seeker)
   { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Item, Relic]
-  }
-
-secondWind :: CardDef
-secondWind = (event "04149" "Second Wind" 1 Guardian)
-  { cdSkills = [SkillIntellect]
-  , cdCardTraits = setFromList [Spirit, Bold]
-  , cdFast = True -- not fast
-  , cdWindows = mempty -- handle via behavior since must be first action
   }
 
 trueUnderstanding :: CardDef
@@ -1390,34 +1033,11 @@ occultLexicon = (asset "05316" "Occult Lexicon" 2 Seeker)
   , cdCardTraits = setFromList [Item, Tome, Occult]
   }
 
-bloodRite :: CardDef
-bloodRite = (event "05317" "Blood Rite" 0 Seeker)
-  { cdSkills = [SkillWillpower, SkillIntellect, SkillCombat]
-  , cdCardTraits = setFromList [Spell]
-  }
-
-firstWatch :: CardDef
-firstWatch = (event "06110" "First Watch" 1 Guardian)
-  { cdSkills = [SkillIntellect, SkillAgility]
-  , cdCardTraits = setFromList [Tactic]
-  , cdFast = True
-  , cdWindows = setFromList [WhenAllDrawEncounterCard]
-  }
-
 scrollOfProphecies :: CardDef
 scrollOfProphecies =
   (asset "06116" "Scroll of Prophecies" 3 Mystic)
     { cdSkills = [SkillWillpower]
     , cdCardTraits = setFromList [Item, Tome]
-    }
-
-astoundingRevelation :: CardDef
-astoundingRevelation =
-  (event "06023" "Astounding Revelation" 0 Seeker)
-    { cdSkills = [SkillIntellect]
-    , cdCardTraits = setFromList [Research]
-    , cdFast = True
-    , cdWindows = mempty -- cannot be played
     }
 
 litaChantler :: CardDef
@@ -1433,26 +1053,11 @@ physicalTraining2 = (asset "50001" "Physical Training" 0 Guardian
   , cdLevel = 2
   }
 
-dynamiteBlast2 :: CardDef
-dynamiteBlast2 = (event "50002" "Dynamite Blast" 4 Guardian)
-  { cdSkills = [SkillWillpower, SkillCombat]
-  , cdCardTraits = setFromList [Tactic]
-  , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
-  , cdLevel = 2
-  }
-
 hyperawareness2 :: CardDef
 hyperawareness2 = (asset "50003" "Hyperawareness" 0 Seeker)
   { cdSkills = [SkillIntellect, SkillIntellect, SkillAgility, SkillAgility]
   , cdCardTraits = setFromList [Talent]
   , cdLevel = 2
-  }
-
-barricade3 :: CardDef
-barricade3 = (event "50004" "Barricade" 0 Seeker)
-  { cdSkills = [SkillWillpower, SkillIntellect, SkillAgility]
-  , cdCardTraits = setFromList [Insight, Tactic]
-  , cdLevel = 3
   }
 
 hardKnocks2 :: CardDef
@@ -1462,27 +1067,11 @@ hardKnocks2 = (asset "50005" "Hard Knocks" 0 Rogue)
   , cdLevel = 2
   }
 
-hotStreak2 :: CardDef
-hotStreak2 = (event "50006" "Hot Streak" 5 Rogue)
-  { cdSkills = [SkillWillpower]
-  , cdCardTraits = setFromList [Fortune]
-  , cdLevel = 2
-  }
-
 arcaneStudies2 :: CardDef
 arcaneStudies2 = (asset "50007" "Arcane Studies" 0 Mystic)
   { cdSkills = [SkillWillpower, SkillWillpower, SkillIntellect, SkillIntellect]
   , cdCardTraits = setFromList [Talent]
   , cdLevel = 2
-  }
-
-mindWipe3 :: CardDef
-mindWipe3 = (event "50008" "Mind Wipe" 1 Mystic)
-  { cdSkills = [SkillWillpower, SkillCombat]
-  , cdCardTraits = setFromList [Spell]
-  , cdLevel = 3
-  , cdFast = True
-  , cdWindows = setFromList [AnyPhaseBegins]
   }
 
 digDeep2 :: CardDef
@@ -1497,21 +1086,6 @@ rabbitsFoot3 = (asset "50010" "Rabbit's Foot" 1 Survivor)
   { cdSkills = [SkillWild]
   , cdCardTraits = setFromList [Item, Charm]
   , cdLevel = 3
-  }
-
-contraband2 :: CardDef
-contraband2 = (event "51005" "Contraband" 3 Rogue)
-  { cdSkills = [SkillWillpower, SkillIntellect, SkillIntellect]
-  , cdCardTraits = setFromList [Supply, Illicit]
-  , cdLevel = 2
-  }
-
-taunt3 :: CardDef
-taunt3 = (event "60130" "Taunt" 1 Guardian)
-  { cdCardTraits = setFromList [Tactic]
-  , cdFast = True
-  , cdWindows = setFromList [FastPlayerWindow]
-  , cdSkills = [SkillWillpower, SkillWillpower, SkillCombat, SkillAgility]
   }
 
 arcaneEnlightenment :: CardDef
@@ -1543,12 +1117,6 @@ whittonGreene :: CardDef
 whittonGreene = (asset "60213" "Whitton Greene" 4 Seeker)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Ally, Miskatonic]
-  }
-
-iveGotAPlan2 :: CardDef
-iveGotAPlan2 = (event "60225" "\"I've Got a Plan!\"" 2 Seeker)
-  { cdSkills = [SkillIntellect, SkillIntellect, SkillCombat]
-  , cdCardTraits = setFromList [Insight, Tactic]
   }
 
 atychiphobia :: CardDef

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: bc38d42ce277c56d2c4b4e47084c9a60e48e2f50dde22c605d27a66360d6b156
+-- hash: 261910d75f2f43b7bd89a5cee2c3a475e1626ea48d97785019622a110ea19fab
 
 name:           arkham-core
 version:        0.0.0
@@ -16,6 +16,7 @@ library
       Arkham.EncounterCard
       Arkham.EncounterSet
       Arkham.Enemy.Cards
+      Arkham.Event.Cards
       Arkham.Game
       Arkham.Json
       Arkham.Location.Cards

@@ -42,7 +42,7 @@ instance EventRunner env => RunMessage env BloodRite where
           e <$ unshiftMessage
             (chooseOne iid
             $ [ Run
-                  [ DiscardCard iid (getCardId card)
+                  [ DiscardCard iid (card ^. cardIdL)
                   , PayForCardAbility
                     iid
                     source

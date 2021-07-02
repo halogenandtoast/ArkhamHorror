@@ -5,7 +5,6 @@ module Arkham.Types.Event.Attrs where
 import Arkham.Prelude
 
 import Arkham.Json
-import Arkham.PlayerCard
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.EventId
@@ -26,7 +25,7 @@ data EventAttrs = EventAttrs
 makeLensesWith suffixedFields ''EventAttrs
 
 instance HasCardDef EventAttrs where
-  defL = cardDefL
+  toCardDef = eventCardDef
 
 instance ToJSON EventAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "event"
@@ -44,13 +43,13 @@ unshiftEffect
   -> Target
   -> m ()
 unshiftEffect attrs target = unshiftMessages
-  [ CreateEffect (attrs ^. defL . cardCodeL) Nothing (toSource attrs) target
+  [ CreateEffect (cdCardCode $ toCardDef attrs) Nothing (toSource attrs) target
   , Discard $ toTarget attrs
   ]
 
-baseAttrs :: InvestigatorId -> EventId -> CardCode -> EventAttrs
-baseAttrs iid eid cardCode = EventAttrs
-  { eventCardDef = lookupPlayerCardDef cardCode
+baseAttrs :: CardDef -> InvestigatorId -> EventId -> EventAttrs
+baseAttrs cardDef iid eid = EventAttrs
+  { eventCardDef = cardDef
   , eventId = eid
   , eventAttachedTarget = Nothing
   , eventOwner = iid
@@ -64,7 +63,7 @@ instance Entity EventAttrs where
   toAttrs = id
 
 instance NamedEntity EventAttrs where
-  toName = view (defL . nameL)
+  toName = cdName . toCardDef
 
 instance TargetEntity EventAttrs where
   toTarget = EventTarget . toId

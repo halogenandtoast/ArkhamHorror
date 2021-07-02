@@ -31,9 +31,9 @@ _PlayerCard f (PlayerCard pc) = PlayerCard <$> f pc
 _PlayerCard _ other = pure other
 
 instance HasCardDef Card where
-  defL f = \case
-    PlayerCard pc -> PlayerCard <$> defL f pc
-    EncounterCard ec -> EncounterCard <$> defL f ec
+  toCardDef = \case
+    PlayerCard pc -> toCardDef pc
+    EncounterCard ec -> toCardDef ec
 
 data CampaignStoryCard = CampaignStoryCard
   { campaignStoryCardInvestigatorId :: InvestigatorId
@@ -90,7 +90,7 @@ cardIsWeakness (EncounterCard _) = False
 cardIsWeakness (PlayerCard pc) = cdWeakness (pcDef pc)
 
 filterCardType :: HasCardDef a => CardType -> [a] -> [a]
-filterCardType = filter . views (defL . cardTypeL) . (==)
+filterCardType cardType' = filter ((== cardType') . cdCardType . toCardDef)
 
 filterLocations :: HasCardDef a => [a] -> [a]
 filterLocations = filterCardType LocationType

@@ -9,24 +9,21 @@ import Arkham.PlayerCard
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
-import Arkham.Types.Name
 import Arkham.Types.SkillId
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Trait
-import qualified Data.HashMap.Strict as HashMap
 
 data SkillAttrs = SkillAttrs
-  { skillName :: Text
+  { skillCardDef :: CardDef
   , skillId :: SkillId
-  , skillCardCode :: CardCode
-  , skillTraits :: HashSet Trait
   , skillOwner :: InvestigatorId
-  , skillWeakness :: Bool
   }
   deriving stock (Show, Eq, Generic)
 
 makeLensesWith suffixedFields ''SkillAttrs
+
+instance HasCardDef SkillAttrs where
+  toCardDef = skillCardDef
 
 instance ToJSON SkillAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "skill"
@@ -42,7 +39,7 @@ instance Entity SkillAttrs where
   toAttrs = id
 
 instance NamedEntity SkillAttrs where
-  toName = mkName . skillName
+  toName = cdName . toCardDef
 
 instance TargetEntity SkillAttrs where
   toTarget = SkillTarget . skillId
@@ -55,44 +52,14 @@ instance SourceEntity SkillAttrs where
   isSource _ _ = False
 
 instance IsCard SkillAttrs where
-  getCardId = unSkillId . skillId
-  getCardCode = skillCardCode
-  getTraits = skillTraits
-  getKeywords = mempty
+  cardIdL = lens (unSkillId . skillId) $ \m x -> m { skillId = SkillId x }
 
 baseAttrs :: InvestigatorId -> SkillId -> CardCode -> SkillAttrs
-baseAttrs iid eid cardCode =
-  let
-    CardDef {..} =
-      fromJustNote
-          ("missing player card: " <> unpack (unCardCode cardCode))
-          (HashMap.lookup cardCode allPlayerCards)
-  in
-    SkillAttrs
-      { skillName = cdName
-      , skillId = eid
-      , skillCardCode = cardCode
-      , skillTraits = cdTraits
-      , skillOwner = iid
-      , skillWeakness = False
-      }
-
-weaknessAttrs :: InvestigatorId -> SkillId -> CardCode -> SkillAttrs
-weaknessAttrs iid eid cardCode =
-  let
-    CardDef {..} =
-      fromJustNote
-          "missing weakness card"
-          (HashMap.lookup cardCode allPlayerCards)
-  in
-    SkillAttrs
-      { skillName = cdName
-      , skillId = eid
-      , skillCardCode = cardCode
-      , skillTraits = cdTraits
-      , skillOwner = iid
-      , skillWeakness = True
-      }
+baseAttrs iid eid cardCode = SkillAttrs
+  { skillCardDef = lookupPlayerCardDef cardCode
+  , skillId = eid
+  , skillOwner = iid
+  }
 
 instance HasActions env SkillAttrs where
   getActions _ _ _ = pure []

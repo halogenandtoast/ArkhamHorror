@@ -5,7 +5,6 @@ module Arkham.Types.Treachery.Attrs where
 import Arkham.Prelude
 
 import Arkham.Json
-import Arkham.PlayerCard
 import Arkham.EncounterCard
 import Arkham.Types.AgendaId
 import Arkham.Types.Card
@@ -15,25 +14,17 @@ import Arkham.Types.Exception
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.TreacheryId
-import Arkham.Types.Trait
-import Arkham.Types.Keyword
 import Arkham.Types.Treachery.Runner
-import qualified Data.HashMap.Strict as HashMap
 
 data TreacheryAttrs = TreacheryAttrs
-  { treacheryName :: TreacheryName
-  , treacheryId :: TreacheryId
-  , treacheryCardCode :: CardCode
-  , treacheryTraits :: HashSet Trait
-  , treacheryKeywords :: HashSet Keyword
+  { treacheryId :: TreacheryId
+  , treacheryCardDef :: CardDef
   , treacheryAttachedTarget :: Maybe Target
   , treacheryOwner :: Maybe InvestigatorId
-  , treacheryWeakness :: Bool
   , treacheryDoom :: Int
   , treacheryClues :: Maybe Int
   , treacheryResources :: Maybe Int
@@ -41,6 +32,9 @@ data TreacheryAttrs = TreacheryAttrs
   deriving stock (Show, Eq, Generic)
 
 makeLensesWith suffixedFields ''TreacheryAttrs
+
+instance HasCardDef TreacheryAttrs where
+  toCardDef = treacheryCardDef
 
 instance ToJSON TreacheryAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "treachery"
@@ -59,7 +53,7 @@ instance Entity TreacheryAttrs where
   toAttrs = id
 
 instance NamedEntity TreacheryAttrs where
-  toName = unTreacheryName . treacheryName
+  toName = cdName . toCardDef
 
 instance TargetEntity TreacheryAttrs where
   toTarget = TreacheryTarget . toId
@@ -74,10 +68,7 @@ instance SourceEntity TreacheryAttrs where
   isSource _ _ = False
 
 instance IsCard TreacheryAttrs where
-  getCardId = unTreacheryId . treacheryId
-  getCardCode = treacheryCardCode
-  getTraits = treacheryTraits
-  getKeywords = treacheryKeywords
+  cardIdL = lens (unTreacheryId . treacheryId) $ \m x -> m { treacheryId = TreacheryId x }
 
 instance DiscardableEntity TreacheryAttrs
 
@@ -105,7 +96,7 @@ withTreacheryEnemy attrs f = case treacheryAttachedTarget attrs of
   Just (EnemyTarget eid) -> f eid
   _ -> throwIO
     (InvalidState
-    $ tshow (treacheryName attrs)
+    $ tshow (cdName $ toCardDef attrs)
     <> " must be attached to an enemy"
     )
 
@@ -115,7 +106,7 @@ withTreacheryLocation attrs f = case treacheryAttachedTarget attrs of
   Just (LocationTarget lid) -> f lid
   _ -> throwIO
     (InvalidState
-    $ tshow (treacheryName attrs)
+    $ tshow (cdName $ toCardDef attrs)
     <> " must be attached to a location"
     )
 
@@ -125,66 +116,27 @@ withTreacheryInvestigator attrs f = case treacheryAttachedTarget attrs of
   Just (InvestigatorTarget iid) -> f iid
   _ -> throwIO
     (InvalidState
-    $ tshow (treacheryName attrs)
+    $ tshow (cdName $ toCardDef attrs)
     <> " must be attached to an investigator"
     )
 
-baseAttrs :: TreacheryId -> CardCode -> TreacheryAttrs
-baseAttrs tid cardCode =
-  let
-    MkEncounterCard {..} =
-      fromJustNote
-          ("missing encounter card: " <> unpack (unCardCode cardCode))
-          (HashMap.lookup cardCode allEncounterCards)
-        $ unTreacheryId tid
-  in
-    TreacheryAttrs
-      { treacheryName = TreacheryName ecName
-      , treacheryId = tid
-      , treacheryCardCode = ecCardCode
-      , treacheryTraits = ecTraits
-      , treacheryKeywords = ecKeywords
-      , treacheryAttachedTarget = Nothing
-      , treacheryOwner = Nothing
-      , treacheryWeakness = False
-      , treacheryDoom = 0
-      , treacheryClues = Nothing
-      , treacheryResources = Nothing
-      }
-
-weaknessAttrs
-  :: HasCallStack
-  => TreacheryId
-  -> Maybe InvestigatorId
-  -> CardCode
-  -> TreacheryAttrs
-weaknessAttrs tid iid cardCode =
-  let
-    CardDef {..} =
-      fromJustNote
-          ("missing weakness card: " <> show cardCode)
-          (HashMap.lookup cardCode allPlayerCards)
-  in
-    TreacheryAttrs
-      { treacheryName = TreacheryName (mkName cdName)
-      , treacheryId = tid
-      , treacheryCardCode = cardCode
-      , treacheryTraits = cdTraits
-      , treacheryKeywords = cdKeywords
-      , treacheryAttachedTarget = Nothing
-      , treacheryOwner = iid
-      , treacheryWeakness = True
-      , treacheryDoom = 0
-      , treacheryClues = Nothing
-      , treacheryResources = Nothing
-      }
+baseAttrs :: TreacheryId -> CardDef -> TreacheryAttrs
+baseAttrs tid cardDef = TreacheryAttrs
+  { treacheryId = tid
+  , treacheryCardDef = cardDef
+  , treacheryAttachedTarget = Nothing
+  , treacheryOwner = Nothing
+  , treacheryDoom = 0
+  , treacheryClues = Nothing
+  , treacheryResources = Nothing
+  }
 
 instance HasActions env TreacheryAttrs where
   getActions _ _ _ = pure []
 
 is :: Target -> TreacheryAttrs -> Bool
 is (TreacheryTarget tid) t = tid == treacheryId t
-is (CardCodeTarget cardCode) t = cardCode == treacheryCardCode t
+is (CardCodeTarget cardCode) t = cardCode == cdCardCode (toCardDef t)
 is (CardIdTarget cardId) t = cardId == unTreacheryId (treacheryId t)
 is _ _ = False
 

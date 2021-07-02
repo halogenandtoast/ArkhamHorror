@@ -16,7 +16,7 @@ data EncounterCard = MkEncounterCard
   deriving anyclass Hashable
 
 instance HasCardDef EncounterCard where
-  defL = lens ecDef $ \m x -> m { ecDef = x }
+  toCardDef = ecDef
 
 instance ToJSON EncounterCard where
   toJSON = genericToJSON $ aesonOptions $ Just "ec"

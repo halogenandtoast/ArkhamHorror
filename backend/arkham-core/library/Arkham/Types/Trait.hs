@@ -157,4 +157,4 @@ data Trait
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 class HasTraits a where
-  traitsL :: Lens' a (HashSet Trait)
+  getTraits :: a -> HashSet Trait

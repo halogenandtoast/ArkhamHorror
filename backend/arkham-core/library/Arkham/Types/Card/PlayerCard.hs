@@ -40,4 +40,4 @@ instance HasCost PlayerCard where
     Nothing -> 0
 
 instance HasCardDef PlayerCard where
-  defL = lens pcDef $ \m x -> m { pcDef = x }
+  toCardDef = pcDef

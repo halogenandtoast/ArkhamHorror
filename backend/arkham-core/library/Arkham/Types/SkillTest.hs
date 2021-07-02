@@ -94,7 +94,7 @@ instance HasSet CommittedCardCode env SkillTest where
   getSet =
     pure
       . setFromList
-      . map (CommittedCardCode . getCardCode . snd)
+      . map (CommittedCardCode . cdCardCode . toCardDef . snd)
       . toList
       . skillTestCommittedCards
 

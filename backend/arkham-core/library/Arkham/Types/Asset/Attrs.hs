@@ -49,7 +49,7 @@ data AssetAttrs = AssetAttrs
 makeLensesWith suffixedFields ''AssetAttrs
 
 instance HasCardDef AssetAttrs where
-  defL = cardDefL
+  toCardDef = assetCardDef
 
 instance ToJSON AssetAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "asset"
@@ -91,13 +91,13 @@ instance Entity AssetAttrs where
   toAttrs = id
 
 instance NamedEntity AssetAttrs where
-  toName = view (defL . nameL)
+  toName = cdName . toCardDef
 
 instance TargetEntity AssetAttrs where
   toTarget = AssetTarget . toId
   isTarget attrs@AssetAttrs {..} = \case
     AssetTarget aid -> aid == assetId
-    CardCodeTarget cardCode -> attrs ^. defL . cardCodeL == cardCode
+    CardCodeTarget cardCode -> cdCardCode (toCardDef attrs) == cardCode
     CardIdTarget cardId -> cardId == unAssetId assetId
     SkillTestInitiatorTarget target -> isTarget attrs target
     _ -> False

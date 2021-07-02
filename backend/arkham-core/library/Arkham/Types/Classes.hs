@@ -284,7 +284,7 @@ class Exhaustable a where
 
 class (HasTraits a, HasCardDef a) => IsCard a where
   toCard :: a -> Card
-  toCard a = lookupCard (a ^. defL . cardCodeL) (a ^. cardIdL)
+  toCard a = lookupCard (cdCardCode $ toCardDef a) (a ^. cardIdL)
   cardIdL :: Lens' a CardId
 
 instance IsCard Card where

@@ -57,13 +57,13 @@ instance FromJSON CardDef where
   parseJSON = genericParseJSON $ aesonOptions $ Just "cd"
 
 class HasCardDef a where
-  defL :: Lens' a CardDef
+  toCardDef :: a -> CardDef
 
 instance HasCardDef a => HasTraits a where
-  traitsL = defL . cardTraitsL
+  getTraits = getTraits . toCardDef
 
 instance HasCardDef CardDef where
-  defL = id
+  toCardDef = id
 
 cardMatch :: CardMatcher -> CardDef -> Bool
 cardMatch (CardMatchByType (cardType', traits)) CardDef {..} =

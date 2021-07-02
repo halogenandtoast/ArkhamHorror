@@ -1,7 +1,7 @@
 {-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module Arkham.Types.Location.Attrs where
+module Arkham.Types.Location.Attrs (module Arkham.Types.Location.Attrs, module X) where
 
 import Arkham.Prelude
 
@@ -9,6 +9,7 @@ import Arkham.Json
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
+import Arkham.Types.Card.CardDef as X
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Direction

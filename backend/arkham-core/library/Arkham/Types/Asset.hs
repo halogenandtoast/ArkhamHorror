@@ -25,7 +25,7 @@ import Arkham.Types.SkillTest
 import Arkham.Types.Trait (Trait)
 
 createAsset :: IsCard a => a -> Asset
-createAsset a = lookupAsset (getCardCode a) (AssetId $ getCardId a)
+createAsset a = lookupAsset (toCardCode a) (AssetId $ toCardId a)
 
 data Asset
   = Rolands38Special' Rolands38Special
@@ -194,18 +194,17 @@ instance SourceEntity Asset where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 
+instance HasCardDef Asset where
+  toCardDef = toCardDef . toAttrs
+
 instance IsCard Asset where
-  toCard = toCard . toAttrs
-  getCardId = getCardId . toAttrs
-  getCardCode = getCardCode . toAttrs
-  getTraits = getTraits . toAttrs
-  getKeywords = getKeywords . toAttrs
+  toCardId = toCardId . toAttrs
 
 newtype BaseAsset = BaseAsset AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-baseAsset :: AssetId -> CardCode -> (AssetAttrs -> AssetAttrs) -> Asset
-baseAsset a b f = BaseAsset' . BaseAsset . f $ baseAttrs a b
+baseAsset :: AssetId -> CardCode -> (AssetAttrs -> AssetAttrs) -> (CardDef -> CardDef) -> Asset
+baseAsset aid cardCode attrsF defF = BaseAsset' $ asset BaseAsset (defF $ testCardDef AssetType cardCode) attrsF aid
 
 instance HasDamage Asset where
   getDamage a =

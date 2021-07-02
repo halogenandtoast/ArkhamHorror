@@ -2,22 +2,20 @@ module Arkham.Types.Treachery.Cards.CryptChill where
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype CryptChill = CryptChill TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-cryptChill :: TreacheryId -> a -> CryptChill
-cryptChill uuid _ = CryptChill $ baseAttrs uuid "01167"
+cryptChill :: TreacheryCard CryptChill
+cryptChill = treachery CryptChill Cards.cryptChill
 
 instance HasModifiersFor env CryptChill where
   getModifiersFor = noModifiersFor

@@ -17,7 +17,7 @@ spec = describe "Duke" $ do
       enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 4))
       investigator <- testInvestigator "00000"
         $ \attrs -> attrs { investigatorCombat = 1 }
-      location <- testLocation "00000" id
+      location <- testLocation id
       gameTest
           investigator
           [ SetTokens [Zero]
@@ -45,7 +45,6 @@ spec = describe "Duke" $ do
       investigator <- testInvestigator "00000"
         $ \attrs -> attrs { investigatorIntellect = 1 }
       location <- testLocation
-        "00000"
         (\attrs -> attrs { locationShroud = 4, locationClues = 1 })
       gameTest
           investigator

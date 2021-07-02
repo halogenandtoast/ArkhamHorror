@@ -13,7 +13,7 @@ import Arkham.Types.Card.Cost
 import Arkham.Types.ClassSymbol
 import Arkham.Types.CommitRestriction
 import Arkham.Types.EncounterSet
-import Arkham.Types.Keyword (Keyword)
+import Arkham.Types.Keyword (HasKeywords(..), Keyword)
 import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
@@ -43,6 +43,7 @@ data CardDef = CardDef
   , cdAttackOfOpportunityModifiers :: [AttackOfOpportunityModifier]
   , cdPermanent :: Bool
   , cdEncounterSet :: Maybe EncounterSet
+  , cdUnique :: Bool
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
@@ -59,16 +60,54 @@ instance FromJSON CardDef where
 class HasCardDef a where
   toCardDef :: a -> CardDef
 
-instance HasCardDef a => HasTraits a where
-  getTraits = getTraits . toCardDef
+class HasCardCode a where
+  toCardCode :: a -> CardCode
+
+class HasCardType a where
+  toCardType :: a -> CardType
+
+instance HasCardDef a => HasCardType a where
+  toCardType = cdCardType . toCardDef
+
+instance {-# OVERLAPPABLE #-} HasCardDef a => HasTraits a where
+  toTraits = cdCardTraits . toCardDef
+
+instance HasCardDef a => HasKeywords a where
+  toKeywords = cdKeywords . toCardDef
+
+instance HasCardDef a => HasCardCode a where
+  toCardCode = cdCardCode . toCardDef
 
 instance HasCardDef CardDef where
   toCardDef = id
 
-cardMatch :: CardMatcher -> CardDef -> Bool
-cardMatch (CardMatchByType (cardType', traits)) CardDef {..} =
-  cdCardType
-    == cardType'
-    && (null traits || notNull (intersection cdCardTraits traits))
+cardMatch :: HasCardDef a => CardMatcher -> a -> Bool
+cardMatch (CardMatchByType (cardType', traits)) a =
+  (toCardType a == cardType')
+    && (null traits || notNull (intersection (toTraits a) traits))
 cardMatch (CardMatchByCardCode cardCode) card =
-  cdCardCode card == cardCode
+  toCardCode card == cardCode
+
+testCardDef :: CardType -> CardCode -> CardDef
+testCardDef cardType cardCode = CardDef
+  { cdCardCode = cardCode
+  , cdName = "Test"
+  , cdCost = Nothing
+  , cdLevel = 0
+  , cdCardType = cardType
+  , cdWeakness = False
+  , cdClassSymbol = Nothing
+  , cdSkills = []
+  , cdCardTraits = mempty
+  , cdKeywords = mempty
+  , cdFast = False
+  , cdWindows = mempty
+  , cdAction = Nothing
+  , cdRevelation = False
+  , cdVictoryPoints = Nothing
+  , cdCommitRestrictions = []
+  , cdAttackOfOpportunityModifiers = []
+  , cdPermanent = False
+  , cdEncounterSet = Nothing
+  , cdUnique = False
+  }

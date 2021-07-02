@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
@@ -18,15 +18,15 @@ import Arkham.Types.Window
 newtype SecondWind = SecondWind EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-secondWind :: InvestigatorId -> EventId -> SecondWind
-secondWind iid uuid = SecondWind $ baseAttrs iid uuid "04149"
+secondWind :: EventCard SecondWind
+secondWind = event SecondWind Cards.secondWind
 
 instance HasCount ActionTakenCount env InvestigatorId => HasActions env SecondWind where
   getActions iid (InHandWindow ownerId (DuringTurn You)) (SecondWind attrs)
     | iid == ownerId = do
       actionsTaken <- unActionTakenCount <$> getCount iid
       pure
-        [ InitiatePlayCard iid (attrs ^. cardIdL) Nothing True
+        [ InitiatePlayCard iid (toCardId attrs) Nothing True
         | actionsTaken == 0
         ]
   getActions iid window (SecondWind attrs) = getActions iid window attrs

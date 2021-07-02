@@ -55,7 +55,7 @@ instance (HasName env LocationId, ActRunner env) => RunMessage env IntoTheBeyond
           , chooseOne
             iid
             [ TargetLabel
-                (CardIdTarget $ location ^. cardIdL)
+                (CardIdTarget $ toCardId location)
                 [ RemoveFromEncounterDiscard location
                 , InvestigatorDrewEncounterCard iid location
                 ]

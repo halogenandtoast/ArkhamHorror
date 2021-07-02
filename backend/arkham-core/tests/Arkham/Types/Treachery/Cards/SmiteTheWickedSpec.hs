@@ -39,7 +39,7 @@ spec = describe "Smite the Wicked" $ do
     investigator <- testInvestigator "00000" id
     smiteTheWicked <- buildPlayerCard "02007"
     enemy <- buildTestEnemyEncounterCard
-    location <- testLocation "00000" id
+    location <- testLocation id
     gameTest
         investigator
         [ SetEncounterDeck [enemy]
@@ -58,7 +58,7 @@ spec = describe "Smite the Wicked" $ do
     investigator <- testInvestigator "00000" id
     smiteTheWicked <- buildPlayerCard "02007"
     enemy <- buildTestEnemyEncounterCard
-    location <- testLocation "00000" id
+    location <- testLocation id
     gameTest
         investigator
         [ placedLocation location
@@ -78,7 +78,7 @@ spec = describe "Smite the Wicked" $ do
               (toId updatedEnemy)
               (toId investigator)
               (toId location)
-              (getCardCode enemy)
+              (toCardCode enemy)
               (toSource investigator)
               []
             , EndOfGame
@@ -92,7 +92,7 @@ spec = describe "Smite the Wicked" $ do
     investigator <- testInvestigator "00000" id
     smiteTheWicked <- buildPlayerCard "02007"
     enemy <- buildTestEnemyEncounterCard
-    location <- testLocation "00000" id
+    location <- testLocation id
     gameTest
         investigator
         [ placedLocation location

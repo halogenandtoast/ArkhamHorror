@@ -2,15 +2,12 @@ module Arkham.Types.Treachery.Cards.MysteriousChanting where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
@@ -18,8 +15,8 @@ import Arkham.Types.Treachery.Runner
 newtype MysteriousChanting = MysteriousChanting TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-mysteriousChanting :: TreacheryId -> a -> MysteriousChanting
-mysteriousChanting uuid _ = MysteriousChanting $ baseAttrs uuid "01171"
+mysteriousChanting :: TreacheryCard MysteriousChanting
+mysteriousChanting = treachery MysteriousChanting Cards.mysteriousChanting
 
 instance HasModifiersFor env MysteriousChanting where
   getModifiersFor = noModifiersFor
@@ -36,7 +33,7 @@ instance TreacheryRunner env => RunMessage env MysteriousChanting where
         [] -> t <$ unshiftMessages
           [ FindAndDrawEncounterCard
             iid
-            (EncounterCardMatchByType (EnemyType, Just Cultist))
+            (CardMatchByType (EnemyType, singleton Cultist))
           , Discard $ toTarget attrs
           ]
         xs -> t <$ unshiftMessages

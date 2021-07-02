@@ -52,7 +52,7 @@ instance LocationRunner env => RunMessage env TheHiddenChamber where
       connectedLocation <- getId iid
       name <- getName connectedLocation
       unshiftMessages
-        [ PlaceLocation (attrs ^. defL . cardCodeL) (toId attrs)
+        [ PlaceLocation (toCardCode attrs) (toId attrs)
         , AddDirectConnection (toId attrs) connectedLocation
         , AddDirectConnection connectedLocation (toId attrs)
         , SetLocationLabel (toId attrs) $ nameToLabel name <> "HiddenChamber"

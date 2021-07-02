@@ -427,7 +427,7 @@ data Message
   | RunDrawFromBag Source (Maybe InvestigatorId) RequestedTokenStrategy
   | RunSkillTest InvestigatorId
   | RunSkillTestSourceNotification InvestigatorId Source
-  | SearchCollectionForRandom InvestigatorId Source (CardType, HashSet Trait)
+  | SearchCollectionForRandom InvestigatorId Source CardMatcher
   | SearchDeckForTraits InvestigatorId Target [Trait]
   | SearchDiscard InvestigatorId Target [Trait]
   | SearchTopOfDeck InvestigatorId Target Int [Trait] LeftoverCardStrategy

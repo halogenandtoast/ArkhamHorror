@@ -12,7 +12,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Effect.Attrs hiding (traitsL)
+import Arkham.Types.Effect.Attrs
 import Arkham.Types.EffectId
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Game.Helpers
@@ -169,7 +169,7 @@ instance
           cards = filter
             (and . sequence
               [ maybe (const True) (==) mPlayerCardType . cdCardType . pcDef
-              , (|| null traits) . notNull . intersection traits . view traitsL
+              , (|| null traits) . notNull . intersection traits . toTraits
               , (|| null skillTypes)
               . not
               . null
@@ -181,7 +181,7 @@ instance
             )
             handCards
         e <$ unshiftMessage
-          (chooseN iid x [ DiscardCard iid (card ^. cardIdL) | card <- cards ])
+          (chooseN iid x [ DiscardCard iid (toCardId card) | card <- cards ])
       SkillIconCost x skillTypes -> do
         handCards <- mapMaybe (preview _PlayerCard . unHandCard) <$> getList iid
         let
@@ -190,9 +190,9 @@ instance
             handCards
           cardMsgs = map
             (\(n, card) -> if n >= x
-              then DiscardCard iid (card ^. cardIdL)
+              then DiscardCard iid (toCardId card)
               else Run
-                [ DiscardCard iid (card ^. cardIdL)
+                [ DiscardCard iid (toCardId card)
                 , PayAbilityCost
                   source
                   iid

@@ -5,25 +5,23 @@ module Arkham.Types.Asset.Cards.GrotesqueStatue4
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.Cost
-import Arkham.Types.Message
-import Arkham.Types.Slot
-import Arkham.Types.Source
-import Arkham.Types.Window
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.ChaosBagStepState
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.Message
+import Arkham.Types.Source
+import Arkham.Types.Window
 
 newtype GrotesqueStatue4 = GrotesqueStatue4 AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
-grotesqueStatue4 :: AssetId -> GrotesqueStatue4
-grotesqueStatue4 uuid =
-  GrotesqueStatue4 $ (baseAttrs uuid "01071") { assetSlots = [HandSlot] }
+grotesqueStatue4 :: AssetCard GrotesqueStatue4
+grotesqueStatue4 = hand GrotesqueStatue4 Cards.grotesqueStatue4
 
 instance HasModifiersFor env GrotesqueStatue4 where
   getModifiersFor = noModifiersFor

@@ -8,14 +8,13 @@ import Arkham.Prelude
 import qualified Arkham.Treachery.Cards as Cards (acrossSpaceAndTime)
 import Arkham.Types.Classes
 import Arkham.Types.Message
-import Arkham.Types.TreacheryId
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype AcrossSpaceAndTime = AcrossSpaceAndTime TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-acrossSpaceAndTime :: InvestigatorId -> TreacheryId -> AcrossSpaceAndTime
+acrossSpaceAndTime :: TreacheryCard AcrossSpaceAndTime
 acrossSpaceAndTime = treachery AcrossSpaceAndTime Cards.acrossSpaceAndTime
 
 instance HasModifiersFor env AcrossSpaceAndTime where

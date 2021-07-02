@@ -2,21 +2,18 @@ module Arkham.Types.Treachery.Cards.Paranoia where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Query
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype Paranoia = Paranoia TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-paranoia :: TreacheryId -> Maybe InvestigatorId -> Paranoia
-paranoia uuid iid = Paranoia $ weaknessAttrs uuid iid "01097"
+paranoia :: TreacheryCard Paranoia
+paranoia = treachery Paranoia Cards.paranoia
 
 instance HasModifiersFor env Paranoia where
   getModifiersFor = noModifiersFor

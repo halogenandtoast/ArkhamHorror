@@ -5,14 +5,13 @@ import Arkham.Prelude
 import qualified Arkham.Treachery.Cards as Cards (abandonedAndAlone)
 import Arkham.Types.Classes
 import Arkham.Types.Message
-import Arkham.Types.TreacheryId
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype AbandonedAndAlone = AbandonedAndAlone TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-abandonedAndAlone :: TreacheryId -> AbandonedAndAlone
+abandonedAndAlone :: TreacheryCard AbandonedAndAlone
 abandonedAndAlone = treachery AbandonedAndAlone Cards.abandonedAndAlone
 
 instance HasModifiersFor env AbandonedAndAlone where

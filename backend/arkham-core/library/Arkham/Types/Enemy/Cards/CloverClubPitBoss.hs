@@ -6,27 +6,25 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
+import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Prey
 import Arkham.Types.SkillType
-import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Runner
 
 newtype CloverClubPitBoss = CloverClubPitBoss EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-cloverClubPitBoss :: EnemyId -> CloverClubPitBoss
-cloverClubPitBoss uuid =
-  CloverClubPitBoss
-    $ baseAttrs uuid "02078"
-    $ (healthDamageL .~ 2)
-    . (fightL .~ 3)
-    . (healthL .~ Static 4)
-    . (evadeL .~ 3)
-    . (preyL .~ HighestSkill SkillIntellect)
+cloverClubPitBoss :: EnemyCard CloverClubPitBoss
+cloverClubPitBoss = enemy CloverClubPitBoss Cards.cloverClubPitBoss
+  $ (healthDamageL .~ 2)
+  . (fightL .~ 3)
+  . (healthL .~ Static 4)
+  . (evadeL .~ 3)
+  . (preyL .~ HighestSkill SkillIntellect)
 
 instance HasModifiersFor env CloverClubPitBoss where
   getModifiersFor = noModifiersFor

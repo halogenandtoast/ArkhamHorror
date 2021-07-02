@@ -5,26 +5,24 @@ module Arkham.Types.Enemy.Cards.SilasBishop
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.Modifier
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
+import Arkham.Types.GameValue
+import Arkham.Types.Modifier
 
 newtype SilasBishop = SilasBishop EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-silasBishop :: EnemyId -> SilasBishop
-silasBishop uuid =
-  SilasBishop
-    $ baseAttrs uuid "02216"
-    $ (healthDamageL .~ 2)
-    . (sanityDamageL .~ 2)
-    . (fightL .~ 3)
-    . (healthL .~ PerPlayer 6)
-    . (evadeL .~ 7)
+silasBishop :: EnemyCard SilasBishop
+silasBishop = enemy SilasBishop Cards.silasBishop
+  $ (healthDamageL .~ 2)
+  . (sanityDamageL .~ 2)
+  . (fightL .~ 3)
+  . (healthL .~ PerPlayer 6)
+  . (evadeL .~ 7)
 
 instance HasModifiersFor env SilasBishop where
   getModifiersFor _ target (SilasBishop attrs) | isTarget attrs target =

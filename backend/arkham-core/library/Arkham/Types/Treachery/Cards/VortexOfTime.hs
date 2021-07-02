@@ -5,21 +5,21 @@ module Arkham.Types.Treachery.Cards.VortexOfTime
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
 
 newtype VortexOfTime = VortexOfTime TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-vortexOfTime :: TreacheryId -> a -> VortexOfTime
-vortexOfTime uuid _ = VortexOfTime $ baseAttrs uuid "02298"
+vortexOfTime :: TreacheryCard VortexOfTime
+vortexOfTime = treachery VortexOfTime Cards.vortexOfTime
 
 instance HasModifiersFor env VortexOfTime where
   getModifiersFor = noModifiersFor

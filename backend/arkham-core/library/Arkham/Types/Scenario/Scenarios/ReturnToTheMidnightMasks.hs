@@ -3,15 +3,13 @@ module Arkham.Types.Scenario.Scenarios.ReturnToTheMidnightMasks where
 import Arkham.Prelude
 
 import Arkham.EncounterCard
+import Arkham.EncounterSet (gatherEncounterSet)
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
-import Arkham.Types.EncounterSet (gatherEncounterSet)
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Query

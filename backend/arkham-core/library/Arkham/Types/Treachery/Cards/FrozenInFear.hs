@@ -2,16 +2,14 @@ module Arkham.Types.Treachery.Cards.FrozenInFear where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
-import qualified Arkham.Types.Action as Action
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
@@ -19,8 +17,8 @@ import Arkham.Types.Treachery.Runner
 newtype FrozenInFear = FrozenInFear TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-frozenInFear :: TreacheryId -> a -> FrozenInFear
-frozenInFear uuid _ = FrozenInFear $ baseAttrs uuid "01164"
+frozenInFear :: TreacheryCard FrozenInFear
+frozenInFear = treachery FrozenInFear Cards.frozenInFear
 
 instance HasModifiersFor env FrozenInFear where
   getModifiersFor _ (InvestigatorTarget iid) (FrozenInFear attrs) =

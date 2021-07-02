@@ -6,32 +6,26 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.Cost
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.SkillType
-import Arkham.Types.Slot
-import Arkham.Types.Source
-import Arkham.Types.Target
-import Arkham.Types.Window
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.Id
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.SkillType
+import Arkham.Types.Source
+import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype BrotherXavier1 = BrotherXavier1 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-brotherXavier1 :: AssetId -> BrotherXavier1
-brotherXavier1 uuid = BrotherXavier1 $ (baseAttrs uuid "02106")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 3
-  , assetSanity = Just 3
-  }
+brotherXavier1 :: AssetCard BrotherXavier1
+brotherXavier1 = ally BrotherXavier1 Cards.brotherXavier1 (3, 3)
 
 instance (HasId LocationId env InvestigatorId) => HasModifiersFor env BrotherXavier1 where
   getModifiersFor _ (InvestigatorTarget iid) (BrotherXavier1 a)

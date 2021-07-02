@@ -2,22 +2,19 @@ module Arkham.Types.Asset.Cards.LitaChantler where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -25,12 +22,8 @@ import Arkham.Types.Window
 newtype LitaChantler = LitaChantler AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-litaChantler :: AssetId -> LitaChantler
-litaChantler uuid = LitaChantler $ (baseAttrs uuid "01117")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 3
-  , assetSanity = Just 3
-  }
+litaChantler :: AssetCard LitaChantler
+litaChantler = allyWith LitaChantler Cards.litaChantler (3, 3) (isStoryL .~ True)
 
 instance HasId LocationId env InvestigatorId => HasModifiersFor env LitaChantler where
   getModifiersFor _ (InvestigatorTarget iid) (LitaChantler a@AssetAttrs {..}) =

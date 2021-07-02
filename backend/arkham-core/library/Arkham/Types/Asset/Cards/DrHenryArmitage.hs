@@ -5,26 +5,21 @@ module Arkham.Types.Asset.Cards.DrHenryArmitage
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
-import Arkham.Types.Slot
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
 
 newtype DrHenryArmitage = DrHenryArmitage AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-drHenryArmitage :: AssetId -> DrHenryArmitage
-drHenryArmitage uuid = DrHenryArmitage $ (baseAttrs uuid "02040")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 2
-  , assetSanity = Just 2
-  }
+drHenryArmitage :: AssetCard DrHenryArmitage
+drHenryArmitage = ally DrHenryArmitage Cards.drHenryArmitage (2, 2)
 
 fastAbility :: AssetAttrs -> CardId -> Ability
 fastAbility a cid = mkAbility

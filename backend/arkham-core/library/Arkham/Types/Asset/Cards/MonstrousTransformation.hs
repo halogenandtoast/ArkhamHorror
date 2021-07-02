@@ -5,12 +5,12 @@ module Arkham.Types.Asset.Cards.MonstrousTransformation
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -23,9 +23,8 @@ import Arkham.Types.Target
 newtype MonstrousTransformation = MonstrousTransformation AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-monstrousTransformation :: AssetId -> MonstrousTransformation
-monstrousTransformation uuid =
-  MonstrousTransformation $ (baseAttrs uuid "81030") { assetIsStory = True }
+monstrousTransformation :: AssetCard MonstrousTransformation
+monstrousTransformation = assetWith MonstrousTransformation Cards.monstrousTransformation (isStoryL .~ True)
 
 instance HasModifiersFor env MonstrousTransformation where
   getModifiersFor _ (InvestigatorTarget iid) (MonstrousTransformation a)

@@ -2,18 +2,16 @@ module Arkham.Types.Asset.Cards.BulletproofVest3 where
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.Slot
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
+import Arkham.Types.Classes
 
 newtype BulletproofVest3 = BulletproofVest3 AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
-bulletproofVest3 :: AssetId -> BulletproofVest3
-bulletproofVest3 uuid = BulletproofVest3
-  $ (baseAttrs uuid "01094") { assetSlots = [BodySlot], assetHealth = Just 4 }
+bulletproofVest3 :: AssetCard BulletproofVest3
+bulletproofVest3 = bodyWith BulletproofVest3 Cards.bulletproofVest3 (healthL ?~ 4)
 
 instance HasModifiersFor env BulletproofVest3 where
   getModifiersFor = noModifiersFor

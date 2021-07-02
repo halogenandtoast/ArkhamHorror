@@ -6,24 +6,23 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers
+import Arkham.Types.Id
+import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
-import Arkham.Types.Game.Helpers
-import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype ShadowSpawned = ShadowSpawned TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-shadowSpawned :: TreacheryId -> a -> ShadowSpawned
-shadowSpawned uuid _ = ShadowSpawned $ baseAttrs uuid "02142"
+shadowSpawned :: TreacheryCard ShadowSpawned
+shadowSpawned = treachery ShadowSpawned Cards.shadowSpawned
 
 instance HasCount ResourceCount env TreacheryId => HasModifiersFor env ShadowSpawned where
   getModifiersFor _ (EnemyTarget eid) (ShadowSpawned attrs)

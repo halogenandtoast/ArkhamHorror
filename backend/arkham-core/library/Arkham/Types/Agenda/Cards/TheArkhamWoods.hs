@@ -44,7 +44,7 @@ instance AgendaRunner env => RunMessage env TheArkhamWoods where
           mainPathId <- getJustLocationIdByName "Main Path"
           a <$ unshiftMessages
             [ SpawnEnemyAt (EncounterCard card) mainPathId
-            , PlaceDoom (CardIdTarget $ card ^. cardIdL) 1
+            , PlaceDoom (CardIdTarget $ toCardId card) 1
             , NextAgenda aid "01144"
             ]
     _ -> TheArkhamWoods <$> runMessage msg attrs

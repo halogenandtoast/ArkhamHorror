@@ -13,6 +13,7 @@ import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import Arkham.Types.Trait (toTraits)
 
 playEvent :: Investigator -> Event -> Message
 playEvent i e = InvestigatorPlayEvent (toId i) (toId e) Nothing
@@ -53,13 +54,13 @@ disengageEnemy i e = DisengageEnemy (toId i) (toId e)
 
 playAsset :: Investigator -> Asset -> Message
 playAsset i a =
-  InvestigatorPlayAsset (toId i) (toId a) (slotsOf a) (toList $ getTraits a)
+  InvestigatorPlayAsset (toId i) (toId a) (slotsOf a) (toList $ toTraits a)
 
 placedLocation :: Location -> Message
-placedLocation l = PlacedLocation (toName l) (getCardCode l) (toId l)
+placedLocation l = PlacedLocation (toName l) (toCardCode l) (toId l)
 
 playDynamicCard :: Investigator -> Card -> Message
-playDynamicCard i c = PlayDynamicCard (toId i) (getCardId c) 0 Nothing True
+playDynamicCard i c = PlayDynamicCard (toId i) (toCardId c) 0 Nothing True
 
 drawCards :: Investigator -> Int -> Message
 drawCards i n = DrawCards (toId i) n False

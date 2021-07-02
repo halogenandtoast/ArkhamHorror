@@ -6,11 +6,10 @@ where
 
 import Arkham.Prelude
 
-import Arkham.Types.Card
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Prey
@@ -19,16 +18,14 @@ import Arkham.Types.Trait
 newtype WizardOfYogSothoth = WizardOfYogSothoth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-wizardOfYogSothoth :: EnemyId -> WizardOfYogSothoth
-wizardOfYogSothoth uuid =
-  WizardOfYogSothoth
-    $ baseAttrs uuid "02087"
-    $ (healthDamageL .~ 1)
-    . (sanityDamageL .~ 2)
-    . (fightL .~ 4)
-    . (healthL .~ Static 3)
-    . (evadeL .~ 3)
-    . (preyL .~ FewestCards)
+wizardOfYogSothoth :: EnemyCard WizardOfYogSothoth
+wizardOfYogSothoth = enemy WizardOfYogSothoth Cards.wizardOfYogSothoth
+  $ (healthDamageL .~ 1)
+  . (sanityDamageL .~ 2)
+  . (fightL .~ 4)
+  . (healthL .~ Static 3)
+  . (evadeL .~ 3)
+  . (preyL .~ FewestCards)
 
 instance HasModifiersFor env WizardOfYogSothoth where
   getModifiersFor = noModifiersFor
@@ -40,9 +37,9 @@ instance (EnemyRunner env) => RunMessage env WizardOfYogSothoth where
   runMessage msg e@(WizardOfYogSothoth attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrewEncounterCard iid card
       | iid `elem` enemyEngagedInvestigators -> e <$ when
-        (any (`member` card ^. traitsL) [Hex, Pact])
+        (any (`member` toTraits card) [Hex, Pact])
         (unshiftMessage (EnemyAttack iid enemyId))
     InvestigatorDrewPlayerCard iid card -> e <$ when
-      (any (`member` cdTraits (pcDef card)) [Hex, Pact])
+      (any (`member` toTraits card) [Hex, Pact])
       (unshiftMessage (EnemyAttack iid enemyId))
     _ -> WizardOfYogSothoth <$> runMessage msg attrs

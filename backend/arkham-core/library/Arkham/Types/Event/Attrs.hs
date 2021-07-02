@@ -13,6 +13,8 @@ import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
 
+type EventCard a = (InvestigatorId -> EventId -> a)
+
 data EventAttrs = EventAttrs
   { eventCardDef :: CardDef
   , eventId :: EventId
@@ -35,7 +37,7 @@ instance FromJSON EventAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "event"
 
 instance IsCard EventAttrs where
-  cardIdL = lens (unEventId . eventId) $ \m x -> m { eventId = EventId x }
+  toCardId = unEventId . eventId
 
 unshiftEffect
   :: (HasQueue env, MonadReader env m, MonadIO m)

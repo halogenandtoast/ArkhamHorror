@@ -6,15 +6,11 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
@@ -22,8 +18,8 @@ import Arkham.Types.Treachery.Runner
 newtype AlteredBeast = AlteredBeast TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-alteredBeast :: TreacheryId -> a -> AlteredBeast
-alteredBeast uuid _ = AlteredBeast $ baseAttrs uuid "02096"
+alteredBeast :: TreacheryCard AlteredBeast
+alteredBeast = treachery AlteredBeast Cards.alteredBeast
 
 instance HasModifiersFor env AlteredBeast where
   getModifiersFor = noModifiersFor

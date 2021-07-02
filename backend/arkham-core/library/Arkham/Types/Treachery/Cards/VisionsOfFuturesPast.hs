@@ -6,22 +6,20 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype VisionsOfFuturesPast = VisionsOfFuturesPast TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-visionsOfFuturesPast :: TreacheryId -> a -> VisionsOfFuturesPast
-visionsOfFuturesPast uuid _ = VisionsOfFuturesPast $ baseAttrs uuid "02083"
+visionsOfFuturesPast :: TreacheryCard VisionsOfFuturesPast
+visionsOfFuturesPast = treachery VisionsOfFuturesPast Cards.visionsOfFuturesPast
 
 instance HasModifiersFor env VisionsOfFuturesPast where
   getModifiersFor = noModifiersFor

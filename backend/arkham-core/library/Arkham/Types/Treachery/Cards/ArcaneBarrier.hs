@@ -6,22 +6,20 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype ArcaneBarrier = ArcaneBarrier TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-arcaneBarrier :: TreacheryId -> a -> ArcaneBarrier
-arcaneBarrier uuid _ = ArcaneBarrier $ baseAttrs uuid "02102"
+arcaneBarrier :: TreacheryCard ArcaneBarrier
+arcaneBarrier = treachery ArcaneBarrier Cards.arcaneBarrier
 
 instance HasModifiersFor env ArcaneBarrier where
   getModifiersFor = noModifiersFor

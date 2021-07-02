@@ -2,8 +2,11 @@ module Arkham.Types.Asset.Cards.DiscOfItzamna2 where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -11,20 +14,15 @@ import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
-import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype DiscOfItzamna2 = DiscOfItzamna2 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-discOfItzamna2 :: AssetId -> DiscOfItzamna2
-discOfItzamna2 uuid =
-  DiscOfItzamna2 $ (baseAttrs uuid "01059") { assetSlots = [AccessorySlot] }
+discOfItzamna2 :: AssetCard DiscOfItzamna2
+discOfItzamna2 = accessory DiscOfItzamna2 Cards.discOfItzamna2
 
 instance HasModifiersFor env DiscOfItzamna2 where
   getModifiersFor = noModifiersFor

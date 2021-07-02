@@ -5,13 +5,10 @@ import Arkham.Prelude
 import Arkham.EncounterCard
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Query
@@ -171,7 +168,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       <$ unshiftMessage
            (FindAndDrawEncounterCard
              iid
-             (EncounterCardMatchByType (EnemyType, Just Monster))
+             (CardMatchByType (EnemyType, singleton Monster))
            )
     ScenarioResolution NoResolution -> do
       leadInvestigatorId <- getLeadInvestigatorId

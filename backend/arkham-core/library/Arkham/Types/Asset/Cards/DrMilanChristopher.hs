@@ -2,30 +2,24 @@ module Arkham.Types.Asset.Cards.DrMilanChristopher where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 
 newtype DrMilanChristopher = DrMilanChristopher AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-drMilanChristopher :: AssetId -> DrMilanChristopher
-drMilanChristopher uuid =
-  DrMilanChristopher
-    $ baseAttrs uuid "01033"
-    & (healthL ?~ 1)
-    & (sanityL ?~ 2)
-    & (slotsL .~ [AllySlot])
+drMilanChristopher :: AssetCard DrMilanChristopher
+drMilanChristopher = ally DrMilanChristopher Cards.drMilanChristopher (1, 2)
 
 instance HasModifiersFor env DrMilanChristopher where
   getModifiersFor _ (InvestigatorTarget iid) (DrMilanChristopher a) =

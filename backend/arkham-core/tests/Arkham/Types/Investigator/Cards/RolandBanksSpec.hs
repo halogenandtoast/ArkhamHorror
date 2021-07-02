@@ -17,7 +17,7 @@ spec = describe "Roland Banks" $ do
           let rolandBanks = lookupInvestigator "01001"
           enemy <- testEnemy
             $ \attrs -> attrs { enemyFight = 4, enemyHealth = Static 1 }
-          location <- testLocation "00000"
+          location <- testLocation
             $ \attrs -> attrs { locationClues = 1 }
           gameTest
               rolandBanks
@@ -45,7 +45,7 @@ spec = describe "Roland Banks" $ do
   context "elder sign" $ do
     it "gives +1 for each clue on your location" $ do
       let rolandBanks = lookupInvestigator "01001"
-      location <- testLocation "00000"
+      location <- testLocation
         $ \attrs -> attrs { locationClues = 1, locationShroud = 4 }
       gameTest
           rolandBanks

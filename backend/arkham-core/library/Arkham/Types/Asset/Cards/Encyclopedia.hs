@@ -5,29 +5,27 @@ module Arkham.Types.Asset.Cards.Encyclopedia
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.Cost
-import Arkham.Types.Effect.Window
-import Arkham.Types.EffectMetadata
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.SkillType
-import Arkham.Types.Slot
-import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.Effect.Window
+import Arkham.Types.EffectMetadata
+import Arkham.Types.Id
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.SkillType
+import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype Encyclopedia = Encyclopedia AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-encyclopedia :: AssetId -> Encyclopedia
-encyclopedia uuid =
-  Encyclopedia $ (baseAttrs uuid "60208") { assetSlots = [HandSlot] }
+encyclopedia :: AssetCard Encyclopedia
+encyclopedia = hand Encyclopedia Cards.encyclopedia
 
 instance HasModifiersFor env Encyclopedia where
   getModifiersFor = noModifiersFor

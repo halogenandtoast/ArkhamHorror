@@ -2,22 +2,20 @@ module Arkham.Types.Treachery.Cards.DraggedUnder where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype DraggedUnder = DraggedUnder TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-draggedUnder :: TreacheryId -> a -> DraggedUnder
-draggedUnder uuid _ = DraggedUnder $ baseAttrs uuid "81026"
+draggedUnder :: TreacheryCard DraggedUnder
+draggedUnder = treachery DraggedUnder Cards.draggedUnder
 
 instance HasModifiersFor env DraggedUnder where
   getModifiersFor = noModifiersFor

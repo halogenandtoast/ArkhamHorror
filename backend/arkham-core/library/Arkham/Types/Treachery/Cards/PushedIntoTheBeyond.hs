@@ -5,21 +5,21 @@ module Arkham.Types.Treachery.Cards.PushedIntoTheBeyond
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.EffectMetadata
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
 
 newtype PushedIntoTheBeyond = PushedIntoTheBeyond TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-pushedIntoTheBeyond :: TreacheryId -> a -> PushedIntoTheBeyond
-pushedIntoTheBeyond uuid _ = PushedIntoTheBeyond $ baseAttrs uuid "02100"
+pushedIntoTheBeyond :: TreacheryCard PushedIntoTheBeyond
+pushedIntoTheBeyond = treachery PushedIntoTheBeyond Cards.pushedIntoTheBeyond
 
 instance HasModifiersFor env PushedIntoTheBeyond where
   getModifiersFor = noModifiersFor

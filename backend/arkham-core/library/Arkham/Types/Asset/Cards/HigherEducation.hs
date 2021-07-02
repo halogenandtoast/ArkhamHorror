@@ -5,17 +5,17 @@ module Arkham.Types.Asset.Cards.HigherEducation
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -25,8 +25,8 @@ import Arkham.Types.Window
 newtype HigherEducation = HigherEducation AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-higherEducation :: AssetId -> HigherEducation
-higherEducation uuid = HigherEducation $ baseAttrs uuid "60211"
+higherEducation :: AssetCard HigherEducation
+higherEducation = asset HigherEducation Cards.higherEducation
 
 instance HasList HandCard env InvestigatorId => HasActions env HigherEducation where
   getActions iid (WhenSkillTest SkillWillpower) (HigherEducation a)

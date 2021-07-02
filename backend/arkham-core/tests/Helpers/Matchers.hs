@@ -49,11 +49,11 @@ instance ToPlayerCard PlayerCard where
   asPlayerCard = id
 
 instance ToPlayerCard Event where
-  asPlayerCard event = lookupPlayerCard (getCardCode event) (getCardId event)
+  asPlayerCard event = lookupPlayerCard (toCardCode event) (toCardId event)
 
 instance ToPlayerCard Treachery where
   asPlayerCard treachery =
-    lookupPlayerCard (getCardCode treachery) (getCardId treachery)
+    lookupPlayerCard (toCardCode treachery) (toCardId treachery)
 
 class (Entity a, TargetEntity a) => TestEntity a where
   updated :: (MonadReader env m, HasGameRef env, MonadIO m) => a -> m a
@@ -96,7 +96,7 @@ isAttachedTo x y = case toTarget x of
 
 instance ToEncounterCard Enemy where
   asEncounterCard enemy =
-    lookupEncounterCard (getCardCode enemy) (getCardId enemy)
+    lookupEncounterCard (toCardCode enemy) (toCardId enemy)
 
 isInEncounterDiscard
   :: (ToEncounterCard entity, HasGameRef env, MonadIO m, MonadReader env m)
@@ -184,7 +184,7 @@ hasTreacheryWithMatchingCardCode c a = do
     (mtreachery game)
  where
   mtreachery g =
-    find ((== getCardCode c) . getCardCode) $ toList (g ^. treacheriesL)
+    find ((== toCardCode c) . toCardCode) $ toList (g ^. treacheriesL)
 
 hasClueCount :: HasCount ClueCount () a => Int -> a -> Bool
 hasClueCount n a = n == unClueCount (getCount a ())

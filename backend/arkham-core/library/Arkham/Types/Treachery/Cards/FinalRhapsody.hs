@@ -2,20 +2,19 @@ module Arkham.Types.Treachery.Cards.FinalRhapsody where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Token
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
 
 newtype FinalRhapsody = FinalRhapsody TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-finalRhapsody :: TreacheryId -> Maybe InvestigatorId -> FinalRhapsody
-finalRhapsody uuid iid = FinalRhapsody $ weaknessAttrs uuid iid "02013"
+finalRhapsody :: TreacheryCard FinalRhapsody
+finalRhapsody = treachery FinalRhapsody Cards.finalRhapsody
 
 instance HasModifiersFor env FinalRhapsody where
   getModifiersFor = noModifiersFor

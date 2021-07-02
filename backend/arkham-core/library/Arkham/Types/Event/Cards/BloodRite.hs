@@ -1,25 +1,23 @@
-module Arkham.Types.Event.Cards.BloodRite where
+module Arkham.Types.Event.Cards.BloodRite (bloodRite, BloodRite(..)) where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EnemyId
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Source
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
+import Arkham.Types.Id
+import Arkham.Types.Message
+import Arkham.Types.Source
 
 newtype BloodRite = BloodRite EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-bloodRite :: InvestigatorId -> EventId -> BloodRite
-bloodRite iid uuid = BloodRite $ baseAttrs iid uuid "05317"
+bloodRite :: EventCard BloodRite
+bloodRite = event BloodRite Cards.bloodRite
 
 instance HasModifiersFor env BloodRite where
   getModifiersFor = noModifiersFor
@@ -42,7 +40,7 @@ instance EventRunner env => RunMessage env BloodRite where
           e <$ unshiftMessage
             (chooseOne iid
             $ [ Run
-                  [ DiscardCard iid (card ^. cardIdL)
+                  [ DiscardCard iid (toCardId card)
                   , PayForCardAbility
                     iid
                     source

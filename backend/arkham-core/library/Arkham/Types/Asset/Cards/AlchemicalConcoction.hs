@@ -6,17 +6,17 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
-import Arkham.Types.EnemyId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillTest
@@ -27,8 +27,8 @@ import Arkham.Types.Target
 newtype AlchemicalConcoction = AlchemicalConcoction AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-alchemicalConcoction :: AssetId -> AlchemicalConcoction
-alchemicalConcoction uuid = AlchemicalConcoction $ baseAttrs uuid "02059"
+alchemicalConcoction :: AssetCard AlchemicalConcoction
+alchemicalConcoction = asset AlchemicalConcoction Cards.alchemicalConcoction
 
 instance ActionRunner env => HasActions env AlchemicalConcoction where
   getActions iid window (AlchemicalConcoction a) | ownedBy a iid = do

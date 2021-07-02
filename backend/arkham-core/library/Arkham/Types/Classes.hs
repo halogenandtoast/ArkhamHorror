@@ -284,18 +284,19 @@ class Exhaustable a where
 
 class (HasTraits a, HasCardDef a) => IsCard a where
   toCard :: a -> Card
-  toCard a = lookupCard (cdCardCode $ toCardDef a) (a ^. cardIdL)
-  cardIdL :: Lens' a CardId
+  toCard a = lookupCard (cdCardCode $ toCardDef a) (toCardId a)
+  toCardId :: a -> CardId
 
 instance IsCard Card where
-  cardIdL f = \case
-    PlayerCard pc -> PlayerCard <$> cardIdL f pc
-    EncounterCard ec -> EncounterCard <$> cardIdL f ec
+  toCardId = \case
+    PlayerCard pc -> toCardId pc
+    EncounterCard ec -> toCardId ec
+
 instance IsCard PlayerCard where
-  cardIdL = lens pcId $ \m x -> m { pcId = x }
+  toCardId = pcId
 
 instance IsCard EncounterCard where
-  cardIdL = lens ecId $ \m x -> m { ecId = x }
+  toCardId = ecId
 
 class IsInvestigator a where
   isResigned :: a -> Bool

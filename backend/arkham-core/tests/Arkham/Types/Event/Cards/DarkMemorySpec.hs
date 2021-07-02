@@ -34,7 +34,7 @@ spec = do
       darkMemory <- buildPlayerCard "01013"
 
       (didReveal, logger) <- createMessageMatcher
-        (RevealInHand $ getCardId darkMemory)
+        (RevealInHand $ toCardId darkMemory)
 
       gameTestWithLogger
           logger

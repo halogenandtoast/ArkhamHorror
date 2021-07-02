@@ -5,11 +5,11 @@ module Arkham.Types.Asset.Cards.Hyperawareness
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -23,8 +23,8 @@ import Arkham.Types.Window
 newtype Hyperawareness = Hyperawareness AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-hyperawareness :: AssetId -> Hyperawareness
-hyperawareness uuid = Hyperawareness $ baseAttrs uuid "01034"
+hyperawareness :: AssetCard Hyperawareness
+hyperawareness = asset Hyperawareness Cards.hyperawareness
 
 instance HasModifiersFor env Hyperawareness where
   getModifiersFor = noModifiersFor

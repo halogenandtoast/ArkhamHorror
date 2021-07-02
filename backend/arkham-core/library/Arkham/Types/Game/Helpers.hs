@@ -30,7 +30,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
-import Arkham.Types.Trait (Trait, traitsL)
+import Arkham.Types.Trait (Trait, toTraits)
 import Arkham.Types.Window
 
 cancelToken :: (HasQueue env, MonadIO m, MonadReader env m) => Token -> m ()
@@ -199,10 +199,10 @@ getCanAffordCost iid source mAction = \case
     let
       cardTypeFilter = case mCardType of
         Nothing -> const True
-        Just cardType' -> views (defL . cardTypeL) (== cardType')
+        Just cardType' -> (== cardType') . cdCardType . toCardDef
       traitFilter = if null traits
         then const True
-        else notNull . intersect traits . view traitsL
+        else notNull . intersect traits . toTraits
       skillTypeFilter = if null skillTypes
         then const True
         else

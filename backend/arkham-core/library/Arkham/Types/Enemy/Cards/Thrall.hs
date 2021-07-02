@@ -5,10 +5,10 @@ module Arkham.Types.Enemy.Cards.Thrall
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
 import Arkham.Types.Exception
 import Arkham.Types.GameValue
 import Arkham.Types.Message
@@ -17,15 +17,13 @@ import Arkham.Types.Query
 newtype Thrall = Thrall EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-thrall :: EnemyId -> Thrall
-thrall uuid =
-  Thrall
-    $ baseAttrs uuid "02086"
-    $ (healthDamageL .~ 1)
-    . (sanityDamageL .~ 1)
-    . (fightL .~ 2)
-    . (healthL .~ Static 2)
-    . (evadeL .~ 2)
+thrall :: EnemyCard Thrall
+thrall = enemy Thrall Cards.thrall
+  $ (healthDamageL .~ 1)
+  . (sanityDamageL .~ 1)
+  . (fightL .~ 2)
+  . (healthL .~ Static 2)
+  . (evadeL .~ 2)
 
 instance HasModifiersFor env Thrall where
   getModifiersFor = noModifiersFor

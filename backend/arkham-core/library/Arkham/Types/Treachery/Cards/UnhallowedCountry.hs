@@ -5,16 +5,15 @@ module Arkham.Types.Treachery.Cards.UnhallowedCountry
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
@@ -23,8 +22,8 @@ import Arkham.Types.Treachery.Runner
 newtype UnhallowedCountry = UnhallowedCountry TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-unhallowedCountry :: TreacheryId -> a -> UnhallowedCountry
-unhallowedCountry uuid _ = UnhallowedCountry $ baseAttrs uuid "02088"
+unhallowedCountry :: TreacheryCard UnhallowedCountry
+unhallowedCountry = treachery UnhallowedCountry Cards.unhallowedCountry
 
 instance (HasSet Trait env AssetId, HasId (Maybe OwnerId) env AssetId) => HasModifiersFor env UnhallowedCountry where
   getModifiersFor _ (InvestigatorTarget iid) (UnhallowedCountry attrs) =

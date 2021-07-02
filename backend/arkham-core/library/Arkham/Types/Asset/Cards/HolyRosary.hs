@@ -2,24 +2,20 @@ module Arkham.Types.Asset.Cards.HolyRosary where
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.Modifier
-import Arkham.Types.SkillType
-import Arkham.Types.Slot
-import Arkham.Types.Target
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
+import Arkham.Types.Classes
+import Arkham.Types.Modifier
+import Arkham.Types.SkillType
+import Arkham.Types.Target
 
 newtype HolyRosary = HolyRosary AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-holyRosary :: AssetId -> HolyRosary
-holyRosary uuid = HolyRosary $ (baseAttrs uuid "01059")
-  { assetSlots = [AccessorySlot]
-  , assetSanity = Just 2
-  }
+holyRosary :: AssetCard HolyRosary
+holyRosary = accessoryWith HolyRosary Cards.holyRosary (sanityL ?~ 2)
 
 instance HasModifiersFor env  HolyRosary where
   getModifiersFor _ (InvestigatorTarget iid) (HolyRosary a) =

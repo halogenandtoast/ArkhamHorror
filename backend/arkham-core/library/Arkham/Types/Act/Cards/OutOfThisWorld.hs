@@ -56,7 +56,7 @@ instance ActRunner env => RunMessage env OutOfThisWorld where
           , chooseOne
             iid
             [ TargetLabel
-                (CardIdTarget $ location ^. cardIdL)
+                (CardIdTarget $ toCardId location)
                 [ RemoveFromEncounterDiscard location
                 , InvestigatorDrewEncounterCard iid location
                 ]

@@ -5,25 +5,24 @@ module Arkham.Types.Asset.Cards.BookOfShadows3
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
+import qualified Arkham.Asset.Cards as Cards
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
+import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
-import Arkham.Types.Asset.Uses
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype BookOfShadows3 = BookOfShadows3 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-bookOfShadows3 :: AssetId -> BookOfShadows3
-bookOfShadows3 uuid =
-  BookOfShadows3 $ (baseAttrs uuid "01070") { assetSlots = [HandSlot] }
+bookOfShadows3 :: AssetCard BookOfShadows3
+bookOfShadows3 = hand BookOfShadows3 Cards.bookOfShadows3
 
 instance HasModifiersFor env BookOfShadows3 where
   getModifiersFor = noModifiersFor

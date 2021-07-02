@@ -6,6 +6,7 @@ where
 
 import Arkham.Prelude
 
+import Arkham.EncounterSet (gatherEncounterSet)
 import Arkham.Types.AgendaId
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
@@ -201,7 +202,7 @@ instance
 
       silasMsgs <- if silasBishopPutOutOfMisery
         then do
-          result <- EncounterSet.gatherEncounterSet
+          result <- gatherEncounterSet
             EncounterSet.HideousAbominations
           let
             conglomerationOfSpheres = fromJust . headMay $ result
@@ -277,7 +278,7 @@ instance
     DiscardedTopOfDeck _iid cards target@(DrawnTokenTarget token) ->
       s <$ case drawnTokenFace token of
         ElderThing -> do
-          let n = sum $ map (toPrintedCost . cdCost . pcDef) cards
+          let n = sum $ map (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . pcDef) cards
           unshiftMessage $ CreateTokenValueEffect (-n) (toSource attrs) target
         _ -> pure ()
     ScenarioResolution NoResolution ->

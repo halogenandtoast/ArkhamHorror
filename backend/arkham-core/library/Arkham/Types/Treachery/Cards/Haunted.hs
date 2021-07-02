@@ -5,28 +5,25 @@ module Arkham.Types.Treachery.Cards.Haunted
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.Window
 
 newtype Haunted = Haunted TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-haunted :: TreacheryId -> Maybe InvestigatorId -> Haunted
-haunted uuid iid = Haunted $ weaknessAttrs uuid iid "01098"
+haunted :: TreacheryCard Haunted
+haunted = treachery Haunted Cards.haunted
 
 instance HasModifiersFor env Haunted where
   getModifiersFor _ (InvestigatorTarget iid) (Haunted attrs) =

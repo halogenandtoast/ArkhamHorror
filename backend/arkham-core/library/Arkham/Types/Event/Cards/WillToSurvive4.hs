@@ -2,18 +2,17 @@ module Arkham.Types.Event.Cards.WillToSurvive4 where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Event.Attrs
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Event.Attrs
 
 newtype WillToSurvive4 = WillToSurvive4 EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-willToSurvive4 :: InvestigatorId -> EventId -> WillToSurvive4
-willToSurvive4 iid uuid = WillToSurvive4 $ baseAttrs iid uuid "01085"
+willToSurvive4 :: EventCard WillToSurvive4
+willToSurvive4 = event WillToSurvive4 Cards.willToSurvive4
 
 instance HasModifiersFor env WillToSurvive4 where
   getModifiersFor = noModifiersFor

@@ -79,18 +79,15 @@ data InvestigatorAttrs = InvestigatorAttrs
 
 makeLensesWith suffixedFields ''InvestigatorAttrs
 
+instance HasTraits InvestigatorAttrs where
+  toTraits = investigatorTraits
+
 instance ToJSON InvestigatorAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "investigator"
   toEncoding = genericToEncoding $ aesonOptions $ Just "investigator"
 
 instance FromJSON InvestigatorAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "investigator"
-
-instance IsCard InvestigatorAttrs where
-  getCardId = error "Investigators are not treated as cards yet"
-  getCardCode = unInvestigatorId . investigatorId
-  getTraits = investigatorTraits
-  getKeywords = mempty
 
 instance HasCount ActionRemainingCount env InvestigatorAttrs where
   getCount = pure . ActionRemainingCount . investigatorRemainingActions
@@ -436,7 +433,7 @@ getFastIsPlayable attrs windows c@(PlayerCard MkPlayerCard {..}) = do
   canBecomeFast modifiers = foldr applyModifier False modifiers
   applyModifier (CanBecomeFast (mcardType, traits)) _
     | maybe True (== cdCardType pcDef) mcardType
-      && not (null (setFromList traits `intersect` cdTraits pcDef))
+      && not (null (setFromList traits `intersect` toTraits pcDef))
     = True
   applyModifier _ val = val
 
@@ -451,10 +448,11 @@ getModifiedCardCost attrs (PlayerCard MkPlayerCard {..}) = do
   pure $ foldr applyModifier startingCost modifiers
  where
   startingCost = case cdCost pcDef of
-    StaticCost n -> n
-    DynamicCost -> 0
+    Just (StaticCost n) -> n
+    Just DynamicCost -> 0
+    Nothing -> 0
   applyModifier (ReduceCostOf traits m) n
-    | not (null (setFromList traits `intersection` cdTraits pcDef)) = max 0 (n - m)
+    | not (null (setFromList traits `intersection` toTraits pcDef)) = max 0 (n - m)
   applyModifier (ReduceCostOfCardType cardType m) n | cardType == cdCardType pcDef =
     max 0 (n - m)
   applyModifier _ n = n
@@ -467,7 +465,7 @@ getModifiedCardCost attrs (EncounterCard MkEncounterCard {..}) = do
     modifiers
  where
   applyModifier (ReduceCostOf traits m) n
-    | not (null (setFromList traits `intersection` ecTraits)) = max 0 (n - m)
+    | not (null (setFromList traits `intersection` toTraits ecDef)) = max 0 (n - m)
   applyModifier _ n = n
 
 getIsPlayable
@@ -494,7 +492,7 @@ getIsPlayable attrs@InvestigatorAttrs {..} windows c@(PlayerCard MkPlayerCard {.
     (\(cType, traits) ->
       cdCardType pcDef
         == cType
-        && (null traits || notNull (intersection (cdTraits pcDef) traits))
+        && (null traits || notNull (intersection (toTraits pcDef) traits))
     )
     typePairs
   prevents _ = False
@@ -542,7 +540,7 @@ getPlayableDiscards attrs@InvestigatorAttrs {..} windows = do
     any (allowsPlayFromDiscard n card) modifiers
   allowsPlayFromDiscard 0 MkPlayerCard {..} (CanPlayTopOfDiscard (mcardType, traits))
     = maybe True (== cdCardType pcDef) mcardType
-      && (null traits || (setFromList traits `HashSet.isSubsetOf` cdTraits pcDef))
+      && (null traits || (setFromList traits `HashSet.isSubsetOf` toTraits pcDef))
   allowsPlayFromDiscard _ _ _ = False
 
 
@@ -662,7 +660,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       (chooseOne iid
       $ Run
           [Continue "Done With Mulligan", FinishedWithMulligan investigatorId]
-      : [ Run [DiscardCard iid (getCardId card), InvestigatorMulligan iid]
+      : [ Run [DiscardCard iid (toCardId card), InvestigatorMulligan iid]
         | card <- investigatorHand
         ]
       )
@@ -690,7 +688,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     n <- getRandomR (0, length investigatorHand - 1)
     case investigatorHand !!? n of
       Nothing -> pure a
-      Just c -> a <$ unshiftMessage (DiscardCard investigatorId (getCardId c))
+      Just c -> a <$ unshiftMessage (DiscardCard investigatorId (toCardId c))
   FinishedWithMulligan iid | iid == investigatorId -> do
     let (discard, hand, deck) = drawOpeningHand a (5 - length investigatorHand)
     unshiftMessage (ShuffleDiscardBackIn iid)
@@ -745,7 +743,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     when (length investigatorHand > handSize) $ unshiftMessage
       (chooseOne
         iid
-        [ Run [DiscardCard iid (getCardId card), CheckHandSize iid]
+        [ Run [DiscardCard iid (toCardId card), CheckHandSize iid]
         | card <- filter (not . cdWeakness . pcDef)
           $ mapMaybe (preview _PlayerCard) investigatorHand
         ]
@@ -754,23 +752,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   AddToDiscard iid pc | iid == investigatorId -> pure $ a & discardL %~ (pc :)
   ChooseAndDiscardCard iid | iid == investigatorId -> a <$ unshiftMessage
     (chooseOne iid
-    $ [ DiscardCard iid (getCardId card) | card <- discardableCards a ]
+    $ [ DiscardCard iid (toCardId card) | card <- discardableCards a ]
     )
   DiscardCard iid cardId | iid == investigatorId -> do
     let
       card = fromJustNote "must be in hand"
-        $ find ((== cardId) . getCardId) investigatorHand
+        $ find ((== cardId) . toCardId) investigatorHand
     case card of
       PlayerCard pc ->
         pure
           $ a
           & handL
-          %~ filter ((/= cardId) . getCardId)
+          %~ filter ((/= cardId) . toCardId)
           & discardL
           %~ (pc :)
-      EncounterCard _ -> pure $ a & handL %~ filter ((/= cardId) . getCardId) -- TODO: This should discard to the encounter discard
+      EncounterCard _ -> pure $ a & handL %~ filter ((/= cardId) . toCardId) -- TODO: This should discard to the encounter discard
   RemoveCardFromHand iid cardCode | iid == investigatorId ->
-    pure $ a & handL %~ filter ((/= cardCode) . getCardCode)
+    pure $ a & handL %~ filter ((/= cardCode) . toCardCode)
   ShuffleIntoDeck iid (TreacheryTarget tid) | iid == investigatorId ->
     pure $ a & treacheriesL %~ deleteSet tid
   ShuffleIntoDeck iid (AssetTarget aid) | iid == investigatorId -> do
@@ -791,7 +789,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure
       $ a
       & (assetsL %~ deleteSet aid)
-      & (discardL %~ (lookupPlayerCard (getCardCode card) (unAssetId aid) :))
+      & (discardL %~ (lookupPlayerCard (toCardCode card) (unAssetId aid) :))
       & (slotsL %~ removeFromSlots aid)
   RemoveFromGame (AssetTarget aid) -> pure $ a & assetsL %~ deleteSet aid
   ChooseFightEnemy iid source skillType traits isAction
@@ -1069,7 +1067,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   PayCardCost iid cardId | iid == investigatorId -> do
     let
       card =
-        fromJustNote "not in hand" $ find ((== cardId) . getCardId) (a ^. handL)
+        fromJustNote "not in hand" $ find ((== cardId) . toCardId) (a ^. handL)
       cost = getCost card
     pure $ a & resourcesL -~ cost
   PayDynamicCardCost iid cardId n beforePlayMessages | iid == investigatorId ->
@@ -1099,7 +1097,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   PlayDynamicCard iid cardId _n _mtarget True | iid == investigatorId -> do
     let
       card = fromJustNote "not in hand"
-        $ find ((== cardId) . getCardId) investigatorHand
+        $ find ((== cardId) . toCardId) investigatorHand
       isFast = case card of
         PlayerCard pc -> cdFast (pcDef pc)
         _ -> False
@@ -1137,7 +1135,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   PlayCard iid cardId mtarget True | iid == investigatorId -> do
     let
       card = fromJustNote "not in hand"
-        $ find ((== cardId) . getCardId) investigatorHand
+        $ find ((== cardId) . toCardId) investigatorHand
       isFast = case card of
         PlayerCard pc -> cdFast (pcDef pc)
         _ -> False
@@ -1176,7 +1174,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         )
       else pure a
   PlayedCard iid cardId _ _ | iid == investigatorId ->
-    pure $ a & handL %~ filter ((/= cardId) . getCardId)
+    pure $ a & handL %~ filter ((/= cardId) . toCardId)
   InvestigatorPlayAsset iid aid slotTypes traits | iid == investigatorId -> do
     let assetsUpdate = assetsL %~ insertSet aid
     if fitsAvailableSlots slotTypes traits a
@@ -1205,7 +1203,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           )
   ChangeCardToFast iid cardId | iid == investigatorId -> do
     let
-      updateCard card = if getCardId card == cardId
+      updateCard card = if toCardId card == cardId
         then case card of
           PlayerCard pc -> PlayerCard $ pc { pcDef = (pcDef pc) { cdFast = True } }
           EncounterCard ec -> EncounterCard ec
@@ -1219,9 +1217,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         (unshiftMessage $ RemoveFromGame (AssetTarget assetId))
     pure
       $ a
-      & (deckL %~ Deck . filter ((/= cardCode) . getCardCode) . unDeck)
-      & (discardL %~ filter ((/= cardCode) . getCardCode))
-      & (handL %~ filter ((/= cardCode) . getCardCode))
+      & (deckL %~ Deck . filter ((/= cardCode) . toCardCode) . unDeck)
+      & (discardL %~ filter ((/= cardCode) . toCardCode))
+      & (handL %~ filter ((/= cardCode) . toCardCode))
   InvestigatorDamage iid _ health sanity | iid == investigatorId ->
     pure $ a & healthDamageL +~ health & sanityDamageL +~ sanity
   DrivenInsane iid | iid == investigatorId ->
@@ -1343,7 +1341,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               $ unshiftMessage (DrewPlayerEnemy iid $ PlayerCard card)
             when (cdCardType pcDef /= PlayerTreacheryType && cdWeakness pcDef)
               $ unshiftMessage
-                  (Revelation iid (PlayerCardSource $ getCardId card))
+                  (Revelation iid (PlayerCardSource $ toCardId card))
           Nothing -> pure ()
         unshiftMessages
           $ [ DeckHasNoCards iid Nothing | null deck ]
@@ -1384,7 +1382,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       else card
     pure $ a & deckL .~ Deck shuffled
   InvestigatorCommittedCard iid cardId | iid == investigatorId ->
-    pure $ a & handL %~ filter ((/= cardId) . getCardId)
+    pure $ a & handL %~ filter ((/= cardId) . toCardId)
   BeforeSkillTest iid skillType | iid == investigatorId -> do
     committedCardIds <- map unCommittedCardId <$> getSetList iid
     committedCardCodes <- mapSet unCommittedCardCode <$> getSet ()
@@ -1423,7 +1421,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           iid
           (map
               (\card ->
-                Run [SkillTestCommitCard iid (getCardId card), beginMessage]
+                Run [SkillTestCommitCard iid (toCardId card), beginMessage]
               )
               committableCards
           <> map
@@ -1471,7 +1469,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               (map
                   (\card ->
                     Run
-                      [ SkillTestCommitCard investigatorId (getCardId card)
+                      [ SkillTestCommitCard investigatorId (toCardId card)
                       , beginMessage
                       ]
                   )
@@ -1497,8 +1495,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         else a <$ unshiftMessage
           (chooseOne iid
           $ [ Run
-                [ PayCardCost iid (getCardId c)
-                , PlayCard iid (getCardId c) Nothing False
+                [ PayCardCost iid (toCardId c)
+                , PlayCard iid (toCardId c) Nothing False
                 , CheckWindow iid windows
                 ]
             | c <- playableCards
@@ -1529,7 +1527,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   AddToHand iid card | iid == investigatorId -> do
     case card of
       PlayerCard card' -> when (cdRevelation (pcDef card'))
-        $ unshiftMessage (Revelation iid (PlayerCardSource $ getCardId card'))
+        $ unshiftMessage (Revelation iid (PlayerCardSource $ toCardId card'))
       _ -> pure ()
     pure $ a & handL %~ (card :)
   ShuffleCardsIntoDeck iid cards | iid == investigatorId -> do
@@ -1538,9 +1536,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   AddToHandFromDeck iid cardId | iid == investigatorId -> do
     let
       card = fromJustNote "card did not exist"
-        $ find ((== cardId) . getCardId) (unDeck investigatorDeck)
+        $ find ((== cardId) . toCardId) (unDeck investigatorDeck)
     deck <- shuffleM
-      $ filter ((/= cardId) . getCardId) (unDeck investigatorDeck)
+      $ filter ((/= cardId) . toCardId) (unDeck investigatorDeck)
     case card of
       MkPlayerCard {..} -> do
         when (cdCardType pcDef == PlayerTreacheryType)
@@ -1572,7 +1570,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           $ [ AddFocusedToTopOfDeck
                 iid
                 (InvestigatorTarget iid')
-                (getCardId card)
+                (toCardId card)
             | card <- cards
             ]
           )
@@ -1583,12 +1581,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   [ AddFocusedToHand
                     iid
                     (InvestigatorTarget iid')
-                    (getCardId card)
+                    (toCardId card)
                   , ShuffleAllFocusedIntoDeck iid (InvestigatorTarget iid')
                   ]
               | card <- cards
               , null traits'
-                || not (null $ traits' `intersection` getTraits card)
+                || not (null $ traits' `intersection` toTraits card)
               ]
           unshiftMessage
             (chooseOne iid $ if null choices
@@ -1620,17 +1618,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         (chooseOne
           iid
           [ Run
-              [ AddFocusedToHand iid (InvestigatorTarget iid') (getCardId card)
-              , RemoveFromDiscard iid (getCardId card)
+              [ AddFocusedToHand iid (InvestigatorTarget iid') (toCardId card)
+              , RemoveFromDiscard iid (toCardId card)
               , UnfocusCards
               ]
           | card <- investigatorDiscard
-          , null traits' || traits' `intersection` getTraits card == traits'
+          , null traits' || traits' `intersection` toTraits card == traits'
           ]
         )
       a <$ unshiftMessage (FocusCards $ map PlayerCard investigatorDiscard)
   RemoveFromDiscard iid cardId | iid == investigatorId ->
-    pure $ a & discardL %~ filter ((/= cardId) . getCardId)
+    pure $ a & discardL %~ filter ((/= cardId) . toCardId)
   SufferTrauma iid physical mental | iid == investigatorId ->
     pure $ a & physicalTraumaL +~ physical & mentalTraumaL +~ mental
   GainXP iid amount | iid == investigatorId -> pure $ a & xpL +~ amount
@@ -1696,12 +1694,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
              && CannotDrawCards
              `notElem` modifiers
            ]
-        <> [ InitiatePlayCard iid (getCardId c) Nothing True
+        <> [ InitiatePlayCard iid (toCardId c) Nothing True
            | c <- investigatorHand
            , canAffordPlayCard || fastIsPlayable c
            , isPlayable c && not (isDynamic c)
            ]
-        <> [ InitiatePlayDynamicCard iid (getCardId c) 0 Nothing True
+        <> [ InitiatePlayDynamicCard iid (toCardId c) 0 Nothing True
            | c <- investigatorHand
            , canAffordPlayCard || fastIsPlayable c
            , isPlayable c && isDynamic c

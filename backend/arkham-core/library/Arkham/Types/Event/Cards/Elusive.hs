@@ -2,20 +2,19 @@ module Arkham.Types.Event.Cards.Elusive where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype Elusive = Elusive EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-elusive :: InvestigatorId -> EventId -> Elusive
-elusive iid uuid = Elusive $ baseAttrs iid uuid "01050"
+elusive :: EventCard Elusive
+elusive = event Elusive Cards.elusive
 
 instance HasModifiersFor env Elusive where
   getModifiersFor = noModifiersFor

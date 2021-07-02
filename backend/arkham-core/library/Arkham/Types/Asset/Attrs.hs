@@ -5,7 +5,6 @@ module Arkham.Types.Asset.Attrs where
 import Arkham.Prelude
 
 import Arkham.Json
-import Arkham.PlayerCard
 import Arkham.Types.Ability
 import Arkham.Types.AssetId
 import Arkham.Types.Card
@@ -23,6 +22,8 @@ import Arkham.Types.Window
 import Arkham.Types.Action
 import Arkham.Types.Asset.Class
 import Arkham.Types.Asset.Uses
+
+type AssetCard a = (AssetId -> a)
 
 data AssetAttrs = AssetAttrs
   { assetId :: AssetId
@@ -59,30 +60,68 @@ instance FromJSON AssetAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "asset"
 
 instance IsCard AssetAttrs where
-  cardIdL = lens (unAssetId . assetId) $ \m x -> m { assetId = AssetId x }
+  toCardId = unAssetId . assetId
 
-baseAttrs :: AssetId -> CardCode -> AssetAttrs
-baseAttrs aid cardCode =
-    AssetAttrs
-      { assetId = aid
-      , assetCardDef = lookupPlayerCardDef cardCode
-      , assetInvestigator = Nothing
-      , assetLocation = Nothing
-      , assetEnemy = Nothing
-      , assetActions = mempty
-      , assetSlots = mempty
-      , assetHealth = Nothing
-      , assetSanity = Nothing
-      , assetHealthDamage = 0
-      , assetSanityDamage = 0
-      , assetUses = NoUses
-      , assetExhausted = False
-      , assetDoom = 0
-      , assetClues = 0
-      , assetHorror = Nothing
-      , assetCanLeavePlayByNormalMeans = True
-      , assetIsStory = False
-      }
+asset :: (AssetAttrs -> a) -> CardDef -> AssetId -> a
+asset f cardDef aid = assetWith f cardDef id aid
+
+ally :: (AssetAttrs -> a) -> CardDef -> (Int, Int) -> AssetId -> a
+ally f cardDef stats  = allyWith f cardDef stats id
+
+allyWith :: (AssetAttrs -> a) -> CardDef -> (Int, Int) -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
+allyWith f cardDef (health, sanity) g = slotWith AllySlot f cardDef (g . setSanity . setHealth)
+ where
+   setHealth = healthL ?~ health
+   setSanity = sanityL ?~ sanity
+
+arcane :: (AssetAttrs -> a) -> CardDef -> AssetId -> a
+arcane f cardDef = arcaneWith f cardDef id
+
+arcaneWith :: (AssetAttrs -> a) -> CardDef -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
+arcaneWith = slotWith ArcaneSlot
+
+body :: (AssetAttrs -> a) -> CardDef -> AssetId -> a
+body f cardDef = bodyWith f cardDef id
+
+bodyWith :: (AssetAttrs -> a) -> CardDef -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
+bodyWith = slotWith BodySlot
+
+accessory :: (AssetAttrs -> a) -> CardDef -> AssetId -> a
+accessory f cardDef = accessoryWith f cardDef id
+
+accessoryWith :: (AssetAttrs -> a) -> CardDef -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
+accessoryWith = slotWith AccessorySlot
+
+hand :: (AssetAttrs -> a) -> CardDef -> AssetId -> a
+hand f cardDef = handWith f cardDef id
+
+handWith :: (AssetAttrs -> a) -> CardDef -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
+handWith = slotWith HandSlot
+
+slotWith :: SlotType -> (AssetAttrs -> a) -> CardDef -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
+slotWith slot f cardDef g aid = assetWith f cardDef (g . (slotsL .~ [slot])) aid
+
+assetWith :: (AssetAttrs -> a) -> CardDef -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
+assetWith f cardDef g aid = f . g $ AssetAttrs
+  { assetId = aid
+  , assetCardDef = cardDef
+  , assetInvestigator = Nothing
+  , assetLocation = Nothing
+  , assetEnemy = Nothing
+  , assetActions = mempty
+  , assetSlots = mempty
+  , assetHealth = Nothing
+  , assetSanity = Nothing
+  , assetHealthDamage = 0
+  , assetSanityDamage = 0
+  , assetUses = NoUses
+  , assetExhausted = False
+  , assetDoom = 0
+  , assetClues = 0
+  , assetHorror = Nothing
+  , assetCanLeavePlayByNormalMeans = True
+  , assetIsStory = False
+  }
 
 instance Entity AssetAttrs where
   type EntityId AssetAttrs = AssetId
@@ -105,7 +144,7 @@ instance TargetEntity AssetAttrs where
 instance SourceEntity AssetAttrs where
   toSource = AssetSource . toId
   isSource AssetAttrs { assetId } (AssetSource aid) = assetId == aid
-  isSource attrs (PlayerCardSource cid) = attrs ^. cardIdL == cid
+  isSource attrs (PlayerCardSource cid) = toCardId attrs == cid
   isSource _ _ = False
 
 ownedBy :: AssetAttrs -> InvestigatorId -> Bool

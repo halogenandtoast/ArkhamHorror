@@ -2,18 +2,18 @@ module Arkham.Types.Event.Cards.SearchForTheTruth where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Event.Attrs
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query
-import Arkham.Types.Event.Attrs
 
 newtype SearchForTheTruth = SearchForTheTruth EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-searchForTheTruth :: InvestigatorId -> EventId -> SearchForTheTruth
-searchForTheTruth iid uuid = SearchForTheTruth $ baseAttrs iid uuid "02008"
+searchForTheTruth :: EventCard SearchForTheTruth
+searchForTheTruth = event SearchForTheTruth Cards.searchForTheTruth
 
 instance HasModifiersFor env SearchForTheTruth where
   getModifiersFor = noModifiersFor

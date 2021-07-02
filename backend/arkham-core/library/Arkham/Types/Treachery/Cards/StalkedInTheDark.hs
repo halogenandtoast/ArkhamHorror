@@ -5,24 +5,20 @@ module Arkham.Types.Treachery.Cards.StalkedInTheDark
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype StalkedInTheDark = StalkedInTheDark TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-stalkedInTheDark :: TreacheryId -> a -> StalkedInTheDark
-stalkedInTheDark uuid _ = StalkedInTheDark $ baseAttrs uuid "02143"
+stalkedInTheDark :: TreacheryCard StalkedInTheDark
+stalkedInTheDark = treachery StalkedInTheDark Cards.stalkedInTheDark
 
 instance HasModifiersFor env StalkedInTheDark where
   getModifiersFor = noModifiersFor

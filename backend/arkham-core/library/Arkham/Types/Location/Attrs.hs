@@ -73,7 +73,7 @@ data LocationAttrs = LocationAttrs
 makeLensesWith suffixedFields ''LocationAttrs
 
 instance HasCardDef LocationAttrs where
-  defL = cardDefL
+  toCardDef = locationCardDef
 
 instance ToJSON LocationAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "location"
@@ -89,7 +89,7 @@ instance Entity LocationAttrs where
   toAttrs = id
 
 instance NamedEntity LocationAttrs where
-  toName = view (defL . nameL)
+  toName = cdName . toCardDef
 
 instance TargetEntity LocationAttrs where
   toTarget = LocationTarget . toId
@@ -105,13 +105,13 @@ instance SourceEntity LocationAttrs where
   isSource _ _ = False
 
 instance IsCard LocationAttrs where
-  cardIdL =  lens (unLocationId . locationId) $ \m x -> m { locationId = LocationId x }
+  toCardId = unLocationId . locationId
 
 instance HasName env LocationAttrs where
   getName attrs = pure $ locationNameFunc attrs
    where
     locationNameFunc =
-      if locationRevealed attrs then view (defL . nameL) else unLocationName . locationUnrevealedName
+      if locationRevealed attrs then toName else unLocationName . locationUnrevealedName
 
 instance HasId (Maybe LocationId) env (Direction, LocationAttrs) where
   getId (dir, LocationAttrs {..}) = pure $ lookup dir locationDirections

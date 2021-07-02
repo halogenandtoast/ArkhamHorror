@@ -5,15 +5,13 @@ module Arkham.Types.Event.Cards.AstoundingRevelation
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards (astoundingRevelation)
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Uses (UseType(..))
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Event.Attrs
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -22,7 +20,7 @@ import Arkham.Types.Window
 newtype AstoundingRevelation = AstoundingRevelation EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-astoundingRevelation :: InvestigatorId -> EventId -> AstoundingRevelation
+astoundingRevelation :: EventCard AstoundingRevelation
 astoundingRevelation = event AstoundingRevelation Cards.astoundingRevelation
 
 ability :: InvestigatorId -> EventAttrs -> Ability
@@ -33,7 +31,7 @@ ability iid a = base
   base = mkAbility
     (toSource a)
     1
-    (ReactionAbility (DiscardCost (SearchedCardTarget iid $ a ^. cardIdL)))
+    (ReactionAbility (DiscardCost (SearchedCardTarget iid $ toCardId a)))
 
 instance HasActions env AstoundingRevelation where
   getActions iid (WhenAmongSearchedCards You) (AstoundingRevelation attrs) =

@@ -2,17 +2,18 @@ module Arkham.Types.Enemy.Cards.SwarmOfRats where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
 newtype SwarmOfRats = SwarmOfRats EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-swarmOfRats :: EnemyId -> SwarmOfRats
-swarmOfRats uuid =
-  SwarmOfRats $ baseAttrs uuid "01159" $ (healthDamageL .~ 1) . (evadeL .~ 3)
+swarmOfRats :: EnemyCard SwarmOfRats
+swarmOfRats = enemy SwarmOfRats Cards.swarmOfRats
+  $ (healthDamageL .~ 1)
+  . (evadeL .~ 3)
 
 instance HasModifiersFor env SwarmOfRats where
   getModifiersFor = noModifiersFor

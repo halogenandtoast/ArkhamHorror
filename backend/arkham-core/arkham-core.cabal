@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e0d703cc3b90f632a60d33db43f9f5572e87defd18536d85fb767821e6056a02
+-- hash: 0e40ef93dd57bbd6974ad7281b31f621e70214270c3675c143ff024151ebea27
 
 name:           arkham-core
 version:        0.0.0
@@ -12,6 +12,7 @@ build-type:     Simple
 
 library
   exposed-modules:
+      Arkham.Asset.Cards
       Arkham.Card
       Arkham.EncounterCard
       Arkham.EncounterSet
@@ -441,6 +442,7 @@ library
       Arkham.Types.GameRunner
       Arkham.Types.GameValue
       Arkham.Types.Helpers
+      Arkham.Types.Id
       Arkham.Types.Investigator
       Arkham.Types.Investigator.Attrs
       Arkham.Types.Investigator.Cards

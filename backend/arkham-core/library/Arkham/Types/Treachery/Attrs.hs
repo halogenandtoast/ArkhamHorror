@@ -19,11 +19,13 @@ import Arkham.Types.Target
 import Arkham.Types.TreacheryId
 import Arkham.Types.Treachery.Runner
 
+type TreacheryCard a = (InvestigatorId -> TreacheryId -> a)
+
 data TreacheryAttrs = TreacheryAttrs
   { treacheryId :: TreacheryId
   , treacheryCardDef :: CardDef
   , treacheryAttachedTarget :: Maybe Target
-  , treacheryOwner :: InvestigatorId
+  , treacheryOwner :: Maybe InvestigatorId
   , treacheryDoom :: Int
   , treacheryClues :: Maybe Int
   , treacheryResources :: Maybe Int
@@ -67,7 +69,7 @@ instance SourceEntity TreacheryAttrs where
   isSource _ _ = False
 
 instance IsCard TreacheryAttrs where
-  cardIdL = lens (unTreacheryId . treacheryId) $ \m x -> m { treacheryId = TreacheryId x }
+  toCardId = unTreacheryId . treacheryId
 
 instance DiscardableEntity TreacheryAttrs
 
@@ -124,7 +126,7 @@ treachery f cardDef iid tid = f $ TreacheryAttrs
   { treacheryId = tid
   , treacheryCardDef = cardDef
   , treacheryAttachedTarget = Nothing
-  , treacheryOwner = iid
+  , treacheryOwner = if cdWeakness cardDef then Just iid else Nothing
   , treacheryDoom = 0
   , treacheryClues = Nothing
   , treacheryResources = Nothing

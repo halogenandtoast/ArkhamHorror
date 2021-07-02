@@ -5,24 +5,20 @@ module Arkham.Types.Treachery.Cards.SlitheringBehindYou
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype SlitheringBehindYou = SlitheringBehindYou TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-slitheringBehindYou :: TreacheryId -> a -> SlitheringBehindYou
-slitheringBehindYou uuid _ = SlitheringBehindYou $ baseAttrs uuid "02146"
+slitheringBehindYou :: TreacheryCard SlitheringBehindYou
+slitheringBehindYou = treachery SlitheringBehindYou Cards.slitheringBehindYou
 
 instance HasModifiersFor env SlitheringBehindYou where
   getModifiersFor = noModifiersFor
@@ -44,7 +40,7 @@ instance TreacheryRunner env => RunMessage env SlitheringBehindYou where
           (FindEncounterCard
             iid
             (toTarget attrs)
-            (EncounterCardMatchByCardCode "02141")
+            (CardMatchByCardCode "02141")
           )
     FoundEncounterCard iid target ec | isTarget attrs target -> do
       lid <- getId @LocationId iid

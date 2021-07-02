@@ -6,6 +6,7 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
@@ -13,13 +14,12 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
 
 newtype TerrorFromBeyond = TerrorFromBeyond TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-terrorFromBeyond :: TreacheryId -> a -> TerrorFromBeyond
-terrorFromBeyond uuid _ = TerrorFromBeyond $ baseAttrs uuid "02101"
+terrorFromBeyond :: TreacheryCard TerrorFromBeyond
+terrorFromBeyond = treachery TerrorFromBeyond Cards.terrorFromBeyond
 
 instance HasModifiersFor env TerrorFromBeyond where
   getModifiersFor = noModifiersFor
@@ -36,7 +36,7 @@ instance TreacheryRunner env => RunMessage env TerrorFromBeyond where
         secondCopy =
           count
               (\case
-                DrewTreachery _ card | getCardCode card == "02101" -> True
+                DrewTreachery _ card | toCardCode card == "02101" -> True
                 _ -> False
               )
               phaseHistory

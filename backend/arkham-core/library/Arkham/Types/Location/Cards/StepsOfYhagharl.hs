@@ -50,7 +50,7 @@ instance LocationRunner env => RunMessage env StepsOfYhagharl where
     Revelation iid source | isSource attrs source -> do
       encounterDiscard <- map unDiscardedEncounterCard <$> getList ()
       let
-        mMadnessCard = find (views traitsL (member Madness)) encounterDiscard
+        mMadnessCard = find (member Madness . toTraits) encounterDiscard
         revelationMsgs = case mMadnessCard of
           Nothing -> []
           Just madnessCard ->

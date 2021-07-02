@@ -6,13 +6,11 @@ where
 
 import Arkham.Prelude
 
+import Arkham.EncounterSet
 import Arkham.Types.CampaignId
+import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
-
-
-import Arkham.Types.CampaignLogKey
-import Arkham.Types.EncounterSet
 import Arkham.Types.Game.Helpers as X
 
 getHasRecordOrStandalone
@@ -30,7 +28,7 @@ buildEncounterDeck = buildEncounterDeckWith id
 buildEncounterDeckExcluding
   :: MonadRandom m => [CardCode] -> [EncounterSet] -> m [EncounterCard]
 buildEncounterDeckExcluding cardCodes =
-  buildEncounterDeckWith (filter ((`notElem` cardCodes) . ecCardCode))
+  buildEncounterDeckWith (filter ((`notElem` cardCodes) . toCardCode))
 
 buildEncounterDeckWith
   :: MonadRandom m

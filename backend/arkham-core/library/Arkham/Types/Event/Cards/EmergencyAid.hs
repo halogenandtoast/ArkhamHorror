@@ -5,11 +5,9 @@ module Arkham.Types.Event.Cards.EmergencyAid
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
+import qualified Arkham.Event.Cards as Cards
+import Arkham.Types.Id
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Event.Attrs
@@ -18,8 +16,8 @@ import Arkham.Types.Trait
 newtype EmergencyAid = EmergencyAid EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-emergencyAid :: InvestigatorId -> EventId -> EmergencyAid
-emergencyAid iid uuid = EmergencyAid $ baseAttrs iid uuid "02105"
+emergencyAid :: EventCard EmergencyAid
+emergencyAid = event EmergencyAid Cards.emergencyAid
 
 instance HasActions env EmergencyAid where
   getActions iid window (EmergencyAid attrs) = getActions iid window attrs

@@ -5,6 +5,7 @@ module Arkham.Types.Enemy.Cards.VictoriaDevereux
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Action hiding (Ability)
 import Arkham.Types.Classes
@@ -12,9 +13,8 @@ import Arkham.Types.Cost
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Source
@@ -23,16 +23,13 @@ import Arkham.Types.Window
 newtype VictoriaDevereux = VictoriaDevereux EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-victoriaDevereux :: EnemyId -> VictoriaDevereux
-victoriaDevereux uuid =
-  VictoriaDevereux
-    $ baseAttrs uuid "01140"
-    $ (healthDamageL .~ 1)
-    . (fightL .~ 3)
-    . (healthL .~ Static 3)
-    . (evadeL .~ 2)
-    . (uniqueL .~ True)
-    . (spawnAtL ?~ LocationWithTitle "Northside")
+victoriaDevereux :: EnemyCard VictoriaDevereux
+victoriaDevereux = enemy VictoriaDevereux Cards.victoriaDevereux
+  $ (healthDamageL .~ 1)
+  . (fightL .~ 3)
+  . (healthL .~ Static 3)
+  . (evadeL .~ 2)
+  . (spawnAtL ?~ LocationWithTitle "Northside")
 
 instance HasModifiersFor env VictoriaDevereux where
   getModifiersFor = noModifiersFor

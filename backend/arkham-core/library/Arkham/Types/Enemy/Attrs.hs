@@ -4,9 +4,7 @@ module Arkham.Types.Enemy.Attrs where
 
 import Arkham.Prelude
 
-import Arkham.EncounterCard
 import Arkham.Json
-import Arkham.PlayerCard
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
@@ -16,13 +14,12 @@ import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
-import Arkham.Types.Keyword (Keyword)
+import Arkham.Types.Keyword (Keyword, HasKeywords(..))
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.SkillTest
@@ -34,10 +31,11 @@ import Arkham.Types.TreacheryId
 import Arkham.Types.Window
 import Data.UUID (nil)
 
+type EnemyCard a = (EnemyId -> a)
+
 data EnemyAttrs = EnemyAttrs
-  { enemyName :: EnemyName
-  , enemyId :: EnemyId
-  , enemyCardCode :: CardCode
+  { enemyId :: EnemyId
+  , enemyCardDef :: CardDef
   , enemyEngagedInvestigators :: HashSet InvestigatorId
   , enemyLocation :: LocationId
   , enemyFight :: Int
@@ -46,22 +44,21 @@ data EnemyAttrs = EnemyAttrs
   , enemyDamage :: Int
   , enemyHealthDamage :: Int
   , enemySanityDamage :: Int
-  , enemyTraits :: HashSet Trait
   , enemyTreacheries :: HashSet TreacheryId
   , enemyAssets :: HashSet AssetId
-  , enemyVictory :: Maybe Int
-  , enemyKeywords :: HashSet Keyword
   , enemyPrey :: Prey
   , enemyModifiers :: HashMap Source [Modifier]
   , enemyExhausted :: Bool
   , enemyDoom :: Int
   , enemyClues :: Int
-  , enemyUnique :: Bool
   , enemySpawnAt :: Maybe LocationMatcher
   }
   deriving stock (Show, Eq, Generic)
 
 makeLensesWith suffixedFields ''EnemyAttrs
+
+instance HasCardDef EnemyAttrs where
+  toCardDef = enemyCardDef
 
 spawned :: EnemyAttrs -> Bool
 spawned EnemyAttrs { enemyLocation } = enemyLocation /= LocationId (CardId nil)
@@ -74,20 +71,12 @@ instance FromJSON EnemyAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "enemy"
 
 instance IsCard EnemyAttrs where
-  getCardId = unEnemyId . enemyId
-  getCardCode = enemyCardCode
-  getTraits = enemyTraits
-  getKeywords = enemyKeywords
+  toCardId = unEnemyId . enemyId
 
-baseAttrs :: EnemyId -> CardCode -> (EnemyAttrs -> EnemyAttrs) -> EnemyAttrs
-baseAttrs eid cardCode f =
-  let
-    CardDef {..} = lookupEncounterCardDef cardCode
-  in
-    f $ EnemyAttrs
-      { enemyName = EnemyName cdName
-      , enemyId = eid
-      , enemyCardCode = cardCode
+enemy :: (EnemyAttrs -> a) -> CardDef -> (EnemyAttrs -> EnemyAttrs) -> EnemyId -> a
+enemy f cardDef g eid = f . g $ EnemyAttrs
+      { enemyId = eid
+      , enemyCardDef = cardDef
       , enemyEngagedInvestigators = mempty
       , enemyLocation = LocationId $ CardId nil
       , enemyFight = 1
@@ -96,51 +85,13 @@ baseAttrs eid cardCode f =
       , enemyDamage = 0
       , enemyHealthDamage = 0
       , enemySanityDamage = 0
-      , enemyTraits = cdTraits
       , enemyTreacheries = mempty
       , enemyAssets = mempty
-      , enemyKeywords = cdKeywords
       , enemyPrey = AnyPrey
       , enemyModifiers = mempty
       , enemyExhausted = False
       , enemyDoom = 0
       , enemyClues = 0
-      , enemyVictory = cdVictoryPoints
-      , enemyUnique = False
-      , enemySpawnAt = Nothing
-      }
-
-weaknessBaseAttrs :: EnemyId -> CardCode -> EnemyAttrs
-weaknessBaseAttrs eid cardCode =
-  let
-    CardDef {..} =
-      fromJustNote
-          ("missing player enemy weakness card: " <> show cardCode)
-          (lookup cardCode allPlayerCards)
-  in
-    EnemyAttrs
-      { enemyName = EnemyName cdName
-      , enemyId = eid
-      , enemyCardCode = cardCode
-      , enemyEngagedInvestigators = mempty
-      , enemyLocation = LocationId $ CardId nil -- no known location
-      , enemyFight = 1
-      , enemyHealth = Static 1
-      , enemyEvade = 1
-      , enemyDamage = 0
-      , enemyHealthDamage = 0
-      , enemySanityDamage = 0
-      , enemyTraits = cdTraits
-      , enemyTreacheries = mempty
-      , enemyAssets = mempty
-      , enemyVictory = cdVictoryPoints
-      , enemyKeywords = cdKeywords
-      , enemyPrey = AnyPrey
-      , enemyModifiers = mempty
-      , enemyExhausted = False
-      , enemyClues = 0
-      , enemyDoom = 0
-      , enemyUnique = False
       , enemySpawnAt = Nothing
       }
 
@@ -235,7 +186,7 @@ getModifiedKeywords EnemyAttrs {..} = do
   let source = fromMaybe (EnemySource enemyId) msource
   modifiers' <-
     map modifierType <$> getModifiersFor source (EnemyTarget enemyId) ()
-  pure $ foldr applyModifier enemyKeywords modifiers'
+  pure $ foldr applyModifier (toKeywords enemyCardDef) modifiers'
  where
   applyModifier (AddKeyword k) n = insertSet k n
   applyModifier _ n = n
@@ -292,21 +243,21 @@ instance Entity EnemyAttrs where
   toAttrs = id
 
 instance NamedEntity EnemyAttrs where
-  toName = unEnemyName . enemyName
+  toName = cdName . toCardDef
 
 instance TargetEntity EnemyAttrs where
   toTarget = EnemyTarget . toId
   isTarget EnemyAttrs { enemyId } (EnemyTarget eid) = enemyId == eid
-  isTarget EnemyAttrs { enemyCardCode } (CardCodeTarget cardCode) =
-    enemyCardCode == cardCode
+  isTarget attrs (CardCodeTarget cardCode) =
+    toCardCode attrs == cardCode
   isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
   isTarget _ _ = False
 
 instance SourceEntity EnemyAttrs where
   toSource = EnemySource . toId
   isSource EnemyAttrs { enemyId } (EnemySource eid) = enemyId == eid
-  isSource EnemyAttrs { enemyCardCode } (CardCodeSource cardCode) =
-    enemyCardCode == cardCode
+  isSource attrs (CardCodeSource cardCode) =
+    toCardCode attrs == cardCode
   isSource _ _ = False
 
 getModifiedHealth
@@ -647,9 +598,9 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
             eid
             iid
             enemyLocation
-            enemyCardCode
+            (toCardCode a)
             source
-            (setToList enemyTraits)
+            (setToList $ toTraits a)
           )
         )
     EnemyDefeated eid _ _ _ _ _ | eid == enemyId ->
@@ -698,7 +649,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
       pure $ a & engagedInvestigatorsL %~ deleteSet iid
     UnengageNonMatching iid traits
       | iid `elem` enemyEngagedInvestigators && null
-        (setFromList traits `intersection` enemyTraits)
+        (setFromList traits `intersection` toTraits a)
       -> a <$ unshiftMessage (DisengageEnemy iid enemyId)
     DisengageEnemy iid eid | eid == enemyId ->
       pure $ a & engagedInvestigatorsL %~ deleteSet iid

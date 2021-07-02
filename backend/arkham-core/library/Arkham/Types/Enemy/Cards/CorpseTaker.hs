@@ -5,29 +5,27 @@ module Arkham.Types.Enemy.Cards.CorpseTaker
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 
 newtype CorpseTaker = CorpseTaker EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-corpseTaker :: EnemyId -> CorpseTaker
-corpseTaker uuid =
-  CorpseTaker
-    $ baseAttrs uuid "50042"
-    $ (healthDamageL .~ 1)
-    . (sanityDamageL .~ 2)
-    . (fightL .~ 4)
-    . (healthL .~ Static 3)
-    . (evadeL .~ 3)
-    . (spawnAtL ?~ FarthestLocationFromYou EmptyLocation)
+corpseTaker :: EnemyCard CorpseTaker
+corpseTaker = enemy CorpseTaker Cards.corpseTaker
+  $ (healthDamageL .~ 1)
+  . (sanityDamageL .~ 2)
+  . (fightL .~ 4)
+  . (healthL .~ Static 3)
+  . (evadeL .~ 3)
+  . (spawnAtL ?~ FarthestLocationFromYou EmptyLocation)
 
 instance HasModifiersFor env CorpseTaker where
   getModifiersFor = noModifiersFor

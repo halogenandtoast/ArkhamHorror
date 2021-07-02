@@ -5,6 +5,7 @@ module Arkham.Types.Treachery.Cards.DreamsOfRlyeh
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -13,19 +14,16 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.Window
 
 newtype DreamsOfRlyeh = DreamsOfRlyeh TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-dreamsOfRlyeh :: TreacheryId -> a -> DreamsOfRlyeh
-dreamsOfRlyeh uuid _ = DreamsOfRlyeh $ baseAttrs uuid "01182"
+dreamsOfRlyeh :: TreacheryCard DreamsOfRlyeh
+dreamsOfRlyeh = treachery DreamsOfRlyeh Cards.dreamsOfRlyeh
 
 instance HasModifiersFor env DreamsOfRlyeh where
   getModifiersFor _ (InvestigatorTarget iid) (DreamsOfRlyeh attrs) =

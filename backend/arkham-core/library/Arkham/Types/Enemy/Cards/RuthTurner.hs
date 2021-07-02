@@ -2,10 +2,10 @@ module Arkham.Types.Enemy.Cards.RuthTurner where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
@@ -13,16 +13,13 @@ import Arkham.Types.Message
 newtype RuthTurner = RuthTurner EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-ruthTurner :: EnemyId -> RuthTurner
-ruthTurner uuid =
-  RuthTurner
-    $ baseAttrs uuid "01141"
-    $ (healthDamageL .~ 1)
-    . (fightL .~ 2)
-    . (healthL .~ Static 4)
-    . (evadeL .~ 5)
-    . (uniqueL .~ True)
-    . (spawnAtL ?~ LocationWithTitle "St. Mary's Hospital")
+ruthTurner :: EnemyCard RuthTurner
+ruthTurner = enemy RuthTurner Cards.ruthTurner
+  $ (healthDamageL .~ 1)
+  . (fightL .~ 2)
+  . (healthL .~ Static 4)
+  . (evadeL .~ 5)
+  . (spawnAtL ?~ LocationWithTitle "St. Mary's Hospital")
 
 instance HasModifiersFor env RuthTurner where
   getModifiersFor = noModifiersFor

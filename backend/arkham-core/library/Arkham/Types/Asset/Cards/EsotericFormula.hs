@@ -5,15 +5,14 @@ module Arkham.Types.Asset.Cards.EsotericFormula
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
@@ -26,8 +25,8 @@ import Control.Monad.Extra
 newtype EsotericFormula = EsotericFormula AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-esotericFormula :: AssetId -> EsotericFormula
-esotericFormula uuid = EsotericFormula $ baseAttrs uuid "02254"
+esotericFormula :: AssetCard EsotericFormula
+esotericFormula = asset EsotericFormula Cards.esotericFormula
 
 instance (HasActions env ActionType, HasSet Trait env EnemyId, HasSet FightableEnemyId env (InvestigatorId, Source)) => HasActions env EsotericFormula where
   getActions iid window (EsotericFormula attrs) | ownedBy attrs iid =

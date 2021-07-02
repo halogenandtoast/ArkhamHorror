@@ -5,21 +5,20 @@ module Arkham.Types.Treachery.Cards.HuntedDown
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
 
 newtype HuntedDown = HuntedDown TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-huntedDown :: TreacheryId -> a -> HuntedDown
-huntedDown uuid _ = HuntedDown $ baseAttrs uuid "01162"
+huntedDown :: TreacheryCard HuntedDown
+huntedDown = treachery HuntedDown Cards.huntedDown
 
 instance HasModifiersFor env HuntedDown where
   getModifiersFor = noModifiersFor

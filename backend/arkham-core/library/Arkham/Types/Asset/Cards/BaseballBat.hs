@@ -5,12 +5,12 @@ module Arkham.Types.Asset.Cards.BaseballBat
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -25,9 +25,8 @@ import Arkham.Types.Target
 newtype BaseballBat = BaseballBat AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
-baseballBat :: AssetId -> BaseballBat
-baseballBat uuid =
-  BaseballBat $ (baseAttrs uuid "01074") { assetSlots = [HandSlot, HandSlot] }
+baseballBat :: AssetCard BaseballBat
+baseballBat = assetWith BaseballBat Cards.baseballBat (slotsL .~ [HandSlot, HandSlot])
 
 instance HasModifiersFor env BaseballBat where
   getModifiersFor (SkillTestSource _ _ source _ (Just Action.Fight)) (InvestigatorTarget iid) (BaseballBat a)

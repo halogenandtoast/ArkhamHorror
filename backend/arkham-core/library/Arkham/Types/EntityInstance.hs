@@ -43,17 +43,16 @@ instance (ActionRunner env, HasSkillTest env) => HasActions env EntityInstance w
   getActions iid window (TreacheryInstance x) = getActions iid window x
 
 toCardInstance :: InvestigatorId -> Card -> EntityInstance
-toCardInstance iid (PlayerCard card) = case cdCardType (pcDef card) of
+toCardInstance iid card = case toCardType card of
   AssetType -> AssetInstance $ createAsset card
-  PlayerEnemyType -> EnemyInstance $ createEnemy card
-  EventType -> EventInstance $ createEvent card iid
-  SkillType -> SkillInstance $ createSkill card iid
-  PlayerTreacheryType -> TreacheryInstance $ createTreachery card (Just iid)
-toCardInstance iid (EncounterCard card) = case ecCardType card of
   EncounterAssetType -> AssetInstance $ createAsset card
   EnemyType -> EnemyInstance $ createEnemy card
+  EventType -> EventInstance $ createEvent card iid
   LocationType -> LocationInstance $ createLocation card
-  TreacheryType -> TreacheryInstance $ createTreachery card (Just iid)
+  PlayerEnemyType -> EnemyInstance $ createEnemy card
+  PlayerTreacheryType -> TreacheryInstance $ createTreachery card iid
+  SkillType -> SkillInstance $ createSkill card iid
+  TreacheryType -> TreacheryInstance $ createTreachery card iid
 
 -- UseCardAbility and Revelation are special and need access to the original instance
 -- therefor we do not mask with In{Hand,Discard,etc.}

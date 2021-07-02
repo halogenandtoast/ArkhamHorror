@@ -6,19 +6,18 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Message
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
+import Arkham.Types.Id
+import Arkham.Types.Message
 
 newtype Taunt = Taunt EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-taunt :: InvestigatorId -> EventId -> Taunt
-taunt iid uuid = Taunt $ baseAttrs iid uuid "02017"
+taunt :: EventCard Taunt
+taunt = event Taunt Cards.taunt
 
 instance HasActions env Taunt where
   getActions iid window (Taunt attrs) = getActions iid window attrs

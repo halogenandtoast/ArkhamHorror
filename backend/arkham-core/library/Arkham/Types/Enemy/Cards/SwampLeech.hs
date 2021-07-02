@@ -6,27 +6,25 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Target
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
+import Arkham.Types.GameValue
+import Arkham.Types.Id
+import Arkham.Types.Message
+import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype SwampLeech = SwampLeech EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-swampLeech :: EnemyId -> SwampLeech
-swampLeech uuid =
-  SwampLeech
-    $ baseAttrs uuid "81023"
-    $ (healthDamageL .~ 1)
-    . (fightL .~ 4)
-    . (healthL .~ Static 1)
-    . (evadeL .~ 0)
+swampLeech :: EnemyCard SwampLeech
+swampLeech = enemy SwampLeech Cards.swampLeech
+  $ (healthDamageL .~ 1)
+  . (fightL .~ 4)
+  . (healthL .~ Static 1)
+  . (evadeL .~ 0)
 
 instance HasModifiersFor env SwampLeech where
   getModifiersFor = noModifiersFor

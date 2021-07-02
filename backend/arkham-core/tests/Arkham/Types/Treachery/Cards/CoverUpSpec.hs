@@ -25,7 +25,7 @@ spec = describe "Cover Up" $ do
   it "allows you to remove a clue instead of discovering clues" $ do
     investigator <- testInvestigator "00000" id
     coverUp <- buildPlayerCard "01007"
-    location <- testLocation "00000" $ Location.cluesL .~ 1
+    location <- testLocation $ Location.cluesL .~ 1
     gameTest
         investigator
         [ loadDeck investigator [coverUp]
@@ -65,7 +65,7 @@ spec = describe "Cover Up" $ do
   it "does not cause trauma when the game ends if there are no clues on it" $ do
     investigator <- testInvestigator "00000" id
     coverUp <- buildPlayerCard "01007"
-    location <- testLocation "00000" $ Location.cluesL .~ 3
+    location <- testLocation $ Location.cluesL .~ 3
     gameTest
         investigator
         [ loadDeck investigator [coverUp]

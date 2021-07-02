@@ -5,13 +5,13 @@ module Arkham.Types.Asset.Cards.LightningGun5
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Uses (Uses(..), useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -25,9 +25,8 @@ import Arkham.Types.Target
 newtype LightningGun5 = LightningGun5 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-lightningGun5 :: AssetId -> LightningGun5
-lightningGun5 uuid =
-  LightningGun5 $ (baseAttrs uuid "02301") { assetSlots = [HandSlot, HandSlot] }
+lightningGun5 :: AssetCard LightningGun5
+lightningGun5 = assetWith LightningGun5 Cards.lightningGun5 (slotsL .~ [HandSlot, HandSlot])
 
 instance ActionRunner env => HasActions env LightningGun5 where
   getActions iid window (LightningGun5 a) | ownedBy a iid = do

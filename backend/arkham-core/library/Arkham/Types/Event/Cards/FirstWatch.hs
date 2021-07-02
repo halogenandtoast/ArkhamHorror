@@ -5,14 +5,14 @@ module Arkham.Types.Event.Cards.FirstWatch
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Event.Attrs
-import Arkham.Types.EventId
 import Arkham.Types.Game.Helpers
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Source
@@ -24,9 +24,8 @@ newtype FirstWatchMetadata = FirstWatchMetadata { firstWatchPairings :: [(Invest
 newtype FirstWatch = FirstWatch (EventAttrs `With` FirstWatchMetadata)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-firstWatch :: InvestigatorId -> EventId -> FirstWatch
-firstWatch iid uuid =
-  FirstWatch $ baseAttrs iid uuid "06110" `with` FirstWatchMetadata []
+firstWatch :: EventCard FirstWatch
+firstWatch = event (FirstWatch . (`with` FirstWatchMetadata [])) Cards.firstWatch
 
 instance HasActions env FirstWatch where
   getActions iid window (FirstWatch (attrs `With` _)) =
@@ -90,7 +89,7 @@ instance (HasQueue env, HasSet InvestigatorId env (), HasCount PlayerCount env (
           [ chooseOneAtATime
             eventOwner
             [ TargetLabel
-                (CardIdTarget $ card ^. cardIdL)
+                (CardIdTarget $ toCardId card)
                 [ UseCardAbility
                     eventOwner
                     (EventSource eventId)

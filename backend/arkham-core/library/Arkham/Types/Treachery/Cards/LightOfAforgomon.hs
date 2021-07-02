@@ -6,14 +6,12 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
@@ -21,8 +19,8 @@ import Arkham.Types.Treachery.Runner
 newtype LightOfAforgomon = LightOfAforgomon TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-lightOfAforgomon :: TreacheryId -> a -> LightOfAforgomon
-lightOfAforgomon uuid _ = LightOfAforgomon $ baseAttrs uuid "02085"
+lightOfAforgomon :: TreacheryCard LightOfAforgomon
+lightOfAforgomon = treachery LightOfAforgomon Cards.lightOfAforgomon
 
 instance HasModifiersFor env LightOfAforgomon where
   getModifiersFor _ (InvestigatorTarget _) (LightOfAforgomon attrs) =

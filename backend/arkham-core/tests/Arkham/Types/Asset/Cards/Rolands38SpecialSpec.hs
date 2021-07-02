@@ -17,7 +17,7 @@ spec = describe "Roland's .39 Special" $ do
     rolands38Special <- buildAsset "01006"
     enemy <- testEnemy
       $ \attrs -> attrs { enemyFight = 2, enemyHealth = Static 3 }
-    location <- testLocation "00000" id
+    location <- testLocation id
     gameTest
         investigator
         [ SetTokens [Zero]
@@ -49,7 +49,7 @@ spec = describe "Roland's .39 Special" $ do
         rolands38Special <- buildAsset "01006"
         enemy <- testEnemy
           $ \attrs -> attrs { enemyFight = 4, enemyHealth = Static 3 }
-        location <- testLocation "00000" $ \attrs -> attrs { locationClues = 1 }
+        location <- testLocation $ \attrs -> attrs { locationClues = 1 }
         gameTest
             investigator
             [ SetTokens [Zero]

@@ -25,6 +25,9 @@ makeLensesWith suffixedFields ''SkillAttrs
 instance HasCardDef SkillAttrs where
   toCardDef = skillCardDef
 
+instance IsCard SkillAttrs where
+  toCardId = unSkillId . skillId
+
 instance ToJSON SkillAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "skill"
   toEncoding = genericToEncoding $ aesonOptions $ Just "skill"
@@ -50,9 +53,6 @@ instance SourceEntity SkillAttrs where
   toSource = SkillSource . skillId
   isSource SkillAttrs { skillId } (SkillSource sid) = skillId == sid
   isSource _ _ = False
-
-instance IsCard SkillAttrs where
-  cardIdL = lens (unSkillId . skillId) $ \m x -> m { skillId = SkillId x }
 
 baseAttrs :: InvestigatorId -> SkillId -> CardCode -> SkillAttrs
 baseAttrs iid eid cardCode = SkillAttrs

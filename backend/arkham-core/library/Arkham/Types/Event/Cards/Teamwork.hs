@@ -6,11 +6,9 @@ where
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Event.Attrs
@@ -19,8 +17,8 @@ import Arkham.Types.Trait
 newtype Teamwork = Teamwork EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-teamwork :: InvestigatorId -> EventId -> Teamwork
-teamwork iid uuid = Teamwork $ baseAttrs iid uuid "02018"
+teamwork :: EventCard Teamwork
+teamwork = event Teamwork Cards.teamwork
 
 instance HasActions env Teamwork where
   getActions iid window (Teamwork attrs) = getActions iid window attrs

@@ -46,7 +46,7 @@ spec = describe "Jenny's Twin .45s" $ do
       , investigatorCombat = 3
       }
     enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 5))
-    location <- testLocation "00000" id
+    location <- testLocation id
     gameTest
         investigator
         [ SetTokens [Zero]

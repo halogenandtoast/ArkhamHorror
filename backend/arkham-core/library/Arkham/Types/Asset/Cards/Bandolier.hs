@@ -6,20 +6,19 @@ where
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
+import qualified Arkham.Asset.Cards as Cards
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Slot
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
 newtype Bandolier = Bandolier AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-bandolier :: AssetId -> Bandolier
-bandolier uuid = Bandolier
-  $ (baseAttrs uuid "02147") { assetHealth = Just 1, assetSlots = [BodySlot] }
+bandolier :: AssetCard Bandolier
+bandolier = bodyWith Bandolier Cards.bandolier (healthL ?~ 1)
 
 instance HasModifiersFor env Bandolier where
   getModifiersFor = noModifiersFor

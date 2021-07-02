@@ -13,7 +13,7 @@ spec = describe "Jim's Trumpet" $ do
     it "on yourself" $ do
       investigator <- testInvestigator "00000" (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
-      location <- testLocation "00000" id
+      location <- testLocation id
       gameTest
           investigator
           [ SetTokens [Skull]
@@ -42,7 +42,7 @@ spec = describe "Jim's Trumpet" $ do
         "00001"
         (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
-      location <- testLocation "00000" id
+      location <- testLocation id
       gameTest
           investigator
           [ SetTokens [Skull]
@@ -72,7 +72,7 @@ spec = describe "Jim's Trumpet" $ do
         "00001"
         (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
-      location <- testLocation "00000" id
+      location <- testLocation id
       gameTest
           investigator
           [ SetTokens [Skull]

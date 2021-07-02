@@ -31,6 +31,7 @@ location cardCode name encounterSet = CardDef
   , cdAttackOfOpportunityModifiers = mempty
   , cdPermanent = False
   , cdEncounterSet = Just encounterSet
+  , cdUnique = False
   }
 
 allLocationCards :: HashMap CardCode CardDef

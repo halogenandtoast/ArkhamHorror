@@ -49,7 +49,7 @@ instance LocationRunner env => RunMessage env DimensionalDoorway where
     Revelation iid source | isSource attrs source -> do
       encounterDiscard <- map unDiscardedEncounterCard <$> getList ()
       let
-        mHexCard = find (views traitsL $ member Hex) encounterDiscard
+        mHexCard = find (member Hex . toTraits) encounterDiscard
         revelationMsgs = case mHexCard of
           Nothing -> []
           Just hexCard ->

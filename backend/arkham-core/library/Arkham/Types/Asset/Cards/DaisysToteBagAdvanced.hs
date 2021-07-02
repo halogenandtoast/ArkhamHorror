@@ -5,28 +5,28 @@ module Arkham.Types.Asset.Cards.DaisysToteBagAdvanced
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Slot
 import Arkham.Types.Target
-import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype DaisysToteBagAdvanced = DaisysToteBagAdvanced AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-daisysToteBagAdvanced :: AssetId -> DaisysToteBagAdvanced
-daisysToteBagAdvanced uuid = DaisysToteBagAdvanced $ baseAttrs uuid "90002"
+daisysToteBagAdvanced :: AssetCard DaisysToteBagAdvanced
+daisysToteBagAdvanced = asset DaisysToteBagAdvanced Cards.daisysToteBagAdvanced
 
 instance HasSet Trait env (InvestigatorId, CardId) => HasActions env DaisysToteBagAdvanced where
   getActions iid (WhenPlayCard You cardId) (DaisysToteBagAdvanced a)

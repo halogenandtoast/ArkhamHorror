@@ -2,12 +2,11 @@ module Arkham.Types.Event.Cards.Backstab where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Action
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Helpers
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -17,8 +16,8 @@ import Arkham.Types.Target
 newtype Backstab = Backstab EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-backstab :: InvestigatorId -> EventId -> Backstab
-backstab iid uuid = Backstab $ baseAttrs iid uuid "01051"
+backstab :: EventCard Backstab
+backstab = event Backstab Cards.backstab
 
 instance HasModifiersFor env Backstab where
   getModifiersFor (SkillTestSource _ _ source _ (Just Fight)) (InvestigatorTarget _) (Backstab attrs)

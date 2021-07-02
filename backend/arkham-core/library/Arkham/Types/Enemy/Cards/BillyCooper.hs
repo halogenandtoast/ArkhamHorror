@@ -2,27 +2,24 @@ module Arkham.Types.Enemy.Cards.BillyCooper where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
+import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.GameValue
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
-import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Runner
 import Arkham.Types.Trait
 
 newtype BillyCooper = BillyCooper EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-billyCooper :: EnemyId -> BillyCooper
-billyCooper uuid =
-  BillyCooper
-    $ baseAttrs uuid "50045"
-    $ (healthDamageL .~ 2)
-    . (fightL .~ 5)
-    . (healthL .~ Static 4)
-    . (evadeL .~ 2)
-    . (uniqueL .~ True)
+billyCooper :: EnemyCard BillyCooper
+billyCooper = enemy BillyCooper Cards.billyCooper
+  $ (healthDamageL .~ 2)
+  . (fightL .~ 5)
+  . (healthL .~ Static 4)
+  . (evadeL .~ 2)
 
 instance HasModifiersFor env BillyCooper where
   getModifiersFor = noModifiersFor

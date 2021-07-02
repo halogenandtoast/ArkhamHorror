@@ -5,27 +5,25 @@ module Arkham.Types.Asset.Cards.AdamLynch
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
+import qualified Arkham.Asset.Cards as Cards
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Classes
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
 
 newtype AdamLynch = AdamLynch AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-adamLynch :: AssetId -> AdamLynch
-adamLynch uuid = AdamLynch $ (baseAttrs uuid "02139")
-  { assetHealth = Just 1
-  , assetSanity = Just 1
-  , assetIsStory = True
-  }
+adamLynch :: AssetCard AdamLynch
+adamLynch = allyWith AdamLynch Cards.adamLynch (1, 1)
+  $ (isStoryL .~ True)
+  . (slotsL .~ mempty)
 
 instance HasActions env AdamLynch where
   getActions iid window (AdamLynch attrs) = getActions iid window attrs

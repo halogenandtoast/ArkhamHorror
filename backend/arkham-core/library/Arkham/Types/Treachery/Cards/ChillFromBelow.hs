@@ -2,22 +2,20 @@ module Arkham.Types.Treachery.Cards.ChillFromBelow where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype ChillFromBelow = ChillFromBelow TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-chillFromBelow :: TreacheryId -> a -> ChillFromBelow
-chillFromBelow uuid _ = ChillFromBelow $ baseAttrs uuid "50040"
+chillFromBelow :: TreacheryCard ChillFromBelow
+chillFromBelow = treachery ChillFromBelow Cards.chillFromBelow
 
 instance HasModifiersFor env ChillFromBelow where
   getModifiersFor = noModifiersFor

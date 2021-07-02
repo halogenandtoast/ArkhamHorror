@@ -6,26 +6,23 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AgendaId
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
-
-
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.Window
 
 newtype Kidnapped = Kidnapped TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-kidnapped :: TreacheryId -> a -> Kidnapped
-kidnapped uuid _ = Kidnapped $ baseAttrs uuid "02220"
+kidnapped :: TreacheryCard Kidnapped
+kidnapped = treachery Kidnapped Cards.kidnapped
 
 instance HasModifiersFor env Kidnapped where
   getModifiersFor = noModifiersFor

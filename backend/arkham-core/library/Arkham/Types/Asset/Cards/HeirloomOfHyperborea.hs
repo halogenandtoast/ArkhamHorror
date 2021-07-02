@@ -2,23 +2,21 @@ module Arkham.Types.Asset.Cards.HeirloomOfHyperborea where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
-import Arkham.Types.Slot
-import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype HeirloomOfHyperborea = HeirloomOfHyperborea AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-heirloomOfHyperborea :: AssetId -> HeirloomOfHyperborea
-heirloomOfHyperborea uuid = HeirloomOfHyperborea
-  $ (baseAttrs uuid "01012") { assetSlots = [AccessorySlot] }
+heirloomOfHyperborea :: AssetCard HeirloomOfHyperborea
+heirloomOfHyperborea = accessory HeirloomOfHyperborea Cards.heirloomOfHyperborea
 
 instance HasModifiersFor env HeirloomOfHyperborea where
   getModifiersFor = noModifiersFor

@@ -2,27 +2,25 @@ module Arkham.Types.Enemy.Cards.MarshGug where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.Message
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
+import Arkham.Types.GameValue
+import Arkham.Types.Message
 import Arkham.Types.Trait
 
 newtype MarshGug = MarshGug EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-marshGug :: EnemyId -> MarshGug
-marshGug uuid =
-  MarshGug
-    $ baseAttrs uuid "81032"
-    $ (healthDamageL .~ 2)
-    . (sanityDamageL .~ 1)
-    . (fightL .~ 3)
-    . (healthL .~ Static 4)
-    . (evadeL .~ 3)
+marshGug :: EnemyCard MarshGug
+marshGug = enemy MarshGug Cards.marshGug
+  $ (healthDamageL .~ 2)
+  . (sanityDamageL .~ 1)
+  . (fightL .~ 3)
+  . (healthL .~ Static 4)
+  . (evadeL .~ 3)
 
 instance HasModifiersFor env MarshGug where
   getModifiersFor = noModifiersFor

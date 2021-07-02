@@ -6,19 +6,19 @@ where
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
+import qualified Arkham.Asset.Cards as Cards
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Slot
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
 newtype DaisysToteBag = DaisysToteBag AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-daisysToteBag :: AssetId -> DaisysToteBag
-daisysToteBag uuid = DaisysToteBag $ baseAttrs uuid "01008"
+daisysToteBag :: AssetCard DaisysToteBag
+daisysToteBag = asset DaisysToteBag Cards.daisysToteBag
 
 instance HasModifiersFor env DaisysToteBag where
   getModifiersFor = noModifiersFor

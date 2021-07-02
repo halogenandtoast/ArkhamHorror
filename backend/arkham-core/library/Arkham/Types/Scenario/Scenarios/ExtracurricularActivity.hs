@@ -139,7 +139,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
     DiscardedTopOfDeck _iid cards target@(DrawnTokenTarget token) ->
       s <$ case drawnTokenFace token of
         ElderThing -> do
-          let n = sum $ map (toPrintedCost . cdCost . pcDef) cards
+          let n = sum $ map (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . pcDef) cards
           unshiftMessage $ CreateTokenValueEffect (-n) (toSource attrs) target
         _ -> pure ()
     ScenarioResolution NoResolution -> do

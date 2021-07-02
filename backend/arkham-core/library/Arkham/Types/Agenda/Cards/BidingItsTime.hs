@@ -60,9 +60,9 @@ instance AgendaRunner env => RunMessage env BidingItsTime where
         )
     RequestedSetAsideCard source card | isSource attrs source -> do
       when
-        (card ^. defL . cardCodeL /= CardCode "02255")
+        (toCardCode card /= CardCode "02255")
         (throwIO $ InvalidState "wrong card")
-      let enemyId = EnemyId $ card ^. cardIdL
+      let enemyId = EnemyId $ toCardId card
       leadInvestigatorId <- getLeadInvestigatorId
       locationId <- getId leadInvestigatorId
       investigatorIds <- getSetList locationId

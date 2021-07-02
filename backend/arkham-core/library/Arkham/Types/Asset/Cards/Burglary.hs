@@ -5,10 +5,10 @@ module Arkham.Types.Asset.Cards.Burglary
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
@@ -18,8 +18,8 @@ import Arkham.Types.Window
 newtype Burglary = Burglary AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-burglary :: AssetId -> Burglary
-burglary uuid = Burglary $ baseAttrs uuid "01045"
+burglary :: AssetCard Burglary
+burglary = asset Burglary Cards.burglary
 
 instance HasModifiersFor env Burglary where
   getModifiersFor = noModifiersFor

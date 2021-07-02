@@ -5,23 +5,22 @@ module Arkham.Types.Asset.Cards.ArcaneEnlightenment
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
+import qualified Arkham.Asset.Cards as Cards
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Slot
 import Arkham.Types.Target
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
 newtype ArcaneEnlightenment = ArcaneEnlightenment AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
-arcaneEnlightenment :: AssetId -> ArcaneEnlightenment
-arcaneEnlightenment uuid =
-  ArcaneEnlightenment $ (baseAttrs uuid "60205") { assetSlots = [ArcaneSlot] }
+arcaneEnlightenment :: AssetCard ArcaneEnlightenment
+arcaneEnlightenment = arcane ArcaneEnlightenment Cards.arcaneEnlightenment
 
 instance HasModifiersFor env ArcaneEnlightenment where
   getModifiersFor _ (InvestigatorTarget iid) (ArcaneEnlightenment attrs) =

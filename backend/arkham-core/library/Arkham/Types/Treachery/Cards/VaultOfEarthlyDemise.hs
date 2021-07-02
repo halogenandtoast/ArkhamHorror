@@ -2,24 +2,22 @@ module Arkham.Types.Treachery.Cards.VaultOfEarthlyDemise where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
-import Arkham.Types.Game.Helpers
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype VaultOfEarthlyDemise = VaultOfEarthlyDemise TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-vaultOfEarthlyDemise :: TreacheryId -> a -> VaultOfEarthlyDemise
-vaultOfEarthlyDemise uuid _ = VaultOfEarthlyDemise $ baseAttrs uuid "50032b"
+vaultOfEarthlyDemise :: TreacheryCard VaultOfEarthlyDemise
+vaultOfEarthlyDemise = treachery VaultOfEarthlyDemise Cards.vaultOfEarthlyDemise
 
 instance HasCount PlayerCount env () => HasModifiersFor env VaultOfEarthlyDemise where
   getModifiersFor _ target@(EnemyTarget _) (VaultOfEarthlyDemise attrs)

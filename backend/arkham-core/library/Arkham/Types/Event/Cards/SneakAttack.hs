@@ -2,22 +2,20 @@ module Arkham.Types.Event.Cards.SneakAttack where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Event.Attrs
+import Arkham.Types.Event.Runner
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Event.Attrs
-import Arkham.Types.Event.Runner
 
 newtype SneakAttack = SneakAttack EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-sneakAttack :: InvestigatorId -> EventId -> SneakAttack
-sneakAttack iid uuid = SneakAttack $ baseAttrs iid uuid "01052"
+sneakAttack :: EventCard SneakAttack
+sneakAttack = event SneakAttack Cards.sneakAttack
 
 instance HasModifiersFor env SneakAttack where
   getModifiersFor = noModifiersFor

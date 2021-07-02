@@ -2,23 +2,21 @@ module Arkham.Types.Treachery.Cards.UmordhothsWrath where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype UmordhothsWrath = UmordhothsWrath TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-umordhothsWrath :: TreacheryId -> a -> UmordhothsWrath
-umordhothsWrath uuid _ = UmordhothsWrath $ baseAttrs uuid "01158"
+umordhothsWrath :: TreacheryCard UmordhothsWrath
+umordhothsWrath = treachery UmordhothsWrath Cards.umordhothsWrath
 
 instance HasModifiersFor env UmordhothsWrath where
   getModifiersFor = noModifiersFor

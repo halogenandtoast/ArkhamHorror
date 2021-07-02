@@ -2,19 +2,18 @@ module Arkham.Types.Event.Cards.OnTheLam where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Target
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
+import Arkham.Types.Message
+import Arkham.Types.Target
 
 newtype OnTheLam = OnTheLam EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-onTheLam :: InvestigatorId -> EventId -> OnTheLam
-onTheLam iid uuid = OnTheLam $ baseAttrs iid uuid "01010"
+onTheLam :: EventCard OnTheLam
+onTheLam = event OnTheLam Cards.onTheLam
 
 instance HasModifiersFor env OnTheLam where
   getModifiersFor = noModifiersFor

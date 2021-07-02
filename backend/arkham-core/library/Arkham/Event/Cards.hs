@@ -34,6 +34,7 @@ event cardCode name cost classSymbol = CardDef
   , cdAttackOfOpportunityModifiers = mempty
   , cdPermanent = False
   , cdEncounterSet = Nothing
+  , cdUnique = False
   }
 
 allEventCards :: HashMap CardCode CardDef
@@ -51,6 +52,7 @@ allEventCards = mapFromList
   , ("01050", elusive)
   , ("01051", backstab)
   , ("01052", sneakAttack)
+  , ("01056", sureGamble3)
   , ("01057", hotStreak4)
   , ("01064", drawnToTheFlame)
   , ("01065", wardOfProtection)
@@ -183,6 +185,14 @@ sneakAttack :: CardDef
 sneakAttack = (event "01052" "Sneak Attack" 2 Rogue)
   { cdSkills = [SkillIntellect, SkillCombat]
   , cdCardTraits = setFromList [Tactic]
+  }
+
+sureGamble3 :: CardDef
+sureGamble3 = (event "01056" "Sure Gamble" 2 Rogue)
+  { cdCardTraits = setFromList [Fortune, Insight]
+  , cdFast = True
+  , cdWindows = mempty -- We handle this via behavior
+  , cdLevel = 3
   }
 
 hotStreak4 :: CardDef

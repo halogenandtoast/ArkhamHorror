@@ -5,27 +5,26 @@ module Arkham.Types.Asset.Cards.FishingNet
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EnemyId
-import Arkham.Types.LocationId
+import Arkham.Types.Game.Helpers
+import Arkham.Types.Id
+import Arkham.Types.Keyword
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
-import Arkham.Types.Game.Helpers
-import Arkham.Types.Keyword
 
 newtype FishingNet = FishingNet AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
-fishingNet :: AssetId -> FishingNet
-fishingNet uuid = FishingNet $ (baseAttrs uuid "81021") { assetIsStory = True }
+fishingNet :: AssetCard FishingNet
+fishingNet = assetWith FishingNet Cards.fishingNet (isStoryL .~ True)
 
 instance HasModifiersFor env FishingNet where
   getModifiersFor _ (EnemyTarget eid) (FishingNet attrs) = pure $ toModifiers

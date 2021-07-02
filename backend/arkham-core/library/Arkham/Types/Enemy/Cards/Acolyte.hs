@@ -6,22 +6,20 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.Message
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
+import Arkham.Types.Message
 
 newtype Acolyte = Acolyte EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-acolyte :: EnemyId -> Acolyte
-acolyte uuid =
-  Acolyte
-    $ baseAttrs uuid "01169"
-    $ (healthDamageL .~ 1)
-    . (fightL .~ 3)
-    . (evadeL .~ 2)
+acolyte :: EnemyCard Acolyte
+acolyte = enemy Acolyte Cards.acolyte
+  $ (healthDamageL .~ 1)
+  . (fightL .~ 3)
+  . (evadeL .~ 2)
 
 instance HasModifiersFor env Acolyte where
   getModifiersFor = noModifiersFor

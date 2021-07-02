@@ -26,12 +26,13 @@ baseTreachery cardCode name mEncounterSet isWeakness = CardDef
   , cdFast = False
   , cdWindows = mempty
   , cdAction = Nothing
-  , cdRevelation = False
+  , cdRevelation = True
   , cdVictoryPoints = Nothing
   , cdCommitRestrictions = mempty
   , cdAttackOfOpportunityModifiers = mempty
   , cdPermanent = False
   , cdEncounterSet = mEncounterSet
+  , cdUnique = False
   }
 
 weakness :: CardCode -> Name -> CardDef
@@ -42,8 +43,25 @@ treachery cardCode name encounterSet = baseTreachery cardCode name (Just encount
 
 allPlayerTreacheryCards :: HashMap CardCode CardDef
 allPlayerTreacheryCards = mapFromList
-  [ ("01015", abandonedAndAlone)
+  [ ("01007", coverUp)
+  , ("01011", hospitalDebts)
+  , ("01015", abandonedAndAlone)
+  , ("01096", amnesia)
+  , ("01097", paranoia)
+  , ("01098", haunted)
+  , ("01099", psychosis)
+  , ("01100", hypochondria)
+  , ("02007", smiteTheWicked)
+  , ("02009", rexsCurse)
+  , ("02011", searchingForIzzie)
+  , ("02013", finalRhapsody)
+  , ("02015", wrackedByNightmares)
+  , ("02037", indebted)
+  , ("02038", internalInjury)
+  , ("02039", chronophobia)
   , ("02178", acrossSpaceAndTime)
+  , ("60504", atychiphobia)
+  , ("81029", curseOfTheRougarou)
   ]
 
 allEncounterTreacheryCards :: HashMap CardCode CardDef
@@ -120,11 +138,47 @@ placeholderTreachery :: CardDef
 placeholderTreachery =
   treachery "treachery" "Placeholder Treachery Card" Test
 
+coverUp :: CardDef
+coverUp = (weakness "01007" "Cover Up")
+  { cdCardTraits = setFromList [Task]
+  }
+
+hospitalDebts :: CardDef
+hospitalDebts = (weakness "01011" "Hospital Debts")
+  { cdCardTraits = setFromList [Task]
+  }
+
 abandonedAndAlone :: CardDef
 abandonedAndAlone =
   (weakness "01015" "Abandoned and Alone")
     { cdCardTraits = setFromList [Madness]
     }
+
+amnesia :: CardDef
+amnesia = (weakness "01096" "Amnesia")
+  { cdCardTraits = setFromList [Madness]
+  }
+
+paranoia :: CardDef
+paranoia = (weakness "01097" "Paranoia")
+  { cdCardTraits = setFromList [Madness]
+  }
+
+haunted :: CardDef
+haunted = (weakness "01098" "Haunted")
+  { cdCardTraits = setFromList [Curse]
+  }
+
+psychosis :: CardDef
+psychosis = (weakness "01099" "Psychosis")
+  { cdCardTraits = setFromList [Madness]
+  }
+
+hypochondria :: CardDef
+hypochondria = (weakness "01100" "Hypochondria")
+  { cdCardTraits = setFromList [Madness]
+  }
+
 
 huntingShadow :: CardDef
 huntingShadow =
@@ -214,6 +268,48 @@ dreamsOfRlyeh =
   (treachery "01182" "Dreams of R'lyeh" AgentsOfCthulhu)
     { cdCardTraits = setFromList [Omen]
     }
+
+smiteTheWicked :: CardDef
+smiteTheWicked = (weakness "02007" "Smite the Wicked")
+  { cdCardTraits = setFromList [Task]
+  }
+
+rexsCurse :: CardDef
+rexsCurse = (weakness "02009" "Rex's Curse")
+  { cdCardTraits = setFromList [Curse]
+  }
+
+searchingForIzzie :: CardDef
+searchingForIzzie = (weakness "02011" "Searching for Izzie")
+  { cdCardTraits = setFromList [Task]
+  }
+
+finalRhapsody :: CardDef
+finalRhapsody = (weakness "02013" "Final Rhapsody")
+  { cdCardTraits = setFromList [Endtimes]
+  }
+
+wrackedByNightmares :: CardDef
+wrackedByNightmares =
+  (weakness "02015" "Wracked by Nightmares")
+    { cdCardTraits = setFromList [Madness]
+    }
+
+indebted :: CardDef
+indebted = (weakness "02037" "Indebted")
+  { cdCardTraits = singleton Flaw
+  , cdPermanent = True
+  }
+
+internalInjury :: CardDef
+internalInjury = (weakness "02038" "Internal Injury")
+  { cdCardTraits = singleton Injury
+  }
+
+chronophobia :: CardDef
+chronophobia = (weakness "02039" "Chronophobia")
+  { cdCardTraits = singleton Madness
+  }
 
 somethingInTheDrinks :: CardDef
 somethingInTheDrinks =
@@ -462,6 +558,11 @@ maskOfUmordhoth =
     { cdCardTraits = setFromList [Item, Mask]
     }
 
+atychiphobia :: CardDef
+atychiphobia = (weakness "60504" "Atychiphobia")
+  { cdCardTraits = setFromList [Madness]
+  }
+
 cursedSwamp :: CardDef
 cursedSwamp = (treachery "81024" "Cursed Swamp" TheBayou)
   { cdCardTraits = setFromList [Hazard]
@@ -495,3 +596,9 @@ beastOfTheBayou =
 insatiableBloodlust :: CardDef
 insatiableBloodlust =
   treachery "81026" "Insatiable Bloodlust" CurseOfTheRougarou
+
+curseOfTheRougarou :: CardDef
+curseOfTheRougarou = (weakness "81029" "Curse of the Rougarou")
+  { cdCardTraits = setFromList [Curse]
+  }
+

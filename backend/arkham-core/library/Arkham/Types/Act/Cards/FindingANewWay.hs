@@ -56,7 +56,7 @@ instance ActRunner env => RunMessage env FindingANewWay where
           , chooseOne
             iid
             [ TargetLabel
-                (CardIdTarget $ location ^. cardIdL)
+                (CardIdTarget $ toCardId location)
                 [InvestigatorDrewEncounterCard iid location]
             | location <- locationCards
             ]

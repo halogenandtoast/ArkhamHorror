@@ -5,21 +5,19 @@ module Arkham.Types.Treachery.Cards.TwistOfFate
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Message
-import Arkham.Types.Token
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.RequestedTokenStrategy
+import Arkham.Types.Token
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype TwistOfFate = TwistOfFate TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-twistOfFate :: TreacheryId -> a -> TwistOfFate
-twistOfFate uuid _ = TwistOfFate $ baseAttrs uuid "02093"
+twistOfFate :: TreacheryCard TwistOfFate
+twistOfFate = treachery TwistOfFate Cards.twistOfFate
 
 instance HasModifiersFor env TwistOfFate where
   getModifiersFor = noModifiersFor

@@ -1,14 +1,13 @@
-module Arkham.Types.Event.Cards.CloseCall2 where
+module Arkham.Types.Event.Cards.CloseCall2 (closeCall2, CloseCall2(..)) where
 
 import Arkham.Prelude
 
 import Arkham.EncounterCard
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
 import Arkham.Types.Event.Attrs
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -17,8 +16,8 @@ import Arkham.Types.Window
 newtype CloseCall2 = CloseCall2 EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-closeCall2 :: InvestigatorId -> EventId -> CloseCall2
-closeCall2 iid uuid = CloseCall2 $ baseAttrs iid uuid "01083"
+closeCall2 :: EventCard CloseCall2
+closeCall2 = event CloseCall2 Cards.closeCall2
 
 instance HasModifiersFor env CloseCall2 where
   getModifiersFor = noModifiersFor
@@ -30,7 +29,7 @@ instance (HasId CardCode env EnemyId, HasSet Trait env EnemyId) => HasActions en
       traits' <- getSet eid
       cardCode <- getId eid
       pure
-        [ InitiatePlayCard iid (attrs ^. cardIdL) (Just $ EnemyTarget eid) False
+        [ InitiatePlayCard iid (toCardId attrs) (Just $ EnemyTarget eid) False
         | Elite `notMember` traits' && cardCode `elem` keys allEncounterCards
         ]
   getActions i window (CloseCall2 attrs) = getActions i window attrs

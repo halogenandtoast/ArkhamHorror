@@ -18,7 +18,7 @@ import Arkham.Types.Query
 import Arkham.Types.Trait
 
 createEvent :: IsCard a => a -> InvestigatorId -> Event
-createEvent a iid = lookupEvent (getCardCode a) iid (EventId $ getCardId a)
+createEvent a iid = lookupEvent (toCardCode a) iid (EventId $ toCardId a)
 
 data Event
   = OnTheLam' OnTheLam
@@ -76,6 +76,9 @@ data Event
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+instance HasCardDef Event where
+  toCardDef = toCardDef . toAttrs
+
 deriving anyclass instance
   ( HasCount ActionTakenCount env InvestigatorId
   , HasId CardCode env EnemyId
@@ -102,10 +105,7 @@ instance SourceEntity Event where
   isSource = isSource . toAttrs
 
 instance IsCard Event where
-  getCardId = getCardId . toAttrs
-  getCardCode = getCardCode . toAttrs
-  getTraits = getTraits . toAttrs
-  getKeywords = getKeywords . toAttrs
+  toCardId = toCardId . toAttrs
 
 getEventId :: Event -> EventId
 getEventId = eventId . toAttrs

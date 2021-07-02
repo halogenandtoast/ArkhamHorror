@@ -47,8 +47,8 @@ unshiftEffect attrs target = unshiftMessages
   , Discard $ toTarget attrs
   ]
 
-baseAttrs :: CardDef -> InvestigatorId -> EventId -> EventAttrs
-baseAttrs cardDef iid eid = EventAttrs
+event :: (EventAttrs -> a) -> CardDef -> InvestigatorId -> EventId -> a
+event f cardDef iid eid = f $ EventAttrs
   { eventCardDef = cardDef
   , eventId = eid
   , eventAttachedTarget = Nothing

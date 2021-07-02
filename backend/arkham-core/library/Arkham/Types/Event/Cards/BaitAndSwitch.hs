@@ -2,6 +2,7 @@ module Arkham.Types.Event.Cards.BaitAndSwitch where
 
 import Arkham.Prelude
 
+import qualified Arkham.Event.Cards as Cards (baitAndSwitch)
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
@@ -18,7 +19,7 @@ newtype BaitAndSwitch = BaitAndSwitch EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 baitAndSwitch :: InvestigatorId -> EventId -> BaitAndSwitch
-baitAndSwitch iid uuid = BaitAndSwitch $ baseAttrs iid uuid "02034"
+baitAndSwitch = event BaitAndSwitch Cards.baitAndSwitch
 
 instance HasModifiersFor env BaitAndSwitch where
   getModifiersFor = noModifiersFor

@@ -5,7 +5,6 @@ module Arkham.Types.Treachery.Attrs where
 import Arkham.Prelude
 
 import Arkham.Json
-import Arkham.EncounterCard
 import Arkham.Types.AgendaId
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -24,7 +23,7 @@ data TreacheryAttrs = TreacheryAttrs
   { treacheryId :: TreacheryId
   , treacheryCardDef :: CardDef
   , treacheryAttachedTarget :: Maybe Target
-  , treacheryOwner :: Maybe InvestigatorId
+  , treacheryOwner :: InvestigatorId
   , treacheryDoom :: Int
   , treacheryClues :: Maybe Int
   , treacheryResources :: Maybe Int
@@ -120,12 +119,12 @@ withTreacheryInvestigator attrs f = case treacheryAttachedTarget attrs of
     <> " must be attached to an investigator"
     )
 
-baseAttrs :: TreacheryId -> CardDef -> TreacheryAttrs
-baseAttrs tid cardDef = TreacheryAttrs
+treachery :: (TreacheryAttrs -> a) -> CardDef -> InvestigatorId -> TreacheryId -> a
+treachery f cardDef iid tid = f $ TreacheryAttrs
   { treacheryId = tid
   , treacheryCardDef = cardDef
   , treacheryAttachedTarget = Nothing
-  , treacheryOwner = Nothing
+  , treacheryOwner = iid
   , treacheryDoom = 0
   , treacheryClues = Nothing
   , treacheryResources = Nothing

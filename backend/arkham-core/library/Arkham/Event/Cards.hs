@@ -71,7 +71,7 @@ allEventCards = mapFromList
   , ("02022", shortcut)
   , ("02023", seekingAnswers)
   , ("02025", thinkOnYourFeet)
-  , ("02031", bindMonster)
+  , ("02031", bindMonster2)
   , ("02034", baitAndSwitch)
   , ("02105", emergencyAid)
   , ("02107", iveGotAPlan)
@@ -337,8 +337,8 @@ thinkOnYourFeet = (event "02025" "Think on Your Feet" 1 Rogue)
   , cdWindows = setFromList [WhenEnemySpawns YourLocation []]
   }
 
-bindMonster :: CardDef
-bindMonster = (event "02031" "Bind Monster" 3 Mystic)
+bindMonster2 :: CardDef
+bindMonster2 = (event "02031" "Bind Monster" 3 Mystic)
   { cdSkills = [SkillWillpower, SkillIntellect]
   , cdCardTraits = singleton Spell
   , cdAction = Just Action.Evade

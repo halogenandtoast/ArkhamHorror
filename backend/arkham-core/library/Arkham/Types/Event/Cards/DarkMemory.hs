@@ -16,7 +16,7 @@ newtype DarkMemory = DarkMemory EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 darkMemory :: InvestigatorId -> EventId -> DarkMemory
-darkMemory iid uuid = DarkMemory $ baseAttrs Cards.darkMemory iid uuid
+darkMemory = (DarkMemory .) . baseAttrs Cards.darkMemory
 
 instance HasModifiersFor env DarkMemory where
   getModifiersFor = noModifiersFor

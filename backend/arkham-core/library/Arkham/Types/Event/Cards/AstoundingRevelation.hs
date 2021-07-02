@@ -23,8 +23,7 @@ newtype AstoundingRevelation = AstoundingRevelation EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 astoundingRevelation :: InvestigatorId -> EventId -> AstoundingRevelation
-astoundingRevelation iid uuid =
-  AstoundingRevelation $ baseAttrs Cards.astoundingRevelation iid uuid
+astoundingRevelation = event AstoundingRevelation Cards.astoundingRevelation
 
 ability :: InvestigatorId -> EventAttrs -> Ability
 ability iid a = base

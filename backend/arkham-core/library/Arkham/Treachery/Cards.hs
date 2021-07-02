@@ -11,14 +11,14 @@ import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Name
 import Arkham.Types.Trait
 
-treachery :: CardCode -> Name -> EncounterSet -> CardDef
-treachery cardCode name encounterSet = CardDef
+baseTreachery :: CardCode -> Name -> Maybe EncounterSet -> Bool -> CardDef
+baseTreachery cardCode name mEncounterSet isWeakness = CardDef
   { cdCardCode = cardCode
   , cdName = name
   , cdCost = Nothing
   , cdLevel = 0
   , cdCardType = TreacheryType
-  , cdWeakness = False
+  , cdWeakness = isWeakness
   , cdClassSymbol = Nothing
   , cdSkills = mempty
   , cdCardTraits = mempty
@@ -31,11 +31,23 @@ treachery cardCode name encounterSet = CardDef
   , cdCommitRestrictions = mempty
   , cdAttackOfOpportunityModifiers = mempty
   , cdPermanent = False
-  , cdEncounterSet = Just encounterSet
+  , cdEncounterSet = mEncounterSet
   }
 
-allTreacheryCards :: HashMap CardCode CardDef
-allTreacheryCards = mapFromList
+weakness :: CardCode -> Name -> CardDef
+weakness cardCode name = baseTreachery cardCode name Nothing True
+
+treachery :: CardCode -> Name -> EncounterSet -> CardDef
+treachery cardCode name encounterSet = baseTreachery cardCode name (Just encounterSet) False
+
+allPlayerTreacheryCards :: HashMap CardCode CardDef
+allPlayerTreacheryCards = mapFromList
+  [ ("01015", abandonedAndAlone)
+  , ("02178", acrossSpaceAndTime)
+  ]
+
+allEncounterTreacheryCards :: HashMap CardCode CardDef
+allEncounterTreacheryCards = mapFromList
   [ ("treachery", placeholderTreachery)
   , ("01135", huntingShadow)
   , ("01136", falseLead)
@@ -107,6 +119,12 @@ allTreacheryCards = mapFromList
 placeholderTreachery :: CardDef
 placeholderTreachery =
   treachery "treachery" "Placeholder Treachery Card" Test
+
+abandonedAndAlone :: CardDef
+abandonedAndAlone =
+  (weakness "01015" "Abandoned and Alone")
+    { cdCardTraits = setFromList [Madness]
+    }
 
 huntingShadow :: CardDef
 huntingShadow =
@@ -312,6 +330,12 @@ ephemeralExhibits =
 slitheringBehindYou :: CardDef
 slitheringBehindYou =
   treachery "02146" "Slithering Behind You" TheMiskatonicMuseum
+
+acrossSpaceAndTime :: CardDef
+acrossSpaceAndTime =
+  (weakness "02178" "Across Space and Time")
+    { cdCardTraits = setFromList [Madness]
+    }
 
 clawsOfSteam :: CardDef
 clawsOfSteam = (treachery "02180" "Claws of Steam" TheEssexCountyExpress

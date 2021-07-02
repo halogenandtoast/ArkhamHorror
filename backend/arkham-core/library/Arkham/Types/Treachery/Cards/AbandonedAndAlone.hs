@@ -2,20 +2,18 @@ module Arkham.Types.Treachery.Cards.AbandonedAndAlone where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Cards (abandonedAndAlone)
 import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype AbandonedAndAlone = AbandonedAndAlone TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-abandonedAndAlone :: TreacheryId -> Maybe InvestigatorId -> AbandonedAndAlone
-abandonedAndAlone uuid iid = AbandonedAndAlone $ weaknessAttrs uuid iid "01015"
+abandonedAndAlone :: TreacheryId -> AbandonedAndAlone
+abandonedAndAlone = treachery AbandonedAndAlone Cards.abandonedAndAlone
 
 instance HasModifiersFor env AbandonedAndAlone where
   getModifiersFor = noModifiersFor

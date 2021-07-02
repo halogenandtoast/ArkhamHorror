@@ -66,7 +66,7 @@ asset :: CardCode -> Name -> EncounterSet -> CardDef
 asset = baseEncounterCard EncounterAssetType
 
 allEncounterCards :: HashMap CardCode CardDef
-allEncounterCards = allEnemyCards <> allLocationCards <> allTreacheryCards <>
+allEncounterCards = allEnemyCards <> allLocationCards <> allEncounterTreacheryCards <>
   mapFromList [ ("02060", jazzMulligan)
   , ("02179", helplessPassenger)
   , ("02215", keyToTheChamber)

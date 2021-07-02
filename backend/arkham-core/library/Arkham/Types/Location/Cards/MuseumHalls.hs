@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (museumHalls)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -23,7 +23,6 @@ import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype MuseumHalls = MuseumHalls LocationAttrs
@@ -34,14 +33,11 @@ museumHalls =
   MuseumHalls
     . (connectedSymbolsL .~ setFromList [Circle, Diamond, Triangle])
     . baseAttrs
-        "02127"
-        "Museum Halls"
-        EncounterSet.TheMiskatonicMuseum
+        Cards.museumHalls
         2
         (Static 0)
         Square
         [Circle]
-        (singleton Miskatonic)
 
 instance HasModifiersFor env MuseumHalls where
   getModifiersFor _ target (MuseumHalls location) | isTarget location target =

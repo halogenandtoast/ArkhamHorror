@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (engineCar_176)
 import Arkham.Types.Card.CardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.Direction
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -19,7 +19,6 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
-import Arkham.Types.Trait
 
 newtype EngineCar_176 = EngineCar_176 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -27,17 +26,13 @@ newtype EngineCar_176 = EngineCar_176 LocationAttrs
 engineCar_176 :: LocationId -> EngineCar_176
 engineCar_176 =
   EngineCar_176
-    . (victoryL ?~ 1)
     . (connectsToL .~ singleton LeftOf)
     . baseAttrs
-        "02176"
-        "Engine Car"
-        EncounterSet.TheEssexCountyExpress
+        Cards.engineCar_176
         2
         (PerPlayer 2)
         NoSymbol
         []
-        (singleton Train)
 
 instance HasCount ClueCount env LocationId => HasModifiersFor env EngineCar_176 where
   getModifiersFor _ target (EngineCar_176 location@LocationAttrs {..})

@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (diningCar)
 import Arkham.Types.Card.CardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.Direction
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -19,7 +19,6 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
-import Arkham.Types.Trait
 
 newtype DiningCar = DiningCar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -27,14 +26,11 @@ newtype DiningCar = DiningCar LocationAttrs
 diningCar :: LocationId -> DiningCar
 diningCar =
   DiningCar . (connectsToL .~ setFromList [LeftOf, RightOf]) . baseAttrs
-    "02173"
-    "Dining Car"
-    EncounterSet.TheEssexCountyExpress
+    Cards.diningCar
     2
     (Static 0)
     NoSymbol
     []
-    (singleton Train)
 
 instance HasCount ClueCount env LocationId => HasModifiersFor env DiningCar where
   getModifiersFor _ target (DiningCar location@LocationAttrs {..})

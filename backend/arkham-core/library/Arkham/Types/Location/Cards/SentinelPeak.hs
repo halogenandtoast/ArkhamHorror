@@ -6,11 +6,11 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (sentinelPeak)
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
-import Arkham.Types.Location.Attrs hiding (traitsL)
+import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
@@ -26,16 +26,12 @@ sentinelPeak =
     . (costToEnterUnrevealedL
       .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 2) Nothing]
       )
-    . (victoryL ?~ 2)
     . baseAttrs
-        "02284"
-        "Sentinel Peak"
-        EncounterSet.WhereDoomAwaits
+        Cards.sentinelPeak
         4
         (PerPlayer 2)
         Diamond
         [Square]
-        [Dunwich, SentinelHill]
 
 instance HasModifiersFor env SentinelPeak where
   getModifiersFor = noModifiersFor

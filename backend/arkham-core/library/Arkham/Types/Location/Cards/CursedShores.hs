@@ -6,12 +6,12 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (cursedShores)
 import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -20,7 +20,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype CursedShores = CursedShores LocationAttrs
@@ -28,14 +27,11 @@ newtype CursedShores = CursedShores LocationAttrs
 
 cursedShores :: LocationId -> CursedShores
 cursedShores = CursedShores . baseAttrs
-  "81007"
-  "Cursed Shores"
-  EncounterSet.CurseOfTheRougarou
+  Cards.cursedShores
   1
   (Static 0)
   Square
   [Plus, Triangle, Diamond, Hourglass]
-  [NewOrleans, Bayou]
 
 instance HasModifiersFor env CursedShores where
   getModifiersFor = noModifiersFor

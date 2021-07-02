@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (southsideMasBoardingHouse)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -17,7 +17,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -27,14 +26,11 @@ newtype SouthsideMasBoardingHouse = SouthsideMasBoardingHouse LocationAttrs
 
 southsideMasBoardingHouse :: LocationId -> SouthsideMasBoardingHouse
 southsideMasBoardingHouse = SouthsideMasBoardingHouse . baseAttrs
-  "01127"
-  ("Southside" `subtitled` "Ma's Boarding House")
-  EncounterSet.TheMidnightMasks
+  Cards.southsideMasBoardingHouse
   2
   (PerPlayer 1)
   Square
   [Diamond, Plus, Circle]
-  [Arkham]
 
 instance HasModifiersFor env SouthsideMasBoardingHouse where
   getModifiersFor = noModifiersFor

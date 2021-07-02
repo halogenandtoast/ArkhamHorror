@@ -2,8 +2,8 @@ module Arkham.Types.Location.Cards.ScienceBuilding where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (scienceBuilding)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -14,21 +14,17 @@ import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Trait
 
 newtype ScienceBuilding = ScienceBuilding LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 scienceBuilding :: LocationId -> ScienceBuilding
 scienceBuilding = ScienceBuilding . baseAttrs
-  "02056"
-  "Science Building"
-  EncounterSet.ExtracurricularActivity
+  Cards.scienceBuilding
   2
   (PerPlayer 1)
   Hourglass
   [Plus, Squiggle]
-  [Miskatonic]
 
 instance HasModifiersFor env ScienceBuilding where
   getModifiersFor = noModifiersFor

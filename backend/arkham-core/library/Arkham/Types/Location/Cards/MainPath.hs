@@ -6,8 +6,8 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (mainPath)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -21,14 +21,11 @@ newtype MainPath = MainPath LocationAttrs
 
 mainPath :: LocationId -> MainPath
 mainPath = MainPath . baseAttrs
-  "01149"
-  "Main Path"
-  EncounterSet.TheDevourerBelow
+  Cards.mainPath
   2
   (Static 0)
   Squiggle
   [Square, Plus]
-  [Woods]
 
 instance HasModifiersFor env MainPath where
   getModifiersFor = noModifiersFor

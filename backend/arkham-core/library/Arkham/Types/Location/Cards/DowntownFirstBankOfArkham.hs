@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (downtownFirstBankOfArkham)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -18,8 +18,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype DowntownFirstBankOfArkham = DowntownFirstBankOfArkham LocationAttrs
@@ -27,14 +25,11 @@ newtype DowntownFirstBankOfArkham = DowntownFirstBankOfArkham LocationAttrs
 
 downtownFirstBankOfArkham :: LocationId -> DowntownFirstBankOfArkham
 downtownFirstBankOfArkham = DowntownFirstBankOfArkham . baseAttrs
-  "01130"
-  ("Downtown" `subtitled` "First Bank of Arkham")
-  EncounterSet.TheMidnightMasks
+  Cards.downtownFirstBankOfArkham
   3
   (PerPlayer 1)
   Triangle
   [Moon, T]
-  [Arkham]
 
 instance HasModifiersFor env DowntownFirstBankOfArkham where
   getModifiersFor = noModifiersFor

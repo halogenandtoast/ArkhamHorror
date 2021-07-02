@@ -2,9 +2,9 @@ module Arkham.Types.Location.Cards.Bathroom where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (bathroom)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -18,17 +18,12 @@ newtype Bathroom = Bathroom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bathroom :: LocationId -> Bathroom
-bathroom =
-  Bathroom
-    . baseAttrs
-        "50016"
-        "Bathroom"
-        EncounterSet.CurseOfTheRougarou
-        1
-        (PerPlayer 1)
-        Star
-        [T]
-        mempty
+bathroom = Bathroom . baseAttrs
+  Cards.bathroom
+  1
+  (PerPlayer 1)
+  Star
+  [T]
 
 instance HasModifiersFor env Bathroom where
   getModifiersFor = noModifiersFor

@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (southsideHistoricalSociety)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -17,8 +17,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype SouthsideHistoricalSociety = SouthsideHistoricalSociety LocationAttrs
@@ -26,14 +24,11 @@ newtype SouthsideHistoricalSociety = SouthsideHistoricalSociety LocationAttrs
 
 southsideHistoricalSociety :: LocationId -> SouthsideHistoricalSociety
 southsideHistoricalSociety = SouthsideHistoricalSociety . baseAttrs
-  "01126"
-  ("Southside" `subtitled` "Historical Society")
-  EncounterSet.TheMidnightMasks
+  Cards.southsideHistoricalSociety
   3
   (PerPlayer 1)
   Square
   [Diamond, Plus, Circle]
-  [Arkham]
 
 instance HasModifiersFor env SouthsideHistoricalSociety where
   getModifiersFor = noModifiersFor

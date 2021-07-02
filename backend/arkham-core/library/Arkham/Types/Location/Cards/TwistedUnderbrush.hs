@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (twistedUnderbrush)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -17,22 +17,18 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype TwistedUnderbrush = TwistedUnderbrush LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 twistedUnderbrush :: LocationId -> TwistedUnderbrush
-twistedUnderbrush = TwistedUnderbrush . (victoryL ?~ 1) . baseAttrs
-  "81015"
-  "Twisted Underbrush"
-  EncounterSet.CurseOfTheRougarou
+twistedUnderbrush = TwistedUnderbrush . baseAttrs
+  Cards.twistedUnderbrush
   3
   (PerPlayer 1)
   Moon
   [Diamond, Moon]
-  [Wilderness]
 
 instance HasModifiersFor env TwistedUnderbrush where
   getModifiersFor = noModifiersFor

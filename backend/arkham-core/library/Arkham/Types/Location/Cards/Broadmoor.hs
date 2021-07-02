@@ -6,28 +6,24 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (broadmoor)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Trait
 
 newtype Broadmoor = Broadmoor LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 broadmoor :: LocationId -> Broadmoor
-broadmoor = Broadmoor . (victoryL ?~ 1) . baseAttrs
-  "81009"
-  "Broadmoor"
-  EncounterSet.CurseOfTheRougarou
+broadmoor = Broadmoor . baseAttrs
+  Cards.broadmoor
   3
   (PerPlayer 1)
   Plus
   [Square, Plus]
-  [NewOrleans]
 
 instance HasModifiersFor env Broadmoor where
   getModifiersFor = noModifiersFor

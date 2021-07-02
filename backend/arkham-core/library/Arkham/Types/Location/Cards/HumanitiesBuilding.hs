@@ -2,8 +2,8 @@ module Arkham.Types.Location.Cards.HumanitiesBuilding where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (humanitiesBuilding)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -11,21 +11,17 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Query
-import Arkham.Types.Trait
 
 newtype HumanitiesBuilding = HumanitiesBuilding LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 humanitiesBuilding :: LocationId -> HumanitiesBuilding
 humanitiesBuilding = HumanitiesBuilding . baseAttrs
-  "02049"
-  "Humanities Building"
-  EncounterSet.ExtracurricularActivity
+  Cards.humanitiesBuilding
   3
   (PerPlayer 2)
   Square
   [Plus, Triangle]
-  [Miskatonic]
 
 instance HasModifiersFor env HumanitiesBuilding where
   getModifiersFor = noModifiersFor

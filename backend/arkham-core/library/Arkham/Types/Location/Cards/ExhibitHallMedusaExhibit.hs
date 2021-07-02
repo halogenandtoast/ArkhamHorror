@@ -6,32 +6,27 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (exhibitHallMedusaExhibit)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
-import Arkham.Types.Trait
 
 newtype ExhibitHallMedusaExhibit = ExhibitHallMedusaExhibit LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallMedusaExhibit :: LocationId -> ExhibitHallMedusaExhibit
 exhibitHallMedusaExhibit =
-  ExhibitHallMedusaExhibit . (victoryL ?~ 1) . baseAttrs
-    "02133"
-    ("Exhibit Hall" `subtitled` "Medusa Exhibit")
-    EncounterSet.TheMiskatonicMuseum
+  ExhibitHallMedusaExhibit . baseAttrs
+    Cards.exhibitHallMedusaExhibit
     2
     (PerPlayer 1)
     T
     [Square, Moon]
-    [Miskatonic, Exhibit]
 
 instance HasModifiersFor env ExhibitHallMedusaExhibit where
   getModifiersFor = noModifiersFor

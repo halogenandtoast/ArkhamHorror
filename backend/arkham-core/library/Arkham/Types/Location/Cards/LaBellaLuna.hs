@@ -6,28 +6,24 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (laBellaLuna)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Trait
 
 newtype LaBellaLuna = LaBellaLuna LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 laBellaLuna :: LocationId -> LaBellaLuna
 laBellaLuna = LaBellaLuna . baseAttrs
-  "02070"
-  "La Bella Luna"
-  EncounterSet.TheHouseAlwaysWins
+  Cards.laBellaLuna
   2
   (PerPlayer 1)
   Moon
   [Circle]
-  [Arkham]
 
 instance HasModifiersFor env LaBellaLuna where
   getModifiersFor = noModifiersFor

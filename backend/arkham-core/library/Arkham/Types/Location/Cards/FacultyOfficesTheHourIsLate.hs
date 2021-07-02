@@ -2,8 +2,8 @@ module Arkham.Types.Location.Cards.FacultyOfficesTheHourIsLate where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (facultyOfficesTheHourIsLate)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -11,22 +11,17 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
-import Arkham.Types.Name
-import Arkham.Types.Trait
 
 newtype FacultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 facultyOfficesTheHourIsLate :: LocationId -> FacultyOfficesTheHourIsLate
 facultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate . baseAttrs
-  "02055"
-  ("Faculty Offices" `subtitled` "The House is Late")
-  EncounterSet.ExtracurricularActivity
+  Cards.facultyOfficesTheHourIsLate
   2
   (Static 0)
   T
   [Circle]
-  [Miskatonic]
 
 instance HasModifiersFor env FacultyOfficesTheHourIsLate where
   getModifiersFor _ target (FacultyOfficesTheHourIsLate attrs)

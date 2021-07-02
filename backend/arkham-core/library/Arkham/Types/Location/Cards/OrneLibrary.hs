@@ -2,9 +2,9 @@ module Arkham.Types.Location.Cards.OrneLibrary where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (orneLibrary)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -13,21 +13,17 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.Target
-import Arkham.Types.Trait
 
 newtype OrneLibrary = OrneLibrary LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 orneLibrary :: LocationId -> OrneLibrary
-orneLibrary = OrneLibrary . (victoryL ?~ 1) . baseAttrs
-  "02050"
-  "Orne Library"
-  EncounterSet.ExtracurricularActivity
+orneLibrary = OrneLibrary . baseAttrs
+  Cards.orneLibrary
   3
   (PerPlayer 1)
   Triangle
   [Plus, Square]
-  [Miskatonic]
 
 instance HasModifiersFor env OrneLibrary where
   getModifiersFor _ target (OrneLibrary attrs) | isTarget attrs target =

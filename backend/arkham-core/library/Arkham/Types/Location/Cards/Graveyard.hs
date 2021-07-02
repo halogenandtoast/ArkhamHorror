@@ -2,8 +2,8 @@ module Arkham.Types.Location.Cards.Graveyard where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (graveyard)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -14,21 +14,17 @@ import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Trait
 
 newtype Graveyard = Graveyard LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 graveyard :: LocationId -> Graveyard
-graveyard = Graveyard . (victoryL ?~ 1) . baseAttrs
-  "01133"
-  "Graveyard"
-  EncounterSet.TheMidnightMasks
+graveyard = Graveyard . baseAttrs
+  Cards.graveyard
   1
   (PerPlayer 2)
   Hourglass
   [Circle]
-  [Arkham]
 
 instance HasModifiersFor env Graveyard where
   getModifiersFor = noModifiersFor

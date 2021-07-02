@@ -2,8 +2,8 @@ module Arkham.Types.Location.Cards.Easttown where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (easttown)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -19,14 +19,11 @@ newtype Easttown = Easttown LocationAttrs
 
 easttown :: LocationId -> Easttown
 easttown = Easttown . baseAttrs
-  "01132"
-  "Easttown"
-  EncounterSet.TheMidnightMasks
+  Cards.easttown
   2
   (PerPlayer 1)
   Moon
   [Circle, Triangle]
-  [Arkham]
 
 instance HasModifiersFor env Easttown where
   getModifiersFor _ (InvestigatorTarget iid) (Easttown attrs) =

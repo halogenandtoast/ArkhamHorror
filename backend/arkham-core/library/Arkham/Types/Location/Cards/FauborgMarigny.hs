@@ -6,9 +6,9 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (fauborgMarigny)
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -17,21 +17,17 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.Target
-import Arkham.Types.Trait
 
 newtype FauborgMarigny = FauborgMarigny LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fauborgMarigny :: LocationId -> FauborgMarigny
 fauborgMarigny = FauborgMarigny . baseAttrs
-  "81012"
-  "Faurborg Marigny"
-  EncounterSet.CurseOfTheRougarou
+  Cards.fauborgMarigny
   4
   (Static 0)
   Squiggle
   [Triangle, Squiggle]
-  [Riverside]
 
 instance HasModifiersFor env FauborgMarigny where
   getModifiersFor _ (InvestigatorTarget iid) (FauborgMarigny attrs) =

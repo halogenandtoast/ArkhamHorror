@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (downtownArkhamAsylum)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -17,24 +17,19 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Target
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype DowntownArkhamAsylum = DowntownArkhamAsylum LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 downtownArkhamAsylum :: LocationId -> DowntownArkhamAsylum
-downtownArkhamAsylum = DowntownArkhamAsylum . (victoryL ?~ 1) . baseAttrs
-  "01131"
-  ("Downtown" `subtitled` "Arkham Asylum")
-  EncounterSet.TheMidnightMasks
+downtownArkhamAsylum = DowntownArkhamAsylum . baseAttrs
+  Cards.downtownArkhamAsylum
   4
   (PerPlayer 2)
   Triangle
   [Moon, T]
-  [Arkham]
 
 instance HasModifiersFor env DowntownArkhamAsylum where
   getModifiersFor = noModifiersFor

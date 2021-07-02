@@ -6,9 +6,9 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (houseInTheReeds_211)
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -24,14 +24,11 @@ newtype HouseInTheReeds_211 = HouseInTheReeds_211 LocationAttrs
 
 houseInTheReeds_211 :: LocationId -> HouseInTheReeds_211
 houseInTheReeds_211 = HouseInTheReeds_211 . baseAttrs
-  "02211"
-  "House in the Reeds"
-  EncounterSet.BloodOnTheAltar
+  Cards.houseInTheReeds_211
   1
   (PerPlayer 1)
   Squiggle
   [Diamond, Moon]
-  [Dunwich]
 
 instance HasModifiersFor env HouseInTheReeds_211 where
   getModifiersFor = noModifiersFor

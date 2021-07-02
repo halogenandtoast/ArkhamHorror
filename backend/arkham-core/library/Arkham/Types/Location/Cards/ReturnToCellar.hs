@@ -1,9 +1,9 @@
-module Arkham.Types.Location.Cards.ReturnToCellar where
+module Arkham.Types.Location.Cards.ReturnToCellar (returnToCellar, ReturnToCellar(..)) where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (returnToCellar)
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -15,17 +15,12 @@ newtype ReturnToCellar = ReturnToCellar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 returnToCellar :: LocationId -> ReturnToCellar
-returnToCellar =
-  ReturnToCellar
-    . baseAttrs
-        "50020"
-        "Cellar"
-        EncounterSet.ReturnToTheGathering
-        2
-        (PerPlayer 1)
-        Plus
-        [Square, Squiggle]
-        []
+returnToCellar = ReturnToCellar . baseAttrs
+  Cards.returnToCellar
+  2
+  (PerPlayer 1)
+  Plus
+  [Square, Squiggle]
 
 instance HasModifiersFor env ReturnToCellar where
   getModifiersFor = noModifiersFor

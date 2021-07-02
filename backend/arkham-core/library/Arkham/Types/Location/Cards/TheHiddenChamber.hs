@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (theHiddenChamber)
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -19,21 +19,17 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
-import Arkham.Types.Trait
 
 newtype TheHiddenChamber = TheHiddenChamber LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theHiddenChamber :: LocationId -> TheHiddenChamber
-theHiddenChamber = TheHiddenChamber . (victoryL ?~ 2) . baseAttrs
-  "02214"
-  ("The Hidden Chamber" `subtitled` "Prison of the Beast")
-  EncounterSet.BloodOnTheAltar
+theHiddenChamber = TheHiddenChamber . baseAttrs
+  Cards.theHiddenChamber
   3
   (Static 0)
   NoSymbol
   []
-  [Dunwich]
 
 instance HasId (Maybe StoryAssetId) env CardCode => HasModifiersFor env TheHiddenChamber where
   getModifiersFor _ target (TheHiddenChamber attrs) | isTarget attrs target = do
@@ -56,7 +52,7 @@ instance LocationRunner env => RunMessage env TheHiddenChamber where
       connectedLocation <- getId iid
       name <- getName connectedLocation
       unshiftMessages
-        [ PlaceLocation (locationCardCode attrs) (toId attrs)
+        [ PlaceLocation (attrs ^. defL . cardCodeL) (toId attrs)
         , AddDirectConnection (toId attrs) connectedLocation
         , AddDirectConnection connectedLocation (toId attrs)
         , SetLocationLabel (toId attrs) $ nameToLabel name <> "HiddenChamber"

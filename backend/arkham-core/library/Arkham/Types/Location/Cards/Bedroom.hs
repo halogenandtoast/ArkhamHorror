@@ -2,9 +2,9 @@ module Arkham.Types.Location.Cards.Bedroom where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (bedroom)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -16,17 +16,12 @@ newtype Bedroom = Bedroom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bedroom :: LocationId -> Bedroom
-bedroom =
-  Bedroom
-    . baseAttrs
-        "50015"
-        "Bedroom"
-        EncounterSet.ReturnToTheGathering
-        2
-        (PerPlayer 1)
-        Heart
-        [T]
-        mempty
+bedroom = Bedroom . baseAttrs
+  Cards.bedroom
+  2
+  (PerPlayer 1)
+  Heart
+  [T]
 
 instance HasModifiersFor env Bedroom where
   getModifiersFor = noModifiersFor

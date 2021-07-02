@@ -5,10 +5,10 @@ module Arkham.Types.Location.Cards.MiskatonicUniversity
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (miskatonicUniversity)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -24,15 +24,12 @@ newtype MiskatonicUniversity = MiskatonicUniversity LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miskatonicUniversity :: LocationId -> MiskatonicUniversity
-miskatonicUniversity = MiskatonicUniversity . (victoryL ?~ 1) . baseAttrs
-  "01129"
-  "Miskatonic University"
-  EncounterSet.TheMidnightMasks
+miskatonicUniversity = MiskatonicUniversity . baseAttrs
+  Cards.miskatonicUniversity
   4
   (PerPlayer 2)
   Diamond
   [T, Plus, Circle, Square]
-  [Arkham]
 
 instance HasModifiersFor env MiskatonicUniversity where
   getModifiersFor = noModifiersFor

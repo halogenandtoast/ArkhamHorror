@@ -6,12 +6,12 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (stepsOfYhagharl)
 import Arkham.Types.Ability
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
-import Arkham.Types.Location.Attrs hiding (traitsL)
+import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
@@ -26,14 +26,11 @@ newtype StepsOfYhagharl = StepsOfYhagharl LocationAttrs
 
 stepsOfYhagharl :: LocationId -> StepsOfYhagharl
 stepsOfYhagharl = StepsOfYhagharl . baseAttrs
-  "02327"
-  "Steps of Y'hagharl"
-  EncounterSet.LostInTimeAndSpace
+  Cards.stepsOfYhagharl
   3
   (PerPlayer 1)
   Plus
   [Diamond, Moon]
-  [Otherworld, Extradimensional]
 
 instance HasModifiersFor env StepsOfYhagharl where
   getModifiersFor = noModifiersFor

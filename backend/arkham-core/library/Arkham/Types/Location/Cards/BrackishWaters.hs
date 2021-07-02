@@ -6,6 +6,7 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (brackishWaters)
 import Arkham.PlayerCard (genPlayerCard)
 import Arkham.Types.Ability
 import Arkham.Types.AssetId
@@ -13,7 +14,6 @@ import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -24,7 +24,6 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype BrackishWaters = BrackishWaters LocationAttrs
@@ -32,14 +31,11 @@ newtype BrackishWaters = BrackishWaters LocationAttrs
 
 brackishWaters :: LocationId -> BrackishWaters
 brackishWaters = BrackishWaters . baseAttrs
-  "81010"
-  "Brackish Waters"
-  EncounterSet.CurseOfTheRougarou
+  Cards.brackishWaters
   1
   (Static 0)
   Triangle
   [Squiggle, Square, Diamond, Hourglass]
-  [Riverside, Bayou]
 
 instance HasModifiersFor env BrackishWaters where
   getModifiersFor _ (InvestigatorTarget iid) (BrackishWaters attrs) =

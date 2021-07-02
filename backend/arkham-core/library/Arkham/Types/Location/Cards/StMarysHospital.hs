@@ -6,10 +6,10 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (stMarysHospital)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -18,7 +18,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype StMarysHospital = StMarysHospital LocationAttrs
@@ -26,14 +25,11 @@ newtype StMarysHospital = StMarysHospital LocationAttrs
 
 stMarysHospital :: LocationId -> StMarysHospital
 stMarysHospital = StMarysHospital . baseAttrs
-  "01128"
-  "St. Mary's Hospital"
-  EncounterSet.TheMidnightMasks
+  Cards.stMarysHospital
   2
   (PerPlayer 1)
   Plus
   [Diamond, Square]
-  [Arkham]
 
 instance HasModifiersFor env StMarysHospital where
   getModifiersFor = noModifiersFor

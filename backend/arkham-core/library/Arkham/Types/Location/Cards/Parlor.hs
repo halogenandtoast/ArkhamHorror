@@ -2,13 +2,13 @@ module Arkham.Types.Location.Cards.Parlor where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Cards (parlor)
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
@@ -27,17 +27,12 @@ newtype Parlor = Parlor LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 parlor :: LocationId -> Parlor
-parlor =
-  Parlor
-    . baseAttrs
-        "01115"
-        "Parlor"
-        EncounterSet.TheGathering
-        2
-        (Static 0)
-        Diamond
-        [Square]
-        []
+parlor = Parlor . baseAttrs
+  Cards.parlor
+  2
+  (Static 0)
+  Diamond
+  [Square]
 
 instance HasModifiersFor env Parlor where
   getModifiersFor _ target (Parlor attrs) | isTarget attrs target =

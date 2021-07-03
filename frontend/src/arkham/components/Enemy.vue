@@ -69,7 +69,7 @@ export default defineComponent({
   },
   setup(props) {
     const image = computed(() => {
-      const { cardCode } = props.enemy.contents;
+      const { cardCode } = props.enemy.contents.cardDef;
       return `/img/arkham/cards/${cardCode}.jpg`;
     })
 

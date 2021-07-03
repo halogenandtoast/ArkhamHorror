@@ -1,5 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Card, cardDecoder } from '@/arkham/types/Card';
+import { CardDef, cardDefDecoder } from '@/arkham/types/CardDef';
 
 interface ModifierType {
   tag: string;
@@ -23,22 +24,8 @@ export interface Location {
   modifiers: Modifier[];
 }
 
-export interface LocationName {
-  title: string;
-  subtitle: string | null;
-}
-
-export const locationNameDecoder = JsonDecoder.object<LocationName>(
-  {
-    title: JsonDecoder.string,
-    subtitle: JsonDecoder.nullable(JsonDecoder.string),
-  },
-  'LocationName'
-);
-
 export interface LocationContents {
-  name: LocationName;
-  cardCode: string;
+  cardDef: CardDef;
   label: string;
   id: string;
   clues: number;
@@ -47,7 +34,6 @@ export interface LocationContents {
   revealed: boolean;
   investigators: string[];
   enemies: string[];
-  victory: number | null;
   connectedLocations: string[];
   treacheries: string[];
   assets: string[];
@@ -56,17 +42,15 @@ export interface LocationContents {
 
 export const locationContentsDecoder = JsonDecoder.object<LocationContents>(
   {
-    name: locationNameDecoder,
+    cardDef: cardDefDecoder,
     label: JsonDecoder.string,
     id: JsonDecoder.string,
-    cardCode: JsonDecoder.string,
     clues: JsonDecoder.number,
     doom: JsonDecoder.number,
     shroud: JsonDecoder.number,
     revealed: JsonDecoder.boolean,
     investigators: JsonDecoder.array<string>(JsonDecoder.string, 'InvestigatorId[]'),
     enemies: JsonDecoder.array<string>(JsonDecoder.string, 'EnemyId[]'),
-    victory: JsonDecoder.nullable(JsonDecoder.number),
     connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
     treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
     assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),

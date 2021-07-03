@@ -1,4 +1,5 @@
 import { JsonDecoder } from 'ts.data.json';
+import { CardDef, cardDefDecoder } from '@/arkham/types/CardDef';
 
 export interface Uses {
   amount: number; // eslint-disable-line
@@ -10,8 +11,7 @@ export const usesDecoder = JsonDecoder.object<Uses>({
 
 export interface AssetContents {
   id: string;
-  cardCode: string;
-  name: string;
+  cardDef: CardDef;
   health: number | null;
   healthDamage: number;
   sanity: number | null;
@@ -24,8 +24,7 @@ export interface AssetContents {
 
 export const assetContentsDecoder = JsonDecoder.object<AssetContents>({
   id: JsonDecoder.string,
-  cardCode: JsonDecoder.string,
-  name: JsonDecoder.string,
+  cardDef: cardDefDecoder,
   health: JsonDecoder.nullable(JsonDecoder.number),
   healthDamage: JsonDecoder.number,
   sanity: JsonDecoder.nullable(JsonDecoder.number),

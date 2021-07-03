@@ -24,9 +24,9 @@ newtype GameAppT a = GameAppT { unGameAppT :: ReaderT GameApp IO a }
   deriving newtype (MonadReader GameApp, Functor, Applicative, Monad, MonadFail, MonadIO, MonadRandom)
 
 data GameApp = GameApp
-  { appGame  :: IORef Game
+  { appGame :: IORef Game
   , appQueue :: IORef [Message]
-  , appGen   :: IORef StdGen
+  , appGen :: IORef StdGen
   , appLogger :: Message -> IO ()
   }
 
@@ -94,13 +94,17 @@ displayName :: Name -> Text
 displayName (Name title Nothing) = title
 displayName (Name title (Just subtitle)) = title <> ": " <> subtitle
 
-displayCardType :: PlayerCardType -> Text
+displayCardType :: CardType -> Text
 displayCardType = \case
   AssetType -> "asset"
   EventType -> "event"
   SkillType -> "skill"
   PlayerTreacheryType -> "treachery"
   PlayerEnemyType -> "enemy"
+  TreacheryType -> "treachery"
+  EnemyType -> "enemy"
+  LocationType -> "location"
+  EncounterAssetType -> "asset"
 
 toHumanReadable :: Message -> Maybe Text
 toHumanReadable = \case

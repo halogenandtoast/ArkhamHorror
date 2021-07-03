@@ -22,7 +22,7 @@ export default defineComponent({
   },
   setup() {
     const image = (card: PlayerCardContents) => {
-      const { cardCode } = card;
+      const { cardCode } = card.def;
       return `/img/arkham/cards/${cardCode}.jpg`;
     }
 

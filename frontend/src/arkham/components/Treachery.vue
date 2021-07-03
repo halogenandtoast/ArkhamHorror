@@ -35,7 +35,7 @@ export default defineComponent({
     investigatorId: { type: String, required: true },
   },
   setup(props) {
-    const image = computed(() => `/img/arkham/cards/${props.treachery.contents.cardCode}.jpg`)
+    const image = computed(() => `/img/arkham/cards/${props.treachery.contents.cardDef.cardCode}.jpg`)
     const id = computed(() => props.treachery.contents.id)
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 

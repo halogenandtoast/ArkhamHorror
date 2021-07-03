@@ -1,30 +1,16 @@
 import { JsonDecoder } from 'ts.data.json';
+import { CardDef, cardDefDecoder } from '@/arkham/types/CardDef';
 
 export type Card = PlayerCard | EncounterCard;
 
-export interface Name {
-  title: string;
-  subtitle: string | null;
-}
-
-export const nameDecoder = JsonDecoder.object<Name>(
-  {
-    title: JsonDecoder.string,
-    subtitle: JsonDecoder.nullable(JsonDecoder.string),
-  },
-  'Name'
-);
-
 export interface PlayerCardContents {
   id: string;
-  name: string;
-  cardCode: string;
+  def: CardDef;
 }
 
 export interface EncounterCardContents {
   id: string;
-  name: Name;
-  cardCode: string;
+  def: CardDef;
 }
 
 export interface PlayerCard {
@@ -40,8 +26,7 @@ export interface EncounterCard {
 export const playerCardContentsDecoder = JsonDecoder.object<PlayerCardContents>(
   {
     id: JsonDecoder.string,
-    name: JsonDecoder.string,
-    cardCode: JsonDecoder.string,
+    def: cardDefDecoder,
   },
   'PlayerCard',
 );
@@ -49,8 +34,7 @@ export const playerCardContentsDecoder = JsonDecoder.object<PlayerCardContents>(
 export const encounterCardContentsDecoder = JsonDecoder.object<EncounterCardContents>(
   {
     id: JsonDecoder.string,
-    name: nameDecoder,
-    cardCode: JsonDecoder.string,
+    def: cardDefDecoder,
   },
   'EncounterCard',
 );

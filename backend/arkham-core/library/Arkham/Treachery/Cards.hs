@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.CardType
+import Arkham.Types.ClassSymbol
 import Arkham.Types.EncounterSet hiding (Dunwich)
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import qualified Arkham.Types.Keyword as Keyword
@@ -19,7 +20,7 @@ baseTreachery cardCode name mEncounterSet isWeakness = CardDef
   , cdLevel = 0
   , cdCardType = if isWeakness then PlayerTreacheryType else TreacheryType
   , cdWeakness = isWeakness
-  , cdClassSymbol = Nothing
+  , cdClassSymbol = if isWeakness then Just Neutral else Nothing
   , cdSkills = mempty
   , cdCardTraits = mempty
   , cdKeywords = mempty

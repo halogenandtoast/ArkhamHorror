@@ -1,0 +1,50 @@
+name: cards-discover
+
+dependencies:
+- base >= 4.7 && < 5
+
+default-extensions:
+- BlockArguments
+- BangPatterns
+- ConstraintKinds
+- DeriveAnyClass
+- DeriveGeneric
+- DerivingStrategies
+- DerivingVia
+- FlexibleContexts
+- FlexibleInstances
+- GeneralizedNewtypeDeriving
+- LambdaCase
+- MultiParamTypeClasses
+- NamedFieldPuns
+- OverloadedStrings
+- RankNTypes
+- RecordWildCards
+- ScopedTypeVariables
+- StandaloneDeriving
+- TupleSections
+- TypeApplications
+- TypeFamilies
+- TypeOperators
+- UndecidableInstances
+
+library:
+  source-dirs: library
+  dependencies:
+  - filepath
+  - template-haskell
+  - file-embed
+  - mtl
+  - dlist
+  - directory
+
+executables:
+  cards-discover:
+    main: main.hs
+    source-dirs: app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+      - cards-discover

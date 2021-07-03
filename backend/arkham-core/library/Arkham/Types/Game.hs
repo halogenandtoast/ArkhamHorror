@@ -1,29 +1,22 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Types.Game
-  ( module Arkham.Types.Game
-  )
-where
+module Arkham.Types.Game where
 
 import Arkham.Prelude
 
-import Control.Monad.Random.Lazy hiding (filterM)
 import Arkham.Card (lookupCard)
 import Arkham.Json
 import Arkham.PlayerCard
 import Arkham.Types.Ability
 import Arkham.Types.Act
-import Arkham.Types.Treachery.Attrs (treacheryOwner)
 import Arkham.Types.ActId
 import Arkham.Types.Action (Action, TakenAction)
 import Arkham.Types.Agenda
-import Arkham.Types.Id
 import Arkham.Types.Asset
 import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.Campaign
-import Arkham.Types.Card hiding (skillsL)
+import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.ChaosBag
@@ -39,8 +32,9 @@ import Arkham.Types.Event
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameRunner
 import Arkham.Types.Helpers
+import Arkham.Types.Id
 import Arkham.Types.Investigator
-import Arkham.Types.Keyword (Keyword, HasKeywords(..))
+import Arkham.Types.Keyword (HasKeywords(..), Keyword)
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Location
 import Arkham.Types.LocationMatcher
@@ -62,9 +56,11 @@ import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.Treachery
+import Arkham.Types.Treachery.Attrs (treacheryOwner)
 import Arkham.Types.Window
 import qualified Arkham.Types.Window as Fast
 import Control.Monad.Extra (anyM, mapMaybeM)
+import Control.Monad.Random.Lazy hiding (filterM)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (filterM, foldM)
 import qualified Data.HashMap.Strict as HashMap
@@ -195,7 +191,112 @@ data Game = Game
   }
   deriving stock (Eq, Show, Generic)
 
-makeLensesWith suffixedFields ''Game
+playerCountL :: Lens' Game Int
+playerCountL = lens gamePlayerCount $ \m x -> m { gamePlayerCount = x }
+
+playersL :: Lens' Game (HashMap Int InvestigatorId)
+playersL = lens gamePlayers $ \m x -> m { gamePlayers = x }
+
+focusedTargetsL :: Lens' Game [Target]
+focusedTargetsL =
+  lens gameFocusedTargets $ \m x -> m { gameFocusedTargets = x }
+
+focusedTokensL :: Lens' Game [Token]
+focusedTokensL = lens gameFocusedTokens $ \m x -> m { gameFocusedTokens = x }
+
+gameStateL :: Lens' Game GameState
+gameStateL = lens gameGameState $ \m x -> m { gameGameState = x }
+
+victoryDisplayL :: Lens' Game [Card]
+victoryDisplayL =
+  lens gameVictoryDisplay $ \m x -> m { gameVictoryDisplay = x }
+
+phaseL :: Lens' Game Phase
+phaseL = lens gamePhase $ \m x -> m { gamePhase = x }
+
+playerTurnOrderL :: Lens' Game [InvestigatorId]
+playerTurnOrderL =
+  lens gamePlayerTurnOrder $ \m x -> m { gamePlayerTurnOrder = x }
+
+phaseMessageHistoryL :: Lens' Game [Message]
+phaseMessageHistoryL =
+  lens gamePhaseMessageHistory $ \m x -> m { gamePhaseMessageHistory = x }
+
+roundMessageHistoryL :: Lens' Game [Message]
+roundMessageHistoryL =
+  lens gameRoundMessageHistory $ \m x -> m { gameRoundMessageHistory = x }
+
+activeInvestigatorIdL :: Lens' Game InvestigatorId
+activeInvestigatorIdL =
+  lens gameActiveInvestigatorId $ \m x -> m { gameActiveInvestigatorId = x }
+
+leadInvestigatorIdL :: Lens' Game InvestigatorId
+leadInvestigatorIdL =
+  lens gameLeadInvestigatorId $ \m x -> m { gameLeadInvestigatorId = x }
+
+focusedCardsL :: Lens' Game [Card]
+focusedCardsL = lens gameFocusedCards $ \m x -> m { gameFocusedCards = x }
+
+playerOrderL :: Lens' Game [InvestigatorId]
+playerOrderL = lens gamePlayerOrder $ \m x -> m { gamePlayerOrder = x }
+
+encounterDeckL :: Lens' Game (Deck EncounterCard)
+encounterDeckL = lens gameEncounterDeck $ \m x -> m { gameEncounterDeck = x }
+
+activeCardL :: Lens' Game (Maybe Card)
+activeCardL = lens gameActiveCard $ \m x -> m { gameActiveCard = x }
+
+resignedCardCodesL :: Lens' Game [CardCode]
+resignedCardCodesL =
+  lens gameResignedCardCodes $ \m x -> m { gameResignedCardCodes = x }
+
+usedAbilitiesL :: Lens' Game [(InvestigatorId, Ability)]
+usedAbilitiesL = lens gameUsedAbilities $ \m x -> m { gameUsedAbilities = x }
+
+chaosBagL :: Lens' Game ChaosBag
+chaosBagL = lens gameChaosBag $ \m x -> m { gameChaosBag = x }
+
+modeL :: Lens' Game GameMode
+modeL = lens gameMode $ \m x -> m { gameMode = x }
+
+locationsL :: Lens' Game (EntityMap Location)
+locationsL = lens gameLocations $ \m x -> m { gameLocations = x }
+
+investigatorsL :: Lens' Game (EntityMap Investigator)
+investigatorsL = lens gameInvestigators $ \m x -> m { gameInvestigators = x }
+
+enemiesL :: Lens' Game (EntityMap Enemy)
+enemiesL = lens gameEnemies $ \m x -> m { gameEnemies = x }
+
+enemiesInVoidL :: Lens' Game (EntityMap Enemy)
+enemiesInVoidL = lens gameEnemiesInVoid $ \m x -> m { gameEnemiesInVoid = x }
+
+assetsL :: Lens' Game (EntityMap Asset)
+assetsL = lens gameAssets $ \m x -> m { gameAssets = x }
+
+actsL :: Lens' Game (EntityMap Act)
+actsL = lens gameActs $ \m x -> m { gameActs = x }
+
+agendasL :: Lens' Game (EntityMap Agenda)
+agendasL = lens gameAgendas $ \m x -> m { gameAgendas = x }
+
+treacheriesL :: Lens' Game (EntityMap Treachery)
+treacheriesL = lens gameTreacheries $ \m x -> m { gameTreacheries = x }
+
+eventsL :: Lens' Game (EntityMap Event)
+eventsL = lens gameEvents $ \m x -> m { gameEvents = x }
+
+effectsL :: Lens' Game (EntityMap Effect)
+effectsL = lens gameEffects $ \m x -> m { gameEffects = x }
+
+skillsL :: Lens' Game (EntityMap Skill)
+skillsL = lens gameSkills $ \m x -> m { gameSkills = x }
+
+skillTestL :: Lens' Game (Maybe SkillTest)
+skillTestL = lens gameSkillTest $ \m x -> m { gameSkillTest = x }
+
+discardL :: Lens' Game [EncounterCard]
+discardL = lens gameDiscard $ \m x -> m { gameDiscard = x }
 
 withModifiers
   :: ( MonadReader env m
@@ -310,7 +411,8 @@ getLocationsMatching = \case
       <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
     filter ((`member` matches) . toId) . toList . view locationsL <$> getGame
 
-getEnemy :: (HasCallStack, MonadReader env m, HasGame env) => EnemyId -> m Enemy
+getEnemy
+  :: (HasCallStack, MonadReader env m, HasGame env) => EnemyId -> m Enemy
 getEnemy eid =
   fromJustNote missingEnemy . preview (enemiesL . ix eid) <$> getGame
   where missingEnemy = "Unknown enemy: " <> show eid
@@ -341,7 +443,8 @@ getAgenda aid =
   fromJustNote missingAgenda . preview (agendasL . ix aid) <$> getGame
   where missingAgenda = "Unknown agenda: " <> show aid
 
-getAsset :: (HasCallStack, MonadReader env m, HasGame env) => AssetId -> m Asset
+getAsset
+  :: (HasCallStack, MonadReader env m, HasGame env) => AssetId -> m Asset
 getAsset aid =
   fromJustNote missingAsset . preview (assetsL . ix aid) <$> getGame
   where missingAsset = "Unknown asset: " <> show aid
@@ -354,7 +457,8 @@ getTreachery tid =
   fromJustNote missingTreachery . preview (treacheriesL . ix tid) <$> getGame
   where missingTreachery = "Unknown treachery: " <> show tid
 
-getEvent :: (HasCallStack, MonadReader env m, HasGame env) => EventId -> m Event
+getEvent
+  :: (HasCallStack, MonadReader env m, HasGame env) => EventId -> m Event
 getEvent eid =
   fromJustNote missingEvent . preview (eventsL . ix eid) <$> getGame
   where missingEvent = "Unknown event: " <> show eid
@@ -707,7 +811,9 @@ instance HasGame env => HasCount SpendableClueCount env () where
       . sum
       . map unSpendableClueCount
       <$> (traverse getInvestigatorSpendableClueCount
-          =<< (toList . view investigatorsL <$> getGame)
+          . toList
+          . view investigatorsL
+          =<< getGame
           )
 
 instance HasGame env => HasCount ResourceCount env InvestigatorId where
@@ -919,7 +1025,10 @@ instance HasGame env => HasSet HandCardId env (InvestigatorId, CardType) where
   getSet (iid, cardType) =
     setFromList
       . map (coerce . toCardId)
-      . filter (maybe False (cardMatch (CardMatchByType (cardType, mempty))) . toPlayerCard)
+      . filter
+          (maybe False (cardMatch (CardMatchByType (cardType, mempty)))
+          . toPlayerCard
+          )
       . handOf
       <$> getInvestigator iid
 
@@ -1159,8 +1268,7 @@ instance HasGame env => HasSet LocationId env [Trait] where
   getSet traits =
     keysSet . filterMap hasMatchingTrait . view locationsL <$> getGame
    where
-    hasMatchingTrait =
-      notNull . (setFromList traits `intersection`) . toTraits
+    hasMatchingTrait = notNull . (setFromList traits `intersection`) . toTraits
 
 instance HasGame env => HasSet ActId env () where
   getSet _ = keysSet . view actsL <$> getGame
@@ -2005,7 +2113,8 @@ runGameMessage msg g = case msg of
   ShuffleIntoDeck iid (TreacheryTarget treacheryId) -> do
     treachery <- getTreachery treacheryId
     let
-      card = lookupPlayerCard (toCardCode treachery) (unTreacheryId treacheryId)
+      card =
+        lookupPlayerCard (toCardCode treachery) (unTreacheryId treacheryId)
     unshiftMessage (ShuffleCardsIntoDeck iid [card])
     pure $ g & treacheriesL %~ deleteMap treacheryId
   PlayDynamicCard iid cardId n _mtarget False -> do
@@ -2625,9 +2734,7 @@ runGameMessage msg g = case msg of
       & (focusedCardsL .~ mempty)
   SearchCollectionForRandom iid source matcher -> do
     newCardId <- getRandom
-    let
-      matches =
-        filter (cardMatch matcher) (toList allPlayerCards)
+    let matches = filter (cardMatch matcher) (toList allPlayerCards)
     mcard <- case matches of
       [] -> pure Nothing
       (x : xs) -> Just . MkPlayerCard newCardId (Just iid) <$> sample (x :| xs)
@@ -2687,8 +2794,7 @@ runGameMessage msg g = case msg of
     pure $ g & encounterDeckL .~ Deck encounterDeck & discardL .~ discard
   RevelationSkillTest iid (TreacherySource tid) skillType difficulty -> do
     treachery <- getTreachery tid
-    let
-      card = toCard treachery
+    let card = toCard treachery
 
     unshiftMessage $ BeginSkillTest
       iid
@@ -2774,8 +2880,7 @@ runGameMessage msg g = case msg of
   Discarded (AssetTarget aid) _ -> pure $ g & assetsL %~ deleteMap aid
   Discard (EventTarget eid) -> do
     event <- getEvent eid
-    let
-      playerCard = lookupPlayerCard (toCardCode event) (unEventId eid)
+    let playerCard = lookupPlayerCard (toCardCode event) (unEventId eid)
     unshiftMessage (AddToDiscard (ownerOfEvent event) playerCard)
     pure $ g & eventsL %~ deleteMap eid
   Discard (TreacheryTarget tid) -> do
@@ -2784,12 +2889,10 @@ runGameMessage msg g = case msg of
     let card = lookupCard (toCardCode treachery) (unTreacheryId tid)
     case card of
       PlayerCard pc -> do
-        let ownerId = fromJustNote "owner was not set" $ treacheryOwner (toAttrs treachery)
-        unshiftMessage
-          (AddToDiscard
-            ownerId
-            pc { pcBearer = Just ownerId }
-          )
+        let
+          ownerId = fromJustNote "owner was not set"
+            $ treacheryOwner (toAttrs treachery)
+        unshiftMessage (AddToDiscard ownerId pc { pcBearer = Just ownerId })
         pure $ g & treacheriesL %~ deleteMap tid
       EncounterCard ec ->
         pure $ g & treacheriesL %~ deleteMap tid & discardL %~ (ec :)

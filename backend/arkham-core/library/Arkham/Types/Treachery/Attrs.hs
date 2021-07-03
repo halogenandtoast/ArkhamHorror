@@ -1,5 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Arkham.Types.Treachery.Attrs where
 
 import Arkham.Prelude
@@ -16,8 +14,8 @@ import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.TreacheryId
 
 type TreacheryCard a = (InvestigatorId -> TreacheryId -> a)
 
@@ -32,7 +30,15 @@ data TreacheryAttrs = TreacheryAttrs
   }
   deriving stock (Show, Eq, Generic)
 
-makeLensesWith suffixedFields ''TreacheryAttrs
+cluesL :: Lens' TreacheryAttrs (Maybe Int)
+cluesL = lens treacheryClues $ \m x -> m { treacheryClues = x }
+
+attachedTargetL :: Lens' TreacheryAttrs (Maybe Target)
+attachedTargetL =
+  lens treacheryAttachedTarget $ \m x -> m { treacheryAttachedTarget = x }
+
+resourcesL :: Lens' TreacheryAttrs (Maybe Int)
+resourcesL = lens treacheryResources $ \m x -> m { treacheryResources = x }
 
 instance HasCardDef TreacheryAttrs where
   toCardDef = treacheryCardDef
@@ -66,8 +72,7 @@ instance SourceEntity TreacheryAttrs where
   toSource = TreacherySource . toId
   isSource TreacheryAttrs { treacheryId } (TreacherySource tid) =
     treacheryId == tid
-  isSource attrs (PlayerCardSource cardId) =
-     toCardId attrs == cardId
+  isSource attrs (PlayerCardSource cardId) = toCardId attrs == cardId
   isSource _ _ = False
 
 instance IsCard TreacheryAttrs where
@@ -123,7 +128,8 @@ withTreacheryInvestigator attrs f = case treacheryAttachedTarget attrs of
     <> " must be attached to an investigator"
     )
 
-treachery :: (TreacheryAttrs -> a) -> CardDef -> InvestigatorId -> TreacheryId -> a
+treachery
+  :: (TreacheryAttrs -> a) -> CardDef -> InvestigatorId -> TreacheryId -> a
 treachery f cardDef iid tid = f $ TreacheryAttrs
   { treacheryId = tid
   , treacheryCardDef = cardDef

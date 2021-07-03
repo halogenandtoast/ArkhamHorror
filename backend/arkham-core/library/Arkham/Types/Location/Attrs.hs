@@ -1,7 +1,9 @@
 {-# LANGUAGE PatternSynonyms #-}
-{-# LANGUAGE TemplateHaskell #-}
 
-module Arkham.Types.Location.Attrs (module Arkham.Types.Location.Attrs, module X) where
+module Arkham.Types.Location.Attrs
+  ( module Arkham.Types.Location.Attrs
+  , module X
+  ) where
 
 import Arkham.Prelude
 
@@ -70,7 +72,70 @@ data LocationAttrs = LocationAttrs
   }
   deriving stock (Show, Eq, Generic)
 
-makeLensesWith suffixedFields ''LocationAttrs
+symbolL :: Lens' LocationAttrs LocationSymbol
+symbolL = lens locationSymbol $ \m x -> m { locationSymbol = x }
+
+connectedSymbolsL :: Lens' LocationAttrs (HashSet LocationSymbol)
+connectedSymbolsL =
+  lens locationConnectedSymbols $ \m x -> m { locationConnectedSymbols = x }
+
+costToEnterUnrevealedL :: Lens' LocationAttrs Cost
+costToEnterUnrevealedL = lens locationCostToEnterUnrevealed
+  $ \m x -> m { locationCostToEnterUnrevealed = x }
+
+connectsToL :: Lens' LocationAttrs (HashSet Direction)
+connectsToL = lens locationConnectsTo $ \m x -> m { locationConnectsTo = x }
+
+unrevealedNameL :: Lens' LocationAttrs LocationName
+unrevealedNameL =
+  lens locationUnrevealedName $ \m x -> m { locationUnrevealedName = x }
+
+revealedConnectedSymbolsL :: Lens' LocationAttrs (HashSet LocationSymbol)
+revealedConnectedSymbolsL = lens locationRevealedConnectedSymbols
+  $ \m x -> m { locationRevealedConnectedSymbols = x }
+
+revealedSymbolL :: Lens' LocationAttrs LocationSymbol
+revealedSymbolL =
+  lens locationRevealedSymbol $ \m x -> m { locationRevealedSymbol = x }
+
+labelL :: Lens' LocationAttrs Text
+labelL = lens locationLabel $ \m x -> m { locationLabel = x }
+
+treacheriesL :: Lens' LocationAttrs (HashSet TreacheryId)
+treacheriesL = lens locationTreacheries $ \m x -> m { locationTreacheries = x }
+
+eventsL :: Lens' LocationAttrs (HashSet EventId)
+eventsL = lens locationEvents $ \m x -> m { locationEvents = x }
+
+investigatorsL :: Lens' LocationAttrs (HashSet InvestigatorId)
+investigatorsL =
+  lens locationInvestigators $ \m x -> m { locationInvestigators = x }
+
+enemiesL :: Lens' LocationAttrs (HashSet EnemyId)
+enemiesL = lens locationEnemies $ \m x -> m { locationEnemies = x }
+
+assetsL :: Lens' LocationAttrs (HashSet AssetId)
+assetsL = lens locationAssets $ \m x -> m { locationAssets = x }
+
+doomL :: Lens' LocationAttrs Int
+doomL = lens locationDoom $ \m x -> m { locationDoom = x }
+
+cluesL :: Lens' LocationAttrs Int
+cluesL = lens locationClues $ \m x -> m { locationClues = x }
+
+revealedL :: Lens' LocationAttrs Bool
+revealedL = lens locationRevealed $ \m x -> m { locationRevealed = x }
+
+connectedLocationsL :: Lens' LocationAttrs (HashSet LocationId)
+connectedLocationsL =
+  lens locationConnectedLocations $ \m x -> m { locationConnectedLocations = x }
+
+directionsL :: Lens' LocationAttrs (HashMap Direction LocationId)
+directionsL = lens locationDirections $ \m x -> m { locationDirections = x }
+
+cardsUnderneathL :: Lens' LocationAttrs [Card]
+cardsUnderneathL =
+  lens locationCardsUnderneath $ \m x -> m { locationCardsUnderneath = x }
 
 instance HasCardDef LocationAttrs where
   toCardDef = locationCardDef
@@ -110,8 +175,9 @@ instance IsCard LocationAttrs where
 instance HasName env LocationAttrs where
   getName attrs = pure $ locationNameFunc attrs
    where
-    locationNameFunc =
-      if locationRevealed attrs then toName else unLocationName . locationUnrevealedName
+    locationNameFunc = if locationRevealed attrs
+      then toName
+      else unLocationName . locationUnrevealedName
 
 instance HasId (Maybe LocationId) env (Direction, LocationAttrs) where
   getId (dir, LocationAttrs {..}) = pure $ lookup dir locationDirections
@@ -136,32 +202,31 @@ baseAttrs
   -> [LocationSymbol]
   -> LocationId
   -> LocationAttrs
-baseAttrs def shroud' revealClues symbol' connectedSymbols' lid
-  = LocationAttrs
-      { locationId = lid
-      , locationCardDef = def
-      , locationUnrevealedName = LocationName (cdName def)
-      , locationLabel = nameToLabel (cdName def)
-      , locationRevealClues = revealClues
-      , locationClues = 0
-      , locationDoom = 0
-      , locationShroud = shroud'
-      , locationRevealed = False
-      , locationInvestigators = mempty
-      , locationEnemies = mempty
-      , locationSymbol = symbol'
-      , locationRevealedSymbol = symbol'
-      , locationConnectedSymbols = setFromList connectedSymbols'
-      , locationRevealedConnectedSymbols = setFromList connectedSymbols'
-      , locationConnectedLocations = mempty
-      , locationTreacheries = mempty
-      , locationEvents = mempty
-      , locationAssets = mempty
-      , locationDirections = mempty
-      , locationConnectsTo = mempty
-      , locationCardsUnderneath = mempty
-      , locationCostToEnterUnrevealed = ActionCost 1
-      }
+baseAttrs def shroud' revealClues symbol' connectedSymbols' lid = LocationAttrs
+  { locationId = lid
+  , locationCardDef = def
+  , locationUnrevealedName = LocationName (cdName def)
+  , locationLabel = nameToLabel (cdName def)
+  , locationRevealClues = revealClues
+  , locationClues = 0
+  , locationDoom = 0
+  , locationShroud = shroud'
+  , locationRevealed = False
+  , locationInvestigators = mempty
+  , locationEnemies = mempty
+  , locationSymbol = symbol'
+  , locationRevealedSymbol = symbol'
+  , locationConnectedSymbols = setFromList connectedSymbols'
+  , locationRevealedConnectedSymbols = setFromList connectedSymbols'
+  , locationConnectedLocations = mempty
+  , locationTreacheries = mempty
+  , locationEvents = mempty
+  , locationAssets = mempty
+  , locationDirections = mempty
+  , locationConnectsTo = mempty
+  , locationCardsUnderneath = mempty
+  , locationCostToEnterUnrevealed = ActionCost 1
+  }
 
 locationEnemiesWithTrait
   :: (MonadReader env m, HasSet Trait env EnemyId)

@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell #-}
+
 
 module Arkham.Types.Event.Attrs where
 
@@ -24,7 +24,9 @@ data EventAttrs = EventAttrs
   }
   deriving stock (Show, Eq, Generic)
 
-makeLensesWith suffixedFields ''EventAttrs
+attachedTargetL :: Lens' EventAttrs (Maybe Target)
+attachedTargetL =
+  lens eventAttachedTarget $ \m x -> m { eventAttachedTarget = x }
 
 instance HasCardDef EventAttrs where
   toCardDef = eventCardDef

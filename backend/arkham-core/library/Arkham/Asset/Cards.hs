@@ -15,12 +15,24 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 storyAsset :: CardCode -> Name -> Int -> EncounterSet -> CardDef
-storyAsset cardCode name cost encounterSet = baseAsset (Just encounterSet) cardCode name cost Neutral
+storyAsset cardCode name cost encounterSet =
+  baseAsset (Just encounterSet) cardCode name cost Neutral
 
 asset :: CardCode -> Name -> Int -> ClassSymbol -> CardDef
 asset = baseAsset Nothing
 
-baseAsset :: Maybe EncounterSet -> CardCode -> Name -> Int -> ClassSymbol -> CardDef
+permanent :: CardDef -> CardDef
+permanent cd = cd { cdPermanent = True, cdCost = Nothing }
+
+weakness :: CardCode -> Name -> CardDef
+weakness cardCode name = (baseAsset Nothing cardCode name 0 Neutral)
+  { cdWeakness = True
+  , cdRevelation = True
+  , cdCost = Nothing
+  }
+
+baseAsset
+  :: Maybe EncounterSet -> CardCode -> Name -> Int -> ClassSymbol -> CardDef
 baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   { cdCardCode = cardCode
   , cdName = name
@@ -156,7 +168,7 @@ allEncounterAssetCards = mapFromList
   [ ("02059", alchemicalConcoction)
   , ("02060", jazzMulligan)
   , ("02079", peterClover)
-  , ("02138", haroldWalsted )
+  , ("02138", haroldWalsted)
   , ("02139", adamLynch)
   , ("02179", helplessPassenger)
   , ("02215", keyToTheChamber)
@@ -168,36 +180,44 @@ placeholderAsset :: CardDef
 placeholderAsset = asset "asset" "Placeholder Asset" 0 Neutral
 
 rolands38Special :: CardDef
-rolands38Special =
-  (asset "01006" "Roland's .38 Special" 3 Neutral)
-    { cdSkills = [SkillCombat, SkillAgility, SkillWild]
-    , cdCardTraits = setFromList [Item, Weapon, Firearm]
-    }
+rolands38Special = (asset "01006" "Roland's .38 Special" 3 Neutral)
+  { cdSkills = [SkillCombat, SkillAgility, SkillWild]
+  , cdCardTraits = setFromList [Item, Weapon, Firearm]
+  , cdUnique = True
+  }
 
 daisysToteBag :: CardDef
 daisysToteBag = (asset "01008" "Daisy's Tote Bag" 2 Neutral)
   { cdSkills = [SkillWillpower, SkillIntellect, SkillWild]
   , cdCardTraits = setFromList [Item]
+  , cdUnique = True
   }
 
 theNecronomicon :: CardDef
-theNecronomicon = (asset "01009" "The Necronomicon" 0 Neutral)
-  { cdCardTraits = setFromList [Item, Tome]
-  , cdWeakness = True
-  , cdRevelation = True
-  }
+theNecronomicon =
+  (weakness "01009" ("The Necronomicon" <:> "John Dee Translation"))
+    { cdCardTraits = setFromList [Item, Tome]
+    }
 
 heirloomOfHyperborea :: CardDef
-heirloomOfHyperborea =
-  (asset "01012" "Heirloom of Hyperborea" 3 Neutral)
-    { cdSkills = [SkillWillpower, SkillCombat, SkillWild]
-    , cdCardTraits = setFromList [Item, Relic]
-    }
+heirloomOfHyperborea = (asset
+                         "01012"
+                         ("Heirloom of Hyperborea"
+                         <:> "Artifact from Another Life"
+                         )
+                         3
+                         Neutral
+                       )
+  { cdSkills = [SkillWillpower, SkillCombat, SkillWild]
+  , cdCardTraits = setFromList [Item, Relic]
+  , cdUnique = True
+  }
 
 wendysAmulet :: CardDef
 wendysAmulet = (asset "01014" "Wendy's Amulet" 2 Neutral)
   { cdSkills = [SkillWild, SkillWild]
   , cdCardTraits = setFromList [Item, Relic]
+  , cdUnique = True
   }
 
 fortyFiveAutomatic :: CardDef
@@ -279,9 +299,15 @@ researchLibrarian = (asset "01032" "Research Librarian" 2 Seeker)
 
 drMilanChristopher :: CardDef
 drMilanChristopher =
-  (asset "01033" "Dr. Milan Christopher" 4 Seeker)
+  (asset
+      "01033"
+      ("Dr. Milan Christopher" <:> "Professor of Entomology")
+      4
+      Seeker
+    )
     { cdSkills = [SkillIntellect]
     , cdCardTraits = setFromList [Ally, Miskatonic]
+    , cdUnique = True
     }
 
 hyperawareness :: CardDef
@@ -306,11 +332,13 @@ magnifyingGlass1 = (asset "01040" "Magnifying Glass" 0 Seeker)
   }
 
 discOfItzamna2 :: CardDef
-discOfItzamna2 = (asset "01041" "Disc of Itzamna" 3 Seeker)
-  { cdSkills = [SkillWillpower, SkillIntellect, SkillCombat]
-  , cdCardTraits = setFromList [Item, Relic]
-  , cdLevel = 2
-  }
+discOfItzamna2 =
+  (asset "01041" ("Disc of Itzamna" <:> "Protective Amulet") 3 Seeker)
+    { cdSkills = [SkillWillpower, SkillIntellect, SkillCombat]
+    , cdCardTraits = setFromList [Item, Relic]
+    , cdLevel = 2
+    , cdUnique = True
+    }
 
 encyclopedia2 :: CardDef
 encyclopedia2 = (asset "01042" "Encyclopedia" 2 Seeker)
@@ -346,7 +374,7 @@ fortyOneDerringer = (asset "01047" ".41 Derringer" 3 Rogue)
   }
 
 leoDeLuca :: CardDef
-leoDeLuca = (asset "01048" "Leo De Luca" 6 Rogue)
+leoDeLuca = (asset "01048" ("Leo De Luca" <:> "The Louisiana Lion") 6 Rogue)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Ally, Criminal]
   }
@@ -358,10 +386,11 @@ hardKnocks = (asset "01049" "Hard Knocks" 2 Rogue)
   }
 
 leoDeLuca1 :: CardDef
-leoDeLuca1 = (asset "01054" "Leo De Luca" 5 Rogue)
+leoDeLuca1 = (asset "01054" ("Leo De Luca" <:> "The Louisiana Lion") 5 Rogue)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Ally, Criminal]
   , cdLevel = 1
+  , cdUnique = True
   }
 
 catBurgler1 :: CardDef
@@ -372,11 +401,10 @@ catBurgler1 = (asset "01055" "Cat Burgler" 4 Rogue)
   }
 
 forbiddenKnowledge :: CardDef
-forbiddenKnowledge =
-  (asset "01058" "Forbidden Knowledge" 0 Mystic)
-    { cdSkills = [SkillIntellect]
-    , cdCardTraits = setFromList [Talent]
-    }
+forbiddenKnowledge = (asset "01058" "Forbidden Knowledge" 0 Mystic)
+  { cdSkills = [SkillIntellect]
+  , cdCardTraits = setFromList [Talent]
+  }
 
 holyRosary :: CardDef
 holyRosary = (asset "01059" "Holy Rosary" 2 Mystic)
@@ -459,7 +487,8 @@ digDeep = (asset "01077" "Dig Deep" 2 Survivor)
   }
 
 aquinnah1 :: CardDef
-aquinnah1 = (asset "01082" "Aquinnah" 5 Survivor)
+aquinnah1 = (asset "01082" ("Aquinnah" <:> "The Forgotten Daughter") 5 Survivor
+            )
   { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Ally]
   , cdLevel = 1
@@ -491,28 +520,40 @@ elderSignAmulet3 = (asset "01095" "Elder Sign Amulet" 2 Neutral)
   , cdLevel = 3
   }
 
+litaChantler :: CardDef
+litaChantler =
+  (storyAsset "01117" ("Lita Chantler" <:> "The Zealot") 0 TheGathering)
+    { cdCardTraits = setFromList [Ally]
+    }
+
 zoeysCross :: CardDef
-zoeysCross = (asset "02006" "Zoey's Cross" 1 Neutral)
-  { cdSkills = [SkillCombat, SkillCombat, SkillWild]
-  , cdCardTraits = setFromList [Item, Charm]
-  }
+zoeysCross =
+  (asset "02006" ("Zoey's Cross" <:> "Symbol of Righteousness") 1 Neutral)
+    { cdSkills = [SkillCombat, SkillCombat, SkillWild]
+    , cdCardTraits = setFromList [Item, Charm]
+    , cdUnique = True
+    }
 
 jennysTwin45s :: CardDef
-jennysTwin45s = (asset "02010" "Jenny's Twin .45s" 0 Neutral)
-  { cdSkills = [SkillAgility, SkillAgility, SkillWild]
-  , cdCardTraits = setFromList [Item, Weapon, Firearm]
-  , cdCost = Just DynamicCost
-  }
+jennysTwin45s =
+  (asset "02010" ("Jenny's Twin .45s" <:> "A Perfect Fit") 0 Neutral)
+    { cdSkills = [SkillAgility, SkillAgility, SkillWild]
+    , cdCardTraits = setFromList [Item, Weapon, Firearm]
+    , cdCost = Just DynamicCost
+    , cdUnique = True
+    }
 
 jimsTrumpet :: CardDef
-jimsTrumpet = (asset "02012" "Jim's Trumpet" 2 Neutral)
+jimsTrumpet = (asset "02012" ("Jim's Trumpet" <:> "The Dead Listen") 2 Neutral)
   { cdSkills = [SkillWillpower, SkillWillpower, SkillWild]
   , cdCardTraits = setFromList [Item, Instrument, Relic]
+  , cdUnique = True
   }
 
 duke :: CardDef
-duke = (asset "02014" "Duke" 2 Neutral)
+duke = (asset "02014" ("Duke" <:> "Loyal Hound") 2 Neutral)
   { cdCardTraits = setFromList [Ally, Creature]
+  , cdUnique = True
   }
 
 blackjack :: CardDef
@@ -522,11 +563,10 @@ blackjack = (asset "02016" "Blackjack" 1 Guardian)
   }
 
 laboratoryAssistant :: CardDef
-laboratoryAssistant =
-  (asset "02020" "Laboratory Assistant" 2 Seeker)
-    { cdSkills = [SkillIntellect]
-    , cdCardTraits = setFromList [Ally, Miskatonic, Science]
-    }
+laboratoryAssistant = (asset "02020" "Laboratory Assistant" 2 Seeker)
+  { cdSkills = [SkillIntellect]
+  , cdCardTraits = setFromList [Ally, Miskatonic, Science]
+  }
 
 strangeSolution :: CardDef
 strangeSolution = (asset "02021" "Strange Solution" 1 Seeker)
@@ -572,17 +612,21 @@ fireAxe = (asset "02032" "Fire Axe" 1 Survivor)
   }
 
 peterSylvestre :: CardDef
-peterSylvestre = (asset "02033" "Peter Sylvestre" 3 Survivor)
-  { cdSkills = [SkillWillpower]
-  , cdCardTraits = setFromList [Ally, Miskatonic]
-  }
+peterSylvestre =
+  (asset "02033" ("Peter Sylvestre" <:> "Big Man on Campus") 3 Survivor)
+    { cdSkills = [SkillWillpower]
+    , cdCardTraits = setFromList [Ally, Miskatonic]
+    , cdUnique = True
+    }
 
 peterSylvestre2 :: CardDef
-peterSylvestre2 = (asset "02035" "Peter Sylvestre" 3 Survivor)
-  { cdSkills = [SkillWillpower]
-  , cdCardTraits = setFromList [Ally, Miskatonic]
-  , cdLevel = 2
-  }
+peterSylvestre2 =
+  (asset "02035" ("Peter Sylvestre" <:> "Big Man on Campus") 3 Survivor)
+    { cdSkills = [SkillWillpower]
+    , cdCardTraits = setFromList [Ally, Miskatonic]
+    , cdLevel = 2
+    , cdUnique = True
+    }
 
 kukri :: CardDef
 kukri = (asset "02036" "Kukri" 2 Neutral)
@@ -591,7 +635,12 @@ kukri = (asset "02036" "Kukri" 2 Neutral)
   }
 
 drHenryArmitage :: CardDef
-drHenryArmitage = (asset "02040" "Dr. Henry Armitage" 2 Neutral)
+drHenryArmitage = (storyAsset
+                    "02040"
+                    ("Dr. Henry Armitage" <:> "The Head Librarian")
+                    2
+                    ArmitagesFate
+                  )
   { cdSkills = [SkillWild, SkillWild]
   , cdCardTraits = setFromList [Ally, Miskatonic]
   , cdUnique = True
@@ -604,38 +653,59 @@ alchemicalConcoction =
     }
 
 jazzMulligan :: CardDef
-jazzMulligan = (storyAsset "02060" "\"Jazz\" Mulligan" 0 ExtracurricularActivity)
+jazzMulligan = (storyAsset
+                 "02060"
+                 ("\"Jazz\" Mulligan" <:> "The Head Janitor")
+                 0
+                 ExtracurricularActivity
+               )
   { cdCardTraits = setFromList [Ally, Miskatonic]
   , cdUnique = True
   }
 
 professorWarrenRice :: CardDef
-professorWarrenRice =
-  (asset "02061" "Progressor Warren Rice" 3 Neutral)
-    { cdSkills = [SkillIntellect, SkillWild]
-    , cdCardTraits = setFromList [Ally, Miskatonic]
-    , cdUnique = True
-    }
+professorWarrenRice = (storyAsset
+                        "02061"
+                        ("Professor Warren Rice" <:> "Professor of Languages")
+                        3
+                        ExtracurricularActivity
+                      )
+  { cdSkills = [SkillIntellect, SkillWild]
+  , cdCardTraits = setFromList [Ally, Miskatonic]
+  , cdUnique = True
+  }
 
 peterClover :: CardDef
-peterClover = (storyAsset "02079" "Peter Clover" 0 TheHouseAlwaysWins)
+peterClover = (storyAsset
+                "02079"
+                ("Peter Clover" <:> "Holding All the Cards")
+                0
+                TheHouseAlwaysWins
+              )
   { cdCardTraits = setFromList [Humanoid, Criminal]
   , cdUnique = True
   }
 
 drFrancisMorgan :: CardDef
-drFrancisMorgan = (asset "02080" "Dr. Francis Morgan" 3 Neutral)
+drFrancisMorgan = (storyAsset
+                    "02080"
+                    ("Dr. Francis Morgan" <:> "Professor of Archaeology")
+                    3
+                    TheHouseAlwaysWins
+                  )
   { cdSkills = [SkillCombat, SkillWild]
   , cdCardTraits = setFromList [Ally, Miskatonic]
   , cdUnique = True
   }
 
 brotherXavier1 :: CardDef
-brotherXavier1 = (asset "02106" "Brother Xavier" 5 Guardian)
-  { cdSkills = [SkillWillpower]
-  , cdCardTraits = setFromList [Ally]
-  , cdLevel = 1
-  }
+brotherXavier1 =
+  (asset "02106" ("Brother Xavier" <:> "Pure of Spirit") 5 Guardian)
+    { cdSkills = [SkillWillpower]
+    , cdCardTraits = setFromList [Ally]
+    , cdLevel = 1
+    , cdUnique = True
+    }
 
 pathfinder1 :: CardDef
 pathfinder1 = (asset "02108" "Pathfinder" 3 Seeker)
@@ -645,9 +715,8 @@ pathfinder1 = (asset "02108" "Pathfinder" 3 Seeker)
   }
 
 adaptable1 :: CardDef
-adaptable1 = (asset "02110" "Adaptable" 0 Rogue)
-  { cdPermanent = True
-  , cdCardTraits = setFromList [Talent]
+adaptable1 = permanent $ (asset "02110" "Adaptable" 0 Rogue)
+  { cdCardTraits = setFromList [Talent]
   }
 
 songOfTheDead2 :: CardDef
@@ -657,26 +726,38 @@ songOfTheDead2 = (asset "92112" "Song of the Dead" 2 Mystic)
   }
 
 haroldWalsted :: CardDef
-haroldWalsted = (storyAsset "02138" "Harold Walsted" 0 TheMiskatonicMuseum)
+haroldWalsted = (storyAsset
+                  "02138"
+                  ("Harold Walsted" <:> "Curator of the Museum")
+                  0
+                  TheMiskatonicMuseum
+                )
   { cdCardTraits = setFromList [Ally, Miskatonic]
   , cdUnique = True
   }
 
 adamLynch :: CardDef
-adamLynch = (storyAsset "02139" "Adam Lynch" 0 TheMiskatonicMuseum)
-  { cdCardTraits = setFromList [Ally, Miskatonic]
-  , cdUnique = True
-  }
+adamLynch =
+  (storyAsset "02139" ("Adam Lynch" <:> "Museum Security") 0 TheMiskatonicMuseum
+    )
+    { cdCardTraits = setFromList [Ally, Miskatonic]
+    , cdUnique = True
+    }
 
 keenEye :: CardDef
-keenEye = (asset "02185" "Keen Eye" 2 Guardian)
+keenEye = (asset "07152" "Keen Eye" 2 Guardian)
   { cdCardTraits = setFromList [Talent]
   , cdSkills = [SkillIntellect, SkillCombat]
   }
 
 theNecronomiconOlausWormiusTranslation :: CardDef
 theNecronomiconOlausWormiusTranslation =
-  (asset "02140" "The Necronomicon" 2 Neutral)
+  (storyAsset
+      "02140"
+      ("The Necronomicon" <:> "Olaus Wormius Translation")
+      2
+      TheMiskatonicMuseum
+    )
     { cdSkills = [SkillIntellect]
     , cdCardTraits = setFromList [Item, Tome]
     }
@@ -688,13 +769,14 @@ bandolier = (asset "02147" "Bandolier" 2 Guardian)
   }
 
 helplessPassenger :: CardDef
-helplessPassenger = (storyAsset "02179" "Helpless Passenger" 0 TheEssexCountyExpress)
-  { cdCardTraits = setFromList [Ally, Bystander]
-  , cdKeywords = singleton Keyword.Surge
-  }
+helplessPassenger =
+  (storyAsset "02179" "Helpless Passenger" 0 TheEssexCountyExpress)
+    { cdCardTraits = setFromList [Ally, Bystander]
+    , cdKeywords = singleton Keyword.Surge
+    }
 
 keenEye3 :: CardDef
-keenEye3 = (asset "02185" "Keen Eye" 0 Guardian)
+keenEye3 = permanent $ (asset "02185" "Keen Eye" 0 Guardian)
   { cdCardTraits = setFromList [Talent]
   , cdPermanent = True
   , cdLevel = 3
@@ -707,26 +789,41 @@ keyToTheChamber = (storyAsset "02215" "Key to the Chamber" 0 BloodOnTheAltar)
   }
 
 zebulonWhateley :: CardDef
-zebulonWhateley = (asset "02217" "Zebulon Whateley" 3 Neutral)
+zebulonWhateley = (storyAsset
+                    "02217"
+                    ("Zebulon Whateley" <:> "Recalling Ancient Things")
+                    3
+                    BloodOnTheAltar
+                  )
   { cdCardTraits = setFromList [Ally, Dunwich]
   , cdSkills = [SkillWillpower, SkillWild]
+  , cdUnique = True
   }
 
 earlSawyer :: CardDef
-earlSawyer = (asset "02218" "Earl Sawyer" 3 Neutral)
+earlSawyer = (storyAsset
+               "02218"
+               ("Earl Sawyer" <:> "Smarter Than He Lets On")
+               3
+               BloodOnTheAltar
+             )
   { cdCardTraits = setFromList [Ally, Dunwich]
   , cdSkills = [SkillAgility, SkillWild]
+  , cdUnique = True
   }
 
 powderOfIbnGhazi :: CardDef
-powderOfIbnGhazi = (asset "02219" "Powder of Ibn-Ghazi" 0 Neutral
-                          )
+powderOfIbnGhazi = (storyAsset
+                     "02219"
+                     ("Powder of Ibn-Ghazi" <:> "Seeing Things Unseen")
+                     0
+                     BloodOnTheAltar
+                   )
   { cdCardTraits = singleton Item
   }
 
 springfieldM19034 :: CardDef
-springfieldM19034 = (asset "02226" "Springfiled M1903" 4 Guardian
-                           )
+springfieldM19034 = (asset "02226" "Springfiled M1903" 4 Guardian)
   { cdCardTraits = setFromList [Item, Weapon, Firearm]
   , cdLevel = 4
   , cdSkills = [SkillCombat, SkillAgility]
@@ -757,20 +854,13 @@ occultLexicon = (asset "05316" "Occult Lexicon" 2 Seeker)
   }
 
 scrollOfProphecies :: CardDef
-scrollOfProphecies =
-  (asset "06116" "Scroll of Prophecies" 3 Mystic)
-    { cdSkills = [SkillWillpower]
-    , cdCardTraits = setFromList [Item, Tome]
-    }
-
-litaChantler :: CardDef
-litaChantler = (asset "01117" "Lita Chantler" 0 Neutral)
-  { cdCardTraits = setFromList [Ally]
+scrollOfProphecies = (asset "06116" "Scroll of Prophecies" 3 Mystic)
+  { cdSkills = [SkillWillpower]
+  , cdCardTraits = setFromList [Item, Tome]
   }
 
 physicalTraining2 :: CardDef
-physicalTraining2 = (asset "50001" "Physical Training" 0 Guardian
-                           )
+physicalTraining2 = (asset "50001" "Physical Training" 0 Guardian)
   { cdSkills = [SkillWillpower, SkillWillpower, SkillCombat, SkillCombat]
   , cdCardTraits = setFromList [Talent]
   , cdLevel = 2
@@ -812,11 +902,10 @@ rabbitsFoot3 = (asset "50010" "Rabbit's Foot" 1 Survivor)
   }
 
 arcaneEnlightenment :: CardDef
-arcaneEnlightenment =
-  (asset "60205" "Arcane Enlightenment" 2 Seeker)
-    { cdSkills = [SkillWillpower, SkillWillpower]
-    , cdCardTraits = setFromList [Ritual]
-    }
+arcaneEnlightenment = (asset "60205" "Arcane Enlightenment" 2 Seeker)
+  { cdSkills = [SkillWillpower, SkillWillpower]
+  , cdCardTraits = setFromList [Ritual]
+  }
 
 celaenoFragments :: CardDef
 celaenoFragments = (asset "60206" "Celaeno Fragments" 1 Seeker)
@@ -837,21 +926,25 @@ higherEducation = (asset "60211" "Higher Education" 0 Seeker)
   }
 
 whittonGreene :: CardDef
-whittonGreene = (asset "60213" "Whitton Greene" 4 Seeker)
-  { cdSkills = [SkillIntellect]
-  , cdCardTraits = setFromList [Ally, Miskatonic]
-  }
+whittonGreene =
+  (asset "60213" ("Whitton Greene" <:> "Hunter of Rare Books") 4 Seeker)
+    { cdSkills = [SkillIntellect]
+    , cdCardTraits = setFromList [Ally, Miskatonic]
+    , cdUnique = True
+    }
 
 ladyEsprit :: CardDef
-ladyEsprit = (storyAsset "81019" "Lady Espirt" 4 TheBayou)
-  { cdSkills = [SkillWillpower, SkillIntellect, SkillWild]
-  , cdCardTraits = setFromList [Ally, Sorcerer]
-  , cdUnique = True
-  }
+ladyEsprit =
+  (storyAsset "81019" ("Lady Esprit" <:> "Dangerous Bokor") 4 TheBayou)
+    { cdSkills = [SkillWillpower, SkillIntellect, SkillWild]
+    , cdCardTraits = setFromList [Ally, Sorcerer]
+    , cdUnique = True
+    }
 
 bearTrap :: CardDef
-bearTrap =
-  (storyAsset "81020" "Bear Trap" 0 TheBayou) { cdCardTraits = setFromList [Trap] }
+bearTrap = (storyAsset "81020" "Bear Trap" 0 TheBayou)
+  { cdCardTraits = setFromList [Trap]
+  }
 
 fishingNet :: CardDef
 fishingNet = (storyAsset "81021" "Fishing Net" 0 TheBayou)
@@ -860,23 +953,24 @@ fishingNet = (storyAsset "81021" "Fishing Net" 0 TheBayou)
 
 monstrousTransformation :: CardDef
 monstrousTransformation =
-  (asset "81030" "Monstrous Transformation" 0 Neutral)
+  (storyAsset "81030" "Monstrous Transformation" 0 CurseOfTheRougarou)
     { cdCardTraits = setFromList [Talent]
     , cdFast = True
     , cdWindows = setFromList [DuringTurn You]
     }
 
 daisysToteBagAdvanced :: CardDef
-daisysToteBagAdvanced =
-  (asset "90002" "Daisy's Tote Bag" 2 Neutral)
-    { cdSkills = [SkillWillpower, SkillIntellect, SkillWild, SkillWild]
-    , cdCardTraits = setFromList [Item]
-    }
+daisysToteBagAdvanced = (asset "90002" "Daisy's Tote Bag" 2 Neutral)
+  { cdSkills = [SkillWillpower, SkillIntellect, SkillWild, SkillWild]
+  , cdCardTraits = setFromList [Item]
+  , cdUnique = True
+  }
 
 theNecronomiconAdvanced :: CardDef
 theNecronomiconAdvanced =
-  (asset "90003" "The Necronomicon" 0 Neutral)
+  (asset "90003" ("The Necronomicon" <:> "John Dee Translation") 0 Neutral)
     { cdCardTraits = setFromList [Item, Tome]
     , cdWeakness = True
     , cdRevelation = True
+    , cdCost = Nothing
     }

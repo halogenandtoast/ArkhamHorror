@@ -1,5 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Arkham.Types.Enemy.Attrs where
 
 import Arkham.Prelude
@@ -14,7 +12,7 @@ import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
-import Arkham.Types.Keyword (Keyword, HasKeywords(..))
+import Arkham.Types.Keyword (HasKeywords(..), Keyword)
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
@@ -55,7 +53,51 @@ data EnemyAttrs = EnemyAttrs
   }
   deriving stock (Show, Eq, Generic)
 
-makeLensesWith suffixedFields ''EnemyAttrs
+spawnAtL :: Lens' EnemyAttrs (Maybe LocationMatcher)
+spawnAtL = lens enemySpawnAt $ \m x -> m { enemySpawnAt = x }
+
+healthDamageL :: Lens' EnemyAttrs Int
+healthDamageL = lens enemyHealthDamage $ \m x -> m { enemyHealthDamage = x }
+
+sanityDamageL :: Lens' EnemyAttrs Int
+sanityDamageL = lens enemySanityDamage $ \m x -> m { enemySanityDamage = x }
+
+healthL :: Lens' EnemyAttrs (GameValue Int)
+healthL = lens enemyHealth $ \m x -> m { enemyHealth = x }
+
+fightL :: Lens' EnemyAttrs Int
+fightL = lens enemyFight $ \m x -> m { enemyFight = x }
+
+evadeL :: Lens' EnemyAttrs Int
+evadeL = lens enemyEvade $ \m x -> m { enemyEvade = x }
+
+locationL :: Lens' EnemyAttrs LocationId
+locationL = lens enemyLocation $ \m x -> m { enemyLocation = x }
+
+preyL :: Lens' EnemyAttrs Prey
+preyL = lens enemyPrey $ \m x -> m { enemyPrey = x }
+
+treacheriesL :: Lens' EnemyAttrs (HashSet TreacheryId)
+treacheriesL = lens enemyTreacheries $ \m x -> m { enemyTreacheries = x }
+
+assetsL :: Lens' EnemyAttrs (HashSet AssetId)
+assetsL = lens enemyAssets $ \m x -> m { enemyAssets = x }
+
+damageL :: Lens' EnemyAttrs Int
+damageL = lens enemyDamage $ \m x -> m { enemyDamage = x }
+
+engagedInvestigatorsL :: Lens' EnemyAttrs (HashSet InvestigatorId)
+engagedInvestigatorsL =
+  lens enemyEngagedInvestigators $ \m x -> m { enemyEngagedInvestigators = x }
+
+exhaustedL :: Lens' EnemyAttrs Bool
+exhaustedL = lens enemyExhausted $ \m x -> m { enemyExhausted = x }
+
+doomL :: Lens' EnemyAttrs Int
+doomL = lens enemyDoom $ \m x -> m { enemyDoom = x }
+
+cluesL :: Lens' EnemyAttrs Int
+cluesL = lens enemyClues $ \m x -> m { enemyClues = x }
 
 instance HasCardDef EnemyAttrs where
   toCardDef = enemyCardDef
@@ -73,27 +115,28 @@ instance FromJSON EnemyAttrs where
 instance IsCard EnemyAttrs where
   toCardId = unEnemyId . enemyId
 
-enemy :: (EnemyAttrs -> a) -> CardDef -> (EnemyAttrs -> EnemyAttrs) -> EnemyId -> a
+enemy
+  :: (EnemyAttrs -> a) -> CardDef -> (EnemyAttrs -> EnemyAttrs) -> EnemyId -> a
 enemy f cardDef g eid = f . g $ EnemyAttrs
-      { enemyId = eid
-      , enemyCardDef = cardDef
-      , enemyEngagedInvestigators = mempty
-      , enemyLocation = LocationId $ CardId nil
-      , enemyFight = 1
-      , enemyHealth = Static 1
-      , enemyEvade = 1
-      , enemyDamage = 0
-      , enemyHealthDamage = 0
-      , enemySanityDamage = 0
-      , enemyTreacheries = mempty
-      , enemyAssets = mempty
-      , enemyPrey = AnyPrey
-      , enemyModifiers = mempty
-      , enemyExhausted = False
-      , enemyDoom = 0
-      , enemyClues = 0
-      , enemySpawnAt = Nothing
-      }
+  { enemyId = eid
+  , enemyCardDef = cardDef
+  , enemyEngagedInvestigators = mempty
+  , enemyLocation = LocationId $ CardId nil
+  , enemyFight = 1
+  , enemyHealth = Static 1
+  , enemyEvade = 1
+  , enemyDamage = 0
+  , enemyHealthDamage = 0
+  , enemySanityDamage = 0
+  , enemyTreacheries = mempty
+  , enemyAssets = mempty
+  , enemyPrey = AnyPrey
+  , enemyModifiers = mempty
+  , enemyExhausted = False
+  , enemyDoom = 0
+  , enemyClues = 0
+  , enemySpawnAt = Nothing
+  }
 
 spawnAtEmptyLocation
   :: (MonadIO m, HasSet EmptyLocationId env (), MonadReader env m, HasQueue env)
@@ -248,16 +291,14 @@ instance NamedEntity EnemyAttrs where
 instance TargetEntity EnemyAttrs where
   toTarget = EnemyTarget . toId
   isTarget EnemyAttrs { enemyId } (EnemyTarget eid) = enemyId == eid
-  isTarget attrs (CardCodeTarget cardCode) =
-    toCardCode attrs == cardCode
+  isTarget attrs (CardCodeTarget cardCode) = toCardCode attrs == cardCode
   isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
   isTarget _ _ = False
 
 instance SourceEntity EnemyAttrs where
   toSource = EnemySource . toId
   isSource EnemyAttrs { enemyId } (EnemySource eid) = enemyId == eid
-  isSource attrs (CardCodeSource cardCode) =
-    toCardCode attrs == cardCode
+  isSource attrs (CardCodeSource cardCode) = toCardCode attrs == cardCode
   isSource _ _ = False
 
 getModifiedHealth

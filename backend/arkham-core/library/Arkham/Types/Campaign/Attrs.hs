@@ -1,5 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Arkham.Types.Campaign.Attrs where
 
 import Arkham.Prelude
@@ -39,7 +37,27 @@ data CampaignAttrs = CampaignAttrs
   }
   deriving stock (Show, Generic, Eq)
 
-makeLensesWith suffixedFields ''CampaignAttrs
+completedStepsL :: Lens' CampaignAttrs [CampaignStep]
+completedStepsL =
+  lens campaignCompletedSteps $ \m x -> m { campaignCompletedSteps = x }
+
+chaosBagL :: Lens' CampaignAttrs [Token]
+chaosBagL = lens campaignChaosBag $ \m x -> m { campaignChaosBag = x }
+
+storyCardsL :: Lens' CampaignAttrs (HashMap InvestigatorId [PlayerCard])
+storyCardsL = lens campaignStoryCards $ \m x -> m { campaignStoryCards = x }
+
+decksL :: Lens' CampaignAttrs (HashMap InvestigatorId [PlayerCard])
+decksL = lens campaignDecks $ \m x -> m { campaignDecks = x }
+
+logL :: Lens' CampaignAttrs CampaignLog
+logL = lens campaignLog $ \m x -> m { campaignLog = x }
+
+stepL :: Lens' CampaignAttrs (Maybe CampaignStep)
+stepL = lens campaignStep $ \m x -> m { campaignStep = x }
+
+resolutionsL :: Lens' CampaignAttrs (HashMap ScenarioId Resolution)
+resolutionsL = lens campaignResolutions $ \m x -> m { campaignResolutions = x }
 
 completeStep :: Maybe CampaignStep -> [CampaignStep] -> [CampaignStep]
 completeStep (Just step') steps = step' : steps

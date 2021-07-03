@@ -1,5 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Arkham.Types.Agenda.Attrs
   ( module Arkham.Types.Agenda.Attrs
   , module X
@@ -8,9 +6,11 @@ module Arkham.Types.Agenda.Attrs
 import Arkham.Prelude
 
 import Arkham.Json
+import Arkham.Types.Agenda.Sequence as X
 import Arkham.Types.AgendaId
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Name
@@ -19,8 +19,6 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window
-import Arkham.Types.Agenda.Sequence as X
-import Arkham.Types.Game.Helpers
 
 data AgendaAttrs = AgendaAttrs
   { agendaDoom :: Int
@@ -34,7 +32,25 @@ data AgendaAttrs = AgendaAttrs
   }
   deriving stock (Show, Eq, Generic)
 
-makeLensesWith suffixedFields ''AgendaAttrs
+cardsUnderneathL :: Lens' AgendaAttrs [Card]
+cardsUnderneathL =
+  lens agendaCardsUnderneath $ \m x -> m { agendaCardsUnderneath = x }
+
+treacheriesL :: Lens' AgendaAttrs (HashSet TreacheryId)
+treacheriesL = lens agendaTreacheries $ \m x -> m { agendaTreacheries = x }
+
+doomL :: Lens' AgendaAttrs Int
+doomL = lens agendaDoom $ \m x -> m { agendaDoom = x }
+
+doomThresholdL :: Lens' AgendaAttrs (GameValue Int)
+doomThresholdL =
+  lens agendaDoomThreshold $ \m x -> m { agendaDoomThreshold = x }
+
+sequenceL :: Lens' AgendaAttrs AgendaSequence
+sequenceL = lens agendaSequence $ \m x -> m { agendaSequence = x }
+
+flippedL :: Lens' AgendaAttrs Bool
+flippedL = lens agendaFlipped $ \m x -> m { agendaFlipped = x }
 
 instance ToJSON AgendaAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "agenda"

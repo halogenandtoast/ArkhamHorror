@@ -1,10 +1,7 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Arkham.Types.Scenario.Attrs
   ( module Arkham.Types.Scenario.Attrs
   , module X
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -51,7 +48,25 @@ data ScenarioAttrs = ScenarioAttrs
   }
   deriving stock (Show, Generic, Eq)
 
-makeLensesWith suffixedFields ''ScenarioAttrs
+locationsL :: Lens' ScenarioAttrs (HashMap LocationName [CardCode])
+locationsL = lens scenarioLocations $ \m x -> m { scenarioLocations = x }
+
+deckL :: Lens' ScenarioAttrs (Maybe ScenarioDeck)
+deckL = lens scenarioDeck $ \m x -> m { scenarioDeck = x }
+
+actStackL :: Lens' ScenarioAttrs [(Int, [ActId])]
+actStackL = lens scenarioActStack $ \m x -> m { scenarioActStack = x }
+
+logL :: Lens' ScenarioAttrs (HashSet ScenarioLogKey)
+logL = lens scenarioLog $ \m x -> m { scenarioLog = x }
+
+setAsideCardsL :: Lens' ScenarioAttrs [Card]
+setAsideCardsL =
+  lens scenarioSetAsideCards $ \m x -> m { scenarioSetAsideCards = x }
+
+setAsideLocationsL :: Lens' ScenarioAttrs [CardCode]
+setAsideLocationsL =
+  lens scenarioSetAsideLocations $ \m x -> m { scenarioSetAsideLocations = x }
 
 instance ToJSON ScenarioAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "scenario"

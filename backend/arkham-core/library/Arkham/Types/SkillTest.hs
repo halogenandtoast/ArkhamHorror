@@ -1,9 +1,6 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Arkham.Types.SkillTest
   ( module Arkham.Types.SkillTest
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -54,7 +51,32 @@ data SkillTest = SkillTest
   }
   deriving stock (Show, Eq, Generic)
 
-makeLensesWith (suffixedWithFields "skillTest") ''SkillTest
+subscribersL :: Lens' SkillTest [Target]
+subscribersL =
+  lens skillTestSubscribers $ \m x -> m { skillTestSubscribers = x }
+
+setAsideTokensL :: Lens' SkillTest [Token]
+setAsideTokensL =
+  lens skillTestSetAsideTokens $ \m x -> m { skillTestSetAsideTokens = x }
+
+resolvedTokensL :: Lens' SkillTest [DrawnToken]
+resolvedTokensL =
+  lens skillTestResolvedTokens $ \m x -> m { skillTestResolvedTokens = x }
+
+revealedTokensL :: Lens' SkillTest [DrawnToken]
+revealedTokensL =
+  lens skillTestRevealedTokens $ \m x -> m { skillTestRevealedTokens = x }
+
+committedCardsL :: Lens' SkillTest (HashMap CardId (InvestigatorId, Card))
+committedCardsL =
+  lens skillTestCommittedCards $ \m x -> m { skillTestCommittedCards = x }
+
+resultL :: Lens' SkillTest SkillTestResult
+resultL = lens skillTestResult $ \m x -> m { skillTestResult = x }
+
+valueModifierL :: Lens' SkillTest Int
+valueModifierL =
+  lens skillTestValueModifier $ \m x -> m { skillTestValueModifier = x }
 
 instance TargetEntity SkillTest where
   toTarget _ = SkillTestTarget

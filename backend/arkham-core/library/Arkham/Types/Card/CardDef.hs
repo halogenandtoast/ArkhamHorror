@@ -1,4 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Types.Card.CardDef where
 
@@ -48,7 +47,14 @@ data CardDef = CardDef
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
 
-makeLensesWith suffixedFields ''CardDef
+weaknessL :: Lens' CardDef Bool
+weaknessL = lens cdWeakness $ \m x -> m { cdWeakness = x }
+
+keywordsL :: Lens' CardDef (HashSet Keyword)
+keywordsL = lens cdKeywords $ \m x -> m { cdKeywords = x }
+
+cardTraitsL :: Lens' CardDef (HashSet Trait)
+cardTraitsL = lens cdCardTraits $ \m x -> m { cdCardTraits = x }
 
 instance ToJSON CardDef where
   toJSON = genericToJSON $ aesonOptions $ Just "cd"
@@ -88,8 +94,7 @@ cardMatch :: HasCardDef a => CardMatcher -> a -> Bool
 cardMatch (CardMatchByType (cardType', traits)) a =
   (toCardType a == cardType')
     && (null traits || notNull (intersection (toTraits a) traits))
-cardMatch (CardMatchByCardCode cardCode) card =
-  toCardCode card == cardCode
+cardMatch (CardMatchByCardCode cardCode) card = toCardCode card == cardCode
 
 testCardDef :: CardType -> CardCode -> CardDef
 testCardDef cardType cardCode = CardDef

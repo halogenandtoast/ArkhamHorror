@@ -71,7 +71,7 @@ export default defineComponent({
     })
 
     const exhausted = computed(() => props.asset.contents.exhausted)
-    const cardCode = computed(() => props.asset.contents.cardCode)
+    const cardCode = computed(() => props.asset.contents.cardDef.cardCode)
     const image = computed(() => `/img/arkham/cards/${cardCode.value}.jpg`)
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 

@@ -107,10 +107,11 @@ export default defineComponent({
   setup(props, { emit }) {
     const clues = computed(() => props.location.contents.clues)
     const image = computed(() => {
-      const { cardCode, revealed } = props.location.contents;
-      const suffix = revealed ? '' : 'b';
+      const { cardDef, revealed } = props.location.contents
+      const { cardCode } = cardDef
+      const suffix = revealed ? '' : 'b'
 
-      return `/img/arkham/cards/${cardCode}${suffix}.jpg`;
+      return `/img/arkham/cards/${cardCode}${suffix}.jpg`
     })
 
     const id = computed(() => props.location.contents.id)

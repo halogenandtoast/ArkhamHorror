@@ -17,7 +17,7 @@ export default defineComponent({
     const victoryDisplay = computed(() => props.game.currentData.victoryDisplay)
     const topOfVictoryDisplay = computed(() => {
       if (victoryDisplay.value[0]) {
-        const { cardCode } = victoryDisplay.value[0].contents;
+        const { cardCode } = victoryDisplay.value[0].contents.def;
         return `/img/arkham/cards/${cardCode}.jpg`;
       }
 

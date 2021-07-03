@@ -174,7 +174,7 @@ export default defineComponent({
 
     const activeCard = computed(() => {
       if (props.game.currentData.activeCard) {
-        const { cardCode } = props.game.currentData.activeCard.contents;
+        const { cardCode } = props.game.currentData.activeCard.contents.def;
         return `/img/arkham/cards/${cardCode}.jpg`;
       }
 
@@ -185,7 +185,7 @@ export default defineComponent({
 
     const topOfEncounterDiscard = computed(() => {
       if (props.game.currentData.discard[0]) {
-        const { cardCode } = props.game.currentData.discard[0];
+        const { cardCode } = props.game.currentData.discard[0].def;
 
         return `/img/arkham/cards/${cardCode}.jpg`;
       }

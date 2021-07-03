@@ -31,7 +31,7 @@ export default defineComponent({
   },
   setup(props) {
     const image = computed(() => {
-      const { cardCode } = props.card.contents;
+      const { cardCode } = props.card.contents.def;
       return `/img/arkham/cards/${cardCode}.jpg`;
     })
 

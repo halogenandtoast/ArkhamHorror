@@ -595,7 +595,7 @@ beastOfTheBayou =
 
 insatiableBloodlust :: CardDef
 insatiableBloodlust =
-  treachery "81026" "Insatiable Bloodlust" CurseOfTheRougarou
+  treachery "81036" "Insatiable Bloodlust" CurseOfTheRougarou
 
 curseOfTheRougarou :: CardDef
 curseOfTheRougarou = (weakness "81029" "Curse of the Rougarou")

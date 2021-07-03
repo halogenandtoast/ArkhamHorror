@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.CardType
+import Arkham.Types.ClassSymbol
 import Arkham.Types.EncounterSet
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Name
@@ -18,7 +19,7 @@ baseEnemy cardCode name mEncounterSet isWeakness = CardDef
   , cdLevel = 0
   , cdCardType = EnemyType
   , cdWeakness = isWeakness
-  , cdClassSymbol = Nothing
+  , cdClassSymbol = if isWeakness then Just Neutral else Nothing
   , cdSkills = mempty
   , cdCardTraits = mempty
   , cdKeywords = mempty

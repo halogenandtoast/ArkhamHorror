@@ -58,7 +58,7 @@ data Asset
   | LeoDeLuca' LeoDeLuca
   | HardKnocks' HardKnocks
   | LeoDeLuca1' LeoDeLuca1
-  | CatBurgler1' CatBurgler1
+  | CatBurglar1' CatBurglar1
   | ForbiddenKnowledge' ForbiddenKnowledge
   | HolyRosary' HolyRosary
   | Shrivelling' Shrivelling
@@ -279,7 +279,7 @@ allAssets = mapFromList
   , ("01048", LeoDeLuca' . leoDeLuca)
   , ("01049", HardKnocks' . hardKnocks)
   , ("01054", LeoDeLuca1' . leoDeLuca1)
-  , ("01055", CatBurgler1' . catBurgler1)
+  , ("01055", CatBurglar1' . catBurglar1)
   , ("01058", ForbiddenKnowledge' . forbiddenKnowledge)
   , ("01059", HolyRosary' . holyRosary)
   , ("01060", Shrivelling' . shrivelling)

@@ -153,7 +153,7 @@ data Trait
   | Woods
   | Unhallowed
   | Yithian
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Read)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 class HasTraits a where

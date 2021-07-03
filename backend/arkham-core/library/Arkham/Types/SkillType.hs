@@ -8,5 +8,5 @@ data SkillType
   | SkillCombat
   | SkillAgility
   | SkillWild
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Ord)
   deriving anyclass (ToJSON, FromJSON, Hashable)

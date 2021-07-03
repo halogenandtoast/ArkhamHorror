@@ -242,22 +242,20 @@ blindingLight2 = (event "01069" "Blinding Light" 1 Mystic)
   }
 
 cunningDistraction :: CardDef
-cunningDistraction =
-  (event "01078" "Cunning Distraction" 5 Survivor)
-    { cdSkills = [SkillIntellect, SkillWild]
-    , cdCardTraits = setFromList [Tactic]
-    , cdAction = Just Action.Evade
-    }
+cunningDistraction = (event "01078" "Cunning Distraction" 5 Survivor)
+  { cdSkills = [SkillWillpower, SkillWild]
+  , cdCardTraits = setFromList [Tactic]
+  , cdAction = Just Action.Evade
+  }
 
 lookWhatIFound :: CardDef
-lookWhatIFound =
-  (event "01079" "\"Look what I found!\"" 2 Survivor)
-    { cdSkills = [SkillIntellect, SkillIntellect]
-    , cdCardTraits = setFromList [Fortune]
-    , cdFast = True
-    , cdWindows = setFromList
-      [ AfterFailInvestigationSkillTest You n | n <- [0 .. 2] ]
-    }
+lookWhatIFound = (event "01079" "\"Look what I found!\"" 2 Survivor)
+  { cdSkills = [SkillIntellect, SkillIntellect]
+  , cdCardTraits = setFromList [Fortune]
+  , cdFast = True
+  , cdWindows = setFromList
+    [ AfterFailInvestigationSkillTest You n | n <- [0 .. 2] ]
+  }
 
 lucky :: CardDef
 lucky = (event "01080" "Lucky!" 1 Survivor)
@@ -298,11 +296,10 @@ emergencyCache = (event "01088" "Emergency Cache" 0 Neutral)
   }
 
 searchForTheTruth :: CardDef
-searchForTheTruth =
-  (event "02008" "Search for the Truth" 1 Neutral)
-    { cdSkills = [SkillIntellect, SkillIntellect, SkillWild]
-    , cdCardTraits = setFromList [Insight]
-    }
+searchForTheTruth = (event "02008" "Search for the Truth" 1 Neutral)
+  { cdSkills = [SkillIntellect, SkillIntellect, SkillWild]
+  , cdCardTraits = setFromList [Insight]
+  }
 
 taunt :: CardDef
 taunt = (event "02017" "Taunt" 1 Guardian)
@@ -389,23 +386,23 @@ delveTooDeep = (event "02111" "Delve Too Deep" 1 Mystic)
 
 oops :: CardDef
 oops = (event "02113" "Oops!" 2 Survivor)
-  { cdCardTraits = singleton Fortune
+  { cdSkills = [SkillCombat, SkillCombat]
+  , cdCardTraits = singleton Fortune
   , cdFast = True
   , cdWindows = mempty -- We handle this via behavior
   }
 
 letMeHandleThis :: CardDef
-letMeHandleThis =
-  (event "03022" "\"Let me handle this!\"" 0 Guardian)
-    { cdSkills = [SkillWillpower, SkillCombat]
-    , cdCardTraits = setFromList [Spirit]
-    , cdFast = True
-    , cdWindows = mempty -- We handle this via behavior
-    }
+letMeHandleThis = (event "03022" "\"Let me handle this!\"" 0 Guardian)
+  { cdSkills = [SkillWillpower, SkillCombat]
+  , cdCardTraits = setFromList [Spirit]
+  , cdFast = True
+  , cdWindows = mempty -- We handle this via behavior
+  }
 
 secondWind :: CardDef
 secondWind = (event "04149" "Second Wind" 1 Guardian)
-  { cdSkills = [SkillIntellect]
+  { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Spirit, Bold]
   , cdFast = True -- not fast
   , cdWindows = mempty -- handle via behavior since must be first action
@@ -426,14 +423,13 @@ firstWatch = (event "06110" "First Watch" 1 Guardian)
   }
 
 astoundingRevelation :: CardDef
-astoundingRevelation =
-  (event "06023" "Astounding Revelation" 0 Seeker)
-    { cdSkills = [SkillIntellect]
-    , cdCardTraits = setFromList [Research]
-    , cdFast = True
-    , cdWindows = mempty -- cannot be played
-    , cdCost = Nothing
-    }
+astoundingRevelation = (event "06023" "Astounding Revelation" 0 Seeker)
+  { cdSkills = [SkillIntellect]
+  , cdCardTraits = setFromList [Research]
+  , cdFast = True
+  , cdWindows = mempty -- cannot be played
+  , cdCost = Nothing
+  }
 
 dynamiteBlast2 :: CardDef
 dynamiteBlast2 = (event "50002" "Dynamite Blast" 4 Guardian)

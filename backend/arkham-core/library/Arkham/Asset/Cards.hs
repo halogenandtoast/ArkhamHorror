@@ -483,7 +483,7 @@ strayCat = (asset "01076" "Stray Cat" 1 Survivor)
 
 digDeep :: CardDef
 digDeep = (asset "01077" "Dig Deep" 2 Survivor)
-  { cdSkills = [SkillIntellect, SkillAgility]
+  { cdSkills = [SkillWillpower, SkillAgility]
   , cdCardTraits = setFromList [Talent]
   }
 
@@ -572,10 +572,11 @@ laboratoryAssistant = (asset "02020" "Laboratory Assistant" 2 Seeker)
   }
 
 strangeSolution :: CardDef
-strangeSolution = (asset "02021" ("Strange Solution" <:> "Unidentified") 1 Seeker)
-  { cdSkills = [SkillWild]
-  , cdCardTraits = setFromList [Item, Science]
-  }
+strangeSolution =
+  (asset "02021" ("Strange Solution" <:> "Unidentified") 1 Seeker)
+    { cdSkills = [SkillWild]
+    , cdCardTraits = setFromList [Item, Science]
+    }
 
 liquidCourage :: CardDef
 liquidCourage = (asset "02024" "Liquid Courage" 1 Rogue)
@@ -767,7 +768,7 @@ theNecronomiconOlausWormiusTranslation =
 
 bandolier :: CardDef
 bandolier = (asset "02147" "Bandolier" 2 Guardian)
-  { cdSkills = [SkillWillpower, SkillIntellect, SkillWild]
+  { cdSkills = [SkillCombat]
   , cdCardTraits = setFromList [Item]
   }
 
@@ -833,9 +834,10 @@ springfieldM19034 = (asset "02226" "Springfield M1903" 4 Guardian)
   }
 
 esotericFormula :: CardDef
-esotericFormula = (storyAsset "02254" "Esoteric Formula" 0 UndimensionedAndUnseen)
-  { cdCardTraits = singleton Spell
-  }
+esotericFormula =
+  (storyAsset "02254" "Esoteric Formula" 0 UndimensionedAndUnseen)
+    { cdCardTraits = singleton Spell
+    }
 
 lightningGun5 :: CardDef
 lightningGun5 = (asset "02301" "Lightning Gun" 6 Guardian)
@@ -845,7 +847,8 @@ lightningGun5 = (asset "02301" "Lightning Gun" 6 Guardian)
   }
 
 toothOfEztli :: CardDef
-toothOfEztli = (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker)
+toothOfEztli = (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker
+               )
   { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Item, Relic]
   }
@@ -911,11 +914,12 @@ arcaneEnlightenment = (asset "60205" "Arcane Enlightenment" 2 Seeker)
   }
 
 celaenoFragments :: CardDef
-celaenoFragments = (asset "60206" ("Celaeno Fragments" <:> "Book of Books") 1 Seeker)
-  { cdSkills = [SkillIntellect]
-  , cdCardTraits = setFromList [Item, Tome]
-  , cdUnique = True
-  }
+celaenoFragments =
+  (asset "60206" ("Celaeno Fragments" <:> "Book of Books") 1 Seeker)
+    { cdSkills = [SkillIntellect]
+    , cdCardTraits = setFromList [Item, Tome]
+    , cdUnique = True
+    }
 
 encyclopedia :: CardDef
 encyclopedia = (asset "60208" "Encyclopedia" 2 Seeker)

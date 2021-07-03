@@ -192,16 +192,19 @@ getSkills CardJson {..} =
 getTraits :: CardJson -> HashSet Trait
 getTraits CardJson {..} = case traits of
   Nothing -> mempty
-  Just s -> setFromList $ map toTrait (T.splitOn ". " s)
+  Just s -> setFromList $ map toTrait (T.splitOn ". " $ cleanText s)
  where
   toTrait x =
-    handleEither x . readEither . T.unpack . T.dropWhileEnd (== '.') $ T.replace
+    handleEither x . readEither . T.unpack . normalizeTrait . cleanText $ T.replace
       " "
       ""
       x
   handleEither _ (Right a) = a
   handleEither x (Left err) =
     error $ show code <> ": " <> err <> " " <> show x <> " from " <> show traits
+  normalizeTrait "Human" = "Humanoid"
+  normalizeTrait x = x
+  cleanText = T.dropWhileEnd (\c -> c == '.' || c == ' ')
 
 main :: IO ()
 main = do

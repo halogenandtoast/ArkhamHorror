@@ -584,7 +584,7 @@ engineCar_177 =
 villageCommons :: CardDef
 villageCommons =
   (location "02201" "Village Commons" BloodOnTheAltar)
-    { cdCardTraits = singleton Dunwich
+    { cdCardTraits = setFromList [Dunwich, Central]
     }
 
 bishopsBrook_202 :: CardDef

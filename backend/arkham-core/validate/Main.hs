@@ -14,6 +14,7 @@ import Arkham.Types.Card.Cost
 import Arkham.Types.ClassSymbol
 import Arkham.Types.EncounterSet
 import Arkham.Types.Name
+import Arkham.Types.SkillType
 import Control.Exception
 import Data.Aeson
 import Data.Maybe (fromJust)
@@ -58,12 +59,16 @@ data CardCostMismatch = CostMismatch
 data ClassMismatch = ClassMismatch CardCode Name String (Maybe ClassSymbol)
   deriving stock Show
 
+data SkillsMismatch = SkillsMismatch CardCode Name [SkillType] [SkillType]
+  deriving stock Show
+
 instance Exception InternalCardCodeMismatch
 instance Exception UnknownCard
 instance Exception NameMismatch
 instance Exception UniqueMismatch
 instance Exception CardCostMismatch
 instance Exception ClassMismatch
+instance Exception SkillsMismatch
 
 encounterJson :: IO (HashMap EncounterSet (HashMap CardCode CardJson))
 encounterJson = mapFromList
@@ -127,7 +132,7 @@ toCardFile set = "data" </> "packs" </> toDir set </> "cards.json"
 filterTest :: [(CardCode, CardDef)] -> [(CardCode, CardDef)]
 filterTest = filter
   (\(code, cdef) -> code /= "asset" && cdEncounterSet cdef /= Just Test && not
-    ("b" `isSuffixOf` (unCardCode code))
+    ("b" `isSuffixOf` unCardCode code)
   )
 
 toClassSymbol :: String -> Maybe ClassSymbol
@@ -162,6 +167,17 @@ allCards =
     <> allPlayerTreacheryCards
     <> allEncounterTreacheryCards
 
+getSkills :: CardJson -> [SkillType]
+getSkills CardJson {..} =
+  getSkill SkillWillpower skill_willpower
+    <> getSkill SkillIntellect skill_intellect
+    <> getSkill SkillCombat skill_combat
+    <> getSkill SkillAgility skill_agility
+    <> getSkill SkillWild skill_wild
+ where
+  getSkill _ Nothing = []
+  getSkill skillType (Just n) = replicate n skillType
+
 main :: IO ()
 main = do
   ecards <- eitherDecodeFileStrict @[CardJson] ("data" </> "cards.json")
@@ -183,7 +199,7 @@ main = do
             (cdEncounterSet card)
         case lookup ccode lookupMap of
           Nothing -> throw $ UnknownCard (cdCardCode card)
-          Just CardJson {..} -> do
+          Just cardJson@CardJson {..} -> do
             when
               (Name (normalizeName name) subname /= cdName card)
               (throw $ NameMismatch code (Name name subname) (cdName card))
@@ -200,4 +216,12 @@ main = do
                 (cdName card)
                 faction_name
                 (cdClassSymbol card)
+              )
+            when
+              (sort (getSkills cardJson) /= sort (cdSkills card))
+              (throw $ SkillsMismatch
+                code
+                (cdName card)
+                (getSkills cardJson)
+                (cdSkills card)
               )

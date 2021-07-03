@@ -15,9 +15,12 @@ import Arkham.Types.ClassSymbol
 import Arkham.Types.EncounterSet
 import Arkham.Types.Name
 import Arkham.Types.SkillType
+import Arkham.Types.Trait hiding (Dunwich)
 import Control.Exception
 import Data.Aeson
 import Data.Maybe (fromJust)
+import qualified Data.Text as T
+import Text.Read (readEither)
 
 data CardJson = CardJson
   { code :: CardCode
@@ -62,6 +65,13 @@ data ClassMismatch = ClassMismatch CardCode Name String (Maybe ClassSymbol)
 data SkillsMismatch = SkillsMismatch CardCode Name [SkillType] [SkillType]
   deriving stock Show
 
+data TraitsMismatch = TraitsMismatch
+  CardCode
+  Name
+  (HashSet Trait)
+  (HashSet Trait)
+  deriving stock Show
+
 instance Exception InternalCardCodeMismatch
 instance Exception UnknownCard
 instance Exception NameMismatch
@@ -69,6 +79,7 @@ instance Exception UniqueMismatch
 instance Exception CardCostMismatch
 instance Exception ClassMismatch
 instance Exception SkillsMismatch
+instance Exception TraitsMismatch
 
 encounterJson :: IO (HashMap EncounterSet (HashMap CardCode CardJson))
 encounterJson = mapFromList
@@ -178,6 +189,20 @@ getSkills CardJson {..} =
   getSkill _ Nothing = []
   getSkill skillType (Just n) = replicate n skillType
 
+getTraits :: CardJson -> HashSet Trait
+getTraits CardJson {..} = case traits of
+  Nothing -> mempty
+  Just s -> setFromList $ map toTrait (T.splitOn ". " s)
+ where
+  toTrait x =
+    handleEither x . readEither . T.unpack . T.dropWhileEnd (== '.') $ T.replace
+      " "
+      ""
+      x
+  handleEither _ (Right a) = a
+  handleEither x (Left err) =
+    error $ show code <> ": " <> err <> " " <> show x <> " from " <> show traits
+
 main :: IO ()
 main = do
   ecards <- eitherDecodeFileStrict @[CardJson] ("data" </> "cards.json")
@@ -224,4 +249,12 @@ main = do
                 (cdName card)
                 (getSkills cardJson)
                 (cdSkills card)
+              )
+            when
+              (getTraits cardJson /= cdCardTraits card)
+              (throw $ TraitsMismatch
+                code
+                (cdName card)
+                (getTraits cardJson)
+                (cdCardTraits card)
               )

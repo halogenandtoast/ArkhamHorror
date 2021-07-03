@@ -1,15 +1,14 @@
 module Arkham.Types.Investigator
   ( module Arkham.Types.Investigator
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Action (Action, TakenAction)
 import Arkham.Types.AssetId
 import Arkham.Types.Card
-import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs
@@ -281,8 +280,7 @@ getIsPrey LowestRemainingSanity i = do
     . map unRemainingSanity
     <$> getSetList ()
   pure $ lowestRemainingSanity == remainingSanity
-getIsPrey (Bearer bid) i =
-  pure $ unBearerId bid == toId i
+getIsPrey (Bearer bid) i = pure $ unBearerId bid == toId i
 getIsPrey MostClues i = do
   clueCount <- unClueCount <$> getCount i
   mostClueCount <- fromMaybe 0 . maximumMay . map unClueCount <$> getSetList ()

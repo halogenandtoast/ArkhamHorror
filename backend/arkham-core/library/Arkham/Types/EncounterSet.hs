@@ -21,6 +21,7 @@ data EncounterSet
   | AgentsOfCthulhu
   | ExtracurricularActivity
   | TheHouseAlwaysWins
+  | ArmitagesFate
   | TheMiskatonicMuseum
   | TheEssexCountyExpress
   | BloodOnTheAltar
@@ -45,5 +46,5 @@ data EncounterSet
   | TheBayou
   | CurseOfTheRougarou
   | Test
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Bounded, Enum)
   deriving anyclass (ToJSON, FromJSON, Hashable)

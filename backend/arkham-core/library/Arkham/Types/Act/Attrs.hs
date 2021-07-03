@@ -1,10 +1,7 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Arkham.Types.Act.Attrs
   ( module Arkham.Types.Act.Attrs
   , module X
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -37,7 +34,11 @@ data ActAttrs = ActAttrs
   }
   deriving stock (Show, Eq, Generic)
 
-makeLensesWith suffixedFields ''ActAttrs
+sequenceL :: Lens' ActAttrs ActSequence
+sequenceL = lens actSequence $ \m x -> m { actSequence = x }
+
+treacheriesL :: Lens' ActAttrs (HashSet TreacheryId)
+treacheriesL = lens actTreacheries $ \m x -> m { actTreacheries = x }
 
 instance ToJSON ActAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "act"
@@ -134,9 +135,7 @@ advanceActSideA investigatorIds requiredClues attrs = do
   pure
     ([ SpendClues totalRequiredClues investigatorIds | totalRequiredClues > 0 ]
     <> [ CheckWindow leadInvestigatorId [WhenActAdvance (toId attrs)]
-       , chooseOne
-         leadInvestigatorId
-         [AdvanceAct (toId attrs) (toSource attrs)]
+       , chooseOne leadInvestigatorId [AdvanceAct (toId attrs) (toSource attrs)]
        ]
     )
 

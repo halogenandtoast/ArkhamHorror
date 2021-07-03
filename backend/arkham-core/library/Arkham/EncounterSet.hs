@@ -1,4 +1,7 @@
-module Arkham.EncounterSet (module X, gatherEncounterSet) where
+module Arkham.EncounterSet
+  ( module X
+  , gatherEncounterSet
+  ) where
 
 import Arkham.Prelude
 
@@ -30,6 +33,7 @@ setCards = \case
   AgentsOfShubNiggurath -> "01179" : replicate 3 "01180"
   AgentsOfCthulhu -> replicate 2 "01181" <> replicate 2 "01182"
   ExtracurricularActivity -> [] -- all cards are set aside
+  ArmitagesFate -> [] -- no encounter cards
   TheHouseAlwaysWins -> replicate 2 "02081" <> replicate 2 "02082"
   TheMiskatonicMuseum ->
     ["02141", "02142"]

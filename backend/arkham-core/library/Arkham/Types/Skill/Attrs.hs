@@ -1,5 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Arkham.Types.Skill.Attrs where
 
 import Arkham.Prelude
@@ -20,8 +18,6 @@ data SkillAttrs = SkillAttrs
   , skillOwner :: InvestigatorId
   }
   deriving stock (Show, Eq, Generic)
-
-makeLensesWith suffixedFields ''SkillAttrs
 
 instance HasCardDef SkillAttrs where
   toCardDef = skillCardDef
@@ -56,11 +52,8 @@ instance SourceEntity SkillAttrs where
   isSource _ _ = False
 
 skill :: (SkillAttrs -> a) -> CardDef -> InvestigatorId -> SkillId -> a
-skill f cardDef iid sid = f $ SkillAttrs
-  { skillCardDef = cardDef
-  , skillId = sid
-  , skillOwner = iid
-  }
+skill f cardDef iid sid =
+  f $ SkillAttrs { skillCardDef = cardDef, skillId = sid, skillOwner = iid }
 
 instance HasActions env SkillAttrs where
   getActions _ _ _ = pure []

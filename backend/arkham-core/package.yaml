@@ -46,12 +46,23 @@ library:
     - vector
     - MonadRandom
     - extra
-    - template-haskell
     - aeson-casing
     - mtl
     - these-lens
     - semialign
     - pretty-simple
+
+executables:
+  validate:
+    main: main.hs
+    source-dirs: validate
+    ghc-options: -threaded -O2 "-with-rtsopts=-N -T -I0"
+    other-modules: []
+    dependencies:
+      - classy-prelude
+      - arkham-core
+      - aeson
+      - text
 
 tests:
   spec:

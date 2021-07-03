@@ -1,11 +1,12 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Arkham.Types.Asset.Attrs where
 
 import Arkham.Prelude
 
 import Arkham.Json
 import Arkham.Types.Ability
+import Arkham.Types.Action
+import Arkham.Types.Asset.Class
+import Arkham.Types.Asset.Uses
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -19,9 +20,6 @@ import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Action
-import Arkham.Types.Asset.Class
-import Arkham.Types.Asset.Uses
 
 type AssetCard a = (AssetId -> a)
 
@@ -47,7 +45,51 @@ data AssetAttrs = AssetAttrs
   }
   deriving stock (Show, Eq, Generic)
 
-makeLensesWith suffixedFields ''AssetAttrs
+canLeavePlayByNormalMeansL :: Lens' AssetAttrs Bool
+canLeavePlayByNormalMeansL = lens assetCanLeavePlayByNormalMeans
+  $ \m x -> m { assetCanLeavePlayByNormalMeans = x }
+
+horrorL :: Lens' AssetAttrs (Maybe Int)
+horrorL = lens assetHorror $ \m x -> m { assetHorror = x }
+
+isStoryL :: Lens' AssetAttrs Bool
+isStoryL = lens assetIsStory $ \m x -> m { assetIsStory = x }
+
+healthL :: Lens' AssetAttrs (Maybe Int)
+healthL = lens assetHealth $ \m x -> m { assetHealth = x }
+
+sanityL :: Lens' AssetAttrs (Maybe Int)
+sanityL = lens assetSanity $ \m x -> m { assetSanity = x }
+
+slotsL :: Lens' AssetAttrs [SlotType]
+slotsL = lens assetSlots $ \m x -> m { assetSlots = x }
+
+doomL :: Lens' AssetAttrs Int
+doomL = lens assetDoom $ \m x -> m { assetDoom = x }
+
+cluesL :: Lens' AssetAttrs Int
+cluesL = lens assetClues $ \m x -> m { assetHealthDamage = x }
+
+healthDamageL :: Lens' AssetAttrs Int
+healthDamageL = lens assetHealthDamage $ \m x -> m { assetHealthDamage = x }
+
+sanityDamageL :: Lens' AssetAttrs Int
+sanityDamageL = lens assetSanityDamage $ \m x -> m { assetSanityDamage = x }
+
+usesL :: Lens' AssetAttrs Uses
+usesL = lens assetUses $ \m x -> m { assetUses = x }
+
+locationL :: Lens' AssetAttrs (Maybe LocationId)
+locationL = lens assetLocation $ \m x -> m { assetLocation = x }
+
+enemyL :: Lens' AssetAttrs (Maybe EnemyId)
+enemyL = lens assetEnemy $ \m x -> m { assetEnemy = x }
+
+investigatorL :: Lens' AssetAttrs (Maybe InvestigatorId)
+investigatorL = lens assetInvestigator $ \m x -> m { assetInvestigator = x }
+
+exhaustedL :: Lens' AssetAttrs Bool
+exhaustedL = lens assetExhausted $ \m x -> m { assetExhausted = x }
 
 instance HasCardDef AssetAttrs where
   toCardDef = assetCardDef
@@ -66,42 +108,64 @@ asset :: (AssetAttrs -> a) -> CardDef -> AssetId -> a
 asset f cardDef aid = assetWith f cardDef id aid
 
 ally :: (AssetAttrs -> a) -> CardDef -> (Int, Int) -> AssetId -> a
-ally f cardDef stats  = allyWith f cardDef stats id
+ally f cardDef stats = allyWith f cardDef stats id
 
-allyWith :: (AssetAttrs -> a) -> CardDef -> (Int, Int) -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
-allyWith f cardDef (health, sanity) g = slotWith AllySlot f cardDef (g . setSanity . setHealth)
+allyWith
+  :: (AssetAttrs -> a)
+  -> CardDef
+  -> (Int, Int)
+  -> (AssetAttrs -> AssetAttrs)
+  -> AssetId
+  -> a
+allyWith f cardDef (health, sanity) g = slotWith
+  AllySlot
+  f
+  cardDef
+  (g . setSanity . setHealth)
  where
-   setHealth = healthL .~ (health <$ guard (health > 0))
-   setSanity = sanityL .~ (sanity <$ guard (sanity > 0))
+  setHealth = healthL .~ (health <$ guard (health > 0))
+  setSanity = sanityL .~ (sanity <$ guard (sanity > 0))
 
 arcane :: (AssetAttrs -> a) -> CardDef -> AssetId -> a
 arcane f cardDef = arcaneWith f cardDef id
 
-arcaneWith :: (AssetAttrs -> a) -> CardDef -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
+arcaneWith
+  :: (AssetAttrs -> a) -> CardDef -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
 arcaneWith = slotWith ArcaneSlot
 
 body :: (AssetAttrs -> a) -> CardDef -> AssetId -> a
 body f cardDef = bodyWith f cardDef id
 
-bodyWith :: (AssetAttrs -> a) -> CardDef -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
+bodyWith
+  :: (AssetAttrs -> a) -> CardDef -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
 bodyWith = slotWith BodySlot
 
 accessory :: (AssetAttrs -> a) -> CardDef -> AssetId -> a
 accessory f cardDef = accessoryWith f cardDef id
 
-accessoryWith :: (AssetAttrs -> a) -> CardDef -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
+accessoryWith
+  :: (AssetAttrs -> a) -> CardDef -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
 accessoryWith = slotWith AccessorySlot
 
 hand :: (AssetAttrs -> a) -> CardDef -> AssetId -> a
 hand f cardDef = handWith f cardDef id
 
-handWith :: (AssetAttrs -> a) -> CardDef -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
+handWith
+  :: (AssetAttrs -> a) -> CardDef -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
 handWith = slotWith HandSlot
 
-slotWith :: SlotType -> (AssetAttrs -> a) -> CardDef -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
-slotWith slot f cardDef g aid = assetWith f cardDef (g . (slotsL .~ [slot])) aid
+slotWith
+  :: SlotType
+  -> (AssetAttrs -> a)
+  -> CardDef
+  -> (AssetAttrs -> AssetAttrs)
+  -> AssetId
+  -> a
+slotWith slot f cardDef g aid =
+  assetWith f cardDef (g . (slotsL .~ [slot])) aid
 
-assetWith :: (AssetAttrs -> a) -> CardDef -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
+assetWith
+  :: (AssetAttrs -> a) -> CardDef -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
 assetWith f cardDef g aid = f . g $ AssetAttrs
   { assetId = aid
   , assetCardDef = cardDef

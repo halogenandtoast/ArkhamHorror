@@ -1,6 +1,4 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE TemplateHaskell #-}
-
 module Arkham.Types.Investigator.Attrs where
 
 import Arkham.Prelude
@@ -77,7 +75,93 @@ data InvestigatorAttrs = InvestigatorAttrs
   }
   deriving stock (Show, Generic)
 
-makeLensesWith suffixedFields ''InvestigatorAttrs
+willpowerL :: Lens' InvestigatorAttrs Int
+willpowerL =
+  lens investigatorWillpower $ \m x -> m { investigatorWillpower = x }
+
+intellectL :: Lens' InvestigatorAttrs Int
+intellectL =
+  lens investigatorIntellect $ \m x -> m { investigatorIntellect = x }
+
+combatL :: Lens' InvestigatorAttrs Int
+combatL = lens investigatorCombat $ \m x -> m { investigatorCombat = x }
+
+agilityL :: Lens' InvestigatorAttrs Int
+agilityL = lens investigatorAgility $ \m x -> m { investigatorAgility = x }
+
+treacheriesL :: Lens' InvestigatorAttrs (HashSet TreacheryId)
+treacheriesL =
+  lens investigatorTreacheries $ \m x -> m { investigatorTreacheries = x }
+
+assetsL :: Lens' InvestigatorAttrs (HashSet AssetId)
+assetsL = lens investigatorAssets $ \m x -> m { investigatorAssets = x }
+
+healthDamageL :: Lens' InvestigatorAttrs Int
+healthDamageL =
+  lens investigatorHealthDamage $ \m x -> m { investigatorHealthDamage = x }
+
+sanityDamageL :: Lens' InvestigatorAttrs Int
+sanityDamageL =
+  lens investigatorSanityDamage $ \m x -> m { investigatorSanityDamage = x }
+
+locationL :: Lens' InvestigatorAttrs LocationId
+locationL = lens investigatorLocation $ \m x -> m { investigatorLocation = x }
+
+connectedLocationsL :: Lens' InvestigatorAttrs (HashSet LocationId)
+connectedLocationsL = lens investigatorConnectedLocations
+  $ \m x -> m { investigatorConnectedLocations = x }
+
+slotsL :: Lens' InvestigatorAttrs (HashMap SlotType [Slot])
+slotsL = lens investigatorSlots $ \m x -> m { investigatorSlots = x }
+
+endedTurnL :: Lens' InvestigatorAttrs Bool
+endedTurnL =
+  lens investigatorEndedTurn $ \m x -> m { investigatorEndedTurn = x }
+
+defeatedL :: Lens' InvestigatorAttrs Bool
+defeatedL = lens investigatorDefeated $ \m x -> m { investigatorDefeated = x }
+
+resignedL :: Lens' InvestigatorAttrs Bool
+resignedL = lens investigatorResigned $ \m x -> m { investigatorResigned = x }
+
+resourcesL :: Lens' InvestigatorAttrs Int
+resourcesL =
+  lens investigatorResources $ \m x -> m { investigatorResources = x }
+
+remainingActionsL :: Lens' InvestigatorAttrs Int
+remainingActionsL = lens investigatorRemainingActions
+  $ \m x -> m { investigatorRemainingActions = x }
+
+actionsTakenL :: Lens' InvestigatorAttrs [Action]
+actionsTakenL =
+  lens investigatorActionsTaken $ \m x -> m { investigatorActionsTaken = x }
+
+handL :: Lens' InvestigatorAttrs [Card]
+handL = lens investigatorHand $ \m x -> m { investigatorHand = x }
+
+engagedEnemiesL :: Lens' InvestigatorAttrs (HashSet EnemyId)
+engagedEnemiesL =
+  lens investigatorEngagedEnemies $ \m x -> m { investigatorEngagedEnemies = x }
+
+deckL :: Lens' InvestigatorAttrs (Deck PlayerCard)
+deckL = lens investigatorDeck $ \m x -> m { investigatorDeck = x }
+
+discardL :: Lens' InvestigatorAttrs [PlayerCard]
+discardL = lens investigatorDiscard $ \m x -> m { investigatorDiscard = x }
+
+cluesL :: Lens' InvestigatorAttrs Int
+cluesL = lens investigatorClues $ \m x -> m { investigatorClues = x }
+
+xpL :: Lens' InvestigatorAttrs Int
+xpL = lens investigatorXp $ \m x -> m { investigatorXp = x }
+
+mentalTraumaL :: Lens' InvestigatorAttrs Int
+mentalTraumaL =
+  lens investigatorMentalTrauma $ \m x -> m { investigatorMentalTrauma = x }
+
+physicalTraumaL :: Lens' InvestigatorAttrs Int
+physicalTraumaL =
+  lens investigatorPhysicalTrauma $ \m x -> m { investigatorPhysicalTrauma = x }
 
 instance HasTraits InvestigatorAttrs where
   toTraits = investigatorTraits
@@ -452,9 +536,11 @@ getModifiedCardCost attrs (PlayerCard MkPlayerCard {..}) = do
     Just DynamicCost -> 0
     Nothing -> 0
   applyModifier (ReduceCostOf traits m) n
-    | not (null (setFromList traits `intersection` toTraits pcDef)) = max 0 (n - m)
-  applyModifier (ReduceCostOfCardType cardType m) n | cardType == cdCardType pcDef =
-    max 0 (n - m)
+    | not (null (setFromList traits `intersection` toTraits pcDef)) = max
+      0
+      (n - m)
+  applyModifier (ReduceCostOfCardType cardType m) n
+    | cardType == cdCardType pcDef = max 0 (n - m)
   applyModifier _ n = n
 getModifiedCardCost attrs (EncounterCard MkEncounterCard {..}) = do
   modifiers <-
@@ -465,7 +551,9 @@ getModifiedCardCost attrs (EncounterCard MkEncounterCard {..}) = do
     modifiers
  where
   applyModifier (ReduceCostOf traits m) n
-    | not (null (setFromList traits `intersection` toTraits ecDef)) = max 0 (n - m)
+    | not (null (setFromList traits `intersection` toTraits ecDef)) = max
+      0
+      (n - m)
   applyModifier _ n = n
 
 getIsPlayable
@@ -485,7 +573,8 @@ getIsPlayable attrs@InvestigatorAttrs {..} windows c@(PlayerCard MkPlayerCard {.
       && (modifiedCardCost <= investigatorResources)
       && none prevents modifiers
       && (not (cdFast pcDef) || (cdFast pcDef && cardInWindows windows c attrs))
-      && (cdAction pcDef /= Just Action.Evade || not (null investigatorEngagedEnemies)
+      && (cdAction pcDef /= Just Action.Evade || not
+           (null investigatorEngagedEnemies)
          )
  where
   prevents (CannotPlay typePairs) = any
@@ -510,7 +599,8 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
 
 cardInWindows :: [Window] -> Card -> InvestigatorAttrs -> Bool
 cardInWindows windows c _ = case c of
-  PlayerCard pc -> notNull $ cdWindows (pcDef pc) `intersect` setFromList windows
+  PlayerCard pc ->
+    notNull $ cdWindows (pcDef pc) `intersect` setFromList windows
   _ -> False
 
 getPlayableCards
@@ -540,7 +630,9 @@ getPlayableDiscards attrs@InvestigatorAttrs {..} windows = do
     any (allowsPlayFromDiscard n card) modifiers
   allowsPlayFromDiscard 0 MkPlayerCard {..} (CanPlayTopOfDiscard (mcardType, traits))
     = maybe True (== cdCardType pcDef) mcardType
-      && (null traits || (setFromList traits `HashSet.isSubsetOf` toTraits pcDef))
+      && (null traits
+         || (setFromList traits `HashSet.isSubsetOf` toTraits pcDef)
+         )
   allowsPlayFromDiscard _ _ _ = False
 
 
@@ -634,7 +726,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     }
   SetupInvestigators -> do
     let
-      (permanentCards, deck') = partition (cdPermanent . pcDef) (unDeck investigatorDeck)
+      (permanentCards, deck') =
+        partition (cdPermanent . pcDef) (unDeck investigatorDeck)
       (discard, hand, deck) = drawOpeningHand (a & deckL .~ Deck deck') 5
     unshiftMessages
       $ [ PutCardIntoPlay investigatorId (PlayerCard card) Nothing
@@ -760,12 +853,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         $ find ((== cardId) . toCardId) investigatorHand
     case card of
       PlayerCard pc ->
-        pure
-          $ a
-          & handL
-          %~ filter ((/= cardId) . toCardId)
-          & discardL
-          %~ (pc :)
+        pure $ a & handL %~ filter ((/= cardId) . toCardId) & discardL %~ (pc :)
       EncounterCard _ -> pure $ a & handL %~ filter ((/= cardId) . toCardId) -- TODO: This should discard to the encounter discard
   RemoveCardFromHand iid cardCode | iid == investigatorId ->
     pure $ a & handL %~ filter ((/= cardCode) . toCardCode)
@@ -1205,7 +1293,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let
       updateCard card = if toCardId card == cardId
         then case card of
-          PlayerCard pc -> PlayerCard $ pc { pcDef = (pcDef pc) { cdFast = True } }
+          PlayerCard pc ->
+            PlayerCard $ pc { pcDef = (pcDef pc) { cdFast = True } }
           EncounterCard ec -> EncounterCard ec
         else card
     pure $ a & handL %~ map updateCard
@@ -1377,9 +1466,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       $ unshiftMessage (DrawCards investigatorId 1 False)
     pure $ a & resourcesL +~ 1
   LoadDeck iid deck | iid == investigatorId -> do
-    shuffled <- shuffleM $ flip map deck $ \card -> if cdWeakness (pcDef card)
-      then card { pcBearer = Just iid }
-      else card
+    shuffled <- shuffleM $ flip map deck $ \card ->
+      if cdWeakness (pcDef card) then card { pcBearer = Just iid } else card
     pure $ a & deckL .~ Deck shuffled
   InvestigatorCommittedCard iid cardId | iid == investigatorId ->
     pure $ a & handL %~ filter ((/= cardId) . toCardId)
@@ -1402,7 +1490,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           PlayerCard MkPlayerCard {..} ->
             pcId
               `notElem` committedCardIds
-              && (SkillWild `elem` cdSkills pcDef || skillType `elem` cdSkills pcDef)
+              && (SkillWild
+                 `elem` cdSkills pcDef
+                 || skillType
+                 `elem` cdSkills pcDef
+                 )
               && (MaxOnePerTest
                  `notElem` cdCommitRestrictions pcDef
                  || cdCardCode pcDef
@@ -1450,7 +1542,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             PlayerCard MkPlayerCard {..} ->
               pcId
                 `notElem` committedCardIds
-                && (SkillWild `elem` cdSkills pcDef || skillType `elem` cdSkills pcDef)
+                && (SkillWild
+                   `elem` cdSkills pcDef
+                   || skillType
+                   `elem` cdSkills pcDef
+                   )
                 && (OnlyYourTest `notElem` cdCommitRestrictions pcDef)
                 && (MaxOnePerTest
                    `notElem` cdCommitRestrictions pcDef
@@ -1537,8 +1633,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let
       card = fromJustNote "card did not exist"
         $ find ((== cardId) . toCardId) (unDeck investigatorDeck)
-    deck <- shuffleM
-      $ filter ((/= cardId) . toCardId) (unDeck investigatorDeck)
+    deck <- shuffleM $ filter ((/= cardId) . toCardId) (unDeck investigatorDeck)
     case card of
       MkPlayerCard {..} -> do
         when (cdCardType pcDef == PlayerTreacheryType)

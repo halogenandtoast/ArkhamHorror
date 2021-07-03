@@ -1,5 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Arkham.Types.Effect.Attrs
   ( module Arkham.Types.Effect.Attrs
   ) where
@@ -9,13 +7,13 @@ import Arkham.Prelude
 import Arkham.Json
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Effect.Window
 import Arkham.Types.EffectId
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.Effect.Window
 
 data EffectAttrs = EffectAttrs
   { effectId :: EffectId
@@ -27,8 +25,6 @@ data EffectAttrs = EffectAttrs
   , effectWindow :: Maybe EffectWindow
   }
   deriving stock (Show, Eq, Generic)
-
-makeLensesWith suffixedFields ''EffectAttrs
 
 type EffectArgs = (EffectId, Maybe (EffectMetadata Message), Source, Target)
 

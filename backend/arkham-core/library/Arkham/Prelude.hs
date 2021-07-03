@@ -1,8 +1,7 @@
 module Arkham.Prelude
   ( module X
   , module Arkham.Prelude
-  )
-where
+  ) where
 
 import ClassyPrelude as X hiding (on, (\\))
 
@@ -19,11 +18,11 @@ import Control.Lens as X
   , view
   , views
   , (%~)
-  , (<>~)
   , (&)
   , (+~)
   , (-~)
   , (.~)
+  , (<>~)
   , (?~)
   , (^.)
   , (^..)
@@ -35,43 +34,23 @@ import Control.Monad.Random as X (MonadRandom)
 import Control.Monad.Random.Class as X (getRandom, getRandomR, getRandoms)
 import Control.Monad.Random.Strict as X (Random)
 import Data.Aeson as X
-import qualified Data.Char as C
-import Data.Coerce as X (coerce)
-import Data.List as X (nub, (\\))
-import Data.List.NonEmpty as X (NonEmpty(..), nonEmpty)
-import Data.UUID as X (UUID)
-import GHC.Stack as X
-import Language.Haskell.TH hiding (location)
-import Safe as X (fromJustNote)
-import System.Random.Shuffle as X
-
 import Data.Aeson.Text
+import Data.Coerce as X (coerce)
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
+import Data.List as X (nub, (\\))
 import qualified Data.List as L
+import Data.List.NonEmpty as X (NonEmpty(..), nonEmpty)
 import qualified Data.List.NonEmpty as NE
 import qualified Data.Text.Lazy as TL
 import Data.Text.Lazy.Builder
+import Data.UUID as X (UUID)
+import GHC.Stack as X
+import Safe as X (fromJustNote)
+import System.Random.Shuffle as X
 
 guardM :: (Alternative m, Monad m) => m Bool -> m ()
 guardM p = p >>= guard
-
-suffixedNamer :: FieldNamer
-suffixedNamer _ _ n = case dropWhile C.isLower (nameBase n) of
-  x : xs -> [TopName (mkName ((C.toLower x : xs) ++ "L"))]
-  _ -> []
-
-suffixedWithNamer :: String -> FieldNamer
-suffixedWithNamer str _ _ n = case drop (length str) (nameBase n) of
-  x : xs -> [TopName (mkName ((C.toLower x : xs) ++ "L"))]
-  _ -> []
-
-suffixedWithFields :: String -> LensRules
-suffixedWithFields suffix =
-  defaultFieldRules & lensField .~ suffixedWithNamer suffix
-
-suffixedFields :: LensRules
-suffixedFields = defaultFieldRules & lensField .~ suffixedNamer
 
 mapSet :: (Hashable b, Eq b) => (a -> b) -> HashSet a -> HashSet b
 mapSet = HashSet.map

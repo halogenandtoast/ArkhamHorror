@@ -3,6 +3,11 @@ module Main where
 import ClassyPrelude
 
 import Arkham.Asset.Cards
+import Arkham.Enemy.Cards
+import Arkham.Event.Cards
+import Arkham.Location.Cards
+import Arkham.Skill.Cards
+import Arkham.Treachery.Cards
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.Cost
@@ -121,7 +126,7 @@ toCardFile set = "data" </> "packs" </> toDir set </> "cards.json"
 
 filterTest :: [(CardCode, CardDef)] -> [(CardCode, CardDef)]
 filterTest =
-  filter (\(code, cdef) -> code /= "asset" && cdEncounterSet cdef /= Just Test)
+  filter (\(code, cdef) -> code /= "asset" && cdEncounterSet cdef /= Just Test && not (isSuffixOf "b" (unCardCode code)))
 
 toClassSymbol :: String -> Maybe ClassSymbol
 toClassSymbol = \case
@@ -142,6 +147,17 @@ normalizeCost (Just (-2)) = Just DynamicCost
 normalizeCost (Just n) = Just (StaticCost n)
 normalizeCost Nothing = Nothing
 
+allCards :: HashMap CardCode CardDef
+allCards = allPlayerAssetCards
+  <> allEncounterAssetCards
+  <> allEncounterEnemyCards
+  <> allPlayerEnemyCards
+  <> allPlayerEventCards
+  <> allLocationCards
+  <> allPlayerSkillCards
+  <> allPlayerTreacheryCards
+  <> allEncounterTreacheryCards
+
 main :: IO ()
 main = do
   ecards <- eitherDecodeFileStrict @[CardJson] ("data" </> "cards.json")
@@ -152,7 +168,7 @@ main = do
         jsonMap :: HashMap CardCode CardJson =
           mapFromList $ map (code &&& id) cards
       encounterMaps <- encounterJson
-      for_ (filterTest $ mapToList allPlayerAssetCards) $ \(ccode, card) -> do
+      for_ (filterTest $ mapToList allCards) $ \(ccode, card) -> do
         when
           (ccode /= cdCardCode card)
           (throw $ InternalCardCodeMismatch ccode (cdCardCode card))

@@ -661,7 +661,7 @@ schoolhouse_213 =
 
 theHiddenChamber :: CardDef
 theHiddenChamber =
-  (location "02214" "The Hidden Chamber" BloodOnTheAltar)
+  (location "02214" ("The Hidden Chamber" <:> "Prison of the Beast") BloodOnTheAltar)
     { cdCardTraits = singleton Dunwich
     , cdVictoryPoints = Just 2
     }

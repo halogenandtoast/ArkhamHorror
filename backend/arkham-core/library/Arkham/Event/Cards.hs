@@ -197,7 +197,7 @@ sureGamble3 = (event "01056" "Sure Gamble" 2 Rogue)
   }
 
 hotStreak4 :: CardDef
-hotStreak4 = (event "01057" "Hot Streak" 2 Rogue)
+hotStreak4 = (event "01057" "Hot Streak" 3 Rogue)
   { cdSkills = [SkillWild]
   , cdCardTraits = setFromList [Fortune]
   , cdLevel = 4
@@ -370,7 +370,7 @@ emergencyAid = (event "02105" "Emergency Aid" 2 Guardian)
   }
 
 iveGotAPlan :: CardDef
-iveGotAPlan = (event "02107" "\"I've Got a Plan!\"" 3 Seeker)
+iveGotAPlan = (event "02107" "\"I've got a plan!\"" 3 Seeker)
   { cdSkills = [SkillIntellect, SkillCombat]
   , cdCardTraits = setFromList [Insight, Tactic]
   }
@@ -388,7 +388,7 @@ delveTooDeep = (event "02111" "Delve Too Deep" 1 Mystic)
   }
 
 oops :: CardDef
-oops = (event "02113" "Oops" 2 Survivor)
+oops = (event "02113" "Oops!" 2 Survivor)
   { cdCardTraits = singleton Fortune
   , cdFast = True
   , cdWindows = mempty -- We handle this via behavior
@@ -412,7 +412,7 @@ secondWind = (event "04149" "Second Wind" 1 Guardian)
   }
 
 bloodRite :: CardDef
-bloodRite = (event "05317" "Blood Rite" 0 Seeker)
+bloodRite = (event "05317" "Blood-Rite" 0 Seeker)
   { cdSkills = [SkillWillpower, SkillIntellect, SkillCombat]
   , cdCardTraits = setFromList [Spell]
   }
@@ -432,6 +432,7 @@ astoundingRevelation =
     , cdCardTraits = setFromList [Research]
     , cdFast = True
     , cdWindows = mempty -- cannot be played
+    , cdCost = Nothing
     }
 
 dynamiteBlast2 :: CardDef
@@ -481,7 +482,7 @@ taunt3 = (event "60130" "Taunt" 1 Guardian)
   }
 
 iveGotAPlan2 :: CardDef
-iveGotAPlan2 = (event "60225" "\"I've Got a Plan!\"" 2 Seeker)
+iveGotAPlan2 = (event "60225" "\"I've got a plan!\"" 2 Seeker)
   { cdSkills = [SkillIntellect, SkillIntellect, SkillCombat]
   , cdCardTraits = setFromList [Insight, Tactic]
   }

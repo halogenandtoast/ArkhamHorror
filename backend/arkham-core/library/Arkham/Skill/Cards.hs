@@ -74,7 +74,7 @@ fearless = (skill "01067" "Fearless" [SkillWillpower] Mystic)
 
 survivalInstinct :: CardDef
 survivalInstinct =
-  (skill "01081" "Survival Instrinct" [SkillAgility] Survivor)
+  (skill "01081" "Survival Instinct" [SkillAgility] Survivor)
     { cdCardTraits = setFromList [Innate]
     }
 
@@ -87,7 +87,7 @@ guts =
 
 perception :: CardDef
 perception =
-  (skill "01090" "Perceptions" [SkillIntellect, SkillIntellect] Neutral)
+  (skill "01090" "Perception" [SkillIntellect, SkillIntellect] Neutral)
     { cdCardTraits = setFromList [Practiced]
     , cdCommitRestrictions = [MaxOnePerTest]
     }

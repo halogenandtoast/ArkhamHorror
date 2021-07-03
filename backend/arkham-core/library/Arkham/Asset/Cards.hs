@@ -89,7 +89,7 @@ allPlayerAssetCards = mapFromList
   , ("01048", leoDeLuca)
   , ("01049", hardKnocks)
   , ("01054", leoDeLuca1)
-  , ("01055", catBurgler1)
+  , ("01055", catBurglar1)
   , ("01058", forbiddenKnowledge)
   , ("01059", holyRosary)
   , ("01060", shrivelling)
@@ -348,7 +348,7 @@ encyclopedia2 = (asset "01042" "Encyclopedia" 2 Seeker)
   }
 
 switchblade :: CardDef
-switchblade = (asset "01044" "Switchbalde" 1 Rogue)
+switchblade = (asset "01044" "Switchblade" 1 Rogue)
   { cdSkills = [SkillAgility]
   , cdCardTraits = setFromList [Item, Weapon, Melee, Illicit]
   , cdFast = True
@@ -377,6 +377,7 @@ leoDeLuca :: CardDef
 leoDeLuca = (asset "01048" ("Leo De Luca" <:> "The Louisiana Lion") 6 Rogue)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Ally, Criminal]
+  , cdUnique = True
   }
 
 hardKnocks :: CardDef
@@ -393,8 +394,8 @@ leoDeLuca1 = (asset "01054" ("Leo De Luca" <:> "The Louisiana Lion") 5 Rogue)
   , cdUnique = True
   }
 
-catBurgler1 :: CardDef
-catBurgler1 = (asset "01055" "Cat Burgler" 4 Rogue)
+catBurglar1 :: CardDef
+catBurglar1 = (asset "01055" "Cat Burglar" 4 Rogue)
   { cdSkills = [SkillWillpower, SkillAgility]
   , cdCardTraits = setFromList [Ally, Criminal]
   , cdLevel = 1
@@ -492,6 +493,7 @@ aquinnah1 = (asset "01082" ("Aquinnah" <:> "The Forgotten Daughter") 5 Survivor
   { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Ally]
   , cdLevel = 1
+  , cdUnique = True
   }
 
 knife :: CardDef
@@ -524,6 +526,7 @@ litaChantler :: CardDef
 litaChantler =
   (storyAsset "01117" ("Lita Chantler" <:> "The Zealot") 0 TheGathering)
     { cdCardTraits = setFromList [Ally]
+    , cdUnique = True
     }
 
 zoeysCross :: CardDef
@@ -569,7 +572,7 @@ laboratoryAssistant = (asset "02020" "Laboratory Assistant" 2 Seeker)
   }
 
 strangeSolution :: CardDef
-strangeSolution = (asset "02021" "Strange Solution" 1 Seeker)
+strangeSolution = (asset "02021" ("Strange Solution" <:> "Unidentified") 1 Seeker)
   { cdSkills = [SkillWild]
   , cdCardTraits = setFromList [Item, Science]
   }
@@ -720,7 +723,7 @@ adaptable1 = permanent $ (asset "02110" "Adaptable" 0 Rogue)
   }
 
 songOfTheDead2 :: CardDef
-songOfTheDead2 = (asset "92112" "Song of the Dead" 2 Mystic)
+songOfTheDead2 = (asset "02112" "Song of the Dead" 2 Mystic)
   { cdCardTraits = setFromList [Spell, Song]
   , cdSkills = [SkillWillpower]
   }
@@ -823,14 +826,14 @@ powderOfIbnGhazi = (storyAsset
   }
 
 springfieldM19034 :: CardDef
-springfieldM19034 = (asset "02226" "Springfiled M1903" 4 Guardian)
+springfieldM19034 = (asset "02226" "Springfield M1903" 4 Guardian)
   { cdCardTraits = setFromList [Item, Weapon, Firearm]
   , cdLevel = 4
   , cdSkills = [SkillCombat, SkillAgility]
   }
 
 esotericFormula :: CardDef
-esotericFormula = (asset "02254" "Esoteric Formula" 0 Neutral)
+esotericFormula = (storyAsset "02254" "Esoteric Formula" 0 UndimensionedAndUnseen)
   { cdCardTraits = singleton Spell
   }
 
@@ -842,7 +845,7 @@ lightningGun5 = (asset "02301" "Lightning Gun" 6 Guardian)
   }
 
 toothOfEztli :: CardDef
-toothOfEztli = (asset "04023" "Tooth of Eztli" 3 Seeker)
+toothOfEztli = (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker)
   { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Item, Relic]
   }
@@ -908,9 +911,10 @@ arcaneEnlightenment = (asset "60205" "Arcane Enlightenment" 2 Seeker)
   }
 
 celaenoFragments :: CardDef
-celaenoFragments = (asset "60206" "Celaeno Fragments" 1 Seeker)
+celaenoFragments = (asset "60206" ("Celaeno Fragments" <:> "Book of Books") 1 Seeker)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Item, Tome]
+  , cdUnique = True
   }
 
 encyclopedia :: CardDef
@@ -944,11 +948,13 @@ ladyEsprit =
 bearTrap :: CardDef
 bearTrap = (storyAsset "81020" "Bear Trap" 0 TheBayou)
   { cdCardTraits = setFromList [Trap]
+  , cdCost = Nothing
   }
 
 fishingNet :: CardDef
 fishingNet = (storyAsset "81021" "Fishing Net" 0 TheBayou)
   { cdCardTraits = setFromList [Trap]
+  , cdCost = Nothing
   }
 
 monstrousTransformation :: CardDef

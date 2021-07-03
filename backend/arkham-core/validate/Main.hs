@@ -125,8 +125,10 @@ toCardFile set = "data" </> "packs" </> toDir set </> "cards.json"
     Test -> "test"
 
 filterTest :: [(CardCode, CardDef)] -> [(CardCode, CardDef)]
-filterTest =
-  filter (\(code, cdef) -> code /= "asset" && cdEncounterSet cdef /= Just Test && not (isSuffixOf "b" (unCardCode code)))
+filterTest = filter
+  (\(code, cdef) -> code /= "asset" && cdEncounterSet cdef /= Just Test && not
+    ("b" `isSuffixOf` (unCardCode code))
+  )
 
 toClassSymbol :: String -> Maybe ClassSymbol
 toClassSymbol = \case
@@ -142,21 +144,23 @@ normalizeName :: Text -> Text
 normalizeName "Powder of Ibn Ghazi" = "Powder of Ibn-Ghazi"
 normalizeName a = a
 
-normalizeCost :: Maybe Int -> Maybe CardCost
-normalizeCost (Just (-2)) = Just DynamicCost
-normalizeCost (Just n) = Just (StaticCost n)
-normalizeCost Nothing = Nothing
+normalizeCost :: CardCode -> Maybe Int -> Maybe CardCost
+normalizeCost "02178" _ = Nothing
+normalizeCost _ (Just (-2)) = Just DynamicCost
+normalizeCost _ (Just n) = Just (StaticCost n)
+normalizeCost _ Nothing = Nothing
 
 allCards :: HashMap CardCode CardDef
-allCards = allPlayerAssetCards
-  <> allEncounterAssetCards
-  <> allEncounterEnemyCards
-  <> allPlayerEnemyCards
-  <> allPlayerEventCards
-  <> allLocationCards
-  <> allPlayerSkillCards
-  <> allPlayerTreacheryCards
-  <> allEncounterTreacheryCards
+allCards =
+  allPlayerAssetCards
+    <> allEncounterAssetCards
+    <> allEncounterEnemyCards
+    <> allPlayerEnemyCards
+    <> allPlayerEventCards
+    <> allLocationCards
+    <> allPlayerSkillCards
+    <> allPlayerTreacheryCards
+    <> allEncounterTreacheryCards
 
 main :: IO ()
 main = do
@@ -187,7 +191,7 @@ main = do
               (is_unique /= cdUnique card)
               (throw $ UniqueMismatch code (cdName card))
             when
-              (normalizeCost cost /= cdCost card)
+              (normalizeCost code cost /= cdCost card)
               (throw $ CostMismatch code (cdName card) cost (cdCost card))
             when
               (toClassSymbol faction_name /= cdClassSymbol card)

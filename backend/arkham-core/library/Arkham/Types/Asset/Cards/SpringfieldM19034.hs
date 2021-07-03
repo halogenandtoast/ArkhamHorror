@@ -6,8 +6,13 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import qualified Arkham.Types.Action as Action
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Uses (Uses(..), useCount)
+import qualified Arkham.Types.Asset.Uses as Resource
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -17,18 +22,13 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Uses (Uses(..), useCount)
-import qualified Arkham.Types.Asset.Uses as Resource
 
 newtype SpringfieldM19034 = SpringfieldM19034 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-springfieldM19034 :: AssetId -> SpringfieldM19034
-springfieldM19034 uuid = SpringfieldM19034
-  $ (baseAttrs uuid "02226") { assetSlots = [HandSlot, HandSlot] }
+springfieldM19034 :: AssetCard SpringfieldM19034
+springfieldM19034 = assetWith SpringfieldM19034 Cards.springfieldM19034 $
+  slotsL .~ [HandSlot, HandSlot]
 
 instance ActionRunner env => HasActions env SpringfieldM19034 where
   getActions iid window (SpringfieldM19034 a) | ownedBy a iid = do

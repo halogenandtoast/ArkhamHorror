@@ -5,18 +5,16 @@ module Arkham.Types.Asset.Cards.PowderOfIbnGhazi
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
-import Arkham.Types.AssetId
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EnemyId
+import Arkham.Types.Id
 import Arkham.Types.Exception
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Window
@@ -24,8 +22,8 @@ import Arkham.Types.Window
 newtype PowderOfIbnGhazi = PowderOfIbnGhazi AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-powderOfIbnGhazi :: AssetId -> PowderOfIbnGhazi
-powderOfIbnGhazi uuid = PowderOfIbnGhazi $ baseAttrs uuid "02219"
+powderOfIbnGhazi :: AssetCard PowderOfIbnGhazi
+powderOfIbnGhazi = asset PowderOfIbnGhazi Cards.powderOfIbnGhazi
 
 instance
   ( HasId LocationId env InvestigatorId

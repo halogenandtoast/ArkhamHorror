@@ -18,7 +18,7 @@ import Arkham.Types.Agenda as X
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.AgendaId
 import Arkham.Types.Asset as X
-import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Attrs hiding (body)
 import Arkham.Types.AssetId
 import Arkham.Types.Card as X hiding (skillsL)
 import qualified Arkham.Types.Card.CardDef as CardDef

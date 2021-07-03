@@ -6,27 +6,24 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.Cost
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.SkillType
-import Arkham.Types.Slot
-import Arkham.Types.Target
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Uses
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.Id
+import Arkham.Types.Message
+import Arkham.Types.SkillType
+import Arkham.Types.Target
 
 newtype RiteOfSeeking = RiteOfSeeking AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-riteOfSeeking :: AssetId -> RiteOfSeeking
-riteOfSeeking uuid =
-  RiteOfSeeking $ (baseAttrs uuid "02028") { assetSlots = [ArcaneSlot] }
+riteOfSeeking :: AssetCard RiteOfSeeking
+riteOfSeeking = arcane RiteOfSeeking Cards.riteOfSeeking
 
 instance ActionRunner env => HasActions env RiteOfSeeking where
   getActions iid window (RiteOfSeeking a) | ownedBy a iid = do

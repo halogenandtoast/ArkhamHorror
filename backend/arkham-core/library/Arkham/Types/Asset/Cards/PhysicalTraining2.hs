@@ -5,8 +5,11 @@ module Arkham.Types.Asset.Cards.PhysicalTraining2
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -16,15 +19,12 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 
 newtype PhysicalTraining2 = PhysicalTraining2 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-physicalTraining2 :: AssetId -> PhysicalTraining2
-physicalTraining2 uuid = PhysicalTraining2 $ baseAttrs uuid "50001"
+physicalTraining2 :: AssetCard PhysicalTraining2
+physicalTraining2 = asset PhysicalTraining2 Cards.physicalTraining2
 
 instance HasModifiersFor env PhysicalTraining2 where
   getModifiersFor = noModifiersFor

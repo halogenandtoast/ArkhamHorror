@@ -5,13 +5,12 @@ module Arkham.Types.Asset.Cards.StrayCat
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
-import Arkham.Types.Slot
 import Arkham.Types.Window
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
@@ -21,9 +20,8 @@ import Arkham.Types.Trait
 newtype StrayCat = StrayCat AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-strayCat :: AssetId -> StrayCat
-strayCat uuid = StrayCat
-  $ (baseAttrs uuid "01076") { assetSlots = [AllySlot], assetHealth = Just 2 }
+strayCat :: AssetCard StrayCat
+strayCat = ally StrayCat Cards.strayCat (2, 0)
 
 instance HasModifiersFor env StrayCat where
   getModifiersFor = noModifiersFor

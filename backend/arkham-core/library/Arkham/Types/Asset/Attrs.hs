@@ -71,8 +71,8 @@ ally f cardDef stats  = allyWith f cardDef stats id
 allyWith :: (AssetAttrs -> a) -> CardDef -> (Int, Int) -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
 allyWith f cardDef (health, sanity) g = slotWith AllySlot f cardDef (g . setSanity . setHealth)
  where
-   setHealth = healthL ?~ health
-   setSanity = sanityL ?~ sanity
+   setHealth = healthL .~ (health <$ guard (health > 0))
+   setSanity = sanityL .~ (sanity <$ guard (sanity > 0))
 
 arcane :: (AssetAttrs -> a) -> CardDef -> AssetId -> a
 arcane f cardDef = arcaneWith f cardDef id

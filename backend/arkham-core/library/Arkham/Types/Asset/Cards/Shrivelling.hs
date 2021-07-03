@@ -5,13 +5,13 @@ module Arkham.Types.Asset.Cards.Shrivelling
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -19,15 +19,13 @@ import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 
 newtype Shrivelling = Shrivelling AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
-shrivelling :: AssetId -> Shrivelling
-shrivelling uuid =
-  Shrivelling $ (baseAttrs uuid "01060") { assetSlots = [ArcaneSlot] }
+shrivelling :: AssetCard Shrivelling
+shrivelling = arcane Shrivelling Cards.shrivelling
 
 instance HasModifiersFor env Shrivelling where
   getModifiersFor = noModifiersFor

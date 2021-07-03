@@ -6,24 +6,22 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Uses
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 
 newtype SongOfTheDead2 = SongOfTheDead2 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-songOfTheDead2 :: AssetId -> SongOfTheDead2
-songOfTheDead2 uuid =
-  SongOfTheDead2 . (slotsL .~ [ArcaneSlot]) $ baseAttrs uuid "02112"
+songOfTheDead2 :: AssetCard SongOfTheDead2
+songOfTheDead2 = arcane SongOfTheDead2 Cards.songOfTheDead2
 
 instance ActionRunner env => HasActions env SongOfTheDead2 where
   getActions iid window (SongOfTheDead2 a) = whenOwnedBy a iid $ do

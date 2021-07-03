@@ -5,12 +5,12 @@ module Arkham.Types.Asset.Cards.Scavenging
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
@@ -21,8 +21,8 @@ import Arkham.Types.Window
 newtype Scavenging = Scavenging AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-scavenging :: AssetId -> Scavenging
-scavenging uuid = Scavenging $ baseAttrs uuid "01073"
+scavenging :: AssetCard Scavenging
+scavenging = asset Scavenging Cards.scavenging
 
 instance HasModifiersFor env Scavenging where
   getModifiersFor = noModifiersFor

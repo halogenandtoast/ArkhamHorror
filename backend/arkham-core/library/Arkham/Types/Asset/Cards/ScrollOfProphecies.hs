@@ -5,26 +5,24 @@ module Arkham.Types.Asset.Cards.ScrollOfProphecies
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.Cost
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Slot
-import Arkham.Types.Target
-import Arkham.Types.Window
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses (Uses(..), useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
+import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.Id
+import Arkham.Types.Message
+import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype ScrollOfProphecies = ScrollOfProphecies AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-scrollOfProphecies :: AssetId -> ScrollOfProphecies
-scrollOfProphecies uuid =
-  ScrollOfProphecies $ (baseAttrs uuid "06116") { assetSlots = [HandSlot] }
+scrollOfProphecies :: AssetCard ScrollOfProphecies
+scrollOfProphecies = hand ScrollOfProphecies Cards.scrollOfProphecies
 
 instance HasModifiersFor env ScrollOfProphecies where
   getModifiersFor = noModifiersFor

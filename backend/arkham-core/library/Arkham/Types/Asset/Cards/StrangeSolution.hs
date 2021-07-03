@@ -6,22 +6,22 @@ where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.CampaignLogKey
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.CampaignLogKey
 
 newtype StrangeSolution = StrangeSolution AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-strangeSolution :: AssetId -> StrangeSolution
-strangeSolution uuid = StrangeSolution $ baseAttrs uuid "02021"
+strangeSolution :: AssetCard StrangeSolution
+strangeSolution = asset StrangeSolution Cards.strangeSolution
 
 instance HasActions env StrangeSolution where
   getActions iid NonFast (StrangeSolution attrs) | ownedBy attrs iid = pure

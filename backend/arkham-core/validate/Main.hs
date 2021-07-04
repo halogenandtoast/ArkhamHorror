@@ -36,6 +36,7 @@ data CardJson = CardJson
   , skill_willpower :: Maybe Int
   , skill_wild :: Maybe Int
   , faction_name :: String
+  , victory :: Maybe Int
   }
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
@@ -52,11 +53,18 @@ data NameMismatch = NameMismatch CardCode Name Name
 data UniqueMismatch = UniqueMismatch CardCode Name
   deriving stock Show
 
-data CardCostMismatch = CostMismatch
+data CardCostMismatch = CardCostMismatch
   CardCode
   Name
   (Maybe Int)
   (Maybe CardCost)
+  deriving stock Show
+
+data VictoryMismatch = VictoryMismatch
+  CardCode
+  Name
+  (Maybe Int)
+  (Maybe Int)
   deriving stock Show
 
 data ClassMismatch = ClassMismatch CardCode Name String (Maybe ClassSymbol)
@@ -80,6 +88,7 @@ instance Exception CardCostMismatch
 instance Exception ClassMismatch
 instance Exception SkillsMismatch
 instance Exception TraitsMismatch
+instance Exception VictoryMismatch
 
 encounterJson :: IO (HashMap EncounterSet (HashMap CardCode CardJson))
 encounterJson = mapFromList
@@ -236,7 +245,7 @@ main = do
               (throw $ UniqueMismatch code (cdName card))
             when
               (normalizeCost code cost /= cdCost card)
-              (throw $ CostMismatch code (cdName card) cost (cdCost card))
+              (throw $ CardCostMismatch code (cdName card) cost (cdCost card))
             when
               (toClassSymbol faction_name /= cdClassSymbol card)
               (throw $ ClassMismatch
@@ -260,4 +269,12 @@ main = do
                 (cdName card)
                 (getTraits cardJson)
                 (cdCardTraits card)
+              )
+            when
+              (victory /= cdVictoryPoints card)
+              (throw $ VictoryMismatch
+                code
+                (cdName card)
+                victory
+                (cdVictoryPoints card)
               )

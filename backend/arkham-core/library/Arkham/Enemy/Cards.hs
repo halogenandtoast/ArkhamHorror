@@ -246,6 +246,7 @@ screechingByakhee =
   (enemy "01175" "Screeching Byakhee" AgentsOfHastur)
     { cdCardTraits = setFromList [Monster, Byakhee]
     , cdKeywords = setFromList [Keyword.Hunter]
+    , cdVictoryPoints = Just 1
     }
 
 yithianObserver :: CardDef

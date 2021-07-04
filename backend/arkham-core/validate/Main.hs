@@ -26,7 +26,6 @@ import Arkham.Types.Trait hiding (Dunwich)
 import Control.Exception
 import Control.Monad.Random.Lazy
 import Data.Aeson
-import Data.Maybe (fromJust)
 import qualified Data.Text as T
 import Text.Read (readEither)
 
@@ -126,65 +125,6 @@ instance Exception EnemyDamageMismatch
 instance Exception ShroudMismatch
 instance Exception ClueMismatch
 
-encounterJson :: IO (HashMap EncounterSet (HashMap CardCode CardJson))
-encounterJson = mapFromList
-  <$> for [minBound .. maxBound] (\set -> (set, ) <$> encounterMap set)
-
-encounterMap :: EncounterSet -> IO (HashMap CardCode CardJson)
-encounterMap set = do
-  eresult <- eitherDecodeFileStrict @[CardJson] (toCardFile set)
-  case eresult of
-    Left err -> error err
-    Right cards -> pure . mapFromList $ map (code &&& id) cards
-
-toCardFile :: EncounterSet -> FilePath
-toCardFile set = "data" </> "packs" </> toDir set </> "cards.json"
- where
-  toDir = \case
-    TheGathering -> "core"
-    TheMidnightMasks -> "core"
-    TheDevourerBelow -> "core"
-    CultOfUmordhoth -> "core"
-    Rats -> "core"
-    Ghouls -> "core"
-    StrikingFear -> "core"
-    AncientEvils -> "core"
-    ChillingCold -> "core"
-    Nightgaunts -> "core"
-    DarkCult -> "core"
-    LockedDoors -> "core"
-    AgentsOfHastur -> "core"
-    AgentsOfYogSothoth -> "core"
-    AgentsOfShubNiggurath -> "core"
-    AgentsOfCthulhu -> "core"
-    ExtracurricularActivity -> "dwl"
-    TheHouseAlwaysWins -> "dwl"
-    ArmitagesFate -> "dwl"
-    TheMiskatonicMuseum -> "tmm"
-    TheEssexCountyExpress -> "tece"
-    BloodOnTheAltar -> "bota"
-    UndimensionedAndUnseen -> "uau"
-    WhereDoomAwaits -> "wda"
-    LostInTimeAndSpace -> "litas"
-    Sorcery -> "dwl"
-    BishopsThralls -> "dwl"
-    Dunwich -> "dwl"
-    Whippoorwills -> "dwl"
-    BadLuck -> "dwl"
-    BeastThralls -> "dwl"
-    NaomisCrew -> "dwl"
-    TheBeyond -> "dwl"
-    HideousAbominations -> "dwl"
-    ReturnToTheGathering -> "rtnotz"
-    ReturnToTheMidnightMasks -> "rtnotz"
-    ReturnToTheDevourerBelow -> "rtnotz"
-    GhoulsOfUmordhoth -> "rtnotz"
-    TheDevourersCult -> "rtnotz"
-    ReturnCultOfUmordhoth -> "rtnotz"
-    TheBayou -> "cotr"
-    CurseOfTheRougarou -> "cotr"
-    Test -> "test"
-
 filterTest :: [(CardCode, CardDef)] -> [(CardCode, CardDef)]
 filterTest = filter
   (\(code, cdef) -> code /= "asset" && cdEncounterSet cdef /= Just Test && not
@@ -269,19 +209,13 @@ main = do
       let
         jsonMap :: HashMap CardCode CardJson =
           mapFromList $ map (code &&& id) cards
-      encounterMaps <- encounterJson
 
       -- validate card defs
       for_ (filterTest $ mapToList allCards) $ \(ccode, card) -> do
         when
           (ccode /= cdCardCode card)
           (throw $ InternalCardCodeMismatch ccode (cdCardCode card))
-        let
-          lookupMap = maybe
-            jsonMap
-            (fromJust . (`lookup` encounterMaps))
-            (cdEncounterSet card)
-        case lookup ccode lookupMap of
+        case lookup ccode jsonMap of
           Nothing -> throw $ UnknownCard (cdCardCode card)
           Just cardJson@CardJson {..} -> do
             when
@@ -329,12 +263,7 @@ main = do
       -- validate enemies
       for_ (filterTestEntities $ mapToList allEnemies) $ \(ccode, builder) -> do
         attrs <- toAttrs . builder <$> getRandom
-        let
-          lookupMap = maybe
-            jsonMap
-            (fromJust . (`lookup` encounterMaps))
-            (cdEncounterSet $ toCardDef attrs)
-        case lookup ccode lookupMap of
+        case lookup ccode jsonMap of
           Nothing -> throw $ UnknownCard ccode
           Just CardJson {..} -> do
             let
@@ -373,12 +302,7 @@ main = do
       -- validate locations
       for_ (filterTestEntities $ mapToList allLocations) $ \(ccode, builder) -> do
         attrs <- toAttrs . builder <$> getRandom
-        let
-          lookupMap = maybe
-            jsonMap
-            (fromJust . (`lookup` encounterMaps))
-            (cdEncounterSet $ toCardDef attrs)
-        case lookup ccode lookupMap of
+        case lookup ccode jsonMap of
           Nothing -> throw $ UnknownCard ccode
           Just CardJson {..} -> do
             when

@@ -19,59 +19,59 @@ createEvent :: IsCard a => a -> InvestigatorId -> Event
 createEvent a iid = lookupEvent (toCardCode a) iid (EventId $ toCardId a)
 
 data Event
-  = OnTheLam' OnTheLam
-  | DarkMemory' DarkMemory
-  | Evidence' Evidence
-  | Dodge' Dodge
-  | DynamiteBlast' DynamiteBlast
-  | ExtraAmmunition1' ExtraAmmunition1
-  | MindOverMatter' MindOverMatter
-  | WorkingAHunch' WorkingAHunch
-  | Barricade' Barricade
-  | CrypticResearch4' CrypticResearch4
-  | Elusive' Elusive
+  = AstoundingRevelation' AstoundingRevelation
   | Backstab' Backstab
-  | SneakAttack' SneakAttack
-  | SureGamble3' SureGamble3
-  | HotStreak4' HotStreak4
-  | DrawnToTheFlame' DrawnToTheFlame
-  | WardOfProtection' WardOfProtection
+  | BaitAndSwitch' BaitAndSwitch
+  | Barricade' Barricade
+  | Barricade3' Barricade3
+  | BindMonster2' BindMonster2
   | BlindingLight' BlindingLight
-  | MindWipe1' MindWipe1
   | BlindingLight2' BlindingLight2
+  | BloodRite' BloodRite
+  | CloseCall2' CloseCall2
+  | Contraband' Contraband
+  | Contraband2' Contraband2
+  | CrypticResearch4' CrypticResearch4
   | CunningDistraction' CunningDistraction
+  | DarkMemory' DarkMemory
+  | DelveTooDeep' DelveTooDeep
+  | Dodge' Dodge
+  | DrawnToTheFlame' DrawnToTheFlame
+  | DynamiteBlast' DynamiteBlast
+  | DynamiteBlast2' DynamiteBlast2
+  | Elusive' Elusive
+  | EmergencyAid' EmergencyAid
+  | EmergencyCache' EmergencyCache
+  | Evidence' Evidence
+  | ExtraAmmunition1' ExtraAmmunition1
+  | FirstWatch' FirstWatch
+  | HotStreak2' HotStreak2
+  | HotStreak4' HotStreak4
+  | IveGotAPlan' IveGotAPlan
+  | IveGotAPlan2' IveGotAPlan2
+  | LetMeHandleThis' LetMeHandleThis
   | LookWhatIFound' LookWhatIFound
   | Lucky' Lucky
-  | CloseCall2' CloseCall2
   | Lucky2' Lucky2
-  | WillToSurvive4' WillToSurvive4
-  | EmergencyCache' EmergencyCache
-  | SearchForTheTruth' SearchForTheTruth
-  | Taunt' Taunt
-  | Teamwork' Teamwork
-  | Taunt2' Taunt2
-  | Shortcut' Shortcut
-  | SeekingAnswers' SeekingAnswers
-  | ThinkOnYourFeet' ThinkOnYourFeet
-  | BindMonster2' BindMonster2
-  | BaitAndSwitch' BaitAndSwitch
-  | EmergencyAid' EmergencyAid
-  | IveGotAPlan' IveGotAPlan
-  | Contraband' Contraband
-  | DelveTooDeep' DelveTooDeep
-  | Oops' Oops
-  | LetMeHandleThis' LetMeHandleThis
-  | SecondWind' SecondWind
-  | BloodRite' BloodRite
-  | AstoundingRevelation' AstoundingRevelation
-  | FirstWatch' FirstWatch
-  | DynamiteBlast2' DynamiteBlast2
-  | Barricade3' Barricade3
-  | HotStreak2' HotStreak2
+  | MindOverMatter' MindOverMatter
+  | MindWipe1' MindWipe1
   | MindWipe3' MindWipe3
-  | Contraband2' Contraband2
+  | OnTheLam' OnTheLam
+  | Oops' Oops
+  | SearchForTheTruth' SearchForTheTruth
+  | SecondWind' SecondWind
+  | SeekingAnswers' SeekingAnswers
+  | Shortcut' Shortcut
+  | SneakAttack' SneakAttack
+  | SureGamble3' SureGamble3
+  | Taunt' Taunt
+  | Taunt2' Taunt2
   | Taunt3' Taunt3
-  | IveGotAPlan2' IveGotAPlan2
+  | Teamwork' Teamwork
+  | ThinkOnYourFeet' ThinkOnYourFeet
+  | WardOfProtection' WardOfProtection
+  | WillToSurvive4' WillToSurvive4
+  | WorkingAHunch' WorkingAHunch
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -120,59 +120,59 @@ lookupEvent cardCode =
 allEvents :: HashMap CardCode (InvestigatorId -> EventId -> Event)
 allEvents = mapFromList $ map
   (cbCardCode &&& (curry . cbCardBuilder))
-  [ OnTheLam' <$> onTheLam
-  , DarkMemory' <$> darkMemory
-  , Evidence' <$> evidence
-  , Dodge' <$> dodge
-  , DynamiteBlast' <$> dynamiteBlast
-  , ExtraAmmunition1' <$> extraAmmunition1
-  , MindOverMatter' <$> mindOverMatter
-  , WorkingAHunch' <$> workingAHunch
-  , Barricade' <$> barricade
-  , CrypticResearch4' <$> crypticResearch4
-  , Elusive' <$> elusive
+  [ AstoundingRevelation' <$> astoundingRevelation
   , Backstab' <$> backstab
-  , SneakAttack' <$> sneakAttack
-  , SureGamble3' <$> sureGamble3
-  , HotStreak4' <$> hotStreak4
-  , DrawnToTheFlame' <$> drawnToTheFlame
-  , WardOfProtection' <$> wardOfProtection
+  , BaitAndSwitch' <$> baitAndSwitch
+  , Barricade' <$> barricade
+  , Barricade3' <$> barricade3
+  , BindMonster2' <$> bindMonster2
   , BlindingLight' <$> blindingLight
-  , MindWipe1' <$> mindWipe1
   , BlindingLight2' <$> blindingLight2
+  , BloodRite' <$> bloodRite
+  , CloseCall2' <$> closeCall2
+  , Contraband' <$> contraband
+  , Contraband2' <$> contraband2
+  , CrypticResearch4' <$> crypticResearch4
   , CunningDistraction' <$> cunningDistraction
+  , DarkMemory' <$> darkMemory
+  , DelveTooDeep' <$> delveTooDeep
+  , Dodge' <$> dodge
+  , DrawnToTheFlame' <$> drawnToTheFlame
+  , DynamiteBlast' <$> dynamiteBlast
+  , DynamiteBlast2' <$> dynamiteBlast2
+  , Elusive' <$> elusive
+  , EmergencyAid' <$> emergencyAid
+  , EmergencyCache' <$> emergencyCache
+  , Evidence' <$> evidence
+  , ExtraAmmunition1' <$> extraAmmunition1
+  , FirstWatch' <$> firstWatch
+  , HotStreak2' <$> hotStreak2
+  , HotStreak4' <$> hotStreak4
+  , IveGotAPlan' <$> iveGotAPlan
+  , IveGotAPlan2' <$> iveGotAPlan2
+  , LetMeHandleThis' <$> letMeHandleThis
   , LookWhatIFound' <$> lookWhatIFound
   , Lucky' <$> lucky
-  , CloseCall2' <$> closeCall2
   , Lucky2' <$> lucky2
-  , WillToSurvive4' <$> willToSurvive4
-  , EmergencyCache' <$> emergencyCache
-  , SearchForTheTruth' <$> searchForTheTruth
-  , Taunt' <$> taunt
-  , Teamwork' <$> teamwork
-  , Taunt2' <$> taunt2
-  , Shortcut' <$> shortcut
-  , SeekingAnswers' <$> seekingAnswers
-  , ThinkOnYourFeet' <$> thinkOnYourFeet
-  , BindMonster2' <$> bindMonster2
-  , BaitAndSwitch' <$> baitAndSwitch
-  , EmergencyAid' <$> emergencyAid
-  , IveGotAPlan' <$> iveGotAPlan
-  , Contraband' <$> contraband
-  , DelveTooDeep' <$> delveTooDeep
-  , Oops' <$> oops
-  , LetMeHandleThis' <$> letMeHandleThis
-  , SecondWind' <$> secondWind
-  , BloodRite' <$> bloodRite
-  , AstoundingRevelation' <$> astoundingRevelation
-  , FirstWatch' <$> firstWatch
-  , DynamiteBlast2' <$> dynamiteBlast2
-  , Barricade3' <$> barricade3
-  , HotStreak2' <$> hotStreak2
+  , MindOverMatter' <$> mindOverMatter
+  , MindWipe1' <$> mindWipe1
   , MindWipe3' <$> mindWipe3
-  , Contraband2' <$> contraband2
+  , OnTheLam' <$> onTheLam
+  , Oops' <$> oops
+  , SearchForTheTruth' <$> searchForTheTruth
+  , SecondWind' <$> secondWind
+  , SeekingAnswers' <$> seekingAnswers
+  , Shortcut' <$> shortcut
+  , SneakAttack' <$> sneakAttack
+  , SureGamble3' <$> sureGamble3
+  , Taunt' <$> taunt
+  , Taunt2' <$> taunt2
   , Taunt3' <$> taunt3
-  , IveGotAPlan2' <$> iveGotAPlan2
+  , Teamwork' <$> teamwork
+  , ThinkOnYourFeet' <$> thinkOnYourFeet
+  , WardOfProtection' <$> wardOfProtection
+  , WillToSurvive4' <$> willToSurvive4
+  , WorkingAHunch' <$> workingAHunch
   ]
 
 ownerOfEvent :: Event -> InvestigatorId

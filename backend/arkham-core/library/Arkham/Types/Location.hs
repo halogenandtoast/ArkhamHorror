@@ -33,146 +33,146 @@ toLocationSymbol :: Location -> LocationSymbol
 toLocationSymbol = locationSymbol . toAttrs
 
 data Location
-  = Study' Study
-  | Hallway' Hallway
-  | Attic' Attic
-  | Cellar' Cellar
-  | Parlor' Parlor
-  | YourHouse' YourHouse
-  | Rivertown' Rivertown
-  | SouthsideHistoricalSociety' SouthsideHistoricalSociety
-  | SouthsideMasBoardingHouse' SouthsideMasBoardingHouse
-  | StMarysHospital' StMarysHospital
-  | MiskatonicUniversity' MiskatonicUniversity
-  | DowntownFirstBankOfArkham' DowntownFirstBankOfArkham
-  | DowntownArkhamAsylum' DowntownArkhamAsylum
-  | Easttown' Easttown
-  | Graveyard' Graveyard
-  | Northside' Northside
-  | MainPath' MainPath
-  | ArkhamWoodsUnhallowedGround' ArkhamWoodsUnhallowedGround
-  | ArkhamWoodsTwistingPaths' ArkhamWoodsTwistingPaths
-  | ArkhamWoodsOldHouse' ArkhamWoodsOldHouse
-  | ArkhamWoodsCliffside' ArkhamWoodsCliffside
-  | ArkhamWoodsTangledThicket' ArkhamWoodsTangledThicket
-  | ArkhamWoodsQuietGlade' ArkhamWoodsQuietGlade
-  | MiskatonicQuad' MiskatonicQuad
-  | HumanitiesBuilding' HumanitiesBuilding
-  | OrneLibrary' OrneLibrary
-  | StudentUnion' StudentUnion
-  | Dormitories' Dormitories
+  = BaseLocation' BaseLocation
+  | ATearInThePath' ATearInThePath
   | AdministrationBuilding' AdministrationBuilding
-  | FacultyOfficesTheNightIsStillYoung' FacultyOfficesTheNightIsStillYoung
-  | FacultyOfficesTheHourIsLate' FacultyOfficesTheHourIsLate
-  | ScienceBuilding' ScienceBuilding
-  | AlchemyLabs' AlchemyLabs
-  | LaBellaLuna' LaBellaLuna
-  | CloverClubLounge' CloverClubLounge
-  | CloverClubBar' CloverClubBar
-  | CloverClubCardroom' CloverClubCardroom
-  | DarkenedHall' DarkenedHall
-  | ArtGallery' ArtGallery
-  | VipArea' VipArea
-  | BackAlley' BackAlley
-  | MuseumEntrance' MuseumEntrance
-  | MuseumHalls' MuseumHalls
-  | SecurityOffice_128' SecurityOffice_128
-  | SecurityOffice_129' SecurityOffice_129
   | AdministrationOffice_130' AdministrationOffice_130
   | AdministrationOffice_131' AdministrationOffice_131
+  | AlchemyLabs' AlchemyLabs
+  | AnotherDimension' AnotherDimension
+  | ArkhamWoodsCliffside' ArkhamWoodsCliffside
+  | ArkhamWoodsCorpseRiddenClearing' ArkhamWoodsCorpseRiddenClearing
+  | ArkhamWoodsGreatWillow' ArkhamWoodsGreatWillow
+  | ArkhamWoodsLakeside' ArkhamWoodsLakeside
+  | ArkhamWoodsOldHouse' ArkhamWoodsOldHouse
+  | ArkhamWoodsQuietGlade' ArkhamWoodsQuietGlade
+  | ArkhamWoodsTangledThicket' ArkhamWoodsTangledThicket
+  | ArkhamWoodsTwistingPaths' ArkhamWoodsTwistingPaths
+  | ArkhamWoodsUnhallowedGround' ArkhamWoodsUnhallowedGround
+  | ArkhamWoodsWoodenBridge' ArkhamWoodsWoodenBridge
+  | ArtGallery' ArtGallery
+  | AscendingPath' AscendingPath
+  | Attic' Attic
+  | AudubonPark' AudubonPark
+  | BackAlley' BackAlley
+  | BaseOfTheHill' BaseOfTheHill
+  | Bathroom' Bathroom
+  | Bedroom' Bedroom
+  | BishopsBrook_202' BishopsBrook_202
+  | BishopsBrook_203' BishopsBrook_203
+  | BlastedHeath_248' BlastedHeath_248
+  | BlastedHeath_249' BlastedHeath_249
+  | BrackishWaters' BrackishWaters
+  | Broadmoor' Broadmoor
+  | BurnedRuins_204' BurnedRuins_204
+  | BurnedRuins_205' BurnedRuins_205
+  | Cellar' Cellar
+  | CloverClubBar' CloverClubBar
+  | CloverClubCardroom' CloverClubCardroom
+  | CloverClubLounge' CloverClubLounge
+  | ColdSpringGlen_244' ColdSpringGlen_244
+  | ColdSpringGlen_245' ColdSpringGlen_245
+  | CongregationalChurch_208' CongregationalChurch_208
+  | CongregationalChurch_209' CongregationalChurch_209
+  | CursedShores' CursedShores
+  | DarkenedHall' DarkenedHall
+  | DeepBelowYourHouse' DeepBelowYourHouse
+  | DestroyedPath' DestroyedPath
+  | DevilsHopYard_252' DevilsHopYard_252
+  | DevilsHopYard_253' DevilsHopYard_253
+  | DimensionalDoorway' DimensionalDoorway
+  | DimensionalGap' DimensionalGap
+  | DiningCar' DiningCar
+  | Dormitories' Dormitories
+  | DowntownArkhamAsylum' DowntownArkhamAsylum
+  | DowntownFirstBankOfArkham' DowntownFirstBankOfArkham
+  | DunwichVillage_242' DunwichVillage_242
+  | DunwichVillage_243' DunwichVillage_243
+  | Easttown' Easttown
+  | EasttownArkhamPoliceStation' EasttownArkhamPoliceStation
+  | EerieGlade' EerieGlade
+  | EndlessBridge' EndlessBridge
+  | EngineCar_175' EngineCar_175
+  | EngineCar_176' EngineCar_176
+  | EngineCar_177' EngineCar_177
   | ExhibitHallAthabaskanExhibit' ExhibitHallAthabaskanExhibit
-  | ExhibitHallMedusaExhibit' ExhibitHallMedusaExhibit
-  | ExhibitHallNatureExhibit' ExhibitHallNatureExhibit
   | ExhibitHallEgyptianExhibit' ExhibitHallEgyptianExhibit
   | ExhibitHallHallOfTheDead' ExhibitHallHallOfTheDead
+  | ExhibitHallMedusaExhibit' ExhibitHallMedusaExhibit
+  | ExhibitHallNatureExhibit' ExhibitHallNatureExhibit
   | ExhibitHallRestrictedHall' ExhibitHallRestrictedHall
+  | FacultyOfficesTheHourIsLate' FacultyOfficesTheHourIsLate
+  | FacultyOfficesTheNightIsStillYoung' FacultyOfficesTheNightIsStillYoung
+  | FarAboveYourHouse' FarAboveYourHouse
+  | FauborgMarigny' FauborgMarigny
+  | ForgottenMarsh' ForgottenMarsh
+  | FoulSwamp' FoulSwamp
+  | FrozenSpring' FrozenSpring
+  | GardenDistrict' GardenDistrict
+  | Graveyard' Graveyard
+  | GuestHall' GuestHall
+  | Hallway' Hallway
+  | HoleInTheWall' HoleInTheWall
+  | HouseInTheReeds_210' HouseInTheReeds_210
+  | HouseInTheReeds_211' HouseInTheReeds_211
+  | HumanitiesBuilding' HumanitiesBuilding
+  | LaBellaLuna' LaBellaLuna
+  | LostMemories' LostMemories
+  | MainPath' MainPath
+  | MiskatonicQuad' MiskatonicQuad
+  | MiskatonicUniversity' MiskatonicUniversity
+  | MiskatonicUniversityMiskatonicMuseum' MiskatonicUniversityMiskatonicMuseum
+  | MuseumEntrance' MuseumEntrance
+  | MuseumHalls' MuseumHalls
+  | Northside' Northside
+  | NorthsideTrainStation' NorthsideTrainStation
+  | OrneLibrary' OrneLibrary
+  | OsbornsGeneralStore_206' OsbornsGeneralStore_206
+  | OsbornsGeneralStore_207' OsbornsGeneralStore_207
+  | OvergrownCairns' OvergrownCairns
+  | Parlor' Parlor
+  | ParlorCar' ParlorCar
   | PassengerCar_167' PassengerCar_167
   | PassengerCar_168' PassengerCar_168
   | PassengerCar_169' PassengerCar_169
   | PassengerCar_170' PassengerCar_170
   | PassengerCar_171' PassengerCar_171
-  | SleepingCar' SleepingCar
-  | DiningCar' DiningCar
-  | ParlorCar' ParlorCar
-  | EngineCar_175' EngineCar_175
-  | EngineCar_176' EngineCar_176
-  | EngineCar_177' EngineCar_177
-  | VillageCommons' VillageCommons
-  | BishopsBrook_202' BishopsBrook_202
-  | BishopsBrook_203' BishopsBrook_203
-  | BurnedRuins_204' BurnedRuins_204
-  | BurnedRuins_205' BurnedRuins_205
-  | OsbornsGeneralStore_206' OsbornsGeneralStore_206
-  | OsbornsGeneralStore_207' OsbornsGeneralStore_207
-  | CongregationalChurch_208' CongregationalChurch_208
-  | CongregationalChurch_209' CongregationalChurch_209
-  | HouseInTheReeds_210' HouseInTheReeds_210
-  | HouseInTheReeds_211' HouseInTheReeds_211
+  | PrismaticCascade' PrismaticCascade
+  | ReturnToAttic' ReturnToAttic
+  | ReturnToCellar' ReturnToCellar
+  | RitualGrounds' RitualGrounds
+  | RitualSite' RitualSite
+  | Rivertown' Rivertown
+  | RivertownAbandonedWarehouse' RivertownAbandonedWarehouse
   | Schoolhouse_212' Schoolhouse_212
   | Schoolhouse_213' Schoolhouse_213
-  | TheHiddenChamber' TheHiddenChamber
-  | DunwichVillage_242' DunwichVillage_242
-  | DunwichVillage_243' DunwichVillage_243
-  | ColdSpringGlen_244' ColdSpringGlen_244
-  | ColdSpringGlen_245' ColdSpringGlen_245
-  | TenAcreMeadow_246' TenAcreMeadow_246
-  | TenAcreMeadow_247' TenAcreMeadow_247
-  | BlastedHeath_248' BlastedHeath_248
-  | BlastedHeath_249' BlastedHeath_249
-  | WhateleyRuins_250' WhateleyRuins_250
-  | WhateleyRuins_251' WhateleyRuins_251
-  | DevilsHopYard_252' DevilsHopYard_252
-  | DevilsHopYard_253' DevilsHopYard_253
-  | BaseOfTheHill' BaseOfTheHill
-  | AscendingPath' AscendingPath
+  | ScienceBuilding' ScienceBuilding
+  | SecurityOffice_128' SecurityOffice_128
+  | SecurityOffice_129' SecurityOffice_129
   | SentinelPeak' SentinelPeak
   | SlaughteredWoods' SlaughteredWoods
-  | EerieGlade' EerieGlade
-  | DestroyedPath' DestroyedPath
-  | FrozenSpring' FrozenSpring
-  | DimensionalGap' DimensionalGap
-  | ATearInThePath' ATearInThePath
-  | UprootedWoods' UprootedWoods
-  | LostMemories' LostMemories
-  | AnotherDimension' AnotherDimension
-  | TheEdgeOfTheUniverse' TheEdgeOfTheUniverse
-  | TearThroughTime' TearThroughTime
-  | TearThroughSpace' TearThroughSpace
-  | PrismaticCascade' PrismaticCascade
-  | EndlessBridge' EndlessBridge
+  | SleepingCar' SleepingCar
+  | SouthsideHistoricalSociety' SouthsideHistoricalSociety
+  | SouthsideMasBoardingHouse' SouthsideMasBoardingHouse
+  | StMarysHospital' StMarysHospital
   | StepsOfYhagharl' StepsOfYhagharl
-  | DimensionalDoorway' DimensionalDoorway
+  | StudentUnion' StudentUnion
+  | Study' Study
   | StudyAberrantGateway' StudyAberrantGateway
-  | GuestHall' GuestHall
-  | Bedroom' Bedroom
-  | Bathroom' Bathroom
-  | HoleInTheWall' HoleInTheWall
-  | ReturnToAttic' ReturnToAttic
-  | FarAboveYourHouse' FarAboveYourHouse
-  | ReturnToCellar' ReturnToCellar
-  | DeepBelowYourHouse' DeepBelowYourHouse
-  | EasttownArkhamPoliceStation' EasttownArkhamPoliceStation
-  | NorthsideTrainStation' NorthsideTrainStation
-  | MiskatonicUniversityMiskatonicMuseum' MiskatonicUniversityMiskatonicMuseum
-  | RivertownAbandonedWarehouse' RivertownAbandonedWarehouse
-  | ArkhamWoodsGreatWillow' ArkhamWoodsGreatWillow
-  | ArkhamWoodsLakeside' ArkhamWoodsLakeside
-  | ArkhamWoodsCorpseRiddenClearing' ArkhamWoodsCorpseRiddenClearing
-  | ArkhamWoodsWoodenBridge' ArkhamWoodsWoodenBridge
-  | RitualSite' RitualSite
-  | CursedShores' CursedShores
-  | GardenDistrict' GardenDistrict
-  | Broadmoor' Broadmoor
-  | BrackishWaters' BrackishWaters
-  | AudubonPark' AudubonPark
-  | FauborgMarigny' FauborgMarigny
-  | ForgottenMarsh' ForgottenMarsh
+  | TearThroughSpace' TearThroughSpace
+  | TearThroughTime' TearThroughTime
+  | TenAcreMeadow_246' TenAcreMeadow_246
+  | TenAcreMeadow_247' TenAcreMeadow_247
+  | TheEdgeOfTheUniverse' TheEdgeOfTheUniverse
+  | TheHiddenChamber' TheHiddenChamber
   | TrappersCabin' TrappersCabin
   | TwistedUnderbrush' TwistedUnderbrush
-  | FoulSwamp' FoulSwamp
-  | RitualGrounds' RitualGrounds
-  | OvergrownCairns' OvergrownCairns
-  | BaseLocation' BaseLocation
+  | UprootedWoods' UprootedWoods
+  | VillageCommons' VillageCommons
+  | VipArea' VipArea
+  | WhateleyRuins_250' WhateleyRuins_250
+  | WhateleyRuins_251' WhateleyRuins_251
+  | YourHouse' YourHouse
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -304,151 +304,150 @@ lookupLocation lid =
 allLocations :: HashMap CardCode (LocationId -> Location)
 allLocations = mapFromList $ map
   (cbCardCode &&& cbCardBuilder)
-  [ Study' <$> study
-  , Hallway' <$> hallway
-  , Attic' <$> attic
-  , Cellar' <$> cellar
-  , Parlor' <$> parlor
-  , YourHouse' <$> yourHouse
-  , Rivertown' <$> rivertown
-  , SouthsideHistoricalSociety' <$> southsideHistoricalSociety
-  , SouthsideMasBoardingHouse' <$> southsideMasBoardingHouse
-  , StMarysHospital' <$> stMarysHospital
-  , MiskatonicUniversity' <$> miskatonicUniversity
-  , DowntownFirstBankOfArkham' <$> downtownFirstBankOfArkham
-  , DowntownArkhamAsylum' <$> downtownArkhamAsylum
-  , Easttown' <$> easttown
-  , Graveyard' <$> graveyard
-  , Northside' <$> northside
-  , MainPath' <$> mainPath
-  , ArkhamWoodsUnhallowedGround' <$> arkhamWoodsUnhallowedGround
-  , ArkhamWoodsTwistingPaths' <$> arkhamWoodsTwistingPaths
-  , ArkhamWoodsOldHouse' <$> arkhamWoodsOldHouse
-  , ArkhamWoodsCliffside' <$> arkhamWoodsCliffside
-  , ArkhamWoodsTangledThicket' <$> arkhamWoodsTangledThicket
-  , ArkhamWoodsQuietGlade' <$> arkhamWoodsQuietGlade
-  , RitualSite' <$> ritualSite
-  , MiskatonicQuad' <$> miskatonicQuad
-  , HumanitiesBuilding' <$> humanitiesBuilding
-  , OrneLibrary' <$> orneLibrary
-  , StudentUnion' <$> studentUnion
-  , Dormitories' <$> dormitories
+  [ CardBuilder
+    { cbCardCode = "location"
+    , cbCardBuilder = \lid ->
+      baseLocation lid "location" 0 (Static 0) NoSymbol [] id id
+    }
+  , ATearInThePath' <$> aTearInThePath
   , AdministrationBuilding' <$> administrationBuilding
-  , FacultyOfficesTheNightIsStillYoung' <$> facultyOfficesTheNightIsStillYoung
-  , FacultyOfficesTheHourIsLate' <$> facultyOfficesTheHourIsLate
-  , ScienceBuilding' <$> scienceBuilding
-  , AlchemyLabs' <$> alchemyLabs
-  , LaBellaLuna' <$> laBellaLuna
-  , CloverClubLounge' <$> cloverClubLounge
-  , CloverClubBar' <$> cloverClubBar
-  , CloverClubCardroom' <$> cloverClubCardroom
-  , DarkenedHall' <$> darkenedHall
-  , ArtGallery' <$> artGallery
-  , VipArea' <$> vipArea
-  , BackAlley' <$> backAlley
-  , MuseumEntrance' <$> museumEntrance
-  , MuseumHalls' <$> museumHalls
-  , SecurityOffice_128' <$> securityOffice_128
-  , SecurityOffice_129' <$> securityOffice_129
   , AdministrationOffice_130' <$> administrationOffice_130
   , AdministrationOffice_131' <$> administrationOffice_131
+  , AlchemyLabs' <$> alchemyLabs
+  , AnotherDimension' <$> anotherDimension
+  , ArkhamWoodsCliffside' <$> arkhamWoodsCliffside
+  , ArkhamWoodsCorpseRiddenClearing' <$> arkhamWoodsCorpseRiddenClearing
+  , ArkhamWoodsGreatWillow' <$> arkhamWoodsGreatWillow
+  , ArkhamWoodsLakeside' <$> arkhamWoodsLakeside
+  , ArkhamWoodsOldHouse' <$> arkhamWoodsOldHouse
+  , ArkhamWoodsQuietGlade' <$> arkhamWoodsQuietGlade
+  , ArkhamWoodsTangledThicket' <$> arkhamWoodsTangledThicket
+  , ArkhamWoodsTwistingPaths' <$> arkhamWoodsTwistingPaths
+  , ArkhamWoodsUnhallowedGround' <$> arkhamWoodsUnhallowedGround
+  , ArkhamWoodsWoodenBridge' <$> arkhamWoodsWoodenBridge
+  , ArtGallery' <$> artGallery
+  , AscendingPath' <$> ascendingPath
+  , Attic' <$> attic
+  , AudubonPark' <$> audubonPark
+  , BackAlley' <$> backAlley
+  , BaseOfTheHill' <$> baseOfTheHill
+  , Bathroom' <$> bathroom
+  , Bedroom' <$> bedroom
+  , BishopsBrook_202' <$> bishopsBrook_202
+  , BishopsBrook_203' <$> bishopsBrook_203
+  , BlastedHeath_248' <$> blastedHeath_248
+  , BlastedHeath_249' <$> blastedHeath_249
+  , BrackishWaters' <$> brackishWaters
+  , Broadmoor' <$> broadmoor
+  , BurnedRuins_204' <$> burnedRuins_204
+  , BurnedRuins_205' <$> burnedRuins_205
+  , Cellar' <$> cellar
+  , CloverClubBar' <$> cloverClubBar
+  , CloverClubCardroom' <$> cloverClubCardroom
+  , CloverClubLounge' <$> cloverClubLounge
+  , ColdSpringGlen_244' <$> coldSpringGlen_244
+  , ColdSpringGlen_245' <$> coldSpringGlen_245
+  , CongregationalChurch_208' <$> congregationalChurch_208
+  , CongregationalChurch_209' <$> congregationalChurch_209
+  , CursedShores' <$> cursedShores
+  , DarkenedHall' <$> darkenedHall
+  , DeepBelowYourHouse' <$> deepBelowYourHouse
+  , DestroyedPath' <$> destroyedPath
+  , DevilsHopYard_252' <$> devilsHopYard_252
+  , DevilsHopYard_253' <$> devilsHopYard_253
+  , DimensionalDoorway' <$> dimensionalDoorway
+  , DimensionalGap' <$> dimensionalGap
+  , DiningCar' <$> diningCar
+  , Dormitories' <$> dormitories
+  , DowntownArkhamAsylum' <$> downtownArkhamAsylum
+  , DowntownFirstBankOfArkham' <$> downtownFirstBankOfArkham
+  , DunwichVillage_242' <$> dunwichVillage_242
+  , DunwichVillage_243' <$> dunwichVillage_243
+  , Easttown' <$> easttown
+  , EasttownArkhamPoliceStation' <$> easttownArkhamPoliceStation
+  , EerieGlade' <$> eerieGlade
+  , EndlessBridge' <$> endlessBridge
+  , EngineCar_175' <$> engineCar_175
+  , EngineCar_176' <$> engineCar_176
+  , EngineCar_177' <$> engineCar_177
   , ExhibitHallAthabaskanExhibit' <$> exhibitHallAthabaskanExhibit
-  , ExhibitHallMedusaExhibit' <$> exhibitHallMedusaExhibit
-  , ExhibitHallNatureExhibit' <$> exhibitHallNatureExhibit
   , ExhibitHallEgyptianExhibit' <$> exhibitHallEgyptianExhibit
   , ExhibitHallHallOfTheDead' <$> exhibitHallHallOfTheDead
+  , ExhibitHallMedusaExhibit' <$> exhibitHallMedusaExhibit
+  , ExhibitHallNatureExhibit' <$> exhibitHallNatureExhibit
   , ExhibitHallRestrictedHall' <$> exhibitHallRestrictedHall
+  , FacultyOfficesTheHourIsLate' <$> facultyOfficesTheHourIsLate
+  , FacultyOfficesTheNightIsStillYoung' <$> facultyOfficesTheNightIsStillYoung
+  , FarAboveYourHouse' <$> farAboveYourHouse
+  , FauborgMarigny' <$> fauborgMarigny
+  , ForgottenMarsh' <$> forgottenMarsh
+  , FoulSwamp' <$> foulSwamp
+  , FrozenSpring' <$> frozenSpring
+  , GardenDistrict' <$> gardenDistrict
+  , Graveyard' <$> graveyard
+  , GuestHall' <$> guestHall
+  , Hallway' <$> hallway
+  , HoleInTheWall' <$> holeInTheWall
+  , HouseInTheReeds_210' <$> houseInTheReeds_210
+  , HouseInTheReeds_211' <$> houseInTheReeds_211
+  , HumanitiesBuilding' <$> humanitiesBuilding
+  , LaBellaLuna' <$> laBellaLuna
+  , LostMemories' <$> lostMemories
+  , MainPath' <$> mainPath
+  , MiskatonicQuad' <$> miskatonicQuad
+  , MiskatonicUniversity' <$> miskatonicUniversity
+  , MiskatonicUniversityMiskatonicMuseum' <$> miskatonicUniversityMiskatonicMuseum
+  , MuseumEntrance' <$> museumEntrance
+  , MuseumHalls' <$> museumHalls
+  , Northside' <$> northside
+  , NorthsideTrainStation' <$> northsideTrainStation
+  , OrneLibrary' <$> orneLibrary
+  , OsbornsGeneralStore_206' <$> osbornsGeneralStore_206
+  , OsbornsGeneralStore_207' <$> osbornsGeneralStore_207
+  , OvergrownCairns' <$> overgrownCairns
+  , Parlor' <$> parlor
+  , ParlorCar' <$> parlorCar
   , PassengerCar_167' <$> passengerCar_167
   , PassengerCar_168' <$> passengerCar_168
   , PassengerCar_169' <$> passengerCar_169
   , PassengerCar_170' <$> passengerCar_170
   , PassengerCar_171' <$> passengerCar_171
-  , SleepingCar' <$> sleepingCar
-  , DiningCar' <$> diningCar
-  , ParlorCar' <$> parlorCar
-  , EngineCar_175' <$> engineCar_175
-  , EngineCar_176' <$> engineCar_176
-  , EngineCar_177' <$> engineCar_177
-  , VillageCommons' <$> villageCommons
-  , BishopsBrook_202' <$> bishopsBrook_202
-  , BishopsBrook_203' <$> bishopsBrook_203
-  , BurnedRuins_204' <$> burnedRuins_204
-  , BurnedRuins_205' <$> burnedRuins_205
-  , OsbornsGeneralStore_206' <$> osbornsGeneralStore_206
-  , OsbornsGeneralStore_207' <$> osbornsGeneralStore_207
-  , CongregationalChurch_208' <$> congregationalChurch_208
-  , CongregationalChurch_209' <$> congregationalChurch_209
-  , HouseInTheReeds_210' <$> houseInTheReeds_210
-  , HouseInTheReeds_211' <$> houseInTheReeds_211
+  , PrismaticCascade' <$> prismaticCascade
+  , ReturnToAttic' <$> returnToAttic
+  , ReturnToCellar' <$> returnToCellar
+  , RitualGrounds' <$> ritualGrounds
+  , RitualSite' <$> ritualSite
+  , Rivertown' <$> rivertown
+  , RivertownAbandonedWarehouse' <$> rivertownAbandonedWarehouse
   , Schoolhouse_212' <$> schoolhouse_212
   , Schoolhouse_213' <$> schoolhouse_213
-  , TheHiddenChamber' <$> theHiddenChamber
-  , DunwichVillage_242' <$> dunwichVillage_242
-  , DunwichVillage_243' <$> dunwichVillage_243
-  , ColdSpringGlen_244' <$> coldSpringGlen_244
-  , ColdSpringGlen_245' <$> coldSpringGlen_245
-  , TenAcreMeadow_246' <$> tenAcreMeadow_246
-  , TenAcreMeadow_247' <$> tenAcreMeadow_247
-  , BlastedHeath_248' <$> blastedHeath_248
-  , BlastedHeath_249' <$> blastedHeath_249
-  , WhateleyRuins_250' <$> whateleyRuins_250
-  , WhateleyRuins_251' <$> whateleyRuins_251
-  , DevilsHopYard_252' <$> devilsHopYard_252
-  , DevilsHopYard_253' <$> devilsHopYard_253
-  , BaseOfTheHill' <$> baseOfTheHill
-  , AscendingPath' <$> ascendingPath
+  , ScienceBuilding' <$> scienceBuilding
+  , SecurityOffice_128' <$> securityOffice_128
+  , SecurityOffice_129' <$> securityOffice_129
   , SentinelPeak' <$> sentinelPeak
   , SlaughteredWoods' <$> slaugteredWoods
-  , EerieGlade' <$> eerieGlade
-  , DestroyedPath' <$> destroyedPath
-  , FrozenSpring' <$> frozenSpring
-  , DimensionalGap' <$> dimensionalGap
-  , ATearInThePath' <$> aTearInThePath
-  , UprootedWoods' <$> uprootedWoods
-  , LostMemories' <$> lostMemories
-  , AnotherDimension' <$> anotherDimension
-  , TheEdgeOfTheUniverse' <$> theEdgeOfTheUniverse
-  , TearThroughTime' <$> tearThroughTime
-  , TearThroughSpace' <$> tearThroughSpace
-  , PrismaticCascade' <$> prismaticCascade
-  , EndlessBridge' <$> endlessBridge
+  , SleepingCar' <$> sleepingCar
+  , SouthsideHistoricalSociety' <$> southsideHistoricalSociety
+  , SouthsideMasBoardingHouse' <$> southsideMasBoardingHouse
+  , StMarysHospital' <$> stMarysHospital
   , StepsOfYhagharl' <$> stepsOfYhagharl
-  , DimensionalDoorway' <$> dimensionalDoorway
+  , StudentUnion' <$> studentUnion
+  , Study' <$> study
   , StudyAberrantGateway' <$> studyAberrantGateway
-  , GuestHall' <$> guestHall
-  , Bedroom' <$> bedroom
-  , Bathroom' <$> bathroom
-  , HoleInTheWall' <$> holeInTheWall
-  , ReturnToAttic' <$> returnToAttic
-  , FarAboveYourHouse' <$> farAboveYourHouse
-  , ReturnToCellar' <$> returnToCellar
-  , DeepBelowYourHouse' <$> deepBelowYourHouse
-  , EasttownArkhamPoliceStation' <$> easttownArkhamPoliceStation
-  , NorthsideTrainStation' <$> northsideTrainStation
-  , MiskatonicUniversityMiskatonicMuseum'
-    <$> miskatonicUniversityMiskatonicMuseum
-  , RivertownAbandonedWarehouse' <$> rivertownAbandonedWarehouse
-  , ArkhamWoodsGreatWillow' <$> arkhamWoodsGreatWillow
-  , ArkhamWoodsLakeside' <$> arkhamWoodsLakeside
-  , ArkhamWoodsCorpseRiddenClearing' <$> arkhamWoodsCorpseRiddenClearing
-  , ArkhamWoodsWoodenBridge' <$> arkhamWoodsWoodenBridge
-  , CursedShores' <$> cursedShores
-  , GardenDistrict' <$> gardenDistrict
-  , Broadmoor' <$> broadmoor
-  , BrackishWaters' <$> brackishWaters
-  , AudubonPark' <$> audubonPark
-  , FauborgMarigny' <$> fauborgMarigny
-  , ForgottenMarsh' <$> forgottenMarsh
+  , TearThroughSpace' <$> tearThroughSpace
+  , TearThroughTime' <$> tearThroughTime
+  , TenAcreMeadow_246' <$> tenAcreMeadow_246
+  , TenAcreMeadow_247' <$> tenAcreMeadow_247
+  , TheEdgeOfTheUniverse' <$> theEdgeOfTheUniverse
+  , TheHiddenChamber' <$> theHiddenChamber
   , TrappersCabin' <$> trappersCabin
   , TwistedUnderbrush' <$> twistedUnderbrush
-  , FoulSwamp' <$> foulSwamp
-  , RitualGrounds' <$> ritualGrounds
-  , OvergrownCairns' <$> overgrownCairns
-  , CardBuilder
-    { cbCardCode = "location"
-    , cbCardBuilder = \lid ->
-      baseLocation lid "location" 0 (Static 0) NoSymbol [] id id
-    }
+  , UprootedWoods' <$> uprootedWoods
+  , VillageCommons' <$> villageCommons
+  , VipArea' <$> vipArea
+  , WhateleyRuins_250' <$> whateleyRuins_250
+  , WhateleyRuins_251' <$> whateleyRuins_251
+  , YourHouse' <$> yourHouse
   ]
 
 isEmptyLocation :: Location -> Bool

@@ -27,118 +27,118 @@ createAsset :: IsCard a => a -> Asset
 createAsset a = lookupAsset (toCardCode a) (AssetId $ toCardId a)
 
 data Asset
-  = Rolands38Special' Rolands38Special
-  | DaisysToteBag' DaisysToteBag
-  | TheNecronomicon' TheNecronomicon
-  | HeirloomOfHyperborea' HeirloomOfHyperborea
-  | WendysAmulet' WendysAmulet
-  | FortyFiveAutomatic' FortyFiveAutomatic
-  | PhysicalTraining' PhysicalTraining
-  | BeatCop' BeatCop
-  | FirstAid' FirstAid
-  | Machete' Machete
-  | GuardDog' GuardDog
-  | PoliceBadge2' PoliceBadge2
-  | BeatCop2' BeatCop2
-  | Shotgun4' Shotgun4
-  | MagnifyingGlass' MagnifyingGlass
-  | OldBookOfLore' OldBookOfLore
-  | ResearchLibrarian' ResearchLibrarian
-  | DrMilanChristopher' DrMilanChristopher
-  | Hyperawareness' Hyperawareness
-  | MedicalTexts' MedicalTexts
-  | MagnifyingGlass1' MagnifyingGlass1
-  | DiscOfItzamna2' DiscOfItzamna2
-  | Encyclopedia2' Encyclopedia2
-  | Switchblade' Switchblade
-  | Burglary' Burglary
-  | Pickpocketing' Pickpocketing
-  | FortyOneDerringer' FortyOneDerringer
-  | LeoDeLuca' LeoDeLuca
-  | HardKnocks' HardKnocks
-  | LeoDeLuca1' LeoDeLuca1
-  | CatBurglar1' CatBurglar1
-  | ForbiddenKnowledge' ForbiddenKnowledge
-  | HolyRosary' HolyRosary
-  | Shrivelling' Shrivelling
-  | Scrying' Scrying
-  | ArcaneStudies' ArcaneStudies
-  | ArcaneInitiate' ArcaneInitiate
-  | BookOfShadows3' BookOfShadows3
-  | GrotesqueStatue4' GrotesqueStatue4
-  | LeatherCoat' LeatherCoat
-  | Scavenging' Scavenging
-  | BaseballBat' BaseballBat
-  | RabbitsFoot' RabbitsFoot
-  | StrayCat' StrayCat
-  | DigDeep' DigDeep
+  = BaseAsset' BaseAsset
+  | AdamLynch' AdamLynch
+  | Adaptable1' Adaptable1
+  | AlchemicalConcoction' AlchemicalConcoction
   | Aquinnah1' Aquinnah1
-  | Knife' Knife
-  | Flashlight' Flashlight
+  | ArcaneEnlightenment' ArcaneEnlightenment
+  | ArcaneInitiate' ArcaneInitiate
+  | ArcaneStudies' ArcaneStudies
+  | ArcaneStudies2' ArcaneStudies2
+  | Bandolier' Bandolier
+  | BaseballBat' BaseballBat
+  | BearTrap' BearTrap
+  | BeatCop' BeatCop
+  | BeatCop2' BeatCop2
+  | Blackjack' Blackjack
+  | BookOfShadows3' BookOfShadows3
+  | BrotherXavier1' BrotherXavier1
   | BulletproofVest3' BulletproofVest3
+  | Burglary' Burglary
+  | CatBurglar1' CatBurglar1
+  | CelaenoFragments' CelaenoFragments
+  | ClarityOfMind' ClarityOfMind
+  | DaisysToteBag' DaisysToteBag
+  | DaisysToteBagAdvanced' DaisysToteBagAdvanced
+  | DigDeep' DigDeep
+  | DigDeep2' DigDeep2
+  | DiscOfItzamna2' DiscOfItzamna2
+  | DrFrancisMorgan' DrFrancisMorgan
+  | DrHenryArmitage' DrHenryArmitage
+  | DrMilanChristopher' DrMilanChristopher
+  | Duke' Duke
+  | EarlSawyer' EarlSawyer
   | ElderSignAmulet3' ElderSignAmulet3
-  | LitaChantler' LitaChantler
-  | ZoeysCross' ZoeysCross
+  | Encyclopedia' Encyclopedia
+  | Encyclopedia2' Encyclopedia2
+  | EsotericFormula' EsotericFormula
+  | FireAxe' FireAxe
+  | FirstAid' FirstAid
+  | FishingNet' FishingNet
+  | Flashlight' Flashlight
+  | ForbiddenKnowledge' ForbiddenKnowledge
+  | FortyFiveAutomatic' FortyFiveAutomatic
+  | FortyOneDerringer' FortyOneDerringer
+  | GrotesqueStatue4' GrotesqueStatue4
+  | GuardDog' GuardDog
+  | HardKnocks' HardKnocks
+  | HardKnocks2' HardKnocks2
+  | HaroldWalsted' HaroldWalsted
+  | HeirloomOfHyperborea' HeirloomOfHyperborea
+  | HelplessPassenger' HelplessPassenger
+  | HigherEducation' HigherEducation
+  | HiredMuscle1' HiredMuscle1
+  | HolyRosary' HolyRosary
+  | Hyperawareness' Hyperawareness
+  | Hyperawareness2' Hyperawareness2
+  | JazzMulligan' JazzMulligan
   | JennysTwin45s' JennysTwin45s
   | JimsTrumpet' JimsTrumpet
-  | Duke' Duke
-  | Blackjack' Blackjack
-  | LaboratoryAssistant' LaboratoryAssistant
-  | StrangeSolution' StrangeSolution
-  | LiquidCourage' LiquidCourage
-  | HiredMuscle1' HiredMuscle1
-  | RiteOfSeeking' RiteOfSeeking
-  | RitualCandles' RitualCandles
-  | ClarityOfMind' ClarityOfMind
-  | FireAxe' FireAxe
-  | PeterSylvestre' PeterSylvestre
-  | PeterSylvestre2' PeterSylvestre2
-  | Kukri' Kukri
-  | DrHenryArmitage' DrHenryArmitage
-  | AlchemicalConcoction' AlchemicalConcoction
-  | JazzMulligan' JazzMulligan
-  | ProfessorWarrenRice' ProfessorWarrenRice
-  | PeterClover' PeterClover
-  | DrFrancisMorgan' DrFrancisMorgan
-  | BrotherXavier1' BrotherXavier1
-  | Pathfinder1' Pathfinder1
-  | Adaptable1' Adaptable1
-  | SongOfTheDead2' SongOfTheDead2
-  | HaroldWalsted' HaroldWalsted
-  | AdamLynch' AdamLynch
-  | TheNecronomiconOlausWormiusTranslation' TheNecronomiconOlausWormiusTranslation
-  | Bandolier' Bandolier
-  | HelplessPassenger' HelplessPassenger
+  | KeenEye' KeenEye
   | KeenEye3' KeenEye3
   | KeyToTheChamber' KeyToTheChamber
-  | ZebulonWhateley' ZebulonWhateley
-  | EarlSawyer' EarlSawyer
-  | PowderOfIbnGhazi' PowderOfIbnGhazi
-  | SpringfieldM19034' SpringfieldM19034
-  | EsotericFormula' EsotericFormula
-  | LightningGun5' LightningGun5
-  | ToothOfEztli' ToothOfEztli
-  | OccultLexicon' OccultLexicon
-  | ScrollOfProphecies' ScrollOfProphecies
-  | KeenEye' KeenEye
-  | PhysicalTraining2' PhysicalTraining2
-  | Hyperawareness2' Hyperawareness2
-  | HardKnocks2' HardKnocks2
-  | ArcaneStudies2' ArcaneStudies2
-  | DigDeep2' DigDeep2
-  | RabbitsFoot3' RabbitsFoot3
-  | ArcaneEnlightenment' ArcaneEnlightenment
-  | CelaenoFragments' CelaenoFragments
-  | Encyclopedia' Encyclopedia
-  | HigherEducation' HigherEducation
-  | WhittonGreene' WhittonGreene
+  | Knife' Knife
+  | Kukri' Kukri
+  | LaboratoryAssistant' LaboratoryAssistant
   | LadyEsprit' LadyEsprit
-  | BearTrap' BearTrap
-  | FishingNet' FishingNet
+  | LeatherCoat' LeatherCoat
+  | LeoDeLuca' LeoDeLuca
+  | LeoDeLuca1' LeoDeLuca1
+  | LightningGun5' LightningGun5
+  | LiquidCourage' LiquidCourage
+  | LitaChantler' LitaChantler
+  | Machete' Machete
+  | MagnifyingGlass' MagnifyingGlass
+  | MagnifyingGlass1' MagnifyingGlass1
+  | MedicalTexts' MedicalTexts
   | MonstrousTransformation' MonstrousTransformation
-  | DaisysToteBagAdvanced' DaisysToteBagAdvanced
+  | OccultLexicon' OccultLexicon
+  | OldBookOfLore' OldBookOfLore
+  | Pathfinder1' Pathfinder1
+  | PeterClover' PeterClover
+  | PeterSylvestre' PeterSylvestre
+  | PeterSylvestre2' PeterSylvestre2
+  | PhysicalTraining' PhysicalTraining
+  | PhysicalTraining2' PhysicalTraining2
+  | Pickpocketing' Pickpocketing
+  | PoliceBadge2' PoliceBadge2
+  | PowderOfIbnGhazi' PowderOfIbnGhazi
+  | ProfessorWarrenRice' ProfessorWarrenRice
+  | RabbitsFoot' RabbitsFoot
+  | RabbitsFoot3' RabbitsFoot3
+  | ResearchLibrarian' ResearchLibrarian
+  | RiteOfSeeking' RiteOfSeeking
+  | RitualCandles' RitualCandles
+  | Rolands38Special' Rolands38Special
+  | Scavenging' Scavenging
+  | ScrollOfProphecies' ScrollOfProphecies
+  | Scrying' Scrying
+  | Shotgun4' Shotgun4
+  | Shrivelling' Shrivelling
+  | SongOfTheDead2' SongOfTheDead2
+  | SpringfieldM19034' SpringfieldM19034
+  | StrangeSolution' StrangeSolution
+  | StrayCat' StrayCat
+  | Switchblade' Switchblade
+  | TheNecronomicon' TheNecronomicon
   | TheNecronomiconAdvanced' TheNecronomiconAdvanced
-  | BaseAsset' BaseAsset
+  | TheNecronomiconOlausWormiusTranslation' TheNecronomiconOlausWormiusTranslation
+  | ToothOfEztli' ToothOfEztli
+  | WendysAmulet' WendysAmulet
+  | WhittonGreene' WhittonGreene
+  | ZebulonWhateley' ZebulonWhateley
+  | ZoeysCross' ZoeysCross
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -256,122 +256,122 @@ lookupAsset cardCode =
 allAssets :: HashMap CardCode (AssetId -> Asset)
 allAssets = mapFromList $ map
   (cbCardCode &&& cbCardBuilder)
-  [ Rolands38Special' <$> rolands38Special
-  , DaisysToteBag' <$> daisysToteBag
-  , TheNecronomicon' <$> theNecronomicon
-  , HeirloomOfHyperborea' <$> heirloomOfHyperborea
-  , WendysAmulet' <$> wendysAmulet
-  , FortyFiveAutomatic' <$> fortyFiveAutomatic
-  , PhysicalTraining' <$> physicalTraining
-  , BeatCop' <$> beatCop
-  , FirstAid' <$> firstAid
-  , Machete' <$> machete
-  , GuardDog' <$> guardDog
-  , PoliceBadge2' <$> policeBadge2
-  , BeatCop2' <$> beatCop2
-  , Shotgun4' <$> shotgun4
-  , MagnifyingGlass' <$> magnifyingGlass
-  , OldBookOfLore' <$> oldBookOfLore
-  , ResearchLibrarian' <$> researchLibrarian
-  , DrMilanChristopher' <$> drMilanChristopher
-  , Hyperawareness' <$> hyperawareness
-  , MedicalTexts' <$> medicalTexts
-  , MagnifyingGlass1' <$> magnifyingGlass1
-  , DiscOfItzamna2' <$> discOfItzamna2
-  , Encyclopedia2' <$> encyclopedia2
-  , Switchblade' <$> switchblade
-  , Burglary' <$> burglary
-  , Pickpocketing' <$> pickpoketing
-  , FortyOneDerringer' <$> fortyOneDerringer
-  , LeoDeLuca' <$> leoDeLuca
-  , HardKnocks' <$> hardKnocks
-  , LeoDeLuca1' <$> leoDeLuca1
-  , CatBurglar1' <$> catBurglar1
-  , ForbiddenKnowledge' <$> forbiddenKnowledge
-  , HolyRosary' <$> holyRosary
-  , Shrivelling' <$> shrivelling
-  , Scrying' <$> scrying
-  , ArcaneStudies' <$> arcaneStudies
-  , ArcaneInitiate' <$> arcaneInitiate
-  , BookOfShadows3' <$> bookOfShadows3
-  , GrotesqueStatue4' <$> grotesqueStatue4
-  , LeatherCoat' <$> leatherCoat
-  , Scavenging' <$> scavenging
-  , BaseballBat' <$> baseballBat
-  , RabbitsFoot' <$> rabbitsFoot
-  , StrayCat' <$> strayCat
-  , DigDeep' <$> digDeep
-  , Aquinnah1' <$> aquinnah1
-  , Knife' <$> knife
-  , Flashlight' <$> flashlight
-  , BulletproofVest3' <$> bulletproofVest3
-  , ElderSignAmulet3' <$> elderSignAmulet3
-  , LitaChantler' <$> litaChantler
-  , ZoeysCross' <$> zoeysCross
-  , JennysTwin45s' <$> jennysTwin45s
-  , JimsTrumpet' <$> jimsTrumpet
-  , Duke' <$> duke
-  , Blackjack' <$> blackjack
-  , LaboratoryAssistant' <$> laboratoryAssistant
-  , StrangeSolution' <$> strangeSolution
-  , LiquidCourage' <$> liquidCourage
-  , HiredMuscle1' <$> hiredMuscle1
-  , RiteOfSeeking' <$> riteOfSeeking
-  , RitualCandles' <$> ritualCandles
-  , ClarityOfMind' <$> clarityOfMind
-  , FireAxe' <$> fireAxe
-  , PeterSylvestre' <$> peterSylvestre
-  , PeterSylvestre2' <$> peterSylvestre2
-  , Kukri' <$> kukri
-  , DrHenryArmitage' <$> drHenryArmitage
-  , AlchemicalConcoction' <$> alchemicalConcoction
-  , JazzMulligan' <$> jazzMulligan
-  , ProfessorWarrenRice' <$> professorWarrenRice
-  , PeterClover' <$> peterClover
-  , DrFrancisMorgan' <$> drFrancisMorgan
-  , BrotherXavier1' <$> brotherXavier1
-  , Pathfinder1' <$> pathfinder1
-  , Adaptable1' <$> adaptable1
-  , SongOfTheDead2' <$> songOfTheDead2
-  , HaroldWalsted' <$> haroldWalsted
-  , AdamLynch' <$> adamLynch
-  , TheNecronomiconOlausWormiusTranslation'
-    <$> theNecronomiconOlausWormiusTranslation
-  , Bandolier' <$> bandolier
-  , HelplessPassenger' <$> helplessPassenger
-  , KeenEye3' <$> keenEye3
-  , KeyToTheChamber' <$> keyToTheChamber
-  , ZebulonWhateley' <$> zebulonWhateley
-  , EarlSawyer' <$> earlSawyer
-  , PowderOfIbnGhazi' <$> powderOfIbnGhazi
-  , SpringfieldM19034' <$> springfieldM19034
-  , EsotericFormula' <$> esotericFormula
-  , LightningGun5' <$> lightningGun5
-  , ToothOfEztli' <$> toothOfEztli
-  , OccultLexicon' <$> occultLexicon
-  , ScrollOfProphecies' <$> scrollOfProphecies
-  , KeenEye' <$> keenEye
-  , PhysicalTraining2' <$> physicalTraining2
-  , Hyperawareness2' <$> hyperawareness2
-  , HardKnocks2' <$> hardKnocks2
-  , ArcaneStudies2' <$> arcaneStudies2
-  , DigDeep2' <$> digDeep2
-  , RabbitsFoot3' <$> rabbitsFoot3
-  , ArcaneEnlightenment' <$> arcaneEnlightenment
-  , CelaenoFragments' <$> celaenoFragments
-  , Encyclopedia' <$> encyclopedia
-  , HigherEducation' <$> higherEducation
-  , WhittonGreene' <$> whittonGreene
-  , LadyEsprit' <$> ladyEsprit
-  , BearTrap' <$> bearTrap
-  , FishingNet' <$> fishingNet
-  , MonstrousTransformation' <$> monstrousTransformation
-  , DaisysToteBagAdvanced' <$> daisysToteBagAdvanced
-  , TheNecronomiconAdvanced' <$> theNecronomiconAdvanced
-  , CardBuilder
+  [ CardBuilder
     { cbCardCode = "asset"
     , cbCardBuilder = \aid -> baseAsset aid "asset" id id
     }
+  , AdamLynch' <$> adamLynch
+  , Adaptable1' <$> adaptable1
+  , AlchemicalConcoction' <$> alchemicalConcoction
+  , Aquinnah1' <$> aquinnah1
+  , ArcaneEnlightenment' <$> arcaneEnlightenment
+  , ArcaneInitiate' <$> arcaneInitiate
+  , ArcaneStudies' <$> arcaneStudies
+  , ArcaneStudies2' <$> arcaneStudies2
+  , Bandolier' <$> bandolier
+  , BaseballBat' <$> baseballBat
+  , BearTrap' <$> bearTrap
+  , BeatCop' <$> beatCop
+  , BeatCop2' <$> beatCop2
+  , Blackjack' <$> blackjack
+  , BookOfShadows3' <$> bookOfShadows3
+  , BrotherXavier1' <$> brotherXavier1
+  , BulletproofVest3' <$> bulletproofVest3
+  , Burglary' <$> burglary
+  , CatBurglar1' <$> catBurglar1
+  , CelaenoFragments' <$> celaenoFragments
+  , ClarityOfMind' <$> clarityOfMind
+  , DaisysToteBag' <$> daisysToteBag
+  , DaisysToteBagAdvanced' <$> daisysToteBagAdvanced
+  , DigDeep' <$> digDeep
+  , DigDeep2' <$> digDeep2
+  , DiscOfItzamna2' <$> discOfItzamna2
+  , DrFrancisMorgan' <$> drFrancisMorgan
+  , DrHenryArmitage' <$> drHenryArmitage
+  , DrMilanChristopher' <$> drMilanChristopher
+  , Duke' <$> duke
+  , EarlSawyer' <$> earlSawyer
+  , ElderSignAmulet3' <$> elderSignAmulet3
+  , Encyclopedia' <$> encyclopedia
+  , Encyclopedia2' <$> encyclopedia2
+  , EsotericFormula' <$> esotericFormula
+  , FireAxe' <$> fireAxe
+  , FirstAid' <$> firstAid
+  , FishingNet' <$> fishingNet
+  , Flashlight' <$> flashlight
+  , ForbiddenKnowledge' <$> forbiddenKnowledge
+  , FortyFiveAutomatic' <$> fortyFiveAutomatic
+  , FortyOneDerringer' <$> fortyOneDerringer
+  , GrotesqueStatue4' <$> grotesqueStatue4
+  , GuardDog' <$> guardDog
+  , HardKnocks' <$> hardKnocks
+  , HardKnocks2' <$> hardKnocks2
+  , HaroldWalsted' <$> haroldWalsted
+  , HeirloomOfHyperborea' <$> heirloomOfHyperborea
+  , HelplessPassenger' <$> helplessPassenger
+  , HigherEducation' <$> higherEducation
+  , HiredMuscle1' <$> hiredMuscle1
+  , HolyRosary' <$> holyRosary
+  , Hyperawareness' <$> hyperawareness
+  , Hyperawareness2' <$> hyperawareness2
+  , JazzMulligan' <$> jazzMulligan
+  , JennysTwin45s' <$> jennysTwin45s
+  , JimsTrumpet' <$> jimsTrumpet
+  , KeenEye' <$> keenEye
+  , KeenEye3' <$> keenEye3
+  , KeyToTheChamber' <$> keyToTheChamber
+  , Knife' <$> knife
+  , Kukri' <$> kukri
+  , LaboratoryAssistant' <$> laboratoryAssistant
+  , LadyEsprit' <$> ladyEsprit
+  , LeatherCoat' <$> leatherCoat
+  , LeoDeLuca' <$> leoDeLuca
+  , LeoDeLuca1' <$> leoDeLuca1
+  , LightningGun5' <$> lightningGun5
+  , LiquidCourage' <$> liquidCourage
+  , LitaChantler' <$> litaChantler
+  , Machete' <$> machete
+  , MagnifyingGlass' <$> magnifyingGlass
+  , MagnifyingGlass1' <$> magnifyingGlass1
+  , MedicalTexts' <$> medicalTexts
+  , MonstrousTransformation' <$> monstrousTransformation
+  , OccultLexicon' <$> occultLexicon
+  , OldBookOfLore' <$> oldBookOfLore
+  , Pathfinder1' <$> pathfinder1
+  , PeterClover' <$> peterClover
+  , PeterSylvestre' <$> peterSylvestre
+  , PeterSylvestre2' <$> peterSylvestre2
+  , PhysicalTraining' <$> physicalTraining
+  , PhysicalTraining2' <$> physicalTraining2
+  , Pickpocketing' <$> pickpoketing
+  , PoliceBadge2' <$> policeBadge2
+  , PowderOfIbnGhazi' <$> powderOfIbnGhazi
+  , ProfessorWarrenRice' <$> professorWarrenRice
+  , RabbitsFoot' <$> rabbitsFoot
+  , RabbitsFoot3' <$> rabbitsFoot3
+  , ResearchLibrarian' <$> researchLibrarian
+  , RiteOfSeeking' <$> riteOfSeeking
+  , RitualCandles' <$> ritualCandles
+  , Rolands38Special' <$> rolands38Special
+  , Scavenging' <$> scavenging
+  , ScrollOfProphecies' <$> scrollOfProphecies
+  , Scrying' <$> scrying
+  , Shotgun4' <$> shotgun4
+  , Shrivelling' <$> shrivelling
+  , SongOfTheDead2' <$> songOfTheDead2
+  , SpringfieldM19034' <$> springfieldM19034
+  , StrangeSolution' <$> strangeSolution
+  , StrayCat' <$> strayCat
+  , Switchblade' <$> switchblade
+  , TheNecronomicon' <$> theNecronomicon
+  , TheNecronomiconAdvanced' <$> theNecronomiconAdvanced
+  , TheNecronomiconOlausWormiusTranslation'
+      <$> theNecronomiconOlausWormiusTranslation
+  , ToothOfEztli' <$> toothOfEztli
+  , WendysAmulet' <$> wendysAmulet
+  , WhittonGreene' <$> whittonGreene
+  , ZebulonWhateley' <$> zebulonWhateley
+  , ZoeysCross' <$> zoeysCross
   ]
 
 instance IsAsset Asset where

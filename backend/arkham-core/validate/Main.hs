@@ -8,6 +8,8 @@ import Arkham.Event.Cards
 import Arkham.Location.Cards
 import Arkham.Skill.Cards
 import Arkham.Treachery.Cards
+import Arkham.Types.Asset
+import Arkham.Types.Asset.Attrs (assetHealth, assetSanity)
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.Cost
@@ -46,6 +48,7 @@ data CardJson = CardJson
   , victory :: Maybe Int
   , enemy_fight :: Maybe Int
   , health :: Maybe Int
+  , sanity :: Maybe Int
   , health_per_investigator :: Maybe Bool
   , enemy_evade :: Maybe Int
   , enemy_damage :: Maybe Int
@@ -85,6 +88,13 @@ data EnemyStatsMismatch = EnemyStatsMismatch
   (Int, GameValue Int, Int)
   deriving stock Show
 
+data AssetStatsMismatch = AssetStatsMismatch
+  CardCode
+  Name
+  (Maybe Int, Maybe Int)
+  (Maybe Int, Maybe Int)
+  deriving stock Show
+
 data EnemyDamageMismatch = EnemyDamageMismatch
   CardCode
   Name
@@ -121,6 +131,7 @@ instance Exception SkillsMismatch
 instance Exception TraitsMismatch
 instance Exception VictoryMismatch
 instance Exception EnemyStatsMismatch
+instance Exception AssetStatsMismatch
 instance Exception EnemyDamageMismatch
 instance Exception ShroudMismatch
 instance Exception ClueMismatch
@@ -132,7 +143,10 @@ filterTest = filter
   )
 
 filterTestEntities :: [(CardCode, a)] -> [(CardCode, a)]
-filterTestEntities = filter (\(code, _) -> code /= "enemy" && code /= "location"  && not ("b" `isSuffixOf` unCardCode code))
+filterTestEntities = filter
+  (\(code, _) -> code `notElem` ["enemy", "location", "asset"] && not
+    ("b" `isSuffixOf` unCardCode code)
+  )
 
 toClassSymbol :: String -> Maybe ClassSymbol
 toClassSymbol = \case
@@ -276,12 +290,8 @@ main = do
                 )
               enemyStats =
                 (enemyFight attrs, enemyHealth attrs, enemyEvade attrs)
-              cardDamage =
-                ( fromMaybe 0 enemy_damage
-                , fromMaybe 0 enemy_horror
-                )
-              enemyDamage =
-                (enemyHealthDamage attrs, enemySanityDamage attrs)
+              cardDamage = (fromMaybe 0 enemy_damage, fromMaybe 0 enemy_horror)
+              enemyDamage = (enemyHealthDamage attrs, enemySanityDamage attrs)
             when
               (cardStats /= enemyStats)
               (throw $ EnemyStatsMismatch
@@ -300,24 +310,45 @@ main = do
               )
 
       -- validate locations
-      for_ (filterTestEntities $ mapToList allLocations) $ \(ccode, builder) -> do
+      for_ (filterTestEntities $ mapToList allLocations) $ \(ccode, builder) ->
+        do
+          attrs <- toAttrs . builder <$> getRandom
+          case lookup ccode jsonMap of
+            Nothing -> throw $ UnknownCard ccode
+            Just CardJson {..} -> do
+              when
+                (fromMaybe 0 shroud /= locationShroud attrs)
+                (throw $ ShroudMismatch
+                  code
+                  (cdName $ toCardDef attrs)
+                  (fromMaybe 0 shroud)
+                  (locationShroud attrs)
+                )
+              when
+                (fromMaybe 0 clues
+                /= fromGameValue (locationRevealClues attrs) 1
+                )
+                (throw $ ClueMismatch
+                  code
+                  (cdName $ toCardDef attrs)
+                  (fromMaybe 0 clues)
+                  (fromGameValue (locationRevealClues attrs) 1)
+                )
+
+      -- validate assets
+      for_ (filterTestEntities $ mapToList allAssets) $ \(ccode, builder) -> do
         attrs <- toAttrs . builder <$> getRandom
         case lookup ccode jsonMap of
           Nothing -> throw $ UnknownCard ccode
           Just CardJson {..} -> do
+            let
+              cardStats = (health, sanity)
+              assetStats = (assetHealth attrs, assetSanity attrs)
             when
-              (fromMaybe 0 shroud /= locationShroud attrs)
-              (throw $ ShroudMismatch
+              (cardStats /= assetStats)
+              (throw $ AssetStatsMismatch
                 code
                 (cdName $ toCardDef attrs)
-                (fromMaybe 0 shroud)
-                (locationShroud attrs)
-              )
-            when
-              (fromMaybe 0 clues /= fromGameValue (locationRevealClues attrs) 1)
-              (throw $ ClueMismatch
-                code
-                (cdName $ toCardDef attrs)
-                (fromMaybe 0 clues)
-                (fromGameValue (locationRevealClues attrs) 1)
+                cardStats
+                assetStats
               )

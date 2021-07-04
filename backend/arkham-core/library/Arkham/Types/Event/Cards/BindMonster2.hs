@@ -9,20 +9,18 @@ import qualified Arkham.Event.Cards as Cards (bindMonster2)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EventId
+import Arkham.Types.Event.Attrs
 import Arkham.Types.Exception
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Event.Attrs
 
 newtype BindMonster2 = BindMonster2 EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-bindMonster2 :: InvestigatorId -> EventId -> BindMonster2
+bindMonster2 :: EventCard BindMonster2
 bindMonster2 = event BindMonster2 Cards.bindMonster2
 
 ability :: Target -> EventAttrs -> Ability

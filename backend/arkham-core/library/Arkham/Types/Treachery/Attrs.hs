@@ -17,7 +17,7 @@ import Arkham.Types.Target
 import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
 
-type TreacheryCard a = (InvestigatorId -> TreacheryId -> a)
+type TreacheryCard a = CardBuilder (InvestigatorId, TreacheryId) a
 
 data TreacheryAttrs = TreacheryAttrs
   { treacheryId :: TreacheryId
@@ -129,15 +129,20 @@ withTreacheryInvestigator attrs f = case treacheryAttachedTarget attrs of
     )
 
 treachery
-  :: (TreacheryAttrs -> a) -> CardDef -> InvestigatorId -> TreacheryId -> a
-treachery f cardDef iid tid = f $ TreacheryAttrs
-  { treacheryId = tid
-  , treacheryCardDef = cardDef
-  , treacheryAttachedTarget = Nothing
-  , treacheryOwner = if cdWeakness cardDef then Just iid else Nothing
-  , treacheryDoom = 0
-  , treacheryClues = Nothing
-  , treacheryResources = Nothing
+  :: (TreacheryAttrs -> a)
+  -> CardDef
+  -> CardBuilder (InvestigatorId, TreacheryId) a
+treachery f cardDef = CardBuilder
+  { cbCardCode = cdCardCode cardDef
+  , cbCardBuilder = \(iid, tid) -> f $ TreacheryAttrs
+    { treacheryId = tid
+    , treacheryCardDef = cardDef
+    , treacheryAttachedTarget = Nothing
+    , treacheryOwner = if cdWeakness cardDef then Just iid else Nothing
+    , treacheryDoom = 0
+    , treacheryClues = Nothing
+    , treacheryResources = Nothing
+    }
   }
 
 instance HasActions env TreacheryAttrs where

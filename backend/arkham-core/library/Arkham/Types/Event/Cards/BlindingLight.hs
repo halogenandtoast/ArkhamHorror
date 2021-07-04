@@ -4,19 +4,17 @@ import Arkham.Prelude
 
 import qualified Arkham.Event.Cards as Cards (blindingLight)
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Event.Attrs
+import Arkham.Types.Event.Runner
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Event.Attrs
-import Arkham.Types.Event.Runner
 
 newtype BlindingLight = BlindingLight EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-blindingLight :: InvestigatorId -> EventId -> BlindingLight
+blindingLight :: EventCard BlindingLight
 blindingLight = event BlindingLight Cards.blindingLight
 
 instance HasModifiersFor env BlindingLight where

@@ -10,7 +10,7 @@ import Arkham.Types.SkillId
 import Arkham.Types.Source
 import Arkham.Types.Target
 
-type SkillCard a = (InvestigatorId -> SkillId -> a)
+type SkillCard a = CardBuilder (InvestigatorId, SkillId) a
 
 data SkillAttrs = SkillAttrs
   { skillCardDef :: CardDef
@@ -51,9 +51,13 @@ instance SourceEntity SkillAttrs where
   isSource SkillAttrs { skillId } (SkillSource sid) = skillId == sid
   isSource _ _ = False
 
-skill :: (SkillAttrs -> a) -> CardDef -> InvestigatorId -> SkillId -> a
-skill f cardDef iid sid =
-  f $ SkillAttrs { skillCardDef = cardDef, skillId = sid, skillOwner = iid }
+skill
+  :: (SkillAttrs -> a) -> CardDef -> CardBuilder (InvestigatorId, SkillId) a
+skill f cardDef = CardBuilder
+  { cbCardCode = cdCardCode cardDef
+  , cbCardBuilder = \(iid, sid) ->
+    f $ SkillAttrs { skillCardDef = cardDef, skillId = sid, skillOwner = iid }
+  }
 
 instance HasActions env SkillAttrs where
   getActions _ _ _ = pure []

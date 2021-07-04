@@ -1,4 +1,7 @@
-module Arkham.Types.Enemy.Attrs (module Arkham.Types.Enemy.Attrs, module X) where
+module Arkham.Types.Enemy.Attrs
+  ( module Arkham.Types.Enemy.Attrs
+  , module X
+  ) where
 
 import Arkham.Prelude
 
@@ -29,7 +32,7 @@ import Arkham.Types.TreacheryId
 import Arkham.Types.Window
 import Data.UUID (nil)
 
-type EnemyCard a = (EnemyId -> a)
+type EnemyCard a = CardBuilder EnemyId a
 
 data EnemyAttrs = EnemyAttrs
   { enemyId :: EnemyId
@@ -116,31 +119,44 @@ instance IsCard EnemyAttrs where
   toCardId = unEnemyId . enemyId
 
 enemy
-  :: (EnemyAttrs -> a) -> CardDef -> (Int, GameValue Int, Int) -> (Int, Int) -> EnemyId -> a
-enemy f cardDef stats damageStats eid = enemyWith f cardDef stats damageStats id eid
+  :: (EnemyAttrs -> a)
+  -> CardDef
+  -> (Int, GameValue Int, Int)
+  -> (Int, Int)
+  -> CardBuilder EnemyId a
+enemy f cardDef stats damageStats = enemyWith f cardDef stats damageStats id
 
 enemyWith
-  :: (EnemyAttrs -> a) -> CardDef -> (Int, GameValue Int, Int) -> (Int, Int) -> (EnemyAttrs -> EnemyAttrs) -> EnemyId -> a
-enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g eid = f . g $ EnemyAttrs
-  { enemyId = eid
-  , enemyCardDef = cardDef
-  , enemyEngagedInvestigators = mempty
-  , enemyLocation = LocationId $ CardId nil
-  , enemyFight = fight
-  , enemyHealth = health
-  , enemyEvade = evade
-  , enemyDamage = 0
-  , enemyHealthDamage = healthDamage
-  , enemySanityDamage = sanityDamage
-  , enemyTreacheries = mempty
-  , enemyAssets = mempty
-  , enemyPrey = AnyPrey
-  , enemyModifiers = mempty
-  , enemyExhausted = False
-  , enemyDoom = 0
-  , enemyClues = 0
-  , enemySpawnAt = Nothing
-  }
+  :: (EnemyAttrs -> a)
+  -> CardDef
+  -> (Int, GameValue Int, Int)
+  -> (Int, Int)
+  -> (EnemyAttrs -> EnemyAttrs)
+  -> CardBuilder EnemyId a
+enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
+  CardBuilder
+    { cbCardCode = cdCardCode cardDef
+    , cbCardBuilder = \eid -> f . g $ EnemyAttrs
+      { enemyId = eid
+      , enemyCardDef = cardDef
+      , enemyEngagedInvestigators = mempty
+      , enemyLocation = LocationId $ CardId nil
+      , enemyFight = fight
+      , enemyHealth = health
+      , enemyEvade = evade
+      , enemyDamage = 0
+      , enemyHealthDamage = healthDamage
+      , enemySanityDamage = sanityDamage
+      , enemyTreacheries = mempty
+      , enemyAssets = mempty
+      , enemyPrey = AnyPrey
+      , enemyModifiers = mempty
+      , enemyExhausted = False
+      , enemyDoom = 0
+      , enemyClues = 0
+      , enemySpawnAt = Nothing
+      }
+    }
 
 spawnAtEmptyLocation
   :: (MonadIO m, HasSet EmptyLocationId env (), MonadReader env m, HasQueue env)

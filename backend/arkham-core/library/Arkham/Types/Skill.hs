@@ -61,19 +61,20 @@ lookupSkill cardCode =
   fromJustNote ("Unknown skill: " <> show cardCode) $ lookup cardCode allSkills
 
 allSkills :: HashMap CardCode (InvestigatorId -> SkillId -> Skill)
-allSkills = mapFromList
-  [ ("01025", (ViciousBlow' .) . viciousBlow)
-  , ("01039", (Deduction' .) . deduction)
-  , ("01053", (Opportunist' .) . opportunist)
-  , ("01067", (Fearless' .) . fearless)
-  , ("01081", (SurvivalInstinct' .) . survivalInstinct)
-  , ("01089", (Guts' .) . guts)
-  , ("01090", (Perception' .) . perception)
-  , ("01091", (Overpower' .) . overpower)
-  , ("01092", (ManualDexterity' .) . manualDexterity)
-  , ("01093", (UnexpectedCourage' .) . unexpectedCourage)
-  , ("02026", (DoubleOrNothing' .) . doubleOrNothing)
-  , ("04153", (TrueUnderstanding' .) . trueUnderstanding)
+allSkills = mapFromList $ map
+  (cbCardCode &&& (curry . cbCardBuilder))
+  [ ViciousBlow' <$> viciousBlow
+  , Deduction' <$> deduction
+  , Opportunist' <$> opportunist
+  , Fearless' <$> fearless
+  , SurvivalInstinct' <$> survivalInstinct
+  , Guts' <$> guts
+  , Perception' <$> perception
+  , Overpower' <$> overpower
+  , ManualDexterity' <$> manualDexterity
+  , UnexpectedCourage' <$> unexpectedCourage
+  , DoubleOrNothing' <$> doubleOrNothing
+  , TrueUnderstanding' <$> trueUnderstanding
   ]
 
 ownerOfSkill :: Skill -> InvestigatorId

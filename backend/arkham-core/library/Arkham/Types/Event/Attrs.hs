@@ -13,7 +13,7 @@ import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
 
-type EventCard a = (InvestigatorId -> EventId -> a)
+type EventCard a = CardBuilder (InvestigatorId, EventId) a
 
 data EventAttrs = EventAttrs
   { eventCardDef :: CardDef
@@ -51,13 +51,17 @@ unshiftEffect attrs target = unshiftMessages
   , Discard $ toTarget attrs
   ]
 
-event :: (EventAttrs -> a) -> CardDef -> InvestigatorId -> EventId -> a
-event f cardDef iid eid = f $ EventAttrs
-  { eventCardDef = cardDef
-  , eventId = eid
-  , eventAttachedTarget = Nothing
-  , eventOwner = iid
-  , eventDoom = 0
+event
+  :: (EventAttrs -> a) -> CardDef -> CardBuilder (InvestigatorId, EventId) a
+event f cardDef = CardBuilder
+  { cbCardCode = cdCardCode cardDef
+  , cbCardBuilder = \(iid, eid) -> f $ EventAttrs
+    { eventCardDef = cardDef
+    , eventId = eid
+    , eventAttachedTarget = Nothing
+    , eventOwner = iid
+    , eventDoom = 0
+    }
   }
 
 instance Entity EventAttrs where

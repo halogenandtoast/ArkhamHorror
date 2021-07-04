@@ -106,12 +106,14 @@ baseEnemy
   -> (EnemyAttrs -> EnemyAttrs)
   -> (CardDef -> CardDef)
   -> Enemy
-baseEnemy eid cardCode attrsF defF = BaseEnemy' $ enemyWith
-  BaseEnemy
-  (defF $ testCardDef EnemyType cardCode)
-  (1, Static 1, 1)
-  (0, 0)
-  attrsF
+baseEnemy eid cardCode attrsF defF = BaseEnemy' $ cbCardBuilder
+  (enemyWith
+    BaseEnemy
+    (defF $ testCardDef EnemyType cardCode)
+    (1, Static 1, 1)
+    (0, 0)
+    attrsF
+  )
   eid
 
 instance ActionRunner env => HasActions env BaseEnemy where
@@ -228,71 +230,75 @@ lookupEnemy cardCode =
     $ lookup cardCode allEnemies
 
 allEnemies :: HashMap CardCode (EnemyId -> Enemy)
-allEnemies = mapFromList
-  [ ("01101", MobEnforcer' . mobEnforcer)
-  , ("01102", SilverTwilightAcolyte' . silverTwilightAcolyte)
-  , ("01103", StubbornDetective' . stubbornDetective)
-  , ("01116", GhoulPriest' . ghoulPriest)
-  , ("01118", FleshEater' . fleshEater)
-  , ("01119", IcyGhoul' . icyGhoul)
-  , ("01121b", TheMaskedHunter' . theMaskedHunter)
-  , ("01137", WolfManDrew' . wolfManDrew)
-  , ("01138", HermanCollins' . hermanCollins)
-  , ("01139", PeterWarren' . peterWarren)
-  , ("01140", VictoriaDevereux' . victoriaDevereux)
-  , ("01141", RuthTurner' . ruthTurner)
-  , ("01157", Umordhoth' . umordhoth)
-  , ("01159", SwarmOfRats' . swarmOfRats)
-  , ("01160", GhoulMinion' . ghoulMinion)
-  , ("01161", RavenousGhoul' . ravenousGhoul)
-  , ("01169", Acolyte' . acolyte)
-  , ("01170", WizardOfTheOrder' . wizardOfTheOrder)
-  , ("01172", HuntingNightgaunt' . huntingNightgaunt)
-  , ("01175", ScreechingByakhee' . screechingByakhee)
-  , ("01177", YithianObserver' . yithianObserver)
-  , ("01179", RelentlessDarkYoung' . relentlessDarkYoung)
-  , ("01180", GoatSpawn' . goatSpawn)
-  , ("01181", YoungDeepOne' . youngDeepOne)
-  , ("02058", TheExperiment' . theExperiment)
-  , ("02078", CloverClubPitBoss' . cloverClubPitBoss)
-  , ("02086", Thrall' . thrall)
-  , ("02087", WizardOfYogSothoth' . wizardOfYogSothoth)
-  , ("02090", Whippoorwill' . whippoorwill)
-  , ("02094", AvianThrall' . avianThrall)
-  , ("02095", LupineThrall' . lupineThrall)
-  , ("02097", OBannionsThug' . oBannionsThug)
-  , ("02098", Mobster' . mobster)
-  , ("02103", ConglomerationOfSpheres' . conglomerationOfSpheres)
-  , ("02104", ServantOfTheLurker' . servantOfTheLurker)
-  , ("02141", HuntingHorror' . huntingHorror)
-  , ("02182", GrapplingHorror' . grapplingHorror)
-  , ("02183", EmergentMonstrosity' . emergentMonstrosity)
-  , ("02216", SilasBishop' . silasBishop)
-  , ("02224", ServantOfManyMouths' . servantOfManyMouths)
-  , ("02255", BroodOfYogSothoth' . broodOfYogSothoth)
-  , ("02293", SethBishop' . sethBishop)
-  , ("02294", DevoteeOfTheKey' . devoteeOfTheKey)
-  , ("02295", CrazedShoggoth' . crazedShoggoth)
-  , ("02323", YogSothoth' . yogSothoth)
-  , ("02329", InterstellarTraveler' . interstellarTraveler)
-  , ("02330", YithianStarseeker' . yithianStarseeker)
-  , ("50022", CorpseHungryGhoul' . corpseHungryGhoul)
-  , ("50023", GhoulFromTheDepths' . ghoulFromTheDepths)
-  , ("50026b", Narogath' . narogath)
-  , ("50038", GraveEater' . graveEater)
-  , ("50039", AcolyteOfUmordhoth' . acolyteOfUmordhoth)
-  , ("50041", DiscipleOfTheDevourer' . discipleOfTheDevourer)
-  , ("50042", CorpseTaker' . corpseTaker)
-  , ("50044", JeremiahPierce' . jeremiahPierce)
-  , ("50045", BillyCooper' . billyCooper)
-  , ("50046", AlmaHill' . almaHill)
-  , ("81022", BogGator' . bogGator)
-  , ("81023", SwampLeech' . swampLeech)
-  , ("81028", TheRougarou' . theRougarou)
-  , ("81031", SlimeCoveredDhole' . slimeCoveredDhole)
-  , ("81032", MarshGug' . marshGug)
-  , ("81033", DarkYoungHost' . darkYoungHost)
-  , ("enemy", \eid -> baseEnemy eid "enemy" id id)
+allEnemies = mapFromList $ map
+  (cbCardCode &&& cbCardBuilder)
+  [ MobEnforcer' <$> mobEnforcer
+  , SilverTwilightAcolyte' <$> silverTwilightAcolyte
+  , StubbornDetective' <$> stubbornDetective
+  , GhoulPriest' <$> ghoulPriest
+  , FleshEater' <$> fleshEater
+  , IcyGhoul' <$> icyGhoul
+  , TheMaskedHunter' <$> theMaskedHunter
+  , WolfManDrew' <$> wolfManDrew
+  , HermanCollins' <$> hermanCollins
+  , PeterWarren' <$> peterWarren
+  , VictoriaDevereux' <$> victoriaDevereux
+  , RuthTurner' <$> ruthTurner
+  , Umordhoth' <$> umordhoth
+  , SwarmOfRats' <$> swarmOfRats
+  , GhoulMinion' <$> ghoulMinion
+  , RavenousGhoul' <$> ravenousGhoul
+  , Acolyte' <$> acolyte
+  , WizardOfTheOrder' <$> wizardOfTheOrder
+  , HuntingNightgaunt' <$> huntingNightgaunt
+  , ScreechingByakhee' <$> screechingByakhee
+  , YithianObserver' <$> yithianObserver
+  , RelentlessDarkYoung' <$> relentlessDarkYoung
+  , GoatSpawn' <$> goatSpawn
+  , YoungDeepOne' <$> youngDeepOne
+  , TheExperiment' <$> theExperiment
+  , CloverClubPitBoss' <$> cloverClubPitBoss
+  , Thrall' <$> thrall
+  , WizardOfYogSothoth' <$> wizardOfYogSothoth
+  , Whippoorwill' <$> whippoorwill
+  , AvianThrall' <$> avianThrall
+  , LupineThrall' <$> lupineThrall
+  , OBannionsThug' <$> oBannionsThug
+  , Mobster' <$> mobster
+  , ConglomerationOfSpheres' <$> conglomerationOfSpheres
+  , ServantOfTheLurker' <$> servantOfTheLurker
+  , HuntingHorror' <$> huntingHorror
+  , GrapplingHorror' <$> grapplingHorror
+  , EmergentMonstrosity' <$> emergentMonstrosity
+  , SilasBishop' <$> silasBishop
+  , ServantOfManyMouths' <$> servantOfManyMouths
+  , BroodOfYogSothoth' <$> broodOfYogSothoth
+  , SethBishop' <$> sethBishop
+  , DevoteeOfTheKey' <$> devoteeOfTheKey
+  , CrazedShoggoth' <$> crazedShoggoth
+  , YogSothoth' <$> yogSothoth
+  , InterstellarTraveler' <$> interstellarTraveler
+  , YithianStarseeker' <$> yithianStarseeker
+  , CorpseHungryGhoul' <$> corpseHungryGhoul
+  , GhoulFromTheDepths' <$> ghoulFromTheDepths
+  , Narogath' <$> narogath
+  , GraveEater' <$> graveEater
+  , AcolyteOfUmordhoth' <$> acolyteOfUmordhoth
+  , DiscipleOfTheDevourer' <$> discipleOfTheDevourer
+  , CorpseTaker' <$> corpseTaker
+  , JeremiahPierce' <$> jeremiahPierce
+  , BillyCooper' <$> billyCooper
+  , AlmaHill' <$> almaHill
+  , BogGator' <$> bogGator
+  , SwampLeech' <$> swampLeech
+  , TheRougarou' <$> theRougarou
+  , SlimeCoveredDhole' <$> slimeCoveredDhole
+  , MarshGug' <$> marshGug
+  , DarkYoungHost' <$> darkYoungHost
+  , CardBuilder
+    { cbCardCode = "enemy"
+    , cbCardBuilder = \eid -> baseEnemy eid "enemy" id id
+    }
   ]
 
 isEngaged :: Enemy -> Bool

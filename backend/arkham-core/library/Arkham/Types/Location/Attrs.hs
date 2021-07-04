@@ -45,7 +45,7 @@ pattern UseResign iid source <- UseCardAbility iid source _ 99 _
 pattern UseDrawCardUnderneath :: InvestigatorId -> Source -> Message
 pattern UseDrawCardUnderneath iid source <- UseCardAbility iid source _ 100 _
 
-type LocationCard a = (LocationId -> a)
+type LocationCard a = CardBuilder LocationId a
 
 data LocationAttrs = LocationAttrs
   { locationId :: LocationId
@@ -203,8 +203,7 @@ location
   -> GameValue Int
   -> LocationSymbol
   -> [LocationSymbol]
-  -> LocationId
-  -> a
+  -> CardBuilder LocationId a
 location f def shroud' revealClues symbol' connectedSymbols' =
   locationWith f def shroud' revealClues symbol' connectedSymbols' id
 
@@ -216,33 +215,35 @@ locationWith
   -> LocationSymbol
   -> [LocationSymbol]
   -> (LocationAttrs -> LocationAttrs)
-  -> LocationId
-  -> a
-locationWith f def shroud' revealClues symbol' connectedSymbols' g lid =
-  f . g $ LocationAttrs
-    { locationId = lid
-    , locationCardDef = def
-    , locationUnrevealedName = LocationName (cdName def)
-    , locationLabel = nameToLabel (cdName def)
-    , locationRevealClues = revealClues
-    , locationClues = 0
-    , locationDoom = 0
-    , locationShroud = shroud'
-    , locationRevealed = False
-    , locationInvestigators = mempty
-    , locationEnemies = mempty
-    , locationSymbol = symbol'
-    , locationRevealedSymbol = symbol'
-    , locationConnectedSymbols = setFromList connectedSymbols'
-    , locationRevealedConnectedSymbols = setFromList connectedSymbols'
-    , locationConnectedLocations = mempty
-    , locationTreacheries = mempty
-    , locationEvents = mempty
-    , locationAssets = mempty
-    , locationDirections = mempty
-    , locationConnectsTo = mempty
-    , locationCardsUnderneath = mempty
-    , locationCostToEnterUnrevealed = ActionCost 1
+  -> CardBuilder LocationId a
+locationWith f def shroud' revealClues symbol' connectedSymbols' g =
+  CardBuilder
+    { cbCardCode = cdCardCode def
+    , cbCardBuilder = \lid -> f . g $ LocationAttrs
+      { locationId = lid
+      , locationCardDef = def
+      , locationUnrevealedName = LocationName (cdName def)
+      , locationLabel = nameToLabel (cdName def)
+      , locationRevealClues = revealClues
+      , locationClues = 0
+      , locationDoom = 0
+      , locationShroud = shroud'
+      , locationRevealed = False
+      , locationInvestigators = mempty
+      , locationEnemies = mempty
+      , locationSymbol = symbol'
+      , locationRevealedSymbol = symbol'
+      , locationConnectedSymbols = setFromList connectedSymbols'
+      , locationRevealedConnectedSymbols = setFromList connectedSymbols'
+      , locationConnectedLocations = mempty
+      , locationTreacheries = mempty
+      , locationEvents = mempty
+      , locationAssets = mempty
+      , locationDirections = mempty
+      , locationConnectsTo = mempty
+      , locationCardsUnderneath = mempty
+      , locationCostToEnterUnrevealed = ActionCost 1
+      }
     }
 
 locationEnemiesWithTrait

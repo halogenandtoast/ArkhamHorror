@@ -18,7 +18,7 @@ newtype EmergentMonstrosity = EmergentMonstrosity EnemyAttrs
 
 emergentMonstrosity :: EnemyCard EmergentMonstrosity
 emergentMonstrosity =
-  enemy EmergentMonstrosity Cards.emergentMonstrosity (4, Static 5, 4) (2, 2)
+  enemy EmergentMonstrosity Cards.emergentMonstrosity (4, Static 5, 3) (2, 2)
 
 instance HasModifiersFor env EmergentMonstrosity where
   getModifiersFor = noModifiersFor

@@ -874,7 +874,8 @@ executable validate
       UndecidableInstances
   ghc-options: -threaded -O2 "-with-rtsopts=-N -T -I0"
   build-depends:
-      aeson
+      MonadRandom
+    , aeson
     , arkham-core
     , base >=4.7 && <5
     , classy-prelude

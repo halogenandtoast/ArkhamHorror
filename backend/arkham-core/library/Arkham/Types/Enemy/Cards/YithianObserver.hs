@@ -1,4 +1,7 @@
-module Arkham.Types.Enemy.Cards.YithianObserver where
+module Arkham.Types.Enemy.Cards.YithianObserver
+  ( YithianObserver(..)
+  , yithianObserver
+  ) where
 
 import Arkham.Prelude
 
@@ -6,7 +9,6 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Prey
 import Arkham.Types.Query
@@ -16,13 +18,12 @@ newtype YithianObserver = YithianObserver EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yithianObserver :: EnemyCard YithianObserver
-yithianObserver = enemy YithianObserver Cards.yithianObserver
-  $ (healthDamageL .~ 1)
-  . (sanityDamageL .~ 1)
-  . (fightL .~ 4)
-  . (healthL .~ Static 4)
-  . (evadeL .~ 3)
-  . (preyL .~ FewestCards)
+yithianObserver = enemyWith
+  YithianObserver
+  Cards.yithianObserver
+  (4, Static 4, 3)
+  (1, 1)
+  (preyL .~ FewestCards)
 
 instance HasModifiersFor env YithianObserver where
   getModifiersFor = noModifiersFor

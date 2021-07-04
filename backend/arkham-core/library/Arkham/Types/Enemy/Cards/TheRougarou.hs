@@ -10,7 +10,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
@@ -23,12 +22,11 @@ newtype TheRougarou = TheRougarou (EnemyAttrs `With` TheRougarouMetadata)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theRougarou :: EnemyCard TheRougarou
-theRougarou = enemy (TheRougarou . (`with` TheRougarouMetadata 0)) Cards.theRougarou
-  $ (healthDamageL .~ 2)
-  . (sanityDamageL .~ 2)
-  . (fightL .~ 3)
-  . (healthL .~ PerPlayer 5)
-  . (evadeL .~ 3)
+theRougarou = enemy
+  (TheRougarou . (`with` TheRougarouMetadata 0))
+  Cards.theRougarou
+  (3, PerPlayer 5, 3)
+  (2, 2)
 
 instance HasModifiersFor env TheRougarou where
   getModifiersFor = noModifiersFor

@@ -1,4 +1,7 @@
-module Arkham.Types.Enemy.Cards.TheExperiment where
+module Arkham.Types.Enemy.Cards.TheExperiment
+  ( TheExperiment(..)
+  , theExperiment
+  ) where
 
 import Arkham.Prelude
 
@@ -7,7 +10,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
-import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
@@ -16,12 +18,7 @@ newtype TheExperiment = TheExperiment EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theExperiment :: EnemyCard TheExperiment
-theExperiment = enemy TheExperiment Cards.theExperiment
-  $ (healthDamageL .~ 2)
-  . (sanityDamageL .~ 2)
-  . (fightL .~ 4)
-  . (healthL .~ Static 7)
-  . (evadeL .~ 2)
+theExperiment = enemy TheExperiment Cards.theExperiment (4, Static 7, 2) (2, 2)
 
 instance HasCount PlayerCount env () => HasModifiersFor env TheExperiment where
   getModifiersFor _ target (TheExperiment attrs) | isTarget attrs target = do

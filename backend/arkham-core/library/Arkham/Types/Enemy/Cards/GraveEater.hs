@@ -1,4 +1,7 @@
-module Arkham.Types.Enemy.Cards.GraveEater where
+module Arkham.Types.Enemy.Cards.GraveEater
+  ( graveEater
+  , GraveEater(..)
+  ) where
 
 import Arkham.Prelude
 
@@ -6,19 +9,13 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Message
 
 newtype GraveEater = GraveEater EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 graveEater :: EnemyCard GraveEater
-graveEater = enemy GraveEater Cards.graveEater
-  $ (healthDamageL .~ 1)
-  . (sanityDamageL .~ 1)
-  . (fightL .~ 2)
-  . (healthL .~ Static 2)
-  . (evadeL .~ 2)
+graveEater = enemy GraveEater Cards.graveEater (2, Static 2, 2) (1, 1)
 
 instance HasModifiersFor env GraveEater where
   getModifiersFor = noModifiersFor

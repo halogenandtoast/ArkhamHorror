@@ -11,7 +11,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -23,12 +22,8 @@ newtype BroodOfYogSothoth = BroodOfYogSothoth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 broodOfYogSothoth :: EnemyCard BroodOfYogSothoth
-broodOfYogSothoth = enemy BroodOfYogSothoth Cards.broodOfYogSothoth
-  $ (healthDamageL .~ 2)
-  . (sanityDamageL .~ 2)
-  . (fightL .~ 6)
-  . (healthL .~ Static 1)
-  . (evadeL .~ 3)
+broodOfYogSothoth =
+  enemy BroodOfYogSothoth Cards.broodOfYogSothoth (6, Static 1, 3) (2, 2)
 
 instance HasCount PlayerCount env () => HasModifiersFor env BroodOfYogSothoth where
   getModifiersFor _ target (BroodOfYogSothoth a) | isTarget a target = do

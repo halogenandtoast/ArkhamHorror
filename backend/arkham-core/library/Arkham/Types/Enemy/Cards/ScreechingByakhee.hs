@@ -1,4 +1,7 @@
-module Arkham.Types.Enemy.Cards.ScreechingByakhee where
+module Arkham.Types.Enemy.Cards.ScreechingByakhee
+  ( screechingByakhee
+  , ScreechingByakhee(..)
+  ) where
 
 import Arkham.Prelude
 
@@ -7,7 +10,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Modifier
 import Arkham.Types.Prey
@@ -17,13 +19,12 @@ newtype ScreechingByakhee = ScreechingByakhee EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 screechingByakhee :: EnemyCard ScreechingByakhee
-screechingByakhee = enemy ScreechingByakhee Cards.screechingByakhee
-  $ (healthDamageL .~ 1)
-  . (sanityDamageL .~ 2)
-  . (fightL .~ 3)
-  . (healthL .~ Static 4)
-  . (evadeL .~ 3)
-  . (preyL .~ LowestRemainingSanity)
+screechingByakhee = enemyWith
+  ScreechingByakhee
+  Cards.screechingByakhee
+  (3, Static 4, 3)
+  (1, 2)
+  (preyL .~ LowestRemainingSanity)
 
 instance HasCount RemainingSanity env InvestigatorId => HasModifiersFor env ScreechingByakhee where
   getModifiersFor _ target (ScreechingByakhee attrs) | isTarget attrs target =

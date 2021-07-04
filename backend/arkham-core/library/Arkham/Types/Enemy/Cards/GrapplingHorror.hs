@@ -10,7 +10,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Modifier
 import Arkham.Types.Target
 
@@ -18,16 +17,12 @@ newtype GrapplingHorror = GrapplingHorror EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 grapplingHorror :: EnemyCard GrapplingHorror
-grapplingHorror = enemy GrapplingHorror Cards.grapplingHorror
-  $ (healthDamageL .~ 1)
-  . (sanityDamageL .~ 1)
-  . (fightL .~ 3)
-  . (healthL .~ Static 3)
-  . (evadeL .~ 2)
+grapplingHorror =
+  enemy GrapplingHorror Cards.grapplingHorror (3, Static 3, 2) (1, 1)
 
 instance HasModifiersFor env GrapplingHorror where
-  getModifiersFor _ (InvestigatorTarget iid) (GrapplingHorror a@EnemyAttrs {..}) =
-    if iid `elem` enemyEngagedInvestigators
+  getModifiersFor _ (InvestigatorTarget iid) (GrapplingHorror a@EnemyAttrs {..})
+    = if iid `elem` enemyEngagedInvestigators
       then pure $ toModifiers a [CannotMove]
       else pure []
   getModifiersFor _ _ _ = pure []

@@ -8,18 +8,12 @@ import Arkham.Prelude
 import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
-import Arkham.Types.GameValue
 
 newtype SethBishop = SethBishop EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sethBishop :: EnemyCard SethBishop
-sethBishop = enemy SethBishop Cards.sethBishop
-  $ (healthDamageL .~ 1)
-  . (sanityDamageL .~ 1)
-  . (fightL .~ 5)
-  . (healthL .~ PerPlayer 3)
-  . (evadeL .~ 5)
+sethBishop = enemy SethBishop Cards.sethBishop (5, PerPlayer 3, 5) (1, 1)
 
 instance HasModifiersFor env SethBishop where
   getModifiersFor = noModifiersFor

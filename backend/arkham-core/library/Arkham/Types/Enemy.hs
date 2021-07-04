@@ -1,14 +1,17 @@
 module Arkham.Types.Enemy
   ( module Arkham.Types.Enemy
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Cards
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
@@ -17,12 +20,8 @@ import Arkham.Types.Modifier
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
-import Arkham.Types.Action
 import Arkham.Types.Trait (Trait, toTraits)
-import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Cards
-import Arkham.Types.Enemy.Runner
+import Arkham.Types.TreacheryId
 
 createEnemy :: IsCard a => a -> Enemy
 createEnemy a = lookupEnemy (toCardCode a) (EnemyId $ toCardId a)
@@ -101,8 +100,19 @@ newtype BaseEnemy = BaseEnemy EnemyAttrs
 instance HasCardDef Enemy where
   toCardDef = toCardDef . toAttrs
 
-baseEnemy :: EnemyId -> CardCode -> (EnemyAttrs -> EnemyAttrs) -> (CardDef -> CardDef) -> Enemy
-baseEnemy eid cardCode attrsF defF = BaseEnemy' $ enemy BaseEnemy (defF $ testCardDef EnemyType cardCode) attrsF eid
+baseEnemy
+  :: EnemyId
+  -> CardCode
+  -> (EnemyAttrs -> EnemyAttrs)
+  -> (CardDef -> CardDef)
+  -> Enemy
+baseEnemy eid cardCode attrsF defF = BaseEnemy' $ enemyWith
+  BaseEnemy
+  (defF $ testCardDef EnemyType cardCode)
+  (1, Static 1, 1)
+  (0, 0)
+  attrsF
+  eid
 
 instance ActionRunner env => HasActions env BaseEnemy where
   getActions investigator window (BaseEnemy attrs) =
@@ -126,8 +136,8 @@ preventedByModifier EnemyAttrs {..} msg (Modifier _ (CannotTakeAction matcher))
   = case actionFromMessage msg of
     Just action -> case matcher of
       IsAction a -> a == action
-      EnemyAction a traits ->
-        a == action && notNull (setFromList traits `intersect` toTraits enemyCardDef)
+      EnemyAction a traits -> a == action && notNull
+        (setFromList traits `intersect` toTraits enemyCardDef)
       FirstOneOf _ -> False -- TODO: We can't tell here
     Nothing -> False
 preventedByModifier _ _ _ = False
@@ -140,9 +150,7 @@ instance ActionRunner env => HasActions env Enemy where
       ()
     actions <- defaultGetActions investigator window x
     pure $ filter
-      (\action ->
-        not $ any (preventedByModifier (toAttrs x) action) modifiers'
-      )
+      (\action -> not $ any (preventedByModifier (toAttrs x) action) modifiers')
       actions
 
 deriving anyclass instance

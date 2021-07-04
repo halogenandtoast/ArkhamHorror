@@ -1,4 +1,7 @@
-module Arkham.Types.Enemy.Cards.CorpseHungryGhoul where
+module Arkham.Types.Enemy.Cards.CorpseHungryGhoul
+  ( corpseHungryGhoul
+  , CorpseHungryGhoul(..)
+  ) where
 
 import Arkham.Prelude
 
@@ -6,7 +9,6 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 
@@ -14,12 +16,8 @@ newtype CorpseHungryGhoul = CorpseHungryGhoul EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 corpseHungryGhoul :: EnemyCard CorpseHungryGhoul
-corpseHungryGhoul = enemy CorpseHungryGhoul Cards.corpseHungryGhoul
-  $ (healthDamageL .~ 2)
-  . (sanityDamageL .~ 2)
-  . (fightL .~ 4)
-  . (healthL .~ Static 3)
-  . (evadeL .~ 3)
+corpseHungryGhoul =
+  enemy CorpseHungryGhoul Cards.corpseHungryGhoul (4, Static 3, 3) (2, 2)
 
 instance HasModifiersFor env CorpseHungryGhoul where
   getModifiersFor = noModifiersFor

@@ -1,4 +1,7 @@
-module Arkham.Types.Enemy.Cards.ServantOfTheLurker where
+module Arkham.Types.Enemy.Cards.ServantOfTheLurker
+  ( servantOfTheLurker
+  , ServantOfTheLurker(..)
+  ) where
 
 import Arkham.Prelude
 
@@ -6,7 +9,6 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Prey
 import Arkham.Types.SkillType
@@ -15,13 +17,12 @@ newtype ServantOfTheLurker = ServantOfTheLurker EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 servantOfTheLurker :: EnemyCard ServantOfTheLurker
-servantOfTheLurker = enemy ServantOfTheLurker Cards.servantOfTheLurker
-  $ (healthDamageL .~ 2)
-  . (sanityDamageL .~ 2)
-  . (fightL .~ 4)
-  . (healthL .~ Static 5)
-  . (evadeL .~ 2)
-  . (preyL .~ LowestSkill SkillAgility)
+servantOfTheLurker = enemyWith
+  ServantOfTheLurker
+  Cards.servantOfTheLurker
+  (4, Static 5, 2)
+  (2, 2)
+  (preyL .~ LowestSkill SkillAgility)
 
 instance HasModifiersFor env ServantOfTheLurker where
   getModifiersFor = noModifiersFor

@@ -1,4 +1,7 @@
-module Arkham.Types.Enemy.Cards.MarshGug where
+module Arkham.Types.Enemy.Cards.MarshGug
+  ( marshGug
+  , MarshGug(..)
+  ) where
 
 import Arkham.Prelude
 
@@ -7,7 +10,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Trait
 
@@ -15,12 +17,7 @@ newtype MarshGug = MarshGug EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 marshGug :: EnemyCard MarshGug
-marshGug = enemy MarshGug Cards.marshGug
-  $ (healthDamageL .~ 2)
-  . (sanityDamageL .~ 1)
-  . (fightL .~ 3)
-  . (healthL .~ Static 4)
-  . (evadeL .~ 3)
+marshGug = enemy MarshGug Cards.marshGug (3, Static 4, 3) (2, 1)
 
 instance HasModifiersFor env MarshGug where
   getModifiersFor = noModifiersFor

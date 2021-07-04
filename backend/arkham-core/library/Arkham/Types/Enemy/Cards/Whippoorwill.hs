@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.Whippoorwill
   ( Whippoorwill(..)
   , whippoorwill
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -11,7 +10,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Modifier
 import Arkham.Types.Target
@@ -20,11 +18,7 @@ newtype Whippoorwill = Whippoorwill EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 whippoorwill :: EnemyCard Whippoorwill
-whippoorwill = enemy Whippoorwill Cards.whippoorwill
-  $ (sanityDamageL .~ 1)
-  . (fightL .~ 1)
-  . (healthL .~ Static 1)
-  . (evadeL .~ 4)
+whippoorwill = enemy Whippoorwill Cards.whippoorwill (1, Static 1, 4) (0, 1)
 
 instance HasId LocationId env InvestigatorId => HasModifiersFor env Whippoorwill where
   getModifiersFor _ (InvestigatorTarget iid) (Whippoorwill attrs) = do

@@ -10,7 +10,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Direction
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Message
 
@@ -18,12 +17,8 @@ newtype EmergentMonstrosity = EmergentMonstrosity EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 emergentMonstrosity :: EnemyCard EmergentMonstrosity
-emergentMonstrosity = enemy EmergentMonstrosity Cards.emergentMonstrosity
-  $ (healthDamageL .~ 2)
-  . (sanityDamageL .~ 2)
-  . (fightL .~ 4)
-  . (healthL .~ Static 5)
-  . (evadeL .~ 4)
+emergentMonstrosity =
+  enemy EmergentMonstrosity Cards.emergentMonstrosity (4, Static 5, 4) (2, 2)
 
 instance HasModifiersFor env EmergentMonstrosity where
   getModifiersFor = noModifiersFor

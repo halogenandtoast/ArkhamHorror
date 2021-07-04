@@ -1,4 +1,4 @@
-module Arkham.Types.Enemy.Attrs where
+module Arkham.Types.Enemy.Attrs (module Arkham.Types.Enemy.Attrs, module X) where
 
 import Arkham.Prelude
 
@@ -10,7 +10,7 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
-import Arkham.Types.GameValue
+import Arkham.Types.GameValue as X
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword (HasKeywords(..), Keyword)
 import qualified Arkham.Types.Keyword as Keyword
@@ -116,18 +116,22 @@ instance IsCard EnemyAttrs where
   toCardId = unEnemyId . enemyId
 
 enemy
-  :: (EnemyAttrs -> a) -> CardDef -> (EnemyAttrs -> EnemyAttrs) -> EnemyId -> a
-enemy f cardDef g eid = f . g $ EnemyAttrs
+  :: (EnemyAttrs -> a) -> CardDef -> (Int, GameValue Int, Int) -> (Int, Int) -> EnemyId -> a
+enemy f cardDef stats damageStats eid = enemyWith f cardDef stats damageStats id eid
+
+enemyWith
+  :: (EnemyAttrs -> a) -> CardDef -> (Int, GameValue Int, Int) -> (Int, Int) -> (EnemyAttrs -> EnemyAttrs) -> EnemyId -> a
+enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g eid = f . g $ EnemyAttrs
   { enemyId = eid
   , enemyCardDef = cardDef
   , enemyEngagedInvestigators = mempty
   , enemyLocation = LocationId $ CardId nil
-  , enemyFight = 1
-  , enemyHealth = Static 1
-  , enemyEvade = 1
+  , enemyFight = fight
+  , enemyHealth = health
+  , enemyEvade = evade
   , enemyDamage = 0
-  , enemyHealthDamage = 0
-  , enemySanityDamage = 0
+  , enemyHealthDamage = healthDamage
+  , enemySanityDamage = sanityDamage
   , enemyTreacheries = mempty
   , enemyAssets = mempty
   , enemyPrey = AnyPrey

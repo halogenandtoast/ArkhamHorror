@@ -11,7 +11,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
@@ -21,11 +20,8 @@ newtype ServantOfManyMouths = ServantOfManyMouths EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 servantOfManyMouths :: EnemyCard ServantOfManyMouths
-servantOfManyMouths = enemy ServantOfManyMouths Cards.servantOfManyMouths
-  $ (healthDamageL .~ 2)
-  . (fightL .~ 3)
-  . (healthL .~ Static 2)
-  . (evadeL .~ 1)
+servantOfManyMouths =
+  enemy ServantOfManyMouths Cards.servantOfManyMouths (3, Static 2, 1) (2, 0)
 
 instance HasModifiersFor env ServantOfManyMouths where
   getModifiersFor = noModifiersFor

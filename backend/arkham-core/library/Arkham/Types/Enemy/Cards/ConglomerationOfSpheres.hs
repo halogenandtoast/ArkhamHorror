@@ -1,4 +1,7 @@
-module Arkham.Types.Enemy.Cards.ConglomerationOfSpheres where
+module Arkham.Types.Enemy.Cards.ConglomerationOfSpheres
+  ( conglomerationOfSpheres
+  , ConglomerationOfSpheres(..)
+  ) where
 
 import Arkham.Prelude
 
@@ -7,7 +10,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
-import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Prey
 import Arkham.Types.SkillType
@@ -17,13 +19,12 @@ newtype ConglomerationOfSpheres = ConglomerationOfSpheres EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 conglomerationOfSpheres :: EnemyCard ConglomerationOfSpheres
-conglomerationOfSpheres = enemy ConglomerationOfSpheres Cards.conglomerationOfSpheres
-  $ (healthDamageL .~ 1)
-  . (sanityDamageL .~ 1)
-  . (fightL .~ 1)
-  . (healthL .~ Static 6)
-  . (evadeL .~ 4)
-  . (preyL .~ LowestSkill SkillWillpower)
+conglomerationOfSpheres = enemyWith
+  ConglomerationOfSpheres
+  Cards.conglomerationOfSpheres
+  (1, Static 6, 4)
+  (1, 1)
+  (preyL .~ LowestSkill SkillWillpower)
 
 instance HasModifiersFor env ConglomerationOfSpheres where
   getModifiersFor = noModifiersFor
@@ -33,10 +34,11 @@ instance ActionRunner env => HasActions env ConglomerationOfSpheres where
     getActions i window attrs
 
 instance EnemyRunner env => RunMessage env ConglomerationOfSpheres where
-  runMessage msg e@(ConglomerationOfSpheres attrs@EnemyAttrs {..}) = case msg of
-    After (FightEnemy _ eid source _ _) | eid == enemyId -> do
-      traits <- getSet source
-      e <$ when
-        (Melee `member` traits)
-        (unshiftMessage $ Discard $ sourceToTarget source)
-    _ -> ConglomerationOfSpheres <$> runMessage msg attrs
+  runMessage msg e@(ConglomerationOfSpheres attrs@EnemyAttrs {..}) =
+    case msg of
+      After (FightEnemy _ eid source _ _) | eid == enemyId -> do
+        traits <- getSet source
+        e <$ when
+          (Melee `member` traits)
+          (unshiftMessage $ Discard $ sourceToTarget source)
+      _ -> ConglomerationOfSpheres <$> runMessage msg attrs

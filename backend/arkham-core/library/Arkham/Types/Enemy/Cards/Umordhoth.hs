@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.Umordhoth
   ( Umordhoth(..)
   , umordhoth
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -14,7 +13,6 @@ import Arkham.Types.Cost
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query
@@ -26,12 +24,7 @@ newtype Umordhoth = Umordhoth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 umordhoth :: EnemyCard Umordhoth
-umordhoth = enemy Umordhoth Cards.umordhoth
-  $ (healthDamageL .~ 3)
-  . (sanityDamageL .~ 3)
-  . (fightL .~ 5)
-  . (healthL .~ Static 6)
-  . (evadeL .~ 6)
+umordhoth = enemy Umordhoth Cards.umordhoth (5, Static 6, 6) (3, 3)
 
 instance HasModifiersFor env Umordhoth where
   getModifiersFor = noModifiersFor

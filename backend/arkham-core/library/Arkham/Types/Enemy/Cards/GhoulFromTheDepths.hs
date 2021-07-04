@@ -9,7 +9,6 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 
@@ -17,12 +16,8 @@ newtype GhoulFromTheDepths = GhoulFromTheDepths EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ghoulFromTheDepths :: EnemyCard GhoulFromTheDepths
-ghoulFromTheDepths = enemy GhoulFromTheDepths Cards.ghoulFromTheDepths
-  $ (healthDamageL .~ 1)
-  . (sanityDamageL .~ 1)
-  . (fightL .~ 3)
-  . (healthL .~ Static 4)
-  . (evadeL .~ 2)
+ghoulFromTheDepths =
+  enemy GhoulFromTheDepths Cards.ghoulFromTheDepths (3, Static 4, 2) (1, 1)
 
 instance HasModifiersFor env GhoulFromTheDepths where
   getModifiersFor = noModifiersFor

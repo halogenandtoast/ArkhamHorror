@@ -1,4 +1,7 @@
-module Arkham.Types.Enemy.Cards.Mobster where
+module Arkham.Types.Enemy.Cards.Mobster
+  ( mobster
+  , Mobster(..)
+  ) where
 
 import Arkham.Prelude
 
@@ -6,19 +9,13 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Message
 
 newtype Mobster = Mobster EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mobster :: EnemyCard Mobster
-mobster = enemy Mobster Cards.mobster
-  $ (healthDamageL .~ 1)
-  . (sanityDamageL .~ 0)
-  . (fightL .~ 2)
-  . (healthL .~ Static 2)
-  . (evadeL .~ 2)
+mobster = enemy Mobster Cards.mobster (2, Static 2, 2) (1, 0)
 
 instance HasModifiersFor env Mobster where
   getModifiersFor = noModifiersFor

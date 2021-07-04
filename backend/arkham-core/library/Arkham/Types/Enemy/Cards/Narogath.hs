@@ -1,4 +1,7 @@
-module Arkham.Types.Enemy.Cards.Narogath where
+module Arkham.Types.Enemy.Cards.Narogath
+  ( narogath
+  , Narogath(..)
+  ) where
 
 import Arkham.Prelude
 
@@ -8,8 +11,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
-import Arkham.Types.Helpers ()
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -23,13 +24,12 @@ newtype Narogath = Narogath EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 narogath :: EnemyCard Narogath
-narogath = enemy Narogath Cards.narogath
-  $ (healthDamageL .~ 1)
-  . (sanityDamageL .~ 2)
-  . (fightL .~ 3)
-  . (healthL .~ Static 4)
-  . (evadeL .~ 3)
-  . (preyL .~ NearestToEnemyWithTrait Trait.Cultist)
+narogath = enemyWith
+  Narogath
+  Cards.narogath
+  (3, Static 4, 3)
+  (1, 2)
+  (preyL .~ NearestToEnemyWithTrait Trait.Cultist)
 
 instance (HasSet InvestigatorId env LocationId, HasSet ConnectedLocationId env LocationId) => HasModifiersFor env Narogath where
   getModifiersFor _ (InvestigatorTarget iid) (Narogath a@EnemyAttrs {..})

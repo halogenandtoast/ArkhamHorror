@@ -10,7 +10,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Exception
-import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Query
 
@@ -18,12 +17,7 @@ newtype Thrall = Thrall EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thrall :: EnemyCard Thrall
-thrall = enemy Thrall Cards.thrall
-  $ (healthDamageL .~ 1)
-  . (sanityDamageL .~ 1)
-  . (fightL .~ 2)
-  . (healthL .~ Static 2)
-  . (evadeL .~ 2)
+thrall = enemy Thrall Cards.thrall (2, Static 2, 2) (1, 1)
 
 instance HasModifiersFor env Thrall where
   getModifiersFor = noModifiersFor

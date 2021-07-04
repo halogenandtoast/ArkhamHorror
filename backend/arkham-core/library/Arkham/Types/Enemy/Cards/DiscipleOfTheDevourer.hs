@@ -1,4 +1,7 @@
-module Arkham.Types.Enemy.Cards.DiscipleOfTheDevourer where
+module Arkham.Types.Enemy.Cards.DiscipleOfTheDevourer
+  ( discipleOfTheDevourer
+  , DiscipleOfTheDevourer(..)
+  ) where
 
 import Arkham.Prelude
 
@@ -7,7 +10,6 @@ import Arkham.Types.AgendaId
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 
@@ -15,12 +17,12 @@ newtype DiscipleOfTheDevourer = DiscipleOfTheDevourer EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 discipleOfTheDevourer :: EnemyCard DiscipleOfTheDevourer
-discipleOfTheDevourer = enemy DiscipleOfTheDevourer Cards.discipleOfTheDevourer
-  $ (healthDamageL .~ 1)
-  . (fightL .~ 3)
-  . (healthL .~ Static 1)
-  . (evadeL .~ 1)
-  . (spawnAtL ?~ FarthestLocationFromYou EmptyLocation)
+discipleOfTheDevourer = enemyWith
+  DiscipleOfTheDevourer
+  Cards.discipleOfTheDevourer
+  (3, Static 1, 1)
+  (1, 0)
+  (spawnAtL ?~ FarthestLocationFromYou EmptyLocation)
 
 instance HasModifiersFor env DiscipleOfTheDevourer where
   getModifiersFor = noModifiersFor

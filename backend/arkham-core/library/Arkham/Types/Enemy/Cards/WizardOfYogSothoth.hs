@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.WizardOfYogSothoth
   ( WizardOfYogSothoth(..)
   , wizardOfYogSothoth
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -10,7 +9,6 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Prey
 import Arkham.Types.Trait
@@ -19,13 +17,12 @@ newtype WizardOfYogSothoth = WizardOfYogSothoth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wizardOfYogSothoth :: EnemyCard WizardOfYogSothoth
-wizardOfYogSothoth = enemy WizardOfYogSothoth Cards.wizardOfYogSothoth
-  $ (healthDamageL .~ 1)
-  . (sanityDamageL .~ 2)
-  . (fightL .~ 4)
-  . (healthL .~ Static 3)
-  . (evadeL .~ 3)
-  . (preyL .~ FewestCards)
+wizardOfYogSothoth = enemyWith
+  WizardOfYogSothoth
+  Cards.wizardOfYogSothoth
+  (4, Static 3, 3)
+  (1, 2)
+  (preyL .~ FewestCards)
 
 instance HasModifiersFor env WizardOfYogSothoth where
   getModifiersFor = noModifiersFor

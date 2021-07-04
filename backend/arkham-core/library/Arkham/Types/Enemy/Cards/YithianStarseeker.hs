@@ -1,15 +1,13 @@
 module Arkham.Types.Enemy.Cards.YithianStarseeker
   ( yithianStarseeker
   , YithianStarseeker(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
-import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
@@ -19,13 +17,12 @@ newtype YithianStarseeker = YithianStarseeker EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yithianStarseeker :: EnemyCard YithianStarseeker
-yithianStarseeker = enemy YithianStarseeker Cards.yithianStarseeker
-  $ (healthDamageL .~ 2)
-  . (sanityDamageL .~ 1)
-  . (fightL .~ 3)
-  . (healthL .~ Static 4)
-  . (evadeL .~ 5)
-  . (spawnAtL ?~ LocationWithTitle "Another Dimension")
+yithianStarseeker = enemyWith
+  YithianStarseeker
+  Cards.yithianStarseeker
+  (3, Static 4, 5)
+  (2, 1)
+  (spawnAtL ?~ LocationWithTitle "Another Dimension")
 
 instance HasModifiersFor env YithianStarseeker where
   getModifiersFor = noModifiersFor

@@ -38,60 +38,61 @@ event cardCode name cost classSymbol = CardDef
   }
 
 allPlayerEventCards :: HashMap CardCode CardDef
-allPlayerEventCards = mapFromList
-  [ ("01010", onTheLam)
-  , ("01013", darkMemory)
-  , ("01022", evidence)
-  , ("01023", dodge)
-  , ("01024", dynamiteBlast)
-  , ("01026", extraAmmunition1)
-  , ("01036", mindOverMatter)
-  , ("01037", workingAHunch)
-  , ("01038", barricade)
-  , ("01043", crypticResearch4)
-  , ("01050", elusive)
-  , ("01051", backstab)
-  , ("01052", sneakAttack)
-  , ("01056", sureGamble3)
-  , ("01057", hotStreak4)
-  , ("01064", drawnToTheFlame)
-  , ("01065", wardOfProtection)
-  , ("01066", blindingLight)
-  , ("01068", mindWipe1)
-  , ("01069", blindingLight2)
-  , ("01078", cunningDistraction)
-  , ("01079", lookWhatIFound)
-  , ("01080", lucky)
-  , ("01083", closeCall2)
-  , ("01084", lucky2)
-  , ("01085", willToSurvive4)
-  , ("01088", emergencyCache)
-  , ("02008", searchForTheTruth)
-  , ("02017", taunt)
-  , ("02018", teamwork)
-  , ("02019", taunt2)
-  , ("02022", shortcut)
-  , ("02023", seekingAnswers)
-  , ("02025", thinkOnYourFeet)
-  , ("02031", bindMonster2)
-  , ("02034", baitAndSwitch)
-  , ("02105", emergencyAid)
-  , ("02107", iveGotAPlan)
-  , ("02109", contraband)
-  , ("02111", delveTooDeep)
-  , ("02113", oops)
-  , ("03022", letMeHandleThis)
-  , ("04149", secondWind)
-  , ("05317", bloodRite)
-  , ("06110", firstWatch)
-  , ("06023", astoundingRevelation)
-  , ("50002", dynamiteBlast2)
-  , ("50004", barricade3)
-  , ("50006", hotStreak2)
-  , ("50008", mindWipe3)
-  , ("51005", contraband2)
-  , ("60130", taunt3)
-  , ("60225", iveGotAPlan2)
+allPlayerEventCards = mapFromList $ map
+  (toCardCode &&& id)
+  [ astoundingRevelation
+  , backstab
+  , baitAndSwitch
+  , barricade
+  , barricade3
+  , bindMonster2
+  , blindingLight
+  , blindingLight2
+  , bloodRite
+  , closeCall2
+  , contraband
+  , contraband2
+  , crypticResearch4
+  , cunningDistraction
+  , darkMemory
+  , delveTooDeep
+  , dodge
+  , drawnToTheFlame
+  , dynamiteBlast
+  , dynamiteBlast2
+  , elusive
+  , emergencyAid
+  , emergencyCache
+  , evidence
+  , extraAmmunition1
+  , firstWatch
+  , hotStreak2
+  , hotStreak4
+  , iveGotAPlan
+  , iveGotAPlan2
+  , letMeHandleThis
+  , lookWhatIFound
+  , lucky
+  , lucky2
+  , mindOverMatter
+  , mindWipe1
+  , mindWipe3
+  , onTheLam
+  , oops
+  , searchForTheTruth
+  , secondWind
+  , seekingAnswers
+  , shortcut
+  , sneakAttack
+  , sureGamble3
+  , taunt
+  , taunt2
+  , taunt3
+  , teamwork
+  , thinkOnYourFeet
+  , wardOfProtection
+  , willToSurvive4
+  , workingAHunch
   ]
 
 onTheLam :: CardDef

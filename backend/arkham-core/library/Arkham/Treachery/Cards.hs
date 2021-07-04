@@ -44,96 +44,98 @@ treachery cardCode name encounterSet =
   baseTreachery cardCode name (Just encounterSet) False
 
 allPlayerTreacheryCards :: HashMap CardCode CardDef
-allPlayerTreacheryCards = mapFromList
-  [ ("01007", coverUp)
-  , ("01011", hospitalDebts)
-  , ("01015", abandonedAndAlone)
-  , ("01096", amnesia)
-  , ("01097", paranoia)
-  , ("01098", haunted)
-  , ("01099", psychosis)
-  , ("01100", hypochondria)
-  , ("02007", smiteTheWicked)
-  , ("02009", rexsCurse)
-  , ("02011", searchingForIzzie)
-  , ("02013", finalRhapsody)
-  , ("02015", wrackedByNightmares)
-  , ("02037", indebted)
-  , ("02038", internalInjury)
-  , ("02039", chronophobia)
-  , ("02178", acrossSpaceAndTime)
-  , ("60504", atychiphobia)
-  , ("81029", curseOfTheRougarou)
+allPlayerTreacheryCards = mapFromList $ map
+  (toCardCode &&& id)
+  [ abandonedAndAlone
+  , acrossSpaceAndTime
+  , amnesia
+  , atychiphobia
+  , chronophobia
+  , coverUp
+  , curseOfTheRougarou
+  , finalRhapsody
+  , haunted
+  , hospitalDebts
+  , hypochondria
+  , indebted
+  , internalInjury
+  , paranoia
+  , psychosis
+  , rexsCurse
+  , searchingForIzzie
+  , smiteTheWicked
+  , wrackedByNightmares
   ]
 
 allEncounterTreacheryCards :: HashMap CardCode CardDef
-allEncounterTreacheryCards = mapFromList
-  [ ("treachery", placeholderTreachery)
-  , ("01135", huntingShadow)
-  , ("01136", falseLead)
-  , ("01158", umordhothsWrath)
-  , ("01162", graspingHands)
-  , ("01163", rottingRemains)
-  , ("01164", frozenInFear)
-  , ("01165", dissonantVoices)
-  , ("01166", ancientEvils)
-  , ("01167", cryptChill)
-  , ("01168", obscuringFog)
-  , ("01171", mysteriousChanting)
-  , ("01173", onWingsOfDarkness)
-  , ("01174", lockedDoor)
-  , ("01176", theYellowSign)
-  , ("01178", offerOfPower)
-  , ("01182", dreamsOfRlyeh)
-  , ("02081", somethingInTheDrinks)
-  , ("02082", arousingSuspicions)
-  , ("02083", visionsOfFuturesPast)
-  , ("02084", beyondTheVeil)
-  , ("02085", lightOfAforgomon)
-  , ("02088", unhallowedCountry)
-  , ("02089", sordidAndSilent)
-  , ("02091", eagerForDeath)
-  , ("02092", cursedLuck)
-  , ("02093", twistOfFate)
-  , ("02096", alteredBeast)
-  , ("02099", huntedDown)
-  , ("02100", pushedIntoTheBeyond)
-  , ("02101", terrorFromBeyond)
-  , ("02102", arcaneBarrier)
-  , ("02142", shadowSpawned)
-  , ("02143", stalkedInTheDark)
-  , ("02144", passageIntoTheVeil)
-  , ("02145", ephemeralExhibits)
-  , ("02146", slitheringBehindYou)
-  , ("02180", clawsOfSteam)
-  , ("02181", brokenRails)
-  , ("02220", kidnapped)
-  , ("02221", psychopompsSong)
-  , ("02222", strangeSigns)
-  , ("02223", rottingRemainsBloodOnTheAltar)
-  , ("02256", toweringBeasts)
-  , ("02257", ruinAndDestruction)
-  , ("02258", attractingAttention)
-  , ("02259", theCreaturesTracks)
-  , ("02296", ritesHowled)
-  , ("02297", spacesBetween)
-  , ("02298", vortexOfTime)
-  , ("02331", collapsingReality)
-  , ("02332", wormhole)
-  , ("02333", vastExpanse)
-  , ("50024", theZealotsSeal)
-  , ("50031", maskedHorrors)
-  , ("50032b", vaultOfEarthlyDemise)
-  , ("50037", umordhothsHunger)
-  , ("50040", chillFromBelow)
-  , ("50043", maskOfUmordhoth)
-  , ("81024", cursedSwamp)
-  , ("81025", spectralMist)
-  , ("81026", draggedUnder)
-  , ("81027", ripplesOnTheSurface)
-  , ("81034", onTheProwl)
-  , ("81035", beastOfTheBayou)
-  , ("81036", insatiableBloodlust)
+allEncounterTreacheryCards = mapFromList $ map
+  (toCardCode &&& id)
+  [ placeholderTreachery
+  , alteredBeast
+  , ancientEvils
+  , arcaneBarrier
+  , arousingSuspicions
+  , attractingAttention
+  , beastOfTheBayou
+  , beyondTheVeil
+  , brokenRails
+  , chillFromBelow
+  , clawsOfSteam
+  , collapsingReality
+  , cryptChill
+  , cursedLuck
+  , cursedSwamp
+  , dissonantVoices
+  , draggedUnder
+  , dreamsOfRlyeh
+  , eagerForDeath
+  , ephemeralExhibits
+  , falseLead
+  , frozenInFear
+  , graspingHands
+  , huntedDown
+  , huntingShadow
+  , insatiableBloodlust
+  , kidnapped
+  , lightOfAforgomon
+  , lockedDoor
+  , maskOfUmordhoth
+  , maskedHorrors
+  , mysteriousChanting
+  , obscuringFog
+  , offerOfPower
+  , onTheProwl
+  , onWingsOfDarkness
+  , passageIntoTheVeil
+  , psychopompsSong
+  , pushedIntoTheBeyond
+  , ripplesOnTheSurface
+  , ritesHowled
+  , rottingRemains
+  , rottingRemainsBloodOnTheAltar
+  , ruinAndDestruction
+  , shadowSpawned
+  , slitheringBehindYou
+  , somethingInTheDrinks
+  , sordidAndSilent
+  , spacesBetween
+  , spectralMist
+  , stalkedInTheDark
+  , strangeSigns
+  , terrorFromBeyond
+  , theCreaturesTracks
+  , theYellowSign
+  , theZealotsSeal
+  , toweringBeasts
+  , twistOfFate
+  , umordhothsHunger
+  , umordhothsWrath
+  , unhallowedCountry
+  , vastExpanse
+  , vaultOfEarthlyDemise
+  , visionsOfFuturesPast
+  , vortexOfTime
+  , wormhole
   ]
 
 placeholderTreachery :: CardDef
@@ -491,7 +493,7 @@ maskedHorrors = (treachery "50031" "Masked Horrors" ReturnToTheMidnightMasks)
 
 vaultOfEarthlyDemise :: CardDef
 vaultOfEarthlyDemise =
-  (treachery "50032a" "Vault of Earthly Demise" ReturnToTheDevourerBelow)
+  (treachery "50032b" "Vault of Earthly Demise" ReturnToTheDevourerBelow)
     { cdCardTraits = setFromList [Eldritch, Otherworld]
     }
 

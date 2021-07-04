@@ -39,78 +39,78 @@ weakness :: CardCode -> Name -> CardDef
 weakness cardCode name = baseEnemy cardCode name Nothing True
 
 enemy :: CardCode -> Name -> EncounterSet -> CardDef
-enemy cardCode name encounterSet = baseEnemy cardCode name (Just encounterSet) False
+enemy cardCode name encounterSet =
+  baseEnemy cardCode name (Just encounterSet) False
 
 allPlayerEnemyCards :: HashMap CardCode CardDef
-allPlayerEnemyCards = mapFromList
-  [ ("01101", mobEnforcer)
-  , ("01102", silverTwilightAcolyte)
-  , ("01103", stubbornDetective)
-  ]
+allPlayerEnemyCards = mapFromList $ map
+  (toCardCode &&& id)
+  [mobEnforcer, silverTwilightAcolyte, stubbornDetective]
 
 allEncounterEnemyCards :: HashMap CardCode CardDef
-allEncounterEnemyCards = mapFromList
-  [ ("enemy", placeholderEnemy)
-  , ("01116", ghoulPriest)
-  , ("01118", fleshEater)
-  , ("01119", icyGhoul)
-  , ("01121b", theMaskedHunter)
-  , ("01137", wolfManDrew)
-  , ("01138", hermanCollins)
-  , ("01139", peterWarren)
-  , ("01140", victoriaDevereux)
-  , ("01141", ruthTurner)
-  , ("01157", umordhoth)
-  , ("01159", swarmOfRats)
-  , ("01160", ghoulMinion)
-  , ("01161", ravenousGhoul)
-  , ("01169", acolyte)
-  , ("01170", wizardOfTheOrder)
-  , ("01172", huntingNightgaunt)
-  , ("01175", screechingByakhee)
-  , ("01177", yithianObserver)
-  , ("01179", relentlessDarkYoung)
-  , ("01180", goatSpawn)
-  , ("01181", youngDeepOne)
-  , ("02058", theExperiment)
-  , ("02078", cloverClubPitBoss)
-  , ("02086", thrall)
-  , ("02087", wizardOfYogSothoth)
-  , ("02090", whippoorwill)
-  , ("02094", avianThrall)
-  , ("02095", lupineThrall)
-  , ("02097", oBannionsThug)
-  , ("02098", mobster)
-  , ("02103", conglomerationOfSpheres)
-  , ("02104", servantOfTheLurker)
-  , ("02141", huntingHorror)
-  , ("02182", grapplingHorror)
-  , ("02183", emergentMonstrosity)
-  , ("02216", silasBishop)
-  , ("02224", servantOfManyMouths)
-  , ("02255", broodOfYogSothoth)
-  , ("02293", sethBishop)
-  , ("02294", devoteeOfTheKey)
-  , ("02295", crazedShoggoth)
-  , ("02323", yogSothoth)
-  , ("02329", interstellarTraveler)
-  , ("02330", yithianStarseeker)
-  , ("50022", corpseHungryGhoul)
-  , ("50023", ghoulFromTheDepths)
-  , ("50026b", narogath)
-  , ("50038", graveEater)
-  , ("50039", acolyteOfUmordhoth)
-  , ("50041", discipleOfTheDevourer)
-  , ("50042", corpseTaker)
-  , ("50044", jeremiahPierce)
-  , ("50045", billyCooper)
-  , ("50046", almaHill)
-  , ("81022", bogGator)
-  , ("81023", swampLeech)
-  , ("81028", theRougarou)
-  , ("81031", slimeCoveredDhole)
-  , ("81032", marshGug)
-  , ("81033", darkYoungHost)
+allEncounterEnemyCards = mapFromList $ map
+  (toCardCode &&& id)
+  [ placeholderEnemy
+  , acolyte
+  , acolyteOfUmordhoth
+  , almaHill
+  , avianThrall
+  , billyCooper
+  , bogGator
+  , broodOfYogSothoth
+  , cloverClubPitBoss
+  , conglomerationOfSpheres
+  , corpseHungryGhoul
+  , corpseTaker
+  , crazedShoggoth
+  , darkYoungHost
+  , devoteeOfTheKey
+  , discipleOfTheDevourer
+  , emergentMonstrosity
+  , fleshEater
+  , ghoulFromTheDepths
+  , ghoulMinion
+  , ghoulPriest
+  , goatSpawn
+  , grapplingHorror
+  , graveEater
+  , hermanCollins
+  , huntingHorror
+  , huntingNightgaunt
+  , icyGhoul
+  , interstellarTraveler
+  , jeremiahPierce
+  , lupineThrall
+  , marshGug
+  , mobster
+  , narogath
+  , oBannionsThug
+  , peterWarren
+  , ravenousGhoul
+  , relentlessDarkYoung
+  , ruthTurner
+  , screechingByakhee
+  , servantOfManyMouths
+  , servantOfTheLurker
+  , sethBishop
+  , silasBishop
+  , slimeCoveredDhole
+  , swampLeech
+  , swarmOfRats
+  , theExperiment
+  , theMaskedHunter
+  , theRougarou
+  , thrall
+  , umordhoth
+  , victoriaDevereux
+  , whippoorwill
+  , wizardOfTheOrder
+  , wizardOfYogSothoth
+  , wolfManDrew
+  , yithianObserver
+  , yithianStarseeker
+  , yogSothoth
+  , youngDeepOne
   ]
 
 placeholderEnemy :: CardDef
@@ -123,11 +123,10 @@ mobEnforcer = (weakness "01101" "Mob Enforcer")
   }
 
 silverTwilightAcolyte :: CardDef
-silverTwilightAcolyte =
-  (weakness "01102" "Silver Twilight Acolyte")
-    { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
-    , cdKeywords = setFromList [Keyword.Hunter]
-    }
+silverTwilightAcolyte = (weakness "01102" "Silver Twilight Acolyte")
+  { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
+  , cdKeywords = setFromList [Keyword.Hunter]
+  }
 
 stubbornDetective :: CardDef
 stubbornDetective = (weakness "01103" "Stubborn Detective")
@@ -156,7 +155,8 @@ icyGhoul = (enemy "01119" "Icy Ghoul" TheGathering)
 
 theMaskedHunter :: CardDef
 theMaskedHunter =
-  (enemy "01121b" ("The Masked Hunter" <:> "Silently Stalking") TheMidnightMasks)
+  (enemy "01121b" ("The Masked Hunter" <:> "Silently Stalking") TheMidnightMasks
+    )
     { cdCardTraits = setFromList [Humanoid, Cultist, Elite]
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdVictoryPoints = Just 2
@@ -164,25 +164,28 @@ theMaskedHunter =
     }
 
 wolfManDrew :: CardDef
-wolfManDrew = (enemy "01137" ("\"Wolf-Man\" Drew" <:> "The Cannibal") TheMidnightMasks)
-  { cdCardTraits = setFromList [Humanoid, Cultist]
-  , cdVictoryPoints = Just 1
-  , cdUnique = True
-  }
+wolfManDrew =
+  (enemy "01137" ("\"Wolf-Man\" Drew" <:> "The Cannibal") TheMidnightMasks)
+    { cdCardTraits = setFromList [Humanoid, Cultist]
+    , cdVictoryPoints = Just 1
+    , cdUnique = True
+    }
 
 hermanCollins :: CardDef
-hermanCollins = (enemy "01138" ("Herman Collins" <:> "The Undertaker") TheMidnightMasks)
-  { cdCardTraits = setFromList [Humanoid, Cultist]
-  , cdVictoryPoints = Just 1
-  , cdUnique = True
-  }
+hermanCollins =
+  (enemy "01138" ("Herman Collins" <:> "The Undertaker") TheMidnightMasks)
+    { cdCardTraits = setFromList [Humanoid, Cultist]
+    , cdVictoryPoints = Just 1
+    , cdUnique = True
+    }
 
 peterWarren :: CardDef
-peterWarren = (enemy "01139" ("Peter Warren" <:> "The Occult Professor") TheMidnightMasks)
-  { cdCardTraits = setFromList [Humanoid, Cultist]
-  , cdVictoryPoints = Just 1
-  , cdUnique = True
-  }
+peterWarren =
+  (enemy "01139" ("Peter Warren" <:> "The Occult Professor") TheMidnightMasks)
+    { cdCardTraits = setFromList [Humanoid, Cultist]
+    , cdVictoryPoints = Just 1
+    , cdUnique = True
+    }
 
 victoriaDevereux :: CardDef
 victoriaDevereux =
@@ -193,18 +196,20 @@ victoriaDevereux =
     }
 
 ruthTurner :: CardDef
-ruthTurner = (enemy "01141" ("Ruth Turner" <:> "The Mortician") TheMidnightMasks)
-  { cdCardTraits = setFromList [Humanoid, Cultist]
-  , cdVictoryPoints = Just 1
-  , cdUnique = True
-  }
+ruthTurner =
+  (enemy "01141" ("Ruth Turner" <:> "The Mortician") TheMidnightMasks)
+    { cdCardTraits = setFromList [Humanoid, Cultist]
+    , cdVictoryPoints = Just 1
+    , cdUnique = True
+    }
 
 umordhoth :: CardDef
-umordhoth = (enemy "01157" ("Umôrdhoth" <:> "The Devourer Below") TheDevourerBelow)
-  { cdCardTraits = setFromList [AncientOne, Elite]
-  , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
-  , cdUnique = True
-  }
+umordhoth =
+  (enemy "01157" ("Umôrdhoth" <:> "The Devourer Below") TheDevourerBelow)
+    { cdCardTraits = setFromList [AncientOne, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
+    , cdUnique = True
+    }
 
 swarmOfRats :: CardDef
 swarmOfRats = (enemy "01159" "Swarm of Rats" Rats)
@@ -228,33 +233,29 @@ acolyte = (enemy "01169" "Acolyte" DarkCult)
   }
 
 wizardOfTheOrder :: CardDef
-wizardOfTheOrder =
-  (enemy "01170" "Wizard of the Order" DarkCult)
-    { cdCardTraits = setFromList [Humanoid, Cultist]
-    , cdKeywords = setFromList [Keyword.Retaliate]
-    }
+wizardOfTheOrder = (enemy "01170" "Wizard of the Order" DarkCult)
+  { cdCardTraits = setFromList [Humanoid, Cultist]
+  , cdKeywords = setFromList [Keyword.Retaliate]
+  }
 
 huntingNightgaunt :: CardDef
-huntingNightgaunt =
-  (enemy "01172" "Hunting Nightgaunt" Nightgaunts)
-    { cdCardTraits = setFromList [Monster, Nightgaunt]
-    , cdKeywords = setFromList [Keyword.Hunter]
-    }
+huntingNightgaunt = (enemy "01172" "Hunting Nightgaunt" Nightgaunts)
+  { cdCardTraits = setFromList [Monster, Nightgaunt]
+  , cdKeywords = setFromList [Keyword.Hunter]
+  }
 
 screechingByakhee :: CardDef
-screechingByakhee =
-  (enemy "01175" "Screeching Byakhee" AgentsOfHastur)
-    { cdCardTraits = setFromList [Monster, Byakhee]
-    , cdKeywords = setFromList [Keyword.Hunter]
-    , cdVictoryPoints = Just 1
-    }
+screechingByakhee = (enemy "01175" "Screeching Byakhee" AgentsOfHastur)
+  { cdCardTraits = setFromList [Monster, Byakhee]
+  , cdKeywords = setFromList [Keyword.Hunter]
+  , cdVictoryPoints = Just 1
+  }
 
 yithianObserver :: CardDef
-yithianObserver =
-  (enemy "01177" "Yithian Observer" AgentsOfYogSothoth)
-    { cdCardTraits = setFromList [Monster, Yithian]
-    , cdVictoryPoints = Just 1
-    }
+yithianObserver = (enemy "01177" "Yithian Observer" AgentsOfYogSothoth)
+  { cdCardTraits = setFromList [Monster, Yithian]
+  , cdVictoryPoints = Just 1
+  }
 
 relentlessDarkYoung :: CardDef
 relentlessDarkYoung =
@@ -276,7 +277,11 @@ youngDeepOne = (enemy "01181" "Young Deep One" AgentsOfCthulhu)
   }
 
 theExperiment :: CardDef
-theExperiment = (enemy "02058" ("The Experiment" <:> "Something Went Terribly Wrong") ExtracurricularActivity)
+theExperiment = (enemy
+                  "02058"
+                  ("The Experiment" <:> "Something Went Terribly Wrong")
+                  ExtracurricularActivity
+                )
   { cdCardTraits = setFromList [Monster, Abomination, Elite]
   , cdKeywords = setFromList [Keyword.Massive]
   , cdVictoryPoints = Just 2
@@ -284,12 +289,11 @@ theExperiment = (enemy "02058" ("The Experiment" <:> "Something Went Terribly Wr
   }
 
 cloverClubPitBoss :: CardDef
-cloverClubPitBoss =
-  (enemy "02078" "Clover Club Pit Boss" TheHouseAlwaysWins)
-    { cdCardTraits = setFromList [Criminal, Elite]
-    , cdKeywords = setFromList [Keyword.Hunter]
-    , cdVictoryPoints = Just 1
-    }
+cloverClubPitBoss = (enemy "02078" "Clover Club Pit Boss" TheHouseAlwaysWins)
+  { cdCardTraits = setFromList [Criminal, Elite]
+  , cdKeywords = setFromList [Keyword.Hunter]
+  , cdVictoryPoints = Just 1
+  }
 
 thrall :: CardDef
 thrall = (enemy "02086" "Thrall" BishopsThralls)
@@ -298,12 +302,11 @@ thrall = (enemy "02086" "Thrall" BishopsThralls)
   }
 
 wizardOfYogSothoth :: CardDef
-wizardOfYogSothoth =
-  (enemy "02087" "Wizard of Yog-Sothoth" BishopsThralls)
-    { cdCardTraits = setFromList [Humanoid, Sorcerer]
-    , cdKeywords = setFromList [Keyword.Hunter]
-    , cdVictoryPoints = Just 1
-    }
+wizardOfYogSothoth = (enemy "02087" "Wizard of Yog-Sothoth" BishopsThralls)
+  { cdCardTraits = setFromList [Humanoid, Sorcerer]
+  , cdKeywords = setFromList [Keyword.Hunter]
+  , cdVictoryPoints = Just 1
+  }
 
 whippoorwill :: CardDef
 whippoorwill = (enemy "02090" "Whippoorwill" Whippoorwills)
@@ -342,25 +345,28 @@ conglomerationOfSpheres =
     }
 
 servantOfTheLurker :: CardDef
-servantOfTheLurker =
-  (enemy "02104" "Servant of the Lurker" HideousAbominations)
-    { cdCardTraits = setFromList [Monster, Abomination]
-    , cdKeywords = setFromList [Keyword.Hunter]
-    , cdVictoryPoints = Just 1
-    }
+servantOfTheLurker = (enemy "02104" "Servant of the Lurker" HideousAbominations
+                     )
+  { cdCardTraits = setFromList [Monster, Abomination]
+  , cdKeywords = setFromList [Keyword.Hunter]
+  , cdVictoryPoints = Just 1
+  }
 
 huntingHorror :: CardDef
-huntingHorror = (enemy "02141" ("Hunting Horror" <:> "Spawned from the Void") TheMiskatonicMuseum)
+huntingHorror = (enemy
+                  "02141"
+                  ("Hunting Horror" <:> "Spawned from the Void")
+                  TheMiskatonicMuseum
+                )
   { cdCardTraits = setFromList [Monster, Elite]
   , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
   }
 
 grapplingHorror :: CardDef
-grapplingHorror =
-  (enemy "02182" "Grappling Horror" TheEssexCountyExpress)
-    { cdCardTraits = setFromList [Monster, Abomination]
-    , cdKeywords = setFromList [Keyword.Hunter]
-    }
+grapplingHorror = (enemy "02182" "Grappling Horror" TheEssexCountyExpress)
+  { cdCardTraits = setFromList [Monster, Abomination]
+  , cdKeywords = setFromList [Keyword.Hunter]
+  }
 
 emergentMonstrosity :: CardDef
 emergentMonstrosity =
@@ -370,19 +376,19 @@ emergentMonstrosity =
     }
 
 silasBishop :: CardDef
-silasBishop = (enemy "02216" ("Silas Bishop" <:> "Infused With Evil") BloodOnTheAltar)
-  { cdCardTraits = setFromList [Monster, Abomination, Elite]
-  , cdKeywords = singleton Keyword.Massive
-  , cdVictoryPoints = Just 2
-  , cdUnique = True
-  }
+silasBishop =
+  (enemy "02216" ("Silas Bishop" <:> "Infused With Evil") BloodOnTheAltar)
+    { cdCardTraits = setFromList [Monster, Abomination, Elite]
+    , cdKeywords = singleton Keyword.Massive
+    , cdVictoryPoints = Just 2
+    , cdUnique = True
+    }
 
 servantOfManyMouths :: CardDef
-servantOfManyMouths =
-  (enemy "02224" "Servant of Many Mouths" BloodOnTheAltar)
-    { cdCardTraits = singleton Humanoid
-    , cdKeywords = singleton Keyword.Retaliate
-    }
+servantOfManyMouths = (enemy "02224" "Servant of Many Mouths" BloodOnTheAltar)
+  { cdCardTraits = singleton Humanoid
+  , cdKeywords = singleton Keyword.Retaliate
+  }
 
 broodOfYogSothoth :: CardDef
 broodOfYogSothoth =
@@ -402,10 +408,9 @@ sethBishop =
     }
 
 devoteeOfTheKey :: CardDef
-devoteeOfTheKey =
-  (enemy "02294" "Devotee of the Key" WhereDoomAwaits)
-    { cdCardTraits = setFromList [Humanoid, Sorcerer]
-    }
+devoteeOfTheKey = (enemy "02294" "Devotee of the Key" WhereDoomAwaits)
+  { cdCardTraits = setFromList [Humanoid, Sorcerer]
+  }
 
 crazedShoggoth :: CardDef
 crazedShoggoth = (enemy "02295" "Crazed Shoggoth" WhereDoomAwaits)
@@ -415,11 +420,10 @@ crazedShoggoth = (enemy "02295" "Crazed Shoggoth" WhereDoomAwaits)
 
 yogSothoth :: CardDef
 yogSothoth = (enemy
-                      "02323"
-                      ("Yog-Sothoth"
-                        <:> "The Lurker Beyond the Threshold")
-                      LostInTimeAndSpace
-                      )
+               "02323"
+               ("Yog-Sothoth" <:> "The Lurker Beyond the Threshold")
+               LostInTimeAndSpace
+             )
   { cdCardTraits = setFromList [AncientOne, Elite]
   , cdKeywords = setFromList
     [Keyword.Massive, Keyword.Hunter, Keyword.Retaliate]
@@ -434,19 +438,17 @@ interstellarTraveler =
     }
 
 yithianStarseeker :: CardDef
-yithianStarseeker =
-  (enemy "02330" "Yithian Starseeker" LostInTimeAndSpace)
-    { cdCardTraits = setFromList [Monster, Yithian]
-    , cdKeywords = setFromList [Keyword.Retaliate]
-    }
+yithianStarseeker = (enemy "02330" "Yithian Starseeker" LostInTimeAndSpace)
+  { cdCardTraits = setFromList [Monster, Yithian]
+  , cdKeywords = setFromList [Keyword.Retaliate]
+  }
 
 corpseHungryGhoul :: CardDef
-corpseHungryGhoul =
-  (enemy "50022" "Corpse-Hungry Ghoul" ReturnToTheGathering)
-    { cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
-    , cdKeywords = setFromList [Keyword.Hunter]
-    , cdVictoryPoints = Just 1
-    }
+corpseHungryGhoul = (enemy "50022" "Corpse-Hungry Ghoul" ReturnToTheGathering)
+  { cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
+  , cdKeywords = setFromList [Keyword.Hunter]
+  , cdVictoryPoints = Just 1
+  }
 
 ghoulFromTheDepths :: CardDef
 ghoulFromTheDepths =
@@ -457,12 +459,13 @@ ghoulFromTheDepths =
     }
 
 narogath :: CardDef
-narogath = (enemy "50026b" ("Narôgath" <:> "The Charnel Lord") ReturnToTheMidnightMasks)
-  { cdCardTraits = setFromList [Humanoid, Monster, Cultist, Elite]
-  , cdKeywords = setFromList [Keyword.Hunter]
-  , cdVictoryPoints = Just 2
-  , cdUnique = True
-  }
+narogath =
+  (enemy "50026b" ("Narôgath" <:> "The Charnel Lord") ReturnToTheMidnightMasks)
+    { cdCardTraits = setFromList [Humanoid, Monster, Cultist, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdVictoryPoints = Just 2
+    , cdUnique = True
+    }
 
 graveEater :: CardDef
 graveEater = (enemy "50038" "Grave-Eater" GhoulsOfUmordhoth)
@@ -470,10 +473,9 @@ graveEater = (enemy "50038" "Grave-Eater" GhoulsOfUmordhoth)
   }
 
 acolyteOfUmordhoth :: CardDef
-acolyteOfUmordhoth =
-  (enemy "50039" "Acolyte of Umôrdhoth" GhoulsOfUmordhoth)
-    { cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
-    }
+acolyteOfUmordhoth = (enemy "50039" "Acolyte of Umôrdhoth" GhoulsOfUmordhoth)
+  { cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
+  }
 
 discipleOfTheDevourer :: CardDef
 discipleOfTheDevourer =
@@ -487,30 +489,38 @@ corpseTaker = (enemy "50042" "Corpse-Taker" TheDevourersCult)
   }
 
 jeremiahPierce :: CardDef
-jeremiahPierce = (enemy "50044" ("Jeremiah Pierce" <:> "Your Next-Door Neighbor") ReturnCultOfUmordhoth)
+jeremiahPierce = (enemy
+                   "50044"
+                   ("Jeremiah Pierce" <:> "Your Next-Door Neighbor")
+                   ReturnCultOfUmordhoth
+                 )
   { cdCardTraits = setFromList [Humanoid, Cultist]
   , cdVictoryPoints = Just 1
   , cdUnique = True
   }
 
 billyCooper :: CardDef
-billyCooper = (enemy "50045" ("Billy Cooper" <:> "The Crooked Cop") ReturnCultOfUmordhoth)
-  { cdCardTraits = setFromList [Humanoid, Cultist]
-  , cdVictoryPoints = Just 1
-  , cdUnique = True
-  }
+billyCooper =
+  (enemy "50045" ("Billy Cooper" <:> "The Crooked Cop") ReturnCultOfUmordhoth)
+    { cdCardTraits = setFromList [Humanoid, Cultist]
+    , cdVictoryPoints = Just 1
+    , cdUnique = True
+    }
 
 almaHill :: CardDef
-almaHill = (enemy "50046" ("Alma Hill" <:> "The Inquisitive Historian") ReturnCultOfUmordhoth)
+almaHill = (enemy
+             "50046"
+             ("Alma Hill" <:> "The Inquisitive Historian")
+             ReturnCultOfUmordhoth
+           )
   { cdCardTraits = setFromList [Humanoid, Cultist]
   , cdVictoryPoints = Just 1
   , cdUnique = True
   }
 
 bogGator :: CardDef
-bogGator = (enemy "81022" "Bog Gator" TheBayou)
-  { cdCardTraits = setFromList [Creature]
-  }
+bogGator =
+  (enemy "81022" "Bog Gator" TheBayou) { cdCardTraits = setFromList [Creature] }
 
 swampLeech :: CardDef
 swampLeech = (enemy "81023" "Swamp Leech" TheBayou)
@@ -518,18 +528,18 @@ swampLeech = (enemy "81023" "Swamp Leech" TheBayou)
   }
 
 theRougarou :: CardDef
-theRougarou = (enemy "81028" ("The Rougarou" <:> "Cursed Soul") CurseOfTheRougarou)
-  { cdCardTraits = setFromList [Monster, Creature, Elite]
-  , cdKeywords = setFromList [Keyword.Aloof, Keyword.Retaliate]
-  , cdUnique = True
-  }
+theRougarou =
+  (enemy "81028" ("The Rougarou" <:> "Cursed Soul") CurseOfTheRougarou)
+    { cdCardTraits = setFromList [Monster, Creature, Elite]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Retaliate]
+    , cdUnique = True
+    }
 
 slimeCoveredDhole :: CardDef
-slimeCoveredDhole =
-  (enemy "81031" "Slime-Covered Dhole" CurseOfTheRougarou)
-    { cdCardTraits = setFromList [Monster, Dhole]
-    , cdKeywords = setFromList [Keyword.Hunter]
-    }
+slimeCoveredDhole = (enemy "81031" "Slime-Covered Dhole" CurseOfTheRougarou)
+  { cdCardTraits = setFromList [Monster, Dhole]
+  , cdKeywords = setFromList [Keyword.Hunter]
+  }
 
 marshGug :: CardDef
 marshGug = (enemy "81032" "Marsh Gug" CurseOfTheRougarou)

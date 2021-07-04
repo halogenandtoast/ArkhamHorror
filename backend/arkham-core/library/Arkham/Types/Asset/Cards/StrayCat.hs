@@ -7,21 +7,21 @@ import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
-import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype StrayCat = StrayCat AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strayCat :: AssetCard StrayCat
-strayCat = ally StrayCat Cards.strayCat (2, 0)
+strayCat = ally StrayCat Cards.strayCat (1, 0)
 
 instance HasModifiersFor env StrayCat where
   getModifiersFor = noModifiersFor

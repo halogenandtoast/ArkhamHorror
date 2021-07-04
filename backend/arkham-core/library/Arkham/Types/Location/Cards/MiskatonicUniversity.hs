@@ -13,7 +13,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Target
@@ -23,8 +22,8 @@ import Arkham.Types.Window
 newtype MiskatonicUniversity = MiskatonicUniversity LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-miskatonicUniversity :: LocationId -> MiskatonicUniversity
-miskatonicUniversity = MiskatonicUniversity . baseAttrs
+miskatonicUniversity :: LocationCard MiskatonicUniversity
+miskatonicUniversity = location MiskatonicUniversity 
   Cards.miskatonicUniversity
   4
   (PerPlayer 2)

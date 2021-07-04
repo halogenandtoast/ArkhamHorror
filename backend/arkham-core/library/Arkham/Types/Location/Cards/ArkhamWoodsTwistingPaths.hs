@@ -8,7 +8,6 @@ import Arkham.Types.EffectMetadata
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.SkillType
@@ -17,17 +16,17 @@ import Arkham.Types.Target
 newtype ArkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-arkhamWoodsTwistingPaths :: LocationId -> ArkhamWoodsTwistingPaths
-arkhamWoodsTwistingPaths =
+arkhamWoodsTwistingPaths :: LocationCard ArkhamWoodsTwistingPaths
+arkhamWoodsTwistingPaths = locationWith
   ArkhamWoodsTwistingPaths
-    . (revealedConnectedSymbolsL .~ setFromList [Squiggle, Diamond, Equals])
-    . (revealedSymbolL .~ T)
-    . baseAttrs
-        Cards.arkhamWoodsTwistingPaths
-        3
-        (PerPlayer 1)
-        Square
-        [Squiggle]
+  Cards.arkhamWoodsTwistingPaths
+  3
+  (PerPlayer 1)
+  Square
+  [Squiggle]
+  ((revealedConnectedSymbolsL .~ setFromList [Squiggle, Diamond, Equals])
+  . (revealedSymbolL .~ T)
+  )
 
 instance HasModifiersFor env ArkhamWoodsTwistingPaths where
   getModifiersFor = noModifiersFor

@@ -10,7 +10,6 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Source
@@ -18,17 +17,17 @@ import Arkham.Types.Source
 newtype ArkhamWoodsLakeside = ArkhamWoodsLakeside LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-arkhamWoodsLakeside :: LocationId -> ArkhamWoodsLakeside
-arkhamWoodsLakeside =
+arkhamWoodsLakeside :: LocationCard ArkhamWoodsLakeside
+arkhamWoodsLakeside = locationWith
   ArkhamWoodsLakeside
-    . (revealedConnectedSymbolsL .~ setFromList [Squiggle, Heart])
-    . (revealedSymbolL .~ Star)
-    . baseAttrs
-        Cards.arkhamWoodsLakeside
-        4
-        (PerPlayer 1)
-        Square
-        [Squiggle]
+  Cards.arkhamWoodsLakeside
+  4
+  (PerPlayer 1)
+  Square
+  [Squiggle]
+  ((revealedConnectedSymbolsL .~ setFromList [Squiggle, Heart])
+  . (revealedSymbolL .~ Star)
+  )
 
 instance HasModifiersFor env ArkhamWoodsLakeside where
   getModifiersFor = noModifiersFor

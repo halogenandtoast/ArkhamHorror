@@ -10,7 +10,6 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
@@ -21,8 +20,8 @@ import Arkham.Types.Window
 newtype Dormitories = Dormitories LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-dormitories :: LocationId -> Dormitories
-dormitories = Dormitories . baseAttrs
+dormitories :: LocationCard Dormitories
+dormitories = location Dormitories 
   Cards.dormitories
   1
   (PerPlayer 3)

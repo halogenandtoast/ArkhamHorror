@@ -9,7 +9,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.Target
@@ -17,17 +16,17 @@ import Arkham.Types.Target
 newtype ArkhamWoodsCorpseRiddenClearing = ArkhamWoodsCorpseRiddenClearing LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-arkhamWoodsCorpseRiddenClearing :: LocationId -> ArkhamWoodsCorpseRiddenClearing
-arkhamWoodsCorpseRiddenClearing =
+arkhamWoodsCorpseRiddenClearing :: LocationCard ArkhamWoodsCorpseRiddenClearing
+arkhamWoodsCorpseRiddenClearing = locationWith
   ArkhamWoodsCorpseRiddenClearing
-    . (revealedConnectedSymbolsL .~ setFromList [Squiggle, Circle])
-    . (revealedSymbolL .~ Droplet)
-    . baseAttrs
-        Cards.arkhamWoodsCorpseRiddenClearing
-        3
-        (PerPlayer 1)
-        Square
-        [Squiggle]
+  Cards.arkhamWoodsCorpseRiddenClearing
+  3
+  (PerPlayer 1)
+  Square
+  [Squiggle]
+  ((revealedConnectedSymbolsL .~ setFromList [Squiggle, Circle])
+  . (revealedSymbolL .~ Droplet)
+  )
 
 instance HasModifiersFor env ArkhamWoodsCorpseRiddenClearing where
   getModifiersFor _ (EnemyTarget eid) (ArkhamWoodsCorpseRiddenClearing attrs) =

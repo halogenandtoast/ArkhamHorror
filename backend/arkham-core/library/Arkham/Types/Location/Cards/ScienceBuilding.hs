@@ -7,7 +7,6 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
@@ -18,8 +17,8 @@ import Arkham.Types.Target
 newtype ScienceBuilding = ScienceBuilding LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-scienceBuilding :: LocationId -> ScienceBuilding
-scienceBuilding = ScienceBuilding . baseAttrs
+scienceBuilding :: LocationCard ScienceBuilding
+scienceBuilding = location ScienceBuilding 
   Cards.scienceBuilding
   2
   (PerPlayer 1)

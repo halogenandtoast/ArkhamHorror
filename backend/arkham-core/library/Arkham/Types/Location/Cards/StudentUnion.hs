@@ -14,7 +14,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
@@ -24,8 +23,8 @@ import Arkham.Types.Window
 newtype StudentUnion = StudentUnion LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-studentUnion :: LocationId -> StudentUnion
-studentUnion = StudentUnion . baseAttrs
+studentUnion :: LocationCard StudentUnion
+studentUnion = location StudentUnion 
   Cards.studentUnion
   1
   (Static 2)

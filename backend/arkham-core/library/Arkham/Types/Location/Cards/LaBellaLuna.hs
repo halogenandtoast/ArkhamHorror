@@ -11,14 +11,13 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 
 newtype LaBellaLuna = LaBellaLuna LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-laBellaLuna :: LocationId -> LaBellaLuna
-laBellaLuna = LaBellaLuna . baseAttrs
+laBellaLuna :: LocationCard LaBellaLuna
+laBellaLuna = location LaBellaLuna 
   Cards.laBellaLuna
   2
   (PerPlayer 1)

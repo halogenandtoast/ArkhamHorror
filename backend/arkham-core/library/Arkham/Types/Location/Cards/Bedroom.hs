@@ -8,15 +8,14 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 
 newtype Bedroom = Bedroom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-bedroom :: LocationId -> Bedroom
-bedroom = Bedroom . baseAttrs
+bedroom :: LocationCard Bedroom
+bedroom = location Bedroom 
   Cards.bedroom
   2
   (PerPlayer 1)

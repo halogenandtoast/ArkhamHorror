@@ -12,16 +12,15 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 
 newtype ExhibitHallEgyptianExhibit = ExhibitHallEgyptianExhibit LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-exhibitHallEgyptianExhibit :: LocationId -> ExhibitHallEgyptianExhibit
+exhibitHallEgyptianExhibit :: LocationCard ExhibitHallEgyptianExhibit
 exhibitHallEgyptianExhibit =
-  ExhibitHallEgyptianExhibit . baseAttrs
+  location ExhibitHallEgyptianExhibit 
     Cards.exhibitHallEgyptianExhibit
     3
     (PerPlayer 2)

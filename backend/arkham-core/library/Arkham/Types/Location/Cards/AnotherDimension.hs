@@ -1,21 +1,18 @@
 module Arkham.Types.Location.Cards.AnotherDimension
   ( anotherDimension
   , AnotherDimension(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (anotherDimension)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Target
@@ -24,8 +21,9 @@ import Arkham.Types.Window
 newtype AnotherDimension = AnotherDimension LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-anotherDimension :: LocationId -> AnotherDimension
-anotherDimension = AnotherDimension . baseAttrs
+anotherDimension :: LocationCard AnotherDimension
+anotherDimension = location
+  AnotherDimension
   Cards.anotherDimension
   6
   (Static 0)

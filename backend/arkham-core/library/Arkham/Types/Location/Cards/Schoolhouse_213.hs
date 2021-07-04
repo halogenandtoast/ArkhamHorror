@@ -11,15 +11,14 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 
 newtype Schoolhouse_213 = Schoolhouse_213 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-schoolhouse_213 :: LocationId -> Schoolhouse_213
-schoolhouse_213 = Schoolhouse_213 . baseAttrs
+schoolhouse_213 :: LocationCard Schoolhouse_213
+schoolhouse_213 = location Schoolhouse_213 
   Cards.schoolhouse_213
   4
   (Static 1)

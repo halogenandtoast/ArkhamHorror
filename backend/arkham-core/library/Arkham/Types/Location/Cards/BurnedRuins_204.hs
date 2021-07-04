@@ -12,7 +12,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.Target
@@ -20,8 +19,8 @@ import Arkham.Types.Target
 newtype BurnedRuins_204 = BurnedRuins_204 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-burnedRuins_204 :: LocationId -> BurnedRuins_204
-burnedRuins_204 = BurnedRuins_204 . baseAttrs
+burnedRuins_204 :: LocationCard BurnedRuins_204
+burnedRuins_204 = location BurnedRuins_204 
   Cards.burnedRuins_204
   3
   (Static 3)

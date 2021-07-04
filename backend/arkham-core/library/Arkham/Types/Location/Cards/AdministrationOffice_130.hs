@@ -13,7 +13,6 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.Query
@@ -22,8 +21,8 @@ import Arkham.Types.Source
 newtype AdministrationOffice_130 = AdministrationOffice_130 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-administrationOffice_130 :: LocationId -> AdministrationOffice_130
-administrationOffice_130 = AdministrationOffice_130 . baseAttrs
+administrationOffice_130 :: LocationCard AdministrationOffice_130
+administrationOffice_130 = location AdministrationOffice_130 
   Cards.administrationOffice_130
   1
   (PerPlayer 1)

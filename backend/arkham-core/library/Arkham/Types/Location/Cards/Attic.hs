@@ -7,7 +7,6 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Source
@@ -15,8 +14,8 @@ import Arkham.Types.Source
 newtype Attic = Attic LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-attic :: LocationId -> Attic
-attic = Attic . baseAttrs
+attic :: LocationCard Attic
+attic = location Attic 
   Cards.attic
   1
   (PerPlayer 2)

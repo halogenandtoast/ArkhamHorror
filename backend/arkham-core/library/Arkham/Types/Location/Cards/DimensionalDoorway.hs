@@ -13,7 +13,6 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Query
@@ -23,8 +22,8 @@ import Arkham.Types.Window
 newtype DimensionalDoorway = DimensionalDoorway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-dimensionalDoorway :: LocationId -> DimensionalDoorway
-dimensionalDoorway = DimensionalDoorway . baseAttrs
+dimensionalDoorway :: LocationCard DimensionalDoorway
+dimensionalDoorway = location DimensionalDoorway 
   Cards.dimensionalDoorway
   2
   (PerPlayer 1)

@@ -12,7 +12,6 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Query
@@ -21,18 +20,17 @@ import Arkham.Types.Window
 newtype LostMemories = LostMemories LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-lostMemories :: LocationId -> LostMemories
-lostMemories =
+lostMemories :: LocationCard LostMemories
+lostMemories = locationWith
   LostMemories
-    . (revealedSymbolL .~ T)
-    . (revealedConnectedSymbolsL .~ setFromList [Square, Moon])
-    . (unrevealedNameL .~ "Altered Path")
-    . baseAttrs
-        Cards.lostMemories
-        2
-        (PerPlayer 1)
-        NoSymbol
-        []
+  Cards.lostMemories
+  2
+  (PerPlayer 1)
+  NoSymbol
+  []
+  ((revealedSymbolL .~ T)
+  . (revealedConnectedSymbolsL .~ setFromList [Square, Moon])
+  . (unrevealedNameL .~ "Altered Path"))
 
 instance HasModifiersFor env LostMemories where
   getModifiersFor = noModifiersFor

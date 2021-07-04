@@ -13,7 +13,6 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.SkillType
@@ -24,8 +23,8 @@ import Arkham.Types.Window
 newtype StepsOfYhagharl = StepsOfYhagharl LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-stepsOfYhagharl :: LocationId -> StepsOfYhagharl
-stepsOfYhagharl = StepsOfYhagharl . baseAttrs
+stepsOfYhagharl :: LocationCard StepsOfYhagharl
+stepsOfYhagharl = location StepsOfYhagharl 
   Cards.stepsOfYhagharl
   3
   (PerPlayer 1)

@@ -7,15 +7,14 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 
 newtype ForgottenMarsh = ForgottenMarsh LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-forgottenMarsh :: LocationId -> ForgottenMarsh
-forgottenMarsh = ForgottenMarsh . baseAttrs
+forgottenMarsh :: LocationCard ForgottenMarsh
+forgottenMarsh = location ForgottenMarsh 
   Cards.forgottenMarsh
   2
   (Static 0)

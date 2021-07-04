@@ -12,7 +12,6 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.Target
@@ -20,8 +19,8 @@ import Arkham.Types.Target
 newtype OsbornsGeneralStore_206 = OsbornsGeneralStore_206 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-osbornsGeneralStore_206 :: LocationId -> OsbornsGeneralStore_206
-osbornsGeneralStore_206 = OsbornsGeneralStore_206 . baseAttrs
+osbornsGeneralStore_206 :: LocationCard OsbornsGeneralStore_206
+osbornsGeneralStore_206 = location OsbornsGeneralStore_206 
   Cards.osbornsGeneralStore_206
   2
   (PerPlayer 1)

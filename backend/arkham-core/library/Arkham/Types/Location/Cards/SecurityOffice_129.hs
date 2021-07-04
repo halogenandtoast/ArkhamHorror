@@ -11,10 +11,10 @@ import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.GameValue
+import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
@@ -24,8 +24,8 @@ import Arkham.Types.Window
 newtype SecurityOffice_129 = SecurityOffice_129 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-securityOffice_129 :: LocationId -> SecurityOffice_129
-securityOffice_129 = SecurityOffice_129 . baseAttrs
+securityOffice_129 :: LocationCard SecurityOffice_129
+securityOffice_129 = location SecurityOffice_129
   Cards.securityOffice_129
   3
   (PerPlayer 2)

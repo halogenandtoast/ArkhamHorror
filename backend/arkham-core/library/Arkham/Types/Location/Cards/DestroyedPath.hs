@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.DestroyedPath
   ( destroyedPath
   , DestroyedPath(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -15,7 +14,6 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Query
@@ -26,18 +24,18 @@ import Arkham.Types.Window
 newtype DestroyedPath = DestroyedPath LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-destroyedPath :: LocationId -> DestroyedPath
-destroyedPath =
+destroyedPath :: LocationCard DestroyedPath
+destroyedPath = locationWith
   DestroyedPath
-    . (revealedSymbolL .~ Squiggle)
-    . (revealedConnectedSymbolsL .~ setFromList [Triangle, Equals])
-    . (unrevealedNameL .~ "Diverging Path")
-    . baseAttrs
-        Cards.destroyedPath
-        3
-        (Static 0)
-        NoSymbol
-        []
+  Cards.destroyedPath
+  3
+  (Static 0)
+  NoSymbol
+  []
+  ((revealedSymbolL .~ Squiggle)
+  . (revealedConnectedSymbolsL .~ setFromList [Triangle, Equals])
+  . (unrevealedNameL .~ "Diverging Path")
+  )
 
 instance HasModifiersFor env DestroyedPath where
   getModifiersFor = noModifiersFor

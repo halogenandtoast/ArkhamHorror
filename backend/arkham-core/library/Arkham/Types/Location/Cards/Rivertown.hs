@@ -7,14 +7,13 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 
 newtype Rivertown = Rivertown LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-rivertown :: LocationId -> Rivertown
-rivertown = Rivertown . baseAttrs
+rivertown :: LocationCard Rivertown
+rivertown = location Rivertown 
   Cards.rivertown
   1
   (PerPlayer 1)

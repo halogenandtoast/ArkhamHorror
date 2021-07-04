@@ -7,15 +7,14 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 
 newtype ReturnToCellar = ReturnToCellar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-returnToCellar :: LocationId -> ReturnToCellar
-returnToCellar = ReturnToCellar . baseAttrs
+returnToCellar :: LocationCard ReturnToCellar
+returnToCellar = location ReturnToCellar 
   Cards.returnToCellar
   2
   (PerPlayer 1)

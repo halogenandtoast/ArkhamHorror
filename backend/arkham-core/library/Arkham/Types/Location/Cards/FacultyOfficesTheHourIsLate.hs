@@ -8,15 +8,14 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 
 newtype FacultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-facultyOfficesTheHourIsLate :: LocationId -> FacultyOfficesTheHourIsLate
-facultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate . baseAttrs
+facultyOfficesTheHourIsLate :: LocationCard FacultyOfficesTheHourIsLate
+facultyOfficesTheHourIsLate = location FacultyOfficesTheHourIsLate 
   Cards.facultyOfficesTheHourIsLate
   2
   (Static 0)

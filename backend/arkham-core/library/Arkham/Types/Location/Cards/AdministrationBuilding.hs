@@ -7,7 +7,6 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
@@ -15,8 +14,8 @@ import Arkham.Types.Message
 newtype AdministrationBuilding = AdministrationBuilding LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-administrationBuilding :: LocationId -> AdministrationBuilding
-administrationBuilding = AdministrationBuilding . baseAttrs
+administrationBuilding :: LocationCard AdministrationBuilding
+administrationBuilding = location AdministrationBuilding 
   Cards.administrationBuilding
   4
   (PerPlayer 1)

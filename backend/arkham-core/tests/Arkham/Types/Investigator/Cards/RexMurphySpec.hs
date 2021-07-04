@@ -12,14 +12,14 @@ spec = describe "Rex Murphy" $ do
   context "special ability" $ do
     it "discovers a clue if succeed a skill test by 2 or more" $ do
       let rexMurphy = lookupInvestigator "02002"
-      location <- testLocation (Location.cluesL .~ 1)
+      location1 <- testLocation (Location.cluesL .~ 1)
       gameTest
           rexMurphy
           [ SetTokens [Zero]
-          , moveTo rexMurphy location
+          , moveTo rexMurphy location1
           , beginSkillTest rexMurphy SkillIntellect 2
           ]
-          (locationsL %~ insertEntity location)
+          (locationsL %~ insertEntity location1)
         $ do
             runMessages
             chooseOnlyOption "start skill test"
@@ -31,7 +31,7 @@ spec = describe "Rex Murphy" $ do
                 _ -> False
               )
             updated rexMurphy `shouldSatisfyM` hasClueCount 1
-            updated location `shouldSatisfyM` hasClueCount 0
+            updated location1 `shouldSatisfyM` hasClueCount 0
 
   context "elder sign token" $ do
     it "can autofail to draw 3 cards" $ do

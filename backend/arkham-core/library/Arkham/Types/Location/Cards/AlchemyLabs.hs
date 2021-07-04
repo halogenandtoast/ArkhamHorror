@@ -17,7 +17,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -27,8 +26,8 @@ import Arkham.Types.Window
 newtype AlchemyLabs = AlchemyLabs LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-alchemyLabs :: LocationId -> AlchemyLabs
-alchemyLabs = AlchemyLabs . baseAttrs
+alchemyLabs :: LocationCard AlchemyLabs
+alchemyLabs = location AlchemyLabs 
   Cards.alchemyLabs
   5
   (Static 0)

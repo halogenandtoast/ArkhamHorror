@@ -8,7 +8,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.SkillType
@@ -18,8 +17,8 @@ import Arkham.Types.Target
 newtype Graveyard = Graveyard LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-graveyard :: LocationId -> Graveyard
-graveyard = Graveyard . baseAttrs
+graveyard :: LocationCard Graveyard
+graveyard = location Graveyard 
   Cards.graveyard
   1
   (PerPlayer 2)

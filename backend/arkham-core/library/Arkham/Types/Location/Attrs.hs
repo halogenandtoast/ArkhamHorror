@@ -45,6 +45,8 @@ pattern UseResign iid source <- UseCardAbility iid source _ 99 _
 pattern UseDrawCardUnderneath :: InvestigatorId -> Source -> Message
 pattern UseDrawCardUnderneath iid source <- UseCardAbility iid source _ 100 _
 
+type LocationCard a = (LocationId -> a)
+
 data LocationAttrs = LocationAttrs
   { locationId :: LocationId
   , locationCardDef :: CardDef
@@ -194,39 +196,54 @@ unrevealed = not . locationRevealed
 revealed :: LocationAttrs -> Bool
 revealed = locationRevealed
 
-baseAttrs
-  :: CardDef
+location
+  :: (LocationAttrs -> a)
+  -> CardDef
   -> Int
   -> GameValue Int
   -> LocationSymbol
   -> [LocationSymbol]
   -> LocationId
-  -> LocationAttrs
-baseAttrs def shroud' revealClues symbol' connectedSymbols' lid = LocationAttrs
-  { locationId = lid
-  , locationCardDef = def
-  , locationUnrevealedName = LocationName (cdName def)
-  , locationLabel = nameToLabel (cdName def)
-  , locationRevealClues = revealClues
-  , locationClues = 0
-  , locationDoom = 0
-  , locationShroud = shroud'
-  , locationRevealed = False
-  , locationInvestigators = mempty
-  , locationEnemies = mempty
-  , locationSymbol = symbol'
-  , locationRevealedSymbol = symbol'
-  , locationConnectedSymbols = setFromList connectedSymbols'
-  , locationRevealedConnectedSymbols = setFromList connectedSymbols'
-  , locationConnectedLocations = mempty
-  , locationTreacheries = mempty
-  , locationEvents = mempty
-  , locationAssets = mempty
-  , locationDirections = mempty
-  , locationConnectsTo = mempty
-  , locationCardsUnderneath = mempty
-  , locationCostToEnterUnrevealed = ActionCost 1
-  }
+  -> a
+location f def shroud' revealClues symbol' connectedSymbols' =
+  locationWith f def shroud' revealClues symbol' connectedSymbols' id
+
+locationWith
+  :: (LocationAttrs -> a)
+  -> CardDef
+  -> Int
+  -> GameValue Int
+  -> LocationSymbol
+  -> [LocationSymbol]
+  -> (LocationAttrs -> LocationAttrs)
+  -> LocationId
+  -> a
+locationWith f def shroud' revealClues symbol' connectedSymbols' g lid =
+  f . g $ LocationAttrs
+    { locationId = lid
+    , locationCardDef = def
+    , locationUnrevealedName = LocationName (cdName def)
+    , locationLabel = nameToLabel (cdName def)
+    , locationRevealClues = revealClues
+    , locationClues = 0
+    , locationDoom = 0
+    , locationShroud = shroud'
+    , locationRevealed = False
+    , locationInvestigators = mempty
+    , locationEnemies = mempty
+    , locationSymbol = symbol'
+    , locationRevealedSymbol = symbol'
+    , locationConnectedSymbols = setFromList connectedSymbols'
+    , locationRevealedConnectedSymbols = setFromList connectedSymbols'
+    , locationConnectedLocations = mempty
+    , locationTreacheries = mempty
+    , locationEvents = mempty
+    , locationAssets = mempty
+    , locationDirections = mempty
+    , locationConnectsTo = mempty
+    , locationCardsUnderneath = mempty
+    , locationCostToEnterUnrevealed = ActionCost 1
+    }
 
 locationEnemiesWithTrait
   :: (MonadReader env m, HasSet Trait env EnemyId)
@@ -293,11 +310,11 @@ withResignAction
   -> Window
   -> location
   -> m [Message]
-withResignAction iid NonFast location | locationRevealed (toAttrs location) =
+withResignAction iid NonFast x | locationRevealed (toAttrs x) =
   withBaseActions iid NonFast attrs
     $ pure [ resignAction iid attrs | iid `on` attrs ]
-  where attrs = toAttrs location
-withResignAction iid window location = getActions iid window (toAttrs location)
+  where attrs = toAttrs x
+withResignAction iid window x = getActions iid window (toAttrs x)
 
 withDrawCardUnderneathAction
   :: ( Entity location
@@ -310,21 +327,19 @@ withDrawCardUnderneathAction
   -> Window
   -> location
   -> m [Message]
-withDrawCardUnderneathAction iid NonFast location
-  | locationRevealed (toAttrs location) = withBaseActions iid NonFast attrs
-  $ pure
-      [ drawCardUnderneathAction iid attrs
-      | iid `on` attrs && locationClues attrs == 0
-      ]
-  where attrs = toAttrs location
-withDrawCardUnderneathAction iid window location =
-  getActions iid window (toAttrs location)
+withDrawCardUnderneathAction iid NonFast x | locationRevealed (toAttrs x) =
+  withBaseActions iid NonFast attrs $ pure
+    [ drawCardUnderneathAction iid attrs
+    | iid `on` attrs && locationClues attrs == 0
+    ]
+  where attrs = toAttrs x
+withDrawCardUnderneathAction iid window x = getActions iid window (toAttrs x)
 
 instance ActionRunner env => HasActions env LocationAttrs where
-  getActions iid NonFast location@LocationAttrs {..} = do
+  getActions iid NonFast l@LocationAttrs {..} = do
     canMoveTo <- getCanMoveTo locationId iid
     canInvestigate <- getCanInvestigate locationId iid
-    investigateAllowed <- getInvestigateAllowed iid location
+    investigateAllowed <- getInvestigateAllowed iid l
     pure
       $ moveActions canMoveTo
       <> investigateActions canInvestigate investigateAllowed

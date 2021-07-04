@@ -14,7 +14,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
@@ -28,42 +27,41 @@ import Arkham.Types.Window
 newtype MuseumHalls = MuseumHalls LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-museumHalls :: LocationId -> MuseumHalls
-museumHalls =
+museumHalls :: LocationCard MuseumHalls
+museumHalls = locationWith
   MuseumHalls
-    . (connectedSymbolsL .~ setFromList [Circle, Diamond, Triangle])
-    . baseAttrs
-        Cards.museumHalls
-        2
-        (Static 0)
-        Square
-        [Circle]
+  Cards.museumHalls
+  2
+  (Static 0)
+  Square
+  [Circle]
+  (connectedSymbolsL .~ setFromList [Circle, Diamond, Triangle])
 
 instance HasModifiersFor env MuseumHalls where
-  getModifiersFor _ target (MuseumHalls location) | isTarget location target =
-    pure $ toModifiers location [ Blocked | unrevealed location ]
+  getModifiersFor _ target (MuseumHalls l) | isTarget l target =
+    pure $ toModifiers l [ Blocked | unrevealed l ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env MuseumHalls where
-  getActions iid NonFast (MuseumHalls location) | unrevealed location =
-    withBaseActions iid NonFast location $ do
+  getActions iid NonFast (MuseumHalls attrs) | unrevealed attrs =
+    withBaseActions iid NonFast attrs $ do
       lid <- fromJustNote "missing location"
         <$> getLocationIdWithTitle "Museum Entrance"
       pure
         [ ActivateCardAbilityAction
             iid
             (mkAbility
-              (ProxySource (LocationSource lid) (toSource location))
+              (ProxySource (LocationSource lid) (toSource attrs))
               1
               (ActionAbility Nothing $ ActionCost 1)
             )
         ]
-  getActions iid NonFast (MuseumHalls location) | revealed location =
-    withBaseActions iid NonFast location $ pure
+  getActions iid NonFast (MuseumHalls attrs) | revealed attrs =
+    withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction
           iid
           (mkAbility
-            (toSource location)
+            (toSource attrs)
             1
             (ActionAbility Nothing $ Costs
               [ ActionCost 1
@@ -77,9 +75,9 @@ instance ActionRunner env => HasActions env MuseumHalls where
   getActions iid window (MuseumHalls attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env MuseumHalls where
-  runMessage msg l@(MuseumHalls location) = case msg of
+  runMessage msg l@(MuseumHalls attrs) = case msg of
     UseCardAbility iid (ProxySource _ source) _ 1 _
-      | isSource location source && unrevealed location -> do
+      | isSource attrs source && unrevealed attrs -> do
         museumEntrance <- fromJustNote "missing location"
           <$> getLocationIdWithTitle "Museum Entrance"
         l <$ unshiftMessage
@@ -92,15 +90,15 @@ instance LocationRunner env => RunMessage env MuseumHalls where
             5
           )
     UseCardAbility iid source _ 1 _
-      | isSource location source && revealed location -> l
+      | isSource attrs source && revealed attrs -> l
       <$ unshiftMessage (UseScenarioSpecificAbility iid Nothing 1)
-    PassedSkillTest _ _ source _ _ _ | isSource location source -> do
+    PassedSkillTest _ _ source _ _ _ | isSource attrs source -> do
       actId <- fromJustNote "missing act" . headMay <$> getSetList ()
       l <$ unshiftMessage (AdvanceAct actId source)
-    AddConnection lid _ | locationId location /= lid -> do
+    AddConnection lid _ | locationId attrs /= lid -> do
       name <- nameTitle <$> getName lid
       if name == "Exhibit Hall"
         then MuseumHalls
-          <$> runMessage msg (location & connectedLocationsL %~ insertSet lid)
-        else MuseumHalls <$> runMessage msg location
-    _ -> MuseumHalls <$> runMessage msg location
+          <$> runMessage msg (attrs & connectedLocationsL %~ insertSet lid)
+        else MuseumHalls <$> runMessage msg attrs
+    _ -> MuseumHalls <$> runMessage msg attrs

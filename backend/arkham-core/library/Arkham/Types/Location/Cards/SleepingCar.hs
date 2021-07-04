@@ -12,10 +12,10 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Direction
 import Arkham.Types.GameValue
+import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -26,22 +26,23 @@ import Arkham.Types.Window
 newtype SleepingCar = SleepingCar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-sleepingCar :: LocationId -> SleepingCar
-sleepingCar =
-  SleepingCar . (connectsToL .~ setFromList [LeftOf, RightOf]) . baseAttrs
-    Cards.sleepingCar
-    4
-    (Static 1)
-    NoSymbol
-    []
+sleepingCar :: LocationCard SleepingCar
+sleepingCar = locationWith
+  SleepingCar
+  Cards.sleepingCar
+  4
+  (Static 1)
+  NoSymbol
+  []
+  (connectsToL .~ setFromList [LeftOf, RightOf])
 
 instance HasCount ClueCount env LocationId => HasModifiersFor env SleepingCar where
-  getModifiersFor _ target (SleepingCar location@LocationAttrs {..})
-    | isTarget location target = case lookup LeftOf locationDirections of
+  getModifiersFor _ target (SleepingCar l@LocationAttrs {..})
+    | isTarget l target = case lookup LeftOf locationDirections of
       Just leftLocation -> do
         clueCount <- unClueCount <$> getCount leftLocation
         pure $ toModifiers
-          location
+          l
           [ Blocked | not locationRevealed && clueCount > 0 ]
       Nothing -> pure []
   getModifiersFor _ _ _ = pure []

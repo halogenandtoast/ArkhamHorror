@@ -17,7 +17,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -28,8 +27,8 @@ import Arkham.Types.Window
 newtype TrappersCabin = TrappersCabin LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-trappersCabin :: LocationId -> TrappersCabin
-trappersCabin = TrappersCabin . baseAttrs
+trappersCabin :: LocationCard TrappersCabin
+trappersCabin = location TrappersCabin 
   Cards.trappersCabin
   3
   (Static 0)

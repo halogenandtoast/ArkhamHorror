@@ -5,16 +5,14 @@ import Arkham.Prelude
 import qualified Arkham.Location.Cards as Cards (parlor)
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -26,8 +24,8 @@ import Arkham.Types.Window
 newtype Parlor = Parlor LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-parlor :: LocationId -> Parlor
-parlor = Parlor . baseAttrs
+parlor :: LocationCard Parlor
+parlor = location Parlor
   Cards.parlor
   2
   (Static 0)

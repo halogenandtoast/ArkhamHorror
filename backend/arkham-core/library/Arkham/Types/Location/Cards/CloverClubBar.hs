@@ -15,7 +15,6 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.ScenarioLogKey
@@ -24,8 +23,8 @@ import Arkham.Types.Window
 newtype CloverClubBar = CloverClubBar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-cloverClubBar :: LocationId -> CloverClubBar
-cloverClubBar = CloverClubBar . baseAttrs
+cloverClubBar :: LocationCard CloverClubBar
+cloverClubBar = location CloverClubBar 
   Cards.cloverClubBar
   3
   (Static 0)

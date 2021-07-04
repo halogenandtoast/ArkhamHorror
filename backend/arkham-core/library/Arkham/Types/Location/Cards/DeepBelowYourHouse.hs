@@ -8,7 +8,6 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.SkillType
@@ -17,8 +16,8 @@ import Arkham.Types.Target
 newtype DeepBelowYourHouse = DeepBelowYourHouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-deepBelowYourHouse :: LocationId -> DeepBelowYourHouse
-deepBelowYourHouse = DeepBelowYourHouse . baseAttrs
+deepBelowYourHouse :: LocationCard DeepBelowYourHouse
+deepBelowYourHouse = location DeepBelowYourHouse 
   Cards.deepBelowYourHouse
   4
   (PerPlayer 1)

@@ -12,7 +12,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -22,8 +21,8 @@ import Arkham.Types.Target
 newtype ExhibitHallAthabaskanExhibit = ExhibitHallAthabaskanExhibit LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-exhibitHallAthabaskanExhibit :: LocationId -> ExhibitHallAthabaskanExhibit
-exhibitHallAthabaskanExhibit = ExhibitHallAthabaskanExhibit . baseAttrs
+exhibitHallAthabaskanExhibit :: LocationCard ExhibitHallAthabaskanExhibit
+exhibitHallAthabaskanExhibit = location ExhibitHallAthabaskanExhibit 
   Cards.exhibitHallAthabaskanExhibit
   1
   (Static 0)

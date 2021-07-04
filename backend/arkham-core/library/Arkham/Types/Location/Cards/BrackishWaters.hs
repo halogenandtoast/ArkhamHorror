@@ -18,7 +18,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -29,8 +28,8 @@ import Arkham.Types.Window
 newtype BrackishWaters = BrackishWaters LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-brackishWaters :: LocationId -> BrackishWaters
-brackishWaters = BrackishWaters . baseAttrs
+brackishWaters :: LocationCard BrackishWaters
+brackishWaters = location BrackishWaters 
   Cards.brackishWaters
   1
   (Static 0)

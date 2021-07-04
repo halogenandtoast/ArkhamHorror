@@ -7,7 +7,6 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Query
@@ -15,8 +14,8 @@ import Arkham.Types.Query
 newtype HumanitiesBuilding = HumanitiesBuilding LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-humanitiesBuilding :: LocationId -> HumanitiesBuilding
-humanitiesBuilding = HumanitiesBuilding . baseAttrs
+humanitiesBuilding :: LocationCard HumanitiesBuilding
+humanitiesBuilding = location HumanitiesBuilding 
   Cards.humanitiesBuilding
   3
   (PerPlayer 2)

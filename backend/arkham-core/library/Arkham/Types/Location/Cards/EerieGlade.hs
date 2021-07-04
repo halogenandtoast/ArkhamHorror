@@ -12,7 +12,6 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Query
@@ -21,18 +20,17 @@ import Arkham.Types.Window
 newtype EerieGlade = EerieGlade LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-eerieGlade :: LocationId -> EerieGlade
-eerieGlade =
+eerieGlade :: LocationCard EerieGlade
+eerieGlade = locationWith
   EerieGlade
-    . (revealedSymbolL .~ Hourglass)
-    . (revealedConnectedSymbolsL .~ setFromList [Triangle, Plus])
-    . (unrevealedNameL .~ "Diverging Path")
-    . baseAttrs
-        Cards.eerieGlade
-        4
-        (PerPlayer 1)
-        NoSymbol
-        []
+  Cards.eerieGlade
+  4
+  (PerPlayer 1)
+  NoSymbol
+  []
+  ((revealedSymbolL .~ Hourglass)
+  . (revealedConnectedSymbolsL .~ setFromList [Triangle, Plus])
+  . (unrevealedNameL .~ "Diverging Path"))
 
 instance HasModifiersFor env EerieGlade where
   getModifiersFor = noModifiersFor

@@ -11,14 +11,13 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 
 newtype MiskatonicQuad = MiskatonicQuad LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-miskatonicQuad :: LocationId -> MiskatonicQuad
-miskatonicQuad = MiskatonicQuad . baseAttrs
+miskatonicQuad :: LocationCard MiskatonicQuad
+miskatonicQuad = location MiskatonicQuad 
   Cards.miskatonicQuad
   3
   (Static 0)

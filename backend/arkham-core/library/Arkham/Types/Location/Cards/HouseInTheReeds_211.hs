@@ -13,7 +13,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
@@ -22,8 +21,8 @@ import Arkham.Types.Trait
 newtype HouseInTheReeds_211 = HouseInTheReeds_211 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-houseInTheReeds_211 :: LocationId -> HouseInTheReeds_211
-houseInTheReeds_211 = HouseInTheReeds_211 . baseAttrs
+houseInTheReeds_211 :: LocationCard HouseInTheReeds_211
+houseInTheReeds_211 = location HouseInTheReeds_211 
   Cards.houseInTheReeds_211
   1
   (PerPlayer 1)

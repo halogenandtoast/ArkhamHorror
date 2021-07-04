@@ -16,7 +16,6 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
@@ -29,9 +28,9 @@ newtype FacultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung 
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 facultyOfficesTheNightIsStillYoung
-  :: LocationId -> FacultyOfficesTheNightIsStillYoung
+  :: LocationCard FacultyOfficesTheNightIsStillYoung
 facultyOfficesTheNightIsStillYoung =
-  FacultyOfficesTheNightIsStillYoung . baseAttrs
+  location FacultyOfficesTheNightIsStillYoung 
     Cards.facultyOfficesTheNightIsStillYoung
     2
     (PerPlayer 2)

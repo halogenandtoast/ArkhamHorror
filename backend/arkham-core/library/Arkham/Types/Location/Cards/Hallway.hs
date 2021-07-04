@@ -7,14 +7,13 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 
 newtype Hallway = Hallway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-hallway :: LocationId -> Hallway
-hallway = Hallway . baseAttrs
+hallway :: LocationCard Hallway
+hallway = location Hallway 
   Cards.hallway
   1
   (Static 0)

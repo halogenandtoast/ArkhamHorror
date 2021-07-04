@@ -13,7 +13,6 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Window
@@ -21,8 +20,8 @@ import Arkham.Types.Window
 newtype PrismaticCascade = PrismaticCascade LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-prismaticCascade :: LocationId -> PrismaticCascade
-prismaticCascade = PrismaticCascade . baseAttrs
+prismaticCascade :: LocationCard PrismaticCascade
+prismaticCascade = location PrismaticCascade 
   Cards.prismaticCascade
   2
   (Static 3)

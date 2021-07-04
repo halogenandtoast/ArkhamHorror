@@ -13,7 +13,6 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Window
@@ -21,8 +20,8 @@ import Arkham.Types.Window
 newtype EndlessBridge = EndlessBridge LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-endlessBridge :: LocationId -> EndlessBridge
-endlessBridge = EndlessBridge . baseAttrs
+endlessBridge :: LocationCard EndlessBridge
+endlessBridge = location EndlessBridge 
   Cards.endlessBridge
   4
   (Static 2)

@@ -15,7 +15,6 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.RequestedTokenStrategy
@@ -25,8 +24,8 @@ import Arkham.Types.Window
 newtype CloverClubCardroom = CloverClubCardroom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-cloverClubCardroom :: LocationId -> CloverClubCardroom
-cloverClubCardroom = CloverClubCardroom . baseAttrs
+cloverClubCardroom :: LocationCard CloverClubCardroom
+cloverClubCardroom = location CloverClubCardroom 
   Cards.cloverClubCardroom
   3
   (Static 0)

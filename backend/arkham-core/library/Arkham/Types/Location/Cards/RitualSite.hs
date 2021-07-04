@@ -7,7 +7,6 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Query
@@ -15,8 +14,8 @@ import Arkham.Types.Query
 newtype RitualSite = RitualSite LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-ritualSite :: LocationId -> RitualSite
-ritualSite = RitualSite . baseAttrs
+ritualSite :: LocationCard RitualSite
+ritualSite = location RitualSite 
   Cards.ritualSite
   3
   (PerPlayer 2)

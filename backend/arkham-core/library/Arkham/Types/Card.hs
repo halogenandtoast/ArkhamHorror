@@ -1,8 +1,7 @@
 module Arkham.Types.Card
   ( module Arkham.Types.Card
   , module X
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -19,6 +18,15 @@ import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Card.PlayerCard as X
   (BearerId(..), DiscardedPlayerCard(..), PlayerCard(..))
 import Arkham.Types.InvestigatorId
+
+data CardBuilder ident a = CardBuilder
+  { cbCardCode :: CardCode
+  , cbCardBuilder :: ident -> a
+  }
+
+instance Functor (CardBuilder ident) where
+  fmap f CardBuilder {..} =
+    CardBuilder { cbCardCode = cbCardCode, cbCardBuilder = f . cbCardBuilder }
 
 data Card
   = PlayerCard PlayerCard

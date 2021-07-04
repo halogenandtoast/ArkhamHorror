@@ -6,9 +6,7 @@ import qualified Arkham.Event.Cards as Cards (baitAndSwitch)
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
@@ -18,7 +16,7 @@ import Arkham.Types.Target
 newtype BaitAndSwitch = BaitAndSwitch EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-baitAndSwitch :: InvestigatorId -> EventId -> BaitAndSwitch
+baitAndSwitch :: EventCard BaitAndSwitch
 baitAndSwitch = event BaitAndSwitch Cards.baitAndSwitch
 
 instance HasModifiersFor env BaitAndSwitch where

@@ -1,8 +1,7 @@
 module Arkham.Types.Asset
   ( module Arkham.Types.Asset
   , module X
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -203,8 +202,15 @@ instance IsCard Asset where
 newtype BaseAsset = BaseAsset AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-baseAsset :: AssetId -> CardCode -> (AssetAttrs -> AssetAttrs) -> (CardDef -> CardDef) -> Asset
-baseAsset aid cardCode attrsF defF = BaseAsset' $ assetWith BaseAsset (defF $ testCardDef AssetType cardCode) attrsF aid
+baseAsset
+  :: AssetId
+  -> CardCode
+  -> (AssetAttrs -> AssetAttrs)
+  -> (CardDef -> CardDef)
+  -> Asset
+baseAsset aid cardCode attrsF defF = BaseAsset' $ cbCardBuilder
+  (assetWith BaseAsset (defF $ testCardDef AssetType cardCode) attrsF)
+  aid
 
 instance HasDamage Asset where
   getDamage a =
@@ -248,122 +254,124 @@ lookupAsset cardCode =
   fromJustNote ("Unknown asset: " <> show cardCode) $ lookup cardCode allAssets
 
 allAssets :: HashMap CardCode (AssetId -> Asset)
-allAssets = mapFromList
-  [ ("01006", Rolands38Special' . rolands38Special)
-  , ("01008", DaisysToteBag' . daisysToteBag)
-  , ("01009", TheNecronomicon' . theNecronomicon)
-  , ("01012", HeirloomOfHyperborea' . heirloomOfHyperborea)
-  , ("01014", WendysAmulet' . wendysAmulet)
-  , ("01016", FortyFiveAutomatic' . fortyFiveAutomatic)
-  , ("01017", PhysicalTraining' . physicalTraining)
-  , ("01018", BeatCop' . beatCop)
-  , ("01019", FirstAid' . firstAid)
-  , ("01020", Machete' . machete)
-  , ("01021", GuardDog' . guardDog)
-  , ("01027", PoliceBadge2' . policeBadge2)
-  , ("01028", BeatCop2' . beatCop2)
-  , ("01029", Shotgun4' . shotgun4)
-  , ("01030", MagnifyingGlass' . magnifyingGlass)
-  , ("01031", OldBookOfLore' . oldBookOfLore)
-  , ("01032", ResearchLibrarian' . researchLibrarian)
-  , ("01033", DrMilanChristopher' . drMilanChristopher)
-  , ("01034", Hyperawareness' . hyperawareness)
-  , ("01035", MedicalTexts' . medicalTexts)
-  , ("01040", MagnifyingGlass1' . magnifyingGlass1)
-  , ("01041", DiscOfItzamna2' . discOfItzamna2)
-  , ("01042", Encyclopedia2' . encyclopedia2)
-  , ("01044", Switchblade' . switchblade)
-  , ("01045", Burglary' . burglary)
-  , ("01046", Pickpocketing' . pickpoketing)
-  , ("01047", FortyOneDerringer' . fortyOneDerringer)
-  , ("01048", LeoDeLuca' . leoDeLuca)
-  , ("01049", HardKnocks' . hardKnocks)
-  , ("01054", LeoDeLuca1' . leoDeLuca1)
-  , ("01055", CatBurglar1' . catBurglar1)
-  , ("01058", ForbiddenKnowledge' . forbiddenKnowledge)
-  , ("01059", HolyRosary' . holyRosary)
-  , ("01060", Shrivelling' . shrivelling)
-  , ("01061", Scrying' . scrying)
-  , ("01062", ArcaneStudies' . arcaneStudies)
-  , ("01063", ArcaneInitiate' . arcaneInitiate)
-  , ("01070", BookOfShadows3' . bookOfShadows3)
-  , ("01071", GrotesqueStatue4' . grotesqueStatue4)
-  , ("01072", LeatherCoat' . leatherCoat)
-  , ("01073", Scavenging' . scavenging)
-  , ("01074", BaseballBat' . baseballBat)
-  , ("01075", RabbitsFoot' . rabbitsFoot)
-  , ("01076", StrayCat' . strayCat)
-  , ("01077", DigDeep' . digDeep)
-  , ("01082", Aquinnah1' . aquinnah1)
-  , ("01086", Knife' . knife)
-  , ("01087", Flashlight' . flashlight)
-  , ("01094", BulletproofVest3' . bulletproofVest3)
-  , ("01095", ElderSignAmulet3' . elderSignAmulet3)
-  , ("01117", LitaChantler' . litaChantler)
-  , ("02006", ZoeysCross' . zoeysCross)
-  , ("02010", JennysTwin45s' . jennysTwin45s)
-  , ("02012", JimsTrumpet' . jimsTrumpet)
-  , ("02014", Duke' . duke)
-  , ("02016", Blackjack' . blackjack)
-  , ("02020", LaboratoryAssistant' . laboratoryAssistant)
-  , ("02021", StrangeSolution' . strangeSolution)
-  , ("02024", LiquidCourage' . liquidCourage)
-  , ("02027", HiredMuscle1' . hiredMuscle1)
-  , ("02028", RiteOfSeeking' . riteOfSeeking)
-  , ("02029", RitualCandles' . ritualCandles)
-  , ("02030", ClarityOfMind' . clarityOfMind)
-  , ("02032", FireAxe' . fireAxe)
-  , ("02033", PeterSylvestre' . peterSylvestre)
-  , ("02035", PeterSylvestre2' . peterSylvestre2)
-  , ("02036", Kukri' . kukri)
-  , ("02040", DrHenryArmitage' . drHenryArmitage)
-  , ("02059", AlchemicalConcoction' . alchemicalConcoction)
-  , ("02060", JazzMulligan' . jazzMulligan)
-  , ("02061", ProfessorWarrenRice' . professorWarrenRice)
-  , ("02079", PeterClover' . peterClover)
-  , ("02080", DrFrancisMorgan' . drFrancisMorgan)
-  , ("02106", BrotherXavier1' . brotherXavier1)
-  , ("02108", Pathfinder1' . pathfinder1)
-  , ("02110", Adaptable1' . adaptable1)
-  , ("02112", SongOfTheDead2' . songOfTheDead2)
-  , ("02138", HaroldWalsted' . haroldWalsted)
-  , ("02139", AdamLynch' . adamLynch)
-  , ( "02140"
-    , TheNecronomiconOlausWormiusTranslation'
-      . theNecronomiconOlausWormiusTranslation
-    )
-  , ("02147", Bandolier' . bandolier)
-  , ("02179", HelplessPassenger' . helplessPassenger)
-  , ("02185", KeenEye3' . keenEye3)
-  , ("02215", KeyToTheChamber' . keyToTheChamber)
-  , ("02217", ZebulonWhateley' . zebulonWhateley)
-  , ("02218", EarlSawyer' . earlSawyer)
-  , ("02219", PowderOfIbnGhazi' . powderOfIbnGhazi)
-  , ("02226", SpringfieldM19034' . springfieldM19034)
-  , ("02254", EsotericFormula' . esotericFormula)
-  , ("02301", LightningGun5' . lightningGun5)
-  , ("04023", ToothOfEztli' . toothOfEztli)
-  , ("05316", OccultLexicon' . occultLexicon)
-  , ("06116", ScrollOfProphecies' . scrollOfProphecies)
-  , ("07152", KeenEye' . keenEye)
-  , ("50001", PhysicalTraining2' . physicalTraining2)
-  , ("50003", Hyperawareness2' . hyperawareness2)
-  , ("50005", HardKnocks2' . hardKnocks2)
-  , ("50007", ArcaneStudies2' . arcaneStudies2)
-  , ("50009", DigDeep2' . digDeep2)
-  , ("50010", RabbitsFoot3' . rabbitsFoot3)
-  , ("60205", ArcaneEnlightenment' . arcaneEnlightenment)
-  , ("60206", CelaenoFragments' . celaenoFragments)
-  , ("60208", Encyclopedia' . encyclopedia)
-  , ("60211", HigherEducation' . higherEducation)
-  , ("60213", WhittonGreene' . whittonGreene)
-  , ("81019", LadyEsprit' . ladyEsprit)
-  , ("81020", BearTrap' . bearTrap)
-  , ("81021", FishingNet' . fishingNet)
-  , ("81030", MonstrousTransformation' . monstrousTransformation)
-  , ("90002", DaisysToteBagAdvanced' . daisysToteBagAdvanced)
-  , ("90003", TheNecronomiconAdvanced' . theNecronomiconAdvanced)
-  , ("asset", \aid -> baseAsset aid "asset" id id)
+allAssets = mapFromList $ map
+  (cbCardCode &&& cbCardBuilder)
+  [ Rolands38Special' <$> rolands38Special
+  , DaisysToteBag' <$> daisysToteBag
+  , TheNecronomicon' <$> theNecronomicon
+  , HeirloomOfHyperborea' <$> heirloomOfHyperborea
+  , WendysAmulet' <$> wendysAmulet
+  , FortyFiveAutomatic' <$> fortyFiveAutomatic
+  , PhysicalTraining' <$> physicalTraining
+  , BeatCop' <$> beatCop
+  , FirstAid' <$> firstAid
+  , Machete' <$> machete
+  , GuardDog' <$> guardDog
+  , PoliceBadge2' <$> policeBadge2
+  , BeatCop2' <$> beatCop2
+  , Shotgun4' <$> shotgun4
+  , MagnifyingGlass' <$> magnifyingGlass
+  , OldBookOfLore' <$> oldBookOfLore
+  , ResearchLibrarian' <$> researchLibrarian
+  , DrMilanChristopher' <$> drMilanChristopher
+  , Hyperawareness' <$> hyperawareness
+  , MedicalTexts' <$> medicalTexts
+  , MagnifyingGlass1' <$> magnifyingGlass1
+  , DiscOfItzamna2' <$> discOfItzamna2
+  , Encyclopedia2' <$> encyclopedia2
+  , Switchblade' <$> switchblade
+  , Burglary' <$> burglary
+  , Pickpocketing' <$> pickpoketing
+  , FortyOneDerringer' <$> fortyOneDerringer
+  , LeoDeLuca' <$> leoDeLuca
+  , HardKnocks' <$> hardKnocks
+  , LeoDeLuca1' <$> leoDeLuca1
+  , CatBurglar1' <$> catBurglar1
+  , ForbiddenKnowledge' <$> forbiddenKnowledge
+  , HolyRosary' <$> holyRosary
+  , Shrivelling' <$> shrivelling
+  , Scrying' <$> scrying
+  , ArcaneStudies' <$> arcaneStudies
+  , ArcaneInitiate' <$> arcaneInitiate
+  , BookOfShadows3' <$> bookOfShadows3
+  , GrotesqueStatue4' <$> grotesqueStatue4
+  , LeatherCoat' <$> leatherCoat
+  , Scavenging' <$> scavenging
+  , BaseballBat' <$> baseballBat
+  , RabbitsFoot' <$> rabbitsFoot
+  , StrayCat' <$> strayCat
+  , DigDeep' <$> digDeep
+  , Aquinnah1' <$> aquinnah1
+  , Knife' <$> knife
+  , Flashlight' <$> flashlight
+  , BulletproofVest3' <$> bulletproofVest3
+  , ElderSignAmulet3' <$> elderSignAmulet3
+  , LitaChantler' <$> litaChantler
+  , ZoeysCross' <$> zoeysCross
+  , JennysTwin45s' <$> jennysTwin45s
+  , JimsTrumpet' <$> jimsTrumpet
+  , Duke' <$> duke
+  , Blackjack' <$> blackjack
+  , LaboratoryAssistant' <$> laboratoryAssistant
+  , StrangeSolution' <$> strangeSolution
+  , LiquidCourage' <$> liquidCourage
+  , HiredMuscle1' <$> hiredMuscle1
+  , RiteOfSeeking' <$> riteOfSeeking
+  , RitualCandles' <$> ritualCandles
+  , ClarityOfMind' <$> clarityOfMind
+  , FireAxe' <$> fireAxe
+  , PeterSylvestre' <$> peterSylvestre
+  , PeterSylvestre2' <$> peterSylvestre2
+  , Kukri' <$> kukri
+  , DrHenryArmitage' <$> drHenryArmitage
+  , AlchemicalConcoction' <$> alchemicalConcoction
+  , JazzMulligan' <$> jazzMulligan
+  , ProfessorWarrenRice' <$> professorWarrenRice
+  , PeterClover' <$> peterClover
+  , DrFrancisMorgan' <$> drFrancisMorgan
+  , BrotherXavier1' <$> brotherXavier1
+  , Pathfinder1' <$> pathfinder1
+  , Adaptable1' <$> adaptable1
+  , SongOfTheDead2' <$> songOfTheDead2
+  , HaroldWalsted' <$> haroldWalsted
+  , AdamLynch' <$> adamLynch
+  , TheNecronomiconOlausWormiusTranslation'
+    <$> theNecronomiconOlausWormiusTranslation
+  , Bandolier' <$> bandolier
+  , HelplessPassenger' <$> helplessPassenger
+  , KeenEye3' <$> keenEye3
+  , KeyToTheChamber' <$> keyToTheChamber
+  , ZebulonWhateley' <$> zebulonWhateley
+  , EarlSawyer' <$> earlSawyer
+  , PowderOfIbnGhazi' <$> powderOfIbnGhazi
+  , SpringfieldM19034' <$> springfieldM19034
+  , EsotericFormula' <$> esotericFormula
+  , LightningGun5' <$> lightningGun5
+  , ToothOfEztli' <$> toothOfEztli
+  , OccultLexicon' <$> occultLexicon
+  , ScrollOfProphecies' <$> scrollOfProphecies
+  , KeenEye' <$> keenEye
+  , PhysicalTraining2' <$> physicalTraining2
+  , Hyperawareness2' <$> hyperawareness2
+  , HardKnocks2' <$> hardKnocks2
+  , ArcaneStudies2' <$> arcaneStudies2
+  , DigDeep2' <$> digDeep2
+  , RabbitsFoot3' <$> rabbitsFoot3
+  , ArcaneEnlightenment' <$> arcaneEnlightenment
+  , CelaenoFragments' <$> celaenoFragments
+  , Encyclopedia' <$> encyclopedia
+  , HigherEducation' <$> higherEducation
+  , WhittonGreene' <$> whittonGreene
+  , LadyEsprit' <$> ladyEsprit
+  , BearTrap' <$> bearTrap
+  , FishingNet' <$> fishingNet
+  , MonstrousTransformation' <$> monstrousTransformation
+  , DaisysToteBagAdvanced' <$> daisysToteBagAdvanced
+  , TheNecronomiconAdvanced' <$> theNecronomiconAdvanced
+  , CardBuilder
+    { cbCardCode = "asset"
+    , cbCardBuilder = \aid -> baseAsset aid "asset" id id
+    }
   ]
 
 instance IsAsset Asset where

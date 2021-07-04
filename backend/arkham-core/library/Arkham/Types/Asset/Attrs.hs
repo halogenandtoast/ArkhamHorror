@@ -7,13 +7,10 @@ import Arkham.Types.Ability
 import Arkham.Types.Action
 import Arkham.Types.Asset.Class
 import Arkham.Types.Asset.Uses
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Slot
@@ -21,7 +18,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Window
 
-type AssetCard a = (AssetId -> a)
+type AssetCard a = CardBuilder AssetId a
 
 data AssetAttrs = AssetAttrs
   { assetId :: AssetId
@@ -104,10 +101,10 @@ instance FromJSON AssetAttrs where
 instance IsCard AssetAttrs where
   toCardId = unAssetId . assetId
 
-asset :: (AssetAttrs -> a) -> CardDef -> AssetId -> a
-asset f cardDef aid = assetWith f cardDef id aid
+asset :: (AssetAttrs -> a) -> CardDef -> CardBuilder AssetId a
+asset f cardDef = assetWith f cardDef id
 
-ally :: (AssetAttrs -> a) -> CardDef -> (Int, Int) -> AssetId -> a
+ally :: (AssetAttrs -> a) -> CardDef -> (Int, Int) -> CardBuilder AssetId a
 ally f cardDef stats = allyWith f cardDef stats id
 
 allyWith
@@ -115,8 +112,7 @@ allyWith
   -> CardDef
   -> (Int, Int)
   -> (AssetAttrs -> AssetAttrs)
-  -> AssetId
-  -> a
+  -> CardBuilder AssetId a
 allyWith f cardDef (health, sanity) g = slotWith
   AllySlot
   f
@@ -126,32 +122,44 @@ allyWith f cardDef (health, sanity) g = slotWith
   setHealth = healthL .~ (health <$ guard (health > 0))
   setSanity = sanityL .~ (sanity <$ guard (sanity > 0))
 
-arcane :: (AssetAttrs -> a) -> CardDef -> AssetId -> a
+arcane :: (AssetAttrs -> a) -> CardDef -> CardBuilder AssetId a
 arcane f cardDef = arcaneWith f cardDef id
 
 arcaneWith
-  :: (AssetAttrs -> a) -> CardDef -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
+  :: (AssetAttrs -> a)
+  -> CardDef
+  -> (AssetAttrs -> AssetAttrs)
+  -> CardBuilder AssetId a
 arcaneWith = slotWith ArcaneSlot
 
-body :: (AssetAttrs -> a) -> CardDef -> AssetId -> a
+body :: (AssetAttrs -> a) -> CardDef -> CardBuilder AssetId a
 body f cardDef = bodyWith f cardDef id
 
 bodyWith
-  :: (AssetAttrs -> a) -> CardDef -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
+  :: (AssetAttrs -> a)
+  -> CardDef
+  -> (AssetAttrs -> AssetAttrs)
+  -> CardBuilder AssetId a
 bodyWith = slotWith BodySlot
 
-accessory :: (AssetAttrs -> a) -> CardDef -> AssetId -> a
+accessory :: (AssetAttrs -> a) -> CardDef -> CardBuilder AssetId a
 accessory f cardDef = accessoryWith f cardDef id
 
 accessoryWith
-  :: (AssetAttrs -> a) -> CardDef -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
+  :: (AssetAttrs -> a)
+  -> CardDef
+  -> (AssetAttrs -> AssetAttrs)
+  -> CardBuilder AssetId a
 accessoryWith = slotWith AccessorySlot
 
-hand :: (AssetAttrs -> a) -> CardDef -> AssetId -> a
+hand :: (AssetAttrs -> a) -> CardDef -> CardBuilder AssetId a
 hand f cardDef = handWith f cardDef id
 
 handWith
-  :: (AssetAttrs -> a) -> CardDef -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
+  :: (AssetAttrs -> a)
+  -> CardDef
+  -> (AssetAttrs -> AssetAttrs)
+  -> CardBuilder AssetId a
 handWith = slotWith HandSlot
 
 slotWith
@@ -159,32 +167,36 @@ slotWith
   -> (AssetAttrs -> a)
   -> CardDef
   -> (AssetAttrs -> AssetAttrs)
-  -> AssetId
-  -> a
-slotWith slot f cardDef g aid =
-  assetWith f cardDef (g . (slotsL .~ [slot])) aid
+  -> CardBuilder AssetId a
+slotWith slot f cardDef g = assetWith f cardDef (g . (slotsL .~ [slot]))
 
 assetWith
-  :: (AssetAttrs -> a) -> CardDef -> (AssetAttrs -> AssetAttrs) -> AssetId -> a
-assetWith f cardDef g aid = f . g $ AssetAttrs
-  { assetId = aid
-  , assetCardDef = cardDef
-  , assetInvestigator = Nothing
-  , assetLocation = Nothing
-  , assetEnemy = Nothing
-  , assetActions = mempty
-  , assetSlots = mempty
-  , assetHealth = Nothing
-  , assetSanity = Nothing
-  , assetHealthDamage = 0
-  , assetSanityDamage = 0
-  , assetUses = NoUses
-  , assetExhausted = False
-  , assetDoom = 0
-  , assetClues = 0
-  , assetHorror = Nothing
-  , assetCanLeavePlayByNormalMeans = True
-  , assetIsStory = False
+  :: (AssetAttrs -> a)
+  -> CardDef
+  -> (AssetAttrs -> AssetAttrs)
+  -> CardBuilder AssetId a
+assetWith f cardDef g = CardBuilder
+  { cbCardCode = cdCardCode cardDef
+  , cbCardBuilder = \aid -> f . g $ AssetAttrs
+    { assetId = aid
+    , assetCardDef = cardDef
+    , assetInvestigator = Nothing
+    , assetLocation = Nothing
+    , assetEnemy = Nothing
+    , assetActions = mempty
+    , assetSlots = mempty
+    , assetHealth = Nothing
+    , assetSanity = Nothing
+    , assetHealthDamage = 0
+    , assetSanityDamage = 0
+    , assetUses = NoUses
+    , assetExhausted = False
+    , assetDoom = 0
+    , assetClues = 0
+    , assetHorror = Nothing
+    , assetCanLeavePlayByNormalMeans = True
+    , assetIsStory = False
+    }
   }
 
 instance Entity AssetAttrs where

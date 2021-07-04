@@ -1,7 +1,6 @@
 module Arkham.Types.Treachery
   ( module Arkham.Types.Treachery
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -154,113 +153,114 @@ instance HasCount (Maybe ClueCount) env Treachery where
 instance HasId (Maybe OwnerId) env Treachery where
   getId = pure . (OwnerId <$>) . treacheryOwner . toAttrs
 
-lookupTreachery
-  :: CardCode -> (InvestigatorId -> TreacheryId -> Treachery)
+lookupTreachery :: CardCode -> (InvestigatorId -> TreacheryId -> Treachery)
 lookupTreachery cardCode =
   fromJustNote ("Unknown treachery: " <> pack (show cardCode))
     $ lookup cardCode allTreacheries
 
-allTreacheries
-  :: HashMap CardCode (InvestigatorId -> TreacheryId -> Treachery)
-allTreacheries = mapFromList
-  [ ("01007", (CoverUp' .) . coverUp)
-  , ("01011", (HospitalDebts' .) . hospitalDebts)
-  , ("01015", (AbandonedAndAlone' .) . abandonedAndAlone)
-  , ("01096", (Amnesia' .) . amnesia)
-  , ("01097", (Paranoia' .) . paranoia)
-  , ("01098", (Haunted' .) . haunted)
-  , ("01099", (Psychosis' .) . psychosis)
-  , ("01100", (Hypochondria' .) . hypochondria)
-  , ("01135", (HuntingShadow' .) . huntingShadow)
-  , ("01136", (FalseLead' .) . falseLead)
-  , ("01158", (UmordhothsWrath' .) . umordhothsWrath)
-  , ("01162", (GraspingHands' .) . graspingHands)
-  , ("01166", (AncientEvils' .) . ancientEvils)
-  , ("01163", (RottingRemains' .) . rottingRemains)
-  , ("01164", (FrozenInFear' .) . frozenInFear)
-  , ("01165", (DissonantVoices' .) . dissonantVoices)
-  , ("01167", (CryptChill' .) . cryptChill)
-  , ("01168", (ObscuringFog' .) . obscuringFog)
-  , ("01171", (MysteriousChanting' .) . mysteriousChanting)
-  , ("01173", (OnWingsOfDarkness' .) . onWingsOfDarkness)
-  , ("01174", (LockedDoor' .) . lockedDoor)
-  , ("01176", (TheYellowSign' .) . theYellowSign)
-  , ("01178", (OfferOfPower' .) . offerOfPower)
-  , ("01182", (DreamsOfRlyeh' .) . dreamsOfRlyeh)
-  , ("02007", (SmiteTheWicked' .) . smiteTheWicked)
-  , ("02009", (RexsCurse' .) . rexsCurse)
-  , ("02011", (SearchingForIzzie' .) . searchingForIzzie)
-  , ("02013", (FinalRhapsody' .) . finalRhapsody)
-  , ("02015", (WrackedByNightmares' .) . wrackedByNightmares)
-  , ("02037", (Indebted' .) . indebted)
-  , ("02038", (InternalInjury' .) . internalInjury)
-  , ("02039", (Chronophobia' .) . chronophobia)
-  , ("02081", (SomethingInTheDrinks' .) . somethingInTheDrinks)
-  , ("02082", (ArousingSuspicions' .) . arousingSuspicions)
-  , ("02083", (VisionsOfFuturesPast' .) . visionsOfFuturesPast)
-  , ("02084", (BeyondTheVeil' .) . beyondTheVeil)
-  , ("02085", (LightOfAforgomon' .) . lightOfAforgomon)
-  , ("02088", (UnhallowedCountry' .) . unhallowedCountry)
-  , ("02089", (SordidAndSilent' .) . sordidAndSilent)
-  , ("02091", (EagerForDeath' .) . eagerForDeath)
-  , ("02092", (CursedLuck' .) . cursedLuck)
-  , ("02093", (TwistOfFate' .) . twistOfFate)
-  , ("02096", (AlteredBeast' .) . alteredBeast)
-  , ("02099", (HuntedDown' .) . huntedDown)
-  , ("02100", (PushedIntoTheBeyond' .) . pushedIntoTheBeyond)
-  , ("02101", (TerrorFromBeyond' .) . terrorFromBeyond)
-  , ("02102", (ArcaneBarrier' .) . arcaneBarrier)
-  , ("02142", (ShadowSpawned' .) . shadowSpawned)
-  , ("02143", (StalkedInTheDark' .) . stalkedInTheDark)
-  , ("02144", (PassageIntoTheVeil' .) . passageIntoTheVeil)
-  , ("02145", (EphemeralExhibits' .) . ephemeralExhibits)
-  , ("02146", (SlitheringBehindYou' .) . slitheringBehindYou)
-  , ("02178", (AcrossSpaceAndTime' .) . acrossSpaceAndTime)
-  , ("02180", (ClawsOfSteam' .) . clawsOfSteam)
-  , ("02181", (BrokenRails' .) . brokenRails)
-  , ("02220", (Kidnapped' .) . kidnapped)
-  , ("02221", (PsychopompsSong' .) . psychopompsSong)
-  , ("02222", (StrangeSigns' .) . strangeSigns)
-  , ( "02223"
-    , (RottingRemainsBloodOnTheAltar' .) . rottingRemainsBloodOnTheAltar
-    )
-  , ("02256", (ToweringBeasts' .) . toweringBeasts)
-  , ("02257", (RuinAndDestruction' .) . ruinAndDestruction)
-  , ("02258", (AttractingAttention' .) . attractingAttention)
-  , ("02259", (TheCreaturesTracks' .) . theCreaturesTracks)
-  , ("02296", (RitesHowled' .) . ritesHowled)
-  , ("02297", (SpacesBetween' .) . spacesBetween)
-  , ("02298", (VortexOfTime' .) . vortexOfTime)
-  , ("02331", (CollapsingReality' .) . collapsingReality)
-  , ("02332", (Wormhole' .) . wormhole)
-  , ("02333", (VastExpanse' .) . vastExpanse)
-  , ("50024", (TheZealotsSeal' .) . theZealotsSeal)
-  , ("50031", (MaskedHorrors' .) . maskedHorrors)
-  , ("50032b", (VaultOfEarthlyDemise' .) . vaultOfEarthlyDemise)
-  , ("50037", (UmordhothsHunger' .) . umordhothsHunger)
-  , ("50040", (ChillFromBelow' .) . chillFromBelow)
-  , ("50043", (MaskOfUmordhoth' .) . maskOfUmordhoth)
-  , ("60504", (Atychiphobia' .) . atychiphobia)
-  , ("81024", (CursedSwamp' .) . cursedSwamp)
-  , ("81025", (SpectralMist' .) . spectralMist)
-  , ("81026", (DraggedUnder' .) . draggedUnder)
-  , ("81027", (RipplesOnTheSurface' .) . ripplesOnTheSurface)
-  , ("81029", (CurseOfTheRougarou' .) . curseOfTheRougarou)
-  , ("81034", (OnTheProwl' .) . onTheProwl)
-  , ("81035", (BeastOfTheBayou' .) . beastOfTheBayou)
-  , ("81036", (InsatiableBloodlust' .) . insatiableBloodlust)
-  , ("treachery", baseTreachery "treachery")
+allTreacheries :: HashMap CardCode (InvestigatorId -> TreacheryId -> Treachery)
+allTreacheries = mapFromList $ map
+  (cbCardCode &&& (curry . cbCardBuilder))
+  [ CoverUp' <$> coverUp
+  , HospitalDebts' <$> hospitalDebts
+  , AbandonedAndAlone' <$> abandonedAndAlone
+  , Amnesia' <$> amnesia
+  , Paranoia' <$> paranoia
+  , Haunted' <$> haunted
+  , Psychosis' <$> psychosis
+  , Hypochondria' <$> hypochondria
+  , HuntingShadow' <$> huntingShadow
+  , FalseLead' <$> falseLead
+  , UmordhothsWrath' <$> umordhothsWrath
+  , GraspingHands' <$> graspingHands
+  , AncientEvils' <$> ancientEvils
+  , RottingRemains' <$> rottingRemains
+  , FrozenInFear' <$> frozenInFear
+  , DissonantVoices' <$> dissonantVoices
+  , CryptChill' <$> cryptChill
+  , ObscuringFog' <$> obscuringFog
+  , MysteriousChanting' <$> mysteriousChanting
+  , OnWingsOfDarkness' <$> onWingsOfDarkness
+  , LockedDoor' <$> lockedDoor
+  , TheYellowSign' <$> theYellowSign
+  , OfferOfPower' <$> offerOfPower
+  , DreamsOfRlyeh' <$> dreamsOfRlyeh
+  , SmiteTheWicked' <$> smiteTheWicked
+  , RexsCurse' <$> rexsCurse
+  , SearchingForIzzie' <$> searchingForIzzie
+  , FinalRhapsody' <$> finalRhapsody
+  , WrackedByNightmares' <$> wrackedByNightmares
+  , Indebted' <$> indebted
+  , InternalInjury' <$> internalInjury
+  , Chronophobia' <$> chronophobia
+  , SomethingInTheDrinks' <$> somethingInTheDrinks
+  , ArousingSuspicions' <$> arousingSuspicions
+  , VisionsOfFuturesPast' <$> visionsOfFuturesPast
+  , BeyondTheVeil' <$> beyondTheVeil
+  , LightOfAforgomon' <$> lightOfAforgomon
+  , UnhallowedCountry' <$> unhallowedCountry
+  , SordidAndSilent' <$> sordidAndSilent
+  , EagerForDeath' <$> eagerForDeath
+  , CursedLuck' <$> cursedLuck
+  , TwistOfFate' <$> twistOfFate
+  , AlteredBeast' <$> alteredBeast
+  , HuntedDown' <$> huntedDown
+  , PushedIntoTheBeyond' <$> pushedIntoTheBeyond
+  , TerrorFromBeyond' <$> terrorFromBeyond
+  , ArcaneBarrier' <$> arcaneBarrier
+  , ShadowSpawned' <$> shadowSpawned
+  , StalkedInTheDark' <$> stalkedInTheDark
+  , PassageIntoTheVeil' <$> passageIntoTheVeil
+  , EphemeralExhibits' <$> ephemeralExhibits
+  , SlitheringBehindYou' <$> slitheringBehindYou
+  , AcrossSpaceAndTime' <$> acrossSpaceAndTime
+  , ClawsOfSteam' <$> clawsOfSteam
+  , BrokenRails' <$> brokenRails
+  , Kidnapped' <$> kidnapped
+  , PsychopompsSong' <$> psychopompsSong
+  , StrangeSigns' <$> strangeSigns
+  , RottingRemainsBloodOnTheAltar' <$> rottingRemainsBloodOnTheAltar
+  , ToweringBeasts' <$> toweringBeasts
+  , RuinAndDestruction' <$> ruinAndDestruction
+  , AttractingAttention' <$> attractingAttention
+  , TheCreaturesTracks' <$> theCreaturesTracks
+  , RitesHowled' <$> ritesHowled
+  , SpacesBetween' <$> spacesBetween
+  , VortexOfTime' <$> vortexOfTime
+  , CollapsingReality' <$> collapsingReality
+  , Wormhole' <$> wormhole
+  , VastExpanse' <$> vastExpanse
+  , TheZealotsSeal' <$> theZealotsSeal
+  , MaskedHorrors' <$> maskedHorrors
+  , VaultOfEarthlyDemise' <$> vaultOfEarthlyDemise
+  , UmordhothsHunger' <$> umordhothsHunger
+  , ChillFromBelow' <$> chillFromBelow
+  , MaskOfUmordhoth' <$> maskOfUmordhoth
+  , Atychiphobia' <$> atychiphobia
+  , CursedSwamp' <$> cursedSwamp
+  , SpectralMist' <$> spectralMist
+  , DraggedUnder' <$> draggedUnder
+  , RipplesOnTheSurface' <$> ripplesOnTheSurface
+  , CurseOfTheRougarou' <$> curseOfTheRougarou
+  , OnTheProwl' <$> onTheProwl
+  , BeastOfTheBayou' <$> beastOfTheBayou
+  , InsatiableBloodlust' <$> insatiableBloodlust
+  , CardBuilder
+    { cbCardCode = "treachery"
+    , cbCardBuilder = uncurry (baseTreachery "treachery")
+    }
   ]
 
 newtype BaseTreachery = BaseTreachery TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 baseTreachery :: CardCode -> InvestigatorId -> TreacheryId -> Treachery
-baseTreachery cardCode iid tid = BaseTreachery' $ treachery BaseTreachery (testCardDef TreacheryType cardCode) iid tid
+baseTreachery cardCode iid tid = BaseTreachery' $ cbCardBuilder
+  (treachery BaseTreachery (testCardDef TreacheryType cardCode))
+  (iid, tid)
 
 instance HasActions env BaseTreachery where
-  getActions x window (BaseTreachery attrs) =
-    getActions x window attrs
+  getActions x window (BaseTreachery attrs) = getActions x window attrs
 
 instance HasModifiersFor env BaseTreachery where
   getModifiersFor = noModifiersFor

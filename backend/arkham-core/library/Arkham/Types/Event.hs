@@ -118,60 +118,61 @@ lookupEvent cardCode =
   fromJustNote ("Unknown event: " <> show cardCode) $ lookup cardCode allEvents
 
 allEvents :: HashMap CardCode (InvestigatorId -> EventId -> Event)
-allEvents = mapFromList
-  [ ("01010", (OnTheLam' .) . onTheLam)
-  , ("01013", (DarkMemory' .) . darkMemory)
-  , ("01022", (Evidence' .) . evidence)
-  , ("01023", (Dodge' .) . dodge)
-  , ("01024", (DynamiteBlast' .) . dynamiteBlast)
-  , ("01026", (ExtraAmmunition1' .) . extraAmmunition1)
-  , ("01036", (MindOverMatter' .) . mindOverMatter)
-  , ("01037", (WorkingAHunch' .) . workingAHunch)
-  , ("01038", (Barricade' .) . barricade)
-  , ("01043", (CrypticResearch4' .) . crypticResearch4)
-  , ("01050", (Elusive' .) . elusive)
-  , ("01051", (Backstab' .) . backstab)
-  , ("01052", (SneakAttack' .) . sneakAttack)
-  , ("01056", (SureGamble3' .) . sureGamble3)
-  , ("01057", (HotStreak4' .) . hotStreak4)
-  , ("01064", (DrawnToTheFlame' .) . drawnToTheFlame)
-  , ("01065", (WardOfProtection' .) . wardOfProtection)
-  , ("01066", (BlindingLight' .) . blindingLight)
-  , ("01068", (MindWipe1' .) . mindWipe1)
-  , ("01069", (BlindingLight2' .) . blindingLight2)
-  , ("01078", (CunningDistraction' .) . cunningDistraction)
-  , ("01079", (LookWhatIFound' .) . lookWhatIFound)
-  , ("01080", (Lucky' .) . lucky)
-  , ("01083", (CloseCall2' .) . closeCall2)
-  , ("01084", (Lucky2' .) . lucky2)
-  , ("01085", (WillToSurvive4' .) . willToSurvive4)
-  , ("01088", (EmergencyCache' .) . emergencyCache)
-  , ("02008", (SearchForTheTruth' .) . searchForTheTruth)
-  , ("02017", (Taunt' .) . taunt)
-  , ("02018", (Teamwork' .) . teamwork)
-  , ("02019", (Taunt2' .) . taunt2)
-  , ("02022", (Shortcut' .) . shortcut)
-  , ("02023", (SeekingAnswers' .) . seekingAnswers)
-  , ("02025", (ThinkOnYourFeet' .) . thinkOnYourFeet)
-  , ("02031", (BindMonster2' .) . bindMonster2)
-  , ("02034", (BaitAndSwitch' .) . baitAndSwitch)
-  , ("02105", (EmergencyAid' .) . emergencyAid)
-  , ("02107", (IveGotAPlan' .) . iveGotAPlan)
-  , ("02109", (Contraband' .) . contraband)
-  , ("02111", (DelveTooDeep' .) . delveTooDeep)
-  , ("02113", (Oops' .) . oops)
-  , ("03022", (LetMeHandleThis' .) . letMeHandleThis)
-  , ("04149", (SecondWind' .) . secondWind)
-  , ("05317", (BloodRite' .) . bloodRite)
-  , ("06023", (AstoundingRevelation' .) . astoundingRevelation)
-  , ("06110", (FirstWatch' .) . firstWatch)
-  , ("50002", (DynamiteBlast2' .) . dynamiteBlast2)
-  , ("50004", (Barricade3' .) . barricade3)
-  , ("50006", (HotStreak2' .) . hotStreak2)
-  , ("50008", (MindWipe3' .) . mindWipe3)
-  , ("51005", (Contraband2' .) . contraband2)
-  , ("60130", (Taunt3' .) . taunt3)
-  , ("60255", (IveGotAPlan2' .) . iveGotAPlan2)
+allEvents = mapFromList $ map
+  (cbCardCode &&& (curry . cbCardBuilder))
+  [ OnTheLam' <$> onTheLam
+  , DarkMemory' <$> darkMemory
+  , Evidence' <$> evidence
+  , Dodge' <$> dodge
+  , DynamiteBlast' <$> dynamiteBlast
+  , ExtraAmmunition1' <$> extraAmmunition1
+  , MindOverMatter' <$> mindOverMatter
+  , WorkingAHunch' <$> workingAHunch
+  , Barricade' <$> barricade
+  , CrypticResearch4' <$> crypticResearch4
+  , Elusive' <$> elusive
+  , Backstab' <$> backstab
+  , SneakAttack' <$> sneakAttack
+  , SureGamble3' <$> sureGamble3
+  , HotStreak4' <$> hotStreak4
+  , DrawnToTheFlame' <$> drawnToTheFlame
+  , WardOfProtection' <$> wardOfProtection
+  , BlindingLight' <$> blindingLight
+  , MindWipe1' <$> mindWipe1
+  , BlindingLight2' <$> blindingLight2
+  , CunningDistraction' <$> cunningDistraction
+  , LookWhatIFound' <$> lookWhatIFound
+  , Lucky' <$> lucky
+  , CloseCall2' <$> closeCall2
+  , Lucky2' <$> lucky2
+  , WillToSurvive4' <$> willToSurvive4
+  , EmergencyCache' <$> emergencyCache
+  , SearchForTheTruth' <$> searchForTheTruth
+  , Taunt' <$> taunt
+  , Teamwork' <$> teamwork
+  , Taunt2' <$> taunt2
+  , Shortcut' <$> shortcut
+  , SeekingAnswers' <$> seekingAnswers
+  , ThinkOnYourFeet' <$> thinkOnYourFeet
+  , BindMonster2' <$> bindMonster2
+  , BaitAndSwitch' <$> baitAndSwitch
+  , EmergencyAid' <$> emergencyAid
+  , IveGotAPlan' <$> iveGotAPlan
+  , Contraband' <$> contraband
+  , DelveTooDeep' <$> delveTooDeep
+  , Oops' <$> oops
+  , LetMeHandleThis' <$> letMeHandleThis
+  , SecondWind' <$> secondWind
+  , BloodRite' <$> bloodRite
+  , AstoundingRevelation' <$> astoundingRevelation
+  , FirstWatch' <$> firstWatch
+  , DynamiteBlast2' <$> dynamiteBlast2
+  , Barricade3' <$> barricade3
+  , HotStreak2' <$> hotStreak2
+  , MindWipe3' <$> mindWipe3
+  , Contraband2' <$> contraband2
+  , Taunt3' <$> taunt3
+  , IveGotAPlan2' <$> iveGotAPlan2
   ]
 
 ownerOfEvent :: Event -> InvestigatorId

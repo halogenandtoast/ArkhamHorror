@@ -16,18 +16,18 @@ createSkill :: IsCard a => a -> InvestigatorId -> Skill
 createSkill a iid = lookupSkill (toCardCode a) iid (SkillId $ toCardId a)
 
 data Skill
-  = ViciousBlow' ViciousBlow
-  | Deduction' Deduction
-  | Opportunist' Opportunist
-  | Fearless' Fearless
-  | SurvivalInstinct' SurvivalInstinct
-  | Guts' Guts
-  | Perception' Perception
-  | Overpower' Overpower
-  | ManualDexterity' ManualDexterity
-  | UnexpectedCourage' UnexpectedCourage
+  = Deduction' Deduction
   | DoubleOrNothing' DoubleOrNothing
+  | Fearless' Fearless
+  | Guts' Guts
+  | ManualDexterity' ManualDexterity
+  | Opportunist' Opportunist
+  | Overpower' Overpower
+  | Perception' Perception
+  | SurvivalInstinct' SurvivalInstinct
   | TrueUnderstanding' TrueUnderstanding
+  | UnexpectedCourage' UnexpectedCourage
+  | ViciousBlow' ViciousBlow
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -63,18 +63,18 @@ lookupSkill cardCode =
 allSkills :: HashMap CardCode (InvestigatorId -> SkillId -> Skill)
 allSkills = mapFromList $ map
   (cbCardCode &&& (curry . cbCardBuilder))
-  [ ViciousBlow' <$> viciousBlow
-  , Deduction' <$> deduction
-  , Opportunist' <$> opportunist
-  , Fearless' <$> fearless
-  , SurvivalInstinct' <$> survivalInstinct
-  , Guts' <$> guts
-  , Perception' <$> perception
-  , Overpower' <$> overpower
-  , ManualDexterity' <$> manualDexterity
-  , UnexpectedCourage' <$> unexpectedCourage
+  [ Deduction' <$> deduction
   , DoubleOrNothing' <$> doubleOrNothing
+  , Fearless' <$> fearless
+  , Guts' <$> guts
+  , ManualDexterity' <$> manualDexterity
+  , Opportunist' <$> opportunist
+  , Overpower' <$> overpower
+  , Perception' <$> perception
+  , SurvivalInstinct' <$> survivalInstinct
   , TrueUnderstanding' <$> trueUnderstanding
+  , UnexpectedCourage' <$> unexpectedCourage
+  , ViciousBlow' <$> viciousBlow
   ]
 
 ownerOfSkill :: Skill -> InvestigatorId

@@ -19,91 +19,91 @@ createTreachery a iid =
   lookupTreachery (toCardCode a) iid (TreacheryId $ toCardId a)
 
 data Treachery
-  = CoverUp' CoverUp
-  | HospitalDebts' HospitalDebts
+  = BaseTreachery' BaseTreachery
   | AbandonedAndAlone' AbandonedAndAlone
-  | Amnesia' Amnesia
-  | Paranoia' Paranoia
-  | Haunted' Haunted
-  | Psychosis' Psychosis
-  | Hypochondria' Hypochondria
-  | HuntingShadow' HuntingShadow
-  | FalseLead' FalseLead
-  | UmordhothsWrath' UmordhothsWrath
-  | GraspingHands' GraspingHands
-  | AncientEvils' AncientEvils
-  | RottingRemains' RottingRemains
-  | FrozenInFear' FrozenInFear
-  | DissonantVoices' DissonantVoices
-  | CryptChill' CryptChill
-  | ObscuringFog' ObscuringFog
-  | MysteriousChanting' MysteriousChanting
-  | OnWingsOfDarkness' OnWingsOfDarkness
-  | LockedDoor' LockedDoor
-  | TheYellowSign' TheYellowSign
-  | OfferOfPower' OfferOfPower
-  | DreamsOfRlyeh' DreamsOfRlyeh
-  | SmiteTheWicked' SmiteTheWicked
-  | RexsCurse' RexsCurse
-  | SearchingForIzzie' SearchingForIzzie
-  | FinalRhapsody' FinalRhapsody
-  | WrackedByNightmares' WrackedByNightmares
-  | Indebted' Indebted
-  | InternalInjury' InternalInjury
-  | Chronophobia' Chronophobia
-  | SomethingInTheDrinks' SomethingInTheDrinks
-  | ArousingSuspicions' ArousingSuspicions
-  | VisionsOfFuturesPast' VisionsOfFuturesPast
-  | BeyondTheVeil' BeyondTheVeil
-  | LightOfAforgomon' LightOfAforgomon
-  | UnhallowedCountry' UnhallowedCountry
-  | SordidAndSilent' SordidAndSilent
-  | EagerForDeath' EagerForDeath
-  | CursedLuck' CursedLuck
-  | TwistOfFate' TwistOfFate
-  | AlteredBeast' AlteredBeast
-  | HuntedDown' HuntedDown
-  | PushedIntoTheBeyond' PushedIntoTheBeyond
-  | TerrorFromBeyond' TerrorFromBeyond
-  | ArcaneBarrier' ArcaneBarrier
-  | ShadowSpawned' ShadowSpawned
-  | StalkedInTheDark' StalkedInTheDark
-  | PassageIntoTheVeil' PassageIntoTheVeil
-  | EphemeralExhibits' EphemeralExhibits
-  | SlitheringBehindYou' SlitheringBehindYou
   | AcrossSpaceAndTime' AcrossSpaceAndTime
-  | ClawsOfSteam' ClawsOfSteam
-  | BrokenRails' BrokenRails
-  | Kidnapped' Kidnapped
-  | PsychopompsSong' PsychopompsSong
-  | StrangeSigns' StrangeSigns
-  | RottingRemainsBloodOnTheAltar' RottingRemainsBloodOnTheAltar
-  | ToweringBeasts' ToweringBeasts
-  | RuinAndDestruction' RuinAndDestruction
+  | AlteredBeast' AlteredBeast
+  | Amnesia' Amnesia
+  | AncientEvils' AncientEvils
+  | ArcaneBarrier' ArcaneBarrier
+  | ArousingSuspicions' ArousingSuspicions
   | AttractingAttention' AttractingAttention
-  | TheCreaturesTracks' TheCreaturesTracks
-  | RitesHowled' RitesHowled
-  | SpacesBetween' SpacesBetween
-  | VortexOfTime' VortexOfTime
-  | CollapsingReality' CollapsingReality
-  | Wormhole' Wormhole
-  | VastExpanse' VastExpanse
-  | TheZealotsSeal' TheZealotsSeal
-  | MaskedHorrors' MaskedHorrors
-  | VaultOfEarthlyDemise' VaultOfEarthlyDemise
-  | UmordhothsHunger' UmordhothsHunger
-  | ChillFromBelow' ChillFromBelow
-  | MaskOfUmordhoth' MaskOfUmordhoth
   | Atychiphobia' Atychiphobia
-  | CursedSwamp' CursedSwamp
-  | SpectralMist' SpectralMist
-  | DraggedUnder' DraggedUnder
-  | RipplesOnTheSurface' RipplesOnTheSurface
-  | CurseOfTheRougarou' CurseOfTheRougarou
-  | OnTheProwl' OnTheProwl
   | BeastOfTheBayou' BeastOfTheBayou
+  | BeyondTheVeil' BeyondTheVeil
+  | BrokenRails' BrokenRails
+  | ChillFromBelow' ChillFromBelow
+  | Chronophobia' Chronophobia
+  | ClawsOfSteam' ClawsOfSteam
+  | CollapsingReality' CollapsingReality
+  | CoverUp' CoverUp
+  | CryptChill' CryptChill
+  | CurseOfTheRougarou' CurseOfTheRougarou
+  | CursedLuck' CursedLuck
+  | CursedSwamp' CursedSwamp
+  | DissonantVoices' DissonantVoices
+  | DraggedUnder' DraggedUnder
+  | DreamsOfRlyeh' DreamsOfRlyeh
+  | EagerForDeath' EagerForDeath
+  | EphemeralExhibits' EphemeralExhibits
+  | FalseLead' FalseLead
+  | FinalRhapsody' FinalRhapsody
+  | FrozenInFear' FrozenInFear
+  | GraspingHands' GraspingHands
+  | Haunted' Haunted
+  | HospitalDebts' HospitalDebts
+  | HuntedDown' HuntedDown
+  | HuntingShadow' HuntingShadow
+  | Hypochondria' Hypochondria
+  | Indebted' Indebted
   | InsatiableBloodlust' InsatiableBloodlust
-  | BaseTreachery' BaseTreachery
+  | InternalInjury' InternalInjury
+  | Kidnapped' Kidnapped
+  | LightOfAforgomon' LightOfAforgomon
+  | LockedDoor' LockedDoor
+  | MaskOfUmordhoth' MaskOfUmordhoth
+  | MaskedHorrors' MaskedHorrors
+  | MysteriousChanting' MysteriousChanting
+  | ObscuringFog' ObscuringFog
+  | OfferOfPower' OfferOfPower
+  | OnTheProwl' OnTheProwl
+  | OnWingsOfDarkness' OnWingsOfDarkness
+  | Paranoia' Paranoia
+  | PassageIntoTheVeil' PassageIntoTheVeil
+  | PsychopompsSong' PsychopompsSong
+  | Psychosis' Psychosis
+  | PushedIntoTheBeyond' PushedIntoTheBeyond
+  | RexsCurse' RexsCurse
+  | RipplesOnTheSurface' RipplesOnTheSurface
+  | RitesHowled' RitesHowled
+  | RottingRemains' RottingRemains
+  | RottingRemainsBloodOnTheAltar' RottingRemainsBloodOnTheAltar
+  | RuinAndDestruction' RuinAndDestruction
+  | SearchingForIzzie' SearchingForIzzie
+  | ShadowSpawned' ShadowSpawned
+  | SlitheringBehindYou' SlitheringBehindYou
+  | SmiteTheWicked' SmiteTheWicked
+  | SomethingInTheDrinks' SomethingInTheDrinks
+  | SordidAndSilent' SordidAndSilent
+  | SpacesBetween' SpacesBetween
+  | SpectralMist' SpectralMist
+  | StalkedInTheDark' StalkedInTheDark
+  | StrangeSigns' StrangeSigns
+  | TerrorFromBeyond' TerrorFromBeyond
+  | TheCreaturesTracks' TheCreaturesTracks
+  | TheYellowSign' TheYellowSign
+  | TheZealotsSeal' TheZealotsSeal
+  | ToweringBeasts' ToweringBeasts
+  | TwistOfFate' TwistOfFate
+  | UmordhothsHunger' UmordhothsHunger
+  | UmordhothsWrath' UmordhothsWrath
+  | UnhallowedCountry' UnhallowedCountry
+  | VastExpanse' VastExpanse
+  | VaultOfEarthlyDemise' VaultOfEarthlyDemise
+  | VisionsOfFuturesPast' VisionsOfFuturesPast
+  | VortexOfTime' VortexOfTime
+  | Wormhole' Wormhole
+  | WrackedByNightmares' WrackedByNightmares
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -161,94 +161,94 @@ lookupTreachery cardCode =
 allTreacheries :: HashMap CardCode (InvestigatorId -> TreacheryId -> Treachery)
 allTreacheries = mapFromList $ map
   (cbCardCode &&& (curry . cbCardBuilder))
-  [ CoverUp' <$> coverUp
-  , HospitalDebts' <$> hospitalDebts
-  , AbandonedAndAlone' <$> abandonedAndAlone
-  , Amnesia' <$> amnesia
-  , Paranoia' <$> paranoia
-  , Haunted' <$> haunted
-  , Psychosis' <$> psychosis
-  , Hypochondria' <$> hypochondria
-  , HuntingShadow' <$> huntingShadow
-  , FalseLead' <$> falseLead
-  , UmordhothsWrath' <$> umordhothsWrath
-  , GraspingHands' <$> graspingHands
-  , AncientEvils' <$> ancientEvils
-  , RottingRemains' <$> rottingRemains
-  , FrozenInFear' <$> frozenInFear
-  , DissonantVoices' <$> dissonantVoices
-  , CryptChill' <$> cryptChill
-  , ObscuringFog' <$> obscuringFog
-  , MysteriousChanting' <$> mysteriousChanting
-  , OnWingsOfDarkness' <$> onWingsOfDarkness
-  , LockedDoor' <$> lockedDoor
-  , TheYellowSign' <$> theYellowSign
-  , OfferOfPower' <$> offerOfPower
-  , DreamsOfRlyeh' <$> dreamsOfRlyeh
-  , SmiteTheWicked' <$> smiteTheWicked
-  , RexsCurse' <$> rexsCurse
-  , SearchingForIzzie' <$> searchingForIzzie
-  , FinalRhapsody' <$> finalRhapsody
-  , WrackedByNightmares' <$> wrackedByNightmares
-  , Indebted' <$> indebted
-  , InternalInjury' <$> internalInjury
-  , Chronophobia' <$> chronophobia
-  , SomethingInTheDrinks' <$> somethingInTheDrinks
-  , ArousingSuspicions' <$> arousingSuspicions
-  , VisionsOfFuturesPast' <$> visionsOfFuturesPast
-  , BeyondTheVeil' <$> beyondTheVeil
-  , LightOfAforgomon' <$> lightOfAforgomon
-  , UnhallowedCountry' <$> unhallowedCountry
-  , SordidAndSilent' <$> sordidAndSilent
-  , EagerForDeath' <$> eagerForDeath
-  , CursedLuck' <$> cursedLuck
-  , TwistOfFate' <$> twistOfFate
-  , AlteredBeast' <$> alteredBeast
-  , HuntedDown' <$> huntedDown
-  , PushedIntoTheBeyond' <$> pushedIntoTheBeyond
-  , TerrorFromBeyond' <$> terrorFromBeyond
-  , ArcaneBarrier' <$> arcaneBarrier
-  , ShadowSpawned' <$> shadowSpawned
-  , StalkedInTheDark' <$> stalkedInTheDark
-  , PassageIntoTheVeil' <$> passageIntoTheVeil
-  , EphemeralExhibits' <$> ephemeralExhibits
-  , SlitheringBehindYou' <$> slitheringBehindYou
-  , AcrossSpaceAndTime' <$> acrossSpaceAndTime
-  , ClawsOfSteam' <$> clawsOfSteam
-  , BrokenRails' <$> brokenRails
-  , Kidnapped' <$> kidnapped
-  , PsychopompsSong' <$> psychopompsSong
-  , StrangeSigns' <$> strangeSigns
-  , RottingRemainsBloodOnTheAltar' <$> rottingRemainsBloodOnTheAltar
-  , ToweringBeasts' <$> toweringBeasts
-  , RuinAndDestruction' <$> ruinAndDestruction
-  , AttractingAttention' <$> attractingAttention
-  , TheCreaturesTracks' <$> theCreaturesTracks
-  , RitesHowled' <$> ritesHowled
-  , SpacesBetween' <$> spacesBetween
-  , VortexOfTime' <$> vortexOfTime
-  , CollapsingReality' <$> collapsingReality
-  , Wormhole' <$> wormhole
-  , VastExpanse' <$> vastExpanse
-  , TheZealotsSeal' <$> theZealotsSeal
-  , MaskedHorrors' <$> maskedHorrors
-  , VaultOfEarthlyDemise' <$> vaultOfEarthlyDemise
-  , UmordhothsHunger' <$> umordhothsHunger
-  , ChillFromBelow' <$> chillFromBelow
-  , MaskOfUmordhoth' <$> maskOfUmordhoth
-  , Atychiphobia' <$> atychiphobia
-  , CursedSwamp' <$> cursedSwamp
-  , SpectralMist' <$> spectralMist
-  , DraggedUnder' <$> draggedUnder
-  , RipplesOnTheSurface' <$> ripplesOnTheSurface
-  , CurseOfTheRougarou' <$> curseOfTheRougarou
-  , OnTheProwl' <$> onTheProwl
-  , BeastOfTheBayou' <$> beastOfTheBayou
-  , InsatiableBloodlust' <$> insatiableBloodlust
-  , CardBuilder
+  [ CardBuilder
     { cbCardCode = "treachery"
     , cbCardBuilder = uncurry (baseTreachery "treachery")
     }
+  , AbandonedAndAlone' <$> abandonedAndAlone
+  , AcrossSpaceAndTime' <$> acrossSpaceAndTime
+  , AlteredBeast' <$> alteredBeast
+  , Amnesia' <$> amnesia
+  , AncientEvils' <$> ancientEvils
+  , ArcaneBarrier' <$> arcaneBarrier
+  , ArousingSuspicions' <$> arousingSuspicions
+  , AttractingAttention' <$> attractingAttention
+  , Atychiphobia' <$> atychiphobia
+  , BeastOfTheBayou' <$> beastOfTheBayou
+  , BeyondTheVeil' <$> beyondTheVeil
+  , BrokenRails' <$> brokenRails
+  , ChillFromBelow' <$> chillFromBelow
+  , Chronophobia' <$> chronophobia
+  , ClawsOfSteam' <$> clawsOfSteam
+  , CollapsingReality' <$> collapsingReality
+  , CoverUp' <$> coverUp
+  , CryptChill' <$> cryptChill
+  , CurseOfTheRougarou' <$> curseOfTheRougarou
+  , CursedLuck' <$> cursedLuck
+  , CursedSwamp' <$> cursedSwamp
+  , DissonantVoices' <$> dissonantVoices
+  , DraggedUnder' <$> draggedUnder
+  , DreamsOfRlyeh' <$> dreamsOfRlyeh
+  , EagerForDeath' <$> eagerForDeath
+  , EphemeralExhibits' <$> ephemeralExhibits
+  , FalseLead' <$> falseLead
+  , FinalRhapsody' <$> finalRhapsody
+  , FrozenInFear' <$> frozenInFear
+  , GraspingHands' <$> graspingHands
+  , Haunted' <$> haunted
+  , HospitalDebts' <$> hospitalDebts
+  , HuntedDown' <$> huntedDown
+  , HuntingShadow' <$> huntingShadow
+  , Hypochondria' <$> hypochondria
+  , Indebted' <$> indebted
+  , InsatiableBloodlust' <$> insatiableBloodlust
+  , InternalInjury' <$> internalInjury
+  , Kidnapped' <$> kidnapped
+  , LightOfAforgomon' <$> lightOfAforgomon
+  , LockedDoor' <$> lockedDoor
+  , MaskOfUmordhoth' <$> maskOfUmordhoth
+  , MaskedHorrors' <$> maskedHorrors
+  , MysteriousChanting' <$> mysteriousChanting
+  , ObscuringFog' <$> obscuringFog
+  , OfferOfPower' <$> offerOfPower
+  , OnTheProwl' <$> onTheProwl
+  , OnWingsOfDarkness' <$> onWingsOfDarkness
+  , Paranoia' <$> paranoia
+  , PassageIntoTheVeil' <$> passageIntoTheVeil
+  , PsychopompsSong' <$> psychopompsSong
+  , Psychosis' <$> psychosis
+  , PushedIntoTheBeyond' <$> pushedIntoTheBeyond
+  , RexsCurse' <$> rexsCurse
+  , RipplesOnTheSurface' <$> ripplesOnTheSurface
+  , RitesHowled' <$> ritesHowled
+  , RottingRemains' <$> rottingRemains
+  , RottingRemainsBloodOnTheAltar' <$> rottingRemainsBloodOnTheAltar
+  , RuinAndDestruction' <$> ruinAndDestruction
+  , SearchingForIzzie' <$> searchingForIzzie
+  , ShadowSpawned' <$> shadowSpawned
+  , SlitheringBehindYou' <$> slitheringBehindYou
+  , SmiteTheWicked' <$> smiteTheWicked
+  , SomethingInTheDrinks' <$> somethingInTheDrinks
+  , SordidAndSilent' <$> sordidAndSilent
+  , SpacesBetween' <$> spacesBetween
+  , SpectralMist' <$> spectralMist
+  , StalkedInTheDark' <$> stalkedInTheDark
+  , StrangeSigns' <$> strangeSigns
+  , TerrorFromBeyond' <$> terrorFromBeyond
+  , TheCreaturesTracks' <$> theCreaturesTracks
+  , TheYellowSign' <$> theYellowSign
+  , TheZealotsSeal' <$> theZealotsSeal
+  , ToweringBeasts' <$> toweringBeasts
+  , TwistOfFate' <$> twistOfFate
+  , UmordhothsHunger' <$> umordhothsHunger
+  , UmordhothsWrath' <$> umordhothsWrath
+  , UnhallowedCountry' <$> unhallowedCountry
+  , VastExpanse' <$> vastExpanse
+  , VaultOfEarthlyDemise' <$> vaultOfEarthlyDemise
+  , VisionsOfFuturesPast' <$> visionsOfFuturesPast
+  , VortexOfTime' <$> vortexOfTime
+  , Wormhole' <$> wormhole
+  , WrackedByNightmares' <$> wrackedByNightmares
   ]
 
 newtype BaseTreachery = BaseTreachery TreacheryAttrs

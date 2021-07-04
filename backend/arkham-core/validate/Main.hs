@@ -15,8 +15,11 @@ import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes.Entity
 import Arkham.Types.EncounterSet
 import Arkham.Types.Enemy
-import Arkham.Types.Enemy.Attrs (enemyEvade, enemyFight, enemyHealth, enemyHealthDamage, enemySanityDamage)
+import Arkham.Types.Enemy.Attrs
+  (enemyEvade, enemyFight, enemyHealth, enemyHealthDamage, enemySanityDamage)
 import Arkham.Types.GameValue
+import Arkham.Types.Location
+import Arkham.Types.Location.Attrs (locationRevealClues, locationShroud)
 import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Trait hiding (Dunwich)
@@ -48,6 +51,8 @@ data CardJson = CardJson
   , enemy_evade :: Maybe Int
   , enemy_damage :: Maybe Int
   , enemy_horror :: Maybe Int
+  , clues :: Maybe Int
+  , shroud :: Maybe Int
   }
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
@@ -101,6 +106,12 @@ data TraitsMismatch = TraitsMismatch
   (HashSet Trait)
   deriving stock Show
 
+data ShroudMismatch = ShroudMismatch CardCode Name Int Int
+  deriving stock Show
+
+data ClueMismatch = ClueMismatch CardCode Name Int Int
+  deriving stock Show
+
 instance Exception InternalCardCodeMismatch
 instance Exception UnknownCard
 instance Exception NameMismatch
@@ -112,6 +123,8 @@ instance Exception TraitsMismatch
 instance Exception VictoryMismatch
 instance Exception EnemyStatsMismatch
 instance Exception EnemyDamageMismatch
+instance Exception ShroudMismatch
+instance Exception ClueMismatch
 
 encounterJson :: IO (HashMap EncounterSet (HashMap CardCode CardJson))
 encounterJson = mapFromList
@@ -179,7 +192,7 @@ filterTest = filter
   )
 
 filterTestEntities :: [(CardCode, a)] -> [(CardCode, a)]
-filterTestEntities = filter (\(code, _) -> code /= "enemy" && not ("b" `isSuffixOf` unCardCode code))
+filterTestEntities = filter (\(code, _) -> code /= "enemy" && code /= "location"  && not ("b" `isSuffixOf` unCardCode code))
 
 toClassSymbol :: String -> Maybe ClassSymbol
 toClassSymbol = \case
@@ -355,4 +368,32 @@ main = do
                 (cdName $ toCardDef attrs)
                 cardDamage
                 enemyDamage
+              )
+
+      -- validate locations
+      for_ (filterTestEntities $ mapToList allLocations) $ \(ccode, builder) -> do
+        attrs <- toAttrs . builder <$> getRandom
+        let
+          lookupMap = maybe
+            jsonMap
+            (fromJust . (`lookup` encounterMaps))
+            (cdEncounterSet $ toCardDef attrs)
+        case lookup ccode lookupMap of
+          Nothing -> throw $ UnknownCard ccode
+          Just CardJson {..} -> do
+            when
+              (fromMaybe 0 shroud /= locationShroud attrs)
+              (throw $ ShroudMismatch
+                code
+                (cdName $ toCardDef attrs)
+                (fromMaybe 0 shroud)
+                (locationShroud attrs)
+              )
+            when
+              (fromMaybe 0 clues /= fromGameValue (locationRevealClues attrs) 1)
+              (throw $ ClueMismatch
+                code
+                (cdName $ toCardDef attrs)
+                (fromMaybe 0 clues)
+                (fromGameValue (locationRevealClues attrs) 1)
               )

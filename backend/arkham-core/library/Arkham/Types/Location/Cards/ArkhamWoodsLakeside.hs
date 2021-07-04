@@ -21,7 +21,7 @@ arkhamWoodsLakeside :: LocationCard ArkhamWoodsLakeside
 arkhamWoodsLakeside = locationWith
   ArkhamWoodsLakeside
   Cards.arkhamWoodsLakeside
-  4
+  2
   (PerPlayer 1)
   Square
   [Squiggle]

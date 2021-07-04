@@ -63,6 +63,7 @@ executables:
       - arkham-core
       - aeson
       - text
+      - MonadRandom
 
 tests:
   spec:

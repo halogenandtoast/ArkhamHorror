@@ -18,7 +18,7 @@ newtype Whippoorwill = Whippoorwill EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 whippoorwill :: EnemyCard Whippoorwill
-whippoorwill = enemy Whippoorwill Cards.whippoorwill (1, Static 1, 4) (0, 1)
+whippoorwill = enemy Whippoorwill Cards.whippoorwill (2, Static 1, 4) (0, 1)
 
 instance HasId LocationId env InvestigatorId => HasModifiersFor env Whippoorwill where
   getModifiersFor _ (InvestigatorTarget iid) (Whippoorwill attrs) = do

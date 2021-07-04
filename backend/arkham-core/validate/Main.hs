@@ -12,11 +12,16 @@ import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.Cost
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes.Entity
 import Arkham.Types.EncounterSet
+import Arkham.Types.Enemy
+import Arkham.Types.Enemy.Attrs (enemyEvade, enemyFight, enemyHealth, enemyHealthDamage, enemySanityDamage)
+import Arkham.Types.GameValue
 import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Trait hiding (Dunwich)
 import Control.Exception
+import Control.Monad.Random.Lazy
 import Data.Aeson
 import Data.Maybe (fromJust)
 import qualified Data.Text as T
@@ -37,6 +42,12 @@ data CardJson = CardJson
   , skill_wild :: Maybe Int
   , faction_name :: String
   , victory :: Maybe Int
+  , enemy_fight :: Maybe Int
+  , health :: Maybe Int
+  , health_per_investigator :: Maybe Bool
+  , enemy_evade :: Maybe Int
+  , enemy_damage :: Maybe Int
+  , enemy_horror :: Maybe Int
   }
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
@@ -60,11 +71,21 @@ data CardCostMismatch = CardCostMismatch
   (Maybe CardCost)
   deriving stock Show
 
-data VictoryMismatch = VictoryMismatch
+data VictoryMismatch = VictoryMismatch CardCode Name (Maybe Int) (Maybe Int)
+  deriving stock Show
+
+data EnemyStatsMismatch = EnemyStatsMismatch
   CardCode
   Name
-  (Maybe Int)
-  (Maybe Int)
+  (Int, GameValue Int, Int)
+  (Int, GameValue Int, Int)
+  deriving stock Show
+
+data EnemyDamageMismatch = EnemyDamageMismatch
+  CardCode
+  Name
+  (Int, Int)
+  (Int, Int)
   deriving stock Show
 
 data ClassMismatch = ClassMismatch CardCode Name String (Maybe ClassSymbol)
@@ -89,6 +110,8 @@ instance Exception ClassMismatch
 instance Exception SkillsMismatch
 instance Exception TraitsMismatch
 instance Exception VictoryMismatch
+instance Exception EnemyStatsMismatch
+instance Exception EnemyDamageMismatch
 
 encounterJson :: IO (HashMap EncounterSet (HashMap CardCode CardJson))
 encounterJson = mapFromList
@@ -155,6 +178,9 @@ filterTest = filter
     ("b" `isSuffixOf` unCardCode code)
   )
 
+filterTestEntities :: [(CardCode, a)] -> [(CardCode, a)]
+filterTestEntities = filter (\(code, _) -> code /= "enemy" && not ("b" `isSuffixOf` unCardCode code))
+
 toClassSymbol :: String -> Maybe ClassSymbol
 toClassSymbol = \case
   "Guardian" -> Just Guardian
@@ -204,16 +230,22 @@ getTraits CardJson {..} = case traits of
   Just s -> setFromList $ map toTrait (T.splitOn ". " $ cleanText s)
  where
   toTrait x =
-    handleEither x . readEither . T.unpack . normalizeTrait . cleanText $ T.replace
-      " "
-      ""
-      x
+    handleEither x
+      . readEither
+      . T.unpack
+      . normalizeTrait
+      . cleanText
+      $ T.replace " " "" x
   handleEither _ (Right a) = a
   handleEither x (Left err) =
     error $ show code <> ": " <> err <> " " <> show x <> " from " <> show traits
   normalizeTrait "Human" = "Humanoid"
   normalizeTrait x = x
   cleanText = T.dropWhileEnd (\c -> c == '.' || c == ' ')
+
+toGameVal :: Bool -> Int -> GameValue Int
+toGameVal True n = PerPlayer n
+toGameVal False n = Static n
 
 main :: IO ()
 main = do
@@ -225,6 +257,8 @@ main = do
         jsonMap :: HashMap CardCode CardJson =
           mapFromList $ map (code &&& id) cards
       encounterMaps <- encounterJson
+
+      -- validate card defs
       for_ (filterTest $ mapToList allCards) $ \(ccode, card) -> do
         when
           (ccode /= cdCardCode card)
@@ -277,4 +311,48 @@ main = do
                 (cdName card)
                 victory
                 (cdVictoryPoints card)
+              )
+
+      -- validate enemies
+      for_ (filterTestEntities $ mapToList allEnemies) $ \(ccode, builder) -> do
+        attrs <- toAttrs . builder <$> getRandom
+        let
+          lookupMap = maybe
+            jsonMap
+            (fromJust . (`lookup` encounterMaps))
+            (cdEncounterSet $ toCardDef attrs)
+        case lookup ccode lookupMap of
+          Nothing -> throw $ UnknownCard ccode
+          Just CardJson {..} -> do
+            let
+              cardStats =
+                ( fromMaybe 0 enemy_fight
+                , toGameVal
+                  (fromMaybe False health_per_investigator)
+                  (fromMaybe 0 health)
+                , fromMaybe 0 enemy_evade
+                )
+              enemyStats =
+                (enemyFight attrs, enemyHealth attrs, enemyEvade attrs)
+              cardDamage =
+                ( fromMaybe 0 enemy_damage
+                , fromMaybe 0 enemy_horror
+                )
+              enemyDamage =
+                (enemyHealthDamage attrs, enemySanityDamage attrs)
+            when
+              (cardStats /= enemyStats)
+              (throw $ EnemyStatsMismatch
+                code
+                (cdName $ toCardDef attrs)
+                cardStats
+                enemyStats
+              )
+            when
+              (cardDamage /= enemyDamage)
+              (throw $ EnemyDamageMismatch
+                code
+                (cdName $ toCardDef attrs)
+                cardDamage
+                enemyDamage
               )

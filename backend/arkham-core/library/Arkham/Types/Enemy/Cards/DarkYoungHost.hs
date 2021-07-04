@@ -18,7 +18,7 @@ newtype DarkYoungHost = DarkYoungHost EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 darkYoungHost :: EnemyCard DarkYoungHost
-darkYoungHost = enemy DarkYoungHost Cards.darkYoungHost (4, Static 5, 2) (2, 1)
+darkYoungHost = enemy DarkYoungHost Cards.darkYoungHost (4, Static 5, 2) (2, 2)
 
 instance HasModifiersFor env DarkYoungHost where
   getModifiersFor = noModifiersFor

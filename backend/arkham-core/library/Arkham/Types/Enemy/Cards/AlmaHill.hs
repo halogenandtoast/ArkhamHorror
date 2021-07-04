@@ -23,7 +23,7 @@ newtype AlmaHill = AlmaHill EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 almaHill :: EnemyCard AlmaHill
-almaHill = enemy AlmaHill Cards.almaHill (3, Static 3, 3) (0, 3)
+almaHill = enemy AlmaHill Cards.almaHill (3, Static 3, 3) (0, 2)
 
 instance HasModifiersFor env AlmaHill where
   getModifiersFor = noModifiersFor

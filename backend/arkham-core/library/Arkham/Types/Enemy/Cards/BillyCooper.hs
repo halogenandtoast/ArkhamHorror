@@ -17,7 +17,7 @@ newtype BillyCooper = BillyCooper EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 billyCooper :: EnemyCard BillyCooper
-billyCooper = enemy BillyCooper Cards.billyCooper (5, Static 4, 2) (1, 0)
+billyCooper = enemy BillyCooper Cards.billyCooper (5, Static 4, 2) (2, 0)
 
 instance HasModifiersFor env BillyCooper where
   getModifiersFor = noModifiersFor

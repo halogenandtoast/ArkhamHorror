@@ -36,25 +36,25 @@ skill cardCode name skills classSymbol = CardDef
   }
 
 allPlayerSkillCards :: HashMap CardCode CardDef
-allPlayerSkillCards = mapFromList
-  [ ("01025", viciousBlow)
-  , ("01039", deduction)
-  , ("01053", opportunist)
-  , ("01067", fearless)
-  , ("01081", survivalInstinct)
-  , ("01089", guts)
-  , ("01090", perception)
-  , ("01091", overpower)
-  , ("01092", manualDexterity)
-  , ("01093", unexpectedCourage)
-  , ("02026", doubleOrNothing)
-  , ("04153", trueUnderstanding)
+allPlayerSkillCards = mapFromList $ map
+  (toCardCode &&& id)
+  [ deduction
+  , doubleOrNothing
+  , fearless
+  , guts
+  , manualDexterity
+  , opportunist
+  , overpower
+  , perception
+  , survivalInstinct
+  , trueUnderstanding
+  , unexpectedCourage
+  , viciousBlow
   ]
 viciousBlow :: CardDef
-viciousBlow =
-  (skill "01025" "Vicious Blow" [SkillCombat] Guardian)
-    { cdCardTraits = setFromList [Practiced]
-    }
+viciousBlow = (skill "01025" "Vicious Blow" [SkillCombat] Guardian)
+  { cdCardTraits = setFromList [Practiced]
+  }
 
 deduction :: CardDef
 deduction = (skill "01039" "Deduction" [SkillIntellect] Seeker)
@@ -73,17 +73,15 @@ fearless = (skill "01067" "Fearless" [SkillWillpower] Mystic)
   }
 
 survivalInstinct :: CardDef
-survivalInstinct =
-  (skill "01081" "Survival Instinct" [SkillAgility] Survivor)
-    { cdCardTraits = setFromList [Innate]
-    }
+survivalInstinct = (skill "01081" "Survival Instinct" [SkillAgility] Survivor)
+  { cdCardTraits = setFromList [Innate]
+  }
 
 guts :: CardDef
-guts =
-  (skill "01089" "Guts" [SkillWillpower, SkillWillpower] Neutral)
-    { cdCardTraits = setFromList [Innate]
-    , cdCommitRestrictions = [MaxOnePerTest]
-    }
+guts = (skill "01089" "Guts" [SkillWillpower, SkillWillpower] Neutral)
+  { cdCardTraits = setFromList [Innate]
+  , cdCommitRestrictions = [MaxOnePerTest]
+  }
 
 perception :: CardDef
 perception =
@@ -93,11 +91,10 @@ perception =
     }
 
 overpower :: CardDef
-overpower =
-  (skill "01091" "Overpower" [SkillCombat, SkillCombat] Neutral)
-    { cdCardTraits = setFromList [Practiced]
-    , cdCommitRestrictions = [MaxOnePerTest]
-    }
+overpower = (skill "01091" "Overpower" [SkillCombat, SkillCombat] Neutral)
+  { cdCardTraits = setFromList [Practiced]
+  , cdCommitRestrictions = [MaxOnePerTest]
+  }
 
 manualDexterity :: CardDef
 manualDexterity =
@@ -114,15 +111,13 @@ unexpectedCourage =
     }
 
 doubleOrNothing :: CardDef
-doubleOrNothing =
-  (skill "02026" "Double or Nothing" [SkillWild] Rogue)
-    { cdCardTraits = singleton Fortune
-    , cdCommitRestrictions = [MaxOnePerTest]
-    }
+doubleOrNothing = (skill "02026" "Double or Nothing" [SkillWild] Rogue)
+  { cdCardTraits = singleton Fortune
+  , cdCommitRestrictions = [MaxOnePerTest]
+  }
 
 trueUnderstanding :: CardDef
-trueUnderstanding =
-  (skill "04153" "True Understanding" [SkillWild] Seeker)
-    { cdCardTraits = setFromList [Innate]
-    , cdCommitRestrictions = [ScenarioAbility]
-    }
+trueUnderstanding = (skill "04153" "True Understanding" [SkillWild] Seeker)
+  { cdCardTraits = setFromList [Innate]
+  , cdCommitRestrictions = [ScenarioAbility]
+  }

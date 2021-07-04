@@ -57,123 +57,125 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   }
 
 allPlayerAssetCards :: HashMap CardCode CardDef
-allPlayerAssetCards = mapFromList
-  [ ("asset", placeholderAsset)
-  , ("01006", rolands38Special)
-  , ("01008", daisysToteBag)
-  , ("01009", theNecronomicon)
-  , ("01012", heirloomOfHyperborea)
-  , ("01014", wendysAmulet)
-  , ("01016", fortyFiveAutomatic)
-  , ("01017", physicalTraining)
-  , ("01018", beatCop)
-  , ("01019", firstAid)
-  , ("01020", machete)
-  , ("01021", guardDog)
-  , ("01027", policeBadge2)
-  , ("01028", beatCop2)
-  , ("01029", shotgun4)
-  , ("01030", magnifyingGlass)
-  , ("01031", oldBookOfLore)
-  , ("01032", researchLibrarian)
-  , ("01033", drMilanChristopher)
-  , ("01034", hyperawareness)
-  , ("01035", medicalTexts)
-  , ("01040", magnifyingGlass1)
-  , ("01041", discOfItzamna2)
-  , ("01042", encyclopedia2)
-  , ("01044", switchblade)
-  , ("01045", burglary)
-  , ("01046", pickpoketing)
-  , ("01047", fortyOneDerringer)
-  , ("01048", leoDeLuca)
-  , ("01049", hardKnocks)
-  , ("01054", leoDeLuca1)
-  , ("01055", catBurglar1)
-  , ("01058", forbiddenKnowledge)
-  , ("01059", holyRosary)
-  , ("01060", shrivelling)
-  , ("01061", scrying)
-  , ("01062", arcaneStudies)
-  , ("01063", arcaneInitiate)
-  , ("01070", bookOfShadows3)
-  , ("01071", grotesqueStatue4)
-  , ("01072", leatherCoat)
-  , ("01073", scavenging)
-  , ("01074", baseballBat)
-  , ("01075", rabbitsFoot)
-  , ("01076", strayCat)
-  , ("01077", digDeep)
-  , ("01082", aquinnah1)
-  , ("01086", knife)
-  , ("01087", flashlight)
-  , ("01094", bulletproofVest3)
-  , ("01095", elderSignAmulet3)
-  , ("01117", litaChantler)
-  , ("02006", zoeysCross)
-  , ("02010", jennysTwin45s)
-  , ("02012", jimsTrumpet)
-  , ("02014", duke)
-  , ("02016", blackjack)
-  , ("02020", laboratoryAssistant)
-  , ("02021", strangeSolution)
-  , ("02024", liquidCourage)
-  , ("02027", hiredMuscle1)
-  , ("02028", riteOfSeeking)
-  , ("02029", ritualCandles)
-  , ("02030", clarityOfMind)
-  , ("02032", fireAxe)
-  , ("02033", peterSylvestre)
-  , ("02035", peterSylvestre2)
-  , ("02036", kukri)
-  , ("02040", drHenryArmitage)
-  , ("02061", professorWarrenRice)
-  , ("02080", drFrancisMorgan)
-  , ("02106", brotherXavier1)
-  , ("02108", pathfinder1)
-  , ("02110", adaptable1)
-  , ("02112", songOfTheDead2)
-  , ("02140", theNecronomiconOlausWormiusTranslation)
-  , ("02147", bandolier)
-  , ("02185", keenEye3)
-  , ("02217", zebulonWhateley)
-  , ("02218", earlSawyer)
-  , ("02219", powderOfIbnGhazi)
-  , ("02226", springfieldM19034)
-  , ("02254", esotericFormula)
-  , ("02301", lightningGun5)
-  , ("04023", toothOfEztli)
-  , ("05316", occultLexicon)
-  , ("06116", scrollOfProphecies)
-  , ("07152", keenEye)
-  , ("50001", physicalTraining2)
-  , ("50003", hyperawareness2)
-  , ("50005", hardKnocks2)
-  , ("50007", arcaneStudies2)
-  , ("50009", digDeep2)
-  , ("50010", rabbitsFoot3)
-  , ("60205", arcaneEnlightenment)
-  , ("60206", celaenoFragments)
-  , ("60208", encyclopedia)
-  , ("60211", higherEducation)
-  , ("60213", whittonGreene)
-  , ("81019", ladyEsprit)
-  , ("81030", monstrousTransformation)
-  , ("90002", daisysToteBagAdvanced)
-  , ("90003", theNecronomiconAdvanced)
+allPlayerAssetCards = mapFromList $ map
+  (toCardCode &&& id)
+  [ placeholderAsset
+  , adaptable1
+  , aquinnah1
+  , arcaneEnlightenment
+  , arcaneInitiate
+  , arcaneStudies
+  , arcaneStudies2
+  , bandolier
+  , baseballBat
+  , beatCop
+  , beatCop2
+  , blackjack
+  , bookOfShadows3
+  , brotherXavier1
+  , bulletproofVest3
+  , burglary
+  , catBurglar1
+  , celaenoFragments
+  , clarityOfMind
+  , daisysToteBag
+  , daisysToteBagAdvanced
+  , digDeep
+  , digDeep2
+  , discOfItzamna2
+  , drFrancisMorgan
+  , drHenryArmitage
+  , drMilanChristopher
+  , duke
+  , earlSawyer
+  , elderSignAmulet3
+  , encyclopedia
+  , encyclopedia2
+  , esotericFormula
+  , fireAxe
+  , firstAid
+  , flashlight
+  , forbiddenKnowledge
+  , fortyFiveAutomatic
+  , fortyOneDerringer
+  , grotesqueStatue4
+  , guardDog
+  , hardKnocks
+  , hardKnocks2
+  , heirloomOfHyperborea
+  , higherEducation
+  , hiredMuscle1
+  , holyRosary
+  , hyperawareness
+  , hyperawareness2
+  , jennysTwin45s
+  , jimsTrumpet
+  , keenEye
+  , keenEye3
+  , knife
+  , kukri
+  , laboratoryAssistant
+  , ladyEsprit
+  , leatherCoat
+  , leoDeLuca
+  , leoDeLuca1
+  , lightningGun5
+  , liquidCourage
+  , litaChantler
+  , machete
+  , magnifyingGlass
+  , magnifyingGlass1
+  , medicalTexts
+  , monstrousTransformation
+  , occultLexicon
+  , oldBookOfLore
+  , pathfinder1
+  , peterSylvestre
+  , peterSylvestre2
+  , physicalTraining
+  , physicalTraining2
+  , pickpoketing
+  , policeBadge2
+  , powderOfIbnGhazi
+  , professorWarrenRice
+  , rabbitsFoot
+  , rabbitsFoot3
+  , researchLibrarian
+  , riteOfSeeking
+  , ritualCandles
+  , rolands38Special
+  , scavenging
+  , scrollOfProphecies
+  , scrying
+  , shotgun4
+  , shrivelling
+  , songOfTheDead2
+  , springfieldM19034
+  , strangeSolution
+  , strayCat
+  , switchblade
+  , theNecronomicon
+  , theNecronomiconAdvanced
+  , theNecronomiconOlausWormiusTranslation
+  , toothOfEztli
+  , wendysAmulet
+  , whittonGreene
+  , zebulonWhateley
+  , zoeysCross
   ]
 
 allEncounterAssetCards :: HashMap CardCode CardDef
-allEncounterAssetCards = mapFromList
-  [ ("02059", alchemicalConcoction)
-  , ("02060", jazzMulligan)
-  , ("02079", peterClover)
-  , ("02138", haroldWalsted)
-  , ("02139", adamLynch)
-  , ("02179", helplessPassenger)
-  , ("02215", keyToTheChamber)
-  , ("81020", bearTrap)
-  , ("81021", fishingNet)
+allEncounterAssetCards = mapFromList $ map
+  (toCardCode &&& id)
+  [ adamLynch
+  , alchemicalConcoction
+  , bearTrap
+  , fishingNet
+  , haroldWalsted
+  , helplessPassenger
+  , jazzMulligan
+  , keyToTheChamber
+  , peterClover
   ]
 
 placeholderAsset :: CardDef

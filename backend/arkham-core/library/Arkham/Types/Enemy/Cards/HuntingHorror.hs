@@ -1,4 +1,7 @@
-module Arkham.Types.Enemy.Cards.HuntingHorror where
+module Arkham.Types.Enemy.Cards.HuntingHorror
+  ( huntingHorror
+  , HuntingHorror(..)
+  ) where
 
 import Arkham.Prelude
 
@@ -7,7 +10,6 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.RequestedTokenStrategy
@@ -18,12 +20,7 @@ newtype HuntingHorror = HuntingHorror EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 huntingHorror :: EnemyCard HuntingHorror
-huntingHorror = enemy HuntingHorror Cards.huntingHorror
-  $ (healthDamageL .~ 1)
-  . (sanityDamageL .~ 1)
-  . (fightL .~ 2)
-  . (healthL .~ Static 3)
-  . (evadeL .~ 2)
+huntingHorror = enemy HuntingHorror Cards.huntingHorror (2, Static 3, 2) (1, 1)
 
 instance HasModifiersFor env HuntingHorror where
   getModifiersFor = noModifiersFor

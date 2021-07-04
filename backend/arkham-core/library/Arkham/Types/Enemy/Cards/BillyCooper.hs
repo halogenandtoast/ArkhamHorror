@@ -1,4 +1,7 @@
-module Arkham.Types.Enemy.Cards.BillyCooper where
+module Arkham.Types.Enemy.Cards.BillyCooper
+  ( billyCooper
+  , BillyCooper(..)
+  ) where
 
 import Arkham.Prelude
 
@@ -6,7 +9,6 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Trait
@@ -15,11 +17,7 @@ newtype BillyCooper = BillyCooper EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 billyCooper :: EnemyCard BillyCooper
-billyCooper = enemy BillyCooper Cards.billyCooper
-  $ (healthDamageL .~ 2)
-  . (fightL .~ 5)
-  . (healthL .~ Static 4)
-  . (evadeL .~ 2)
+billyCooper = enemy BillyCooper Cards.billyCooper (5, Static 4, 2) (1, 0)
 
 instance HasModifiersFor env BillyCooper where
   getModifiersFor = noModifiersFor

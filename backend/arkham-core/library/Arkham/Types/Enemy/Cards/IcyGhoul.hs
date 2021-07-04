@@ -1,4 +1,7 @@
-module Arkham.Types.Enemy.Cards.IcyGhoul where
+module Arkham.Types.Enemy.Cards.IcyGhoul
+  ( icyGhoul
+  , IcyGhoul(..)
+  ) where
 
 import Arkham.Prelude
 
@@ -6,20 +9,18 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.LocationMatcher
 
 newtype IcyGhoul = IcyGhoul EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 icyGhoul :: EnemyCard IcyGhoul
-icyGhoul = enemy IcyGhoul Cards.icyGhoul
-  $ (healthDamageL .~ 2)
-  . (sanityDamageL .~ 1)
-  . (fightL .~ 3)
-  . (healthL .~ Static 4)
-  . (evadeL .~ 4)
-  . (spawnAtL ?~ LocationWithTitle "Cellar")
+icyGhoul = enemyWith
+  IcyGhoul
+  Cards.icyGhoul
+  (3, Static 4, 4)
+  (2, 1)
+  (spawnAtL ?~ LocationWithTitle "Cellar")
 
 instance HasModifiersFor env IcyGhoul where
   getModifiersFor = noModifiersFor

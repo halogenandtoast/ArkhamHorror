@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.AlmaHill
   ( AlmaHill(..)
   , almaHill
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -14,7 +13,6 @@ import Arkham.Types.Cost
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
-import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
@@ -25,11 +23,7 @@ newtype AlmaHill = AlmaHill EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 almaHill :: EnemyCard AlmaHill
-almaHill = enemy AlmaHill Cards.almaHill
-  $ (sanityDamageL .~ 2)
-  . (fightL .~ 3)
-  . (healthL .~ Static 3)
-  . (evadeL .~ 3)
+almaHill = enemy AlmaHill Cards.almaHill (3, Static 3, 3) (0, 3)
 
 instance HasModifiersFor env AlmaHill where
   getModifiersFor = noModifiersFor

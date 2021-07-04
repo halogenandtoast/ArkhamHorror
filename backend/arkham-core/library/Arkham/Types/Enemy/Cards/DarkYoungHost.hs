@@ -1,4 +1,7 @@
-module Arkham.Types.Enemy.Cards.DarkYoungHost where
+module Arkham.Types.Enemy.Cards.DarkYoungHost
+  ( darkYoungHost
+  , DarkYoungHost(..)
+  ) where
 
 import Arkham.Prelude
 
@@ -7,7 +10,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -16,12 +18,7 @@ newtype DarkYoungHost = DarkYoungHost EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 darkYoungHost :: EnemyCard DarkYoungHost
-darkYoungHost = enemy DarkYoungHost Cards.darkYoungHost
-  $ (healthDamageL .~ 2)
-  . (sanityDamageL .~ 1)
-  . (fightL .~ 4)
-  . (healthL .~ Static 5)
-  . (evadeL .~ 2)
+darkYoungHost = enemy DarkYoungHost Cards.darkYoungHost (4, Static 5, 2) (2, 1)
 
 instance HasModifiersFor env DarkYoungHost where
   getModifiersFor = noModifiersFor

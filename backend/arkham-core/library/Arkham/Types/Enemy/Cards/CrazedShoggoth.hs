@@ -8,7 +8,6 @@ import Arkham.Prelude
 import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
-import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Trait
@@ -17,12 +16,8 @@ newtype CrazedShoggoth = CrazedShoggoth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 crazedShoggoth :: EnemyCard CrazedShoggoth
-crazedShoggoth = enemy CrazedShoggoth Cards.crazedShoggoth
-  $ (healthDamageL .~ 2)
-  . (sanityDamageL .~ 2)
-  . (fightL .~ 3)
-  . (healthL .~ Static 6)
-  . (evadeL .~ 4)
+crazedShoggoth =
+  enemy CrazedShoggoth Cards.crazedShoggoth (3, Static 6, 4) (2, 2)
 
 deriving newtype instance EnemyAttrsHasActions env => HasActions env CrazedShoggoth
 

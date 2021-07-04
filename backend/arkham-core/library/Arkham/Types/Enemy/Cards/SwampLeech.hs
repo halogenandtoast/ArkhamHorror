@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.SwampLeech
   ( SwampLeech(..)
   , swampLeech
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -10,7 +9,6 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
@@ -20,11 +18,7 @@ newtype SwampLeech = SwampLeech EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 swampLeech :: EnemyCard SwampLeech
-swampLeech = enemy SwampLeech Cards.swampLeech
-  $ (healthDamageL .~ 1)
-  . (fightL .~ 4)
-  . (healthL .~ Static 1)
-  . (evadeL .~ 0)
+swampLeech = enemy SwampLeech Cards.swampLeech (4, Static 1, 0) (1, 0)
 
 instance HasModifiersFor env SwampLeech where
   getModifiersFor = noModifiersFor

@@ -1,4 +1,7 @@
-module Arkham.Types.Enemy.Cards.SwarmOfRats where
+module Arkham.Types.Enemy.Cards.SwarmOfRats
+  ( SwarmOfRats(..)
+  , swarmOfRats
+  ) where
 
 import Arkham.Prelude
 
@@ -11,9 +14,7 @@ newtype SwarmOfRats = SwarmOfRats EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 swarmOfRats :: EnemyCard SwarmOfRats
-swarmOfRats = enemy SwarmOfRats Cards.swarmOfRats
-  $ (healthDamageL .~ 1)
-  . (evadeL .~ 3)
+swarmOfRats = enemy SwarmOfRats Cards.swarmOfRats (1, Static 1, 3) (1, 0)
 
 instance HasModifiersFor env SwarmOfRats where
   getModifiersFor = noModifiersFor

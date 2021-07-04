@@ -13,7 +13,6 @@ import Arkham.Types.Cost
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
@@ -24,12 +23,12 @@ newtype VictoriaDevereux = VictoriaDevereux EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 victoriaDevereux :: EnemyCard VictoriaDevereux
-victoriaDevereux = enemy VictoriaDevereux Cards.victoriaDevereux
-  $ (healthDamageL .~ 1)
-  . (fightL .~ 3)
-  . (healthL .~ Static 3)
-  . (evadeL .~ 2)
-  . (spawnAtL ?~ LocationWithTitle "Northside")
+victoriaDevereux = enemyWith
+  VictoriaDevereux
+  Cards.victoriaDevereux
+  (3, Static 3, 2)
+  (1, 0)
+  (spawnAtL ?~ LocationWithTitle "Northside")
 
 instance HasModifiersFor env VictoriaDevereux where
   getModifiersFor = noModifiersFor

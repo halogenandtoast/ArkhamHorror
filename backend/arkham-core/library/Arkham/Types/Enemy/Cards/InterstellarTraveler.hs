@@ -1,15 +1,13 @@
 module Arkham.Types.Enemy.Cards.InterstellarTraveler
   ( interstellarTraveler
   , InterstellarTraveler(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
-import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
@@ -21,13 +19,12 @@ newtype InterstellarTraveler = InterstellarTraveler EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 interstellarTraveler :: EnemyCard InterstellarTraveler
-interstellarTraveler = enemy InterstellarTraveler Cards.interstellarTraveler
-  $ (healthDamageL .~ 1)
-  . (sanityDamageL .~ 2)
-  . (fightL .~ 4)
-  . (healthL .~ Static 3)
-  . (evadeL .~ 2)
-  . (spawnAtL ?~ LocationWithTrait Extradimensional)
+interstellarTraveler = enemyWith
+  InterstellarTraveler
+  Cards.interstellarTraveler
+  (4, Static 3, 2)
+  (1, 2)
+  (spawnAtL ?~ LocationWithTrait Extradimensional)
 
 instance HasModifiersFor env InterstellarTraveler where
   getModifiersFor = noModifiersFor

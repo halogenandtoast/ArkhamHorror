@@ -1,4 +1,7 @@
-module Arkham.Types.Enemy.Cards.GoatSpawn where
+module Arkham.Types.Enemy.Cards.GoatSpawn
+  ( goatSpawn
+  , GoatSpawn(..)
+  ) where
 
 import Arkham.Prelude
 
@@ -6,7 +9,6 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Source
 
@@ -14,11 +16,7 @@ newtype GoatSpawn = GoatSpawn EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 goatSpawn :: EnemyCard GoatSpawn
-goatSpawn = enemy GoatSpawn Cards.goatSpawn
-  $ (healthDamageL .~ 1)
-  . (fightL .~ 3)
-  . (healthL .~ Static 3)
-  . (evadeL .~ 2)
+goatSpawn = enemy GoatSpawn Cards.goatSpawn (3, Static 3, 2) (1, 0)
 
 instance HasModifiersFor env GoatSpawn where
   getModifiersFor = noModifiersFor

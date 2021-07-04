@@ -1,4 +1,7 @@
-module Arkham.Types.Enemy.Cards.SilverTwilightAcolyte where
+module Arkham.Types.Enemy.Cards.SilverTwilightAcolyte
+  ( SilverTwilightAcolyte(..)
+  , silverTwilightAcolyte
+  ) where
 
 import Arkham.Prelude
 
@@ -6,7 +9,6 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Prey
 
@@ -14,13 +16,12 @@ newtype SilverTwilightAcolyte = SilverTwilightAcolyte EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 silverTwilightAcolyte :: EnemyCard SilverTwilightAcolyte
-silverTwilightAcolyte = enemy SilverTwilightAcolyte Cards.silverTwilightAcolyte
-  $ (healthDamageL .~ 1)
-  . (sanityDamageL .~ 0)
-  . (fightL .~ 2)
-  . (healthL .~ Static 3)
-  . (evadeL .~ 3)
-  . (preyL .~ SetToBearer)
+silverTwilightAcolyte = enemyWith
+  SilverTwilightAcolyte
+  Cards.silverTwilightAcolyte
+  (2, Static 3, 3)
+  (1, 0)
+  (preyL .~ SetToBearer)
 
 instance HasModifiersFor env SilverTwilightAcolyte where
   getModifiersFor = noModifiersFor

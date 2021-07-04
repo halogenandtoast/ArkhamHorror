@@ -13,7 +13,6 @@ import Arkham.Types.Cost
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
@@ -24,12 +23,12 @@ newtype PeterWarren = PeterWarren EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 peterWarren :: EnemyCard PeterWarren
-peterWarren = enemy PeterWarren Cards.peterWarren
-  $ (healthDamageL .~ 1)
-  . (fightL .~ 2)
-  . (healthL .~ Static 3)
-  . (evadeL .~ 3)
-  . (spawnAtL ?~ LocationWithTitle "Miskatonic University")
+peterWarren = enemyWith
+  PeterWarren
+  Cards.peterWarren
+  (2, Static 3, 3)
+  (1, 0)
+  (spawnAtL ?~ LocationWithTitle "Miskatonic University")
 
 instance HasModifiersFor env PeterWarren where
   getModifiersFor = noModifiersFor

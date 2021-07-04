@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.Acolyte
   ( Acolyte(..)
   , acolyte
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -16,10 +15,7 @@ newtype Acolyte = Acolyte EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 acolyte :: EnemyCard Acolyte
-acolyte = enemy Acolyte Cards.acolyte
-  $ (healthDamageL .~ 1)
-  . (fightL .~ 3)
-  . (evadeL .~ 2)
+acolyte = enemy Acolyte Cards.acolyte (3, Static 1, 2) (1, 0)
 
 instance HasModifiersFor env Acolyte where
   getModifiersFor = noModifiersFor

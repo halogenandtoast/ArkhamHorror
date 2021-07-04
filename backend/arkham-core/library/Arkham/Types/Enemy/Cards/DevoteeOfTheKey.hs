@@ -9,7 +9,6 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Game.Helpers
-import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
@@ -18,13 +17,12 @@ newtype DevoteeOfTheKey = DevoteeOfTheKey EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 devoteeOfTheKey :: EnemyCard DevoteeOfTheKey
-devoteeOfTheKey = enemy DevoteeOfTheKey Cards.devoteeOfTheKey
-  $ (healthDamageL .~ 1)
-  . (sanityDamageL .~ 1)
-  . (fightL .~ 3)
-  . (healthL .~ Static 3)
-  . (evadeL .~ 3)
-  . (spawnAtL ?~ LocationWithTitle "Base of the Hill")
+devoteeOfTheKey = enemyWith
+  DevoteeOfTheKey
+  Cards.devoteeOfTheKey
+  (3, Static 3, 3)
+  (1, 1)
+  (spawnAtL ?~ LocationWithTitle "Base of the Hill")
 
 instance HasModifiersFor env DevoteeOfTheKey where
   getModifiersFor = noModifiersFor

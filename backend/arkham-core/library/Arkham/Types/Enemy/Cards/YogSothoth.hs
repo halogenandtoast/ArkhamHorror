@@ -9,7 +9,6 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Game.Helpers
-import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
@@ -19,12 +18,7 @@ newtype YogSothoth = YogSothoth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yogSothoth :: EnemyCard YogSothoth
-yogSothoth = enemy YogSothoth Cards.yogSothoth
-  $ (healthDamageL .~ 1)
-  . (sanityDamageL .~ 5)
-  . (fightL .~ 4)
-  . (healthL .~ Static 4)
-  . (evadeL .~ 0)
+yogSothoth = enemy YogSothoth Cards.yogSothoth (4, Static 4, 0) (1, 5)
 
 instance HasCount PlayerCount env () => HasModifiersFor env YogSothoth where
   getModifiersFor _ target (YogSothoth a) | isTarget a target = do

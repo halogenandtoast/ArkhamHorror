@@ -14,7 +14,6 @@ import Arkham.Types.Cost
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
-import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
@@ -26,12 +25,8 @@ newtype JeremiahPierce = JeremiahPierce EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jeremiahPierce :: EnemyCard JeremiahPierce
-jeremiahPierce = enemy JeremiahPierce Cards.jeremiahPierce
-  $ (healthDamageL .~ 1)
-  . (sanityDamageL .~ 1)
-  . (fightL .~ 4)
-  . (healthL .~ Static 3)
-  . (evadeL .~ 4)
+jeremiahPierce =
+  enemy JeremiahPierce Cards.jeremiahPierce (4, Static 3, 4) (1, 1)
 
 instance HasModifiersFor env JeremiahPierce where
   getModifiersFor = noModifiersFor

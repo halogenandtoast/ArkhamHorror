@@ -10,7 +10,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
-import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
@@ -19,13 +18,12 @@ newtype CorpseTaker = CorpseTaker EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 corpseTaker :: EnemyCard CorpseTaker
-corpseTaker = enemy CorpseTaker Cards.corpseTaker
-  $ (healthDamageL .~ 1)
-  . (sanityDamageL .~ 2)
-  . (fightL .~ 4)
-  . (healthL .~ Static 3)
-  . (evadeL .~ 3)
-  . (spawnAtL ?~ FarthestLocationFromYou EmptyLocation)
+corpseTaker = enemyWith
+  CorpseTaker
+  Cards.corpseTaker
+  (4, Static 3, 3)
+  (1, 2)
+  (spawnAtL ?~ FarthestLocationFromYou EmptyLocation)
 
 instance HasModifiersFor env CorpseTaker where
   getModifiersFor = noModifiersFor

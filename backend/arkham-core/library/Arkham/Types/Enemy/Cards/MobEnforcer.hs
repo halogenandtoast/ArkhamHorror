@@ -13,7 +13,6 @@ import Arkham.Types.Cost
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Prey
@@ -24,13 +23,12 @@ newtype MobEnforcer = MobEnforcer EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mobEnforcer :: EnemyCard MobEnforcer
-mobEnforcer = enemy MobEnforcer Cards.mobEnforcer
-  $ (healthDamageL .~ 1)
-  . (sanityDamageL .~ 0)
-  . (fightL .~ 4)
-  . (healthL .~ Static 3)
-  . (evadeL .~ 3)
-  . (preyL .~ SetToBearer)
+mobEnforcer = enemyWith
+  MobEnforcer
+  Cards.mobEnforcer
+  (4, Static 3, 3)
+  (1, 0)
+  (preyL .~ SetToBearer)
 
 instance HasModifiersFor env MobEnforcer where
   getModifiersFor = noModifiersFor

@@ -1,4 +1,7 @@
-module Arkham.Types.Enemy.Cards.RelentlessDarkYoung where
+module Arkham.Types.Enemy.Cards.RelentlessDarkYoung
+  ( relentlessDarkYoung
+  , RelentlessDarkYoung(..)
+  ) where
 
 import Arkham.Prelude
 
@@ -6,7 +9,6 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Prey
 import Arkham.Types.SkillType
@@ -15,13 +17,12 @@ newtype RelentlessDarkYoung = RelentlessDarkYoung EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 relentlessDarkYoung :: EnemyCard RelentlessDarkYoung
-relentlessDarkYoung = enemy RelentlessDarkYoung Cards.relentlessDarkYoung
-  $ (healthDamageL .~ 2)
-  . (sanityDamageL .~ 1)
-  . (fightL .~ 4)
-  . (healthL .~ Static 5)
-  . (evadeL .~ 2)
-  . (preyL .~ LowestSkill SkillAgility)
+relentlessDarkYoung = enemyWith
+  RelentlessDarkYoung
+  Cards.relentlessDarkYoung
+  (4, Static 5, 2)
+  (2, 1)
+  (preyL .~ LowestSkill SkillAgility)
 
 instance HasModifiersFor env RelentlessDarkYoung where
   getModifiersFor = noModifiersFor

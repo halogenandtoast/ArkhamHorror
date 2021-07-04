@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.WizardOfTheOrder
   ( WizardOfTheOrder(..)
   , wizardOfTheOrder
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -10,18 +9,14 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Message
 
 newtype WizardOfTheOrder = WizardOfTheOrder EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wizardOfTheOrder :: EnemyCard WizardOfTheOrder
-wizardOfTheOrder = enemy WizardOfTheOrder Cards.wizardOfTheOrder
-  $ (healthDamageL .~ 1)
-  . (fightL .~ 4)
-  . (healthL .~ Static 2)
-  . (evadeL .~ 2)
+wizardOfTheOrder =
+  enemy WizardOfTheOrder Cards.wizardOfTheOrder (4, Static 2, 2) (1, 0)
 
 instance HasModifiersFor env WizardOfTheOrder where
   getModifiersFor = noModifiersFor

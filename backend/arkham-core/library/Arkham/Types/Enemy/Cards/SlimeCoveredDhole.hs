@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.SlimeCoveredDhole
   ( SlimeCoveredDhole(..)
   , slimeCoveredDhole
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -11,7 +10,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Prey
@@ -21,13 +19,12 @@ newtype SlimeCoveredDhole = SlimeCoveredDhole EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 slimeCoveredDhole :: EnemyCard SlimeCoveredDhole
-slimeCoveredDhole = enemy SlimeCoveredDhole Cards.slimeCoveredDhole
-  $ (healthDamageL .~ 1)
-  . (sanityDamageL .~ 1)
-  . (fightL .~ 2)
-  . (healthL .~ Static 3)
-  . (evadeL .~ 3)
-  . (preyL .~ LowestRemainingHealth)
+slimeCoveredDhole = enemyWith
+  SlimeCoveredDhole
+  Cards.slimeCoveredDhole
+  (2, Static 3, 3)
+  (1, 1)
+  (preyL .~ LowestRemainingHealth)
 
 instance HasModifiersFor env SlimeCoveredDhole where
   getModifiersFor = noModifiersFor

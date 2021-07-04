@@ -26,7 +26,7 @@ newtype BlastedHeath_248 = BlastedHeath_248 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blastedHeath_248 :: LocationCard BlastedHeath_248
-blastedHeath_248 = location BlastedHeath_248 
+blastedHeath_248 = location BlastedHeath_248
   Cards.blastedHeath_248
   4
   (Static 3)

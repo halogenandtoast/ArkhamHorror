@@ -444,7 +444,6 @@ allLocations = mapFromList
     , ArkhamWoodsCorpseRiddenClearing' . arkhamWoodsCorpseRiddenClearing
     )
   , ("50036", ArkhamWoodsWoodenBridge' . arkhamWoodsWoodenBridge)
-  , ("50037", RitualSite' . ritualSite)
   , ("81007", CursedShores' . cursedShores)
   , ("81008", GardenDistrict' . gardenDistrict)
   , ("81009", Broadmoor' . broadmoor)

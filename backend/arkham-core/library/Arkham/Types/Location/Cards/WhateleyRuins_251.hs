@@ -29,7 +29,7 @@ whateleyRuins_251 :: LocationCard WhateleyRuins_251
 whateleyRuins_251 = location
   WhateleyRuins_251
   Cards.whateleyRuins_251
-  3
+  2
   (PerPlayer 2)
   Plus
   [Triangle, Diamond, Hourglass]

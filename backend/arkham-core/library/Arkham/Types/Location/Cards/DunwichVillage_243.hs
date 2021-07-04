@@ -27,10 +27,10 @@ newtype DunwichVillage_243 = DunwichVillage_243 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dunwichVillage_243 :: LocationCard DunwichVillage_243
-dunwichVillage_243 = location DunwichVillage_243 
+dunwichVillage_243 = location DunwichVillage_243
   Cards.dunwichVillage_243
-  3
-  (Static 1)
+  2
+  (Static 3)
   Circle
   [Triangle, Square, Diamond]
 

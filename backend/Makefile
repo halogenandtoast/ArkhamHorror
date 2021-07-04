@@ -5,6 +5,7 @@ api.watch:
 	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
 	  --interleaved-output \
 	  --file-watch \
+		$(EXTRA_STACK_FLAGS) \
 	  --exec "bash -c \"pkill arkham-api; DEVELOPMENT=true stack exec arkham-api &\"" \
 
 ## Generate a tags file for source-code navigation

@@ -15,7 +15,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Window
@@ -23,8 +22,8 @@ import Arkham.Types.Window
 newtype YourHouse = YourHouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-yourHouse :: LocationId -> YourHouse
-yourHouse = YourHouse . baseAttrs
+yourHouse :: LocationCard YourHouse
+yourHouse = location YourHouse 
   Cards.yourHouse
   2
   (PerPlayer 1)

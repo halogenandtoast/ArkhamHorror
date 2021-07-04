@@ -12,7 +12,6 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Query
@@ -21,18 +20,17 @@ import Arkham.Types.Window
 newtype UprootedWoods = UprootedWoods LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-uprootedWoods :: LocationId -> UprootedWoods
-uprootedWoods =
+uprootedWoods :: LocationCard UprootedWoods
+uprootedWoods = locationWith
   UprootedWoods
-    . (revealedSymbolL .~ Moon)
-    . (revealedConnectedSymbolsL .~ setFromList [Square, T])
-    . (unrevealedNameL .~ "Altered Path")
-    . baseAttrs
-        Cards.uprootedWoods
-        2
-        (PerPlayer 1)
-        NoSymbol
-        []
+  Cards.uprootedWoods
+  2
+  (PerPlayer 1)
+  NoSymbol
+  []
+  ((revealedSymbolL .~ Moon)
+  . (revealedConnectedSymbolsL .~ setFromList [Square, T])
+  . (unrevealedNameL .~ "Altered Path"))
 
 instance HasModifiersFor env UprootedWoods where
   getModifiersFor = noModifiersFor

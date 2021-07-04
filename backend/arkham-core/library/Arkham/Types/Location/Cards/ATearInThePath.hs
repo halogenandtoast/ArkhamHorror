@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.ATearInThePath
   ( aTearInThePath
   , ATearInThePath(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -12,7 +11,6 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Query
@@ -21,18 +19,18 @@ import Arkham.Types.Window
 newtype ATearInThePath = ATearInThePath LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-aTearInThePath :: LocationId -> ATearInThePath
-aTearInThePath =
+aTearInThePath :: LocationCard ATearInThePath
+aTearInThePath = locationWith
   ATearInThePath
-    . (revealedSymbolL .~ Equals)
-    . (revealedConnectedSymbolsL .~ setFromList [Square, Squiggle])
-    . (unrevealedNameL .~ "Altered Path")
-    . baseAttrs
-        Cards.aTearInThePath
-        3
-        (PerPlayer 1)
-        NoSymbol
-        []
+  Cards.aTearInThePath
+  3
+  (PerPlayer 1)
+  NoSymbol
+  []
+  ((revealedSymbolL .~ Equals)
+  . (revealedConnectedSymbolsL .~ setFromList [Square, Squiggle])
+  . (unrevealedNameL .~ "Altered Path")
+  )
 
 instance HasModifiersFor env ATearInThePath where
   getModifiersFor = noModifiersFor

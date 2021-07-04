@@ -17,7 +17,6 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -29,8 +28,8 @@ import Arkham.Types.Window
 newtype FoulSwamp = FoulSwamp LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-foulSwamp :: LocationId -> FoulSwamp
-foulSwamp = FoulSwamp . baseAttrs
+foulSwamp :: LocationCard FoulSwamp
+foulSwamp = location FoulSwamp 
   Cards.foulSwamp
   2
   (Static 0)

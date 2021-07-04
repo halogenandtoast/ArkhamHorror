@@ -7,7 +7,6 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
@@ -15,8 +14,8 @@ import Arkham.Types.Message
 newtype HoleInTheWall = HoleInTheWall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-holeInTheWall :: LocationId -> HoleInTheWall
-holeInTheWall = HoleInTheWall . baseAttrs
+holeInTheWall :: LocationCard HoleInTheWall
+holeInTheWall = location HoleInTheWall
   Cards.holeInTheWall
   1
   (Static 0)

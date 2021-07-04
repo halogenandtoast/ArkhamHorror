@@ -11,14 +11,13 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 
 newtype Broadmoor = Broadmoor LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-broadmoor :: LocationId -> Broadmoor
-broadmoor = Broadmoor . baseAttrs
+broadmoor :: LocationCard Broadmoor
+broadmoor = location Broadmoor 
   Cards.broadmoor
   3
   (PerPlayer 1)

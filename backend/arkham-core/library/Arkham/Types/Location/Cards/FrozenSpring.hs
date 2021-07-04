@@ -12,7 +12,6 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Window
@@ -20,18 +19,17 @@ import Arkham.Types.Window
 newtype FrozenSpring = FrozenSpring LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-frozenSpring :: LocationId -> FrozenSpring
-frozenSpring =
+frozenSpring :: LocationCard FrozenSpring
+frozenSpring = locationWith
   FrozenSpring
-    . (revealedSymbolL .~ Plus)
-    . (revealedConnectedSymbolsL .~ setFromList [Triangle, Hourglass])
-    . (unrevealedNameL .~ "Diverging Path")
-    . baseAttrs
-        Cards.frozenSpring
-        3
-        (PerPlayer 1)
-        NoSymbol
-        []
+  Cards.frozenSpring
+  3
+  (PerPlayer 1)
+  NoSymbol
+  []
+  ((revealedSymbolL .~ Plus)
+  . (revealedConnectedSymbolsL .~ setFromList [Triangle, Hourglass])
+  . (unrevealedNameL .~ "Diverging Path"))
 
 instance HasModifiersFor env FrozenSpring where
   getModifiersFor = noModifiersFor

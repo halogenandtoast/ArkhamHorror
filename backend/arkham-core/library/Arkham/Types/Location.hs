@@ -241,12 +241,13 @@ baseLocation
   -> (CardDef -> CardDef)
   -> Location
 baseLocation a b c d e f attrsF defF =
-  BaseLocation' . BaseLocation . attrsF $ baseAttrs
+  BaseLocation' $ locationWith BaseLocation
     (defF $ lookupEncounterCardDef b)
     c
     d
     e
     f
+    attrsF
     a
 
 instance HasVictoryPoints Location where
@@ -292,7 +293,7 @@ instance HasId LocationSymbol env Location where
   getId = getId . toAttrs
 
 instance HasId (Maybe LocationId) env (Direction, Location) where
-  getId (dir, location) = getId (dir, toAttrs location)
+  getId (dir, location') = getId (dir, toAttrs location')
 
 getLocationName :: Location -> LocationName
 getLocationName l = if locationRevealed attrs

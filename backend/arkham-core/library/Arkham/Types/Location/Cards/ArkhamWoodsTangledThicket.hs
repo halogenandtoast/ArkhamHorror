@@ -7,7 +7,6 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.SkillType
@@ -15,17 +14,17 @@ import Arkham.Types.SkillType
 newtype ArkhamWoodsTangledThicket = ArkhamWoodsTangledThicket LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-arkhamWoodsTangledThicket :: LocationId -> ArkhamWoodsTangledThicket
-arkhamWoodsTangledThicket =
+arkhamWoodsTangledThicket :: LocationCard ArkhamWoodsTangledThicket
+arkhamWoodsTangledThicket = locationWith
   ArkhamWoodsTangledThicket
-    . (revealedConnectedSymbolsL .~ setFromList [Squiggle, T, Moon])
-    . (revealedSymbolL .~ Equals)
-    . baseAttrs
-        Cards.arkhamWoodsTangledThicket
-        2
-        (PerPlayer 1)
-        Square
-        [Squiggle]
+  Cards.arkhamWoodsTangledThicket
+  2
+  (PerPlayer 1)
+  Square
+  [Squiggle]
+  ((revealedConnectedSymbolsL .~ setFromList [Squiggle, T, Moon])
+  . (revealedSymbolL .~ Equals)
+  )
 
 instance HasModifiersFor env ArkhamWoodsTangledThicket where
   getModifiersFor = noModifiersFor

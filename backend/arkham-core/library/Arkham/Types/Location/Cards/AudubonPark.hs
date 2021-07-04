@@ -7,15 +7,14 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 
 newtype AudubonPark = AudubonPark LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-audubonPark :: LocationId -> AudubonPark
-audubonPark = AudubonPark . baseAttrs
+audubonPark :: LocationCard AudubonPark
+audubonPark = location AudubonPark 
   Cards.audubonPark
   3
   (PerPlayer 1)

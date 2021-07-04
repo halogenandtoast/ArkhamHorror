@@ -9,7 +9,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.Target
@@ -17,8 +16,8 @@ import Arkham.Types.Target
 newtype GuestHall = GuestHall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-guestHall :: LocationId -> GuestHall
-guestHall = GuestHall . baseAttrs
+guestHall :: LocationCard GuestHall
+guestHall = location GuestHall 
   Cards.guestHall
   1
   (Static 0)

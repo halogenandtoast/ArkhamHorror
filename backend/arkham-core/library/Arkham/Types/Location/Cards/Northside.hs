@@ -13,7 +13,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Window
@@ -21,13 +20,9 @@ import Arkham.Types.Window
 newtype Northside = Northside LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-northside :: LocationId -> Northside
-northside = Northside . baseAttrs
-  Cards.northside
-  3
-  (PerPlayer 2)
-  T
-  [Diamond, Triangle]
+northside :: LocationCard Northside
+northside =
+  location Northside Cards.northside 3 (PerPlayer 2) T [Diamond, Triangle]
 
 instance HasModifiersFor env Northside where
   getModifiersFor = noModifiersFor

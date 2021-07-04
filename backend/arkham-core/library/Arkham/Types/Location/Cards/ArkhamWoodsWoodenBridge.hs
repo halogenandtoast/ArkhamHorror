@@ -10,7 +10,6 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Source
@@ -18,17 +17,17 @@ import Arkham.Types.Source
 newtype ArkhamWoodsWoodenBridge = ArkhamWoodsWoodenBridge LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-arkhamWoodsWoodenBridge :: LocationId -> ArkhamWoodsWoodenBridge
-arkhamWoodsWoodenBridge =
+arkhamWoodsWoodenBridge :: LocationCard ArkhamWoodsWoodenBridge
+arkhamWoodsWoodenBridge = locationWith
   ArkhamWoodsWoodenBridge
-    . (revealedConnectedSymbolsL .~ setFromList [Squiggle, Droplet])
-    . (revealedSymbolL .~ Circle)
-    . baseAttrs
-        Cards.arkhamWoodsWoodenBridge
-        3
-        (PerPlayer 1)
-        Square
-        [Squiggle]
+  Cards.arkhamWoodsWoodenBridge
+  3
+  (PerPlayer 1)
+  Square
+  [Squiggle]
+  ((revealedConnectedSymbolsL .~ setFromList [Squiggle, Droplet])
+  . (revealedSymbolL .~ Circle)
+  )
 
 instance HasModifiersFor env ArkhamWoodsWoodenBridge where
   getModifiersFor = noModifiersFor

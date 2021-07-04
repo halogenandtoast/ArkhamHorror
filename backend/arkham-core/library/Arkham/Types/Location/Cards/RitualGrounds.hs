@@ -7,15 +7,14 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 
 newtype RitualGrounds = RitualGrounds LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-ritualGrounds :: LocationId -> RitualGrounds
-ritualGrounds = RitualGrounds . baseAttrs
+ritualGrounds :: LocationCard RitualGrounds
+ritualGrounds = location RitualGrounds 
   Cards.ritualGrounds
   2
   (PerPlayer 1)

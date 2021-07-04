@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.BaseOfTheHill
   ( baseOfTheHill
   , BaseOfTheHill(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -13,10 +12,10 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.SkillType
@@ -26,8 +25,9 @@ import Arkham.Types.Window
 newtype BaseOfTheHill = BaseOfTheHill LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-baseOfTheHill :: LocationId -> BaseOfTheHill
-baseOfTheHill = BaseOfTheHill . baseAttrs
+baseOfTheHill :: LocationCard BaseOfTheHill
+baseOfTheHill = location
+  BaseOfTheHill
   Cards.baseOfTheHill
   3
   (Static 0)
@@ -69,9 +69,7 @@ instance LocationRunner env => RunMessage env BaseOfTheHill where
     SuccessfulInvestigation _ _ (AbilitySource source 1)
       | isSource attrs source -> do
         locations <- getSetList @SetAsideLocationCardCode ()
-        alteredPaths <- filterM
-          (fmap (== "Diverging Path") . getName)
-          locations
+        alteredPaths <- filterM (fmap (== "Diverging Path") . getName) locations
         case nonEmpty alteredPaths of
           Just ne -> do
             newLocationId <- getRandom

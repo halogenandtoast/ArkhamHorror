@@ -15,7 +15,6 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Query
@@ -26,8 +25,8 @@ import Arkham.Types.Window
 newtype DevilsHopYard_252 = DevilsHopYard_252 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-devilsHopYard_252 :: LocationId -> DevilsHopYard_252
-devilsHopYard_252 = DevilsHopYard_252 . baseAttrs
+devilsHopYard_252 :: LocationCard DevilsHopYard_252
+devilsHopYard_252 = location DevilsHopYard_252 
   Cards.devilsHopYard_252
   1
   (Static 2)

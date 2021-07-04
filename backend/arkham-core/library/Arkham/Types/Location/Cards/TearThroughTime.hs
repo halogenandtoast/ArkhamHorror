@@ -16,7 +16,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Window
@@ -24,8 +23,8 @@ import Arkham.Types.Window
 newtype TearThroughTime = TearThroughTime LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-tearThroughTime :: LocationId -> TearThroughTime
-tearThroughTime = TearThroughTime . baseAttrs
+tearThroughTime :: LocationCard TearThroughTime
+tearThroughTime = location TearThroughTime 
   Cards.tearThroughTime
   2
   (PerPlayer 2)

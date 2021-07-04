@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.DarkenedHall
   ( darkenedHall
   , DarkenedHall(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -11,25 +10,23 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 
 newtype DarkenedHall = DarkenedHall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-darkenedHall :: LocationId -> DarkenedHall
-darkenedHall =
+darkenedHall :: LocationCard DarkenedHall
+darkenedHall = locationWith
   DarkenedHall
-    . (revealedConnectedSymbolsL
-      .~ setFromList [Triangle, T, Hourglass, Plus, Squiggle]
-      )
-    . baseAttrs
-        Cards.darkenedHall
-        4
-        (Static 0)
-        Diamond
-        [Triangle]
+  Cards.darkenedHall
+  4
+  (Static 0)
+  Diamond
+  [Triangle]
+  (revealedConnectedSymbolsL
+  .~ setFromList [Triangle, T, Hourglass, Plus, Squiggle]
+  )
 
 instance HasModifiersFor env DarkenedHall where
   getModifiersFor = noModifiersFor
@@ -43,10 +40,10 @@ instance LocationRunner env => RunMessage env DarkenedHall where
       locations <- shuffleM ["02075", "02076", "02077"]
       randomIds <- replicateM 3 getRandom
       unshiftMessages $ concat
-        [ [ PlaceLocation location locationId'
+        [ [ PlaceLocation location' locationId'
           , SetLocationLabel locationId' label'
           ]
-        | (locationId', (label', location)) <- zip randomIds $ zip
+        | (locationId', (label', location')) <- zip randomIds $ zip
           ["backHallDoorway1", "backHallDoorway2", "backHallDoorway3"]
           locations
         ]

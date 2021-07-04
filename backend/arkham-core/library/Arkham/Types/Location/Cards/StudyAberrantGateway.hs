@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.StudyAberrantGateway
   ( StudyAberrantGateway(..)
   , studyAberrantGateway
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -12,9 +11,9 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Source
@@ -23,8 +22,9 @@ import Arkham.Types.Window
 newtype StudyAberrantGateway = StudyAberrantGateway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-studyAberrantGateway :: LocationId -> StudyAberrantGateway
-studyAberrantGateway = StudyAberrantGateway . baseAttrs
+studyAberrantGateway :: LocationCard StudyAberrantGateway
+studyAberrantGateway = location
+  StudyAberrantGateway
   Cards.studyAberrantGateway
   3
   (PerPlayer 1)

@@ -13,7 +13,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Trait
@@ -22,8 +21,8 @@ import Arkham.Types.Window
 newtype NorthsideTrainStation = NorthsideTrainStation LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-northsideTrainStation :: LocationId -> NorthsideTrainStation
-northsideTrainStation = NorthsideTrainStation . baseAttrs
+northsideTrainStation :: LocationCard NorthsideTrainStation
+northsideTrainStation = location NorthsideTrainStation 
   Cards.northsideTrainStation
   2
   (PerPlayer 1)

@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.BackAlley
   ( backAlley
   , BackAlley(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -11,20 +10,20 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 
 newtype BackAlley = BackAlley LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-backAlley :: LocationId -> BackAlley
-backAlley =
-  BackAlley . (revealedSymbolL .~ Squiggle) . baseAttrs
-    Cards.backAlley
-    1
-    (PerPlayer 1)
-    T
-    [Diamond]
+backAlley :: LocationCard BackAlley
+backAlley = locationWith
+  BackAlley
+  Cards.backAlley
+  1
+  (PerPlayer 1)
+  T
+  [Diamond]
+  (revealedSymbolL .~ Squiggle)
 
 instance HasModifiersFor env BackAlley where
   getModifiersFor = noModifiersFor

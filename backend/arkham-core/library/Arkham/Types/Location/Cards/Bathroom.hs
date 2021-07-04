@@ -8,7 +8,6 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Source
@@ -17,8 +16,8 @@ import Arkham.Types.Token
 newtype Bathroom = Bathroom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-bathroom :: LocationId -> Bathroom
-bathroom = Bathroom . baseAttrs
+bathroom :: LocationCard Bathroom
+bathroom = location Bathroom 
   Cards.bathroom
   1
   (PerPlayer 1)

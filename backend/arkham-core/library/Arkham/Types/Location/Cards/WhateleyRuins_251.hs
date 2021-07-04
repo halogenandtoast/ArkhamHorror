@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.WhateleyRuins_251
   ( whateleyRuins_251
   , WhateleyRuins_251(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -11,12 +10,11 @@ import Arkham.Types.Ability
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -27,8 +25,9 @@ import Arkham.Types.Window
 newtype WhateleyRuins_251 = WhateleyRuins_251 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-whateleyRuins_251 :: LocationId -> WhateleyRuins_251
-whateleyRuins_251 = WhateleyRuins_251 . baseAttrs
+whateleyRuins_251 :: LocationCard WhateleyRuins_251
+whateleyRuins_251 = location
+  WhateleyRuins_251
   Cards.whateleyRuins_251
   3
   (PerPlayer 2)

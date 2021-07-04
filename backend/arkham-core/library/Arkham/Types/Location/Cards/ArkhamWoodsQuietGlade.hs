@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.ArkhamWoodsQuietGlade
   ( ArkhamWoodsQuietGlade(..)
   , arkhamWoodsQuietGlade
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -14,7 +13,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Source
@@ -24,17 +22,17 @@ import Arkham.Types.Window
 newtype ArkhamWoodsQuietGlade = ArkhamWoodsQuietGlade LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-arkhamWoodsQuietGlade :: LocationId -> ArkhamWoodsQuietGlade
-arkhamWoodsQuietGlade =
+arkhamWoodsQuietGlade :: LocationCard ArkhamWoodsQuietGlade
+arkhamWoodsQuietGlade = locationWith
   ArkhamWoodsQuietGlade
-    . (revealedConnectedSymbolsL .~ setFromList [Squiggle, Equals, Hourglass])
-    . (revealedSymbolL .~ Moon)
-    . baseAttrs
-        Cards.arkhamWoodsQuietGlade
-        1
-        (Static 0)
-        Square
-        [Squiggle]
+  Cards.arkhamWoodsQuietGlade
+  1
+  (Static 0)
+  Square
+  [Squiggle]
+  ((revealedConnectedSymbolsL .~ setFromList [Squiggle, Equals, Hourglass])
+  . (revealedSymbolL .~ Moon)
+  )
 
 instance HasModifiersFor env ArkhamWoodsQuietGlade where
   getModifiersFor = noModifiersFor

@@ -7,7 +7,6 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.SkillType
@@ -15,17 +14,17 @@ import Arkham.Types.SkillType
 newtype ArkhamWoodsCliffside = ArkhamWoodsCliffside LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-arkhamWoodsCliffside :: LocationId -> ArkhamWoodsCliffside
-arkhamWoodsCliffside =
+arkhamWoodsCliffside :: LocationCard ArkhamWoodsCliffside
+arkhamWoodsCliffside = locationWith
   ArkhamWoodsCliffside
-    . (revealedConnectedSymbolsL .~ setFromList [Squiggle, Moon, Triangle])
-    . (revealedSymbolL .~ Hourglass)
-    . baseAttrs
-        Cards.arkhamWoodsCliffside
-        2
-        (PerPlayer 1)
-        Square
-        [Squiggle]
+  Cards.arkhamWoodsCliffside
+  2
+  (PerPlayer 1)
+  Square
+  [Squiggle]
+  ((revealedConnectedSymbolsL .~ setFromList [Squiggle, Moon, Triangle])
+  . (revealedSymbolL .~ Hourglass)
+  )
 
 instance HasModifiersFor env ArkhamWoodsCliffside where
   getModifiersFor = noModifiersFor

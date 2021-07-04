@@ -17,7 +17,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
@@ -27,8 +26,8 @@ import Arkham.Types.Window
 newtype DunwichVillage_243 = DunwichVillage_243 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-dunwichVillage_243 :: LocationId -> DunwichVillage_243
-dunwichVillage_243 = DunwichVillage_243 . baseAttrs
+dunwichVillage_243 :: LocationCard DunwichVillage_243
+dunwichVillage_243 = location DunwichVillage_243 
   Cards.dunwichVillage_243
   3
   (Static 1)

@@ -14,7 +14,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.ScenarioLogKey
@@ -26,8 +25,8 @@ import Arkham.Types.Window
 newtype GardenDistrict = GardenDistrict LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-gardenDistrict :: LocationId -> GardenDistrict
-gardenDistrict = GardenDistrict . baseAttrs
+gardenDistrict :: LocationCard GardenDistrict
+gardenDistrict = location GardenDistrict 
   Cards.gardenDistrict
   1
   (Static 0)

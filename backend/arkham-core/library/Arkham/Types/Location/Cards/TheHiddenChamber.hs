@@ -14,7 +14,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -23,8 +22,8 @@ import Arkham.Types.Name
 newtype TheHiddenChamber = TheHiddenChamber LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-theHiddenChamber :: LocationId -> TheHiddenChamber
-theHiddenChamber = TheHiddenChamber . baseAttrs
+theHiddenChamber :: LocationCard TheHiddenChamber
+theHiddenChamber = location TheHiddenChamber 
   Cards.theHiddenChamber
   3
   (Static 0)

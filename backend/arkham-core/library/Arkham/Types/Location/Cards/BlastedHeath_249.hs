@@ -11,15 +11,14 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 
 newtype BlastedHeath_249 = BlastedHeath_249 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-blastedHeath_249 :: LocationId -> BlastedHeath_249
-blastedHeath_249 = BlastedHeath_249 . baseAttrs
+blastedHeath_249 :: LocationCard BlastedHeath_249
+blastedHeath_249 = location BlastedHeath_249 
   Cards.blastedHeath_249
   3
   (Static 2)

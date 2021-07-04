@@ -12,7 +12,6 @@ import Arkham.Types.Cost
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Trait
@@ -20,18 +19,15 @@ import Arkham.Types.Trait
 newtype SentinelPeak = SentinelPeak LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-sentinelPeak :: LocationId -> SentinelPeak
-sentinelPeak =
+sentinelPeak :: LocationCard SentinelPeak
+sentinelPeak = locationWith
   SentinelPeak
-    . (costToEnterUnrevealedL
-      .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 2) Nothing]
-      )
-    . baseAttrs
-        Cards.sentinelPeak
-        4
-        (PerPlayer 2)
-        Diamond
-        [Square]
+  Cards.sentinelPeak
+  4
+  (PerPlayer 2)
+  Diamond
+  [Square]
+  (costToEnterUnrevealedL .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 2) Nothing])
 
 instance HasModifiersFor env SentinelPeak where
   getModifiersFor = noModifiersFor

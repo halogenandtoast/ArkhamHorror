@@ -7,7 +7,6 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.SkillType
@@ -15,17 +14,17 @@ import Arkham.Types.SkillType
 newtype ArkhamWoodsOldHouse = ArkhamWoodsOldHouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-arkhamWoodsOldHouse :: LocationId -> ArkhamWoodsOldHouse
-arkhamWoodsOldHouse =
+arkhamWoodsOldHouse :: LocationCard ArkhamWoodsOldHouse
+arkhamWoodsOldHouse = locationWith
   ArkhamWoodsOldHouse
-    . (revealedConnectedSymbolsL .~ setFromList [Squiggle, Triangle, T])
-    . (revealedSymbolL .~ Diamond)
-    . baseAttrs
-        Cards.arkhamWoodsOldHouse
-        2
-        (PerPlayer 1)
-        Square
-        [Squiggle]
+  Cards.arkhamWoodsOldHouse
+  2
+  (PerPlayer 1)
+  Square
+  [Squiggle]
+  ((revealedConnectedSymbolsL .~ setFromList [Squiggle, Triangle, T])
+  . (revealedSymbolL .~ Diamond)
+  )
 
 instance HasModifiersFor env ArkhamWoodsOldHouse where
   getModifiersFor = noModifiersFor

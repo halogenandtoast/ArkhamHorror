@@ -8,7 +8,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.Target
@@ -17,8 +16,8 @@ import Arkham.Types.Trait
 newtype Easttown = Easttown LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-easttown :: LocationId -> Easttown
-easttown = Easttown . baseAttrs
+easttown :: LocationCard Easttown
+easttown = location Easttown 
   Cards.easttown
   2
   (PerPlayer 1)

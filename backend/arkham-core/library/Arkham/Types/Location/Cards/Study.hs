@@ -7,14 +7,13 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 
 newtype Study = Study LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-study :: LocationId -> Study
-study = Study . baseAttrs
+study :: LocationCard Study
+study = location Study 
   Cards.study
   2
   (PerPlayer 2)

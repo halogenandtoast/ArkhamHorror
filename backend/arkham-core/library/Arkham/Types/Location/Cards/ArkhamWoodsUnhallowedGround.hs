@@ -7,7 +7,6 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.SkillType
@@ -16,17 +15,17 @@ import Arkham.Types.Target
 newtype ArkhamWoodsUnhallowedGround = ArkhamWoodsUnhallowedGround LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-arkhamWoodsUnhallowedGround :: LocationId -> ArkhamWoodsUnhallowedGround
-arkhamWoodsUnhallowedGround =
+arkhamWoodsUnhallowedGround :: LocationCard ArkhamWoodsUnhallowedGround
+arkhamWoodsUnhallowedGround = locationWith
   ArkhamWoodsUnhallowedGround
-    . (revealedConnectedSymbolsL .~ setFromList [Squiggle, Hourglass, Diamond])
-    . (revealedSymbolL .~ Triangle)
-    . baseAttrs
-        Cards.arkhamWoodsUnhallowedGround
-        4
-        (PerPlayer 1)
-        Square
-        [Squiggle]
+  Cards.arkhamWoodsUnhallowedGround
+  4
+  (PerPlayer 1)
+  Square
+  [Squiggle]
+  ((revealedConnectedSymbolsL .~ setFromList [Squiggle, Hourglass, Diamond])
+  . (revealedSymbolL .~ Triangle)
+  )
 
 instance HasModifiersFor env ArkhamWoodsUnhallowedGround where
   getModifiersFor = noModifiersFor

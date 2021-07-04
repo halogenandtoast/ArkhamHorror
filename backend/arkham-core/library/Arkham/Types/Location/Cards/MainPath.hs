@@ -11,7 +11,6 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Trait
@@ -19,8 +18,8 @@ import Arkham.Types.Trait
 newtype MainPath = MainPath LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-mainPath :: LocationId -> MainPath
-mainPath = MainPath . baseAttrs
+mainPath :: LocationCard MainPath
+mainPath = location MainPath 
   Cards.mainPath
   2
   (Static 0)

@@ -14,7 +14,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Window
@@ -22,8 +21,8 @@ import Arkham.Types.Window
 newtype CongregationalChurch_209 = CongregationalChurch_209 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-congregationalChurch_209 :: LocationId -> CongregationalChurch_209
-congregationalChurch_209 = CongregationalChurch_209 . baseAttrs
+congregationalChurch_209 :: LocationCard CongregationalChurch_209
+congregationalChurch_209 = location CongregationalChurch_209 
   Cards.congregationalChurch_209
   2
   (PerPlayer 1)

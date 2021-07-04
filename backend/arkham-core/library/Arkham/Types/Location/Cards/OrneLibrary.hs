@@ -9,7 +9,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.Target
@@ -17,8 +16,8 @@ import Arkham.Types.Target
 newtype OrneLibrary = OrneLibrary LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-orneLibrary :: LocationId -> OrneLibrary
-orneLibrary = OrneLibrary . baseAttrs
+orneLibrary :: LocationCard OrneLibrary
+orneLibrary = location OrneLibrary 
   Cards.orneLibrary
   3
   (PerPlayer 1)

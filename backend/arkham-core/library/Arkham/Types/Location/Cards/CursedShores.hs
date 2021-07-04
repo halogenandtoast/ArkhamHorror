@@ -16,7 +16,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Target
@@ -25,8 +24,8 @@ import Arkham.Types.Window
 newtype CursedShores = CursedShores LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-cursedShores :: LocationId -> CursedShores
-cursedShores = CursedShores . baseAttrs
+cursedShores :: LocationCard CursedShores
+cursedShores = location CursedShores 
   Cards.cursedShores
   1
   (Static 0)

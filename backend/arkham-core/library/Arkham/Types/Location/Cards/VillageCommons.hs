@@ -11,14 +11,13 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 
 newtype VillageCommons = VillageCommons LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-villageCommons :: LocationId -> VillageCommons
-villageCommons = VillageCommons . baseAttrs
+villageCommons :: LocationCard VillageCommons
+villageCommons = location VillageCommons 
   Cards.villageCommons
   3
   (Static 0)

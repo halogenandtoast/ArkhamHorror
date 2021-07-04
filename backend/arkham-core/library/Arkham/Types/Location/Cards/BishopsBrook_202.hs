@@ -12,7 +12,6 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.Target
@@ -20,8 +19,8 @@ import Arkham.Types.Target
 newtype BishopsBrook_202 = BishopsBrook_202 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-bishopsBrook_202 :: LocationId -> BishopsBrook_202
-bishopsBrook_202 = BishopsBrook_202 . baseAttrs
+bishopsBrook_202 :: LocationCard BishopsBrook_202
+bishopsBrook_202 = location BishopsBrook_202 
   Cards.bishopsBrook_202
   3
   (Static 2)

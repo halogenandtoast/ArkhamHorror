@@ -14,7 +14,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Window
@@ -22,8 +21,8 @@ import Arkham.Types.Window
 newtype SouthsideHistoricalSociety = SouthsideHistoricalSociety LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-southsideHistoricalSociety :: LocationId -> SouthsideHistoricalSociety
-southsideHistoricalSociety = SouthsideHistoricalSociety . baseAttrs
+southsideHistoricalSociety :: LocationCard SouthsideHistoricalSociety
+southsideHistoricalSociety = location SouthsideHistoricalSociety 
   Cards.southsideHistoricalSociety
   3
   (PerPlayer 1)

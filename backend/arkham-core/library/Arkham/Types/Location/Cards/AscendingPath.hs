@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.AscendingPath
   ( ascendingPath
   , AscendingPath(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -13,9 +12,9 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -26,8 +25,9 @@ import Arkham.Types.Window
 newtype AscendingPath = AscendingPath LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-ascendingPath :: LocationId -> AscendingPath
-ascendingPath = AscendingPath . baseAttrs
+ascendingPath :: LocationCard AscendingPath
+ascendingPath = location
+  AscendingPath
   Cards.ascendingPath
   3
   (Static 0)
@@ -35,9 +35,9 @@ ascendingPath = AscendingPath . baseAttrs
   [Triangle, Diamond, T, Equals, Moon]
 
 instance HasModifiersFor env AscendingPath where
-  getModifiersFor _ target (AscendingPath location@LocationAttrs {..})
-    | isTarget location target = pure
-    $ toModifiers location [ Blocked | not locationRevealed ]
+  getModifiersFor _ target (AscendingPath l@LocationAttrs {..})
+    | isTarget l target = pure
+    $ toModifiers l [ Blocked | not locationRevealed ]
   getModifiersFor _ _ _ = pure []
 
 ability :: LocationAttrs -> Ability
@@ -71,9 +71,7 @@ instance LocationRunner env => RunMessage env AscendingPath where
     SuccessfulInvestigation _ _ (AbilitySource source 1)
       | isSource attrs source -> do
         locations <- getSetList @SetAsideLocationCardCode ()
-        alteredPaths <- filterM
-          (fmap (== "Altered Path") . getName)
-          locations
+        alteredPaths <- filterM (fmap (== "Altered Path") . getName) locations
         case nonEmpty alteredPaths of
           Just ne -> do
             newLocationId <- getRandom

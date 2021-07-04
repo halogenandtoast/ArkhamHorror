@@ -9,7 +9,6 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Source
@@ -17,17 +16,17 @@ import Arkham.Types.Source
 newtype ArkhamWoodsGreatWillow = ArkhamWoodsGreatWillow LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-arkhamWoodsGreatWillow :: LocationId -> ArkhamWoodsGreatWillow
-arkhamWoodsGreatWillow =
+arkhamWoodsGreatWillow :: LocationCard ArkhamWoodsGreatWillow
+arkhamWoodsGreatWillow = locationWith
   ArkhamWoodsGreatWillow
-    . (revealedConnectedSymbolsL .~ setFromList [Squiggle, Star])
-    . (revealedSymbolL .~ Heart)
-    . baseAttrs
-        Cards.arkhamWoodsGreatWillow
-        4
-        (PerPlayer 1)
-        Square
-        [Squiggle]
+  Cards.arkhamWoodsGreatWillow
+  4
+  (PerPlayer 1)
+  Square
+  [Squiggle]
+  ((revealedConnectedSymbolsL .~ setFromList [Squiggle, Star])
+  . (revealedSymbolL .~ Heart)
+  )
 
 instance HasModifiersFor env ArkhamWoodsGreatWillow where
   getModifiersFor = noModifiersFor

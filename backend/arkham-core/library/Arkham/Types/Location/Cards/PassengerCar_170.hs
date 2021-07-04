@@ -11,10 +11,10 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Direction
 import Arkham.Types.GameValue
+import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -24,22 +24,23 @@ import Arkham.Types.SkillType
 newtype PassengerCar_170 = PassengerCar_170 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-passengerCar_170 :: LocationId -> PassengerCar_170
-passengerCar_170 =
-  PassengerCar_170 . (connectsToL .~ setFromList [LeftOf, RightOf]) . baseAttrs
-    Cards.passengerCar_170
-    3
-    (PerPlayer 2)
-    NoSymbol
-    []
+passengerCar_170 :: LocationCard PassengerCar_170
+passengerCar_170 = locationWith
+  PassengerCar_170
+  Cards.passengerCar_170
+  3
+  (PerPlayer 2)
+  NoSymbol
+  []
+  (connectsToL .~ setFromList [LeftOf, RightOf])
 
 instance HasCount ClueCount env LocationId => HasModifiersFor env PassengerCar_170 where
-  getModifiersFor _ target (PassengerCar_170 location@LocationAttrs {..})
-    | isTarget location target = case lookup LeftOf locationDirections of
+  getModifiersFor _ target (PassengerCar_170 l@LocationAttrs {..})
+    | isTarget l target = case lookup LeftOf locationDirections of
       Just leftLocation -> do
         clueCount <- unClueCount <$> getCount leftLocation
         pure $ toModifiers
-          location
+          l
           [ Blocked | not locationRevealed && clueCount > 0 ]
       Nothing -> pure []
   getModifiersFor _ _ _ = pure []

@@ -230,7 +230,8 @@ data Message
   | EndInvestigation
   | EndMythos
   | EndOfGame
-  | ExileCard InvestigatorId CardId
+  | Exile Target
+  | Exiled Target Card
   | ScenarioResolution Resolution
   | EndOfScenario
   | EndPhase

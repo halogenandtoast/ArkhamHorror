@@ -2878,6 +2878,7 @@ runGameMessage msg g = case msg of
     asset <- getAsset aid
     pure $ g & resignedCardCodesL %~ (toCardCode asset :)
   Discarded (AssetTarget aid) _ -> pure $ g & assetsL %~ deleteMap aid
+  Exiled (AssetTarget aid) _ -> pure $ g & assetsL %~ deleteMap aid
   Discard (EventTarget eid) -> do
     event <- getEvent eid
     let playerCard = lookupPlayerCard (toCardCode event) (unEventId eid)

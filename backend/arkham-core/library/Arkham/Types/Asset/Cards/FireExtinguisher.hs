@@ -45,7 +45,7 @@ instance HasActions env ActionType => HasActions env FireExtinguisher where
              (mkAbility
                (toSource a)
                2
-               (ActionAbility (Just Action.Evade) (ActionCost 1))
+               (ActionAbility (Just Action.Evade) (Costs [ActionCost 1, ExileCost $ toTarget a]))
              )
          | evadeAvailable
          ]

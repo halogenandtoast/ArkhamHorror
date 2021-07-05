@@ -282,6 +282,7 @@ library
       Arkham.Types.Effect.Effects.CursedShores
       Arkham.Types.Effect.Effects.CurseOfTheRougarouTabletToken
       Arkham.Types.Effect.Effects.Deduction
+      Arkham.Types.Effect.Effects.FireExtinguisher
       Arkham.Types.Effect.Effects.HuntingNightgaunt
       Arkham.Types.Effect.Effects.JeremiahPierce
       Arkham.Types.Effect.Effects.LetMeHandleThis

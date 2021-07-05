@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Action (Action(Fight))
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
@@ -36,20 +36,12 @@ instance ActionRunner env => HasActions env Knife where
     pure
       $ [ UseAbility
             iid
-            (mkAbility
-              (toSource a)
-              1
-              (ActionAbility (Just Action.Fight) (ActionCost 1))
-            )
+            (mkAbility a 1 (ActionAbility (Just Fight) (ActionCost 1)))
         | fightAvailable
         ]
       <> [ UseAbility
              iid
-             (mkAbility
-               (toSource a)
-               2
-               (ActionAbility (Just Action.Fight) (ActionCost 1))
-             )
+             (mkAbility a 2 (ActionAbility (Just Fight) (ActionCost 1)))
          | fightAvailable
          ]
   getActions _ _ _ = pure []

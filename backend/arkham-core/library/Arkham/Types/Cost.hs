@@ -63,7 +63,7 @@ data Cost
   | DamageCost Source Target Int
   | DiscardCost Target
   | DiscardCardCost CardId
-  | ExileCardCost CardId
+  | ExileCost Target
   | HandDiscardCost Int (Maybe CardType) (HashSet Trait) (HashSet SkillType)
   | SkillIconCost Int (HashSet SkillType)
   | HorrorCost Source Target Int

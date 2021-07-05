@@ -130,7 +130,7 @@ instance
       ExhaustCost target -> e <$ unshiftMessage (Exhaust target)
       DiscardCost target -> e <$ unshiftMessage (Discard target)
       DiscardCardCost cid -> e <$ unshiftMessage (DiscardCard iid cid)
-      ExileCardCost cid -> e <$ unshiftMessage (ExileCard iid cid)
+      ExileCost target -> e <$ unshiftMessage (Exile target)
       HorrorCost _ target x -> case target of
         InvestigatorTarget iid' | iid' == iid ->
           e <$ unshiftMessage

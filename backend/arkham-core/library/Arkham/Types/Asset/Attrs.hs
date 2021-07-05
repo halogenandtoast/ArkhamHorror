@@ -315,6 +315,8 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs whe
       a <$ unshiftMessage (RemovedFromPlay $ toSource a)
     Discard target | a `isTarget` target -> a <$ unshiftMessages
       [RemovedFromPlay $ toSource a, Discarded target (toCard a)]
+    Exile target | a `isTarget` target -> a <$ unshiftMessages
+      [RemovedFromPlay $ toSource a, Exiled target (toCard a)]
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessage $ CheckWindow iid [WhenEnterPlay $ toTarget a]
       pure $ a & investigatorL ?~ iid

@@ -185,7 +185,7 @@ getCanAffordCost iid source mAction = \case
     pure $ resources >= n
   DiscardCost _ -> pure True -- TODO: Make better
   DiscardCardCost _ -> pure True -- TODO: Make better
-  ExileCardCost _ -> pure True -- TODO: Make better
+  ExileCost _ -> pure True -- TODO: Make better
   HorrorCost{} -> pure True -- TODO: Make better
   DamageCost{} -> pure True -- TODO: Make better
   SkillIconCost n skillTypes -> do

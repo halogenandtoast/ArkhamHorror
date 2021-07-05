@@ -84,6 +84,7 @@ data Effect
   | BindMonster2' BindMonster2
   | PushedIntoTheBeyond' PushedIntoTheBeyond
   | ArcaneBarrier' ArcaneBarrier
+  | FireExtinguisher' FireExtinguisher
   | UndimensionedAndUnseenTabletToken' UndimensionedAndUnseenTabletToken
   | TenAcreMeadow_246' TenAcreMeadow_246
   | LetMeHandleThis' LetMeHandleThis
@@ -109,6 +110,7 @@ deriving anyclass instance
   , HasId Difficulty env ()
   , HasCount ClueCount env EnemyId
   , HasSet StoryEnemyId env CardCode
+  , HasSet EnemyId env InvestigatorId
   )
   => RunMessage env Effect
 
@@ -164,6 +166,7 @@ allEffects = mapFromList
   , ("02031", BindMonster2' . bindMonster2)
   , ("02100", PushedIntoTheBeyond' . pushedIntoTheBeyond)
   , ("02102", ArcaneBarrier' . arcaneBarrier)
+  , ("02114", FireExtinguisher' . fireExtinguisher)
   , ( "02236"
     , UndimensionedAndUnseenTabletToken' . undimensionedAndUnseenTabletToken
     )

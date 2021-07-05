@@ -85,7 +85,7 @@ export default defineComponent({
     }
 
     function isActivate(v: Message) {
-      if (v.tag !== 'ActivateCardAbilityAction') {
+      if (v.tag !== 'UseAbility') {
         return false
       }
 

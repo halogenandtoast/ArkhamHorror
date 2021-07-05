@@ -6,6 +6,7 @@ module Arkham.Types.Scenario.Scenarios.UndimensionedAndUnseen
 import Arkham.Prelude
 
 import Arkham.EncounterCard
+import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
@@ -191,7 +192,7 @@ instance
       standalone <- getIsStandalone
       investigatorIds <- getInvestigatorIds
       encounterDeck <- buildEncounterDeckExcluding
-        ["02255"]
+        [Enemies.broodOfYogSothoth]
         [ EncounterSet.UndimensionedAndUnseen
         , EncounterSet.Whippoorwills
         , EncounterSet.BeastThralls

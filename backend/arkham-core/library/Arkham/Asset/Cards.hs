@@ -60,6 +60,7 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   , cdEncounterSet = fst <$> mEncounterSet
   , cdEncounterSetQuantity = snd <$> mEncounterSet
   , cdUnique = False
+  , cdDoubleSided = False
   }
 
 allPlayerAssetCards :: HashMap CardCode CardDef

@@ -6,6 +6,7 @@ module Arkham.Types.Scenario.Scenarios.BloodOnTheAltar
 import Arkham.Prelude
 
 import Arkham.EncounterCard
+import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.PlayerCard
 import Arkham.Types.AgendaId
 import Arkham.Types.CampaignLogKey
@@ -184,7 +185,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
 
         (encounterCardsToPutUnderneath, encounterDeck) <-
           splitAt 3 <$> buildEncounterDeckExcluding
-            ["02216"]
+            [Enemies.silasBishop]
             ([ EncounterSet.BloodOnTheAltar
              , EncounterSet.Dunwich
              , EncounterSet.Whippoorwills

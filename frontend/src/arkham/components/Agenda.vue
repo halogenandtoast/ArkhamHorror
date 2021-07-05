@@ -79,7 +79,7 @@ export default defineComponent({
       return choices
         .value
         .reduce<number[]>((acc, v, i) => {
-          if (v.tag === 'ActivateCardAbilityAction' && v.contents[1].source.tag === 'AgendaSource' && v.contents[1].source.contents === id.value) {
+          if (v.tag === 'UseAbility' && v.contents[1].source.tag === 'AgendaSource' && v.contents[1].source.contents === id.value) {
             return [...acc, i];
           }
 

@@ -5,6 +5,7 @@ module Arkham.Types.Scenario.Scenarios.LostInTimeAndSpace
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -155,7 +156,7 @@ instance
     Setup -> do
       investigatorIds <- getInvestigatorIds
       encounterDeck <- buildEncounterDeckExcluding
-        ["02323"]
+        [Enemies.yogSothoth]
         [ EncounterSet.LostInTimeAndSpace
         , EncounterSet.Sorcery
         , EncounterSet.TheBeyond

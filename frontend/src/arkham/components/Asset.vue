@@ -124,7 +124,7 @@ export default defineComponent({
     const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
 
     function isActivate(v: Message) {
-      if (v.tag !== 'ActivateCardAbilityAction') {
+      if (v.tag !== 'UseAbility') {
         return false
       }
 

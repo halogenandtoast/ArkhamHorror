@@ -25,9 +25,12 @@ buildEncounterDeck :: MonadRandom m => [EncounterSet] -> m [EncounterCard]
 buildEncounterDeck = buildEncounterDeckWith id
 
 buildEncounterDeckExcluding
-  :: MonadRandom m => [CardCode] -> [EncounterSet] -> m [EncounterCard]
-buildEncounterDeckExcluding cardCodes =
-  buildEncounterDeckWith (filter ((`notElem` cardCodes) . toCardCode))
+  :: MonadRandom m => [CardDef] -> [EncounterSet] -> m [EncounterCard]
+buildEncounterDeckExcluding defs =
+  buildEncounterDeckWith (filter ((`notElem` defs) . toCardDef))
+
+excludeDoubleSided :: [EncounterCard] -> [EncounterCard]
+excludeDoubleSided = filter (not . cdDoubleSided . toCardDef)
 
 buildEncounterDeckWith
   :: MonadRandom m
@@ -35,4 +38,8 @@ buildEncounterDeckWith
   -> [EncounterSet]
   -> m [EncounterCard]
 buildEncounterDeckWith f encounterSets =
-  shuffleM . f . concat =<< traverse gatherEncounterSet encounterSets
+  shuffleM
+    . f
+    . excludeDoubleSided
+    . concat
+    =<< traverse gatherEncounterSet encounterSets

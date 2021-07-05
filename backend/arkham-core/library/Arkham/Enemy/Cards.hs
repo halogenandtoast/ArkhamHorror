@@ -34,6 +34,7 @@ baseEnemy cardCode name mEncounterSet isWeakness = CardDef
   , cdEncounterSet = fst <$> mEncounterSet
   , cdEncounterSetQuantity = snd <$> mEncounterSet
   , cdUnique = False
+  , cdDoubleSided = False
   }
 
 weakness :: CardCode -> Name -> CardDef

@@ -64,6 +64,7 @@ data Asset
   | Encyclopedia2' Encyclopedia2
   | EsotericFormula' EsotericFormula
   | FireAxe' FireAxe
+  | FireExtinguisher' FireExtinguisher
   | FirstAid' FirstAid
   | FishingNet' FishingNet
   | Flashlight' Flashlight
@@ -296,6 +297,7 @@ allAssets = mapFromList $ map
   , Encyclopedia2' <$> encyclopedia2
   , EsotericFormula' <$> esotericFormula
   , FireAxe' <$> fireAxe
+  , FireExtinguisher' <$> fireExtinguisher
   , FirstAid' <$> firstAid
   , FishingNet' <$> fishingNet
   , Flashlight' <$> flashlight

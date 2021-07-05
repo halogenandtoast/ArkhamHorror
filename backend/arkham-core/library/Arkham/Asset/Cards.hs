@@ -93,6 +93,7 @@ allPlayerAssetCards = mapFromList $ map
   , encyclopedia2
   , esotericFormula
   , fireAxe
+  , fireExtinguisher
   , firstAid
   , flashlight
   , forbiddenKnowledge
@@ -729,6 +730,12 @@ songOfTheDead2 :: CardDef
 songOfTheDead2 = (asset "02112" "Song of the Dead" 2 Mystic)
   { cdCardTraits = setFromList [Spell, Song]
   , cdSkills = [SkillWillpower]
+  }
+
+fireExtinguisher :: CardDef
+fireExtinguisher = (asset "02114" "Fire Extinguisher" 2 Survivor)
+  { cdCardTraits = setFromList [Item, Tool, Melee]
+  , cdSkills = [SkillAgility]
   }
 
 haroldWalsted :: CardDef

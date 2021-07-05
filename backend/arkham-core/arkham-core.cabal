@@ -282,7 +282,7 @@ library
       Arkham.Types.Effect.Effects.CursedShores
       Arkham.Types.Effect.Effects.CurseOfTheRougarouTabletToken
       Arkham.Types.Effect.Effects.Deduction
-      Arkham.Types.Effect.Effects.FireExtinguisher
+      Arkham.Types.Effect.Effects.FireExtinguisher1
       Arkham.Types.Effect.Effects.HuntingNightgaunt
       Arkham.Types.Effect.Effects.JeremiahPierce
       Arkham.Types.Effect.Effects.LetMeHandleThis
@@ -408,6 +408,7 @@ library
       Arkham.Types.Event.Cards.Evidence
       Arkham.Types.Event.Cards.ExtraAmmunition1
       Arkham.Types.Event.Cards.FirstWatch
+      Arkham.Types.Event.Cards.Flare1
       Arkham.Types.Event.Cards.HotStreak2
       Arkham.Types.Event.Cards.HotStreak4
       Arkham.Types.Event.Cards.IveGotAPlan

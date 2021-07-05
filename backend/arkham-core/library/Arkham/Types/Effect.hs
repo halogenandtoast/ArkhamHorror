@@ -5,25 +5,20 @@ module Arkham.Types.Effect
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Action
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
+import Arkham.Types.Effect.Attrs
+import Arkham.Types.Effect.Effects
 import Arkham.Types.Effect.Window
-import Arkham.Types.EffectId
 import Arkham.Types.EffectMetadata
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Target
-
-
-import Arkham.Types.Action
-import Arkham.Types.Effect.Attrs
-import Arkham.Types.Effect.Effects
 import Arkham.Types.Trait
 
 createEffect
@@ -84,7 +79,7 @@ data Effect
   | BindMonster2' BindMonster2
   | PushedIntoTheBeyond' PushedIntoTheBeyond
   | ArcaneBarrier' ArcaneBarrier
-  | FireExtinguisher' FireExtinguisher
+  | FireExtinguisher1' FireExtinguisher1
   | UndimensionedAndUnseenTabletToken' UndimensionedAndUnseenTabletToken
   | TenAcreMeadow_246' TenAcreMeadow_246
   | LetMeHandleThis' LetMeHandleThis
@@ -166,7 +161,7 @@ allEffects = mapFromList
   , ("02031", BindMonster2' . bindMonster2)
   , ("02100", PushedIntoTheBeyond' . pushedIntoTheBeyond)
   , ("02102", ArcaneBarrier' . arcaneBarrier)
-  , ("02114", FireExtinguisher' . fireExtinguisher)
+  , ("02114", FireExtinguisher1' . fireExtinguisher1)
   , ( "02236"
     , UndimensionedAndUnseenTabletToken' . undimensionedAndUnseenTabletToken
     )

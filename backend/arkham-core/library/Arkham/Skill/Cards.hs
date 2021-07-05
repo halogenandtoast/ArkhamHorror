@@ -32,6 +32,7 @@ skill cardCode name skills classSymbol = CardDef
   , cdAttackOfOpportunityModifiers = mempty
   , cdPermanent = False
   , cdEncounterSet = Nothing
+  , cdEncounterSetQuantity = Nothing
   , cdUnique = False
   }
 

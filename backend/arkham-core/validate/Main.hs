@@ -56,6 +56,7 @@ data CardJson = CardJson
   , clues :: Maybe Int
   , shroud :: Maybe Int
   , xp :: Maybe Int
+  , quantity :: Int
   }
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
@@ -67,6 +68,9 @@ newtype UnknownCard = UnknownCard CardCode
   deriving stock Show
 
 data NameMismatch = NameMismatch CardCode Name Name
+  deriving stock Show
+
+data QuantityMismatch = QuantityMismatch CardCode Name Int (Maybe Int)
   deriving stock Show
 
 data UniqueMismatch = UniqueMismatch CardCode Name
@@ -140,6 +144,7 @@ instance Exception EnemyDamageMismatch
 instance Exception ShroudMismatch
 instance Exception ClueMismatch
 instance Exception XpMismatch
+instance Exception QuantityMismatch
 
 filterTest :: [(CardCode, CardDef)] -> [(CardCode, CardDef)]
 filterTest = filter
@@ -240,6 +245,17 @@ main = do
             when
               (Name (normalizeName name) subname /= cdName card)
               (throw $ NameMismatch code (Name name subname) (cdName card))
+            when
+              (isJust (cdEncounterSet card)
+              && Just quantity
+              /= cdEncounterSetQuantity card
+              )
+              (throw $ QuantityMismatch
+                code
+                (Name name subname)
+                quantity
+                (cdEncounterSetQuantity card)
+              )
             when
               (is_unique /= cdUnique card)
               (throw $ UniqueMismatch code (cdName card))

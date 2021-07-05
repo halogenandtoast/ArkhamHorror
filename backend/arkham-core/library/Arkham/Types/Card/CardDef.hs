@@ -42,6 +42,7 @@ data CardDef = CardDef
   , cdAttackOfOpportunityModifiers :: [AttackOfOpportunityModifier]
   , cdPermanent :: Bool
   , cdEncounterSet :: Maybe EncounterSet
+  , cdEncounterSetQuantity :: Maybe Int
   , cdUnique :: Bool
   }
   deriving stock (Show, Eq, Generic)
@@ -117,5 +118,6 @@ testCardDef cardType cardCode = CardDef
   , cdAttackOfOpportunityModifiers = []
   , cdPermanent = False
   , cdEncounterSet = Nothing
+  , cdEncounterSetQuantity = Nothing
   , cdUnique = False
   }

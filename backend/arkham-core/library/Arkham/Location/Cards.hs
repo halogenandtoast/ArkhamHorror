@@ -31,6 +31,7 @@ location cardCode name encounterSet = CardDef
   , cdAttackOfOpportunityModifiers = mempty
   , cdPermanent = False
   , cdEncounterSet = Just encounterSet
+  , cdEncounterSetQuantity = Just 1
   , cdUnique = False
   }
 
@@ -777,16 +778,19 @@ tearThroughSpace :: CardDef
 tearThroughSpace = (location "02324" "Tear Through Space" LostInTimeAndSpace)
   { cdCardTraits = setFromList [Otherworld, Extradimensional]
   , cdKeywords = setFromList [Keyword.Surge]
+  , cdEncounterSetQuantity = Just 4
   }
 
 prismaticCascade :: CardDef
 prismaticCascade = (location "02325" "Prismatic Cascade" LostInTimeAndSpace)
   { cdCardTraits = setFromList [Otherworld, Extradimensional]
+  , cdEncounterSetQuantity = Just 2
   }
 
 endlessBridge :: CardDef
 endlessBridge = (location "02326" "Endless Bridge" LostInTimeAndSpace)
   { cdCardTraits = setFromList [Otherworld, Extradimensional]
+  , cdEncounterSetQuantity = Just 2
   }
 
 stepsOfYhagharl :: CardDef

@@ -2,6 +2,7 @@ module Arkham.Types.Scenario.Scenarios.TheGathering where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -67,7 +68,8 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
   runMessage msg s@(TheGathering attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds
-      encounterDeck <- buildEncounterDeck
+      encounterDeck <- buildEncounterDeckExcluding
+        [Enemies.ghoulPriest]
         [ EncounterSet.TheGathering
         , EncounterSet.Rats
         , EncounterSet.Ghouls

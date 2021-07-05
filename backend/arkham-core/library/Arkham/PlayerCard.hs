@@ -72,4 +72,5 @@ basePlayerCard cardCode name cost cardType classSymbol = CardDef
   , cdEncounterSet = Nothing
   , cdEncounterSetQuantity = Nothing
   , cdUnique = False
+  , cdDoubleSided = False
   }

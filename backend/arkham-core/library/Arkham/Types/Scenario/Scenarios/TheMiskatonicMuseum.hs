@@ -2,6 +2,7 @@ module Arkham.Types.Scenario.Scenarios.TheMiskatonicMuseum where
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -173,7 +174,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       let exhibitDeck = top <> bottom'
 
       encounterDeck <- buildEncounterDeckExcluding
-        ["02142"]
+        [Treacheries.shadowSpawned]
         [ EncounterSet.TheMiskatonicMuseum
         , EncounterSet.BadLuck
         , EncounterSet.Sorcery

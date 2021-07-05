@@ -6,6 +6,7 @@ module Arkham.Types.Scenario.Scenarios.WhereDoomAwaits
 import Arkham.Prelude
 
 import Arkham.EncounterSet (gatherEncounterSet)
+import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.AgendaId
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
@@ -174,7 +175,7 @@ instance
       investigatorIds <- getInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       encounterDeck <- buildEncounterDeckExcluding
-        ["02293"]
+        [Enemies.sethBishop]
         [ EncounterSet.WhereDoomAwaits
         , EncounterSet.Whippoorwills
         , EncounterSet.BeastThralls

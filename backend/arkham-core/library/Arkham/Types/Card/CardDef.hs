@@ -44,6 +44,7 @@ data CardDef = CardDef
   , cdEncounterSet :: Maybe EncounterSet
   , cdEncounterSetQuantity :: Maybe Int
   , cdUnique :: Bool
+  , cdDoubleSided :: Bool
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
@@ -120,4 +121,5 @@ testCardDef cardType cardCode = CardDef
   , cdEncounterSet = Nothing
   , cdEncounterSetQuantity = Nothing
   , cdUnique = False
+  , cdDoubleSided = False
   }

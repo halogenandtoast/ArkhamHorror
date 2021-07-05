@@ -33,6 +33,7 @@ location cardCode name encounterSet = CardDef
   , cdEncounterSet = Just encounterSet
   , cdEncounterSetQuantity = Just 1
   , cdUnique = False
+  , cdDoubleSided = True
   }
 
 allLocationCards :: HashMap CardCode CardDef
@@ -778,18 +779,21 @@ tearThroughSpace :: CardDef
 tearThroughSpace = (location "02324" "Tear Through Space" LostInTimeAndSpace)
   { cdCardTraits = setFromList [Otherworld, Extradimensional]
   , cdKeywords = setFromList [Keyword.Surge]
+  , cdDoubleSided = False
   , cdEncounterSetQuantity = Just 4
   }
 
 prismaticCascade :: CardDef
 prismaticCascade = (location "02325" "Prismatic Cascade" LostInTimeAndSpace)
   { cdCardTraits = setFromList [Otherworld, Extradimensional]
+  , cdDoubleSided = False
   , cdEncounterSetQuantity = Just 2
   }
 
 endlessBridge :: CardDef
 endlessBridge = (location "02326" "Endless Bridge" LostInTimeAndSpace)
   { cdCardTraits = setFromList [Otherworld, Extradimensional]
+  , cdDoubleSided = False
   , cdEncounterSetQuantity = Just 2
   }
 

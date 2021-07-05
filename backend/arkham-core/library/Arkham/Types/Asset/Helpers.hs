@@ -25,6 +25,17 @@ hasFightActions i NonFast = do
   pure $ or [ True | FightEnemy{} <- enemyActions ]
 hasFightActions _ _ = pure False
 
+hasEvadeActions
+  :: forall env m
+   . (MonadIO m, MonadReader env m, HasActions env ActionType)
+  => InvestigatorId
+  -> Window
+  -> m Bool
+hasEvadeActions i NonFast = do
+  enemyActions <- getActions i NonFast EnemyActionType
+  pure $ or [ True | EvadeEnemy{} <- enemyActions ]
+hasEvadeActions _ _ = pure False
+
 hasInvestigateActions
   :: forall env m
    . (MonadIO m, MonadReader env m, HasActions env ActionType)

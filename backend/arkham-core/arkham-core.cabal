@@ -154,6 +154,7 @@ library
       Arkham.Types.Asset.Cards.Encyclopedia2
       Arkham.Types.Asset.Cards.EsotericFormula
       Arkham.Types.Asset.Cards.FireAxe
+      Arkham.Types.Asset.Cards.FireExtinguisher
       Arkham.Types.Asset.Cards.FirstAid
       Arkham.Types.Asset.Cards.FishingNet
       Arkham.Types.Asset.Cards.Flashlight

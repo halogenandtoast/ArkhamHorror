@@ -30,5 +30,5 @@ import Arkham.Types.Effect.Effects.Shrivelling as X
 import Arkham.Types.Effect.Effects.SureGamble3 as X
 import Arkham.Types.Effect.Effects.TenAcreMeadow_246 as X
 import Arkham.Types.Effect.Effects.UndimensionedAndUnseenTabletToken as X
-import Arkham.Types.Effect.Effects.WillToSurvive4 as X
+import Arkham.Types.Effect.Effects.WillToSurvive3 as X
 import Arkham.Types.Effect.Effects.WindowModifierEffect as X

@@ -75,7 +75,7 @@ data Effect
   | BaseballBat' BaseballBat
   | Lucky' Lucky
   | Lucky2' Lucky2
-  | WillToSurvive4' WillToSurvive4
+  | WillToSurvive3' WillToSurvive3
   | SureGamble3' SureGamble3
   | ArkhamWoodsTwistingPaths' ArkhamWoodsTwistingPaths
   | HuntingNightgaunt' HuntingNightgaunt
@@ -157,7 +157,7 @@ allEffects = mapFromList
   , ("01074", BaseballBat' . baseballBat)
   , ("01080", Lucky' . lucky)
   , ("01084", Lucky2' . lucky2)
-  , ("01085", WillToSurvive4' . willToSurvive4)
+  , ("01085", WillToSurvive3' . willToSurvive3)
   , ("01088", SureGamble3' . sureGamble3)
   , ("01151", ArkhamWoodsTwistingPaths' . arkhamWoodsTwistingPaths)
   , ("01172", HuntingNightgaunt' . huntingNightgaunt)

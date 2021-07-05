@@ -154,7 +154,7 @@ library
       Arkham.Types.Asset.Cards.Encyclopedia2
       Arkham.Types.Asset.Cards.EsotericFormula
       Arkham.Types.Asset.Cards.FireAxe
-      Arkham.Types.Asset.Cards.FireExtinguisher
+      Arkham.Types.Asset.Cards.FireExtinguisher1
       Arkham.Types.Asset.Cards.FirstAid
       Arkham.Types.Asset.Cards.FishingNet
       Arkham.Types.Asset.Cards.Flashlight
@@ -301,7 +301,7 @@ library
       Arkham.Types.Effect.Effects.SureGamble3
       Arkham.Types.Effect.Effects.TenAcreMeadow_246
       Arkham.Types.Effect.Effects.UndimensionedAndUnseenTabletToken
-      Arkham.Types.Effect.Effects.WillToSurvive4
+      Arkham.Types.Effect.Effects.WillToSurvive3
       Arkham.Types.Effect.Effects.WindowModifierEffect
       Arkham.Types.Effect.Helpers
       Arkham.Types.Effect.Window
@@ -433,7 +433,7 @@ library
       Arkham.Types.Event.Cards.Teamwork
       Arkham.Types.Event.Cards.ThinkOnYourFeet
       Arkham.Types.Event.Cards.WardOfProtection
-      Arkham.Types.Event.Cards.WillToSurvive4
+      Arkham.Types.Event.Cards.WillToSurvive3
       Arkham.Types.Event.Cards.WorkingAHunch
       Arkham.Types.Event.Helpers
       Arkham.Types.Event.Runner

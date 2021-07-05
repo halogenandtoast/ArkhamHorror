@@ -1,4 +1,4 @@
-module Arkham.Types.Asset.Cards.FireExtinguisher where
+module Arkham.Types.Asset.Cards.FireExtinguisher1 where
 
 import Arkham.Prelude
 
@@ -17,17 +17,17 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 
-newtype FireExtinguisher = FireExtinguisher AssetAttrs
+newtype FireExtinguisher1 = FireExtinguisher1 AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
-fireExtinguisher :: AssetCard FireExtinguisher
-fireExtinguisher = hand FireExtinguisher Cards.fireExtinguisher
+fireExtinguisher1 :: AssetCard FireExtinguisher1
+fireExtinguisher1 = hand FireExtinguisher1 Cards.fireExtinguisher1
 
-instance HasModifiersFor env FireExtinguisher where
+instance HasModifiersFor env FireExtinguisher1 where
   getModifiersFor = noModifiersFor
 
-instance HasActions env ActionType => HasActions env FireExtinguisher where
-  getActions iid window (FireExtinguisher a) | ownedBy a iid = do
+instance HasActions env ActionType => HasActions env FireExtinguisher1 where
+  getActions iid window (FireExtinguisher1 a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid window
     evadeAvailable <- hasEvadeActions iid window
     pure
@@ -49,10 +49,10 @@ instance HasActions env ActionType => HasActions env FireExtinguisher where
              )
          | evadeAvailable
          ]
-  getActions i window (FireExtinguisher x) = getActions i window x
+  getActions i window (FireExtinguisher1 x) = getActions i window x
 
-instance (AssetRunner env) => RunMessage env FireExtinguisher where
-  runMessage msg a@(FireExtinguisher attrs) = case msg of
+instance (AssetRunner env) => RunMessage env FireExtinguisher1 where
+  runMessage msg a@(FireExtinguisher1 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
         [ CreateWindowModifierEffect
@@ -62,4 +62,4 @@ instance (AssetRunner env) => RunMessage env FireExtinguisher where
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat mempty False
         ]
-    _ -> FireExtinguisher <$> runMessage msg attrs
+    _ -> FireExtinguisher1 <$> runMessage msg attrs

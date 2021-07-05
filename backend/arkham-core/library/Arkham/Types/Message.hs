@@ -1,7 +1,6 @@
 module Arkham.Types.Message
   ( module Arkham.Types.Message
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -231,6 +230,7 @@ data Message
   | EndInvestigation
   | EndMythos
   | EndOfGame
+  | ExileCard InvestigatorId CardId
   | ScenarioResolution Resolution
   | EndOfScenario
   | EndPhase

@@ -103,11 +103,11 @@ instance CampaignRunner env => RunMessage env CampaignAttrs where
         <> [FinishedUpgradingDecks]
         )
     SetTokensForScenario -> a <$ unshiftMessage (SetTokens campaignChaosBag)
-    AddCampaignCardToDeck iid cardCode -> do
-      card <- lookupPlayerCard cardCode <$> getRandom
+    AddCampaignCardToDeck iid cardDef -> do
+      card <- lookupPlayerCard cardDef <$> getRandom
       pure $ a & storyCardsL %~ insertWith (<>) iid [card]
-    AddCampaignCardToEncounterDeck cardCode -> do
-      card <- lookupEncounterCard cardCode <$> getRandom
+    AddCampaignCardToEncounterDeck cardDef -> do
+      card <- lookupEncounterCard cardDef <$> getRandom
       a <$ unshiftMessages [AddToEncounterDeck card]
     RemoveCampaignCardFromDeck iid cardCode ->
       pure

@@ -4,7 +4,7 @@ module Arkham.Types.Treachery.Cards.MysteriousChantingSpec
 
 import TestImport.Lifted
 
-import Arkham.EncounterCard
+import qualified Arkham.Treachery.Cards as Cards
 import qualified Arkham.Types.Trait as Trait
 
 spec :: Spec
@@ -12,7 +12,7 @@ spec = describe "Mysterious Chanting" $ do
   it "will place a token on the nearest cultist" $ do
     investigator <- testInvestigator "00000" id
     cultist <- testEnemyWithDef (cardTraitsL .~ singleton Trait.Cultist) id
-    mysteriousChanting <- lookupEncounterCard "01171" <$> getRandom
+    mysteriousChanting <- genEncounterCard Cards.mysteriousChanting
     (location1, location2) <- testConnectedLocations id id
     gameTest
         investigator

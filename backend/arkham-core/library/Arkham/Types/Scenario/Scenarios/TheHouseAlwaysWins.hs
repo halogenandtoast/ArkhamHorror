@@ -5,6 +5,7 @@ module Arkham.Types.Scenario.Scenarios.TheHouseAlwaysWins
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Assets
 import Arkham.Card
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Classes
@@ -224,7 +225,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
                  leadInvestigatorId
                  [ TargetLabel
                      (InvestigatorTarget iid)
-                     [AddCampaignCardToDeck iid "02061"]
+                     [AddCampaignCardToDeck iid Assets.drFrancisMorgan]
                  | iid <- investigatorIds
                  ]
              ]

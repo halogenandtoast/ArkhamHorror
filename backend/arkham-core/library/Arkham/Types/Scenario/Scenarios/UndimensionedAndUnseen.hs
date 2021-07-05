@@ -228,15 +228,19 @@ instance
 
       (msgs, setAsideCount) <- case sacrificedToYogSothoth of
         2 -> do
-          broodOfYogSothoth <- EncounterCard <$> genEncounterCard "02255"
+          broodOfYogSothoth <- EncounterCard
+            <$> genEncounterCard Enemies.broodOfYogSothoth
           pure ([CreateEnemyAt broodOfYogSothoth coldSpringGlenId Nothing], 3)
         3 -> do
-          broodOfYogSothoth <- EncounterCard <$> genEncounterCard "02255"
+          broodOfYogSothoth <- EncounterCard
+            <$> genEncounterCard Enemies.broodOfYogSothoth
           pure ([CreateEnemyAt broodOfYogSothoth coldSpringGlenId Nothing], 2)
         x -> if x <= 2
           then do
-            broodOfYogSothoth1 <- EncounterCard <$> genEncounterCard "02255"
-            broodOfYogSothoth2 <- EncounterCard <$> genEncounterCard "02255"
+            broodOfYogSothoth1 <- EncounterCard
+              <$> genEncounterCard Enemies.broodOfYogSothoth
+            broodOfYogSothoth2 <- EncounterCard
+              <$> genEncounterCard Enemies.broodOfYogSothoth
             pure
               ( [ CreateEnemyAt broodOfYogSothoth1 coldSpringGlenId Nothing
                 , CreateEnemyAt broodOfYogSothoth2 blastedHeathId Nothing
@@ -247,7 +251,7 @@ instance
 
       setAsideBroodOfYogSothoth <- replicateM
         setAsideCount
-        (EncounterCard <$> genEncounterCard "02255")
+        (EncounterCard <$> genEncounterCard Enemies.broodOfYogSothoth)
 
       let
         locations =

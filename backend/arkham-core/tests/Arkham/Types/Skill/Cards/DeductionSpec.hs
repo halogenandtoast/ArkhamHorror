@@ -4,6 +4,7 @@ module Arkham.Types.Skill.Cards.DeductionSpec
 
 import TestImport.Lifted
 
+import qualified Arkham.Skill.Cards as Cards
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 import Arkham.Types.Location.Attrs (LocationAttrs(..))
 
@@ -14,7 +15,7 @@ spec = describe "Deduction" $ do
       $ \attrs -> attrs { investigatorIntellect = 1 }
     location <- testLocation
       $ \attrs -> attrs { locationClues = 2, locationShroud = 2 }
-    deduction <- buildPlayerCard "01039"
+    deduction <- genPlayerCard Cards.deduction
     gameTest
         investigator
         [ SetTokens [Zero]

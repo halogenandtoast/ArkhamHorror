@@ -4,11 +4,13 @@ module Arkham.Types.Treachery.Cards.FinalRhapsodySpec
 
 import TestImport.Lifted
 
+import qualified Arkham.Treachery.Cards as Cards
+
 spec :: Spec
 spec = describe "Final Rhapsody" $ do
   it "does 1 damage per skull and autofail revealed" $ do
     investigator <- testInvestigator "00000" id
-    finalRhapsody <- buildPlayerCard "02013"
+    finalRhapsody <- genPlayerCard Cards.finalRhapsody
     gameTest
         investigator
         [ SetTokens [Skull, Skull, AutoFail, Zero, Cultist]

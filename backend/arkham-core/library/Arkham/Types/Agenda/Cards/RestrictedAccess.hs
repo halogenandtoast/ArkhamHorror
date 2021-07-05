@@ -6,6 +6,7 @@ module Arkham.Types.Agenda.Cards.RestrictedAccess
 import Arkham.Prelude
 
 import Arkham.EncounterCard
+import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
@@ -35,8 +36,10 @@ instance AgendaRunner env => RunMessage env RestrictedAccess where
     EnemySpawn _ _ eid -> do
       cardCode <- getId @CardCode eid
       when (cardCode == CardCode "02141") $ do
-        mShadowSpawnedId <- fmap unStoryTreacheryId <$> getId (CardCode "02142")
-        shadowSpawned <- EncounterCard <$> genEncounterCard "02142"
+        mShadowSpawnedId <- fmap unStoryTreacheryId
+          <$> getId (toCardCode Treacheries.shadowSpawned)
+        shadowSpawned <- EncounterCard
+          <$> genEncounterCard Treacheries.shadowSpawned
         case mShadowSpawnedId of
           Just tid -> unshiftMessage $ PlaceResources (TreacheryTarget tid) 1
           Nothing -> unshiftMessage

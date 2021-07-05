@@ -13,7 +13,7 @@ import Arkham.Types.EncounterSet as X
 gatherEncounterSet :: MonadRandom m => EncounterSet -> m [EncounterCard]
 gatherEncounterSet encounterSet = concatMapM
   (\def -> traverse genEncounterCard
-    $ replicate (fromMaybe 0 (cdEncounterSetQuantity def)) (toCardCode def)
+    $ replicate (fromMaybe 0 (cdEncounterSetQuantity def)) def
   )
   defs
  where

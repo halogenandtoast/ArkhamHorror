@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.FindingAWayInside
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Assets
 import Arkham.PlayerCard
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -43,7 +44,7 @@ instance ActRunner env => RunMessage env FindingAWayInside where
       | aid == actId && onSide B attrs && isSource attrs source -> do
         leadInvestigatorId <- getLeadInvestigatorId
         investigatorIds <- getInvestigatorIds
-        adamLynch <- PlayerCard <$> genPlayerCard "02139"
+        adamLynch <- PlayerCard <$> genPlayerCard Assets.adamLynch
         museumHallsId <- fromJustNote "missing museum halls"
           <$> getId (LocationWithTitle "Museum Halls")
         a <$ unshiftMessages

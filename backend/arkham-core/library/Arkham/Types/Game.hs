@@ -411,6 +411,12 @@ getLocationsMatching = \case
       <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
     filter ((`member` matches) . toId) . toList . view locationsL <$> getGame
 
+getSkill
+  :: (HasCallStack, MonadReader env m, HasGame env) => SkillId -> m Skill
+getSkill sid =
+  fromJustNote missingSkill . preview (skillsL . ix sid) <$> getGame
+  where missingSkill = "Unknown skill: " <> show sid
+
 getEnemy
   :: (HasCallStack, MonadReader env m, HasGame env) => EnemyId -> m Enemy
 getEnemy eid =
@@ -966,7 +972,7 @@ instance HasGame env => HasList InPlayCard env InvestigatorId where
     assets <- traverse getAsset assetIds
     pure $ map
       (\asset -> InPlayCard . PlayerCard $ lookupPlayerCard
-        (toCardCode asset)
+        (toCardDef asset)
         (toCardId asset)
       )
       assets
@@ -1578,7 +1584,7 @@ instance HasGame env => HasSet FarthestLocationId env [InvestigatorId] where
 instance HasGame env => HasSet Int env SkillType where
   getSet skillType =
     setFromList
-      . map (getSkill skillType)
+      . map (toSkillValue skillType)
       . toList
       . view investigatorsL
       <$> getGame
@@ -2076,7 +2082,7 @@ runGameMessage msg g = case msg of
     let
       skillCardsWithOwner =
         flip map (mapToList $ g ^. skillsL) $ \(skillId, skill) ->
-          ( lookupPlayerCard (toCardCode skill) (unSkillId skillId)
+          ( lookupPlayerCard (toCardDef skill) (unSkillId skillId)
           , ownerOfSkill skill
           )
     unshiftMessages
@@ -2100,22 +2106,16 @@ runGameMessage msg g = case msg of
           )
         )
   ReturnToHand iid (SkillTarget skillId) -> do
-    let
-      skill =
-        fromJustNote ("No such skill: " <> show skillId)
-          $ g
-          ^? (skillsL . ix skillId)
-      card = lookupPlayerCard (toCardCode skill) (unSkillId skillId)
-    unshiftMessage (AddToHand iid (PlayerCard card))
+    skill <- getSkill skillId
+    unshiftMessage $ AddToHand iid (toCard skill)
     pure $ g & skillsL %~ deleteMap skillId
   After (ShuffleIntoDeck _ (AssetTarget aid)) ->
     pure $ g & assetsL %~ deleteMap aid
   ShuffleIntoDeck iid (TreacheryTarget treacheryId) -> do
     treachery <- getTreachery treacheryId
-    let
-      card =
-        lookupPlayerCard (toCardCode treachery) (unTreacheryId treacheryId)
-    unshiftMessage (ShuffleCardsIntoDeck iid [card])
+    case toCard treachery of
+      PlayerCard card -> unshiftMessage (ShuffleCardsIntoDeck iid [card])
+      EncounterCard _ -> error "Unhandled"
     pure $ g & treacheriesL %~ deleteMap treacheryId
   PlayDynamicCard iid cardId n _mtarget False -> do
     investigator <- getInvestigator iid
@@ -2880,8 +2880,9 @@ runGameMessage msg g = case msg of
   Exiled (AssetTarget aid) _ -> pure $ g & assetsL %~ deleteMap aid
   Discard (EventTarget eid) -> do
     event <- getEvent eid
-    let playerCard = lookupPlayerCard (toCardCode event) (unEventId eid)
-    unshiftMessage (AddToDiscard (ownerOfEvent event) playerCard)
+    case toCard event of
+      PlayerCard pc -> unshiftMessage $ AddToDiscard (ownerOfEvent event) pc
+      EncounterCard _ -> error "Unhandled"
     pure $ g & eventsL %~ deleteMap eid
   Discard (TreacheryTarget tid) -> do
     withQueue_ $ filter (/= msg)

@@ -4,6 +4,8 @@ module Arkham.Types.Event.Cards.DarkMemorySpec
 
 import TestImport.Lifted
 
+import qualified Arkham.Event.Cards as Cards
+
 spec :: Spec
 spec = do
   describe "Dark Memory" $ do
@@ -30,7 +32,7 @@ spec = do
 
     it "is revealed and deals 2 horror if in hand at end of turn" $ do
       investigator <- testInvestigator "00000" id
-      darkMemory <- buildPlayerCard "01013"
+      darkMemory <- genPlayerCard Cards.darkMemory
 
       (didReveal, logger) <- createMessageMatcher
         (RevealInHand $ toCardId darkMemory)

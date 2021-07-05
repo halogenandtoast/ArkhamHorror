@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.BreakingAndEntering
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Assets
 import Arkham.PlayerCard
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -34,7 +35,7 @@ instance (HasName env LocationId, ActRunner env) => RunMessage env BreakingAndEn
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       mHuntingHorror <- fmap unStoryEnemyId <$> getId (CardCode "02141")
-      haroldWalsted <- PlayerCard <$> genPlayerCard "02138"
+      haroldWalsted <- PlayerCard <$> genPlayerCard Assets.haroldWalsted
       case mHuntingHorror of
         Just eid -> do
           lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
@@ -44,7 +45,7 @@ instance (HasName env LocationId, ActRunner env) => RunMessage env BreakingAndEn
               leadInvestigatorId
               [ TargetLabel
                   (InvestigatorTarget iid)
-                  [AddCampaignCardToDeck iid "02138"]
+                  [AddCampaignCardToDeck iid Assets.haroldWalsted]
               | iid <- investigatorIds
               ]
             , EnemySpawn Nothing lid eid

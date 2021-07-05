@@ -23,18 +23,15 @@ import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Name
 
-genPlayerCard :: MonadRandom m => CardCode -> m PlayerCard
-genPlayerCard cardCode = lookupPlayerCard cardCode <$> getRandom
+genPlayerCard :: MonadRandom m => CardDef -> m PlayerCard
+genPlayerCard cardDef = lookupPlayerCard cardDef <$> getRandom
 
 lookupPlayerCardName :: CardCode -> Name
 lookupPlayerCardName = cdName . lookupPlayerCardDef
 
-lookupPlayerCard :: CardCode -> CardId -> PlayerCard
-lookupPlayerCard cardCode cardId = MkPlayerCard
-  { pcId = cardId
-  , pcDef = lookupPlayerCardDef cardCode
-  , pcBearer = Nothing
-  }
+lookupPlayerCard :: CardDef -> CardId -> PlayerCard
+lookupPlayerCard cardDef cardId =
+  MkPlayerCard { pcId = cardId, pcDef = cardDef, pcBearer = Nothing }
 
 lookupPlayerCardDef :: CardCode -> CardDef
 lookupPlayerCardDef cardCode =

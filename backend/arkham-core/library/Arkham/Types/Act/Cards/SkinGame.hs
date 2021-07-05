@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.SkinGame
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Assets
 import Arkham.PlayerCard
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -49,8 +50,8 @@ instance ActRunner env => RunMessage env SkinGame where
       completedExtracurricularActivity <-
         elem "02041" . map unCompletedScenarioId <$> getSetList ()
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
-      peterClover <- PlayerCard <$> genPlayerCard "02079"
-      drFrancisMorgan <- PlayerCard <$> genPlayerCard "02080"
+      peterClover <- PlayerCard <$> genPlayerCard Assets.peterClover
+      drFrancisMorgan <- PlayerCard <$> genPlayerCard Assets.drFrancisMorgan
       cloverClubBarId <- getJustLocationIdByName "Clover Club Bar"
       vipAreaId <- getJustLocationIdByName "VIP Area"
       a <$ if completedExtracurricularActivity

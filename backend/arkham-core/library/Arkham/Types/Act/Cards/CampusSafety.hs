@@ -2,7 +2,9 @@ module Arkham.Types.Act.Cards.CampusSafety where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Assets
 import Arkham.EncounterCard
+import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.PlayerCard
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -34,8 +36,9 @@ instance ActRunner env => RunMessage env CampusSafety where
       agendaStep <- unAgendaStep <$> getStep
       completedTheHouseAlwaysWins <-
         elem "02062" . map unCompletedScenarioId <$> getSetList ()
-      theExperiment <- EncounterCard <$> genEncounterCard "02058"
-      alchemicalConcoction <- PlayerCard <$> genPlayerCard "02059"
+      theExperiment <- EncounterCard <$> genEncounterCard Enemies.theExperiment
+      alchemicalConcoction <- PlayerCard
+        <$> genPlayerCard Assets.alchemicalConcoction
 
       unshiftMessages
         $ [ PlaceLocationMatching (LocationWithTitle "Alchemy Labs")

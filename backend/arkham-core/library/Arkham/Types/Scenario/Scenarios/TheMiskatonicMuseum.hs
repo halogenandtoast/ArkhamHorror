@@ -2,6 +2,7 @@ module Arkham.Types.Scenario.Scenarios.TheMiskatonicMuseum where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
@@ -334,7 +335,10 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
                  leadInvestigatorId
                  [ TargetLabel
                      (InvestigatorTarget iid)
-                     [AddCampaignCardToDeck iid "02140"]
+                     [ AddCampaignCardToDeck
+                         iid
+                         Assets.theNecronomiconOlausWormiusTranslation
+                     ]
                  | iid <- investigatorIds
                  ]
              ]

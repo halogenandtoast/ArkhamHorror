@@ -5,9 +5,12 @@ module Arkham.Types.Act.Cards.FindingLadyEsprit
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Assets
 import Arkham.EncounterCard
 import Arkham.EncounterSet
+import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.PlayerCard
+import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
@@ -75,7 +78,7 @@ instance ActRunner env => RunMessage env FindingLadyEsprit where
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       ladyEspritSpawnLocation <-
         fromJust . headMay . setToList <$> bayouLocations
-      ladyEsprit <- PlayerCard <$> genPlayerCard "81019"
+      ladyEsprit <- PlayerCard <$> genPlayerCard Assets.ladyEsprit
       a <$ unshiftMessages
         [ CreateStoryAssetAt ladyEsprit ladyEspritSpawnLocation
         , PutSetAsideIntoPlay (SetAsideLocationsTarget mempty)
@@ -86,8 +89,9 @@ instance ActRunner env => RunMessage env FindingLadyEsprit where
       curseOfTheRougarouSet <- gatherEncounterSet
         EncounterSet.CurseOfTheRougarou
       rougarouSpawnLocations <- setToList <$> nonBayouLocations
-      theRougarou <- EncounterCard <$> genEncounterCard "81028"
-      curseOfTheRougarou <- PlayerCard <$> genPlayerCard "81029"
+      theRougarou <- EncounterCard <$> genEncounterCard Enemies.theRougarou
+      curseOfTheRougarou <- PlayerCard
+        <$> genPlayerCard Treacheries.curseOfTheRougarou
       a <$ unshiftMessages
         ([ chooseOne
              leadInvestigatorId
@@ -97,7 +101,9 @@ instance ActRunner env => RunMessage env FindingLadyEsprit where
          ]
         <> [ ShuffleEncounterDiscardBackIn
            , ShuffleIntoEncounterDeck curseOfTheRougarouSet
-           , AddCampaignCardToDeck leadInvestigatorId "81029"
+           , AddCampaignCardToDeck
+             leadInvestigatorId
+             Treacheries.curseOfTheRougarou
            , CreateWeaknessInThreatArea curseOfTheRougarou leadInvestigatorId
            , NextAct aid "81006"
            ]

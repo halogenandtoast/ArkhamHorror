@@ -2,7 +2,9 @@ module Arkham.Types.Act.Cards.TheBarrier where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Assets
 import Arkham.EncounterCard
+import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.PlayerCard
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -39,8 +41,8 @@ instance ActRunner env => RunMessage env TheBarrier where
       pure $ TheBarrier $ attrs & sequenceL .~ Act 2 B
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       hallwayId <- getJustLocationIdByName "Hallway"
-      ghoulPriest <- EncounterCard <$> genEncounterCard "01116"
-      litaChantler <- PlayerCard <$> genPlayerCard "01117"
+      ghoulPriest <- EncounterCard <$> genEncounterCard Enemies.ghoulPriest
+      litaChantler <- PlayerCard <$> genPlayerCard Assets.litaChantler
       parlorId <- getJustLocationIdByName "Parlor"
       a <$ unshiftMessages
         [ RevealLocation Nothing parlorId

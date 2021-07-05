@@ -5,7 +5,8 @@ module Arkham.Types.Location.Cards.TrappersCabin
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (trappersCabin)
+import qualified Arkham.Asset.Cards as Assets
+import qualified Arkham.Location.Cards as Cards
 import Arkham.PlayerCard (genPlayerCard)
 import Arkham.Types.Ability
 import Arkham.Types.AssetId
@@ -61,6 +62,6 @@ instance (LocationRunner env) => RunMessage env TrappersCabin where
         (BeginSkillTest iid source (toTarget attrs) Nothing SkillIntellect 3)
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        bearTrap <- PlayerCard <$> genPlayerCard "81020"
+        bearTrap <- PlayerCard <$> genPlayerCard Assets.bearTrap
         l <$ unshiftMessage (TakeControlOfSetAsideAsset iid bearTrap)
     _ -> TrappersCabin <$> runMessage msg attrs

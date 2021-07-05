@@ -3,6 +3,7 @@ module Arkham.Types.Asset.Cards.OccultLexicon where
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
+import qualified Arkham.Event.Cards as Events
 import Arkham.PlayerCard
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
@@ -25,8 +26,8 @@ instance HasActions env OccultLexicon where
 instance (AssetRunner env) => RunMessage env OccultLexicon where
   runMessage msg (OccultLexicon attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
-      handBloodRite <- PlayerCard <$> genPlayerCard "05317"
-      deckBloodRites <- replicateM 2 (genPlayerCard "05317")
+      handBloodRite <- PlayerCard <$> genPlayerCard Events.bloodRite
+      deckBloodRites <- replicateM 2 (genPlayerCard Events.bloodRite)
       unshiftMessages
         [AddToHand iid handBloodRite, ShuffleCardsIntoDeck iid deckBloodRites]
       OccultLexicon <$> runMessage msg attrs

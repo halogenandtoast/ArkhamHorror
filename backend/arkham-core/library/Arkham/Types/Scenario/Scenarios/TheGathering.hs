@@ -2,6 +2,7 @@ module Arkham.Types.Scenario.Scenarios.TheGathering where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
@@ -153,7 +154,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            leadInvestigatorId
            [ Label
              "Add Lita Chantler to your deck"
-             [AddCampaignCardToDeck leadInvestigatorId "01117"]
+             [AddCampaignCardToDeck leadInvestigatorId Assets.litaChantler]
            , Label "Do not add Lita Chantler to your deck" []
            ]
          ]
@@ -186,7 +187,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            leadInvestigatorId
            [ Label
              "Add Lita Chantler to your deck"
-             [AddCampaignCardToDeck leadInvestigatorId "01117"]
+             [AddCampaignCardToDeck leadInvestigatorId Assets.litaChantler]
            , Label "Do not add Lita Chantler to your deck" []
            ]
          , SufferTrauma leadInvestigatorId 0 1
@@ -245,7 +246,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           leadInvestigatorId
           [ Label
             "Add Lita Chantler to your deck"
-            [AddCampaignCardToDeck leadInvestigatorId "01117"]
+            [AddCampaignCardToDeck leadInvestigatorId Assets.litaChantler]
           , Label "Do not add Lita Chantler to your deck" []
           ]
         , EndOfGame

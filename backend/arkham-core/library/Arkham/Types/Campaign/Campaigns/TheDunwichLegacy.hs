@@ -2,6 +2,7 @@ module Arkham.Types.Campaign.Campaigns.TheDunwichLegacy where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Assets
 import Arkham.Types.Campaign.Attrs
 import Arkham.Types.Campaign.Runner
 import Arkham.Types.CampaignId
@@ -229,7 +230,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
           , addCampaignCardToDeckChoice
             leadInvestigatorId
             investigatorIds
-            "02040"
+            Assets.drHenryArmitage
           , NextCampaignStep Nothing
           ]
     CampaignStep (Just (InterludeStep 2)) -> do
@@ -241,39 +242,64 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
       drFrancisMorganUnowned <- isNothing <$> findOwner "02080"
       let
         addPowderOfIbnGhazi =
-          addCampaignCardToDeckChoice leadInvestigatorId investigatorIds "02219"
+          addCampaignCardToDeckChoice
+              leadInvestigatorId
+              investigatorIds
+              Assets.powderOfIbnGhazi
             <$ guard
                  (any
-                   (`notElem` sacrificedToYogSothoth)
-                   ["02040", "02061", "02080"]
+                   ((`notElem` sacrificedToYogSothoth) . toCardCode)
+                   [ Assets.drHenryArmitage
+                   , Assets.professorWarrenRice
+                   , Assets.drFrancisMorgan
+                   ]
                  )
         addDrHenryArmitage =
-          addCampaignCardToDeckChoice leadInvestigatorId investigatorIds "02040"
+          addCampaignCardToDeckChoice
+              leadInvestigatorId
+              investigatorIds
+              Assets.drHenryArmitage
             <$ guard
                  (drHenryArmitageUnowned
-                 && "02040"
+                 && toCardCode Assets.drHenryArmitage
                  `notElem` sacrificedToYogSothoth
                  )
         addProfessorWarrenRice =
-          addCampaignCardToDeckChoice leadInvestigatorId investigatorIds "02061"
+          addCampaignCardToDeckChoice
+              leadInvestigatorId
+              investigatorIds
+              Assets.professorWarrenRice
             <$ guard
                  (professorWarrenRiceUnowned
-                 && "02061"
+                 && toCardCode Assets.professorWarrenRice
                  `notElem` sacrificedToYogSothoth
                  )
         addDrFrancisMorgan =
-          addCampaignCardToDeckChoice leadInvestigatorId investigatorIds "02080"
+          addCampaignCardToDeckChoice
+              leadInvestigatorId
+              investigatorIds
+              Assets.drFrancisMorgan
             <$ guard
                  (drFrancisMorganUnowned
-                 && "02080"
+                 && toCardCode Assets.drFrancisMorgan
                  `notElem` sacrificedToYogSothoth
                  )
         addZebulonWhateley =
-          addCampaignCardToDeckChoice leadInvestigatorId investigatorIds "02217"
-            <$ guard ("02217" `notElem` sacrificedToYogSothoth)
+          addCampaignCardToDeckChoice
+              leadInvestigatorId
+              investigatorIds
+              Assets.zebulonWhateley
+            <$ guard
+                 (toCardCode Assets.zebulonWhateley
+                 `notElem` sacrificedToYogSothoth
+                 )
         addEarlSawyer =
-          addCampaignCardToDeckChoice leadInvestigatorId investigatorIds "02218"
-            <$ guard ("02218" `notElem` sacrificedToYogSothoth)
+          addCampaignCardToDeckChoice
+              leadInvestigatorId
+              investigatorIds
+              Assets.earlSawyer
+            <$ guard
+                 (toCardCode Assets.earlSawyer `notElem` sacrificedToYogSothoth)
       c <$ unshiftMessages
         ([ AskMap
            . mapFromList

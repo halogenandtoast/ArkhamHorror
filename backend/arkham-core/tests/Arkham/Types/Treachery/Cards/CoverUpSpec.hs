@@ -4,13 +4,14 @@ module Arkham.Types.Treachery.Cards.CoverUpSpec
 
 import TestImport.Lifted
 
+import qualified Arkham.Treachery.Cards as Cards
 import qualified Arkham.Types.Location.Attrs as Location
 
 spec :: Spec
 spec = describe "Cover Up" $ do
   it "starts with 3 clues on it" $ do
     investigator <- testInvestigator "00000" id
-    coverUp <- buildPlayerCard "01007"
+    coverUp <- genPlayerCard Cards.coverUp
     gameTest
         investigator
         [loadDeck investigator [coverUp], drawCards investigator 1]
@@ -23,7 +24,7 @@ spec = describe "Cover Up" $ do
 
   it "allows you to remove a clue instead of discovering clues" $ do
     investigator <- testInvestigator "00000" id
-    coverUp <- buildPlayerCard "01007"
+    coverUp <- genPlayerCard Cards.coverUp
     location <- testLocation $ Location.cluesL .~ 1
     gameTest
         investigator
@@ -49,7 +50,7 @@ spec = describe "Cover Up" $ do
   it "causes one mental trauma when the game ends if there are any clues on it"
     $ do
         investigator <- testInvestigator "00000" id
-        coverUp <- buildPlayerCard "01007"
+        coverUp <- genPlayerCard Cards.coverUp
         gameTest
             investigator
             [ loadDeck investigator [coverUp]
@@ -63,7 +64,7 @@ spec = describe "Cover Up" $ do
 
   it "does not cause trauma when the game ends if there are no clues on it" $ do
     investigator <- testInvestigator "00000" id
-    coverUp <- buildPlayerCard "01007"
+    coverUp <- genPlayerCard Cards.coverUp
     location <- testLocation $ Location.cluesL .~ 3
     gameTest
         investigator

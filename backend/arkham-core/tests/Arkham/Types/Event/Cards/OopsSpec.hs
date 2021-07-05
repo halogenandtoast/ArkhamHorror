@@ -4,6 +4,7 @@ module Arkham.Types.Event.Cards.OopsSpec
 
 import TestImport
 
+import qualified Arkham.Event.Cards as Cards
 import qualified Arkham.Types.Enemy.Attrs as Enemy
 import qualified Arkham.Types.Investigator.Attrs as Investigator
 
@@ -14,7 +15,7 @@ spec = describe "Oops!" $ do
       testInvestigator "00000"
       $ (Investigator.combatL .~ 1)
       . (Investigator.resourcesL .~ 2)
-    oops <- buildPlayerCard "02113"
+    oops <- genPlayerCard Cards.oops
     rolands38Special <- buildAsset "01006" -- does 2 damage
     enemy <- testEnemy $ (Enemy.healthL .~ Static 1) . (Enemy.fightL .~ 2)
     enemy2 <- testEnemy (Enemy.healthL .~ Static 3)
@@ -66,7 +67,7 @@ spec = describe "Oops!" $ do
       testInvestigator "00000"
       $ (Investigator.combatL .~ 1)
       . (Investigator.resourcesL .~ 2)
-    oops <- buildPlayerCard "02113"
+    oops <- genPlayerCard Cards.oops
     fortyOneDerringer <- buildAsset "01047"
     enemy <- testEnemy $ (Enemy.healthL .~ Static 1) . (Enemy.fightL .~ 4)
     enemy2 <- testEnemy (Enemy.healthL .~ Static 3)
@@ -118,7 +119,7 @@ spec = describe "Oops!" $ do
       testInvestigator "00000"
       $ (Investigator.combatL .~ 1)
       . (Investigator.resourcesL .~ 2)
-    oops <- buildPlayerCard "02113"
+    oops <- genPlayerCard Cards.oops
     shotgun4 <- buildAsset "01029"
     enemy <- testEnemy $ (Enemy.healthL .~ Static 1) . (Enemy.fightL .~ 5)
     enemy2 <- testEnemy (Enemy.healthL .~ Static 3)

@@ -9,9 +9,9 @@ module TestImport
 
 import Arkham.Prelude as X
 
-import Arkham.EncounterCard
+import Arkham.EncounterCard as X
 import Arkham.Game as X hiding (newGame)
-import Arkham.PlayerCard
+import Arkham.PlayerCard as X
 import Arkham.Types.Action
 import Arkham.Types.Agenda as X
 import Arkham.Types.Agenda.Attrs
@@ -212,26 +212,6 @@ testPlayerCard f = do
     , pcDef = f $ basePlayerCard "asset" "Test" 0 AssetType Guardian
     , pcBearer = Nothing
     }
-
-buildPlayerCard :: MonadIO m => CardCode -> m PlayerCard
-buildPlayerCard cardCode = do
-  cardId <- CardId <$> liftIO nextRandom
-  pure $ lookupPlayerCard cardCode cardId
-
-buildEncounterCard :: MonadIO m => CardCode -> m EncounterCard
-buildEncounterCard cardCode = do
-  cardId <- CardId <$> liftIO nextRandom
-  pure $ lookupEncounterCard cardCode cardId
-
-buildTestEnemyEncounterCard :: MonadIO m => m EncounterCard
-buildTestEnemyEncounterCard = do
-  cardId <- CardId <$> liftIO nextRandom
-  pure $ lookupEncounterCard "enemy" cardId
-
-buildTestTreacheryEncounterCard :: MonadIO m => m EncounterCard
-buildTestTreacheryEncounterCard = do
-  cardId <- CardId <$> liftIO nextRandom
-  pure $ lookupEncounterCard "treachery" cardId
 
 testEnemy :: MonadRandom m => (EnemyAttrs -> EnemyAttrs) -> m Enemy
 testEnemy = testEnemyWithDef id

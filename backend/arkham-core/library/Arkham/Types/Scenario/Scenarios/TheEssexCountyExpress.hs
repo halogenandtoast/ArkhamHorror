@@ -5,6 +5,7 @@ module Arkham.Types.Scenario.Scenarios.TheEssexCountyExpress
 
 import Arkham.Prelude
 
+import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.AgendaId
 import Arkham.Types.CampaignId
 import Arkham.Types.CampaignLogKey
@@ -187,7 +188,9 @@ investigatorDefeat = do
       <> [ RemoveCampaignCardFromDeck owner "02080"
          | owner <- maybeToList mDrFrancisMorganOwner
          ]
-      <> [ AddCampaignCardToDeck iid "02178" | iid <- defeatedInvestigatorIds ]
+      <> [ AddCampaignCardToDeck iid Treacheries.acrossSpaceAndTime
+         | iid <- defeatedInvestigatorIds
+         ]
 
 instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env TheEssexCountyExpress where
   runMessage msg s@(TheEssexCountyExpress attrs@ScenarioAttrs {..}) =

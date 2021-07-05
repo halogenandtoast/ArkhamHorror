@@ -4,7 +4,6 @@ module Arkham.Types.Game.Helpers where
 
 import Arkham.Prelude
 
-import Arkham.PlayerCard
 import Arkham.Types.Ability
 import Arkham.Types.Action hiding (Ability)
 import qualified Arkham.Types.Action as Action
@@ -562,8 +561,8 @@ sourceToTarget = \case
   AbilitySource{} -> error "not implemented"
 
 addCampaignCardToDeckChoice
-  :: InvestigatorId -> [InvestigatorId] -> CardCode -> Message
-addCampaignCardToDeckChoice leadInvestigatorId investigatorIds cardCode =
+  :: InvestigatorId -> [InvestigatorId] -> CardDef -> Message
+addCampaignCardToDeckChoice leadInvestigatorId investigatorIds cardDef =
   chooseOne
     leadInvestigatorId
     [ Label
@@ -572,13 +571,13 @@ addCampaignCardToDeckChoice leadInvestigatorId investigatorIds cardCode =
           leadInvestigatorId
           [ TargetLabel
               (InvestigatorTarget iid)
-              [AddCampaignCardToDeck iid cardCode]
+              [AddCampaignCardToDeck iid cardDef]
           | iid <- investigatorIds
           ]
       ]
     , Label ("Do not add " <> tshow name <> " to any deck") []
     ]
-  where name = lookupPlayerCardName cardCode
+  where name = cdName cardDef
 
 skillTestModifier
   :: (SourceEntity source, TargetEntity target)

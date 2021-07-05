@@ -107,8 +107,8 @@ data Message
   | AddAbility Source Ability
   | AddAct ActId
   | AddAgenda AgendaId
-  | AddCampaignCardToDeck InvestigatorId CardCode
-  | AddCampaignCardToEncounterDeck CardCode
+  | AddCampaignCardToDeck InvestigatorId CardDef
+  | AddCampaignCardToEncounterDeck CardDef
   | AddConnection LocationId LocationSymbol
   | AddDirectConnection LocationId LocationId
   | AddFocusedToHand InvestigatorId Target CardId

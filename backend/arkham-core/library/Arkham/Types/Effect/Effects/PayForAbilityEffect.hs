@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.PayForAbilityEffect
   ( payForAbilityEffect
   , PayForAbilityEffect(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -131,6 +130,7 @@ instance
       ExhaustCost target -> e <$ unshiftMessage (Exhaust target)
       DiscardCost target -> e <$ unshiftMessage (Discard target)
       DiscardCardCost cid -> e <$ unshiftMessage (DiscardCard iid cid)
+      ExileCardCost cid -> e <$ unshiftMessage (ExileCard iid cid)
       HorrorCost _ target x -> case target of
         InvestigatorTarget iid' | iid' == iid ->
           e <$ unshiftMessage
@@ -186,7 +186,12 @@ instance
         handCards <- mapMaybe (preview _PlayerCard . unHandCard) <$> getList iid
         let
           cards = filter ((> 0) . fst) $ map
-            (toFst (count (`member` insertSet SkillWild skillTypes) . cdSkills . pcDef))
+            (toFst
+              (count (`member` insertSet SkillWild skillTypes)
+              . cdSkills
+              . pcDef
+              )
+            )
             handCards
           cardMsgs = map
             (\(n, card) -> if n >= x

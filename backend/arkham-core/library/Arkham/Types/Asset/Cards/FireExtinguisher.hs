@@ -30,25 +30,25 @@ instance HasActions env ActionType => HasActions env FireExtinguisher where
   getActions iid window (FireExtinguisher a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid window
     evadeAvailable <- hasEvadeActions iid window
-    pure $
-      [ ActivateCardAbilityAction
-          iid
-          (mkAbility
-            (toSource a)
-            1
-            (ActionAbility (Just Action.Fight) (ActionCost 1))
-          )
-      | fightAvailable
-      ] <>
-      [ ActivateCardAbilityAction
-          iid
-          (mkAbility
-            (toSource a)
-            2
-            (ActionAbility (Just Action.Evade) (ActionCost 1))
-          )
-      | evadeAvailable
-      ]
+    pure
+      $ [ ActivateCardAbilityAction
+            iid
+            (mkAbility
+              (toSource a)
+              1
+              (ActionAbility (Just Action.Fight) (ActionCost 1))
+            )
+        | fightAvailable
+        ]
+      <> [ ActivateCardAbilityAction
+             iid
+             (mkAbility
+               (toSource a)
+               2
+               (ActionAbility (Just Action.Evade) (ActionCost 1))
+             )
+         | evadeAvailable
+         ]
   getActions i window (FireExtinguisher x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env FireExtinguisher where
@@ -57,10 +57,7 @@ instance (AssetRunner env) => RunMessage env FireExtinguisher where
       a <$ unshiftMessages
         [ CreateWindowModifierEffect
           EffectSkillTestWindow
-          (EffectModifiers $ toModifiers
-            attrs
-            [SkillModifier SkillCombat 1]
-          )
+          (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
           source
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat mempty False

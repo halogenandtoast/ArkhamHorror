@@ -16,7 +16,7 @@ import Arkham.Types.Window
 
 storyAsset :: CardCode -> Name -> Int -> EncounterSet -> CardDef
 storyAsset cardCode name cost encounterSet =
-  baseAsset (Just encounterSet) cardCode name cost Neutral
+  baseAsset (Just (encounterSet, 1)) cardCode name cost Neutral
 
 asset :: CardCode -> Name -> Int -> ClassSymbol -> CardDef
 asset = baseAsset Nothing
@@ -32,7 +32,12 @@ weakness cardCode name = (baseAsset Nothing cardCode name 0 Neutral)
   }
 
 baseAsset
-  :: Maybe EncounterSet -> CardCode -> Name -> Int -> ClassSymbol -> CardDef
+  :: Maybe (EncounterSet, Int)
+  -> CardCode
+  -> Name
+  -> Int
+  -> ClassSymbol
+  -> CardDef
 baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   { cdCardCode = cardCode
   , cdName = name
@@ -52,7 +57,8 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   , cdCommitRestrictions = mempty
   , cdAttackOfOpportunityModifiers = mempty
   , cdPermanent = False
-  , cdEncounterSet = mEncounterSet
+  , cdEncounterSet = fst <$> mEncounterSet
+  , cdEncounterSetQuantity = snd <$> mEncounterSet
   , cdUnique = False
   }
 
@@ -789,6 +795,7 @@ helplessPassenger =
   (storyAsset "02179" "Helpless Passenger" 0 TheEssexCountyExpress)
     { cdCardTraits = setFromList [Ally, Bystander]
     , cdKeywords = singleton Keyword.Surge
+    , cdEncounterSetQuantity = Just 3
     }
 
 keenEye3 :: CardDef
@@ -849,6 +856,7 @@ esotericFormula :: CardDef
 esotericFormula =
   (storyAsset "02254" "Esoteric Formula" 0 UndimensionedAndUnseen)
     { cdCardTraits = singleton Spell
+    , cdEncounterSetQuantity = Just 4
     }
 
 lightningGun5 :: CardDef

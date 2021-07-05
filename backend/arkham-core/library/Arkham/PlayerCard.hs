@@ -70,5 +70,6 @@ basePlayerCard cardCode name cost cardType classSymbol = CardDef
   , cdAttackOfOpportunityModifiers = mempty
   , cdPermanent = False
   , cdEncounterSet = Nothing
+  , cdEncounterSetQuantity = Nothing
   , cdUnique = False
   }

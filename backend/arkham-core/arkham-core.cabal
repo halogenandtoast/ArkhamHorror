@@ -802,6 +802,7 @@ library
       library
   default-extensions:
       BangPatterns
+      BlockArguments
       ConstraintKinds
       DeriveAnyClass
       DeriveGeneric
@@ -854,6 +855,7 @@ executable validate
       validate
   default-extensions:
       BangPatterns
+      BlockArguments
       ConstraintKinds
       DeriveAnyClass
       DeriveGeneric
@@ -958,6 +960,7 @@ test-suite spec
       tests
   default-extensions:
       BangPatterns
+      BlockArguments
       ConstraintKinds
       DeriveAnyClass
       DeriveGeneric

@@ -16,6 +16,7 @@ conf_forward:
   options_ghc:
     - -XImportQualifiedPost
     - -XBangPatterns
+    - -XBlockArguments
     - -XDataKinds
     - -XDeriveAnyClass
     - -XDeriveFoldable

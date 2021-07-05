@@ -5,8 +5,8 @@ Act	src/Arkham/Types/Act.hs	1;"	m
 ActStack	src/Arkham/Types/GameState.hs	176;"	C
 Action	src/Arkham/Types/Action.hs	1;"	m
 Actions	src/Arkham/Api/Handler/Actions.hs	1;"	m
-ActivateCardAbilityAction	/Users/halogenandtoast/Code/ArkhamHorror/arkham-horror-backend/src/Arkham/Types/Message.hs	14;"	C
-ActivateCardAbilityAction	src/Arkham/Types/Message.hs	14;"	C
+UseAbility	/Users/halogenandtoast/Code/ArkhamHorror/arkham-horror-backend/src/Arkham/Types/Message.hs	14;"	C
+UseAbility	src/Arkham/Types/Message.hs	14;"	C
 Acts	src/Arkham/Api/Handler/Acts.hs	2;"	m
 AddDoom	src/Arkham/Types/GameState.hs	140;"	C
 Agenda	/Users/halogenandtoast/Code/ArkhamHorror/arkham-horror-backend/src/Arkham/Internal/Agenda.hs	1;"	m
@@ -1072,7 +1072,7 @@ Users.halogenandtoast.Code.ArkhamHorror.arkham-horror-backend.src.Arkham.Types.L
 Users.halogenandtoast.Code.ArkhamHorror.arkham-horror-backend.src.Arkham.Types.LocationId.LocationId	/Users/halogenandtoast/Code/ArkhamHorror/arkham-horror-backend/src/Arkham/Types/LocationId.hs	6;"	t
 Users.halogenandtoast.Code.ArkhamHorror.arkham-horror-backend.src.Arkham.Types.LocationId.unLocationId	/Users/halogenandtoast/Code/ArkhamHorror/arkham-horror-backend/src/Arkham/Types/LocationId.hs	6;"	f
 Users.halogenandtoast.Code.ArkhamHorror.arkham-horror-backend.src.Arkham.Types.Message	/Users/halogenandtoast/Code/ArkhamHorror/arkham-horror-backend/src/Arkham/Types/Message.hs	1;"	m
-Users.halogenandtoast.Code.ArkhamHorror.arkham-horror-backend.src.Arkham.Types.Message.ActivateCardAbilityAction	/Users/halogenandtoast/Code/ArkhamHorror/arkham-horror-backend/src/Arkham/Types/Message.hs	14;"	C
+Users.halogenandtoast.Code.ArkhamHorror.arkham-horror-backend.src.Arkham.Types.Message.UseAbility	/Users/halogenandtoast/Code/ArkhamHorror/arkham-horror-backend/src/Arkham/Types/Message.hs	14;"	C
 Users.halogenandtoast.Code.ArkhamHorror.arkham-horror-backend.src.Arkham.Types.Message.AndThen	/Users/halogenandtoast/Code/ArkhamHorror/arkham-horror-backend/src/Arkham/Types/Message.hs	53;"	C
 Users.halogenandtoast.Code.ArkhamHorror.arkham-horror-backend.src.Arkham.Types.Message.Ask	/Users/halogenandtoast/Code/ArkhamHorror/arkham-horror-backend/src/Arkham/Types/Message.hs	15;"	C
 Users.halogenandtoast.Code.ArkhamHorror.arkham-horror-backend.src.Arkham.Types.Message.AssetDamaged	/Users/halogenandtoast/Code/ArkhamHorror/arkham-horror-backend/src/Arkham/Types/Message.hs	16;"	C
@@ -3053,7 +3053,7 @@ src.Arkham.Types.LocationId	src/Arkham/Types/LocationId.hs	1;"	m
 src.Arkham.Types.LocationId.LocationId	src/Arkham/Types/LocationId.hs	7;"	t
 src.Arkham.Types.LocationId.unLocationId	src/Arkham/Types/LocationId.hs	7;"	f
 src.Arkham.Types.Message	src/Arkham/Types/Message.hs	1;"	m
-src.Arkham.Types.Message.ActivateCardAbilityAction	src/Arkham/Types/Message.hs	14;"	C
+src.Arkham.Types.Message.UseAbility	src/Arkham/Types/Message.hs	14;"	C
 src.Arkham.Types.Message.AndThen	src/Arkham/Types/Message.hs	53;"	C
 src.Arkham.Types.Message.Ask	src/Arkham/Types/Message.hs	15;"	C
 src.Arkham.Types.Message.AssetDamaged	src/Arkham/Types/Message.hs	16;"	C

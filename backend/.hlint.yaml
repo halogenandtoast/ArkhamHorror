@@ -19,6 +19,7 @@
 # Specify additional command line arguments
 - arguments:
   - -XBangPatterns
+  - -XBlockArguments
   - -XDataKinds
   - -XDeriveAnyClass
   - -XDeriveFoldable

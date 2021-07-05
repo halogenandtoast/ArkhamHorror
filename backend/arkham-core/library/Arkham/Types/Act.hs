@@ -11,6 +11,7 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.ActId
 import Arkham.Types.Classes
 import Arkham.Types.LocationId
+import Arkham.Types.Name
 import Arkham.Types.Trait
 
 data Act
@@ -63,7 +64,7 @@ instance Entity Act where
   type EntityId Act = ActId
   type EntityAttrs Act = ActAttrs
 
-instance NamedEntity Act where
+instance Named Act where
   toName = toName . toAttrs
 
 instance TargetEntity Act where

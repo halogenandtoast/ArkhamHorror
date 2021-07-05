@@ -10,6 +10,7 @@ import Arkham.Types.Event
 import Arkham.Types.Investigator
 import Arkham.Types.Location
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target

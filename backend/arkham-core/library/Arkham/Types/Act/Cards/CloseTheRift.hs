@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.CloseTheRift
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
@@ -48,7 +49,9 @@ instance ActRunner env => RunMessage env CloseTheRift where
       tearThroughTimeId <- getRandom
       a <$ unshiftMessages
         (resolve (RemoveLocation theEdgeOfTheUniverseId)
-        <> [PlaceLocation "02322" tearThroughTimeId, NextAct actId "02319"]
+        <> [ PlaceLocation tearThroughTimeId Locations.tearThroughTime
+           , NextAct actId "02319"
+           ]
         )
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage

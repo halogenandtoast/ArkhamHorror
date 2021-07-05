@@ -264,7 +264,7 @@ testInvestigator
 testInvestigator cardCode f =
   let
     investigatorId = InvestigatorId cardCode
-    name = unCardCode cardCode
+    name = mkName (unCardCode cardCode)
     stats = Stats 5 5 5 5 5 5
   in pure $ baseInvestigator investigatorId name Neutral stats [] f
 

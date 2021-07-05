@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.EncounterCard
 import Arkham.EncounterSet (gatherEncounterSet)
 import qualified Arkham.Enemy.Cards as Enemies
+import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -13,6 +14,7 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
@@ -109,8 +111,14 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       (acolytes, darkCult) <- splitAt (count' - 1)
         <$> gatherEncounterSet EncounterSet.DarkCult
       -- we will spawn these acolytes
-      southside <- sample $ "01126" :| ["01127"]
-      downtown <- sample $ "01130" :| ["01131"]
+      southside <-
+        sample
+        $ Locations.southsideHistoricalSociety
+        :| [Locations.southsideMasBoardingHouse]
+      downtown <-
+        sample
+        $ Locations.downtownFirstBankOfArkham
+        :| [Locations.downtownArkhamAsylum]
 
       yourHouseId <- getRandom
       rivertownId <- getRandom
@@ -133,7 +141,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         startingLocationMessages = if houseBurnedDown
           then [RevealLocation Nothing rivertownId, MoveAllTo rivertownId]
           else
-            [ PlaceLocation "01124" yourHouseId
+            [ PlaceLocation yourHouseId Locations.yourHouse
             , RevealLocation Nothing yourHouseId
             , MoveAllTo yourHouseId
             ]
@@ -160,30 +168,30 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           , SetEncounterDeck encounterDeck
           , AddAgenda "01121"
           , AddAct "01123"
-          , PlaceLocation "01125" rivertownId
-          , PlaceLocation southside southsideId
-          , PlaceLocation "01128" stMarysHospitalId
-          , PlaceLocation "01129" miskatonicUniversityId
-          , PlaceLocation downtown downtownId
-          , PlaceLocation "01132" easttownId
-          , PlaceLocation "01133" graveyardId
-          , PlaceLocation "01134" northsideId
+          , PlaceLocation rivertownId Locations.rivertown
+          , PlaceLocation southsideId southside
+          , PlaceLocation stMarysHospitalId Locations.stMarysHospital
+          , PlaceLocation miskatonicUniversityId Locations.miskatonicUniversity
+          , PlaceLocation downtownId downtown
+          , PlaceLocation easttownId Locations.easttown
+          , PlaceLocation graveyardId Locations.graveyard
+          , PlaceLocation northsideId Locations.northside
           ]
         <> startingLocationMessages
         <> ghoulPriestMessages
         <> spawnAcolyteMessages
       let
         locations' = mapFromList $ map
-          (second pure . toFst (getLocationName . lookupLocationStub))
-          [ "01124"
-          , "01124"
+          ((LocationName . toName) &&& pure)
+          [ Locations.yourHouse
+          , Locations.rivertown
           , southside
-          , "01128"
-          , "01129"
+          , Locations.stMarysHospital
+          , Locations.miskatonicUniversity
           , downtown
-          , "01132"
-          , "01133"
-          , "01134"
+          , Locations.easttown
+          , Locations.graveyard
+          , Locations.northside
           ]
       pure $ TheMidnightMasks
         (attrs

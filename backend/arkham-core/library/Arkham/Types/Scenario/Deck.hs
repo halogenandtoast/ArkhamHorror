@@ -4,6 +4,6 @@ import Arkham.Prelude
 
 import Arkham.Types.Card
 
-data ScenarioDeck = CultistDeck [EncounterCard] | ExhibitDeck [CardCode] | PotentialSacrifices [Card]
+data ScenarioDeck = CultistDeck [EncounterCard] | ExhibitDeck [EncounterCard] | PotentialSacrifices [Card]
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)

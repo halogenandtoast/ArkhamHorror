@@ -7,6 +7,7 @@ import Arkham.Prelude
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Id
+import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Target
 import Arkham.Types.Trait (Trait)
@@ -111,7 +112,7 @@ instance HasCardDef Treachery where
   toCardDef = toCardDef . toAttrs
 
 deriving anyclass instance ActionRunner env => HasActions env Treachery
-deriving anyclass instance (HasId CardCode env LocationId, TreacheryRunner env) => RunMessage env Treachery
+deriving anyclass instance (GetCardDef env LocationId, TreacheryRunner env) => RunMessage env Treachery
 deriving anyclass instance
   ( HasCount PlayerCount env ()
   , HasId LocationId env InvestigatorId
@@ -127,7 +128,7 @@ instance Entity Treachery where
   type EntityId Treachery = TreacheryId
   type EntityAttrs Treachery = TreacheryAttrs
 
-instance NamedEntity Treachery where
+instance Named Treachery where
   toName = toName . toAttrs
 
 instance TargetEntity Treachery where

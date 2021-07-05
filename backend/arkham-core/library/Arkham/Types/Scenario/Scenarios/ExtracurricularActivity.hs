@@ -3,22 +3,22 @@ module Arkham.Types.Scenario.Scenarios.ExtracurricularActivity where
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Assets
+import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
-import Arkham.Types.ScenarioId
 import Arkham.Types.Target
 import Arkham.Types.Token
 
@@ -92,12 +92,14 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         [ SetEncounterDeck encounterDeck
         , AddAgenda "02042"
         , AddAct "02045"
-        , PlaceLocation "02048" miskatonicQuadId
-        , PlaceLocation "02050" orneLibraryId
-        , PlaceLocation "02049" humanitiesBuildingId
-        , PlaceLocation "02051" studentUnionId
-        , PlaceLocation "02056" scienceBuildingId
-        , PlaceLocation "02053" administrationBuildingId
+        , PlaceLocation miskatonicQuadId Locations.miskatonicQuad
+        , PlaceLocation orneLibraryId Locations.orneLibrary
+        , PlaceLocation humanitiesBuildingId Locations.humanitiesBuilding
+        , PlaceLocation studentUnionId Locations.studentUnion
+        , PlaceLocation scienceBuildingId Locations.scienceBuilding
+        , PlaceLocation
+          administrationBuildingId
+          Locations.administrationBuilding
         , RevealLocation Nothing miskatonicQuadId
         , MoveAllTo miskatonicQuadId
         , AskMap
@@ -111,16 +113,18 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         ]
       let
         locations' = mapFromList $ map
-          (second pure . toFst (getLocationName . lookupLocationStub))
-          [ "02048"
-          , "02049"
-          , "02050"
-          , "02051"
-          , "02052"
-          , "02053"
-          , if completedTheHouseAlwaysWins then "02055" else "02054"
-          , "02056"
-          , "02057"
+          ((LocationName . toName) &&& pure)
+          [ Locations.miskatonicQuad
+          , Locations.humanitiesBuilding
+          , Locations.orneLibrary
+          , Locations.studentUnion
+          , Locations.dormitories
+          , Locations.administrationBuilding
+          , if completedTheHouseAlwaysWins
+            then Locations.facultyOfficesTheHourIsLate
+            else Locations.facultyOfficesTheNightIsStillYoung
+          , Locations.scienceBuilding
+          , Locations.alchemyLabs
           ]
       ExtracurricularActivity
         <$> runMessage msg (attrs & locationsL .~ locations')

@@ -155,8 +155,8 @@ instance Entity LocationAttrs where
   toId = locationId
   toAttrs = id
 
-instance NamedEntity LocationAttrs where
-  toName = cdName . toCardDef
+instance Named LocationAttrs where
+  toName = toName . toCardDef
 
 instance TargetEntity LocationAttrs where
   toTarget = LocationTarget . toId

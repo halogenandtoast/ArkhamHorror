@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.OutOfThisWorld
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
@@ -42,7 +43,9 @@ instance ActRunner env => RunMessage env OutOfThisWorld where
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       theEdgeOfTheUniverseId <- getRandom
       a <$ unshiftMessages
-        [PlaceLocation "02321" theEdgeOfTheUniverseId, NextAct actId "02317"]
+        [ PlaceLocation theEdgeOfTheUniverseId Locations.theEdgeOfTheUniverse
+        , NextAct actId "02317"
+        ]
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage
         (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))

@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.DarkenedHall
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (darkenedHall)
+import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -37,10 +37,10 @@ instance ActionRunner env => HasActions env DarkenedHall where
 instance LocationRunner env => RunMessage env DarkenedHall where
   runMessage msg (DarkenedHall attrs@LocationAttrs {..}) = case msg of
     RevealLocation _ lid | lid == locationId -> do
-      locations <- shuffleM ["02075", "02076", "02077"]
+      locations <- shuffleM [Cards.artGallery, Cards.vipArea, Cards.backAlley]
       randomIds <- replicateM 3 getRandom
       unshiftMessages $ concat
-        [ [ PlaceLocation location' locationId'
+        [ [ PlaceLocation locationId' location'
           , SetLocationLabel locationId' label'
           ]
         | (locationId', (label', location')) <- zip randomIds $ zip

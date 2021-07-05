@@ -114,9 +114,12 @@ cycleN :: Int -> [a] -> [a]
 cycleN n as = take (length as * n) $ L.cycle as
 
 deleteFirst :: Eq a => a -> [a] -> [a]
-deleteFirst _ [] = []
-deleteFirst a (a' : as) | a == a' = as
-deleteFirst a (b' : as) = b' : deleteFirst a as
+deleteFirst a = deleteFirstMatch (== a)
+
+deleteFirstMatch :: (a -> Bool) -> [a] -> [a]
+deleteFirstMatch _ [] = []
+deleteFirstMatch f (a' : as) | f a' = as
+deleteFirstMatch f (b' : as) = b' : deleteFirstMatch f as
 
 data With a b = With a b
 

@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.ReturnToAttic
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (returnToAttic)
+import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -35,6 +35,6 @@ instance (LocationRunner env) => RunMessage env ReturnToAttic where
   runMessage msg (ReturnToAttic attrs) = case msg of
     RevealLocation _ lid | lid == locationId attrs -> do
       farAboveYourHouseId <- getRandom
-      unshiftMessage (PlaceLocation "50019" farAboveYourHouseId)
+      unshiftMessage (PlaceLocation farAboveYourHouseId Cards.farAboveYourHouse)
       ReturnToAttic <$> runMessage msg attrs
     _ -> ReturnToAttic <$> runMessage msg attrs

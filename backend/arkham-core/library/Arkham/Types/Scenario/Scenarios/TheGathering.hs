@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Enemy.Cards as Enemies
+import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -12,6 +13,7 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
@@ -83,7 +85,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         [ SetEncounterDeck encounterDeck
         , AddAgenda "01105"
         , AddAct "01108"
-        , PlaceLocation "01111" studyId
+        , PlaceLocation studyId Locations.study
         , RevealLocation Nothing studyId
         , MoveAllTo studyId
         , AskMap
@@ -94,8 +96,13 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         ]
       let
         locations' = mapFromList $ map
-          (second pure . toFst (getLocationName . lookupLocationStub))
-          ["01111", "01112", "01113", "01114", "01115"]
+          ((LocationName . toName) &&& pure)
+          [ Locations.study
+          , Locations.hallway
+          , Locations.attic
+          , Locations.cellar
+          , Locations.parlor
+          ]
       TheGathering <$> runMessage msg (attrs & locationsL .~ locations')
     ResolveToken _ Cultist iid ->
       s <$ when (isHardExpert attrs) (unshiftMessage $ DrawAnotherToken iid)

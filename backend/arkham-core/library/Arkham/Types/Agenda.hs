@@ -13,6 +13,7 @@ import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.EnemyMatcher
 import Arkham.Types.GameValue
+import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Trait (Trait)
 
@@ -124,7 +125,7 @@ instance Entity Agenda where
   type EntityId Agenda = AgendaId
   type EntityAttrs Agenda = AgendaAttrs
 
-instance NamedEntity Agenda where
+instance Named Agenda where
   toName = toName . toAttrs
 
 instance TargetEntity Agenda where

@@ -85,29 +85,11 @@ instance HasCount ScenarioDeckCount env Scenario where
 instance HasCount SetAsideCount env (Scenario, CardCode) where
   getCount = getCount . first toAttrs
 
-instance HasSet SetAsideLocationCardCode env Scenario where
-  getSet = getSet . toAttrs
+instance HasList SetAsideCard env Scenario where
+  getList = getList . toAttrs
 
 instance HasName env Scenario where
   getName = getName . toAttrs
-
-instance HasName Scenario SetAsideLocationCardCode where
-  getName saLocationCardCode = do
-    locations <- asks (scenarioLocations . toAttrs)
-    let
-      locations' :: HashMap CardCode LocationName =
-        mapFromList
-          . concatMap (\(a, bs) -> map (, a) bs)
-          . mapToList
-          $ locations
-    case lookup (unSetAsideLocationCardCode saLocationCardCode) locations' of
-      Nothing ->
-        error
-          $ "could not lookup location name"
-          <> show saLocationCardCode
-          <> ": "
-          <> show locations'
-      Just name -> pure $ unLocationName name
 
 newtype BaseScenario = BaseScenario ScenarioAttrs
   deriving stock Generic

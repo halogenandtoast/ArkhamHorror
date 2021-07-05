@@ -19,6 +19,7 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.SkillTest
 import Arkham.Types.Trait (Trait)
@@ -180,7 +181,7 @@ instance Entity Asset where
   type EntityId Asset = AssetId
   type EntityAttrs Asset = AssetAttrs
 
-instance NamedEntity Asset where
+instance Named Asset where
   toName = toName . toAttrs
 
 instance HasName env Asset where

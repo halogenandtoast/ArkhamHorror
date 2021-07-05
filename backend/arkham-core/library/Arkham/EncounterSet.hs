@@ -11,11 +11,10 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.EncounterSet as X
 
 gatherEncounterSet :: MonadRandom m => EncounterSet -> m [EncounterCard]
-gatherEncounterSet encounterSet = concatMapM
-  (\def -> traverse genEncounterCard
-    $ replicate (fromMaybe 0 (cdEncounterSetQuantity def)) def
-  )
+gatherEncounterSet encounterSet = concat <$> for
   defs
+  \def -> traverse genEncounterCard
+    $ replicate (fromMaybe 0 (cdEncounterSetQuantity def)) def
  where
   defs =
     filter ((== Just encounterSet) . cdEncounterSet) $ toList allEncounterCards

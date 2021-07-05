@@ -7,18 +7,18 @@ import Arkham.Prelude
 
 import Arkham.EncounterCard
 import qualified Arkham.Enemy.Cards as Enemies
+import qualified Arkham.Location.Cards as Locations
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
@@ -200,12 +200,18 @@ instance
         , EncounterSet.StrikingFear
         ]
 
-      dunwichVillage <- sample $ "02242" :| ["02243"]
-      coldSpringGlen <- sample $ "02244" :| ["02245"]
-      tenAcreMeadow <- sample $ "02246" :| ["02247"]
-      blastedHeath <- sample $ "02248" :| ["02249"]
-      whateleyRuins <- sample $ "02250" :| ["02251"]
-      devilsHopYard <- sample $ "00252" :| ["02253"]
+      dunwichVillage <-
+        sample $ Locations.dunwichVillage_242 :| [Locations.dunwichVillage_243]
+      coldSpringGlen <-
+        sample $ Locations.coldSpringGlen_244 :| [Locations.coldSpringGlen_245]
+      tenAcreMeadow <-
+        sample $ Locations.tenAcreMeadow_246 :| [Locations.tenAcreMeadow_247]
+      blastedHeath <-
+        sample $ Locations.blastedHeath_248 :| [Locations.blastedHeath_249]
+      whateleyRuins <-
+        sample $ Locations.whateleyRuins_250 :| [Locations.whateleyRuins_251]
+      devilsHopYard <-
+        sample $ Locations.devilsHopYard_252 :| [Locations.devilsHopYard_253]
 
       dunwichVillageId <- getRandom
       coldSpringGlenId <- getRandom
@@ -262,9 +268,8 @@ instance
           , (whateleyRuinsId, whateleyRuins)
           , (devilsHopYardId, devilsHopYard)
           ]
-        locations' = mapFromList $ map
-          ((second pure . toFst (getLocationName . lookupLocationStub)) . snd)
-          locations
+        locations' = mapFromList
+          $ map (((LocationName . toName) &&& pure) . snd) locations
 
       unshiftMessages
         $ [ story
@@ -279,8 +284,8 @@ instance
           , AddAgenda "02237"
           , AddAct "02240"
           ]
-        <> [ PlaceLocation cardCode locationId
-           | (locationId, cardCode) <- locations
+        <> [ PlaceLocation locationId cardDef
+           | (locationId, cardDef) <- locations
            ]
         <> [RevealLocation Nothing dunwichVillageId, MoveAllTo dunwichVillageId]
         <> [ chooseOne

@@ -5,9 +5,8 @@ module Arkham.Types.Scenario.Scenarios.TheEssexCountyExpress
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Locations
 import qualified Arkham.Treachery.Cards as Treacheries
-import Arkham.Types.AgendaId
-import Arkham.Types.CampaignId
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -16,12 +15,11 @@ import Arkham.Types.Direction
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
@@ -202,19 +200,22 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           else pure ()
       Setup -> do
         investigatorIds <- getInvestigatorIds
-        engineCar <- sample $ "02175" :| ["02176", "02177"]
+        engineCar <-
+          sample
+          $ Locations.engineCar_175
+          :| [Locations.engineCar_176, Locations.engineCar_177]
         trainCars <-
           zip
           <$> getRandoms
           <*> (take 6 <$> shuffleM
-                [ "02167"
-                , "02168"
-                , "02169"
-                , "02170"
-                , "02171"
-                , "02172"
-                , "02173"
-                , "02174"
+                [ Locations.passengerCar_167
+                , Locations.passengerCar_168
+                , Locations.passengerCar_169
+                , Locations.passengerCar_170
+                , Locations.passengerCar_171
+                , Locations.sleepingCar
+                , Locations.diningCar
+                , Locations.parlorCar
                 ]
               )
         encounterDeck <- buildEncounterDeck
@@ -247,15 +248,15 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
             , AddAct "02165"
             ]
           <> concat
-               [ [ PlaceLocation cardCode locationId
+               [ [ PlaceLocation locationId cardDef
                  , SetLocationLabel locationId ("trainCar" <> tshow @Int n)
                  ]
-               | (n, (locationId, cardCode)) <- zip [6, 5 ..] trainCars
+               | (n, (locationId, cardDef)) <- zip [6, 5 ..] trainCars
                ]
           <> [ PlacedLocationDirection lid1 LeftOf lid2
              | (lid1, lid2) <- zip allCars (drop 1 allCars)
              ]
-          <> [ PlaceLocation engineCar engineCarId
+          <> [ PlaceLocation engineCarId engineCar
              , PlacedLocationDirection engineCarId RightOf end
              , CreateWindowModifierEffect
                EffectSetupWindow
@@ -268,7 +269,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
 
         let
           locations' = mapFromList $ map
-            (second pure . toFst (getLocationName . lookupLocationStub))
+            ((LocationName . toName) &&& pure)
             (engineCar : map snd trainCars)
         TheEssexCountyExpress
           <$> runMessage msg (attrs & locationsL .~ locations')

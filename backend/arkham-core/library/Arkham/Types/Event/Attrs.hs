@@ -10,6 +10,7 @@ import Arkham.Types.Classes
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Source
 import Arkham.Types.Target
 
@@ -70,8 +71,8 @@ instance Entity EventAttrs where
   toId = eventId
   toAttrs = id
 
-instance NamedEntity EventAttrs where
-  toName = cdName . toCardDef
+instance Named EventAttrs where
+  toName = toName . toCardDef
 
 instance TargetEntity EventAttrs where
   toTarget = EventTarget . toId

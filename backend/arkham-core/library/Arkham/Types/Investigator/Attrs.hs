@@ -38,7 +38,7 @@ import qualified Data.HashSet as HashSet
 import Data.UUID (nil)
 
 data InvestigatorAttrs = InvestigatorAttrs
-  { investigatorName :: Text
+  { investigatorName :: Name
   , investigatorClass :: ClassSymbol
   , investigatorId :: InvestigatorId
   , investigatorHealth :: Int
@@ -184,8 +184,8 @@ instance Entity InvestigatorAttrs where
   toId = investigatorId
   toAttrs = id
 
-instance NamedEntity InvestigatorAttrs where
-  toName = mkName . investigatorName
+instance Named InvestigatorAttrs where
+  toName = investigatorName
 
 instance TargetEntity InvestigatorAttrs where
   toTarget = InvestigatorTarget . toId
@@ -381,7 +381,7 @@ getAttrStats InvestigatorAttrs {..} = Stats
 
 baseAttrs
   :: InvestigatorId
-  -> Text
+  -> Name
   -> ClassSymbol
   -> Stats
   -> [Trait]

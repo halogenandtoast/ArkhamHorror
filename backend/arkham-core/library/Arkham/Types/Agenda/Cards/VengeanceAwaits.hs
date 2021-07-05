@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.EncounterCard
 import qualified Arkham.Enemy.Cards as Enemies
+import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
@@ -38,7 +39,7 @@ instance AgendaRunner env => RunMessage env VengeanceAwaits where
         then do
           ritualSiteId <- getRandom
           unshiftMessages
-            $ [ PlaceLocation "01156" ritualSiteId
+            $ [ PlaceLocation ritualSiteId Locations.ritualSite
               , CreateEnemyAt umordhoth ritualSiteId Nothing
               ]
             <> [ Discard (ActTarget actId) | actId <- actIds ]

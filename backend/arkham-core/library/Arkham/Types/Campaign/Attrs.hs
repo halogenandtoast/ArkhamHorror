@@ -67,7 +67,7 @@ instance Entity CampaignAttrs where
   toId = campaignId
   toAttrs = id
 
-instance NamedEntity CampaignAttrs where
+instance Named CampaignAttrs where
   toName = mkName . campaignName
 
 instance ToJSON CampaignAttrs where

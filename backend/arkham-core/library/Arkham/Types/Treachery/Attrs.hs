@@ -11,6 +11,7 @@ import Arkham.Types.Exception
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -59,8 +60,8 @@ instance Entity TreacheryAttrs where
   toId = treacheryId
   toAttrs = id
 
-instance NamedEntity TreacheryAttrs where
-  toName = cdName . toCardDef
+instance Named TreacheryAttrs where
+  toName = toName . toCardDef
 
 instance TargetEntity TreacheryAttrs where
   toTarget = TreacheryTarget . toId

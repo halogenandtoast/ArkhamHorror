@@ -5,7 +5,9 @@ module Arkham.Types.Scenario.Scenarios.LostInTimeAndSpace
 
 import Arkham.Prelude
 
+import Arkham.EncounterCard
 import qualified Arkham.Enemy.Cards as Enemies
+import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -16,6 +18,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
@@ -169,28 +172,34 @@ instance
         , SetEncounterDeck encounterDeck
         , AddAgenda "02312"
         , AddAct "02316"
-        , PlaceLocation "02320" anotherDimensionId
+        , PlaceLocation anotherDimensionId Locations.anotherDimension
         , RevealLocation Nothing anotherDimensionId
         , MoveAllTo anotherDimensionId
         ]
 
       let
         locations' = mapFromList $ map
-          (second pure . toFst (getLocationName . lookupLocationStub))
-          [ "02320"
-          , "02321"
-          , "02322"
-          , "02324"
-          , "02325"
-          , "02326"
-          , "02327"
-          , "02328"
+          ((LocationName . toName) &&& pure)
+          [ Locations.anotherDimension
+          , Locations.theEdgeOfTheUniverse
+          , Locations.tearThroughTime
+          , Locations.tearThroughSpace
+          , Locations.prismaticCascade
+          , Locations.endlessBridge
+          , Locations.stepsOfYhagharl
+          , Locations.dimensionalDoorway
           ]
+      theEdgeOfTheUniverse <- genEncounterCard Locations.theEdgeOfTheUniverse
+      tearThroughTime <- genEncounterCard Locations.tearThroughTime
       LostInTimeAndSpace <$> runMessage
         msg
         (attrs
         & (locationsL .~ locations')
-        & (setAsideLocationsL .~ ["02321", "02322"])
+        & (setAsideCardsL
+          <>~ [ EncounterCard theEdgeOfTheUniverse
+              , EncounterCard tearThroughTime
+              ]
+          )
         )
     After (PassedSkillTest iid _ _ (DrawnTokenTarget token) _ _) ->
       s <$ case (isHardExpert attrs, drawnTokenFace token) of
@@ -222,7 +231,7 @@ instance
       | isSource attrs source -> s <$ case mcard of
         Nothing -> pure ()
         Just card -> unshiftMessages
-          [ PlaceLocation (toCardCode card) (LocationId $ toCardId card)
+          [ PlaceLocation (LocationId $ toCardId card) (toCardDef card)
           , MoveTo iid (LocationId $ toCardId card)
           ]
     ScenarioResolution NoResolution -> do

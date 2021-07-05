@@ -5,9 +5,10 @@ module Arkham.Types.Scenario.Scenarios.WhereDoomAwaits
 
 import Arkham.Prelude
 
+import Arkham.EncounterCard
 import Arkham.EncounterSet (gatherEncounterSet)
 import qualified Arkham.Enemy.Cards as Enemies
-import Arkham.Types.AgendaId
+import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
@@ -17,11 +18,11 @@ import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
@@ -214,21 +215,33 @@ instance
             ]
         else pure []
 
-      divergingPaths <- take 3 <$> shuffleM ["02285", "02286", "02287", "02288"]
-      alteredPaths <- take 3 <$> shuffleM ["02289", "02290", "02291", "02292"]
+      divergingPaths <-
+        traverse (fmap EncounterCard . genEncounterCard) . take 3 =<< shuffleM
+          [ Locations.slaugteredWoods
+          , Locations.eerieGlade
+          , Locations.destroyedPath
+          , Locations.frozenSpring
+          ]
+      alteredPaths <-
+        traverse (fmap EncounterCard . genEncounterCard) . take 3 =<< shuffleM
+          [ Locations.dimensionalGap
+          , Locations.aTearInThePath
+          , Locations.uprootedWoods
+          , Locations.lostMemories
+          ]
 
       let
         inPlayLocations =
-          [ (baseOfTheHillId, "02282")
-          , (ascendingPathId, "02283")
-          , (sentinelPeakId, "02284")
+          [ (baseOfTheHillId, Locations.baseOfTheHill)
+          , (ascendingPathId, Locations.ascendingPath)
+          , (sentinelPeakId, Locations.sentinelPeak)
           ]
-        locations = map snd inPlayLocations <> divergingPaths <> alteredPaths
-        locations' = unionsWith (<>) $ map
-          (uncurry singletonMap . second pure . toFst
-            (getLocationName . lookupLocationStub)
-          )
-          locations
+        locations =
+          map snd inPlayLocations
+            <> map toCardDef divergingPaths
+            <> map toCardDef alteredPaths
+        locations' =
+          mapFromList $ map ((LocationName . toName) &&& pure) locations
         token = case scenarioDifficulty attrs of
           Easy -> MinusThree
           Standard -> MinusFive
@@ -247,8 +260,8 @@ instance
            , AddAct "02277"
            ]
         <> replicate broodEscapedCount PlaceDoomOnAgenda
-        <> [ PlaceLocation cardCode locationId
-           | (locationId, cardCode) <- inPlayLocations
+        <> [ PlaceLocation locationId cardDef
+           | (locationId, cardDef) <- inPlayLocations
            ]
         <> silasMsgs
         <> [RevealLocation Nothing baseOfTheHillId, MoveAllTo baseOfTheHillId]
@@ -257,7 +270,7 @@ instance
         msg
         (attrs
         & (locationsL .~ locations')
-        & (setAsideLocationsL .~ (divergingPaths <> alteredPaths))
+        & (setAsideCardsL <>~ (divergingPaths <> alteredPaths))
         )
     ResolveToken drawnToken Cultist iid -> s <$ unshiftMessages
       [ CreateWindowModifierEffect

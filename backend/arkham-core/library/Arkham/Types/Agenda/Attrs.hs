@@ -65,7 +65,7 @@ instance Entity AgendaAttrs where
   toId = agendaId
   toAttrs = id
 
-instance NamedEntity AgendaAttrs where
+instance Named AgendaAttrs where
   toName = mkName . agendaName
 
 instance TargetEntity AgendaAttrs where

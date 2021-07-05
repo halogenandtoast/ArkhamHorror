@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.EncounterCard
 import Arkham.EncounterSet (gatherEncounterSet)
 import qualified Arkham.Enemy.Cards as Enemies
+import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -13,6 +14,7 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
@@ -52,12 +54,26 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           <$> gatherEncounterSet EncounterSet.TheDevourersCult
         -- we will spawn these disciples of the devourer
 
-        southside <- sample $ "01126" :| ["01127"]
-        downtown <- sample $ "01130" :| ["01131"]
-        easttown <- sample $ "01132" :| ["50027"]
-        northside <- sample $ "01134" :| ["50028"]
-        rivertown <- sample $ "01125" :| ["50030"]
-        miskatonicUniversity <- sample $ "01129" :| ["50029"]
+        southside <-
+          sample
+          $ Locations.southsideHistoricalSociety
+          :| [Locations.southsideMasBoardingHouse]
+        downtown <-
+          sample
+          $ Locations.downtownFirstBankOfArkham
+          :| [Locations.downtownArkhamAsylum]
+        easttown <-
+          sample $ Locations.easttown :| [Locations.easttownArkhamPoliceStation]
+        northside <-
+          sample $ Locations.northside :| [Locations.northsideTrainStation]
+        rivertown <-
+          sample
+          $ Locations.rivertown
+          :| [Locations.rivertownAbandonedWarehouse]
+        miskatonicUniversity <-
+          sample
+          $ Locations.miskatonicUniversity
+          :| [Locations.miskatonicUniversityMiskatonicMuseum]
         predatorOrPrey <- sample $ "01121" :| ["50026"]
 
         yourHouseId <- getRandom
@@ -84,7 +100,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           startingLocationMessages = if houseBurnedDown
             then [RevealLocation Nothing rivertownId, MoveAllTo rivertownId]
             else
-              [ PlaceLocation "01124" yourHouseId
+              [ PlaceLocation yourHouseId Locations.yourHouse
               , RevealLocation Nothing yourHouseId
               , MoveAllTo yourHouseId
               ]
@@ -111,29 +127,29 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
             , SetEncounterDeck encounterDeck
             , AddAgenda predatorOrPrey
             , AddAct "01123"
-            , PlaceLocation rivertown rivertownId
-            , PlaceLocation southside southsideId
-            , PlaceLocation "01128" stMarysHospitalId
-            , PlaceLocation miskatonicUniversity miskatonicUniversityId
-            , PlaceLocation downtown downtownId
-            , PlaceLocation easttown easttownId
-            , PlaceLocation "01133" graveyardId
-            , PlaceLocation northside northsideId
+            , PlaceLocation rivertownId rivertown
+            , PlaceLocation southsideId southside
+            , PlaceLocation stMarysHospitalId Locations.stMarysHospital
+            , PlaceLocation miskatonicUniversityId miskatonicUniversity
+            , PlaceLocation downtownId downtown
+            , PlaceLocation easttownId easttown
+            , PlaceLocation graveyardId Locations.graveyard
+            , PlaceLocation northsideId northside
             ]
           <> startingLocationMessages
           <> ghoulPriestMessages
           <> spawnAcolyteMessages
         let
           locations' = mapFromList $ map
-            (second pure . toFst (getLocationName . lookupLocationStub))
-            [ "01124"
+            ((LocationName . toName) &&& pure)
+            [ Locations.yourHouse
             , rivertown
             , southside
-            , "01128"
+            , Locations.stMarysHospital
             , miskatonicUniversity
             , downtown
             , easttown
-            , "01133"
+            , Locations.graveyard
             , northside
             ]
         ReturnToTheMidnightMasks . TheMidnightMasks <$> runMessage

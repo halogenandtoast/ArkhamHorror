@@ -2,6 +2,7 @@ module Arkham.Types.Act.Cards.MysteriousGateway where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
@@ -45,7 +46,7 @@ instance ActRunner env => RunMessage env MysteriousGateway where
         (LocationWithTitle "Guest Hall")
       holeInTheWallId <- getRandom
       a <$ unshiftMessages
-        ([PlaceLocation "50017" holeInTheWallId]
+        ([PlaceLocation holeInTheWallId Locations.holeInTheWall]
         <> [ chooseOne
              leadInvestigatorId
              [ TargetLabel

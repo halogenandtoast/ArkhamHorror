@@ -49,6 +49,9 @@ data CardDef = CardDef
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
 
+instance Named CardDef where
+  toName = cdName
+
 weaknessL :: Lens' CardDef Bool
 weaknessL = lens cdWeakness $ \m x -> m { cdWeakness = x }
 

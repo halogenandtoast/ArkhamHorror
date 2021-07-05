@@ -174,12 +174,24 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           else pure ()
       Setup -> do
         investigatorIds <- getInvestigatorIds
-        bishopsBrook <- sample $ "02202" :| ["02203"]
-        burnedRuins <- sample $ "02204" :| ["02205"]
-        osbornsGeneralStore <- sample $ "02206" :| ["02207"]
-        congregationalChurch <- sample $ "02208" :| ["02209"]
-        houseInTheReeds <- sample $ "02210" :| ["02211"]
-        schoolhouse <- sample $ "02212" :| ["02213"]
+        bishopsBrook <-
+          sample $ Locations.bishopsBrook_202 :| [Locations.bishopsBrook_203]
+        burnedRuins <-
+          sample $ Locations.burnedRuins_204 :| [Locations.burnedRuins_205]
+        osbornsGeneralStore <-
+          sample
+          $ Locations.osbornsGeneralStore_206
+          :| [Locations.osbornsGeneralStore_207]
+        congregationalChurch <-
+          sample
+          $ Locations.congregationalChurch_208
+          :| [Locations.congregationalChurch_209]
+        houseInTheReeds <-
+          sample
+          $ Locations.houseInTheReeds_210
+          :| [Locations.houseInTheReeds_211]
+        schoolhouse <-
+          sample $ Locations.schoolhouse_212 :| [Locations.schoolhouse_213]
 
         oBannionGangHasABoneToPick <- getHasRecordOrStandalone
           OBannionGangHasABoneToPickWithTheInvestigators
@@ -197,14 +209,11 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
             <> [ EncounterSet.NaomisCrew | oBannionGangHasABoneToPick ]
             )
 
-        theHiddenChamber <-
-          EncounterCard
-          . lookupEncounterCard Locations.theHiddenChamber
-          <$> getRandom
-        keyToTheChamber <-
-          EncounterCard
-          . lookupEncounterCard Assets.keyToTheChamber
-          <$> getRandom
+        theHiddenChamber <- EncounterCard
+          <$> genEncounterCard Locations.theHiddenChamber
+        keyToTheChamber <- EncounterCard
+          <$> genEncounterCard Assets.keyToTheChamber
+
         cardsToPutUnderneath <-
           shuffleM
           $ keyToTheChamber
@@ -260,9 +269,11 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
             , AddAgenda "02196"
             ]
           <> [ PlaceDoomOnAgenda | delayedOnTheirWayToDunwich ]
-          <> [AddAct "02199", PlaceLocation "02201" villageCommonsId]
+          <> [ AddAct "02199"
+             , PlaceLocation villageCommonsId Locations.villageCommons
+             ]
           <> concat
-               [ [ PlaceLocation location locationId
+               [ [ PlaceLocation locationId location
                  , PlaceUnderneath (LocationTarget locationId) [card]
                  ]
                | (locationId, (location, card)) <- zip
@@ -275,15 +286,15 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
 
         let
           locations' = mapFromList $ map
-            (second pure . toFst (getLocationName . lookupLocationStub))
-            [ "02201"
+            ((LocationName . toName) &&& pure)
+            [ Locations.villageCommons
             , bishopsBrook
             , burnedRuins
             , osbornsGeneralStore
             , congregationalChurch
             , houseInTheReeds
             , schoolhouse
-            , "02214"
+            , Locations.theHiddenChamber
             ]
         BloodOnTheAltar . (`with` metadata) <$> runMessage
           msg

@@ -528,6 +528,9 @@ instance HasGame env => HasId (Maybe CampaignId) env () where
 instance HasGame env => GetCardDef env EnemyId where
   getCardDef = (toCardDef <$>) . getEnemy
 
+instance HasGame env => GetCardDef env LocationId where
+  getCardDef = (toCardDef <$>) . getLocation
+
 instance HasGame env => HasId CardCode env EnemyId where
   getId = (toCardCode <$>) . getEnemy
 
@@ -565,13 +568,6 @@ instance HasGame env => HasName env LocationId where
 
 instance HasName env ScenarioId where
   getName = getName . flip lookupScenario Easy
-
-instance {-# OVERLAPPABLE #-} HasGame env => HasName env SetAsideLocationCardCode where
-  getName saLocationId = do
-    mScenario <- modeScenario . view modeL <$> getGame
-    case mScenario of
-      Just scenario -> runReaderT (getName saLocationId) scenario
-      Nothing -> error "missing scenario"
 
 instance HasGame env => HasName env AssetId where
   getName = getName <=< getAsset
@@ -617,11 +613,11 @@ instance HasGame env => HasSet FightableEnemyId env (InvestigatorId, Source) whe
               modifiers'
     pure . setFromList . coerce $ fightableEnemyIds
 
-instance HasGame env => HasSet SetAsideLocationCardCode env () where
-  getSet _ = do
+instance HasGame env => HasList SetAsideCard env () where
+  getList _ = do
     mScenario <- modeScenario . view modeL <$> getGame
     case mScenario of
-      Just scenario -> getSet scenario
+      Just scenario -> getList scenario
       Nothing -> error "missing scenario"
 
 instance HasGame env => HasSet ClosestPathLocationId env (LocationId, LocationMatcher) where
@@ -2009,10 +2005,10 @@ runGameMessage msg g = case msg of
   GameOver -> do
     clearQueue
     pure $ g & gameStateL .~ IsOver
-  PlaceLocation cardCode lid -> if isNothing $ g ^. locationsL . at lid
+  PlaceLocation lid cardDef -> if isNothing $ g ^. locationsL . at lid
     then do
-      let location = lookupLocation cardCode lid
-      unshiftMessage (PlacedLocation (toName location) cardCode lid)
+      let location = lookupLocation (toCardCode cardDef) lid
+      unshiftMessage (PlacedLocation (toName location) (toCardCode cardDef) lid)
       pure $ g & locationsL . at lid ?~ location
     else pure g
   SetEncounterDeck encounterDeck ->

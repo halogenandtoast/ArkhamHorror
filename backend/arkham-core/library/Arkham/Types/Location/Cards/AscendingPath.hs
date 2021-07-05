@@ -5,9 +5,10 @@ module Arkham.Types.Location.Cards.AscendingPath
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (ascendingPath)
+import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
@@ -18,6 +19,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Window
@@ -67,17 +69,13 @@ instance LocationRunner env => RunMessage env AscendingPath where
         )
     SuccessfulInvestigation _ _ (AbilitySource source 1)
       | isSource attrs source -> do
-        locations <- getSetList @SetAsideLocationCardCode ()
-        alteredPaths <- filterM (fmap (== "Altered Path") . getName) locations
+        setAsideCards <- map unSetAsideCard <$> getList ()
+        let alteredPaths = filter ((== "Altered Path") . toName) setAsideCards
         case nonEmpty alteredPaths of
           Just ne -> do
-            newLocationId <- getRandom
-            l
-              <$ (unshiftMessage
-                 . (`PlaceLocation` newLocationId)
-                 . unSetAsideLocationCardCode
-                 =<< sample ne
-                 )
+            card <- sample ne
+            l <$ unshiftMessage
+              (PlaceLocation (LocationId $ toCardId card) (toCardDef card))
           Nothing -> pure l
     AddConnection lid _ | toId attrs /= lid -> do
       isAlteredPath <- (== "Altered Path") <$> getName lid

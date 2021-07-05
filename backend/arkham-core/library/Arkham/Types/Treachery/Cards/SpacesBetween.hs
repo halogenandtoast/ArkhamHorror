@@ -6,7 +6,7 @@ module Arkham.Types.Treachery.Cards.SpacesBetween
 import Arkham.Prelude
 
 import qualified Arkham.Treachery.Cards as Cards
-import Arkham.Types.Card.CardCode
+import Arkham.Types.Card.CardDef
 import Arkham.Types.Classes
 import Arkham.Types.Id
 import Arkham.Types.Message
@@ -26,7 +26,7 @@ instance HasModifiersFor env SpacesBetween where
 instance HasActions env SpacesBetween where
   getActions i window (SpacesBetween attrs) = getActions i window attrs
 
-instance (HasId CardCode env LocationId, TreacheryRunner env) => RunMessage env SpacesBetween where
+instance (GetCardDef env LocationId, TreacheryRunner env) => RunMessage env SpacesBetween where
   runMessage msg t@(SpacesBetween attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
       sentinelHillLocations <- getSet @LocationId [SentinelHill]
@@ -58,12 +58,12 @@ instance (HasId CardCode env LocationId, TreacheryRunner env) => RunMessage env 
             <> [RemoveLocation nonSentinelHillLocation]
         )
         nonSentinelHillLocations
-      shuffledLocations <- traverse (\lid -> (lid, ) <$> getId lid)
+      shuffledLocations <- traverse (\lid -> (lid, ) <$> getCardDef lid)
         =<< shuffleM nonSentinelHillLocations
       t <$ unshiftMessages
         (msgs
-        <> [ PlaceLocation cardCode locationId
-           | (locationId, cardCode) <- shuffledLocations
+        <> [ PlaceLocation locationId cardDef
+           | (locationId, cardDef) <- shuffledLocations
            ]
         <> [Discard (toTarget attrs)]
         )

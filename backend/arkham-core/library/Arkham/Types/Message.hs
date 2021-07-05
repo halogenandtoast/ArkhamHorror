@@ -359,7 +359,7 @@ data Message
   | PlaceDoom Target Int
   | PlaceDoomOnAgenda
   | PlaceEnemyInVoid EnemyId
-  | PlaceLocation CardCode LocationId
+  | PlaceLocation LocationId CardDef
   | PlaceLocationMatching LocationMatcher
   | PlaceResources Target Int
   | PlaceUnderneath Target [Card]

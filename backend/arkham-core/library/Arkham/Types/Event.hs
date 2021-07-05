@@ -11,6 +11,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Cards
 import Arkham.Types.Event.Runner
 import Arkham.Types.Id
+import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.SkillTest
 import Arkham.Types.Trait
@@ -96,7 +97,7 @@ instance Entity Event where
   type EntityId Event = EventId
   type EntityAttrs Event = EventAttrs
 
-instance NamedEntity Event where
+instance Named Event where
   toName = toName . toAttrs
 
 instance TargetEntity Event where

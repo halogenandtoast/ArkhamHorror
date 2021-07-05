@@ -5,25 +5,20 @@ module Arkham.Types.Location
 import Arkham.Prelude
 
 import Arkham.EncounterCard
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Direction
-import Arkham.Types.EnemyId
-import Arkham.Types.EventId
 import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Cards
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Query
-import Arkham.Types.TreacheryId
 import Data.UUID (nil)
 
 createLocation :: IsCard a => a -> Location
@@ -200,7 +195,7 @@ instance Entity Location where
   type EntityId Location = LocationId
   type EntityAttrs Location = LocationAttrs
 
-instance NamedEntity Location where
+instance Named Location where
   toName = toName . toAttrs
 
 instance TargetEntity Location where

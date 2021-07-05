@@ -3,6 +3,8 @@ module Arkham.Types.Scenario.Scenarios.TheMiskatonicMuseum where
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Assets
+import Arkham.EncounterCard
+import qualified Arkham.Location.Cards as Locations
 import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
@@ -145,32 +147,44 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       case fromJustNote "must be set" scenarioDeck of
         ExhibitDeck [] -> pure s
         ExhibitDeck (x : xs) -> do
-          locationId <- getRandom
-          unshiftMessage (PlaceLocation x locationId)
+          unshiftMessage (PlaceLocation (LocationId $ toCardId x) (toCardDef x))
           pure $ TheMiskatonicMuseum $ attrs & deckL ?~ ExhibitDeck xs
         _ -> error "Wrong deck"
     LookAtTopOfDeck _ ScenarioDeckTarget n ->
       case fromJustNote "must be set" scenarioDeck of
         ExhibitDeck xs -> do
-          let lids = map CardCodeTarget $ take n xs
+          let lids = map (CardCodeTarget . toCardCode) $ take n xs
           s <$ unshiftMessages
             [FocusTargets lids, Label "Continue" [UnfocusTargets]]
         _ -> error "Wrong deck"
     Setup -> do
       investigatorIds <- getInvestigatorIds
 
-      securityOffice <- sample $ "02128" :| ["02129"]
-      administrationOffice <- sample $ "02130" :| ["02131"]
+      securityOffice <-
+        sample $ Locations.securityOffice_128 :| [Locations.securityOffice_129]
+      administrationOffice <-
+        sample
+        $ Locations.administrationOffice_130
+        :| [Locations.administrationOffice_131]
 
       armitageKidnapped <- getHasRecordOrStandalone
         DrHenryArmitageWasKidnapped
         True
 
-      exhibitHalls <- shuffleM ["02132", "02133", "02134", "02135", "02136"]
+      exhibitHalls <- shuffleM =<< traverse
+        genEncounterCard
+        [ Locations.exhibitHallAthabaskanExhibit
+        , Locations.exhibitHallMedusaExhibit
+        , Locations.exhibitHallNatureExhibit
+        , Locations.exhibitHallEgyptianExhibit
+        , Locations.exhibitHallHallOfTheDead
+        ]
 
       let (bottom, top) = splitAt 2 exhibitHalls
 
-      bottom' <- shuffleM $ "02137" : bottom -- 02137 is the restricted hall
+      restrictedHall <- genEncounterCard Locations.exhibitHallRestrictedHall
+
+      bottom' <- shuffleM $ restrictedHall : bottom -- 02137 is the restricted hall
 
       let exhibitDeck = top <> bottom'
 
@@ -195,27 +209,27 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         , SetEncounterDeck encounterDeck
         , AddAgenda "02119"
         , AddAct "02122"
-        , PlaceLocation securityOffice securityOfficeId
-        , PlaceLocation administrationOffice administrationOfficeId
-        , PlaceLocation "02126" museumEntranceId
-        , PlaceLocation "02127" museumHallsId
+        , PlaceLocation securityOfficeId securityOffice
+        , PlaceLocation administrationOfficeId administrationOffice
+        , PlaceLocation museumEntranceId Locations.museumEntrance
+        , PlaceLocation museumHallsId Locations.museumHalls
         , RevealLocation Nothing museumEntranceId
         , MoveAllTo museumEntranceId
         ]
 
       let
         locations' = mapFromList $ map
-          (second pure . toFst (getLocationName . lookupLocationStub))
-          [ "02126"
-          , "02127"
+          ((LocationName . toName) &&& pure)
+          [ Locations.museumEntrance
+          , Locations.museumHalls
           , securityOffice
           , administrationOffice
-          , "02132"
-          , "02133"
-          , "02134"
-          , "02135"
-          , "02136"
-          , "02137"
+          , Locations.exhibitHallAthabaskanExhibit
+          , Locations.exhibitHallMedusaExhibit
+          , Locations.exhibitHallNatureExhibit
+          , Locations.exhibitHallEgyptianExhibit
+          , Locations.exhibitHallHallOfTheDead
+          , Locations.exhibitHallRestrictedHall
           ]
       TheMiskatonicMuseum <$> runMessage
         msg

@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.EncounterCard
 import qualified Arkham.Enemy.Cards as Enemies
+import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -12,6 +13,7 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
@@ -59,7 +61,14 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       ghoulPriestCard <- genEncounterCard Enemies.ghoulPriest
       mainPathId <- getRandom
       let
-        arkhamWoods = ["01150", "01151", "01152", "01153", "01154", "01155"]
+        arkhamWoods =
+          [ Locations.arkhamWoodsUnhallowedGround
+          , Locations.arkhamWoodsTwistingPaths
+          , Locations.arkhamWoodsOldHouse
+          , Locations.arkhamWoodsCliffside
+          , Locations.arkhamWoodsTangledThicket
+          , Locations.arkhamWoodsQuietGlade
+          ]
         woodsLabels = ["woods1", "woods2", "woods3", "woods4"]
         ghoulPriestMessages =
           [ AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive ]
@@ -122,10 +131,10 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           , AddToken ElderThing
           , AddAgenda "01143"
           , AddAct "01146"
-          , PlaceLocation "01149" mainPathId
+          , PlaceLocation mainPathId Locations.mainPath
           ]
-        <> [ PlaceLocation cardCode locationId
-           | (locationId, cardCode) <- woodsLocations
+        <> [ PlaceLocation locationId cardDef
+           | (locationId, cardDef) <- woodsLocations
            ]
         <> [ SetLocationLabel locationId label
            | (label, (locationId, _)) <- zip woodsLabels woodsLocations
@@ -136,8 +145,8 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         <> pastMidnightMessages
       let
         locations' = mapFromList $ map
-          (second pure . toFst (getLocationName . lookupLocationStub))
-          (["01149", "01156"] <> map snd woodsLocations)
+          ((LocationName . toName) &&& pure)
+          ([Locations.mainPath, Locations.ritualSite] <> map snd woodsLocations)
       TheDevourerBelow <$> runMessage msg (attrs & locationsL .~ locations')
     ResolveToken _ Cultist iid -> do
       let doom = if isEasyStandard attrs then 1 else 2

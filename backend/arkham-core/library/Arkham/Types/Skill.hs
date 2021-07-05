@@ -6,11 +6,11 @@ import Arkham.Prelude
 
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
+import Arkham.Types.Name
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Cards
 import Arkham.Types.Skill.Runner
-import Arkham.Types.SkillId
 
 createSkill :: IsCard a => a -> InvestigatorId -> Skill
 createSkill a iid = lookupSkill (toCardCode a) iid (SkillId $ toCardId a)
@@ -42,7 +42,7 @@ instance Entity Skill where
   type EntityId Skill = SkillId
   type EntityAttrs Skill = SkillAttrs
 
-instance NamedEntity Skill where
+instance Named Skill where
   toName = toName . toAttrs
 
 instance TargetEntity Skill where

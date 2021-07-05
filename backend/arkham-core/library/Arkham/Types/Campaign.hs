@@ -5,11 +5,11 @@ import Arkham.Prelude
 import Arkham.Types.Campaign.Attrs
 import Arkham.Types.Campaign.Campaigns
 import Arkham.Types.Campaign.Runner
-import Arkham.Types.CampaignId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
-import Arkham.Types.ScenarioId
+import Arkham.Types.Id
+import Arkham.Types.Name
 import Arkham.Types.Token
 
 data Campaign
@@ -38,7 +38,7 @@ instance Entity Campaign where
   type EntityId Campaign = CampaignId
   type EntityAttrs Campaign = CampaignAttrs
 
-instance NamedEntity Campaign where
+instance Named Campaign where
   toName = toName . toAttrs
 
 allCampaigns :: HashMap CampaignId (Difficulty -> Campaign)

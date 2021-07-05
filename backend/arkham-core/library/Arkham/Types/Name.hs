@@ -14,6 +14,12 @@ data Name = Name
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSONKey, FromJSONKey, Hashable)
 
+class Named a where
+  toName :: a -> Name
+
+instance Named a => Named (a `With` b) where
+  toName (a `With` _) = toName a
+
 instance IsString Name where
   fromString = mkName . fromString
 

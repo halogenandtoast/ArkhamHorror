@@ -7,14 +7,15 @@ import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Assets
 import Arkham.Card
+import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
@@ -88,10 +89,10 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         [ SetEncounterDeck encounterDeck
         , AddAgenda "02063"
         , AddAct "02066"
-        , PlaceLocation "02070" laBellaLunaId
-        , PlaceLocation "02071" cloverClubLoungeId
-        , PlaceLocation "02072" cloverClubBarId
-        , PlaceLocation "02073" cloverClubCardroomId
+        , PlaceLocation laBellaLunaId Locations.laBellaLuna
+        , PlaceLocation cloverClubLoungeId Locations.cloverClubLounge
+        , PlaceLocation cloverClubBarId Locations.cloverClubBar
+        , PlaceLocation cloverClubCardroomId Locations.cloverClubCardroom
         , RevealLocation Nothing laBellaLunaId
         , MoveAllTo laBellaLunaId
         , CreateEnemyAt cloverClubPitBoss cloverClubLoungeId Nothing
@@ -105,15 +106,15 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         ]
       let
         locations' = mapFromList $ map
-          (second pure . toFst (getLocationName . lookupLocationStub))
-          [ "02070"
-          , "02071"
-          , "02072"
-          , "02073"
-          , "02074"
-          , "02075"
-          , "02076"
-          , "02077"
+          ((LocationName . toName) &&& pure)
+          [ Locations.laBellaLuna
+          , Locations.cloverClubLounge
+          , Locations.cloverClubBar
+          , Locations.cloverClubCardroom
+          , Locations.darkenedHall
+          , Locations.artGallery
+          , Locations.vipArea
+          , Locations.backAlley
           ]
       TheHouseAlwaysWins <$> runMessage msg (attrs & locationsL .~ locations')
     ResolveToken _ Tablet iid -> s <$ unshiftMessage (SpendResources iid 3)

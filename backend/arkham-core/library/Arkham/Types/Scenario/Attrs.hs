@@ -6,23 +6,18 @@ module Arkham.Types.Scenario.Attrs
 import Arkham.Prelude
 
 import Arkham.Json
-import Arkham.Types.ActId
-import Arkham.Types.AgendaId
-import Arkham.Types.CampaignId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Game.Helpers
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Location as X
-import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Deck as X
-import Arkham.Types.ScenarioId
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -42,13 +37,12 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioLocationLayout :: Maybe [GridTemplateRow]
   , scenarioDeck :: Maybe ScenarioDeck
   , scenarioLog :: HashSet ScenarioLogKey
-  , scenarioLocations :: HashMap LocationName [CardCode]
+  , scenarioLocations :: HashMap LocationName [CardDef]
   , scenarioSetAsideCards :: [Card]
-  , scenarioSetAsideLocations :: [CardCode]
   }
   deriving stock (Show, Generic, Eq)
 
-locationsL :: Lens' ScenarioAttrs (HashMap LocationName [CardCode])
+locationsL :: Lens' ScenarioAttrs (HashMap LocationName [CardDef])
 locationsL = lens scenarioLocations $ \m x -> m { scenarioLocations = x }
 
 deckL :: Lens' ScenarioAttrs (Maybe ScenarioDeck)
@@ -63,10 +57,6 @@ logL = lens scenarioLog $ \m x -> m { scenarioLog = x }
 setAsideCardsL :: Lens' ScenarioAttrs [Card]
 setAsideCardsL =
   lens scenarioSetAsideCards $ \m x -> m { scenarioSetAsideCards = x }
-
-setAsideLocationsL :: Lens' ScenarioAttrs [CardCode]
-setAsideLocationsL =
-  lens scenarioSetAsideLocations $ \m x -> m { scenarioSetAsideLocations = x }
 
 instance ToJSON ScenarioAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "scenario"
@@ -95,12 +85,8 @@ instance HasCount SetAsideCount env (ScenarioAttrs, CardCode) where
     ((== cardCode) . toCardCode)
     (attrs ^. setAsideCardsL)
 
-instance HasSet SetAsideLocationCardCode env ScenarioAttrs where
-  getSet =
-    pure
-      . setFromList
-      . map SetAsideLocationCardCode
-      . scenarioSetAsideLocations
+instance HasList SetAsideCard env ScenarioAttrs where
+  getList = pure . map SetAsideCard . scenarioSetAsideCards
 
 toTokenValue :: ScenarioAttrs -> Token -> Int -> Int -> TokenValue
 toTokenValue attrs t esVal heVal = TokenValue
@@ -128,7 +114,6 @@ baseAttrs cardCode name agendaStack actStack' difficulty = ScenarioAttrs
   , scenarioLog = mempty
   , scenarioLocations = mempty
   , scenarioSetAsideCards = mempty
-  , scenarioSetAsideLocations = mempty
   }
 
 instance Entity ScenarioAttrs where
@@ -137,7 +122,7 @@ instance Entity ScenarioAttrs where
   toId = scenarioId
   toAttrs = id
 
-instance NamedEntity ScenarioAttrs where
+instance Named ScenarioAttrs where
   toName = scenarioName
 
 instance TargetEntity ScenarioAttrs where
@@ -169,7 +154,7 @@ instance HasTokenValue env InvestigatorId => HasTokenValue env ScenarioAttrs whe
     otherFace -> pure $ TokenValue otherFace NoModifier
 
 findLocationKey
-  :: LocationMatcher -> HashMap LocationName [CardCode] -> Maybe LocationName
+  :: LocationMatcher -> HashMap LocationName [CardDef] -> Maybe LocationName
 findLocationKey locationMatcher locations = fst
   <$> find match (mapToList locations)
  where
@@ -217,9 +202,9 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioAttrsRunner env)
             >>= flip lookup scenarioLocations
       a <$ case locations of
         [] -> error "There were no locations with that name"
-        [cardCode] -> do
+        [cardDef] -> do
           lid <- getRandom
-          unshiftMessage (PlaceLocation cardCode lid)
+          unshiftMessage (PlaceLocation lid cardDef)
         _ ->
           error "We want there to be only one location when targetting names"
     EnemySpawnAtLocationMatching miid locationMatcher eid -> do
@@ -276,8 +261,8 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioAttrsRunner env)
               [WhenChosenRandomLocation randomLocationId]
             , ChosenRandomLocation target randomLocationId
             ]
-    PlaceLocation cardCode _ ->
-      pure $ a & setAsideLocationsL %~ deleteFirst cardCode
+    PlaceLocation _ cardDef -> pure $ a & setAsideCardsL %~ deleteFirstMatch
+      ((== toCardCode cardDef) . toCardCode)
     RequestSetAsideCard target cardCode -> do
       let
         (before, rest) =

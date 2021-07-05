@@ -5,26 +5,23 @@ module Arkham.Types.Investigator
 import Arkham.Prelude
 
 import Arkham.Types.Action (Action, TakenAction)
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
 import Arkham.Types.Helpers
+import Arkham.Types.Id
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Cards
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Name
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Trait
-import Arkham.Types.TreacheryId
 
 data Investigator
   = AgnesBaker' AgnesBaker
@@ -50,7 +47,7 @@ instance Eq Investigator where
 
 baseInvestigator
   :: InvestigatorId
-  -> Text
+  -> Name
   -> ClassSymbol
   -> Stats
   -> [Trait]
@@ -364,7 +361,7 @@ instance Entity Investigator where
   type EntityId Investigator = InvestigatorId
   type EntityAttrs Investigator = InvestigatorAttrs
 
-instance NamedEntity Investigator where
+instance Named Investigator where
   toName = toName . toAttrs
 
 instance TargetEntity Investigator where

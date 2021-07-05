@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.ReturnToCellar
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (returnToCellar)
+import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -35,6 +35,7 @@ instance (LocationRunner env) => RunMessage env ReturnToCellar where
   runMessage msg (ReturnToCellar attrs) = case msg of
     RevealLocation _ lid | lid == locationId attrs -> do
       deepBelowYourHouseId <- getRandom
-      unshiftMessage (PlaceLocation "50021" deepBelowYourHouseId)
+      unshiftMessage
+        (PlaceLocation deepBelowYourHouseId Cards.deepBelowYourHouse)
       ReturnToCellar <$> runMessage msg attrs
     _ -> ReturnToCellar <$> runMessage msg attrs

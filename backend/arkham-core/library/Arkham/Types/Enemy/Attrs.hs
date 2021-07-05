@@ -21,6 +21,7 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Name
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.SkillTest
@@ -305,8 +306,8 @@ instance Entity EnemyAttrs where
   toId = enemyId
   toAttrs = id
 
-instance NamedEntity EnemyAttrs where
-  toName = cdName . toCardDef
+instance Named EnemyAttrs where
+  toName = toName . toCardDef
 
 instance TargetEntity EnemyAttrs where
   toTarget = EnemyTarget . toId

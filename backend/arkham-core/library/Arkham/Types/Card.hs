@@ -18,6 +18,7 @@ import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Card.PlayerCard as X
   (BearerId(..), DiscardedPlayerCard(..), PlayerCard(..))
 import Arkham.Types.InvestigatorId
+import Arkham.Types.Name
 
 data CardBuilder ident a = CardBuilder
   { cbCardCode :: CardCode
@@ -28,6 +29,9 @@ instance Functor (CardBuilder ident) where
   fmap f CardBuilder {..} =
     CardBuilder { cbCardCode = cbCardCode, cbCardBuilder = f . cbCardBuilder }
 
+newtype SetAsideCard = SetAsideCard { unSetAsideCard :: Card }
+  deriving newtype (Show, Eq, ToJSON, FromJSON)
+
 data Card
   = PlayerCard PlayerCard
   | EncounterCard EncounterCard
@@ -37,6 +41,9 @@ data Card
 _PlayerCard :: Traversal' Card PlayerCard
 _PlayerCard f (PlayerCard pc) = PlayerCard <$> f pc
 _PlayerCard _ other = pure other
+
+instance Named Card where
+  toName = toName . toCardDef
 
 instance HasCardDef Card where
   toCardDef = \case

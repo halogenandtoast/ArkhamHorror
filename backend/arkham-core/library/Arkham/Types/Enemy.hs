@@ -17,6 +17,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Name
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.Target
@@ -170,7 +171,7 @@ instance Entity Enemy where
   type EntityId Enemy = EnemyId
   type EntityAttrs Enemy = EnemyAttrs
 
-instance NamedEntity Enemy where
+instance Named Enemy where
   toName = toName . toAttrs
 
 instance TargetEntity Enemy where

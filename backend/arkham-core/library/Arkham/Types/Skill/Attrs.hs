@@ -6,6 +6,7 @@ import Arkham.Json
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
+import Arkham.Types.Name
 import Arkham.Types.SkillId
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -38,8 +39,8 @@ instance Entity SkillAttrs where
   toId = skillId
   toAttrs = id
 
-instance NamedEntity SkillAttrs where
-  toName = cdName . toCardDef
+instance Named SkillAttrs where
+  toName = toName . toCardDef
 
 instance TargetEntity SkillAttrs where
   toTarget = SkillTarget . skillId

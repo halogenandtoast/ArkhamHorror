@@ -13,6 +13,7 @@ import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Name
 import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -205,8 +206,8 @@ instance Entity AssetAttrs where
   toId = assetId
   toAttrs = id
 
-instance NamedEntity AssetAttrs where
-  toName = cdName . toCardDef
+instance Named AssetAttrs where
+  toName = toName . toCardDef
 
 instance TargetEntity AssetAttrs where
   toTarget = AssetTarget . toId

@@ -2,13 +2,14 @@ module Arkham.Types.Scenario.Scenarios.ReturnToTheGathering where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
@@ -65,10 +66,10 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           [ SetEncounterDeck encounterDeck
           , AddAgenda "01105"
           , AddAct "50012"
-          , PlaceLocation "50013" studyId
-          , PlaceLocation "50014" guestHallId
-          , PlaceLocation "50015" bedroomId
-          , PlaceLocation "50016" bathroomId
+          , PlaceLocation studyId Locations.studyAberrantGateway
+          , PlaceLocation guestHallId Locations.guestHall
+          , PlaceLocation bedroomId Locations.bedroom
+          , PlaceLocation bathroomId Locations.bathroom
           , RevealLocation Nothing studyId
           , MoveAllTo studyId
           , AskMap
@@ -77,21 +78,21 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
             | iid <- investigatorIds
             ]
           ]
-        attic <- sample $ "50018" :| ["01113"]
-        cellar <- sample $ "50020" :| ["01114"]
+        attic <- sample $ Locations.returnToAttic :| [Locations.attic]
+        cellar <- sample $ Locations.returnToCellar :| [Locations.cellar]
         let
           locations' = mapFromList $ map
-            (second pure . toFst (getLocationName . lookupLocationStub))
-            [ "50013"
-            , "50014"
-            , "50015"
-            , "50016"
-            , "50017"
+            ((LocationName . toName) &&& pure)
+            [ Locations.studyAberrantGateway
+            , Locations.guestHall
+            , Locations.bedroom
+            , Locations.bathroom
+            , Locations.holeInTheWall
             , attic
-            , "50019"
+            , Locations.farAboveYourHouse
             , cellar
-            , "50021"
-            , "01115"
+            , Locations.deepBelowYourHouse
+            , Locations.parlor
             ]
         ReturnToTheGathering . TheGathering <$> runMessage
           msg

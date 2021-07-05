@@ -3,6 +3,7 @@ module Arkham.Types.Act.Cards.InvestigatingTheTrail where
 import Arkham.Prelude
 
 import Arkham.EncounterCard
+import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
@@ -42,7 +43,7 @@ instance ActRunner env => RunMessage env InvestigatingTheTrail where
       mainPathId <- getJustLocationIdByName "Main Path"
       when (isNothing mRitualSiteId) $ do
         ritualSiteId <- getRandom
-        unshiftMessage (PlaceLocation "01156" ritualSiteId)
+        unshiftMessage (PlaceLocation ritualSiteId Locations.ritualSite)
       cultistsWhoGotAwayDefs <- map lookupEncounterCardDef
         <$> hasRecordSet CultistsWhoGotAway
       cultistsWhoGotAway <- traverse genEncounterCard cultistsWhoGotAwayDefs

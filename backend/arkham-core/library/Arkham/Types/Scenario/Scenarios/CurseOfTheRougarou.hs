@@ -7,16 +7,16 @@ import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Assets
 import Arkham.Json
+import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
@@ -56,15 +56,29 @@ curseOfTheRougarou difficulty =
           ]
         }
 
-locationsByTrait :: HashMap Trait [CardCode]
+locationsByTrait :: HashMap Trait [CardDef]
 locationsByTrait = mapFromList
-  [ (NewOrleans, ["81007", "81008", "81009"])
-  , (Riverside, ["81010", "81011", "81012"])
-  , (Wilderness, ["81013", "81014", "81015"])
-  , (Unhallowed, ["81016", "81017", "81018"])
+  [ ( NewOrleans
+    , [Locations.cursedShores, Locations.gardenDistrict, Locations.broadmoor]
+    )
+  , ( Riverside
+    , [ Locations.brackishWaters
+      , Locations.audubonPark
+      , Locations.fauborgMarigny
+      ]
+    )
+  , ( Wilderness
+    , [ Locations.forgottenMarsh
+      , Locations.trappersCabin
+      , Locations.twistedUnderbrush
+      ]
+    )
+  , ( Unhallowed
+    , [Locations.foulSwamp, Locations.ritualGrounds, Locations.overgrownCairns]
+    )
   ]
 
-locationsWithLabels :: MonadRandom m => Trait -> m [(Text, CardCode)]
+locationsWithLabels :: MonadRandom m => Trait -> m [(Text, CardDef)]
 locationsWithLabels trait = do
   shuffled <- shuffleM (before <> after)
   pure $ zip labels (bayou : shuffled)
@@ -75,8 +89,7 @@ locationsWithLabels trait = do
     , pack (camelCase $ show trait) <> "1"
     , pack (camelCase $ show trait) <> "2"
     ]
-  (before, bayou : after) =
-    break (elem Bayou . toTraits . lookupLocationStub) locationSet
+  (before, bayou : after) = break (elem Bayou . toTraits) locationSet
 
 instance (HasTokenValue env InvestigatorId, HasSet Trait env LocationId, HasId LocationId env InvestigatorId) => HasTokenValue env CurseOfTheRougarou where
   getTokenValue (CurseOfTheRougarou (attrs `With` _)) iid = \case
@@ -103,16 +116,15 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       startingLocationsWithLabel <-
         zip <$> getRandoms <*> locationsWithLabels trait
       let
-        (_, (bayouId, _) : _) = break
-          (elem Bayou . toTraits . lookupLocationStub . snd . snd)
-          startingLocationsWithLabel
+        (_, (bayouId, _) : _) =
+          break (elem Bayou . toTraits . snd . snd) startingLocationsWithLabel
       pushMessages
         $ [SetEncounterDeck encounterDeck, AddAgenda "81002", AddAct "81005"]
         <> concat
-             [ [ PlaceLocation cardCode locationId
+             [ [ PlaceLocation locationId cardDef
                , SetLocationLabel locationId label
                ]
-             | (locationId, (label, cardCode)) <- startingLocationsWithLabel
+             | (locationId, (label, cardDef)) <- startingLocationsWithLabel
              ]
         <> [ RevealLocation Nothing bayouId
            , MoveAllTo bayouId
@@ -151,19 +163,19 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
 
       let
         locations' = mapFromList $ map
-          (second pure . toFst (getLocationName . lookupLocationStub))
-          [ "81007"
-          , "81008"
-          , "81009"
-          , "81010"
-          , "81011"
-          , "81012"
-          , "81013"
-          , "81014"
-          , "81015"
-          , "81016"
-          , "81017"
-          , "81018"
+          ((LocationName . toName) &&& pure)
+          [ Locations.cursedShores
+          , Locations.gardenDistrict
+          , Locations.broadmoor
+          , Locations.brackishWaters
+          , Locations.audubonPark
+          , Locations.fauborgMarigny
+          , Locations.forgottenMarsh
+          , Locations.trappersCabin
+          , Locations.twistedUnderbrush
+          , Locations.foulSwamp
+          , Locations.ritualGrounds
+          , Locations.overgrownCairns
           ]
       CurseOfTheRougarou
         . (`with` metadata { setAsideLocationTraits = setFromList rest })
@@ -174,8 +186,8 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         (setToList $ setAsideLocationTraits metadata)
       locationIds <- getRandoms
       unshiftMessages $ concat
-        [ [PlaceLocation cardCode locationId, SetLocationLabel locationId label]
-        | (locationId, (label, cardCode)) <- zip
+        [ [PlaceLocation locationId cardDef, SetLocationLabel locationId label]
+        | (locationId, (label, cardDef)) <- zip
           locationIds
           setAsideLocationsWithLabels
         ]

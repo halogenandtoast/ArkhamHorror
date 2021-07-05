@@ -59,7 +59,7 @@ instance Entity ActAttrs where
   toId = actId
   toAttrs = id
 
-instance NamedEntity ActAttrs where
+instance Named ActAttrs where
   toName = mkName . actName
 
 instance TargetEntity ActAttrs where

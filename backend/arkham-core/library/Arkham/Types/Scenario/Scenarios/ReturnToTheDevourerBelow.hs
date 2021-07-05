@@ -4,16 +4,17 @@ import Arkham.Prelude
 
 import Arkham.EncounterCard
 import qualified Arkham.Enemy.Cards as Enemies
+import qualified Arkham.Location.Cards as Locations
 import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
@@ -58,16 +59,16 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         mainPathId <- getRandom
         let
           arkhamWoods =
-            [ "01150"
-            , "01151"
-            , "01152"
-            , "01153"
-            , "01154"
-            , "01155"
-            , "50033"
-            , "50034"
-            , "50035"
-            , "50036"
+            [ Locations.arkhamWoodsUnhallowedGround
+            , Locations.arkhamWoodsTwistingPaths
+            , Locations.arkhamWoodsOldHouse
+            , Locations.arkhamWoodsCliffside
+            , Locations.arkhamWoodsTangledThicket
+            , Locations.arkhamWoodsQuietGlade
+            , Locations.arkhamWoodsGreatWillow
+            , Locations.arkhamWoodsLakeside
+            , Locations.arkhamWoodsCorpseRiddenClearing
+            , Locations.arkhamWoodsWoodenBridge
             ]
           woodsLabels = ["woods1", "woods2", "woods3", "woods4"]
           ghoulPriestMessages =
@@ -134,10 +135,10 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
             , AddToken ElderThing
             , AddAgenda "01143"
             , AddAct "01146"
-            , PlaceLocation "01149" mainPathId
+            , PlaceLocation mainPathId Locations.mainPath
             ]
-          <> [ PlaceLocation cardCode locationId
-             | (locationId, cardCode) <- woodsLocations
+          <> [ PlaceLocation locationId cardDef
+             | (locationId, cardDef) <- woodsLocations
              ]
           <> [ SetLocationLabel locationId label
              | (label, (locationId, _)) <- zip woodsLabels woodsLocations
@@ -148,8 +149,10 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           <> pastMidnightMessages
         let
           locations' = mapFromList $ map
-            (second pure . toFst (getLocationName . lookupLocationStub))
-            (["01149", "01156"] <> map snd woodsLocations)
+            ((LocationName . toName) &&& pure)
+            ([Locations.mainPath, Locations.ritualSite]
+            <> map snd woodsLocations
+            )
         ReturnToTheDevourerBelow . TheDevourerBelow <$> runMessage
           msg
           (attrs & locationsL .~ locations')

@@ -5,9 +5,10 @@ module Arkham.Types.Location.Cards.BaseOfTheHill
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (baseOfTheHill)
+import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
@@ -18,6 +19,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Window
@@ -66,17 +68,15 @@ instance LocationRunner env => RunMessage env BaseOfTheHill where
         )
     SuccessfulInvestigation _ _ (AbilitySource source 1)
       | isSource attrs source -> do
-        locations <- getSetList @SetAsideLocationCardCode ()
-        alteredPaths <- filterM (fmap (== "Diverging Path") . getName) locations
-        case nonEmpty alteredPaths of
+        setAsideCards <- map unSetAsideCard <$> getList @SetAsideCard ()
+        let
+          divergingPaths =
+            filter ((== "Diverging Path") . toName) setAsideCards
+        case nonEmpty divergingPaths of
           Just ne -> do
-            newLocationId <- getRandom
-            l
-              <$ (unshiftMessage
-                 . (`PlaceLocation` newLocationId)
-                 . unSetAsideLocationCardCode
-                 =<< sample ne
-                 )
+            card <- sample ne
+            l <$ unshiftMessage
+              (PlaceLocation (LocationId $ toCardId card) (toCardDef card))
           Nothing -> pure l
     AddConnection lid _ | toId attrs /= lid -> do
       isDivergingPath <- (== "Diverging Path") <$> getName lid

@@ -2,6 +2,7 @@ module Arkham.Types.Act.Cards.Trapped where
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
@@ -42,10 +43,10 @@ instance ActRunner env => RunMessage env Trapped where
       cellarId <- getRandom
       parlorId <- getRandom
       a <$ unshiftMessages
-        ([ PlaceLocation "01112" hallwayId
-         , PlaceLocation "01114" cellarId
-         , PlaceLocation "01113" atticId
-         , PlaceLocation "01115" parlorId
+        ([ PlaceLocation hallwayId Locations.hallway
+         , PlaceLocation cellarId Locations.cellar
+         , PlaceLocation atticId Locations.attic
+         , PlaceLocation parlorId Locations.parlor
          ]
         <> map (Discard . EnemyTarget) enemyIds
         <> [ RevealLocation Nothing hallwayId

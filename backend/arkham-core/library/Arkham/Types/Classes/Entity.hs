@@ -8,7 +8,6 @@ import Arkham.Prelude hiding (to)
 
 import Arkham.Types.Classes.Entity.Source as X
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Target
 import GHC.Generics
 
@@ -25,9 +24,6 @@ class Entity a where
 class TargetEntity a => DiscardableEntity a where
   discard :: a -> Message
   discard = Discard . toTarget
-
-class NamedEntity a where
-  toName :: a -> Name
 
 class TargetEntity a where
   toTarget :: a -> Target
@@ -70,9 +66,6 @@ instance Entity a => Entity (a `With` b) where
 instance TargetEntity a => TargetEntity (a `With` b) where
   toTarget (a `With` _) = toTarget a
   isTarget (a `With` _) = isTarget a
-
-instance NamedEntity a => NamedEntity (a `With` b) where
-  toName (a `With` _) = toName a
 
 insertEntity
   :: (Entity v, EntityId v ~ k, Eq k, Hashable k)

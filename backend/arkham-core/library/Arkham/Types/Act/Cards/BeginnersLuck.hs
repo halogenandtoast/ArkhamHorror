@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.BeginnersLuck
 
 import Arkham.Prelude
 
+import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Card
@@ -51,7 +52,7 @@ instance
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       lid <- getRandom
       a <$ unshiftMessages
-        [ PlaceLocation "02074" lid
+        [ PlaceLocation lid Locations.darkenedHall
         , DiscardEncounterUntilFirst
           (toSource attrs)
           (CardMatchByType (EnemyType, singleton Criminal))

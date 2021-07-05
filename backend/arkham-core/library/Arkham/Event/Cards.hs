@@ -394,6 +394,15 @@ oops = (event "02113" "Oops!" 2 Survivor)
   , cdWindows = mempty -- We handle this via behavior
   }
 
+flare1 :: CardDef
+flare1 = (event "02115" "Flare" 2 Survivor)
+  { cdSkills = [SkillWild]
+  , cdCardTraits = singleton Tactic
+  -- | we want to handle this manually
+  -- , cdAction = Just Action.Fight
+  , cdLevel = 1
+  }
+
 letMeHandleThis :: CardDef
 letMeHandleThis = (event "03022" "\"Let me handle this!\"" 0 Guardian)
   { cdSkills = [SkillWillpower, SkillCombat]

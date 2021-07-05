@@ -91,7 +91,7 @@ allPlayerEventCards = mapFromList $ map
   , teamwork
   , thinkOnYourFeet
   , wardOfProtection
-  , willToSurvive4
+  , willToSurvive3
   , workingAHunch
   ]
 
@@ -282,13 +282,13 @@ lucky2 = (event "01084" "Lucky!" 1 Survivor)
   , cdLevel = 2
   }
 
-willToSurvive4 :: CardDef
-willToSurvive4 = (event "01085" "Will to Survive" 4 Survivor)
+willToSurvive3 :: CardDef
+willToSurvive3 = (event "01085" "Will to Survive" 4 Survivor)
   { cdSkills = [SkillCombat, SkillWild]
   , cdCardTraits = setFromList [Spirit]
   , cdFast = True
   , cdWindows = setFromList [DuringTurn You]
-  , cdLevel = 4
+  , cdLevel = 3
   }
 
 emergencyCache :: CardDef
@@ -322,6 +322,7 @@ taunt2 = (event "02019" "Taunt" 1 Guardian)
   , cdFast = True
   , cdWindows = setFromList [DuringTurn You]
   , cdSkills = [SkillWillpower, SkillCombat, SkillAgility]
+  , cdLevel = 2
   }
 
 shortcut :: CardDef
@@ -476,10 +477,12 @@ taunt3 = (event "60130" "Taunt" 1 Guardian)
   , cdFast = True
   , cdWindows = setFromList [FastPlayerWindow]
   , cdSkills = [SkillWillpower, SkillWillpower, SkillCombat, SkillAgility]
+  , cdLevel = 3
   }
 
 iveGotAPlan2 :: CardDef
 iveGotAPlan2 = (event "60225" "\"I've got a plan!\"" 2 Seeker)
   { cdSkills = [SkillIntellect, SkillIntellect, SkillCombat]
   , cdCardTraits = setFromList [Insight, Tactic]
+  , cdLevel = 2
   }

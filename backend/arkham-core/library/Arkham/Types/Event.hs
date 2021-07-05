@@ -70,7 +70,7 @@ data Event
   | Teamwork' Teamwork
   | ThinkOnYourFeet' ThinkOnYourFeet
   | WardOfProtection' WardOfProtection
-  | WillToSurvive4' WillToSurvive4
+  | WillToSurvive3' WillToSurvive3
   | WorkingAHunch' WorkingAHunch
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -171,7 +171,7 @@ allEvents = mapFromList $ map
   , Teamwork' <$> teamwork
   , ThinkOnYourFeet' <$> thinkOnYourFeet
   , WardOfProtection' <$> wardOfProtection
-  , WillToSurvive4' <$> willToSurvive4
+  , WillToSurvive3' <$> willToSurvive3
   , WorkingAHunch' <$> workingAHunch
   ]
 

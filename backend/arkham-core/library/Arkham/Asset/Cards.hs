@@ -93,7 +93,7 @@ allPlayerAssetCards = mapFromList $ map
   , encyclopedia2
   , esotericFormula
   , fireAxe
-  , fireExtinguisher
+  , fireExtinguisher1
   , firstAid
   , flashlight
   , forbiddenKnowledge
@@ -724,18 +724,21 @@ pathfinder1 = (asset "02108" "Pathfinder" 3 Seeker)
 adaptable1 :: CardDef
 adaptable1 = permanent $ (asset "02110" "Adaptable" 0 Rogue)
   { cdCardTraits = setFromList [Talent]
+  , cdLevel = 1
   }
 
 songOfTheDead2 :: CardDef
 songOfTheDead2 = (asset "02112" "Song of the Dead" 2 Mystic)
   { cdCardTraits = setFromList [Spell, Song]
   , cdSkills = [SkillWillpower]
+  , cdLevel = 2
   }
 
-fireExtinguisher :: CardDef
-fireExtinguisher = (asset "02114" "Fire Extinguisher" 2 Survivor)
+fireExtinguisher1 :: CardDef
+fireExtinguisher1 = (asset "02114" "Fire Extinguisher" 2 Survivor)
   { cdCardTraits = setFromList [Item, Tool, Melee]
   , cdSkills = [SkillAgility]
+  , cdLevel = 1
   }
 
 haroldWalsted :: CardDef

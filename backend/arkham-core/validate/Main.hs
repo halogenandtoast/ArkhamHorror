@@ -55,6 +55,7 @@ data CardJson = CardJson
   , enemy_horror :: Maybe Int
   , clues :: Maybe Int
   , shroud :: Maybe Int
+  , xp :: Maybe Int
   }
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
@@ -79,6 +80,9 @@ data CardCostMismatch = CardCostMismatch
   deriving stock Show
 
 data VictoryMismatch = VictoryMismatch CardCode Name (Maybe Int) (Maybe Int)
+  deriving stock Show
+
+data XpMismatch = XpMismatch CardCode Name Int Int
   deriving stock Show
 
 data EnemyStatsMismatch = EnemyStatsMismatch
@@ -135,6 +139,7 @@ instance Exception AssetStatsMismatch
 instance Exception EnemyDamageMismatch
 instance Exception ShroudMismatch
 instance Exception ClueMismatch
+instance Exception XpMismatch
 
 filterTest :: [(CardCode, CardDef)] -> [(CardCode, CardDef)]
 filterTest = filter
@@ -238,6 +243,9 @@ main = do
             when
               (is_unique /= cdUnique card)
               (throw $ UniqueMismatch code (cdName card))
+            when
+              (fromMaybe 0 xp /= cdLevel card)
+              (throw $ XpMismatch code (cdName card) (fromMaybe 0 xp) (cdLevel card))
             when
               (normalizeCost code cost /= cdCost card)
               (throw $ CardCostMismatch code (cdName card) cost (cdCost card))

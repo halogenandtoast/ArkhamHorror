@@ -35,7 +35,7 @@ ability a =
 
 instance HasActions env BeatCop where
   getActions iid _ (BeatCop a) | ownedBy a iid =
-    pure [ActivateCardAbilityAction iid (ability a)]
+    pure [UseAbility iid (ability a)]
   getActions _ _ _ = pure []
 
 -- | See: PlayerCardWithBehavior

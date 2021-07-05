@@ -1,12 +1,14 @@
 module Arkham.Types.Agenda.Cards.TimeIsRunningShort
   ( TimeIsRunningShort(..)
   , timeIsRunningShort
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
+import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.GameValue
@@ -14,9 +16,6 @@ import Arkham.Types.Message
 import Arkham.Types.Resolution
 import Arkham.Types.Source
 import Arkham.Types.Window
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.Agenda.Attrs
-import Arkham.Types.Agenda.Runner
 
 newtype TimeIsRunningShort = TimeIsRunningShort AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -30,7 +29,7 @@ instance HasModifiersFor env TimeIsRunningShort where
 
 instance HasActions env TimeIsRunningShort where
   getActions iid NonFast (TimeIsRunningShort _) = pure
-    [ ActivateCardAbilityAction
+    [ UseAbility
         iid
         (mkAbility
           (AgendaSource "01122")

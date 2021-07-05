@@ -39,7 +39,7 @@ instance ActionRunner env => HasActions env Umordhoth where
         Just aid -> do
           miid <- fmap unOwnerId <$> getId aid
           pure
-            [ ActivateCardAbilityAction
+            [ UseAbility
                 iid
                 (mkAbility
                   (EnemySource enemyId)

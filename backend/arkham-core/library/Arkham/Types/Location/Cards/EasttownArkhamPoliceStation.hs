@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.EasttownArkhamPoliceStation
   ( EasttownArkhamPoliceStation(..)
   , easttownArkhamPoliceStation
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -24,13 +23,13 @@ newtype EasttownArkhamPoliceStation = EasttownArkhamPoliceStation LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 easttownArkhamPoliceStation :: LocationCard EasttownArkhamPoliceStation
-easttownArkhamPoliceStation =
-  location EasttownArkhamPoliceStation 
-    Cards.easttownArkhamPoliceStation
-    4
-    (PerPlayer 2)
-    Moon
-    [Circle, Triangle]
+easttownArkhamPoliceStation = location
+  EasttownArkhamPoliceStation
+  Cards.easttownArkhamPoliceStation
+  4
+  (PerPlayer 2)
+  Moon
+  [Circle, Triangle]
 
 instance HasModifiersFor env EasttownArkhamPoliceStation where
   getModifiersFor _ _ _ = pure []
@@ -44,7 +43,7 @@ ability attrs =
 instance ActionRunner env => HasActions env EasttownArkhamPoliceStation where
   getActions iid NonFast (EasttownArkhamPoliceStation attrs)
     | locationRevealed attrs = withBaseActions iid NonFast attrs $ pure
-      [ ActivateCardAbilityAction iid (ability attrs)
+      [ UseAbility iid (ability attrs)
       | iid `member` locationInvestigators attrs
       ]
   getActions iid window (EasttownArkhamPoliceStation attrs) =

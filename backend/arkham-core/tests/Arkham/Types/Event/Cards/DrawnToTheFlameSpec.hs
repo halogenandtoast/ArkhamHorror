@@ -1,7 +1,6 @@
 module Arkham.Types.Event.Cards.DrawnToTheFlameSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport.Lifted
 
@@ -18,8 +17,9 @@ spec = describe "Drawn to the flame" $ do
     -- effect per the FAQ
         investigator <- testInvestigator "00000"
           $ \attrs -> attrs { investigatorAgility = 3 }
-        (startLocation, centralLocation) <-
-          testConnectedLocationsWithDef (id, id) (cardTraitsL .~ singleton Central, cluesL .~ 2)
+        (startLocation, centralLocation) <- testConnectedLocationsWithDef
+          (id, id)
+          (cardTraitsL .~ singleton Central, cluesL .~ 2)
         drawnToTheFlame <- buildEvent "01064" investigator
         onWingsOfDarkness <- buildEncounterCard "01173"
         gameTest

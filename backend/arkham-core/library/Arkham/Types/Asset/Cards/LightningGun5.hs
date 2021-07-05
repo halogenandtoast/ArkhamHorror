@@ -26,13 +26,14 @@ newtype LightningGun5 = LightningGun5 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lightningGun5 :: AssetCard LightningGun5
-lightningGun5 = assetWith LightningGun5 Cards.lightningGun5 (slotsL .~ [HandSlot, HandSlot])
+lightningGun5 =
+  assetWith LightningGun5 Cards.lightningGun5 (slotsL .~ [HandSlot, HandSlot])
 
 instance ActionRunner env => HasActions env LightningGun5 where
   getActions iid window (LightningGun5 a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid window
     pure
-      [ ActivateCardAbilityAction
+      [ UseAbility
           iid
           (mkAbility
             (toSource a)

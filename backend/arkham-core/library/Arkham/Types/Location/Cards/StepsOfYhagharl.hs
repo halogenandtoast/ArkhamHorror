@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.StepsOfYhagharl
   ( stepsOfYhagharl
   , StepsOfYhagharl(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -24,7 +23,8 @@ newtype StepsOfYhagharl = StepsOfYhagharl LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stepsOfYhagharl :: LocationCard StepsOfYhagharl
-stepsOfYhagharl = location StepsOfYhagharl 
+stepsOfYhagharl = location
+  StepsOfYhagharl
   Cards.stepsOfYhagharl
   3
   (PerPlayer 1)
@@ -37,9 +37,7 @@ instance HasModifiersFor env StepsOfYhagharl where
 instance ActionRunner env => HasActions env StepsOfYhagharl where
   getActions iid (WhenWouldLeave You lid) (StepsOfYhagharl attrs)
     | iid `on` attrs = pure
-      [ ActivateCardAbilityAction
-          iid
-          (mkAbility (toSource attrs) 1 ForcedAbility)
+      [ UseAbility iid (mkAbility (toSource attrs) 1 ForcedAbility)
       | lid == locationId attrs
       ]
   getActions iid window (StepsOfYhagharl attrs) = getActions iid window attrs

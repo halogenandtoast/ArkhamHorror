@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Aquinnah1
   ( Aquinnah1(..)
   , aquinnah1
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -25,14 +24,8 @@ aquinnah1 :: AssetCard Aquinnah1
 aquinnah1 = ally Aquinnah1 Cards.aquinnah1 (1, 4)
 
 reactionAbility :: AssetAttrs -> Ability
-reactionAbility attrs = mkAbility
-  (toSource attrs)
-  1
-  (FastAbility $ Costs
-    [ ExhaustCost (toTarget attrs)
-    , HorrorCost (toSource attrs) (toTarget attrs) 1
-    ]
-  )
+reactionAbility attrs = mkAbility attrs 1 $ FastAbility $ Costs
+  [ExhaustCost (toTarget attrs), HorrorCost (toSource attrs) (toTarget attrs) 1]
 
 dropUntilAttack :: [Message] -> [Message]
 dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
@@ -47,10 +40,7 @@ instance ActionRunner env => HasActions env Aquinnah1 where
       let PerformEnemyAttack iid' eid : _ = dropUntilAttack queue
       in if iid' == iid then eid else error "mismatch"
     enemyIds <- filterSet (/= enemyId) <$> getSet locationId
-    pure
-      [ ActivateCardAbilityAction iid (reactionAbility a)
-      | not (null enemyIds)
-      ]
+    pure [ UseAbility iid (reactionAbility a) | not (null enemyIds) ]
   getActions i window (Aquinnah1 x) = getActions i window x
 
 instance AssetRunner env => RunMessage env Aquinnah1 where

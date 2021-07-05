@@ -1,4 +1,7 @@
-module Arkham.Types.Location.Cards.ReturnToCellar (returnToCellar, ReturnToCellar(..)) where
+module Arkham.Types.Location.Cards.ReturnToCellar
+  ( returnToCellar
+  , ReturnToCellar(..)
+  ) where
 
 import Arkham.Prelude
 
@@ -14,7 +17,8 @@ newtype ReturnToCellar = ReturnToCellar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 returnToCellar :: LocationCard ReturnToCellar
-returnToCellar = location ReturnToCellar 
+returnToCellar = location
+  ReturnToCellar
   Cards.returnToCellar
   2
   (PerPlayer 1)

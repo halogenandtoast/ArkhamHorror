@@ -39,7 +39,7 @@ instance ActionRunner env => HasActions env MobEnforcer where
       resourceCount <- getResourceCount iid
       locationId <- getId @LocationId iid
       pure
-        [ ActivateCardAbilityAction
+        [ UseAbility
             iid
             (mkAbility
               (toSource attrs)

@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.DevilsHopYard_253
   ( devilsHopYard_253
   , DevilsHopYard_253(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -25,7 +24,8 @@ newtype DevilsHopYard_253 = DevilsHopYard_253 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 devilsHopYard_253 :: LocationCard DevilsHopYard_253
-devilsHopYard_253 = location DevilsHopYard_253 
+devilsHopYard_253 = location
+  DevilsHopYard_253
   Cards.devilsHopYard_253
   2
   (PerPlayer 1)
@@ -46,7 +46,7 @@ instance ActionRunner env => HasActions env DevilsHopYard_253 where
       investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
       pure
-        [ ActivateCardAbilityAction iid (ability attrs)
+        [ UseAbility iid (ability attrs)
         | investigatorsWithClues && anyAbominations
         ]
   getActions iid window (DevilsHopYard_253 attrs) = getActions iid window attrs

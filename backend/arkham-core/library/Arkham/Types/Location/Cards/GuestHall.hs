@@ -17,7 +17,8 @@ newtype GuestHall = GuestHall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 guestHall :: LocationCard GuestHall
-guestHall = location GuestHall 
+guestHall = location
+  GuestHall
   Cards.guestHall
   1
   (Static 0)

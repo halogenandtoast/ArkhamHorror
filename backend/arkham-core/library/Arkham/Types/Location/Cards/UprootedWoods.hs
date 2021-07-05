@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.UprootedWoods
   ( uprootedWoods
   , UprootedWoods(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -30,7 +29,8 @@ uprootedWoods = locationWith
   []
   ((revealedSymbolL .~ Moon)
   . (revealedConnectedSymbolsL .~ setFromList [Square, T])
-  . (unrevealedNameL .~ "Altered Path"))
+  . (unrevealedNameL .~ "Altered Path")
+  )
 
 instance HasModifiersFor env UprootedWoods where
   getModifiersFor = noModifiersFor
@@ -42,10 +42,7 @@ instance ActionRunner env => HasActions env UprootedWoods where
   getActions iid (AfterRevealLocation You) (UprootedWoods attrs)
     | iid `on` attrs = do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid
-      pure
-        [ ActivateCardAbilityAction iid (forcedAbility attrs)
-        | actionRemainingCount == 0
-        ]
+      pure [ UseAbility iid (forcedAbility attrs) | actionRemainingCount == 0 ]
   getActions iid window (UprootedWoods attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env UprootedWoods where

@@ -23,7 +23,8 @@ newtype HospitalDebts = HospitalDebts TreacheryAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 hospitalDebts :: TreacheryCard HospitalDebts
-hospitalDebts = treachery (HospitalDebts . (resourcesL ?~ 0)) Cards.hospitalDebts
+hospitalDebts =
+  treachery (HospitalDebts . (resourcesL ?~ 0)) Cards.hospitalDebts
 
 instance HasModifiersFor env HospitalDebts where
   getModifiersFor _ (InvestigatorTarget iid) (HospitalDebts attrs) = do
@@ -45,7 +46,7 @@ instance ActionRunner env => HasActions env HospitalDebts where
       treacheryLocationId <- getId tormented
       investigatorLocationId <- getId @LocationId iid
       pure
-        [ ActivateCardAbilityAction iid (ability a)
+        [ UseAbility iid (ability a)
         | resourceCount > 0 && treacheryLocationId == investigatorLocationId
         ]
   getActions _ _ _ = pure []

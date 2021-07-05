@@ -17,12 +17,8 @@ newtype Easttown = Easttown LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 easttown :: LocationCard Easttown
-easttown = location Easttown 
-  Cards.easttown
-  2
-  (PerPlayer 1)
-  Moon
-  [Circle, Triangle]
+easttown =
+  location Easttown Cards.easttown 2 (PerPlayer 1) Moon [Circle, Triangle]
 
 instance HasModifiersFor env Easttown where
   getModifiersFor _ (InvestigatorTarget iid) (Easttown attrs) =

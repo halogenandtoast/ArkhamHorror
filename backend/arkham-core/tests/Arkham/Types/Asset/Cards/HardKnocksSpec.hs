@@ -1,7 +1,6 @@
 module Arkham.Types.Asset.Cards.HardKnocksSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 

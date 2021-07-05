@@ -1,20 +1,19 @@
 module Arkham.Types.Asset.Cards.RabbitsFoot3
   ( RabbitsFoot3(..)
   , rabbitsFoot3
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
 
 newtype RabbitsFoot3 = RabbitsFoot3 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -34,7 +33,7 @@ ability attrs n =
 
 instance HasActions env RabbitsFoot3 where
   getActions iid (AfterFailSkillTest You n) (RabbitsFoot3 a) | ownedBy a iid =
-    pure [ActivateCardAbilityAction iid (ability a n)]
+    pure [UseAbility iid (ability a n)]
   getActions i window (RabbitsFoot3 x) = getActions i window x
 
 instance AssetRunner env => RunMessage env RabbitsFoot3 where

@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.ColdSpringGlen_244
   ( coldSpringGlen_244
   , ColdSpringGlen_244(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -27,7 +26,8 @@ newtype ColdSpringGlen_244 = ColdSpringGlen_244 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 coldSpringGlen_244 :: LocationCard ColdSpringGlen_244
-coldSpringGlen_244 = location ColdSpringGlen_244 
+coldSpringGlen_244 = location
+  ColdSpringGlen_244
   Cards.coldSpringGlen_244
   3
   (Static 2)
@@ -52,7 +52,7 @@ instance ActionRunner env => HasActions env ColdSpringGlen_244 where
       investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
       pure
-        [ ActivateCardAbilityAction iid (ability attrs)
+        [ UseAbility iid (ability attrs)
         | investigatorsWithClues && anyAbominations
         ]
   getActions iid window (ColdSpringGlen_244 attrs) =

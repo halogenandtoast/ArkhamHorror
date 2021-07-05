@@ -17,12 +17,7 @@ newtype Bathroom = Bathroom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bathroom :: LocationCard Bathroom
-bathroom = location Bathroom 
-  Cards.bathroom
-  1
-  (PerPlayer 1)
-  Star
-  [T]
+bathroom = location Bathroom Cards.bathroom 1 (PerPlayer 1) Star [T]
 
 instance HasModifiersFor env Bathroom where
   getModifiersFor = noModifiersFor

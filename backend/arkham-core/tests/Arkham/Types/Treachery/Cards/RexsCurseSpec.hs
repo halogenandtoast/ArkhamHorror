@@ -1,7 +1,6 @@
 module Arkham.Types.Treachery.Cards.RexsCurseSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport.Lifted
 

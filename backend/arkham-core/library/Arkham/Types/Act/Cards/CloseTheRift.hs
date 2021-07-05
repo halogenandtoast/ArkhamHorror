@@ -34,7 +34,7 @@ closeTheRift = CloseTheRift $ baseAttrs
 instance ActionRunner env => HasActions env CloseTheRift where
   getActions iid NonFast (CloseTheRift x) = withBaseActions iid NonFast x $ do
     pure
-      [ ActivateCardAbilityAction
+      [ UseAbility
           iid
           (mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1))
       ]

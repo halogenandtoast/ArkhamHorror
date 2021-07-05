@@ -1,7 +1,6 @@
 module Arkham.Types.Event.Cards.WillToSurvive4Spec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 

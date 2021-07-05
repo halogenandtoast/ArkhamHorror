@@ -23,13 +23,13 @@ newtype MiskatonicUniversityMiskatonicMuseum = MiskatonicUniversityMiskatonicMus
 
 miskatonicUniversityMiskatonicMuseum
   :: LocationCard MiskatonicUniversityMiskatonicMuseum
-miskatonicUniversityMiskatonicMuseum =
-  location MiskatonicUniversityMiskatonicMuseum 
-    Cards.miskatonicUniversityMiskatonicMuseum
-    3
-    (PerPlayer 1)
-    Diamond
-    [T, Plus, Circle, Square]
+miskatonicUniversityMiskatonicMuseum = location
+  MiskatonicUniversityMiskatonicMuseum
+  Cards.miskatonicUniversityMiskatonicMuseum
+  3
+  (PerPlayer 1)
+  Diamond
+  [T, Plus, Circle, Square]
 
 instance HasModifiersFor env MiskatonicUniversityMiskatonicMuseum where
   getModifiersFor = noModifiersFor
@@ -42,10 +42,11 @@ ability attrs = base { abilityLimit = PlayerLimit PerGame 1 }
 instance ActionRunner env => HasActions env MiskatonicUniversityMiskatonicMuseum where
   getActions iid NonFast (MiskatonicUniversityMiskatonicMuseum attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid NonFast attrs $ pure
-      [ ActivateCardAbilityAction iid (ability attrs)
-      | iid `member` locationInvestigators
-      ]
+    = withBaseActions iid NonFast attrs
+      $ pure
+          [ UseAbility iid (ability attrs)
+          | iid `member` locationInvestigators
+          ]
   getActions iid window (MiskatonicUniversityMiskatonicMuseum attrs) =
     getActions iid window attrs
 

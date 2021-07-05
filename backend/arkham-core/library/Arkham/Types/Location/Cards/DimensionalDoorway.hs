@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.DimensionalDoorway
   ( dimensionalDoorway
   , DimensionalDoorway(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -23,7 +22,8 @@ newtype DimensionalDoorway = DimensionalDoorway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dimensionalDoorway :: LocationCard DimensionalDoorway
-dimensionalDoorway = location DimensionalDoorway 
+dimensionalDoorway = location
+  DimensionalDoorway
   Cards.dimensionalDoorway
   2
   (PerPlayer 1)
@@ -36,10 +36,7 @@ instance HasModifiersFor env DimensionalDoorway where
 instance ActionRunner env => HasActions env DimensionalDoorway where
   getActions iid (AfterEndTurn You) (DimensionalDoorway attrs)
     | iid `on` attrs = pure
-      [ ActivateCardAbilityAction
-          iid
-          (mkAbility (toSource attrs) 1 ForcedAbility)
-      ]
+      [UseAbility iid (mkAbility (toSource attrs) 1 ForcedAbility)]
   getActions iid window (DimensionalDoorway attrs) =
     getActions iid window attrs
 

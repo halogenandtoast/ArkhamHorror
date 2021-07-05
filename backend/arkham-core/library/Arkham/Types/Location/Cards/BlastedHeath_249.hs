@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.BlastedHeath_249
   ( blastedHeath_249
   , BlastedHeath_249(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -18,7 +17,8 @@ newtype BlastedHeath_249 = BlastedHeath_249 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blastedHeath_249 :: LocationCard BlastedHeath_249
-blastedHeath_249 = location BlastedHeath_249 
+blastedHeath_249 = location
+  BlastedHeath_249
   Cards.blastedHeath_249
   3
   (Static 2)

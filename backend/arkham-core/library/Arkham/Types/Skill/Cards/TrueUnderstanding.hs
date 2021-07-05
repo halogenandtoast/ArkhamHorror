@@ -1,8 +1,7 @@
 module Arkham.Types.Skill.Cards.TrueUnderstanding
   ( trueUnderstanding
   , TrueUnderstanding(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

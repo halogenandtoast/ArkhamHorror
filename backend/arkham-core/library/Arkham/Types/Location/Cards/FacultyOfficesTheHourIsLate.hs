@@ -15,7 +15,8 @@ newtype FacultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 facultyOfficesTheHourIsLate :: LocationCard FacultyOfficesTheHourIsLate
-facultyOfficesTheHourIsLate = location FacultyOfficesTheHourIsLate 
+facultyOfficesTheHourIsLate = location
+  FacultyOfficesTheHourIsLate
   Cards.facultyOfficesTheHourIsLate
   2
   (Static 0)

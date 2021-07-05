@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.SecurityOffice_129
   ( securityOffice_129
   , SecurityOffice_129(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -25,7 +24,8 @@ newtype SecurityOffice_129 = SecurityOffice_129 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 securityOffice_129 :: LocationCard SecurityOffice_129
-securityOffice_129 = location SecurityOffice_129
+securityOffice_129 = location
+  SecurityOffice_129
   Cards.securityOffice_129
   3
   (PerPlayer 2)
@@ -44,7 +44,7 @@ ability attrs =
 instance ActionRunner env => HasActions env SecurityOffice_129 where
   getActions iid NonFast (SecurityOffice_129 attrs) =
     withBaseActions iid NonFast attrs
-      $ pure [ ActivateCardAbilityAction iid (ability attrs) | iid `on` attrs ]
+      $ pure [ UseAbility iid (ability attrs) | iid `on` attrs ]
   getActions iid window (SecurityOffice_129 attrs) =
     getActions iid window attrs
 

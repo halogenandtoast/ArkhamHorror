@@ -701,8 +701,7 @@ hasModifier InvestigatorAttrs { investigatorId } m =
           ()
 
 isForced :: Message -> Bool
-isForced (ActivateCardAbilityAction _ Ability { abilityType }) =
-  abilityType == ForcedAbility
+isForced (UseAbility _ Ability { abilityType }) = abilityType == ForcedAbility
 isForced _ = False
 
 runInvestigatorMessage
@@ -880,10 +879,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (discardL %~ (lookupPlayerCard (toCardCode card) (unAssetId aid) :))
       & (slotsL %~ removeFromSlots aid)
   Exiled (AssetTarget aid) _ | aid `elem` investigatorAssets ->
-    pure
-      $ a
-      & (assetsL %~ deleteSet aid)
-      & (slotsL %~ removeFromSlots aid)
+    pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   RemoveFromGame (AssetTarget aid) -> pure $ a & assetsL %~ deleteSet aid
   ChooseFightEnemy iid source skillType traits isAction
     | iid == investigatorId -> do
@@ -1463,7 +1459,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     traits <- getSetList eid
     a <$ unshiftMessage
       (CheckWindow investigatorId [WhenEnemySpawns YourLocation traits])
-  ActivateCardAbilityAction iid ability@Ability {..} | iid == investigatorId ->
+  UseAbility iid ability@Ability {..} | iid == investigatorId ->
     a <$ unshiftMessage
       (CreatePayAbilityCostEffect (Just ability) abilitySource (toTarget a))
   AllDrawCardAndResource | not (a ^. defeatedL || a ^. resignedL) -> do

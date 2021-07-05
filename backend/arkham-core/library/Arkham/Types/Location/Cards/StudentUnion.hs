@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.StudentUnion
   ( StudentUnion(..)
   , studentUnion
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -24,12 +23,8 @@ newtype StudentUnion = StudentUnion LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 studentUnion :: LocationCard StudentUnion
-studentUnion = location StudentUnion 
-  Cards.studentUnion
-  1
-  (Static 2)
-  Diamond
-  [Plus, Equals]
+studentUnion =
+  location StudentUnion Cards.studentUnion 1 (Static 2) Diamond [Plus, Equals]
 
 instance HasModifiersFor env StudentUnion where
   getModifiersFor = noModifiersFor
@@ -40,10 +35,7 @@ instance ActionRunner env => HasActions env StudentUnion where
       let
         ability =
           mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 2)
-      pure
-        [ ActivateCardAbilityAction iid ability
-        | iid `elem` locationInvestigators
-        ]
+      pure [ UseAbility iid ability | iid `elem` locationInvestigators ]
   getActions iid window (StudentUnion attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env StudentUnion where

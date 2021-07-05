@@ -1,6 +1,5 @@
 module Arkham.Types.Act.Helpers
   ( module X
-  )
-where
+  ) where
 
 import Arkham.Types.Game.Helpers as X

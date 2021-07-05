@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.DowntownFirstBankOfArkham
   ( DowntownFirstBankOfArkham(..)
   , downtownFirstBankOfArkham
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -23,7 +22,8 @@ newtype DowntownFirstBankOfArkham = DowntownFirstBankOfArkham LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 downtownFirstBankOfArkham :: LocationCard DowntownFirstBankOfArkham
-downtownFirstBankOfArkham = location DowntownFirstBankOfArkham 
+downtownFirstBankOfArkham = location
+  DowntownFirstBankOfArkham
   Cards.downtownFirstBankOfArkham
   3
   (PerPlayer 1)
@@ -47,7 +47,7 @@ instance ActionRunner env => HasActions env DowntownFirstBankOfArkham where
         . map modifierType
         <$> getInvestigatorModifiers iid (toSource attrs)
       pure
-        [ ActivateCardAbilityAction iid (ability attrs)
+        [ UseAbility iid (ability attrs)
         | canGainResources && iid `member` locationInvestigators
         ]
   getActions iid window (DowntownFirstBankOfArkham attrs) =

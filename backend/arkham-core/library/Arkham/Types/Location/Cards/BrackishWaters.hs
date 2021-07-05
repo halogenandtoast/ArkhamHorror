@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.BrackishWaters
   ( BrackishWaters(..)
   , brackishWaters
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -29,7 +28,8 @@ newtype BrackishWaters = BrackishWaters LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 brackishWaters :: LocationCard BrackishWaters
-brackishWaters = location BrackishWaters 
+brackishWaters = location
+  BrackishWaters
   Cards.brackishWaters
   1
   (Static 0)
@@ -61,11 +61,15 @@ instance ActionRunner env => HasActions env BrackishWaters where
       let
         assetsCount =
           count
-              (maybe False (cardMatch (CardMatchByType (AssetType, mempty)) . pcDef) . toPlayerCard)
+              (maybe
+                  False
+                  (cardMatch (CardMatchByType (AssetType, mempty)) . pcDef)
+              . toPlayerCard
+              )
               hand
             + inPlayAssetsCount
       pure
-        [ ActivateCardAbilityAction
+        [ UseAbility
             iid
             (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
             )

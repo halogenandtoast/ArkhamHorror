@@ -8,8 +8,8 @@ import Arkham.Prelude
 import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
-import Arkham.Types.Id
 import Arkham.Types.Game.Helpers
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target

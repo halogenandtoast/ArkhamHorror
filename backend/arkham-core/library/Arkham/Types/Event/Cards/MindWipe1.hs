@@ -1,4 +1,7 @@
-module Arkham.Types.Event.Cards.MindWipe1 (mindWipe1, MindWipe1(..)) where
+module Arkham.Types.Event.Cards.MindWipe1
+  ( mindWipe1
+  , MindWipe1(..)
+  ) where
 
 import Arkham.Prelude
 

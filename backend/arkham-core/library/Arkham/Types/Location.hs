@@ -396,7 +396,8 @@ allLocations = mapFromList $ map
   , MainPath' <$> mainPath
   , MiskatonicQuad' <$> miskatonicQuad
   , MiskatonicUniversity' <$> miskatonicUniversity
-  , MiskatonicUniversityMiskatonicMuseum' <$> miskatonicUniversityMiskatonicMuseum
+  , MiskatonicUniversityMiskatonicMuseum'
+    <$> miskatonicUniversityMiskatonicMuseum
   , MuseumEntrance' <$> museumEntrance
   , MuseumHalls' <$> museumHalls
   , Northside' <$> northside

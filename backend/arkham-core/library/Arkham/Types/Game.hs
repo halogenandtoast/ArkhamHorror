@@ -2195,8 +2195,7 @@ runGameMessage msg g = case msg of
           pure $ g & eventsL %~ insertMap eid event
         _ -> pure g
       EncounterCard _ -> pure g
-  ActivateCardAbilityAction iid ability ->
-    pure $ g & usedAbilitiesL %~ ((iid, ability) :)
+  UseAbility iid ability -> pure $ g & usedAbilitiesL %~ ((iid, ability) :)
   UseLimitedAbility iid ability ->
     pure $ g & usedAbilitiesL %~ ((iid, ability) :)
   DrewPlayerEnemy iid card -> do

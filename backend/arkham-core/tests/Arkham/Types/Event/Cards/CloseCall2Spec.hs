@@ -1,7 +1,6 @@
 module Arkham.Types.Event.Cards.CloseCall2Spec
   ( spec
-  )
-where
+  ) where
 
 import TestImport.Lifted
 

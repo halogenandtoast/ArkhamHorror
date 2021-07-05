@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.VisionsOfFuturesPast
   ( VisionsOfFuturesPast(..)
   , visionsOfFuturesPast
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -19,7 +18,8 @@ newtype VisionsOfFuturesPast = VisionsOfFuturesPast TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 visionsOfFuturesPast :: TreacheryCard VisionsOfFuturesPast
-visionsOfFuturesPast = treachery VisionsOfFuturesPast Cards.visionsOfFuturesPast
+visionsOfFuturesPast =
+  treachery VisionsOfFuturesPast Cards.visionsOfFuturesPast
 
 instance HasModifiersFor env VisionsOfFuturesPast where
   getModifiersFor = noModifiersFor
@@ -28,12 +28,13 @@ instance HasActions env VisionsOfFuturesPast where
   getActions i window (VisionsOfFuturesPast attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env VisionsOfFuturesPast where
-  runMessage msg t@(VisionsOfFuturesPast attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ unshiftMessages
-      [ RevelationSkillTest iid source SkillWillpower 5
-      , Discard (TreacheryTarget treacheryId)
-      ]
-    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
-      | tid == treacheryId -> t
-      <$ unshiftMessage (DiscardTopOfDeck iid n Nothing)
-    _ -> VisionsOfFuturesPast <$> runMessage msg attrs
+  runMessage msg t@(VisionsOfFuturesPast attrs@TreacheryAttrs {..}) =
+    case msg of
+      Revelation iid source | isSource attrs source -> t <$ unshiftMessages
+        [ RevelationSkillTest iid source SkillWillpower 5
+        , Discard (TreacheryTarget treacheryId)
+        ]
+      FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
+        | tid == treacheryId -> t
+        <$ unshiftMessage (DiscardTopOfDeck iid n Nothing)
+      _ -> VisionsOfFuturesPast <$> runMessage msg attrs

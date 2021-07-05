@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.MedicalTexts
   ( MedicalTexts(..)
   , medicalTexts
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -29,7 +28,7 @@ instance HasModifiersFor env MedicalTexts where
 
 instance HasActions env MedicalTexts where
   getActions iid NonFast (MedicalTexts a) | ownedBy a iid = pure
-    [ ActivateCardAbilityAction
+    [ UseAbility
         iid
         (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
     ]

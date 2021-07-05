@@ -21,12 +21,8 @@ newtype Dormitories = Dormitories LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dormitories :: LocationCard Dormitories
-dormitories = location Dormitories 
-  Cards.dormitories
-  1
-  (PerPlayer 3)
-  Equals
-  [Diamond]
+dormitories =
+  location Dormitories Cards.dormitories 1 (PerPlayer 3) Equals [Diamond]
 
 instance HasModifiersFor env Dormitories where
   getModifiersFor _ target (Dormitories attrs) | isTarget attrs target =
@@ -44,7 +40,7 @@ ability attrs = mkAbility
 instance ActionRunner env => HasActions env Dormitories where
   getActions iid FastPlayerWindow (Dormitories attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid FastPlayerWindow attrs
-    $ pure [ActivateCardAbilityAction iid (ability attrs)]
+    $ pure [UseAbility iid (ability attrs)]
   getActions iid window (Dormitories attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env Dormitories where

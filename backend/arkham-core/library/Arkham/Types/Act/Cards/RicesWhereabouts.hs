@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.RicesWhereabouts
   ( RicesWhereabouts(..)
   , ricesWhereabouts
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -38,7 +37,7 @@ ability attrs = mkAbility
 
 instance ActionRunner env => HasActions env RicesWhereabouts where
   getActions iid NonFast (RicesWhereabouts x) =
-    pure [ActivateCardAbilityAction iid (ability x)]
+    pure [UseAbility iid (ability x)]
   getActions iid window (RicesWhereabouts x) = getActions iid window x
 
 instance ActRunner env => RunMessage env RicesWhereabouts where

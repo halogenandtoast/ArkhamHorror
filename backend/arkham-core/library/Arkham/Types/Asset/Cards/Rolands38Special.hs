@@ -44,7 +44,7 @@ fightAbility attrs = mkAbility
 instance ActionRunner env => HasActions env Rolands38Special where
   getActions iid window (Rolands38Special a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid window
-    pure [ ActivateCardAbilityAction iid (fightAbility a) | fightAvailable ]
+    pure [ UseAbility iid (fightAbility a) | fightAvailable ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Rolands38Special where

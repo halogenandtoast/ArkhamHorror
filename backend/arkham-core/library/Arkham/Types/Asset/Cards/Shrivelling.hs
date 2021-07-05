@@ -34,7 +34,7 @@ instance ActionRunner env => HasActions env Shrivelling where
   getActions iid window (Shrivelling a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid window
     pure
-      [ ActivateCardAbilityAction
+      [ UseAbility
           iid
           (mkAbility
             (toSource a)

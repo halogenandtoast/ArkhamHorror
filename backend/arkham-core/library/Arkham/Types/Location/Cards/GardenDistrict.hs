@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.GardenDistrict
   ( GardenDistrict(..)
   , gardenDistrict
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -26,12 +25,8 @@ newtype GardenDistrict = GardenDistrict LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 gardenDistrict :: LocationCard GardenDistrict
-gardenDistrict = location GardenDistrict 
-  Cards.gardenDistrict
-  1
-  (Static 0)
-  Plus
-  [Square, Plus]
+gardenDistrict =
+  location GardenDistrict Cards.gardenDistrict 1 (Static 0) Plus [Square, Plus]
 
 instance HasModifiersFor env GardenDistrict where
   getModifiersFor = noModifiersFor
@@ -39,7 +34,7 @@ instance HasModifiersFor env GardenDistrict where
 instance ActionRunner env => HasActions env GardenDistrict where
   getActions iid NonFast (GardenDistrict attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ pure
-      [ ActivateCardAbilityAction
+      [ UseAbility
           iid
           (mkAbility
             (LocationSource locationId)

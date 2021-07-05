@@ -6,13 +6,13 @@ module Arkham.Types.Effect.Effects.WindowModifierEffect
 import Arkham.Prelude
 
 import Arkham.Types.Classes
+import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectId
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Effect.Attrs
 
 newtype WindowModifierEffect = WindowModifierEffect EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -46,6 +46,7 @@ instance HasModifiersFor env WindowModifierEffect where
 instance HasQueue env => RunMessage env WindowModifierEffect where
   runMessage msg e@(WindowModifierEffect attrs) = case msg of
     CancelFailedByModifierEffects -> case effectMetadata attrs of
-      Just (FailedByEffectModifiers _) -> e <$ unshiftMessage (DisableEffect $ toId attrs)
+      Just (FailedByEffectModifiers _) ->
+        e <$ unshiftMessage (DisableEffect $ toId attrs)
       _ -> pure e
     _ -> WindowModifierEffect <$> runMessage msg attrs

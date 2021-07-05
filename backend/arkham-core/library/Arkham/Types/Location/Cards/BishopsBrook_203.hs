@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.BishopsBrook_203
   ( bishopsBrook_203
   , BishopsBrook_203(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -20,7 +19,8 @@ newtype BishopsBrook_203 = BishopsBrook_203 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bishopsBrook_203 :: LocationCard BishopsBrook_203
-bishopsBrook_203 = location BishopsBrook_203 
+bishopsBrook_203 = location
+  BishopsBrook_203
   Cards.bishopsBrook_203
   3
   (Static 2)

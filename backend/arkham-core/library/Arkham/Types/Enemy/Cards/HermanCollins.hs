@@ -37,7 +37,7 @@ instance ActionRunner env => HasActions env HermanCollins where
     withBaseActions iid NonFast attrs $ do
       locationId <- getId @LocationId iid
       pure
-        [ ActivateCardAbilityAction
+        [ UseAbility
             iid
             (mkAbility
               (toSource attrs)

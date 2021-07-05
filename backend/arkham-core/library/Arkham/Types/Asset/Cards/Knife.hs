@@ -34,7 +34,7 @@ instance ActionRunner env => HasActions env Knife where
   getActions iid NonFast (Knife a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid NonFast
     pure
-      $ [ ActivateCardAbilityAction
+      $ [ UseAbility
             iid
             (mkAbility
               (toSource a)
@@ -43,7 +43,7 @@ instance ActionRunner env => HasActions env Knife where
             )
         | fightAvailable
         ]
-      <> [ ActivateCardAbilityAction
+      <> [ UseAbility
              iid
              (mkAbility
                (toSource a)

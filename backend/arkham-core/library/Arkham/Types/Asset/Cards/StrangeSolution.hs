@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.StrangeSolution
   ( strangeSolution
   , StrangeSolution(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -25,7 +24,7 @@ strangeSolution = asset StrangeSolution Cards.strangeSolution
 
 instance HasActions env StrangeSolution where
   getActions iid NonFast (StrangeSolution attrs) | ownedBy attrs iid = pure
-    [ ActivateCardAbilityAction
+    [ UseAbility
         iid
         (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
     ]

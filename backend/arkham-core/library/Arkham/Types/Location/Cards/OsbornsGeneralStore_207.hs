@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.OsbornsGeneralStore_207
   ( osbornsGeneralStore_207
   , OsbornsGeneralStore_207(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -24,7 +23,8 @@ newtype OsbornsGeneralStore_207 = OsbornsGeneralStore_207 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 osbornsGeneralStore_207 :: LocationCard OsbornsGeneralStore_207
-osbornsGeneralStore_207 = location OsbornsGeneralStore_207 
+osbornsGeneralStore_207 = location
+  OsbornsGeneralStore_207
   Cards.osbornsGeneralStore_207
   3
   (PerPlayer 1)
@@ -43,7 +43,7 @@ ability attrs = mkAbility
 instance ActionRunner env => HasActions env OsbornsGeneralStore_207 where
   getActions iid NonFast (OsbornsGeneralStore_207 attrs)
     | locationRevealed attrs = withBaseActions iid NonFast attrs
-    $ pure [ActivateCardAbilityAction iid (ability attrs)]
+    $ pure [UseAbility iid (ability attrs)]
   getActions iid FastPlayerWindow (OsbornsGeneralStore_207 attrs)
     | locationRevealed attrs = withBaseActions iid FastPlayerWindow attrs $ pure
       [ drawCardUnderneathAction iid attrs

@@ -1,7 +1,6 @@
 module Arkham.Types.Asset.Cards.JennysTwin45sSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport.Lifted
 

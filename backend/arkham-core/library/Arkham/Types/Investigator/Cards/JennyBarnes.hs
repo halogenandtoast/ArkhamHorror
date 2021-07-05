@@ -2,13 +2,13 @@ module Arkham.Types.Investigator.Cards.JennyBarnes where
 
 import Arkham.Prelude
 
-import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
-import Arkham.Types.Message
-import Arkham.Types.Token
+import Arkham.Types.Classes
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
+import Arkham.Types.Message
 import Arkham.Types.Stats
+import Arkham.Types.Token
 import Arkham.Types.Trait
 
 newtype JennyBarnes = JennyBarnes InvestigatorAttrs

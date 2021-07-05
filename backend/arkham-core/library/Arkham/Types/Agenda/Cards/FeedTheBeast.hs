@@ -1,17 +1,16 @@
 module Arkham.Types.Agenda.Cards.FeedTheBeast
   ( FeedTheBeast(..)
   , feedTheBeast
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
+import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
-import Arkham.Types.Agenda.Attrs
-import Arkham.Types.Agenda.Runner
 
 newtype FeedTheBeast = FeedTheBeast AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

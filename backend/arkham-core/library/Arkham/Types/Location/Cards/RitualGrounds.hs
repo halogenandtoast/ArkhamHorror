@@ -14,7 +14,8 @@ newtype RitualGrounds = RitualGrounds LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ritualGrounds :: LocationCard RitualGrounds
-ritualGrounds = location RitualGrounds 
+ritualGrounds = location
+  RitualGrounds
   Cards.ritualGrounds
   2
   (PerPlayer 1)

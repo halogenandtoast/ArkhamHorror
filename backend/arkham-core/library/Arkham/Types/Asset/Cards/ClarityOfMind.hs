@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.ClarityOfMind
   ( clarityOfMind
   , ClarityOfMind(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -25,7 +24,7 @@ clarityOfMind = arcane ClarityOfMind Cards.clarityOfMind
 
 instance HasActions env ClarityOfMind where
   getActions iid NonFast (ClarityOfMind a) = pure
-    [ ActivateCardAbilityAction
+    [ UseAbility
         iid
         (mkAbility
           (toSource a)

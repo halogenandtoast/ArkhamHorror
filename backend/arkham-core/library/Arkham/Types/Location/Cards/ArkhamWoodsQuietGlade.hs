@@ -45,10 +45,9 @@ ability attrs =
 
 instance ActionRunner env => HasActions env ArkhamWoodsQuietGlade where
   getActions iid NonFast (ArkhamWoodsQuietGlade attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs $ pure
-      [ ActivateCardAbilityAction iid (ability attrs)
-      | iid `elem` locationInvestigators
-      ]
+    | locationRevealed = withBaseActions iid NonFast attrs
+    $ pure
+        [ UseAbility iid (ability attrs) | iid `elem` locationInvestigators ]
   getActions iid window (ArkhamWoodsQuietGlade attrs) =
     getActions iid window attrs
 

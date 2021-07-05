@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.BrotherXavier1
   ( brotherXavier1
   , BrotherXavier1(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -46,7 +45,7 @@ ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
 instance HasActions env BrotherXavier1 where
   getActions iid (WhenDefeated source) (BrotherXavier1 a) | isSource a source =
-    pure [ ActivateCardAbilityAction iid (ability a) | ownedBy a iid ]
+    pure [ UseAbility iid (ability a) | ownedBy a iid ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env BrotherXavier1 where

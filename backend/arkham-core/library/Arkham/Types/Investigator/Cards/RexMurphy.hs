@@ -1,24 +1,23 @@
 module Arkham.Types.Investigator.Cards.RexMurphy
   ( RexMurphy(..)
   , rexMurphy
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Investigator.Attrs
+import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Source
-import Arkham.Types.Token
-import Arkham.Types.Window
-import Arkham.Types.Investigator.Attrs
-import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
+import Arkham.Types.Token
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype RexMurphy = RexMurphy InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
@@ -48,7 +47,7 @@ instance InvestigatorRunner env => HasActions env RexMurphy where
     = do
       let ability = mkAbility (toSource attrs) 1 (ReactionAbility Free)
       clueCount' <- unClueCount <$> getCount investigatorLocation
-      pure [ ActivateCardAbilityAction investigatorId ability | clueCount' > 0 ]
+      pure [ UseAbility investigatorId ability | clueCount' > 0 ]
   getActions i window (RexMurphy attrs) = getActions i window attrs
 
 instance HasTokenValue env RexMurphy where

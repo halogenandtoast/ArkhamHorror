@@ -29,7 +29,7 @@ ability attrs =
 
 instance HasActions env DrFrancisMorgan where
   getActions iid (AfterEnemyDefeated You _) (DrFrancisMorgan attrs) =
-    pure [ ActivateCardAbilityAction iid (ability attrs) | ownedBy attrs iid ]
+    pure [ UseAbility iid (ability attrs) | ownedBy attrs iid ]
   getActions iid window (DrFrancisMorgan attrs) = getActions iid window attrs
 
 instance HasModifiersFor env DrFrancisMorgan where

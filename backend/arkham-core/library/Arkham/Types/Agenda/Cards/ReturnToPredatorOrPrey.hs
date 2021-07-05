@@ -30,7 +30,7 @@ instance HasModifiersFor env ReturnToPredatorOrPrey where
 
 instance HasActions env ReturnToPredatorOrPrey where
   getActions iid NonFast (ReturnToPredatorOrPrey attrs) = pure
-    [ ActivateCardAbilityAction
+    [ UseAbility
         iid
         (mkAbility
           (toSource attrs)

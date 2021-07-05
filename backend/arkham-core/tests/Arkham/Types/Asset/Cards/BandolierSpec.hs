@@ -1,7 +1,6 @@
 module Arkham.Types.Asset.Cards.BandolierSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport.Lifted
 

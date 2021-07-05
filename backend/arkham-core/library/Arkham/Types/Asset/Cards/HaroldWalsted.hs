@@ -23,7 +23,8 @@ newtype HaroldWalsted = HaroldWalsted AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 haroldWalsted :: AssetCard HaroldWalsted
-haroldWalsted = allyWith HaroldWalsted Cards.haroldWalsted (1, 1) (isStoryL .~ True)
+haroldWalsted =
+  allyWith HaroldWalsted Cards.haroldWalsted (1, 1) (isStoryL .~ True)
 
 instance HasActions env HaroldWalsted where
   getActions iid window (HaroldWalsted attrs) = getActions iid window attrs

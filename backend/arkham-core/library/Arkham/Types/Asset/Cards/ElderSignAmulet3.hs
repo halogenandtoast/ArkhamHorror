@@ -11,7 +11,8 @@ newtype ElderSignAmulet3 = ElderSignAmulet3 AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 elderSignAmulet3 :: AssetCard ElderSignAmulet3
-elderSignAmulet3 = accessoryWith ElderSignAmulet3 Cards.elderSignAmulet3 (sanityL ?~ 4)
+elderSignAmulet3 =
+  accessoryWith ElderSignAmulet3 Cards.elderSignAmulet3 (sanityL ?~ 4)
 
 instance HasModifiersFor env ElderSignAmulet3 where
   getModifiersFor = noModifiersFor

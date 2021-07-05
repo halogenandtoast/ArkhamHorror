@@ -17,12 +17,8 @@ newtype OrneLibrary = OrneLibrary LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 orneLibrary :: LocationCard OrneLibrary
-orneLibrary = location OrneLibrary 
-  Cards.orneLibrary
-  3
-  (PerPlayer 1)
-  Triangle
-  [Plus, Square]
+orneLibrary =
+  location OrneLibrary Cards.orneLibrary 3 (PerPlayer 1) Triangle [Plus, Square]
 
 instance HasModifiersFor env OrneLibrary where
   getModifiersFor _ target (OrneLibrary attrs) | isTarget attrs target =

@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.ColdSpringGlen_245
   ( coldSpringGlen_245
   , ColdSpringGlen_245(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -25,7 +24,8 @@ newtype ColdSpringGlen_245 = ColdSpringGlen_245 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 coldSpringGlen_245 :: LocationCard ColdSpringGlen_245
-coldSpringGlen_245 = location ColdSpringGlen_245 
+coldSpringGlen_245 = location
+  ColdSpringGlen_245
   Cards.coldSpringGlen_245
   2
   (Static 0)
@@ -44,7 +44,7 @@ ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
 instance ActionRunner env => HasActions env ColdSpringGlen_245 where
   getActions iid (WhenChosenRandomLocation lid) (ColdSpringGlen_245 attrs)
-    | lid == toId attrs = pure [ActivateCardAbilityAction iid (ability attrs)]
+    | lid == toId attrs = pure [UseAbility iid (ability attrs)]
   getActions iid window (ColdSpringGlen_245 attrs) =
     getActions iid window attrs
 

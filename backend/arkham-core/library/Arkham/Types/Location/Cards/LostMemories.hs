@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.LostMemories
   ( lostMemories
   , LostMemories(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -30,7 +29,8 @@ lostMemories = locationWith
   []
   ((revealedSymbolL .~ T)
   . (revealedConnectedSymbolsL .~ setFromList [Square, Moon])
-  . (unrevealedNameL .~ "Altered Path"))
+  . (unrevealedNameL .~ "Altered Path")
+  )
 
 instance HasModifiersFor env LostMemories where
   getModifiersFor = noModifiersFor
@@ -42,10 +42,7 @@ instance ActionRunner env => HasActions env LostMemories where
   getActions iid (AfterRevealLocation You) (LostMemories attrs)
     | iid `on` attrs = do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid
-      pure
-        [ ActivateCardAbilityAction iid (forcedAbility attrs)
-        | actionRemainingCount > 0
-        ]
+      pure [ UseAbility iid (forcedAbility attrs) | actionRemainingCount > 0 ]
   getActions iid window (LostMemories attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env LostMemories where

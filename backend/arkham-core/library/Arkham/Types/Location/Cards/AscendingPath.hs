@@ -51,10 +51,7 @@ ability attrs =
 instance ActionRunner env => HasActions env AscendingPath where
   getActions iid NonFast (AscendingPath attrs) | iid `on` attrs =
     withBaseActions iid NonFast attrs
-      $ pure
-          [ ActivateCardAbilityAction iid (ability attrs)
-          | locationRevealed attrs
-          ]
+      $ pure [ UseAbility iid (ability attrs) | locationRevealed attrs ]
   getActions iid window (AscendingPath attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env AscendingPath where

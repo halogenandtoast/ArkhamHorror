@@ -34,7 +34,7 @@ instance ActionRunner env => HasActions env Machete where
   getActions iid window (Machete a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid window
     pure
-      [ ActivateCardAbilityAction
+      [ UseAbility
           iid
           (mkAbility
             (toSource a)

@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.RiteOfSeeking
   ( riteOfSeeking
   , RiteOfSeeking(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -29,7 +28,7 @@ instance ActionRunner env => HasActions env RiteOfSeeking where
   getActions iid window (RiteOfSeeking a) | ownedBy a iid = do
     investigateAvailable <- hasInvestigateActions iid window
     pure
-      [ ActivateCardAbilityAction
+      [ UseAbility
           iid
           (mkAbility
             (toSource a)

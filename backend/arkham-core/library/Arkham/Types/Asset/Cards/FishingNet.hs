@@ -45,7 +45,7 @@ instance ActionRunner env => HasActions env FishingNet where
         exhaustedEnemies <- map unExhaustedEnemyId
           <$> getSetList investigatorLocation
         pure
-          [ ActivateCardAbilityAction iid (ability attrs)
+          [ UseAbility iid (ability attrs)
           | eid `elem` exhaustedEnemies && isNothing (assetEnemy attrs)
           ]
   getActions iid window (FishingNet x) = getActions iid window x

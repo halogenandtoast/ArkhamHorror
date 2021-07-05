@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.StrangeDisappearances
   ( StrangeDisappearances(..)
   , strangeDisappearances
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

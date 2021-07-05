@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.FauborgMarigny
   ( FauborgMarigny(..)
   , fauborgMarigny
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -21,7 +20,8 @@ newtype FauborgMarigny = FauborgMarigny LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fauborgMarigny :: LocationCard FauborgMarigny
-fauborgMarigny = location FauborgMarigny 
+fauborgMarigny = location
+  FauborgMarigny
   Cards.fauborgMarigny
   4
   (Static 0)

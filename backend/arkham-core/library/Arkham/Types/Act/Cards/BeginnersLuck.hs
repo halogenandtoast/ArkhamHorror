@@ -38,7 +38,7 @@ ability attrs = (mkAbility (toSource attrs) 1 (ReactionAbility Free))
 
 instance ActionRunner env => HasActions env BeginnersLuck where
   getActions iid (WhenRevealToken You _) (BeginnersLuck x) =
-    pure [ActivateCardAbilityAction iid (ability x)]
+    pure [UseAbility iid (ability x)]
   getActions iid window (BeginnersLuck x) = getActions iid window x
 
 instance

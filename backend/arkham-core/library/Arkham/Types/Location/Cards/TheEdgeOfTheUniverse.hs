@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.TheEdgeOfTheUniverse
   ( theEdgeOfTheUniverse
   , TheEdgeOfTheUniverse(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -23,7 +22,8 @@ newtype TheEdgeOfTheUniverse = TheEdgeOfTheUniverse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theEdgeOfTheUniverse :: LocationCard TheEdgeOfTheUniverse
-theEdgeOfTheUniverse = location TheEdgeOfTheUniverse 
+theEdgeOfTheUniverse = location
+  TheEdgeOfTheUniverse
   Cards.theEdgeOfTheUniverse
   2
   (PerPlayer 2)

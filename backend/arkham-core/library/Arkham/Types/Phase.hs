@@ -1,7 +1,6 @@
 module Arkham.Types.Phase
   ( Phase(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

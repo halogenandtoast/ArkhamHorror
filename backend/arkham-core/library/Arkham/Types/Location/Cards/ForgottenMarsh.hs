@@ -14,7 +14,8 @@ newtype ForgottenMarsh = ForgottenMarsh LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 forgottenMarsh :: LocationCard ForgottenMarsh
-forgottenMarsh = location ForgottenMarsh 
+forgottenMarsh = location
+  ForgottenMarsh
   Cards.forgottenMarsh
   2
   (Static 0)

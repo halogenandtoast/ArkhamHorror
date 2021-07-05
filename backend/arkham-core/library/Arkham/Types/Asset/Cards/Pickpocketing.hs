@@ -27,7 +27,7 @@ instance HasActions env Pickpocketing where
       let
         ability =
           mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a))
-      pure [ ActivateCardAbilityAction iid ability | ownedBy a iid ]
+      pure [ UseAbility iid ability | ownedBy a iid ]
   getActions i window (Pickpocketing a) = getActions i window a
 
 instance AssetRunner env => RunMessage env Pickpocketing where

@@ -30,7 +30,7 @@ ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
 instance HasActions env RitualCandles where
   getActions iid (WhenRevealToken You token) (RitualCandles x) = pure
-    [ ActivateCardAbilityAction iid (ability x)
+    [ UseAbility iid (ability x)
     | token `elem` [Skull, Cultist, Tablet, ElderSign]
     ]
   getActions iid window (RitualCandles x) = getActions iid window x
@@ -42,7 +42,8 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env RitualCandles 
   runMessage msg a@(RitualCandles attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
-        [ CreateWindowModifierEffect EffectSkillTestWindow
+        [ CreateWindowModifierEffect
+            EffectSkillTestWindow
             (EffectModifiers $ toModifiers attrs [AnySkillValue 1])
             source
             (InvestigatorTarget iid)

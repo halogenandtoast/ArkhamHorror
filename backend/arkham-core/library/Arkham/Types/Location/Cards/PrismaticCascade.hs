@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.PrismaticCascade
   ( prismaticCascade
   , PrismaticCascade(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -21,7 +20,8 @@ newtype PrismaticCascade = PrismaticCascade LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 prismaticCascade :: LocationCard PrismaticCascade
-prismaticCascade = location PrismaticCascade 
+prismaticCascade = location
+  PrismaticCascade
   Cards.prismaticCascade
   2
   (Static 3)
@@ -40,7 +40,7 @@ instance ActionRunner env => HasActions env PrismaticCascade where
     = do
       leadInvestigator <- getLeadInvestigatorId
       pure
-        [ ActivateCardAbilityAction leadInvestigator (forcedAbility attrs)
+        [ UseAbility leadInvestigator (forcedAbility attrs)
         | locationClues attrs == 0
         ]
   getActions iid window (PrismaticCascade attrs) = getActions iid window attrs

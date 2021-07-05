@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.CloverClubCardroom
   ( cloverClubCardroom
   , CloverClubCardroom(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -25,7 +24,8 @@ newtype CloverClubCardroom = CloverClubCardroom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cloverClubCardroom :: LocationCard CloverClubCardroom
-cloverClubCardroom = location CloverClubCardroom 
+cloverClubCardroom = location
+  CloverClubCardroom
   Cards.cloverClubCardroom
   3
   (Static 0)
@@ -48,7 +48,7 @@ instance ActionRunner env => HasActions env CloverClubCardroom where
     | locationRevealed = withBaseActions iid NonFast attrs $ do
       step <- unActStep <$> getStep
       pure
-        [ ActivateCardAbilityAction iid (ability attrs)
+        [ UseAbility iid (ability attrs)
         | iid `member` locationInvestigators && step == 1
         ]
   getActions iid window (CloverClubCardroom attrs) =

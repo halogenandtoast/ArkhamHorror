@@ -5,8 +5,7 @@ module Arkham.EncounterCard
   , allEncounterCards
   , placeholderEnemy
   , placeholderTreachery
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -23,10 +22,8 @@ genEncounterCard :: MonadRandom m => CardCode -> m EncounterCard
 genEncounterCard cardCode = lookupEncounterCard cardCode <$> getRandom
 
 lookupEncounterCard :: CardCode -> CardId -> EncounterCard
-lookupEncounterCard cardCode cardId = MkEncounterCard
-  { ecId = cardId
-  , ecDef = lookupEncounterCardDef cardCode
-  }
+lookupEncounterCard cardCode cardId =
+  MkEncounterCard { ecId = cardId, ecDef = lookupEncounterCardDef cardCode }
 
 lookupEncounterCardDef :: CardCode -> CardDef
 lookupEncounterCardDef cardCode =
@@ -34,7 +31,8 @@ lookupEncounterCardDef cardCode =
     $ lookup cardCode allEncounterCards
 
 allEncounterCards :: HashMap CardCode CardDef
-allEncounterCards = allEncounterEnemyCards
-  <> allLocationCards
-  <> allEncounterTreacheryCards
-  <> allEncounterAssetCards
+allEncounterCards =
+  allEncounterEnemyCards
+    <> allLocationCards
+    <> allEncounterTreacheryCards
+    <> allEncounterAssetCards

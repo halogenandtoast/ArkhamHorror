@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.DunwichVillage_243
   ( dunwichVillage_243
   , DunwichVillage_243(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -27,7 +26,8 @@ newtype DunwichVillage_243 = DunwichVillage_243 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dunwichVillage_243 :: LocationCard DunwichVillage_243
-dunwichVillage_243 = location DunwichVillage_243
+dunwichVillage_243 = location
+  DunwichVillage_243
   Cards.dunwichVillage_243
   2
   (Static 3)
@@ -47,9 +47,7 @@ instance ActionRunner env => HasActions env DunwichVillage_243 where
       broodOfYogSothoth <- getSet @EnemyId (CardCode "02255")
       pure
         $ [ resignAction iid attrs | iid `on` attrs ]
-        <> [ ActivateCardAbilityAction iid (ability attrs)
-           | notNull broodOfYogSothoth
-           ]
+        <> [ UseAbility iid (ability attrs) | notNull broodOfYogSothoth ]
   getActions iid window (DunwichVillage_243 attrs) =
     getActions iid window attrs
 

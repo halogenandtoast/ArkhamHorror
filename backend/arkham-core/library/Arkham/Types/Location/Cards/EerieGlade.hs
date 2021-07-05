@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.EerieGlade
   ( eerieGlade
   , EerieGlade(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -30,7 +29,8 @@ eerieGlade = locationWith
   []
   ((revealedSymbolL .~ Hourglass)
   . (revealedConnectedSymbolsL .~ setFromList [Triangle, Plus])
-  . (unrevealedNameL .~ "Diverging Path"))
+  . (unrevealedNameL .~ "Diverging Path")
+  )
 
 instance HasModifiersFor env EerieGlade where
   getModifiersFor = noModifiersFor
@@ -42,10 +42,7 @@ instance ActionRunner env => HasActions env EerieGlade where
   getActions iid (AfterRevealLocation You) (EerieGlade attrs) | iid `on` attrs =
     do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid
-      pure
-        [ ActivateCardAbilityAction iid (forcedAbility attrs)
-        | actionRemainingCount > 0
-        ]
+      pure [ UseAbility iid (forcedAbility attrs) | actionRemainingCount > 0 ]
   getActions iid window (EerieGlade attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env EerieGlade where

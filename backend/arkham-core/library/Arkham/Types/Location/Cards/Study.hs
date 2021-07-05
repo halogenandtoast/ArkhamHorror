@@ -13,12 +13,7 @@ newtype Study = Study LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 study :: LocationCard Study
-study = location Study 
-  Cards.study
-  2
-  (PerPlayer 2)
-  Circle
-  []
+study = location Study Cards.study 2 (PerPlayer 2) Circle []
 
 instance HasModifiersFor env Study where
   getModifiersFor = noModifiersFor

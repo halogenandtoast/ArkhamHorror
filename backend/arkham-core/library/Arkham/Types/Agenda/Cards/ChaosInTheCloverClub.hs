@@ -1,11 +1,12 @@
 module Arkham.Types.Agenda.Cards.ChaosInTheCloverClub
   ( ChaosInTheCloverClub(..)
   , chaosInTheCloverClub
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
+import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
@@ -14,8 +15,6 @@ import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Target
-import Arkham.Types.Agenda.Attrs
-import Arkham.Types.Agenda.Runner
 import Arkham.Types.Trait
 
 newtype ChaosInTheCloverClub = ChaosInTheCloverClub AgendaAttrs

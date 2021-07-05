@@ -32,7 +32,7 @@ instance ActionRunner env => HasActions env InternalInjury where
       investigatorLocationId <- getId @LocationId iid
       treacheryLocation <- getId tormented
       pure
-        [ ActivateCardAbilityAction
+        [ UseAbility
             iid
             (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 2))
         | treacheryLocation == investigatorLocationId

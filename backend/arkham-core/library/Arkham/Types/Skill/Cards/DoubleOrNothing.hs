@@ -1,8 +1,7 @@
 module Arkham.Types.Skill.Cards.DoubleOrNothing
   ( doubleOrNothing
   , DoubleOrNothing(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

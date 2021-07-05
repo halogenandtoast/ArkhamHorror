@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.ArcaneBarrier
   ( ArcaneBarrier(..)
   , arcaneBarrier
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

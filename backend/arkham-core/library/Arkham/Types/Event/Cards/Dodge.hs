@@ -4,10 +4,10 @@ import Arkham.Prelude
 
 import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.Target
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
+import Arkham.Types.Message
+import Arkham.Types.Target
 
 newtype Dodge = Dodge EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

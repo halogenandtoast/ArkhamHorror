@@ -14,12 +14,7 @@ newtype Cellar = Cellar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cellar :: LocationCard Cellar
-cellar = location Cellar 
-  Cards.cellar
-  4
-  (PerPlayer 2)
-  Plus
-  [Square]
+cellar = location Cellar Cards.cellar 4 (PerPlayer 2) Plus [Square]
 
 instance HasModifiersFor env Cellar where
   getModifiersFor = noModifiersFor

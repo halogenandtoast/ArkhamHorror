@@ -260,6 +260,7 @@ library
       Arkham.Types.ChaosBagStepState
       Arkham.Types.Classes
       Arkham.Types.Classes.Entity
+      Arkham.Types.Classes.Entity.Source
       Arkham.Types.Classes.HasQueue
       Arkham.Types.Classes.HasRecord
       Arkham.Types.Classes.HasTokenValue

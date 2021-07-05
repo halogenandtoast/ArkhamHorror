@@ -42,10 +42,7 @@ investigateAbility attrs = mkAbility
 instance ActionRunner env => HasActions env Flashlight where
   getActions iid window (Flashlight a) | ownedBy a iid = do
     investigateAvailable <- hasInvestigateActions iid window
-    pure
-      [ ActivateCardAbilityAction iid (investigateAbility a)
-      | investigateAvailable
-      ]
+    pure [ UseAbility iid (investigateAbility a) | investigateAvailable ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Flashlight where
@@ -55,7 +52,8 @@ instance (AssetRunner env) => RunMessage env Flashlight where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId iid
       a <$ unshiftMessages
-        [ CreateWindowModifierEffect EffectSkillTestWindow
+        [ CreateWindowModifierEffect
+          EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [ShroudModifier (-2)])
           source
           (LocationTarget lid)

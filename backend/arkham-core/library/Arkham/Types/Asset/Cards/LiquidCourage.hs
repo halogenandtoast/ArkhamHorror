@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.LiquidCourage
   ( liquidCourage
   , LiquidCourage(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -26,7 +25,7 @@ liquidCourage = asset LiquidCourage Cards.liquidCourage
 
 instance HasActions env LiquidCourage where
   getActions iid NonFast (LiquidCourage a) = pure
-    [ ActivateCardAbilityAction
+    [ UseAbility
         iid
         (mkAbility
           (toSource a)

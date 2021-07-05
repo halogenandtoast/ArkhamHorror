@@ -22,7 +22,7 @@ instance HasModifiersFor env RabbitsFoot where
 
 instance HasActions env RabbitsFoot where
   getActions iid (AfterFailSkillTest You _) (RabbitsFoot a) = pure
-    [ ActivateCardAbilityAction
+    [ UseAbility
         iid
         (mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a)))
     | ownedBy a iid

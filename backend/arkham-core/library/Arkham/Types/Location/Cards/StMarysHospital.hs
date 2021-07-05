@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.StMarysHospital
   ( StMarysHospital(..)
   , stMarysHospital
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -23,7 +22,8 @@ newtype StMarysHospital = StMarysHospital LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stMarysHospital :: LocationCard StMarysHospital
-stMarysHospital = location StMarysHospital 
+stMarysHospital = location
+  StMarysHospital
   Cards.stMarysHospital
   2
   (PerPlayer 1)
@@ -41,10 +41,11 @@ ability attrs =
 
 instance ActionRunner env => HasActions env StMarysHospital where
   getActions iid NonFast (StMarysHospital attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs $ pure
-      [ ActivateCardAbilityAction iid (ability attrs)
-      | iid `member` locationInvestigators
-      ]
+    | locationRevealed = withBaseActions iid NonFast attrs
+    $ pure
+        [ UseAbility iid (ability attrs)
+        | iid `member` locationInvestigators
+        ]
   getActions iid window (StMarysHospital attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env StMarysHospital where

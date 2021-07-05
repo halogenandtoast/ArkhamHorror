@@ -31,10 +31,7 @@ instance HasModifiersFor env LaboratoryAssistant where
 instance HasActions env LaboratoryAssistant where
   getActions i (WhenEnterPlay target) (LaboratoryAssistant x)
     | isTarget x target = pure
-      [ ActivateCardAbilityAction
-          i
-          (mkAbility (toSource x) 1 (ReactionAbility Free))
-      ]
+      [UseAbility i (mkAbility (toSource x) 1 (ReactionAbility Free))]
   getActions i window (LaboratoryAssistant x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env LaboratoryAssistant where

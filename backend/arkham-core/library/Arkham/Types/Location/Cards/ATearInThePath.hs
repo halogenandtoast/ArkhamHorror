@@ -42,10 +42,7 @@ instance ActionRunner env => HasActions env ATearInThePath where
   getActions iid (AfterRevealLocation You) (ATearInThePath attrs)
     | iid `on` attrs = do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid
-      pure
-        [ ActivateCardAbilityAction iid (forcedAbility attrs)
-        | actionRemainingCount == 0
-        ]
+      pure [ UseAbility iid (forcedAbility attrs) | actionRemainingCount == 0 ]
   getActions iid window (ATearInThePath attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env ATearInThePath where

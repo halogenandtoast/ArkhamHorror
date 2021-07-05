@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.SentinelPeak
   ( sentinelPeak
   , SentinelPeak(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -27,7 +26,9 @@ sentinelPeak = locationWith
   (PerPlayer 2)
   Diamond
   [Square]
-  (costToEnterUnrevealedL .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 2) Nothing])
+  (costToEnterUnrevealedL
+  .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 2) Nothing]
+  )
 
 instance HasModifiersFor env SentinelPeak where
   getModifiersFor = noModifiersFor

@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.IntoTheBeyond
   ( IntoTheBeyond(..)
   , intoTheBeyond
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -28,7 +27,7 @@ intoTheBeyond =
 instance ActionRunner env => HasActions env IntoTheBeyond where
   getActions iid NonFast (IntoTheBeyond x) = withBaseActions iid NonFast x $ do
     pure
-      [ ActivateCardAbilityAction
+      [ UseAbility
           iid
           (mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1))
       ]

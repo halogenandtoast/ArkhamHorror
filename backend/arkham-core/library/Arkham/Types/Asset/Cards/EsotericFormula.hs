@@ -38,7 +38,7 @@ instance (HasActions env ActionType, HasSet Trait env EnemyId, HasSet FightableE
         (fmap (member Abomination) . getSet @Trait)
         fightableEnemies
       pure
-        [ ActivateCardAbilityAction
+        [ UseAbility
             iid
             (mkAbility
               (toSource attrs)

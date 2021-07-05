@@ -6,13 +6,13 @@ module Arkham.Types.Event.Cards.Contraband2
 import Arkham.Prelude
 
 import qualified Arkham.Event.Cards as Cards
-import Arkham.Types.Id
+import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
+import Arkham.Types.Event.Attrs
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
-import Arkham.Types.Asset.Uses
-import Arkham.Types.Event.Attrs
 
 newtype Contraband2 = Contraband2 EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

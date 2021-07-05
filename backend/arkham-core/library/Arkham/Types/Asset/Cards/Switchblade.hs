@@ -37,7 +37,7 @@ instance ActionRunner env => HasActions env Switchblade where
         1
         (ActionAbility (Just Action.Fight) (ActionCost 1))
     fightAvailable <- hasFightActions iid window
-    pure [ ActivateCardAbilityAction iid ability | fightAvailable ]
+    pure [ UseAbility iid ability | fightAvailable ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Switchblade where

@@ -2,14 +2,14 @@ module Arkham.Types.Campaign.Campaigns.NightOfTheZealot where
 
 import Arkham.Prelude
 
-import Arkham.Types.CampaignId
-import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.Token
 import Arkham.Types.Campaign.Attrs
 import Arkham.Types.Campaign.Runner
+import Arkham.Types.CampaignId
 import Arkham.Types.CampaignStep
+import Arkham.Types.Classes
 import Arkham.Types.Difficulty
+import Arkham.Types.Message
+import Arkham.Types.Token
 import qualified Arkham.Types.Token as Token
 
 newtype NightOfTheZealot = NightOfTheZealot CampaignAttrs

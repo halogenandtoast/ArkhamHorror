@@ -21,7 +21,8 @@ newtype KeyToTheChamber = KeyToTheChamber AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 keyToTheChamber :: AssetCard KeyToTheChamber
-keyToTheChamber = assetWith KeyToTheChamber Cards.keyToTheChamber (isStoryL .~ True)
+keyToTheChamber =
+  assetWith KeyToTheChamber Cards.keyToTheChamber (isStoryL .~ True)
 
 instance (HasId LocationId env InvestigatorId, HasSet ConnectedLocationId env LocationId, HasId (Maybe LocationId) env LocationMatcher) => HasActions env KeyToTheChamber where
   getActions iid FastPlayerWindow (KeyToTheChamber attrs) | ownedBy attrs iid =
@@ -33,9 +34,7 @@ instance (HasId LocationId env InvestigatorId, HasSet ConnectedLocationId env Lo
           lid <- getId @LocationId iid
           connectedLocationIds <- map unConnectedLocationId <$> getSetList lid
           pure
-            [ ActivateCardAbilityAction
-                iid
-                (mkAbility (toSource attrs) 1 (FastAbility Free))
+            [ UseAbility iid (mkAbility (toSource attrs) 1 (FastAbility Free))
             | hiddenChamberId `elem` connectedLocationIds
             ]
         Nothing -> pure []

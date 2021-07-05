@@ -33,13 +33,13 @@ instance HasActions env WhittonGreene where
       let
         ability =
           mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a))
-      pure [ActivateCardAbilityAction iid ability]
+      pure [UseAbility iid ability]
   getActions iid (AfterPutLocationIntoPlay You) (WhittonGreene a)
     | ownedBy a iid = do
       let
         ability =
           mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a))
-      pure [ActivateCardAbilityAction iid ability]
+      pure [UseAbility iid ability]
   getActions iid window (WhittonGreene attrs) = getActions iid window attrs
 
 instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor env WhittonGreene where

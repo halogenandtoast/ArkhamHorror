@@ -1,4 +1,7 @@
-module Arkham.Types.Event.Cards.CloseCall2 (closeCall2, CloseCall2(..)) where
+module Arkham.Types.Event.Cards.CloseCall2
+  ( closeCall2
+  , CloseCall2(..)
+  ) where
 
 import Arkham.Prelude
 

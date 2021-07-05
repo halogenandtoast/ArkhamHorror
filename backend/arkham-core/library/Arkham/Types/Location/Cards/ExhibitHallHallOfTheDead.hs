@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.ExhibitHallHallOfTheDead
   ( exhibitHallHallOfTheDead
   , ExhibitHallHallOfTheDead(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -19,13 +18,13 @@ newtype ExhibitHallHallOfTheDead = ExhibitHallHallOfTheDead LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallHallOfTheDead :: LocationCard ExhibitHallHallOfTheDead
-exhibitHallHallOfTheDead =
-  location ExhibitHallHallOfTheDead 
-    Cards.exhibitHallHallOfTheDead
-    3
-    (PerPlayer 2)
-    Squiggle
-    [Square, Hourglass]
+exhibitHallHallOfTheDead = location
+  ExhibitHallHallOfTheDead
+  Cards.exhibitHallHallOfTheDead
+  3
+  (PerPlayer 2)
+  Squiggle
+  [Square, Hourglass]
 
 instance HasModifiersFor env ExhibitHallHallOfTheDead where
   getModifiersFor = noModifiersFor

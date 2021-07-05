@@ -17,7 +17,8 @@ newtype DeepBelowYourHouse = DeepBelowYourHouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deepBelowYourHouse :: LocationCard DeepBelowYourHouse
-deepBelowYourHouse = location DeepBelowYourHouse 
+deepBelowYourHouse = location
+  DeepBelowYourHouse
   Cards.deepBelowYourHouse
   4
   (PerPlayer 1)

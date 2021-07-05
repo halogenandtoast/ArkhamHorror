@@ -17,7 +17,8 @@ newtype SomethingInTheDrinks = SomethingInTheDrinks TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 somethingInTheDrinks :: TreacheryCard SomethingInTheDrinks
-somethingInTheDrinks = treachery SomethingInTheDrinks Cards.somethingInTheDrinks
+somethingInTheDrinks =
+  treachery SomethingInTheDrinks Cards.somethingInTheDrinks
 
 instance HasModifiersFor env SomethingInTheDrinks where
   getModifiersFor = noModifiersFor

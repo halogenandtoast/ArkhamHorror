@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.RampagingCreatures
   ( RampagingCreatures(..)
   , rampagingCreatures
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

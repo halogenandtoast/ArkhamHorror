@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.TrappersCabin
   ( TrappersCabin(..)
   , trappersCabin
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -28,12 +27,8 @@ newtype TrappersCabin = TrappersCabin LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 trappersCabin :: LocationCard TrappersCabin
-trappersCabin = location TrappersCabin 
-  Cards.trappersCabin
-  3
-  (Static 0)
-  Moon
-  [Diamond, Moon]
+trappersCabin =
+  location TrappersCabin Cards.trappersCabin 3 (Static 0) Moon [Diamond, Moon]
 
 instance HasModifiersFor env TrappersCabin where
   getModifiersFor _ (InvestigatorTarget iid) (TrappersCabin attrs) =
@@ -48,7 +43,7 @@ instance ActionRunner env => HasActions env TrappersCabin where
       assetNotTaken <- isNothing
         <$> getId @(Maybe StoryAssetId) (CardCode "81020")
       pure
-        [ ActivateCardAbilityAction
+        [ UseAbility
             iid
             (mkAbility
               (toSource attrs)

@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.RollingBackwards
   ( RollingBackwards(..)
   , rollingBackwards
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

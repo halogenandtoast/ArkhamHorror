@@ -17,7 +17,8 @@ newtype VaultOfEarthlyDemise = VaultOfEarthlyDemise TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 vaultOfEarthlyDemise :: TreacheryCard VaultOfEarthlyDemise
-vaultOfEarthlyDemise = treachery VaultOfEarthlyDemise Cards.vaultOfEarthlyDemise
+vaultOfEarthlyDemise =
+  treachery VaultOfEarthlyDemise Cards.vaultOfEarthlyDemise
 
 instance HasCount PlayerCount env () => HasModifiersFor env VaultOfEarthlyDemise where
   getModifiersFor _ target@(EnemyTarget _) (VaultOfEarthlyDemise attrs)

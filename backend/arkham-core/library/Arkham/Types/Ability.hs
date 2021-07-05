@@ -6,13 +6,14 @@ module Arkham.Types.Ability
 import Arkham.Prelude
 
 import Arkham.Json
-import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Ability.Limit as X
 import Arkham.Types.Ability.Type as X
+import Arkham.Types.Card.EncounterCard
+import Arkham.Types.Classes.Entity.Source
 import Arkham.Types.InvestigatorId
+import Arkham.Types.Modifier
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Modifier
 
 data Ability = Ability
   { abilitySource :: Source
@@ -46,9 +47,9 @@ data AbilityMetadata = IntMetadata Int | TargetMetadata Target | SourceMetadata 
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-mkAbility :: Source -> Int -> AbilityType -> Ability
-mkAbility source idx type' = Ability
-  { abilitySource = source
+mkAbility :: SourceEntity a => a -> Int -> AbilityType -> Ability
+mkAbility entity idx type' = Ability
+  { abilitySource = toSource entity
   , abilityIndex = idx
   , abilityType = type'
   , abilityLimit = if type' == ForcedAbility

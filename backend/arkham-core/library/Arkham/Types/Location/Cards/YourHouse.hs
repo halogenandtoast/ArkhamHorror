@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.YourHouse
   ( YourHouse(..)
   , yourHouse
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -23,12 +22,8 @@ newtype YourHouse = YourHouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yourHouse :: LocationCard YourHouse
-yourHouse = location YourHouse 
-  Cards.yourHouse
-  2
-  (PerPlayer 1)
-  Squiggle
-  [Circle]
+yourHouse =
+  location YourHouse Cards.yourHouse 2 (PerPlayer 1) Squiggle [Circle]
 
 instance HasModifiersFor env YourHouse where
   getModifiersFor = noModifiersFor
@@ -41,10 +36,11 @@ ability attrs =
 
 instance ActionRunner env => HasActions env YourHouse where
   getActions iid NonFast (YourHouse attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs $ pure
-      [ ActivateCardAbilityAction iid (ability attrs)
-      | iid `member` locationInvestigators
-      ]
+    | locationRevealed = withBaseActions iid NonFast attrs
+    $ pure
+        [ UseAbility iid (ability attrs)
+        | iid `member` locationInvestigators
+        ]
   getActions iid window (YourHouse attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env YourHouse where

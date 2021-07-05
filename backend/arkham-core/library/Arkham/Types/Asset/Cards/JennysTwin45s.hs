@@ -26,7 +26,8 @@ newtype JennysTwin45s = JennysTwin45s AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jennysTwin45s :: AssetCard JennysTwin45s
-jennysTwin45s = assetWith JennysTwin45s Cards.jennysTwin45s (slotsL .~ [HandSlot, HandSlot])
+jennysTwin45s =
+  assetWith JennysTwin45s Cards.jennysTwin45s (slotsL .~ [HandSlot, HandSlot])
 
 instance HasModifiersFor env JennysTwin45s where
   getModifiersFor = noModifiersFor
@@ -35,7 +36,7 @@ instance ActionRunner env => HasActions env JennysTwin45s where
   getActions iid window (JennysTwin45s a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid window
     pure
-      [ ActivateCardAbilityAction
+      [ UseAbility
           iid
           (mkAbility
             (toSource a)

@@ -52,7 +52,7 @@ instance TreacheryRunner env => RunMessage env RexsCurse where
             in (before <> remaining, remainingWillPass)
           unshiftMessages
             $ retainedMessages
-            <> [ ActivateCardAbilityAction iid ability
+            <> [ UseAbility iid ability
                , ReturnSkillTestRevealedTokens
                , AddSkillTestSubscriber (TreacheryTarget treacheryId)
                , DrawAnotherToken iid

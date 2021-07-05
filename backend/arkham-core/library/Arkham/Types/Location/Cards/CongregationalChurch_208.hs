@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.CongregationalChurch_208
   ( congregationalChurch_208
   , CongregationalChurch_208(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -22,7 +21,8 @@ newtype CongregationalChurch_208 = CongregationalChurch_208 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 congregationalChurch_208 :: LocationCard CongregationalChurch_208
-congregationalChurch_208 = location CongregationalChurch_208 
+congregationalChurch_208 = location
+  CongregationalChurch_208
   Cards.congregationalChurch_208
   1
   (PerPlayer 1)

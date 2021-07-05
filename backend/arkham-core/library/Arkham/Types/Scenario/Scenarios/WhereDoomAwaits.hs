@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.WhereDoomAwaits
   ( WhereDoomAwaits(..)
   , whereDoomAwaits
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -202,8 +201,7 @@ instance
 
       silasMsgs <- if silasBishopPutOutOfMisery
         then do
-          result <- gatherEncounterSet
-            EncounterSet.HideousAbominations
+          result <- gatherEncounterSet EncounterSet.HideousAbominations
           let
             conglomerationOfSpheres = fromJust . headMay $ result
             rest = drop 1 result
@@ -278,7 +276,10 @@ instance
     DiscardedTopOfDeck _iid cards target@(DrawnTokenTarget token) ->
       s <$ case drawnTokenFace token of
         ElderThing -> do
-          let n = sum $ map (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . pcDef) cards
+          let
+            n = sum $ map
+              (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . pcDef)
+              cards
           unshiftMessage $ CreateTokenValueEffect (-n) (toSource attrs) target
         _ -> pure ()
     ScenarioResolution NoResolution ->

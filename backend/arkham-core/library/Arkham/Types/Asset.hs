@@ -368,7 +368,7 @@ allAssets = mapFromList $ map
   , TheNecronomicon' <$> theNecronomicon
   , TheNecronomiconAdvanced' <$> theNecronomiconAdvanced
   , TheNecronomiconOlausWormiusTranslation'
-      <$> theNecronomiconOlausWormiusTranslation
+    <$> theNecronomiconOlausWormiusTranslation
   , ToothOfEztli' <$> toothOfEztli
   , WendysAmulet' <$> wendysAmulet
   , WhittonGreene' <$> whittonGreene

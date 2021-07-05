@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.Kidnapped
   ( kidnapped
   , Kidnapped(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -29,9 +28,8 @@ instance HasModifiersFor env Kidnapped where
 
 instance HasActions env Kidnapped where
   getActions i (WhenAgendaAdvance aid) (Kidnapped attrs)
-    | treacheryOnAgenda aid attrs
-    = pure
-      [ActivateCardAbilityAction i (mkAbility (toSource attrs) 1 ForcedAbility)]
+    | treacheryOnAgenda aid attrs = pure
+      [UseAbility i (mkAbility (toSource attrs) 1 ForcedAbility)]
   getActions i window (Kidnapped attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env Kidnapped where

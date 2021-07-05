@@ -25,7 +25,8 @@ newtype FirstWatch = FirstWatch (EventAttrs `With` FirstWatchMetadata)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 firstWatch :: EventCard FirstWatch
-firstWatch = event (FirstWatch . (`with` FirstWatchMetadata [])) Cards.firstWatch
+firstWatch =
+  event (FirstWatch . (`with` FirstWatchMetadata [])) Cards.firstWatch
 
 instance HasActions env FirstWatch where
   getActions iid window (FirstWatch (attrs `With` _)) =

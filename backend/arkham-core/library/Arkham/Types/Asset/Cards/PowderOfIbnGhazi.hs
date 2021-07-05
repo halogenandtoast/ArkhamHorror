@@ -13,8 +13,8 @@ import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
 import Arkham.Types.Exception
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Window
@@ -40,9 +40,7 @@ instance
         . mapSet unExhaustedEnemyId
         <$> getSet lid
       pure
-        [ ActivateCardAbilityAction
-            iid
-            (mkAbility (toSource attrs) 1 (ReactionAbility Free))
+        [ UseAbility iid (mkAbility (toSource attrs) 1 (ReactionAbility Free))
         | ownedBy attrs iid
           && not (null exhaustedBroodOfYogSothothAtLocation)
           && (assetClues attrs > 0)

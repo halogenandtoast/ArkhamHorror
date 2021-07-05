@@ -2,18 +2,18 @@ module Arkham.Types.Agenda.Cards.TheBeastUnleashed where
 
 import Arkham.Prelude
 
+import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Target
-import Arkham.Types.Agenda.Attrs
-import Arkham.Types.Agenda.Runner
-import Arkham.Types.Game.Helpers
 
 newtype TheBeastUnleashed = TheBeastUnleashed AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

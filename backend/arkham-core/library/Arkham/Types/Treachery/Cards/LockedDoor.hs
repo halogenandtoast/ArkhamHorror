@@ -39,7 +39,7 @@ instance ActionRunner env => HasActions env LockedDoor where
   getActions iid NonFast (LockedDoor a) = do
     investigatorLocationId <- getId @LocationId iid
     pure
-      [ ActivateCardAbilityAction
+      [ UseAbility
           iid
           (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
       | treacheryOnLocation investigatorLocationId a

@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.FrozenSpring
   ( frozenSpring
   , FrozenSpring(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -29,7 +28,8 @@ frozenSpring = locationWith
   []
   ((revealedSymbolL .~ Plus)
   . (revealedConnectedSymbolsL .~ setFromList [Triangle, Hourglass])
-  . (unrevealedNameL .~ "Diverging Path"))
+  . (unrevealedNameL .~ "Diverging Path")
+  )
 
 instance HasModifiersFor env FrozenSpring where
   getModifiersFor = noModifiersFor
@@ -40,7 +40,7 @@ forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
 instance ActionRunner env => HasActions env FrozenSpring where
   getActions iid (AfterRevealLocation You) (FrozenSpring attrs)
     | iid `on` attrs = do
-      pure [ActivateCardAbilityAction iid (forcedAbility attrs)]
+      pure [UseAbility iid (forcedAbility attrs)]
   getActions iid window (FrozenSpring attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env FrozenSpring where

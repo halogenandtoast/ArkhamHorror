@@ -1,7 +1,6 @@
 module Arkham.Types.Asset.Cards.JimsTrumpetSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 

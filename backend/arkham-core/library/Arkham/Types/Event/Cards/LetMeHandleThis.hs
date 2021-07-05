@@ -27,12 +27,7 @@ instance HasActions env LetMeHandleThis where
   getActions iid (InHandWindow ownerId (WhenDrawNonPerilTreachery who tid)) (LetMeHandleThis attrs)
     | who /= You && iid == ownerId
     = pure
-      [ InitiatePlayCard
-          iid
-          (toCardId attrs)
-          (Just $ TreacheryTarget tid)
-          False
-      ]
+      [InitiatePlayCard iid (toCardId attrs) (Just $ TreacheryTarget tid) False]
   getActions iid window (LetMeHandleThis attrs) = getActions iid window attrs
 
 instance HasQueue env => RunMessage env LetMeHandleThis where

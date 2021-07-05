@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.MuseumEntrance
   ( museumEntrance
   , MuseumEntrance(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -20,12 +19,8 @@ newtype MuseumEntrance = MuseumEntrance LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 museumEntrance :: LocationCard MuseumEntrance
-museumEntrance = location MuseumEntrance
-  Cards.museumEntrance
-  3
-  (Static 2)
-  Circle
-  [Square]
+museumEntrance =
+  location MuseumEntrance Cards.museumEntrance 3 (Static 2) Circle [Square]
 
 instance HasModifiersFor env MuseumEntrance where
   getModifiersFor _ (InvestigatorTarget iid) (MuseumEntrance attrs) =

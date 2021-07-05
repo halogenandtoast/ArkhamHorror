@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.RottingRemainsBloodOnTheAltar
   ( rottingRemainsBloodOnTheAltar
   , RottingRemainsBloodOnTheAltar(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -15,8 +14,7 @@ import Arkham.Types.Treachery.Runner
 newtype RottingRemainsBloodOnTheAltar = RottingRemainsBloodOnTheAltar RottingRemains
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env, HasActions env)
 
-rottingRemainsBloodOnTheAltar
-  :: TreacheryCard RottingRemainsBloodOnTheAltar
+rottingRemainsBloodOnTheAltar :: TreacheryCard RottingRemainsBloodOnTheAltar
 rottingRemainsBloodOnTheAltar = treachery
   (RottingRemainsBloodOnTheAltar . RottingRemains)
   Cards.rottingRemainsBloodOnTheAltar

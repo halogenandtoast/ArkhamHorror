@@ -22,9 +22,10 @@ newtype TheNecronomicon = TheNecronomicon AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 theNecronomicon :: AssetCard TheNecronomicon
-theNecronomicon = handWith TheNecronomicon Cards.theNecronomicon
-  $ (horrorL ?~ 3)
-  . (canLeavePlayByNormalMeansL .~ False)
+theNecronomicon =
+  handWith TheNecronomicon Cards.theNecronomicon
+    $ (horrorL ?~ 3)
+    . (canLeavePlayByNormalMeansL .~ False)
 
 instance HasModifiersFor env TheNecronomicon where
   getModifiersFor _ (InvestigatorTarget iid) (TheNecronomicon a) = pure
@@ -35,7 +36,7 @@ instance HasModifiersFor env TheNecronomicon where
 
 instance HasActions env TheNecronomicon where
   getActions iid NonFast (TheNecronomicon a) | ownedBy a iid = pure
-    [ ActivateCardAbilityAction
+    [ UseAbility
         iid
         (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
     | fromJustNote "Must be set" (assetHorror a) > 0

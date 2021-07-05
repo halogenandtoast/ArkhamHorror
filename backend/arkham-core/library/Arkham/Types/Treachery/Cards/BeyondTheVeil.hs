@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.BeyondTheVeil
   ( BeyondTheVeil(..)
   , beyondTheVeil
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

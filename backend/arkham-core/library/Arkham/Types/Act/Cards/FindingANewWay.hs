@@ -29,7 +29,7 @@ instance ActionRunner env => HasActions env FindingANewWay where
   getActions iid NonFast (FindingANewWay x) =
     withBaseActions iid NonFast x $ do
       pure
-        [ ActivateCardAbilityAction
+        [ UseAbility
             iid
             (mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1))
         ]

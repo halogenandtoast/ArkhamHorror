@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.VillageCommons
   ( villageCommons
   , VillageCommons(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -17,7 +16,8 @@ newtype VillageCommons = VillageCommons LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 villageCommons :: LocationCard VillageCommons
-villageCommons = location VillageCommons 
+villageCommons = location
+  VillageCommons
   Cards.villageCommons
   3
   (Static 0)

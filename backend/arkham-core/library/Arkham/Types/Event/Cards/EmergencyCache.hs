@@ -1,4 +1,7 @@
-module Arkham.Types.Event.Cards.EmergencyCache (emergencyCache, EmergencyCache(..)) where
+module Arkham.Types.Event.Cards.EmergencyCache
+  ( emergencyCache
+  , EmergencyCache(..)
+  ) where
 
 import Arkham.Prelude
 

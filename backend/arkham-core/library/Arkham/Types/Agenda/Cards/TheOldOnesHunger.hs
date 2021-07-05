@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.TheOldOnesHunger
   ( TheOldOnesHunger(..)
   , theOldOnesHunger
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

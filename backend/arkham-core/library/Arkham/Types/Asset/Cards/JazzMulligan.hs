@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.JazzMulligan
   ( jazzMulligan
   , JazzMulligan(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -26,7 +25,8 @@ newtype JazzMulligan = JazzMulligan AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jazzMulligan :: AssetCard JazzMulligan
-jazzMulligan = allyWith JazzMulligan Cards.jazzMulligan (2, 2) (isStoryL .~ True)
+jazzMulligan =
+  allyWith JazzMulligan Cards.jazzMulligan (2, 2) (isStoryL .~ True)
 
 ability :: AssetAttrs -> Ability
 ability attrs =
@@ -37,7 +37,7 @@ instance HasId LocationId env InvestigatorId => HasActions env JazzMulligan wher
     lid <- getId iid
     case assetLocation attrs of
       Just location -> pure
-        [ ActivateCardAbilityAction iid (ability attrs)
+        [ UseAbility iid (ability attrs)
         | lid == location && isNothing (assetInvestigator attrs)
         ]
       _ -> pure mempty

@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.UndergroundMuscle
   ( UndergroundMuscle(..)
   , undergroundMuscle
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -29,7 +29,7 @@ instance ActionRunner env => HasActions env Blackjack where
   getActions iid window (Blackjack a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid window
     pure
-      [ ActivateCardAbilityAction
+      [ UseAbility
           iid
           (mkAbility
             (toSource a)

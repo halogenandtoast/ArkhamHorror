@@ -25,12 +25,7 @@ newtype Parlor = Parlor LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 parlor :: LocationCard Parlor
-parlor = location Parlor
-  Cards.parlor
-  2
-  (Static 0)
-  Diamond
-  [Square]
+parlor = location Parlor Cards.parlor 2 (Static 0) Diamond [Square]
 
 instance HasModifiersFor env Parlor where
   getModifiersFor _ target (Parlor attrs) | isTarget attrs target =
@@ -49,7 +44,7 @@ instance ActionRunner env => HasActions env Parlor where
           investigatorLocationId <- getId @LocationId iid
           pure
             $ [ resignAction iid attrs | iid `member` locationInvestigators ]
-            <> [ ActivateCardAbilityAction
+            <> [ UseAbility
                    iid
                    (mkAbility
                      (ProxySource (AssetSource aid) (toSource attrs))

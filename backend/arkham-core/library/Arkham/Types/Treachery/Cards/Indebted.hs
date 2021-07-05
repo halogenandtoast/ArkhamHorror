@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.Indebted
   ( Indebted(..)
   , indebted
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

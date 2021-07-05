@@ -34,9 +34,9 @@ ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)
 
 instance HasActions env DigDeep2 where
   getActions iid (WhenSkillTest SkillWillpower) (DigDeep2 a) = do
-    pure [ ActivateCardAbilityAction iid (ability 1 a) | ownedBy a iid ]
+    pure [ UseAbility iid (ability 1 a) | ownedBy a iid ]
   getActions iid (WhenSkillTest SkillAgility) (DigDeep2 a) = do
-    pure [ ActivateCardAbilityAction iid (ability 2 a) | ownedBy a iid ]
+    pure [ UseAbility iid (ability 2 a) | ownedBy a iid ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env DigDeep2 where

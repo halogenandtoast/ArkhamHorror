@@ -23,7 +23,8 @@ newtype LitaChantler = LitaChantler AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 litaChantler :: AssetCard LitaChantler
-litaChantler = allyWith LitaChantler Cards.litaChantler (3, 3) (isStoryL .~ True)
+litaChantler =
+  allyWith LitaChantler Cards.litaChantler (3, 3) (isStoryL .~ True)
 
 instance HasId LocationId env InvestigatorId => HasModifiersFor env LitaChantler where
   getModifiersFor _ (InvestigatorTarget iid) (LitaChantler a@AssetAttrs {..}) =
@@ -45,8 +46,7 @@ instance HasSet Trait env EnemyId => HasActions env LitaChantler where
   getActions i (WhenSuccessfulAttackEnemy who eid) (LitaChantler a)
     | ownedBy a i && who `elem` [You, InvestigatorAtYourLocation] = do
       traits <- getSetList eid
-      pure
-        [ ActivateCardAbilityAction i (ability eid a) | Monster `elem` traits ]
+      pure [ UseAbility i (ability eid a) | Monster `elem` traits ]
   getActions i window (LitaChantler a) = getActions i window a
 
 instance (AssetRunner env) => RunMessage env LitaChantler where

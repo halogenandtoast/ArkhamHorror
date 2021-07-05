@@ -10,6 +10,16 @@ import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.EncounterSet as X
 
+gatherEncounterSet' :: MonadRandom m => EncounterSet -> m [EncounterCard]
+gatherEncounterSet' encounterSet = do
+  let
+    defs = filter ((== Just encounterSet) . cdEncounterSet)
+      $ toList allEncounterCards
+  for
+    defs
+    \def -> genEncounterCard
+      $ replicate (fromMaybe 0 (cdEncounterSetQuantity def)) (toCardCode def)
+
 gatherEncounterSet :: MonadRandom m => EncounterSet -> m [EncounterCard]
 gatherEncounterSet = traverse genEncounterCard . setCards
 

@@ -27,22 +27,14 @@ instance HasActions env ActionType => HasActions env Flare1 where
   getActions i (InHandWindow ownerId NonFast) (Flare1 attrs) | i == ownerId = do
     canFight <- hasFightActions i NonFast
     pure
-      $ [ ActivateCardAbilityAction
-            i
-            (mkAbility
-              (toSource attrs)
-              1
-              (ActionAbility (Just Action.Fight) (ActionCost 1))
-            )
+      $ [ UseAbility i $ mkAbility
+            attrs
+            1
+            (ActionAbility (Just Action.Fight) (ActionCost 1))
         | canFight
         ]
-      <> [ ActivateCardAbilityAction
-             i
-             (mkAbility
-               (toSource attrs)
-               2
-               (ActionAbility Nothing (ActionCost 1))
-             )
+      <> [ UseAbility i
+             $ mkAbility attrs 2 (ActionAbility Nothing (ActionCost 1))
          ]
   getActions i window (Flare1 attrs) = getActions i window attrs
 

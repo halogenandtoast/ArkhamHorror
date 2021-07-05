@@ -21,7 +21,11 @@ newtype ProfessorWarrenRice = ProfessorWarrenRice AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 professorWarrenRice :: AssetCard ProfessorWarrenRice
-professorWarrenRice = allyWith ProfessorWarrenRice Cards.professorWarrenRice (2, 3) (isStoryL .~ True)
+professorWarrenRice = allyWith
+  ProfessorWarrenRice
+  Cards.professorWarrenRice
+  (2, 3)
+  (isStoryL .~ True)
 
 instance HasModifiersFor env ProfessorWarrenRice where
   getModifiersFor _ (InvestigatorTarget iid) (ProfessorWarrenRice a) =
@@ -34,7 +38,7 @@ instance ActionRunner env => HasActions env ProfessorWarrenRice where
       lid <- getId @LocationId iid
       lastClue <- (== 0) . unClueCount <$> getCount lid
       pure
-        [ ActivateCardAbilityAction
+        [ UseAbility
             iid
             (mkAbility
               (toSource a)

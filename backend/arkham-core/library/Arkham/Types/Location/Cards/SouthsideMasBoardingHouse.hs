@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.SouthsideMasBoardingHouse
   ( SouthsideMasBoardingHouse(..)
   , southsideMasBoardingHouse
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -24,7 +23,8 @@ newtype SouthsideMasBoardingHouse = SouthsideMasBoardingHouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 southsideMasBoardingHouse :: LocationCard SouthsideMasBoardingHouse
-southsideMasBoardingHouse = location SouthsideMasBoardingHouse 
+southsideMasBoardingHouse = location
+  SouthsideMasBoardingHouse
   Cards.southsideMasBoardingHouse
   2
   (PerPlayer 1)
@@ -42,10 +42,11 @@ ability attrs =
 
 instance ActionRunner env => HasActions env SouthsideMasBoardingHouse where
   getActions iid NonFast (SouthsideMasBoardingHouse attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs $ pure
-      [ ActivateCardAbilityAction iid (ability attrs)
-      | iid `member` locationInvestigators
-      ]
+    | locationRevealed = withBaseActions iid NonFast attrs
+    $ pure
+        [ UseAbility iid (ability attrs)
+        | iid `member` locationInvestigators
+        ]
   getActions iid window (SouthsideMasBoardingHouse attrs) =
     getActions iid window attrs
 

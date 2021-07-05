@@ -16,7 +16,8 @@ newtype HeirloomOfHyperborea = HeirloomOfHyperborea AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 heirloomOfHyperborea :: AssetCard HeirloomOfHyperborea
-heirloomOfHyperborea = accessory HeirloomOfHyperborea Cards.heirloomOfHyperborea
+heirloomOfHyperborea =
+  accessory HeirloomOfHyperborea Cards.heirloomOfHyperborea
 
 instance HasModifiersFor env HeirloomOfHyperborea where
   getModifiersFor = noModifiersFor
@@ -26,11 +27,8 @@ reactionAbility attrs = mkAbility (toSource attrs) 1 (FastAbility Free)
 
 instance HasActions env HeirloomOfHyperborea where
   getActions iid (AfterPlayCard You traits) (HeirloomOfHyperborea a)
-    | ownedBy a iid
-    = pure
-      [ ActivateCardAbilityAction iid (reactionAbility a)
-      | Spell `elem` traits
-      ]
+    | ownedBy a iid = pure
+      [ UseAbility iid (reactionAbility a) | Spell `elem` traits ]
   getActions i window (HeirloomOfHyperborea x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env HeirloomOfHyperborea where

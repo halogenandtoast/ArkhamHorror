@@ -21,9 +21,10 @@ newtype AdamLynch = AdamLynch AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 adamLynch :: AssetCard AdamLynch
-adamLynch = allyWith AdamLynch Cards.adamLynch (1, 1)
-  $ (isStoryL .~ True)
-  . (slotsL .~ mempty)
+adamLynch =
+  allyWith AdamLynch Cards.adamLynch (1, 1)
+    $ (isStoryL .~ True)
+    . (slotsL .~ mempty)
 
 instance HasActions env AdamLynch where
   getActions iid window (AdamLynch attrs) = getActions iid window attrs

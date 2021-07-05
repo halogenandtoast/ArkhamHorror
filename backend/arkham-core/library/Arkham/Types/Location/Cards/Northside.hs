@@ -37,10 +37,11 @@ ability attrs = base { abilityLimit = GroupLimit PerGame 1 }
 
 instance ActionRunner env => HasActions env Northside where
   getActions iid NonFast (Northside attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs $ pure
-      [ ActivateCardAbilityAction iid (ability attrs)
-      | iid `member` locationInvestigators
-      ]
+    | locationRevealed = withBaseActions iid NonFast attrs
+    $ pure
+        [ UseAbility iid (ability attrs)
+        | iid `member` locationInvestigators
+        ]
   getActions iid window (Northside attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env Northside where

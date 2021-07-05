@@ -233,8 +233,7 @@ whenOwnedBy a iid f = if ownedBy a iid then f else pure []
 assetAction
   :: InvestigatorId -> AssetAttrs -> Int -> Maybe Action -> Cost -> Message
 assetAction iid attrs idx mAction cost =
-  ActivateCardAbilityAction iid
-    $ mkAbility (toSource attrs) idx (ActionAbility mAction cost)
+  UseAbility iid $ mkAbility (toSource attrs) idx (ActionAbility mAction cost)
 
 getInvestigator :: HasCallStack => AssetAttrs -> InvestigatorId
 getInvestigator = fromJustNote "asset must be owned" . view investigatorL
@@ -315,8 +314,9 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs whe
       a <$ unshiftMessage (RemovedFromPlay $ toSource a)
     Discard target | a `isTarget` target -> a <$ unshiftMessages
       [RemovedFromPlay $ toSource a, Discarded target (toCard a)]
-    Exile target | a `isTarget` target -> a <$ unshiftMessages
-      [RemovedFromPlay $ toSource a, Exiled target (toCard a)]
+    Exile target | a `isTarget` target ->
+      a <$ unshiftMessages
+        [RemovedFromPlay $ toSource a, Exiled target (toCard a)]
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessage $ CheckWindow iid [WhenEnterPlay $ toTarget a]
       pure $ a & investigatorL ?~ iid

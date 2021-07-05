@@ -23,7 +23,8 @@ newtype MiskatonicUniversity = MiskatonicUniversity LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miskatonicUniversity :: LocationCard MiskatonicUniversity
-miskatonicUniversity = location MiskatonicUniversity 
+miskatonicUniversity = location
+  MiskatonicUniversity
   Cards.miskatonicUniversity
   4
   (PerPlayer 2)
@@ -36,7 +37,7 @@ instance HasModifiersFor env MiskatonicUniversity where
 instance ActionRunner env => HasActions env MiskatonicUniversity where
   getActions iid NonFast (MiskatonicUniversity attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ pure
-      [ ActivateCardAbilityAction
+      [ UseAbility
           iid
           (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
       | iid `member` locationInvestigators

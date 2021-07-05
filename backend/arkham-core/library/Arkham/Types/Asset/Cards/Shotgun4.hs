@@ -35,7 +35,7 @@ instance ActionRunner env => HasActions env Shotgun4 where
   getActions iid window (Shotgun4 a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid window
     pure
-      [ ActivateCardAbilityAction
+      [ UseAbility
           iid
           (mkAbility
             (toSource a)

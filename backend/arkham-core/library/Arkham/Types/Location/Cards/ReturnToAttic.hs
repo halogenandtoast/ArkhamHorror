@@ -1,4 +1,7 @@
-module Arkham.Types.Location.Cards.ReturnToAttic (returnToAttic, ReturnToAttic(..)) where
+module Arkham.Types.Location.Cards.ReturnToAttic
+  ( returnToAttic
+  , ReturnToAttic(..)
+  ) where
 
 import Arkham.Prelude
 
@@ -14,7 +17,8 @@ newtype ReturnToAttic = ReturnToAttic LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 returnToAttic :: LocationCard ReturnToAttic
-returnToAttic = location ReturnToAttic 
+returnToAttic = location
+  ReturnToAttic
   Cards.returnToAttic
   3
   (PerPlayer 1)

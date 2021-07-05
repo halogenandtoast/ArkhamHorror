@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.Schoolhouse_212
   ( schoolhouse_212
   , Schoolhouse_212(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -20,7 +19,8 @@ newtype Schoolhouse_212 = Schoolhouse_212 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 schoolhouse_212 :: LocationCard Schoolhouse_212
-schoolhouse_212 = location Schoolhouse_212 
+schoolhouse_212 = location
+  Schoolhouse_212
   Cards.schoolhouse_212
   4
   (Static 1)

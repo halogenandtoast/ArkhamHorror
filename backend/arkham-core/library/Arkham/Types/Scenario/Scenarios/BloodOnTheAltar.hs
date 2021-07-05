@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.BloodOnTheAltar
   ( BloodOnTheAltar(..)
   , bloodOnTheAltar
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

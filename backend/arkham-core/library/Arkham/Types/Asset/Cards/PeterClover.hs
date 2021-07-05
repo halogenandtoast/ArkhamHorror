@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.PeterClover
   ( peterClover
   , PeterClover(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -20,9 +19,10 @@ newtype PeterClover = PeterClover AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 peterClover :: AssetCard PeterClover
-peterClover = allyWith PeterClover Cards.peterClover (3, 2)
-  $ (slotsL .~ [])
-  . (isStoryL .~ True)
+peterClover =
+  allyWith PeterClover Cards.peterClover (3, 2)
+    $ (slotsL .~ [])
+    . (isStoryL .~ True)
 
 ability :: AssetAttrs -> Ability
 ability attrs =
@@ -36,8 +36,7 @@ instance
   getActions iid FastPlayerWindow (PeterClover attrs) = do
     lid <- getId @LocationId iid
     criminals <- getSet @EnemyId ([Criminal], lid)
-    pure
-      [ ActivateCardAbilityAction iid (ability attrs) | not (null criminals) ]
+    pure [ UseAbility iid (ability attrs) | not (null criminals) ]
   getActions iid window (PeterClover attrs) = getActions iid window attrs
 
 instance HasModifiersFor env PeterClover where

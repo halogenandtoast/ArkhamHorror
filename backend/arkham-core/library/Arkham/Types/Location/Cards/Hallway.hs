@@ -13,12 +13,8 @@ newtype Hallway = Hallway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hallway :: LocationCard Hallway
-hallway = location Hallway 
-  Cards.hallway
-  1
-  (Static 0)
-  Square
-  [Triangle, Plus, Diamond]
+hallway =
+  location Hallway Cards.hallway 1 (Static 0) Square [Triangle, Plus, Diamond]
 
 instance HasModifiersFor env Hallway where
   getModifiersFor = noModifiersFor

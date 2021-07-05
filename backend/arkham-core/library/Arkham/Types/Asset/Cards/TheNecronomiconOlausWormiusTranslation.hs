@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.TheNecronomiconOlausWormiusTranslation
   ( theNecronomiconOlausWormiusTranslation
   , TheNecronomiconOlausWormiusTranslation(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -23,13 +22,15 @@ newtype TheNecronomiconOlausWormiusTranslation = TheNecronomiconOlausWormiusTran
 
 theNecronomiconOlausWormiusTranslation
   :: AssetCard TheNecronomiconOlausWormiusTranslation
-theNecronomiconOlausWormiusTranslation = hand TheNecronomiconOlausWormiusTranslation Cards.theNecronomiconOlausWormiusTranslation
+theNecronomiconOlausWormiusTranslation = hand
+  TheNecronomiconOlausWormiusTranslation
+  Cards.theNecronomiconOlausWormiusTranslation
 
 instance HasActions env TheNecronomiconOlausWormiusTranslation where
   getActions iid NonFast (TheNecronomiconOlausWormiusTranslation a)
     | ownedBy a iid = do
       pure
-        [ ActivateCardAbilityAction
+        [ UseAbility
             iid
             (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
         ]

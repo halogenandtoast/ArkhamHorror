@@ -1,4 +1,7 @@
-module Arkham.Types.Event.Cards.BlindingLight2 (blindingLight2, BlindingLight2(..)) where
+module Arkham.Types.Event.Cards.BlindingLight2
+  ( blindingLight2
+  , BlindingLight2(..)
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.ExhibitHallRestrictedHall
   ( exhibitHallRestrictedHall
   , ExhibitHallRestrictedHall(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -21,13 +20,13 @@ newtype ExhibitHallRestrictedHall = ExhibitHallRestrictedHall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallRestrictedHall :: LocationCard ExhibitHallRestrictedHall
-exhibitHallRestrictedHall =
-  location ExhibitHallRestrictedHall 
-    Cards.exhibitHallRestrictedHall
-    3
-    (PerPlayer 2)
-    Equals
-    [Square]
+exhibitHallRestrictedHall = location
+  ExhibitHallRestrictedHall
+  Cards.exhibitHallRestrictedHall
+  3
+  (PerPlayer 2)
+  Equals
+  [Square]
 
 instance HasId (Maybe StoryEnemyId) env CardCode => HasModifiersFor env ExhibitHallRestrictedHall where
   getModifiersFor _ target (ExhibitHallRestrictedHall attrs)

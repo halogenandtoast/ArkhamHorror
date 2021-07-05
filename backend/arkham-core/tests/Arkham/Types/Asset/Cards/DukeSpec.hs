@@ -1,7 +1,6 @@
 module Arkham.Types.Asset.Cards.DukeSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
@@ -87,7 +86,8 @@ spec = describe "Duke" $ do
                 runMessages
                 duke' <- updated duke
                 [investigateAction] <- getActionsOf investigator NonFast duke'
-                unshiftMessages [moveTo investigator location1, investigateAction]
+                unshiftMessages
+                  [moveTo investigator location1, investigateAction]
                 runMessages
                 chooseOptionMatching
                   "move first"

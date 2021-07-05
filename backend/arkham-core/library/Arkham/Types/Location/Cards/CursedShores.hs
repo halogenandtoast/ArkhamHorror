@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.CursedShores
   ( CursedShores(..)
   , cursedShores
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -25,7 +24,8 @@ newtype CursedShores = CursedShores LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cursedShores :: LocationCard CursedShores
-cursedShores = location CursedShores 
+cursedShores = location
+  CursedShores
   Cards.cursedShores
   1
   (Static 0)
@@ -38,7 +38,7 @@ instance HasModifiersFor env CursedShores where
 instance ActionRunner env => HasActions env CursedShores where
   getActions iid NonFast (CursedShores attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ pure
-      [ ActivateCardAbilityAction
+      [ UseAbility
           iid
           (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
       | iid `member` locationInvestigators

@@ -32,7 +32,7 @@ instance ActionRunner env => HasActions env UncoveringTheConspiracy where
     totalSpendableClues <- getSpendableClueCount =<< getInvestigatorIds
     if totalSpendableClues >= requiredClues
       then pure
-        [ ActivateCardAbilityAction
+        [ UseAbility
             iid
             (mkAbility
               (ActSource actId)

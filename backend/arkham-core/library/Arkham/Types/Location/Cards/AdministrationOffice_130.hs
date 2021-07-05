@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.AdministrationOffice_130
   ( administrationOffice_130
   , AdministrationOffice_130(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -22,7 +21,8 @@ newtype AdministrationOffice_130 = AdministrationOffice_130 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 administrationOffice_130 :: LocationCard AdministrationOffice_130
-administrationOffice_130 = location AdministrationOffice_130 
+administrationOffice_130 = location
+  AdministrationOffice_130
   Cards.administrationOffice_130
   1
   (PerPlayer 1)

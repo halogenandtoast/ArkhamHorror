@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.OutOfThisWorld
   ( OutOfThisWorld(..)
   , outOfThisWorld
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -32,7 +31,7 @@ instance ActionRunner env => HasActions env OutOfThisWorld where
   getActions iid NonFast (OutOfThisWorld x) =
     withBaseActions iid NonFast x $ do
       pure
-        [ ActivateCardAbilityAction
+        [ UseAbility
             iid
             (mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1))
         ]

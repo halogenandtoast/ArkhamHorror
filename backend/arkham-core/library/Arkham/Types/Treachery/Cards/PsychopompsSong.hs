@@ -30,7 +30,7 @@ ability attrs = mkAbility (toSource attrs) 1 ForcedAbility
 instance HasActions env PsychopompsSong where
   getActions iid (WhenWouldTakeDamage _ (InvestigatorTarget iid')) (PsychopompsSong attrs)
     | treacheryOnInvestigator iid attrs && iid == iid'
-    = pure [ActivateCardAbilityAction iid (ability attrs)]
+    = pure [UseAbility iid (ability attrs)]
   getActions i window (PsychopompsSong attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env PsychopompsSong where

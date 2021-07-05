@@ -1,7 +1,6 @@
 module Arkham.Types.Event.Cards.BarricadeSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport.Lifted
 

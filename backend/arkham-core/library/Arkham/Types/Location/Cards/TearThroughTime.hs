@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.TearThroughTime
   ( tearThroughTime
   , TearThroughTime(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -24,7 +23,8 @@ newtype TearThroughTime = TearThroughTime LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tearThroughTime :: LocationCard TearThroughTime
-tearThroughTime = location TearThroughTime 
+tearThroughTime = location
+  TearThroughTime
   Cards.tearThroughTime
   2
   (PerPlayer 2)
@@ -35,7 +35,7 @@ instance HasModifiersFor env TearThroughTime where
   getModifiersFor = noModifiersFor
 
 resignAction :: SourceEntity a => InvestigatorId -> a -> Message
-resignAction iid a = ActivateCardAbilityAction
+resignAction iid a = UseAbility
   iid
   (mkAbility
     (toSource a)

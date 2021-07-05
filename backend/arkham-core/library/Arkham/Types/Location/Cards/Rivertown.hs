@@ -13,7 +13,8 @@ newtype Rivertown = Rivertown LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rivertown :: LocationCard Rivertown
-rivertown = location Rivertown 
+rivertown = location
+  Rivertown
   Cards.rivertown
   1
   (PerPlayer 1)

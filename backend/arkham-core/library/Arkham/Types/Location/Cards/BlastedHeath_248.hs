@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.BlastedHeath_248
   ( blastedHeath_248
   , BlastedHeath_248(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -26,7 +25,8 @@ newtype BlastedHeath_248 = BlastedHeath_248 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blastedHeath_248 :: LocationCard BlastedHeath_248
-blastedHeath_248 = location BlastedHeath_248
+blastedHeath_248 = location
+  BlastedHeath_248
   Cards.blastedHeath_248
   4
   (Static 3)
@@ -47,7 +47,7 @@ instance ActionRunner env => HasActions env BlastedHeath_248 where
       investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
       pure
-        [ ActivateCardAbilityAction iid (ability attrs)
+        [ UseAbility iid (ability attrs)
         | investigatorsWithClues && anyAbominations
         ]
   getActions iid window (BlastedHeath_248 attrs) = getActions iid window attrs

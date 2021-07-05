@@ -234,14 +234,12 @@ instance
       (getActions iid window)
       ([minBound .. maxBound] :: [ActionType])
     actions'' <- for actions' $ \case
-      ActivateCardAbilityAction iid' ability -> do
+      UseAbility iid' ability -> do
         modifiers' <- getModifiersFor
           (InvestigatorSource iid)
           (sourceToTarget $ abilitySource ability)
           ()
-        pure $ ActivateCardAbilityAction
-          iid'
-          (applyAbilityModifiers ability modifiers')
+        pure $ UseAbility iid' (applyAbilityModifiers ability modifiers')
       other -> pure other -- TODO: dynamic abilities
     let
       fromForcedAction = \case
@@ -250,8 +248,7 @@ instance
       forcedActions = mapMaybe fromForcedAction actions''
     forcedActions' <- filterM
       (\case
-        ActivateCardAbilityAction iid' ability ->
-          getCanAffordAbility iid' ability
+        UseAbility iid' ability -> getCanAffordAbility iid' ability
         _ -> pure True
       )
       forcedActions
@@ -259,8 +256,7 @@ instance
       then do
         let
           canAffordAction = \case
-            ActivateCardAbilityAction _ ability ->
-              getCanAffordAbility iid ability
+            UseAbility _ ability -> getCanAffordAbility iid ability
             MoveAction _ lid cost _ ->
               getCanAffordCost iid (LocationSource lid) (Just Action.Move) cost
             _ -> pure True
@@ -624,7 +620,7 @@ getLocationIdByName name = getId matcher
 
 fightAction
   :: SourceEntity source => InvestigatorId -> source -> Int -> [Cost] -> Message
-fightAction iid source n costs = ActivateCardAbilityAction
+fightAction iid source n costs = UseAbility
   iid
   (mkAbility
     (toSource source)

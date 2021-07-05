@@ -7,6 +7,8 @@ import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
@@ -15,8 +17,6 @@ import Arkham.Types.Query
 import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
 
 newtype JimsTrumpet = JimsTrumpet AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
@@ -41,7 +41,7 @@ instance ActionRunner env => HasActions env JimsTrumpet where
     horrorCounts <- for
       (concat investigatorIds)
       ((unHorrorCount <$>) . getCount)
-    pure [ ActivateCardAbilityAction iid (ability a) | any (> 0) horrorCounts ]
+    pure [ UseAbility iid (ability a) | any (> 0) horrorCounts ]
   getActions i window (JimsTrumpet x) = getActions i window x
 
 instance AssetRunner env => RunMessage env JimsTrumpet where

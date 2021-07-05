@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.EndlessBridge
   ( endlessBridge
   , EndlessBridge(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -21,7 +20,8 @@ newtype EndlessBridge = EndlessBridge LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 endlessBridge :: LocationCard EndlessBridge
-endlessBridge = location EndlessBridge 
+endlessBridge = location
+  EndlessBridge
   Cards.endlessBridge
   4
   (Static 2)
@@ -38,7 +38,7 @@ instance ActionRunner env => HasActions env EndlessBridge where
   getActions _ (AfterLeaving You lid) (EndlessBridge attrs)
     | lid == toId attrs = do
       leadInvestigator <- getLeadInvestigatorId
-      pure [ActivateCardAbilityAction leadInvestigator (forcedAbility attrs)]
+      pure [UseAbility leadInvestigator (forcedAbility attrs)]
   getActions iid window (EndlessBridge attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env EndlessBridge where

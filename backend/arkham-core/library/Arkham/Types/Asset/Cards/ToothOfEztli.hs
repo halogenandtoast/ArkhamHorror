@@ -39,7 +39,7 @@ ability a =
 
 instance HasActions env ToothOfEztli where
   getActions iid (AfterPassSkillTest _ (TreacherySource _) You _) (ToothOfEztli a)
-    = pure [ ActivateCardAbilityAction iid (ability a) | ownedBy a iid ]
+    = pure [ UseAbility iid (ability a) | ownedBy a iid ]
   getActions i window (ToothOfEztli a) = getActions i window a
 
 instance AssetRunner env => RunMessage env ToothOfEztli where

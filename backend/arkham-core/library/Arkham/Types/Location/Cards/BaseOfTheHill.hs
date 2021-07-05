@@ -49,9 +49,7 @@ instance ActionRunner env => HasActions env BaseOfTheHill where
   getActions iid NonFast (BaseOfTheHill attrs) | iid `on` attrs =
     withBaseActions iid NonFast attrs
       $ pure
-      $ [ ActivateCardAbilityAction iid (ability attrs)
-        | locationRevealed attrs
-        ]
+      $ [ UseAbility iid (ability attrs) | locationRevealed attrs ]
       ++ [resignAction iid attrs]
   getActions iid window (BaseOfTheHill attrs) = getActions iid window attrs
 

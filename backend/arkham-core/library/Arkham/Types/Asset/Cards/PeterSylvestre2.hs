@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.PeterSylvestre2
   ( PeterSylvestre2(..)
   , peterSylvestre2
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -37,7 +36,7 @@ ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
 instance HasActions env PeterSylvestre2 where
   getActions iid (AfterEndTurn You) (PeterSylvestre2 a) | ownedBy a iid =
-    pure [ ActivateCardAbilityAction iid (ability a) | assetSanityDamage a > 0 ]
+    pure [ UseAbility iid (ability a) | assetSanityDamage a > 0 ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env PeterSylvestre2 where

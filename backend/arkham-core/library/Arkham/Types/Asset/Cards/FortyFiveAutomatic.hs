@@ -34,7 +34,7 @@ instance ActionRunner env => HasActions env FortyFiveAutomatic where
   getActions iid window (FortyFiveAutomatic a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid window
     pure
-      [ ActivateCardAbilityAction
+      [ UseAbility
           iid
           (mkAbility
             (toSource a)

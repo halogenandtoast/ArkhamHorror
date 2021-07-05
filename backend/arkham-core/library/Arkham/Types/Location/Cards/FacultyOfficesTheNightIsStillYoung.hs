@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.FacultyOfficesTheNightIsStillYoung
   ( facultyOfficesTheNightIsStillYoung
   , FacultyOfficesTheNightIsStillYoung(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -29,13 +28,13 @@ newtype FacultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung 
 
 facultyOfficesTheNightIsStillYoung
   :: LocationCard FacultyOfficesTheNightIsStillYoung
-facultyOfficesTheNightIsStillYoung =
-  location FacultyOfficesTheNightIsStillYoung 
-    Cards.facultyOfficesTheNightIsStillYoung
-    2
-    (PerPlayer 2)
-    T
-    [Circle]
+facultyOfficesTheNightIsStillYoung = location
+  FacultyOfficesTheNightIsStillYoung
+  Cards.facultyOfficesTheNightIsStillYoung
+  2
+  (PerPlayer 2)
+  T
+  [Circle]
 
 instance HasModifiersFor env FacultyOfficesTheNightIsStillYoung where
   getModifiersFor _ target (FacultyOfficesTheNightIsStillYoung attrs)
@@ -47,7 +46,7 @@ instance ActionRunner env => HasActions env FacultyOfficesTheNightIsStillYoung w
   getActions iid FastPlayerWindow (FacultyOfficesTheNightIsStillYoung attrs@LocationAttrs {..})
     | locationRevealed
     = withBaseActions iid FastPlayerWindow attrs $ pure
-      [ ActivateCardAbilityAction
+      [ UseAbility
           iid
           (mkAbility
             (toSource attrs)

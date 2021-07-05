@@ -2,14 +2,14 @@ module Arkham.Types.Campaign.Campaigns.ReturnToNightOfTheZealot where
 
 import Arkham.Prelude
 
-import Arkham.Types.CampaignId
-import Arkham.Types.Classes
-import Arkham.Types.Message
 import Arkham.Types.Campaign.Attrs
 import Arkham.Types.Campaign.Campaigns.NightOfTheZealot
 import Arkham.Types.Campaign.Runner
+import Arkham.Types.CampaignId
 import Arkham.Types.CampaignStep
+import Arkham.Types.Classes
 import Arkham.Types.Difficulty
+import Arkham.Types.Message
 
 newtype ReturnToNightOfTheZealot = ReturnToNightOfTheZealot NightOfTheZealot
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)

@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.SongOfTheDead2
   ( shrivelling
   , SongOfTheDead2(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

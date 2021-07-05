@@ -1,7 +1,6 @@
 module Arkham.Types.Asset.Cards.FireAxeSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 

@@ -36,7 +36,7 @@ instance ActionRunner env => HasActions env Scavenging where
     | ownedBy a iid && n >= 2
     = do
       hasItemInDiscard <- any (member Item . toTraits) <$> getDiscardOf iid
-      pure [ ActivateCardAbilityAction iid (ability a) | hasItemInDiscard ]
+      pure [ UseAbility iid (ability a) | hasItemInDiscard ]
   getActions i window (Scavenging x) = getActions i window x
 
 instance AssetRunner env => RunMessage env Scavenging where

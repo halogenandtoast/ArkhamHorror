@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.UndimensionedAndUnseenTabletToken
   ( undimensionedAndUnseenTabletToken
   , UndimensionedAndUnseenTabletToken(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

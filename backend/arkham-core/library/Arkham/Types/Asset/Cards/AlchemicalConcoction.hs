@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.AlchemicalConcoction
   ( alchemicalConcoction
   , AlchemicalConcoction(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -34,13 +33,8 @@ instance ActionRunner env => HasActions env AlchemicalConcoction where
   getActions iid window (AlchemicalConcoction a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid window
     pure
-      [ ActivateCardAbilityAction
-          iid
-          (mkAbility
-            (toSource a)
-            1
-            (ActionAbility (Just Action.Fight) $ ActionCost 1)
-          )
+      [ UseAbility iid
+          $ mkAbility a 1 (ActionAbility (Just Action.Fight) $ ActionCost 1)
       | fightAvailable
       ]
   getActions _ _ _ = pure []

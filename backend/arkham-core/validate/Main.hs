@@ -245,7 +245,12 @@ main = do
               (throw $ UniqueMismatch code (cdName card))
             when
               (fromMaybe 0 xp /= cdLevel card)
-              (throw $ XpMismatch code (cdName card) (fromMaybe 0 xp) (cdLevel card))
+              (throw $ XpMismatch
+                code
+                (cdName card)
+                (fromMaybe 0 xp)
+                (cdLevel card)
+              )
             when
               (normalizeCost code cost /= cdCost card)
               (throw $ CardCostMismatch code (cdName card) cost (cdCost card))

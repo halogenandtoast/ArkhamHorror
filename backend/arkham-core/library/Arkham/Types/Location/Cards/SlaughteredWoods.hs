@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.SlaughteredWoods
   ( slaugteredWoods
   , SlaughteredWoods(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -30,7 +29,8 @@ slaugteredWoods = locationWith
   []
   ((revealedSymbolL .~ Plus)
   . (revealedConnectedSymbolsL .~ setFromList [Triangle, Hourglass])
-  . (unrevealedNameL .~ "Diverging Path"))
+  . (unrevealedNameL .~ "Diverging Path")
+  )
 
 instance HasModifiersFor env SlaughteredWoods where
   getModifiersFor = noModifiersFor
@@ -42,10 +42,7 @@ instance ActionRunner env => HasActions env SlaughteredWoods where
   getActions iid (AfterRevealLocation You) (SlaughteredWoods attrs)
     | iid `on` attrs = do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid
-      pure
-        [ ActivateCardAbilityAction iid (forcedAbility attrs)
-        | actionRemainingCount == 0
-        ]
+      pure [ UseAbility iid (forcedAbility attrs) | actionRemainingCount == 0 ]
   getActions iid window (SlaughteredWoods attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env SlaughteredWoods where

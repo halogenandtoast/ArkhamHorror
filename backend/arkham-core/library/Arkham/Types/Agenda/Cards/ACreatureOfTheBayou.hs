@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.ACreatureOfTheBayou
   ( ACreatureOfTheBayou(..)
   , aCreatureOfTheBayou
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

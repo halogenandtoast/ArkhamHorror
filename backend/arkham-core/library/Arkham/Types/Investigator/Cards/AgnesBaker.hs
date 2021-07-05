@@ -1,14 +1,13 @@
 module Arkham.Types.Investigator.Cards.AgnesBaker
   ( AgnesBaker(..)
   , agnesBaker
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.EnemyId
 import Arkham.Types.Investigator.Attrs
@@ -47,8 +46,7 @@ instance InvestigatorRunner env => HasActions env AgnesBaker where
   getActions iid (WhenDealtHorror _ target) (AgnesBaker attrs)
     | isTarget attrs target = do
       enemyIds <- getSet @EnemyId $ investigatorLocation attrs
-      pure
-        [ ActivateCardAbilityAction iid (ability attrs) | not (null enemyIds) ]
+      pure [ UseAbility iid (ability attrs) | not (null enemyIds) ]
   getActions i window (AgnesBaker attrs) = getActions i window attrs
 
 instance HasTokenValue env AgnesBaker where

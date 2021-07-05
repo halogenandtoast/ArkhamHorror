@@ -1,8 +1,7 @@
 module Arkham.Types.Event.Cards.ThinkOnYourFeet
   ( thinkOnYourFeet
   , ThinkOnYourFeet(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

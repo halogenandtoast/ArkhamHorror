@@ -40,7 +40,7 @@ instance ActionRunner env => HasActions env StudyAberrantGateway where
     = withBaseActions iid NonFast attrs $ do
       leadInvestigatorId <- getLeadInvestigatorId
       pure
-        [ ActivateCardAbilityAction
+        [ UseAbility
             iid
             (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 2)
             )

@@ -35,10 +35,8 @@ ability :: AssetAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (FastAbility Free)
 
 instance HasActions env BearTrap where
-  getActions iid FastPlayerWindow (BearTrap attrs) | ownedBy attrs iid = pure
-    [ ActivateCardAbilityAction iid (ability attrs)
-    | isNothing (assetEnemy attrs)
-    ]
+  getActions iid FastPlayerWindow (BearTrap attrs) | ownedBy attrs iid =
+    pure [ UseAbility iid (ability attrs) | isNothing (assetEnemy attrs) ]
   getActions iid window (BearTrap x) = getActions iid window x
 
 instance AssetRunner env => RunMessage env BearTrap where

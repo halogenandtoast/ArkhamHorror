@@ -24,7 +24,7 @@ instance HasModifiersFor env ForbiddenKnowledge where
 
 instance HasActions env ForbiddenKnowledge where
   getActions iid FastPlayerWindow (ForbiddenKnowledge a) | ownedBy a iid = pure
-    [ ActivateCardAbilityAction
+    [ UseAbility
         iid
         (mkAbility
           (toSource a)

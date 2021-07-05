@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.RivertownAbandonedWarehouse
   ( RivertownAbandonedWarehouse(..)
   , rivertownAbandonedWarehouse
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -26,7 +25,8 @@ newtype RivertownAbandonedWarehouse = RivertownAbandonedWarehouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rivertownAbandonedWarehouse :: LocationCard RivertownAbandonedWarehouse
-rivertownAbandonedWarehouse = location RivertownAbandonedWarehouse 
+rivertownAbandonedWarehouse = location
+  RivertownAbandonedWarehouse
   Cards.rivertownAbandonedWarehouse
   4
   (PerPlayer 1)
@@ -51,7 +51,7 @@ ability attrs = base { abilityLimit = GroupLimit PerGame 1 }
 instance ActionRunner env => HasActions env RivertownAbandonedWarehouse where
   getActions iid NonFast (RivertownAbandonedWarehouse attrs)
     | locationRevealed attrs = withBaseActions iid NonFast attrs $ do
-      pure [ ActivateCardAbilityAction iid (ability attrs) | iid `on` attrs ]
+      pure [ UseAbility iid (ability attrs) | iid `on` attrs ]
   getActions iid window (RivertownAbandonedWarehouse attrs) =
     getActions iid window attrs
 

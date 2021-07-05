@@ -32,7 +32,7 @@ instance ActionRunner env => HasActions env Hypochondria where
       treacheryLocation <- getId tormented
       investigatorLocationId <- getId @LocationId iid
       pure
-        [ ActivateCardAbilityAction
+        [ UseAbility
             iid
             (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 2))
         | treacheryLocation == investigatorLocationId

@@ -29,7 +29,7 @@ ActId.ActId	src/Arkham/Types/ActId.hs	7;"	t
 ActId.AdvanceableActId	src/Arkham/Types/ActId.hs	11;"	t
 ActId.unAdvanceableActId	src/Arkham/Types/ActId.hs	11;"	f
 ActRunner	src/Arkham/Types/Act.hs	84;"	t
-ActivateCardAbilityAction	src/Arkham/Types/Message.hs	94;"	C
+UseAbility	src/Arkham/Types/Message.hs	94;"	C
 AddAct	src/Arkham/Types/Message.hs	137;"	C
 AddAgenda	src/Arkham/Types/Message.hs	138;"	C
 AddConnection	src/Arkham/Types/Message.hs	79;"	C
@@ -209,7 +209,7 @@ Charm	src/Arkham/Types/Trait.hs	21;"	C
 CheckAttackOfOpportunity	src/Arkham/Types/Message.hs	103;"	C
 ChoiceResult	src/Arkham/Types/Message.hs	151;"	C
 ChoiceResults	src/Arkham/Types/Message.hs	152;"	C
-ChooseActivateCardAbilityAction	src/Arkham/Types/Message.hs	93;"	C
+ChooseUseAbility	src/Arkham/Types/Message.hs	93;"	C
 ChooseDrawCardAction	src/Arkham/Types/Message.hs	91;"	C
 ChooseEndTurn	src/Arkham/Types/Message.hs	102;"	C
 ChooseEngageEnemyAction	src/Arkham/Types/Message.hs	101;"	C
@@ -654,7 +654,7 @@ Medic	src/Arkham/Types/Trait.hs	70;"	C
 Melee	src/Arkham/Types/Trait.hs	71;"	C
 Message	src/Arkham/Types/Message.hs	55;"	t
 Message	src/Arkham/Types/Message.hs	1;"	m
-Message.ActivateCardAbilityAction	src/Arkham/Types/Message.hs	94;"	C
+Message.UseAbility	src/Arkham/Types/Message.hs	94;"	C
 Message.AddAct	src/Arkham/Types/Message.hs	137;"	C
 Message.AddAgenda	src/Arkham/Types/Message.hs	138;"	C
 Message.AddConnection	src/Arkham/Types/Message.hs	79;"	C
@@ -686,7 +686,7 @@ Message.BeginUpkeep	src/Arkham/Types/Message.hs	65;"	C
 Message.CheckAttackOfOpportunity	src/Arkham/Types/Message.hs	103;"	C
 Message.ChoiceResult	src/Arkham/Types/Message.hs	151;"	C
 Message.ChoiceResults	src/Arkham/Types/Message.hs	152;"	C
-Message.ChooseActivateCardAbilityAction	src/Arkham/Types/Message.hs	93;"	C
+Message.ChooseUseAbility	src/Arkham/Types/Message.hs	93;"	C
 Message.ChooseDrawCardAction	src/Arkham/Types/Message.hs	91;"	C
 Message.ChooseEndTurn	src/Arkham/Types/Message.hs	102;"	C
 Message.ChooseEngageEnemyAction	src/Arkham/Types/Message.hs	101;"	C

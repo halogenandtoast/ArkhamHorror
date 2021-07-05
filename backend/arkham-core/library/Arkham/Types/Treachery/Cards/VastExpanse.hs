@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.VastExpanse
   ( vastExpanse
   , VastExpanse(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

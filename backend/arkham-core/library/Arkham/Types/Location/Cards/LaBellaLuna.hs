@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.LaBellaLuna
   ( laBellaLuna
   , LaBellaLuna(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -17,12 +16,8 @@ newtype LaBellaLuna = LaBellaLuna LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 laBellaLuna :: LocationCard LaBellaLuna
-laBellaLuna = location LaBellaLuna 
-  Cards.laBellaLuna
-  2
-  (PerPlayer 1)
-  Moon
-  [Circle]
+laBellaLuna =
+  location LaBellaLuna Cards.laBellaLuna 2 (PerPlayer 1) Moon [Circle]
 
 instance HasModifiersFor env LaBellaLuna where
   getModifiersFor = noModifiersFor

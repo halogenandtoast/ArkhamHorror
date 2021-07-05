@@ -15,12 +15,8 @@ newtype RitualSite = RitualSite LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ritualSite :: LocationCard RitualSite
-ritualSite = location RitualSite 
-  Cards.ritualSite
-  3
-  (PerPlayer 2)
-  Plus
-  [Squiggle]
+ritualSite =
+  location RitualSite Cards.ritualSite 3 (PerPlayer 2) Plus [Squiggle]
 
 instance HasModifiersFor env RitualSite where
   getModifiersFor = noModifiersFor

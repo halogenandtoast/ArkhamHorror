@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.SleepingCar
   ( sleepingCar
   , SleepingCar(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -41,9 +40,7 @@ instance HasCount ClueCount env LocationId => HasModifiersFor env SleepingCar wh
     | isTarget l target = case lookup LeftOf locationDirections of
       Just leftLocation -> do
         clueCount <- unClueCount <$> getCount leftLocation
-        pure $ toModifiers
-          l
-          [ Blocked | not locationRevealed && clueCount > 0 ]
+        pure $ toModifiers l [ Blocked | not locationRevealed && clueCount > 0 ]
       Nothing -> pure []
   getModifiersFor _ _ _ = pure []
 
@@ -56,7 +53,7 @@ ability attrs =
 instance ActionRunner env => HasActions env SleepingCar where
   getActions iid NonFast (SleepingCar attrs) | locationRevealed attrs =
     withBaseActions iid NonFast attrs
-      $ pure [ ActivateCardAbilityAction iid (ability attrs) | iid `on` attrs ]
+      $ pure [ UseAbility iid (ability attrs) | iid `on` attrs ]
   getActions iid window (SleepingCar attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env SleepingCar where

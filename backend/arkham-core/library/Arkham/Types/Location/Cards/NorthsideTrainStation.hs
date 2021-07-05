@@ -22,7 +22,8 @@ newtype NorthsideTrainStation = NorthsideTrainStation LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 northsideTrainStation :: LocationCard NorthsideTrainStation
-northsideTrainStation = location NorthsideTrainStation 
+northsideTrainStation = location
+  NorthsideTrainStation
   Cards.northsideTrainStation
   2
   (PerPlayer 1)
@@ -40,10 +41,11 @@ ability attrs =
 
 instance ActionRunner env => HasActions env NorthsideTrainStation where
   getActions iid NonFast (NorthsideTrainStation attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs $ pure
-      [ ActivateCardAbilityAction iid (ability attrs)
-      | iid `member` locationInvestigators
-      ]
+    | locationRevealed = withBaseActions iid NonFast attrs
+    $ pure
+        [ UseAbility iid (ability attrs)
+        | iid `member` locationInvestigators
+        ]
   getActions iid window (NorthsideTrainStation attrs) =
     getActions iid window attrs
 

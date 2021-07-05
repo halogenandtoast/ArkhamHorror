@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.ExhibitHallEgyptianExhibit
   ( exhibitHallEgyptianExhibit
   , ExhibitHallEgyptianExhibit(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -19,13 +18,13 @@ newtype ExhibitHallEgyptianExhibit = ExhibitHallEgyptianExhibit LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallEgyptianExhibit :: LocationCard ExhibitHallEgyptianExhibit
-exhibitHallEgyptianExhibit =
-  location ExhibitHallEgyptianExhibit 
-    Cards.exhibitHallEgyptianExhibit
-    3
-    (PerPlayer 2)
-    Moon
-    [Square, T]
+exhibitHallEgyptianExhibit = location
+  ExhibitHallEgyptianExhibit
+  Cards.exhibitHallEgyptianExhibit
+  3
+  (PerPlayer 2)
+  Moon
+  [Square, T]
 
 instance HasModifiersFor env ExhibitHallEgyptianExhibit where
   getModifiersFor = noModifiersFor

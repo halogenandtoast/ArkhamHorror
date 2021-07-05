@@ -60,10 +60,8 @@ instance ActionRunner env => HasActions env Duke where
     fightAvailable <- hasFightActions iid NonFast
     investigateAvailable <- hasInvestigateActions iid NonFast
     pure
-      $ [ ActivateCardAbilityAction iid (fightAbility a) | fightAvailable ]
-      <> [ ActivateCardAbilityAction iid (investigateAbility a)
-         | investigateAvailable
-         ]
+      $ [ UseAbility iid (fightAbility a) | fightAvailable ]
+      <> [ UseAbility iid (investigateAbility a) | investigateAvailable ]
   getActions i window (Duke x) = getActions i window x
 
 dukeInvestigate :: AssetAttrs -> InvestigatorId -> LocationId -> Message

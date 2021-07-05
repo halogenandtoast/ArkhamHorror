@@ -15,7 +15,8 @@ newtype HoleInTheWall = HoleInTheWall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 holeInTheWall :: LocationCard HoleInTheWall
-holeInTheWall = location HoleInTheWall
+holeInTheWall = location
+  HoleInTheWall
   Cards.holeInTheWall
   1
   (Static 0)

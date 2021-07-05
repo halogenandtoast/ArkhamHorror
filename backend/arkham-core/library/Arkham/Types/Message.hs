@@ -103,7 +103,7 @@ data ActionType
 -- cards that have been set aside
 
 data Message
-  = ActivateCardAbilityAction InvestigatorId Ability
+  = UseAbility InvestigatorId Ability
   | AddAbility Source Ability
   | AddAct ActId
   | AddAgenda AgendaId
@@ -171,7 +171,7 @@ data Message
   | CheckDefeated Source
   | CheckHandSize InvestigatorId
   | CheckWindow InvestigatorId [Window]
-  | ChooseActivateCardAbilityAction InvestigatorId
+  | ChooseUseAbility InvestigatorId
   | ChooseAndDiscardAsset InvestigatorId
   | ChooseAndDiscardCard InvestigatorId
   | ChooseEndTurn InvestigatorId

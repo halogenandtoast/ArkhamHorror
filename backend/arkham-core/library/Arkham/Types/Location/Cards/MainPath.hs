@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.MainPath
   ( MainPath(..)
   , mainPath
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -19,12 +18,8 @@ newtype MainPath = MainPath LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mainPath :: LocationCard MainPath
-mainPath = location MainPath 
-  Cards.mainPath
-  2
-  (Static 0)
-  Squiggle
-  [Square, Plus]
+mainPath =
+  location MainPath Cards.mainPath 2 (Static 0) Squiggle [Square, Plus]
 
 instance HasModifiersFor env MainPath where
   getModifiersFor = noModifiersFor

@@ -25,10 +25,7 @@ instance HasModifiersFor env ResearchLibrarian where
 instance HasActions env ResearchLibrarian where
   getActions i (WhenEnterPlay target) (ResearchLibrarian x)
     | isTarget x target = pure
-      [ ActivateCardAbilityAction
-          i
-          (mkAbility (toSource x) 1 (ReactionAbility Free))
-      ]
+      [UseAbility i (mkAbility (toSource x) 1 (ReactionAbility Free))]
   getActions i window (ResearchLibrarian x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env ResearchLibrarian where

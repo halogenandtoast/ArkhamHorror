@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.MiskatonicQuad
   ( MiskatonicQuad(..)
   , miskatonicQuad
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -17,7 +16,8 @@ newtype MiskatonicQuad = MiskatonicQuad LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miskatonicQuad :: LocationCard MiskatonicQuad
-miskatonicQuad = location MiskatonicQuad 
+miskatonicQuad = location
+  MiskatonicQuad
   Cards.miskatonicQuad
   3
   (Static 0)

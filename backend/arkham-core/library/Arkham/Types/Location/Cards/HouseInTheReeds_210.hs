@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.HouseInTheReeds_210
   ( houseInTheReeds_210
   , HouseInTheReeds_210(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -21,7 +20,8 @@ newtype HouseInTheReeds_210 = HouseInTheReeds_210 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 houseInTheReeds_210 :: LocationCard HouseInTheReeds_210
-houseInTheReeds_210 = location HouseInTheReeds_210 
+houseInTheReeds_210 = location
+  HouseInTheReeds_210
   Cards.houseInTheReeds_210
   2
   (PerPlayer 1)

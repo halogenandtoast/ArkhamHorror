@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.DowntownArkhamAsylum
   ( DowntownArkhamAsylum(..)
   , downtownArkhamAsylum
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -23,7 +22,8 @@ newtype DowntownArkhamAsylum = DowntownArkhamAsylum LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 downtownArkhamAsylum :: LocationCard DowntownArkhamAsylum
-downtownArkhamAsylum = location DowntownArkhamAsylum 
+downtownArkhamAsylum = location
+  DowntownArkhamAsylum
   Cards.downtownArkhamAsylum
   4
   (PerPlayer 2)
@@ -41,10 +41,9 @@ ability attrs =
 
 instance ActionRunner env => HasActions env DowntownArkhamAsylum where
   getActions iid NonFast (DowntownArkhamAsylum attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs $ pure
-      [ ActivateCardAbilityAction iid (ability attrs)
-      | iid `elem` locationInvestigators
-      ]
+    | locationRevealed = withBaseActions iid NonFast attrs
+    $ pure
+        [ UseAbility iid (ability attrs) | iid `elem` locationInvestigators ]
   getActions iid window (DowntownArkhamAsylum attrs) =
     getActions iid window attrs
 

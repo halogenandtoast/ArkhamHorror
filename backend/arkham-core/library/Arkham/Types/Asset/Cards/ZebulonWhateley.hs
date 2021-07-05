@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.ZebulonWhateley
   ( zebulonWhateley
   , ZebulonWhateley(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -23,7 +22,8 @@ newtype ZebulonWhateley = ZebulonWhateley AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 zebulonWhateley :: AssetCard ZebulonWhateley
-zebulonWhateley = allyWith ZebulonWhateley Cards.zebulonWhateley (1, 4) (isStoryL .~ True)
+zebulonWhateley =
+  allyWith ZebulonWhateley Cards.zebulonWhateley (1, 4) (isStoryL .~ True)
 
 ability :: AssetAttrs -> Ability
 ability attrs =
@@ -31,7 +31,7 @@ ability attrs =
 
 instance HasActions env ZebulonWhateley where
   getActions iid (AfterPassSkillTest _ (TreacherySource _) You _) (ZebulonWhateley attrs)
-    = pure [ ActivateCardAbilityAction iid (ability attrs) | ownedBy attrs iid ]
+    = pure [ UseAbility iid (ability attrs) | ownedBy attrs iid ]
   getActions iid window (ZebulonWhateley attrs) = getActions iid window attrs
 
 instance HasModifiersFor env ZebulonWhateley where

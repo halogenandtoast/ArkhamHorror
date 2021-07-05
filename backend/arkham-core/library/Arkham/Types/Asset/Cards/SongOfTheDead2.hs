@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.SongOfTheDead2
   ( songOfTheDead2
   , SongOfTheDead2(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

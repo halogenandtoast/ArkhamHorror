@@ -21,7 +21,8 @@ newtype HelplessPassenger = HelplessPassenger AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 helplessPassenger :: AssetCard HelplessPassenger
-helplessPassenger = allyWith HelplessPassenger Cards.helplessPassenger (1, 1) (isStoryL .~ True)
+helplessPassenger =
+  allyWith HelplessPassenger Cards.helplessPassenger (1, 1) (isStoryL .~ True)
 
 ability :: AssetAttrs -> Ability
 ability attrs =
@@ -32,7 +33,7 @@ instance HasId LocationId env InvestigatorId => HasActions env HelplessPassenger
     lid <- getId iid
     case assetLocation attrs of
       Just location -> pure
-        [ ActivateCardAbilityAction iid (ability attrs)
+        [ UseAbility iid (ability attrs)
         | lid == location && isNothing (assetInvestigator attrs)
         ]
       _ -> pure mempty

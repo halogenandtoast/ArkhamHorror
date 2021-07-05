@@ -14,7 +14,8 @@ newtype AudubonPark = AudubonPark LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 audubonPark :: LocationCard AudubonPark
-audubonPark = location AudubonPark 
+audubonPark = location
+  AudubonPark
   Cards.audubonPark
   3
   (PerPlayer 1)

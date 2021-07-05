@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.Broadmoor
   ( Broadmoor(..)
   , broadmoor
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -17,12 +16,8 @@ newtype Broadmoor = Broadmoor LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 broadmoor :: LocationCard Broadmoor
-broadmoor = location Broadmoor 
-  Cards.broadmoor
-  3
-  (PerPlayer 1)
-  Plus
-  [Square, Plus]
+broadmoor =
+  location Broadmoor Cards.broadmoor 3 (PerPlayer 1) Plus [Square, Plus]
 
 instance HasModifiersFor env Broadmoor where
   getModifiersFor = noModifiersFor

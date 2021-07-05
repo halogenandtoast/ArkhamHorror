@@ -40,8 +40,7 @@ instance ActionRunner env => HasActions env HuntingTheRougarou where
         (pure False)
         ((member iid <$>) . getSet)
         mrougarou
-      pure
-        [ ActivateCardAbilityAction iid (ability a) | engagedWithTheRougarou ]
+      pure [ UseAbility iid (ability a) | engagedWithTheRougarou ]
   getActions i window (HuntingTheRougarou x) = getActions i window x
 
 instance ActRunner env => RunMessage env HuntingTheRougarou where

@@ -39,7 +39,7 @@ ability a = mkAbility
 
 instance HasActions env BeatCop2 where
   getActions iid _ (BeatCop2 a) | ownedBy a iid =
-    pure [ActivateCardAbilityAction iid (ability a)]
+    pure [UseAbility iid (ability a)]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env BeatCop2 where

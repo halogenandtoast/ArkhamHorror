@@ -6,23 +6,23 @@ module Arkham.Types.Investigator.Cards.DaisyWalkerParallel
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Game.Helpers
+import Arkham.Types.Investigator.Attrs
+import Arkham.Types.Investigator.Runner
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
+import Arkham.Types.Stats
 import Arkham.Types.Target
 import Arkham.Types.Token
-import Arkham.Types.Window
-import Arkham.Types.Investigator.Attrs
-import Arkham.Types.Investigator.Runner
-import Arkham.Types.Stats
-import Arkham.Types.Game.Helpers
 import Arkham.Types.Trait
+import Arkham.Types.Window
 
 newtype DaisyWalkerParallel = DaisyWalkerParallel InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
@@ -71,7 +71,7 @@ instance InvestigatorRunner env => HasActions env DaisyWalkerParallel where
     | iid == investigatorId attrs = withBaseActions iid FastPlayerWindow attrs
     $ do
         hasTomes <- (> 0) . unAssetCount <$> getCount (iid, [Tome])
-        pure [ ActivateCardAbilityAction iid (ability attrs) | hasTomes ]
+        pure [ UseAbility iid (ability attrs) | hasTomes ]
   getActions i window (DaisyWalkerParallel attrs) = getActions i window attrs
 
 instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where

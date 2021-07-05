@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.BurnedRuins_204
   ( burnedRuins_204
   , BurnedRuins_204(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -20,7 +19,8 @@ newtype BurnedRuins_204 = BurnedRuins_204 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 burnedRuins_204 :: LocationCard BurnedRuins_204
-burnedRuins_204 = location BurnedRuins_204 
+burnedRuins_204 = location
+  BurnedRuins_204
   Cards.burnedRuins_204
   3
   (Static 3)

@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.FirstAid
   ( FirstAid(..)
   , firstAid
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -36,7 +35,7 @@ ability attrs = mkAbility
 
 instance HasActions env FirstAid where
   getActions iid NonFast (FirstAid a) =
-    pure [ ActivateCardAbilityAction iid (ability a) | ownedBy a iid ]
+    pure [ UseAbility iid (ability a) | ownedBy a iid ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env FirstAid where

@@ -18,12 +18,8 @@ newtype Graveyard = Graveyard LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 graveyard :: LocationCard Graveyard
-graveyard = location Graveyard 
-  Cards.graveyard
-  1
-  (PerPlayer 2)
-  Hourglass
-  [Circle]
+graveyard =
+  location Graveyard Cards.graveyard 1 (PerPlayer 2) Hourglass [Circle]
 
 instance HasModifiersFor env Graveyard where
   getModifiersFor = noModifiersFor

@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.TheRougarouFeeds
   ( TheRougarouFeeds(..)
   , theRougarouFeeds
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

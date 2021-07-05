@@ -17,8 +17,13 @@ newtype FarAboveYourHouse = FarAboveYourHouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 farAboveYourHouse :: LocationCard FarAboveYourHouse
-farAboveYourHouse = location FarAboveYourHouse
-  Cards.farAboveYourHouse 2 (PerPlayer 1) Moon [Triangle]
+farAboveYourHouse = location
+  FarAboveYourHouse
+  Cards.farAboveYourHouse
+  2
+  (PerPlayer 1)
+  Moon
+  [Triangle]
 
 instance HasModifiersFor env FarAboveYourHouse where
   getModifiersFor = noModifiersFor

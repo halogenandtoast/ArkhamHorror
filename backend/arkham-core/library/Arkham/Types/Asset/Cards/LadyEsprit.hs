@@ -36,7 +36,7 @@ instance ActionRunner env => HasActions env LadyEsprit where
       Nothing -> pure $ fromJustNote "must be set" assetLocation
       Just iid' -> getId iid'
     pure
-      [ ActivateCardAbilityAction iid (ability a)
+      [ UseAbility iid (ability a)
       | not assetExhausted && locationId == assetLocationId
       ]
   getActions _ _ _ = pure []

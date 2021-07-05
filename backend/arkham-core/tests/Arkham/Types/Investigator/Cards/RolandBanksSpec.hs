@@ -1,7 +1,6 @@
 module Arkham.Types.Investigator.Cards.RolandBanksSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport.Lifted
 
@@ -17,8 +16,7 @@ spec = describe "Roland Banks" $ do
           let rolandBanks = lookupInvestigator "01001"
           enemy <- testEnemy
             $ \attrs -> attrs { enemyFight = 4, enemyHealth = Static 1 }
-          location <- testLocation
-            $ \attrs -> attrs { locationClues = 1 }
+          location <- testLocation $ \attrs -> attrs { locationClues = 1 }
           gameTest
               rolandBanks
               [ SetTokens [Zero]

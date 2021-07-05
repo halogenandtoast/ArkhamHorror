@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.TwistedUnderbrush
   ( TwistedUnderbrush(..)
   , twistedUnderbrush
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -22,7 +21,8 @@ newtype TwistedUnderbrush = TwistedUnderbrush LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 twistedUnderbrush :: LocationCard TwistedUnderbrush
-twistedUnderbrush = location TwistedUnderbrush 
+twistedUnderbrush = location
+  TwistedUnderbrush
   Cards.twistedUnderbrush
   3
   (PerPlayer 1)
@@ -35,7 +35,7 @@ instance HasModifiersFor env TwistedUnderbrush where
 instance ActionRunner env => HasActions env TwistedUnderbrush where
   getActions iid NonFast (TwistedUnderbrush attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ pure
-      [ ActivateCardAbilityAction
+      [ UseAbility
           iid
           (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
       | iid `member` locationInvestigators

@@ -15,12 +15,7 @@ newtype Attic = Attic LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 attic :: LocationCard Attic
-attic = location Attic 
-  Cards.attic
-  1
-  (PerPlayer 2)
-  Triangle
-  [Square]
+attic = location Attic Cards.attic 1 (PerPlayer 2) Triangle [Square]
 
 instance HasModifiersFor env Attic where
   getModifiersFor = noModifiersFor

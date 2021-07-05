@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.ShadowSpawned
   ( shadowSpawned
   , ShadowSpawned(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

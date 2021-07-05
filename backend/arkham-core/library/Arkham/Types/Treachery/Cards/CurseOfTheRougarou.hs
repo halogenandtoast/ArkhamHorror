@@ -21,7 +21,9 @@ newtype CurseOfTheRougarou = CurseOfTheRougarou (TreacheryAttrs `With` Metadata)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 curseOfTheRougarou :: TreacheryCard CurseOfTheRougarou
-curseOfTheRougarou = treachery (CurseOfTheRougarou . (`with` Metadata False)) Cards.curseOfTheRougarou
+curseOfTheRougarou = treachery
+  (CurseOfTheRougarou . (`with` Metadata False))
+  Cards.curseOfTheRougarou
 
 instance HasModifiersFor env CurseOfTheRougarou where
   getModifiersFor = noModifiersFor

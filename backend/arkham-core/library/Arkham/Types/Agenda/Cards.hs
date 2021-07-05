@@ -3,8 +3,8 @@ module Arkham.Types.Agenda.Cards
   ) where
 
 import Arkham.Types.Agenda.Cards.ACreatureOfTheBayou as X
-import Arkham.Types.Agenda.Cards.AllIsOne as X
 import Arkham.Types.Agenda.Cards.ATearInReality as X
+import Arkham.Types.Agenda.Cards.AllIsOne as X
 import Arkham.Types.Agenda.Cards.BeckoningForPower as X
 import Arkham.Types.Agenda.Cards.BidingItsTime as X
 import Arkham.Types.Agenda.Cards.BreakingThrough as X

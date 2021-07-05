@@ -15,12 +15,7 @@ newtype Bedroom = Bedroom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bedroom :: LocationCard Bedroom
-bedroom = location Bedroom 
-  Cards.bedroom
-  2
-  (PerPlayer 1)
-  Heart
-  [T]
+bedroom = location Bedroom Cards.bedroom 2 (PerPlayer 1) Heart [T]
 
 instance HasModifiersFor env Bedroom where
   getModifiersFor = noModifiersFor

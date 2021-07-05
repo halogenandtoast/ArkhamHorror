@@ -34,10 +34,7 @@ ability source attrs = base
 instance HasActions env GuardDog where
   getActions iid (WhenDealtDamage source@(EnemySource _) target) (GuardDog attrs)
     | isTarget attrs target
-    = pure
-      [ ActivateCardAbilityAction iid (ability source attrs)
-      | ownedBy attrs iid
-      ]
+    = pure [ UseAbility iid (ability source attrs) | ownedBy attrs iid ]
   getActions i window (GuardDog attrs) = getActions i window attrs
 
 instance (AssetRunner env) => RunMessage env GuardDog where

@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.UndimensionedAndUnseen
   ( UndimensionedAndUnseen(..)
   , undimensionedAndUnseen
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -291,7 +290,9 @@ instance
         <> [ SearchCollectionForRandom
                iid
                (toSource attrs)
-               (CardMatchByType (PlayerTreacheryType, setFromList [Madness, Injury, Pact]))
+               (CardMatchByType
+                 (PlayerTreacheryType, setFromList [Madness, Injury, Pact])
+               )
            | not standalone
            , iid <- investigatorIds
            ]

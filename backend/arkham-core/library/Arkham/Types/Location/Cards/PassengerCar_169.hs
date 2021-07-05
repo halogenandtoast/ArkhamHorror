@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.PassengerCar_169
   ( passengerCar_169
   , PassengerCar_169(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -39,9 +38,7 @@ instance HasCount ClueCount env LocationId => HasModifiersFor env PassengerCar_1
     | isTarget l target = case lookup LeftOf locationDirections of
       Just leftLocation -> do
         clueCount <- unClueCount <$> getCount leftLocation
-        pure $ toModifiers
-          l
-          [ Blocked | not locationRevealed && clueCount > 0 ]
+        pure $ toModifiers l [ Blocked | not locationRevealed && clueCount > 0 ]
       Nothing -> pure []
   getModifiersFor _ _ _ = pure []
 

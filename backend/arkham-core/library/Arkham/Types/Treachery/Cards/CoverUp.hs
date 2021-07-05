@@ -43,9 +43,7 @@ instance ActionRunner env => HasActions env CoverUp where
           Just (DiscoverClues _ _ m _) -> m
           _ -> 0
       pure
-        [ ActivateCardAbilityAction
-            iid
-            (mkAbility (toSource a) 1 (ReactionAbility Free))
+        [ UseAbility iid (mkAbility (toSource a) 1 (ReactionAbility Free))
         | (treacheryLocationId == investigatorLocationId)
           && (coverUpClues a > 0)
           && (cluesToDiscover > 0)

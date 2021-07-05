@@ -31,7 +31,7 @@ ability target attrs = (mkAbility (toSource attrs) 1 (ReactionAbility Free))
 instance HasActions env BindMonster2 where
   getActions iid (WhenWouldReady target) (BindMonster2 attrs@EventAttrs {..})
     | iid == eventOwner = pure
-      [ ActivateCardAbilityAction eventOwner (ability target attrs)
+      [ UseAbility eventOwner (ability target attrs)
       | target `elem` eventAttachedTarget
       ]
   getActions iid window (BindMonster2 attrs) = getActions iid window attrs

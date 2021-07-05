@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.TerrorFromBeyond
   ( TerrorFromBeyond(..)
   , terrorFromBeyond
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

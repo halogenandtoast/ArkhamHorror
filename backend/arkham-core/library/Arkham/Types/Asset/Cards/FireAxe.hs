@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.FireAxe
   ( FireAxe(..)
   , fireAxe
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -53,7 +52,7 @@ instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env FireAx
 instance (ActionRunner env, HasSkillTest env) => HasActions env FireAxe where
   getActions iid NonFast (FireAxe a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid NonFast
-    pure [ ActivateCardAbilityAction iid (fightAbility a) | fightAvailable ]
+    pure [ UseAbility iid (fightAbility a) | fightAvailable ]
   getActions iid (WhenSkillTest _) (FireAxe a) | ownedBy a iid = do
     msource <- getSkillTestSource
     let
@@ -61,7 +60,7 @@ instance (ActionRunner env, HasSkillTest env) => HasActions env FireAxe where
         Just (SkillTestSource _ _ source _ (Just Action.Fight))
           | isSource a source -> True
         _ -> False
-    pure [ ActivateCardAbilityAction iid (reactionAbility a) | using ]
+    pure [ UseAbility iid (reactionAbility a) | using ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env FireAxe where

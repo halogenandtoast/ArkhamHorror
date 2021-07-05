@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.TenAcreMeadow_246
   ( tenAcreMeadow_246
   , TenAcreMeadow_246(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -25,7 +24,8 @@ newtype TenAcreMeadow_246 = TenAcreMeadow_246 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tenAcreMeadow_246 :: LocationCard TenAcreMeadow_246
-tenAcreMeadow_246 = location TenAcreMeadow_246 
+tenAcreMeadow_246 = location
+  TenAcreMeadow_246
   Cards.tenAcreMeadow_246
   3
   (Static 1)
@@ -44,7 +44,7 @@ instance ActionRunner env => HasActions env TenAcreMeadow_246 where
   getActions iid FastPlayerWindow (TenAcreMeadow_246 attrs) =
     withBaseActions iid FastPlayerWindow attrs $ do
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
-      pure [ ActivateCardAbilityAction iid (ability attrs) | anyAbominations ]
+      pure [ UseAbility iid (ability attrs) | anyAbominations ]
   getActions iid window (TenAcreMeadow_246 attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env TenAcreMeadow_246 where

@@ -11,7 +11,8 @@ newtype BulletproofVest3 = BulletproofVest3 AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 bulletproofVest3 :: AssetCard BulletproofVest3
-bulletproofVest3 = bodyWith BulletproofVest3 Cards.bulletproofVest3 (healthL ?~ 4)
+bulletproofVest3 =
+  bodyWith BulletproofVest3 Cards.bulletproofVest3 (healthL ?~ 4)
 
 instance HasModifiersFor env BulletproofVest3 where
   getModifiersFor = noModifiersFor

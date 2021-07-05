@@ -1,7 +1,6 @@
 module Arkham.Types.Asset.Cards.Aquinnah1Spec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 

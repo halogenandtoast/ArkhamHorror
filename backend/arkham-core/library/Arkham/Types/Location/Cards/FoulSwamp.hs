@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.FoulSwamp
   ( FoulSwamp(..)
   , foulSwamp
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -29,7 +28,8 @@ newtype FoulSwamp = FoulSwamp LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 foulSwamp :: LocationCard FoulSwamp
-foulSwamp = location FoulSwamp 
+foulSwamp = location
+  FoulSwamp
   Cards.foulSwamp
   2
   (Static 0)
@@ -56,10 +56,12 @@ ability iid attrs = base { abilityMetadata = Just (IntMetadata 0) }
 
 instance ActionRunner env => HasActions env FoulSwamp where
   getActions iid NonFast (FoulSwamp attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs $ pure
-      [ ActivateCardAbilityAction iid (ability iid attrs)
-      | iid `member` locationInvestigators
-      ]
+    | locationRevealed
+    = withBaseActions iid NonFast attrs
+      $ pure
+          [ UseAbility iid (ability iid attrs)
+          | iid `member` locationInvestigators
+          ]
   getActions i window (FoulSwamp attrs) = getActions i window attrs
 
 instance LocationRunner env => RunMessage env FoulSwamp where

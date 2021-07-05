@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.ExhibitHallAthabaskanExhibit
   ( exhibitHallAthabaskanExhibit
   , ExhibitHallAthabaskanExhibit(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -22,7 +21,8 @@ newtype ExhibitHallAthabaskanExhibit = ExhibitHallAthabaskanExhibit LocationAttr
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallAthabaskanExhibit :: LocationCard ExhibitHallAthabaskanExhibit
-exhibitHallAthabaskanExhibit = location ExhibitHallAthabaskanExhibit 
+exhibitHallAthabaskanExhibit = location
+  ExhibitHallAthabaskanExhibit
   Cards.exhibitHallAthabaskanExhibit
   1
   (Static 0)

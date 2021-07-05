@@ -6,8 +6,8 @@ module Arkham.Types.Investigator.Cards.SkidsOToole
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
@@ -47,7 +47,7 @@ ability attrs = base { abilityLimit = PlayerLimit PerTurn 1 }
 
 instance HasActions env SkidsOToole where
   getActions iid (DuringTurn You) (SkidsOToole a@InvestigatorAttrs {..})
-    | iid == investigatorId = pure [ActivateCardAbilityAction iid (ability a)]
+    | iid == investigatorId = pure [UseAbility iid (ability a)]
   getActions _ _ _ = pure []
 
 instance HasTokenValue env SkidsOToole where

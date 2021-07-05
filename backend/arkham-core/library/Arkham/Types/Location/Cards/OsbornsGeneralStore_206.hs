@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.OsbornsGeneralStore_206
   ( osbornsGeneralStore_206
   , OsbornsGeneralStore_206(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -20,7 +19,8 @@ newtype OsbornsGeneralStore_206 = OsbornsGeneralStore_206 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 osbornsGeneralStore_206 :: LocationCard OsbornsGeneralStore_206
-osbornsGeneralStore_206 = location OsbornsGeneralStore_206 
+osbornsGeneralStore_206 = location
+  OsbornsGeneralStore_206
   Cards.osbornsGeneralStore_206
   2
   (PerPlayer 1)

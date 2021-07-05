@@ -2,13 +2,13 @@ module Arkham.Types.Agenda.Cards.WhatsGoingOn where
 
 import Arkham.Prelude
 
+import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Source
-import Arkham.Types.Agenda.Attrs
-import Arkham.Types.Agenda.Runner
 
 newtype WhatsGoingOn = WhatsGoingOn AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

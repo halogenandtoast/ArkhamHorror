@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.TearThroughSpace
   ( tearThroughSpace
   , TearThroughSpace(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -21,7 +20,8 @@ newtype TearThroughSpace = TearThroughSpace LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tearThroughSpace :: LocationCard TearThroughSpace
-tearThroughSpace = location TearThroughSpace 
+tearThroughSpace = location
+  TearThroughSpace
   Cards.tearThroughSpace
   1
   (Static 1)
@@ -38,7 +38,7 @@ instance ActionRunner env => HasActions env TearThroughSpace where
   getActions iid AtEndOfRound (TearThroughSpace attrs) = do
     leadInvestigator <- getLeadInvestigatorId
     pure
-      [ ActivateCardAbilityAction leadInvestigator (forcedAbility attrs)
+      [ UseAbility leadInvestigator (forcedAbility attrs)
       | iid == leadInvestigator
       ]
   getActions iid window (TearThroughSpace attrs) = getActions iid window attrs

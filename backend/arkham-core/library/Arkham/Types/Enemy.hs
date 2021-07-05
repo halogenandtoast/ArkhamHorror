@@ -127,10 +127,9 @@ instance (EnemyRunner env) => RunMessage env BaseEnemy where
   runMessage msg (BaseEnemy attrs) = BaseEnemy <$> runMessage msg attrs
 
 actionFromMessage :: Message -> Maybe Action
-actionFromMessage (ActivateCardAbilityAction _ ability) =
-  case abilityType ability of
-    ActionAbility maction _ -> maction
-    _ -> Nothing
+actionFromMessage (UseAbility _ ability) = case abilityType ability of
+  ActionAbility maction _ -> maction
+  _ -> Nothing
 actionFromMessage _ = Nothing
 
 preventedByModifier :: EnemyAttrs -> Message -> Modifier -> Bool

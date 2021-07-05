@@ -33,7 +33,7 @@ instance HasList HandCard env InvestigatorId => HasActions env HigherEducation w
     | ownedBy a iid = do
       active <- (>= 5) . length <$> getHandOf iid
       pure
-        [ ActivateCardAbilityAction
+        [ UseAbility
             iid
             (mkAbility (toSource a) 1 (FastAbility $ ResourceCost 1))
         | active
@@ -42,7 +42,7 @@ instance HasList HandCard env InvestigatorId => HasActions env HigherEducation w
     | ownedBy a iid = do
       active <- (>= 5) . length <$> getHandOf iid
       pure
-        [ ActivateCardAbilityAction
+        [ UseAbility
             iid
             (mkAbility (toSource a) 2 (FastAbility $ ResourceCost 1))
         | active

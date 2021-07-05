@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.WhateleyRuins_250
   ( whateleyRuins_250
   , WhateleyRuins_250(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -28,7 +27,8 @@ newtype WhateleyRuins_250 = WhateleyRuins_250 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 whateleyRuins_250 :: LocationCard WhateleyRuins_250
-whateleyRuins_250 = location WhateleyRuins_250 
+whateleyRuins_250 = location
+  WhateleyRuins_250
   Cards.whateleyRuins_250
   3
   (PerPlayer 2)
@@ -53,7 +53,7 @@ instance ActionRunner env => HasActions env WhateleyRuins_250 where
       investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
       pure
-        [ ActivateCardAbilityAction iid (ability attrs)
+        [ UseAbility iid (ability attrs)
         | investigatorsWithClues && anyAbominations
         ]
   getActions iid window (WhateleyRuins_250 attrs) = getActions iid window attrs

@@ -1,8 +1,7 @@
 module Arkham.Types.Stats
   ( Stats(..)
   , statsSkillValue
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -16,7 +15,7 @@ data Stats = Stats
   , combat :: Int
   , agility :: Int
   }
-  deriving stock (Show)
+  deriving stock Show
 
 statsSkillValue :: Stats -> SkillType -> Int
 statsSkillValue Stats {..} = \case

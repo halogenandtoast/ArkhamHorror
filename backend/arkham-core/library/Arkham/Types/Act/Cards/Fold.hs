@@ -41,7 +41,7 @@ instance ActionRunner env => HasActions env Fold where
         miid <- fmap unOwnerId <$> getId aid
         assetLocationId <- getId aid
         pure
-          [ ActivateCardAbilityAction
+          [ UseAbility
               iid
               (mkAbility
                 (ProxySource (AssetSource aid) (toSource attrs))

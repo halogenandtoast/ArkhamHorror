@@ -31,7 +31,7 @@ instance HasActions env ActionType => HasActions env FireExtinguisher1 where
     fightAvailable <- hasFightActions iid window
     evadeAvailable <- hasEvadeActions iid window
     pure
-      $ [ ActivateCardAbilityAction
+      $ [ UseAbility
             iid
             (mkAbility
               (toSource a)
@@ -40,7 +40,7 @@ instance HasActions env ActionType => HasActions env FireExtinguisher1 where
             )
         | fightAvailable
         ]
-      <> [ ActivateCardAbilityAction
+      <> [ UseAbility
              iid
              (mkAbility
                (toSource a)

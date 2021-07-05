@@ -1,18 +1,17 @@
 module Arkham.Types.Agenda.Cards.OutOfTime
   ( OutOfTime(..)
   , outOfTime
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
+import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Resolution
-import Arkham.Types.Agenda.Attrs
-import Arkham.Types.Agenda.Runner
 
 newtype OutOfTime = OutOfTime AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

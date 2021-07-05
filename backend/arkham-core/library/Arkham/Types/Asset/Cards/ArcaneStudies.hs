@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.ArcaneStudies
   ( ArcaneStudies(..)
   , arcaneStudies
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -31,27 +30,29 @@ instance HasModifiersFor env ArcaneStudies where
   getModifiersFor = noModifiersFor
 
 ability :: Int -> AssetAttrs -> Ability
-ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)
+ability idx a = mkAbility a idx $ FastAbility $ ResourceCost 1
 
 instance HasActions env ArcaneStudies where
   getActions iid (WhenSkillTest SkillWillpower) (ArcaneStudies a) =
-    pure [ ActivateCardAbilityAction iid (ability 1 a) | ownedBy a iid ]
+    pure [ UseAbility iid (ability 1 a) | ownedBy a iid ]
   getActions iid (WhenSkillTest SkillIntellect) (ArcaneStudies a) =
-    pure [ ActivateCardAbilityAction iid (ability 2 a) | ownedBy a iid ]
+    pure [ UseAbility iid (ability 2 a) | ownedBy a iid ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env ArcaneStudies where
   runMessage msg a@(ArcaneStudies attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage
-        (CreateWindowModifierEffect EffectSkillTestWindow
+        (CreateWindowModifierEffect
+          EffectSkillTestWindow
           (EffectModifiers [toModifier attrs $ SkillModifier SkillWillpower 1])
           source
           (InvestigatorTarget iid)
         )
     UseCardAbility iid source _ 2 _ | isSource attrs source ->
       a <$ unshiftMessage
-        (CreateWindowModifierEffect EffectSkillTestWindow
+        (CreateWindowModifierEffect
+          EffectSkillTestWindow
           (EffectModifiers [toModifier attrs $ SkillModifier SkillIntellect 1])
           source
           (InvestigatorTarget iid)

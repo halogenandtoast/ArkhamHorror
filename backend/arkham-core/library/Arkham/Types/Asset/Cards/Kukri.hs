@@ -32,7 +32,7 @@ instance ActionRunner env => HasActions env Kukri where
   getActions iid NonFast (Kukri a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid NonFast
     pure
-      [ ActivateCardAbilityAction
+      [ UseAbility
           iid
           (mkAbility
             (toSource a)

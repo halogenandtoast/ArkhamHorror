@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.EarlSawyer
   ( earlSawyer
   , EarlSawyer(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -30,7 +29,7 @@ ability attrs =
 
 instance HasActions env EarlSawyer where
   getActions iid (AfterEnemyEvaded You _) (EarlSawyer attrs) =
-    pure [ ActivateCardAbilityAction iid (ability attrs) | ownedBy attrs iid ]
+    pure [ UseAbility iid (ability attrs) | ownedBy attrs iid ]
   getActions iid window (EarlSawyer attrs) = getActions iid window attrs
 
 instance HasModifiersFor env EarlSawyer where

@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.DrawnIn
   ( DrawnIn(..)
   , drawnIn
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

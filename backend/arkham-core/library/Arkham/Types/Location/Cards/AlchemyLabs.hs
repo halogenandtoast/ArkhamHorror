@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.AlchemyLabs
   ( alchemyLabs
   , AlchemyLabs(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -27,12 +26,8 @@ newtype AlchemyLabs = AlchemyLabs LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alchemyLabs :: LocationCard AlchemyLabs
-alchemyLabs = location AlchemyLabs 
-  Cards.alchemyLabs
-  5
-  (Static 0)
-  Squiggle
-  [Hourglass]
+alchemyLabs =
+  location AlchemyLabs Cards.alchemyLabs 5 (Static 0) Squiggle [Hourglass]
 
 instance HasModifiersFor env AlchemyLabs where
   getModifiersFor _ target (AlchemyLabs attrs) | isTarget attrs target =
@@ -47,10 +42,7 @@ instance ActionRunner env => HasActions env AlchemyLabs where
           (toSource attrs)
           1
           (ActionAbility (Just Action.Investigate) (ActionCost 1))
-      pure
-        [ ActivateCardAbilityAction iid ability
-        | iid `elem` locationInvestigators
-        ]
+      pure [ UseAbility iid ability | iid `elem` locationInvestigators ]
   getActions iid window (AlchemyLabs attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env AlchemyLabs where

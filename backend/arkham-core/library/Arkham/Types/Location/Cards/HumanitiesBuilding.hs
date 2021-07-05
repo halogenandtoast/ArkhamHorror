@@ -15,7 +15,8 @@ newtype HumanitiesBuilding = HumanitiesBuilding LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 humanitiesBuilding :: LocationCard HumanitiesBuilding
-humanitiesBuilding = location HumanitiesBuilding 
+humanitiesBuilding = location
+  HumanitiesBuilding
   Cards.humanitiesBuilding
   3
   (PerPlayer 2)

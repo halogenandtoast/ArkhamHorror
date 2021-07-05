@@ -26,7 +26,8 @@ newtype BaseballBat = BaseballBat AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 baseballBat :: AssetCard BaseballBat
-baseballBat = assetWith BaseballBat Cards.baseballBat (slotsL .~ [HandSlot, HandSlot])
+baseballBat =
+  assetWith BaseballBat Cards.baseballBat (slotsL .~ [HandSlot, HandSlot])
 
 instance HasModifiersFor env BaseballBat where
   getModifiersFor (SkillTestSource _ _ source _ (Just Action.Fight)) (InvestigatorTarget iid) (BaseballBat a)
@@ -35,17 +36,14 @@ instance HasModifiersFor env BaseballBat where
   getModifiersFor _ _ _ = pure []
 
 fightAbility :: AssetAttrs -> Ability
-fightAbility AssetAttrs { assetId } = mkAbility
-  (AssetSource assetId)
-  1
-  (ActionAbility (Just Action.Fight) (ActionCost 1))
+fightAbility a =
+  mkAbility a 1 (ActionAbility (Just Action.Fight) (ActionCost 1))
 
 instance ActionRunner env  => HasActions env BaseballBat where
   getActions iid window (BaseballBat a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid window
-    pure [ ActivateCardAbilityAction iid (fightAbility a) | fightAvailable ]
+    pure [ UseAbility iid (fightAbility a) | fightAvailable ]
   getActions _ _ _ = pure []
-
 
 instance (AssetRunner env) => RunMessage env BaseballBat where
   runMessage msg a@(BaseballBat attrs) = case msg of

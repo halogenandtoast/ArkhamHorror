@@ -15,7 +15,8 @@ newtype AdministrationBuilding = AdministrationBuilding LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 administrationBuilding :: LocationCard AdministrationBuilding
-administrationBuilding = location AdministrationBuilding 
+administrationBuilding = location
+  AdministrationBuilding
   Cards.administrationBuilding
   4
   (PerPlayer 1)

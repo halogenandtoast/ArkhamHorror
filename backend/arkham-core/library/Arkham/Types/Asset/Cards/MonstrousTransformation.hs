@@ -24,7 +24,10 @@ newtype MonstrousTransformation = MonstrousTransformation AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 monstrousTransformation :: AssetCard MonstrousTransformation
-monstrousTransformation = assetWith MonstrousTransformation Cards.monstrousTransformation (isStoryL .~ True)
+monstrousTransformation = assetWith
+  MonstrousTransformation
+  Cards.monstrousTransformation
+  (isStoryL .~ True)
 
 instance HasModifiersFor env MonstrousTransformation where
   getModifiersFor _ (InvestigatorTarget iid) (MonstrousTransformation a)
@@ -41,7 +44,7 @@ instance ActionRunner env => HasActions env MonstrousTransformation where
   getActions iid window (MonstrousTransformation a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid window
     pure
-      [ ActivateCardAbilityAction
+      [ UseAbility
           iid
           (mkAbility
             (toSource a)

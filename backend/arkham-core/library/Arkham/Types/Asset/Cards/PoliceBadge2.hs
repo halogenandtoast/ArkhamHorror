@@ -1,13 +1,15 @@
 module Arkham.Types.Asset.Cards.PoliceBadge2
   ( PoliceBadge2(..)
   , policeBadge2
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
@@ -16,9 +18,6 @@ import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 
 newtype PoliceBadge2 = PoliceBadge2 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -34,7 +33,7 @@ instance HasModifiersFor env PoliceBadge2 where
 instance HasActions env PoliceBadge2 where
   getActions iid (DuringTurn InvestigatorAtYourLocation) (PoliceBadge2 a)
     | ownedBy a iid = pure
-      [ ActivateCardAbilityAction
+      [ UseAbility
           iid
           (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
       ]

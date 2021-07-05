@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.CongregationalChurch_209
   ( congregationalChurch_209
   , CongregationalChurch_209(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -22,7 +21,8 @@ newtype CongregationalChurch_209 = CongregationalChurch_209 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 congregationalChurch_209 :: LocationCard CongregationalChurch_209
-congregationalChurch_209 = location CongregationalChurch_209 
+congregationalChurch_209 = location
+  CongregationalChurch_209
   Cards.congregationalChurch_209
   2
   (PerPlayer 1)
@@ -43,7 +43,7 @@ ability attrs = mkAbility
 instance ActionRunner env => HasActions env CongregationalChurch_209 where
   getActions iid NonFast (CongregationalChurch_209 attrs)
     | locationRevealed attrs = withBaseActions iid NonFast attrs
-    $ pure [ActivateCardAbilityAction iid (ability attrs)]
+    $ pure [UseAbility iid (ability attrs)]
   getActions iid FastPlayerWindow (CongregationalChurch_209 attrs)
     | locationRevealed attrs = withBaseActions iid FastPlayerWindow attrs $ pure
       [ drawCardUnderneathAction iid attrs

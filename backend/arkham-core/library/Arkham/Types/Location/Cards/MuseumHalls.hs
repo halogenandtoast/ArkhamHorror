@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.MuseumHalls
   ( museumHalls
   , MuseumHalls(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -48,7 +47,7 @@ instance ActionRunner env => HasActions env MuseumHalls where
       lid <- fromJustNote "missing location"
         <$> getLocationIdWithTitle "Museum Entrance"
       pure
-        [ ActivateCardAbilityAction
+        [ UseAbility
             iid
             (mkAbility
               (ProxySource (LocationSource lid) (toSource attrs))
@@ -58,7 +57,7 @@ instance ActionRunner env => HasActions env MuseumHalls where
         ]
   getActions iid NonFast (MuseumHalls attrs) | revealed attrs =
     withBaseActions iid NonFast attrs $ pure
-      [ ActivateCardAbilityAction
+      [ UseAbility
           iid
           (mkAbility
             (toSource attrs)
@@ -89,9 +88,8 @@ instance LocationRunner env => RunMessage env MuseumHalls where
             SkillCombat
             5
           )
-    UseCardAbility iid source _ 1 _
-      | isSource attrs source && revealed attrs -> l
-      <$ unshiftMessage (UseScenarioSpecificAbility iid Nothing 1)
+    UseCardAbility iid source _ 1 _ | isSource attrs source && revealed attrs ->
+      l <$ unshiftMessage (UseScenarioSpecificAbility iid Nothing 1)
     PassedSkillTest _ _ source _ _ _ | isSource attrs source -> do
       actId <- fromJustNote "missing act" . headMay <$> getSetList ()
       l <$ unshiftMessage (AdvanceAct actId source)

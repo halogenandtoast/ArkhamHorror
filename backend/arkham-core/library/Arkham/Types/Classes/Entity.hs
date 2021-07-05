@@ -1,11 +1,14 @@
 {-# LANGUAGE DefaultSignatures #-}
-module Arkham.Types.Classes.Entity where
+module Arkham.Types.Classes.Entity
+  ( module Arkham.Types.Classes.Entity
+  , module X
+  ) where
 
 import Arkham.Prelude hiding (to)
 
+import Arkham.Types.Classes.Entity.Source as X
 import Arkham.Types.Message
 import Arkham.Types.Name
-import Arkham.Types.Source
 import Arkham.Types.Target
 import GHC.Generics
 
@@ -34,15 +37,6 @@ class TargetEntity a where
 instance TargetEntity Target where
   toTarget = id
   isTarget = (==)
-
-class SourceEntity a where
-  toSource :: a -> Source
-  isSource :: a -> Source -> Bool
-  isSource = (==) . toSource
-
-instance SourceEntity Source where
-  toSource = id
-  isSource = (==)
 
 defaultToId
   :: (EntityId a ~ EntityId (EntityAttrs a), Entity a, Entity (EntityAttrs a))
@@ -76,10 +70,6 @@ instance Entity a => Entity (a `With` b) where
 instance TargetEntity a => TargetEntity (a `With` b) where
   toTarget (a `With` _) = toTarget a
   isTarget (a `With` _) = isTarget a
-
-instance SourceEntity a => SourceEntity (a `With` b) where
-  toSource (a `With` _) = toSource a
-  isSource (a `With` _) = isSource a
 
 instance NamedEntity a => NamedEntity (a `With` b) where
   toName (a `With` _) = toName a

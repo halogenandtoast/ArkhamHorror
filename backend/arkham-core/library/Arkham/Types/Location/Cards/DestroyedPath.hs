@@ -51,17 +51,12 @@ investigateAbility a = mkAbility
 
 instance ActionRunner env => HasActions env DestroyedPath where
   getActions iid NonFast (DestroyedPath attrs) =
-    withBaseActions iid NonFast attrs $ pure
-      [ ActivateCardAbilityAction iid (investigateAbility attrs)
-      | iid `on` attrs
-      ]
+    withBaseActions iid NonFast attrs
+      $ pure [ UseAbility iid (investigateAbility attrs) | iid `on` attrs ]
   getActions iid (AfterRevealLocation You) (DestroyedPath attrs)
     | iid `on` attrs = do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid
-      pure
-        [ ActivateCardAbilityAction iid (forcedAbility attrs)
-        | actionRemainingCount == 0
-        ]
+      pure [ UseAbility iid (forcedAbility attrs) | actionRemainingCount == 0 ]
   getActions iid window (DestroyedPath attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env DestroyedPath where

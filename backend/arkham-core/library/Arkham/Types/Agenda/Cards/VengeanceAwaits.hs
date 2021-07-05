@@ -3,6 +3,7 @@ module Arkham.Types.Agenda.Cards.VengeanceAwaits where
 import Arkham.Prelude
 
 import Arkham.EncounterCard
+import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
@@ -32,7 +33,7 @@ instance AgendaRunner env => RunMessage env VengeanceAwaits where
       a <$ unshiftMessage (ScenarioResolution $ Resolution 2)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
       actIds <- getSetList ()
-      umordhoth <- EncounterCard <$> genEncounterCard "01157"
+      umordhoth <- EncounterCard <$> genEncounterCard Enemies.umordhoth
       a <$ if "01146" `elem` actIds
         then do
           ritualSiteId <- getRandom

@@ -202,8 +202,8 @@ getInvestigatorSpendableClueCount =
 instance HasSet AssetId env Investigator where
   getSet = pure . investigatorAssets . toAttrs
 
-instance HasSkill Investigator where
-  getSkill skillType = skillValueFor skillType Nothing [] . toAttrs
+instance HasSkillValue Investigator where
+  toSkillValue skillType = skillValueFor skillType Nothing [] . toAttrs
 
 allInvestigators :: HashMap InvestigatorId Investigator
 allInvestigators = mapFromList $ map

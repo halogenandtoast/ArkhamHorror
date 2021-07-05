@@ -2,6 +2,7 @@ module Arkham.Types.Act.Cards.AfterHours where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Assets
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
@@ -24,7 +25,7 @@ instance ActionRunner env => HasActions env AfterHours where
 instance ActRunner env => RunMessage env AfterHours where
   runMessage msg a@(AfterHours attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide B attrs -> a <$ unshiftMessages
-      [ AddCampaignCardToEncounterDeck "02060"
+      [ AddCampaignCardToEncounterDeck Assets.jazzMulligan
       , ShuffleEncounterDiscardBackIn
       , NextAct aid "02046"
       ]

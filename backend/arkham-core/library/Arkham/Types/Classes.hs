@@ -130,8 +130,8 @@ type HasCostPayment env
 class HasStats env a where
   getStats :: MonadReader env m => a -> Source -> m Stats
 
-class HasSkill a where
-  getSkill :: SkillType -> a -> Int
+class HasSkillValue a where
+  toSkillValue :: SkillType -> a -> Int
 
 class HasVictoryPoints a where
   getVictoryPoints :: a -> Maybe Int

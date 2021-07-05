@@ -18,12 +18,12 @@ import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 
-genEncounterCard :: MonadRandom m => CardCode -> m EncounterCard
-genEncounterCard cardCode = lookupEncounterCard cardCode <$> getRandom
+genEncounterCard :: MonadRandom m => CardDef -> m EncounterCard
+genEncounterCard cardDef = lookupEncounterCard cardDef <$> getRandom
 
-lookupEncounterCard :: CardCode -> CardId -> EncounterCard
-lookupEncounterCard cardCode cardId =
-  MkEncounterCard { ecId = cardId, ecDef = lookupEncounterCardDef cardCode }
+lookupEncounterCard :: CardDef -> CardId -> EncounterCard
+lookupEncounterCard cardDef cardId =
+  MkEncounterCard { ecId = cardId, ecDef = cardDef }
 
 lookupEncounterCardDef :: CardCode -> CardDef
 lookupEncounterCardDef cardCode =

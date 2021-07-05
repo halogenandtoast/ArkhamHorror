@@ -6,6 +6,7 @@ module Arkham.Types.Act.Cards.AscendingTheHillV3
 import Arkham.Prelude
 
 import Arkham.EncounterCard
+import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.ActId
@@ -48,7 +49,7 @@ instance (HasName env LocationId, ActRunner env) => RunMessage env AscendingTheH
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       sentinelPeak <- fromJustNote "must exist"
         <$> getLocationIdWithTitle "Sentinel Peak"
-      sethBishop <- EncounterCard <$> genEncounterCard "02293"
+      sethBishop <- EncounterCard <$> genEncounterCard Enemies.sethBishop
       a <$ unshiftMessages
         [ CreateEnemyAt sethBishop sentinelPeak (Just $ toTarget attrs)
         , NextAct actId "02281"

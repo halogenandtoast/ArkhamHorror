@@ -3,6 +3,8 @@ module Arkham.Types.Scenario.Scenarios.ReturnToTheDevourerBelow where
 import Arkham.Prelude
 
 import Arkham.EncounterCard
+import qualified Arkham.Enemy.Cards as Enemies
+import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -52,7 +54,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         pastMidnight <- getHasRecord ItIsPastMidnight
         ghoulPriestAlive <- getHasRecord GhoulPriestIsStillAlive
         cultistsWhoGotAway <- getRecordSet CultistsWhoGotAway
-        ghoulPriestCard <- lookupEncounterCard "01116" <$> getRandom
+        ghoulPriestCard <- genEncounterCard Enemies.ghoulPriest
         mainPathId <- getRandom
         let
           arkhamWoods =
@@ -155,7 +157,8 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         name <- getName lid
         if name == "Ritual Site"
           then do
-            vaultOfEarthlyDemise <- EncounterCard <$> genEncounterCard "50032b"
+            vaultOfEarthlyDemise <- EncounterCard
+              <$> genEncounterCard Treacheries.vaultOfEarthlyDemise
             s <$ unshiftMessage
               (AttachStoryTreacheryTo
                 vaultOfEarthlyDemise

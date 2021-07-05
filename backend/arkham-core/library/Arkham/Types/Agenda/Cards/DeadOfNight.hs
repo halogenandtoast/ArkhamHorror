@@ -3,6 +3,7 @@ module Arkham.Types.Agenda.Cards.DeadOfNight where
 import Arkham.Prelude
 
 import Arkham.EncounterCard
+import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
@@ -34,8 +35,9 @@ instance AgendaRunner env => RunMessage env DeadOfNight where
   runMessage msg a@(DeadOfNight attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       dormitoriesInPlay <- isJust <$> getLocationIdWithTitle "Dormitories"
-      mExperimentId <- fmap unStoryEnemyId <$> getId (CardCode "02058")
-      theExperiment <- EncounterCard <$> genEncounterCard "02058"
+      mExperimentId <- fmap unStoryEnemyId
+        <$> getId (toCardCode Enemies.theExperiment)
+      theExperiment <- EncounterCard <$> genEncounterCard Enemies.theExperiment
       scienceBuildingId <- fromJustNote "missing science building"
         <$> getLocationIdWithTitle "Science Building"
       a <$ unshiftMessages

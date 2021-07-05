@@ -6,6 +6,7 @@ module Arkham.Types.Agenda.Cards.BreakingThrough
 import Arkham.Prelude
 
 import Arkham.EncounterCard
+import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
@@ -33,7 +34,7 @@ instance AgendaRunner env => RunMessage env BreakingThrough where
       yogSothothSpawnLocation <- fromMaybeM
         (getJustLocationIdByName "Another Dimension")
         (getLocationIdByName "The Edge of the Universe")
-      yogSothoth <- EncounterCard <$> genEncounterCard "02323"
+      yogSothoth <- EncounterCard <$> genEncounterCard Enemies.yogSothoth
       a <$ unshiftMessages
         [ CreateEnemyAt yogSothoth yogSothothSpawnLocation Nothing
         , NextAgenda aid "02315"

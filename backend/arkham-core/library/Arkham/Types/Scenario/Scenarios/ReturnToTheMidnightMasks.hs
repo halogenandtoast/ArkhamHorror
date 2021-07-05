@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.EncounterCard
 import Arkham.EncounterSet (gatherEncounterSet)
+import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -73,19 +74,11 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         ghoulPriestAlive <- getHasRecord GhoulPriestIsStillAlive
         litaForcedToFindOthersToHelpHerCause <- getHasRecord
           LitaWasForcedToFindOthersToHelpHerCause
-        ghoulPriestCard <- lookupEncounterCard "01116" <$> getRandom
-        cultistCards <-
-          for
-              [ "01137"
-              , "01138"
-              , "01139"
-              , "01140"
-              , "01141"
-              , "50044"
-              , "50045"
-              , "50046"
-              ]
-            $ \cardCode -> lookupEncounterCard cardCode <$> getRandom
+        ghoulPriestCard <- genEncounterCard Enemies.ghoulPriest
+        cultistCards <- liftM2
+          (<>)
+          (gatherEncounterSet EncounterSet.CultOfUmordhoth)
+          (gatherEncounterSet EncounterSet.ReturnCultOfUmordhoth)
         cultistDeck' <- drop 3 <$> shuffleM cultistCards
         let
           startingLocationMessages = if houseBurnedDown

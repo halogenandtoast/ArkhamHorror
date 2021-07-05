@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.SaracenicScript
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Assets
 import Arkham.PlayerCard
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
@@ -38,8 +39,8 @@ instance ActRunner env => RunMessage env SaracenicScript where
       survived <- getHasRecord DrHenryArmitageSurvivedTheDunwichLegacy
       investigatorIds <- map unInScenarioInvestigatorId
         <$> getSetList @InScenarioInvestigatorId ()
-      investigatorEsotericFormulaPairs <- for investigatorIds
-        $ \iid -> (iid, ) <$> (PlayerCard <$> genPlayerCard "02254")
+      investigatorEsotericFormulaPairs <- for investigatorIds $ \iid ->
+        (iid, ) <$> (PlayerCard <$> genPlayerCard Assets.esotericFormula)
       a <$ unshiftMessages
         ([ TakeControlOfSetAsideAsset iid esotericFormula
          | (iid, esotericFormula) <- investigatorEsotericFormulaPairs

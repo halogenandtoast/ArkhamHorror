@@ -4,11 +4,13 @@ module Arkham.Types.Treachery.Cards.SearchingForIzzieSpec
 
 import TestImport.Lifted
 
+import qualified Arkham.Treachery.Cards as Cards
+
 spec :: Spec
 spec = describe "Searching for Izzie" $ do
   it "attaches to the location farthest away from you" $ do
     investigator <- testInvestigator "00000" id
-    searchingForIzzie <- buildPlayerCard "02011"
+    searchingForIzzie <- genPlayerCard Cards.searchingForIzzie
     (location1, location2) <- testConnectedLocations id id
     gameTest
         investigator
@@ -31,7 +33,7 @@ spec = describe "Searching for Izzie" $ do
 
   it "takes 2 actions and is discarded on a successful investigation" $ do
     investigator <- testInvestigator "00000" id
-    searchingForIzzie <- buildPlayerCard "02011"
+    searchingForIzzie <- genPlayerCard Cards.searchingForIzzie
     location <- testLocation id
     gameTest
         investigator
@@ -70,7 +72,7 @@ spec = describe "Searching for Izzie" $ do
 
   it "causes 1 mental trauma if not discarded" $ do
     investigator <- testInvestigator "00000" id
-    searchingForIzzie <- buildPlayerCard "02011"
+    searchingForIzzie <- genPlayerCard Cards.searchingForIzzie
     location <- testLocation id
     gameTest
         investigator

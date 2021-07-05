@@ -6,6 +6,7 @@ module Arkham.Types.Agenda.Cards.ReturnToPredatorOrPrey
 import Arkham.Prelude
 
 import Arkham.EncounterCard
+import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Agenda.Attrs
@@ -44,7 +45,7 @@ instance AgendaRunner env => RunMessage env ReturnToPredatorOrPrey where
   runMessage msg a@(ReturnToPredatorOrPrey attrs@AgendaAttrs {..}) =
     case msg of
       AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
-        narogath <- EncounterCard <$> genEncounterCard "50026b"
+        narogath <- EncounterCard <$> genEncounterCard Enemies.narogath
         a <$ unshiftMessages
           [CreateEnemyEngagedWithPrey narogath, NextAgenda aid "01122"]
       UseCardAbility iid (AgendaSource aid) _ 1 _ | aid == agendaId -> do

@@ -4,11 +4,13 @@ module Arkham.Types.Treachery.Cards.RexsCurseSpec
 
 import TestImport.Lifted
 
+import qualified Arkham.Treachery.Cards as Cards
+
 spec :: Spec
 spec = describe "Rex's Curse" $ do
   it "is put into play into your threat area" $ do
     investigator <- testInvestigator "00000" id
-    rexsCurse <- buildPlayerCard "02009"
+    rexsCurse <- genPlayerCard Cards.rexsCurse
     gameTest
         investigator
         [loadDeck investigator [rexsCurse], drawCards investigator 1]
@@ -21,7 +23,7 @@ spec = describe "Rex's Curse" $ do
 
   it "causes you to reveal another token" $ do
     investigator <- testInvestigator "00000" id
-    rexsCurse <- buildPlayerCard "02009"
+    rexsCurse <- genPlayerCard Cards.rexsCurse
 
     (didRunMessage, logger) <- didPassSkillTestBy investigator SkillIntellect 2
 
@@ -51,7 +53,7 @@ spec = describe "Rex's Curse" $ do
 
   it "is shuffled back into your deck if you fail the test" $ do
     investigator <- testInvestigator "00000" id
-    rexsCurse <- buildPlayerCard "02009"
+    rexsCurse <- genPlayerCard Cards.rexsCurse
     gameTest
         investigator
         [ SetTokens [MinusOne]

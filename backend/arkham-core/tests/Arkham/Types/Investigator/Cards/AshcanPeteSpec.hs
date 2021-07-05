@@ -4,12 +4,15 @@ module Arkham.Types.Investigator.Cards.AshcanPeteSpec
 
 import TestImport.Lifted
 
+import qualified Arkham.Asset.Cards as Assets
+import qualified Arkham.Event.Cards as Events
+
 spec :: Spec
 spec = describe "\"Ashcan\" Pete" $ do
   it "starts with Duke in play" $ do
     let ashcanPete = lookupInvestigator "02005"
-    duke <- buildPlayerCard "02014"
-    placeholders <- replicateM 5 (buildPlayerCard "01088") -- need to fill deck for setup
+    duke <- genPlayerCard Assets.duke
+    placeholders <- replicateM 5 (genPlayerCard Events.emergencyCache) -- need to fill deck for setup
 
     gameTest
         ashcanPete

@@ -4,6 +4,7 @@ module Arkham.Types.Event.Cards.DodgeSpec
 
 import TestImport
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
@@ -14,7 +15,7 @@ spec = do
         $ \attrs -> attrs { investigatorResources = 1 }
       enemy <- testEnemy id
       location <- testLocation id
-      dodge <- buildPlayerCard "01023"
+      dodge <- genPlayerCard Cards.dodge
 
       (didRunMessage, logger) <- createMessageMatcher
         (PerformEnemyAttack "00000" (toId enemy))

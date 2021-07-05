@@ -2,6 +2,7 @@ module Arkham.Types.Scenario.Scenarios.ExtracurricularActivity where
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Assets
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
@@ -208,7 +209,10 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            leadInvestigatorId
            [ Label
              "Add Professor Warren Rice to your deck"
-             [AddCampaignCardToDeck leadInvestigatorId "02061"]
+             [ AddCampaignCardToDeck
+                 leadInvestigatorId
+                 Assets.professorWarrenRice
+             ]
            , Label "Do not add Professor Warren Rice to your deck" []
            ]
          ]

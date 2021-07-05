@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.JennysTwin45sSpec
 
 import TestImport.Lifted
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.AssetId
 import qualified Arkham.Types.Enemy.Attrs as Enemy
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
@@ -19,7 +20,7 @@ spec = describe "Jenny's Twin .45s" $ do
       )
 
   it "enters play with X uses" $ do
-    jennysTwin45s <- buildPlayerCard "02010"
+    jennysTwin45s <- genPlayerCard Cards.jennysTwin45s
     investigator <- testInvestigator "00000" $ \attrs -> attrs
       { investigatorResources = 5
       , investigatorHand = [PlayerCard jennysTwin45s]
@@ -38,7 +39,7 @@ spec = describe "Jenny's Twin .45s" $ do
           updatedJennysTwin45s <- getAsset (AssetId $ pcId jennysTwin45s)
           updatedJennysTwin45s `shouldSatisfy` hasUses 5
   it "gives +2 combat and does +1 damage" $ do
-    jennysTwin45s <- buildPlayerCard "02010"
+    jennysTwin45s <- genPlayerCard Cards.jennysTwin45s
     investigator <- testInvestigator "00000" $ \attrs -> attrs
       { investigatorResources = 1
       , investigatorHand = [PlayerCard jennysTwin45s]

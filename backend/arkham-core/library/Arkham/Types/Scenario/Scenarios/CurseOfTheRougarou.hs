@@ -5,6 +5,7 @@ module Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Assets
 import Arkham.Json
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
@@ -316,7 +317,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
                 leadInvestigatorId
                 [ Label
                   "Add Lady Esprit to your deck"
-                  [AddCampaignCardToDeck leadInvestigatorId "81019"]
+                  [AddCampaignCardToDeck leadInvestigatorId Assets.ladyEsprit]
                 , Label "Do not add Lady Esprit to your deck" []
                 ]
               ]
@@ -347,7 +348,9 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
                   \ not.\""
                 ]
               , Record TheRougarouEscapedAndYouEmbracedTheCurse
-              , AddCampaignCardToDeck leadInvestigatorId "81030"
+              , AddCampaignCardToDeck
+                leadInvestigatorId
+                Assets.monstrousTransformation
               ]
             <> [ GainXP iid xp | iid <- investigatorIds ]
             <> [EndOfGame]

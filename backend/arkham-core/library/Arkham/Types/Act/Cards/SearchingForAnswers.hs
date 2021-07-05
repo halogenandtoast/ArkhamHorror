@@ -6,6 +6,7 @@ module Arkham.Types.Act.Cards.SearchingForAnswers
 import Arkham.Prelude
 
 import Arkham.EncounterCard
+import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.ActId
@@ -47,7 +48,7 @@ instance ActRunner env => RunMessage env SearchingForAnswers where
       unrevealedLocationIds <- map unUnrevealedLocationId <$> getSetList ()
       hiddenChamber <- fromJustNote "must exist"
         <$> getId (LocationWithTitle "The Hidden Chamber")
-      silasBishop <- EncounterCard <$> genEncounterCard "02216"
+      silasBishop <- EncounterCard <$> genEncounterCard Enemies.silasBishop
       a <$ unshiftMessages
         ([ RevealLocation Nothing lid | lid <- unrevealedLocationIds ]
         <> [ MoveAllCluesTo (LocationTarget hiddenChamber)

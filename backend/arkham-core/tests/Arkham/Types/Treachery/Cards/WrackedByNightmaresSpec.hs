@@ -4,13 +4,14 @@ module Arkham.Types.Treachery.Cards.WrackedByNightmaresSpec
 
 import TestImport.Lifted
 
+import qualified Arkham.Treachery.Cards as Cards
 import qualified Arkham.Types.Asset.Attrs as Asset
 
 spec :: Spec
 spec = describe "Wracked by Nightmares" $ do
   it "prevents controlled assets from readying" $ do
     investigator <- testInvestigator "00000" id
-    wrackedByNightmares <- buildPlayerCard "02015"
+    wrackedByNightmares <- genPlayerCard Cards.wrackedByNightmares
     asset <- testAsset
       ((Asset.exhaustedL .~ True) . (Asset.investigatorL ?~ toId investigator))
     gameTest
@@ -31,7 +32,7 @@ spec = describe "Wracked by Nightmares" $ do
 
   it "trigger actions removes restriction and takes two actions" $ do
     investigator <- testInvestigator "00000" id
-    wrackedByNightmares <- buildPlayerCard "02015"
+    wrackedByNightmares <- genPlayerCard Cards.wrackedByNightmares
     asset <- testAsset
       ((Asset.exhaustedL .~ True) . (Asset.investigatorL ?~ toId investigator))
     gameTest

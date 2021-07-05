@@ -5,7 +5,8 @@ module Arkham.Types.Location.Cards.BrackishWaters
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (brackishWaters)
+import qualified Arkham.Asset.Cards as Assets
+import qualified Arkham.Location.Cards as Cards
 import Arkham.PlayerCard (genPlayerCard)
 import Arkham.Types.Ability
 import Arkham.Types.AssetId
@@ -92,6 +93,6 @@ instance LocationRunner env => RunMessage env BrackishWaters where
         ]
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        fishingNet <- PlayerCard <$> genPlayerCard "81021"
+        fishingNet <- PlayerCard <$> genPlayerCard Assets.fishingNet
         l <$ unshiftMessage (TakeControlOfSetAsideAsset iid fishingNet)
     _ -> BrackishWaters <$> runMessage msg attrs

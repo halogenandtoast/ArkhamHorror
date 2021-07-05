@@ -4,7 +4,6 @@ module Arkham.Types.Investigator.Attrs where
 import Arkham.Prelude
 
 import Arkham.Json
-import Arkham.PlayerCard
 import Arkham.Types.Ability
 import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
@@ -872,12 +871,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       %~ removeFromSlots aid
   Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
   Discard (EnemyTarget eid) -> pure $ a & engagedEnemiesL %~ deleteSet eid
-  Discarded (AssetTarget aid) card | aid `elem` investigatorAssets ->
-    pure
+  Discarded (AssetTarget aid) (PlayerCard card)
+    | aid `elem` investigatorAssets
+    -> pure
       $ a
       & (assetsL %~ deleteSet aid)
-      & (discardL %~ (lookupPlayerCard (toCardCode card) (unAssetId aid) :))
+      & (discardL %~ (card :))
       & (slotsL %~ removeFromSlots aid)
+  Discarded (AssetTarget aid) (EncounterCard _)
+    | aid `elem` investigatorAssets -> error "Not handled"
   Exiled (AssetTarget aid) _ | aid `elem` investigatorAssets ->
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   RemoveFromGame (AssetTarget aid) -> pure $ a & assetsL %~ deleteSet aid

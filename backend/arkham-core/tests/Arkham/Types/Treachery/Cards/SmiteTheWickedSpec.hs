@@ -4,13 +4,16 @@ module Arkham.Types.Treachery.Cards.SmiteTheWickedSpec
 
 import TestImport.Lifted
 
+import qualified Arkham.Enemy.Cards as Cards
+import qualified Arkham.Treachery.Cards as Cards
+
 spec :: Spec
 spec = describe "Smite the Wicked" $ do
   it "draws an enemy, attaches to it, and spawns farthest away from you" $ do
     investigator <- testInvestigator "00000" id
-    smiteTheWicked <- buildPlayerCard "02007"
-    enemy <- buildTestEnemyEncounterCard
-    treachery <- buildTestTreacheryEncounterCard
+    smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
+    enemy <- genEncounterCard Cards.placeholderEnemy
+    treachery <- genEncounterCard Cards.placeholderTreachery
     (location1, location2) <- testConnectedLocations id id
     gameTest
         investigator
@@ -36,8 +39,8 @@ spec = describe "Smite the Wicked" $ do
 
   it "causes 1 mental trauma if enemy not defeated" $ do
     investigator <- testInvestigator "00000" id
-    smiteTheWicked <- buildPlayerCard "02007"
-    enemy <- buildTestEnemyEncounterCard
+    smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
+    enemy <- genEncounterCard Cards.placeholderEnemy
     location <- testLocation id
     gameTest
         investigator
@@ -55,8 +58,8 @@ spec = describe "Smite the Wicked" $ do
 
   it "won't cause trauma if enemy is defeated" $ do
     investigator <- testInvestigator "00000" id
-    smiteTheWicked <- buildPlayerCard "02007"
-    enemy <- buildTestEnemyEncounterCard
+    smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
+    enemy <- genEncounterCard Cards.placeholderEnemy
     location <- testLocation id
     gameTest
         investigator
@@ -89,8 +92,8 @@ spec = describe "Smite the Wicked" $ do
 
   it "will cause trauma if player is eliminated" $ do
     investigator <- testInvestigator "00000" id
-    smiteTheWicked <- buildPlayerCard "02007"
-    enemy <- buildTestEnemyEncounterCard
+    smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
+    enemy <- genEncounterCard Cards.placeholderEnemy
     location <- testLocation id
     gameTest
         investigator

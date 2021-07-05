@@ -4,6 +4,7 @@ module Arkham.Types.Event.Cards.DrawnToTheFlameSpec
 
 import TestImport.Lifted
 
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 import Arkham.Types.Location.Attrs (cluesL)
 import Arkham.Types.Trait
@@ -21,7 +22,7 @@ spec = describe "Drawn to the flame" $ do
           (id, id)
           (cardTraitsL .~ singleton Central, cluesL .~ 2)
         drawnToTheFlame <- buildEvent "01064" investigator
-        onWingsOfDarkness <- buildEncounterCard "01173"
+        onWingsOfDarkness <- genEncounterCard Cards.onWingsOfDarkness
         gameTest
             investigator
             [ SetEncounterDeck [onWingsOfDarkness]

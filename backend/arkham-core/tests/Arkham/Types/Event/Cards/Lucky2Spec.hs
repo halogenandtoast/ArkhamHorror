@@ -4,6 +4,7 @@ module Arkham.Types.Event.Cards.Lucky2Spec
 
 import TestImport.Lifted
 
+import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
@@ -15,7 +16,7 @@ spec = describe "Lucky! (2)" $ do
       , investigatorResources = 1
       , investigatorDeck = Deck [cardToDraw]
       }
-    lucky2 <- buildPlayerCard "01084"
+    lucky2 <- genPlayerCard Cards.lucky2
 
     (didPassTest, logger) <- didPassSkillTestBy investigator SkillIntellect 0
 
@@ -47,7 +48,7 @@ spec = describe "Lucky! (2)" $ do
       , investigatorResources = 1
       , investigatorDeck = Deck [cardToDraw]
       }
-    lucky <- buildPlayerCard "01084"
+    lucky2 <- genPlayerCard Cards.lucky2
 
     (didFailTest, logger) <- didFailSkillTestBy investigator SkillIntellect 2
 
@@ -55,7 +56,7 @@ spec = describe "Lucky! (2)" $ do
         logger
         investigator
         [ SetTokens [AutoFail]
-        , addToHand investigator (PlayerCard lucky)
+        , addToHand investigator (PlayerCard lucky2)
         , beginSkillTest investigator SkillIntellect 2
         ]
         id

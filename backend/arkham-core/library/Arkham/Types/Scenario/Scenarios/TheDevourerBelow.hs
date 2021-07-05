@@ -3,6 +3,7 @@ module Arkham.Types.Scenario.Scenarios.TheDevourerBelow where
 import Arkham.Prelude
 
 import Arkham.EncounterCard
+import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -55,7 +56,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       pastMidnight <- getHasRecord ItIsPastMidnight
       ghoulPriestAlive <- getHasRecord GhoulPriestIsStillAlive
       cultistsWhoGotAway <- getRecordSet CultistsWhoGotAway
-      ghoulPriestCard <- lookupEncounterCard "01116" <$> getRandom
+      ghoulPriestCard <- genEncounterCard Enemies.ghoulPriest
       mainPathId <- getRandom
       let
         arkhamWoods = ["01150", "01151", "01152", "01153", "01154", "01155"]

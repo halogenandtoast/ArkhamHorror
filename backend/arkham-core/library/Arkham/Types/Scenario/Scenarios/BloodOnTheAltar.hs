@@ -5,8 +5,10 @@ module Arkham.Types.Scenario.Scenarios.BloodOnTheAltar
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Assets
 import Arkham.EncounterCard
 import qualified Arkham.Enemy.Cards as Enemies
+import qualified Arkham.Location.Cards as Locations
 import Arkham.PlayerCard
 import Arkham.Types.AgendaId
 import Arkham.Types.CampaignLogKey
@@ -196,9 +198,13 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
             )
 
         theHiddenChamber <-
-          EncounterCard . lookupEncounterCard "02214" <$> getRandom
+          EncounterCard
+          . lookupEncounterCard Locations.theHiddenChamber
+          <$> getRandom
         keyToTheChamber <-
-          EncounterCard . lookupEncounterCard "02215" <$> getRandom
+          EncounterCard
+          . lookupEncounterCard Assets.keyToTheChamber
+          <$> getRandom
         cardsToPutUnderneath <-
           shuffleM
           $ keyToTheChamber
@@ -216,16 +222,16 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           True
 
         professorWarrenRice <- if professorWarrenRiceKidnapped
-          then Just . PlayerCard . lookupPlayerCard "02061" <$> getRandom
+          then Just . PlayerCard <$> genPlayerCard Assets.professorWarrenRice
           else pure Nothing
         drFrancisMorgan <- if drFrancisMorganKidnapped
-          then Just . PlayerCard . lookupPlayerCard "02080" <$> getRandom
+          then Just . PlayerCard <$> genPlayerCard Assets.drFrancisMorgan
           else pure Nothing
         drHenryArmitage <- if drHenryArmitageKidnapped
-          then Just . PlayerCard . lookupPlayerCard "02040" <$> getRandom
+          then Just . PlayerCard <$> genPlayerCard Assets.drHenryArmitage
           else pure Nothing
-        zebulonWhateley <- PlayerCard . lookupPlayerCard "02217" <$> getRandom
-        earlSawyer <- PlayerCard . lookupPlayerCard "02218" <$> getRandom
+        zebulonWhateley <- PlayerCard <$> genPlayerCard Assets.zebulonWhateley
+        earlSawyer <- PlayerCard <$> genPlayerCard Assets.earlSawyer
 
         delayedOnTheirWayToDunwich <- getHasRecordOrStandalone
           TheInvestigatorsWereDelayedOnTheirWayToDunwich

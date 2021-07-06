@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.ThePathToTheHill
   ( ThePathToTheHill(..)
   , thePathToTheHill
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -35,7 +36,7 @@ instance ActRunner env => RunMessage env ThePathToTheHill where
   runMessage msg a@(ThePathToTheHill attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       investigatorIds <- getInvestigatorIds
-      unshiftMessages =<< advanceActSideA investigatorIds (PerPlayer 2) attrs
+      pushAll =<< advanceActSideA investigatorIds (PerPlayer 2) attrs
       pure
         . ThePathToTheHill
         $ attrs
@@ -54,7 +55,7 @@ instance ActRunner env => RunMessage env ThePathToTheHill where
           (True, _) -> "02278"
           (False, True) -> "02279"
           (False, False) -> "02280"
-      a <$ unshiftMessages
+      a <$ pushAll
         (map (RemoveAllClues . LocationTarget) locationIds
         ++ [RevealLocation Nothing ascendingPathId, NextAct actId nextActId]
         )

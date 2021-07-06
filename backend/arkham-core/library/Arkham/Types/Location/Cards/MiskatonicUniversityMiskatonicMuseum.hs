@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.MiskatonicUniversityMiskatonicMuseum
   ( MiskatonicUniversityMiskatonicMuseum(..)
   , miskatonicUniversityMiskatonicMuseum
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -52,7 +53,6 @@ instance ActionRunner env => HasActions env MiskatonicUniversityMiskatonicMuseum
 
 instance (LocationRunner env) => RunMessage env MiskatonicUniversityMiskatonicMuseum where
   runMessage msg l@(MiskatonicUniversityMiskatonicMuseum attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessages
-        [InvestigatorAssignDamage iid source DamageAny 0 2, GainClues iid 1]
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ pushAll
+      [InvestigatorAssignDamage iid source DamageAny 0 2, GainClues iid 1]
     _ -> MiskatonicUniversityMiskatonicMuseum <$> runMessage msg attrs

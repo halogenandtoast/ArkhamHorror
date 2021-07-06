@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.VictoriaDevereux
   ( VictoriaDevereux(..)
   , victoriaDevereux
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -55,5 +56,5 @@ instance ActionRunner env => HasActions env VictoriaDevereux where
 instance (EnemyRunner env) => RunMessage env VictoriaDevereux where
   runMessage msg e@(VictoriaDevereux attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      e <$ unshiftMessage (AddToVictory $ toTarget attrs)
+      e <$ push (AddToVictory $ toTarget attrs)
     _ -> VictoriaDevereux <$> runMessage msg attrs

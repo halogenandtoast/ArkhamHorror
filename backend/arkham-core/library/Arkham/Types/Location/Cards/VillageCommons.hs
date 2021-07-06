@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.VillageCommons
   ( villageCommons
   , VillageCommons(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

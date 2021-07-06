@@ -1,6 +1,7 @@
 module Cards.Discover
   ( findCardFiles
-  ) where
+  )
+where
 
 import Cards.Discover.Exe (getFilesRecursive, stripSuffix)
 import Data.FileEmbed

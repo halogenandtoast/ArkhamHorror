@@ -1,6 +1,7 @@
 module Arkham.Types.Name
   ( module Arkham.Types.Name
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

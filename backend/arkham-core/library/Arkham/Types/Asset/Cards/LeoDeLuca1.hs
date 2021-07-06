@@ -29,6 +29,6 @@ instance HasActions env LeoDeLuca1 where
 instance (AssetRunner env) => RunMessage env LeoDeLuca1 where
   runMessage msg (LeoDeLuca1 attrs@AssetAttrs {..}) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
-      unshiftMessage $ GainActions iid (AssetSource aid) 1
+      push $ GainActions iid (AssetSource aid) 1
       LeoDeLuca1 <$> runMessage msg attrs
     _ -> LeoDeLuca1 <$> runMessage msg attrs

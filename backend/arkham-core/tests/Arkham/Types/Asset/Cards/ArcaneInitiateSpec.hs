@@ -1,6 +1,7 @@
 module Arkham.Types.Asset.Cards.ArcaneInitiateSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport.Lifted
 
@@ -39,7 +40,7 @@ spec = describe "Arcane Initiate" $ do
                 investigator
                 FastPlayerWindow
                 arcaneInitiate
-              unshiftMessage ability
+              push ability
               runMessages
               chooseOnlyOption "search top of deck"
               chooseOnlyOption "take spell card"
@@ -56,7 +57,7 @@ spec = describe "Arcane Initiate" $ do
       $ do
           runMessages
           [ability] <- getActionsOf investigator FastPlayerWindow arcaneInitiate
-          unshiftMessage ability
+          push ability
           runMessages
           chooseOnlyOption "search top of deck"
           chooseOptionMatching

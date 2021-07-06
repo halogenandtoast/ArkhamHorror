@@ -28,11 +28,11 @@ instance (AssetRunner env) => RunMessage env OccultLexicon where
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       handBloodRite <- PlayerCard <$> genPlayerCard Events.bloodRite
       deckBloodRites <- replicateM 2 (genPlayerCard Events.bloodRite)
-      unshiftMessages
+      pushAll
         [AddToHand iid handBloodRite, ShuffleCardsIntoDeck iid deckBloodRites]
       OccultLexicon <$> runMessage msg attrs
     RemovedFromPlay source | isSource attrs source -> do
       for_ (assetInvestigator attrs)
-        $ \iid -> unshiftMessage (RemoveAllCopiesOfCardFromGame iid "05317")
+        $ \iid -> push (RemoveAllCopiesOfCardFromGame iid "05317")
       OccultLexicon <$> runMessage msg attrs
     _ -> OccultLexicon <$> runMessage msg attrs

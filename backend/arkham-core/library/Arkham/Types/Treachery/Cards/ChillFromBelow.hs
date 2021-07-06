@@ -25,7 +25,7 @@ instance HasActions env ChillFromBelow where
 
 instance (TreacheryRunner env) => RunMessage env ChillFromBelow where
   runMessage msg t@(ChillFromBelow attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ unshiftMessages
+    Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RevelationSkillTest iid source SkillWillpower 3
       , Discard (TreacheryTarget treacheryId)
       ]
@@ -34,9 +34,9 @@ instance (TreacheryRunner env) => RunMessage env ChillFromBelow where
         handCount <- unCardCount <$> getCount iid
         if handCount < n
           then
-            unshiftMessages
+            pushAll
             $ replicate handCount (RandomDiscard iid)
             <> [InvestigatorAssignDamage iid source DamageAny (n - handCount) 0]
-          else unshiftMessages $ replicate n (RandomDiscard iid)
+          else pushAll $ replicate n (RandomDiscard iid)
         pure t
     _ -> ChillFromBelow <$> runMessage msg attrs

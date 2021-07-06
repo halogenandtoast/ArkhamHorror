@@ -27,7 +27,7 @@ instance (EventRunner env) => RunMessage env CrypticResearch4 where
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       locationId <- getId @LocationId iid
       investigatorIds <- getSetList locationId
-      e <$ unshiftMessages
+      e <$ pushAll
         [ chooseOne
           iid
           [ TargetLabel (InvestigatorTarget iid') [DrawCards iid' 3 False]

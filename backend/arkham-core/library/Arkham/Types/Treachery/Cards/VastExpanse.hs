@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.VastExpanse
   ( vastExpanse
   , VastExpanse(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -42,8 +43,8 @@ instance TreacheryRunner env => RunMessage env VastExpanse where
             Nothing
             SkillWillpower
             (min 5 extradimensionalCount)
-      t <$ unshiftMessages [revelationMsg, Discard (toTarget attrs)]
+      t <$ pushAll [revelationMsg, Discard (toTarget attrs)]
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
-      | isSource attrs source
-      -> t <$ unshiftMessage (InvestigatorAssignDamage iid source DamageAny 0 n)
+      | isSource attrs source -> t
+      <$ push (InvestigatorAssignDamage iid source DamageAny 0 n)
     _ -> VastExpanse <$> runMessage msg attrs

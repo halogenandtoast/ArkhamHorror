@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.KeyToTheChamber
   ( keyToTheChamber
   , KeyToTheChamber(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -46,12 +47,11 @@ instance HasModifiersFor env KeyToTheChamber where
 instance (HasQueue env, HasModifiersFor env (), HasId (Maybe LocationId) env LocationMatcher) => RunMessage env KeyToTheChamber where
   runMessage msg a@(KeyToTheChamber attrs) = case msg of
     Revelation iid source | isSource attrs source ->
-      a <$ unshiftMessage (TakeControlOfAsset iid $ toId a)
+      a <$ push (TakeControlOfAsset iid $ toId a)
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       mHiddenChamberId <- getId (LocationWithTitle "The Hidden Chamber")
       case mHiddenChamberId of
         Nothing -> throwIO $ InvalidState "The Hidden Chamber is missing"
         Just hiddenChamberId ->
-          a <$ unshiftMessage
-            (AttachAsset (toId a) (LocationTarget hiddenChamberId))
+          a <$ push (AttachAsset (toId a) (LocationTarget hiddenChamberId))
     _ -> KeyToTheChamber <$> runMessage msg attrs

@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.CoverUp
   ( CoverUp(..)
   , coverUp
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -52,7 +53,7 @@ instance ActionRunner env => HasActions env CoverUp where
 
 instance (TreacheryRunner env) => RunMessage env CoverUp where
   runMessage msg t@(CoverUp attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ unshiftMessages
+    Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RemoveCardFromHand iid "01007"
       , AttachTreachery treacheryId (InvestigatorTarget iid)
       ]
@@ -60,7 +61,7 @@ instance (TreacheryRunner env) => RunMessage env CoverUp where
       runMessage EndOfGame t >>= \case
         CoverUp attrs' -> CoverUp <$> runMessage msg attrs'
     EndOfGame | coverUpClues attrs > 0 -> withTreacheryInvestigator attrs
-      $ \tormented -> t <$ unshiftMessage (SufferTrauma tormented 0 1)
+      $ \tormented -> t <$ push (SufferTrauma tormented 0 1)
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       cluesToRemove <- withQueue $ \queue -> do
         let

@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.SordidAndSilent
   ( SordidAndSilent(..)
   , sordidAndSilent
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -29,14 +30,14 @@ instance TreacheryRunner env => RunMessage env SordidAndSilent where
   runMessage msg t@(SordidAndSilent attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid
-      t <$ unshiftMessage (AttachTreachery treacheryId $ LocationTarget lid)
+      t <$ push (AttachTreachery treacheryId $ LocationTarget lid)
     EndRound -> case treacheryAttachedTarget of
       Just (LocationTarget lid) -> do
         iids <- getSetList @InvestigatorId lid
-        t <$ unshiftMessages
+        t <$ pushAll
           [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
           | iid <- iids
           ]
       _ -> pure t
-    AdvanceAgenda _ -> t <$ unshiftMessage (Discard $ toTarget attrs)
+    AdvanceAgenda _ -> t <$ push (Discard $ toTarget attrs)
     _ -> SordidAndSilent <$> runMessage msg attrs

@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.TheCreaturesTracks
   ( theCreaturesTracks
   , TheCreaturesTracks(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -31,11 +32,11 @@ instance TreacheryRunner env => RunMessage env TheCreaturesTracks where
       broodOfYogSothothCount <- unSetAsideCount
         <$> getCount @SetAsideCount (CardCode "02255")
       if broodOfYogSothothCount == 0
-        then t <$ unshiftMessages
+        then t <$ pushAll
           [ InvestigatorAssignDamage iid source DamageAny 0 2
           , Discard (toTarget attrs)
           ]
-        else t <$ unshiftMessages
+        else t <$ pushAll
           [ chooseOne
             iid
             [ Label

@@ -1,6 +1,7 @@
 module Arkham.Types.Asset.Cards.ZoeysCrossSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport
 

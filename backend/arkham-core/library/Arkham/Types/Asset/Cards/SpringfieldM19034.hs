@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.SpringfieldM19034
   ( springfieldM19034
   , SpringfieldM19034(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -55,7 +56,7 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env SpringfieldM19
       SpringfieldM19034
         <$> runMessage msg (attrs & usesL .~ Uses Resource.Ammo 3)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      unshiftMessages
+      pushAll
         [ CreateWindowModifierEffect
           EffectSkillTestWindow
           (EffectModifiers

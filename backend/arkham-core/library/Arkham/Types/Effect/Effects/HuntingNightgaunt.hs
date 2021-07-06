@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.HuntingNightgaunt
   ( huntingNightgaunt
   , HuntingNightgaunt(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -27,5 +28,5 @@ instance HasModifiersFor env HuntingNightgaunt where
 
 instance HasQueue env => RunMessage env HuntingNightgaunt where
   runMessage msg e@(HuntingNightgaunt attrs) = case msg of
-    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect $ effectId attrs)
+    SkillTestEnds _ -> e <$ push (DisableEffect $ effectId attrs)
     _ -> HuntingNightgaunt <$> runMessage msg attrs

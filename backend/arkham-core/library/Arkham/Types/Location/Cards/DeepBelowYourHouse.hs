@@ -34,7 +34,7 @@ instance ActionRunner env => HasActions env DeepBelowYourHouse where
 instance (LocationRunner env) => RunMessage env DeepBelowYourHouse where
   runMessage msg l@(DeepBelowYourHouse attrs) = case msg of
     RevealLocation (Just iid) lid | lid == locationId attrs -> do
-      unshiftMessage
+      push
         (BeginSkillTest
           iid
           (toSource attrs)
@@ -45,7 +45,7 @@ instance (LocationRunner env) => RunMessage env DeepBelowYourHouse where
         )
       DeepBelowYourHouse <$> runMessage msg attrs
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
-      | isSource attrs source -> l <$ unshiftMessages
+      | isSource attrs source -> l <$ pushAll
         (replicate
           n
           (FindAndDrawEncounterCard iid (CardMatchByCardCode "01159"))

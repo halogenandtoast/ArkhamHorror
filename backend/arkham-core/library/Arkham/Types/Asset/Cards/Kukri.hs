@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.Kukri
   ( kukri
   , Kukri(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -53,20 +54,19 @@ instance
   )
   => RunMessage env Kukri where
   runMessage msg a@(Kukri attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessages
-        [ CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
-          source
-          (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillCombat mempty False
-        ]
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+      [ CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
+        source
+        (InvestigatorTarget iid)
+      , ChooseFightEnemy iid source SkillCombat mempty False
+      ]
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         actionRemainingCount <- unActionRemainingCount <$> getCount iid
         if actionRemainingCount > 0
-          then a <$ unshiftMessage
+          then a <$ push
             (chooseOne
               iid
               [ Label

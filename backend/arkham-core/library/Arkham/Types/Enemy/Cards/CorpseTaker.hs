@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.CorpseTaker
   ( CorpseTaker(..)
   , corpseTaker
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -42,15 +43,15 @@ instance EnemyRunner env => RunMessage env CorpseTaker where
           fromJustNote "one of these has to exist" (mRivertown <|> mMainPath)
       if enemyLocation == locationId
         then do
-          unshiftMessages (replicate enemyDoom PlaceDoomOnAgenda)
+          pushAll (replicate enemyDoom PlaceDoomOnAgenda)
           pure $ CorpseTaker $ attrs & doomL .~ 0
         else do
           leadInvestigatorId <- getLeadInvestigatorId
           closestLocationIds <- map unClosestPathLocationId
             <$> getSetList (enemyLocation, locationId)
           case closestLocationIds of
-            [lid] -> e <$ unshiftMessage (EnemyMove enemyId enemyLocation lid)
-            lids -> e <$ unshiftMessage
+            [lid] -> e <$ push (EnemyMove enemyId enemyLocation lid)
+            lids -> e <$ push
               (chooseOne
                 leadInvestigatorId
                 [ EnemyMove enemyId enemyLocation lid | lid <- lids ]

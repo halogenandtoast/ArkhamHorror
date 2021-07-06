@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.RivertownAbandonedWarehouse
   ( RivertownAbandonedWarehouse(..)
   , rivertownAbandonedWarehouse
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -68,7 +69,7 @@ instance LocationRunner env => RunMessage env RivertownAbandonedWarehouse where
       cultists <- getSetList Cultist
       l <$ unless
         (null cultists)
-        (unshiftMessage
+        (push
           (chooseOne
             iid
             [ RemoveDoom (EnemyTarget eid) doomToRemove | eid <- cultists ]

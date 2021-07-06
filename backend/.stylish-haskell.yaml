@@ -22,6 +22,8 @@ columns: 80
 newline: native
 language_extensions:
   - BangPatterns
+  - NamedFieldPuns
+  - TupleSections
   - BlockArguments
   - DataKinds
   - DeriveAnyClass

@@ -7,7 +7,8 @@ module Api.Handler.Arkham.Games
   , putApiV1ArkhamGameR
   , deleteApiV1ArkhamGameR
   , putApiV1ArkhamGameRawR
-  ) where
+  )
+where
 
 import Api.Arkham.Helpers
 import Arkham.Game

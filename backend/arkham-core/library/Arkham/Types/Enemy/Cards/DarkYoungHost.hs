@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.DarkYoungHost
   ( darkYoungHost
   , DarkYoungHost(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -33,8 +34,8 @@ instance (EnemyRunner env) => RunMessage env DarkYoungHost where
       bayouLocations <- getSetList [Bayou]
       e <$ spawnAtOneOf leadInvestigatorId enemyId bayouLocations
     PlaceClues (LocationTarget lid) n | lid == enemyLocation -> do
-      unshiftMessage $ RemoveClues (LocationTarget lid) n
+      push $ RemoveClues (LocationTarget lid) n
       pure . DarkYoungHost $ attrs & cluesL +~ n
     When (EnemyDefeated eid _ _ _ _ _) | eid == enemyId ->
-      e <$ unshiftMessage (PlaceClues (LocationTarget enemyLocation) enemyClues)
+      e <$ push (PlaceClues (LocationTarget enemyLocation) enemyClues)
     _ -> DarkYoungHost <$> runMessage msg attrs

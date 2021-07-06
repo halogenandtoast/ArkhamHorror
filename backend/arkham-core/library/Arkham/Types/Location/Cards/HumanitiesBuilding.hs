@@ -33,7 +33,5 @@ instance LocationRunner env => RunMessage env HumanitiesBuilding where
   runMessage msg l@(HumanitiesBuilding attrs) = case msg of
     EndTurn iid | iid `elem` locationInvestigators attrs -> do
       horror <- unHorrorCount <$> getCount iid
-      l <$ when
-        (horror > 0)
-        (unshiftMessage $ DiscardTopOfDeck iid horror Nothing)
+      l <$ when (horror > 0) (push $ DiscardTopOfDeck iid horror Nothing)
     _ -> HumanitiesBuilding <$> runMessage msg attrs

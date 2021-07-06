@@ -67,7 +67,7 @@ instance CampaignRunner env => RunMessage env NightOfTheZealot where
   runMessage msg c@(NightOfTheZealot attrs@CampaignAttrs {..}) = case msg of
     CampaignStep (Just PrologueStep) -> do
       investigatorIds <- getSetList ()
-      c <$ unshiftMessages
+      c <$ pushAll
         [ AskMap
         . mapFromList
         $ [ ( iid
@@ -109,7 +109,7 @@ instance CampaignRunner env => RunMessage env NightOfTheZealot where
             Just (UpgradeDeckStep $ ScenarioStep "01142")
           Just (UpgradeDeckStep nextStep') -> Just nextStep'
           _ -> Nothing
-      unshiftMessage (CampaignStep nextStep)
+      push (CampaignStep nextStep)
       pure
         . NightOfTheZealot
         $ attrs

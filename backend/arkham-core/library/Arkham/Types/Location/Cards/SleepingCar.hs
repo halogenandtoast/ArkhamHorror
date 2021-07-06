@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.SleepingCar
   ( sleepingCar
   , SleepingCar(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -59,6 +60,6 @@ instance ActionRunner env => HasActions env SleepingCar where
 instance LocationRunner env => RunMessage env SleepingCar where
   runMessage msg l@(SleepingCar attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessages
+      l <$ pushAll
         [TakeResources iid 3 False, Remember StolenAPassengersLuggage]
     _ -> SleepingCar <$> runMessage msg attrs

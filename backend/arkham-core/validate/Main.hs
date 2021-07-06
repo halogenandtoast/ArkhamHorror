@@ -13,8 +13,8 @@ import Arkham.Types.Asset.Attrs (assetHealth, assetSanity)
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.Cost
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes.Entity
+import Arkham.Types.ClassSymbol
 import Arkham.Types.EncounterSet
 import Arkham.Types.Enemy
 import Arkham.Types.Enemy.Attrs

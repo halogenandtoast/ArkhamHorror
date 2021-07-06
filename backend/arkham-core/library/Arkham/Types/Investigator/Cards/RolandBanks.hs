@@ -1,13 +1,14 @@
 module Arkham.Types.Investigator.Cards.RolandBanks
   ( RolandBanks(..)
   , rolandBanks
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Cost
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
@@ -57,7 +58,6 @@ instance HasCount ClueCount env LocationId => HasTokenValue env RolandBanks wher
 
 instance InvestigatorRunner env => RunMessage env RolandBanks where
   runMessage msg rb@(RolandBanks attrs@InvestigatorAttrs {..}) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      rb <$ unshiftMessage
-        (DiscoverCluesAtLocation (toId attrs) investigatorLocation 1 Nothing)
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> rb <$ push
+      (DiscoverCluesAtLocation (toId attrs) investigatorLocation 1 Nothing)
     _ -> RolandBanks <$> runMessage msg attrs

@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.FeedTheBeast
   ( FeedTheBeast(..)
   , feedTheBeast
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -29,5 +30,5 @@ instance AgendaRunner env => RunMessage env FeedTheBeast where
   runMessage msg a@(FeedTheBeast attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       investigatorIds <- map unInScenarioInvestigatorId <$> getSetList ()
-      a <$ unshiftMessages [ Resign iid | iid <- investigatorIds ]
+      a <$ pushAll [ Resign iid | iid <- investigatorIds ]
     _ -> FeedTheBeast <$> runMessage msg attrs

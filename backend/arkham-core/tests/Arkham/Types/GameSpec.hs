@@ -1,6 +1,7 @@
 module Arkham.Types.GameSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport
 

@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.AlteredBeast
   ( AlteredBeast(..)
   , alteredBeast
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -31,12 +32,12 @@ instance (TreacheryRunner env) => RunMessage env AlteredBeast where
     Revelation iid source | isSource attrs source -> do
       abominations <- getSetList @EnemyId Abomination
       t <$ case abominations of
-        [] -> unshiftMessages [Surge iid source, Discard $ toTarget attrs]
-        [x] -> unshiftMessages
+        [] -> pushAll [Surge iid source, Discard $ toTarget attrs]
+        [x] -> pushAll
           [ AttachTreachery treacheryId (EnemyTarget x)
           , HealAllDamage (EnemyTarget x)
           ]
-        xs -> unshiftMessage
+        xs -> push
           (chooseOne
             iid
             [ TargetLabel
@@ -51,13 +52,14 @@ instance (TreacheryRunner env) => RunMessage env AlteredBeast where
       Just (EnemyTarget eid) -> do
         lid' <- getId @LocationId eid
         if lid == lid'
-          then t <$ unshiftMessage
-            (InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1)
+          then
+            t <$ push
+              (InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1)
           else pure t
       _ -> pure t
     EnemyMove eid _ lid | EnemyTarget eid `elem` treacheryAttachedTarget -> do
       iids <- getSetList @InvestigatorId lid
-      t <$ unshiftMessages
+      t <$ pushAll
         [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
         | iid <- iids
         ]

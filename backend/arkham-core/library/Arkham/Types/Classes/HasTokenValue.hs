@@ -1,7 +1,8 @@
 {-# LANGUAGE DefaultSignatures #-}
 module Arkham.Types.Classes.HasTokenValue
   ( module Arkham.Types.Classes.HasTokenValue
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

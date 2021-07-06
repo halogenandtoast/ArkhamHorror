@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.LadyEsprit
   ( LadyEsprit(..)
   , ladyEsprit
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -44,7 +45,7 @@ instance ActionRunner env => HasActions env LadyEsprit where
 instance (AssetRunner env) => RunMessage env LadyEsprit where
   runMessage msg (LadyEsprit attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      unshiftMessage $ chooseOne
+      push $ chooseOne
         iid
         [HealDamage (InvestigatorTarget iid) 2, TakeResources iid 2 False]
       runMessage

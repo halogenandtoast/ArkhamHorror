@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.TheNecronomiconAdvanced
   ( TheNecronomiconAdvanced(..)
   , theNecronomiconAdvanced
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -50,11 +51,11 @@ instance HasActions env TheNecronomiconAdvanced where
 instance (AssetRunner env) => RunMessage env TheNecronomiconAdvanced where
   runMessage msg a@(TheNecronomiconAdvanced attrs) = case msg of
     Revelation iid source | isSource attrs source ->
-      a <$ unshiftMessage (PlayCard iid (toCardId attrs) Nothing False)
+      a <$ push (PlayCard iid (toCardId attrs) Nothing False)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      unshiftMessage $ InvestigatorDamage iid source 0 1
+      push $ InvestigatorDamage iid source 0 1
       if fromJustNote "Must be set" (assetHorror attrs) == 1
-        then a <$ unshiftMessage (Discard (toTarget attrs))
+        then a <$ push (Discard (toTarget attrs))
         else pure $ TheNecronomiconAdvanced
           (attrs { assetHorror = max 0 . subtract 1 <$> assetHorror attrs })
     _ -> TheNecronomiconAdvanced <$> runMessage msg attrs

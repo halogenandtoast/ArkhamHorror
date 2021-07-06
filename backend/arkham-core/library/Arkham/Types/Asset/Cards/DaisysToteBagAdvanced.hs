@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.DaisysToteBagAdvanced
   ( daisysToteBagAdvanced
   , DaisysToteBagAdvanced(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -54,9 +55,9 @@ slot attrs = TraitRestrictedSlot (toSource attrs) Tome Nothing
 instance AssetRunner env => RunMessage env DaisysToteBagAdvanced where
   runMessage msg a@(DaisysToteBagAdvanced attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
-      unshiftMessages $ replicate 2 (AddSlot iid HandSlot (slot attrs))
+      pushAll $ replicate 2 (AddSlot iid HandSlot (slot attrs))
       DaisysToteBagAdvanced <$> runMessage msg attrs
     UseCardAbility iid source (Just (TargetMetadata (CardIdTarget cardId))) 1 _
       | isSource attrs source
-      -> a <$ unshiftMessage (ChangeCardToFast iid cardId)
+      -> a <$ push (ChangeCardToFast iid cardId)
     _ -> DaisysToteBagAdvanced <$> runMessage msg attrs

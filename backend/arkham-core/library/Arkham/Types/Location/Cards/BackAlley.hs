@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.BackAlley
   ( backAlley
   , BackAlley(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

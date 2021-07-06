@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.LightOfAforgomon
   ( LightOfAforgomon(..)
   , lightOfAforgomon
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -42,8 +43,8 @@ instance TreacheryRunner env => RunMessage env LightOfAforgomon where
         . (`difference` exemptAgendas)
         <$> getSet ()
       if null (targetActs <> targetAgendas)
-        then unshiftMessage (Discard $ toTarget attrs)
-        else unshiftMessage $ chooseOne
+        then push (Discard $ toTarget attrs)
+        else push $ chooseOne
           iid
           [ AttachTreachery treacheryId target
           | target <- targetActs <> targetAgendas

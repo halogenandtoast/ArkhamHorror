@@ -1,6 +1,7 @@
 module Arkham.Types.Treachery.Cards.WrackedByNightmaresSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport.Lifted
 
@@ -49,7 +50,7 @@ spec = describe "Wracked by Nightmares" $ do
             investigator
             NonFast
             wrackedByNightmaresTreachery
-          unshiftMessages [discardWrackedByNightmares, ReadyExhausted]
+          pushAll [discardWrackedByNightmares, ReadyExhausted]
           runMessages
           investigator' <- updated investigator
           hasTreacheryWithMatchingCardCode

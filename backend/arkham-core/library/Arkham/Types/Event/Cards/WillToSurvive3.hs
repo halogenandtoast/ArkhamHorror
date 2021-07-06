@@ -23,7 +23,7 @@ instance HasActions env WillToSurvive3 where
 instance HasQueue env => RunMessage env WillToSurvive3 where
   runMessage msg e@(WillToSurvive3 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
-      e <$ unshiftMessages
+      e <$ pushAll
         [ CreateEffect "01085" Nothing (toSource attrs) (InvestigatorTarget iid)
         , Discard (EventTarget eid)
         ]

@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.PeterWarren
   ( PeterWarren(..)
   , peterWarren
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -52,5 +53,5 @@ instance ActionRunner env => HasActions env PeterWarren where
 instance (EnemyRunner env) => RunMessage env PeterWarren where
   runMessage msg e@(PeterWarren attrs@EnemyAttrs {..}) = case msg of
     UseCardAbility _ (EnemySource eid) _ 1 _ | eid == enemyId ->
-      e <$ unshiftMessage (AddToVictory $ toTarget attrs)
+      e <$ push (AddToVictory $ toTarget attrs)
     _ -> PeterWarren <$> runMessage msg attrs

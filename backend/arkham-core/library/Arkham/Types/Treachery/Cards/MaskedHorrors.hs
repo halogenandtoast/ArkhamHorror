@@ -34,13 +34,13 @@ instance TreacheryRunner env => RunMessage env MaskedHorrors where
           pure (iid, clueCount)
         )
       t <$ if null targetInvestigators
-        then unshiftMessages
+        then pushAll
           ([ InvestigatorAssignDamage iid source DamageAny 0 2
            | iid <- targetInvestigators
            ]
           <> [Discard (TreacheryTarget treacheryId)]
           )
-        else unshiftMessages
+        else pushAll
           [ PlaceDoomOnAgenda
           , AdvanceAgendaIfThresholdSatisfied
           , Discard (TreacheryTarget treacheryId)

@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.ColdSpringGlen_244
   ( coldSpringGlen_244
   , ColdSpringGlen_244(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -78,7 +79,7 @@ instance LocationRunner env => RunMessage env ColdSpringGlen_244 where
           | target <- abominations
           ]
 
-      l <$ unshiftMessages
+      l <$ pushAll
         ([placeClueOnAbomination]
         <> [ chooseOne
                iid

@@ -43,5 +43,5 @@ instance ActionRunner env => HasActions env MagnifyingGlass1 where
 instance (AssetRunner env) => RunMessage env MagnifyingGlass1 where
   runMessage msg a@(MagnifyingGlass1 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage (ReturnToHand iid (toTarget attrs))
+      a <$ push (ReturnToHand iid (toTarget attrs))
     _ -> MagnifyingGlass1 <$> runMessage msg attrs

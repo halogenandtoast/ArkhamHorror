@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.AscendingPath
   ( ascendingPath
   , AscendingPath(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -58,15 +59,14 @@ instance ActionRunner env => HasActions env AscendingPath where
 
 instance LocationRunner env => RunMessage env AscendingPath where
   runMessage msg l@(AscendingPath attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessage
-        (Investigate
-          iid
-          (toId attrs)
-          (AbilitySource source 1)
-          SkillIntellect
-          False
-        )
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+      (Investigate
+        iid
+        (toId attrs)
+        (AbilitySource source 1)
+        SkillIntellect
+        False
+      )
     SuccessfulInvestigation _ _ (AbilitySource source 1)
       | isSource attrs source -> do
         setAsideCards <- map unSetAsideCard <$> getList ()
@@ -74,7 +74,7 @@ instance LocationRunner env => RunMessage env AscendingPath where
         case nonEmpty alteredPaths of
           Just ne -> do
             card <- sample ne
-            l <$ unshiftMessage
+            l <$ push
               (PlaceLocation (LocationId $ toCardId card) (toCardDef card))
           Nothing -> pure l
     AddConnection lid _ | toId attrs /= lid -> do

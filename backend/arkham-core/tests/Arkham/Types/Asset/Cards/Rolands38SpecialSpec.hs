@@ -1,6 +1,7 @@
 module Arkham.Types.Asset.Cards.Rolands38SpecialSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport
 
@@ -32,7 +33,7 @@ spec = describe "Roland's .39 Special" $ do
       $ do
           runMessages
           [doFight] <- getActionsOf investigator NonFast rolands38Special
-          unshiftMessage doFight
+          push doFight
           runMessages
           chooseOnlyOption "choose enemy"
           chooseOnlyOption "start skill test"
@@ -64,7 +65,7 @@ spec = describe "Roland's .39 Special" $ do
           $ do
               runMessages
               [doFight] <- getActionsOf investigator NonFast rolands38Special
-              unshiftMessage doFight
+              push doFight
               runMessages
               chooseOnlyOption "choose enemy"
               chooseOnlyOption "start skill test"

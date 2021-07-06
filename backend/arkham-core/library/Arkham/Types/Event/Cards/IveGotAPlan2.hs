@@ -1,7 +1,8 @@
 module Arkham.Types.Event.Cards.IveGotAPlan2
   ( iveGotAPlan2
   , IveGotAPlan2(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -39,6 +40,6 @@ instance (HasCount ClueCount env InvestigatorId) => HasModifiersFor env IveGotAP
 instance HasQueue env => RunMessage env IveGotAPlan2 where
   runMessage msg e@(IveGotAPlan2 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
-      e <$ unshiftMessage
+      e <$ push
         (ChooseFightEnemy iid (EventSource eid) SkillIntellect mempty False)
     _ -> IveGotAPlan2 <$> runMessage msg attrs

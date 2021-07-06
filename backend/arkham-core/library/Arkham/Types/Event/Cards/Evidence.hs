@@ -29,9 +29,9 @@ instance (EventRunner env) => RunMessage env Evidence where
       currentLocationId <- getId @LocationId iid
       locationClueCount <- unClueCount <$> getCount currentLocationId
       if locationClueCount > 0
-        then e <$ unshiftMessages
+        then e <$ pushAll
           [ DiscoverCluesAtLocation iid currentLocationId 1 Nothing
           , Discard (EventTarget eid)
           ]
-        else e <$ unshiftMessages [Discard (EventTarget eid)]
+        else e <$ pushAll [Discard (EventTarget eid)]
     _ -> Evidence <$> runMessage msg attrs

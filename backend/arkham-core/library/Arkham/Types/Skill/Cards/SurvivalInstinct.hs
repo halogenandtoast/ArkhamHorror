@@ -47,8 +47,8 @@ instance SkillRunner env => RunMessage env SurvivalInstinct where
         s <$ case engagedEnemyIds of
           [] -> if null unblockedConnectedLocationIds
             then pure ()
-            else unshiftMessage moveOptions
-          es -> unshiftMessages
+            else push moveOptions
+          es -> pushAll
             ([ chooseOne
                  iid
                  [ Label

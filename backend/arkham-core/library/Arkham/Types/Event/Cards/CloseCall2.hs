@@ -1,7 +1,8 @@
 module Arkham.Types.Event.Cards.CloseCall2
   ( closeCall2
   , CloseCall2(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -39,7 +40,7 @@ instance (GetCardDef env EnemyId, HasSet Trait env EnemyId) => HasActions env Cl
 instance RunMessage env CloseCall2 where
   runMessage msg e@(CloseCall2 attrs) = case msg of
     InvestigatorPlayEvent _iid eid (Just (EnemyTarget enemyId))
-      | eid == toId attrs -> e <$ unshiftMessages
+      | eid == toId attrs -> e <$ pushAll
         [ ShuffleBackIntoEncounterDeck (EnemyTarget enemyId)
         , Discard (toTarget attrs)
         ]

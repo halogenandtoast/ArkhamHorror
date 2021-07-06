@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.Burglary
   ( burglary
   , Burglary(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -30,9 +31,8 @@ instance HasModifiersFor env Burglary where
 instance HasQueue env => RunMessage env Burglary where
   runMessage msg e@(Burglary attrs@EffectAttrs {..}) = case msg of
     CreatedEffect eid _ _ (InvestigationTarget iid lid) | eid == effectId ->
-      e <$ unshiftMessage
-        (Investigate iid lid (toSource attrs) SkillIntellect False)
+      e <$ push (Investigate iid lid (toSource attrs) SkillIntellect False)
     SuccessfulInvestigation iid _ source | isSource attrs source ->
-      e <$ unshiftMessages [TakeResources iid 3 False, DisableEffect effectId]
-    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect effectId)
+      e <$ pushAll [TakeResources iid 3 False, DisableEffect effectId]
+    SkillTestEnds _ -> e <$ push (DisableEffect effectId)
     _ -> Burglary <$> runMessage msg attrs

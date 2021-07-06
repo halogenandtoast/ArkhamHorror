@@ -38,7 +38,7 @@ instance (LocationRunner env) => RunMessage env ArkhamWoodsUnhallowedGround wher
   runMessage msg l@(ArkhamWoodsUnhallowedGround attrs@LocationAttrs {..}) =
     case msg of
       MoveTo iid lid | lid == locationId -> do
-        unshiftMessage
+        push
           (BeginSkillTest
             iid
             (toSource attrs)
@@ -49,6 +49,7 @@ instance (LocationRunner env) => RunMessage env ArkhamWoodsUnhallowedGround wher
           )
         ArkhamWoodsUnhallowedGround <$> runMessage msg attrs
       FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
-        | isSource attrs source -> l <$ unshiftMessage
+        | isSource attrs source
+        -> l <$ push
           (InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1)
       _ -> ArkhamWoodsUnhallowedGround <$> runMessage msg attrs

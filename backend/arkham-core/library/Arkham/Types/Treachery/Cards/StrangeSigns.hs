@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.StrangeSigns
   ( strangeSigns
   , StrangeSigns(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -28,7 +29,7 @@ instance HasActions env StrangeSigns where
 
 instance TreacheryRunner env => RunMessage env StrangeSigns where
   runMessage msg t@(StrangeSigns attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ unshiftMessages
+    Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RevelationSkillTest iid source SkillIntellect 3
       , Discard (TreacheryTarget treacheryId)
       ]
@@ -37,5 +38,5 @@ instance TreacheryRunner env => RunMessage env StrangeSigns where
         playerCount <- getPlayerCount
         lid <- getId iid
         let clueCount = if playerCount == 3 || playerCount == 4 then 2 else 1
-        t <$ unshiftMessage (PlaceClues (LocationTarget lid) clueCount)
+        t <$ push (PlaceClues (LocationTarget lid) clueCount)
     _ -> StrangeSigns <$> runMessage msg attrs

@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.Burglary
   ( Burglary(..)
   , burglary
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -35,6 +36,6 @@ instance AssetRunner env => RunMessage env Burglary where
   runMessage msg a@(Burglary attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId iid
-      a <$ unshiftMessage
+      a <$ push
         (CreateEffect "01045" Nothing source (InvestigationTarget iid lid))
     _ -> Burglary <$> runMessage msg attrs

@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.SentinelPeak
   ( sentinelPeak
   , SentinelPeak(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -40,13 +41,13 @@ instance LocationRunner env => RunMessage env SentinelPeak where
   runMessage msg l@(SentinelPeak attrs) = case msg of
     InvestigatorDrewEncounterCard iid card | iid `on` attrs -> l <$ when
       (Hex `member` toTraits card)
-      (unshiftMessage $ TargetLabel
+      (push $ TargetLabel
         (toTarget attrs)
         [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
       )
     InvestigatorDrewPlayerCard iid card | iid `on` attrs -> l <$ when
       (Hex `member` toTraits card)
-      (unshiftMessage $ TargetLabel
+      (push $ TargetLabel
         (toTarget attrs)
         [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
       )

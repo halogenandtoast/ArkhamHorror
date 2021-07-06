@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.SkinGame
   ( SkinGame(..)
   , skinGame
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -39,7 +40,7 @@ instance ActRunner env => RunMessage env SkinGame where
         <$> getLocationIdWithTitle "VIP Area"
       investigatorIds <- getSetList vipAreaId
       requiredClueCount <- getPlayerCountValue (PerPlayer 2)
-      unshiftMessages
+      pushAll
         (SpendClues requiredClueCount investigatorIds
         : [ chooseOne iid [AdvanceAct aid (toSource attrs)]
           | iid <- investigatorIds
@@ -55,7 +56,7 @@ instance ActRunner env => RunMessage env SkinGame where
       cloverClubBarId <- getJustLocationIdByName "Clover Club Bar"
       vipAreaId <- getJustLocationIdByName "VIP Area"
       a <$ if completedExtracurricularActivity
-        then unshiftMessages
+        then pushAll
           [ CreateStoryAssetAt peterClover cloverClubBarId
           , FindEncounterCard
             leadInvestigatorId
@@ -63,9 +64,12 @@ instance ActRunner env => RunMessage env SkinGame where
             (CardMatchByType (EnemyType, singleton Abomination))
           , NextAct actId "02068"
           ]
-        else unshiftMessages
-          [CreateStoryAssetAt drFrancisMorgan vipAreaId, NextAct actId "02068"]
+        else
+          pushAll
+            [ CreateStoryAssetAt drFrancisMorgan vipAreaId
+            , NextAct actId "02068"
+            ]
     FoundEncounterCard _ target ec | isTarget attrs target -> do
       cloverClubBarId <- getJustLocationIdByName "Clover Club Bar"
-      a <$ unshiftMessage (SpawnEnemyAt (EncounterCard ec) cloverClubBarId)
+      a <$ push (SpawnEnemyAt (EncounterCard ec) cloverClubBarId)
     _ -> SkinGame <$> runMessage msg attrs

@@ -35,5 +35,5 @@ instance HasActions env DrMilanChristopher where
 instance AssetRunner env => RunMessage env DrMilanChristopher where
   runMessage msg a@(DrMilanChristopher attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage (TakeResources iid 1 False)
+      a <$ push (TakeResources iid 1 False)
     _ -> DrMilanChristopher <$> runMessage msg attrs

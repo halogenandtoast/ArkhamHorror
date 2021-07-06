@@ -47,5 +47,5 @@ instance LocationRunner env => RunMessage env Dormitories where
   runMessage msg l@(Dormitories attrs) = case msg of
     UseCardAbility _iid source _ 1 _
       | isSource attrs source && locationRevealed attrs -> l
-      <$ unshiftMessage (ScenarioResolution $ Resolution 2)
+      <$ push (ScenarioResolution $ Resolution 2)
     _ -> Dormitories <$> runMessage msg attrs

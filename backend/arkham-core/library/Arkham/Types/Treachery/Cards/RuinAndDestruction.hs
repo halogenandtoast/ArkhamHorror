@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.RuinAndDestruction
   ( ruinAndDestruction
   , RuinAndDestruction(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -37,7 +38,7 @@ instance TreacheryRunner env => RunMessage env RuinAndDestruction where
       targetInvestigators <-
         concat
           <$> traverse (getSetList @InvestigatorId) broodOfYogSothothLocations
-      t <$ unshiftMessages
+      t <$ pushAll
         ([ BeginSkillTest
              iid'
              source
@@ -51,6 +52,6 @@ instance TreacheryRunner env => RunMessage env RuinAndDestruction where
         <> [ Surge iid source | null targetInvestigators ]
         )
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
-      | isSource attrs source
-      -> t <$ unshiftMessage (InvestigatorAssignDamage iid source DamageAny n 0)
+      | isSource attrs source -> t
+      <$ push (InvestigatorAssignDamage iid source DamageAny n 0)
     _ -> RuinAndDestruction <$> runMessage msg attrs

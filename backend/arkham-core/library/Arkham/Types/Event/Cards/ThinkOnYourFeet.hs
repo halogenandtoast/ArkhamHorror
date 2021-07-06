@@ -1,7 +1,8 @@
 module Arkham.Types.Event.Cards.ThinkOnYourFeet
   ( thinkOnYourFeet
   , ThinkOnYourFeet(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -34,7 +35,7 @@ instance
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       lid <- getId @LocationId iid
       connectedLocationIds <- map unAccessibleLocationId <$> getSetList lid
-      e <$ unshiftMessages
+      e <$ pushAll
         [ chooseOne
           iid
           [ TargetLabel (LocationTarget lid') [Move iid lid lid']

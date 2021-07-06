@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.MuseumHalls
   ( museumHalls
   , MuseumHalls(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -79,7 +80,7 @@ instance LocationRunner env => RunMessage env MuseumHalls where
       | isSource attrs source && unrevealed attrs -> do
         museumEntrance <- fromJustNote "missing location"
           <$> getLocationIdWithTitle "Museum Entrance"
-        l <$ unshiftMessage
+        l <$ push
           (BeginSkillTest
             iid
             source
@@ -89,10 +90,10 @@ instance LocationRunner env => RunMessage env MuseumHalls where
             5
           )
     UseCardAbility iid source _ 1 _ | isSource attrs source && revealed attrs ->
-      l <$ unshiftMessage (UseScenarioSpecificAbility iid Nothing 1)
+      l <$ push (UseScenarioSpecificAbility iid Nothing 1)
     PassedSkillTest _ _ source _ _ _ | isSource attrs source -> do
       actId <- fromJustNote "missing act" . headMay <$> getSetList ()
-      l <$ unshiftMessage (AdvanceAct actId source)
+      l <$ push (AdvanceAct actId source)
     AddConnection lid _ | locationId attrs /= lid -> do
       name <- nameTitle <$> getName lid
       if name == "Exhibit Hall"

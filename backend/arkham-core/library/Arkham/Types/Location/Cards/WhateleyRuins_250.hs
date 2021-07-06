@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.WhateleyRuins_250
   ( whateleyRuins_250
   , WhateleyRuins_250(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -78,7 +79,7 @@ instance LocationRunner env => RunMessage env WhateleyRuins_250 where
           | target <- abominations
           ]
 
-      l <$ unshiftMessage
+      l <$ push
         (chooseOne
           iid
           [ TargetLabel

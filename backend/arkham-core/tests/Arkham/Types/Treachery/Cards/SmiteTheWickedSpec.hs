@@ -1,6 +1,7 @@
 module Arkham.Types.Treachery.Cards.SmiteTheWickedSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport.Lifted
 
@@ -75,7 +76,7 @@ spec = describe "Smite the Wicked" $ do
           chooseOnlyOption "place enemy"
           game <- getTestGame
           let updatedEnemy = game ^?! enemiesL . to toList . ix 0
-          unshiftMessages
+          pushAll
             [ EnemyDefeated
               (toId updatedEnemy)
               (toId investigator)

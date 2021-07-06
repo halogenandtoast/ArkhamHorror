@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.TenAcreMeadow_246
   ( tenAcreMeadow_246
   , TenAcreMeadow_246(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -20,6 +21,7 @@ instance HasModifiersFor env TenAcreMeadow_246 where
 
 instance HasQueue env => RunMessage env TenAcreMeadow_246 where
   runMessage msg e@(TenAcreMeadow_246 attrs) = case msg of
-    EndRound -> e <$ unshiftMessages
-      [RemoveClues (effectTarget attrs) 1, DisableEffect (toId attrs)]
+    EndRound ->
+      e <$ pushAll
+        [RemoveClues (effectTarget attrs) 1, DisableEffect (toId attrs)]
     _ -> TenAcreMeadow_246 <$> runMessage msg attrs

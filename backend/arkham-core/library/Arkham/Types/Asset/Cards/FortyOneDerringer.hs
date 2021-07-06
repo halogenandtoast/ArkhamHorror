@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.FortyOneDerringer
   ( FortyOneDerringer(..)
   , fortyOneDerringer
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -52,17 +53,16 @@ instance AssetRunner env => RunMessage env FortyOneDerringer where
   runMessage msg a@(FortyOneDerringer attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       FortyOneDerringer <$> runMessage msg (attrs & usesL .~ Uses Ammo 3)
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessages
-        [ CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 2])
-          source
-          (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillCombat mempty False
-        ]
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+      [ CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 2])
+        source
+        (InvestigatorTarget iid)
+      , ChooseFightEnemy iid source SkillCombat mempty False
+      ]
     PassedSkillTest iid (Just Action.Fight) source _ _ n
-      | isSource attrs source && n >= 2 -> a <$ unshiftMessage
+      | isSource attrs source && n >= 2 -> a <$ push
         (CreateWindowModifierEffect
           EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [DamageDealt 1])

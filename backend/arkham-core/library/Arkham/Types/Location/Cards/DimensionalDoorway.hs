@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.DimensionalDoorway
   ( dimensionalDoorway
   , DimensionalDoorway(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -52,12 +53,12 @@ instance LocationRunner env => RunMessage env DimensionalDoorway where
             [ RemoveFromEncounterDiscard hexCard
             , InvestigatorDrewEncounterCard iid hexCard
             ]
-      unshiftMessages revelationMsgs
+      pushAll revelationMsgs
       DimensionalDoorway <$> runMessage msg attrs
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       resourceCount <- unResourceCount <$> getCount iid
       if resourceCount >= 2
-        then l <$ unshiftMessage
+        then l <$ push
           (chooseOne
             iid
             [ Label "Spend 2 resource" [SpendResources iid 2]
@@ -66,5 +67,5 @@ instance LocationRunner env => RunMessage env DimensionalDoorway where
               [ShuffleBackIntoEncounterDeck $ toTarget attrs]
             ]
           )
-        else l <$ unshiftMessage (ShuffleBackIntoEncounterDeck $ toTarget attrs)
+        else l <$ push (ShuffleBackIntoEncounterDeck $ toTarget attrs)
     _ -> DimensionalDoorway <$> runMessage msg attrs

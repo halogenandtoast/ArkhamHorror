@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.HuntingNightgaunt
   ( huntingNightgaunt
   , HuntingNightgaunt(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -28,7 +29,6 @@ instance ActionRunner env => HasActions env HuntingNightgaunt where
 instance (EnemyRunner env) => RunMessage env HuntingNightgaunt where
   runMessage msg (HuntingNightgaunt attrs@EnemyAttrs {..}) = case msg of
     WhenEvadeEnemy _ eid | eid == enemyId -> do
-      unshiftMessage
-        (CreateEffect "01172" Nothing (toSource attrs) SkillTestTarget)
+      push (CreateEffect "01172" Nothing (toSource attrs) SkillTestTarget)
       HuntingNightgaunt <$> runMessage msg attrs
     _ -> HuntingNightgaunt <$> runMessage msg attrs

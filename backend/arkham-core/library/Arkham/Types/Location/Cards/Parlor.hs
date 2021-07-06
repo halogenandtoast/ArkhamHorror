@@ -64,7 +64,7 @@ instance (LocationRunner env) => RunMessage env Parlor where
         maid <- fmap unStoryAssetId <$> getId (CardCode "01117")
         case maid of
           Nothing -> error "this ability should not be able to be used"
-          Just aid -> l <$ unshiftMessage
+          Just aid -> l <$ push
             (BeginSkillTest
               iid
               source
@@ -77,5 +77,5 @@ instance (LocationRunner env) => RunMessage env Parlor where
       maid <- fmap unStoryAssetId <$> getId (CardCode "01117")
       case maid of
         Nothing -> error "this ability should not be able to be used"
-        Just aid -> l <$ unshiftMessage (TakeControlOfAsset iid aid)
+        Just aid -> l <$ push (TakeControlOfAsset iid aid)
     _ -> Parlor <$> runMessage msg attrs

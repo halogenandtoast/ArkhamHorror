@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.PeterClover
   ( peterClover
   , PeterClover(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -53,8 +54,7 @@ instance
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId @LocationId iid
       criminals <- getSetList ([Criminal], lid)
-      a <$ unshiftMessage
-        (chooseOne iid [ EnemyEvaded iid eid | eid <- criminals ])
+      a <$ push (chooseOne iid [ EnemyEvaded iid eid | eid <- criminals ])
     BeginEnemy | isNothing assetInvestigator ->
-      a <$ unshiftMessage (AssetDamage assetId (toSource attrs) 1 0)
+      a <$ push (AssetDamage assetId (toSource attrs) 1 0)
     _ -> PeterClover <$> runMessage msg attrs

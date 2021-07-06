@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.ATearInReality
   ( ATearInReality(..)
   , aTearInReality
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -46,7 +47,7 @@ instance AgendaRunner env => RunMessage env ATearInReality where
       investigatorIds <- getInvestigatorIds
       locationId <- getId @LocationId leadInvestigatorId
       lid <- leftmostLocation locationId
-      a <$ unshiftMessages
+      a <$ pushAll
         (RemoveLocation lid
         : [ InvestigatorDiscardAllClues iid | iid <- investigatorIds ]
         <> [NextAgenda agendaId "02161"]

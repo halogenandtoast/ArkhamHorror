@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.BindMonster2
   ( bindMonster2
   , BindMonster2(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -32,9 +33,9 @@ instance (HasQueue env, HasSet Trait env EnemyId) => RunMessage env BindMonster2
           nonElite <- notMember Elite <$> getSet eid
           e <$ when
             nonElite
-            (unshiftMessages
+            (pushAll
               [AttachEvent evid (EnemyTarget eid), DisableEffect effectId]
             )
         _ -> pure e
-    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect effectId)
+    SkillTestEnds _ -> e <$ push (DisableEffect effectId)
     _ -> BindMonster2 <$> runMessage msg attrs

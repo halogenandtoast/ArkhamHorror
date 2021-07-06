@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.EsotericFormula
   ( esotericFormula
   , EsotericFormula(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -60,12 +61,13 @@ instance HasCount ClueCount env EnemyId => HasModifiersFor env EsotericFormula w
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env EsotericFormula where
   runMessage msg a@(EsotericFormula attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage
-        (ChooseFightEnemy
-          iid
-          source
-          SkillWillpower
-          (singleton Abomination)
-          False
-        )
+      a
+        <$ push
+             (ChooseFightEnemy
+               iid
+               source
+               SkillWillpower
+               (singleton Abomination)
+               False
+             )
     _ -> EsotericFormula <$> runMessage msg attrs

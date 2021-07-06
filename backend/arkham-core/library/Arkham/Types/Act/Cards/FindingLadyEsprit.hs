@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.FindingLadyEsprit
   ( FindingLadyEsprit(..)
   , findingLadyEsprit
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -68,7 +69,7 @@ instance ActRunner env => RunMessage env FindingLadyEsprit where
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       investigatorIds <- investigatorsInABayouLocation
       requiredClueCount <- getPlayerCountValue (PerPlayer 1)
-      unshiftMessages
+      pushAll
         (SpendClues requiredClueCount investigatorIds
         : [ chooseOne iid [AdvanceAct aid (toSource attrs)]
           | iid <- investigatorIds
@@ -79,7 +80,7 @@ instance ActRunner env => RunMessage env FindingLadyEsprit where
       ladyEspritSpawnLocation <-
         fromJust . headMay . setToList <$> bayouLocations
       ladyEsprit <- PlayerCard <$> genPlayerCard Assets.ladyEsprit
-      a <$ unshiftMessages
+      a <$ pushAll
         [ CreateStoryAssetAt ladyEsprit ladyEspritSpawnLocation
         , PutSetAsideIntoPlay (SetAsideLocationsTarget mempty)
         , NextAdvanceActStep aid 2
@@ -92,7 +93,7 @@ instance ActRunner env => RunMessage env FindingLadyEsprit where
       theRougarou <- EncounterCard <$> genEncounterCard Enemies.theRougarou
       curseOfTheRougarou <- PlayerCard
         <$> genPlayerCard Treacheries.curseOfTheRougarou
-      a <$ unshiftMessages
+      a <$ pushAll
         ([ chooseOne
              leadInvestigatorId
              [ CreateEnemyAt theRougarou lid Nothing

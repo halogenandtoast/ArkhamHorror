@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.Flashlight
   ( Flashlight(..)
   , flashlight
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -51,7 +52,7 @@ instance (AssetRunner env) => RunMessage env Flashlight where
       Flashlight <$> runMessage msg (attrs & usesL .~ Uses Supply 3)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId iid
-      a <$ unshiftMessages
+      a <$ pushAll
         [ CreateWindowModifierEffect
           EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [ShroudModifier (-2)])

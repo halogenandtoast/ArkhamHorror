@@ -28,7 +28,7 @@ instance EventRunner env => RunMessage env SneakAttack where
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       lid <- getId @LocationId iid
       enemyIds <- map unExhaustedEnemyId <$> getSetList lid
-      e <$ unshiftMessages
+      e <$ pushAll
         ([ EnemyDamage enemyId iid (EventSource eventId) 2
          | enemyId <- enemyIds
          ]

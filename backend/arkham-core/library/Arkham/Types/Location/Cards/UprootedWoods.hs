@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.UprootedWoods
   ( uprootedWoods
   , UprootedWoods(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -48,5 +49,5 @@ instance ActionRunner env => HasActions env UprootedWoods where
 instance LocationRunner env => RunMessage env UprootedWoods where
   runMessage msg l@(UprootedWoods attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      l <$ unshiftMessage (DiscardTopOfDeck iid 5 Nothing)
+      l <$ push (DiscardTopOfDeck iid 5 Nothing)
     _ -> UprootedWoods <$> runMessage msg attrs

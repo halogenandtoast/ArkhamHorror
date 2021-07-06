@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.ConglomerationOfSpheres
   ( conglomerationOfSpheres
   , ConglomerationOfSpheres(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -40,5 +41,5 @@ instance EnemyRunner env => RunMessage env ConglomerationOfSpheres where
         traits <- getSet source
         e <$ when
           (Melee `member` traits)
-          (unshiftMessage $ Discard $ sourceToTarget source)
+          (push $ Discard $ sourceToTarget source)
       _ -> ConglomerationOfSpheres <$> runMessage msg attrs

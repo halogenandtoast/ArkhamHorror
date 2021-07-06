@@ -3,8 +3,8 @@ module Arkham.Types.Investigator.Cards.ZoeySamaras where
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
@@ -71,13 +71,12 @@ instance HasTokenValue env ZoeySamaras where
 instance InvestigatorRunner env => RunMessage env ZoeySamaras where
   runMessage msg i@(ZoeySamaras attrs@InvestigatorAttrs {..}) = case msg of
     UseCardAbility _ (InvestigatorSource iid) _ 1 _ | iid == investigatorId ->
-      i <$ unshiftMessage (TakeResources investigatorId 1 False)
-    ResolveToken _drawnToken ElderSign iid | iid == investigatorId ->
-      i <$ unshiftMessage
-        (CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [DamageDealt 1])
-          (InvestigatorSource investigatorId)
-          (InvestigatorTarget investigatorId)
-        )
+      i <$ push (TakeResources investigatorId 1 False)
+    ResolveToken _drawnToken ElderSign iid | iid == investigatorId -> i <$ push
+      (CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers $ toModifiers attrs [DamageDealt 1])
+        (InvestigatorSource investigatorId)
+        (InvestigatorTarget investigatorId)
+      )
     _ -> ZoeySamaras <$> runMessage msg attrs

@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.TheHiddenChamber
   ( theHiddenChamber
   , TheHiddenChamber(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -45,7 +46,7 @@ instance LocationRunner env => RunMessage env TheHiddenChamber where
     Revelation iid source | isSource attrs source -> do
       connectedLocation <- getId iid
       name <- getName connectedLocation
-      unshiftMessages
+      pushAll
         [ PlaceLocation (toId attrs) (toCardDef attrs)
         , AddDirectConnection (toId attrs) connectedLocation
         , AddDirectConnection connectedLocation (toId attrs)
@@ -55,7 +56,7 @@ instance LocationRunner env => RunMessage env TheHiddenChamber where
     -- Revealing will cause the other location to drop it's known connections
     -- So we must queue up to add it back
     RevealLocation _ lid | lid == locationId attrs -> do
-      unshiftMessages $ map
+      pushAll $ map
         (`AddDirectConnection` toId attrs)
         (setToList $ locationConnectedLocations attrs)
       TheHiddenChamber <$> runMessage msg attrs

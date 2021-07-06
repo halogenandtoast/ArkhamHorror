@@ -46,6 +46,5 @@ instance (LocationRunner env) => RunMessage env ArkhamWoodsLakeside where
         unused <- getGroupIsUnused ability
         l <$ when
           unused
-          (unshiftMessages [UseLimitedAbility iid ability, DrawAnotherToken iid]
-          )
+          (pushAll [UseLimitedAbility iid ability, DrawAnotherToken iid])
     _ -> ArkhamWoodsLakeside <$> runMessage msg attrs

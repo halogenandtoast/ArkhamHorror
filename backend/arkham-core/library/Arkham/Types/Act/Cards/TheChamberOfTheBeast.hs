@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.TheChamberOfTheBeast
   ( TheChamberOfTheBeast(..)
   , theChamberOfTheBeast
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -46,7 +47,7 @@ instance ActRunner env => RunMessage env TheChamberOfTheBeast where
       leadInvestigatorId <- getLeadInvestigatorId
       resolution <- maybe 3 (const 2)
         <$> getId @(Maybe StoryAssetId) (CardCode "02140")
-      a <$ unshiftMessage
+      a <$ push
         (chooseOne
           leadInvestigatorId
           [ Label
@@ -55,7 +56,7 @@ instance ActRunner env => RunMessage env TheChamberOfTheBeast where
           ]
         )
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage (AdvanceAct actId source)
+      a <$ push (AdvanceAct actId source)
     EnemyDefeated _ _ _ "02216" _ _ ->
-      a <$ unshiftMessage (ScenarioResolution $ Resolution 1)
+      a <$ push (ScenarioResolution $ Resolution 1)
     _ -> TheChamberOfTheBeast <$> runMessage msg attrs

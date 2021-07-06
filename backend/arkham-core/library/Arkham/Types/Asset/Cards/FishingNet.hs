@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.FishingNet
   ( FishingNet(..)
   , fishingNet
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -56,5 +57,5 @@ instance AssetRunner env => RunMessage env FishingNet where
       mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
       case mrougarou of
         Nothing -> error "can not use this ability"
-        Just eid -> a <$ unshiftMessage (AttachAsset assetId (EnemyTarget eid))
+        Just eid -> a <$ push (AttachAsset assetId (EnemyTarget eid))
     _ -> FishingNet <$> runMessage msg attrs

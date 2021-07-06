@@ -1,13 +1,14 @@
 module Arkham.Types.Investigator.Cards.SkidsOToole
   ( SkidsOToole(..)
   , skidsOToole
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Cost
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
@@ -62,5 +63,5 @@ instance InvestigatorRunner env => RunMessage env SkidsOToole where
       pure . SkidsOToole $ attrs & remainingActionsL +~ 1
     PassedSkillTest iid _ _ (DrawnTokenTarget token) _ _
       | iid == investigatorId && drawnTokenFace token == ElderSign -> i
-      <$ unshiftMessage (TakeResources iid 2 False)
+      <$ push (TakeResources iid 2 False)
     _ -> SkidsOToole <$> runMessage msg attrs

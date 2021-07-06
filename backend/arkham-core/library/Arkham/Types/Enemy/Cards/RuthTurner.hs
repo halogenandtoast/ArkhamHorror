@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.RuthTurner
   ( ruthTurner
   , RuthTurner(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -32,5 +33,5 @@ instance ActionRunner env => HasActions env RuthTurner where
 instance (EnemyRunner env) => RunMessage env RuthTurner where
   runMessage msg e@(RuthTurner attrs) = case msg of
     EnemyEvaded _ eid | eid == enemyId attrs ->
-      e <$ unshiftMessage (AddToVictory $ toTarget attrs)
+      e <$ push (AddToVictory $ toTarget attrs)
     _ -> RuthTurner <$> runMessage msg attrs

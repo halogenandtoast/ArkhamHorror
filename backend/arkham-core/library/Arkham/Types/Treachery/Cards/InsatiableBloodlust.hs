@@ -37,11 +37,9 @@ instance (TreacheryRunner env) => RunMessage env InsatiableBloodlust where
         case mrougarou of
           Nothing -> error "can't happen"
           Just eid -> do
-            unshiftMessage (AttachTreachery treacheryId (EnemyTarget eid))
+            push (AttachTreachery treacheryId (EnemyTarget eid))
         InsatiableBloodlust <$> runMessage msg attrs
       EnemyDamage eid _ _ n | n > 0 -> do
         mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
-        t <$ when
-          (mrougarou == Just eid)
-          (unshiftMessage (Discard $ toTarget attrs))
+        t <$ when (mrougarou == Just eid) (push (Discard $ toTarget attrs))
       _ -> InsatiableBloodlust <$> runMessage msg attrs

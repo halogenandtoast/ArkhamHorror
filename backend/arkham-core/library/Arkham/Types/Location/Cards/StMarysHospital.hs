@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.StMarysHospital
   ( StMarysHospital(..)
   , stMarysHospital
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -51,5 +52,5 @@ instance ActionRunner env => HasActions env StMarysHospital where
 instance (LocationRunner env) => RunMessage env StMarysHospital where
   runMessage msg l@(StMarysHospital attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessage (HealDamage (InvestigatorTarget iid) 3)
+      l <$ push (HealDamage (InvestigatorTarget iid) 3)
     _ -> StMarysHospital <$> runMessage msg attrs

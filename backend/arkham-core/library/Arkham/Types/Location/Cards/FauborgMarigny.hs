@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.FauborgMarigny
   ( FauborgMarigny(..)
   , fauborgMarigny
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

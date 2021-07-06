@@ -161,7 +161,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         intro1or2 = if litaForcedToFindOthersToHelpHerCause
           then TheMidnightMasksIntroOne
           else TheMidnightMasksIntroTwo
-      pushMessages
+      pushAllEnd
         $ [ story investigatorIds (introPart1 intro1or2)
           , story investigatorIds introPart2
           , SetEncounterDeck encounterDeck
@@ -201,7 +201,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       case fromJustNote "must be set" scenarioDeck of
         CultistDeck [] -> pure s
         CultistDeck (x : xs) -> do
-          unshiftMessage (InvestigatorDrewEncounterCard iid x)
+          push (InvestigatorDrewEncounterCard iid x)
           pure $ TheMidnightMasks
             (attrs { scenarioDeck = Just $ CultistDeck xs })
         _ -> error "Wrong deck"
@@ -210,20 +210,19 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         <$> getSetList (iid, [Trait.Cultist])
       s <$ case closestCultists of
         [] -> pure ()
-        [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
-        xs -> unshiftMessage
-          (chooseOne iid [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
+        [x] -> push (PlaceDoom (EnemyTarget x) 1)
+        xs -> push (chooseOne iid [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
     ResolveToken _ Cultist iid | isHardExpert attrs -> do
       cultists <- getSetList @EnemyId Trait.Cultist
       s <$ case cultists of
-        [] -> unshiftMessage (DrawAnotherToken iid)
-        xs -> unshiftMessages [ PlaceDoom (EnemyTarget eid) 1 | eid <- xs ]
+        [] -> push (DrawAnotherToken iid)
+        xs -> pushAll [ PlaceDoom (EnemyTarget eid) 1 | eid <- xs ]
     FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _
       | drawnTokenFace token == Tablet -> if isEasyStandard attrs
-        then s <$ unshiftMessage (InvestigatorPlaceAllCluesOnLocation iid)
-        else s <$ unshiftMessage (InvestigatorPlaceCluesOnLocation iid 1)
+        then s <$ push (InvestigatorPlaceAllCluesOnLocation iid)
+        else s <$ push (InvestigatorPlaceCluesOnLocation iid 1)
     ScenarioResolution NoResolution ->
-      s <$ unshiftMessage (ScenarioResolution $ Resolution 1)
+      s <$ push (ScenarioResolution $ Resolution 1)
     ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       victoryDisplay <- mapSet unVictoryDisplayCardCode <$> getSet ()
@@ -235,7 +234,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         cultistsWeInterrogated = cultists `intersection` victoryDisplay
         cultistsWhoGotAway = cultists `difference` cultistsWeInterrogated
         ghoulPriestDefeated = "01116" `elem` victoryDisplay
-      s <$ unshiftMessage
+      s <$ push
         (chooseOne
           leadInvestigatorId
           [ Run
@@ -267,7 +266,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         cultistsWeInterrogated = cultists `intersection` victoryDisplay
         cultistsWhoGotAway = cultists `difference` cultistsWeInterrogated
         ghoulPriestDefeated = "01116" `elem` victoryDisplay
-      s <$ unshiftMessage
+      s <$ push
         (chooseOne
           leadInvestigatorId
           [ Run

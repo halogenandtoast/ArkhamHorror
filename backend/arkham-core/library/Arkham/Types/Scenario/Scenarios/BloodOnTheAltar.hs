@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Scenarios.BloodOnTheAltar
   ( BloodOnTheAltar(..)
   , bloodOnTheAltar
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -169,9 +170,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
     = case msg of
       SetTokensForScenario -> do
         standalone <- getIsStandalone
-        s <$ if standalone
-          then unshiftMessage (SetTokens standaloneTokens)
-          else pure ()
+        s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
       Setup -> do
         investigatorIds <- getInvestigatorIds
         bishopsBrook <-
@@ -263,7 +262,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           potentialSacrifices = [zebulonWhateley, earlSawyer] <> catMaybes
             [professorWarrenRice, drFrancisMorgan, drHenryArmitage]
 
-        unshiftMessages
+        pushAll
           $ [ story investigatorIds bloodOnTheAltarIntro
             , SetEncounterDeck encounterDeck
             , AddAgenda "02196"
@@ -306,20 +305,20 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         matches <- (== "Hidden Chamber") . nameTitle <$> getName lid
         s <$ when
           (isHardExpert attrs || (isEasyStandard attrs && matches))
-          (unshiftMessage $ DrawAnotherToken iid)
+          (push $ DrawAnotherToken iid)
       ResolveToken _ ElderThing _ | isHardExpert attrs -> do
         agendaId <-
           fromJustNote "no agenda" . headMay <$> getSetList @AgendaId ()
-        s <$ unshiftMessage (PlaceDoom (AgendaTarget agendaId) 1)
+        s <$ push (PlaceDoom (AgendaTarget agendaId) 1)
       FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _ ->
         s <$ case drawnTokenFace token of
           Cultist -> do
             lid <- getId @LocationId iid
-            unshiftMessage (PlaceClues (LocationTarget lid) 1)
+            push (PlaceClues (LocationTarget lid) 1)
           ElderThing | isEasyStandard attrs -> do
             agendaId <-
               fromJustNote "no agenda" . headMay <$> getSetList @AgendaId ()
-            unshiftMessage (PlaceDoom (AgendaTarget agendaId) 1)
+            push (PlaceDoom (AgendaTarget agendaId) 1)
           _ -> pure ()
       ScenarioResolution NoResolution -> do
         leadInvestigatorId <- getLeadInvestigatorId
@@ -336,7 +335,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         removeSacrificedMessages <- getRemoveSacrificedMessages
           sacrificedToYogSothoth
         removeNecronomicon <- getRemoveNecronomicon
-        s <$ unshiftMessages
+        s <$ pushAll
           ([ chooseOne
                leadInvestigatorId
                [ Run
@@ -367,7 +366,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         removeSacrificedMessages <- getRemoveSacrificedMessages
           sacrificedToYogSothoth
         removeNecronomicon <- getRemoveNecronomicon
-        s <$ unshiftMessages
+        s <$ pushAll
           ([ chooseOne
                leadInvestigatorId
                [ Run
@@ -397,7 +396,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         let sacrificedToYogSothoth = map toCardCode sacrificed
         removeSacrificedMessages <- getRemoveSacrificedMessages
           sacrificedToYogSothoth
-        s <$ unshiftMessages
+        s <$ pushAll
           ([ chooseOne
                leadInvestigatorId
                [ Run
@@ -434,7 +433,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         removeSacrificedMessages <- getRemoveSacrificedMessages
           sacrificedToYogSothoth
         removeNecronomicon <- getRemoveNecronomicon
-        s <$ unshiftMessages
+        s <$ pushAll
           ([ chooseOne
                leadInvestigatorId
                [ Run

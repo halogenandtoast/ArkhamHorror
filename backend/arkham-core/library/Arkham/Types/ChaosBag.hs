@@ -2,7 +2,8 @@ module Arkham.Types.ChaosBag
   ( ChaosBag
   , emptyChaosBag
   , tokensL
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -162,7 +163,7 @@ decideFirstUndecided source miid strategy f = \case
       , [ CheckWindow iid [WhenWouldRevealChaosToken source You]
         | iid <- maybeToList miid
         ]
-      <> [NextChaosBagStep source miid strategy]
+        <> [NextChaosBagStep source miid strategy]
       )
     Choose n steps tokens' -> if any isUndecided steps
       then
@@ -245,7 +246,7 @@ instance (HasQueue env, HasId LeadInvestigatorId env ()) => RunMessage env Chaos
         & setAsideTokensL
         .~ mempty
     RequestTokens source miid n strategy -> do
-      unshiftMessage (RunBag source miid strategy)
+      push (RunBag source miid strategy)
       case n of
         0 -> pure $ c & revealedTokensL .~ []
         1 -> pure $ c & choiceL ?~ Undecided Draw & revealedTokensL .~ []
@@ -262,17 +263,17 @@ instance (HasQueue env, HasId LeadInvestigatorId env ()) => RunMessage env Chaos
           let
             (choice'', msgs) =
               decideFirstUndecided source miid strategy id choice'
-          unshiftMessage (RunBag source miid strategy)
-          unshiftMessages msgs
+          push (RunBag source miid strategy)
+          pushAll msgs
           pure $ c & choiceL ?~ choice''
-        else c <$ unshiftMessage (RunDrawFromBag source miid strategy)
+        else c <$ push (RunDrawFromBag source miid strategy)
     NextChaosBagStep source miid strategy -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' -> do
         let
           (updatedChoice, messages) =
             decideFirstUndecided source miid strategy toDecided choice'
-        unless (null messages) $ unshiftMessages messages
+        unless (null messages) $ pushAll messages
         pure $ c & choiceL ?~ updatedChoice
     ReplaceCurrentDraw source iid step -> case chaosBagChoice of
       Nothing -> error "unexpected"
@@ -284,12 +285,12 @@ instance (HasQueue env, HasId LeadInvestigatorId env ()) => RunMessage env Chaos
             SetAside
             (const (Undecided step))
             choice'
-        unless (null messages) $ unshiftMessages messages
+        unless (null messages) $ pushAll messages
         pure $ c & choiceL ?~ updatedChoice
     RunDrawFromBag source miid strategy -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' -> case choice' of
-        Resolved tokenFaces' -> c <$ unshiftMessages
+        Resolved tokenFaces' -> c <$ pushAll
           (FocusTokens tokenFaces'
           : [ CheckWindow
                 iid
@@ -302,8 +303,8 @@ instance (HasQueue env, HasId LeadInvestigatorId env ()) => RunMessage env Chaos
           ((choice'', msgs), c') <- runStateT
             (resolveFirstUnresolved source miid strategy choice')
             c
-          unshiftMessage (RunDrawFromBag source miid strategy)
-          unshiftMessages msgs
+          push (RunDrawFromBag source miid strategy)
+          pushAll msgs
           pure $ c' & choiceL ?~ choice''
     ChooseTokenGroups source iid groupChoice -> case chaosBagChoice of
       Nothing -> error "unexpected"

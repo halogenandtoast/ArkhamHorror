@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.PushedIntoTheBeyond
   ( PushedIntoTheBeyond(..)
   , pushedIntoTheBeyond
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -33,7 +34,7 @@ instance TreacheryRunner env => RunMessage env PushedIntoTheBeyond where
       storyAssets <- map unStoryAssetId <$> getSetList iid
       validAssets <- filter (`notElem` storyAssets) <$> getSetList iid
       targets <- traverse (traverseToSnd getId) validAssets
-      t <$ unshiftMessage
+      t <$ push
         (chooseOne
           iid
           [ TargetLabel

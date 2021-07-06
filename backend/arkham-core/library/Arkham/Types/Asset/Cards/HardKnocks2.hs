@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.HardKnocks2
   ( HardKnocks2(..)
   , hardKnocks2
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -41,20 +42,18 @@ instance HasActions env HardKnocks2 where
 
 instance AssetRunner env => RunMessage env HardKnocks2 where
   runMessage msg a@(HardKnocks2 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage
-        (CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
-          source
-          (InvestigatorTarget iid)
-        )
-    UseCardAbility iid source _ 2 _ | isSource attrs source ->
-      a <$ unshiftMessage
-        (CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [SkillModifier SkillAgility 1])
-          source
-          (InvestigatorTarget iid)
-        )
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+      (CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
+        source
+        (InvestigatorTarget iid)
+      )
+    UseCardAbility iid source _ 2 _ | isSource attrs source -> a <$ push
+      (CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers $ toModifiers attrs [SkillModifier SkillAgility 1])
+        source
+        (InvestigatorTarget iid)
+      )
     _ -> HardKnocks2 <$> runMessage msg attrs

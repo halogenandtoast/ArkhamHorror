@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.BeyondTheVeil
   ( BeyondTheVeil(..)
   , beyondTheVeil
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -32,12 +33,10 @@ instance TreacheryRunner env => RunMessage env BeyondTheVeil where
       exemptInvestigators <- getSet @InvestigatorId
         (TreacheryCardCode $ toCardCode attrs)
       t <$ if iid `member` exemptInvestigators
-        then unshiftMessage (Discard $ toTarget attrs)
-        else unshiftMessage
-          (AttachTreachery treacheryId (InvestigatorTarget iid))
-    DeckHasNoCards iid _ | treacheryOnInvestigator iid attrs ->
-      t <$ unshiftMessages
-        [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 10 0
-        , Discard $ toTarget attrs
-        ]
+        then push (Discard $ toTarget attrs)
+        else push (AttachTreachery treacheryId (InvestigatorTarget iid))
+    DeckHasNoCards iid _ | treacheryOnInvestigator iid attrs -> t <$ pushAll
+      [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 10 0
+      , Discard $ toTarget attrs
+      ]
     _ -> BeyondTheVeil <$> runMessage msg attrs

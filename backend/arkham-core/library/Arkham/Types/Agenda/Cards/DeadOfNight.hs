@@ -40,7 +40,7 @@ instance AgendaRunner env => RunMessage env DeadOfNight where
       theExperiment <- EncounterCard <$> genEncounterCard Enemies.theExperiment
       scienceBuildingId <- fromJustNote "missing science building"
         <$> getLocationIdWithTitle "Science Building"
-      a <$ unshiftMessages
+      a <$ pushAll
         ([ PlaceLocationMatching (LocationWithTitle "Dormitories")
          | not dormitoriesInPlay
          ]

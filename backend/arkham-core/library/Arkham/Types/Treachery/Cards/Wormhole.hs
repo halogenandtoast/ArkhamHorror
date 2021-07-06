@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.Wormhole
   ( wormhole
   , Wormhole(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -28,7 +29,7 @@ instance HasActions env Wormhole where
 
 instance TreacheryRunner env => RunMessage env Wormhole where
   runMessage msg t@(Wormhole attrs) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ unshiftMessages
+    Revelation iid source | isSource attrs source -> t <$ pushAll
       [ DiscardEncounterUntilFirst
         (ProxySource source (InvestigatorSource iid))
         (CardMatchByType (LocationType, mempty))
@@ -39,6 +40,6 @@ instance TreacheryRunner env => RunMessage env Wormhole where
         Nothing -> pure ()
         Just card -> do
           let locationId = LocationId $ toCardId card
-          unshiftMessages
+          pushAll
             [InvestigatorDrewEncounterCard iid card, MoveTo iid locationId]
     _ -> Wormhole <$> runMessage msg attrs

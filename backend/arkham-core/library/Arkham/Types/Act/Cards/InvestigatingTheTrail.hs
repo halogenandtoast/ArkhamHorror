@@ -31,7 +31,7 @@ instance ActRunner env => RunMessage env InvestigatingTheTrail where
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       investigatorIds <- getInvestigatorIds
       requiredClues <- getPlayerCountValue (PerPlayer 3)
-      unshiftMessages
+      pushAll
         (SpendClues requiredClues investigatorIds
         : [ chooseOne iid [AdvanceAct aid (toSource attrs)]
           | iid <- investigatorIds
@@ -43,11 +43,11 @@ instance ActRunner env => RunMessage env InvestigatingTheTrail where
       mainPathId <- getJustLocationIdByName "Main Path"
       when (isNothing mRitualSiteId) $ do
         ritualSiteId <- getRandom
-        unshiftMessage (PlaceLocation ritualSiteId Locations.ritualSite)
+        push (PlaceLocation ritualSiteId Locations.ritualSite)
       cultistsWhoGotAwayDefs <- map lookupEncounterCardDef
         <$> hasRecordSet CultistsWhoGotAway
       cultistsWhoGotAway <- traverse genEncounterCard cultistsWhoGotAwayDefs
-      a <$ unshiftMessages
+      a <$ pushAll
         ([ CreateEnemyAt (EncounterCard card) mainPathId Nothing
          | card <- cultistsWhoGotAway
          ]

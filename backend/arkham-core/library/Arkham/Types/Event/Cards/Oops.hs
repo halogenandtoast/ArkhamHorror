@@ -1,7 +1,8 @@
 module Arkham.Types.Event.Cards.Oops
   ( oops
   , Oops(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -59,7 +60,7 @@ instance HasModifiersFor env Oops where
 instance RunMessage env Oops where
   runMessage msg e@(Oops attrs) = case msg of
     InvestigatorPlayEvent iid eid (Just (EnemyTarget targetId))
-      | eid == toId attrs -> e <$ unshiftMessages
+      | eid == toId attrs -> e <$ pushAll
         [ CancelFailedByModifierEffects
         , InvestigatorDamageEnemy iid targetId
         , Discard (toTarget attrs)

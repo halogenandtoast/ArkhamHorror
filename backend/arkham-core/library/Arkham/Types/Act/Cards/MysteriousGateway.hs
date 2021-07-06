@@ -35,7 +35,7 @@ instance ActRunner env => RunMessage env MysteriousGateway where
       investigatorIds <- getSetList @InvestigatorId
         (LocationWithTitle "Guest Hall")
       requiredClues <- getPlayerCountValue (PerPlayer 3)
-      unshiftMessages
+      pushAll
         [ SpendClues requiredClues investigatorIds
         , chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
         ]
@@ -45,7 +45,7 @@ instance ActRunner env => RunMessage env MysteriousGateway where
       investigatorIds <- getSetList @InvestigatorId
         (LocationWithTitle "Guest Hall")
       holeInTheWallId <- getRandom
-      a <$ unshiftMessages
+      a <$ pushAll
         ([PlaceLocation holeInTheWallId Locations.holeInTheWall]
         <> [ chooseOne
              leadInvestigatorId
@@ -66,5 +66,5 @@ instance ActRunner env => RunMessage env MysteriousGateway where
            ]
         )
     FailedSkillTest iid _ (ActSource aid) SkillTestInitiatorTarget{} _ n
-      | aid == actId -> a <$ unshiftMessages (replicate n (RandomDiscard iid))
+      | aid == actId -> a <$ pushAll (replicate n (RandomDiscard iid))
     _ -> MysteriousGateway <$> runMessage msg attrs

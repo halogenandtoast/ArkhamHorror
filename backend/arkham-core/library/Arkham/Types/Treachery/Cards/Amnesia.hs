@@ -25,7 +25,7 @@ instance TreacheryRunner env => RunMessage env Amnesia where
   runMessage msg t@(Amnesia attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       cardCount' <- unCardCount <$> getCount iid
-      t <$ unshiftMessages
+      t <$ pushAll
         (replicate (cardCount' - 1) (ChooseAndDiscardCard iid)
         <> [Discard $ toTarget attrs]
         )

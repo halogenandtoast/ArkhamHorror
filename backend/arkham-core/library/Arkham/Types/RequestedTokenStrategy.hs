@@ -1,6 +1,7 @@
 module Arkham.Types.RequestedTokenStrategy
   ( RequestedTokenStrategy(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

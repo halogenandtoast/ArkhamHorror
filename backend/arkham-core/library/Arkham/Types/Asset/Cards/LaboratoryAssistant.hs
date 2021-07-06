@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.LaboratoryAssistant
   ( LaboratoryAssistant(..)
   , laboratoryAssistant
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -37,5 +38,5 @@ instance HasActions env LaboratoryAssistant where
 instance (AssetRunner env) => RunMessage env LaboratoryAssistant where
   runMessage msg a@(LaboratoryAssistant attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage (DrawCards iid 2 False)
+      a <$ push (DrawCards iid 2 False)
     _ -> LaboratoryAssistant <$> runMessage msg attrs

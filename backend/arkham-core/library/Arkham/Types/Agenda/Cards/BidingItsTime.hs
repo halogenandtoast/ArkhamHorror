@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.BidingItsTime
   ( BidingItsTime(..)
   , bidingItsTime
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -39,7 +40,7 @@ instance AgendaRunner env => RunMessage env BidingItsTime where
       leadInvestigatorId <- getLeadInvestigatorId
       broodOfYogSothoth <- map EnemyTarget
         <$> getSetList (EnemyWithTitle "Brood of Yog-Sothoth")
-      a <$ unshiftMessage
+      a <$ push
         (chooseOneAtATime
           leadInvestigatorId
           [ TargetLabel target [ChooseRandomLocation target mempty]
@@ -47,11 +48,11 @@ instance AgendaRunner env => RunMessage env BidingItsTime where
           ]
         )
     ChosenRandomLocation target@(EnemyTarget _) lid ->
-      a <$ unshiftMessage (MoveToward target (LocationWithId lid))
+      a <$ push (MoveToward target (LocationWithId lid))
     AdvanceAgenda aid | aid == agendaId attrs && onSide B attrs -> do
       broodOfYogSothothCount <- unSetAsideCount
         <$> getCount @SetAsideCount (CardCode "02255")
-      a <$ unshiftMessages
+      a <$ pushAll
         (ShuffleEncounterDiscardBackIn
         : [ RequestSetAsideCard (toSource attrs) (CardCode "02255")
           | broodOfYogSothothCount > 0
@@ -66,7 +67,7 @@ instance AgendaRunner env => RunMessage env BidingItsTime where
       leadInvestigatorId <- getLeadInvestigatorId
       locationId <- getId leadInvestigatorId
       investigatorIds <- getSetList locationId
-      a <$ unshiftMessages
+      a <$ pushAll
         (CreateEnemy card
         : EnemySpawn Nothing locationId enemyId
         : [ BeginSkillTest
@@ -81,5 +82,5 @@ instance AgendaRunner env => RunMessage env BidingItsTime where
         )
     FailedSkillTest iid _ source (SkillTestInitiatorTarget (EnemyTarget eid)) _ _
       | isSource attrs source
-      -> a <$ unshiftMessage (EnemyAttack iid eid)
+      -> a <$ push (EnemyAttack iid eid)
     _ -> BidingItsTime <$> runMessage msg attrs

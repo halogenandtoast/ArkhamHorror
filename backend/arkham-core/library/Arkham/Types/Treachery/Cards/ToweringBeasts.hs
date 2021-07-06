@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.ToweringBeasts
   ( toweringBeasts
   , ToweringBeasts(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -36,11 +37,11 @@ instance TreacheryRunner env => RunMessage env ToweringBeasts where
     Revelation iid source | isSource attrs source -> do
       broodOfYogSothoth <- getSetList @EnemyId (CardCode "02255")
       case broodOfYogSothoth of
-        [] -> t <$ unshiftMessage (Discard $ toTarget attrs)
+        [] -> t <$ push (Discard $ toTarget attrs)
         xs -> do
           locationId <- getId @LocationId iid
           broodWithLocationIds <- for xs $ \x -> (x, ) <$> getId @LocationId x
-          t <$ unshiftMessages
+          t <$ pushAll
             [ chooseOne
               iid
               [ TargetLabel

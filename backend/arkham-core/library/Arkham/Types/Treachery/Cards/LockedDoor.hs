@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.LockedDoor
   ( LockedDoor(..)
   , lockedDoor
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -58,15 +59,15 @@ instance (TreacheryRunner env) => RunMessage env LockedDoor where
         (traverseToSnd $ (unClueCount <$>) . getCount)
       case maxes locations of
         [] -> pure ()
-        [x] -> unshiftMessages [AttachTreachery treacheryId (LocationTarget x)]
-        xs -> unshiftMessage
+        [x] -> pushAll [AttachTreachery treacheryId (LocationTarget x)]
+        xs -> push
           (chooseOne
             iid
             [ AttachTreachery treacheryId (LocationTarget x) | x <- xs ]
           )
       LockedDoor <$> runMessage msg attrs
     UseCardAbility iid (TreacherySource tid) _ 1 _ | tid == treacheryId ->
-      t <$ unshiftMessage
+      t <$ push
         (chooseOne
           iid
           [ BeginSkillTest
@@ -86,5 +87,5 @@ instance (TreacheryRunner env) => RunMessage env LockedDoor where
           ]
         )
     PassedSkillTest _ _ source _ _ _ | isSource attrs source ->
-      t <$ unshiftMessage (Discard $ toTarget attrs)
+      t <$ push (Discard $ toTarget attrs)
     _ -> LockedDoor <$> runMessage msg attrs

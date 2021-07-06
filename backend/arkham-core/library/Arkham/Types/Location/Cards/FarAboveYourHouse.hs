@@ -34,7 +34,7 @@ instance ActionRunner env => HasActions env FarAboveYourHouse where
 instance (LocationRunner env) => RunMessage env FarAboveYourHouse where
   runMessage msg l@(FarAboveYourHouse attrs) = case msg of
     RevealLocation (Just iid) lid | lid == locationId attrs -> do
-      unshiftMessage
+      push
         (BeginSkillTest
           iid
           (toSource attrs)
@@ -47,7 +47,7 @@ instance (LocationRunner env) => RunMessage env FarAboveYourHouse where
     FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> do
         investigatorIds <- getInvestigatorIds
-        l <$ unshiftMessages
+        l <$ pushAll
           (concat $ replicate @[[Message]]
             n
             [ RandomDiscard iid' | iid' <- investigatorIds ]

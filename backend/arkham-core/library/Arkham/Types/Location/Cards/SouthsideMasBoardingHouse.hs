@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.SouthsideMasBoardingHouse
   ( SouthsideMasBoardingHouse(..)
   , southsideMasBoardingHouse
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -53,6 +54,5 @@ instance ActionRunner env => HasActions env SouthsideMasBoardingHouse where
 instance (LocationRunner env) => RunMessage env SouthsideMasBoardingHouse where
   runMessage msg l@(SouthsideMasBoardingHouse attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessage
-        (SearchDeckForTraits iid (InvestigatorTarget iid) [Ally])
+      l <$ push (SearchDeckForTraits iid (InvestigatorTarget iid) [Ally])
     _ -> SouthsideMasBoardingHouse <$> runMessage msg attrs

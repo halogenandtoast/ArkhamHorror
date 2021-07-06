@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.CollapsingReality
   ( collapsingReality
   , CollapsingReality(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -38,5 +39,5 @@ instance TreacheryRunner env => RunMessage env CollapsingReality where
             , InvestigatorAssignDamage iid source DamageAny 1 0
             ]
           else [InvestigatorAssignDamage iid source DamageAny 2 0]
-      t <$ unshiftMessages (revelationMsgs <> [Discard (toTarget attrs)])
+      t <$ pushAll (revelationMsgs <> [Discard (toTarget attrs)])
     _ -> CollapsingReality <$> runMessage msg attrs

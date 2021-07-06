@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Attrs
   ( module Arkham.Types.Act.Attrs
   , module X
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -135,7 +136,9 @@ advanceActSideA investigatorIds requiredClues attrs = do
   pure
     ([ SpendClues totalRequiredClues investigatorIds | totalRequiredClues > 0 ]
     <> [ CheckWindow leadInvestigatorId [WhenActAdvance (toId attrs)]
-       , chooseOne leadInvestigatorId [AdvanceAct (toId attrs) (toSource attrs)]
+       , chooseOne
+         leadInvestigatorId
+         [AdvanceAct (toId attrs) (toSource attrs)]
        ]
     )
 
@@ -145,24 +148,23 @@ instance ActAttrsRunner env => RunMessage env ActAttrs where
       case actRequiredClues of
         Just (RequiredClues requiredClues Nothing) -> do
           investigatorIds <- getInvestigatorIds
-          unshiftMessages =<< advanceActSideA investigatorIds requiredClues a
+          pushAll =<< advanceActSideA investigatorIds requiredClues a
         Just (RequiredClues requiredClues (Just locationMatcher)) -> do
           mLocationId <- getId @(Maybe LocationId) locationMatcher
           case mLocationId of
             Just lid -> do
               investigatorIds <- getSetList @InvestigatorId lid
-              unshiftMessages
-                =<< advanceActSideA investigatorIds requiredClues a
+              pushAll =<< advanceActSideA investigatorIds requiredClues a
             Nothing ->
               throwIO $ InvalidState
                 "Should not have advanced if locaiton does not exists"
         Nothing -> do
           investigatorIds <- getInvestigatorIds
-          unshiftMessages =<< advanceActSideA investigatorIds (Static 0) a
+          pushAll =<< advanceActSideA investigatorIds (Static 0) a
       pure $ a & (sequenceL .~ Act (unActStep $ actStep actSequence) B)
     AttachTreachery tid (ActTarget aid) | aid == actId ->
       pure $ a & treacheriesL %~ insertSet tid
     InvestigatorResigned _ -> do
       investigatorIds <- getSet @InScenarioInvestigatorId ()
-      a <$ when (null investigatorIds) (unshiftMessage AllInvestigatorsResigned)
+      a <$ when (null investigatorIds) (push AllInvestigatorsResigned)
     _ -> pure a

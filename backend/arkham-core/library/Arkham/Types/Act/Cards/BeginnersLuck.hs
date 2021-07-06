@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.BeginnersLuck
   ( BeginnersLuck(..)
   , beginnersLuck
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -51,7 +52,7 @@ instance
   runMessage msg a@(BeginnersLuck attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       lid <- getRandom
-      a <$ unshiftMessages
+      a <$ pushAll
         [ PlaceLocation lid Locations.darkenedHall
         , DiscardEncounterUntilFirst
           (toSource attrs)
@@ -61,10 +62,10 @@ instance
     RequestedEncounterCard source (Just ec) | isSource attrs source -> do
       darkenedHallId <- fromJustNote "missing darkened hall"
         <$> getId (LocationWithTitle "Darkened Hall")
-      a <$ unshiftMessage (SpawnEnemyAt (EncounterCard ec) darkenedHallId)
+      a <$ push (SpawnEnemyAt (EncounterCard ec) darkenedHallId)
     UseCardAbility iid source Nothing 1 payments | isSource attrs source -> do
       tokensInBag <- getList @Token ()
-      a <$ unshiftMessages
+      a <$ pushAll
         [ FocusTokens tokensInBag
         , chooseOne
           iid
@@ -84,11 +85,11 @@ instance
       | isSource attrs source
       -> do
         replaceToken token
-        a <$ unshiftMessages [FocusTokens [token], Remember $ Cheated iid]
+        a <$ pushAll [FocusTokens [token], Remember $ Cheated iid]
     After (GainClues _ _) -> do
       totalClues <- unSpendableClueCount <$> getCount ()
       requiredClues <- getPlayerCountValue (PerPlayer 4)
       a <$ when
         (totalClues >= requiredClues)
-        (unshiftMessage $ AdvanceAct actId (toSource attrs))
+        (push $ AdvanceAct actId (toSource attrs))
     _ -> BeginnersLuck <$> runMessage msg attrs

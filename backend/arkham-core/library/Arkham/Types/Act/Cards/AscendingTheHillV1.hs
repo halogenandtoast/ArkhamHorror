@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.AscendingTheHillV1
   ( AscendingTheHillV1(..)
   , ascendingTheHillV1
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -36,17 +37,16 @@ instance (HasName env LocationId, ActRunner env) => RunMessage env AscendingTheH
   runMessage msg a@(AscendingTheHillV1 attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      unshiftMessage
-        $ chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
+      push $ chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
       pure
         . AscendingTheHillV1
         $ attrs
         & (sequenceL .~ Act (unActStep $ actStep actSequence) B)
     AdvanceAct aid _ | aid == actId && onSide B attrs ->
-      a <$ unshiftMessage (NextAct actId "02281")
+      a <$ push (NextAct actId "02281")
     WhenEnterLocation _ lid -> do
       name <- getName lid
       a <$ when
         (name == "Sentinel Hill")
-        (unshiftMessage $ AdvanceAct actId (toSource attrs))
+        (push $ AdvanceAct actId (toSource attrs))
     _ -> AscendingTheHillV1 <$> runMessage msg attrs

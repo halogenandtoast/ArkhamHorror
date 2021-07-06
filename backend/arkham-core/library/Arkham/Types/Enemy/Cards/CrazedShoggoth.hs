@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.CrazedShoggoth
   ( CrazedShoggoth(..)
   , crazedShoggoth
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -36,5 +37,5 @@ instance
         <$> getSetList (lid, [Altered])
       e <$ spawnAtOneOf iid eid closestAlteredLocationIds
     InvestigatorWhenDefeated source iid | isSource attrs source ->
-      e <$ unshiftMessage (InvestigatorKilled iid)
+      e <$ push (InvestigatorKilled iid)
     _ -> CrazedShoggoth <$> runMessage msg attrs

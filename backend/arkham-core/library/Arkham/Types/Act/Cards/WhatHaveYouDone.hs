@@ -23,7 +23,7 @@ instance ActRunner env => RunMessage env WhatHaveYouDone where
   runMessage msg a@(WhatHaveYouDone attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      unshiftMessage
+      push
         (chooseOne
           leadInvestigatorId
           [ Label
@@ -36,5 +36,5 @@ instance ActRunner env => RunMessage env WhatHaveYouDone where
         )
       pure $ WhatHaveYouDone $ attrs & sequenceL .~ Act 3 B
     EnemyDefeated _ _ _ "01116" _ _ ->
-      a <$ unshiftMessage (AdvanceAct actId $ toSource attrs)
+      a <$ push (AdvanceAct actId $ toSource attrs)
     _ -> WhatHaveYouDone <$> runMessage msg attrs

@@ -30,7 +30,7 @@ instance HasActions env ViciousBlow where
 instance (SkillRunner env) => RunMessage env ViciousBlow where
   runMessage msg s@(ViciousBlow attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest iid (Just Fight) _ (SkillTarget sid) _ _ | sid == skillId ->
-      s <$ unshiftMessage
+      s <$ push
         (CreateWindowModifierEffect
           EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [DamageDealt 1])

@@ -1,7 +1,8 @@
 module Arkham.Types.Event.Cards.LetMeHandleThis
   ( letMeHandleThis
   , LetMeHandleThis(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -41,7 +42,7 @@ instance HasQueue env => RunMessage env LetMeHandleThis where
           Surge _ (TreacherySource tid') | tid == tid' ->
             Surge iid (TreacherySource tid')
           other -> other
-        e <$ unshiftMessages
+        e <$ pushAll
           [ CreateEffect
             (toCardCode attrs)
             Nothing

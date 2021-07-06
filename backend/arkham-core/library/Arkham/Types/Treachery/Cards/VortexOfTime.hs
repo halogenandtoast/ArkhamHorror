@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.VortexOfTime
   ( vortexOfTime
   , VortexOfTime(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -32,7 +33,7 @@ instance TreacheryRunner env => RunMessage env VortexOfTime where
     Revelation _iid source | isSource attrs source -> do
       sentinelHills <- getSetList @LocationId [SentinelHill]
       investigatorsAtSentinelHills <- concatMapM' getSetList sentinelHills
-      t <$ unshiftMessages
+      t <$ pushAll
         ([ BeginSkillTest
              iid
              source
@@ -45,6 +46,6 @@ instance TreacheryRunner env => RunMessage env VortexOfTime where
         <> [discard attrs]
         )
     FailedSkillTest iid _ source SkillTestTarget{} _ _
-      | isSource attrs source
-      -> t <$ unshiftMessage (InvestigatorAssignDamage iid source DamageAny 2 0)
+      | isSource attrs source -> t
+      <$ push (InvestigatorAssignDamage iid source DamageAny 2 0)
     _ -> VortexOfTime <$> runMessage msg attrs

@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.EarlSawyer
   ( earlSawyer
   , EarlSawyer(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -40,5 +41,5 @@ instance HasModifiersFor env EarlSawyer where
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env EarlSawyer where
   runMessage msg a@(EarlSawyer attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage (DrawCards iid 1 False)
+      a <$ push (DrawCards iid 1 False)
     _ -> EarlSawyer <$> runMessage msg attrs

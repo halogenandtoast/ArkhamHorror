@@ -48,9 +48,10 @@ instance PathPiece UUID where
 
 instance PersistField UUID where
   toPersistValue u = PersistLiteral_ Escaped . BS8.pack . UUID.toString $ u
-  fromPersistValue (PersistLiteral_ _ t) = case UUID.fromString $ BS8.unpack t of
-    Just x -> Right x
-    Nothing -> Left "Invalid UUID"
+  fromPersistValue (PersistLiteral_ _ t) =
+    case UUID.fromString $ BS8.unpack t of
+      Just x -> Right x
+      Nothing -> Left "Invalid UUID"
   fromPersistValue _ = Left "Not PersistDBSpecific"
 
 instance PersistFieldSql UUID where

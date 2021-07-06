@@ -1,6 +1,7 @@
 module Arkham.Types.Exception
   ( module Arkham.Types.Exception
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

@@ -1,13 +1,14 @@
 module Arkham.Types.Investigator.Cards.RexMurphy
   ( RexMurphy(..)
   , rexMurphy
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Cost
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
@@ -58,16 +59,21 @@ instance HasTokenValue env RexMurphy where
 instance (InvestigatorRunner env) => RunMessage env RexMurphy where
   runMessage msg i@(RexMurphy attrs@InvestigatorAttrs {..}) = case msg of
     UseCardAbility _ (InvestigatorSource iid) _ 1 _ | iid == investigatorId ->
-      i <$ unshiftMessage
-        (DiscoverCluesAtLocation investigatorId investigatorLocation 1 Nothing)
-    ResolveToken _drawnToken ElderSign iid | iid == investigatorId ->
-      i <$ unshiftMessage
-        (chooseOne
-          iid
-          [ Label
-            "Automatically fail to draw 3"
-            [FailSkillTest, DrawCards iid 3 False]
-          , Label "Resolve normally" []
-          ]
-        )
+      i
+        <$ push
+             (DiscoverCluesAtLocation
+               investigatorId
+               investigatorLocation
+               1
+               Nothing
+             )
+    ResolveToken _drawnToken ElderSign iid | iid == investigatorId -> i <$ push
+      (chooseOne
+        iid
+        [ Label
+          "Automatically fail to draw 3"
+          [FailSkillTest, DrawCards iid 3 False]
+        , Label "Resolve normally" []
+        ]
+      )
     _ -> RexMurphy <$> runMessage msg attrs

@@ -32,7 +32,7 @@ instance (CampaignRunner env) => RunMessage env ReturnToNightOfTheZealot where
             Just (ScenarioStep "50011") -> Just (ScenarioStep "50025")
             Just (ScenarioStep "50025") -> Just (ScenarioStep "50032")
             _ -> Nothing
-        unshiftMessage (CampaignStep nextStep)
+        push (CampaignStep nextStep)
         pure
           . ReturnToNightOfTheZealot
           . NightOfTheZealot

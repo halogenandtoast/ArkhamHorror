@@ -1,6 +1,7 @@
 module Arkham.Types.Effect.Attrs
   ( module Arkham.Types.Effect.Attrs
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -58,15 +59,15 @@ instance HasActions env EffectAttrs where
 instance HasQueue env => RunMessage env EffectAttrs where
   runMessage msg a@EffectAttrs {..} = case msg of
     EndSetup | EffectSetupWindow `elem` effectWindow ->
-      a <$ unshiftMessage (DisableEffect effectId)
+      a <$ push (DisableEffect effectId)
     EndPhase | EffectPhaseWindow `elem` effectWindow ->
-      a <$ unshiftMessage (DisableEffect effectId)
+      a <$ push (DisableEffect effectId)
     EndRound | EffectRoundWindow `elem` effectWindow ->
-      a <$ unshiftMessage (DisableEffect effectId)
+      a <$ push (DisableEffect effectId)
     SkillTestEnds _ | EffectSkillTestWindow `elem` effectWindow ->
-      a <$ unshiftMessage (DisableEffect effectId)
+      a <$ push (DisableEffect effectId)
     CancelSkillEffects -> case effectSource of
-      (SkillSource _) -> a <$ unshiftMessage (DisableEffect effectId)
+      (SkillSource _) -> a <$ push (DisableEffect effectId)
       _ -> pure a
     _ -> pure a
 

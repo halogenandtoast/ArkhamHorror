@@ -4,7 +4,8 @@
 --
 module TestImport.Lifted
   ( module X
-  ) where
+  )
+where
 
 import TestImport as X hiding
   ( expectationFailure

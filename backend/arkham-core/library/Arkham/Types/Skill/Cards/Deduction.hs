@@ -29,7 +29,7 @@ instance (SkillRunner env) => RunMessage env Deduction where
     PassedSkillTest iid (Just Action.Investigate) _ (SkillTarget sid) _ _
       | sid == skillId -> do
         lid <- getId @LocationId iid
-        s <$ unshiftMessage
+        s <$ push
           (CreateEffect
             "01039"
             (Just $ EffectMetaTarget (LocationTarget lid))

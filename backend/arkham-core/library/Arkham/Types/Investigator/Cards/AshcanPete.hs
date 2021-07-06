@@ -1,15 +1,16 @@
 module Arkham.Types.Investigator.Cards.AshcanPete
   ( AshcanPete(..)
   , ashcanPete
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.AssetId
 import Arkham.Types.Card
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Cost
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs
@@ -70,12 +71,12 @@ instance HasTokenValue env AshcanPete where
 instance (InvestigatorRunner env) => RunMessage env AshcanPete where
   runMessage msg i@(AshcanPete attrs@InvestigatorAttrs {..}) = case msg of
     ResolveToken _drawnToken ElderSign iid | iid == investigatorId ->
-      i <$ unshiftMessage (Ready $ CardCodeTarget "02014")
+      i <$ push (Ready $ CardCodeTarget "02014")
     UseCardAbility _ (InvestigatorSource iid) _ 1 _ | iid == investigatorId ->
       do
         exhaustedAssetIds <- map unExhaustedAssetId
           <$> getSetList investigatorId
-        i <$ unshiftMessage
+        i <$ push
           (chooseOne
             investigatorId
             [ Ready (AssetTarget aid) | aid <- exhaustedAssetIds ]
@@ -86,8 +87,7 @@ instance (InvestigatorRunner env) => RunMessage env AshcanPete where
           break ((== "02014") . cdCardCode . pcDef) (unDeck investigatorDeck)
       case after of
         (card : rest) -> do
-          unshiftMessage
-            (PutCardIntoPlay investigatorId (PlayerCard card) Nothing)
+          push (PutCardIntoPlay investigatorId (PlayerCard card) Nothing)
           AshcanPete <$> runMessage msg (attrs & deckL .~ Deck (before <> rest))
         _ -> error "Duke must be in deck"
     _ -> AshcanPete <$> runMessage msg attrs

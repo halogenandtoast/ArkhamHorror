@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.SecurityOffice_129
   ( securityOffice_129
   , SecurityOffice_129(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -53,7 +54,7 @@ instance LocationRunner env => RunMessage env SecurityOffice_129 where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       unrevealedExhibitHalls <- map unUnrevealedLocationId
         <$> getSetList (LocationWithTitle "ExhibitHall")
-      l <$ unshiftMessage
+      l <$ push
         (chooseOne
           iid
           (TargetLabel

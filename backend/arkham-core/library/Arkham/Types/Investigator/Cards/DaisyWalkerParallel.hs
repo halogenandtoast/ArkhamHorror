@@ -1,13 +1,14 @@
 module Arkham.Types.Investigator.Cards.DaisyWalkerParallel
   ( DaisyWalkerParallel(..)
   , daisyWalkerParallel
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs
@@ -87,7 +88,7 @@ instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
               <$> traverse (\a -> (a, ) <$> getActions iid NonFast a) tomeAssets
           if null pairs'
             then pure i
-            else i <$ unshiftMessage
+            else i <$ push
               (chooseOneAtATime iid $ map
                 (\(tome, actions) ->
                   TargetLabel (AssetTarget tome) [Run [chooseOne iid actions]]
@@ -95,11 +96,10 @@ instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
                 pairs'
               )
       UseCardAbility iid (TokenEffectSource ElderSign) _ 2 _
-        | iid == investigatorId
-        -> i <$ unshiftMessage
-          (SearchDiscard iid (InvestigatorTarget iid) [Tome])
+        | iid == investigatorId -> i
+        <$ push (SearchDiscard iid (InvestigatorTarget iid) [Tome])
       ResolveToken _drawnToken ElderSign iid | iid == investigatorId ->
-        i <$ unshiftMessage
+        i <$ push
           (chooseOne
             iid
             [ UseCardAbility

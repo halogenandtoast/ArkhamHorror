@@ -24,5 +24,5 @@ instance HasActions env Opportunist where
 instance (SkillRunner env) => RunMessage env Opportunist where
   runMessage msg s@(Opportunist attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest iid _ _ (SkillTarget sid) _ n | sid == skillId && n >= 3 ->
-      s <$ unshiftMessage (ReturnToHand iid (SkillTarget skillId))
+      s <$ push (ReturnToHand iid (SkillTarget skillId))
     _ -> Opportunist <$> runMessage msg attrs

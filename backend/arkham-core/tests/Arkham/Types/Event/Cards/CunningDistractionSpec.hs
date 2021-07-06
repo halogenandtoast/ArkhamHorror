@@ -1,6 +1,7 @@
 module Arkham.Types.Event.Cards.CunningDistractionSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport.Lifted
 

@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.SpacesBetween
   ( spacesBetween
   , SpacesBetween(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -60,7 +61,7 @@ instance (GetCardDef env LocationId, TreacheryRunner env) => RunMessage env Spac
         nonSentinelHillLocations
       shuffledLocations <- traverse (\lid -> (lid, ) <$> getCardDef lid)
         =<< shuffleM nonSentinelHillLocations
-      t <$ unshiftMessages
+      t <$ pushAll
         (msgs
         <> [ PlaceLocation locationId cardDef
            | (locationId, cardDef) <- shuffledLocations

@@ -3,7 +3,8 @@ module Api.Handler.Arkham.Decks
   , postApiV1ArkhamDecksR
   , deleteApiV1ArkhamDeckR
   , putApiV1ArkhamGameDecksR
-  ) where
+  )
+where
 
 import Import hiding (delete, on, (==.))
 

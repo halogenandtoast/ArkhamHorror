@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.LiquidCourage
   ( liquidCourage
   , LiquidCourage(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -67,8 +68,8 @@ instance
           ]
       a <$ case iids of
         [] -> pure ()
-        [iid'] -> unshiftMessages $ abilityEffect iid'
-        _ -> unshiftMessage
+        [iid'] -> pushAll $ abilityEffect iid'
+        _ -> push
           (chooseOne
             iid
             [ TargetLabel (InvestigatorTarget iid') (abilityEffect iid')
@@ -76,7 +77,7 @@ instance
             ]
           )
     PassedSkillTest iid _ source _ _ _ | isSource attrs source ->
-      a <$ unshiftMessage (HealHorror (InvestigatorTarget iid) 1)
+      a <$ push (HealHorror (InvestigatorTarget iid) 1)
     FailedSkillTest iid _ source _ _ _ | isSource attrs source ->
-      a <$ unshiftMessage (RandomDiscard iid)
+      a <$ push (RandomDiscard iid)
     _ -> LiquidCourage <$> runMessage msg attrs

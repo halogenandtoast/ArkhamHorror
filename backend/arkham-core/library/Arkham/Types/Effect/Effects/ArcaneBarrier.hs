@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.ArcaneBarrier
   ( ArcaneBarrier(..)
   , arcaneBarrier
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -25,7 +26,7 @@ instance HasModifiersFor env ArcaneBarrier where
 instance HasQueue env => RunMessage env ArcaneBarrier where
   runMessage msg e@(ArcaneBarrier attrs@EffectAttrs {..}) = case msg of
     CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == effectId ->
-      e <$ unshiftMessage
+      e <$ push
         (BeginSkillTest
           iid
           (toSource attrs)
@@ -40,7 +41,7 @@ instance HasQueue env => RunMessage env ArcaneBarrier where
           moveMessages = case effectMetadata of
             Just (EffectMessages msgs) -> msgs
             _ -> error "messages must be supplied"
-        e <$ unshiftMessages
+        e <$ pushAll
           [ chooseOne
             iid
             [ Label "Cancel Move" []
@@ -58,6 +59,6 @@ instance HasQueue env => RunMessage env ArcaneBarrier where
             _ -> error "messages must be supplied"
         case effectSource of
           TreacherySource tid ->
-            e <$ unshiftMessages (Discard (TreacheryTarget tid) : moveMessages)
+            e <$ pushAll (Discard (TreacheryTarget tid) : moveMessages)
           _ -> error "Has to be a treachery source"
     _ -> ArcaneBarrier <$> runMessage msg attrs

@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.Acolyte
   ( Acolyte(..)
   , acolyte
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

@@ -274,15 +274,14 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs whe
     RemoveClues target n | isTarget a target ->
       pure $ a & cluesL %~ max 0 . subtract n
     CheckDefeated _ ->
-      a <$ when (defeated a) (unshiftMessages $ resolve $ AssetDefeated assetId)
-    AssetDefeated aid | aid == assetId ->
-      a <$ unshiftMessage (Discard $ toTarget a)
+      a <$ when (defeated a) (pushAll $ resolve $ AssetDefeated assetId)
+    AssetDefeated aid | aid == assetId -> a <$ push (Discard $ toTarget a)
     AssetDamage aid _ health sanity | aid == assetId ->
       pure $ a & healthDamageL +~ health & sanityDamageL +~ sanity
     When (InvestigatorResigned iid) | assetInvestigator == Just iid ->
-      a <$ unshiftMessage (ResignWith (AssetTarget assetId))
+      a <$ push (ResignWith (AssetTarget assetId))
     InvestigatorEliminated iid | assetInvestigator == Just iid ->
-      a <$ unshiftMessage (Discard (AssetTarget assetId))
+      a <$ push (Discard (AssetTarget assetId))
     AddUses target useType' n | a `isTarget` target -> case assetUses of
       Uses useType'' m | useType' == useType'' ->
         pure $ a & usesL .~ Uses useType' (n + m)
@@ -312,20 +311,18 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs whe
           ?~ eid
       _ -> error "Cannot attach asset to that type"
     RemoveFromGame target | a `isTarget` target ->
-      a <$ unshiftMessage (RemovedFromPlay $ toSource a)
-    Discard target | a `isTarget` target -> a <$ unshiftMessages
-      [RemovedFromPlay $ toSource a, Discarded target (toCard a)]
+      a <$ push (RemovedFromPlay $ toSource a)
+    Discard target | a `isTarget` target ->
+      a <$ pushAll [RemovedFromPlay $ toSource a, Discarded target (toCard a)]
     Exile target | a `isTarget` target ->
-      a <$ unshiftMessages
-        [RemovedFromPlay $ toSource a, Exiled target (toCard a)]
+      a <$ pushAll [RemovedFromPlay $ toSource a, Exiled target (toCard a)]
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
-      unshiftMessage $ CheckWindow iid [WhenEnterPlay $ toTarget a]
+      push $ CheckWindow iid [WhenEnterPlay $ toTarget a]
       pure $ a & investigatorL ?~ iid
     TakeControlOfAsset iid aid | aid == assetId ->
       pure $ a & investigatorL ?~ iid
     AddToScenarioDeck target | isTarget a target -> do
-      unshiftMessages
-        [AddCardToScenarioDeck (toCard a), RemoveFromGame (toTarget a)]
+      pushAll [AddCardToScenarioDeck (toCard a), RemoveFromGame (toTarget a)]
       pure $ a & investigatorL .~ Nothing
     Exhaust target | a `isTarget` target -> pure $ a & exhaustedL .~ True
     Ready target | a `isTarget` target -> case assetInvestigator of

@@ -48,5 +48,5 @@ instance LocationRunner env => RunMessage env ArkhamWoodsGreatWillow where
           unused <- getGroupIsUnused ability
           l <$ when
             unused
-            (unshiftMessages [UseLimitedAbility iid ability, Surge iid source])
+            (pushAll [UseLimitedAbility iid ability, Surge iid source])
       _ -> ArkhamWoodsGreatWillow <$> runMessage msg attrs

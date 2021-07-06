@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.WhateleyRuins_251
   ( whateleyRuins_251
   , WhateleyRuins_251(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -53,9 +54,8 @@ instance ActionRunner env => HasActions env WhateleyRuins_251 where
 
 instance LocationRunner env => RunMessage env WhateleyRuins_251 where
   runMessage msg l@(WhateleyRuins_251 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessage
-        (BeginSkillTest iid source (toTarget attrs) Nothing SkillIntellect 4)
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+      (BeginSkillTest iid source (toTarget attrs) Nothing SkillIntellect 4)
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         abominations <- getSetList @EnemyId (CardCode "02255")
@@ -66,7 +66,7 @@ instance LocationRunner env => RunMessage env WhateleyRuins_251 where
               . map unEnemyAccessibleLocationId
               <$> getSetList (abomination, locationId)
 
-        l <$ unshiftMessage
+        l <$ push
           (chooseOne
             iid
             [ TargetLabel

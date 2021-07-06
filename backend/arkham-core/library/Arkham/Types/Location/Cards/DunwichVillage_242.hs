@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.DunwichVillage_242
   ( dunwichVillage_242
   , DunwichVillage_242(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -62,7 +63,7 @@ instance LocationRunner env => RunMessage env DunwichVillage_242 where
       when
         (null investigatorsWithClues || null abominations)
         (throwIO $ InvalidState "should not have been able to use this ability")
-      l <$ unshiftMessages
+      l <$ pushAll
         [ chooseOne
             iid
             [ Label

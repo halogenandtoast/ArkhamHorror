@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.Indebted
   ( Indebted(..)
   , indebted
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -33,5 +34,5 @@ instance HasActions env Indebted where
 instance (TreacheryRunner env) => RunMessage env Indebted where
   runMessage msg t@(Indebted attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
+      t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)
     _ -> Indebted <$> runMessage msg attrs

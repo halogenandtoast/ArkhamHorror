@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Scenarios.TheHouseAlwaysWins
   ( TheHouseAlwaysWins(..)
   , theHouseAlwaysWins
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -84,7 +85,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       cloverClubLoungeId <- getRandom
       cloverClubBarId <- getRandom
       cloverClubCardroomId <- getRandom
-      pushMessages
+      pushAllEnd
         [ SetEncounterDeck encounterDeck
         , AddAgenda "02063"
         , AddAct "02066"
@@ -115,12 +116,12 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           , Locations.backAlley
           ]
       TheHouseAlwaysWins <$> runMessage msg (attrs & locationsL .~ locations')
-    ResolveToken _ Tablet iid -> s <$ unshiftMessage (SpendResources iid 3)
+    ResolveToken _ Tablet iid -> s <$ push (SpendResources iid 3)
     ResolveToken drawnToken Skull iid -> do
       let requiredResources = if isEasyStandard attrs then 2 else 3
       resourceCount <- unResourceCount <$> getCount iid
       if resourceCount >= requiredResources
-        then unshiftMessage $ chooseOne
+        then push $ chooseOne
           iid
           [ Label
             ("Spend "
@@ -136,19 +137,18 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           , Label "Do not spend resources" []
           ]
         else pure ()
-      s <$ unshiftMessage (SpendResources iid 3)
+      s <$ push (SpendResources iid 3)
     PassedSkillTest iid _ _ (DrawnTokenTarget token) _ _ ->
       s <$ case drawnTokenFace token of
-        Cultist | isEasyStandard attrs ->
-          unshiftMessage $ TakeResources iid 3 False
+        Cultist | isEasyStandard attrs -> push $ TakeResources iid 3 False
         _ -> pure ()
     FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _ ->
       s <$ case drawnTokenFace token of
-        Cultist | isHardExpert attrs -> unshiftMessage $ SpendResources iid 3
-        Tablet | isEasyStandard attrs -> unshiftMessage $ SpendResources iid 3
+        Cultist | isHardExpert attrs -> push $ SpendResources iid 3
+        Tablet | isEasyStandard attrs -> push $ SpendResources iid 3
         _ -> pure ()
     ScenarioResolution NoResolution ->
-      s <$ unshiftMessage (ScenarioResolution $ Resolution 1)
+      s <$ push (ScenarioResolution $ Resolution 1)
     ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
@@ -160,7 +160,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
             )
           <$> getSet ()
       xp <- getXp
-      s <$ unshiftMessages
+      s <$ pushAll
         ([ chooseOne
            leadInvestigatorId
            [ Run
@@ -195,7 +195,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
             )
           <$> getSet ()
       xp <- getXp
-      s <$ unshiftMessages
+      s <$ pushAll
         ([ chooseOne
            leadInvestigatorId
            [ Run
@@ -246,7 +246,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
             )
           <$> getSet ()
       xp <- getXp
-      s <$ unshiftMessages
+      s <$ pushAll
         ([ chooseOne
            leadInvestigatorId
            [ Run
@@ -298,7 +298,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
             )
           <$> getSet ()
       xp <- getXp
-      s <$ unshiftMessages
+      s <$ pushAll
         ([ chooseOne
              leadInvestigatorId
              [ Run

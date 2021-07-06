@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.GhoulPriest
   ( ghoulPriest
   , GhoulPriest(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

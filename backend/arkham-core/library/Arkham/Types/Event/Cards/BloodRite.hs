@@ -1,7 +1,8 @@
 module Arkham.Types.Event.Cards.BloodRite
   ( bloodRite
   , BloodRite(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -30,17 +31,17 @@ instance HasActions env BloodRite where
 
 instance EventRunner env => RunMessage env BloodRite where
   runMessage msg e@(BloodRite attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ unshiftMessages
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ pushAll
       [ DrawCards iid 2 False
       , PayForCardAbility iid (EventSource eid) (Just $ IntMetadata 0) 1
       , Discard (toTarget attrs)
       ]
     PayForCardAbility iid source meta@(Just (IntMetadata n)) 1
       | isSource attrs source -> if n == 2
-        then e <$ unshiftMessage (UseCardAbility iid source meta 1 NoPayment)
+        then e <$ push (UseCardAbility iid source meta 1 NoPayment)
         else do
           cards <- map unDiscardableHandCard <$> getList iid
-          e <$ unshiftMessage
+          e <$ push
             (chooseOne iid
             $ [ Run
                   [ DiscardCard iid (toCardId card)
@@ -61,7 +62,7 @@ instance EventRunner env => RunMessage env BloodRite where
       | isSource attrs source -> do
         locationId <- getId @LocationId iid
         enemyIds <- getSetList @EnemyId locationId
-        e <$ unshiftMessages
+        e <$ pushAll
           (replicate
             n
             (chooseOne iid

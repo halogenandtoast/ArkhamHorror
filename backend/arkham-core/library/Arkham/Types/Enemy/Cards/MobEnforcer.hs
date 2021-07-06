@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.MobEnforcer
   ( MobEnforcer(..)
   , mobEnforcer
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -56,5 +57,5 @@ instance ActionRunner env => HasActions env MobEnforcer where
 instance (EnemyRunner env) => RunMessage env MobEnforcer where
   runMessage msg e@(MobEnforcer attrs@EnemyAttrs {..}) = case msg of
     UseCardAbility _ (EnemySource eid) _ 1 _ | eid == enemyId ->
-      e <$ unshiftMessage (Discard $ toTarget attrs)
+      e <$ push (Discard $ toTarget attrs)
     _ -> MobEnforcer <$> runMessage msg attrs

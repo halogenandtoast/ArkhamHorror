@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.TheOldOnesHunger
   ( TheOldOnesHunger(..)
   , theOldOnesHunger
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -31,9 +32,9 @@ instance AgendaRunner env => RunMessage env TheOldOnesHunger where
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       scenarioDeckCount <- unScenarioDeckCount <$> getCount ()
       if scenarioDeckCount >= 2
-        then a <$ unshiftMessages
+        then a <$ pushAll
           [ UseScenarioSpecificAbility leadInvestigatorId Nothing 1
           , NextAgenda agendaId "02198"
           ]
-        else a <$ unshiftMessage (NextAgenda agendaId "02198")
+        else a <$ push (NextAgenda agendaId "02198")
     _ -> TheOldOnesHunger <$> runMessage msg attrs

@@ -80,7 +80,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         , EncounterSet.ChillingCold
         ]
       studyId <- getRandom
-      pushMessages
+      pushAllEnd
         [ SetEncounterDeck encounterDeck
         , AddAgenda "01105"
         , AddAct "01108"
@@ -104,13 +104,13 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           ]
         )
     ResolveToken _ Cultist iid ->
-      s <$ when (isHardExpert attrs) (unshiftMessage $ DrawAnotherToken iid)
+      s <$ when (isHardExpert attrs) (push $ DrawAnotherToken iid)
     ResolveToken _ Tablet iid -> do
       ghoulCount <- unEnemyCount
         <$> getCount (InvestigatorLocation iid, [Trait.Ghoul])
       s <$ when
         (ghoulCount > 0)
-        (unshiftMessage $ InvestigatorAssignDamage
+        (push $ InvestigatorAssignDamage
           iid
           (TokenEffectSource Tablet)
           DamageAny
@@ -119,10 +119,10 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         )
     FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _ -> do
       case drawnTokenFace token of
-        Skull | isHardExpert attrs -> unshiftMessage $ FindAndDrawEncounterCard
+        Skull | isHardExpert attrs -> push $ FindAndDrawEncounterCard
           iid
           (CardMatchByType (EnemyType, singleton Trait.Ghoul))
-        Cultist -> unshiftMessage $ InvestigatorAssignDamage
+        Cultist -> push $ InvestigatorAssignDamage
           iid
           (DrawnTokenSource token)
           DamageAny
@@ -134,7 +134,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
-      s <$ unshiftMessages
+      s <$ pushAll
         ([ chooseOne
            leadInvestigatorId
            [ Run
@@ -171,7 +171,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
-      s <$ unshiftMessages
+      s <$ pushAll
         ([ chooseOne
            leadInvestigatorId
            [ Run
@@ -205,7 +205,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
-      s <$ unshiftMessages
+      s <$ pushAll
         ([ chooseOne
            leadInvestigatorId
            [ Run
@@ -231,7 +231,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         )
     ScenarioResolution (Resolution 3) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      s <$ unshiftMessages
+      s <$ pushAll
         [ chooseOne
           leadInvestigatorId
           [ Run

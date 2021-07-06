@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.StudentUnion
   ( StudentUnion(..)
   , studentUnion
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -41,11 +42,10 @@ instance ActionRunner env => HasActions env StudentUnion where
 instance (LocationRunner env) => RunMessage env StudentUnion where
   runMessage msg l@(StudentUnion attrs) = case msg of
     RevealLocation _ lid | lid == locationId attrs -> do
-      unshiftMessage $ PlaceLocationMatching (LocationWithTitle "Dormitories")
+      push $ PlaceLocationMatching (LocationWithTitle "Dormitories")
       StudentUnion <$> runMessage msg attrs
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessages
-        [ HealDamage (InvestigatorTarget iid) 1
-        , HealHorror (InvestigatorTarget iid) 1
-        ]
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ pushAll
+      [ HealDamage (InvestigatorTarget iid) 1
+      , HealHorror (InvestigatorTarget iid) 1
+      ]
     _ -> StudentUnion <$> runMessage msg attrs

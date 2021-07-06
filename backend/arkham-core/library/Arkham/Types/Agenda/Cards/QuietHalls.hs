@@ -42,7 +42,7 @@ instance AgendaRunner env => RunMessage env QuietHalls where
             )
           else pure Nothing
 
-      unshiftMessages messages
+      pushAll messages
 
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
 
@@ -54,6 +54,6 @@ instance AgendaRunner env => RunMessage env QuietHalls where
           then [NextAgenda aid "02043", AdvanceCurrentAgenda]
           else [NextAgenda aid "02043"]
 
-      a <$ unshiftMessage
+      a <$ push
         (chooseOne leadInvestigatorId [Label "Continue" continueMessages])
     _ -> QuietHalls <$> runMessage msg attrs

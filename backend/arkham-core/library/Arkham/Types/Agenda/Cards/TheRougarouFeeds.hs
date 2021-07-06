@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.TheRougarouFeeds
   ( TheRougarouFeeds(..)
   , theRougarouFeeds
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -40,7 +41,7 @@ instance AgendaRunner env => RunMessage env TheRougarouFeeds where
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       mrougarou <- getRougarou
       case mrougarou of
-        Nothing -> a <$ unshiftMessages
+        Nothing -> a <$ pushAll
           [ ShuffleAllInEncounterDiscardBackIn "81034"
           , NextAgenda aid "81004"
           , PlaceDoomOnAgenda
@@ -66,7 +67,7 @@ instance AgendaRunner env => RunMessage env TheRougarouFeeds where
                     xs -> chooseOne
                       leadInvestigatorId
                       [ MoveUntil x (EnemyTarget eid) | (x, _) <- xs ]
-          a <$ unshiftMessages
+          a <$ pushAll
             [ ShuffleAllInEncounterDiscardBackIn "81034"
             , moveMessage
             , NextAgenda aid "81004"

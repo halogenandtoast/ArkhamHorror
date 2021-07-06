@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.ArkhamWoodsTwistingPaths
   ( arkhamWoodsTwistingPaths
   , ArkhamWoodsTwistingPaths(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -36,8 +37,8 @@ instance (HasId (Maybe LocationId) env LocationMatcher, HasQueue env) => RunMess
         e <$ when
           (lid == arkhamWoodsTwistingPathsId)
           (case effectMetadata attrs of
-            Just (EffectMessages msgs) -> unshiftMessages (msgs <> [disable])
-            _ -> unshiftMessage disable
+            Just (EffectMessages msgs) -> pushAll (msgs <> [disable])
+            _ -> push disable
           )
     FailedSkillTest _ _ (LocationSource lid) SkillTestInitiatorTarget{} _ _ ->
       do
@@ -45,5 +46,5 @@ instance (HasId (Maybe LocationId) env LocationMatcher, HasQueue env) => RunMess
           (mkFullName "Arkham Woods" "Twisting Paths")
         e <$ when
           (lid == arkhamWoodsTwistingPathsId)
-          (unshiftMessage $ DisableEffect $ effectId attrs)
+          (push $ DisableEffect $ effectId attrs)
     _ -> ArkhamWoodsTwistingPaths <$> runMessage msg attrs

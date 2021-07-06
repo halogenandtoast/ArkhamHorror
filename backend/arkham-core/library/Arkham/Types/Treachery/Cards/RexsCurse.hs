@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.RexsCurse
   ( RexsCurse(..)
   , rexsCurse
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -28,7 +29,7 @@ instance HasActions env RexsCurse where
 instance TreacheryRunner env => RunMessage env RexsCurse where
   runMessage msg t@(RexsCurse attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
-      t <$ unshiftMessage (AttachTreachery treacheryId (InvestigatorTarget iid))
+      t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))
     Will (PassedSkillTest iid _ _ SkillTestInitiatorTarget{} _ _)
       | treacheryOnInvestigator iid attrs -> do
         let
@@ -50,7 +51,7 @@ instance TreacheryRunner env => RunMessage env RexsCurse where
                 [] -> []
                 (_ : xs) -> xs
             in (before <> remaining, remainingWillPass)
-          unshiftMessages
+          pushAll
             $ retainedMessages
             <> [ UseAbility iid ability
                , ReturnSkillTestRevealedTokens
@@ -59,5 +60,5 @@ instance TreacheryRunner env => RunMessage env RexsCurse where
                ]
         pure t
     FailedSkillTest iid _ _ (TreacheryTarget tid) _ _ | tid == treacheryId ->
-      t <$ unshiftMessage (ShuffleIntoDeck iid (TreacheryTarget treacheryId))
+      t <$ push (ShuffleIntoDeck iid (TreacheryTarget treacheryId))
     _ -> RexsCurse <$> runMessage msg attrs

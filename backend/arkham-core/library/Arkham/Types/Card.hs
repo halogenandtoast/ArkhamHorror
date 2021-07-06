@@ -1,7 +1,8 @@
 module Arkham.Types.Card
   ( module Arkham.Types.Card
   , module X
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.TrappersCabin
   ( TrappersCabin(..)
   , trappersCabin
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -57,11 +58,10 @@ instance ActionRunner env => HasActions env TrappersCabin where
 
 instance (LocationRunner env) => RunMessage env TrappersCabin where
   runMessage msg l@(TrappersCabin attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessage
-        (BeginSkillTest iid source (toTarget attrs) Nothing SkillIntellect 3)
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+      (BeginSkillTest iid source (toTarget attrs) Nothing SkillIntellect 3)
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         bearTrap <- PlayerCard <$> genPlayerCard Assets.bearTrap
-        l <$ unshiftMessage (TakeControlOfSetAsideAsset iid bearTrap)
+        l <$ push (TakeControlOfSetAsideAsset iid bearTrap)
     _ -> TrappersCabin <$> runMessage msg attrs

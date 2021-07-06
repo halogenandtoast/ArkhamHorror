@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.FindingANewWay
   ( FindingANewWay(..)
   , findingANewWay
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -41,17 +42,16 @@ instance ActRunner env => RunMessage env FindingANewWay where
       investigatorIds <- getSet @InScenarioInvestigatorId ()
       a <$ when
         (null investigatorIds)
-        (unshiftMessage $ AdvanceAct actId (toSource attrs))
+        (push $ AdvanceAct actId (toSource attrs))
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
-      a <$ unshiftMessage (ScenarioResolution $ Resolution 1)
+      a <$ push (ScenarioResolution $ Resolution 1)
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage
-        (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))
+      a <$ push (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))
     DiscardedTopOfEncounterDeck iid cards target | isTarget attrs target -> do
       let locationCards = filterLocations cards
       a <$ unless
         (null locationCards)
-        (unshiftMessages
+        (pushAll
           [ FocusCards (map EncounterCard locationCards)
           , chooseOne
             iid

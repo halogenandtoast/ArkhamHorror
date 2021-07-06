@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.WhittonGreene
   ( whittonGreene
   , WhittonGreene(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -51,13 +52,12 @@ instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor en
 
 instance AssetRunner env => RunMessage env WhittonGreene where
   runMessage msg a@(WhittonGreene attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage
-        (SearchTopOfDeck
-          iid
-          (InvestigatorTarget iid)
-          6
-          [Tome, Relic]
-          ShuffleBackIn
-        )
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+      (SearchTopOfDeck
+        iid
+        (InvestigatorTarget iid)
+        6
+        [Tome, Relic]
+        ShuffleBackIn
+      )
     _ -> WhittonGreene <$> runMessage msg attrs

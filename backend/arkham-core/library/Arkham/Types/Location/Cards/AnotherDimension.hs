@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.AnotherDimension
   ( anotherDimension
   , AnotherDimension(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -54,7 +55,7 @@ instance (HasSet UnengagedEnemyId env LocationId, LocationRunner env) => RunMess
       | isSource attrs source -> do
         investigatorIds <- getSetList @InvestigatorId lid
         enemyIds <- map unUnengagedEnemyId <$> getSetList lid
-        l <$ unshiftMessages
+        l <$ pushAll
           ([ MoveTo iid (toId attrs) | iid <- investigatorIds ]
           ++ [ EnemyMove eid lid (toId attrs) | eid <- enemyIds ]
           )

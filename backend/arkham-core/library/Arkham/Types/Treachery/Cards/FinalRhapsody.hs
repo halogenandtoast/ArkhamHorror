@@ -25,10 +25,10 @@ instance HasActions env FinalRhapsody where
 instance TreacheryRunner env => RunMessage env FinalRhapsody where
   runMessage msg t@(FinalRhapsody attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      t <$ unshiftMessage (RequestTokens source (Just iid) 5 SetAside)
+      t <$ push (RequestTokens source (Just iid) 5 SetAside)
     RequestedTokens source (Just iid) faces | isSource attrs source -> do
       let damageCount = count (`elem` [Skull, AutoFail]) faces
-      t <$ unshiftMessages
+      t <$ pushAll
         [ InvestigatorAssignDamage iid source DamageAny damageCount damageCount
         , ResetTokens source
         , Discard $ toTarget attrs

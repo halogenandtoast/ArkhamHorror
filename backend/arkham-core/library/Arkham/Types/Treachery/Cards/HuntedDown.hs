@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.HuntedDown
   ( HuntedDown(..)
   , huntedDown
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -34,9 +35,7 @@ instance TreacheryRunner env => RunMessage env HuntedDown where
       criminalEnemyIds <- getSet Criminal
       let enemiesToMove = criminalEnemyIds `intersection` unengagedEnemyIds
       if null enemiesToMove
-        then
-          t <$ unshiftMessages
-            [Surge iid $ toSource attrs, Discard $ toTarget attrs]
+        then t <$ pushAll [Surge iid $ toSource attrs, Discard $ toTarget attrs]
         else do
           messages <- for (setToList enemiesToMove) $ \eid -> do
             locationId <- getId eid
@@ -59,7 +58,7 @@ instance TreacheryRunner env => RunMessage env HuntedDown where
 
           t <$ unless
             (null enemiesToMove || null (catMaybes messages))
-            (unshiftMessages
+            (pushAll
               [ chooseOneAtATime iid (catMaybes messages)
               , Discard $ toTarget attrs
               ]

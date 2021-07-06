@@ -375,7 +375,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       if allowed
         then do
           shroudValue' <- getModifiedShroudValueFor a
-          a <$ unshiftMessage
+          a <$ push
             (BeginSkillTest
               iid
               source
@@ -387,14 +387,14 @@ instance LocationRunner env => RunMessage env LocationAttrs where
         else pure a
     PassedSkillTest iid (Just Action.Investigate) source (SkillTestInitiatorTarget target) _ _
       | isTarget a target
-      -> a <$ unshiftMessage (SuccessfulInvestigation iid locationId source)
+      -> a <$ push (SuccessfulInvestigation iid locationId source)
     SuccessfulInvestigation iid lid _ | lid == locationId -> do
       modifiers' <-
         map modifierType
           <$> getModifiersFor (InvestigatorSource iid) (LocationTarget lid) ()
       a <$ unless
         (AlternateSuccessfullInvestigation `elem` modifiers')
-        (unshiftMessages
+        (pushAll
           [ CheckWindow iid [WhenSuccessfulInvestigation You YourLocation]
           , InvestigatorDiscoverClues iid lid 1 (Just Action.Investigate)
           , CheckWindow iid [AfterSuccessfulInvestigation You YourLocation]
@@ -405,7 +405,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
     SetLocationLabel lid label' | lid == locationId ->
       pure $ a & labelL .~ label'
     PlacedLocation _ _ lid | lid == locationId ->
-      a <$ unshiftMessage (AddConnection lid locationSymbol)
+      a <$ push (AddConnection lid locationSymbol)
     PlacedLocationDirection lid direction lid2 | lid == locationId ->
       case direction of
         LeftOf | RightOf `member` locationConnectsTo ->
@@ -460,7 +460,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
     Discard (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
     Discard (EnemyTarget eid) -> pure $ a & enemiesL %~ deleteSet eid
     Discard target | isTarget a target ->
-      a <$ unshiftMessages (resolve (RemoveLocation $ toId a))
+      a <$ pushAll (resolve (RemoveLocation $ toId a))
     AttachAsset aid (LocationTarget lid) | lid == locationId ->
       pure $ a & assetsL %~ insertSet aid
     AttachAsset aid _ -> pure $ a & assetsL %~ deleteSet aid
@@ -470,7 +470,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
           then locationRevealedConnectedSymbols
           else locationConnectedSymbols
         )
-      unshiftMessages $ map (AddedConnection locationId) connectedLocations
+      pushAll $ map (AddedConnection locationId) connectedLocations
       pure $ a & connectedLocationsL %~ union (setFromList connectedLocations)
     AddConnection lid symbol' | lid /= locationId -> do
       let
@@ -479,7 +479,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
           else locationConnectedSymbols
       if symbol' `elem` symbols
         then do
-          unshiftMessage (AddedConnection locationId lid)
+          push (AddedConnection locationId lid)
           pure $ a & connectedLocationsL %~ insertSet lid
         else pure a
     AddDirectConnection fromLid toLid | fromLid == locationId -> do
@@ -496,7 +496,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
           InvestigatorInGame -> [WhenDiscoverClues who LocationInGame]
         )
 
-      a <$ unshiftMessages
+      a <$ pushAll
         (checkWindowMsgs <> [DiscoverClues iid lid discoveredClues maction])
     AfterDiscoverClues iid lid n | lid == locationId -> do
       checkWindowMsgs <- checkWindows
@@ -509,14 +509,14 @@ instance LocationRunner env => RunMessage env LocationAttrs where
             [AfterDiscoveringClues who ConnectedLocation]
           InvestigatorInGame -> [AfterDiscoveringClues who LocationInGame]
         )
-      unshiftMessages checkWindowMsgs
+      pushAll checkWindowMsgs
       pure $ a & cluesL -~ n
     InvestigatorEliminated iid -> pure $ a & investigatorsL %~ deleteSet iid
     WhenEnterLocation iid lid
       | lid /= locationId && iid `elem` locationInvestigators
       -> pure $ a & investigatorsL %~ deleteSet iid -- TODO: should we broadcast leaving the location
     WhenEnterLocation iid lid | lid == locationId -> do
-      unless locationRevealed $ unshiftMessage (RevealLocation (Just iid) lid)
+      unless locationRevealed $ push (RevealLocation (Just iid) lid)
       pure $ a & investigatorsL %~ insertSet iid
     AddToVictory (EnemyTarget eid) -> pure $ a & enemiesL %~ deleteSet eid
     EnemyEngageInvestigator eid iid -> do
@@ -549,8 +549,8 @@ instance LocationRunner env => RunMessage env LocationAttrs where
                 _ -> False
           withQueue_ $ filter (/= next)
           if null availableLocationIds
-            then unshiftMessage (Discard (EnemyTarget eid))
-            else unshiftMessage
+            then push (Discard (EnemyTarget eid))
+            else push
               (chooseOne
                 activeInvestigatorId
                 [ Run
@@ -569,7 +569,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
     MoveAllCluesTo target | not (isTarget a target) -> do
       when
         (locationClues > 0)
-        (unshiftMessage $ PlaceClues target locationClues)
+        (push $ PlaceClues target locationClues)
       pure $ a & cluesL .~ 0
     PlaceClues target n | isTarget a target -> do
       modifiers' <-
@@ -587,14 +587,14 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       locationClueCount <- if CannotPlaceClues `elem` modifiers'
         then pure 0
         else fromGameValue locationRevealClues . unPlayerCount <$> getCount ()
-      unshiftMessages
+      pushAll
         $ AddConnection lid locationRevealedSymbol
         : [ CheckWindow iid [AfterRevealLocation You]
           | iid <- maybeToList miid
           ]
       pure $ a & cluesL +~ locationClueCount & revealedL .~ True
     LookAtRevealed lid | lid == locationId -> do
-      unshiftMessage (Label "Continue" [After (LookAtRevealed lid)])
+      push (Label "Continue" [After (LookAtRevealed lid)])
       pure $ a & revealedL .~ True
     After (LookAtRevealed lid) | lid == locationId ->
       pure $ a & revealedL .~ False
@@ -605,11 +605,11 @@ instance LocationRunner env => RunMessage env LocationAttrs where
     RemoveLocation lid ->
       pure $ a & connectedLocationsL %~ deleteSet lid & directionsL %~ filterMap
         (/= lid)
-    UseResign iid source | isSource a source -> a <$ unshiftMessage (Resign iid)
+    UseResign iid source | isSource a source -> a <$ push (Resign iid)
     UseDrawCardUnderneath iid source | isSource a source ->
       case locationCardsUnderneath of
         (EncounterCard card : rest) -> do
-          unshiftMessage (InvestigatorDrewEncounterCard iid card)
+          push (InvestigatorDrewEncounterCard iid card)
           pure $ a & cardsUnderneathL .~ rest
         _ -> throwIO $ InvalidState "Not expecting a player card or empty yet"
     Blanked msg' -> runMessage msg' a

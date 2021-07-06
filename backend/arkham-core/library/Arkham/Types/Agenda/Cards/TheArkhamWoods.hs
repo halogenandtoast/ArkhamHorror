@@ -29,7 +29,7 @@ instance HasActions env TheArkhamWoods where
 instance AgendaRunner env => RunMessage env TheArkhamWoods where
   runMessage msg a@(TheArkhamWoods attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B ->
-      a <$ unshiftMessage
+      a <$ push
         (Run
           [ ShuffleEncounterDiscardBackIn
           , DiscardEncounterUntilFirst
@@ -39,10 +39,10 @@ instance AgendaRunner env => RunMessage env TheArkhamWoods where
         )
     RequestedEncounterCard (AgendaSource aid) mcard | aid == agendaId ->
       case mcard of
-        Nothing -> a <$ unshiftMessage (NextAgenda aid "01144")
+        Nothing -> a <$ push (NextAgenda aid "01144")
         Just card -> do
           mainPathId <- getJustLocationIdByName "Main Path"
-          a <$ unshiftMessages
+          a <$ pushAll
             [ SpawnEnemyAt (EncounterCard card) mainPathId
             , PlaceDoom (CardIdTarget $ toCardId card) 1
             , NextAgenda aid "01144"

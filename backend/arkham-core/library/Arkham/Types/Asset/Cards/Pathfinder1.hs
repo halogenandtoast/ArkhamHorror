@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.Pathfinder1
   ( pathfinder1
   , Pathfinder1(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -44,7 +45,7 @@ instance
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       accessibleLocationIds <-
         map unAccessibleLocationId <$> (getSetList =<< getId @LocationId iid)
-      a <$ unshiftMessage
+      a <$ push
         (chooseOne
           iid
           [ MoveAction iid lid Free False | lid <- accessibleLocationIds ]

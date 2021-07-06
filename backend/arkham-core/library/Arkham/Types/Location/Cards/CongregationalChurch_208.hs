@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.CongregationalChurch_208
   ( congregationalChurch_208
   , CongregationalChurch_208(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -39,7 +40,7 @@ instance LocationRunner env => RunMessage env CongregationalChurch_208 where
   runMessage msg l@(CongregationalChurch_208 attrs) = case msg of
     RevealLocation miid lid | lid == locationId attrs -> do
       iid <- maybe getLeadInvestigatorId pure miid
-      unshiftMessage $ FindEncounterCard
+      push $ FindEncounterCard
         iid
         (toTarget attrs)
         (CardMatchByType (EnemyType, singleton Humanoid))
@@ -47,5 +48,5 @@ instance LocationRunner env => RunMessage env CongregationalChurch_208 where
     FoundEncounterCard _iid target card | isTarget attrs target -> do
       villageCommonsId <- fromJustNote "missing village commons"
         <$> getId (LocationWithTitle "Village Commons")
-      l <$ unshiftMessage (SpawnEnemyAt (EncounterCard card) villageCommonsId)
+      l <$ push (SpawnEnemyAt (EncounterCard card) villageCommonsId)
     _ -> CongregationalChurch_208 <$> runMessage msg attrs

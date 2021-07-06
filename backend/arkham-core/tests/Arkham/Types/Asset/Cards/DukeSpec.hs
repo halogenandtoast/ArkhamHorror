@@ -1,6 +1,7 @@
 module Arkham.Types.Asset.Cards.DukeSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport
 
@@ -32,7 +33,7 @@ spec = describe "Duke" $ do
             runMessages
             duke' <- updated duke
             [doFight, _] <- getActionsOf investigator NonFast duke'
-            unshiftMessage doFight
+            push doFight
             runMessages
             chooseOnlyOption "Fight enemy"
             chooseOnlyOption "Start skill test"
@@ -58,7 +59,7 @@ spec = describe "Duke" $ do
             runMessages
             duke' <- updated duke
             [investigateAction] <- getActionsOf investigator NonFast duke'
-            unshiftMessages [moveTo investigator location, investigateAction]
+            pushAll [moveTo investigator location, investigateAction]
             runMessages
             chooseOnlyOption "Start skill test"
             chooseOnlyOption "Apply results"
@@ -86,8 +87,7 @@ spec = describe "Duke" $ do
                 runMessages
                 duke' <- updated duke
                 [investigateAction] <- getActionsOf investigator NonFast duke'
-                unshiftMessages
-                  [moveTo investigator location1, investigateAction]
+                pushAll [moveTo investigator location1, investigateAction]
                 runMessages
                 chooseOptionMatching
                   "move first"

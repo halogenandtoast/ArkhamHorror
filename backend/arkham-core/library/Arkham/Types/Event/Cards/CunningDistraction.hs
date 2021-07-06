@@ -27,7 +27,7 @@ instance (EventRunner env) => RunMessage env CunningDistraction where
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       locationId <- getId @LocationId iid
       enemyIds <- getSetList locationId
-      e <$ unshiftMessages
+      e <$ pushAll
         ([ EnemyEvaded iid enemyId | enemyId <- enemyIds ]
         <> [Discard (EventTarget eid)]
         )

@@ -24,5 +24,5 @@ instance HasActions env ManualDexterity where
 instance (SkillRunner env) => RunMessage env ManualDexterity where
   runMessage msg s@(ManualDexterity attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest _ _ _ (SkillTarget sid) _ _ | sid == skillId ->
-      s <$ unshiftMessage (DrawCards skillOwner 1 False)
+      s <$ push (DrawCards skillOwner 1 False)
     _ -> ManualDexterity <$> runMessage msg attrs

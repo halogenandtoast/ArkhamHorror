@@ -1,6 +1,7 @@
 module Arkham.Types.ClassSymbol
   ( ClassSymbol(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

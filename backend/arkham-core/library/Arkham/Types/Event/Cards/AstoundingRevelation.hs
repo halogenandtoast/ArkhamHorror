@@ -1,7 +1,8 @@
 module Arkham.Types.Event.Cards.AstoundingRevelation
   ( astoundingRevelation
   , AstoundingRevelation(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -46,7 +47,7 @@ instance (HasQueue env, HasSet AssetId env (InvestigatorId, UseType)) => RunMess
   runMessage msg e@(AstoundingRevelation attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       secretAssetIds <- getSetList (iid, Secret)
-      e <$ unshiftMessage
+      e <$ push
         (chooseOne
           iid
           (TakeResources iid 2 False

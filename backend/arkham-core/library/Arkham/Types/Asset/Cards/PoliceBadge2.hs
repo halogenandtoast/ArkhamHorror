@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.PoliceBadge2
   ( PoliceBadge2(..)
   , policeBadge2
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -43,6 +44,6 @@ instance AssetRunner env => RunMessage env PoliceBadge2 where
   runMessage msg a@(PoliceBadge2 attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       activeInvestigatorId <- unActiveInvestigatorId <$> getId ()
-      a <$ unshiftMessages
+      a <$ pushAll
         [Discard (toTarget attrs), GainActions activeInvestigatorId source 2]
     _ -> PoliceBadge2 <$> runMessage msg attrs

@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.OutOfThisWorld
   ( OutOfThisWorld(..)
   , outOfThisWorld
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -42,18 +43,17 @@ instance ActRunner env => RunMessage env OutOfThisWorld where
   runMessage msg a@(OutOfThisWorld attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       theEdgeOfTheUniverseId <- getRandom
-      a <$ unshiftMessages
+      a <$ pushAll
         [ PlaceLocation theEdgeOfTheUniverseId Locations.theEdgeOfTheUniverse
         , NextAct actId "02317"
         ]
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage
-        (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))
+      a <$ push (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))
     DiscardedTopOfEncounterDeck iid cards target | isTarget attrs target -> do
       let locationCards = filterLocations cards
       a <$ unless
         (null locationCards)
-        (unshiftMessages
+        (pushAll
           [ FocusCards (map EncounterCard locationCards)
           , chooseOne
             iid

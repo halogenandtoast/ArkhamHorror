@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.PeterSylvestre
   ( PeterSylvestre(..)
   , peterSylvestre
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

@@ -1,15 +1,16 @@
 module Arkham.Types.Investigator.Cards.WendyAdams
   ( WendyAdams(..)
   , wendyAdams
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.AssetId
 import Arkham.Types.Card
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs
@@ -72,19 +73,19 @@ instance (InvestigatorRunner env) => RunMessage env WendyAdams where
       | iid == investigatorId
       -> do
         cancelToken token
-        i <$ unshiftMessages
+        i <$ pushAll
           [ CancelNext DrawTokenMessage
           , CancelNext RevealTokenMessage
           , ReturnTokens [token]
           , UnfocusTokens
           , DrawAnotherToken iid
           ]
-    When (DrawToken iid token) | iid == investigatorId -> i <$ unshiftMessages
+    When (DrawToken iid token) | iid == investigatorId -> i <$ pushAll
       [ FocusTokens [token]
       , CheckWindow investigatorId [WhenDrawToken You token]
       , UnfocusTokens
       ]
     ResolveToken _drawnToken ElderSign iid | iid == investigatorId -> do
       maid <- getId @(Maybe AssetId) (CardCode "01014")
-      i <$ when (isJust maid) (unshiftMessage PassSkillTest)
+      i <$ when (isJust maid) (push PassSkillTest)
     _ -> WendyAdams <$> runMessage msg attrs

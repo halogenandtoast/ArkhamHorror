@@ -33,6 +33,6 @@ instance HasActions env DissonantVoices where
 instance (TreacheryRunner env) => RunMessage env DissonantVoices where
   runMessage msg t@(DissonantVoices attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
-      t <$ unshiftMessage (AttachTreachery treacheryId (InvestigatorTarget iid))
-    EndRound -> t <$ unshiftMessage (Discard $ toTarget attrs)
+      t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))
+    EndRound -> t <$ push (Discard $ toTarget attrs)
     _ -> DissonantVoices <$> runMessage msg attrs

@@ -3,7 +3,8 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Entity.Arkham.Deck
   ( module Entity.Arkham.Deck
-  ) where
+  )
+where
 
 import ClassyPrelude
 import Data.UUID

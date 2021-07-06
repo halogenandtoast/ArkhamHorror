@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.Scrying
   ( Scrying(..)
   , scrying
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -40,7 +41,7 @@ instance AssetRunner env => RunMessage env Scrying where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid
       targets <- map InvestigatorTarget <$> getSetList locationId
-      a <$ unshiftMessage
+      a <$ push
         (chooseOne iid
         $ SearchTopOfDeck iid EncounterDeckTarget 3 [] PutBackInAnyOrder
         : [ SearchTopOfDeck iid target 3 [] PutBackInAnyOrder

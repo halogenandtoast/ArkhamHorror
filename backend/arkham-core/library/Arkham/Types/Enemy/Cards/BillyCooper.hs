@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.BillyCooper
   ( billyCooper
   , BillyCooper(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -31,5 +32,5 @@ instance (EnemyRunner env) => RunMessage env BillyCooper where
       e <$ spawnAt (Just iid) eid (LocationWithTitle "Easttown")
     After (EnemyDefeated _ _ lid _ _ traits)
       | lid == enemyLocation && Monster `elem` traits -> e
-      <$ unshiftMessage (AddToVictory $ toTarget attrs)
+      <$ push (AddToVictory $ toTarget attrs)
     _ -> BillyCooper <$> runMessage msg attrs

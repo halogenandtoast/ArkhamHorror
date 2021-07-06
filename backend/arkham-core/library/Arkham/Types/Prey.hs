@@ -1,6 +1,7 @@
 module Arkham.Types.Prey
   ( Prey(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

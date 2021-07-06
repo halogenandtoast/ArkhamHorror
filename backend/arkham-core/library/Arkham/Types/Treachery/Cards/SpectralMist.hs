@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.SpectralMist
   ( SpectralMist(..)
   , spectralMist
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -54,15 +55,15 @@ instance (TreacheryRunner env) => RunMessage env SpectralMist where
         setToList . (`difference` exemptLocations) <$> getSet @LocationId
           [Bayou]
       if null targetLocations
-        then unshiftMessage (Discard (toTarget attrs))
-        else unshiftMessage $ chooseOne
+        then push (Discard (toTarget attrs))
+        else push $ chooseOne
           iid
           [ AttachTreachery treacheryId (LocationTarget x)
           | x <- targetLocations
           ]
       SpectralMist <$> runMessage msg attrs
     UseCardAbility iid (TreacherySource tid) _ 1 _ | tid == treacheryId ->
-      t <$ unshiftMessage
+      t <$ push
         (BeginSkillTest
           iid
           (TreacherySource treacheryId)
@@ -72,5 +73,5 @@ instance (TreacheryRunner env) => RunMessage env SpectralMist where
           2
         )
     PassedSkillTest _ _ source _ _ _ | isSource attrs source ->
-      t <$ unshiftMessage (Discard $ toTarget attrs)
+      t <$ push (Discard $ toTarget attrs)
     _ -> SpectralMist <$> runMessage msg attrs

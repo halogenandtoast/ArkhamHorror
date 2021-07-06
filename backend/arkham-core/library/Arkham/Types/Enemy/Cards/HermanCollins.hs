@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.HermanCollins
   ( HermanCollins(..)
   , hermanCollins
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -54,5 +55,5 @@ instance ActionRunner env => HasActions env HermanCollins where
 instance EnemyRunner env => RunMessage env HermanCollins where
   runMessage msg e@(HermanCollins attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      e <$ unshiftMessage (AddToVictory $ toTarget attrs)
+      e <$ push (AddToVictory $ toTarget attrs)
     _ -> HermanCollins <$> runMessage msg attrs

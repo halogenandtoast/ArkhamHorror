@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.InterstellarTraveler
   ( interstellarTraveler
   , InterstellarTraveler(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -36,6 +37,6 @@ instance (HasCount ClueCount env LocationId, EnemyAttrsRunMessage env) => RunMes
   runMessage msg (InterstellarTraveler attrs) = case msg of
     EnemyEntered eid lid | eid == enemyId attrs -> do
       clueCount <- unClueCount <$> getCount lid
-      when (clueCount > 0) (unshiftMessage $ RemoveClues (LocationTarget lid) 1)
+      when (clueCount > 0) (push $ RemoveClues (LocationTarget lid) 1)
       pure . InterstellarTraveler $ attrs & doomL +~ 1
     _ -> InterstellarTraveler <$> runMessage msg attrs

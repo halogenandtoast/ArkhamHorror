@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.BaseballBat
   ( BaseballBat(..)
   , baseballBat
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -47,14 +48,13 @@ instance ActionRunner env  => HasActions env BaseballBat where
 
 instance (AssetRunner env) => RunMessage env BaseballBat where
   runMessage msg a@(BaseballBat attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessages
-        [ CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 2])
-          source
-          (InvestigatorTarget iid)
-        , CreateEffect "01074" Nothing source (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillCombat mempty False
-        ]
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+      [ CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 2])
+        source
+        (InvestigatorTarget iid)
+      , CreateEffect "01074" Nothing source (InvestigatorTarget iid)
+      , ChooseFightEnemy iid source SkillCombat mempty False
+      ]
     _ -> BaseballBat <$> runMessage msg attrs

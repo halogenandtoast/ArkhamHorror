@@ -1,7 +1,8 @@
 module Arkham.Types.Event.Cards.DelveTooDeep
   ( delveTooDeep
   , DelveTooDeep(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -25,5 +26,5 @@ instance HasModifiersFor env DelveTooDeep where
 instance HasQueue env => RunMessage env DelveTooDeep where
   runMessage msg e@(DelveTooDeep attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent _ eid _ | eid == eventId -> do
-      e <$ unshiftMessages [AllDrawEncounterCard, AddToVictory (toTarget attrs)]
+      e <$ pushAll [AllDrawEncounterCard, AddToVictory (toTarget attrs)]
     _ -> DelveTooDeep <$> runMessage msg attrs

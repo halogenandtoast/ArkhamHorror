@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.ATearInThePath
   ( aTearInThePath
   , ATearInThePath(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -48,5 +49,5 @@ instance ActionRunner env => HasActions env ATearInThePath where
 instance LocationRunner env => RunMessage env ATearInThePath where
   runMessage msg l@(ATearInThePath attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessage (InvestigatorAssignDamage iid source DamageAny 2 0)
+      l <$ push (InvestigatorAssignDamage iid source DamageAny 2 0)
     _ -> ATearInThePath <$> runMessage msg attrs

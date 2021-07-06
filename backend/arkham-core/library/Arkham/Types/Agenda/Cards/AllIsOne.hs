@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.AllIsOne
   ( AllIsOne
   , allIsOne
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -33,7 +34,7 @@ instance (HasRecord env, AgendaRunner env) => RunMessage env AllIsOne where
       failedToSaveStudents <- getHasRecord
         TheInvestigatorsFailedToSaveTheStudents
       investigatorIds <- getInvestigatorIds
-      a <$ unshiftMessages
+      a <$ pushAll
         ([ ShuffleEncounterDiscardBackIn
          , DiscardEncounterUntilFirst
            (toSource attrs)
@@ -47,5 +48,5 @@ instance (HasRecord env, AgendaRunner env) => RunMessage env AllIsOne where
         )
     RequestedEncounterCard source (Just card) | isSource attrs source -> do
       leadInvestigator <- getLeadInvestigatorId
-      a <$ unshiftMessage (InvestigatorDrewEncounterCard leadInvestigator card)
+      a <$ push (InvestigatorDrewEncounterCard leadInvestigator card)
     _ -> AllIsOne <$> runMessage msg attrs

@@ -29,7 +29,7 @@ instance ActionRunner env => HasActions env CampusSafety where
 instance ActRunner env => RunMessage env CampusSafety where
   runMessage msg (CampusSafety attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      unshiftMessage (AdvanceAct aid $ toSource attrs)
+      push (AdvanceAct aid $ toSource attrs)
       pure $ CampusSafety $ attrs & sequenceL .~ Act 3 B
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       alchemyLabsInPlay <- isJust <$> getLocationIdWithTitle "Alchemy Labs"
@@ -40,7 +40,7 @@ instance ActRunner env => RunMessage env CampusSafety where
       alchemicalConcoction <- PlayerCard
         <$> genPlayerCard Assets.alchemicalConcoction
 
-      unshiftMessages
+      pushAll
         $ [ PlaceLocationMatching (LocationWithTitle "Alchemy Labs")
           | not alchemyLabsInPlay
           ]
@@ -55,6 +55,6 @@ instance ActRunner env => RunMessage env CampusSafety where
            | completedTheHouseAlwaysWins
            ]
       leadInvestigatorId <- getLeadInvestigatorId
-      unshiftMessage $ chooseOne leadInvestigatorId [NextAct aid "02047"]
+      push $ chooseOne leadInvestigatorId [NextAct aid "02047"]
       pure $ CampusSafety $ attrs & sequenceL .~ Act 3 B
     _ -> CampusSafety <$> runMessage msg attrs

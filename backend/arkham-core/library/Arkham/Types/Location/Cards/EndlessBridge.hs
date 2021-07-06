@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.EndlessBridge
   ( endlessBridge
   , EndlessBridge(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -44,16 +45,13 @@ instance ActionRunner env => HasActions env EndlessBridge where
 instance LocationRunner env => RunMessage env EndlessBridge where
   runMessage msg l@(EndlessBridge attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      unshiftMessage $ LoseResources iid 2
+      push $ LoseResources iid 2
       EndlessBridge <$> runMessage msg attrs
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessage
-        (chooseOne
-          iid
-          [ Label
-            "Place 1 doom on Endless Bridge"
-            [PlaceDoom (toTarget attrs) 1]
-          , Label "Discard Endless Bridge" [Discard (toTarget attrs)]
-          ]
-        )
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+      (chooseOne
+        iid
+        [ Label "Place 1 doom on Endless Bridge" [PlaceDoom (toTarget attrs) 1]
+        , Label "Discard Endless Bridge" [Discard (toTarget attrs)]
+        ]
+      )
     _ -> EndlessBridge <$> runMessage msg attrs

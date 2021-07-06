@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.UndimensionedAndUnseenTabletToken
   ( undimensionedAndUnseenTabletToken
   , UndimensionedAndUnseenTabletToken(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -54,7 +55,7 @@ instance (HasId Difficulty env (), HasQueue env, HasCount ClueCount env EnemyId,
           else "automatically fail"
       if null broodOfYogSothothWithClues
         then pure e
-        else e <$ unshiftMessage
+        else e <$ push
           (chooseOne iid
           $ Label
               ("Do not remove clues from Brood of Yog-Sothoth and " <> result)
@@ -67,5 +68,5 @@ instance (HasId Difficulty env (), HasQueue env, HasCount ClueCount env EnemyId,
             | enemyId <- broodOfYogSothothWithClues
             ]
           )
-    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect $ effectId attrs)
+    SkillTestEnds _ -> e <$ push (DisableEffect $ effectId attrs)
     _ -> UndimensionedAndUnseenTabletToken <$> runMessage msg attrs

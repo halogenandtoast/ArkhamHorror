@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.Mobster
   ( mobster
   , Mobster(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -26,5 +27,5 @@ instance ActionRunner env => HasActions env Mobster where
 instance (EnemyRunner env) => RunMessage env Mobster where
   runMessage msg e@(Mobster attrs@EnemyAttrs {..}) = case msg of
     After (PerformEnemyAttack iid eid) | eid == enemyId ->
-      e <$ unshiftMessage (SpendResources iid 1)
+      e <$ push (SpendResources iid 1)
     _ -> Mobster <$> runMessage msg attrs

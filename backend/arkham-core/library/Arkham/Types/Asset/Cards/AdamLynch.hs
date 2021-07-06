@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.AdamLynch
   ( adamLynch
   , AdamLynch(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -41,5 +42,5 @@ instance HasId (Maybe LocationId) env LocationMatcher => HasModifiersFor env Ada
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AdamLynch where
   runMessage msg a@(AdamLynch attrs) = case msg of
     Discard target | isTarget attrs target ->
-      a <$ unshiftMessages [AddToken Tablet, RemoveFromGame target]
+      a <$ pushAll [AddToken Tablet, RemoveFromGame target]
     _ -> AdamLynch <$> runMessage msg attrs

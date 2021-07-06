@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.AttractingAttention
   ( attractingAttention
   , AttractingAttention(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -32,7 +33,7 @@ instance TreacheryRunner env => RunMessage env AttractingAttention where
       lid <- getId iid
       broodOfYogSothoth <- getSetList (CardCode "02255")
 
-      t <$ unshiftMessages
+      t <$ pushAll
         (chooseOneAtATime
             iid
             [ MoveToward (EnemyTarget eid) (LocationWithId lid)

@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.FireExtinguisher1
   ( fireExtinguisher1
   , FireExtinguisher1(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -27,6 +28,6 @@ instance HasSet EnemyId env InvestigatorId => RunMessage env FireExtinguisher1 w
       | SkillTestTarget == effectTarget
       -> do
         evasions <- map (EnemyEvaded iid) <$> getSetList @EnemyId iid
-        e <$ unshiftMessages (evasions <> [DisableEffect effectId])
-    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect effectId)
+        e <$ pushAll (evasions <> [DisableEffect effectId])
+    SkillTestEnds _ -> e <$ push (DisableEffect effectId)
     _ -> FireExtinguisher1 <$> runMessage msg attrs

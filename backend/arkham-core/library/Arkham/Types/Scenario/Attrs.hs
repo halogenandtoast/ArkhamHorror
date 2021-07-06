@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Attrs
   ( module Arkham.Types.Scenario.Attrs
   , module X
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -189,15 +190,15 @@ getIsStandalone = isNothing <$> getId @(Maybe CampaignId) ()
 
 instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioAttrsRunner env) => RunMessage env ScenarioAttrs where
   runMessage msg a@ScenarioAttrs {..} = case msg of
-    Setup -> a <$ pushMessage BeginInvestigation
+    Setup -> a <$ pushEnd BeginInvestigation
     StartCampaign -> do
       standalone <- getIsStandalone
       a <$ if standalone
-        then unshiftMessage $ StartScenario scenarioName scenarioId
+        then push $ StartScenario scenarioName scenarioId
         else pure ()
     InitDeck iid deck -> do
       standalone <- getIsStandalone
-      a <$ if standalone then unshiftMessage $ LoadDeck iid deck else pure ()
+      a <$ if standalone then push $ LoadDeck iid deck else pure ()
     PlaceLocationMatching locationMatcher -> do
       let
         locations =
@@ -208,19 +209,19 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioAttrsRunner env)
         [] -> error "There were no locations with that name"
         [cardDef] -> do
           lid <- getRandom
-          unshiftMessage (PlaceLocation lid cardDef)
+          push (PlaceLocation lid cardDef)
         _ ->
           error "We want there to be only one location when targetting names"
     EnemySpawnAtLocationMatching miid locationMatcher eid -> do
       mlid <- getId locationMatcher
       a <$ case mlid of
-        Nothing -> unshiftMessage (Discard (EnemyTarget eid))
-        Just lid -> unshiftMessage (EnemySpawn miid lid eid)
+        Nothing -> push (Discard (EnemyTarget eid))
+        Just lid -> push (EnemySpawn miid lid eid)
     PlaceDoomOnAgenda -> do
       agendaIds <- getSetList @AgendaId ()
       case agendaIds of
         [] -> pure a
-        [x] -> a <$ unshiftMessage (PlaceDoom (AgendaTarget x) 1)
+        [x] -> a <$ push (PlaceDoom (AgendaTarget x) 1)
         _ -> error "multiple agendas should be handled by the scenario"
     Discard (ActTarget _) -> pure $ a & actStackL .~ []
     -- See: Vengeance Awaits / The Devourer Below - right now the assumption
@@ -230,20 +231,17 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioAttrsRunner env)
       if null investigatorIds
         then do
           clearQueue
-          a <$ unshiftMessage (ScenarioResolution NoResolution)
+          a <$ push (ScenarioResolution NoResolution)
         else pure a
-    AllInvestigatorsResigned ->
-      a <$ unshiftMessage (ScenarioResolution NoResolution)
-    InvestigatorWhenEliminated _ iid ->
-      a <$ unshiftMessage (InvestigatorEliminated iid)
+    AllInvestigatorsResigned -> a <$ push (ScenarioResolution NoResolution)
+    InvestigatorWhenEliminated _ iid -> a <$ push (InvestigatorEliminated iid)
     Remember logKey -> pure $ a & logL %~ insertSet logKey
     ResolveToken _drawnToken token _iid | token == AutoFail ->
-      a <$ unshiftMessage FailSkillTest
+      a <$ push FailSkillTest
     EndOfScenario -> do
       clearQueue
       standalone <- getIsStandalone
-      a <$ unshiftMessage
-        (if standalone then GameOver else NextCampaignStep Nothing)
+      a <$ push (if standalone then GameOver else NextCampaignStep Nothing)
     ScenarioResolution _ ->
       error "The scenario should specify what to do for no resolution"
     UseScenarioSpecificAbility{} ->
@@ -259,7 +257,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioAttrsRunner env)
         [] -> error "no locations?"
         (h : t) -> do
           randomLocationId <- sample $ h :| t
-          a <$ unshiftMessages
+          a <$ pushAll
             [ CheckWindow
               leadInvestigatorId
               [WhenChosenRandomLocation randomLocationId]
@@ -274,6 +272,6 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioAttrsRunner env)
       case rest of
         [] -> error "requested a card that is not set aside"
         (x : xs) -> do
-          unshiftMessage (RequestedSetAsideCard target x)
+          push (RequestedSetAsideCard target x)
           pure $ a & setAsideCardsL .~ (before <> xs)
     _ -> pure a

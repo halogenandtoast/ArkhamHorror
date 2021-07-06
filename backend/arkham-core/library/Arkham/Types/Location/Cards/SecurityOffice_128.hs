@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.SecurityOffice_128
   ( securityOffice_128
   , SecurityOffice_128(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -48,7 +49,6 @@ instance ActionRunner env => HasActions env SecurityOffice_128 where
 
 instance LocationRunner env => RunMessage env SecurityOffice_128 where
   runMessage msg l@(SecurityOffice_128 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessage
-        (SearchTopOfDeck iid (InvestigatorTarget iid) 6 mempty ShuffleBackIn)
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+      (SearchTopOfDeck iid (InvestigatorTarget iid) 6 mempty ShuffleBackIn)
     _ -> SecurityOffice_128 <$> runMessage msg attrs

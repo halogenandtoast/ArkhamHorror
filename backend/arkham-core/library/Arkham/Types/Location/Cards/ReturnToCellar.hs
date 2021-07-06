@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.ReturnToCellar
   ( returnToCellar
   , ReturnToCellar(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -35,7 +36,6 @@ instance (LocationRunner env) => RunMessage env ReturnToCellar where
   runMessage msg (ReturnToCellar attrs) = case msg of
     RevealLocation _ lid | lid == locationId attrs -> do
       deepBelowYourHouseId <- getRandom
-      unshiftMessage
-        (PlaceLocation deepBelowYourHouseId Cards.deepBelowYourHouse)
+      push (PlaceLocation deepBelowYourHouseId Cards.deepBelowYourHouse)
       ReturnToCellar <$> runMessage msg attrs
     _ -> ReturnToCellar <$> runMessage msg attrs

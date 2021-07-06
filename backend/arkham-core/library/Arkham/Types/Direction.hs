@@ -1,6 +1,7 @@
 module Arkham.Types.Direction
   ( module Arkham.Types.Direction
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.CatBurglar1
   ( CatBurglar1(..)
   , catBurglar1
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -41,7 +42,7 @@ instance HasActions env CatBurglar1 where
 instance AssetRunner env => RunMessage env CatBurglar1 where
   runMessage msg (CatBurglar1 attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
-      unshiftMessage $ CreateWindowModifierEffect
+      push $ CreateWindowModifierEffect
         EffectSkillTestWindow
         (EffectModifiers $ toModifiers attrs [SkillModifier SkillAgility 1])
         (toSource attrs)
@@ -52,7 +53,7 @@ instance AssetRunner env => RunMessage env CatBurglar1 where
       locationId <- getId @LocationId iid
       accessibleLocationIds <- map unAccessibleLocationId
         <$> getSetList locationId
-      unshiftMessages
+      pushAll
         $ [ DisengageEnemy iid eid | eid <- engagedEnemyIds ]
         <> [ chooseOne
                iid

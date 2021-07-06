@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.ArcaneBarrier
   ( ArcaneBarrier(..)
   , arcaneBarrier
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -30,7 +31,7 @@ instance TreacheryRunner env => RunMessage env ArcaneBarrier where
   runMessage msg t@(ArcaneBarrier attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId iid
-      t <$ unshiftMessage (AttachTreachery (toId attrs) (LocationTarget lid))
+      t <$ push (AttachTreachery (toId attrs) (LocationTarget lid))
     Will (MoveTo iid lid) -> do
       investigatorLocation <- getId iid
       when
@@ -40,7 +41,7 @@ instance TreacheryRunner env => RunMessage env ArcaneBarrier where
         $ do
             moveFromMessage <- fromJustNote "missing move from" <$> popMessage
             moveToMessage <- fromJustNote "missing move to" <$> popMessage
-            unshiftMessage
+            push
               (CreateEffect
                 (CardCode "02102")
                 (Just (EffectMessages [moveFromMessage, moveToMessage]))

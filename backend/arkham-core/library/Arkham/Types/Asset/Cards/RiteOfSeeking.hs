@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.RiteOfSeeking
   ( riteOfSeeking
   , RiteOfSeeking(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -51,7 +52,7 @@ instance (HasQueue env, HasModifiersFor env (), HasId LocationId env Investigato
       RiteOfSeeking <$> runMessage msg (attrs & usesL .~ Uses Charge 3)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId @LocationId iid
-      a <$ unshiftMessages
+      a <$ pushAll
         [ CreateEffect "02028" Nothing source (InvestigationTarget iid lid)
         , Investigate iid lid source SkillWillpower False
         ]

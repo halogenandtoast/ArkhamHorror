@@ -28,13 +28,13 @@ instance TreacheryRunner env => RunMessage env UmordhothsWrath where
   runMessage msg t@(UmordhothsWrath attrs@TreacheryAttrs {..}) = case msg of
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
       | tid == treacheryId -> t
-      <$ unshiftMessage (HandlePointOfFailure iid (TreacheryTarget tid) n)
+      <$ push (HandlePointOfFailure iid (TreacheryTarget tid) n)
     HandlePointOfFailure _ (TreacheryTarget tid) 0 | tid == treacheryId ->
       pure t
     HandlePointOfFailure iid (TreacheryTarget tid) n | tid == treacheryId -> do
       cardCount' <- unCardCount <$> getCount iid
       if cardCount' > 0
-        then t <$ unshiftMessages
+        then t <$ pushAll
           [ chooseOne
             iid
             [ Label "Discard a card from your hand" [RandomDiscard iid]
@@ -50,7 +50,7 @@ instance TreacheryRunner env => RunMessage env UmordhothsWrath where
             ]
           , HandlePointOfFailure iid (TreacheryTarget treacheryId) (n - 1)
           ]
-        else t <$ unshiftMessages
+        else t <$ pushAll
           [ InvestigatorAssignDamage
             iid
             (TreacherySource treacheryId)
@@ -59,7 +59,7 @@ instance TreacheryRunner env => RunMessage env UmordhothsWrath where
             1
           , HandlePointOfFailure iid (TreacheryTarget treacheryId) (n - 1)
           ]
-    Revelation iid source | isSource attrs source -> t <$ unshiftMessage
+    Revelation iid source | isSource attrs source -> t <$ push
       (BeginSkillTest
         iid
         source

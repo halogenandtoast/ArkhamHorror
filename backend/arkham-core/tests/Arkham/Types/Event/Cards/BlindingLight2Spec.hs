@@ -1,6 +1,7 @@
 module Arkham.Types.Event.Cards.BlindingLight2Spec
   ( spec
-  ) where
+  )
+where
 
 import TestImport.Lifted
 
@@ -11,8 +12,8 @@ spec :: Spec
 spec = do
   describe "Blinding Light 2" $ do
     it "Uses willpower to evade an enemy" $ do
-      investigator <- testInvestigator "00000" $ \attrs ->
-        attrs { investigatorWillpower = 5, investigatorAgility = 3 }
+      investigator <- testInvestigator "00000"
+        $ \attrs -> attrs { investigatorWillpower = 5, investigatorAgility = 3 }
       enemy <- testEnemy
         (set EnemyAttrs.evadeL 4 . set EnemyAttrs.healthL (Static 3))
       blindingLight2 <- buildEvent "01069" investigator

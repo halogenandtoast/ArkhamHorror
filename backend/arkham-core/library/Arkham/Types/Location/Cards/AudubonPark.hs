@@ -31,5 +31,5 @@ instance ActionRunner env => HasActions env AudubonPark where
 instance (LocationRunner env) => RunMessage env AudubonPark where
   runMessage msg l@(AudubonPark attrs@LocationAttrs {..}) = case msg of
     EnemyEvaded iid eid | eid `member` locationEnemies ->
-      l <$ unshiftMessage (RandomDiscard iid)
+      l <$ push (RandomDiscard iid)
     _ -> AudubonPark <$> runMessage msg attrs

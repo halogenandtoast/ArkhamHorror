@@ -1,6 +1,7 @@
 module Arkham.Types.Investigator.Cards.WendyAdamsSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport.Lifted
 

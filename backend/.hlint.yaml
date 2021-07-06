@@ -19,6 +19,8 @@
 # Specify additional command line arguments
 - arguments:
   - -XBangPatterns
+  - -XNamedFieldPuns
+  - -XTupleSections
   - -XBlockArguments
   - -XDataKinds
   - -XDeriveAnyClass

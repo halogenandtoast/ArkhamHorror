@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Attrs
   ( module Arkham.Types.Enemy.Attrs
   , module X
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -167,10 +168,10 @@ spawnAtEmptyLocation
 spawnAtEmptyLocation iid eid = do
   emptyLocations <- map unEmptyLocationId <$> getSetList ()
   case emptyLocations of
-    [] -> unshiftMessage (Discard (EnemyTarget eid))
-    [lid] -> unshiftMessage (EnemySpawn (Just iid) lid eid)
-    lids -> unshiftMessage
-      (chooseOne iid [ EnemySpawn (Just iid) lid eid | lid <- lids ])
+    [] -> push (Discard (EnemyTarget eid))
+    [lid] -> push (EnemySpawn (Just iid) lid eid)
+    lids ->
+      push (chooseOne iid [ EnemySpawn (Just iid) lid eid | lid <- lids ])
 
 spawnAt
   :: (MonadIO m, MonadReader env m, HasQueue env)
@@ -178,8 +179,8 @@ spawnAt
   -> EnemyId
   -> LocationMatcher
   -> m ()
-spawnAt miid eid locationMatcher = unshiftMessages
-  $ resolve (EnemySpawnAtLocationMatching miid locationMatcher eid)
+spawnAt miid eid locationMatcher =
+  pushAll $ resolve (EnemySpawnAtLocationMatching miid locationMatcher eid)
 
 spawnAtOneOf
   :: (MonadIO m, HasSet LocationId env (), MonadReader env m, HasQueue env)
@@ -190,10 +191,10 @@ spawnAtOneOf
 spawnAtOneOf iid eid targetLids = do
   locations' <- getSet ()
   case setToList (setFromList targetLids `intersection` locations') of
-    [] -> unshiftMessage (Discard (EnemyTarget eid))
-    [lid] -> unshiftMessage (EnemySpawn (Just iid) lid eid)
-    lids -> unshiftMessage
-      (chooseOne iid [ EnemySpawn (Just iid) lid eid | lid <- lids ])
+    [] -> push (Discard (EnemyTarget eid))
+    [lid] -> push (EnemySpawn (Just iid) lid eid)
+    lids ->
+      push (chooseOne iid [ EnemySpawn (Just iid) lid eid | lid <- lids ])
 
 modifiedEnemyFight
   :: (MonadReader env m, HasModifiersFor env (), HasSkillTest env)
@@ -364,9 +365,9 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
       leadInvestigatorId <- getLeadInvestigatorId
       a <$ case preyIdsWithLocation of
         [] -> pure ()
-        [(iid, lid)] -> unshiftMessages
-          [EnemySpawnedAt lid eid, EnemyEngageInvestigator eid iid]
-        iids -> unshiftMessage
+        [(iid, lid)] ->
+          pushAll [EnemySpawnedAt lid eid, EnemyEngageInvestigator eid iid]
+        iids -> push
           (chooseOne
             leadInvestigatorId
             [ Run [EnemySpawnedAt lid eid, EnemyEngageInvestigator eid iid]
@@ -377,7 +378,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
       locations' <- getSet ()
       keywords <- getModifiedKeywords a
       if lid `notElem` locations'
-        then a <$ unshiftMessage (Discard (EnemyTarget eid))
+        then a <$ push (Discard (EnemyTarget eid))
         else do
           when
               (Keyword.Aloof
@@ -394,9 +395,9 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
                 leadInvestigatorId <- getLeadInvestigatorId
                 case preyIds <> investigatorIds of
                   [] -> pure ()
-                  [iid] -> unshiftMessages
+                  [iid] -> pushAll
                     [EnemyEntered eid lid, EnemyEngageInvestigator eid iid]
-                  iids -> unshiftMessage
+                  iids -> push
                     (chooseOne
                       leadInvestigatorId
                       [ TargetLabel
@@ -410,12 +411,12 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
 
           when (Keyword.Massive `elem` keywords) $ do
             investigatorIds <- getSetList @InvestigatorId lid
-            unshiftMessages
+            pushAll
               $ EnemyEntered eid lid
               : [ EnemyEngageInvestigator eid iid | iid <- investigatorIds ]
           pure $ a & locationL .~ lid
     EnemySpawnedAt lid eid | eid == enemyId -> do
-      unshiftMessage $ EnemyEntered eid lid
+      push $ EnemyEntered eid lid
       pure $ a & locationL .~ lid
     Ready target | isTarget a target -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -432,7 +433,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
                  `elem` keywords
                  )
               )
-            $ unshiftMessage
+            $ push
                 (chooseOne
                   leadInvestigatorId
                   [ TargetLabel
@@ -453,10 +454,8 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
           )
           modifiers'
       case alternativeSources of
-        [] -> a <$ when
-          enemyExhausted
-          (unshiftMessages $ resolve (Ready $ toTarget a))
-        [source] -> a <$ unshiftMessage (ReadyAlternative source (toTarget a))
+        [] -> a <$ when enemyExhausted (pushAll $ resolve (Ready $ toTarget a))
+        [source] -> a <$ push (ReadyAlternative source (toTarget a))
         _ -> error "Can not handle multiple targets yet"
     MoveToward target locationMatcher | isTarget a target -> do
       lid <- fromJustNote "can't move toward" <$> getId locationMatcher
@@ -469,12 +468,14 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
           closestLocationIds <- map unClosestPathLocationId
             <$> getSetList (enemyLocation, lid)
           if lid `elem` adjacentLocationIds
-            then a <$ unshiftMessage
-              (chooseOne
-                leadInvestigatorId
-                [EnemyMove enemyId enemyLocation lid]
-              )
-            else a <$ unshiftMessages
+            then
+              a
+                <$ push
+                     (chooseOne
+                       leadInvestigatorId
+                       [EnemyMove enemyId enemyLocation lid]
+                     )
+            else a <$ pushAll
               [ chooseOne
                   leadInvestigatorId
                   [ EnemyMove enemyId enemyLocation lid'
@@ -490,9 +491,14 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
         closestLocationIds <- map unClosestPathLocationId
           <$> getSetList (enemyLocation, lid)
         if lid `elem` adjacentLocationIds
-          then a <$ unshiftMessage
-            (chooseOne leadInvestigatorId [EnemyMove enemyId enemyLocation lid])
-          else a <$ unshiftMessages
+          then
+            a
+              <$ push
+                   (chooseOne
+                     leadInvestigatorId
+                     [EnemyMove enemyId enemyLocation lid]
+                   )
+          else a <$ pushAll
             [ chooseOne
               leadInvestigatorId
               [ EnemyMove enemyId enemyLocation lid'
@@ -504,9 +510,9 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
       willMove <- canEnterLocation eid lid
       if willMove
         then do
-          unshiftMessages [EnemyEntered eid lid, EnemyCheckEngagement eid]
+          pushAll [EnemyEntered eid lid, EnemyCheckEngagement eid]
           pure $ a & locationL .~ lid & engagedInvestigatorsL .~ mempty
-        else a <$ unshiftMessage (EnemyCheckEngagement eid)
+        else a <$ push (EnemyCheckEngagement eid)
     EnemyCheckEngagement eid | eid == enemyId -> do
       keywords <- getModifiedKeywords a
       investigatorIds <- getSetList enemyLocation
@@ -519,13 +525,13 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
         && not enemyExhausted
         )
         (if Keyword.Massive `elem` keywords
-          then unshiftMessages
+          then pushAll
             [ EnemyEngageInvestigator eid investigatorId
             | investigatorId <- investigatorIds
             ]
           else unless
             (null investigatorIds)
-            (unshiftMessage $ chooseOne
+            (push $ chooseOne
               leadInvestigatorId
               [ EnemyEngageInvestigator eid investigatorId
               | investigatorId <- investigatorIds
@@ -567,19 +573,21 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
             <$> traverse (getSetList . (enemyLocation, )) destinationLocationIds
           case pathIds of
             [] -> pure a
-            [lid] -> a <$ unshiftMessage (EnemyMove enemyId enemyLocation lid)
-            ls -> a <$ unshiftMessage
-              (chooseOne leadInvestigatorId
-              $ map (EnemyMove enemyId enemyLocation) ls
-              )
+            [lid] -> a <$ push (EnemyMove enemyId enemyLocation lid)
+            ls ->
+              a
+                <$ push
+                     (chooseOne leadInvestigatorId
+                     $ map (EnemyMove enemyId enemyLocation) ls
+                     )
     EnemiesAttack
       | not (null enemyEngagedInvestigators) && not enemyExhausted -> do
-        unshiftMessages $ map (`EnemyWillAttack` enemyId) $ setToList
+        pushAll $ map (`EnemyWillAttack` enemyId) $ setToList
           enemyEngagedInvestigators
         pure a
     AttackEnemy iid eid source skillType | eid == enemyId -> do
       enemyFight' <- modifiedEnemyFight a
-      a <$ unshiftMessage
+      a <$ push
         (BeginSkillTest
           iid
           source
@@ -597,26 +605,33 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
         afterWindows <- checkWindows
           iid
           (\who -> pure [AfterSuccessfulAttackEnemy who enemyId])
-        a <$ unshiftMessages
-          (whenWindows <> [InvestigatorDamageEnemy iid enemyId] <> afterWindows)
+        a
+          <$ pushAll
+               (whenWindows
+               <> [InvestigatorDamageEnemy iid enemyId]
+               <> afterWindows
+               )
     After (FailedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ _)
       | isTarget a target
       -> do
         keywords <- getModifiedKeywords a
         a <$ if Keyword.Retaliate `elem` keywords
-          then unshiftMessage (EnemyAttack iid enemyId)
-          else unshiftMessage (FailedAttackEnemy iid enemyId)
+          then push (EnemyAttack iid enemyId)
+          else push (FailedAttackEnemy iid enemyId)
     EnemyAttackIfEngaged eid miid | eid == enemyId -> a <$ case miid of
       Just iid | iid `elem` enemyEngagedInvestigators ->
-        unshiftMessage (EnemyAttack iid enemyId)
+        push (EnemyAttack iid enemyId)
       Just _ -> pure ()
-      Nothing -> unshiftMessages
-        [ EnemyAttack iid enemyId | iid <- setToList enemyEngagedInvestigators ]
+      Nothing ->
+        pushAll
+          [ EnemyAttack iid enemyId
+          | iid <- setToList enemyEngagedInvestigators
+          ]
     EnemyEvaded iid eid | eid == enemyId ->
       pure $ a & engagedInvestigatorsL %~ deleteSet iid & exhaustedL .~ True
     TryEvadeEnemy iid eid source skillType | eid == enemyId -> do
       enemyEvade' <- modifiedEnemyEvade a
-      a <$ unshiftMessage
+      a <$ push
         (BeginSkillTest
           iid
           source
@@ -627,17 +642,18 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
         )
     PassedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget target) _ _
       | isTarget a target
-      -> a <$ unshiftMessage (EnemyEvaded iid enemyId)
+      -> a <$ push (EnemyEvaded iid enemyId)
     FailedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget target) _ _
       | isTarget a target
       -> do
         keywords <- getModifiedKeywords a
         a <$ when
           (Keyword.Alert `elem` keywords)
-          (unshiftMessage $ EnemyAttack iid enemyId)
-    EnemyAttack iid eid | eid == enemyId -> a <$ unshiftMessages
-      [PerformEnemyAttack iid eid, After (PerformEnemyAttack iid eid)]
-    PerformEnemyAttack iid eid | eid == enemyId -> a <$ unshiftMessages
+          (push $ EnemyAttack iid enemyId)
+    EnemyAttack iid eid | eid == enemyId ->
+      a <$ pushAll
+        [PerformEnemyAttack iid eid, After (PerformEnemyAttack iid eid)]
+    PerformEnemyAttack iid eid | eid == enemyId -> a <$ pushAll
       [ InvestigatorAssignDamage
         iid
         (EnemySource enemyId)
@@ -655,7 +671,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
       modifiedHealth <- getModifiedHealth a
       (a & damageL +~ amount') <$ when
         (a ^. damageL + amount' >= modifiedHealth)
-        (unshiftMessage
+        (push
           (EnemyDefeated
             eid
             iid
@@ -666,7 +682,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
           )
         )
     EnemyDefeated eid _ _ _ _ _ | eid == enemyId ->
-      a <$ unshiftMessages (map (Discard . AssetTarget) (setToList enemyAssets))
+      a <$ pushAll (map (Discard . AssetTarget) (setToList enemyAssets))
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
       lid <- getId @LocationId iid
       pure $ a & engagedInvestigatorsL %~ insertSet iid & locationL .~ lid
@@ -677,7 +693,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
       willMove <- canEnterLocation enemyId lid
       if Keyword.Massive `notElem` keywords && willMove
         then pure $ a & locationL .~ lid
-        else a <$ unshiftMessage (DisengageEnemy iid enemyId)
+        else a <$ push (DisengageEnemy iid enemyId)
     AfterEnterLocation iid lid | lid == enemyLocation -> do
       keywords <- getModifiedKeywords a
       when
@@ -689,7 +705,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
              )
           && not enemyExhausted
           )
-        $ unshiftMessage (EnemyEngageInvestigator enemyId iid)
+        $ push (EnemyEngageInvestigator enemyId iid)
       pure a
     CheckAttackOfOpportunity iid isFast
       | not isFast && iid `elem` enemyEngagedInvestigators && not enemyExhausted -> do
@@ -698,12 +714,11 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
             <$> getModifiersFor (toSource a) (EnemyTarget enemyId) ()
         a <$ unless
           (CannotMakeAttacksOfOpportunity `elem` modifiers')
-          (unshiftMessage (EnemyWillAttack iid enemyId))
+          (push (EnemyWillAttack iid enemyId))
     InvestigatorDrawEnemy iid lid eid | eid == enemyId ->
       a
         <$ (case enemySpawnAt of
-             Nothing ->
-               unshiftMessages (resolve (EnemySpawn (Just iid) lid eid))
+             Nothing -> pushAll (resolve (EnemySpawn (Just iid) lid eid))
              Just matcher -> do
                spawnAt (Just iid) enemyId matcher
            )
@@ -712,7 +727,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
     UnengageNonMatching iid traits
       | iid `elem` enemyEngagedInvestigators && null
         (setFromList traits `intersection` toTraits a)
-      -> a <$ unshiftMessage (DisengageEnemy iid enemyId)
+      -> a <$ push (DisengageEnemy iid enemyId)
     DisengageEnemy iid eid | eid == enemyId ->
       pure $ a & engagedInvestigatorsL %~ deleteSet iid
     EnemySetBearer eid bid | eid == enemyId -> pure $ a & preyL .~ Bearer bid

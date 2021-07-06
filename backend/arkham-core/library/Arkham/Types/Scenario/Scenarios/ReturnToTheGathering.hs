@@ -61,7 +61,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         guestHallId <- getRandom
         bedroomId <- getRandom
         bathroomId <- getRandom
-        pushMessages
+        pushAllEnd
           [ SetEncounterDeck encounterDeck
           , AddAgenda "01105"
           , AddAct "50012"

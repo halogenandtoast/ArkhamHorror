@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.TearThroughSpace
   ( tearThroughSpace
   , TearThroughSpace(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -45,14 +46,13 @@ instance ActionRunner env => HasActions env TearThroughSpace where
 
 instance LocationRunner env => RunMessage env TearThroughSpace where
   runMessage msg l@(TearThroughSpace attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessage
-        (chooseOne
-          iid
-          [ Label
-            "Place 1 doom on Tear through Space"
-            [PlaceDoom (toTarget attrs) 1]
-          , Label "Discard Tear through Space" [Discard (toTarget attrs)]
-          ]
-        )
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+      (chooseOne
+        iid
+        [ Label
+          "Place 1 doom on Tear through Space"
+          [PlaceDoom (toTarget attrs) 1]
+        , Label "Discard Tear through Space" [Discard (toTarget attrs)]
+        ]
+      )
     _ -> TearThroughSpace <$> runMessage msg attrs

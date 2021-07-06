@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.DarkenedHall
   ( darkenedHall
   , DarkenedHall(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -39,7 +40,7 @@ instance LocationRunner env => RunMessage env DarkenedHall where
     RevealLocation _ lid | lid == locationId -> do
       locations <- shuffleM [Cards.artGallery, Cards.vipArea, Cards.backAlley]
       randomIds <- replicateM 3 getRandom
-      unshiftMessages $ concat
+      pushAll $ concat
         [ [ PlaceLocation locationId' location'
           , SetLocationLabel locationId' label'
           ]

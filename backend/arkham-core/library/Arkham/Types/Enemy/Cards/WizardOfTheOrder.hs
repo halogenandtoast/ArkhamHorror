@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.WizardOfTheOrder
   ( WizardOfTheOrder(..)
   , wizardOfTheOrder
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

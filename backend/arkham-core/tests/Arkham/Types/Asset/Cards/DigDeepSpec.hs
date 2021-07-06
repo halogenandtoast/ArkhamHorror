@@ -1,6 +1,7 @@
 module Arkham.Types.Asset.Cards.DigDeepSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport
 
@@ -10,8 +11,8 @@ spec :: Spec
 spec = describe "Dig Deep" $ do
   it "Adds 1 to willpower check for each resource spent" $ do
     digDeep <- buildAsset "01077"
-    investigator <- testInvestigator "00000" $ \attrs ->
-      attrs { investigatorWillpower = 1, investigatorResources = 2 }
+    investigator <- testInvestigator "00000"
+      $ \attrs -> attrs { investigatorWillpower = 1, investigatorResources = 2 }
 
     (didPassTest, logger) <- didPassSkillTestBy investigator SkillWillpower 0
 

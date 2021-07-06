@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.GraspingHands
   ( GraspingHands(..)
   , graspingHands
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -28,17 +29,19 @@ instance HasActions env GraspingHands where
 
 instance TreacheryRunner env => RunMessage env GraspingHands where
   runMessage msg t@(GraspingHands attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ unshiftMessages
+    Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RevelationSkillTest iid source SkillAgility 3
       , Discard (TreacheryTarget treacheryId)
       ]
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
-      | tid == treacheryId -> t <$ unshiftMessage
-        (InvestigatorAssignDamage
-          iid
-          (TreacherySource treacheryId)
-          DamageAny
-          n
-          0
-        )
+      | tid == treacheryId
+      -> t
+        <$ push
+             (InvestigatorAssignDamage
+               iid
+               (TreacherySource treacheryId)
+               DamageAny
+               n
+               0
+             )
     _ -> GraspingHands <$> runMessage msg attrs

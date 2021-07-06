@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.TheCloverClub
   ( TheCloverClub(..)
   , theCloverClub
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -46,9 +47,7 @@ instance AgendaRunner env => RunMessage env TheCloverClub where
   runMessage msg a@(TheCloverClub attrs@AgendaAttrs {..}) = case msg of
     InvestigatorDamageEnemy _ eid | agendaSequence == Agenda 1 A -> do
       traits <- getSet eid
-      a <$ when
-        (Criminal `member` traits)
-        (unshiftMessage $ AdvanceAgenda agendaId)
+      a <$ when (Criminal `member` traits) (push $ AdvanceAgenda agendaId)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       completedExtracurricularActivity <-
@@ -60,7 +59,7 @@ instance AgendaRunner env => RunMessage env TheCloverClub where
           [ShuffleEncounterDiscardBackIn, NextAgenda aid "02064"]
             <> [ AdvanceCurrentAgenda | completedExtracurricularActivity ]
 
-      a <$ unshiftMessages
+      a <$ pushAll
         (map EnemyCheckEngagement enemyIds
         <> [chooseOne leadInvestigatorId [Label "Continue" continueMessages]]
         )

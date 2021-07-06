@@ -42,7 +42,7 @@ instance (LocationRunner env) => RunMessage env ArkhamWoodsTwistingPaths where
         | iid `elem` locationInvestigators && lid /= locationId -> do
           moveFrom <- popMessage -- MoveFrom
           moveTo <- popMessage -- MoveTo
-          l <$ unshiftMessages
+          l <$ pushAll
             [ CreateEffect
               "01151"
               (Just $ EffectMessages (catMaybes [moveFrom, moveTo]))

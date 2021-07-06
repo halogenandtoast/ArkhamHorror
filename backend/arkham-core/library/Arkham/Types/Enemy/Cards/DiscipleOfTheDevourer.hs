@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.DiscipleOfTheDevourer
   ( discipleOfTheDevourer
   , DiscipleOfTheDevourer(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -37,8 +38,6 @@ instance EnemyRunner env => RunMessage env DiscipleOfTheDevourer where
         messages =
           [PlaceDoom (toTarget attrs) 1, InvestigatorPlaceCluesOnLocation iid 1]
       step <- unAgendaStep <$> getStep
-      if step == 1
-        then unshiftMessage (chooseOne iid messages)
-        else unshiftMessages messages
+      if step == 1 then push (chooseOne iid messages) else pushAll messages
       DiscipleOfTheDevourer <$> runMessage msg attrs
     _ -> DiscipleOfTheDevourer <$> runMessage msg attrs

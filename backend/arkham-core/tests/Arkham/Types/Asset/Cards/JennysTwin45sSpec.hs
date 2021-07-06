@@ -1,6 +1,7 @@
 module Arkham.Types.Asset.Cards.JennysTwin45sSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport.Lifted
 
@@ -58,7 +59,7 @@ spec = describe "Jenny's Twin .45s" $ do
       $ do
           runMessages
           payResource
-          unshiftMessages
+          pushAll
             [ enemySpawn location enemy
             , moveTo investigator location
             , UseCardAbility

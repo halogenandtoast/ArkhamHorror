@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.HospitalDebts
   ( HospitalDebts(..)
   , hospitalDebts
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -53,12 +54,12 @@ instance ActionRunner env => HasActions env HospitalDebts where
 
 instance (TreacheryRunner env) => RunMessage env HospitalDebts where
   runMessage msg t@(HospitalDebts attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ unshiftMessages
+    Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RemoveCardFromHand iid "01011"
       , AttachTreachery treacheryId (InvestigatorTarget iid)
       ]
     UseCardAbility iid (TreacherySource tid) _ 1 _ | tid == treacheryId -> do
-      unshiftMessage (SpendResources iid 1)
+      push (SpendResources iid 1)
       pure $ HospitalDebts
         (attrs { treacheryResources = (+ 1) <$> treacheryResources })
     _ -> HospitalDebts <$> runMessage msg attrs

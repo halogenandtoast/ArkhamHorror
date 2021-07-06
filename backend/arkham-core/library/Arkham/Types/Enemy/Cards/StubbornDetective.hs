@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.StubbornDetective
   ( StubbornDetective(..)
   , stubbornDetective
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.ArcaneStudies2
   ( ArcaneStudies2(..)
   , arcaneStudies2
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -41,20 +42,18 @@ instance HasActions env ArcaneStudies2 where
 
 instance AssetRunner env => RunMessage env ArcaneStudies2 where
   runMessage msg a@(ArcaneStudies2 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage
-        (CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [SkillModifier SkillWillpower 1])
-          source
-          (InvestigatorTarget iid)
-        )
-    UseCardAbility iid source _ 2 _ | isSource attrs source ->
-      a <$ unshiftMessage
-        (CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [SkillModifier SkillIntellect 1])
-          source
-          (InvestigatorTarget iid)
-        )
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+      (CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers $ toModifiers attrs [SkillModifier SkillWillpower 1])
+        source
+        (InvestigatorTarget iid)
+      )
+    UseCardAbility iid source _ 2 _ | isSource attrs source -> a <$ push
+      (CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers $ toModifiers attrs [SkillModifier SkillIntellect 1])
+        source
+        (InvestigatorTarget iid)
+      )
     _ -> ArcaneStudies2 <$> runMessage msg attrs

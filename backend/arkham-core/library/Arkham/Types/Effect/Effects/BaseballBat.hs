@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.BaseballBat
   ( baseballBat
   , BaseballBat(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -27,9 +28,7 @@ instance HasQueue env => RunMessage env BaseballBat where
       case effectSource of
         AssetSource assetId -> e <$ when
           (token `elem` [Skull, AutoFail])
-          (unshiftMessages
-            [Discard (AssetTarget assetId), DisableEffect effectId]
-          )
+          (pushAll [Discard (AssetTarget assetId), DisableEffect effectId])
         _ -> error "wrong source"
-    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect effectId)
+    SkillTestEnds _ -> e <$ push (DisableEffect effectId)
     _ -> BaseballBat <$> runMessage msg attrs

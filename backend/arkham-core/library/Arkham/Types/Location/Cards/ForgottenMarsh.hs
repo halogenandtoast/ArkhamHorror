@@ -32,5 +32,5 @@ instance (LocationRunner env) => RunMessage env ForgottenMarsh where
   runMessage msg l@(ForgottenMarsh attrs@LocationAttrs {..}) = case msg of
     Will (MoveTo iid lid)
       | iid `elem` locationInvestigators && lid /= locationId -> l
-      <$ unshiftMessage (SpendResources iid 2)
+      <$ push (SpendResources iid 2)
     _ -> ForgottenMarsh <$> runMessage msg attrs

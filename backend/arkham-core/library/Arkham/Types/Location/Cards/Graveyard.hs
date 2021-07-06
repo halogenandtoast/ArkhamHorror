@@ -30,7 +30,7 @@ instance ActionRunner env => HasActions env Graveyard where
 instance (LocationRunner env) => RunMessage env Graveyard where
   runMessage msg l@(Graveyard attrs@LocationAttrs {..}) = case msg of
     AfterEnterLocation iid lid | lid == locationId -> do
-      unshiftMessage
+      push
         (BeginSkillTest
           iid
           (LocationSource lid)
@@ -42,7 +42,7 @@ instance (LocationRunner env) => RunMessage env Graveyard where
       Graveyard <$> runMessage msg attrs
     FailedSkillTest iid _ source _ _ _ | isSource attrs source -> do
       rivertownId <- getJustLocationIdByName "Rivertown"
-      l <$ unshiftMessage
+      l <$ push
         (chooseOne
           iid
           [ InvestigatorAssignDamage iid source DamageAny 0 2

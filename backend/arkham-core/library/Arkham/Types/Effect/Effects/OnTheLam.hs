@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.OnTheLam
   ( onTheLam
   , OnTheLam(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -23,5 +24,5 @@ instance HasModifiersFor env OnTheLam where
 
 instance HasQueue env => RunMessage env OnTheLam where
   runMessage msg e@(OnTheLam attrs) = case msg of
-    EndRound -> e <$ unshiftMessage (DisableEffect $ toId attrs)
+    EndRound -> e <$ push (DisableEffect $ toId attrs)
     _ -> OnTheLam <$> runMessage msg attrs

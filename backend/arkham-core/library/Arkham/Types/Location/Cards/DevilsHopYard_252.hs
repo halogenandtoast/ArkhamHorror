@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.DevilsHopYard_252
   ( devilsHopYard_252
   , DevilsHopYard_252(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -72,7 +73,7 @@ instance LocationRunner env => RunMessage env DevilsHopYard_252 where
           | target <- abominations
           ]
 
-      l <$ unshiftMessage
+      l <$ push
         (chooseOne
           iid
           [ TargetLabel

@@ -31,14 +31,14 @@ instance HasActions env VengeanceAwaits where
 instance AgendaRunner env => RunMessage env VengeanceAwaits where
   runMessage msg a@(VengeanceAwaits attrs@AgendaAttrs {..}) = case msg of
     EnemyDefeated _ _ _ "01156" _ _ ->
-      a <$ unshiftMessage (ScenarioResolution $ Resolution 2)
+      a <$ push (ScenarioResolution $ Resolution 2)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
       actIds <- getSetList ()
       umordhoth <- EncounterCard <$> genEncounterCard Enemies.umordhoth
       a <$ if "01146" `elem` actIds
         then do
           ritualSiteId <- getRandom
-          unshiftMessages
+          pushAll
             $ [ PlaceLocation ritualSiteId Locations.ritualSite
               , CreateEnemyAt umordhoth ritualSiteId Nothing
               ]
@@ -46,7 +46,7 @@ instance AgendaRunner env => RunMessage env VengeanceAwaits where
         else do
           ritualSiteId <- getJustLocationIdByName "Ritual Site"
           enemyIds <- getSetList ritualSiteId
-          unshiftMessages
+          pushAll
             $ [ Discard (EnemyTarget eid) | eid <- enemyIds ]
             <> [CreateEnemyAt umordhoth ritualSiteId Nothing]
             <> [ Discard (ActTarget actId) | actId <- actIds ]

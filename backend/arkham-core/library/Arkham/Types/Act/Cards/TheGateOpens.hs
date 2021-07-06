@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.TheGateOpens
   ( TheGateOpens(..)
   , theGateOpens
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -30,5 +31,5 @@ instance ActionRunner env => HasActions env TheGateOpens where
 instance ActRunner env => RunMessage env TheGateOpens where
   runMessage msg a@(TheGateOpens attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide B attrs ->
-      a <$ unshiftMessage (ScenarioResolution $ Resolution 2)
+      a <$ push (ScenarioResolution $ Resolution 2)
     _ -> TheGateOpens <$> runMessage msg attrs

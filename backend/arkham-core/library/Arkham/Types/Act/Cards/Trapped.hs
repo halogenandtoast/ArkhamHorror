@@ -30,7 +30,7 @@ instance ActRunner env => RunMessage env Trapped where
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       requiredClues <- getPlayerCountValue (PerPlayer 2)
-      unshiftMessages
+      pushAll
         [ SpendClues requiredClues investigatorIds
         , chooseOne leadInvestigatorId [AdvanceAct aid $ toSource attrs]
         ]
@@ -42,7 +42,7 @@ instance ActRunner env => RunMessage env Trapped where
       atticId <- getRandom
       cellarId <- getRandom
       parlorId <- getRandom
-      a <$ unshiftMessages
+      a <$ pushAll
         ([ PlaceLocation hallwayId Locations.hallway
          , PlaceLocation cellarId Locations.cellar
          , PlaceLocation atticId Locations.attic

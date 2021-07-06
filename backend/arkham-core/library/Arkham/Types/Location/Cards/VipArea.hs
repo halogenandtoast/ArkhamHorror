@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.VipArea
   ( vipArea
   , VipArea(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.AvianThrall
   ( AvianThrall(..)
   , avianThrall
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

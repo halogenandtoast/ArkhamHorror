@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.DrHenryArmitage
   ( DrHenryArmitage(..)
   , drHenryArmitage
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -38,5 +39,5 @@ instance HasActions env DrHenryArmitage where
 instance (AssetRunner env) => RunMessage env DrHenryArmitage where
   runMessage msg a@(DrHenryArmitage attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage (TakeResources iid 3 False)
+      a <$ push (TakeResources iid 3 False)
     _ -> DrHenryArmitage <$> runMessage msg attrs

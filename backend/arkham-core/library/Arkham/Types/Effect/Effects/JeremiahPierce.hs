@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.JeremiahPierce
   ( jeremiahPierce
   , JeremiahPierce(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -24,7 +25,7 @@ instance HasModifiersFor env JeremiahPierce where
 instance HasQueue env => RunMessage env JeremiahPierce where
   runMessage msg e@(JeremiahPierce attrs) = case msg of
     CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == effectId attrs ->
-      e <$ unshiftMessages
+      e <$ pushAll
         [ BeginSkillTest
           iid
           (toSource attrs)
@@ -35,6 +36,6 @@ instance HasQueue env => RunMessage env JeremiahPierce where
         , DisableEffect $ effectId attrs
         ]
     FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ n
-      | isSource attrs source -> e <$ unshiftMessages
+      | isSource attrs source -> e <$ pushAll
         (replicate n PlaceDoomOnAgenda <> [AdvanceAgendaIfThresholdSatisfied])
     _ -> JeremiahPierce <$> runMessage msg attrs

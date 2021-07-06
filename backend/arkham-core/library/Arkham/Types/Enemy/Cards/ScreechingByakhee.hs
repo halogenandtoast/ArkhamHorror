@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.ScreechingByakhee
   ( screechingByakhee
   , ScreechingByakhee(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

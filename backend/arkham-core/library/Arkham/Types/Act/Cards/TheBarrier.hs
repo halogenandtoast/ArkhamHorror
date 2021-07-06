@@ -32,7 +32,7 @@ instance ActRunner env => RunMessage env TheBarrier where
         <$> getLocationIdWithTitle "Hallway"
       investigatorIds <- getSetList hallwayId
       requiredClueCount <- getPlayerCountValue (PerPlayer 3)
-      unshiftMessages
+      pushAll
         (SpendClues requiredClueCount investigatorIds
         : [ chooseOne iid [AdvanceAct aid $ toSource attrs]
           | iid <- investigatorIds
@@ -44,7 +44,7 @@ instance ActRunner env => RunMessage env TheBarrier where
       ghoulPriest <- EncounterCard <$> genEncounterCard Enemies.ghoulPriest
       litaChantler <- PlayerCard <$> genPlayerCard Assets.litaChantler
       parlorId <- getJustLocationIdByName "Parlor"
-      a <$ unshiftMessages
+      a <$ pushAll
         [ RevealLocation Nothing parlorId
         , CreateStoryAssetAt litaChantler parlorId
         , CreateEnemyAt ghoulPriest hallwayId Nothing
@@ -57,7 +57,7 @@ instance ActRunner env => RunMessage env TheBarrier where
       totalSpendableClueCount <- getSpendableClueCount investigatorIds
       requiredClueCount <- getPlayerCountValue (PerPlayer 3)
       if totalSpendableClueCount >= requiredClueCount
-        then a <$ unshiftMessage
+        then a <$ push
           (chooseOne
             leadInvestigatorId
             [ AdvanceAct actId (toSource attrs)

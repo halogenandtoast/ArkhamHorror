@@ -38,7 +38,7 @@ instance HasActions env DiscOfItzamna2 where
 instance (AssetRunner env) => RunMessage env DiscOfItzamna2 where
   runMessage msg a@(DiscOfItzamna2 attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
-      unshiftMessage
+      push
         (CreateWindowModifierEffect
           EffectSkillTestWindow
           (EffectModifiers [toModifier attrs $ SkillModifier SkillWillpower 1])
@@ -51,6 +51,6 @@ instance (AssetRunner env) => RunMessage env DiscOfItzamna2 where
         $ find ((== Just EnemySpawnMessage) . messageType)
       a <$ case menemySpawnMessage of
         Just (EnemySpawn _ _ eid) ->
-          unshiftMessages [Discard (toTarget attrs), Discard (EnemyTarget eid)]
+          pushAll [Discard (toTarget attrs), Discard (EnemyTarget eid)]
         _ -> pure ()
     _ -> DiscOfItzamna2 <$> runMessage msg attrs

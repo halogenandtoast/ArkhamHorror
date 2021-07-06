@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.StalkedInTheDark
   ( stalkedInTheDark
   , StalkedInTheDark(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -34,10 +35,9 @@ instance TreacheryRunner env => RunMessage env StalkedInTheDark where
         Just eid -> do
           lid <- getId @LocationId iid
           iids <- getSetList @InvestigatorId lid
-          t <$ unshiftMessages
+          t <$ pushAll
             ([Ready (EnemyTarget eid), EnemyEngageInvestigator eid iid]
             <> [ EnemyAttack iid' eid | iid' <- iids ]
             )
-        Nothing ->
-          t <$ unshiftMessages [Surge iid source, Discard $ toTarget attrs]
+        Nothing -> t <$ pushAll [Surge iid source, Discard $ toTarget attrs]
     _ -> StalkedInTheDark <$> runMessage msg attrs

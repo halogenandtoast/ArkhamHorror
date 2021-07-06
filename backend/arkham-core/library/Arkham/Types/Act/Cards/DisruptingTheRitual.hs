@@ -42,38 +42,36 @@ instance ActRunner env => RunMessage env DisruptingTheRitual where
   runMessage msg a@(DisruptingTheRitual attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      unshiftMessage
-        (chooseOne leadInvestigatorId [AdvanceAct actId (toSource attrs)])
+      push (chooseOne leadInvestigatorId [AdvanceAct actId (toSource attrs)])
       pure $ DisruptingTheRitual $ attrs & (sequenceL .~ Act 3 B)
     AdvanceAct aid _ | aid == actId && onSide B attrs ->
-      a <$ unshiftMessage (ScenarioResolution $ Resolution 1)
+      a <$ push (ScenarioResolution $ Resolution 1)
     PlaceClues (ActTarget aid) n | aid == actId -> do
       requiredClues <- getPlayerCountValue (PerPlayer 2)
       let totalClues = n + fromJustNote "Must be set" actClues
       when
         (totalClues >= requiredClues)
-        (unshiftMessage (AdvanceAct actId $ toSource attrs))
+        (push (AdvanceAct actId $ toSource attrs))
       pure $ DisruptingTheRitual (attrs { actClues = Just totalClues })
-    UseCardAbility iid (ActSource aid) _ 1 _ | aid == actId ->
-      a <$ unshiftMessage
-        (chooseOne
+    UseCardAbility iid (ActSource aid) _ 1 _ | aid == actId -> a <$ push
+      (chooseOne
+        iid
+        [ BeginSkillTest
           iid
-          [ BeginSkillTest
-            iid
-            (ActSource actId)
-            (ActTarget actId)
-            Nothing
-            SkillWillpower
-            3
-          , BeginSkillTest
-            iid
-            (ActSource actId)
-            (ActTarget actId)
-            Nothing
-            SkillAgility
-            3
-          ]
-        )
+          (ActSource actId)
+          (ActTarget actId)
+          Nothing
+          SkillWillpower
+          3
+        , BeginSkillTest
+          iid
+          (ActSource actId)
+          (ActTarget actId)
+          Nothing
+          SkillAgility
+          3
+        ]
+      )
     PassedSkillTest _ _ source _ _ _ | isSource attrs source ->
-      a <$ unshiftMessage (PlaceClues (toTarget attrs) 1)
+      a <$ push (PlaceClues (toTarget attrs) 1)
     _ -> DisruptingTheRitual <$> runMessage msg attrs

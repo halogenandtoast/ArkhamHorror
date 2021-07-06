@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.HelplessPassenger
   ( helplessPassenger
   , HelplessPassenger(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -54,12 +55,12 @@ instance
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid
       spawnAt <- fromMaybe lid <$> getId (LeftOf, lid)
-      a <$ unshiftMessage (AttachAsset assetId (LocationTarget spawnAt))
+      a <$ push (AttachAsset assetId (LocationTarget spawnAt))
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage (TakeControlOfAsset iid assetId)
+      a <$ push (TakeControlOfAsset iid assetId)
     When (Discard target) | isTarget attrs target -> do
       investigatorIds <- map unInScenarioInvestigatorId <$> getSetList ()
-      a <$ unshiftMessages
+      a <$ pushAll
         [ InvestigatorAssignDamage iid' (toSource attrs) DamageAny 0 1
         | iid' <- investigatorIds
         ]

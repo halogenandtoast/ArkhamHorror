@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.FirstAid
   ( FirstAid(..)
   , firstAid
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -45,7 +46,7 @@ instance AssetRunner env => RunMessage env FirstAid where
     UseCardAbility iid (AssetSource aid) _ 1 _ | aid == assetId -> do
       lid <- getId @LocationId iid
       investigatorTargets <- map InvestigatorTarget <$> getSetList lid
-      a <$ unshiftMessage
+      a <$ push
         (chooseOne
           iid
           [ TargetLabel

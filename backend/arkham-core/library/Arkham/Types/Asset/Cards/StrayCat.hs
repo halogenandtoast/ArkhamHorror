@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.StrayCat
   ( StrayCat(..)
   , strayCat
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -43,7 +44,10 @@ instance AssetRunner env => RunMessage env StrayCat where
         ((notMember Elite <$>) . getSet)
         locationEnemyIds
 
-      a <$ unshiftMessage
-        (chooseOne iid [ EnemyEvaded iid enemyId | enemyId <- nonEliteEnemyIds ]
-        )
+      a
+        <$ push
+             (chooseOne
+               iid
+               [ EnemyEvaded iid enemyId | enemyId <- nonEliteEnemyIds ]
+             )
     _ -> StrayCat <$> runMessage msg attrs

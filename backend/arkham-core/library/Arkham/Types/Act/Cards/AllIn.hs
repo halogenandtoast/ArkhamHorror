@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.AllIn
   ( AllIn(..)
   , allIn
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -58,16 +59,15 @@ instance ActRunner env => RunMessage env AllIn where
       investigatorIds <- getSet @InScenarioInvestigatorId ()
       a <$ when
         (null investigatorIds)
-        (unshiftMessage $ AdvanceAct actId (toSource attrs))
+        (push $ AdvanceAct actId (toSource attrs))
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      unshiftMessage
-        $ chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
+      push $ chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
       pure $ AllIn $ attrs & sequenceL .~ Act 3 B
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       resignedWithDrFrancisMorgan <- elem (ResignedCardCode $ CardCode "02080")
         <$> getList ()
-      a <$ unshiftMessage
+      a <$ push
         (ScenarioResolution $ Resolution $ if resignedWithDrFrancisMorgan
           then 2
           else 1
@@ -77,7 +77,7 @@ instance ActRunner env => RunMessage env AllIn where
         maid <- fmap unStoryAssetId <$> getId (CardCode "02080")
         case maid of
           Nothing -> error "this ability should not be able to be used"
-          Just aid -> a <$ unshiftMessage
+          Just aid -> a <$ push
             (BeginSkillTest
               iid
               source
@@ -94,8 +94,8 @@ instance ActRunner env => RunMessage env AllIn where
           Just aid -> do
             currentClueCount <- unClueCount <$> getCount aid
             requiredClueCount <- getPlayerCountValue (PerPlayer 1)
-            unshiftMessage (PlaceClues (AssetTarget aid) 1)
+            push (PlaceClues (AssetTarget aid) 1)
             a <$ when
               (currentClueCount + 1 >= requiredClueCount)
-              (unshiftMessage $ TakeControlOfAsset iid aid)
+              (push $ TakeControlOfAsset iid aid)
     _ -> AllIn <$> runMessage msg attrs

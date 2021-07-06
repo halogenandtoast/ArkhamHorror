@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.CursedSwamp
   ( CursedSwamp(..)
   , cursedSwamp
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -42,17 +43,19 @@ instance HasActions env CursedSwamp where
 
 instance TreacheryRunner env => RunMessage env CursedSwamp where
   runMessage msg t@(CursedSwamp attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ unshiftMessages
+    Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RevelationSkillTest iid source SkillWillpower 3
       , Discard (TreacheryTarget treacheryId)
       ]
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
-      | tid == treacheryId -> t <$ unshiftMessage
-        (InvestigatorAssignDamage
-          iid
-          (TreacherySource treacheryId)
-          DamageAny
-          n
-          0
-        )
+      | tid == treacheryId
+      -> t
+        <$ push
+             (InvestigatorAssignDamage
+               iid
+               (TreacherySource treacheryId)
+               DamageAny
+               n
+               0
+             )
     _ -> CursedSwamp <$> runMessage msg attrs

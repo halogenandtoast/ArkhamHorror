@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.InEveryShadow
   ( InEveryShadow(..)
   , inEveryShadow
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -40,13 +41,13 @@ instance AgendaRunner env => RunMessage env InEveryShadow where
         shadowSpawned <- EncounterCard
           <$> genEncounterCard Treacheries.shadowSpawned
         case mShadowSpawnedId of
-          Just tid -> unshiftMessage $ PlaceResources (TreacheryTarget tid) 1
-          Nothing -> unshiftMessage
-            $ AttachStoryTreacheryTo shadowSpawned (EnemyTarget eid)
+          Just tid -> push $ PlaceResources (TreacheryTarget tid) 1
+          Nothing ->
+            push $ AttachStoryTreacheryTo shadowSpawned (EnemyTarget eid)
       pure a
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
       iids <- map unInScenarioInvestigatorId <$> getSetList ()
-      a <$ unshiftMessages
+      a <$ pushAll
         (concatMap
           (\iid -> [SufferTrauma iid 1 0, InvestigatorDefeated iid])
           iids

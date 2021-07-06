@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.WrackedByNightmares
   ( WrackedByNightmares(..)
   , wrackedByNightmares
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -49,12 +50,11 @@ instance TreacheryRunner env => RunMessage env WrackedByNightmares where
   runMessage msg t@(WrackedByNightmares attrs@TreacheryAttrs {..}) =
     case msg of
       Revelation iid source | isSource attrs source ->
-        t <$ unshiftMessage
-          (AttachTreachery treacheryId $ InvestigatorTarget iid)
+        t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)
       AttachTreachery tid (InvestigatorTarget iid) | tid == treacheryId -> do
         assetIds <- getSetList iid
-        unshiftMessages [ Exhaust (AssetTarget aid) | aid <- assetIds ]
+        pushAll [ Exhaust (AssetTarget aid) | aid <- assetIds ]
         WrackedByNightmares <$> runMessage msg attrs
       UseCardAbility _ (TreacherySource tid) _ 1 _ | tid == treacheryId ->
-        t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
+        t <$ push (Discard (TreacheryTarget treacheryId))
       _ -> WrackedByNightmares <$> runMessage msg attrs

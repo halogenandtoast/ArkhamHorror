@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.DrawnIn
   ( DrawnIn(..)
   , drawnIn
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -46,7 +47,7 @@ instance AgendaRunner env => RunMessage env DrawnIn where
       locationId <- getId @LocationId leadInvestigatorId
       lid <- leftmostLocation locationId
       rlid <- fromJustNote "missing right" <$> getId (RightOf, lid)
-      a <$ unshiftMessages
+      a <$ pushAll
         (RemoveLocation lid
         : RemoveLocation rlid
         : [ InvestigatorDiscardAllClues iid | iid <- investigatorIds ]

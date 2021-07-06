@@ -1,7 +1,8 @@
 module Arkham.Types.Event.Cards.Taunt2
   ( taunt2
   , Taunt2(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -30,7 +31,7 @@ instance (EventRunner env) => RunMessage env Taunt2 where
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       lid <- getId @LocationId iid
       enemyIds <- getSetList lid
-      e <$ unshiftMessage
+      e <$ push
         (chooseSome
           iid
           [ TargetLabel

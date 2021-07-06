@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.SwampLeech
   ( SwampLeech(..)
   , swampLeech
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -42,5 +43,5 @@ instance EnemyRunner env => RunMessage env SwampLeech where
       bayouLocations <- getSetList @LocationId [Bayou]
       e <$ when
         (lid `notElem` bayouLocations)
-        (unshiftMessage $ Discard (EnemyTarget enemyId))
+        (push $ Discard (EnemyTarget enemyId))
     _ -> SwampLeech <$> runMessage msg attrs

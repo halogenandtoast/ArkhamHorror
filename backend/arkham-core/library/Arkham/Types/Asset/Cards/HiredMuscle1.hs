@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.HiredMuscle1
   ( hiredMuscle1
   , HiredMuscle1(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -32,7 +33,7 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env HiredMuscle1 w
   runMessage msg a@(HiredMuscle1 attrs@AssetAttrs {..}) = case msg of
     EndUpkeep -> do
       let iid = fromJustNote "must be owned" assetInvestigator
-      a <$ unshiftMessage
+      a <$ push
         (chooseOne
           iid
           [ Label "Pay 1 Resource to Hired Muscle" [SpendResources iid 1]

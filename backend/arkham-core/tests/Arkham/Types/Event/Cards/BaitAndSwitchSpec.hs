@@ -1,6 +1,7 @@
 module Arkham.Types.Event.Cards.BaitAndSwitchSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport.Lifted
 

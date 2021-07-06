@@ -91,7 +91,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         , EncounterSet.DarkCult
         , randomSet
         ]
-      pushMessages
+      pushAllEnd
         $ [ AskMap
             (mapFromList
               [ ( iid
@@ -151,9 +151,8 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       closestEnemyIds <- map unClosestEnemyId <$> getSetList iid
       case closestEnemyIds of
         [] -> pure ()
-        [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) doom)
-        xs -> unshiftMessage
-          (chooseOne iid [ PlaceDoom (EnemyTarget x) doom | x <- xs ])
+        [x] -> push (PlaceDoom (EnemyTarget x) doom)
+        xs -> push (chooseOne iid [ PlaceDoom (EnemyTarget x) doom | x <- xs ])
       pure s
     ResolveToken _ Tablet iid -> do
       let horror = if isEasyStandard attrs then 0 else 1
@@ -161,7 +160,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         <$> getCount (InvestigatorLocation iid, [Monster])
       s <$ when
         (monsterCount > 0)
-        (unshiftMessage $ InvestigatorAssignDamage
+        (push $ InvestigatorAssignDamage
           iid
           (TokenEffectSource Tablet)
           DamageAny
@@ -170,17 +169,16 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         )
     ResolveToken _ ElderThing iid -> do
       ancientOneCount <- unEnemyCount <$> getCount [AncientOne]
-      s <$ when (ancientOneCount > 0) (unshiftMessage $ DrawAnotherToken iid)
+      s <$ when (ancientOneCount > 0) (push $ DrawAnotherToken iid)
     FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _
-      | isHardExpert attrs && drawnTokenFace token == Skull -> s
-      <$ unshiftMessage
-           (FindAndDrawEncounterCard
-             iid
-             (CardMatchByType (EnemyType, singleton Monster))
-           )
+      | isHardExpert attrs && drawnTokenFace token == Skull -> s <$ push
+        (FindAndDrawEncounterCard
+          iid
+          (CardMatchByType (EnemyType, singleton Monster))
+        )
     ScenarioResolution NoResolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      s <$ unshiftMessage
+      s <$ push
         (chooseOne
           leadInvestigatorId
           [ Run
@@ -202,7 +200,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         )
     ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      s <$ unshiftMessage
+      s <$ push
         (chooseOne
           leadInvestigatorId
           [ Run
@@ -223,7 +221,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         )
     ScenarioResolution (Resolution 2) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      s <$ unshiftMessage
+      s <$ push
         (chooseOne
           leadInvestigatorId
           [ Run
@@ -250,7 +248,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         )
     ScenarioResolution (Resolution 3) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      s <$ unshiftMessage
+      s <$ push
         (chooseOne
           leadInvestigatorId
           [ Run

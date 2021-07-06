@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.JennysTwin45s
   ( JennysTwin45s(..)
   , jennysTwin45s
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -54,15 +55,14 @@ instance AssetRunner env => RunMessage env JennysTwin45s where
   runMessage msg a@(JennysTwin45s attrs) = case msg of
     InvestigatorPlayDynamicAsset _ aid _ _ n | aid == assetId attrs ->
       JennysTwin45s <$> runMessage msg (attrs & usesL .~ Uses Ammo n)
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessages
-        [ CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers
-          $ toModifiers attrs [DamageDealt 1, SkillModifier SkillCombat 2]
-          )
-          source
-          (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillCombat mempty False
-        ]
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+      [ CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers
+        $ toModifiers attrs [DamageDealt 1, SkillModifier SkillCombat 2]
+        )
+        source
+        (InvestigatorTarget iid)
+      , ChooseFightEnemy iid source SkillCombat mempty False
+      ]
     _ -> JennysTwin45s <$> runMessage msg attrs

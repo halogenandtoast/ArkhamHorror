@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.JimsTrumpet
   ( JimsTrumpet(..)
   , jimsTrumpet
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -56,7 +57,7 @@ instance AssetRunner env => RunMessage env JimsTrumpet where
       pairings <- for investigatorIds
         $ \targetId -> (targetId, ) . unHorrorCount <$> getCount targetId
       let choices = map fst $ filter ((> 0) . snd) pairings
-      a <$ unshiftMessage
+      a <$ push
         (chooseOne
           ownerId
           [ HealHorror (InvestigatorTarget iid) 1 | iid <- choices ]

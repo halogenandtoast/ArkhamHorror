@@ -25,12 +25,12 @@ instance HasActions env OnWingsOfDarkness where
 
 instance TreacheryRunner env => RunMessage env OnWingsOfDarkness where
   runMessage msg t@(OnWingsOfDarkness attrs) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ unshiftMessages
+    Revelation iid source | isSource attrs source -> t <$ pushAll
       [RevelationSkillTest iid source SkillAgility 4, Discard (toTarget attrs)]
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         centralLocations <- getSetList [Central]
-        t <$ unshiftMessages
+        t <$ pushAll
           ([ InvestigatorAssignDamage iid source DamageAny 1 1
            , UnengageNonMatching iid [Nightgaunt]
            ]

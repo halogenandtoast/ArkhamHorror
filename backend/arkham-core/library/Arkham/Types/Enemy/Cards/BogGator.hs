@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.BogGator
   ( bogGator
   , BogGator(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

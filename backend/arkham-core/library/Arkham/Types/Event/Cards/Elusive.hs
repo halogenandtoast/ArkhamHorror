@@ -35,7 +35,7 @@ instance (EventRunner env) => RunMessage env Elusive where
       e <$ pushAll
         ([ DisengageEnemy iid enemyId | enemyId <- enemyIds ]
         <> [ chooseOne iid [ MoveTo iid lid | lid <- candidateLocations ]
-           | not (null candidateLocations)
+           | notNull candidateLocations
            ]
         <> [Discard (EventTarget eventId)]
         )

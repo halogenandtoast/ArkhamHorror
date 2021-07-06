@@ -75,7 +75,7 @@ instance EventRunner env => RunMessage env BloodRite where
                      | enemyId <- enemyIds
                      ]
                    ]
-               | not (null enemyIds)
+               | notNull enemyIds
                ]
             )
           )

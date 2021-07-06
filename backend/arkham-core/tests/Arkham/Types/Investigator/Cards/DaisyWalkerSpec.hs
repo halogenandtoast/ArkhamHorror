@@ -33,7 +33,7 @@ spec = describe "Daisy Walker" $ do
       gameTest
           daisyWalker
           [ SetTokens [ElderSign]
-          , LoadDeck (toId daisyWalker) deckCards
+          , LoadDeck (toId daisyWalker) (Deck deckCards)
           , playAsset daisyWalker tome1
           , playAsset daisyWalker tome2
           , beginSkillTest daisyWalker SkillIntellect 5

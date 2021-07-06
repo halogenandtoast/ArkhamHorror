@@ -18,7 +18,6 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
@@ -178,8 +177,7 @@ instance
         ]
 
       let
-        locations' = mapFromList $ map
-          ((LocationName . toName) &&& pure)
+        locations' = locationNameMap
           [ Locations.anotherDimension
           , Locations.theEdgeOfTheUniverse
           , Locations.tearThroughTime

@@ -33,8 +33,11 @@ findOwner cardCode = do
           campaignStoryCards
 
 theDunwichLegacy :: Difficulty -> TheDunwichLegacy
-theDunwichLegacy difficulty = TheDunwichLegacy
-  (baseAttrs (CampaignId "02") "The Dunwich Legacy" difficulty chaosBagContents)
+theDunwichLegacy difficulty = TheDunwichLegacy $ baseAttrs
+  (CampaignId "02")
+  "The Dunwich Legacy"
+  difficulty
+  chaosBagContents
  where
   chaosBagContents = case difficulty of
     Easy ->

@@ -18,7 +18,6 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
@@ -268,8 +267,7 @@ instance
           , (whateleyRuinsId, whateleyRuins)
           , (devilsHopYardId, devilsHopYard)
           ]
-        locations' = mapFromList
-          $ map (((LocationName . toName) &&& pure) . snd) locations
+        locations' = locationNameMap $ map snd locations
 
       unshiftMessages
         $ [ story

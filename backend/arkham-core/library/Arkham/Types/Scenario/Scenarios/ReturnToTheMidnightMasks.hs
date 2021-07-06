@@ -14,7 +14,6 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
@@ -140,8 +139,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           <> ghoulPriestMessages
           <> spawnAcolyteMessages
         let
-          locations' = mapFromList $ map
-            ((LocationName . toName) &&& pure)
+          locations' = locationNameMap
             [ Locations.yourHouse
             , rivertown
             , southside

@@ -19,7 +19,6 @@ import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
@@ -239,7 +238,6 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
             Hard -> MinusFour
             Expert -> MinusFive
 
-
         unshiftMessages
           $ [ story investigatorIds theEssexCountyExpressIntro
             , AddToken token
@@ -267,10 +265,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
              , MoveAllTo start
              ]
 
-        let
-          locations' = mapFromList $ map
-            ((LocationName . toName) &&& pure)
-            (engineCar : map snd trainCars)
+        let locations' = locationNameMap (engineCar : map snd trainCars)
         TheEssexCountyExpress
           <$> runMessage msg (attrs & locationsL .~ locations')
       ResolveToken _ Tablet iid | isEasyStandard attrs -> do

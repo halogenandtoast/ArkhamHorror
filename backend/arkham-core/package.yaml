@@ -28,6 +28,7 @@ default-extensions:
 - TypeFamilies
 - TypeOperators
 - UndecidableInstances
+- ImportQualifiedPost
 
 library:
   source-dirs: library

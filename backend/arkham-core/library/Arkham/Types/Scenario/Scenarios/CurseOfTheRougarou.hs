@@ -16,7 +16,6 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
@@ -162,8 +161,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            ]
 
       let
-        locations' = mapFromList $ map
-          ((LocationName . toName) &&& pure)
+        locations' = locationNameMap
           [ Locations.cursedShores
           , Locations.gardenDistrict
           , Locations.broadmoor

@@ -24,7 +24,7 @@ export default defineComponent({
           const [, investigatorId ] = found
           if (investigatorId) {
             const name = this.game.currentData.investigators[investigatorId]?.contents?.name
-            return name ? h('span', { 'data-image-id': investigatorId }, name) : split
+            return name ? h('span', { 'data-image-id': investigatorId }, name.title) : split
           }
         }
       }

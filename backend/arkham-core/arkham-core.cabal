@@ -825,6 +825,7 @@ library
       TypeFamilies
       TypeOperators
       UndecidableInstances
+      ImportQualifiedPost
   build-depends:
       MonadRandom
     , aeson >=1.5.4.1
@@ -878,6 +879,7 @@ executable validate
       TypeFamilies
       TypeOperators
       UndecidableInstances
+      ImportQualifiedPost
   ghc-options: -threaded -O2 "-with-rtsopts=-N -T -I0"
   build-depends:
       MonadRandom
@@ -983,6 +985,7 @@ test-suite spec
       TypeFamilies
       TypeOperators
       UndecidableInstances
+      ImportQualifiedPost
   ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
   build-depends:
       MonadRandom

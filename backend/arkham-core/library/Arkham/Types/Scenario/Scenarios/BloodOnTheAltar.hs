@@ -285,8 +285,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
              ]
 
         let
-          locations' = mapFromList $ map
-            ((LocationName . toName) &&& pure)
+          locations' = locationNameMap
             [ Locations.villageCommons
             , bishopsBrook
             , burnedRuins
@@ -299,10 +298,8 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         BloodOnTheAltar . (`with` metadata) <$> runMessage
           msg
           (attrs
-          & locationsL
-          .~ locations'
-          & deckL
-          ?~ PotentialSacrifices potentialSacrifices
+          & (locationsL .~ locations')
+          & (deckL ?~ PotentialSacrifices potentialSacrifices)
           )
       ResolveToken _ Tablet iid -> do
         lid <- getId @LocationId iid

@@ -16,13 +16,11 @@ newtype NightOfTheZealot = NightOfTheZealot CampaignAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 nightOfTheZealot :: Difficulty -> NightOfTheZealot
-nightOfTheZealot difficulty = NightOfTheZealot
-  (baseAttrs
-    (CampaignId "01")
-    "Night of the Zealot"
-    difficulty
-    (nightOfTheZealotChaosBagContents difficulty)
-  )
+nightOfTheZealot difficulty = NightOfTheZealot $ baseAttrs
+  (CampaignId "01")
+  "Night of the Zealot"
+  difficulty
+  (nightOfTheZealotChaosBagContents difficulty)
 
 nightOfTheZealotChaosBagContents :: Difficulty -> [Token]
 nightOfTheZealotChaosBagContents difficulty =

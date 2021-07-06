@@ -218,8 +218,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         ]
 
       let
-        locations' = mapFromList $ map
-          ((LocationName . toName) &&& pure)
+        locations' = locationNameMap
           [ Locations.museumEntrance
           , Locations.museumHalls
           , securityOffice

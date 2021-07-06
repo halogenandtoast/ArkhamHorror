@@ -26,7 +26,7 @@
             :key="investigator.contents.id"
             class="investigator-name"
           >
-            {{investigator.contents.name}}
+            {{investigator.contents.name.title}}
           </span>
         </div>
       </div>

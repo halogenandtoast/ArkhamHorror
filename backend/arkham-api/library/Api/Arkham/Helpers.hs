@@ -5,7 +5,6 @@ import Import hiding (appLogger)
 
 import Arkham.PlayerCard
 import Arkham.Types.Card
-import Arkham.Types.Card.Id
 import Arkham.Types.Classes.HasQueue
 import Arkham.Types.Game
 import Arkham.Types.InvestigatorId
@@ -17,7 +16,6 @@ import Control.Monad.Random (MonadRandom(..), StdGen, mkStdGen)
 import qualified Data.ByteString.Lazy as BSL
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Map.Strict as Map
-import Data.UUID.V4
 import Json
 
 newtype GameAppT a = GameAppT { unGameAppT :: ReaderT GameApp IO a }
@@ -75,9 +73,7 @@ loadDecklistCards :: ArkhamDBDecklist -> IO [PlayerCard]
 loadDecklistCards decklist =
   flip HashMap.foldMapWithKey (slots decklist) $ \cardCode count' ->
     if cardCode /= "01000"
-      then replicateM
-        count'
-        ((<$> (CardId <$> nextRandom)) (lookupPlayerCard cardCode))
+      then replicateM count' (genPlayerCard (lookupPlayerCardDef cardCode))
       else pure []
 
 loadDecklist :: ArkhamDeck -> IO (InvestigatorId, [PlayerCard])

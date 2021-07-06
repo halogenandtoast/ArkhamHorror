@@ -22,7 +22,6 @@ import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
@@ -240,8 +239,7 @@ instance
           map snd inPlayLocations
             <> map toCardDef divergingPaths
             <> map toCardDef alteredPaths
-        locations' =
-          mapFromList $ map ((LocationName . toName) &&& pure) locations
+        locations' = locationNameMap locations
         token = case scenarioDifficulty attrs of
           Easy -> MinusThree
           Standard -> MinusFive

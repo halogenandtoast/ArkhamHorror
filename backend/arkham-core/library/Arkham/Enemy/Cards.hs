@@ -170,7 +170,7 @@ theMaskedHunter = (enemy
 
 wolfManDrew :: CardDef
 wolfManDrew =
-  (enemy "01137" ("\"Wolf-Man\" Drew" <:> "The Cannibal") TheMidnightMasks 1)
+  (enemy "01137" ("\"Wolf-Man\" Drew" <:> "The Cannibal") CultOfUmordhoth 1)
     { cdCardTraits = setFromList [Humanoid, Cultist]
     , cdVictoryPoints = Just 1
     , cdUnique = True
@@ -178,7 +178,7 @@ wolfManDrew =
 
 hermanCollins :: CardDef
 hermanCollins =
-  (enemy "01138" ("Herman Collins" <:> "The Undertaker") TheMidnightMasks 1)
+  (enemy "01138" ("Herman Collins" <:> "The Undertaker") CultOfUmordhoth 1)
     { cdCardTraits = setFromList [Humanoid, Cultist]
     , cdVictoryPoints = Just 1
     , cdUnique = True
@@ -186,7 +186,7 @@ hermanCollins =
 
 peterWarren :: CardDef
 peterWarren =
-  (enemy "01139" ("Peter Warren" <:> "The Occult Professor") TheMidnightMasks 1)
+  (enemy "01139" ("Peter Warren" <:> "The Occult Professor") CultOfUmordhoth 1)
     { cdCardTraits = setFromList [Humanoid, Cultist]
     , cdVictoryPoints = Just 1
     , cdUnique = True
@@ -194,7 +194,7 @@ peterWarren =
 
 victoriaDevereux :: CardDef
 victoriaDevereux =
-  (enemy "01140" ("Victoria Devereux" <:> "The Collector") TheMidnightMasks 1)
+  (enemy "01140" ("Victoria Devereux" <:> "The Collector") CultOfUmordhoth 1)
     { cdCardTraits = setFromList [Humanoid, Cultist]
     , cdVictoryPoints = Just 1
     , cdUnique = True
@@ -202,7 +202,7 @@ victoriaDevereux =
 
 ruthTurner :: CardDef
 ruthTurner =
-  (enemy "01141" ("Ruth Turner" <:> "The Mortician") TheMidnightMasks 1)
+  (enemy "01141" ("Ruth Turner" <:> "The Mortician") CultOfUmordhoth 1)
     { cdCardTraits = setFromList [Humanoid, Cultist]
     , cdVictoryPoints = Just 1
     , cdUnique = True

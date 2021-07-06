@@ -1,4 +1,5 @@
 import { JsonDecoder } from 'ts.data.json';
+import { Name, nameDecoder } from '@/arkham/types/Name';
 import {
   Card,
   PlayerCardContents,
@@ -23,7 +24,7 @@ export const classSymbolDecoder = JsonDecoder.oneOf<ClassSymbol>([
 ], 'ClassSymbol');
 
 export interface InvestigatorContents {
-  name: string;
+  name: Name;
   id: string;
   class: ClassSymbol;
   health: number;
@@ -52,7 +53,7 @@ export interface InvestigatorContents {
 }
 
 export const investigatorContentsDecoder = JsonDecoder.object<InvestigatorContents>({
-  name: JsonDecoder.string,
+  name: nameDecoder,
   id: JsonDecoder.string,
   class: classSymbolDecoder,
   health: JsonDecoder.number,

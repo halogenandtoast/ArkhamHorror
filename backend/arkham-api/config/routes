@@ -15,5 +15,6 @@
           /raw ApiV1ArkhamGameRawR PUT
           /join ApiV1ArkhamPendingGameR PUT
           /decks ApiV1ArkhamGameDecksR PUT
+          /undo ApiV1ArkhamGameUndoR PUT
 
 !/ StaticR Static appStatic

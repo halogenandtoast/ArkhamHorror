@@ -25,8 +25,8 @@ import Arkham.Types.Card.Id
 import Arkham.Types.ChaosBag as X
 import qualified Arkham.Types.ChaosBag as ChaosBag
 import Arkham.Types.ClassSymbol
-import Arkham.Types.Classes as X
-  hiding (getCount, getId, getModifiersFor, getTokenValue)
+import Arkham.Types.Classes as X hiding
+  (getCount, getId, getModifiersFor, getTokenValue)
 import qualified Arkham.Types.Classes as Arkham
 import Arkham.Types.Cost as X
 import Arkham.Types.Difficulty
@@ -59,7 +59,7 @@ import Arkham.Types.Stats as X
 import Arkham.Types.Target as X
 import Arkham.Types.Token as X
 import Arkham.Types.Window as X
-import Control.Lens as X ((^?!), set)
+import Control.Lens as X (set, (^?!))
 import Control.Monad.Fail as X
 import Control.Monad.State as X (get)
 import Control.Monad.State hiding (replicateM)
@@ -458,7 +458,9 @@ newGame investigator = do
   scenario' <- testScenario "00000" id
   seed <- liftIO getRandom
   pure $ Game
-    { gameRoundMessageHistory = []
+    { gameParams = GameParams (Left "00000") 1 mempty Easy -- Not used in tests
+    , gameChoices = []
+    , gameRoundMessageHistory = []
     , gamePhaseMessageHistory = []
     , gameSeed = seed
     , gameInitialSeed = seed
@@ -494,6 +496,5 @@ newGame investigator = do
     , gamePlayerTurnOrder = [investigatorId]
     , gameVictoryDisplay = mempty
     , gameQuestion = mempty
-    , gameHash = UUID.nil
     }
   where investigatorId = toId investigator

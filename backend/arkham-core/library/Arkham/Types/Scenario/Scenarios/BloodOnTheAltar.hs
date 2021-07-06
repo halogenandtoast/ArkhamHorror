@@ -17,6 +17,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Exception
+import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
@@ -196,7 +197,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           False
 
         (encounterCardsToPutUnderneath, encounterDeck) <-
-          splitAt 3 <$> buildEncounterDeckExcluding
+          splitAt 3 . unDeck <$> buildEncounterDeckExcluding
             [ Enemies.silasBishop
             , Locations.theHiddenChamber
             , Assets.keyToTheChamber
@@ -266,7 +267,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
 
         pushAll
           $ [ story investigatorIds bloodOnTheAltarIntro
-            , SetEncounterDeck encounterDeck
+            , SetEncounterDeck (Deck encounterDeck)
             , AddAgenda "02196"
             ]
           <> [ PlaceDoomOnAgenda | delayedOnTheirWayToDunwich ]

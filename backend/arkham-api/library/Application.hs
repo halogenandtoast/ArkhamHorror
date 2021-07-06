@@ -55,6 +55,7 @@ import WaiAppStatic.Types (StaticSettings(..), unsafeToPiece)
 import Api.Handler.Arkham.Decks
 import Api.Handler.Arkham.Games
 import Api.Handler.Arkham.PendingGames
+import Api.Handler.Arkham.Undo
 import Base.Api.Handler.Authentication
 import Base.Api.Handler.CurrentUser
 import Base.Api.Handler.Registration

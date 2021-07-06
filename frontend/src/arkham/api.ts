@@ -37,8 +37,8 @@ export const newDeck = (
 export const deleteDeck = (deckId: string) => api
   .delete(`arkham/decks/${deckId}`);
 
-export const updateGame = (gameId: string, choice: number, gameHash: string) => api
-  .put(`arkham/games/${gameId}`, { choice, gameHash })
+export const updateGame = (gameId: string, choice: number) => api
+  .put(`arkham/games/${gameId}`, { choice })
   .then((resp) => gameDecoder.decodePromise(resp.data));
 
 export const upgradeDeck = (gameId: string, deckUrl?: string) => api
@@ -75,3 +75,6 @@ export const newGame = (
 export const joinGame = (gameId: string, deckId: string) => api
   .put(`arkham/games/${gameId}/join`, { deckId })
   .then((resp) => gameDecoder.decodePromise(resp.data));
+
+export const undoChoice = (gameId: string) => api
+  .put(`arkham/games/${gameId}/undo`)

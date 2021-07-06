@@ -5,11 +5,12 @@ module Api.Handler.Arkham.Decks
   , putApiV1ArkhamGameDecksR
   ) where
 
-import Import hiding ((==.), delete, on)
+import Import hiding (delete, on, (==.))
 
 import Api.Arkham.Helpers
 import Arkham.Game
 import Arkham.Types.Game
+import Arkham.Types.Helpers
 import Arkham.Types.Message
 import Control.Monad.Random (mkStdGen)
 import Database.Esqueleto.Experimental
@@ -69,7 +70,7 @@ putApiV1ArkhamGameDecksR gameId = do
         Left err -> error $ show err
         Right decklist -> do
           cards <- liftIO $ loadDecklistCards decklist
-          pure $ UpgradeDeck investigatorId cards
+          pure $ UpgradeDeck investigatorId (Deck cards)
 
   gameRef <- newIORef arkhamGameCurrentData
   queueRef <- newIORef (msg : arkhamGameQueue)
@@ -81,9 +82,9 @@ putApiV1ArkhamGameDecksR gameId = do
   writeChannel <- getChannel gameId
   liftIO $ atomically $ writeTChan
     writeChannel
-    (encode
-      (Entity gameId (ArkhamGame arkhamGameName ge updatedQueue updatedMessages)
-      )
+    (encode $ GameUpdate $ Entity
+      gameId
+      (ArkhamGame arkhamGameName ge updatedQueue updatedMessages)
     )
   void $ runDB
     (replace gameId (ArkhamGame arkhamGameName ge updatedQueue updatedMessages))

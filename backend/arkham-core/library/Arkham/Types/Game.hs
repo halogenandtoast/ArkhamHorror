@@ -140,12 +140,25 @@ class HasMessageLogger a where
 getGame :: (HasGame env, MonadReader env m) => m Game
 getGame = view gameL
 
+data GameChoice = AskChoice InvestigatorId Int
+  deriving stock (Eq, Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+data GameParams = GameParams
+  (Either ScenarioId CampaignId)
+  Int
+  (HashMap Int (Investigator, [PlayerCard]))
+  Difficulty
+  deriving stock (Eq, Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 data Game = Game
   { gameRoundMessageHistory :: [Message]
   , gamePhaseMessageHistory :: [Message]
   , gameInitialSeed :: Int
   , gameSeed :: Int
-  , gameHash :: UUID
+  , gameChoices :: [GameChoice]
+  , gameParams :: GameParams
 
   -- Active Scenario/Campaign
   , gameMode :: GameMode
@@ -190,6 +203,9 @@ data Game = Game
   , gameQuestion :: HashMap InvestigatorId Question
   }
   deriving stock (Eq, Show, Generic)
+
+choicesL :: Lens' Game [GameChoice]
+choicesL = lens gameChoices $ \m x -> m { gameChoices = x }
 
 playerCountL :: Lens' Game Int
 playerCountL = lens gamePlayerCount $ \m x -> m { gamePlayerCount = x }
@@ -313,11 +329,12 @@ withModifiers a = do
 
 instance ToJSON Game where
   toJSON g@Game {..} = object
-    [ "roundMessageHistory" .= toJSON gameRoundMessageHistory
+    [ "choices" .= toJSON gameChoices
+    , "params" .= toJSON gameParams
+    , "roundMessageHistory" .= toJSON gameRoundMessageHistory
     , "phaseMessageHistory" .= toJSON gamePhaseMessageHistory
     , "initialSeed" .= toJSON gameInitialSeed
     , "seed" .= toJSON gameSeed
-    , "hash" .= toJSON gameHash
     , "mode" .= toJSON gameMode
     , "locations" .= toJSON (runReader (traverse withModifiers gameLocations) g)
     , "investigators"
@@ -2012,8 +2029,7 @@ runGameMessage msg g = case msg of
       push (PlacedLocation (toName location) (toCardCode cardDef) lid)
       pure $ g & locationsL . at lid ?~ location
     else pure g
-  SetEncounterDeck encounterDeck ->
-    pure $ g & encounterDeckL .~ Deck encounterDeck
+  SetEncounterDeck encounterDeck -> pure $ g & encounterDeckL .~ encounterDeck
   RemoveEnemy eid -> pure $ g & enemiesL %~ deleteMap eid
   When (RemoveLocation lid) -> g <$ push
     (CheckWindow (g ^. leadInvestigatorIdL) [WhenLocationLeavesPlay lid])

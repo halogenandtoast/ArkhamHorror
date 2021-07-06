@@ -25,7 +25,7 @@ spec = describe "Drawn to the flame" $ do
         onWingsOfDarkness <- genEncounterCard Cards.onWingsOfDarkness
         gameTest
             investigator
-            [ SetEncounterDeck [onWingsOfDarkness]
+            [ SetEncounterDeck (Deck [onWingsOfDarkness])
             , SetTokens [Zero]
             , placedLocation startLocation
             , placedLocation centralLocation

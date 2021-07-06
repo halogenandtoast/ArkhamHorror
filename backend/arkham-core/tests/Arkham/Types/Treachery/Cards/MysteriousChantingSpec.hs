@@ -16,7 +16,7 @@ spec = describe "Mysterious Chanting" $ do
     (location1, location2) <- testConnectedLocations id id
     gameTest
         investigator
-        [ SetEncounterDeck [mysteriousChanting, mysteriousChanting]
+        [ SetEncounterDeck (Deck [mysteriousChanting, mysteriousChanting])
         , placedLocation location1
         , placedLocation location2
         , enemySpawn location1 cultist

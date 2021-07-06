@@ -2,7 +2,7 @@
   <div class="player-info">
     <ul class='tabs__header'>
       <li v-for='(player, index) in players'
-        :key='player.contents.name'
+        :key='player.contents.name.title'
         @click='selectTab(index)'
         :class='tabClass(index)'
       >
@@ -15,7 +15,7 @@
       :index="index"
       :selectedTab="selectedTab"
       :playerClass="player.contents.class"
-      :title="player.contents.name"
+      :title="player.contents.name.title"
       :investigatorId="index"
       :activePlayer="player.contents.id == activePlayerId"
     >

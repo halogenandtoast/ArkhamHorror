@@ -5,6 +5,7 @@ module Arkham.Types.Scenario.Scenarios.UndimensionedAndUnseen
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Assets
 import Arkham.EncounterCard
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
@@ -189,7 +190,7 @@ instance
       standalone <- getIsStandalone
       investigatorIds <- getInvestigatorIds
       encounterDeck <- buildEncounterDeckExcluding
-        [Enemies.broodOfYogSothoth]
+        [Enemies.broodOfYogSothoth, Assets.esotericFormula]
         [ EncounterSet.UndimensionedAndUnseen
         , EncounterSet.Whippoorwills
         , EncounterSet.BeastThralls

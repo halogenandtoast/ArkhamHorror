@@ -197,7 +197,10 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
 
         (encounterCardsToPutUnderneath, encounterDeck) <-
           splitAt 3 <$> buildEncounterDeckExcluding
-            [Enemies.silasBishop]
+            [ Enemies.silasBishop
+            , Locations.theHiddenChamber
+            , Assets.keyToTheChamber
+            ]
             ([ EncounterSet.BloodOnTheAltar
              , EncounterSet.Dunwich
              , EncounterSet.Whippoorwills

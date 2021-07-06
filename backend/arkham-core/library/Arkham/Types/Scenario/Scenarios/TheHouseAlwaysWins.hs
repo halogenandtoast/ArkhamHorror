@@ -73,7 +73,8 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
   runMessage msg s@(TheHouseAlwaysWins attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds
-      encounterDeck <- buildEncounterDeck
+      encounterDeck <- buildEncounterDeckExcluding
+        [Assets.peterClover]
         [ EncounterSet.TheHouseAlwaysWins
         , EncounterSet.BadLuck
         , EncounterSet.NaomisCrew

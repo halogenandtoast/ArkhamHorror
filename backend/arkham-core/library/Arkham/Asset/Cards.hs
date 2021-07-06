@@ -767,6 +767,12 @@ adamLynch =
     , cdUnique = True
     }
 
+charisma3 :: CardDef
+charisma3 = permanent $ (asset "02158" "Charisma" 0 Neutral)
+  { cdCardTraits = singleton Talent
+  , cdLevel = 3
+  }
+
 keenEye :: CardDef
 keenEye = (asset "07152" "Keen Eye" 2 Guardian)
   { cdCardTraits = setFromList [Talent]
@@ -802,7 +808,6 @@ helplessPassenger =
 keenEye3 :: CardDef
 keenEye3 = permanent $ (asset "02185" "Keen Eye" 0 Guardian)
   { cdCardTraits = setFromList [Talent]
-  , cdPermanent = True
   , cdLevel = 3
   }
 

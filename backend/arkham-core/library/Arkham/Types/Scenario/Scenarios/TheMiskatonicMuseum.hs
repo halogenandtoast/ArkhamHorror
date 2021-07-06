@@ -186,7 +186,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       let exhibitDeck = top <> bottom'
 
       encounterDeck <- buildEncounterDeckExcluding
-        [Treacheries.shadowSpawned]
+        [Treacheries.shadowSpawned, Assets.haroldWalsted, Assets.adamLynch]
         [ EncounterSet.TheMiskatonicMuseum
         , EncounterSet.BadLuck
         , EncounterSet.Sorcery

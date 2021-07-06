@@ -83,7 +83,8 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            , EncounterSet.AgentsOfCthulhu
            , EncounterSet.AgentsOfHastur
            ]
-      encounterDeck <- buildEncounterDeck
+      encounterDeck <- buildEncounterDeckExcluding
+        [Enemies.umordhoth]
         [ EncounterSet.TheDevourerBelow
         , EncounterSet.AncientEvils
         , EncounterSet.StrikingFear

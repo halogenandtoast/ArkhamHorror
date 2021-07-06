@@ -3,6 +3,7 @@ module Arkham.Types.Scenario.Scenarios.ExtracurricularActivity where
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Assets
+import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
@@ -71,7 +72,11 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       investigatorIds <- getInvestigatorIds
       completedTheHouseAlwaysWins <-
         elem "02062" . map unCompletedScenarioId <$> getSetList ()
-      encounterDeck <- buildEncounterDeck
+      encounterDeck <- buildEncounterDeckExcluding
+        [ Enemies.theExperiment
+        , Assets.jazzMulligan
+        , Assets.alchemicalConcoction
+        ]
         [ EncounterSet.ExtracurricularActivity
         , EncounterSet.Sorcery
         , EncounterSet.TheBeyond

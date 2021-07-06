@@ -515,7 +515,7 @@ getFastIsPlayable attrs windows c@(PlayerCard MkPlayerCard {..}) = do
   canBecomeFast modifiers = foldr applyModifier False modifiers
   applyModifier (CanBecomeFast (mcardType, traits)) _
     | maybe True (== cdCardType pcDef) mcardType
-      && not (null (setFromList traits `intersect` toTraits pcDef))
+      && notNull (setFromList traits `intersect` toTraits pcDef)
     = True
   applyModifier _ val = val
 
@@ -534,9 +534,7 @@ getModifiedCardCost attrs (PlayerCard MkPlayerCard {..}) = do
     Just DynamicCost -> 0
     Nothing -> 0
   applyModifier (ReduceCostOf traits m) n
-    | not (null (setFromList traits `intersection` toTraits pcDef)) = max
-      0
-      (n - m)
+    | notNull (setFromList traits `intersection` toTraits pcDef) = max 0 (n - m)
   applyModifier (ReduceCostOfCardType cardType m) n
     | cardType == cdCardType pcDef = max 0 (n - m)
   applyModifier _ n = n
@@ -549,9 +547,7 @@ getModifiedCardCost attrs (EncounterCard MkEncounterCard {..}) = do
     modifiers
  where
   applyModifier (ReduceCostOf traits m) n
-    | not (null (setFromList traits `intersection` toTraits ecDef)) = max
-      0
-      (n - m)
+    | notNull (setFromList traits `intersection` toTraits ecDef) = max 0 (n - m)
   applyModifier _ n = n
 
 getIsPlayable
@@ -1062,7 +1058,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               (health - 1)
               sanity
             mustAssignDamageToAssets =
-              strategy == DamageAssetsFirst && not (null healthDamageableAssets)
+              strategy == DamageAssetsFirst && notNull healthDamageableAssets
           pure
             $ [ Run
                   [ InvestigatorDamage investigatorId source 1 0
@@ -1093,7 +1089,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               health
               (sanity - 1)
             mustAssignDamageToAssets =
-              strategy == DamageAssetsFirst && not (null sanityDamageableAssets)
+              strategy == DamageAssetsFirst && notNull sanityDamageableAssets
           pure
             $ [ Run
                   [ InvestigatorDamage investigatorId source 0 1
@@ -1497,10 +1493,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                  || isScenarioAbility
                  )
           _ -> False
-    if not (null committableCards) || not (null committedCardIds) || not
-      (null actions)
-    then
-      push
+    if notNull committableCards || notNull committedCardIds || notNull actions
+      then push
         (SkillTestAsk $ chooseOne
           iid
           (map
@@ -1517,8 +1511,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           <> [triggerMessage]
           )
         )
-    else
-      push (SkillTestAsk $ chooseOne iid [triggerMessage])
+      else push (SkillTestAsk $ chooseOne iid [triggerMessage])
     pure a
   BeforeSkillTest iid skillType | iid /= investigatorId -> do
     locationId <- getId iid
@@ -1528,7 +1521,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       committedCardCodes <- mapSet unCommittedCardCode <$> getSet ()
       let
         beginMessage = BeforeSkillTest iid skillType
-        committableCards = if not (null committedCardIds)
+        committableCards = if notNull committedCardIds
           then []
           else flip filter investigatorHand $ \case
             PlayerCard MkPlayerCard {..} ->
@@ -1550,7 +1543,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                    || isScenarioAbility
                    )
             _ -> False
-      when (not (null committableCards) || not (null committedCardIds)) $ push
+      when (notNull committableCards || notNull committedCardIds) $ push
         (SkillTestAsk $ chooseOne
           investigatorId
           (map
@@ -1573,7 +1566,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   CheckWindow iid windows | iid == investigatorId -> do
     actions <- fmap concat <$> for windows $ \window -> getActions iid window ()
     playableCards <- getPlayableCards a windows
-    if not (null playableCards) || not (null actions)
+    if notNull playableCards || notNull actions
       then if any isForced actions
         then
           a <$ push
@@ -1671,7 +1664,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   ]
               | card <- cards
               , null traits'
-                || not (null $ traits' `intersection` toTraits card)
+                || notNull (traits' `intersection` toTraits card)
               ]
           push
             (chooseOne iid $ if null choices

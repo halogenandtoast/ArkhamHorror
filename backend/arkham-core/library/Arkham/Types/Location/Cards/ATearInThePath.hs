@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.ATearInThePath
   ( aTearInThePath
   , ATearInThePath(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.SecurityOffice_128
   ( securityOffice_128
   , SecurityOffice_128(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

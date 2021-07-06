@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.ExhibitHallRestrictedHall
   ( exhibitHallRestrictedHall
   , ExhibitHallRestrictedHall(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

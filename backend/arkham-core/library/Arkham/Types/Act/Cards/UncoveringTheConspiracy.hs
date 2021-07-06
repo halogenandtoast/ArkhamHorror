@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.UncoveringTheConspiracy
   ( UncoveringTheConspiracy(..)
   , uncoveringTheConspiracy
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

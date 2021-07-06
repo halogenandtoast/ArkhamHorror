@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Helpers
   ( module X
   , module Arkham.Types.Location.Helpers
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

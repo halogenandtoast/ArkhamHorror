@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.LightOfAforgomon
   ( LightOfAforgomon(..)
   , lightOfAforgomon
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

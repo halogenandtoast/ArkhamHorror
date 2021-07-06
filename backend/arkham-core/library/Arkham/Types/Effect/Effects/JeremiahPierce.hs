@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.JeremiahPierce
   ( jeremiahPierce
   , JeremiahPierce(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

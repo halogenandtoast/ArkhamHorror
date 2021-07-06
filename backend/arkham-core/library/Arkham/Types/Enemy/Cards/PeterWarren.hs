@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.PeterWarren
   ( PeterWarren(..)
   , peterWarren
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

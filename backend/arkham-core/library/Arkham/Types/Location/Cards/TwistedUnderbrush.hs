@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.TwistedUnderbrush
   ( TwistedUnderbrush(..)
   , twistedUnderbrush
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

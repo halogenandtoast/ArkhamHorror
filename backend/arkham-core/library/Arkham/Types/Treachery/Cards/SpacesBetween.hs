@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.SpacesBetween
   ( spacesBetween
   , SpacesBetween(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

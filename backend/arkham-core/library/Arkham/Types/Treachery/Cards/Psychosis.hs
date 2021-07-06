@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.Psychosis
   ( Psychosis(..)
   , psychosis
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -3,8 +3,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Entity.Arkham.Game
   ( module Entity.Arkham.Game
-  )
-where
+  ) where
 
 import Arkham.Types.Game
 import Arkham.Types.Message

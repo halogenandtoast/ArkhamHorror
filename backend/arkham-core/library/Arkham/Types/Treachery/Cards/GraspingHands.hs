@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.GraspingHands
   ( GraspingHands(..)
   , graspingHands
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

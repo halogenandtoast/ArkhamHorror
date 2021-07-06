@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Bandolier
   ( Bandolier(..)
   , bandolier
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

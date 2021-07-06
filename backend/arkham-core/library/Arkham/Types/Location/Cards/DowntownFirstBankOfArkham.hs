@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.DowntownFirstBankOfArkham
   ( DowntownFirstBankOfArkham(..)
   , downtownFirstBankOfArkham
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

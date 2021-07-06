@@ -1,9 +1,8 @@
 module Api.Handler.Arkham.PendingGames
   ( putApiV1ArkhamPendingGameR
-  )
-where
+  ) where
 
-import Import hiding (on, (==.))
+import Import hiding ((==.), on)
 
 import Api.Arkham.Helpers
 import Arkham.Game

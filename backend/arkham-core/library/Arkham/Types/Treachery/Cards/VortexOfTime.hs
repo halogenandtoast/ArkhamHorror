@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.VortexOfTime
   ( vortexOfTime
   , VortexOfTime(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

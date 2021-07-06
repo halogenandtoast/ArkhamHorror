@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.MedicalTexts
   ( MedicalTexts(..)
   , medicalTexts
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

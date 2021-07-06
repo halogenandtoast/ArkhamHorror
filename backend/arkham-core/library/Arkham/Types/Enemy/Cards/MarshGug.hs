@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.MarshGug
   ( marshGug
   , MarshGug(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

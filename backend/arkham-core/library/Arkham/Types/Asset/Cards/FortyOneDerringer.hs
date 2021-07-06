@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.FortyOneDerringer
   ( FortyOneDerringer(..)
   , fortyOneDerringer
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.SearchingForTheTome
   ( SearchingForTheTome(..)
   , searchingForTheTome
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

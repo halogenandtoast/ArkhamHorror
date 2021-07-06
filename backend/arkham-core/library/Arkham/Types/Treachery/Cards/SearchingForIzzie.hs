@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.SearchingForIzzie
   ( SearchingForIzzie(..)
   , searchingForIzzie
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

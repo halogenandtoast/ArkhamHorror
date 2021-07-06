@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.TheyMustBeDestroyed
   ( TheyMustBeDestroyed(..)
   , theyMustBeDestroyed
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

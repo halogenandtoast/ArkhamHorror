@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.ServantOfManyMouths
   ( ServantOfManyMouths(..)
   , servantOfManyMouths
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

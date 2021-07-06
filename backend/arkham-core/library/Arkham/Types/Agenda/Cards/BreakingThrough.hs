@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.BreakingThrough
   ( BreakingThrough
   , breakingThrough
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

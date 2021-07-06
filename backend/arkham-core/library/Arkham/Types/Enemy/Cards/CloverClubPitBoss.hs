@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.CloverClubPitBoss
   ( CloverClubPitBoss(..)
   , cloverClubPitBoss
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

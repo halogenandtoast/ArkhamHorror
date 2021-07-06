@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.DevilsHopYard_253
   ( devilsHopYard_253
   , DevilsHopYard_253(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

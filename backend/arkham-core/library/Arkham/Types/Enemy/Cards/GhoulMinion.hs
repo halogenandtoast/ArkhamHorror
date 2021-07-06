@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.GhoulMinion
   ( ghoulMinion
   , GhoulMinion(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

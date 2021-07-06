@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.VictoriaDevereux
   ( VictoriaDevereux(..)
   , victoriaDevereux
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

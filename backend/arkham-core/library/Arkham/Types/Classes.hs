@@ -2,8 +2,7 @@
 module Arkham.Types.Classes
   ( module Arkham.Types.Classes
   , module X
-  )
-where
+  ) where
 
 import Arkham.Prelude hiding (to)
 

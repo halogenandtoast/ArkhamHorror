@@ -1,7 +1,6 @@
 module Arkham.Types.Act.Cards
   ( module X
-  )
-where
+  ) where
 
 import Arkham.Types.Act.Cards.AfterHours as X
 import Arkham.Types.Act.Cards.AllIn as X

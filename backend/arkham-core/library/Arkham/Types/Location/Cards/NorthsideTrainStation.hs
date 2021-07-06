@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.NorthsideTrainStation
   ( NorthsideTrainStation(..)
   , northsideTrainStation
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

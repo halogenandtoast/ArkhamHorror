@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.FindingAWayInside
   ( FindingAWayInside(..)
   , findingAWayInside
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

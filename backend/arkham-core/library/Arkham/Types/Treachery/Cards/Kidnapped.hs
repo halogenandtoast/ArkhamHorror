@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.Kidnapped
   ( kidnapped
   , Kidnapped(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

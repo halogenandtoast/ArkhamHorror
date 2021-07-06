@@ -1,13 +1,12 @@
 module Arkham.Types.Investigator.Cards.DaisyWalker
   ( DaisyWalker(..)
   , daisyWalker
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message

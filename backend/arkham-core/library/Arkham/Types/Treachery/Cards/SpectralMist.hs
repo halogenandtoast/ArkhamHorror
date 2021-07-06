@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.SpectralMist
   ( SpectralMist(..)
   , spectralMist
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

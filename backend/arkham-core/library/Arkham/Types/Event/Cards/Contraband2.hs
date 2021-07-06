@@ -1,8 +1,7 @@
 module Arkham.Types.Event.Cards.Contraband2
   ( contraband2
   , Contraband2(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

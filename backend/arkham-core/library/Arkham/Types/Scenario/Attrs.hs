@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Attrs
   ( module Arkham.Types.Scenario.Attrs
   , module X
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

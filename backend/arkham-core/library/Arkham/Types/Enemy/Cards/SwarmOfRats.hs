@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.SwarmOfRats
   ( SwarmOfRats(..)
   , swarmOfRats
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

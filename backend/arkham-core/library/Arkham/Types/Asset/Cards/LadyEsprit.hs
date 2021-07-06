@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.LadyEsprit
   ( LadyEsprit(..)
   , ladyEsprit
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

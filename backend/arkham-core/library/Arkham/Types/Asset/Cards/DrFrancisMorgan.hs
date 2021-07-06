@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.DrFrancisMorgan
   ( drFrancisMorgan
   , DrFrancisMorgan(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

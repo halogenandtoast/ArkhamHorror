@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.BaseballBat
   ( BaseballBat(..)
   , baseballBat
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

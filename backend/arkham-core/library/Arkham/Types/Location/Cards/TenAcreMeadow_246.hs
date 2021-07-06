@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.TenAcreMeadow_246
   ( tenAcreMeadow_246
   , TenAcreMeadow_246(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

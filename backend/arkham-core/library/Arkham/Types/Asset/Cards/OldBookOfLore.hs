@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.OldBookOfLore
   ( OldBookOfLore(..)
   , oldBookOfLore
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

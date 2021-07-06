@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.BishopsBrook_202
   ( bishopsBrook_202
   , BishopsBrook_202(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

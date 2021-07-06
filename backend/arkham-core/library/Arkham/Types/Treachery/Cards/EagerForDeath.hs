@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.EagerForDeath
   ( EagerForDeath(..)
   , eagerForDeath
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

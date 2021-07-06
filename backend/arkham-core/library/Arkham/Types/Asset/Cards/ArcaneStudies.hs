@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.ArcaneStudies
   ( ArcaneStudies(..)
   , arcaneStudies
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.FirstAid
   ( FirstAid(..)
   , firstAid
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

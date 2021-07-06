@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.InEveryShadow
   ( InEveryShadow(..)
   , inEveryShadow
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

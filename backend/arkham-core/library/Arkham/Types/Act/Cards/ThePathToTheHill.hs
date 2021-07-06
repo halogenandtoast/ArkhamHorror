@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.ThePathToTheHill
   ( ThePathToTheHill(..)
   , thePathToTheHill
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

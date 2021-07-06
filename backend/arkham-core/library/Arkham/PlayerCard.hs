@@ -5,8 +5,7 @@ module Arkham.PlayerCard
   , lookupPlayerCardName
   , allPlayerCards
   , basePlayerCard
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

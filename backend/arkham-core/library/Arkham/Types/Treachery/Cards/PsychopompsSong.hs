@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.PsychopompsSong
   ( psychopompsSong
   , PsychopompsSong(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

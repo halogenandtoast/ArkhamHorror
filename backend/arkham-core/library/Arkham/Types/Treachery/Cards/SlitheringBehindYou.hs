@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.SlitheringBehindYou
   ( SlitheringBehindYou(..)
   , slitheringBehindYou
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

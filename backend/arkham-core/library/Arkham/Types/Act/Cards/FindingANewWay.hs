@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.FindingANewWay
   ( FindingANewWay(..)
   , findingANewWay
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

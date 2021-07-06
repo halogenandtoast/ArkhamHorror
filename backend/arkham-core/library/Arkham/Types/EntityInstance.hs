@@ -1,7 +1,6 @@
 module Arkham.Types.EntityInstance
   ( module Arkham.Types.EntityInstance
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

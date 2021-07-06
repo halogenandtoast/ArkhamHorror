@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.OutOfThisWorld
   ( OutOfThisWorld(..)
   , outOfThisWorld
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

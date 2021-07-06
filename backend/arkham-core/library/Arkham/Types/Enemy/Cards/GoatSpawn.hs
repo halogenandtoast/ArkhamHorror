@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.GoatSpawn
   ( goatSpawn
   , GoatSpawn(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.Lucky2
   ( lucky2
   , Lucky2(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

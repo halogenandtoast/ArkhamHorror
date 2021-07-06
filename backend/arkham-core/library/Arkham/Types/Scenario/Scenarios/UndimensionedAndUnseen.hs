@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.UndimensionedAndUnseen
   ( UndimensionedAndUnseen(..)
   , undimensionedAndUnseen
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

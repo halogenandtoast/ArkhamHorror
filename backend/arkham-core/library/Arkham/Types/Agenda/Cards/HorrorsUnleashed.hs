@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.HorrorsUnleashed
   ( HorrorsUnleashed(..)
   , horrorsUnleashed
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

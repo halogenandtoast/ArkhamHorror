@@ -5,8 +5,7 @@ module Arkham.EncounterCard
   , allEncounterCards
   , placeholderEnemy
   , placeholderTreachery
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

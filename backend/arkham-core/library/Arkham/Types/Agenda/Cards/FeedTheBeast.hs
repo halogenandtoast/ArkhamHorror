@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.FeedTheBeast
   ( FeedTheBeast(..)
   , feedTheBeast
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

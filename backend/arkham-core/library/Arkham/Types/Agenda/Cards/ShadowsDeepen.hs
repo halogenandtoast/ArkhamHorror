@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.ShadowsDeepen
   ( ShadowsDeepen(..)
   , shadowsDeepen
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

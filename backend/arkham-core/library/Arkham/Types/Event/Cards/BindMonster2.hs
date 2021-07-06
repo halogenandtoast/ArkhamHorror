@@ -1,8 +1,7 @@
 module Arkham.Types.Event.Cards.BindMonster2
   ( bindMonster2
   , BindMonster2(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

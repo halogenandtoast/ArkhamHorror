@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.OsbornsGeneralStore_207
   ( osbornsGeneralStore_207
   , OsbornsGeneralStore_207(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

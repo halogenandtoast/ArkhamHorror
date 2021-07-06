@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.PeterClover
   ( peterClover
   , PeterClover(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -37,7 +36,7 @@ instance
   getActions iid FastPlayerWindow (PeterClover attrs) = do
     lid <- getId @LocationId iid
     criminals <- getSet @EnemyId ([Criminal], lid)
-    pure [ UseAbility iid (ability attrs) | not (null criminals) ]
+    pure [ UseAbility iid (ability attrs) | notNull criminals ]
   getActions iid window (PeterClover attrs) = getActions iid window attrs
 
 instance HasModifiersFor env PeterClover where

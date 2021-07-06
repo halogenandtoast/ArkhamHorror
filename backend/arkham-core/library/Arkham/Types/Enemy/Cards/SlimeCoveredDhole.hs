@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.SlimeCoveredDhole
   ( SlimeCoveredDhole(..)
   , slimeCoveredDhole
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

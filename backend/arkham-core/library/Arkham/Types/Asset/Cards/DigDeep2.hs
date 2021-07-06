@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.DigDeep2
   ( DigDeep2(..)
   , digDeep2
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,7 +1,6 @@
 module Arkham.Types.Classes.HasQueue
   ( module Arkham.Types.Classes.HasQueue
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -15,7 +14,7 @@ withQueue
   => ([Message] -> ([Message], r))
   -> m r
 withQueue body = do
-  ref <- asks $ view messageQueue
+  ref <- view messageQueue
   liftIO $ atomicModifyIORef' ref body
 
 withQueue_
@@ -26,7 +25,7 @@ withQueue_ body = withQueue ((, ()) . body)
 
 fromQueue
   :: (MonadIO m, MonadReader env m, HasQueue env) => ([Message] -> r) -> m r
-fromQueue f = f <$> (readIORef =<< asks (view messageQueue))
+fromQueue f = f <$> (readIORef =<< view messageQueue)
 
 findFromQueue
   :: (MonadIO m, MonadReader env m, HasQueue env)
@@ -35,15 +34,16 @@ findFromQueue
 findFromQueue f = fromQueue (find f)
 
 popMessage :: (MonadIO m, MonadReader env m, HasQueue env) => m (Maybe Message)
-popMessage = withQueue $ \case
+popMessage = withQueue \case
   [] -> ([], Nothing)
   (m : ms) -> (ms, Just m)
 
 clearQueue :: (MonadIO m, MonadReader env m, HasQueue env) => m ()
 clearQueue = withQueue $ const ([], ())
 
-peekMessage :: (MonadIO m, MonadReader env m, HasQueue env) => m (Maybe Message)
-peekMessage = withQueue $ \case
+peekMessage
+  :: (MonadIO m, MonadReader env m, HasQueue env) => m (Maybe Message)
+peekMessage = withQueue \case
   [] -> ([], Nothing)
   (m : ms) -> (m : ms, Just m)
 
@@ -51,13 +51,13 @@ pushEnd :: (MonadIO m, MonadReader env m, HasQueue env) => Message -> m ()
 pushEnd = pushAllEnd . pure
 
 pushAllEnd :: (MonadIO m, MonadReader env m, HasQueue env) => [Message] -> m ()
-pushAllEnd msgs = withQueue $ \queue -> (queue <> msgs, ())
+pushAllEnd msgs = withQueue \queue -> (queue <> msgs, ())
 
 push :: (MonadIO m, MonadReader env m, HasQueue env) => Message -> m ()
 push = pushAll . pure
 
 pushAll :: (MonadIO m, MonadReader env m, HasQueue env) => [Message] -> m ()
-pushAll msgs = withQueue $ \queue -> (msgs <> queue, ())
+pushAll msgs = withQueue \queue -> (msgs <> queue, ())
 
 replaceMessage
   :: (MonadIO m, MonadReader env m, HasQueue env)
@@ -72,7 +72,7 @@ replaceMessageMatching
   => (Message -> Bool)
   -> (Message -> [Message])
   -> m ()
-replaceMessageMatching matcher replacer = withQueue $ \queue ->
+replaceMessageMatching matcher replacer = withQueue \queue ->
   let (before, after) = span matcher queue
   in
     case after of

@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.FacultyOfficesTheNightIsStillYoung
   ( facultyOfficesTheNightIsStillYoung
   , FacultyOfficesTheNightIsStillYoung(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

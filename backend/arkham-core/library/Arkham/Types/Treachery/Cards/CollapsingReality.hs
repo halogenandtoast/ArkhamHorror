@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.CollapsingReality
   ( collapsingReality
   , CollapsingReality(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

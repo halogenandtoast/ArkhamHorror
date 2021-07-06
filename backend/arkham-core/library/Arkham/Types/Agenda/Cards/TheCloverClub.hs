@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.TheCloverClub
   ( TheCloverClub(..)
   , theCloverClub
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.CursedSwamp
   ( CursedSwamp(..)
   , cursedSwamp
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.BaseballBat
   ( baseballBat
   , BaseballBat(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

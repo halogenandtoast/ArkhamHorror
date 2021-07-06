@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.Broadmoor
   ( Broadmoor(..)
   , broadmoor
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

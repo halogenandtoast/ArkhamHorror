@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.RexsCurse
   ( RexsCurse(..)
   , rexsCurse
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Flashlight
   ( Flashlight(..)
   , flashlight
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.AlmaHill
   ( AlmaHill(..)
   , almaHill
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

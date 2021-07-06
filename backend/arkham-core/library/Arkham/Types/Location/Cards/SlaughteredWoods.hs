@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.SlaughteredWoods
   ( slaugteredWoods
   , SlaughteredWoods(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

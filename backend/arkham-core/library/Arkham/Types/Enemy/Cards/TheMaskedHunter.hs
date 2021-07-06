@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.TheMaskedHunter
   ( TheMaskedHunter(..)
   , theMaskedHunter
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

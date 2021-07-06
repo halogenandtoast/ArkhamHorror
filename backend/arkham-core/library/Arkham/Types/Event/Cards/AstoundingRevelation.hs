@@ -1,8 +1,7 @@
 module Arkham.Types.Event.Cards.AstoundingRevelation
   ( astoundingRevelation
   , AstoundingRevelation(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

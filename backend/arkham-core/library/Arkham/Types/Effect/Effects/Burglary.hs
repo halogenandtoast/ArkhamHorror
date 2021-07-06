@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.Burglary
   ( burglary
   , Burglary(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

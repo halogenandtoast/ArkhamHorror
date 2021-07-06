@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.MobEnforcer
   ( MobEnforcer(..)
   , mobEnforcer
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

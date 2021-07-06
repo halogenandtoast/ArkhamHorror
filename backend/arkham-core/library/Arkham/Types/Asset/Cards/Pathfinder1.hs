@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Pathfinder1
   ( pathfinder1
   , Pathfinder1(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

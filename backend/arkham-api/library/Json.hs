@@ -1,8 +1,7 @@
 module Json
   ( module X
   , aesonOptions
-  )
-where
+  ) where
 
 import ClassyPrelude
 import Data.Aeson as X

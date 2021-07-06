@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.EphemeralExhibits
   ( ephemeralExhibits
   , EphemeralExhibits(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

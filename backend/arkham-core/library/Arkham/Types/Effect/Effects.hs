@@ -1,7 +1,6 @@
 module Arkham.Types.Effect.Effects
   ( module X
-  )
-where
+  ) where
 
 import Arkham.Types.Effect.Effects.ArcaneBarrier as X
 import Arkham.Types.Effect.Effects.ArkhamWoodsTwistingPaths as X
@@ -10,8 +9,8 @@ import Arkham.Types.Effect.Effects.BindMonster2 as X
 import Arkham.Types.Effect.Effects.BlindingLight as X
 import Arkham.Types.Effect.Effects.BlindingLight2 as X
 import Arkham.Types.Effect.Effects.Burglary as X
-import Arkham.Types.Effect.Effects.CursedShores as X
 import Arkham.Types.Effect.Effects.CurseOfTheRougarouTabletToken as X
+import Arkham.Types.Effect.Effects.CursedShores as X
 import Arkham.Types.Effect.Effects.Deduction as X
 import Arkham.Types.Effect.Effects.FireExtinguisher1 as X
 import Arkham.Types.Effect.Effects.HuntingNightgaunt as X

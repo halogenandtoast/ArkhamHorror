@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.CursedLuck
   ( CursedLuck(..)
   , cursedLuck
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

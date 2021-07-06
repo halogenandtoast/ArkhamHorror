@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.EngineCar_176
   ( engineCar_176
   , EngineCar_176(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

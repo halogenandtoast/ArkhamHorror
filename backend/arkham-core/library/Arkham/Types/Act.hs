@@ -1,8 +1,7 @@
 module Arkham.Types.Act
   ( Act(..)
   , lookupAct
-  )
-where
+  ) where
 
 import Arkham.Prelude hiding (fold)
 

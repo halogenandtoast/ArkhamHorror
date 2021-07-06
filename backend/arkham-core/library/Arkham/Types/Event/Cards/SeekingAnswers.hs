@@ -1,8 +1,7 @@
 module Arkham.Types.Event.Cards.SeekingAnswers
   ( seekingAnswers
   , SeekingAnswers(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

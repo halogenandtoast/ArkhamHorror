@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.PowderOfIbnGhazi
   ( powderOfIbnGhazi
   , PowderOfIbnGhazi(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -43,7 +42,7 @@ instance
       pure
         [ UseAbility iid (mkAbility (toSource attrs) 1 (ReactionAbility Free))
         | ownedBy attrs iid
-          && not (null exhaustedBroodOfYogSothothAtLocation)
+          && notNull exhaustedBroodOfYogSothothAtLocation
           && (assetClues attrs > 0)
         ]
   getActions iid window (PowderOfIbnGhazi attrs) = getActions iid window attrs

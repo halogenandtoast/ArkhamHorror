@@ -1,8 +1,7 @@
 module Arkham.Types.ChaosBagStepState
   ( ChaosBagStepState(..)
   , ChaosBagStep(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

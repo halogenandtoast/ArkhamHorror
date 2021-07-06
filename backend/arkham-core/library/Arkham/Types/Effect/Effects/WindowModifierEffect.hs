@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.WindowModifierEffect
   ( windowModifierEffect
   , WindowModifierEffect(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

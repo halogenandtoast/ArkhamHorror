@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.BookOfShadows3
   ( BookOfShadows3(..)
   , bookOfShadows3
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

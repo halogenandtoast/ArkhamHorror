@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.Thrall
   ( Thrall(..)
   , thrall
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

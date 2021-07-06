@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.ReturnToPredatorOrPrey
   ( ReturnToPredatorOrPrey(..)
   , returnToPredatorOrPrey
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

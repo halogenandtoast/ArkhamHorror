@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.EsotericFormula
   ( esotericFormula
   , EsotericFormula(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

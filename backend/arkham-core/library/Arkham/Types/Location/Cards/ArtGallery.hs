@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.ArtGallery
   ( artGallery
   , ArtGallery(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

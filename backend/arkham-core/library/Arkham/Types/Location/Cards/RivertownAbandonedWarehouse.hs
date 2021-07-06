@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.RivertownAbandonedWarehouse
   ( RivertownAbandonedWarehouse(..)
   , rivertownAbandonedWarehouse
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

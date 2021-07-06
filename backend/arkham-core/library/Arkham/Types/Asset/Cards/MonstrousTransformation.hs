@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.MonstrousTransformation
   ( MonstrousTransformation(..)
   , monstrousTransformation
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.SouthsideHistoricalSociety
   ( SouthsideHistoricalSociety(..)
   , southsideHistoricalSociety
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

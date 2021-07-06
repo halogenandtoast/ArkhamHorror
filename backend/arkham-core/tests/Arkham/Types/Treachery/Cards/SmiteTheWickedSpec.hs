@@ -1,7 +1,6 @@
 module Arkham.Types.Treachery.Cards.SmiteTheWickedSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport.Lifted
 

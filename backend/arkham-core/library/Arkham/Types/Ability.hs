@@ -1,8 +1,7 @@
 module Arkham.Types.Ability
   ( module Arkham.Types.Ability
   , module X
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

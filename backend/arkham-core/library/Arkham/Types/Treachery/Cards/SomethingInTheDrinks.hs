@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.SomethingInTheDrinks
   ( SomethingInTheDrinks(..)
   , somethingInTheDrinks
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

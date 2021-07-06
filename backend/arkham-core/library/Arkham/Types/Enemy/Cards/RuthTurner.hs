@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.RuthTurner
   ( ruthTurner
   , RuthTurner(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.LetMeHandleThis
   ( letMeHandleThis
   , LetMeHandleThis(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.StudyAberrantGateway
   ( StudyAberrantGateway(..)
   , studyAberrantGateway
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

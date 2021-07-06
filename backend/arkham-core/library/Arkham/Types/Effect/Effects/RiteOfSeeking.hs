@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.RiteOfSeeking
   ( riteOfSeeking
   , RiteOfSeeking(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

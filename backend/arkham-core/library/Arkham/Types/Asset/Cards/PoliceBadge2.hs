@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.PoliceBadge2
   ( PoliceBadge2(..)
   , policeBadge2
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

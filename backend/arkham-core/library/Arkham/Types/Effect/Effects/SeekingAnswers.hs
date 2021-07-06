@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.SeekingAnswers
   ( seekingAnswers
   , SeekingAnswers(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

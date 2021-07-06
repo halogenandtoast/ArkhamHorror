@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.OnTheProwl
   ( OnTheProwl(..)
   , onTheProwl
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

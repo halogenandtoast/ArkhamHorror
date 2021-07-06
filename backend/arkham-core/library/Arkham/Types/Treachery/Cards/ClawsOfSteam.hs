@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.ClawsOfSteam
   ( clawsOfSteam
   , ClawsOfSteam(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

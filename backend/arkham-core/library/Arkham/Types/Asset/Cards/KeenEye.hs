@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.KeenEye
   ( keenEye
   , KeenEye(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

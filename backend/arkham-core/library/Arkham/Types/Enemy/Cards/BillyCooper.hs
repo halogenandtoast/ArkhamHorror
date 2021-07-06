@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.BillyCooper
   ( billyCooper
   , BillyCooper(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

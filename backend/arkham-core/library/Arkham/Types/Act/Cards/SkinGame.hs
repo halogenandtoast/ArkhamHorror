@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.SkinGame
   ( SkinGame(..)
   , skinGame
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

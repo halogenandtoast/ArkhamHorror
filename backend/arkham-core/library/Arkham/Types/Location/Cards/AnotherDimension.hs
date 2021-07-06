@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.AnotherDimension
   ( anotherDimension
   , AnotherDimension(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.UnhallowedCountry
   ( UnhallowedCountry(..)
   , unhallowedCountry
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

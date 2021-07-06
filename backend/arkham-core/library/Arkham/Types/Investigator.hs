@@ -1,14 +1,13 @@
 module Arkham.Types.Investigator
   ( module Arkham.Types.Investigator
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Action (Action, TakenAction)
 import Arkham.Types.Card
-import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes
 import Arkham.Types.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Investigator.Attrs

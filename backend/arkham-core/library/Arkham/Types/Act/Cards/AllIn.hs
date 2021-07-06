@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.AllIn
   ( AllIn(..)
   , allIn
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.CallingForthTheOldOnes
   ( CallingForthTheOldOnes
   , callingForthTheOldOnes
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

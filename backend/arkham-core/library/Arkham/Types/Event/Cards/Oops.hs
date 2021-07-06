@@ -1,8 +1,7 @@
 module Arkham.Types.Event.Cards.Oops
   ( oops
   , Oops(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

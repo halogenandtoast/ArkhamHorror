@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.AttractingAttention
   ( attractingAttention
   , AttractingAttention(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

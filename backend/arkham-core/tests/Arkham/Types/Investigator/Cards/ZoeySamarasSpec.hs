@@ -1,7 +1,6 @@
 module Arkham.Types.Investigator.Cards.ZoeySamarasSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport.Lifted
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.Whippoorwill
   ( Whippoorwill(..)
   , whippoorwill
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

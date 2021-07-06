@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.DarkenedHall
   ( darkenedHall
   , DarkenedHall(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.DarkYoungHost
   ( darkYoungHost
   , DarkYoungHost(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

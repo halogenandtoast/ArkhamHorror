@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.GetTheEngineRunning
   ( GetTheEngineRunning(..)
   , getTheEngineRunning
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

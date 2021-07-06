@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.JazzMulligan
   ( jazzMulligan
   , JazzMulligan(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

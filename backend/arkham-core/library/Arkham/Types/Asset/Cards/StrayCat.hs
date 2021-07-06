@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.StrayCat
   ( StrayCat(..)
   , strayCat
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

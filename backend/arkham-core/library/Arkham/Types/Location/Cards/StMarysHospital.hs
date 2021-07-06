@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.StMarysHospital
   ( StMarysHospital(..)
   , stMarysHospital
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

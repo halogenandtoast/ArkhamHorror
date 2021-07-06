@@ -1,16 +1,15 @@
 module Arkham.Types.Investigator.Cards.AshcanPete
   ( AshcanPete(..)
   , ashcanPete
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.AssetId
 import Arkham.Types.Card
-import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs
@@ -59,7 +58,7 @@ instance InvestigatorRunner env => HasActions env AshcanPete where
       exhaustedAssetIds <- map unExhaustedAssetId <$> getSetList investigatorId
       pure
         [ UseAbility investigatorId (ability attrs)
-        | not (null exhaustedAssetIds)
+        | notNull exhaustedAssetIds
         ]
   getActions i window (AshcanPete attrs) = getActions i window attrs
 

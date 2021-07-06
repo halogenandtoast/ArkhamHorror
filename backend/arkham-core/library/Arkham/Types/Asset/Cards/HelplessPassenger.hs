@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.HelplessPassenger
   ( helplessPassenger
   , HelplessPassenger(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

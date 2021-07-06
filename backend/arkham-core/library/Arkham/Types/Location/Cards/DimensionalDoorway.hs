@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.DimensionalDoorway
   ( dimensionalDoorway
   , DimensionalDoorway(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

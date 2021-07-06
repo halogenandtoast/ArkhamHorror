@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Hyperawareness
   ( Hyperawareness(..)
   , hyperawareness
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

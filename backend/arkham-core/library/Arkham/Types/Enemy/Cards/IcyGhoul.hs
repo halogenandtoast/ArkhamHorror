@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.IcyGhoul
   ( icyGhoul
   , IcyGhoul(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

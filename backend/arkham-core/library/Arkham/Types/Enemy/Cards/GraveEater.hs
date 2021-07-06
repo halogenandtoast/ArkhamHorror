@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.GraveEater
   ( graveEater
   , GraveEater(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

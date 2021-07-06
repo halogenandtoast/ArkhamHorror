@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.ArkhamWoodsTwistingPaths
   ( arkhamWoodsTwistingPaths
   , ArkhamWoodsTwistingPaths(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

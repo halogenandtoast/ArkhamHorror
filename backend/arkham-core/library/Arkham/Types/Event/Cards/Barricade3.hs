@@ -1,8 +1,7 @@
 module Arkham.Types.Event.Cards.Barricade3
   ( barricade3
   , Barricade3(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

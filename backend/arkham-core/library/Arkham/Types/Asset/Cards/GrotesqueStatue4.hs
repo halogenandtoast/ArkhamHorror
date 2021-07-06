@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.GrotesqueStatue4
   ( GrotesqueStatue4(..)
   , grotesqueStatue4
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

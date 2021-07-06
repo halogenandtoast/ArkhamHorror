@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.RitualCandles
   ( ritualCandles
   , RitualCandles(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

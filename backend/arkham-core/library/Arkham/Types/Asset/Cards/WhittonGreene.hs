@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.WhittonGreene
   ( whittonGreene
   , WhittonGreene(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

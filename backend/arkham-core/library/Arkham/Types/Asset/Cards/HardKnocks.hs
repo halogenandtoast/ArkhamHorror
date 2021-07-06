@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.HardKnocks
   ( HardKnocks(..)
   , hardKnocks
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

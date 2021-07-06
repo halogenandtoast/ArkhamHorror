@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.Schoolhouse_212
   ( schoolhouse_212
   , Schoolhouse_212(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,7 +1,6 @@
 module Arkham.Types.Source
   ( Source(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

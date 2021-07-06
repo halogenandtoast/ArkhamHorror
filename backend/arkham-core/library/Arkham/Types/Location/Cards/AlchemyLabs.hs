@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.AlchemyLabs
   ( alchemyLabs
   , AlchemyLabs(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

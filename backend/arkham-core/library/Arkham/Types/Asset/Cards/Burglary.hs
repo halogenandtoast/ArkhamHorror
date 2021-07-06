@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Burglary
   ( Burglary(..)
   , burglary
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

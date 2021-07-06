@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.TheCurseSpreads
   ( TheCurseSpreads(..)
   , theCurseSpreads
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

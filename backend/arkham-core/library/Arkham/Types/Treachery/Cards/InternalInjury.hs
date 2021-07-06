@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.InternalInjury
   ( internalInjury
   , InternalInjury(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

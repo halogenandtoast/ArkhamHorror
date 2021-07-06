@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.Atychiphobia
   ( atychiphobia
   , Atychiphobia(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

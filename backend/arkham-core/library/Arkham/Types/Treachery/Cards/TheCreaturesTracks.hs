@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.TheCreaturesTracks
   ( theCreaturesTracks
   , TheCreaturesTracks(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

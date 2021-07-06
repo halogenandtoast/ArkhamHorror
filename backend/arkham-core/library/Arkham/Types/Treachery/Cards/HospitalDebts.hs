@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.HospitalDebts
   ( HospitalDebts(..)
   , hospitalDebts
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

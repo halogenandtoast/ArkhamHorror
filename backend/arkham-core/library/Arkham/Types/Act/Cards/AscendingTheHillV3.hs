@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.AscendingTheHillV3
   ( AscendingTheHillV3(..)
   , ascendingTheHillV3
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.RestrictedAccess
   ( RestrictedAccess(..)
   , restrictedAccess
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

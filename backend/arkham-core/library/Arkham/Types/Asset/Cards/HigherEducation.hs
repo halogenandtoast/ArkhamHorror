@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.HigherEducation
   ( higherEducation
   , HigherEducation(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

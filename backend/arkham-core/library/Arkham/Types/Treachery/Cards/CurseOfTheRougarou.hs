@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.CurseOfTheRougarou
   ( CurseOfTheRougarou(..)
   , curseOfTheRougarou
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -411,12 +411,14 @@ getLocationsMatching = \case
       <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
     filter ((`member` matches) . toId) . toList . view locationsL <$> getGame
 
-getSkill :: (HasCallStack, MonadReader env m, HasGame env) => SkillId -> m Skill
+getSkill
+  :: (HasCallStack, MonadReader env m, HasGame env) => SkillId -> m Skill
 getSkill sid =
   fromJustNote missingSkill . preview (skillsL . ix sid) <$> getGame
   where missingSkill = "Unknown skill: " <> show sid
 
-getEnemy :: (HasCallStack, MonadReader env m, HasGame env) => EnemyId -> m Enemy
+getEnemy
+  :: (HasCallStack, MonadReader env m, HasGame env) => EnemyId -> m Enemy
 getEnemy eid =
   fromJustNote missingEnemy . preview (enemiesL . ix eid) <$> getGame
   where missingEnemy = "Unknown enemy: " <> show eid
@@ -447,7 +449,8 @@ getAgenda aid =
   fromJustNote missingAgenda . preview (agendasL . ix aid) <$> getGame
   where missingAgenda = "Unknown agenda: " <> show aid
 
-getAsset :: (HasCallStack, MonadReader env m, HasGame env) => AssetId -> m Asset
+getAsset
+  :: (HasCallStack, MonadReader env m, HasGame env) => AssetId -> m Asset
 getAsset aid =
   fromJustNote missingAsset . preview (assetsL . ix aid) <$> getGame
   where missingAsset = "Unknown asset: " <> show aid
@@ -460,7 +463,8 @@ getTreachery tid =
   fromJustNote missingTreachery . preview (treacheriesL . ix tid) <$> getGame
   where missingTreachery = "Unknown treachery: " <> show tid
 
-getEvent :: (HasCallStack, MonadReader env m, HasGame env) => EventId -> m Event
+getEvent
+  :: (HasCallStack, MonadReader env m, HasGame env) => EventId -> m Event
 getEvent eid =
   fromJustNote missingEvent . preview (eventsL . ix eid) <$> getGame
   where missingEvent = "Unknown event: " <> show eid

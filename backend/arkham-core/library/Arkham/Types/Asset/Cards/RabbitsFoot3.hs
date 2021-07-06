@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.RabbitsFoot3
   ( RabbitsFoot3(..)
   , rabbitsFoot3
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

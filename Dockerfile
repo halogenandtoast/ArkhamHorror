@@ -51,12 +51,14 @@ RUN mkdir -p /opt/arkham/src
 RUN mkdir -p /opt/arkham/bin
 RUN mkdir -p /opt/arkham/src/backend/arkham-api
 RUN mkdir -p /opt/arkham/src/backend/arkham-core
+RUN mkdir -p /opt/arkham/src/backend/cards-discover
 RUN mkdir -p /opt/arkham/src/frontend
 
 WORKDIR /opt/arkham/src/backend
 COPY ./backend/stack.yaml /opt/arkham/src/backend/stack.yaml
 COPY ./backend/arkham-api/package.yaml /opt/arkham/src/backend/arkham-api/package.yaml
 COPY ./backend/arkham-core/package.yaml /opt/arkham/src/backend/arkham-core/package.yaml
+COPY ./backend/cards-discover/package.yaml /opt/arkham/src/backend/cards-discover/package.yaml
 RUN stack --no-terminal setup
 RUN stack install yesod-bin --install-ghc --ghc-options '-j4 +RTS -A64m -n2m -RTS'
 

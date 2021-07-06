@@ -65,7 +65,6 @@ import Control.Monad.State as X (get)
 import Control.Monad.State hiding (replicateM)
 import qualified Data.HashMap.Strict as HashMap
 import Data.These
-import qualified Data.UUID as UUID
 import Data.UUID.V4 as X
 import Helpers.Matchers as X
 import Helpers.Message as X

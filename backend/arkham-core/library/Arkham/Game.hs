@@ -155,10 +155,7 @@ startGame g =
 
 -- TODO: Rename this
 toExternalGame
-  :: (MonadRandom m, MonadIO m)
-  => Game
-  -> HashMap InvestigatorId Question
-  -> m Game
+  :: MonadRandom m => Game -> HashMap InvestigatorId Question -> m Game
 toExternalGame g mq = do
   newGameSeed <- getRandom
   pure $ g { gameQuestion = mq, gameSeed = newGameSeed }
@@ -176,7 +173,6 @@ replayChoices = do
   gameRef <- view gameRefL
   genRef <- view genL
   currentQueueRef <- view messageQueue
-  currentGen <- readIORef genRef
   currentGame <- readIORef gameRef
   writeIORef genRef (mkStdGen (gameInitialSeed currentGame))
 
@@ -263,11 +259,11 @@ runMessages = do
       mmsg <- popMessage
       case mmsg of
         Nothing -> case gamePhase g of
-          CampaignPhase -> error "should not happen"
-          ResolutionPhase -> error "should not happen"
-          MythosPhase -> error "should not happen"
-          EnemyPhase -> error "should not happen"
-          UpkeepPhase -> error "should not happen"
+          CampaignPhase -> pure ()
+          ResolutionPhase -> pure ()
+          MythosPhase -> pure ()
+          EnemyPhase -> pure ()
+          UpkeepPhase -> pure ()
           InvestigationPhase -> do
             activeInvestigator <- runReaderT getActiveInvestigator g
             if hasEndedTurn activeInvestigator

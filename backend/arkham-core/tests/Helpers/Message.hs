@@ -7,6 +7,7 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Enemy
 import Arkham.Types.Event
+import Arkham.Types.Helpers
 import Arkham.Types.Investigator
 import Arkham.Types.Location
 import Arkham.Types.Message
@@ -32,10 +33,10 @@ enemySpawn :: Location -> Enemy -> Message
 enemySpawn l e = EnemySpawn Nothing (toId l) (toId e)
 
 loadDeck :: Investigator -> [PlayerCard] -> Message
-loadDeck i cs = LoadDeck (toId i) cs
+loadDeck i cs = LoadDeck (toId i) (Deck cs)
 
 addToHand :: Investigator -> Card -> Message
-addToHand i card = AddToHand (toId i) card
+addToHand i = AddToHand (toId i)
 
 chooseEndTurn :: Investigator -> Message
 chooseEndTurn i = ChooseEndTurn (toId i)
@@ -71,10 +72,5 @@ investigate i l =
   Investigate (toId i) (toId l) (TestSource mempty) SkillIntellect False
 
 beginSkillTest :: Investigator -> SkillType -> Int -> Message
-beginSkillTest i stype difficulty = BeginSkillTest
-  (toId i)
-  (TestSource mempty)
-  TestTarget
-  Nothing
-  stype
-  difficulty
+beginSkillTest i =
+  BeginSkillTest (toId i) (TestSource mempty) TestTarget Nothing

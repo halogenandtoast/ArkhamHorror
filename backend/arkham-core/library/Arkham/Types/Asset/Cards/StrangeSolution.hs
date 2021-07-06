@@ -44,9 +44,10 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env StrangeSolutio
         SkillIntellect
         4
       )
-    PassedSkillTest iid _ source _ _ _ | isSource attrs source -> a <$ pushAll
-      [ Discard (toTarget attrs)
-      , DrawCards iid 2 False
-      , Record YouHaveIdentifiedTheSolution
-      ]
+    PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
+      | isSource attrs source -> a <$ pushAll
+        [ Discard (toTarget attrs)
+        , DrawCards iid 2 False
+        , Record YouHaveIdentifiedTheSolution
+        ]
     _ -> StrangeSolution <$> runMessage msg attrs

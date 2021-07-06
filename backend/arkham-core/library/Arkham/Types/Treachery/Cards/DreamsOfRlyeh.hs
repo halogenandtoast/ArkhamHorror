@@ -55,6 +55,6 @@ instance (TreacheryRunner env) => RunMessage env DreamsOfRlyeh where
           SkillWillpower
           3
         )
-    PassedSkillTest _ _ source _ _ _ | isSource attrs source ->
-      t <$ push (Discard $ toTarget attrs)
+    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+      | isSource attrs source -> t <$ push (Discard $ toTarget attrs)
     _ -> DreamsOfRlyeh <$> runMessage msg attrs

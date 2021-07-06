@@ -90,6 +90,6 @@ instance LocationRunner env => RunMessage env FoulSwamp where
           (InvestigatorTarget iid)
         , BeginSkillTest iid source (toTarget attrs) Nothing SkillWillpower 7
         ]
-    PassedSkillTest _ _ source _ _ _ | isSource attrs source ->
-      l <$ push (Remember FoundAnAncientBindingStone)
+    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+      | isSource attrs source -> l <$ push (Remember FoundAnAncientBindingStone)
     _ -> FoulSwamp <$> runMessage msg attrs

@@ -2746,11 +2746,9 @@ runGameMessage msg g = case msg of
       & (discardL .~ discard)
       & (focusedCardsL .~ mempty)
   SearchCollectionForRandom iid source matcher -> do
-    newCardId <- getRandom
-    let matches = filter (cardMatch matcher) (toList allPlayerCards)
-    mcard <- case matches of
+    mcard <- case filter (cardMatch matcher) (toList allPlayerCards) of
       [] -> pure Nothing
-      (x : xs) -> Just . MkPlayerCard newCardId (Just iid) <$> sample (x :| xs)
+      (x : xs) -> Just <$> (genPlayerCard =<< sample (x :| xs))
     g <$ push (RequestedPlayerCard iid source mcard)
   DiscardEncounterUntilFirst source matcher -> do
     let

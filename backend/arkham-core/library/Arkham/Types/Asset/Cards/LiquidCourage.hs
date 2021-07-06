@@ -75,8 +75,9 @@ instance
             | iid' <- iids
             ]
           )
-    PassedSkillTest iid _ source _ _ _ | isSource attrs source ->
-      a <$ push (HealHorror (InvestigatorTarget iid) 1)
-    FailedSkillTest iid _ source _ _ _ | isSource attrs source ->
-      a <$ push (RandomDiscard iid)
+    PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
+      | isSource attrs source -> a
+      <$ push (HealHorror (InvestigatorTarget iid) 1)
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
+      | isSource attrs source -> a <$ push (RandomDiscard iid)
     _ -> LiquidCourage <$> runMessage msg attrs

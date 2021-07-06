@@ -43,8 +43,9 @@ instance (TreacheryRunner env) => RunMessage env Atychiphobia where
   runMessage msg t@(Atychiphobia attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)
-    FailedSkillTest iid _ _ _ _ _ | treacheryOnInvestigator iid attrs ->
-      t
+    FailedSkillTest iid _ _ SkillTestInitiatorTarget{} _ _
+      | treacheryOnInvestigator iid attrs
+      -> t
         <$ push
              (InvestigatorAssignDamage
                iid

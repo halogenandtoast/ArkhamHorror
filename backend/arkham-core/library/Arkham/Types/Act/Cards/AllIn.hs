@@ -85,7 +85,7 @@ instance ActRunner env => RunMessage env AllIn where
               SkillWillpower
               3
             )
-    PassedSkillTest iid _ source _ _ _
+    PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source && onSide A attrs -> do
         maid <- fmap unStoryAssetId <$> getId (CardCode "02080")
         case maid of

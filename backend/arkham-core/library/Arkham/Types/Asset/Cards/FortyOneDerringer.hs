@@ -60,8 +60,9 @@ instance AssetRunner env => RunMessage env FortyOneDerringer where
         (InvestigatorTarget iid)
       , ChooseFightEnemy iid source SkillCombat mempty False
       ]
-    PassedSkillTest iid (Just Action.Fight) source _ _ n
-      | isSource attrs source && n >= 2 -> a <$ push
+    PassedSkillTest iid (Just Action.Fight) source SkillTestInitiatorTarget{} _ n
+      | isSource attrs source && n >= 2
+      -> a <$ push
         (CreateWindowModifierEffect
           EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [DamageDealt 1])

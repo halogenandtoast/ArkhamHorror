@@ -90,9 +90,10 @@ instance LocationRunner env => RunMessage env MuseumHalls where
           )
     UseCardAbility iid source _ 1 _ | isSource attrs source && revealed attrs ->
       l <$ push (UseScenarioSpecificAbility iid Nothing 1)
-    PassedSkillTest _ _ source _ _ _ | isSource attrs source -> do
-      actId <- fromJustNote "missing act" . headMay <$> getSetList ()
-      l <$ push (AdvanceAct actId source)
+    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+      | isSource attrs source -> do
+        actId <- fromJustNote "missing act" . headMay <$> getSetList ()
+        l <$ push (AdvanceAct actId source)
     AddConnection lid _ | locationId attrs /= lid -> do
       name <- nameTitle <$> getName lid
       if name == "Exhibit Hall"

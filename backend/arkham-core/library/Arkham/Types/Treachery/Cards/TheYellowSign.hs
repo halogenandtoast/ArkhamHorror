@@ -36,8 +36,14 @@ instance (TreacheryRunner env) => RunMessage env TheYellowSign where
         4
       , Discard $ toTarget attrs
       ]
-    FailedSkillTest iid _ source _ _ _ | isSource attrs source -> t <$ pushAll
-      [ InvestigatorAssignDamage iid (TreacherySource treacheryId) DamageAny 0 2
-      , SearchDeckForTraits iid (InvestigatorTarget iid) [Madness] -- TODO: We may need to specify weakness
-      ]
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
+      | isSource attrs source -> t <$ pushAll
+        [ InvestigatorAssignDamage
+          iid
+          (TreacherySource treacheryId)
+          DamageAny
+          0
+          2
+        , SearchDeckForTraits iid (InvestigatorTarget iid) [Madness] -- TODO: We may need to specify weakness
+        ]
     _ -> TheYellowSign <$> runMessage msg attrs

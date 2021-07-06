@@ -93,7 +93,7 @@ instance ActRunner env => RunMessage env Fold where
               SkillWillpower
               3
             )
-    PassedSkillTest iid _ source _ _ _
+    PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source && actSequence == Act 3 A -> do
         maid <- fmap unStoryAssetId <$> getId (CardCode "02079")
         case maid of

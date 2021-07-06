@@ -56,10 +56,10 @@ instance ActRunner env => RunMessage env Run where
             )
           pure $ Run $ attrs & sequenceL .~ Act 1 B
         else pure a
-    FailedSkillTest iid _ source _ SkillAgility _
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} SkillAgility _
       | isSource attrs source && actSequence == Act 1 B -> a
       <$ push (SufferTrauma iid 1 0)
-    FailedSkillTest iid _ source _ SkillCombat _
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} SkillCombat _
       | isSource attrs source && actSequence == Act 1 B -> a
       <$ push (SufferTrauma iid 1 0)
     _ -> Run <$> runMessage msg attrs

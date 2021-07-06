@@ -40,9 +40,10 @@ instance (TreacheryRunner env) => RunMessage env DraggedUnder where
         SkillAgility
         3
       )
-    FailedSkillTest iid _ source _ _ _ | isSource attrs source -> t <$ when
-      (isNothing treacheryAttachedTarget)
-      (push $ AttachTreachery treacheryId (InvestigatorTarget iid))
-    PassedSkillTest _ _ source _ _ _ | isSource attrs source ->
-      t <$ push (Discard $ toTarget attrs)
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
+      | isSource attrs source -> t <$ when
+        (isNothing treacheryAttachedTarget)
+        (push $ AttachTreachery treacheryId (InvestigatorTarget iid))
+    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+      | isSource attrs source -> t <$ push (Discard $ toTarget attrs)
     _ -> DraggedUnder <$> runMessage msg attrs

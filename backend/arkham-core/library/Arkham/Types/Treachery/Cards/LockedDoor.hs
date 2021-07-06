@@ -85,6 +85,6 @@ instance (TreacheryRunner env) => RunMessage env LockedDoor where
             4
           ]
         )
-    PassedSkillTest _ _ source _ _ _ | isSource attrs source ->
-      t <$ push (Discard $ toTarget attrs)
+    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+      | isSource attrs source -> t <$ push (Discard $ toTarget attrs)
     _ -> LockedDoor <$> runMessage msg attrs

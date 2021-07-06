@@ -1605,8 +1605,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & deckL %~ Deck . (card :) . unDeck
   AddToHand iid card | iid == investigatorId -> do
     case card of
-      PlayerCard card' -> when (cdRevelation (pcDef card'))
-        $ push (Revelation iid (PlayerCardSource $ toCardId card'))
+      PlayerCard card' ->
+        when (cdRevelation (pcDef card'))
+          $ if toCardType card' == PlayerTreacheryType
+              then push (DrewTreachery iid card)
+              else push (Revelation iid (PlayerCardSource $ toCardId card'))
       _ -> pure ()
     pure $ a & handL %~ (card :)
   ShuffleCardsIntoDeck iid cards | iid == investigatorId -> do
@@ -1663,8 +1666,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   , ShuffleAllFocusedIntoDeck iid (InvestigatorTarget iid')
                   ]
               | card <- cards
-              , null traits'
-                || notNull (traits' `intersection` toTraits card)
+              , null traits' || notNull (traits' `intersection` toTraits card)
               ]
           push
             (chooseOne iid $ if null choices

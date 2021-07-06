@@ -12,6 +12,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Source
+import Arkham.Types.Target
 
 newtype ArkhamWoodsGreatWillow = ArkhamWoodsGreatWillow LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -39,8 +40,9 @@ instance ActionRunner env => HasActions env ArkhamWoodsGreatWillow where
 instance LocationRunner env => RunMessage env ArkhamWoodsGreatWillow where
   runMessage msg l@(ArkhamWoodsGreatWillow attrs@LocationAttrs {..}) =
     case msg of
-      PassedSkillTest iid _ source@(TreacherySource _) _ _ _
-        | iid `elem` locationInvestigators -> do
+      PassedSkillTest iid _ source@(TreacherySource _) SkillTestInitiatorTarget{} _ _
+        | iid `elem` locationInvestigators
+        -> do
           let
             ability = (mkAbility (toSource attrs) 0 ForcedAbility)
               { abilityLimit = GroupLimit PerRound 1

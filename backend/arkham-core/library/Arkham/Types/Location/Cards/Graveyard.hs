@@ -40,13 +40,14 @@ instance (LocationRunner env) => RunMessage env Graveyard where
           3
         )
       Graveyard <$> runMessage msg attrs
-    FailedSkillTest iid _ source _ _ _ | isSource attrs source -> do
-      rivertownId <- getJustLocationIdByName "Rivertown"
-      l <$ push
-        (chooseOne
-          iid
-          [ InvestigatorAssignDamage iid source DamageAny 0 2
-          , MoveTo iid rivertownId
-          ]
-        )
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
+      | isSource attrs source -> do
+        rivertownId <- getJustLocationIdByName "Rivertown"
+        l <$ push
+          (chooseOne
+            iid
+            [ InvestigatorAssignDamage iid source DamageAny 0 2
+            , MoveTo iid rivertownId
+            ]
+          )
     _ -> Graveyard <$> runMessage msg attrs

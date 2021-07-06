@@ -11,6 +11,7 @@ import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers as X
+import Arkham.Types.Helpers
 
 getHasRecordOrStandalone
   :: (MonadReader env m, HasRecord env, HasId (Maybe CampaignId) env ())
@@ -21,11 +22,11 @@ getHasRecordOrStandalone key def = do
   standalone <- isNothing <$> getId @(Maybe CampaignId) ()
   if standalone then pure def else getHasRecord key
 
-buildEncounterDeck :: MonadRandom m => [EncounterSet] -> m [EncounterCard]
+buildEncounterDeck :: MonadRandom m => [EncounterSet] -> m (Deck EncounterCard)
 buildEncounterDeck = buildEncounterDeckWith id
 
 buildEncounterDeckExcluding
-  :: MonadRandom m => [CardDef] -> [EncounterSet] -> m [EncounterCard]
+  :: MonadRandom m => [CardDef] -> [EncounterSet] -> m (Deck EncounterCard)
 buildEncounterDeckExcluding defs =
   buildEncounterDeckWith (filter ((`notElem` defs) . toCardDef))
 
@@ -39,11 +40,13 @@ buildEncounterDeckWith
   :: MonadRandom m
   => ([EncounterCard] -> [EncounterCard])
   -> [EncounterSet]
-  -> m [EncounterCard]
+  -> m (Deck EncounterCard)
 buildEncounterDeckWith f encounterSets =
-  shuffleM
-    . f
-    . excludeBSides
-    . excludeDoubleSided
-    . concat
-    =<< traverse gatherEncounterSet encounterSets
+  Deck
+    <$> (shuffleM
+        . f
+        . excludeBSides
+        . excludeDoubleSided
+        . concat
+        =<< traverse gatherEncounterSet encounterSets
+        )

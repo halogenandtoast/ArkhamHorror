@@ -100,7 +100,7 @@ export default defineComponent({
 
     async function choose(idx: number) {
       if (idx !== -1 && game.value && game.value.currentData) {
-        updateGame(props.gameId, idx, game.value.currentData.hash);
+        updateGame(props.gameId, idx);
       }
     }
 

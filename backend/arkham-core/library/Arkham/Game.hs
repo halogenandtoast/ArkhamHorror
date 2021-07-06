@@ -9,21 +9,23 @@ import Arkham.Types.ChaosBag
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Game
+import Arkham.Types.Helpers
 import Arkham.Types.Investigator
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Phase
 import Arkham.Types.Scenario
 import Arkham.Types.ScenarioId
+import Control.Monad.Random (mkStdGen)
 import Data.Align
 import Safe (headNote)
 import System.Environment
 import Text.Pretty.Simple
-import Text.Read (readMaybe)
 
 newCampaign
-  :: (MonadIO m, MonadRandom m)
+  :: MonadIO m
   => CampaignId
+  -> Int
   -> Int
   -> HashMap Int (Investigator, [PlayerCard])
   -> Difficulty
@@ -31,8 +33,9 @@ newCampaign
 newCampaign = newGame . Right
 
 newScenario
-  :: (MonadIO m, MonadRandom m)
+  :: MonadIO m
   => ScenarioId
+  -> Int
   -> Int
   -> HashMap Int (Investigator, [PlayerCard])
   -> Difficulty
@@ -40,25 +43,29 @@ newScenario
 newScenario = newGame . Left
 
 newGame
-  :: (MonadIO m, MonadRandom m)
+  :: MonadIO m
   => Either ScenarioId CampaignId
+  -> Int
   -> Int
   -> HashMap Int (Investigator, [PlayerCard])
   -> Difficulty
   -> m (IORef [Message], Game)
-newGame scenarioOrCampaignId playerCount investigatorsList difficulty = do
-  hash' <- getRandom
-  mseed <- liftIO $ fmap readMaybe <$> lookupEnv "SEED"
-  seed <- maybe getRandom (pure . fromJustNote "invalid seed") mseed
+newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
   ref <-
     newIORef
-    $ map (uncurry (InitDeck . toId)) (toList investigatorsList)
+    $ map (uncurry InitDeck . bimap toId Deck) (toList investigatorsList)
     <> [StartCampaign]
 
   pure
     ( ref
     , Game
-      { gameRoundMessageHistory = []
+      { gameParams = GameParams
+        scenarioOrCampaignId
+        playerCount
+        investigatorsList
+        difficulty
+      , gameChoices = []
+      , gameRoundMessageHistory = []
       , gamePhaseMessageHistory = []
       , gameInitialSeed = seed
       , gameSeed = seed
@@ -96,7 +103,6 @@ newGame scenarioOrCampaignId playerCount investigatorsList difficulty = do
       , gamePlayerTurnOrder = toList playersMap
       , gameVictoryDisplay = mempty
       , gameQuestion = mempty
-      , gameHash = hash'
       }
     )
  where
@@ -115,13 +121,7 @@ newGame scenarioOrCampaignId playerCount investigatorsList difficulty = do
   mode = fromJustNote "Need campaign or scenario" $ align campaign scenario
 
 addInvestigator
-  :: ( MonadIO m
-     , HasStdGen env
-     , MonadReader env m
-     , HasQueue env
-     , HasGameRef env
-     , HasMessageLogger env
-     )
+  :: (MonadIO m, MonadReader env m, HasQueue env, HasGameRef env)
   => Int
   -> Investigator
   -> [PlayerCard]
@@ -130,7 +130,9 @@ addInvestigator uid i d = do
   gameRef <- view gameRefL
   game <- liftIO $ readIORef gameRef
   queueRef <- view messageQueue
-  atomicModifyIORef' queueRef (\queue -> (InitDeck (toId i) d : queue, ()))
+  atomicModifyIORef'
+    queueRef
+    (\queue -> (InitDeck (toId i) (Deck d) : queue, ()))
   let
     iid = toId i
     g' =
@@ -143,7 +145,6 @@ addInvestigator uid i d = do
       then IsPending
       else IsActive
   atomicWriteIORef gameRef (g' & gameStateL .~ gameState)
-  void runMessages
 
 startGame :: MonadIO m => Game -> m Game
 startGame g =
@@ -154,11 +155,86 @@ startGame g =
 
 -- TODO: Rename this
 toExternalGame
-  :: MonadRandom m => Game -> HashMap InvestigatorId Question -> m Game
+  :: (MonadRandom m, MonadIO m)
+  => Game
+  -> HashMap InvestigatorId Question
+  -> m Game
 toExternalGame g mq = do
-  hash' <- getRandom
   newGameSeed <- getRandom
-  pure $ g { gameHash = hash', gameQuestion = mq, gameSeed = newGameSeed }
+  pure $ g { gameQuestion = mq, gameSeed = newGameSeed }
+
+replayChoices
+  :: ( MonadIO m
+     , HasGameRef env
+     , HasStdGen env
+     , HasQueue env
+     , MonadReader env m
+     , HasMessageLogger env
+     )
+  => m ()
+replayChoices = do
+  gameRef <- view gameRefL
+  genRef <- view genL
+  currentQueueRef <- view messageQueue
+  currentGen <- readIORef genRef
+  currentGame <- readIORef gameRef
+  writeIORef genRef (mkStdGen (gameInitialSeed currentGame))
+
+  let
+    GameParams scenarioOrCampaignId playerCount investigatorsList difficulty =
+      gameParams currentGame
+    choices = gameChoices currentGame
+
+  (newQueueRef, replayedGame) <- newGame
+    scenarioOrCampaignId
+    (gameInitialSeed currentGame)
+    playerCount
+    investigatorsList
+    difficulty
+
+  newQueue <- readIORef newQueueRef
+  writeIORef currentQueueRef newQueue
+  writeIORef gameRef (replayedGame & choicesL .~ choices)
+
+  runMessages
+
+  for_ (reverse choices) $ \case
+    AskChoice iid idx -> do
+      gameState <- readIORef gameRef
+      writeIORef genRef (mkStdGen (gameSeed gameState))
+      let
+        messages = case lookup iid (gameQuestion gameState) of
+          Just (ChooseOne qs) -> case qs !!? idx of
+            Nothing -> [Ask iid $ ChooseOne qs]
+            Just msg -> [msg]
+          Just (ChooseN n qs) -> do
+            let (mm, msgs') = extract idx qs
+            case (mm, msgs') of
+              (Just m', []) -> [m']
+              (Just m', msgs'') -> if n - 1 == 0
+                then [m']
+                else [m', Ask iid $ ChooseN (n - 1) msgs'']
+              (Nothing, msgs'') -> [Ask iid $ ChooseOneAtATime msgs'']
+          Just (ChooseOneAtATime msgs) -> do
+            let (mm, msgs') = extract idx msgs
+            case (mm, msgs') of
+              (Just m', []) -> [m']
+              (Just m', msgs'') -> [m', Ask iid $ ChooseOneAtATime msgs'']
+              (Nothing, msgs'') -> [Ask iid $ ChooseOneAtATime msgs'']
+          Just (ChooseSome msgs) -> do
+            let (mm, msgs') = extract idx msgs
+            case (mm, msgs') of
+              (Just Done, _) -> []
+              (Just m', msgs'') -> case msgs'' of
+                [] -> [m']
+                [Done] -> [m']
+                rest -> [m', Ask iid $ ChooseSome rest]
+              (Nothing, msgs'') -> [Ask iid $ ChooseSome msgs'']
+          _ -> []
+      pushAll messages >> runMessages
+ where
+  extract n xs =
+    let a = xs !!? n in (a, [ x | (i, x) <- zip [0 ..] xs, i /= n ])
 
 runMessages
   :: ( MonadIO m
@@ -187,11 +263,11 @@ runMessages = do
       mmsg <- popMessage
       case mmsg of
         Nothing -> case gamePhase g of
-          CampaignPhase -> pure ()
-          ResolutionPhase -> pure ()
-          MythosPhase -> pure ()
-          EnemyPhase -> pure ()
-          UpkeepPhase -> pure ()
+          CampaignPhase -> error "should not happen"
+          ResolutionPhase -> error "should not happen"
+          MythosPhase -> error "should not happen"
+          EnemyPhase -> error "should not happen"
+          UpkeepPhase -> error "should not happen"
           InvestigationPhase -> do
             activeInvestigator <- runReaderT getActiveInvestigator g
             if hasEndedTurn activeInvestigator

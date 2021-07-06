@@ -13,6 +13,7 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Game.Helpers
+import Arkham.Types.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Investigator
 import Arkham.Types.Message
@@ -24,7 +25,7 @@ data CampaignAttrs = CampaignAttrs
   { campaignId :: CampaignId
   , campaignName :: Text
   , campaignInvestigators :: HashMap Int Investigator
-  , campaignDecks :: HashMap InvestigatorId [PlayerCard]
+  , campaignDecks :: HashMap InvestigatorId (Deck PlayerCard)
   , campaignStoryCards :: HashMap InvestigatorId [PlayerCard]
   , campaignDifficulty :: Difficulty
   , campaignChaosBag :: [Token]
@@ -45,7 +46,7 @@ chaosBagL = lens campaignChaosBag $ \m x -> m { campaignChaosBag = x }
 storyCardsL :: Lens' CampaignAttrs (HashMap InvestigatorId [PlayerCard])
 storyCardsL = lens campaignStoryCards $ \m x -> m { campaignStoryCards = x }
 
-decksL :: Lens' CampaignAttrs (HashMap InvestigatorId [PlayerCard])
+decksL :: Lens' CampaignAttrs (HashMap InvestigatorId (Deck PlayerCard))
 decksL = lens campaignDecks $ \m x -> m { campaignDecks = x }
 
 logL :: Lens' CampaignAttrs CampaignLog
@@ -125,7 +126,7 @@ instance CampaignRunner env => RunMessage env CampaignAttrs where
     ResetGame -> do
       for_ (mapToList campaignDecks) $ \(iid, deck) -> do
         let investigatorStoryCards = findWithDefault [] iid campaignStoryCards
-        push (LoadDeck iid $ deck <> investigatorStoryCards)
+        push (LoadDeck iid . Deck $ unDeck deck <> investigatorStoryCards)
       pure a
     CrossOutRecord key ->
       pure

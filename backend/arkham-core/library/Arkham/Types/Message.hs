@@ -23,6 +23,7 @@ import Arkham.Types.EffectMetadata
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
 import Arkham.Types.Exception
+import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
@@ -289,8 +290,8 @@ data Message
   | HuntersMove
   | InDiscard InvestigatorId Message
   | InHand InvestigatorId Message
-  | InitDeck InvestigatorId [PlayerCard] -- used to initialize the deck for the campaign
-  | UpgradeDeck InvestigatorId [PlayerCard] -- used to upgrade deck during campaign
+  | InitDeck InvestigatorId (Deck PlayerCard) -- used to initialize the deck for the campaign
+  | UpgradeDeck InvestigatorId (Deck PlayerCard) -- used to upgrade deck during campaign
   | FinishedUpgradingDecks
   | InitiatePlayCard InvestigatorId CardId (Maybe Target) Bool
   | InitiatePlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
@@ -326,7 +327,7 @@ data Message
   | InvestigatorWhenDefeated Source InvestigatorId
   | InvestigatorWhenEliminated Source InvestigatorId
   | Label Text [Message]
-  | LoadDeck InvestigatorId [PlayerCard] -- used to reset the deck of the investigator
+  | LoadDeck InvestigatorId (Deck PlayerCard) -- used to reset the deck of the investigator
   | LookAtRevealed LocationId
   | LookAtTopOfDeck InvestigatorId Target Int
   | LoseActions InvestigatorId Source Int
@@ -434,7 +435,7 @@ data Message
   | SearchDiscard InvestigatorId Target [Trait]
   | SearchTopOfDeck InvestigatorId Target Int [Trait] LeftoverCardStrategy
   | SetActions InvestigatorId Source Int
-  | SetEncounterDeck [EncounterCard]
+  | SetEncounterDeck (Deck EncounterCard)
   | SetLocationLabel LocationId Text
   | SetTokens [Token]
   | SetTokensForScenario

@@ -74,7 +74,6 @@ export function choicesSource(game: Game, investigatorId: string) {
 
 export interface GameState {
   activeInvestigatorId: string;
-  hash: string;
   acts: Record<string, Act>;
   agendas: Record<string, Agenda>;
   assets: Record<string, Asset>;
@@ -113,7 +112,6 @@ export const modeDecoder = JsonDecoder.object<Mode>(
 export const gameStateDecoder = JsonDecoder.object<GameState>(
   {
     activeInvestigatorId: JsonDecoder.string,
-    hash: JsonDecoder.string,
     acts: JsonDecoder.dictionary<Act>(actDecoder, 'Dict<UUID, Act>'),
     agendas: JsonDecoder.dictionary<Agenda>(agendaDecoder, 'Dict<UUID, Agenda>'),
     assets: JsonDecoder.dictionary<Asset>(assetDecoder, 'Dict<UUID, Asset>'),

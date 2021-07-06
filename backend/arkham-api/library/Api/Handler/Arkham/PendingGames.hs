@@ -2,7 +2,7 @@ module Api.Handler.Arkham.PendingGames
   ( putApiV1ArkhamPendingGameR
   ) where
 
-import Import hiding ((==.), on)
+import Import hiding (on, (==.))
 
 import Api.Arkham.Helpers
 import Arkham.Game
@@ -48,11 +48,9 @@ putApiV1ArkhamPendingGameR gameId = do
   writeChannel <- getChannel gameId
   liftIO $ atomically $ writeTChan
     writeChannel
-    (encode
-      (Entity
-        gameId
-        (ArkhamGame arkhamGameName updatedGame updatedQueue updatedMessages)
-      )
+    (encode $ GameUpdate $ Entity
+      gameId
+      (ArkhamGame arkhamGameName updatedGame updatedQueue updatedMessages)
     )
 
   Entity

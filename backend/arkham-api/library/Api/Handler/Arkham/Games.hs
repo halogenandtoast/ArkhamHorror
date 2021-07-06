@@ -19,14 +19,15 @@ import Arkham.Types.Investigator
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.ScenarioId
+import Control.Lens ((%~), (&))
 import Control.Monad.Random (mkStdGen)
+import Control.Monad.Random.Class (getRandom)
 import qualified Data.ByteString.Lazy as BSL
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Map.Strict as Map
-import Data.UUID
 import Database.Esqueleto.Experimental
 import Entity.Arkham.Player
-import Import hiding ((==.), delete, on)
+import Import hiding (delete, on, (==.))
 import Json
 import Network.WebSockets (ConnectionException)
 import Safe (fromJustNote)
@@ -113,12 +114,13 @@ postApiV1ArkhamGamesR = do
     hashKey = fromIntegral $ fromSqlKey userId
     investigators =
       HashMap.singleton hashKey (lookupInvestigator iid, decklist)
+  newGameSeed <- liftIO getRandom
+  genRef <- newIORef (mkStdGen newGameSeed)
   case campaignId of
     Just cid -> do
       (queueRef, game) <- liftIO
-        $ newCampaign cid playerCount investigators difficulty
+        $ newCampaign cid newGameSeed playerCount investigators difficulty
       gameRef <- newIORef game
-      genRef <- newIORef (mkStdGen (gameSeed game))
       runGameApp (GameApp gameRef queueRef genRef $ pure . const ()) runMessages
       ge <- readIORef gameRef
       updatedQueue <- readIORef queueRef
@@ -130,9 +132,8 @@ postApiV1ArkhamGamesR = do
     Nothing -> case scenarioId of
       Just sid -> do
         (queueRef, game) <- liftIO
-          $ newScenario sid playerCount investigators difficulty
+          $ newScenario sid newGameSeed playerCount investigators difficulty
         gameRef <- newIORef game
-        genRef <- newIORef (mkStdGen (gameSeed game))
         runGameApp
           (GameApp gameRef queueRef genRef $ pure . const ())
           runMessages
@@ -145,10 +146,7 @@ postApiV1ArkhamGamesR = do
         pure $ Entity key (ArkhamGame campaignName ge updatedQueue [])
       Nothing -> error "missing either campaign id or scenario id"
 
-data QuestionReponse = QuestionResponse
-  { qrChoice :: Int
-  , qrGameHash :: UUID
-  }
+newtype QuestionReponse = QuestionResponse { qrChoice :: Int }
   deriving stock Generic
 
 instance FromJSON QuestionReponse where
@@ -197,35 +195,28 @@ putApiV1ArkhamGameR gameId = do
           (Nothing, msgs'') -> [Ask investigatorId $ ChooseSome msgs'']
       _ -> []
 
-  if gameHash == qrGameHash response
-    then do
-      gameRef <- newIORef gameJson
-      queueRef <- newIORef (messages <> arkhamGameQueue)
-      logRef <- newIORef []
-      genRef <- newIORef (mkStdGen gameSeed)
-      writeChannel <- getChannel gameId
-      runGameApp
-        (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel))
-        runMessages
-      ge <- readIORef gameRef
-      updatedQueue <- readIORef queueRef
-      updatedLog <- (arkhamGameLog <>) <$> readIORef logRef
-      liftIO $ atomically $ writeTChan
-        writeChannel
-        (encode
-          (GameUpdate $ Entity
-            gameId
-            (ArkhamGame arkhamGameName ge updatedQueue updatedLog)
-          )
-        )
-      Entity gameId (ArkhamGame arkhamGameName ge updatedQueue updatedLog)
-        <$ runDB
-             (replace
-               gameId
-               (ArkhamGame arkhamGameName ge updatedQueue updatedLog)
-             )
-    else invalidArgs ["Hash mismatch"]
-
+  gameRef <- newIORef
+    (gameJson & choicesL %~ (AskChoice investigatorId (qrChoice response) :))
+  queueRef <- newIORef (messages <> arkhamGameQueue)
+  logRef <- newIORef []
+  genRef <- newIORef (mkStdGen gameSeed)
+  writeChannel <- getChannel gameId
+  runGameApp
+    (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel))
+    runMessages
+  ge <- readIORef gameRef
+  updatedQueue <- readIORef queueRef
+  updatedLog <- (arkhamGameLog <>) <$> readIORef logRef
+  liftIO $ atomically $ writeTChan
+    writeChannel
+    (encode
+      (GameUpdate
+      $ Entity gameId (ArkhamGame arkhamGameName ge updatedQueue updatedLog)
+      )
+    )
+  Entity gameId (ArkhamGame arkhamGameName ge updatedQueue updatedLog)
+    <$ runDB
+         (replace gameId (ArkhamGame arkhamGameName ge updatedQueue updatedLog))
 
 data RawGameJsonPut = RawGameJsonPut
   { gameJson :: Game
@@ -233,10 +224,6 @@ data RawGameJsonPut = RawGameJsonPut
   }
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
-
-data ApiResponse = GameUpdate (Entity ArkhamGame) | GameMessage Text
-  deriving stock Generic
-  deriving anyclass ToJSON
 
 handleMessageLog
   :: MonadIO m => IORef [Text] -> TChan BSL.ByteString -> Message -> m ()

@@ -19,7 +19,7 @@ spec = describe "Smite the Wicked" $ do
         investigator
         [ placedLocation location1
         , placedLocation location2
-        , SetEncounterDeck [treachery, enemy]
+        , SetEncounterDeck (Deck [treachery, enemy])
         , loadDeck investigator [smiteTheWicked]
         , moveTo investigator location1
         , drawCards investigator 1
@@ -44,7 +44,7 @@ spec = describe "Smite the Wicked" $ do
     location <- testLocation id
     gameTest
         investigator
-        [ SetEncounterDeck [enemy]
+        [ SetEncounterDeck (Deck [enemy])
         , loadDeck investigator [smiteTheWicked]
         , moveTo investigator location
         , drawCards investigator 1
@@ -64,7 +64,7 @@ spec = describe "Smite the Wicked" $ do
     gameTest
         investigator
         [ placedLocation location
-        , SetEncounterDeck [enemy]
+        , SetEncounterDeck (Deck [enemy])
         , loadDeck investigator [smiteTheWicked]
         , moveTo investigator location
         , drawCards investigator 1
@@ -98,7 +98,7 @@ spec = describe "Smite the Wicked" $ do
     gameTest
         investigator
         [ placedLocation location
-        , SetEncounterDeck [enemy]
+        , SetEncounterDeck (Deck [enemy])
         , loadDeck investigator [smiteTheWicked]
         , moveTo investigator location
         , drawCards investigator 1

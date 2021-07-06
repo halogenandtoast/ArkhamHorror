@@ -1,13 +1,18 @@
 <template>
-  <div class="game-log" ref="messages">
-    <ul>
+  <div class="game-log">
+    <ul ref="messages">
       <li class="log-entry" v-for="(msg, i) in gameLog" :key="i"><GameMessage :game="game" :msg="msg" /></li>
     </ul>
+    <div>
+      <input type="text">
+      <button @click="undo">Undo</button>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, watch, ref, toRefs, nextTick, onMounted } from 'vue';
+import { undoChoice } from '@/arkham/api'
 import { Game } from '@/arkham/types/Game';
 import GameMessage from '@/arkham/components/GameMessage.vue';
 
@@ -45,7 +50,11 @@ export default defineComponent({
       }
     }, { deep: true })
 
-    return { messages }
+    async function undo() {
+      undoChoice(props.game.id);
+    }
+
+    return { messages, undo }
   }
 })
 </script>
@@ -58,14 +67,16 @@ export default defineComponent({
   margin: 10px;
   height: 100%;
   padding: 10px 10px;
-  overflow-y: auto;
-  overflow-x: hidden;
   box-sizing: border-box;
   flex: 1 1 50%;
+  overflow-x: hidden;
   ul {
     list-style: none;
     margin: 0;
     padding: 0;
+    height: calc(100% - 2em);
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 }
 

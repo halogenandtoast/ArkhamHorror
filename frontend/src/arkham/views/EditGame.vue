@@ -2,12 +2,13 @@
   <div id="edit-game" class="edit-game" v-if="ready">
     <input :v-model="rawGameMessage" type="text" />
     <button @click="save">Save</button>
+    <button @click="undo">Undo</button>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
-import { fetchGameRaw, updateGameRaw } from '@/arkham/api'
+import { fetchGameRaw, updateGameRaw, undoChoice } from '@/arkham/api'
 import { Message, messageDecoder } from '@/arkham/types/Message'
 
 export default defineComponent({
@@ -36,7 +37,11 @@ export default defineComponent({
       }
     }
 
-    return { save, ready, json }
+    async function undo() {
+      undoChoice(props.gameId);
+    }
+
+    return { undo, save, ready, json }
   }
 })
 </script>

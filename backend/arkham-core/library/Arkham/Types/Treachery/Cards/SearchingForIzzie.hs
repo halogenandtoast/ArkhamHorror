@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.SearchingForIzzie
   ( SearchingForIzzie(..)
   , searchingForIzzie
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -45,9 +46,8 @@ instance TreacheryRunner env => RunMessage env SearchingForIzzie where
     Revelation iid source | isSource attrs source -> do
       farthestLocations <- map unFarthestLocationId <$> getSetList iid
       t <$ case farthestLocations of
-        [lid] ->
-          unshiftMessage (AttachTreachery treacheryId (LocationTarget lid))
-        lids -> unshiftMessage
+        [lid] -> push (AttachTreachery treacheryId (LocationTarget lid))
+        lids -> push
           (chooseOne
             iid
             [ AttachTreachery treacheryId (LocationTarget lid) | lid <- lids ]
@@ -55,7 +55,7 @@ instance TreacheryRunner env => RunMessage env SearchingForIzzie where
     UseCardAbility iid (TreacherySource tid) _ 1 _ | tid == treacheryId ->
       withTreacheryLocation attrs $ \attachedLocationId -> do
         shroud <- unShroud <$> getCount attachedLocationId
-        t <$ unshiftMessage
+        t <$ push
           (BeginSkillTest
             iid
             (TreacherySource treacheryId)
@@ -65,8 +65,8 @@ instance TreacheryRunner env => RunMessage env SearchingForIzzie where
             shroud
           )
     PassedSkillTest _ _ source _ _ _ | isSource attrs source ->
-      t <$ unshiftMessage (Discard $ toTarget attrs)
+      t <$ push (Discard $ toTarget attrs)
     EndOfGame ->
       let investigator = fromJustNote "missing investigator" treacheryOwner
-      in t <$ unshiftMessage (SufferTrauma investigator 0 1)
+      in t <$ push (SufferTrauma investigator 0 1)
     _ -> SearchingForIzzie <$> runMessage msg attrs

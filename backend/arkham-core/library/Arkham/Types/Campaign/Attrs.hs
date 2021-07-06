@@ -90,25 +90,25 @@ instance HasList CampaignStoryCard env CampaignAttrs where
 
 instance CampaignRunner env => RunMessage env CampaignAttrs where
   runMessage msg a@CampaignAttrs {..} = case msg of
-    StartCampaign -> a <$ unshiftMessage (CampaignStep campaignStep)
-    CampaignStep Nothing -> a <$ unshiftMessage GameOver -- TODO: move to generic
+    StartCampaign -> a <$ push (CampaignStep campaignStep)
+    CampaignStep Nothing -> a <$ push GameOver -- TODO: move to generic
     CampaignStep (Just (ScenarioStep sid)) -> do
       scenarioName <- getName sid
-      a <$ unshiftMessages [ResetGame, StartScenario scenarioName sid]
+      a <$ pushAll [ResetGame, StartScenario scenarioName sid]
     CampaignStep (Just (UpgradeDeckStep _)) -> do
       investigatorIds <- getInvestigatorIds
-      a <$ unshiftMessages
+      a <$ pushAll
         (ResetGame
         : map chooseUpgradeDeck investigatorIds
         <> [FinishedUpgradingDecks]
         )
-    SetTokensForScenario -> a <$ unshiftMessage (SetTokens campaignChaosBag)
+    SetTokensForScenario -> a <$ push (SetTokens campaignChaosBag)
     AddCampaignCardToDeck iid cardDef -> do
       card <- lookupPlayerCard cardDef <$> getRandom
       pure $ a & storyCardsL %~ insertWith (<>) iid [card]
     AddCampaignCardToEncounterDeck cardDef -> do
       card <- lookupEncounterCard cardDef <$> getRandom
-      a <$ unshiftMessages [AddToEncounterDeck card]
+      a <$ pushAll [AddToEncounterDeck card]
     RemoveCampaignCardFromDeck iid cardCode ->
       pure
         $ a
@@ -119,13 +119,13 @@ instance CampaignRunner env => RunMessage env CampaignAttrs where
     UpgradeDeck iid deck -> pure $ a & decksL %~ insertMap iid deck
     FinishedUpgradingDecks -> case a ^. stepL of
       Just (UpgradeDeckStep nextStep) -> do
-        unshiftMessage (CampaignStep $ Just nextStep)
+        push (CampaignStep $ Just nextStep)
         pure $ a & stepL ?~ nextStep
       _ -> error "invalid state"
     ResetGame -> do
       for_ (mapToList campaignDecks) $ \(iid, deck) -> do
         let investigatorStoryCards = findWithDefault [] iid campaignStoryCards
-        unshiftMessage (LoadDeck iid $ deck <> investigatorStoryCards)
+        push (LoadDeck iid $ deck <> investigatorStoryCards)
       pure a
     CrossOutRecord key ->
       pure

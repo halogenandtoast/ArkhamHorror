@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.Psychosis
   ( Psychosis(..)
   , psychosis
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -42,10 +43,11 @@ instance ActionRunner env => HasActions env Psychosis where
 instance (TreacheryRunner env) => RunMessage env Psychosis where
   runMessage msg t@(Psychosis attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
-      t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
+      t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)
     After (InvestigatorTakeDamage iid _ _ n)
-      | treacheryOnInvestigator iid attrs && n > 0 -> t <$ unshiftMessage
+      | treacheryOnInvestigator iid attrs && n > 0
+      -> t <$ push
         (InvestigatorDirectDamage iid (TreacherySource treacheryId) 1 0)
     UseCardAbility _ (TreacherySource tid) _ 1 _ | tid == treacheryId ->
-      t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
+      t <$ push (Discard (TreacheryTarget treacheryId))
     _ -> Psychosis <$> runMessage msg attrs

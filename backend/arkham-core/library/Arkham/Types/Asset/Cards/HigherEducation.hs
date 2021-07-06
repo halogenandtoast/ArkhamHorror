@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.HigherEducation
   ( higherEducation
   , HigherEducation(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -54,22 +55,20 @@ instance HasModifiersFor env HigherEducation where
 
 instance AssetRunner env => RunMessage env HigherEducation where
   runMessage msg a@(HigherEducation attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessages
-        [ SpendResources iid 1
-        , CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [SkillModifier SkillWillpower 1])
-          source
-          (InvestigatorTarget iid)
-        ]
-    UseCardAbility iid source _ 2 _ | isSource attrs source ->
-      a <$ unshiftMessages
-        [ SpendResources iid 1
-        , CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [SkillModifier SkillIntellect 1])
-          source
-          (InvestigatorTarget iid)
-        ]
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+      [ SpendResources iid 1
+      , CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers $ toModifiers attrs [SkillModifier SkillWillpower 1])
+        source
+        (InvestigatorTarget iid)
+      ]
+    UseCardAbility iid source _ 2 _ | isSource attrs source -> a <$ pushAll
+      [ SpendResources iid 1
+      , CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers $ toModifiers attrs [SkillModifier SkillIntellect 1])
+        source
+        (InvestigatorTarget iid)
+      ]
     _ -> HigherEducation <$> runMessage msg attrs

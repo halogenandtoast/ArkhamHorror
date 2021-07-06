@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.OnTheProwl
   ( OnTheProwl(..)
   , onTheProwl
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -47,7 +48,7 @@ instance TreacheryRunner env => RunMessage env OnTheProwl where
     Revelation iid source | isSource attrs source -> do
       mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
       t <$ case mrougarou of
-        Nothing -> unshiftMessage (Discard (TreacheryTarget treacheryId))
+        Nothing -> push (Discard (TreacheryTarget treacheryId))
         Just eid -> do
           locationIds <- setToList <$> nonBayouLocations
           locationsWithClueCounts <- for locationIds
@@ -55,18 +56,19 @@ instance TreacheryRunner env => RunMessage env OnTheProwl where
           let
             sortedLocationsWithClueCounts = sortOn snd locationsWithClueCounts
           case sortedLocationsWithClueCounts of
-            [] -> unshiftMessage (Discard (TreacheryTarget treacheryId))
+            [] -> push (Discard (TreacheryTarget treacheryId))
             ((_, c) : _) ->
               let
                 (matches, _) =
                   span ((== c) . snd) sortedLocationsWithClueCounts
               in
                 case matches of
-                  [(x, _)] -> unshiftMessages
-                    [ MoveUntil x (EnemyTarget eid)
-                    , Discard (TreacheryTarget treacheryId)
-                    ]
-                  xs -> unshiftMessages
+                  [(x, _)] ->
+                    pushAll
+                      [ MoveUntil x (EnemyTarget eid)
+                      , Discard (TreacheryTarget treacheryId)
+                      ]
+                  xs -> pushAll
                     [ chooseOne
                       iid
                       [ MoveUntil x (EnemyTarget eid) | (x, _) <- xs ]

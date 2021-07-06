@@ -23,7 +23,7 @@ instance HasActions env AbandonedAndAlone where
 instance TreacheryRunner env => RunMessage env AbandonedAndAlone where
   runMessage msg t@(AbandonedAndAlone attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      t <$ unshiftMessages
+      t <$ pushAll
         [ InvestigatorDirectDamage iid source 0 2
         , RemoveDiscardFromGame iid
         , Discard $ toTarget attrs

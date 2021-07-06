@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.LostMemories
   ( lostMemories
   , LostMemories(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -49,6 +50,6 @@ instance LocationRunner env => RunMessage env LostMemories where
   runMessage msg l@(LostMemories attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid
-      l <$ unshiftMessage
+      l <$ push
         (InvestigatorAssignDamage iid source DamageAny 0 actionRemainingCount)
     _ -> LostMemories <$> runMessage msg attrs

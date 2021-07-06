@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.RampagingCreatures
   ( RampagingCreatures(..)
   , rampagingCreatures
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -34,7 +35,7 @@ instance AgendaRunner env => RunMessage env RampagingCreatures where
       leadInvestigatorId <- getLeadInvestigatorId
       broodOfYogSothoth <- map EnemyTarget
         <$> getSetList (EnemyWithTitle "Brood of Yog-Sothoth")
-      a <$ unshiftMessage
+      a <$ push
         (chooseOneAtATime
           leadInvestigatorId
           [ TargetLabel target [ChooseRandomLocation target mempty]
@@ -42,10 +43,10 @@ instance AgendaRunner env => RunMessage env RampagingCreatures where
           ]
         )
     ChosenRandomLocation target@(EnemyTarget _) lid ->
-      a <$ unshiftMessage (MoveToward target (LocationWithId lid))
+      a <$ push (MoveToward target (LocationWithId lid))
     AdvanceAgenda aid | aid == agendaId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      a <$ unshiftMessages
+      a <$ pushAll
         [ ShuffleEncounterDiscardBackIn
         , UseScenarioSpecificAbility leadInvestigatorId Nothing 1
         , NextAgenda aid "02238"

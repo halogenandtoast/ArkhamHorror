@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.OldBookOfLore
   ( OldBookOfLore(..)
   , oldBookOfLore
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -36,7 +37,7 @@ instance AssetRunner env => RunMessage env OldBookOfLore where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid
       investigatorIds <- getSetList locationId
-      a <$ unshiftMessage
+      a <$ push
         (chooseOne
           iid
           [ SearchTopOfDeck iid' (InvestigatorTarget iid') 3 [] ShuffleBackIn

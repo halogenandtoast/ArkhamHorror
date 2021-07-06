@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.FortyFiveAutomatic
   ( FortyFiveAutomatic(..)
   , fortyFiveAutomatic
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -52,15 +53,14 @@ instance AssetRunner env => RunMessage env FortyFiveAutomatic where
   runMessage msg a@(FortyFiveAutomatic attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       FortyFiveAutomatic <$> runMessage msg (attrs & usesL .~ Uses Ammo 4)
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessages
-        [ CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers
-          $ toModifiers attrs [DamageDealt 1, SkillModifier SkillCombat 1]
-          )
-          source
-          (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillCombat mempty False
-        ]
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+      [ CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers
+        $ toModifiers attrs [DamageDealt 1, SkillModifier SkillCombat 1]
+        )
+        source
+        (InvestigatorTarget iid)
+      , ChooseFightEnemy iid source SkillCombat mempty False
+      ]
     _ -> FortyFiveAutomatic <$> runMessage msg attrs

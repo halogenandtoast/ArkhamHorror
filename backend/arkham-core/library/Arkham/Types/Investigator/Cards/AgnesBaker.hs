@@ -1,13 +1,14 @@
 module Arkham.Types.Investigator.Cards.AgnesBaker
   ( AgnesBaker(..)
   , agnesBaker
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Cost
 import Arkham.Types.EnemyId
 import Arkham.Types.Investigator.Attrs
@@ -59,7 +60,7 @@ instance (InvestigatorRunner env) => RunMessage env AgnesBaker where
   runMessage msg i@(AgnesBaker attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       enemyIds <- getSetList $ investigatorLocation attrs
-      i <$ unshiftMessage
+      i <$ push
         (chooseOne
           (toId attrs)
           [ EnemyDamage eid (toId attrs) source 1 | eid <- enemyIds ]

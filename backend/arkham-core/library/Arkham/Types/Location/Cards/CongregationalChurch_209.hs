@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.CongregationalChurch_209
   ( congregationalChurch_209
   , CongregationalChurch_209(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -55,5 +56,5 @@ instance ActionRunner env => HasActions env CongregationalChurch_209 where
 instance LocationRunner env => RunMessage env CongregationalChurch_209 where
   runMessage msg l@(CongregationalChurch_209 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessage (TakeResources iid 2 False)
+      l <$ push (TakeResources iid 2 False)
     _ -> CongregationalChurch_209 <$> runMessage msg attrs

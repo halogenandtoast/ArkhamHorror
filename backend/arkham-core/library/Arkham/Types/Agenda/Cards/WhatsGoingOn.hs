@@ -27,7 +27,7 @@ instance AgendaRunner env => RunMessage env WhatsGoingOn where
   runMessage msg a@(WhatsGoingOn attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
-      a <$ unshiftMessage
+      a <$ push
         (chooseOne
           leadInvestigatorId
           [ Label

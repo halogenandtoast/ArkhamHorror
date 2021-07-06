@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.GraveEater
   ( graveEater
   , GraveEater(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -26,5 +27,5 @@ instance ActionRunner env => HasActions env GraveEater where
 instance (EnemyRunner env) => RunMessage env GraveEater where
   runMessage msg e@(GraveEater attrs) = case msg of
     After (EnemyAttack iid eid) | eid == enemyId attrs ->
-      e <$ unshiftMessage (RandomDiscard iid)
+      e <$ push (RandomDiscard iid)
     _ -> GraveEater <$> runMessage msg attrs

@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.TwistOfFate
   ( TwistOfFate(..)
   , twistOfFate
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -28,7 +29,7 @@ instance HasActions env TwistOfFate where
 instance (TreacheryRunner env) => RunMessage env TwistOfFate where
   runMessage msg t@(TwistOfFate attrs) = case msg of
     Revelation iid source | isSource attrs source ->
-      t <$ unshiftMessage (RequestTokens source (Just iid) 1 SetAside)
+      t <$ push (RequestTokens source (Just iid) 1 SetAside)
     RequestedTokens source (Just iid) tokens | isSource attrs source -> do
       let
         msgs = mapMaybe
@@ -61,6 +62,5 @@ instance (TreacheryRunner env) => RunMessage env TwistOfFate where
               Just (InvestigatorAssignDamage iid source DamageAny 0 2)
           )
           tokens
-      t <$ unshiftMessages
-        (msgs <> [ResetTokens source, Discard $ toTarget attrs])
+      t <$ pushAll (msgs <> [ResetTokens source, Discard $ toTarget attrs])
     _ -> TwistOfFate <$> runMessage msg attrs

@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.FacultyOfficesTheNightIsStillYoung
   ( facultyOfficesTheNightIsStillYoung
   , FacultyOfficesTheNightIsStillYoung(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -66,14 +67,14 @@ instance LocationRunner env => RunMessage env FacultyOfficesTheNightIsStillYoung
   runMessage msg l@(FacultyOfficesTheNightIsStillYoung attrs) = case msg of
     RevealLocation miid lid | lid == locationId attrs -> do
       iid <- maybe getLeadInvestigatorId pure miid
-      unshiftMessage $ FindEncounterCard
+      push $ FindEncounterCard
         iid
         (toTarget attrs)
         (CardMatchByType (EnemyType, singleton Humanoid))
       FacultyOfficesTheNightIsStillYoung <$> runMessage msg attrs
     FoundEncounterCard _iid target card | isTarget attrs target ->
-      l <$ unshiftMessage (SpawnEnemyAt (EncounterCard card) (toId attrs))
+      l <$ push (SpawnEnemyAt (EncounterCard card) (toId attrs))
     UseCardAbility _iid source _ 1 _
       | isSource attrs source && locationRevealed attrs -> l
-      <$ unshiftMessage (ScenarioResolution $ Resolution 1)
+      <$ push (ScenarioResolution $ Resolution 1)
     _ -> FacultyOfficesTheNightIsStillYoung <$> runMessage msg attrs

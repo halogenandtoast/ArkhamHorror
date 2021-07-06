@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.BlastedHeath_249
   ( blastedHeath_249
   , BlastedHeath_249(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -33,6 +34,6 @@ instance ActionRunner env => HasActions env BlastedHeath_249 where
 
 instance LocationRunner env => RunMessage env BlastedHeath_249 where
   runMessage msg l@(BlastedHeath_249 attrs) = case msg of
-    EndTurn iid | iid `on` attrs -> l <$ unshiftMessage
-      (InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0)
+    EndTurn iid | iid `on` attrs ->
+      l <$ push (InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0)
     _ -> BlastedHeath_249 <$> runMessage msg attrs

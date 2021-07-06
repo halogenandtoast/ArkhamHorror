@@ -1,7 +1,8 @@
 {-# LANGUAGE DefaultSignatures #-}
 module Arkham.Types.Classes.RunMessage
   ( module Arkham.Types.Classes.RunMessage
-  ) where
+  )
+where
 
 import Arkham.Prelude hiding (to)
 

@@ -40,6 +40,5 @@ instance (EventRunner env) => RunMessage env DynamiteBlast2 where
                  InvestigatorAssignDamage iid' (EventSource eid) DamageAny 3 0
                )
                investigatorIds
-      e <$ unshiftMessages
-        [chooseOne iid $ map Run choices, Discard (EventTarget eid)]
+      e <$ pushAll [chooseOne iid $ map Run choices, Discard (EventTarget eid)]
     _ -> DynamiteBlast2 <$> runMessage msg attrs

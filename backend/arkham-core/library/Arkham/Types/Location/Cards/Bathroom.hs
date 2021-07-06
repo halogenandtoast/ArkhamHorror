@@ -31,5 +31,5 @@ instance (LocationRunner env) => RunMessage env Bathroom where
       | isSource attrs source
       -> l <$ when
         (tokenFace `elem` [Skull, Cultist, Tablet, AutoFail])
-        (unshiftMessages [SetActions iid (toSource attrs) 0, ChooseEndTurn iid])
+        (pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid])
     _ -> Bathroom <$> runMessage msg attrs

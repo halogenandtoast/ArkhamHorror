@@ -1,6 +1,7 @@
 module Arkham.Types.Asset.Cards.GrotesqueStatue4Spec
   ( spec
-  ) where
+  )
+where
 
 import TestImport
 

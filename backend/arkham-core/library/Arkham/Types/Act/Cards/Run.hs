@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.Run
   ( Run(..)
   , run
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -28,7 +29,7 @@ instance ActRunner env => RunMessage env Run where
       isEngineCar <- elem lid <$> getLocationIdWithTitle "Engine Car"
       if isEngineCar
         then do
-          unshiftMessages
+          pushAll
             (chooseOne
                 iid
                 [ Label
@@ -58,8 +59,8 @@ instance ActRunner env => RunMessage env Run where
         else pure a
     FailedSkillTest iid _ source _ SkillAgility _
       | isSource attrs source && actSequence == Act 1 B -> a
-      <$ unshiftMessage (SufferTrauma iid 1 0)
+      <$ push (SufferTrauma iid 1 0)
     FailedSkillTest iid _ source _ SkillCombat _
       | isSource attrs source && actSequence == Act 1 B -> a
-      <$ unshiftMessage (SufferTrauma iid 1 0)
+      <$ push (SufferTrauma iid 1 0)
     _ -> Run <$> runMessage msg attrs

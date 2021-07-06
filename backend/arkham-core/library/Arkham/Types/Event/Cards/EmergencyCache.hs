@@ -1,7 +1,8 @@
 module Arkham.Types.Event.Cards.EmergencyCache
   ( emergencyCache
   , EmergencyCache(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -26,6 +27,5 @@ instance HasActions env EmergencyCache where
 instance HasQueue env => RunMessage env EmergencyCache where
   runMessage msg e@(EmergencyCache attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId ->
-      e <$ unshiftMessages
-        [TakeResources iid 3 False, Discard (EventTarget eid)]
+      e <$ pushAll [TakeResources iid 3 False, Discard (EventTarget eid)]
     _ -> EmergencyCache <$> runMessage msg attrs

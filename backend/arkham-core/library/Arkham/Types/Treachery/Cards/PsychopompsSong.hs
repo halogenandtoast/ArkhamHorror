@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.PsychopompsSong
   ( psychopompsSong
   , PsychopompsSong(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -36,7 +37,7 @@ instance HasActions env PsychopompsSong where
 instance TreacheryRunner env => RunMessage env PsychopompsSong where
   runMessage msg t@(PsychopompsSong attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
-      t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
+      t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       mMsg <- findFromQueue $ \case
         InvestigatorDamage iid' _ n _ | iid' == iid -> n > 0

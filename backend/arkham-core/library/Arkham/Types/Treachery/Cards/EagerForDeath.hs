@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.EagerForDeath
   ( EagerForDeath(..)
   , eagerForDeath
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -30,11 +31,11 @@ instance TreacheryRunner env => RunMessage env EagerForDeath where
   runMessage msg t@(EagerForDeath attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       difficulty <- (+ 2) . unDamageCount <$> getCount iid
-      t <$ unshiftMessages
+      t <$ pushAll
         [ RevelationSkillTest iid source SkillWillpower difficulty
         , Discard (toTarget attrs)
         ]
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> t
-      <$ unshiftMessage (InvestigatorAssignDamage iid source DamageAny 0 2)
+      <$ push (InvestigatorAssignDamage iid source DamageAny 0 2)
     _ -> EagerForDeath <$> runMessage msg attrs

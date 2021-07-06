@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.UnhallowedCountry
   ( UnhallowedCountry(..)
   , unhallowedCountry
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -48,9 +49,9 @@ instance HasActions env UnhallowedCountry where
 instance TreacheryRunner env => RunMessage env UnhallowedCountry where
   runMessage msg t@(UnhallowedCountry attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
-      t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
-    ChooseEndTurn iid | treacheryOnInvestigator iid attrs -> t <$ unshiftMessage
+      t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)
+    ChooseEndTurn iid | treacheryOnInvestigator iid attrs -> t <$ push
       (RevelationSkillTest iid (TreacherySource treacheryId) SkillWillpower 3)
     PassedSkillTest _ _ source _ _ _ | isSource attrs source ->
-      t <$ unshiftMessage (Discard $ toTarget attrs)
+      t <$ push (Discard $ toTarget attrs)
     _ -> UnhallowedCountry <$> runMessage msg attrs

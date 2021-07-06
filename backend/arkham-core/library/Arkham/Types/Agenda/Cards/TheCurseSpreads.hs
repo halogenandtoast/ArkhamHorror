@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.TheCurseSpreads
   ( TheCurseSpreads(..)
   , theCurseSpreads
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -45,5 +46,5 @@ instance AgendaRunner env => RunMessage env TheCurseSpreads where
             then attrs & doomL +~ 1
             else attrs
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B ->
-      a <$ unshiftMessage (ScenarioResolution $ Resolution 1)
+      a <$ push (ScenarioResolution $ Resolution 1)
     _ -> TheCurseSpreads <$> runMessage msg attrs

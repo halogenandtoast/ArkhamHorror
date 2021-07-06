@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.ChaosInTheCloverClub
   ( ChaosInTheCloverClub(..)
   , chaosInTheCloverClub
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -37,10 +38,10 @@ instance AgendaRunner env => RunMessage env ChaosInTheCloverClub where
       abominationLocations <- traverse (getId @LocationId) abominations
       criminals <-
         concat <$> traverse (getSetList . ([Criminal], )) abominationLocations
-      a <$ unshiftMessages [ Discard $ EnemyTarget eid | eid <- criminals ]
+      a <$ pushAll [ Discard $ EnemyTarget eid | eid <- criminals ]
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
-      a <$ unshiftMessage
+      a <$ push
         (chooseOne
           leadInvestigatorId
           [Label "Continue" [ScenarioResolution $ Resolution 4]]

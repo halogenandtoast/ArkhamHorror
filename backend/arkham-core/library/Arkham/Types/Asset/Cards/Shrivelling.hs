@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.Shrivelling
   ( Shrivelling(..)
   , shrivelling
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -52,14 +53,13 @@ instance AssetRunner env => RunMessage env Shrivelling where
   runMessage msg a@(Shrivelling attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       Shrivelling <$> runMessage msg (attrs & usesL .~ Uses Charge 4)
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessages
-        [ CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [DamageDealt 1])
-          source
-          (InvestigatorTarget iid)
-        , CreateEffect "01060" Nothing source (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillWillpower mempty False
-        ]
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+      [ CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers $ toModifiers attrs [DamageDealt 1])
+        source
+        (InvestigatorTarget iid)
+      , CreateEffect "01060" Nothing source (InvestigatorTarget iid)
+      , ChooseFightEnemy iid source SkillWillpower mempty False
+      ]
     _ -> Shrivelling <$> runMessage msg attrs

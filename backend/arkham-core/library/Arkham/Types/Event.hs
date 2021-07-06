@@ -1,6 +1,7 @@
 module Arkham.Types.Event
   ( module Arkham.Types.Event
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

@@ -1,7 +1,8 @@
 module Arkham.Types.Event.Cards.Shortcut
   ( shortcut
   , Shortcut(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -36,7 +37,7 @@ instance
       lid <- getId @LocationId iid
       investigatorIds <- getSetList lid
       connectingLocations <- map unAccessibleLocationId <$> getSetList lid
-      e <$ unshiftMessages
+      e <$ pushAll
         [ chooseOne
           iid
           [ TargetLabel

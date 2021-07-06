@@ -24,5 +24,5 @@ instance HasActions env Fearless where
 instance (SkillRunner env) => RunMessage env Fearless where
   runMessage msg s@(Fearless attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest _ _ _ (SkillTarget sid) _ _ | sid == skillId ->
-      s <$ unshiftMessage (HealHorror (InvestigatorTarget skillOwner) 1)
+      s <$ push (HealHorror (InvestigatorTarget skillOwner) 1)
     _ -> Fearless <$> runMessage msg attrs

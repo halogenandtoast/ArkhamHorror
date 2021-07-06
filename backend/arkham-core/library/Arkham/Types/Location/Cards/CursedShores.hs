@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.CursedShores
   ( CursedShores(..)
   , cursedShores
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -47,18 +48,17 @@ instance ActionRunner env => HasActions env CursedShores where
 
 instance LocationRunner env => RunMessage env CursedShores where
   runMessage msg l@(CursedShores attrs@LocationAttrs {..}) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessages
-        [ InvestigatorAssignDamage iid source DamageAny 1 0
-        , CreateEffect "81007" Nothing (toSource attrs) (InvestigatorTarget iid)
-        ]
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ pushAll
+      [ InvestigatorAssignDamage iid source DamageAny 1 0
+      , CreateEffect "81007" Nothing (toSource attrs) (InvestigatorTarget iid)
+      ]
     WhenEnterLocation iid lid
       | -- TODO: SHOULD WE BROADCAST LRAVING THE LOCATION INSTEAD
         lid /= locationId && iid `elem` locationInvestigators -> do
         skillCards <- map unHandCardId <$> getSetList (iid, SkillType)
         case skillCards of
           [] -> pure ()
-          [x] -> unshiftMessage (DiscardCard iid x)
-          xs -> unshiftMessage (chooseOne iid [ DiscardCard iid x | x <- xs ])
+          [x] -> push (DiscardCard iid x)
+          xs -> push (chooseOne iid [ DiscardCard iid x | x <- xs ])
         CursedShores <$> runMessage msg attrs
     _ -> CursedShores <$> runMessage msg attrs

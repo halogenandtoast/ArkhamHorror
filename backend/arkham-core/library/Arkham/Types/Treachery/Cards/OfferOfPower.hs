@@ -23,7 +23,7 @@ instance HasActions env OfferOfPower where
 instance TreacheryRunner env => RunMessage env OfferOfPower where
   runMessage msg t@(OfferOfPower attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      t <$ unshiftMessages
+      t <$ pushAll
         [ chooseOne
           iid
           [ Label

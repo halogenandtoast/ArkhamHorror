@@ -1,7 +1,8 @@
 module Arkham.Types.Event.Cards.Barricade
   ( barricade
   , Barricade(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -35,7 +36,7 @@ instance (EventRunner env) => RunMessage env Barricade where
   runMessage msg e@(Barricade attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       lid <- getId iid
-      e <$ unshiftMessage (AttachEvent eid (LocationTarget lid))
+      e <$ push (AttachEvent eid (LocationTarget lid))
     MoveFrom _ lid | LocationTarget lid `elem` eventAttachedTarget ->
-      e <$ unshiftMessage (Discard (EventTarget eventId))
+      e <$ push (Discard (EventTarget eventId))
     _ -> Barricade <$> runMessage msg attrs

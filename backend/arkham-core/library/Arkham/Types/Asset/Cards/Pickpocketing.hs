@@ -33,5 +33,5 @@ instance HasActions env Pickpocketing where
 instance AssetRunner env => RunMessage env Pickpocketing where
   runMessage msg a@(Pickpocketing attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage (DrawCards iid 1 False)
+      a <$ push (DrawCards iid 1 False)
     _ -> Pickpocketing <$> runMessage msg attrs

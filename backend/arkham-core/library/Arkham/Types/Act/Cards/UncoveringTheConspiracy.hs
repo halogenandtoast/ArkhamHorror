@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.UncoveringTheConspiracy
   ( UncoveringTheConspiracy(..)
   , uncoveringTheConspiracy
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -48,11 +49,10 @@ instance ActRunner env => RunMessage env UncoveringTheConspiracy where
   runMessage msg a@(UncoveringTheConspiracy attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      unshiftMessage
-        (chooseOne leadInvestigatorId [AdvanceAct aid $ toSource attrs])
+      push (chooseOne leadInvestigatorId [AdvanceAct aid $ toSource attrs])
       pure $ UncoveringTheConspiracy $ attrs & sequenceL .~ Act 1 B
     AdvanceAct aid _ | aid == actId && onSide B attrs ->
-      a <$ unshiftMessage (ScenarioResolution $ Resolution 1)
+      a <$ push (ScenarioResolution $ Resolution 1)
     AddToVictory _ -> do
       victoryDisplay <- mapSet unVictoryDisplayCardCode <$> getSet ()
       let
@@ -60,11 +60,11 @@ instance ActRunner env => RunMessage env UncoveringTheConspiracy where
           setFromList ["01121b", "01137", "01138", "01139", "01140", "01141"]
       a <$ when
         (cultists `HashSet.isSubsetOf` victoryDisplay)
-        (unshiftMessage (AdvanceAct actId $ toSource attrs))
+        (push (AdvanceAct actId $ toSource attrs))
     UseCardAbility iid (ActSource aid) _ 1 _ | aid == actId -> do
       investigatorIds <- getInvestigatorIds
       requiredClues <- getPlayerCountValue (PerPlayer 2)
-      a <$ unshiftMessages
+      a <$ pushAll
         [ SpendClues requiredClues investigatorIds
         , UseScenarioSpecificAbility iid Nothing 1
         ]

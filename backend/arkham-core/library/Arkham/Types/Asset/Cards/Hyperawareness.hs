@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.Hyperawareness
   ( Hyperawareness(..)
   , hyperawareness
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -41,20 +42,18 @@ instance HasActions env Hyperawareness where
 
 instance AssetRunner env => RunMessage env Hyperawareness where
   runMessage msg a@(Hyperawareness attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage
-        (CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [SkillModifier SkillIntellect 1])
-          source
-          (InvestigatorTarget iid)
-        )
-    UseCardAbility iid source _ 2 _ | isSource attrs source ->
-      a <$ unshiftMessage
-        (CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [SkillModifier SkillAgility 1])
-          source
-          (InvestigatorTarget iid)
-        )
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+      (CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers $ toModifiers attrs [SkillModifier SkillIntellect 1])
+        source
+        (InvestigatorTarget iid)
+      )
+    UseCardAbility iid source _ 2 _ | isSource attrs source -> a <$ push
+      (CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers $ toModifiers attrs [SkillModifier SkillAgility 1])
+        source
+        (InvestigatorTarget iid)
+      )
     _ -> Hyperawareness <$> runMessage msg attrs

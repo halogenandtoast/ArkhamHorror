@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.SeekingAnswers
   ( seekingAnswers
   , SeekingAnswers(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -32,11 +33,10 @@ instance HasModifiersFor env SeekingAnswers where
 instance (HasQueue env, HasSet ConnectedLocationId env LocationId) => RunMessage env SeekingAnswers where
   runMessage msg e@(SeekingAnswers attrs@EffectAttrs {..}) = case msg of
     CreatedEffect eid _ _ (InvestigationTarget iid lid) | eid == effectId ->
-      e <$ unshiftMessage
-        (Investigate iid lid (toSource attrs) SkillIntellect False)
+      e <$ push (Investigate iid lid (toSource attrs) SkillIntellect False)
     SuccessfulInvestigation iid lid source | isSource attrs source -> do
       lids <- map unConnectedLocationId <$> getSetList @ConnectedLocationId lid
-      e <$ unshiftMessages
+      e <$ pushAll
         [ chooseOne
           iid
           [ TargetLabel
@@ -46,5 +46,5 @@ instance (HasQueue env, HasSet ConnectedLocationId env LocationId) => RunMessage
           ]
         , DisableEffect effectId
         ]
-    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect effectId)
+    SkillTestEnds _ -> e <$ push (DisableEffect effectId)
     _ -> SeekingAnswers <$> runMessage msg attrs

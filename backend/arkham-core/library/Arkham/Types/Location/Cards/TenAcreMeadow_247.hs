@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.TenAcreMeadow_247
   ( tenAcreMeadow_247
   , TenAcreMeadow_247(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -59,7 +60,7 @@ instance LocationRunner env => RunMessage env TenAcreMeadow_247 where
       when
         (null investigatorsWithClues || null abominations)
         (throwIO $ InvalidState "should not have been able to use this ability")
-      l <$ unshiftMessages
+      l <$ pushAll
         [ chooseOne
             iid
             [ Label

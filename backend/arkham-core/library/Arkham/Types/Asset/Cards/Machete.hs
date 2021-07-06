@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.Machete
   ( Machete(..)
   , machete
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -49,7 +50,7 @@ instance AssetRunner env => RunMessage env Machete where
   runMessage msg a@(Machete attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       criteriaMet <- (== 1) . unEnemyCount <$> getCount iid
-      a <$ unshiftMessages
+      a <$ pushAll
         [ CreateWindowModifierEffect
           EffectSkillTestWindow
           (EffectModifiers $ toModifiers

@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.Deduction
   ( deduction
   , Deduction(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -25,8 +26,8 @@ instance HasQueue env => RunMessage env Deduction where
   runMessage msg e@(Deduction attrs@EffectAttrs {..}) = case msg of
     SuccessfulInvestigation iid lid _ -> case effectMetadata of
       Just (EffectMetaTarget (LocationTarget lid')) | lid == lid' ->
-        e <$ unshiftMessage
+        e <$ push
           (InvestigatorDiscoverClues iid lid 1 (Just Action.Investigate))
       _ -> pure e
-    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect effectId)
+    SkillTestEnds _ -> e <$ push (DisableEffect effectId)
     _ -> Deduction <$> runMessage msg attrs

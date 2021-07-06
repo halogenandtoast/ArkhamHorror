@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.Umordhoth
   ( Umordhoth(..)
   , umordhoth
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -59,5 +60,5 @@ instance (EnemyRunner env) => RunMessage env Umordhoth where
     ChooseEndTurn _ ->
       Umordhoth <$> runMessage msg (attrs & exhaustedL .~ False)
     UseCardAbility _ (EnemySource eid) _ 1 _ | eid == enemyId ->
-      e <$ unshiftMessage (ScenarioResolution $ Resolution 3)
+      e <$ push (ScenarioResolution $ Resolution 3)
     _ -> Umordhoth <$> runMessage msg attrs

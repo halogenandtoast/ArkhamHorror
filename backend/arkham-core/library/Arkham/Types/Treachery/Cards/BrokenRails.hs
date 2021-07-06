@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.BrokenRails
   ( brokenRails
   , BrokenRails(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -33,7 +34,7 @@ instance TreacheryRunner env => RunMessage env BrokenRails where
       investigatorsWhoMustDiscard <- flip filterM investigatorIds $ \iid' -> do
         damageCount <- unDamageCount <$> getCount iid'
         pure $ damageCount >= 4
-      t <$ unshiftMessages
+      t <$ pushAll
         ([ LoseActions iid' source 1 | iid' <- investigatorIds ]
         <> [ ChooseAndDiscardAsset iid'
            | iid' <- investigatorsWhoMustDiscard

@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.MedicalTexts
   ( MedicalTexts(..)
   , medicalTexts
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -39,7 +40,7 @@ instance AssetRunner env => RunMessage env MedicalTexts where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId (getInvestigator attrs)
       locationInvestigatorIds <- getSetList locationId
-      unshiftMessage
+      push
         (chooseOne
           iid
           [ BeginSkillTest
@@ -54,8 +55,8 @@ instance AssetRunner env => RunMessage env MedicalTexts where
         )
       MedicalTexts <$> runMessage msg attrs
     PassedSkillTest _ _ source target _ _ | isSource attrs source ->
-      a <$ unshiftMessage (HealDamage target 1)
+      a <$ push (HealDamage target 1)
     FailedSkillTest _ _ source (InvestigatorTarget iid) _ _
       | isSource attrs source -> a
-      <$ unshiftMessage (InvestigatorAssignDamage iid source DamageAny 1 0)
+      <$ push (InvestigatorAssignDamage iid source DamageAny 1 0)
     _ -> MedicalTexts <$> runMessage msg attrs

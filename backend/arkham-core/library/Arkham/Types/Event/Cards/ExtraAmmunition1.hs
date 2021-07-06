@@ -32,8 +32,8 @@ instance (EventRunner env) => RunMessage env ExtraAmmunition1 where
       assetIds <- concatForM investigatorIds getSetList
       firearms <- filterM ((elem Firearm <$>) . getSetList) assetIds
       e <$ if null firearms
-        then unshiftMessage . Discard $ toTarget attrs
-        else unshiftMessages
+        then push . Discard $ toTarget attrs
+        else pushAll
           [ chooseOne iid [ AddUses (AssetTarget aid) Ammo 3 | aid <- firearms ]
           , Discard (toTarget attrs)
           ]

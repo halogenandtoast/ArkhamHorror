@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.SouthsideHistoricalSociety
   ( SouthsideHistoricalSociety(..)
   , southsideHistoricalSociety
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -51,5 +52,5 @@ instance ActionRunner env => HasActions env SouthsideHistoricalSociety where
 instance (LocationRunner env) => RunMessage env SouthsideHistoricalSociety where
   runMessage msg l@(SouthsideHistoricalSociety attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessage (DrawCards iid 3 False)
+      l <$ push (DrawCards iid 3 False)
     _ -> SouthsideHistoricalSociety <$> runMessage msg attrs

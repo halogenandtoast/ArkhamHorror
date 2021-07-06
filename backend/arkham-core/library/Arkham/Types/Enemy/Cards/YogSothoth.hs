@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.YogSothoth
   ( yogSothoth
   , YogSothoth(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -36,7 +37,7 @@ instance EnemyAttrsHasActions env => HasActions env YogSothoth where
 
 instance EnemyAttrsRunMessage env => RunMessage env YogSothoth where
   runMessage msg e@(YogSothoth attrs@EnemyAttrs {..}) = case msg of
-    PerformEnemyAttack iid eid | eid == enemyId -> e <$ unshiftMessages
+    PerformEnemyAttack iid eid | eid == enemyId -> e <$ pushAll
       (chooseOne
           iid
           [ Label
@@ -59,5 +60,5 @@ instance EnemyAttrsRunMessage env => RunMessage env YogSothoth where
       : [After (EnemyAttack iid eid)]
       )
     DeckHasNoCards iid (Just target) | isTarget attrs target ->
-      e <$ unshiftMessage (DrivenInsane iid)
+      e <$ push (DrivenInsane iid)
     _ -> YogSothoth <$> runMessage msg attrs

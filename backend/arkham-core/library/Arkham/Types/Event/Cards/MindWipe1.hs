@@ -1,7 +1,8 @@
 module Arkham.Types.Event.Cards.MindWipe1
   ( mindWipe1
   , MindWipe1(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -35,8 +36,8 @@ instance (EventRunner env) => RunMessage env MindWipe1 where
       nonEliteEnemyIds <- flip filterM enemyIds $ \enemyId -> do
         notElem Elite <$> getSet enemyId
       if null nonEliteEnemyIds
-        then e <$ unshiftMessage (Discard (EventTarget eventId))
-        else e <$ unshiftMessages
+        then e <$ push (Discard (EventTarget eventId))
+        else e <$ pushAll
           [ chooseOne
             iid
             [ TargetLabel

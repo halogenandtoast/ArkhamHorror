@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.GrapplingHorror
   ( GrapplingHorror(..)
   , grapplingHorror
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

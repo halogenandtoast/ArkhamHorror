@@ -1,7 +1,8 @@
 module Arkham.Prelude
   ( module X
   , module Arkham.Prelude
-  ) where
+  )
+where
 
 import ClassyPrelude as X hiding (on, (\\))
 

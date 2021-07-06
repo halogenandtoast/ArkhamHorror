@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.YoungDeepOne
   ( YoungDeepOne(..)
   , youngDeepOne
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -34,11 +35,9 @@ instance ActionRunner env => HasActions env YoungDeepOne where
 instance (EnemyRunner env) => RunMessage env YoungDeepOne where
   runMessage msg (YoungDeepOne attrs@EnemyAttrs {..}) = case msg of
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
-      unshiftMessage
-        (InvestigatorAssignDamage iid (EnemySource eid) DamageAny 0 1)
+      push (InvestigatorAssignDamage iid (EnemySource eid) DamageAny 0 1)
       YoungDeepOne <$> runMessage msg attrs
     EngageEnemy iid eid False | eid == enemyId -> do
-      unshiftMessage
-        (InvestigatorAssignDamage iid (EnemySource eid) DamageAny 0 1)
+      push (InvestigatorAssignDamage iid (EnemySource eid) DamageAny 0 1)
       YoungDeepOne <$> runMessage msg attrs
     _ -> YoungDeepOne <$> runMessage msg attrs

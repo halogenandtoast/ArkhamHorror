@@ -1,6 +1,7 @@
 module Arkham.Types.Event.Cards.OopsSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport
 
@@ -38,7 +39,7 @@ spec = describe "Oops!" $ do
       $ do
           runMessages
           [doFight] <- getActionsOf investigator NonFast rolands38Special
-          unshiftMessage doFight
+          push doFight
           runMessages
           chooseOptionMatching
             "fight enemy 1"
@@ -90,7 +91,7 @@ spec = describe "Oops!" $ do
       $ do
           runMessages
           [doFight] <- getActionsOf investigator NonFast fortyOneDerringer
-          unshiftMessage doFight
+          push doFight
           runMessages
           chooseOptionMatching
             "fight enemy 1"
@@ -142,7 +143,7 @@ spec = describe "Oops!" $ do
       $ do
           runMessages
           [doFight] <- getActionsOf investigator NonFast shotgun4
-          unshiftMessage doFight
+          push doFight
           runMessages
           chooseOptionMatching
             "fight enemy 1"

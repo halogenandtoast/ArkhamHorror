@@ -95,7 +95,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           , EncounterSet.TheDevourersCult
           , randomSet
           ]
-        pushMessages
+        pushAllEnd
           $ [ AskMap
               (mapFromList
                 [ ( iid
@@ -160,10 +160,11 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           then do
             vaultOfEarthlyDemise <- EncounterCard
               <$> genEncounterCard Treacheries.vaultOfEarthlyDemise
-            s <$ unshiftMessage
-              (AttachStoryTreacheryTo
-                vaultOfEarthlyDemise
-                (CardCodeTarget "00157")
-              )
+            s
+              <$ push
+                   (AttachStoryTreacheryTo
+                     vaultOfEarthlyDemise
+                     (CardCodeTarget "00157")
+                   )
           else pure s
       _ -> ReturnToTheDevourerBelow <$> runMessage msg theDevourerBelow'

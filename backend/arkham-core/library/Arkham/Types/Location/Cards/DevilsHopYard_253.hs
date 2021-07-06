@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.DevilsHopYard_253
   ( devilsHopYard_253
   , DevilsHopYard_253(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -59,7 +60,7 @@ instance LocationRunner env => RunMessage env DevilsHopYard_253 where
       when
         (null investigatorsWithClues || null abominations)
         (throwIO $ InvalidState "should not have been able to use this ability")
-      l <$ unshiftMessages
+      l <$ pushAll
         [ chooseOne
             iid
             [ Label

@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.DowntownFirstBankOfArkham
   ( DowntownFirstBankOfArkham(..)
   , downtownFirstBankOfArkham
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -56,5 +57,5 @@ instance ActionRunner env => HasActions env DowntownFirstBankOfArkham where
 instance (LocationRunner env) => RunMessage env DowntownFirstBankOfArkham where
   runMessage msg l@(DowntownFirstBankOfArkham attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessage (TakeResources iid 3 False)
+      l <$ push (TakeResources iid 3 False)
     _ -> DowntownFirstBankOfArkham <$> runMessage msg attrs

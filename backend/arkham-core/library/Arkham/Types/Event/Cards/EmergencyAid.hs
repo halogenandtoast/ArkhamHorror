@@ -1,7 +1,8 @@
 module Arkham.Types.Event.Cards.EmergencyAid
   ( emergencyAid
   , EmergencyAid(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -40,7 +41,7 @@ instance
       allyTargets <- map AssetTarget . concat <$> for
         investigatorIds
         (getSetList . (, [Ally]))
-      e <$ unshiftMessage
+      e <$ push
         (chooseOne
           iid
           [ TargetLabel target [HealDamage target 2]

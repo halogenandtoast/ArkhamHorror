@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.StrangeDisappearances
   ( StrangeDisappearances(..)
   , strangeDisappearances
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -31,9 +32,9 @@ instance AgendaRunner env => RunMessage env StrangeDisappearances where
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       scenarioDeckCount <- unScenarioDeckCount <$> getCount ()
       if scenarioDeckCount >= 3
-        then a <$ unshiftMessages
+        then a <$ pushAll
           [ UseScenarioSpecificAbility leadInvestigatorId Nothing 1
           , NextAgenda agendaId "02197"
           ]
-        else a <$ unshiftMessage (NextAgenda agendaId "02197")
+        else a <$ push (NextAgenda agendaId "02197")
     _ -> StrangeDisappearances <$> runMessage msg attrs

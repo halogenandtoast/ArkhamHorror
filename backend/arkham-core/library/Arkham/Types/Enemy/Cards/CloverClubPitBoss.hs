@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.CloverClubPitBoss
   ( CloverClubPitBoss(..)
   , cloverClubPitBoss
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -36,7 +37,7 @@ instance EnemyRunner env => RunMessage env CloverClubPitBoss where
       lid <- getId iid
       e <$ when
         (lid == enemyLocation)
-        (unshiftMessages
+        (pushAll
         $ [ Ready (toTarget attrs) | enemyExhausted ]
         <> [ EnemyEngageInvestigator enemyId iid
            , EnemyAttackIfEngaged enemyId (Just iid)

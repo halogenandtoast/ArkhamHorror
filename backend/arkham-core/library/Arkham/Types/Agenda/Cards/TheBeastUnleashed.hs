@@ -37,7 +37,7 @@ instance AgendaRunner env => RunMessage env TheBeastUnleashed where
         (CardCode "02058")
       a <$ when
         (totalDoom >= perPlayerDoomThreshold)
-        (unshiftMessages
+        (pushAll
           [ RemoveAllDoom
           , MoveToward
             (EnemyTarget experimentId)
@@ -46,7 +46,7 @@ instance AgendaRunner env => RunMessage env TheBeastUnleashed where
         )
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       investigatorIds <- getInvestigatorIds
-      a <$ unshiftMessages
+      a <$ pushAll
         ([ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 3
          | iid <- investigatorIds
          ]

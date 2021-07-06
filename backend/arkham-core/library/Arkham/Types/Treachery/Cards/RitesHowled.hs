@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.RitesHowled
   ( ritesHowled
   , RitesHowled(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -31,7 +32,7 @@ instance TreacheryRunner env => RunMessage env RitesHowled where
   runMessage msg t@(RitesHowled attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
-      t <$ unshiftMessages
+      t <$ pushAll
         ([ DiscardTopOfDeck iid 3 (Just $ toTarget attrs)
          | iid <- investigatorIds
          ]
@@ -43,7 +44,7 @@ instance TreacheryRunner env => RunMessage env RitesHowled where
         isAltered
         (do
           discardPile <- map unDiscardedPlayerCard <$> getList iid
-          unshiftMessage $ ShuffleCardsIntoDeck
+          push $ ShuffleCardsIntoDeck
             iid
             (filter (cdWeakness . pcDef) discardPile)
         )

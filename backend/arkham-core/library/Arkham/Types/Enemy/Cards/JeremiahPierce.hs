@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.JeremiahPierce
   ( JeremiahPierce(..)
   , jeremiahPierce
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -55,13 +56,12 @@ instance (EnemyRunner env) => RunMessage env JeremiahPierce where
         spawnLocation =
           LocationWithTitle $ maybe "Rivertown" (const "Your House") mYourHouse
       e <$ spawnAt (Just iid) eid spawnLocation
-    UseCardAbility iid (EnemySource eid) _ 1 _ | eid == enemyId ->
-      e <$ unshiftMessages
-        [ AddToVictory (EnemyTarget enemyId)
-        , CreateEffect
-          (toCardCode attrs)
-          Nothing
-          (toSource attrs)
-          (InvestigatorTarget iid)
-        ]
+    UseCardAbility iid (EnemySource eid) _ 1 _ | eid == enemyId -> e <$ pushAll
+      [ AddToVictory (EnemyTarget enemyId)
+      , CreateEffect
+        (toCardCode attrs)
+        Nothing
+        (toSource attrs)
+        (InvestigatorTarget iid)
+      ]
     _ -> JeremiahPierce <$> runMessage msg attrs

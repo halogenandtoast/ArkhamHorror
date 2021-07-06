@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.KeenEye
   ( keenEye
   , KeenEye(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -41,20 +42,18 @@ instance HasModifiersFor env KeenEye where
 
 instance AssetRunner env => RunMessage env KeenEye where
   runMessage msg a@(KeenEye attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage
-        (CreateWindowModifierEffect
-          EffectPhaseWindow
-          (EffectModifiers $ toModifiers attrs [SkillModifier SkillIntellect 1])
-          source
-          (InvestigatorTarget iid)
-        )
-    UseCardAbility iid source _ 2 _ | isSource attrs source ->
-      a <$ unshiftMessage
-        (CreateWindowModifierEffect
-          EffectPhaseWindow
-          (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
-          source
-          (InvestigatorTarget iid)
-        )
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+      (CreateWindowModifierEffect
+        EffectPhaseWindow
+        (EffectModifiers $ toModifiers attrs [SkillModifier SkillIntellect 1])
+        source
+        (InvestigatorTarget iid)
+      )
+    UseCardAbility iid source _ 2 _ | isSource attrs source -> a <$ push
+      (CreateWindowModifierEffect
+        EffectPhaseWindow
+        (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
+        source
+        (InvestigatorTarget iid)
+      )
     _ -> KeenEye <$> runMessage msg attrs

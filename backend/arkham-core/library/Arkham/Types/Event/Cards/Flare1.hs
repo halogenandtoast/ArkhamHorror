@@ -41,5 +41,5 @@ instance HasActions env ActionType => HasActions env Flare1 where
 instance (EventRunner env) => RunMessage env Flare1 where
   runMessage msg e@(Flare1 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent _ eid _ | eid == eventId ->
-      e <$ unshiftMessages [Discard (EventTarget eid)]
+      e <$ pushAll [Discard (EventTarget eid)]
     _ -> Flare1 <$> runMessage msg attrs

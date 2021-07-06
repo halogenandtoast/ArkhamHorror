@@ -1,7 +1,8 @@
 module Arkham.Types.Event.Cards.SecondWind
   ( secondWind
   , SecondWind(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -42,7 +43,7 @@ instance (HasQueue env, HasRoundHistory env) => RunMessage env SecondWind where
           DrewTreachery iid' _ -> iid == iid'
           _ -> False
         damageToHeal = if any didDrawTreachery roundHistory then 2 else 1
-      e <$ unshiftMessages
+      e <$ pushAll
         [ HealDamage (InvestigatorTarget iid) damageToHeal
         , DrawCards iid 1 False
         , Discard (toTarget attrs)

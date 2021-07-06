@@ -5,7 +5,8 @@
 module TestImport
   ( module X
   , module TestImport
-  ) where
+  )
+where
 
 import Arkham.Prelude as X
 
@@ -24,10 +25,10 @@ import qualified Arkham.Types.Card.CardDef as CardDef
 import Arkham.Types.Card.Id
 import Arkham.Types.ChaosBag as X
 import qualified Arkham.Types.ChaosBag as ChaosBag
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes as X hiding
   (getCount, getId, getModifiersFor, getTokenValue)
 import qualified Arkham.Types.Classes as Arkham
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Cost as X
 import Arkham.Types.Difficulty
 import Arkham.Types.Enemy as X
@@ -328,8 +329,7 @@ getActionsOf investigator window e = do
   e' <- updated e
   toGameEnv >>= runReaderT (getActions (toId investigator) window e')
 
-getChaosBagTokens
-  :: (HasGameRef env, MonadIO m, MonadReader env m) => m [Token]
+getChaosBagTokens :: (HasGameRef env, MonadIO m, MonadReader env m) => m [Token]
 getChaosBagTokens = view (chaosBagL . ChaosBag.tokensL) <$> getTestGame
 
 createMessageMatcher :: MonadIO m => Message -> m (IORef Bool, Message -> m ())
@@ -387,9 +387,9 @@ chooseOnlyOption _reason = do
   questionMap <- gameQuestion <$> getTestGame
   case mapToList questionMap of
     [(_, question)] -> case question of
-      ChooseOne [msg] -> unshiftMessage msg <* runMessages
-      ChooseOneAtATime [msg] -> unshiftMessage msg <* runMessages
-      ChooseN _ [msg] -> unshiftMessage msg <* runMessages
+      ChooseOne [msg] -> push msg <* runMessages
+      ChooseOneAtATime [msg] -> push msg <* runMessages
+      ChooseN _ [msg] -> push msg <* runMessages
       _ -> error "spec expectation mismatch"
     _ -> error "There must be only one choice to use this function"
 
@@ -408,8 +408,8 @@ chooseFirstOption _reason = do
   questionMap <- gameQuestion <$> getTestGame
   case mapToList questionMap of
     [(_, question)] -> case question of
-      ChooseOne (msg : _) -> unshiftMessage msg >> runMessages
-      ChooseOneAtATime (msg : _) -> unshiftMessage msg >> runMessages
+      ChooseOne (msg : _) -> push msg >> runMessages
+      ChooseOneAtATime (msg : _) -> push msg >> runMessages
       _ -> error "spec expectation mismatch"
     _ -> error "There must be at least one option"
 
@@ -430,7 +430,7 @@ chooseOptionMatching _reason f = do
   case mapToList questionMap of
     [(_, question)] -> case question of
       ChooseOne msgs -> case find f msgs of
-        Just msg -> unshiftMessage msg <* runMessages
+        Just msg -> push msg <* runMessages
         Nothing -> error "could not find a matching message"
       _ -> error "unsupported questions type"
     _ -> error "There must be only one question to use this function"

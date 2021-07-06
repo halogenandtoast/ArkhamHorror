@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.TheRougarou
   ( TheRougarou(..)
   , theRougarou
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -71,8 +72,8 @@ instance EnemyRunner env => RunMessage env TheRougarou where
               iids -> map unFarthestLocationId <$> getSetList iids
             case farthestLocationIds of
               [] -> error "can't happen"
-              [x] -> unshiftMessage (MoveUntil x (EnemyTarget enemyId))
-              xs -> unshiftMessage
+              [x] -> push (MoveUntil x (EnemyTarget enemyId))
+              xs -> push
                 (chooseOne
                   leadInvestigatorId
                   [ MoveUntil x (EnemyTarget enemyId) | x <- xs ]

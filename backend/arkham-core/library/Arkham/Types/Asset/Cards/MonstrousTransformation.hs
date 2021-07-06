@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.MonstrousTransformation
   ( MonstrousTransformation(..)
   , monstrousTransformation
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -58,7 +59,7 @@ instance ActionRunner env => HasActions env MonstrousTransformation where
 instance (AssetRunner env) => RunMessage env MonstrousTransformation where
   runMessage msg (MonstrousTransformation attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      unshiftMessages
+      pushAll
         [ CreateWindowModifierEffect
           EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [DamageDealt 1])

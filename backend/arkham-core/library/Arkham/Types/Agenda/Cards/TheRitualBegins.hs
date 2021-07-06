@@ -35,7 +35,7 @@ instance (AgendaRunner env) => RunMessage env TheRitualBegins where
   runMessage msg a@(TheRitualBegins attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       investigatorIds <- getSetList ()
-      a <$ unshiftMessages
+      a <$ pushAll
         ([ BeginSkillTest
              iid
              (AgendaSource agendaId)
@@ -47,16 +47,19 @@ instance (AgendaRunner env) => RunMessage env TheRitualBegins where
          ]
         <> [NextAgenda agendaId "01145"]
         )
-    FailedSkillTest iid _ source _ _ _ | isSource attrs source ->
-      a <$ unshiftMessage
-        (SearchCollectionForRandom
-          iid
-          (AgendaSource agendaId)
-          (CardMatchByType (PlayerTreacheryType, singleton Madness))
-        )
+    FailedSkillTest iid _ source _ _ _ | isSource attrs source -> a <$ push
+      (SearchCollectionForRandom
+        iid
+        (AgendaSource agendaId)
+        (CardMatchByType (PlayerTreacheryType, singleton Madness))
+      )
     RequestedPlayerCard iid (AgendaSource aid) mcard | aid == agendaId ->
       case mcard of
         Nothing -> pure a
-        Just card -> a <$ unshiftMessages
-          [AddToHand iid (PlayerCard card), DrewTreachery iid (PlayerCard card)]
+        Just card ->
+          a
+            <$ pushAll
+                 [ AddToHand iid (PlayerCard card)
+                 , DrewTreachery iid (PlayerCard card)
+                 ]
     _ -> TheRitualBegins <$> runMessage msg attrs

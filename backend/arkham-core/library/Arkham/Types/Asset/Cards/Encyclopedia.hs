@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.Encyclopedia
   ( Encyclopedia(..)
   , encyclopedia
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -45,7 +46,7 @@ instance AssetRunner env => RunMessage env Encyclopedia where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid
       investigatorTargets <- map InvestigatorTarget <$> getSetList locationId
-      a <$ unshiftMessage
+      a <$ push
         (chooseOne
           iid
           [ TargetLabel

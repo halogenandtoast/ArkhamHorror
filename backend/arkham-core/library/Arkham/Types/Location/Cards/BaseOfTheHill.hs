@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.BaseOfTheHill
   ( baseOfTheHill
   , BaseOfTheHill(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -57,15 +58,14 @@ instance ActionRunner env => HasActions env BaseOfTheHill where
 
 instance LocationRunner env => RunMessage env BaseOfTheHill where
   runMessage msg l@(BaseOfTheHill attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessage
-        (Investigate
-          iid
-          (toId attrs)
-          (AbilitySource source 1)
-          SkillIntellect
-          False
-        )
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+      (Investigate
+        iid
+        (toId attrs)
+        (AbilitySource source 1)
+        SkillIntellect
+        False
+      )
     SuccessfulInvestigation _ _ (AbilitySource source 1)
       | isSource attrs source -> do
         setAsideCards <- map unSetAsideCard <$> getList @SetAsideCard ()
@@ -75,7 +75,7 @@ instance LocationRunner env => RunMessage env BaseOfTheHill where
         case nonEmpty divergingPaths of
           Just ne -> do
             card <- sample ne
-            l <$ unshiftMessage
+            l <$ push
               (PlaceLocation (LocationId $ toCardId card) (toCardDef card))
           Nothing -> pure l
     AddConnection lid _ | toId attrs /= lid -> do

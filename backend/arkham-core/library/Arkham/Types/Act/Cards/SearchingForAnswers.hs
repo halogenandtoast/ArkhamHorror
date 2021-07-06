@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.SearchingForAnswers
   ( SearchingForAnswers(..)
   , searchingForAnswers
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -35,11 +36,10 @@ instance ActRunner env => RunMessage env SearchingForAnswers where
       mHiddenChamberId <- getLocationIdByName "Hidden Chamber"
       a <$ when
         (Just lid == mHiddenChamberId)
-        (unshiftMessage $ AdvanceAct actId (toSource attrs))
+        (push $ AdvanceAct actId (toSource attrs))
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      unshiftMessage
-        $ chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
+      push $ chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
       pure
         . SearchingForAnswers
         $ attrs
@@ -49,7 +49,7 @@ instance ActRunner env => RunMessage env SearchingForAnswers where
       hiddenChamber <- fromJustNote "must exist"
         <$> getId (LocationWithTitle "The Hidden Chamber")
       silasBishop <- EncounterCard <$> genEncounterCard Enemies.silasBishop
-      a <$ unshiftMessages
+      a <$ pushAll
         ([ RevealLocation Nothing lid | lid <- unrevealedLocationIds ]
         <> [ MoveAllCluesTo (LocationTarget hiddenChamber)
            , CreateEnemyAt silasBishop hiddenChamber Nothing

@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.UndergroundMuscle
   ( UndergroundMuscle(..)
   , undergroundMuscle
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -48,7 +49,7 @@ instance AgendaRunner env => RunMessage env UndergroundMuscle where
       unEngagedEnemiesAtLaBellaLuna <- filterM
         (\eid -> null <$> getSetList @InvestigatorId eid)
         laBellaLunaEnemies
-      unshiftMessage
+      push
         (chooseOne
           leadInvestigatorId
           [ Label

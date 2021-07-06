@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.DimensionalGap
   ( dimensionalGap
   , DimensionalGap(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -46,9 +47,11 @@ instance ActionRunner env => HasActions env DimensionalGap where
 instance LocationRunner env => RunMessage env DimensionalGap where
   runMessage msg l@(DimensionalGap attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      l <$ unshiftMessage
-        (DiscardEncounterUntilFirst source $ CardMatchByType (EnemyType, mempty)
-        )
+      l
+        <$ push
+             (DiscardEncounterUntilFirst source
+             $ CardMatchByType (EnemyType, mempty)
+             )
     RequestedEncounterCard source (Just ec) | isSource attrs source ->
-      l <$ unshiftMessage (SpawnEnemyAt (EncounterCard ec) (toId attrs))
+      l <$ push (SpawnEnemyAt (EncounterCard ec) (toId attrs))
     _ -> DimensionalGap <$> runMessage msg attrs

@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.ACreatureOfTheBayou
   ( ACreatureOfTheBayou(..)
   , aCreatureOfTheBayou
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -40,7 +41,7 @@ instance AgendaRunner env => RunMessage env ACreatureOfTheBayou where
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
       mrougarou <- getRougarou
       case mrougarou of
-        Nothing -> a <$ unshiftMessages
+        Nothing -> a <$ pushAll
           [ ShuffleEncounterDiscardBackIn
           , NextAgenda aid "81003"
           , PlaceDoomOnAgenda
@@ -66,6 +67,10 @@ instance AgendaRunner env => RunMessage env ACreatureOfTheBayou where
                     xs -> chooseOne
                       leadInvestigatorId
                       [ MoveUntil x (EnemyTarget eid) | (x, _) <- xs ]
-          a <$ unshiftMessages
-            [ShuffleEncounterDiscardBackIn, moveMessage, NextAgenda aid "81003"]
+          a
+            <$ pushAll
+                 [ ShuffleEncounterDiscardBackIn
+                 , moveMessage
+                 , NextAgenda aid "81003"
+                 ]
     _ -> ACreatureOfTheBayou <$> runMessage msg attrs

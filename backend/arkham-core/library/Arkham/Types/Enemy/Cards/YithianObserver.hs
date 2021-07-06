@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.YithianObserver
   ( YithianObserver(..)
   , yithianObserver
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -36,7 +37,7 @@ instance (EnemyRunner env) => RunMessage env YithianObserver where
     PerformEnemyAttack iid eid | eid == enemyId -> do
       cardCount' <- unCardCount <$> getCount iid
       if cardCount' == 0
-        then e <$ unshiftMessage
+        then e <$ push
           (InvestigatorAssignDamage
             iid
             (EnemySource enemyId)
@@ -44,7 +45,7 @@ instance (EnemyRunner env) => RunMessage env YithianObserver where
             (enemyHealthDamage + 1)
             (enemySanityDamage + 1)
           )
-        else e <$ unshiftMessages
+        else e <$ pushAll
           [ RandomDiscard iid
           , InvestigatorAssignDamage
             iid

@@ -1,6 +1,7 @@
 module Arkham.Types.Event.Cards.CrypticResearch4Spec
   ( spec
-  ) where
+  )
+where
 
 import TestImport.Lifted
 

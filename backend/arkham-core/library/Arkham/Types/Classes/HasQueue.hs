@@ -1,6 +1,7 @@
 module Arkham.Types.Classes.HasQueue
   ( module Arkham.Types.Classes.HasQueue
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -41,26 +42,22 @@ popMessage = withQueue $ \case
 clearQueue :: (MonadIO m, MonadReader env m, HasQueue env) => m ()
 clearQueue = withQueue $ const ([], ())
 
-peekMessage
-  :: (MonadIO m, MonadReader env m, HasQueue env) => m (Maybe Message)
+peekMessage :: (MonadIO m, MonadReader env m, HasQueue env) => m (Maybe Message)
 peekMessage = withQueue $ \case
   [] -> ([], Nothing)
   (m : ms) -> (m : ms, Just m)
 
-pushMessage :: (MonadIO m, MonadReader env m, HasQueue env) => Message -> m ()
-pushMessage = pushMessages . pure
+pushEnd :: (MonadIO m, MonadReader env m, HasQueue env) => Message -> m ()
+pushEnd = pushAllEnd . pure
 
-pushMessages
-  :: (MonadIO m, MonadReader env m, HasQueue env) => [Message] -> m ()
-pushMessages msgs = withQueue $ \queue -> (queue <> msgs, ())
+pushAllEnd :: (MonadIO m, MonadReader env m, HasQueue env) => [Message] -> m ()
+pushAllEnd msgs = withQueue $ \queue -> (queue <> msgs, ())
 
-unshiftMessage
-  :: (MonadIO m, MonadReader env m, HasQueue env) => Message -> m ()
-unshiftMessage = unshiftMessages . pure
+push :: (MonadIO m, MonadReader env m, HasQueue env) => Message -> m ()
+push = pushAll . pure
 
-unshiftMessages
-  :: (MonadIO m, MonadReader env m, HasQueue env) => [Message] -> m ()
-unshiftMessages msgs = withQueue $ \queue -> (msgs <> queue, ())
+pushAll :: (MonadIO m, MonadReader env m, HasQueue env) => [Message] -> m ()
+pushAll msgs = withQueue $ \queue -> (msgs <> queue, ())
 
 replaceMessage
   :: (MonadIO m, MonadReader env m, HasQueue env)

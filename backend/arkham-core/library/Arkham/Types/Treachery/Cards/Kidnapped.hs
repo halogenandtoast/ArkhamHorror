@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.Kidnapped
   ( kidnapped
   , Kidnapped(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -34,7 +35,7 @@ instance HasActions env Kidnapped where
 
 instance TreacheryRunner env => RunMessage env Kidnapped where
   runMessage msg t@(Kidnapped attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ unshiftMessage
+    Revelation iid source | isSource attrs source -> t <$ push
       (chooseOne
         iid
         [ Label
@@ -63,7 +64,7 @@ instance TreacheryRunner env => RunMessage env Kidnapped where
       | isTarget attrs target -> do
         allies <- getSetList @AssetId (iid, [Ally])
         if null allies
-          then t <$ unshiftMessages
+          then t <$ pushAll
             [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0
             , Discard (toTarget attrs)
             ]
@@ -72,7 +73,7 @@ instance TreacheryRunner env => RunMessage env Kidnapped where
               fromJustNote "missing agenga"
               . headMay
               <$> getSetList @AgendaId ()
-            t <$ unshiftMessages
+            t <$ pushAll
               [ chooseOne
                 iid
                 [ TargetLabel
@@ -83,5 +84,5 @@ instance TreacheryRunner env => RunMessage env Kidnapped where
               , AttachTreachery treacheryId (AgendaTarget agendaId)
               ]
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      t <$ unshiftMessage (UseScenarioSpecificAbility iid Nothing 1)
+      t <$ push (UseScenarioSpecificAbility iid Nothing 1)
     _ -> Kidnapped <$> runMessage msg attrs

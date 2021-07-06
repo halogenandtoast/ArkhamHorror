@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.Bandolier
   ( Bandolier(..)
   , bandolier
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -31,6 +32,6 @@ slot attrs = TraitRestrictedSlot (toSource attrs) Weapon Nothing
 instance AssetRunner env => RunMessage env Bandolier where
   runMessage msg (Bandolier attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
-      unshiftMessage $ AddSlot iid HandSlot (slot attrs)
+      push $ AddSlot iid HandSlot (slot attrs)
       Bandolier <$> runMessage msg attrs
     _ -> Bandolier <$> runMessage msg attrs

@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.PassageIntoTheVeil
   ( passageIntoTheVeil
   , PassageIntoTheVeil(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -31,7 +32,7 @@ instance TreacheryRunner env => RunMessage env PassageIntoTheVeil where
   runMessage msg t@(PassageIntoTheVeil attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       huntingHorrorAtYourLocation <- enemyAtInvestigatorLocation "02141" iid
-      t <$ unshiftMessage
+      t <$ push
         (BeginSkillTest
           iid
           source
@@ -43,7 +44,7 @@ instance TreacheryRunner env => RunMessage env PassageIntoTheVeil where
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         assetIds <- getSetList @AssetId iid
-        t <$ unshiftMessage
+        t <$ push
           (chooseOne
             iid
             [ Label

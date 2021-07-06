@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.BrotherXavier1
   ( brotherXavier1
   , BrotherXavier1(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -53,7 +54,7 @@ instance AssetRunner env => RunMessage env BrotherXavier1 where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId (getInvestigator attrs)
       locationEnemyIds <- getSetList locationId
-      a <$ unshiftMessages
+      a <$ pushAll
         [ chooseOne
             iid
             [ EnemyDamage eid iid (toSource attrs) 2 | eid <- locationEnemyIds ]

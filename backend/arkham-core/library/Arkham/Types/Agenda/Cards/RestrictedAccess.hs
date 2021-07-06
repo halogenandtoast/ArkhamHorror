@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.RestrictedAccess
   ( RestrictedAccess(..)
   , restrictedAccess
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -41,28 +42,28 @@ instance AgendaRunner env => RunMessage env RestrictedAccess where
         shadowSpawned <- EncounterCard
           <$> genEncounterCard Treacheries.shadowSpawned
         case mShadowSpawnedId of
-          Just tid -> unshiftMessage $ PlaceResources (TreacheryTarget tid) 1
-          Nothing -> unshiftMessage
-            $ AttachStoryTreacheryTo shadowSpawned (EnemyTarget eid)
+          Just tid -> push $ PlaceResources (TreacheryTarget tid) 1
+          Nothing ->
+            push $ AttachStoryTreacheryTo shadowSpawned (EnemyTarget eid)
       pure a
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       mHuntingHorrorId <- fmap unStoryEnemyId <$> getId (CardCode "02141")
       a <$ case mHuntingHorrorId of
-        Just eid -> unshiftMessages
-          [PlaceDoom (EnemyTarget eid) 1, NextAgenda agendaId "02120"]
-        Nothing -> unshiftMessage $ FindEncounterCard
+        Just eid ->
+          pushAll [PlaceDoom (EnemyTarget eid) 1, NextAgenda agendaId "02120"]
+        Nothing -> push $ FindEncounterCard
           leadInvestigatorId
           (toTarget attrs)
           (CardMatchByCardCode "02141")
     FoundEnemyInVoid _ target eid | isTarget attrs target -> do
       lid <- fromJustNote "Museum Halls missing"
         <$> getLocationIdWithTitle "Museum Halls"
-      a <$ unshiftMessages
+      a <$ pushAll
         [EnemySpawnFromVoid Nothing lid eid, NextAgenda agendaId "02120"]
     FoundEncounterCard _ target ec | isTarget attrs target -> do
       lid <- fromJustNote "Museum Halls missing"
         <$> getLocationIdWithTitle "Museum Halls"
-      a <$ unshiftMessages
+      a <$ pushAll
         [SpawnEnemyAt (EncounterCard ec) lid, NextAgenda agendaId "02120"]
     _ -> RestrictedAccess <$> runMessage msg attrs

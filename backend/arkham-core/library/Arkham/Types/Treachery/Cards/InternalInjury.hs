@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.InternalInjury
   ( internalInjury
   , InternalInjury(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -42,9 +43,9 @@ instance ActionRunner env => HasActions env InternalInjury where
 instance (TreacheryRunner env) => RunMessage env InternalInjury where
   runMessage msg t@(InternalInjury attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
-      t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
+      t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)
     EndTurn iid | InvestigatorTarget iid `elem` treacheryAttachedTarget ->
-      t <$ unshiftMessage (InvestigatorDirectDamage iid (toSource attrs) 1 0)
+      t <$ push (InvestigatorDirectDamage iid (toSource attrs) 1 0)
     UseCardAbility _ (TreacherySource tid) _ 1 _ | tid == treacheryId ->
-      t <$ unshiftMessage (Discard $ toTarget attrs)
+      t <$ push (Discard $ toTarget attrs)
     _ -> InternalInjury <$> runMessage msg attrs

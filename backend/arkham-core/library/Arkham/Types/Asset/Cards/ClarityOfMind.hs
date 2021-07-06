@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.ClarityOfMind
   ( clarityOfMind
   , ClarityOfMind(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -53,7 +54,7 @@ instance
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId @LocationId iid
       iids <- getSetList @InvestigatorId lid
-      a <$ unshiftMessage
+      a <$ push
         (chooseOne
           iid
           [ TargetLabel

@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.Blackjack
   ( blackjack
   , Blackjack(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -45,16 +46,15 @@ instance HasModifiersFor env Blackjack where
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Blackjack where
   runMessage msg a@(Blackjack attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessages
-        [ CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers
-            attrs
-            [SkillModifier SkillCombat 1, DoesNotDamageOtherInvestigator]
-          )
-          source
-          (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillCombat mempty False
-        ]
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+      [ CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers $ toModifiers
+          attrs
+          [SkillModifier SkillCombat 1, DoesNotDamageOtherInvestigator]
+        )
+        source
+        (InvestigatorTarget iid)
+      , ChooseFightEnemy iid source SkillCombat mempty False
+      ]
     _ -> Blackjack <$> runMessage msg attrs

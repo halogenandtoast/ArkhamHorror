@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.SomethingInTheDrinks
   ( SomethingInTheDrinks(..)
   , somethingInTheDrinks
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -31,7 +32,7 @@ instance TreacheryRunner env => RunMessage env SomethingInTheDrinks where
     Revelation _ source | isSource attrs source -> do
       scenarioLogs <- getSet ()
       investigatorIds <- getInvestigatorIds
-      t <$ unshiftMessages
+      t <$ pushAll
         ([ LoseActions iid source 1
          | iid <- investigatorIds
          , HadADrink iid `member` scenarioLogs

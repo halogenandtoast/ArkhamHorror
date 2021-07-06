@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.ArousingSuspicions
   ( ArousingSuspicions(..)
   , arousingSuspicions
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -32,9 +33,8 @@ instance TreacheryRunner env => RunMessage env ArousingSuspicions where
       lid <- getId @LocationId iid
       criminals <- getSetList @EnemyId ([Criminal], lid)
       if null criminals
-        then t
-          <$ unshiftMessages [SpendResources iid 2, Discard $ toTarget attrs]
-        else t <$ unshiftMessages
+        then t <$ pushAll [SpendResources iid 2, Discard $ toTarget attrs]
+        else t <$ pushAll
           ([ PlaceDoom (EnemyTarget eid) 1 | eid <- criminals ]
           <> [Discard $ toTarget attrs]
           )

@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.FrozenSpring
   ( frozenSpring
   , FrozenSpring(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -46,6 +47,5 @@ instance ActionRunner env => HasActions env FrozenSpring where
 instance LocationRunner env => RunMessage env FrozenSpring where
   runMessage msg l@(FrozenSpring attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      l <$ unshiftMessages
-        [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
+      l <$ pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
     _ -> FrozenSpring <$> runMessage msg attrs

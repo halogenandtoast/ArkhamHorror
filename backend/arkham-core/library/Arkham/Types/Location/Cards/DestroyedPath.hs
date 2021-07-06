@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.DestroyedPath
   ( destroyedPath
   , DestroyedPath(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -63,17 +64,15 @@ instance LocationRunner env => RunMessage env DestroyedPath where
   runMessage msg l@(DestroyedPath attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       amount <- getPlayerCountValue (PerPlayer 1)
-      l <$ unshiftMessage (PlaceDoom (toTarget attrs) amount)
-    UseCardAbility iid source _ 2 _ | isSource attrs source ->
-      l <$ unshiftMessage
-        (Investigate
-          iid
-          (toId attrs)
-          (AbilitySource source 2)
-          SkillIntellect
-          False
-        )
+      l <$ push (PlaceDoom (toTarget attrs) amount)
+    UseCardAbility iid source _ 2 _ | isSource attrs source -> l <$ push
+      (Investigate
+        iid
+        (toId attrs)
+        (AbilitySource source 2)
+        SkillIntellect
+        False
+      )
     SuccessfulInvestigation _ _ (AbilitySource source 2)
-      | isSource attrs source -> l
-      <$ unshiftMessage (RemoveDoom (toTarget attrs) 1)
+      | isSource attrs source -> l <$ push (RemoveDoom (toTarget attrs) 1)
     _ -> DestroyedPath <$> runMessage msg attrs

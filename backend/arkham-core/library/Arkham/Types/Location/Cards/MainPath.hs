@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.MainPath
   ( MainPath(..)
   , mainPath
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -30,7 +31,7 @@ instance ActionRunner env => HasActions env MainPath where
 instance (LocationRunner env) => RunMessage env MainPath where
   runMessage msg l@(MainPath attrs@LocationAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessage (Resign iid)
+      l <$ push (Resign iid)
     AddConnection lid _ | locationId /= lid -> do
       isWoods <- member Woods <$> getSet lid
       if isWoods

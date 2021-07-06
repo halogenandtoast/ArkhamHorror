@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.Aquinnah1
   ( Aquinnah1(..)
   , aquinnah1
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -56,7 +57,7 @@ instance AssetRunner env => RunMessage env Aquinnah1 where
 
       when (null enemyIds) (error "other enemies had to be present")
 
-      a <$ unshiftMessage
+      a <$ push
         (chooseOne
           iid
           [ Run

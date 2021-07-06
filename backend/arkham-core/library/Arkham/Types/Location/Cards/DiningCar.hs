@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.DiningCar
   ( diningCar
   , DiningCar(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -47,7 +48,6 @@ instance ActionRunner env => HasActions env DiningCar where
 instance LocationRunner env => RunMessage env DiningCar where
   runMessage msg (DiningCar attrs) = case msg of
     RevealLocation (Just iid) lid | lid == locationId attrs -> do
-      unshiftMessage
-        (FindAndDrawEncounterCard iid (CardMatchByCardCode "02182"))
+      push (FindAndDrawEncounterCard iid (CardMatchByCardCode "02182"))
       DiningCar <$> runMessage msg attrs
     _ -> DiningCar <$> runMessage msg attrs

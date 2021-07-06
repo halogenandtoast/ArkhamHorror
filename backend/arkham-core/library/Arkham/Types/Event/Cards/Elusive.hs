@@ -32,7 +32,7 @@ instance (EventRunner env) => RunMessage env Elusive where
         candidateLocations =
           setToList $ emptyLocations `intersection` revealedLocations
 
-      e <$ unshiftMessages
+      e <$ pushAll
         ([ DisengageEnemy iid enemyId | enemyId <- enemyIds ]
         <> [ chooseOne iid [ MoveTo iid lid | lid <- candidateLocations ]
            | not (null candidateLocations)

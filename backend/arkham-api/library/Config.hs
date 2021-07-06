@@ -23,17 +23,17 @@ module Config
 
 import Import.NoFoundation
 
-import Data.Yaml.Config
-import System.Environment (getEnvironment)
-import Network.Wai.Handler.Warp
-import Text.Read (readMaybe)
 import Control.Concurrent (forkIO, threadDelay)
-import System.Exit (exitSuccess)
-import System.Directory (doesFileExist)
+import Data.Yaml.Config
+import Network.Wai.Handler.Warp
 import Network.Wai.Logger (clockDateCacher)
-import Yesod.Core.Types (Logger (Logger))
+import System.Directory (doesFileExist)
+import System.Environment (getEnvironment)
+import System.Exit (exitSuccess)
 import System.Log.FastLogger (LoggerSet)
-import System.Posix.Signals (installHandler, sigINT, Handler(Catch))
+import System.Posix.Signals (Handler(Catch), installHandler, sigINT)
+import Text.Read (readMaybe)
+import Yesod.Core.Types (Logger(Logger))
 
 -- | Location of the default config file.
 configSettingsYml :: FilePath

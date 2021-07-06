@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Scenarios.WhereDoomAwaits
   ( WhereDoomAwaits(..)
   , whereDoomAwaits
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -168,9 +169,7 @@ instance
   runMessage msg s@(WhereDoomAwaits attrs) = case msg of
     SetTokensForScenario -> do
       standalone <- getIsStandalone
-      s <$ if standalone
-        then unshiftMessage (SetTokens standaloneTokens)
-        else pure ()
+      s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
     Setup -> do
       investigatorIds <- getInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
@@ -246,7 +245,7 @@ instance
           Hard -> MinusSix
           Expert -> MinusSeven
 
-      unshiftMessages
+      pushAll
         $ story investigatorIds whereDoomAwaitsIntro
         : [ story investigatorIds whereDoomAwaitsPart1
           | naomiHasTheInvestigatorsBacks
@@ -270,7 +269,7 @@ instance
         & (locationsL .~ locations')
         & (setAsideCardsL <>~ (divergingPaths <> alteredPaths))
         )
-    ResolveToken drawnToken Cultist iid -> s <$ unshiftMessages
+    ResolveToken drawnToken Cultist iid -> s <$ pushAll
       [ CreateWindowModifierEffect
         EffectSkillTestWindow
         (EffectModifiers $ toModifiers attrs [CancelSkills])
@@ -279,7 +278,7 @@ instance
       , CancelSkillEffects
       , DrawAnotherToken iid
       ]
-    ResolveToken drawnToken ElderThing iid -> s <$ unshiftMessage
+    ResolveToken drawnToken ElderThing iid -> s <$ push
       (DiscardTopOfDeck
         iid
         (if isEasyStandard attrs then 2 else 3)
@@ -292,15 +291,15 @@ instance
             n = sum $ map
               (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . pcDef)
               cards
-          unshiftMessage $ CreateTokenValueEffect (-n) (toSource attrs) target
+          push $ CreateTokenValueEffect (-n) (toSource attrs) target
         _ -> pure ()
     ScenarioResolution NoResolution ->
-      s <$ unshiftMessage (ScenarioResolution $ Resolution 2)
+      s <$ push (ScenarioResolution $ Resolution 2)
     ScenarioResolution (Resolution 1) -> do
       xp <- getXp
       investigatorIds <- getInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
-      s <$ unshiftMessages
+      s <$ pushAll
         ([ chooseOne
            leadInvestigatorId
            [ Run
@@ -326,7 +325,7 @@ instance
     ScenarioResolution (Resolution 2) -> do
       investigatorIds <- getInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
-      s <$ unshiftMessages
+      s <$ pushAll
         ([ chooseOne
            leadInvestigatorId
            [ Run
@@ -356,11 +355,9 @@ instance
     PlacedLocation name _ lid -> do
       when (name == "Altered Path") $ do
         alteredCount <- length <$> getSetList @LocationId [Woods]
-        unshiftMessage
-          (SetLocationLabel lid $ "alteredPath" <> tshow alteredCount)
+        push (SetLocationLabel lid $ "alteredPath" <> tshow alteredCount)
       when (name == "Diverging Path") $ do
         woodsCount <- length <$> getSetList @LocationId [Woods]
-        unshiftMessage
-          (SetLocationLabel lid $ "divergingPath" <> tshow woodsCount)
+        push (SetLocationLabel lid $ "divergingPath" <> tshow woodsCount)
       pure s
     _ -> WhereDoomAwaits <$> runMessage msg attrs

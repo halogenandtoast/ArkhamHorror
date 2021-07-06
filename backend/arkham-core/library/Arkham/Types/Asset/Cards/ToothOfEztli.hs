@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.ToothOfEztli
   ( toothOfEztli
   , ToothOfEztli(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -45,5 +46,5 @@ instance HasActions env ToothOfEztli where
 instance AssetRunner env => RunMessage env ToothOfEztli where
   runMessage msg a@(ToothOfEztli attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage (DrawCards iid 1 False)
+      a <$ push (DrawCards iid 1 False)
     _ -> ToothOfEztli <$> runMessage msg attrs

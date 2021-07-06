@@ -2,7 +2,8 @@ module Arkham.Json
   ( module X
   , aesonOptions
   , camelCase
-  ) where
+  )
+where
 
 import Arkham.Prelude
 import Data.Aeson as X

@@ -1,7 +1,8 @@
 module Arkham.Types.Event.Cards.FirstWatch
   ( firstWatch
   , FirstWatch(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -43,7 +44,7 @@ instance (HasQueue env, HasSet InvestigatorId env (), HasCount PlayerCount env (
           AllDrawEncounterCard -> rest
           _ -> error "AllDrawEncounterCard expected"
         playerCount <- getPlayerCount
-        e <$ unshiftMessages
+        e <$ pushAll
           [ DrawEncounterCards (EventTarget eventId) playerCount
           , Discard (toTarget attrs)
           ]
@@ -58,7 +59,7 @@ instance (HasQueue env, HasSet InvestigatorId env (), HasCount PlayerCount env (
                 . insertSet iid
                 $ investigatorIds
                 `difference` assignedInvestigatorIds
-          e <$ unshiftMessage
+          e <$ push
             (chooseOne
               iid
               [ TargetLabel
@@ -81,12 +82,12 @@ instance (HasQueue env, HasSet InvestigatorId env (), HasCount PlayerCount env (
             }
           )
       UseCardAbility _ (EventSource eid) Nothing 3 _ | eid == eventId ->
-        e <$ unshiftMessages
+        e <$ pushAll
           [ InvestigatorDrewEncounterCard iid' card
           | (iid', card) <- firstWatchPairings
           ]
       RequestedEncounterCards (EventTarget eid) cards | eid == eventId ->
-        e <$ unshiftMessages
+        e <$ pushAll
           [ chooseOneAtATime
             eventOwner
             [ TargetLabel

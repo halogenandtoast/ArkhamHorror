@@ -39,14 +39,14 @@ instance TreacheryRunner env => RunMessage env MaskOfUmordhoth where
     Revelation iid source | isSource attrs source -> do
       enemies <- map unFarthestEnemyId <$> getSetList (iid, EnemyTrait Cultist)
       t <$ case enemies of
-        [] -> unshiftMessages
+        [] -> pushAll
           [ FindAndDrawEncounterCard
             iid
             (CardMatchByType (EnemyType, singleton Cultist))
           , Revelation iid source
           ]
-        [eid] -> unshiftMessage (AttachTreachery treacheryId (EnemyTarget eid))
-        eids -> unshiftMessage
+        [eid] -> push (AttachTreachery treacheryId (EnemyTarget eid))
+        eids -> push
           (chooseOne
             iid
             [ AttachTreachery treacheryId (EnemyTarget eid) | eid <- eids ]

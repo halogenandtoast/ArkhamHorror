@@ -28,7 +28,7 @@ instance HasActions env RiseOfTheGhouls where
 instance AgendaRunner env => RunMessage env RiseOfTheGhouls where
   runMessage msg a@(RiseOfTheGhouls attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B ->
-      a <$ unshiftMessage
+      a <$ push
         (Run
           [ ShuffleEncounterDiscardBackIn
           , DiscardEncounterUntilFirst
@@ -38,10 +38,10 @@ instance AgendaRunner env => RunMessage env RiseOfTheGhouls where
         )
     RequestedEncounterCard (AgendaSource aid) mcard | aid == agendaId ->
       case mcard of
-        Nothing -> a <$ unshiftMessage (NextAgenda aid "01107")
+        Nothing -> a <$ push (NextAgenda aid "01107")
         Just card -> do
           leadInvestigatorId <- getLeadInvestigatorId
-          a <$ unshiftMessages
+          a <$ pushAll
             [ InvestigatorDrewEncounterCard leadInvestigatorId card
             , NextAgenda aid "01107"
             ]

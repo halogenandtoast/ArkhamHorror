@@ -1,6 +1,7 @@
 module Arkham.Types.Effect
   ( module Arkham.Types.Effect
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

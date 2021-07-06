@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.RipplesOnTheSurface
   ( RipplesOnTheSurface(..)
   , ripplesOnTheSurface
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -43,17 +44,19 @@ instance HasActions env RipplesOnTheSurface where
 instance TreacheryRunner env => RunMessage env RipplesOnTheSurface where
   runMessage msg t@(RipplesOnTheSurface attrs@TreacheryAttrs {..}) =
     case msg of
-      Revelation iid source | isSource attrs source -> t <$ unshiftMessages
+      Revelation iid source | isSource attrs source -> t <$ pushAll
         [ RevelationSkillTest iid source SkillWillpower 3
         , Discard (TreacheryTarget treacheryId)
         ]
       FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
-        | tid == treacheryId -> t <$ unshiftMessage
-          (InvestigatorAssignDamage
-            iid
-            (TreacherySource treacheryId)
-            DamageAny
-            0
-            n
-          )
+        | tid == treacheryId
+        -> t
+          <$ push
+               (InvestigatorAssignDamage
+                 iid
+                 (TreacherySource treacheryId)
+                 DamageAny
+                 0
+                 n
+               )
       _ -> RipplesOnTheSurface <$> runMessage msg attrs

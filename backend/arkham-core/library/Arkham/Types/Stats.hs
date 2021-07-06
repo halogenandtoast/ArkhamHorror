@@ -1,7 +1,8 @@
 module Arkham.Types.Stats
   ( Stats(..)
   , statsSkillValue
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

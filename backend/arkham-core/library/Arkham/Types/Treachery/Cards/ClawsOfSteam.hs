@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.ClawsOfSteam
   ( clawsOfSteam
   , ClawsOfSteam(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -32,12 +33,12 @@ instance HasActions env ClawsOfSteam where
 
 instance TreacheryRunner env => RunMessage env ClawsOfSteam where
   runMessage msg t@(ClawsOfSteam attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ unshiftMessages
+    Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RevelationSkillTest iid source SkillWillpower 3
       , Discard (toTarget attrs)
       ]
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> t <$ unshiftMessages
+      | isSource attrs source -> t <$ pushAll
         [ CreateWindowModifierEffect
           EffectRoundWindow
           (EffectModifiers $ toModifiers attrs [CannotMove])

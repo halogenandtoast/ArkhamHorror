@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.StrangeSolution
   ( strangeSolution
   , StrangeSolution(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -35,20 +36,18 @@ instance HasModifiersFor env StrangeSolution where
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env StrangeSolution where
   runMessage msg a@(StrangeSolution attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage
-        (BeginSkillTest
-          iid
-          source
-          (InvestigatorTarget iid)
-          Nothing
-          SkillIntellect
-          4
-        )
-    PassedSkillTest iid _ source _ _ _ | isSource attrs source ->
-      a <$ unshiftMessages
-        [ Discard (toTarget attrs)
-        , DrawCards iid 2 False
-        , Record YouHaveIdentifiedTheSolution
-        ]
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+      (BeginSkillTest
+        iid
+        source
+        (InvestigatorTarget iid)
+        Nothing
+        SkillIntellect
+        4
+      )
+    PassedSkillTest iid _ source _ _ _ | isSource attrs source -> a <$ pushAll
+      [ Discard (toTarget attrs)
+      , DrawCards iid 2 False
+      , Record YouHaveIdentifiedTheSolution
+      ]
     _ -> StrangeSolution <$> runMessage msg attrs

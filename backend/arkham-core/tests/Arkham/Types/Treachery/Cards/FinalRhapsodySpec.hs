@@ -1,6 +1,7 @@
 module Arkham.Types.Treachery.Cards.FinalRhapsodySpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport.Lifted
 

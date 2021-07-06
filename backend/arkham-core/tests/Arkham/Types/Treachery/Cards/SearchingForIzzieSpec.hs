@@ -1,6 +1,7 @@
 module Arkham.Types.Treachery.Cards.SearchingForIzzieSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport.Lifted
 
@@ -55,7 +56,7 @@ spec = describe "Searching for Izzie" $ do
             NonFast
             updatedSearchingForIzzie
 
-          unshiftMessage searchingForIzzieAction
+          push searchingForIzzieAction
           runMessages
           chooseOnlyOption "start skill test"
           chooseOnlyOption "apply results"

@@ -1,7 +1,8 @@
 module Arkham.Types.Event.Cards.SeekingAnswers
   ( seekingAnswers
   , SeekingAnswers(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -28,7 +29,7 @@ instance (HasQueue env, HasId LocationId env InvestigatorId) => RunMessage env S
   runMessage msg e@(SeekingAnswers attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       lid <- getId @LocationId iid
-      e <$ unshiftMessages
+      e <$ pushAll
         [ CreateEffect
           "02023"
           Nothing

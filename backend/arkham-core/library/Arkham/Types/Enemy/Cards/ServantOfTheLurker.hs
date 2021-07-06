@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.ServantOfTheLurker
   ( servantOfTheLurker
   , ServantOfTheLurker(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -33,6 +34,6 @@ instance ActionRunner env => HasActions env ServantOfTheLurker where
 instance (EnemyRunner env) => RunMessage env ServantOfTheLurker where
   runMessage msg (ServantOfTheLurker attrs@EnemyAttrs {..}) = case msg of
     PerformEnemyAttack iid eid | eid == enemyId -> do
-      unshiftMessage $ DiscardTopOfDeck iid 2 Nothing
+      push $ DiscardTopOfDeck iid 2 Nothing
       ServantOfTheLurker <$> runMessage msg attrs
     _ -> ServantOfTheLurker <$> runMessage msg attrs

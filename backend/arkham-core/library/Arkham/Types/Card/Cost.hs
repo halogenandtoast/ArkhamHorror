@@ -1,7 +1,8 @@
 module Arkham.Types.Card.Cost
   ( CardCost(..)
   , toPrintedCost
-  ) where
+  )
+where
 
 import ClassyPrelude
 

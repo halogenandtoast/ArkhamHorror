@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.SlitheringBehindYou
   ( SlitheringBehindYou(..)
   , slitheringBehindYou
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -31,17 +32,23 @@ instance TreacheryRunner env => RunMessage env SlitheringBehindYou where
     Revelation iid source | isSource attrs source -> do
       mHuntingHorrorId <- fmap unStoryEnemyId <$> getId (CardCode "02141")
       case mHuntingHorrorId of
-        Just eid -> t <$ unshiftMessages
+        Just eid -> t <$ pushAll
           [ PlaceDoom (EnemyTarget eid) 1
           , ShuffleIntoEncounterDeck []
           , Discard $ toTarget attrs
           ]
-        Nothing -> t <$ unshiftMessage
-          (FindEncounterCard iid (toTarget attrs) (CardMatchByCardCode "02141"))
+        Nothing ->
+          t
+            <$ push
+                 (FindEncounterCard
+                   iid
+                   (toTarget attrs)
+                   (CardMatchByCardCode "02141")
+                 )
     FoundEncounterCard iid target ec | isTarget attrs target -> do
       lid <- getId @LocationId iid
-      t <$ unshiftMessage (SpawnEnemyAtEngagedWith (EncounterCard ec) lid iid)
+      t <$ push (SpawnEnemyAtEngagedWith (EncounterCard ec) lid iid)
     FoundEnemyInVoid iid target eid | isTarget attrs target -> do
       lid <- getId @LocationId iid
-      t <$ unshiftMessage (EnemySpawnFromVoid (Just iid) lid eid)
+      t <$ push (EnemySpawnFromVoid (Just iid) lid eid)
     _ -> SlitheringBehindYou <$> runMessage msg attrs

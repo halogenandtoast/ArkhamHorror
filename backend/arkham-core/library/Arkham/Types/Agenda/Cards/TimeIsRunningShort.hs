@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.TimeIsRunningShort
   ( TimeIsRunningShort(..)
   , timeIsRunningShort
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -42,8 +43,8 @@ instance HasActions env TimeIsRunningShort where
 instance (AgendaRunner env) => RunMessage env TimeIsRunningShort where
   runMessage msg a@(TimeIsRunningShort attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B ->
-      a <$ unshiftMessage (ScenarioResolution $ Resolution 2)
+      a <$ push (ScenarioResolution $ Resolution 2)
     UseCardAbility iid (AgendaSource aid) _ 1 _ | aid == agendaId -> do
-      unshiftMessage (Resign iid)
+      push (Resign iid)
       TimeIsRunningShort <$> runMessage msg attrs
     _ -> TimeIsRunningShort <$> runMessage msg attrs

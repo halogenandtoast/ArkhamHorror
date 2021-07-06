@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.ExhibitHallAthabaskanExhibit
   ( exhibitHallAthabaskanExhibit
   , ExhibitHallAthabaskanExhibit(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -41,6 +42,5 @@ instance ActionRunner env => HasActions env ExhibitHallAthabaskanExhibit where
 instance LocationRunner env => RunMessage env ExhibitHallAthabaskanExhibit where
   runMessage msg l@(ExhibitHallAthabaskanExhibit attrs) = case msg of
     AfterEnterLocation iid lid | lid == locationId attrs ->
-      l <$ unshiftMessages
-        [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
+      l <$ pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
     _ -> ExhibitHallAthabaskanExhibit <$> runMessage msg attrs

@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.TheEndOfAllThings
   ( TheEndOfAllThings
   , theEndOfAllThings
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -34,10 +35,10 @@ instance (HasId (Maybe EnemyId) env EnemyMatcher, AgendaRunner env) => RunMessag
       investigatorIds <- getInvestigatorIds
       yogSothoth <- fromJustNote "defeated?"
         <$> getId (EnemyWithTitle "Yog-Sothoth")
-      a <$ unshiftMessages
+      a <$ pushAll
         ([ EnemyAttack iid yogSothoth | iid <- investigatorIds ]
         <> [RevertAgenda aid]
         )
     EnemyDefeated _ _ _ "02323" _ _ ->
-      a <$ unshiftMessage (ScenarioResolution $ Resolution 3)
+      a <$ push (ScenarioResolution $ Resolution 3)
     _ -> TheEndOfAllThings <$> runMessage msg attrs

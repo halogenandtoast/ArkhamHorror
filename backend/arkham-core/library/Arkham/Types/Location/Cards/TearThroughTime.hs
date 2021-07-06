@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.TearThroughTime
   ( tearThroughTime
   , TearThroughTime(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

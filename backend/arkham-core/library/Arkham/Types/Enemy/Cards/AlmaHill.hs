@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.AlmaHill
   ( AlmaHill(..)
   , almaHill
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -48,9 +49,8 @@ instance (EnemyRunner env) => RunMessage env AlmaHill where
   runMessage msg e@(AlmaHill attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAt (Just iid) eid (LocationWithTitle "Southside")
-    UseCardAbility iid (EnemySource eid) _ 1 _ | eid == enemyId ->
-      e <$ unshiftMessages
-        (replicate 3 (InvestigatorDrawEncounterCard iid)
-        <> [AddToVictory (toTarget attrs)]
-        )
+    UseCardAbility iid (EnemySource eid) _ 1 _ | eid == enemyId -> e <$ pushAll
+      (replicate 3 (InvestigatorDrawEncounterCard iid)
+      <> [AddToVictory (toTarget attrs)]
+      )
     _ -> AlmaHill <$> runMessage msg attrs

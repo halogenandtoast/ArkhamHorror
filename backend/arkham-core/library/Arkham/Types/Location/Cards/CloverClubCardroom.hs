@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.CloverClubCardroom
   ( cloverClubCardroom
   , CloverClubCardroom(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -58,7 +59,7 @@ instance LocationRunner env => RunMessage env CloverClubCardroom where
   runMessage msg l@(CloverClubCardroom attrs@LocationAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _
       | isSource attrs source && locationRevealed -> l
-      <$ unshiftMessage (RequestTokens source (Just iid) 1 SetAside)
+      <$ push (RequestTokens source (Just iid) 1 SetAside)
     RequestedTokens source (Just iid) tokens | isSource attrs source -> do
       let
         msgs = concatMap
@@ -81,7 +82,7 @@ instance LocationRunner env => RunMessage env CloverClubCardroom where
             AutoFail -> []
           )
           tokens
-      l <$ unshiftMessages
+      l <$ pushAll
         ([chooseOne iid [Continue "Apply results"]]
         <> msgs
         <> [ResetTokens source]

@@ -1,12 +1,13 @@
 module Arkham.Types.Investigator.Cards.DaisyWalker
   ( DaisyWalker(..)
   , daisyWalker
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -70,7 +71,7 @@ instance InvestigatorRunner env => RunMessage env DaisyWalker where
           tomeCount <- unAssetCount <$> getCount (iid, [Tome])
           i <$ when
             (tomeCount > 0)
-            (unshiftMessage $ chooseOne
+            (push $ chooseOne
               iid
               [ DrawCards iid tomeCount False
               , Continue "Do not use Daisy's ability"

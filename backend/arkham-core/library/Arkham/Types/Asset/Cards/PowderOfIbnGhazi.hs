@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.PowderOfIbnGhazi
   ( powderOfIbnGhazi
   , PowderOfIbnGhazi(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -79,8 +80,8 @@ instance
         <$> getSet lid
       case setToList exhaustedBroodOfYogSothothAtLocation of
         [] -> throwIO $ InvalidState "missing brood of yog sothoth"
-        [x] -> unshiftMessage (PlaceClues (EnemyTarget x) 1)
-        xs -> unshiftMessage
+        [x] -> push (PlaceClues (EnemyTarget x) 1)
+        xs -> push
           (chooseOne
             iid
             [ TargetLabel x [PlaceClues x 1] | x <- map EnemyTarget xs ]

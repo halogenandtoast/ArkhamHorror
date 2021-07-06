@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Scenarios.UndimensionedAndUnseen
   ( UndimensionedAndUnseen(..)
   , undimensionedAndUnseen
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -169,13 +170,11 @@ instance
   runMessage msg s@(UndimensionedAndUnseen attrs) = case msg of
     SetTokensForScenario -> do
       standalone <- getIsStandalone
-      s <$ if standalone
-        then unshiftMessage (SetTokens standaloneTokens)
-        else pure ()
+      s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
     Setup -> do
       investigatorIds <- getInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
-      s <$ unshiftMessages
+      s <$ pushAll
         [ story investigatorIds undimensionedAndUnseenIntro
         , chooseOne
           leadInvestigatorId
@@ -269,7 +268,7 @@ instance
           ]
         locations' = locationNameMap $ map snd locations
 
-      unshiftMessages
+      pushAll
         $ [ story
             investigatorIds
             (if n == 1
@@ -314,7 +313,7 @@ instance
         & setAsideCardsL
         .~ setAsideBroodOfYogSothoth
         )
-    ResolveToken drawnToken Tablet _ -> s <$ unshiftMessage
+    ResolveToken drawnToken Tablet _ -> s <$ push
       (CreateEffect
         "02236"
         Nothing
@@ -331,14 +330,14 @@ instance
             == "02255"
             && (action `elem` [Action.Evade, Action.Fight])
             )
-            (unshiftMessage $ EnemyAttack iid eid)
+            (push $ EnemyAttack iid eid)
         _ -> pure s
     RequestedPlayerCard iid source mcard | isSource attrs source ->
       case mcard of
         Nothing -> pure s
-        Just card -> s <$ unshiftMessage (ShuffleCardsIntoDeck iid [card])
+        Just card -> s <$ push (ShuffleCardsIntoDeck iid [card])
     ScenarioResolution NoResolution ->
-      s <$ unshiftMessages [ScenarioResolution $ Resolution 1]
+      s <$ pushAll [ScenarioResolution $ Resolution 1]
     ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
@@ -347,7 +346,7 @@ instance
         (+ count ((== "02255") . toCardCode) (scenarioSetAsideCards attrs))
         . length
         <$> getSetList @StoryEnemyId (CardCode "02255")
-      s <$ unshiftMessages
+      s <$ pushAll
         ([ chooseOne
            leadInvestigatorId
            [ Run
@@ -371,7 +370,7 @@ instance
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
-      s <$ unshiftMessages
+      s <$ pushAll
         ([ chooseOne
            leadInvestigatorId
            [ Run
@@ -391,16 +390,16 @@ instance
         <> [EndOfGame]
         )
     UseScenarioSpecificAbility _ Nothing 1 ->
-      s <$ unshiftMessage (ChooseRandomLocation (toTarget attrs) mempty)
+      s <$ push (ChooseRandomLocation (toTarget attrs) mempty)
     UseScenarioSpecificAbility _ (Just (LocationTarget lid)) 1 ->
       case scenarioSetAsideCards attrs of
         [] -> error "should not call when empty"
         (x : xs) -> do
-          unshiftMessage (CreateEnemyAt x lid Nothing)
+          push (CreateEnemyAt x lid Nothing)
           pure . UndimensionedAndUnseen $ attrs & setAsideCardsL .~ xs
     ChosenRandomLocation target randomLocationId | isTarget attrs target -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      s <$ unshiftMessage
+      s <$ push
         (UseScenarioSpecificAbility
           leadInvestigatorId
           (Just (LocationTarget randomLocationId))

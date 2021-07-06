@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.Fold
   ( Fold(..)
   , fold
-  ) where
+  )
+where
 
 import Arkham.Prelude hiding (fold)
 
@@ -58,11 +59,11 @@ instance ActRunner env => RunMessage env Fold where
       investigatorIds <- getSet @InScenarioInvestigatorId ()
       a <$ when
         (null investigatorIds)
-        (unshiftMessage $ AdvanceAct actId (toSource attrs))
+        (push $ AdvanceAct actId (toSource attrs))
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       investigatorIds <- getInvestigatorIds
       requiredClueCount <- getPlayerCountValue (PerPlayer 2)
-      unshiftMessages
+      pushAll
         (SpendClues requiredClueCount investigatorIds
         : [ chooseOne iid [AdvanceAct aid (toSource attrs)]
           | iid <- investigatorIds
@@ -72,10 +73,10 @@ instance ActRunner env => RunMessage env Fold where
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       maid <- fmap unStoryAssetId <$> getId (CardCode "02079")
       a <$ case maid of
-        Nothing -> unshiftMessage (ScenarioResolution $ Resolution 1)
+        Nothing -> push (ScenarioResolution $ Resolution 1)
         Just assetId -> do
           miid <- fmap unOwnerId <$> getId assetId
-          unshiftMessage
+          push
             (ScenarioResolution
             $ maybe (Resolution 1) (const (Resolution 2)) miid
             )
@@ -84,7 +85,7 @@ instance ActRunner env => RunMessage env Fold where
         maid <- fmap unStoryAssetId <$> getId (CardCode "02079")
         case maid of
           Nothing -> error "this ability should not be able to be used"
-          Just aid -> a <$ unshiftMessage
+          Just aid -> a <$ push
             (BeginSkillTest
               iid
               source
@@ -101,8 +102,8 @@ instance ActRunner env => RunMessage env Fold where
           Just aid -> do
             currentClueCount <- unClueCount <$> getCount aid
             requiredClueCount <- getPlayerCountValue (PerPlayer 1)
-            unshiftMessage (PlaceClues (AssetTarget aid) 1)
+            push (PlaceClues (AssetTarget aid) 1)
             a <$ when
               (currentClueCount + 1 >= requiredClueCount)
-              (unshiftMessage $ TakeControlOfAsset iid aid)
+              (push $ TakeControlOfAsset iid aid)
     _ -> Fold <$> runMessage msg attrs

@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.ServantOfManyMouths
   ( ServantOfManyMouths(..)
   , servantOfManyMouths
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -45,7 +46,7 @@ instance EnemyRunner env => RunMessage env ServantOfManyMouths where
         locationIds
       e <$ unless
         (null locationsWithClues)
-        (unshiftMessage
+        (push
           (chooseOne
             iid
             [ TargetLabel

@@ -1,7 +1,8 @@
 module Arkham.Types.Skill.Cards.TrueUnderstanding
   ( trueUnderstanding
   , TrueUnderstanding(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -31,5 +32,5 @@ instance SkillRunner env => RunMessage env TrueUnderstanding where
   runMessage msg s@(TrueUnderstanding attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest iid _ _ (SkillTarget sid) _ _ | sid == skillId -> do
       lid <- getId iid
-      s <$ unshiftMessage (InvestigatorDiscoverClues iid lid 1 Nothing)
+      s <$ push (InvestigatorDiscoverClues iid lid 1 Nothing)
     _ -> TrueUnderstanding <$> runMessage msg attrs

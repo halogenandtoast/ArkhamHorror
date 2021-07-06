@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.BearTrap
   ( BearTrap(..)
   , bearTrap
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -43,10 +44,8 @@ instance AssetRunner env => RunMessage env BearTrap where
   runMessage msg a@(BearTrap attrs@AssetAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid
-      a <$ unshiftMessage (AttachAsset assetId (LocationTarget locationId))
+      a <$ push (AttachAsset assetId (LocationTarget locationId))
     EnemyMove eid _ lid | Just lid == assetLocation -> do
       isRougarou <- (== CardCode "81028") <$> getId eid
-      a <$ when
-        isRougarou
-        (unshiftMessage (AttachAsset assetId (EnemyTarget eid)))
+      a <$ when isRougarou (push (AttachAsset assetId (EnemyTarget eid)))
     _ -> BearTrap <$> runMessage msg attrs

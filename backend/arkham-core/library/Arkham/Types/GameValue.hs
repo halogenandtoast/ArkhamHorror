@@ -1,7 +1,8 @@
 module Arkham.Types.GameValue
   ( GameValue(..)
   , fromGameValue
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

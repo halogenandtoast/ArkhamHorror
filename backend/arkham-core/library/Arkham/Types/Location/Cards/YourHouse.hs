@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.YourHouse
   ( YourHouse(..)
   , yourHouse
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -50,11 +51,11 @@ instance (LocationRunner env) => RunMessage env YourHouse where
       when (cardCode == "01116") $ do
         withQueue_
           $ filter (and . sequence [(/= After spawnMsg), (/= spawnMsg)])
-        unshiftMessages
+        pushAll
           [ EnemySpawn miid locationId eid
           , After (EnemySpawn miid locationId eid)
           ]
       YourHouse <$> runMessage msg attrs
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessages [DrawCards iid 1 False, TakeResources iid 1 False]
+      l <$ pushAll [DrawCards iid 1 False, TakeResources iid 1 False]
     _ -> YourHouse <$> runMessage msg attrs

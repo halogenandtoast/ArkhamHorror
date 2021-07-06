@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.RiteOfSeeking
   ( riteOfSeeking
   , RiteOfSeeking(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -26,7 +27,7 @@ instance (HasQueue env) => RunMessage env RiteOfSeeking where
     RevealToken _ iid token -> case effectTarget of
       InvestigationTarget iid' _ | iid == iid' -> e <$ when
         (token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-        (unshiftMessage $ CreateEffect
+        (push $ CreateEffect
           "02028"
           Nothing
           (toSource attrs)
@@ -34,12 +35,12 @@ instance (HasQueue env) => RunMessage env RiteOfSeeking where
         )
       _ -> pure e
     SkillTestEnds _ -> e <$ case effectTarget of
-      InvestigatorTarget iid ->
-        unshiftMessages [DisableEffect effectId, EndTurn iid]
-      _ -> unshiftMessage (DisableEffect effectId)
+      InvestigatorTarget iid -> pushAll [DisableEffect effectId, EndTurn iid]
+      _ -> push (DisableEffect effectId)
     SuccessfulInvestigation iid _ source | isSource attrs source ->
       case effectTarget of
-        InvestigationTarget _ lid' -> e <$ unshiftMessage
-          (InvestigatorDiscoverClues iid lid' 1 (Just Action.Investigate))
+        InvestigationTarget _ lid' ->
+          e <$ push
+            (InvestigatorDiscoverClues iid lid' 1 (Just Action.Investigate))
         _ -> pure e
     _ -> RiteOfSeeking <$> runMessage msg attrs

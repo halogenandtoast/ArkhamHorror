@@ -26,17 +26,22 @@ instance HasActions env SmiteTheWicked where
 
 instance TreacheryRunner env => RunMessage env SmiteTheWicked where
   runMessage msg t@(SmiteTheWicked attrs@TreacheryAttrs {..}) = case msg of
-    Revelation _iid source | isSource attrs source -> t <$ unshiftMessage
-      (DiscardEncounterUntilFirst source (CardMatchByType (EnemyType, mempty)))
+    Revelation _iid source | isSource attrs source ->
+      t
+        <$ push
+             (DiscardEncounterUntilFirst
+               source
+               (CardMatchByType (EnemyType, mempty))
+             )
     RequestedEncounterCard (TreacherySource tid) mcard | tid == treacheryId ->
       case mcard of
-        Nothing -> t <$ unshiftMessage (Discard $ toTarget attrs)
+        Nothing -> t <$ push (Discard $ toTarget attrs)
         Just card -> do
           let
             ownerId = fromJustNote "has to be set" treacheryOwner
             enemyId = EnemyId $ toCardId card
           farthestLocations <- map unFarthestLocationId <$> getSetList ownerId
-          t <$ unshiftMessages
+          t <$ pushAll
             [ CreateEnemy (EncounterCard card)
             , AttachTreachery treacheryId (EnemyTarget enemyId)
             , chooseOne
@@ -50,5 +55,5 @@ instance TreacheryRunner env => RunMessage env SmiteTheWicked where
         SmiteTheWicked attrs' -> SmiteTheWicked <$> runMessage msg attrs'
     EndOfGame ->
       let investigator = fromJustNote "missing investigator" treacheryOwner
-      in t <$ unshiftMessage (SufferTrauma investigator 0 1)
+      in t <$ push (SufferTrauma investigator 0 1)
     _ -> SmiteTheWicked <$> runMessage msg attrs

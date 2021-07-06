@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.DevoteeOfTheKey
   ( devoteeOfTheKey
   , DevoteeOfTheKey(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -37,16 +38,19 @@ instance EnemyAttrsRunMessage env => RunMessage env DevoteeOfTheKey where
       sentinelPeak <- fromJustNote "missing location"
         <$> getLocationIdWithTitle "Sentinel Peak"
       if enemyLocation == sentinelPeak
-        then e <$ unshiftMessages
-          [Discard (toTarget attrs), PlaceDoomOnAgenda, PlaceDoomOnAgenda]
+        then
+          e <$ pushAll
+            [Discard (toTarget attrs), PlaceDoomOnAgenda, PlaceDoomOnAgenda]
         else do
           choices <- map unClosestPathLocationId
             <$> getSetList (enemyLocation, sentinelPeak)
           case choices of
             [] -> error "should not happen"
-            [x] -> e <$ unshiftMessage (EnemyMove enemyId enemyLocation x)
-            xs -> e <$ unshiftMessage
-              (chooseOne leadInvestigatorId
-              $ map (EnemyMove enemyId enemyLocation) xs
-              )
+            [x] -> e <$ push (EnemyMove enemyId enemyLocation x)
+            xs ->
+              e
+                <$ push
+                     (chooseOne leadInvestigatorId
+                     $ map (EnemyMove enemyId enemyLocation) xs
+                     )
     _ -> DevoteeOfTheKey <$> runMessage msg attrs

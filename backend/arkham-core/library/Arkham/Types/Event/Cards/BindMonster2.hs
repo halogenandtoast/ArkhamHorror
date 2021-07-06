@@ -1,7 +1,8 @@
 module Arkham.Types.Event.Cards.BindMonster2
   ( bindMonster2
   , BindMonster2(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -41,17 +42,16 @@ instance HasModifiersFor env BindMonster2 where
 
 instance HasQueue env => RunMessage env BindMonster2 where
   runMessage msg e@(BindMonster2 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ unshiftMessages
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ pushAll
       [ CreateEffect "02031" Nothing (toSource attrs) SkillTestTarget
       , ChooseEvadeEnemy iid (EventSource eid) SkillWillpower False
       ]
-    SkillTestEnds _ -> e <$ when
-      (null eventAttachedTarget)
-      (unshiftMessage (Discard $ toTarget attrs))
+    SkillTestEnds _ ->
+      e <$ when (null eventAttachedTarget) (push (Discard $ toTarget attrs))
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       case eventAttachedTarget of
-        Just target -> e <$ unshiftMessage
-          (BeginSkillTest iid source target Nothing SkillWillpower 3)
+        Just target ->
+          e <$ push (BeginSkillTest iid source target Nothing SkillWillpower 3)
         Nothing -> throwIO $ InvalidState "must be attached"
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> case eventAttachedTarget of
@@ -59,5 +59,5 @@ instance HasQueue env => RunMessage env BindMonster2 where
           e <$ withQueue_ (filter (/= Ready target))
         _ -> error "invalid target"
     FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> e <$ unshiftMessage (Discard $ toTarget attrs)
+      | isSource attrs source -> e <$ push (Discard $ toTarget attrs)
     _ -> BindMonster2 <$> runMessage msg attrs

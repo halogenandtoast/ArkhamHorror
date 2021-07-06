@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.GoatSpawn
   ( goatSpawn
   , GoatSpawn(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -28,7 +29,7 @@ instance (EnemyRunner env) => RunMessage env GoatSpawn where
   runMessage msg (GoatSpawn attrs@EnemyAttrs {..}) = case msg of
     EnemyDefeated eid _ _ _ _ _ | eid == enemyId -> do
       investigatorIds <- getSetList enemyLocation
-      unshiftMessages
+      pushAll
         [ InvestigatorAssignDamage iid (EnemySource eid) DamageAny 0 1
         | iid <- investigatorIds
         ]

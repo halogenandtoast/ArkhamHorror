@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.PrismaticCascade
   ( prismaticCascade
   , PrismaticCascade(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -48,8 +49,8 @@ instance ActionRunner env => HasActions env PrismaticCascade where
 instance LocationRunner env => RunMessage env PrismaticCascade where
   runMessage msg l@(PrismaticCascade attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      unshiftMessage $ RandomDiscard iid
+      push $ RandomDiscard iid
       PrismaticCascade <$> runMessage msg attrs
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      l <$ unshiftMessage (Discard $ toTarget attrs)
+      l <$ push (Discard $ toTarget attrs)
     _ -> PrismaticCascade <$> runMessage msg attrs

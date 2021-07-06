@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.RelentlessDarkYoung
   ( relentlessDarkYoung
   , RelentlessDarkYoung(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

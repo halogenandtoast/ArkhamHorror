@@ -31,6 +31,5 @@ instance HasActions env ResearchLibrarian where
 instance (AssetRunner env) => RunMessage env ResearchLibrarian where
   runMessage msg a@(ResearchLibrarian attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage
-        (SearchDeckForTraits iid (InvestigatorTarget iid) [Tome])
+      a <$ push (SearchDeckForTraits iid (InvestigatorTarget iid) [Tome])
     _ -> ResearchLibrarian <$> runMessage msg attrs

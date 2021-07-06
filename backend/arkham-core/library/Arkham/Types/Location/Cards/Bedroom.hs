@@ -26,5 +26,5 @@ instance ActionRunner env => HasActions env Bedroom where
 instance (LocationRunner env) => RunMessage env Bedroom where
   runMessage msg l@(Bedroom attrs) = case msg of
     After (FailedSkillTest iid (Just Action.Investigate) _ target _ _)
-      | isTarget attrs target -> l <$ unshiftMessage (RandomDiscard iid)
+      | isTarget attrs target -> l <$ push (RandomDiscard iid)
     _ -> Bedroom <$> runMessage msg attrs

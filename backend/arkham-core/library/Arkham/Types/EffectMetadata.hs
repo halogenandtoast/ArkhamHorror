@@ -1,6 +1,7 @@
 module Arkham.Types.EffectMetadata
   ( EffectMetadata(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

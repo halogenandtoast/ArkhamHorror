@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.Lucky2
   ( lucky2
   , Lucky2(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -26,6 +27,6 @@ instance HasModifiersFor env Lucky2 where
 instance HasQueue env => RunMessage env Lucky2 where
   runMessage msg e@(Lucky2 attrs) = case msg of
     CreatedEffect eid _ _ (InvestigatorTarget _) | eid == effectId attrs ->
-      e <$ unshiftMessage RerunSkillTest
-    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect $ effectId attrs)
+      e <$ push RerunSkillTest
+    SkillTestEnds _ -> e <$ push (DisableEffect $ effectId attrs)
     _ -> Lucky2 <$> runMessage msg attrs

@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.ScrollOfProphecies
   ( ScrollOfProphecies(..)
   , scrollOfProphecies
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -44,7 +45,7 @@ instance AssetRunner env => RunMessage env ScrollOfProphecies where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid
       investigatorIds <- getSetList locationId
-      unshiftMessage
+      push
         (chooseOne
           iid
           [ TargetLabel

@@ -1,6 +1,7 @@
 module Arkham.Types.Investigator.Cards.AshcanPeteSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport.Lifted
 

@@ -47,13 +47,12 @@ unshiftEffect
   => EventAttrs
   -> Target
   -> m ()
-unshiftEffect attrs target = unshiftMessages
+unshiftEffect attrs target = pushAll
   [ CreateEffect (cdCardCode $ toCardDef attrs) Nothing (toSource attrs) target
   , Discard $ toTarget attrs
   ]
 
-event
-  :: (EventAttrs -> a) -> CardDef -> CardBuilder (InvestigatorId, EventId) a
+event :: (EventAttrs -> a) -> CardDef -> CardBuilder (InvestigatorId, EventId) a
 event f cardDef = CardBuilder
   { cbCardCode = cdCardCode cardDef
   , cbCardBuilder = \(iid, eid) -> f $ EventAttrs
@@ -92,7 +91,7 @@ instance HasQueue env => RunMessage env EventAttrs where
   runMessage msg a@EventAttrs {..} = case msg of
     InvestigatorEliminated iid
       | eventAttachedTarget == Just (InvestigatorTarget iid) -> a
-      <$ unshiftMessage (Discard (EventTarget eventId))
+      <$ push (Discard (EventTarget eventId))
     AttachEvent eid target | eid == eventId ->
       pure $ a & attachedTargetL ?~ target
     _ -> pure a

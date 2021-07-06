@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.Shotgun4
   ( Shotgun4(..)
   , shotgun4
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -53,20 +54,19 @@ instance (AssetRunner env) => RunMessage env Shotgun4 where
   runMessage msg a@(Shotgun4 attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       Shotgun4 <$> runMessage msg (attrs & usesL .~ Uses Ammo 2)
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessages
-        [ CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 3])
-          source
-          (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillCombat mempty False
-        ]
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+      [ CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 3])
+        source
+        (InvestigatorTarget iid)
+      , ChooseFightEnemy iid source SkillCombat mempty False
+      ]
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source
       -> let val = min 1 (max 5 n)
          in
-           a <$ unshiftMessage
+           a <$ push
              (CreateWindowModifierEffect
                EffectSkillTestWindow
                (FailedByEffectModifiers $ toModifiers attrs [DamageDealt val])
@@ -77,7 +77,7 @@ instance (AssetRunner env) => RunMessage env Shotgun4 where
       | isSource attrs source
       -> let val = min 1 (max 5 n)
          in
-           a <$ unshiftMessage
+           a <$ push
              (CreateWindowModifierEffect
                EffectSkillTestWindow
                (EffectModifiers $ toModifiers attrs [DamageDealt val])

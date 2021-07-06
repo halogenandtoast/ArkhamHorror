@@ -1,6 +1,7 @@
 module Arkham.Types.Investigator.Cards.RolandBanksSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport.Lifted
 

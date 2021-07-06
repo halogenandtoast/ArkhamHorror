@@ -1,6 +1,7 @@
 module Arkham.Types.Message
   ( module Arkham.Types.Message
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

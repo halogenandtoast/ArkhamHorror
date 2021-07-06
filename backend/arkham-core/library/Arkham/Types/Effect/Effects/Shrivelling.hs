@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.Shrivelling
   ( shrivelling
   , Shrivelling(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -25,10 +26,10 @@ instance HasQueue env => RunMessage env Shrivelling where
     RevealToken _ iid token | InvestigatorTarget iid == effectTarget ->
       e <$ when
         (token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-        (unshiftMessages
+        (pushAll
           [ InvestigatorAssignDamage iid effectSource DamageAny 0 1
           , DisableEffect effectId
           ]
         )
-    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect effectId)
+    SkillTestEnds _ -> e <$ push (DisableEffect effectId)
     _ -> Shrivelling <$> runMessage msg attrs

@@ -34,5 +34,5 @@ instance HasActions env HeirloomOfHyperborea where
 instance (AssetRunner env) => RunMessage env HeirloomOfHyperborea where
   runMessage msg a@(HeirloomOfHyperborea attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage (DrawCards iid 1 False)
+      a <$ push (DrawCards iid 1 False)
     _ -> HeirloomOfHyperborea <$> runMessage msg attrs

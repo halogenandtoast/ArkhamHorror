@@ -52,8 +52,7 @@ instance SourceEntity SkillAttrs where
   isSource SkillAttrs { skillId } (SkillSource sid) = skillId == sid
   isSource _ _ = False
 
-skill
-  :: (SkillAttrs -> a) -> CardDef -> CardBuilder (InvestigatorId, SkillId) a
+skill :: (SkillAttrs -> a) -> CardDef -> CardBuilder (InvestigatorId, SkillId) a
 skill f cardDef = CardBuilder
   { cbCardCode = cdCardCode cardDef
   , cbCardBuilder = \(iid, sid) ->

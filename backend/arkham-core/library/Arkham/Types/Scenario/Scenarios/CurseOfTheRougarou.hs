@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
   ( CurseOfTheRougarou(..)
   , curseOfTheRougarou
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -117,7 +118,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       let
         (_, (bayouId, _) : _) =
           break (elem Bayou . toTraits . snd . snd) startingLocationsWithLabel
-      pushMessages
+      pushAllEnd
         $ [SetEncounterDeck encounterDeck, AddAgenda "81002", AddAct "81005"]
         <> concat
              [ [ PlaceLocation locationId cardDef
@@ -183,7 +184,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         locationsWithLabels
         (setToList $ setAsideLocationTraits metadata)
       locationIds <- getRandoms
-      unshiftMessages $ concat
+      pushAll $ concat
         [ [PlaceLocation locationId cardDef, SetLocationLabel locationId label]
         | (locationId, (label, cardDef)) <- zip
           locationIds
@@ -249,28 +250,28 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
             , AutoFail
             , ElderSign
             ]
-      s <$ unshiftMessage (SetTokens tokens)
+      s <$ push (SetTokens tokens)
     ResolveToken _ Cultist iid -> do
       lid <- getId @LocationId iid
       enemyIds <- getSetList @EnemyId lid
       rougarouAtYourLocation <- elem "81028" <$> for enemyIds (getId @CardCode)
-      s <$ when rougarouAtYourLocation (unshiftMessage $ DrawAnotherToken iid)
+      s <$ when rougarouAtYourLocation (push $ DrawAnotherToken iid)
     ResolveToken _ ElderThing iid -> if isEasyStandard attrs
       then do
         lid <- getId @LocationId iid
         enemyIds <- getSetList @EnemyId lid
         mrougarou <- findM (((== "81028") <$>) . getId @CardCode) enemyIds
-        s <$ for_ mrougarou (unshiftMessage . EnemyWillAttack iid)
+        s <$ for_ mrougarou (push . EnemyWillAttack iid)
       else do
         lid <- getId @LocationId iid
         connectedLocationIds <- map unConnectedLocationId <$> getSetList lid
         enemyIds <- concat
           <$> for (lid : connectedLocationIds) (getSetList @EnemyId)
         mrougarou <- findM (((== "81028") <$>) . getId @CardCode) enemyIds
-        s <$ for_ mrougarou (unshiftMessage . EnemyWillAttack iid)
+        s <$ for_ mrougarou (push . EnemyWillAttack iid)
     FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _ -> s <$ when
       (drawnTokenFace token == Tablet)
-      (unshiftMessage $ CreateEffect
+      (push $ CreateEffect
         "81001"
         Nothing
         (DrawnTokenSource token)
@@ -282,7 +283,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
-      s <$ unshiftMessage
+      s <$ push
         (chooseOne
           leadInvestigatorId
           [ Run
@@ -306,7 +307,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
-      s <$ unshiftMessage
+      s <$ push
         (chooseOne
           leadInvestigatorId
           [ Run
@@ -339,7 +340,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
-      s <$ unshiftMessage
+      s <$ push
         (chooseOne
           leadInvestigatorId
           [ Run

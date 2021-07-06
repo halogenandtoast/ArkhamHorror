@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.CloverClubLounge
   ( cloverClubLounge
   , CloverClubLounge(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -63,6 +64,5 @@ instance ActionRunner env => HasActions env CloverClubLounge where
 instance LocationRunner env => RunMessage env CloverClubLounge where
   runMessage msg l@(CloverClubLounge attrs@LocationAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _
-      | isSource attrs source && locationRevealed -> l
-      <$ unshiftMessage (GainClues iid 2)
+      | isSource attrs source && locationRevealed -> l <$ push (GainClues iid 2)
     _ -> CloverClubLounge <$> runMessage msg attrs

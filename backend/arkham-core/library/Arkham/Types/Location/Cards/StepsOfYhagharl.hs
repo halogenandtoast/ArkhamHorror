@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.StepsOfYhagharl
   ( stepsOfYhagharl
   , StepsOfYhagharl(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -54,10 +55,10 @@ instance LocationRunner env => RunMessage env StepsOfYhagharl where
             [ RemoveFromEncounterDiscard madnessCard
             , InvestigatorDrewEncounterCard iid madnessCard
             ]
-      unshiftMessages revelationMsgs
+      pushAll revelationMsgs
       StepsOfYhagharl <$> runMessage msg attrs
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      l <$ unshiftMessage
+      l <$ push
         (BeginSkillTest
           iid
           source

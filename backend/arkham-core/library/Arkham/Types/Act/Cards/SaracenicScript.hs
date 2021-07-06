@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.SaracenicScript
   ( SaracenicScript(..)
   , saracenicScript
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -41,7 +42,7 @@ instance ActRunner env => RunMessage env SaracenicScript where
         <$> getSetList @InScenarioInvestigatorId ()
       investigatorEsotericFormulaPairs <- for investigatorIds $ \iid ->
         (iid, ) <$> (PlayerCard <$> genPlayerCard Assets.esotericFormula)
-      a <$ unshiftMessages
+      a <$ pushAll
         ([ TakeControlOfSetAsideAsset iid esotericFormula
          | (iid, esotericFormula) <- investigatorEsotericFormulaPairs
          ]

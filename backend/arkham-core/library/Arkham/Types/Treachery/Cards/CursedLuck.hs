@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.CursedLuck
   ( CursedLuck(..)
   , cursedLuck
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -34,8 +35,8 @@ instance HasActions env CursedLuck where
 instance TreacheryRunner env => RunMessage env CursedLuck where
   runMessage msg t@(CursedLuck attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
-      t <$ unshiftMessage (AttachTreachery treacheryId (InvestigatorTarget iid))
+      t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))
     PassedSkillTest iid _ _ (SkillTestInitiatorTarget _) _ n
       | treacheryOnInvestigator iid attrs && n >= 1 -> t
-      <$ unshiftMessage (Discard $ toTarget attrs)
+      <$ push (Discard $ toTarget attrs)
     _ -> CursedLuck <$> runMessage msg attrs

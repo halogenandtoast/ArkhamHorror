@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.CurseOfTheRougarouTabletToken
   ( curseOfTheRougarouTabletToken
   , CurseOfTheRougarouTabletToken(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -25,5 +26,5 @@ instance HasModifiersFor env CurseOfTheRougarouTabletToken where
 
 instance HasQueue env => RunMessage env CurseOfTheRougarouTabletToken where
   runMessage msg e@(CurseOfTheRougarouTabletToken attrs) = case msg of
-    EndRound -> e <$ unshiftMessage (DisableEffect $ effectId attrs)
+    EndRound -> e <$ push (DisableEffect $ effectId attrs)
     _ -> CurseOfTheRougarouTabletToken <$> runMessage msg attrs

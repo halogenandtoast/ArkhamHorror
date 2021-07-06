@@ -33,9 +33,8 @@ instance ActionRunner env => HasActions env AdministrationBuilding where
 instance (LocationRunner env) => RunMessage env AdministrationBuilding where
   runMessage msg l@(AdministrationBuilding attrs) = case msg of
     RevealLocation _ lid | lid == locationId attrs -> do
-      unshiftMessage
-        $ PlaceLocationMatching (LocationWithTitle "Faculty Offices")
+      push $ PlaceLocationMatching (LocationWithTitle "Faculty Offices")
       AdministrationBuilding <$> runMessage msg attrs
     EndTurn iid | iid `elem` locationInvestigators attrs ->
-      l <$ unshiftMessage (DiscardTopOfDeck iid 1 Nothing)
+      l <$ push (DiscardTopOfDeck iid 1 Nothing)
     _ -> AdministrationBuilding <$> runMessage msg attrs

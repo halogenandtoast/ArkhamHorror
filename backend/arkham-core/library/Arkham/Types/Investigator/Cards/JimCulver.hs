@@ -2,8 +2,8 @@ module Arkham.Types.Investigator.Cards.JimCulver where
 
 import Arkham.Prelude
 
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
@@ -53,7 +53,7 @@ instance InvestigatorRunner env => RunMessage env JimCulver where
     When (RevealToken source iid ElderSign) | iid == investigatorId -> do
       mmsg <- popMessage
       case mmsg of
-        Just RevealToken{} -> i <$ unshiftMessage
+        Just RevealToken{} -> i <$ push
           (chooseOne
             iid
             [ Label "Resolve as Elder Sign" [RevealToken source iid ElderSign]

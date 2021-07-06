@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.ColdSpringGlen_245
   ( coldSpringGlen_245
   , ColdSpringGlen_245(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -51,7 +52,7 @@ instance ActionRunner env => HasActions env ColdSpringGlen_245 where
 instance LocationRunner env => RunMessage env ColdSpringGlen_245 where
   runMessage msg l@(ColdSpringGlen_245 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessage
+      l <$ push
         (BeginSkillTest iid source (toTarget attrs) Nothing SkillAgility 3)
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> l <$ replaceMessageMatching

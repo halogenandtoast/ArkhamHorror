@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.Hypochondria
   ( Hypochondria(..)
   , hypochondria
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -42,10 +43,11 @@ instance ActionRunner env => HasActions env Hypochondria where
 instance (TreacheryRunner env) => RunMessage env Hypochondria where
   runMessage msg t@(Hypochondria attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
-      t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
+      t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)
     After (InvestigatorTakeDamage iid _ n _)
-      | treacheryOnInvestigator iid attrs && n > 0 -> t <$ unshiftMessage
+      | treacheryOnInvestigator iid attrs && n > 0
+      -> t <$ push
         (InvestigatorDirectDamage iid (TreacherySource treacheryId) 0 1)
     UseCardAbility _ (TreacherySource tid) _ 1 _ | tid == treacheryId ->
-      t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
+      t <$ push (Discard (TreacheryTarget treacheryId))
     _ -> Hypochondria <$> runMessage msg attrs

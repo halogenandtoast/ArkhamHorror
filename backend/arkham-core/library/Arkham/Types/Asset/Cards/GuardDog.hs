@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.GuardDog
   ( GuardDog(..)
   , guardDog
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -40,7 +41,7 @@ instance HasActions env GuardDog where
 instance (AssetRunner env) => RunMessage env GuardDog where
   runMessage msg a@(GuardDog attrs) = case msg of
     UseCardAbility _ source (Just (SourceMetadata (EnemySource eid))) 1 _
-      | isSource attrs source -> a <$ unshiftMessage
+      | isSource attrs source -> a <$ push
         (chooseOne
           (getInvestigator attrs)
           [ EnemyDamage eid (getInvestigator attrs) (toSource attrs) 1

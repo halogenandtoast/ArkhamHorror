@@ -1,7 +1,8 @@
 module Arkham.Types.Event.Cards.BlindingLight2
   ( blindingLight2
   , BlindingLight2(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -28,7 +29,7 @@ instance HasActions env BlindingLight2 where
 
 instance (EventRunner env) => RunMessage env BlindingLight2 where
   runMessage msg e@(BlindingLight2 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ unshiftMessages
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ pushAll
       [ CreateEffect "01069" Nothing (toSource attrs) (InvestigatorTarget iid)
       , CreateEffect "01069" Nothing (toSource attrs) SkillTestTarget
       , ChooseEvadeEnemy iid (EventSource eid) SkillWillpower False

@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.Atychiphobia
   ( atychiphobia
   , Atychiphobia(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -42,16 +43,17 @@ instance ActionRunner env => HasActions env Atychiphobia where
 instance (TreacheryRunner env) => RunMessage env Atychiphobia where
   runMessage msg t@(Atychiphobia attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
-      t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
+      t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)
     FailedSkillTest iid _ _ _ _ _ | treacheryOnInvestigator iid attrs ->
-      t <$ unshiftMessage
-        (InvestigatorAssignDamage
-          iid
-          (TreacherySource treacheryId)
-          DamageAny
-          0
-          1
-        )
+      t
+        <$ push
+             (InvestigatorAssignDamage
+               iid
+               (TreacherySource treacheryId)
+               DamageAny
+               0
+               1
+             )
     UseCardAbility _ (TreacherySource tid) _ 1 _ | tid == treacheryId ->
-      t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
+      t <$ push (Discard (TreacheryTarget treacheryId))
     _ -> Atychiphobia <$> runMessage msg attrs

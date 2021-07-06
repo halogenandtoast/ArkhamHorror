@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.TerrorFromBeyond
   ( TerrorFromBeyond(..)
   , terrorFromBeyond
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -49,7 +50,7 @@ instance TreacheryRunner env => RunMessage env TerrorFromBeyond where
       iidsWithSkills <- traverse
         (traverseToSnd $ (map unHandCardId <$>) . getSetList . (, SkillType))
         iids
-      t <$ unshiftMessages
+      t <$ pushAll
         [ chooseN
           iid
           (if secondCopy then 2 else 1)

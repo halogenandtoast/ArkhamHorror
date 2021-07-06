@@ -208,13 +208,13 @@ runMessages = do
                   (gamePlayerOrder g)
                 case playingInvestigators of
                   [] -> do
-                    pushMessage EndInvestigation
+                    pushEnd EndInvestigation
                     runMessages
                   (x : _) -> do
                     atomicWriteIORef gameRef (g & activeInvestigatorIdL .~ x)
                     runMessages
               else
-                pushMessages [PlayerWindow (g ^. activeInvestigatorIdL) []]
+                pushAllEnd [PlayerWindow (g ^. activeInvestigatorIdL) []]
                   >> runMessages
         Just msg -> do
           case msg of

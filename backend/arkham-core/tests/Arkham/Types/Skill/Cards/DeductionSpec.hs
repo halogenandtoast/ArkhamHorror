@@ -1,6 +1,7 @@
 module Arkham.Types.Skill.Cards.DeductionSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport.Lifted
 

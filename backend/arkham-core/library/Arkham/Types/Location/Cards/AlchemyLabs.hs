@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.AlchemyLabs
   ( alchemyLabs
   , AlchemyLabs(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -48,11 +49,10 @@ instance ActionRunner env => HasActions env AlchemyLabs where
 instance LocationRunner env => RunMessage env AlchemyLabs where
   runMessage msg l@(AlchemyLabs attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessage
-        (Investigate iid (locationId attrs) source SkillIntellect False)
+      l <$ push (Investigate iid (locationId attrs) source SkillIntellect False)
     SuccessfulInvestigation iid _ source | isSource attrs source -> do
       maid <- fmap unStoryAssetId <$> getId (CardCode "02059")
       l <$ case maid of
-        Just aid -> unshiftMessage (TakeControlOfAsset iid aid)
+        Just aid -> push (TakeControlOfAsset iid aid)
         Nothing -> pure ()
     _ -> AlchemyLabs <$> runMessage msg attrs

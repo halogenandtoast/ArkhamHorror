@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.VisionsOfFuturesPast
   ( VisionsOfFuturesPast(..)
   , visionsOfFuturesPast
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -30,11 +31,10 @@ instance HasActions env VisionsOfFuturesPast where
 instance TreacheryRunner env => RunMessage env VisionsOfFuturesPast where
   runMessage msg t@(VisionsOfFuturesPast attrs@TreacheryAttrs {..}) =
     case msg of
-      Revelation iid source | isSource attrs source -> t <$ unshiftMessages
+      Revelation iid source | isSource attrs source -> t <$ pushAll
         [ RevelationSkillTest iid source SkillWillpower 5
         , Discard (TreacheryTarget treacheryId)
         ]
       FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
-        | tid == treacheryId -> t
-        <$ unshiftMessage (DiscardTopOfDeck iid n Nothing)
+        | tid == treacheryId -> t <$ push (DiscardTopOfDeck iid n Nothing)
       _ -> VisionsOfFuturesPast <$> runMessage msg attrs

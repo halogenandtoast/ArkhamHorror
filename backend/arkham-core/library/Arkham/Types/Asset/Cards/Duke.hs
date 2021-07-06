@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.Duke
   ( Duke(..)
   , duke
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -71,13 +72,13 @@ dukeInvestigate attrs iid lid =
 instance AssetRunner env => RunMessage env Duke where
   runMessage msg a@(Duke attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      a <$ unshiftMessage (ChooseFightEnemy iid source SkillCombat mempty False)
+      a <$ push (ChooseFightEnemy iid source SkillCombat mempty False)
     UseCardAbility iid source _ 2 _ | isSource attrs source -> do
       lid <- getId iid
       accessibleLocationIds <- map unAccessibleLocationId <$> getSetList lid
       a <$ if null accessibleLocationIds
-        then unshiftMessage $ dukeInvestigate attrs iid lid
-        else unshiftMessage
+        then push $ dukeInvestigate attrs iid lid
+        else push
           (chooseOne iid
           $ dukeInvestigate attrs iid lid
           : [ Run

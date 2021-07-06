@@ -1,7 +1,8 @@
 module Arkham.Types.Event.Cards.Contraband2
   ( contraband2
   , Contraband2(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -50,7 +51,7 @@ instance
       supplyAssetsWithUseCount <- map (\(c, aid) -> (Supply, c, aid))
         <$> for supplyAssets (\aid -> (, aid) . unUsesCount <$> getCount aid)
 
-      e <$ unshiftMessage
+      e <$ push
         (chooseOne
           iid
           [ Label

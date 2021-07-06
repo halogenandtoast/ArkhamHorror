@@ -24,7 +24,7 @@ instance ActionRunner env => HasActions env AfterHours where
 
 instance ActRunner env => RunMessage env AfterHours where
   runMessage msg a@(AfterHours attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> a <$ unshiftMessages
+    AdvanceAct aid _ | aid == actId && onSide B attrs -> a <$ pushAll
       [ AddCampaignCardToEncounterDeck Assets.jazzMulligan
       , ShuffleEncounterDiscardBackIn
       , NextAct aid "02046"

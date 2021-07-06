@@ -1,6 +1,7 @@
 module Arkham.Types.Asset.Cards.FireAxeSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport
 
@@ -30,7 +31,7 @@ spec = describe "Fire Axe" $ do
       $ do
           runMessages
           [doFight] <- getActionsOf investigator NonFast fireAxe
-          unshiftMessage doFight
+          push doFight
           runMessages
           chooseOnlyOption "Fight enemy"
           chooseOnlyOption "Start skill test"
@@ -58,7 +59,7 @@ spec = describe "Fire Axe" $ do
       $ do
           runMessages
           [doFight] <- getActionsOf investigator NonFast fireAxe
-          unshiftMessage doFight
+          push doFight
           runMessages
           chooseOnlyOption "Fight enemy"
           chooseOptionMatching
@@ -97,7 +98,7 @@ spec = describe "Fire Axe" $ do
       $ do
           runMessages
           [doFight] <- getActionsOf investigator NonFast fireAxe
-          unshiftMessage doFight
+          push doFight
           runMessages
           chooseOnlyOption "Fight enemy"
           chooseOptionMatching
@@ -136,7 +137,7 @@ spec = describe "Fire Axe" $ do
       $ do
           runMessages
           [doFight] <- getActionsOf investigator NonFast fireAxe
-          unshiftMessage doFight
+          push doFight
           runMessages
           chooseOnlyOption "Fight enemy"
           chooseOptionMatching

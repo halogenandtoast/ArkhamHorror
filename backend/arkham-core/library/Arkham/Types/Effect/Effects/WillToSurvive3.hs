@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.WillToSurvive3
   ( willToSurvive3
   , WillToSurvive3(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -25,5 +26,5 @@ instance HasModifiersFor env WillToSurvive3 where
 
 instance HasQueue env => RunMessage env WillToSurvive3 where
   runMessage msg e@(WillToSurvive3 attrs) = case msg of
-    EndTurn _ -> e <$ unshiftMessage (DisableEffect $ effectId attrs) -- TODO: should we actually check who?
+    EndTurn _ -> e <$ push (DisableEffect $ effectId attrs) -- TODO: should we actually check who?
     _ -> WillToSurvive3 <$> runMessage msg attrs

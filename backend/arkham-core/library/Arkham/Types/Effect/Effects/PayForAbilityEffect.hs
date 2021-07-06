@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.PayForAbilityEffect
   ( payForAbilityEffect
   , PayForAbilityEffect(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -86,13 +87,13 @@ instance
     CreatedEffect eid (Just (EffectAbility Ability {..})) source (InvestigatorTarget iid)
       | eid == toId attrs
       -> do
-        unshiftMessage (PayAbilityCostFinished source iid)
+        push (PayAbilityCostFinished source iid)
         e <$ case abilityType of
           ForcedAbility -> pure ()
           FastAbility cost ->
-            unshiftMessage (PayAbilityCost abilitySource iid Nothing cost)
+            push (PayAbilityCost abilitySource iid Nothing cost)
           ReactionAbility cost ->
-            unshiftMessage (PayAbilityCost abilitySource iid Nothing cost)
+            push (PayAbilityCost abilitySource iid Nothing cost)
           ActionAbility mAction cost ->
             if mAction
                 `notElem` [ Just Action.Fight
@@ -100,24 +101,24 @@ instance
                           , Just Action.Resign
                           , Just Action.Parley
                           ]
-              then unshiftMessages
+              then pushAll
                 (PayAbilityCost abilitySource iid mAction cost
                 : [ TakenAction iid action | action <- maybeToList mAction ]
                 <> [CheckAttackOfOpportunity iid False]
                 )
-              else unshiftMessages
+              else pushAll
                 (PayAbilityCost abilitySource iid mAction cost
                 : [ TakenAction iid action | action <- maybeToList mAction ]
                 )
     PayAbilityCost source iid mAction cost -> case cost of
       Costs xs ->
-        e <$ unshiftMessages [ PayAbilityCost source iid mAction x | x <- xs ]
+        e <$ pushAll [ PayAbilityCost source iid mAction x | x <- xs ]
       UpTo 0 _ -> pure e
       UpTo n cost' -> do
         canAfford <- getCanAffordCost iid source mAction cost'
         e <$ when
           canAfford
-          (unshiftMessage $ chooseOne
+          (push $ chooseOne
             iid
             [ Label
               "Pay dynamic cost"
@@ -127,41 +128,38 @@ instance
             , Label "Done with dynamic cost" []
             ]
           )
-      ExhaustCost target -> e <$ unshiftMessage (Exhaust target)
-      DiscardCost target -> e <$ unshiftMessage (Discard target)
-      DiscardCardCost cid -> e <$ unshiftMessage (DiscardCard iid cid)
-      ExileCost target -> e <$ unshiftMessage (Exile target)
+      ExhaustCost target -> e <$ push (Exhaust target)
+      DiscardCost target -> e <$ push (Discard target)
+      DiscardCardCost cid -> e <$ push (DiscardCard iid cid)
+      ExileCost target -> e <$ push (Exile target)
       HorrorCost _ target x -> case target of
         InvestigatorTarget iid' | iid' == iid ->
-          e <$ unshiftMessage
-            (InvestigatorAssignDamage iid source DamageAny 0 x)
-        AssetTarget aid -> e <$ unshiftMessage (AssetDamage aid source 0 x)
+          e <$ push (InvestigatorAssignDamage iid source DamageAny 0 x)
+        AssetTarget aid -> e <$ push (AssetDamage aid source 0 x)
         _ -> error "can't target for horror cost"
       DamageCost _ target x -> case target of
         InvestigatorTarget iid' | iid' == iid ->
-          e <$ unshiftMessage
-            (InvestigatorAssignDamage iid source DamageAny x 0)
-        AssetTarget aid -> e <$ unshiftMessage (AssetDamage aid source x 0)
+          e <$ push (InvestigatorAssignDamage iid source DamageAny x 0)
+        AssetTarget aid -> e <$ push (AssetDamage aid source x 0)
         _ -> error "can't target for damage cost"
-      ResourceCost x -> e <$ unshiftMessage (SpendResources iid x)
+      ResourceCost x -> e <$ push (SpendResources iid x)
       ActionCost x -> do
         costModifier <- getActionCostModifier iid mAction
         let modifiedActionCost = max 0 (x + costModifier)
-        e <$ unshiftMessage (SpendActions iid source modifiedActionCost)
-      UseCost aid uType n ->
-        e <$ unshiftMessage (SpendUses (AssetTarget aid) uType n)
-      ClueCost x -> e <$ unshiftMessage (InvestigatorSpendClues iid x)
+        e <$ push (SpendActions iid source modifiedActionCost)
+      UseCost aid uType n -> e <$ push (SpendUses (AssetTarget aid) uType n)
+      ClueCost x -> e <$ push (InvestigatorSpendClues iid x)
       GroupClueCost x Nothing -> do
         investigatorIds <- map unInScenarioInvestigatorId <$> getSetList ()
         totalClues <- getPlayerCountValue x
-        e <$ unshiftMessage (SpendClues totalClues investigatorIds)
+        e <$ push (SpendClues totalClues investigatorIds)
       GroupClueCost x (Just locationMatcher) -> do
         mLocationId <- getId @(Maybe LocationId) locationMatcher
         totalClues <- getPlayerCountValue x
         case mLocationId of
           Just lid -> do
             iids <- getSetList @InvestigatorId lid
-            e <$ unshiftMessage (SpendClues totalClues iids)
+            e <$ push (SpendClues totalClues iids)
           Nothing -> error "could not pay cost"
       HandDiscardCost x mPlayerCardType traits skillTypes -> do
         handCards <- mapMaybe (preview _PlayerCard . unHandCard) <$> getList iid
@@ -180,7 +178,7 @@ instance
               ]
             )
             handCards
-        e <$ unshiftMessage
+        e <$ push
           (chooseN iid x [ DiscardCard iid (toCardId card) | card <- cards ])
       SkillIconCost x skillTypes -> do
         handCards <- mapMaybe (preview _PlayerCard . unHandCard) <$> getList iid
@@ -206,12 +204,12 @@ instance
                 ]
             )
             cards
-        e <$ unshiftMessage (chooseOne iid cardMsgs)
+        e <$ push (chooseOne iid cardMsgs)
       Free -> pure e
     PayAbilityCostFinished source iid -> case effectMetadata attrs of
-      Just (EffectAbility Ability {..}) -> e <$ unshiftMessages
+      Just (EffectAbility Ability {..}) -> e <$ pushAll
         [ DisableEffect $ toId attrs
         , UseCardAbility iid source abilityMetadata abilityIndex payments
         ]
-      _ -> e <$ unshiftMessage (DisableEffect $ toId attrs)
+      _ -> e <$ push (DisableEffect $ toId attrs)
     _ -> PayForAbilityEffect . (`with` payments) <$> runMessage msg attrs

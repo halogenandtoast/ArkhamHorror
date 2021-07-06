@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.PhysicalTraining
   ( PhysicalTraining(..)
   , physicalTraining
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -41,20 +42,18 @@ instance HasActions env PhysicalTraining where
 
 instance (AssetRunner env) => RunMessage env PhysicalTraining where
   runMessage msg a@(PhysicalTraining attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage
-        (CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [SkillModifier SkillWillpower 1])
-          source
-          (InvestigatorTarget iid)
-        )
-    UseCardAbility iid source _ 2 _ | isSource attrs source ->
-      a <$ unshiftMessage
-        (CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
-          source
-          (InvestigatorTarget iid)
-        )
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+      (CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers $ toModifiers attrs [SkillModifier SkillWillpower 1])
+        source
+        (InvestigatorTarget iid)
+      )
+    UseCardAbility iid source _ 2 _ | isSource attrs source -> a <$ push
+      (CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
+        source
+        (InvestigatorTarget iid)
+      )
     _ -> PhysicalTraining <$> runMessage msg attrs

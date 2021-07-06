@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.MindOverMatter
   ( mindOverMatter
   , MindOverMatter(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -29,5 +30,5 @@ instance HasModifiersFor env MindOverMatter where
 
 instance HasQueue env => RunMessage env MindOverMatter where
   runMessage msg e@(MindOverMatter attrs) = case msg of
-    EndRound -> e <$ unshiftMessage (DisableEffect $ effectId attrs)
+    EndRound -> e <$ push (DisableEffect $ effectId attrs)
     _ -> MindOverMatter <$> runMessage msg attrs

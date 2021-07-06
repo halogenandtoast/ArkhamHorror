@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.MiskatonicQuad
   ( MiskatonicQuad(..)
   , miskatonicQuad
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

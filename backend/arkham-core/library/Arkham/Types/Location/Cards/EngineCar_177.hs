@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.EngineCar_177
   ( engineCar_177
   , EngineCar_177(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -46,6 +47,6 @@ instance ActionRunner env => HasActions env EngineCar_177 where
 instance LocationRunner env => RunMessage env EngineCar_177 where
   runMessage msg (EngineCar_177 attrs) = case msg of
     RevealLocation (Just iid) lid | lid == locationId attrs -> do
-      unshiftMessages (replicate 3 $ InvestigatorDrawEncounterCard iid)
+      pushAll (replicate 3 $ InvestigatorDrawEncounterCard iid)
       EngineCar_177 <$> runMessage msg attrs
     _ -> EngineCar_177 <$> runMessage msg attrs

@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.GrotesqueStatue4
   ( GrotesqueStatue4(..)
   , grotesqueStatue4
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -48,9 +49,8 @@ instance AssetRunner env => RunMessage env GrotesqueStatue4 where
       GrotesqueStatue4 <$> runMessage msg (attrs & usesL .~ Uses Charge 4)
     UseCardAbility iid source (Just (SourceMetadata drawSource)) 1 _
       | isSource attrs source -> do
-        when (useCount (assetUses attrs) == 1)
-          $ unshiftMessage (Discard (toTarget attrs))
-        a <$ unshiftMessage
+        when (useCount (assetUses attrs) == 1) $ push (Discard (toTarget attrs))
+        a <$ push
           (ReplaceCurrentDraw drawSource iid
           $ Choose 1 [Undecided Draw, Undecided Draw] []
           )

@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.BlindingLight2
   ( blindingLight2
   , BlindingLight2(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -27,7 +28,7 @@ instance HasQueue env => RunMessage env BlindingLight2 where
     RevealToken _ iid token | InvestigatorTarget iid == effectTarget ->
       e <$ when
         (token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-        (unshiftMessages
+        (pushAll
           [ LoseActions iid (toSource attrs) 1
           , InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
           , DisableEffect effectId
@@ -35,7 +36,10 @@ instance HasQueue env => RunMessage env BlindingLight2 where
         )
     PassedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget (EnemyTarget eid)) _ _
       | SkillTestTarget == effectTarget
-      -> e <$ unshiftMessages
-        [EnemyDamage eid iid (InvestigatorSource iid) 2, DisableEffect effectId]
-    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect effectId)
+      -> e
+        <$ pushAll
+             [ EnemyDamage eid iid (InvestigatorSource iid) 2
+             , DisableEffect effectId
+             ]
+    SkillTestEnds _ -> e <$ push (DisableEffect effectId)
     _ -> BlindingLight2 <$> runMessage msg attrs

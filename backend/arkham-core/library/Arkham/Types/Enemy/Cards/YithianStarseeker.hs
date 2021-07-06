@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.YithianStarseeker
   ( yithianStarseeker
   , YithianStarseeker(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

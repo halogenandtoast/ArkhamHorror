@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.BreakingThrough
   ( BreakingThrough
   , breakingThrough
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -35,7 +36,7 @@ instance AgendaRunner env => RunMessage env BreakingThrough where
         (getJustLocationIdByName "Another Dimension")
         (getLocationIdByName "The Edge of the Universe")
       yogSothoth <- EncounterCard <$> genEncounterCard Enemies.yogSothoth
-      a <$ unshiftMessages
+      a <$ pushAll
         [ CreateEnemyAt yogSothoth yogSothothSpawnLocation Nothing
         , NextAgenda aid "02315"
         ]

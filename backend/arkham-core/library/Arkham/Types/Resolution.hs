@@ -1,6 +1,7 @@
 module Arkham.Types.Resolution
   ( module Arkham.Types.Resolution
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

@@ -24,7 +24,7 @@ instance HasActions env AncientEvils where
 instance TreacheryRunner env => RunMessage env AncientEvils where
   runMessage msg t@(AncientEvils attrs@TreacheryAttrs {..}) = case msg of
     Revelation _ source | isSource attrs source -> do
-      t <$ unshiftMessages
+      t <$ pushAll
         [ PlaceDoomOnAgenda
         , AdvanceAgendaIfThresholdSatisfied
         , Discard (TreacheryTarget treacheryId)

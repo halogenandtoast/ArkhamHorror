@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.BreakingAndEntering
   ( BreakingAndEntering(..)
   , breakingAndEntering
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -40,7 +41,7 @@ instance (HasName env LocationId, ActRunner env) => RunMessage env BreakingAndEn
         Just eid -> do
           lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
             <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
-          a <$ unshiftMessages
+          a <$ pushAll
             [ chooseOne
               leadInvestigatorId
               [ TargetLabel
@@ -52,7 +53,7 @@ instance (HasName env LocationId, ActRunner env) => RunMessage env BreakingAndEn
             , Ready (EnemyTarget eid)
             , NextAct actId "02125"
             ]
-        Nothing -> a <$ unshiftMessages
+        Nothing -> a <$ pushAll
           [ chooseOne
             leadInvestigatorId
             [ TargetLabel
@@ -68,16 +69,14 @@ instance (HasName env LocationId, ActRunner env) => RunMessage env BreakingAndEn
     FoundEnemyInVoid _ target eid | isTarget attrs target -> do
       lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
         <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
-      a <$ unshiftMessages
-        [EnemySpawnFromVoid Nothing lid eid, NextAct actId "02125"]
+      a <$ pushAll [EnemySpawnFromVoid Nothing lid eid, NextAct actId "02125"]
     FoundEncounterCard _ target ec | isTarget attrs target -> do
       lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
         <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
-      a <$ unshiftMessages
-        [SpawnEnemyAt (EncounterCard ec) lid, NextAct actId "02125"]
+      a <$ pushAll [SpawnEnemyAt (EncounterCard ec) lid, NextAct actId "02125"]
     WhenEnterLocation _ lid -> do
       name <- getName lid
       a <$ when
         (name == mkFullName "Exhibit Hall" "Restricted Hall")
-        (unshiftMessage $ AdvanceAct actId (toSource attrs))
+        (push $ AdvanceAct actId (toSource attrs))
     _ -> BreakingAndEntering <$> runMessage msg attrs

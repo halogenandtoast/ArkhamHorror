@@ -87,7 +87,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       studentUnionId <- getRandom
       scienceBuildingId <- getRandom
       administrationBuildingId <- getRandom
-      pushMessages
+      pushAllEnd
         [ SetEncounterDeck encounterDeck
         , AddAgenda "02042"
         , AddAct "02045"
@@ -126,7 +126,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           ]
       ExtracurricularActivity
         <$> runMessage msg (attrs & locationsL .~ locations')
-    ResolveToken drawnToken ElderThing iid -> s <$ unshiftMessage
+    ResolveToken drawnToken ElderThing iid -> s <$ push
       (DiscardTopOfDeck
         iid
         (if isEasyStandard attrs then 2 else 3)
@@ -134,7 +134,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       )
     FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _ ->
       s <$ case drawnTokenFace token of
-        Skull -> unshiftMessage $ DiscardTopOfDeck
+        Skull -> push $ DiscardTopOfDeck
           iid
           (if isEasyStandard attrs then 3 else 5)
           Nothing
@@ -146,13 +146,13 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
             n = sum $ map
               (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . pcDef)
               cards
-          unshiftMessage $ CreateTokenValueEffect (-n) (toSource attrs) target
+          push $ CreateTokenValueEffect (-n) (toSource attrs) target
         _ -> pure ()
     ScenarioResolution NoResolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
-      s <$ unshiftMessages
+      s <$ pushAll
         ([ chooseOne
            leadInvestigatorId
            [ Run
@@ -179,7 +179,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
-      s <$ unshiftMessages
+      s <$ pushAll
         ([ chooseOne
            leadInvestigatorId
            [ Run
@@ -225,7 +225,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
-      s <$ unshiftMessages
+      s <$ pushAll
         ([ chooseOne
            leadInvestigatorId
            [ Run
@@ -256,7 +256,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
-      s <$ unshiftMessages
+      s <$ pushAll
         ([ chooseOne
            leadInvestigatorId
            [ Run
@@ -280,7 +280,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
-      s <$ unshiftMessages
+      s <$ pushAll
         ([ chooseOne
            leadInvestigatorId
            [ Run

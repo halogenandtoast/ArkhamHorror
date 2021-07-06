@@ -1,7 +1,8 @@
 module Arkham.Types.Event.Cards.Teamwork
   ( teamwork
   , Teamwork(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -42,7 +43,7 @@ instance
   => RunMessage env Teamwork where
   runMessage msg e@(Teamwork attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid mtarget | eid == eventId ->
-      e <$ unshiftMessage (ResolveEvent iid eid mtarget)
+      e <$ push (ResolveEvent iid eid mtarget)
     ResolveEvent iid eid mtarget | eid == eventId -> do
       locationId <- getId @LocationId iid
       investigatorIds <- getSetList locationId
@@ -51,7 +52,7 @@ instance
         (\investigatorId ->
           map (investigatorId, ) <$> getSetList (investigatorId, [Ally, Item])
         )
-      e <$ unshiftMessage
+      e <$ push
         (chooseOne
           iid
           (Done

@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.TwistedUnderbrush
   ( TwistedUnderbrush(..)
   , twistedUnderbrush
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -44,9 +45,8 @@ instance ActionRunner env => HasActions env TwistedUnderbrush where
 
 instance (LocationRunner env) => RunMessage env TwistedUnderbrush where
   runMessage msg l@(TwistedUnderbrush attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessages
-        [ TakeResources iid 2 False
-        , InvestigatorAssignDamage iid source DamageAny 0 1
-        ]
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ pushAll
+      [ TakeResources iid 2 False
+      , InvestigatorAssignDamage iid source DamageAny 0 1
+      ]
     _ -> TwistedUnderbrush <$> runMessage msg attrs

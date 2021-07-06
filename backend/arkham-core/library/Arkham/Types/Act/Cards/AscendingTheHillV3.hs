@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.AscendingTheHillV3
   ( AscendingTheHillV3(..)
   , ascendingTheHillV3
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -40,8 +41,7 @@ instance (HasName env LocationId, ActRunner env) => RunMessage env AscendingTheH
   runMessage msg a@(AscendingTheHillV3 attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      unshiftMessage
-        $ chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
+      push $ chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
       pure
         . AscendingTheHillV3
         $ attrs
@@ -50,16 +50,16 @@ instance (HasName env LocationId, ActRunner env) => RunMessage env AscendingTheH
       sentinelPeak <- fromJustNote "must exist"
         <$> getLocationIdWithTitle "Sentinel Peak"
       sethBishop <- EncounterCard <$> genEncounterCard Enemies.sethBishop
-      a <$ unshiftMessages
+      a <$ pushAll
         [ CreateEnemyAt sethBishop sentinelPeak (Just $ toTarget attrs)
         , NextAct actId "02281"
         ]
     CreatedEnemyAt eid _ target | isTarget attrs target -> do
       damage <- getPlayerCountValue (PerPlayer 1)
-      a <$ unshiftMessage (EnemySetDamage eid (toSource attrs) damage)
+      a <$ push (EnemySetDamage eid (toSource attrs) damage)
     WhenEnterLocation _ lid -> do
       name <- getName lid
       a <$ when
         (name == "Sentinel Hill")
-        (unshiftMessage $ AdvanceAct actId (toSource attrs))
+        (push $ AdvanceAct actId (toSource attrs))
     _ -> AscendingTheHillV3 <$> runMessage msg attrs

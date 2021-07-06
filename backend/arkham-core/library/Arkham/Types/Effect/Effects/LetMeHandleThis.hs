@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.LetMeHandleThis
   ( letMeHandleThis
   , LetMeHandleThis(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -27,5 +28,5 @@ instance HasModifiersFor env LetMeHandleThis where
 instance HasQueue env => RunMessage env LetMeHandleThis where
   runMessage msg e@(LetMeHandleThis attrs) = case msg of
     AfterRevelation _ tid' | effectTarget attrs == TreacheryTarget tid' ->
-      e <$ unshiftMessage (DisableEffect $ effectId attrs)
+      e <$ push (DisableEffect $ effectId attrs)
     _ -> LetMeHandleThis <$> runMessage msg attrs

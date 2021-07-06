@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.WizardOfYogSothoth
   ( WizardOfYogSothoth(..)
   , wizardOfYogSothoth
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -35,8 +36,8 @@ instance (EnemyRunner env) => RunMessage env WizardOfYogSothoth where
     InvestigatorDrewEncounterCard iid card
       | iid `elem` enemyEngagedInvestigators -> e <$ when
         (any (`member` toTraits card) [Hex, Pact])
-        (unshiftMessage (EnemyAttack iid enemyId))
+        (push (EnemyAttack iid enemyId))
     InvestigatorDrewPlayerCard iid card -> e <$ when
       (any (`member` toTraits card) [Hex, Pact])
-      (unshiftMessage (EnemyAttack iid enemyId))
+      (push (EnemyAttack iid enemyId))
     _ -> WizardOfYogSothoth <$> runMessage msg attrs

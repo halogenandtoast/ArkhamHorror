@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.BeckoningForPower
   ( BeckoningForPower
   , beckoningForPower
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -28,5 +29,5 @@ instance HasActions env BeckoningForPower where
 instance AgendaRunner env => RunMessage env BeckoningForPower where
   runMessage msg a@(BeckoningForPower attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B ->
-      a <$ unshiftMessage (ScenarioResolution $ Resolution 2)
+      a <$ push (ScenarioResolution $ Resolution 2)
     _ -> BeckoningForPower <$> runMessage msg attrs

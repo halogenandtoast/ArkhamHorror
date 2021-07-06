@@ -1,6 +1,7 @@
 module Arkham.Types.Treachery.Cards.CoverUpSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport.Lifted
 

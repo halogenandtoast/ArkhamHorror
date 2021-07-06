@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Attrs
   ( module Arkham.Types.Agenda.Attrs
   , module X
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -121,7 +122,7 @@ instance
       pure $ a & treacheriesL %~ insertSet tid
     AdvanceAgenda aid | aid == agendaId && agendaSide agendaSequence == A -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      unshiftMessages
+      pushAll
         [ CheckWindow leadInvestigatorId [WhenAgendaAdvance agendaId]
         , chooseOne leadInvestigatorId [AdvanceAgenda agendaId]
         ]
@@ -134,7 +135,7 @@ instance
       totalDoom <- unDoomCount <$> getCount ()
       a <$ when
         (totalDoom >= perPlayerDoomThreshold)
-        (unshiftMessages [AdvanceAgenda agendaId, RemoveAllDoom])
+        (pushAll [AdvanceAgenda agendaId, RemoveAllDoom])
     RevertAgenda aid | aid == agendaId && onSide B a ->
       pure
         $ a

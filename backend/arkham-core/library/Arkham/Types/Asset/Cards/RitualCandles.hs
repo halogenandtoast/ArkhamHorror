@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.RitualCandles
   ( ritualCandles
   , RitualCandles(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -40,12 +41,11 @@ instance HasModifiersFor env RitualCandles where
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env RitualCandles where
   runMessage msg a@(RitualCandles attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessages
-        [ CreateWindowModifierEffect
-            EffectSkillTestWindow
-            (EffectModifiers $ toModifiers attrs [AnySkillValue 1])
-            source
-            (InvestigatorTarget iid)
-        ]
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+      [ CreateWindowModifierEffect
+          EffectSkillTestWindow
+          (EffectModifiers $ toModifiers attrs [AnySkillValue 1])
+          source
+          (InvestigatorTarget iid)
+      ]
     _ -> RitualCandles <$> runMessage msg attrs

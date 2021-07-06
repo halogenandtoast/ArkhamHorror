@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.HaroldWalsted
   ( haroldWalsted
   , HaroldWalsted(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -46,5 +47,5 @@ instance
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env HaroldWalsted where
   runMessage msg a@(HaroldWalsted attrs) = case msg of
     Discard target | isTarget attrs target ->
-      a <$ unshiftMessages [AddToken Tablet, RemoveFromGame target]
+      a <$ pushAll [AddToken Tablet, RemoveFromGame target]
     _ -> HaroldWalsted <$> runMessage msg attrs

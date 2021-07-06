@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.Adaptable1
   ( adaptable1
   , Adaptable1(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

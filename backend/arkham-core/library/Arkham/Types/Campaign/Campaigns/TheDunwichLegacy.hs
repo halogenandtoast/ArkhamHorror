@@ -33,11 +33,8 @@ findOwner cardCode = do
           campaignStoryCards
 
 theDunwichLegacy :: Difficulty -> TheDunwichLegacy
-theDunwichLegacy difficulty = TheDunwichLegacy $ baseAttrs
-  (CampaignId "02")
-  "The Dunwich Legacy"
-  difficulty
-  chaosBagContents
+theDunwichLegacy difficulty = TheDunwichLegacy
+  $ baseAttrs (CampaignId "02") "The Dunwich Legacy" difficulty chaosBagContents
  where
   chaosBagContents = case difficulty of
     Easy ->
@@ -117,7 +114,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
     CampaignStep (Just PrologueStep) -> do
       investigatorIds <- getSetList ()
       leadInvestigatorId <- getLeadInvestigatorId
-      c <$ unshiftMessages
+      c <$ pushAll
         [ AskMap
         . mapFromList
         $ [ ( iid
@@ -173,7 +170,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
       investigatorIds <- getSetList ()
       leadInvestigatorId <- getLeadInvestigatorId
       if unconsciousForSeveralHours
-        then c <$ unshiftMessages
+        then c <$ pushAll
           ([ AskMap
            . mapFromList
            $ [ ( iid
@@ -208,7 +205,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
           <> [ GainXP iid 2 | iid <- investigatorIds ]
           <> [NextCampaignStep Nothing]
           )
-        else c <$ unshiftMessages
+        else c <$ pushAll
           [ AskMap
           . mapFromList
           $ [ ( iid
@@ -303,7 +300,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
               Assets.earlSawyer
             <$ guard
                  (toCardCode Assets.earlSawyer `notElem` sacrificedToYogSothoth)
-      c <$ unshiftMessages
+      c <$ pushAll
         ([ AskMap
            . mapFromList
            $ [ ( iid
@@ -468,7 +465,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
             Just (ScenarioStep "02274") -> Just (ScenarioStep "02311")
             Just (ScenarioStep "02311") -> Nothing
             _ -> Nothing
-      unshiftMessages [CampaignStep nextStep]
+      pushAll [CampaignStep nextStep]
       pure
         . TheDunwichLegacy
         $ attrs

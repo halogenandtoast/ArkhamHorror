@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.SlimeCoveredDhole
   ( SlimeCoveredDhole(..)
   , slimeCoveredDhole
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -52,7 +53,7 @@ instance (EnemyRunner env) => RunMessage env SlimeCoveredDhole where
       e <$ spawnAtOneOf iid enemyId spawnLocations
     EnemyMove eid _ lid | eid == enemyId -> do
       investigatorIds <- getSetList @InvestigatorId lid
-      e <$ unshiftMessages
+      e <$ pushAll
         [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
         | iid <- investigatorIds
         ]

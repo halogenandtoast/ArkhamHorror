@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.OvergrownCairns
   ( OvergrownCairns(..)
   , overgrownCairns
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -53,5 +54,5 @@ instance ActionRunner env => HasActions env OvergrownCairns where
 instance (LocationRunner env) => RunMessage env OvergrownCairns where
   runMessage msg l@(OvergrownCairns attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessages [HealHorror (InvestigatorTarget iid) 2]
+      l <$ pushAll [HealHorror (InvestigatorTarget iid) 2]
     _ -> OvergrownCairns <$> runMessage msg attrs

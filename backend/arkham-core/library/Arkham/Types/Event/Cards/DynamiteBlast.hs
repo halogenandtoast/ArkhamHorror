@@ -40,6 +40,6 @@ instance (EventRunner env) => RunMessage env DynamiteBlast where
                )
                investigatorIds
       let availableChoices = filter notNull choices
-      e <$ unshiftMessages
+      e <$ pushAll
         [chooseOne iid $ map Run availableChoices, Discard (EventTarget eid)]
     _ -> DynamiteBlast <$> runMessage msg attrs

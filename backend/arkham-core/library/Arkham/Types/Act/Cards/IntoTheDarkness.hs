@@ -24,13 +24,12 @@ instance ActRunner env => RunMessage env IntoTheDarkness where
   runMessage msg a@(IntoTheDarkness attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      unshiftMessage
-        (chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)])
+      push (chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)])
       pure $ IntoTheDarkness $ attrs & (sequenceL .~ Act 2 B)
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       playerCount <- getPlayerCount
       if playerCount > 3
-        then a <$ unshiftMessages
+        then a <$ pushAll
           [ ShuffleEncounterDiscardBackIn
           , DiscardEncounterUntilFirst
             (ActSource actId)
@@ -40,7 +39,7 @@ instance ActRunner env => RunMessage env IntoTheDarkness where
             (CardMatchByType (EnemyType, mempty))
           , NextAct actId "01148"
           ]
-        else a <$ unshiftMessages
+        else a <$ pushAll
           [ ShuffleEncounterDiscardBackIn
           , DiscardEncounterUntilFirst
             (ActSource actId)
@@ -51,10 +50,10 @@ instance ActRunner env => RunMessage env IntoTheDarkness where
       Nothing -> pure a
       Just card -> do
         ritualSiteId <- getJustLocationIdByName "Ritual Site"
-        a <$ unshiftMessages [SpawnEnemyAt (EncounterCard card) ritualSiteId]
+        a <$ pushAll [SpawnEnemyAt (EncounterCard card) ritualSiteId]
     WhenEnterLocation _ lid -> do
       mRitualSiteId <- getLocationIdByName "Ritual Site"
       a <$ when
         (mRitualSiteId == Just lid)
-        (unshiftMessage $ AdvanceAct actId (toSource attrs))
+        (push $ AdvanceAct actId (toSource attrs))
     _ -> IntoTheDarkness <$> runMessage msg attrs

@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.StudyAberrantGateway
   ( StudyAberrantGateway(..)
   , studyAberrantGateway
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -53,10 +54,8 @@ instance LocationRunner env => RunMessage env StudyAberrantGateway where
   runMessage msg l@(StudyAberrantGateway attrs@LocationAttrs {..}) =
     case msg of
       UseCardAbility iid (LocationSource lid) _ 1 _ | lid == locationId ->
-        l <$ unshiftMessage (DrawCards iid 3 False)
+        l <$ push (DrawCards iid 3 False)
       When (EnemySpawnAtLocationMatching _ locationMatcher _) -> do
         inPlay <- isJust <$> getId @(Maybe LocationId) locationMatcher
-        l <$ unless
-          inPlay
-          (unshiftMessage (PlaceLocationMatching locationMatcher))
+        l <$ unless inPlay (push (PlaceLocationMatching locationMatcher))
       _ -> StudyAberrantGateway <$> runMessage msg attrs

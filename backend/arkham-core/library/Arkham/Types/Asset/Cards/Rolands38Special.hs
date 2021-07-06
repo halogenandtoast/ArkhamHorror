@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.Rolands38Special
   ( Rolands38Special(..)
   , rolands38Special
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -54,7 +55,7 @@ instance AssetRunner env => RunMessage env Rolands38Special where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid
       anyClues <- (> 0) . unClueCount <$> getCount locationId
-      a <$ unshiftMessages
+      a <$ pushAll
         [ CreateWindowModifierEffect
           EffectSkillTestWindow
           (EffectModifiers $ toModifiers

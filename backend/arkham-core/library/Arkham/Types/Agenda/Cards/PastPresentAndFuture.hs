@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.PastPresentAndFuture
   ( PastPresentAndFuture
   , pastPresentAndFuture
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -35,7 +36,7 @@ instance (HasRecord env, AgendaRunner env) => RunMessage env PastPresentAndFutur
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       sacrificedToYogSothoth <- getRecordCount SacrificedToYogSothoth
       investigatorIds <- getInvestigatorIds
-      a <$ unshiftMessages
+      a <$ pushAll
         ([ ShuffleEncounterDiscardBackIn
          , DiscardEncounterUntilFirst
            (toSource attrs)
@@ -55,8 +56,8 @@ instance (HasRecord env, AgendaRunner env) => RunMessage env PastPresentAndFutur
         )
     RequestedEncounterCard source (Just card) | isSource attrs source -> do
       leadInvestigator <- getLeadInvestigatorId
-      a <$ unshiftMessage (InvestigatorDrewEncounterCard leadInvestigator card)
+      a <$ push (InvestigatorDrewEncounterCard leadInvestigator card)
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
-      | isSource attrs source
-      -> a <$ unshiftMessage (InvestigatorAssignDamage iid source DamageAny n 0)
+      | isSource attrs source -> a
+      <$ push (InvestigatorAssignDamage iid source DamageAny n 0)
     _ -> PastPresentAndFuture <$> runMessage msg attrs

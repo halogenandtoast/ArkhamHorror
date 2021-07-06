@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.ExhibitHallNatureExhibit
   ( exhibitHallNatureExhibit
   , ExhibitHallNatureExhibit(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -37,5 +38,5 @@ instance LocationRunner env => RunMessage env ExhibitHallNatureExhibit where
   runMessage msg l@(ExhibitHallNatureExhibit attrs) = case msg of
     After (FailedSkillTest iid (Just Action.Investigate) _ target _ _)
       | isTarget attrs target -> l
-      <$ unshiftMessages [RandomDiscard iid, RandomDiscard iid]
+      <$ pushAll [RandomDiscard iid, RandomDiscard iid]
     _ -> ExhibitHallNatureExhibit <$> runMessage msg attrs

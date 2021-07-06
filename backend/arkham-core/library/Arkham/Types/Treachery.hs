@@ -1,6 +1,7 @@
 module Arkham.Types.Treachery
   ( module Arkham.Types.Treachery
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

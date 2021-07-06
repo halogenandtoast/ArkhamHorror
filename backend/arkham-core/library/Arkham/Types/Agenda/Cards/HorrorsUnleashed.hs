@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.HorrorsUnleashed
   ( HorrorsUnleashed(..)
   , horrorsUnleashed
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -43,7 +44,7 @@ instance AgendaRunner env => RunMessage env HorrorsUnleashed where
       leadInvestigatorId <- getLeadInvestigatorId
       broodOfYogSothoth <- map EnemyTarget
         <$> getSetList (EnemyWithTitle "Brood of Yog-Sothoth")
-      a <$ unshiftMessage
+      a <$ push
         (chooseOneAtATime
           leadInvestigatorId
           [ TargetLabel target [ChooseRandomLocation target mempty]
@@ -51,7 +52,7 @@ instance AgendaRunner env => RunMessage env HorrorsUnleashed where
           ]
         )
     ChosenRandomLocation target@(EnemyTarget _) lid ->
-      a <$ unshiftMessage (MoveToward target (LocationWithId lid))
+      a <$ push (MoveToward target (LocationWithId lid))
     AdvanceAgenda aid | aid == agendaId attrs && onSide B attrs ->
-      a <$ unshiftMessage (ScenarioResolution $ Resolution 1)
+      a <$ push (ScenarioResolution $ Resolution 1)
     _ -> HorrorsUnleashed <$> runMessage msg attrs

@@ -1,6 +1,7 @@
 module Arkham.Types.Event.Cards.Lucky2Spec
   ( spec
-  ) where
+  )
+where
 
 import TestImport.Lifted
 

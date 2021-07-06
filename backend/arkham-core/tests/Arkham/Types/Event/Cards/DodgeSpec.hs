@@ -1,6 +1,7 @@
 module Arkham.Types.Event.Cards.DodgeSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport
 

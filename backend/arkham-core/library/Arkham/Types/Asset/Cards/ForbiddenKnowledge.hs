@@ -44,5 +44,5 @@ instance (AssetRunner env) => RunMessage env ForbiddenKnowledge where
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       ForbiddenKnowledge <$> runMessage msg (attrs & usesL .~ Uses Secret 4)
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage (TakeResources iid 1 False)
+      a <$ push (TakeResources iid 1 False)
     _ -> ForbiddenKnowledge <$> runMessage msg attrs

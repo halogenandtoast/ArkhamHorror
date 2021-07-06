@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.EerieGlade
   ( eerieGlade
   , EerieGlade(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -49,6 +50,5 @@ instance LocationRunner env => RunMessage env EerieGlade where
   runMessage msg l@(EerieGlade attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid
-      l <$ unshiftMessage
-        (DiscardTopOfDeck iid (actionRemainingCount * 2) Nothing)
+      l <$ push (DiscardTopOfDeck iid (actionRemainingCount * 2) Nothing)
     _ -> EerieGlade <$> runMessage msg attrs

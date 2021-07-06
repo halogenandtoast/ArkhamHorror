@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.AcrossSpaceAndTime
   ( acrossSpaceAndTime
   , AcrossSpaceAndTime(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -25,6 +26,6 @@ instance HasActions env AcrossSpaceAndTime where
 
 instance TreacheryRunner env => RunMessage env AcrossSpaceAndTime where
   runMessage msg t@(AcrossSpaceAndTime attrs) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ unshiftMessages
-      [DiscardTopOfDeck iid 3 Nothing, Discard (toTarget attrs)]
+    Revelation iid source | isSource attrs source ->
+      t <$ pushAll [DiscardTopOfDeck iid 3 Nothing, Discard (toTarget attrs)]
     _ -> AcrossSpaceAndTime <$> runMessage msg attrs

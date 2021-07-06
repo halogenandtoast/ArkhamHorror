@@ -30,18 +30,17 @@ instance TreacheryRunner env => RunMessage env TheZealotsSeal where
     Revelation _ source | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
       -- we must unshift this first for other effects happen before
-      unshiftMessage (Discard $ TreacheryTarget treacheryId)
+      push (Discard $ TreacheryTarget treacheryId)
       t <$ for_
         investigatorIds
         (\iid' -> do
           handCardCount <- unCardCount <$> getCount iid'
           if handCardCount <= 3
-            then unshiftMessage
+            then push
               (InvestigatorAssignDamage iid' (toSource attrs) DamageAny 1 1)
-            else unshiftMessage
-              (RevelationSkillTest iid' source SkillWillpower 2)
+            else push (RevelationSkillTest iid' source SkillWillpower 2)
         )
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ _
       | tid == treacheryId -> t
-      <$ unshiftMessages [RandomDiscard iid, RandomDiscard iid]
+      <$ pushAll [RandomDiscard iid, RandomDiscard iid]
     _ -> TheZealotsSeal <$> runMessage msg attrs

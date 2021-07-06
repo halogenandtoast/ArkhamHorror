@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.TheyMustBeDestroyed
   ( TheyMustBeDestroyed(..)
   , theyMustBeDestroyed
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -42,5 +43,5 @@ instance ActionRunner env => HasActions env TheyMustBeDestroyed where
 instance ActRunner env => RunMessage env TheyMustBeDestroyed where
   runMessage msg a@(TheyMustBeDestroyed attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide B attrs ->
-      a <$ unshiftMessage (ScenarioResolution $ Resolution 2)
+      a <$ push (ScenarioResolution $ Resolution 2)
     _ -> TheyMustBeDestroyed <$> runMessage msg attrs

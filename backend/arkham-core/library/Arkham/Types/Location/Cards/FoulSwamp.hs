@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.FoulSwamp
   ( FoulSwamp(..)
   , foulSwamp
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -70,7 +71,7 @@ instance LocationRunner env => RunMessage env FoulSwamp where
       | isSource attrs source -> if n == 3
         then runMessage (UseCardAbility iid source meta 1 NoPayment) l
         else do
-          unshiftMessage $ chooseOne
+          push $ chooseOne
             iid
             [ Run
               [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
@@ -82,7 +83,7 @@ instance LocationRunner env => RunMessage env FoulSwamp where
             ]
           pure l
     UseCardAbility iid source (Just (IntMetadata n)) 1 _
-      | isSource attrs source -> l <$ unshiftMessages
+      | isSource attrs source -> l <$ pushAll
         [ CreateWindowModifierEffect
           EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillWillpower n])
@@ -91,5 +92,5 @@ instance LocationRunner env => RunMessage env FoulSwamp where
         , BeginSkillTest iid source (toTarget attrs) Nothing SkillWillpower 7
         ]
     PassedSkillTest _ _ source _ _ _ | isSource attrs source ->
-      l <$ unshiftMessage (Remember FoundAnAncientBindingStone)
+      l <$ push (Remember FoundAnAncientBindingStone)
     _ -> FoulSwamp <$> runMessage msg attrs

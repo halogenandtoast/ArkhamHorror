@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.SongOfTheDead2
   ( shrivelling
   , SongOfTheDead2(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -25,6 +26,6 @@ instance HasModifiersFor env SongOfTheDead2 where
 instance HasQueue env => RunMessage env SongOfTheDead2 where
   runMessage msg e@(SongOfTheDead2 attrs@EffectAttrs {..}) = case msg of
     RevealToken _ iid Skull | InvestigatorTarget iid == effectTarget ->
-      e <$ unshiftMessage (skillTestModifier attrs effectTarget (DamageDealt 2))
-    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect effectId)
+      e <$ push (skillTestModifier attrs effectTarget (DamageDealt 2))
+    SkillTestEnds _ -> e <$ push (DisableEffect effectId)
     _ -> SongOfTheDead2 <$> runMessage msg attrs

@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.FleshEater
   ( fleshEater
   , FleshEater(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

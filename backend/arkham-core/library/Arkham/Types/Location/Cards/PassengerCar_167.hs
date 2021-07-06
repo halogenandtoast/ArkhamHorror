@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.PassengerCar_167
   ( passengerCar_167
   , PassengerCar_167(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -51,7 +52,7 @@ instance LocationRunner env => RunMessage env PassengerCar_167 where
       let cost = SkillIconCost 2 (singleton SkillAgility)
       hasSkills <- getCanAffordCost iid (toSource attrs) Nothing cost
       l <$ if hasSkills
-        then unshiftMessage
+        then push
           (chooseOne
             iid
             [ Label
@@ -68,6 +69,5 @@ instance LocationRunner env => RunMessage env PassengerCar_167 where
               ]
             ]
           )
-        else unshiftMessage
-          (InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0)
+        else push (InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0)
     _ -> PassengerCar_167 <$> runMessage msg attrs

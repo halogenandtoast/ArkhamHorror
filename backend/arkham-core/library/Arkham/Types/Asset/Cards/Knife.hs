@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.Knife
   ( Knife(..)
   , knife
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -48,25 +49,23 @@ instance ActionRunner env => HasActions env Knife where
 
 instance (AssetRunner env) => RunMessage env Knife where
   runMessage msg a@(Knife attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessages
-        [ CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
-          source
-          (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillCombat mempty False
-        ]
-    UseCardAbility iid source _ 2 _ | isSource attrs source ->
-      a <$ unshiftMessages
-        [ Discard (toTarget attrs)
-        , CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers
-          $ toModifiers attrs [SkillModifier SkillCombat 2, DamageDealt 1]
-          )
-          source
-          (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillCombat mempty False
-        ]
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+      [ CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
+        source
+        (InvestigatorTarget iid)
+      , ChooseFightEnemy iid source SkillCombat mempty False
+      ]
+    UseCardAbility iid source _ 2 _ | isSource attrs source -> a <$ pushAll
+      [ Discard (toTarget attrs)
+      , CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers
+        $ toModifiers attrs [SkillModifier SkillCombat 2, DamageDealt 1]
+        )
+        source
+        (InvestigatorTarget iid)
+      , ChooseFightEnemy iid source SkillCombat mempty False
+      ]
     _ -> Knife <$> runMessage msg attrs

@@ -1,6 +1,7 @@
 module Arkham.Types.SkillTest
   ( module Arkham.Types.SkillTest
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -240,12 +241,16 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         map modifierType
           <$> getModifiersFor (toSource s) (InvestigatorTarget iid) ()
       if DoNotDrawChaosTokensForSkillChecks `elem` modifiers'
-        then s <$ unshiftMessages
-          [RunSkillTestSourceNotification iid skillTestSource, RunSkillTest iid]
-        else s <$ unshiftMessages
+        then
+          s
+            <$ pushAll
+                 [ RunSkillTestSourceNotification iid skillTestSource
+                 , RunSkillTest iid
+                 ]
+        else s <$ pushAll
           [RequestTokens (toSource s) (Just iid) 1 SetAside, RunSkillTest iid]
     DrawAnotherToken iid -> do
-      unshiftMessages
+      pushAll
         [RequestTokens (toSource s) (Just iid) 1 SetAside, RunSkillTest iid]
       pure
         $ s
@@ -253,12 +258,12 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         & (revealedTokensL .~ mempty)
     RequestedTokens (SkillTestSource siid skillType source target maction) (Just iid) tokenFaces
       -> do
-        unshiftMessage (RevealSkillTestTokens iid)
+        push (RevealSkillTestTokens iid)
         for_ tokenFaces $ \tokenFace -> do
           checkWindowMsgs <- checkWindows
             iid
             (\who -> pure [WhenRevealToken who tokenFace])
-          unshiftMessages $ checkWindowMsgs <> resolve
+          pushAll $ checkWindowMsgs <> resolve
             (RevealToken
               (SkillTestSource siid skillType source target maction)
               iid
@@ -272,7 +277,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
       revealedTokenFaces <- concatMapM
         (\t -> map (t, ) <$> getModifiedTokenFaces s t)
         skillTestRevealedTokens
-      unshiftMessages
+      pushAll
         [ ResolveToken drawnToken tokenFace iid
         | (drawnToken, tokenFace) <- revealedTokenFaces
         ]
@@ -291,14 +296,14 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         currentSkillValue = statsSkillValue stats skillTestSkillType
         modifiedSkillValue' =
           max 0 (currentSkillValue + skillTestValueModifier + skillIconCount s)
-      unshiftMessages
+      pushAll
         [ chooseOne skillTestInvestigator [SkillTestApplyResults]
         , SkillTestEnds skillTestSource
         ]
       pure $ s & resultL .~ SucceededBy True modifiedSkillValue'
     FailSkillTest -> do
       difficulty <- getModifiedSkillTestDifficulty s
-      unshiftMessages
+      pushAll
         $ [ Will
               (FailedSkillTest
                 skillTestInvestigator
@@ -323,7 +328,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
            , SkillTestEnds skillTestSource
            ]
       pure $ s & resultL .~ FailedBy True difficulty
-    StartSkillTest _ -> s <$ unshiftMessages
+    StartSkillTest _ -> s <$ pushAll
       (HashMap.foldMapWithKey
           (\k (i, _) -> [CommitCard i k])
           skillTestCommittedCards
@@ -339,7 +344,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
     ReturnSkillTestRevealedTokens -> do
       -- Rex's Curse timing keeps effects on stack so we do
       -- not want to remove them as subscribers from the stack
-      unshiftMessage $ ResetTokens (toSource s)
+      push $ ResetTokens (toSource s)
       pure
         $ s
         & (setAsideTokensL .~ mempty)
@@ -356,12 +361,12 @@ instance SkillTestRunner env => RunMessage env SkillTest where
             (_, EncounterCard _) -> Nothing
           )
           (s ^. committedCardsL . to toList)
-      s <$ unshiftMessages
+      s <$ pushAll
         (ResetTokens (toSource s) : map (uncurry AddToDiscard) discards)
     SkillTestResults -> do
-      unshiftMessage (chooseOne skillTestInvestigator [SkillTestApplyResults])
+      push (chooseOne skillTestInvestigator [SkillTestApplyResults])
       case skillTestResult of
-        SucceededBy _ n -> unshiftMessages
+        SucceededBy _ n -> pushAll
           ([ Will
                (PassedSkillTest
                  skillTestInvestigator
@@ -384,7 +389,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                  )
              ]
           )
-        FailedBy _ n -> unshiftMessages
+        FailedBy _ n -> pushAll
           ([ Will
                (FailedSkillTest
                  skillTestInvestigator
@@ -410,10 +415,10 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         Unrun -> pure ()
       pure s
     SkillTestApplyResultsAfter -> do -- ST.7 -- apply results
-      unshiftMessage $ SkillTestEnds skillTestSource -- -> ST.8 -- Skill test ends
+      push $ SkillTestEnds skillTestSource -- -> ST.8 -- Skill test ends
 
       case skillTestResult of
-        SucceededBy _ n -> unshiftMessages
+        SucceededBy _ n -> pushAll
           ([ After
                (PassedSkillTest
                  skillTestInvestigator
@@ -436,7 +441,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                  )
              ]
           )
-        FailedBy _ n -> unshiftMessages
+        FailedBy _ n -> pushAll
           ([ After
                (FailedSkillTest
                  skillTestInvestigator
@@ -462,12 +467,12 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         Unrun -> pure ()
       pure s
     SkillTestApplyResults -> do -- ST.7 Apply Results
-      unshiftMessage SkillTestApplyResultsAfter
+      push SkillTestApplyResultsAfter
       modifiers' <-
         map modifierType <$> getModifiersFor (toSource s) (toTarget s) ()
       let successTimes = if DoubleSuccess `elem` modifiers' then 2 else 1
       s <$ case skillTestResult of
-        SucceededBy _ n -> unshiftMessages $ cycleN
+        SucceededBy _ n -> pushAll $ cycleN
           successTimes
           ([ PassedSkillTest
                skillTestInvestigator
@@ -487,7 +492,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                  n
              ]
           )
-        FailedBy _ n -> unshiftMessages
+        FailedBy _ n -> pushAll
           ([ When
                (FailedSkillTest
                  skillTestInvestigator
@@ -538,7 +543,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
           Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResults])
             | skillTestInvestigator == skillTestInvestigator' -> False
           _ -> True
-        unshiftMessage (RunSkillTest skillTestInvestigator)
+        push (RunSkillTest skillTestInvestigator)
         -- We need to subtract the current token values to prevent them from
         -- doubling. However, we need to keep any existing value modifier on
         -- the stack (such as a token no longer visible who effect still
@@ -564,7 +569,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
           + totaledTokenValues
           + (if CancelSkills `elem` modifiers' then 0 else skillIconCount s)
           )
-      unshiftMessage SkillTestResults
+      push SkillTestResults
       liftIO $ whenM
         (isJust <$> lookupEnv "DEBUG")
         (putStrLn

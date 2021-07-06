@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.SilverTwilightAcolyte
   ( SilverTwilightAcolyte(..)
   , silverTwilightAcolyte
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -32,6 +33,6 @@ instance ActionRunner env => HasActions env SilverTwilightAcolyte where
 instance (EnemyRunner env) => RunMessage env SilverTwilightAcolyte where
   runMessage msg (SilverTwilightAcolyte attrs@EnemyAttrs {..}) = case msg of
     EnemyAttack _ eid | eid == enemyId -> do
-      unshiftMessage PlaceDoomOnAgenda
+      push PlaceDoomOnAgenda
       SilverTwilightAcolyte <$> runMessage msg attrs
     _ -> SilverTwilightAcolyte <$> runMessage msg attrs

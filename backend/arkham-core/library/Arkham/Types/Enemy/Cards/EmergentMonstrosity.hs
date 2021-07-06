@@ -1,7 +1,8 @@
 module Arkham.Types.Enemy.Cards.EmergentMonstrosity
   ( EmergentMonstrosity(..)
   , emergentMonstrosity
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -32,6 +33,6 @@ instance EnemyRunner env => RunMessage env EmergentMonstrosity where
     InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
       lid <- getId @LocationId iid
       spawnLocation <- fromMaybe lid <$> getId (RightOf, lid)
-      unshiftMessage (EnemySpawn (Just iid) spawnLocation enemyId)
+      push (EnemySpawn (Just iid) spawnLocation enemyId)
       pure . EmergentMonstrosity $ attrs & exhaustedL .~ True
     _ -> EmergentMonstrosity <$> runMessage msg attrs

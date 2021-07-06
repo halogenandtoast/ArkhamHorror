@@ -25,7 +25,7 @@ instance HasActions env CryptChill where
 
 instance TreacheryRunner env => RunMessage env CryptChill where
   runMessage msg t@(CryptChill attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ unshiftMessages
+    Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RevelationSkillTest iid source SkillWillpower 4
       , Discard (TreacheryTarget treacheryId)
       ]
@@ -33,8 +33,6 @@ instance TreacheryRunner env => RunMessage env CryptChill where
       | isSource attrs source -> do
         assetCount <- length <$> getSet @DiscardableAssetId iid
         if assetCount > 0
-          then t <$ unshiftMessage (ChooseAndDiscardAsset iid)
-          else
-            t <$ unshiftMessage
-              (InvestigatorAssignDamage iid source DamageAny 2 0)
+          then t <$ push (ChooseAndDiscardAsset iid)
+          else t <$ push (InvestigatorAssignDamage iid source DamageAny 2 0)
     _ -> CryptChill <$> runMessage msg attrs

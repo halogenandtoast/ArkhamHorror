@@ -1,6 +1,7 @@
 module Arkham.Types.Enemy
   ( module Arkham.Types.Enemy
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

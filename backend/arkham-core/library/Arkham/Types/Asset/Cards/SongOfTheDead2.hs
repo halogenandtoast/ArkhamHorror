@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.SongOfTheDead2
   ( songOfTheDead2
   , SongOfTheDead2(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -37,13 +38,12 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env SongOfTheDead2
   runMessage msg a@(SongOfTheDead2 attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       SongOfTheDead2 <$> runMessage msg (attrs & usesL .~ Uses Charge 5)
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessages
-        [ skillTestModifier
-          source
-          (InvestigatorTarget iid)
-          (SkillModifier SkillWillpower 1)
-        , CreateEffect "02112" Nothing source (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillWillpower mempty False
-        ]
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+      [ skillTestModifier
+        source
+        (InvestigatorTarget iid)
+        (SkillModifier SkillWillpower 1)
+      , CreateEffect "02112" Nothing source (InvestigatorTarget iid)
+      , ChooseFightEnemy iid source SkillWillpower mempty False
+      ]
     _ -> SongOfTheDead2 <$> runMessage msg attrs

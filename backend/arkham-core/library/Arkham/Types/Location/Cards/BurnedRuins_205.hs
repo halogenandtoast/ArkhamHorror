@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.BurnedRuins_205
   ( burnedRuins_205
   , BurnedRuins_205(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

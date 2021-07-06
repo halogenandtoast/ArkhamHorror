@@ -120,7 +120,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           , EncounterSet.Nightgaunts
           , EncounterSet.LockedDoors
           ]
-        pushMessages
+        pushAllEnd
           $ [ story investigatorIds (introPart1 intro1or2)
             , story investigatorIds introPart2
             , SetEncounterDeck encounterDeck

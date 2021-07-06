@@ -1,6 +1,7 @@
 module Arkham.Types.ModifierData
   ( module Arkham.Types.ModifierData
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

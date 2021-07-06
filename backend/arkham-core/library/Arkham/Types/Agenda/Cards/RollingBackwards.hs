@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.RollingBackwards
   ( RollingBackwards(..)
   , rollingBackwards
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -47,7 +48,7 @@ instance AgendaRunner env => RunMessage env RollingBackwards where
       locationId <- getId @LocationId leadInvestigatorId
       lid <- leftmostLocation locationId
       rlid <- fromJustNote "missing right" <$> getId (RightOf, lid)
-      a <$ unshiftMessages
+      a <$ pushAll
         (RemoveLocation lid
         : RemoveLocation rlid
         : [ InvestigatorDiscardAllClues iid | iid <- investigatorIds ]

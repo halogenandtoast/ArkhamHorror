@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Scenarios.LostInTimeAndSpace
   ( LostInTimeAndSpace(..)
   , lostInTimeAndSpace
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -152,9 +153,7 @@ instance
   runMessage msg s@(LostInTimeAndSpace attrs) = case msg of
     SetTokensForScenario -> do
       standalone <- getIsStandalone
-      s <$ if standalone
-        then unshiftMessage (SetTokens standaloneTokens)
-        else pure ()
+      s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
     Setup -> do
       investigatorIds <- getInvestigatorIds
       encounterDeck <- buildEncounterDeckExcluding
@@ -166,7 +165,7 @@ instance
         , EncounterSet.AgentsOfYogSothoth
         ]
       anotherDimensionId <- getRandom
-      unshiftMessages
+      pushAll
         [ story investigatorIds lostInTimeAndSpaceIntro
         , SetEncounterDeck encounterDeck
         , AddAgenda "02312"
@@ -201,7 +200,7 @@ instance
         )
     After (PassedSkillTest iid _ _ (DrawnTokenTarget token) _ _) ->
       s <$ case (isHardExpert attrs, drawnTokenFace token) of
-        (True, Cultist) -> unshiftMessage
+        (True, Cultist) -> push
           (DiscardEncounterUntilFirst
             (toSource attrs)
             (CardMatchByType (LocationType, mempty))
@@ -210,11 +209,11 @@ instance
           mYogSothothId <- getId (EnemyWithTitle "Yog-Sothoth")
           case mYogSothothId of
             Nothing -> pure ()
-            Just eid -> unshiftMessage (EnemyAttack iid eid)
+            Just eid -> push (EnemyAttack iid eid)
         _ -> pure ()
     After (FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _) ->
       s <$ case drawnTokenFace token of
-        Cultist -> unshiftMessage
+        Cultist -> push
           (DiscardEncounterUntilFirst
             (ProxySource (toSource attrs) (InvestigatorSource iid))
             (CardMatchByType (LocationType, mempty))
@@ -223,25 +222,24 @@ instance
           mYogSothothId <- getId (EnemyWithTitle "Yog-Sothoth")
           case mYogSothothId of
             Nothing -> pure ()
-            Just eid -> unshiftMessage (EnemyAttack iid eid)
+            Just eid -> push (EnemyAttack iid eid)
         _ -> pure ()
     RequestedEncounterCard (ProxySource source (InvestigatorSource iid)) mcard
       | isSource attrs source -> s <$ case mcard of
         Nothing -> pure ()
-        Just card -> unshiftMessages
+        Just card -> pushAll
           [ PlaceLocation (LocationId $ toCardId card) (toCardDef card)
           , MoveTo iid (LocationId $ toCardId card)
           ]
     ScenarioResolution NoResolution -> do
       step <- unActStep <$> getStep
-      s <$ unshiftMessage
-        (ScenarioResolution . Resolution $ if step == 4 then 2 else 4)
+      s <$ push (ScenarioResolution . Resolution $ if step == 4 then 2 else 4)
     ScenarioResolution (Resolution 1) -> do
       msgs <- investigatorDefeat
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
-      s <$ unshiftMessages
+      s <$ pushAll
         (msgs
         <> [ chooseOne
              leadInvestigatorId
@@ -274,7 +272,7 @@ instance
     ScenarioResolution (Resolution 2) -> do
       msgs <- investigatorDefeat
       leadInvestigatorId <- getLeadInvestigatorId
-      s <$ unshiftMessages
+      s <$ pushAll
         (msgs
         <> [ chooseOne
              leadInvestigatorId
@@ -309,7 +307,7 @@ instance
       msgs <- investigatorDefeat
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      s <$ unshiftMessages
+      s <$ pushAll
         (msgs
         <> [ chooseOne
              leadInvestigatorId
@@ -337,7 +335,7 @@ instance
       msgs <- investigatorDefeat
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      s <$ unshiftMessages
+      s <$ pushAll
         (msgs
         <> [ chooseOne
              leadInvestigatorId

@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.BeatCop
   ( BeatCop(..)
   , beatCop
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -44,9 +45,10 @@ instance AssetRunner env => RunMessage env BeatCop where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid
       locationEnemyIds <- getSetList locationId
-      a <$ unshiftMessage
-        (chooseOne
-          iid
-          [ EnemyDamage eid iid source 1 | eid <- locationEnemyIds ]
-        )
+      a
+        <$ push
+             (chooseOne
+               iid
+               [ EnemyDamage eid iid source 1 | eid <- locationEnemyIds ]
+             )
     _ -> BeatCop <$> runMessage msg attrs

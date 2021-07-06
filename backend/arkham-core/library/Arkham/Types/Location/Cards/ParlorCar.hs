@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.ParlorCar
   ( parlorCar
   , ParlorCar(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -62,5 +63,5 @@ instance ActionRunner env => HasActions env ParlorCar where
 instance LocationRunner env => RunMessage env ParlorCar where
   runMessage msg l@(ParlorCar attrs@LocationAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessage (DiscoverCluesAtLocation iid locationId 1 Nothing)
+      l <$ push (DiscoverCluesAtLocation iid locationId 1 Nothing)
     _ -> ParlorCar <$> runMessage msg attrs

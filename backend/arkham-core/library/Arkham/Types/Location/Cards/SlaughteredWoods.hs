@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.SlaughteredWoods
   ( slaugteredWoods
   , SlaughteredWoods(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -48,5 +49,5 @@ instance ActionRunner env => HasActions env SlaughteredWoods where
 instance LocationRunner env => RunMessage env SlaughteredWoods where
   runMessage msg l@(SlaughteredWoods attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ unshiftMessage (InvestigatorAssignDamage iid source DamageAny 0 2)
+      l <$ push (InvestigatorAssignDamage iid source DamageAny 0 2)
     _ -> SlaughteredWoods <$> runMessage msg attrs

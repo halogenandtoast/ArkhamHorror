@@ -140,22 +140,19 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
   runMessage msg s@(TheMiskatonicMuseum attrs@ScenarioAttrs {..}) = case msg of
     SetTokensForScenario -> do
       standalone <- isNothing <$> getId @(Maybe CampaignId) ()
-      s <$ if standalone
-        then unshiftMessage (SetTokens standaloneTokens)
-        else pure ()
+      s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
     UseScenarioSpecificAbility _ _ 1 ->
       case fromJustNote "must be set" scenarioDeck of
         ExhibitDeck [] -> pure s
         ExhibitDeck (x : xs) -> do
-          unshiftMessage (PlaceLocation (LocationId $ toCardId x) (toCardDef x))
+          push (PlaceLocation (LocationId $ toCardId x) (toCardDef x))
           pure $ TheMiskatonicMuseum $ attrs & deckL ?~ ExhibitDeck xs
         _ -> error "Wrong deck"
     LookAtTopOfDeck _ ScenarioDeckTarget n ->
       case fromJustNote "must be set" scenarioDeck of
         ExhibitDeck xs -> do
           let lids = map (CardCodeTarget . toCardCode) $ take n xs
-          s <$ unshiftMessages
-            [FocusTargets lids, Label "Continue" [UnfocusTargets]]
+          s <$ pushAll [FocusTargets lids, Label "Continue" [UnfocusTargets]]
         _ -> error "Wrong deck"
     Setup -> do
       investigatorIds <- getInvestigatorIds
@@ -203,7 +200,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       securityOfficeId <- getRandom
       administrationOfficeId <- getRandom
 
-      pushMessages
+      pushAllEnd
         [ story investigatorIds theMiskatonicMuseumIntro1
         , story investigatorIds (theMiskatonicMuseumIntro2 armitageKidnapped)
         , SetEncounterDeck encounterDeck
@@ -238,10 +235,10 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         then do
           hallCount <- length
             <$> getSet @LocationId (LocationWithTitle "Exhibit Hall")
-          unshiftMessage (SetLocationLabel lid $ "hall" <> tshow hallCount)
+          push (SetLocationLabel lid $ "hall" <> tshow hallCount)
         else pure ()
     ResolveToken _ Tablet iid | isEasyStandard attrs ->
-      s <$ unshiftMessage (InvestigatorPlaceCluesOnLocation iid 1)
+      s <$ push (InvestigatorPlaceCluesOnLocation iid 1)
     ResolveToken _ Tablet iid | isHardExpert attrs -> do
       lid <- getId @LocationId iid
       enemyIds <- getSetList @EnemyId lid
@@ -249,27 +246,27 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       case mHuntingHorrorId of
         Just huntingHorrorId -> s <$ when
           (huntingHorrorId `elem` enemyIds)
-          (unshiftMessage $ EnemyAttack iid huntingHorrorId)
+          (push $ EnemyAttack iid huntingHorrorId)
         Nothing -> pure s
     FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _ ->
       s <$ case drawnTokenFace token of
-        Cultist -> unshiftMessage $ FindEncounterCard
+        Cultist -> push $ FindEncounterCard
           iid
           (toTarget attrs)
           (CardMatchByCardCode "02141")
-        ElderThing -> unshiftMessage $ ChooseAndDiscardAsset iid
+        ElderThing -> push $ ChooseAndDiscardAsset iid
         _ -> pure ()
     FoundEncounterCard iid target ec | isTarget attrs target -> do
       lid <- getId @LocationId iid
-      s <$ unshiftMessage (SpawnEnemyAt (EncounterCard ec) lid)
+      s <$ push (SpawnEnemyAt (EncounterCard ec) lid)
     FoundEnemyInVoid iid target eid | isTarget attrs target -> do
       lid <- getId @LocationId iid
-      s <$ unshiftMessage (EnemySpawnFromVoid Nothing lid eid)
+      s <$ push (EnemySpawnFromVoid Nothing lid eid)
     ScenarioResolution NoResolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
-      s <$ unshiftMessages
+      s <$ pushAll
         ([ chooseOne
            leadInvestigatorId
            [ Run
@@ -293,7 +290,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
-      s <$ unshiftMessages
+      s <$ pushAll
         ([ chooseOne
            leadInvestigatorId
            [ Run
@@ -322,7 +319,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
-      s <$ unshiftMessages
+      s <$ pushAll
         ([ chooseOne
            leadInvestigatorId
            [ Run

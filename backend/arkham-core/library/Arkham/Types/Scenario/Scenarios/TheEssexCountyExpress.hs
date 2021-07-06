@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Scenarios.TheEssexCountyExpress
   ( TheEssexCountyExpress(..)
   , theEssexCountyExpress
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -194,9 +195,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
     case msg of
       SetTokensForScenario -> do
         standalone <- isNothing <$> getId @(Maybe CampaignId) ()
-        s <$ if standalone
-          then unshiftMessage (SetTokens standaloneTokens)
-          else pure ()
+        s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
       Setup -> do
         investigatorIds <- getInvestigatorIds
         engineCar <-
@@ -238,7 +237,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
             Hard -> MinusFour
             Expert -> MinusFive
 
-        unshiftMessages
+        pushAll
           $ [ story investigatorIds theEssexCountyExpressIntro
             , AddToken token
             , SetEncounterDeck encounterDeck
@@ -273,23 +272,21 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           <$> getSetList (iid, [Trait.Cultist])
         s <$ case closestCultists of
           [] -> pure ()
-          [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
-          xs -> unshiftMessage
-            (chooseOne iid [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
+          [x] -> push (PlaceDoom (EnemyTarget x) 1)
+          xs -> push (chooseOne iid [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
       ResolveToken _ Tablet _ | isHardExpert attrs -> do
         cultists <- getSetList @EnemyId Trait.Cultist
-        s <$ unshiftMessages [ PlaceDoom (EnemyTarget eid) 1 | eid <- cultists ]
+        s <$ pushAll [ PlaceDoom (EnemyTarget eid) 1 | eid <- cultists ]
       FailedSkillTest iid _ _ (DrawnTokenTarget token) _ n ->
         s <$ case drawnTokenFace token of
-          Cultist -> unshiftMessages
-            [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
-          ElderThing | isEasyStandard attrs ->
-            unshiftMessage $ ChooseAndDiscardCard iid
+          Cultist ->
+            pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
+          ElderThing | isEasyStandard attrs -> push $ ChooseAndDiscardCard iid
           ElderThing | isHardExpert attrs ->
-            unshiftMessages $ replicate n (ChooseAndDiscardCard iid)
+            pushAll $ replicate n (ChooseAndDiscardCard iid)
           _ -> pure ()
       ScenarioResolution NoResolution ->
-        s <$ unshiftMessages [ScenarioResolution $ Resolution 2]
+        s <$ pushAll [ScenarioResolution $ Resolution 2]
       ScenarioResolution (Resolution 1) -> do
         msgs <- investigatorDefeat
         leadInvestigatorId <- getLeadInvestigatorId
@@ -297,7 +294,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         defeatedInvestigatorIds <- map unDefeatedInvestigatorId
           <$> getSetList ()
         xp <- getXp
-        s <$ unshiftMessages
+        s <$ pushAll
           (msgs
           <> [ chooseOne
                  leadInvestigatorId
@@ -331,7 +328,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         defeatedInvestigatorIds <- map unDefeatedInvestigatorId
           <$> getSetList ()
         xp <- getXp
-        s <$ unshiftMessages
+        s <$ pushAll
           (msgs
           <> [ chooseOne
                leadInvestigatorId

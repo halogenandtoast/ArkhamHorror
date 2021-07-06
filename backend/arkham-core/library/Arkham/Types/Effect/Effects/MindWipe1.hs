@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.MindWipe1
   ( mindWipe1
   , MindWipe1(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -24,5 +25,5 @@ instance HasModifiersFor env MindWipe1 where
 
 instance HasQueue env => RunMessage env MindWipe1 where
   runMessage msg e@(MindWipe1 attrs) = case msg of
-    EndPhase -> e <$ unshiftMessage (DisableEffect $ effectId attrs)
+    EndPhase -> e <$ push (DisableEffect $ effectId attrs)
     _ -> MindWipe1 <$> runMessage msg attrs

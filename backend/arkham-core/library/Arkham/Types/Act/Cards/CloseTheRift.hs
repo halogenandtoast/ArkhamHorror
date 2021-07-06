@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.CloseTheRift
   ( CloseTheRift(..)
   , closeTheRift
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -47,20 +48,19 @@ instance ActRunner env => RunMessage env CloseTheRift where
       theEdgeOfTheUniverseId <- getJustLocationIdByName
         "The Edge of the Universe"
       tearThroughTimeId <- getRandom
-      a <$ unshiftMessages
+      a <$ pushAll
         (resolve (RemoveLocation theEdgeOfTheUniverseId)
         <> [ PlaceLocation tearThroughTimeId Locations.tearThroughTime
            , NextAct actId "02319"
            ]
         )
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessage
-        (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))
+      a <$ push (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))
     DiscardedTopOfEncounterDeck iid cards target | isTarget attrs target -> do
       let locationCards = filterLocations cards
       a <$ unless
         (null locationCards)
-        (unshiftMessages
+        (pushAll
           [ FocusCards (map EncounterCard locationCards)
           , chooseOne
             iid

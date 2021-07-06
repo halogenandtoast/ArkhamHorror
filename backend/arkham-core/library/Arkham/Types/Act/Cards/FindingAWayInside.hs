@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.FindingAWayInside
   ( FindingAWayInside(..)
   , findingAWayInside
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -35,7 +36,7 @@ instance ActRunner env => RunMessage env FindingAWayInside where
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      unshiftMessages
+      pushAll
         [ SpendClues 2 investigatorIds
         , chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
         ]
@@ -47,7 +48,7 @@ instance ActRunner env => RunMessage env FindingAWayInside where
         adamLynch <- PlayerCard <$> genPlayerCard Assets.adamLynch
         museumHallsId <- fromJustNote "missing museum halls"
           <$> getId (LocationWithTitle "Museum Halls")
-        a <$ unshiftMessages
+        a <$ pushAll
           [ chooseOne
             leadInvestigatorId
             [ TargetLabel
@@ -61,6 +62,5 @@ instance ActRunner env => RunMessage env FindingAWayInside where
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       museumHallsId <- fromJustNote "missing museum halls"
         <$> getId (LocationWithTitle "Museum Halls")
-      a <$ unshiftMessages
-        [RevealLocation Nothing museumHallsId, NextAct aid "02124"]
+      a <$ pushAll [RevealLocation Nothing museumHallsId, NextAct aid "02124"]
     _ -> FindingAWayInside <$> runMessage msg attrs

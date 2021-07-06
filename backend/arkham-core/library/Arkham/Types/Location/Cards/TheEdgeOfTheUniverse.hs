@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.TheEdgeOfTheUniverse
   ( theEdgeOfTheUniverse
   , TheEdgeOfTheUniverse(..)
-  ) where
+  )
+where
 
 import Arkham.Prelude
 

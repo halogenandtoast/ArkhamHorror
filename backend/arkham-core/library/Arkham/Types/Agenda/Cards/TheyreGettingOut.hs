@@ -35,7 +35,7 @@ instance AgendaRunner env => RunMessage env TheyreGettingOut where
         resolution = if any ((`elem` actIds) . ActId) ["01108", "01109"]
           then Resolution 3
           else NoResolution
-      a <$ unshiftMessage (ScenarioResolution resolution)
+      a <$ push (ScenarioResolution resolution)
     EndEnemy -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       unengagedEnemyIds <- mapSet unUnengagedEnemyId <$> getSet ()
@@ -60,9 +60,7 @@ instance AgendaRunner env => RunMessage env TheyreGettingOut where
             xs
       a <$ unless
         (null enemiesToMove || null (catMaybes messages))
-        (unshiftMessage
-          (chooseOneAtATime leadInvestigatorId $ catMaybes messages)
-        )
+        (push (chooseOneAtATime leadInvestigatorId $ catMaybes messages))
     EndRoundWindow -> do
       mParlor <- getLocationIdWithTitle "Parlor"
       mHallway <- getLocationIdWithTitle "Hallway"
@@ -72,6 +70,6 @@ instance AgendaRunner env => RunMessage env TheyreGettingOut where
       hallwayGhoulsCount <- case mHallway of
         Just hallway -> unEnemyCount <$> getCount (hallway, [Ghoul])
         Nothing -> pure 0
-      a <$ unshiftMessages
+      a <$ pushAll
         (replicate (parlorGhoulsCount + hallwayGhoulsCount) PlaceDoomOnAgenda)
     _ -> TheyreGettingOut <$> runMessage msg attrs

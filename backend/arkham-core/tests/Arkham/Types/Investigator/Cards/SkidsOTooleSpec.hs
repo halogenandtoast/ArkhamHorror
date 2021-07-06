@@ -1,6 +1,7 @@
 module Arkham.Types.Investigator.Cards.SkidsOTooleSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport.Lifted
 
@@ -22,7 +23,7 @@ spec = describe "\"Skids\" O'Toole" $ do
               skidsOToole'
               (DuringTurn You)
               skidsOToole'
-            unshiftMessage buyAction
+            push buyAction
             runMessages
             getCanAffordCost
                 (toId skidsOToole')

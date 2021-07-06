@@ -42,6 +42,10 @@ data ScenarioAttrs = ScenarioAttrs
   }
   deriving stock (Show, Generic, Eq)
 
+locationNameMap :: [CardDef] -> HashMap LocationName [CardDef]
+locationNameMap defs = unionsWith (<>) $ map toMap defs
+  where toMap = liftM2 singletonMap (LocationName . toName) pure
+
 locationsL :: Lens' ScenarioAttrs (HashMap LocationName [CardDef])
 locationsL = lens scenarioLocations $ \m x -> m { scenarioLocations = x }
 

@@ -32,6 +32,9 @@ buildEncounterDeckExcluding defs =
 excludeDoubleSided :: [EncounterCard] -> [EncounterCard]
 excludeDoubleSided = filter (not . cdDoubleSided . toCardDef)
 
+excludeBSides :: [EncounterCard] -> [EncounterCard]
+excludeBSides = filter (not . isSuffixOf "b" . unCardCode . toCardCode)
+
 buildEncounterDeckWith
   :: MonadRandom m
   => ([EncounterCard] -> [EncounterCard])
@@ -40,6 +43,7 @@ buildEncounterDeckWith
 buildEncounterDeckWith f encounterSets =
   shuffleM
     . f
+    . excludeBSides
     . excludeDoubleSided
     . concat
     =<< traverse gatherEncounterSet encounterSets

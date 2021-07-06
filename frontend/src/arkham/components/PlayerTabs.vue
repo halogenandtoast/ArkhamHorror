@@ -6,7 +6,7 @@
         @click='selectTab(index)'
         :class='tabClass(index)'
       >
-        {{ player.contents.name }}
+        {{ player.contents.name.title }}
       </li>
     </ul>
     <Tab

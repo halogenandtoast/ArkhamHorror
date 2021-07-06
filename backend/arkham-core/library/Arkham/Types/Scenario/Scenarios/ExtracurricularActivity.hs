@@ -13,7 +13,6 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
@@ -112,8 +111,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           ]
         ]
       let
-        locations' = mapFromList $ map
-          ((LocationName . toName) &&& pure)
+        locations' = locationNameMap
           [ Locations.miskatonicQuad
           , Locations.humanitiesBuilding
           , Locations.orneLibrary

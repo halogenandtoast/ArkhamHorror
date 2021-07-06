@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.TrappersCabin
   ( TrappersCabin(..)
   , trappersCabin
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

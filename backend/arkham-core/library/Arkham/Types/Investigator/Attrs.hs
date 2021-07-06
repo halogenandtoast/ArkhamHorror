@@ -1,4 +1,3 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
 module Arkham.Types.Investigator.Attrs where
 
 import Arkham.Prelude
@@ -11,8 +10,8 @@ import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
-import Arkham.Types.Classes hiding (discard)
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes hiding (discard)
 import Arkham.Types.CommitRestriction
 import Arkham.Types.Cost
 import Arkham.Types.EnemyId
@@ -335,7 +334,8 @@ getModifiedSanity attrs@InvestigatorAttrs {..} = do
   applyModifier (SanityModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
+removeFromSlots
+  :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = fmap (map (removeIfMatches aid))
 
 fitsAvailableSlots :: [SlotType] -> [Trait] -> InvestigatorAttrs -> Bool
@@ -744,16 +744,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         5
         modifiers'
     pure $ a & resourcesL .~ startingResources
-  InvestigatorMulligan iid | iid == investigatorId -> if null investigatorHand
-    then a <$ push (FinishedWithMulligan investigatorId)
-    else a <$ push
-      (chooseOne iid
-      $ Run
-          [Continue "Done With Mulligan", FinishedWithMulligan investigatorId]
-      : [ Run [DiscardCard iid (toCardId card), InvestigatorMulligan iid]
-        | card <- investigatorHand
-        ]
-      )
+  InvestigatorMulligan iid | iid == investigatorId -> a <$ push
+    (if null investigatorHand
+      then FinishedWithMulligan investigatorId
+      else
+        chooseOne iid
+        $ Run
+            [Continue "Done With Mulligan", FinishedWithMulligan investigatorId]
+        : [ Run [DiscardCard iid (toCardId card), InvestigatorMulligan iid]
+          | card <- investigatorHand
+          ]
+    )
   BeginTrade iid (AssetTarget aid) iids | iid == investigatorId -> a <$ push
     (chooseOne
       iid
@@ -787,7 +788,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (handL .~ hand)
       & (deckL .~ Deck deck)
   ShuffleDiscardBackIn iid | iid == investigatorId ->
-    if not (null investigatorDiscard)
+    if notNull investigatorDiscard
       then do
         deck <- shuffleM (investigatorDiscard <> coerce investigatorDeck)
         pure $ a & discardL .~ [] & deckL .~ Deck deck
@@ -1203,9 +1204,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             && DoesNotProvokeAttacksOfOpportunity
             `notElem` cdAttackOfOpportunityModifiers (pcDef pc)
         _ -> actionProvokesAttackOfOpportunities
-      aooMessage = if provokesAttackOfOpportunities
-        then [CheckAttackOfOpportunity iid isFast]
-        else []
+      aooMessage =
+        [ CheckAttackOfOpportunity iid isFast | provokesAttackOfOpportunities ]
     actionCost <- if isFast
       then pure 0
       else maybe (pure 1) (getActionCost a) maction
@@ -1241,9 +1241,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             && DoesNotProvokeAttacksOfOpportunity
             `notElem` cdAttackOfOpportunityModifiers (pcDef pc)
         _ -> actionProvokesAttackOfOpportunities
-      aooMessage = if provokesAttackOfOpportunities
-        then [CheckAttackOfOpportunity iid isFast]
-        else []
+      aooMessage =
+        [ CheckAttackOfOpportunity iid isFast | provokesAttackOfOpportunities ]
     actionCost <- if isFast
       then pure 0
       else maybe (pure 1) (getActionCost a) maction

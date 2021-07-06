@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Shotgun4
   ( Shotgun4(..)
   , shotgun4
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

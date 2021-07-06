@@ -2,8 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Handler.HomeSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 

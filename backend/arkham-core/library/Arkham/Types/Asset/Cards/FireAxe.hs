@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.FireAxe
   ( FireAxe(..)
   , fireAxe
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

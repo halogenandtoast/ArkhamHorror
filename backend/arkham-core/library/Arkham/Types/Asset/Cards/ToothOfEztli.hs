@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.ToothOfEztli
   ( toothOfEztli
   , ToothOfEztli(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

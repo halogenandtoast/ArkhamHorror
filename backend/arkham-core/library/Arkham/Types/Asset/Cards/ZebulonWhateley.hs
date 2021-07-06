@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.ZebulonWhateley
   ( zebulonWhateley
   , ZebulonWhateley(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

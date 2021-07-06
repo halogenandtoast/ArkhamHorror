@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Encyclopedia2
   ( Encyclopedia2(..)
   , encyclopedia2
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

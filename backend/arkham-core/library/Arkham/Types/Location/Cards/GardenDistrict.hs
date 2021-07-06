@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.GardenDistrict
   ( GardenDistrict(..)
   , gardenDistrict
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.SwampLeech
   ( SwampLeech(..)
   , swampLeech
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

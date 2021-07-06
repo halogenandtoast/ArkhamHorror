@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.RiteOfSeeking
   ( riteOfSeeking
   , RiteOfSeeking(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

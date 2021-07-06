@@ -1,7 +1,6 @@
 module Arkham.Types.Asset.Cards.Rolands38SpecialSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 

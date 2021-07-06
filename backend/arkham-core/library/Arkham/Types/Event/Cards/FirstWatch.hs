@@ -1,8 +1,7 @@
 module Arkham.Types.Event.Cards.FirstWatch
   ( firstWatch
   , FirstWatch(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

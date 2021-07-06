@@ -1,7 +1,6 @@
 module Arkham.Types.Asset.Cards.HyperawarenessSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
@@ -11,8 +10,8 @@ spec :: Spec
 spec = describe "Hyperawareness" $ do
   it "Adds 1 to intellect check for each resource spent" $ do
     hyperawareness <- buildAsset "01034"
-    investigator <- testInvestigator "00000"
-      $ \attrs -> attrs { investigatorIntellect = 1, investigatorResources = 2 }
+    investigator <- testInvestigator "00000" $ \attrs ->
+      attrs { investigatorIntellect = 1, investigatorResources = 2 }
 
     (didPassTest, logger) <- didPassSkillTestBy investigator SkillIntellect 0
 

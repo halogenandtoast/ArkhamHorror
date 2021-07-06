@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.CloseTheRift
   ( CloseTheRift(..)
   , closeTheRift
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

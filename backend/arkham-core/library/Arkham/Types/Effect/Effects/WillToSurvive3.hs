@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.WillToSurvive3
   ( willToSurvive3
   , WillToSurvive3(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

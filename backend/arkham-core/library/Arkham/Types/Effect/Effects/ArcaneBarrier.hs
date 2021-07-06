@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.ArcaneBarrier
   ( ArcaneBarrier(..)
   , arcaneBarrier
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

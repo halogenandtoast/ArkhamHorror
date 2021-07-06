@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.CongregationalChurch_208
   ( congregationalChurch_208
   , CongregationalChurch_208(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.BrackishWaters
   ( BrackishWaters(..)
   , brackishWaters
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -2,8 +2,7 @@ module Arkham.Types.Trait
   ( Trait(..)
   , EnemyTrait(..)
   , HasTraits(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Blackjack
   ( blackjack
   , Blackjack(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

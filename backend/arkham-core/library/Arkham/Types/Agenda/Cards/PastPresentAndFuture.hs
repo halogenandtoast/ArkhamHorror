@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.PastPresentAndFuture
   ( PastPresentAndFuture
   , pastPresentAndFuture
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

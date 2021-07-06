@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.TheMawWidens
   ( TheMawWidens(..)
   , theMawWidens
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

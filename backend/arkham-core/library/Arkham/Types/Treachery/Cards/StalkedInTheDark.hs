@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.StalkedInTheDark
   ( stalkedInTheDark
   , StalkedInTheDark(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

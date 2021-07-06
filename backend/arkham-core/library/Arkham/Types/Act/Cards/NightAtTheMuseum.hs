@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.NightAtTheMuseum
   ( NightAtTheMuseum(..)
   , nightAtTheMuseum
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

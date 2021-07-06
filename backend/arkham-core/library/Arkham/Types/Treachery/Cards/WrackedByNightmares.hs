@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.WrackedByNightmares
   ( WrackedByNightmares(..)
   , wrackedByNightmares
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

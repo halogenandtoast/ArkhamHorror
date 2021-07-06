@@ -1,7 +1,6 @@
 module Arkham.Types.Asset.Cards.DukeSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 

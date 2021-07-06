@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.CrazedShoggoth
   ( CrazedShoggoth(..)
   , crazedShoggoth
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

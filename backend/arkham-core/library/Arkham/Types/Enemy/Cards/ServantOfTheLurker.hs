@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.ServantOfTheLurker
   ( servantOfTheLurker
   , ServantOfTheLurker(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

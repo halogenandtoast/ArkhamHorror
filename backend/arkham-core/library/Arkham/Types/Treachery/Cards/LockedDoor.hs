@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.LockedDoor
   ( LockedDoor(..)
   , lockedDoor
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.Wormhole
   ( wormhole
   , Wormhole(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -3,8 +3,8 @@ module Arkham.Types.Investigator.Cards.ZoeySamaras where
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata

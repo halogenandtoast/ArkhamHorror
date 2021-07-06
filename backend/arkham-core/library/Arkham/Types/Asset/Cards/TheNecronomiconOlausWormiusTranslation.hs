@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.TheNecronomiconOlausWormiusTranslation
   ( theNecronomiconOlausWormiusTranslation
   , TheNecronomiconOlausWormiusTranslation(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

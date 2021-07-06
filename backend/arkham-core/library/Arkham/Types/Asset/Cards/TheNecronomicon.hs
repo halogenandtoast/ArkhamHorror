@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.TheNecronomicon
   ( TheNecronomicon(..)
   , theNecronomicon
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

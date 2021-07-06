@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.BlindingLight2
   ( blindingLight2
   , BlindingLight2(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

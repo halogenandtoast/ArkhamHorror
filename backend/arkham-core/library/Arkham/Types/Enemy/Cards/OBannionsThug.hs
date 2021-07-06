@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.OBannionsThug
   ( oBannionsThug
   , OBannionsThug(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

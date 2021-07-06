@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.OvergrownCairns
   ( OvergrownCairns(..)
   , overgrownCairns
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

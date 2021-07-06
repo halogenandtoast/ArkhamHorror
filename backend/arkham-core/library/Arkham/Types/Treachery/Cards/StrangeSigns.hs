@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.StrangeSigns
   ( strangeSigns
   , StrangeSigns(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

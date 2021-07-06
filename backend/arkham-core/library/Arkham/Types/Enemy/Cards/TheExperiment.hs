@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.TheExperiment
   ( TheExperiment(..)
   , theExperiment
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

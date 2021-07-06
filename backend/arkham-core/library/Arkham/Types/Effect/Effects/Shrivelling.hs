@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.Shrivelling
   ( shrivelling
   , Shrivelling(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -3,8 +3,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Entity.Arkham.Player
   ( module Entity.Arkham.Player
-  )
-where
+  ) where
 
 import ClassyPrelude
 import Database.Persist.TH

@@ -6,8 +6,7 @@
 
 module Model
   ( module X
-  )
-where
+  ) where
 
 import ClassyPrelude.Yesod
 

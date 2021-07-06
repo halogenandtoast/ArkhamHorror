@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.SordidAndSilent
   ( SordidAndSilent(..)
   , sordidAndSilent
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

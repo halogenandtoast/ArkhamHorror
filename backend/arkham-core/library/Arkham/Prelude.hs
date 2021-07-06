@@ -1,14 +1,23 @@
 module Arkham.Prelude
   ( module X
   , module Arkham.Prelude
-  )
-where
+  ) where
 
-import ClassyPrelude as X hiding (on, (\\))
+import ClassyPrelude as X hiding ((\\), on)
 
 import Control.Lens as X
-  ( Lens'
+  ( (%~)
+  , (&)
+  , (+~)
+  , (-~)
+  , (.~)
+  , (<>~)
+  , (?~)
+  , Lens'
   , Traversal'
+  , (^.)
+  , (^..)
+  , (^?)
   , at
   , ix
   , lens
@@ -18,16 +27,6 @@ import Control.Lens as X
   , traverseOf_
   , view
   , views
-  , (%~)
-  , (&)
-  , (+~)
-  , (-~)
-  , (.~)
-  , (<>~)
-  , (?~)
-  , (^.)
-  , (^..)
-  , (^?)
   )
 import Control.Lens.TH as X
 import Control.Monad.Extra as X (concatMapM, fromMaybeM)
@@ -39,7 +38,7 @@ import Data.Aeson.Text
 import Data.Coerce as X (coerce)
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
-import Data.List as X (nub, (\\))
+import Data.List as X ((\\), nub)
 import qualified Data.List as L
 import Data.List.NonEmpty as X (NonEmpty(..), nonEmpty)
 import qualified Data.List.NonEmpty as NE

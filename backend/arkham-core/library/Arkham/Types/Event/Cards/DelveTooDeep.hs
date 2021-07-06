@@ -1,8 +1,7 @@
 module Arkham.Types.Event.Cards.DelveTooDeep
   ( delveTooDeep
   , DelveTooDeep(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

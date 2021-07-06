@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.Narogath
   ( narogath
   , Narogath(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

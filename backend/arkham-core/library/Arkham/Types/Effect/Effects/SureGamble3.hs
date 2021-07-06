@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.SureGamble3
   ( sureGamble3
   , SureGamble3(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

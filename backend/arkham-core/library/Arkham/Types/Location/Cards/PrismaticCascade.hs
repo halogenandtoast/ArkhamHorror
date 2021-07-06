@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.PrismaticCascade
   ( prismaticCascade
   , PrismaticCascade(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

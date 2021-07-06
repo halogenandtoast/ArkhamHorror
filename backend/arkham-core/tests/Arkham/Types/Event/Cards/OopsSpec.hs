@@ -1,7 +1,6 @@
 module Arkham.Types.Event.Cards.OopsSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 

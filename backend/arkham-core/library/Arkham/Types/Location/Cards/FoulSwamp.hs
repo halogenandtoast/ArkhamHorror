@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.FoulSwamp
   ( FoulSwamp(..)
   , foulSwamp
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.LupineThrall
   ( LupineThrall(..)
   , lupineThrall
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

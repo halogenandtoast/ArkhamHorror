@@ -1,7 +1,6 @@
 module Arkham.Types.Investigator.Cards.SkidsOTooleSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport.Lifted
 

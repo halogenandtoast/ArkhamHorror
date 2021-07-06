@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.ReturnToCellar
   ( returnToCellar
   , ReturnToCellar(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

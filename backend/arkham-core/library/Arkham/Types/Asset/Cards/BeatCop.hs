@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.BeatCop
   ( BeatCop(..)
   , beatCop
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

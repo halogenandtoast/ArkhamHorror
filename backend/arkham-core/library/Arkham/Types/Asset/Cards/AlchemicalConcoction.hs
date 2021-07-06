@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.AlchemicalConcoction
   ( alchemicalConcoction
   , AlchemicalConcoction(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.AllIsOne
   ( AllIsOne
   , allIsOne
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

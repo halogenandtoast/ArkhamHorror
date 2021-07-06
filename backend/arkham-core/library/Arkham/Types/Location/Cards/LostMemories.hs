@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.LostMemories
   ( lostMemories
   , LostMemories(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

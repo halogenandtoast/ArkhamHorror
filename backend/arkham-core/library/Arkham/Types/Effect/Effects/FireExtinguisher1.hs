@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.FireExtinguisher1
   ( fireExtinguisher1
   , FireExtinguisher1(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.VisionsOfFuturesPast
   ( VisionsOfFuturesPast(..)
   , visionsOfFuturesPast
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

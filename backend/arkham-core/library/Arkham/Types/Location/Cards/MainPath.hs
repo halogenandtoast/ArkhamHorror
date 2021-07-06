@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.MainPath
   ( MainPath(..)
   , mainPath
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

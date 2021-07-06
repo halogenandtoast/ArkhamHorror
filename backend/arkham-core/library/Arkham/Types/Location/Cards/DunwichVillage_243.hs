@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.DunwichVillage_243
   ( dunwichVillage_243
   , DunwichVillage_243(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

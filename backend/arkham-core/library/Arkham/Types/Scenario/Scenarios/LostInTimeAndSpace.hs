@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.LostInTimeAndSpace
   ( LostInTimeAndSpace(..)
   , lostInTimeAndSpace
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

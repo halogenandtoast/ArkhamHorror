@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.MindWipe3
   ( mindWipe3
   , MindWipe3(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

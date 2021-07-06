@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.TheEndOfAllThings
   ( TheEndOfAllThings
   , theEndOfAllThings
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

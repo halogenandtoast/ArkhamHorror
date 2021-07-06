@@ -7,8 +7,7 @@ module Api.Handler.Arkham.Games
   , putApiV1ArkhamGameR
   , deleteApiV1ArkhamGameR
   , putApiV1ArkhamGameRawR
-  )
-where
+  ) where
 
 import Api.Arkham.Helpers
 import Arkham.Game
@@ -27,7 +26,7 @@ import qualified Data.Map.Strict as Map
 import Data.UUID
 import Database.Esqueleto.Experimental
 import Entity.Arkham.Player
-import Import hiding (delete, on, (==.))
+import Import hiding ((==.), delete, on)
 import Json
 import Network.WebSockets (ConnectionException)
 import Safe (fromJustNote)

@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.BrotherXavier1
   ( brotherXavier1
   , BrotherXavier1(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

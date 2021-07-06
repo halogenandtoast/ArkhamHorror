@@ -1,7 +1,6 @@
 module Arkham.Types.Investigator.Cards.RexMurphySpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport.Lifted
 

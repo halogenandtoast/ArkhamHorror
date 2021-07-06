@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.BreakingAndEntering
   ( BreakingAndEntering(..)
   , breakingAndEntering
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

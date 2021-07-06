@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.InterstellarTraveler
   ( interstellarTraveler
   , InterstellarTraveler(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

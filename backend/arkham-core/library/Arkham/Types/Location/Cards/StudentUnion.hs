@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.StudentUnion
   ( StudentUnion(..)
   , studentUnion
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

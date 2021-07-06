@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Scrying
   ( Scrying(..)
   , scrying
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

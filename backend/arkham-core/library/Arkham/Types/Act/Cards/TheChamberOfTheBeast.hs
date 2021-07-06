@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.TheChamberOfTheBeast
   ( TheChamberOfTheBeast(..)
   , theChamberOfTheBeast
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

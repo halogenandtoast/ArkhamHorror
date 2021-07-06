@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.ReturnToAttic
   ( returnToAttic
   , ReturnToAttic(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.CoverUp
   ( CoverUp(..)
   , coverUp
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

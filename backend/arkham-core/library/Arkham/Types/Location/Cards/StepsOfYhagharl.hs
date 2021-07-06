@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.StepsOfYhagharl
   ( stepsOfYhagharl
   , StepsOfYhagharl(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Machete
   ( Machete(..)
   , machete
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

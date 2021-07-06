@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.Mobster
   ( mobster
   , Mobster(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

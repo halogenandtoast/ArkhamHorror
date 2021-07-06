@@ -1,7 +1,6 @@
 module Arkham.Types.Event.Cards.DarkMemorySpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport.Lifted
 

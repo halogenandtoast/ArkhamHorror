@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.EndlessBridge
   ( endlessBridge
   , EndlessBridge(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

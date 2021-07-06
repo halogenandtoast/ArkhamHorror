@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.TheGateOpens
   ( TheGateOpens(..)
   , theGateOpens
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

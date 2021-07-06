@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.PushedIntoTheBeyond
   ( PushedIntoTheBeyond(..)
   , pushedIntoTheBeyond
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

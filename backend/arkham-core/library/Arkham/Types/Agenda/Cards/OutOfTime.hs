@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.OutOfTime
   ( OutOfTime(..)
   , outOfTime
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.MiskatonicUniversity
   ( MiskatonicUniversity(..)
   , miskatonicUniversity
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

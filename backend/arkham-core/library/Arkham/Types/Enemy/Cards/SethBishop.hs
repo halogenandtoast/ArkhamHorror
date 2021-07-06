@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.SethBishop
   ( sethBishop
   , SethBishop(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

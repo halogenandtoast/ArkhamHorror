@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.WhateleyRuins_251
   ( whateleyRuins_251
   , WhateleyRuins_251(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

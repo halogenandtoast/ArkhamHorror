@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.IntoTheBeyond
   ( IntoTheBeyond(..)
   , intoTheBeyond
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

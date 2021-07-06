@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.CursedShores
   ( cursedShores
   , CursedShores(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.Run
   ( Run(..)
   , run
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

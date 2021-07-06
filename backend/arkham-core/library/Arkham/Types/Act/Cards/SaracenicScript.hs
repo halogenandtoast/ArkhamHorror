@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.SaracenicScript
   ( SaracenicScript(..)
   , saracenicScript
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

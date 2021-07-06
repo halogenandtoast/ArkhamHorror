@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.ArousingSuspicions
   ( ArousingSuspicions(..)
   , arousingSuspicions
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

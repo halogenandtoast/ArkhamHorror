@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.BeckoningForPower
   ( BeckoningForPower
   , beckoningForPower
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

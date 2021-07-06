@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.Chronophobia
   ( chronophobia
   , Chronophobia(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.RicesWhereabouts
   ( RicesWhereabouts(..)
   , ricesWhereabouts
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

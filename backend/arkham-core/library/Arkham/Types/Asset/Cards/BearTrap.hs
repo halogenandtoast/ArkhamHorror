@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.BearTrap
   ( BearTrap(..)
   , bearTrap
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

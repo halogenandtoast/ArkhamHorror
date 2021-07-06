@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.WolfManDrew
   ( WolfManDrew(..)
   , wolfManDrew
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

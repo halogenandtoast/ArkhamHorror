@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.ConglomerationOfSpheres
   ( conglomerationOfSpheres
   , ConglomerationOfSpheres(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

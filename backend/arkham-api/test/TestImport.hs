@@ -4,8 +4,7 @@
 module TestImport
   ( module TestImport
   , module X
-  )
-where
+  ) where
 
 import Application (makeFoundation, makeLogWare)
 import ClassyPrelude as X hiding (Handler, delete, deleteBy)

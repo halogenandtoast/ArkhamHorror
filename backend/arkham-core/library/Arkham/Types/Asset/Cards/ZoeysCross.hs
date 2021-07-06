@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.ZoeysCross
   ( ZoeysCross(..)
   , zoeysCross
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

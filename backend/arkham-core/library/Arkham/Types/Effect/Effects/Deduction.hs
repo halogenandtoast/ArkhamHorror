@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.Deduction
   ( deduction
   , Deduction(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

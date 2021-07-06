@@ -1,7 +1,6 @@
 module Arkham.Types.Cost
   ( module Arkham.Types.Cost
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

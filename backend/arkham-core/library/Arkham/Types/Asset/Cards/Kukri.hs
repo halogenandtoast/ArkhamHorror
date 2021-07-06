@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Kukri
   ( kukri
   , Kukri(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

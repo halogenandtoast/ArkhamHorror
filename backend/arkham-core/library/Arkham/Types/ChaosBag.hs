@@ -2,8 +2,7 @@ module Arkham.Types.ChaosBag
   ( ChaosBag
   , emptyChaosBag
   , tokensL
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -163,7 +162,7 @@ decideFirstUndecided source miid strategy f = \case
       , [ CheckWindow iid [WhenWouldRevealChaosToken source You]
         | iid <- maybeToList miid
         ]
-        <> [NextChaosBagStep source miid strategy]
+      <> [NextChaosBagStep source miid strategy]
       )
     Choose n steps tokens' -> if any isUndecided steps
       then

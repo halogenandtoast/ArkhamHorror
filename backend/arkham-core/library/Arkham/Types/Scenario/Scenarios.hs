@@ -1,7 +1,6 @@
 module Arkham.Types.Scenario.Scenarios
   ( module X
-  )
-where
+  ) where
 
 import Arkham.Types.Scenario.Scenarios.BloodOnTheAltar as X
 import Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou as X

@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.Fold
   ( Fold(..)
   , fold
-  )
-where
+  ) where
 
 import Arkham.Prelude hiding (fold)
 

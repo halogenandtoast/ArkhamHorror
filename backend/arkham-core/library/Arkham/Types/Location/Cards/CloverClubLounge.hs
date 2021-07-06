@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.CloverClubLounge
   ( cloverClubLounge
   , CloverClubLounge(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

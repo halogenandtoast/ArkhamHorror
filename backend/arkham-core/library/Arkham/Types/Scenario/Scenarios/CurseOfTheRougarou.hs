@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
   ( CurseOfTheRougarou(..)
   , curseOfTheRougarou
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.YithianObserver
   ( YithianObserver(..)
   , yithianObserver
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

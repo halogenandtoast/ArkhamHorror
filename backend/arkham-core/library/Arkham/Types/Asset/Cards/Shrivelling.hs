@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Shrivelling
   ( Shrivelling(..)
   , shrivelling
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

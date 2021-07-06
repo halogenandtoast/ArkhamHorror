@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.EerieGlade
   ( eerieGlade
   , EerieGlade(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

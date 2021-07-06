@@ -57,6 +57,6 @@ instance SkillRunner env => RunMessage env SurvivalInstinct where
                  , Label "Skip" []
                  ]
              ]
-            <> [ moveOptions | not (null unblockedConnectedLocationIds) ]
+            <> [ moveOptions | notNull unblockedConnectedLocationIds ]
             )
     _ -> SurvivalInstinct <$> runMessage msg attrs

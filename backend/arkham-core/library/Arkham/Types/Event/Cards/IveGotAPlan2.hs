@@ -1,8 +1,7 @@
 module Arkham.Types.Event.Cards.IveGotAPlan2
   ( iveGotAPlan2
   , IveGotAPlan2(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

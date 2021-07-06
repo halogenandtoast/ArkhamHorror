@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.PushedIntoTheBeyond
   ( PushedIntoTheBeyond(..)
   , pushedIntoTheBeyond
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

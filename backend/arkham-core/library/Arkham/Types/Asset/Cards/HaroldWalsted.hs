@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.HaroldWalsted
   ( haroldWalsted
   , HaroldWalsted(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

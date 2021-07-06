@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.ScrollOfProphecies
   ( ScrollOfProphecies(..)
   , scrollOfProphecies
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

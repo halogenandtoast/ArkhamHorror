@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.AdministrationOffice_131
   ( administrationOffice_131
   , AdministrationOffice_131(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

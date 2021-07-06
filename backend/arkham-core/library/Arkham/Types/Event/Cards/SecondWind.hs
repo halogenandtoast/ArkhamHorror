@@ -1,8 +1,7 @@
 module Arkham.Types.Event.Cards.SecondWind
   ( secondWind
   , SecondWind(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

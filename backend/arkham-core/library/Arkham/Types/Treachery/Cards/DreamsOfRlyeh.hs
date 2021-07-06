@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.DreamsOfRlyeh
   ( DreamsOfRlyeh(..)
   , dreamsOfRlyeh
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

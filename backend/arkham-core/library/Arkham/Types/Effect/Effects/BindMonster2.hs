@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.BindMonster2
   ( bindMonster2
   , BindMonster2(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

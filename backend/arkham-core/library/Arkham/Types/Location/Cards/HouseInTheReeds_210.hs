@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.HouseInTheReeds_210
   ( houseInTheReeds_210
   , HouseInTheReeds_210(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

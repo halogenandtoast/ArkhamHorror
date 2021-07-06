@@ -3,8 +3,7 @@ module Arkham.Types.Modifier
   , ModifierType(..)
   , ActionTarget(..)
   , isBlank
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

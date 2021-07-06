@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Rolands38Special
   ( Rolands38Special(..)
   , rolands38Special
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

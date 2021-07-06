@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.Haunted
   ( Haunted(..)
   , haunted
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,7 +1,6 @@
 module Arkham.Types.TokenResponse
   ( TokenResponse(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.RipplesOnTheSurface
   ( RipplesOnTheSurface(..)
   , ripplesOnTheSurface
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

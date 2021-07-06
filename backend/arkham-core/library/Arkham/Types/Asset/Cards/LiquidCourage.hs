@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.LiquidCourage
   ( liquidCourage
   , LiquidCourage(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

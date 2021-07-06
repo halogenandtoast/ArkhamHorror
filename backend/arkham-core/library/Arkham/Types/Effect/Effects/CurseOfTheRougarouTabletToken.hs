@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.CurseOfTheRougarouTabletToken
   ( curseOfTheRougarouTabletToken
   , CurseOfTheRougarouTabletToken(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.GuardDog
   ( GuardDog(..)
   , guardDog
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

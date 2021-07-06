@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.JennysTwin45s
   ( JennysTwin45s(..)
   , jennysTwin45s
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

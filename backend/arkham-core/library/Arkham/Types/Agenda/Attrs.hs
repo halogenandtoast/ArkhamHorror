@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Attrs
   ( module Arkham.Types.Agenda.Attrs
   , module X
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

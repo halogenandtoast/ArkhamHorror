@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.TheEssexCountyExpress
   ( TheEssexCountyExpress(..)
   , theEssexCountyExpress
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

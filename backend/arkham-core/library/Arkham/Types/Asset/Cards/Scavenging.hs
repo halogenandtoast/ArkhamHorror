@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Scavenging
   ( Scavenging(..)
   , scavenging
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

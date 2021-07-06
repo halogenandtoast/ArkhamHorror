@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.DestroyedPath
   ( destroyedPath
   , DestroyedPath(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

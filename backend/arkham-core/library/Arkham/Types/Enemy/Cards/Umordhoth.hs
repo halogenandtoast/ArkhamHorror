@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.Umordhoth
   ( Umordhoth(..)
   , umordhoth
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

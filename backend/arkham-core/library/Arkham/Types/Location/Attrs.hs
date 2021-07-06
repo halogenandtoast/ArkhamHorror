@@ -567,9 +567,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
     EnemyDefeated eid _ _ _ _ _ -> pure $ a & enemiesL %~ deleteSet eid
     TakeControlOfAsset _ aid -> pure $ a & assetsL %~ deleteSet aid
     MoveAllCluesTo target | not (isTarget a target) -> do
-      when
-        (locationClues > 0)
-        (push $ PlaceClues target locationClues)
+      when (locationClues > 0) (push $ PlaceClues target locationClues)
       pure $ a & cluesL .~ 0
     PlaceClues target n | isTarget a target -> do
       modifiers' <-

@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.LaboratoryAssistant
   ( LaboratoryAssistant(..)
   , laboratoryAssistant
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

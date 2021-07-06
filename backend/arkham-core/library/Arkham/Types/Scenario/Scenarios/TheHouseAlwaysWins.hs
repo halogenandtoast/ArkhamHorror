@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.TheHouseAlwaysWins
   ( TheHouseAlwaysWins(..)
   , theHouseAlwaysWins
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

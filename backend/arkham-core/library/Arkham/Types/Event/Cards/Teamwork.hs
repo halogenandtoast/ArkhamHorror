@@ -1,8 +1,7 @@
 module Arkham.Types.Event.Cards.Teamwork
   ( teamwork
   , Teamwork(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

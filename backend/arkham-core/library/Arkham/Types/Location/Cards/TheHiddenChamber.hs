@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.TheHiddenChamber
   ( theHiddenChamber
   , TheHiddenChamber(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

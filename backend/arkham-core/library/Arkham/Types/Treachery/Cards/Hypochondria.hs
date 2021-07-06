@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.Hypochondria
   ( Hypochondria(..)
   , hypochondria
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.TwistOfFate
   ( TwistOfFate(..)
   , twistOfFate
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

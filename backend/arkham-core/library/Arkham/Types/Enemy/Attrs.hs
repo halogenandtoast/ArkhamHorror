@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Attrs
   ( module Arkham.Types.Enemy.Attrs
   , module X
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -580,8 +579,8 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
                      (chooseOne leadInvestigatorId
                      $ map (EnemyMove enemyId enemyLocation) ls
                      )
-    EnemiesAttack
-      | not (null enemyEngagedInvestigators) && not enemyExhausted -> do
+    EnemiesAttack | notNull enemyEngagedInvestigators && not enemyExhausted ->
+      do
         pushAll $ map (`EnemyWillAttack` enemyId) $ setToList
           enemyEngagedInvestigators
         pure a

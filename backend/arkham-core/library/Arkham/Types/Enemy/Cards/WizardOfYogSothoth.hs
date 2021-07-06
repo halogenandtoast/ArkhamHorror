@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.WizardOfYogSothoth
   ( WizardOfYogSothoth(..)
   , wizardOfYogSothoth
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

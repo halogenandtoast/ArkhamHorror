@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.BeginnersLuck
   ( BeginnersLuck(..)
   , beginnersLuck
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

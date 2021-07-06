@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.EmergentMonstrosity
   ( EmergentMonstrosity(..)
   , emergentMonstrosity
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

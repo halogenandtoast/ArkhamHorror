@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.FortyFiveAutomatic
   ( FortyFiveAutomatic(..)
   , fortyFiveAutomatic
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

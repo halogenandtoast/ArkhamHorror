@@ -1,14 +1,13 @@
 module Arkham.Types.Investigator.Cards.SkidsOToole
   ( SkidsOToole(..)
   , skidsOToole
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner

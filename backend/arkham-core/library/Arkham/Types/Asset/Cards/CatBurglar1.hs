@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.CatBurglar1
   ( CatBurglar1(..)
   , catBurglar1
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -58,7 +57,7 @@ instance AssetRunner env => RunMessage env CatBurglar1 where
         <> [ chooseOne
                iid
                [ MoveAction iid lid Free False | lid <- accessibleLocationIds ]
-           | not (null accessibleLocationIds)
+           | notNull accessibleLocationIds
            ]
       pure $ CatBurglar1 $ attrs & exhaustedL .~ True
     _ -> CatBurglar1 <$> runMessage msg attrs

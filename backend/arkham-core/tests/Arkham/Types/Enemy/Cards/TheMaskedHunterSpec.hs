@@ -1,7 +1,6 @@
 module Arkham.Types.Enemy.Cards.TheMaskedHunterSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport.Lifted
 

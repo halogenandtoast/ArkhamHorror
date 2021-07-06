@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.WhereDoomAwaits
   ( WhereDoomAwaits(..)
   , whereDoomAwaits
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

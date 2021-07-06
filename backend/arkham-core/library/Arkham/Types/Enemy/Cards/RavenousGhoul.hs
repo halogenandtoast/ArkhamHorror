@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.RavenousGhoul
   ( ravenousGhoul
   , RavenousGhoul(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

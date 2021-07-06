@@ -1,7 +1,6 @@
 module Arkham.Types.Event.Cards.SearchForTheTruthSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 

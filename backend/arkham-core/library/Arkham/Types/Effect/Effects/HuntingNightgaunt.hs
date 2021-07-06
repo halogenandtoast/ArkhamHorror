@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.HuntingNightgaunt
   ( huntingNightgaunt
   , HuntingNightgaunt(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

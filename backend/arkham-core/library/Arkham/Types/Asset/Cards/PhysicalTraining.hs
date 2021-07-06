@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.PhysicalTraining
   ( PhysicalTraining(..)
   , physicalTraining
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.ClarityOfMind
   ( clarityOfMind
   , ClarityOfMind(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

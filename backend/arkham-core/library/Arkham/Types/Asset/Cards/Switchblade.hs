@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Switchblade
   ( Switchblade(..)
   , switchblade
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

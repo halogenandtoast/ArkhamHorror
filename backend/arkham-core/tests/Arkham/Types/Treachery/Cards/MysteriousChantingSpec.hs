@@ -1,7 +1,6 @@
 module Arkham.Types.Treachery.Cards.MysteriousChantingSpec
   ( spec
-  )
-where
+  ) where
 
 import TestImport.Lifted
 

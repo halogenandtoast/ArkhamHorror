@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.LaBellaLuna
   ( laBellaLuna
   , LaBellaLuna(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

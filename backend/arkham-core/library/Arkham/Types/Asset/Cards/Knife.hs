@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Knife
   ( Knife(..)
   , knife
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

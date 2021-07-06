@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.DimensionalGap
   ( dimensionalGap
   , DimensionalGap(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

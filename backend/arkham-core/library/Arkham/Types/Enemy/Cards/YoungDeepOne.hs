@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.YoungDeepOne
   ( YoungDeepOne(..)
   , youngDeepOne
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

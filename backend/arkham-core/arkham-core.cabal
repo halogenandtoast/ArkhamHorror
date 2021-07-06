@@ -801,6 +801,7 @@ library
   hs-source-dirs:
       library
   default-extensions:
+      AllowAmbiguousTypes
       BangPatterns
       BlockArguments
       ConstraintKinds
@@ -855,6 +856,7 @@ executable validate
   hs-source-dirs:
       validate
   default-extensions:
+      AllowAmbiguousTypes
       BangPatterns
       BlockArguments
       ConstraintKinds
@@ -961,6 +963,7 @@ test-suite spec
   hs-source-dirs:
       tests
   default-extensions:
+      AllowAmbiguousTypes
       BangPatterns
       BlockArguments
       ConstraintKinds

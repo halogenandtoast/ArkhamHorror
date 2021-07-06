@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.HuntingHorror
   ( huntingHorror
   , HuntingHorror(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

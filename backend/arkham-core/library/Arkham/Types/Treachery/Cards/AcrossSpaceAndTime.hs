@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.AcrossSpaceAndTime
   ( acrossSpaceAndTime
   , AcrossSpaceAndTime(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

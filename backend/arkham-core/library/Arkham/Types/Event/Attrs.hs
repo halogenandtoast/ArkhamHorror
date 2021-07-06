@@ -52,7 +52,8 @@ unshiftEffect attrs target = pushAll
   , Discard $ toTarget attrs
   ]
 
-event :: (EventAttrs -> a) -> CardDef -> CardBuilder (InvestigatorId, EventId) a
+event
+  :: (EventAttrs -> a) -> CardDef -> CardBuilder (InvestigatorId, EventId) a
 event f cardDef = CardBuilder
   { cbCardCode = cdCardCode cardDef
   , cbCardBuilder = \(iid, eid) -> f $ EventAttrs

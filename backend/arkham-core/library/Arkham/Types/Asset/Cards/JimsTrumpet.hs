@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.JimsTrumpet
   ( JimsTrumpet(..)
   , jimsTrumpet
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

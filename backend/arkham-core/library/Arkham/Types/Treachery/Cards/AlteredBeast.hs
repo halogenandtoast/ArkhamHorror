@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.AlteredBeast
   ( AlteredBeast(..)
   , alteredBeast
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

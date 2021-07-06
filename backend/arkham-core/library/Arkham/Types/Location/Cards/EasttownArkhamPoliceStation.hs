@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.EasttownArkhamPoliceStation
   ( EasttownArkhamPoliceStation(..)
   , easttownArkhamPoliceStation
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

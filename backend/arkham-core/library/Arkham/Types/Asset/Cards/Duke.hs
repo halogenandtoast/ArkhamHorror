@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Duke
   ( Duke(..)
   , duke
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

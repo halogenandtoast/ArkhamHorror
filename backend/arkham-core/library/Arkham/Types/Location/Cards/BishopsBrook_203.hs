@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.BishopsBrook_203
   ( bishopsBrook_203
   , BishopsBrook_203(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -34,7 +33,7 @@ instance HasModifiersFor env BishopsBrook_203 where
     = pure $ toModifiers
       attrs
       [ Blocked
-      | iid `notElem` locationInvestigators && not (null locationInvestigators)
+      | iid `notElem` locationInvestigators && notNull locationInvestigators
       ]
   getModifiersFor _ _ _ = pure []
 

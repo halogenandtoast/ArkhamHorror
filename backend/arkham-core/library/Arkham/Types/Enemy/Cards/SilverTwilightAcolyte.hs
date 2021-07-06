@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.SilverTwilightAcolyte
   ( SilverTwilightAcolyte(..)
   , silverTwilightAcolyte
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

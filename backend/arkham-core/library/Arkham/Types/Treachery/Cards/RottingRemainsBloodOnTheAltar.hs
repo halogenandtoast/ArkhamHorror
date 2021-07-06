@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.RottingRemainsBloodOnTheAltar
   ( rottingRemainsBloodOnTheAltar
   , RottingRemainsBloodOnTheAltar(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

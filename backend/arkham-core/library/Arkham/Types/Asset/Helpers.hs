@@ -3,8 +3,7 @@
 module Arkham.Types.Asset.Helpers
   ( module Arkham.Types.Asset.Helpers
   , module X
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

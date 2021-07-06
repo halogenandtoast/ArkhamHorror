@@ -1,8 +1,7 @@
 module Arkham.Types.Event.Cards.EmergencyAid
   ( emergencyAid
   , EmergencyAid(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

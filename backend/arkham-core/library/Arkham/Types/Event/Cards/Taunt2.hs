@@ -1,8 +1,7 @@
 module Arkham.Types.Event.Cards.Taunt2
   ( taunt2
   , Taunt2(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

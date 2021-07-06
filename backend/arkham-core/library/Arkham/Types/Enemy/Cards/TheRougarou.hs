@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.TheRougarou
   ( TheRougarou(..)
   , theRougarou
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

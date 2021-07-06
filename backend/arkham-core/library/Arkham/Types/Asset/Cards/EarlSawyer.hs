@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.EarlSawyer
   ( earlSawyer
   , EarlSawyer(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

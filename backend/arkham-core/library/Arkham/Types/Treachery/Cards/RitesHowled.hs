@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.RitesHowled
   ( ritesHowled
   , RitesHowled(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

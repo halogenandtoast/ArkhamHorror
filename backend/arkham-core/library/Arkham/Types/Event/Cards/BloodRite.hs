@@ -1,8 +1,7 @@
 module Arkham.Types.Event.Cards.BloodRite
   ( bloodRite
   , BloodRite(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

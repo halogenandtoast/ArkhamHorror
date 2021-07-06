@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.FishingNet
   ( FishingNet(..)
   , fishingNet
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

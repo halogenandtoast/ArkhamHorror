@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.DevoteeOfTheKey
   ( devoteeOfTheKey
   , DevoteeOfTheKey(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

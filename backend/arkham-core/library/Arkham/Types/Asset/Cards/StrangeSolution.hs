@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.StrangeSolution
   ( strangeSolution
   , StrangeSolution(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.TimeIsRunningShort
   ( TimeIsRunningShort(..)
   , timeIsRunningShort
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

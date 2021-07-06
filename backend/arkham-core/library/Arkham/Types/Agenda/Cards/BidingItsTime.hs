@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.BidingItsTime
   ( BidingItsTime(..)
   , bidingItsTime
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

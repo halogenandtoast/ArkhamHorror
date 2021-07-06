@@ -5,8 +5,7 @@
 module TestImport
   ( module X
   , module TestImport
-  )
-where
+  ) where
 
 import Arkham.Prelude as X
 
@@ -25,10 +24,10 @@ import qualified Arkham.Types.Card.CardDef as CardDef
 import Arkham.Types.Card.Id
 import Arkham.Types.ChaosBag as X
 import qualified Arkham.Types.ChaosBag as ChaosBag
-import Arkham.Types.Classes as X hiding
-  (getCount, getId, getModifiersFor, getTokenValue)
-import qualified Arkham.Types.Classes as Arkham
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes as X
+  hiding (getCount, getId, getModifiersFor, getTokenValue)
+import qualified Arkham.Types.Classes as Arkham
 import Arkham.Types.Cost as X
 import Arkham.Types.Difficulty
 import Arkham.Types.Enemy as X
@@ -60,7 +59,7 @@ import Arkham.Types.Stats as X
 import Arkham.Types.Target as X
 import Arkham.Types.Token as X
 import Arkham.Types.Window as X
-import Control.Lens as X (set, (^?!))
+import Control.Lens as X ((^?!), set)
 import Control.Monad.Fail as X
 import Control.Monad.State as X (get)
 import Control.Monad.State hiding (replicateM)
@@ -329,7 +328,8 @@ getActionsOf investigator window e = do
   e' <- updated e
   toGameEnv >>= runReaderT (getActions (toId investigator) window e')
 
-getChaosBagTokens :: (HasGameRef env, MonadIO m, MonadReader env m) => m [Token]
+getChaosBagTokens
+  :: (HasGameRef env, MonadIO m, MonadReader env m) => m [Token]
 getChaosBagTokens = view (chaosBagL . ChaosBag.tokensL) <$> getTestGame
 
 createMessageMatcher :: MonadIO m => Message -> m (IORef Bool, Message -> m ())

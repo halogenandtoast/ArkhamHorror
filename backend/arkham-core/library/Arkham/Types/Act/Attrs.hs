@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Attrs
   ( module Arkham.Types.Act.Attrs
   , module X
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -136,9 +135,7 @@ advanceActSideA investigatorIds requiredClues attrs = do
   pure
     ([ SpendClues totalRequiredClues investigatorIds | totalRequiredClues > 0 ]
     <> [ CheckWindow leadInvestigatorId [WhenActAdvance (toId attrs)]
-       , chooseOne
-         leadInvestigatorId
-         [AdvanceAct (toId attrs) (toSource attrs)]
+       , chooseOne leadInvestigatorId [AdvanceAct (toId attrs) (toSource attrs)]
        ]
     )
 

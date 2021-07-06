@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.RuinAndDestruction
   ( ruinAndDestruction
   , RuinAndDestruction(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

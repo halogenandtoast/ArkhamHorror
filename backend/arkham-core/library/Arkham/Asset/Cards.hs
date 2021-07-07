@@ -161,6 +161,8 @@ allPlayerAssetCards = mapFromList $ map
   , scrying
   , shotgun4
   , shrivelling
+  , smokingPipe
+  , painkillers
   , songOfTheDead2
   , springfieldM19034
   , strangeSolution
@@ -750,6 +752,18 @@ fireExtinguisher1 = (asset "02114" "Fire Extinguisher" 2 Survivor)
   { cdCardTraits = setFromList [Item, Tool, Melee]
   , cdSkills = [SkillAgility]
   , cdLevel = 1
+  }
+
+smokingPipe :: CardDef
+smokingPipe = (asset "02116" "Smoking Pipe" 1 Neutral)
+  { cdCardTraits = singleton Item
+  , cdSkills = [SkillWillpower]
+  }
+
+painkillers :: CardDef
+painkillers = (asset "02117" "Painkillers" 1 Neutral)
+  { cdCardTraits = singleton Item
+  , cdSkills = [SkillWillpower]
   }
 
 haroldWalsted :: CardDef

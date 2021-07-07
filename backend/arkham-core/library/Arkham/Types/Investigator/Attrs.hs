@@ -1209,6 +1209,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       [ TakeAction iid (Just Action.Play) (ActionCost actionCost)
       , PayDynamicCardCost iid cardId 0 aooMessage
       ]
+  InitiatePlayChooseOneCard iid cardId mtarget asAction
+    | iid == investigatorId -> a <$ pushAll
+      [ CheckWindow iid [WhenPlayCard You cardId]
+      , PlayCard iid cardId mtarget asAction
+      ]
   InitiatePlayCard iid cardId mtarget asAction | iid == investigatorId ->
     a <$ pushAll
       [ CheckWindow iid [WhenPlayCard You cardId]
@@ -1787,12 +1792,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         <> [ InitiatePlayCard iid (toCardId c) Nothing True
            | c <- investigatorHand
            , canAffordPlayCard || fastIsPlayable c
-           , isPlayable c && not (isDynamic c)
+           , isPlayable c && not (isDynamic c || isChoiceEvent c)
            ]
         <> [ InitiatePlayDynamicCard iid (toCardId c) 0 Nothing True
            | c <- investigatorHand
            , canAffordPlayCard || fastIsPlayable c
            , isPlayable c && isDynamic c
+           ]
+        <> [ InitiatePlayChooseOneCard iid (toCardId c) Nothing True
+           | c <- investigatorHand
+           , canAffordPlayCard || fastIsPlayable c
+           , isPlayable c && isChoiceEvent c
            ]
         <> [ChooseEndTurn iid]
         <> actions

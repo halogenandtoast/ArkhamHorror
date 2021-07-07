@@ -33,10 +33,8 @@ ability :: Int -> AssetAttrs -> Ability
 ability idx a = mkAbility a idx $ FastAbility $ ResourceCost 1
 
 instance HasActions env ArcaneStudies where
-  getActions iid (WhenSkillTest SkillWillpower) (ArcaneStudies a) =
-    pure [ UseAbility iid (ability 1 a) | ownedBy a iid ]
-  getActions iid (WhenSkillTest SkillIntellect) (ArcaneStudies a) =
-    pure [ UseAbility iid (ability 2 a) | ownedBy a iid ]
+  getActions iid (WhenSkillTest _) (ArcaneStudies a) | ownedBy a iid =
+    pure [ UseAbility iid (ability idx a) | idx <- [1 .. 2] ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env ArcaneStudies where

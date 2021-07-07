@@ -551,7 +551,7 @@ sourceToTarget = \case
   DeckSource -> error "not implemented"
   GameSource -> error "not implemented"
   ActSource aid -> ActTarget aid
-  PlayerCardSource _ -> error "not implemented"
+  PlayerCardSource cid -> CardIdTarget cid
   EncounterCardSource _ -> error "not implemented"
   TestSource{} -> TestTarget
   DrawnTokenSource dt -> DrawnTokenTarget dt

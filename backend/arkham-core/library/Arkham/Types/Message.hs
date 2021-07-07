@@ -295,6 +295,7 @@ data Message
   | FinishedUpgradingDecks
   | InitiatePlayCard InvestigatorId CardId (Maybe Target) Bool
   | InitiatePlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
+  | InitiatePlayChooseOneCard InvestigatorId CardId (Maybe Target) Bool -- Int is unused for Bool True
   | Investigate InvestigatorId LocationId Source SkillType Bool
   | InvestigatorAssignDamage InvestigatorId Source DamageStrategy Int Int -- ^ uses the internal method and then checks defeat
   | InvestigatorCommittedCard InvestigatorId CardId

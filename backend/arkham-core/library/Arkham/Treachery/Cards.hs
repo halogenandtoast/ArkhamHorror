@@ -28,6 +28,7 @@ baseTreachery cardCode name mEncounterSet isWeakness = CardDef
   , cdFast = False
   , cdWindows = mempty
   , cdAction = Nothing
+  , cdChoiceEvent = Nothing
   , cdRevelation = True
   , cdVictoryPoints = Nothing
   , cdCommitRestrictions = mempty

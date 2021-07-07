@@ -30,8 +30,7 @@ instance HasModifiersFor env BeatCop where
   getModifiersFor _ _ _ = pure []
 
 ability :: AssetAttrs -> Ability
-ability a =
-  mkAbility (toSource a) 1 $ ActionAbility Nothing (DiscardCost $ toTarget a)
+ability a = mkAbility (toSource a) 1 $ FastAbility (DiscardCost $ toTarget a)
 
 instance (HasSet EnemyId env LocationId, HasId LocationId env InvestigatorId) => HasActions env BeatCop where
   getActions iid _ (BeatCop a) | ownedBy a iid = do

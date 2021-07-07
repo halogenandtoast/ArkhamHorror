@@ -109,6 +109,7 @@ data Asset
   | MonstrousTransformation' MonstrousTransformation
   | OccultLexicon' OccultLexicon
   | OldBookOfLore' OldBookOfLore
+  | Painkillers' Painkillers
   | Pathfinder1' Pathfinder1
   | PeterClover' PeterClover
   | PeterSylvestre' PeterSylvestre
@@ -131,6 +132,7 @@ data Asset
   | Scrying' Scrying
   | Shotgun4' Shotgun4
   | Shrivelling' Shrivelling
+  | SmokingPipe' SmokingPipe
   | SongOfTheDead2' SongOfTheDead2
   | SpringfieldM19034' SpringfieldM19034
   | StrangeSolution' StrangeSolution
@@ -345,6 +347,7 @@ allAssets = mapFromList $ map
   , MonstrousTransformation' <$> monstrousTransformation
   , OccultLexicon' <$> occultLexicon
   , OldBookOfLore' <$> oldBookOfLore
+  , Painkillers' <$> painkillers
   , Pathfinder1' <$> pathfinder1
   , PeterClover' <$> peterClover
   , PeterSylvestre' <$> peterSylvestre
@@ -367,6 +370,7 @@ allAssets = mapFromList $ map
   , Scrying' <$> scrying
   , Shotgun4' <$> shotgun4
   , Shrivelling' <$> shrivelling
+  , SmokingPipe' <$> smokingPipe
   , SongOfTheDead2' <$> songOfTheDead2
   , SpringfieldM19034' <$> springfieldM19034
   , StrangeSolution' <$> strangeSolution

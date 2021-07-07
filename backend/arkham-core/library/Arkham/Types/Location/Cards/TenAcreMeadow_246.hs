@@ -44,7 +44,7 @@ instance ActionRunner env => HasActions env TenAcreMeadow_246 where
   getActions iid FastPlayerWindow (TenAcreMeadow_246 attrs) =
     withBaseActions iid FastPlayerWindow attrs $ do
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
-      pure [ UseAbility iid (ability attrs) | anyAbominations ]
+      pure [ locationAbility iid (ability attrs) | anyAbominations ]
   getActions iid window (TenAcreMeadow_246 attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env TenAcreMeadow_246 where

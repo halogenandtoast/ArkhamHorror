@@ -35,12 +35,11 @@ forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
 
 instance ActionRunner env => HasActions env PrismaticCascade where
-  getActions iid (AfterDiscoveringClues You YourLocation) (PrismaticCascade attrs)
-    | iid `on` attrs
+  getActions _ (AfterDiscoveringClues You YourLocation) (PrismaticCascade attrs)
     = do
       leadInvestigator <- getLeadInvestigatorId
       pure
-        [ UseAbility leadInvestigator (forcedAbility attrs)
+        [ locationAbility leadInvestigator (forcedAbility attrs)
         | locationClues attrs == 0
         ]
   getActions iid window (PrismaticCascade attrs) = getActions iid window attrs

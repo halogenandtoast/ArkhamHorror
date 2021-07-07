@@ -14,6 +14,7 @@ import Arkham.Types.CommitRestriction
 import Arkham.Types.EncounterSet
 import Arkham.Types.Keyword (HasKeywords(..), Keyword)
 import Arkham.Types.Name
+import Arkham.Types.PlayRestriction
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -46,6 +47,7 @@ data CardDef = CardDef
   , cdAction :: Maybe Action
   , cdRevelation :: Bool
   , cdVictoryPoints :: Maybe Int
+  , cdPlayRestrictions :: [PlayRestriction]
   , cdCommitRestrictions :: [CommitRestriction]
   , cdAttackOfOpportunityModifiers :: [AttackOfOpportunityModifier]
   , cdPermanent :: Bool
@@ -131,6 +133,7 @@ testCardDef cardType cardCode = CardDef
   , cdAction = Nothing
   , cdRevelation = False
   , cdVictoryPoints = Nothing
+  , cdPlayRestrictions = []
   , cdCommitRestrictions = []
   , cdAttackOfOpportunityModifiers = []
   , cdPermanent = False

@@ -28,6 +28,7 @@ skill cardCode name skills classSymbol = CardDef
   , cdAction = Nothing
   , cdRevelation = True
   , cdVictoryPoints = Nothing
+  , cdPlayRestrictions = mempty
   , cdCommitRestrictions = mempty
   , cdAttackOfOpportunityModifiers = mempty
   , cdPermanent = False
@@ -42,6 +43,7 @@ allPlayerSkillCards :: HashMap CardCode CardDef
 allPlayerSkillCards = mapFromList $ map
   (toCardCode &&& id)
   [ deduction
+  , deduction2
   , doubleOrNothing
   , fearless
   , guts
@@ -117,6 +119,13 @@ doubleOrNothing :: CardDef
 doubleOrNothing = (skill "02026" "Double or Nothing" [SkillWild] Rogue)
   { cdCardTraits = singleton Fortune
   , cdCommitRestrictions = [MaxOnePerTest]
+  }
+
+deduction2 :: CardDef
+deduction2 = (skill "02150" "Deduction" [SkillIntellect, SkillIntellect] Seeker
+             )
+  { cdCardTraits = setFromList [Practiced, Expert]
+  , cdLevel = 2
   }
 
 trueUnderstanding :: CardDef

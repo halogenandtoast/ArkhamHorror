@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.CongregationalChurch_209
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (congregationalChurch_209)
+import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -43,12 +43,14 @@ ability attrs = mkAbility
 instance ActionRunner env => HasActions env CongregationalChurch_209 where
   getActions iid NonFast (CongregationalChurch_209 attrs)
     | locationRevealed attrs = withBaseActions iid NonFast attrs
-    $ pure [UseAbility iid (ability attrs)]
+    $ pure [locationAbility iid (ability attrs)]
   getActions iid FastPlayerWindow (CongregationalChurch_209 attrs)
-    | locationRevealed attrs = withBaseActions iid FastPlayerWindow attrs $ pure
-      [ drawCardUnderneathAction iid attrs
-      | iid `on` attrs && locationClues attrs == 0
-      ]
+    | locationRevealed attrs
+    = withBaseActions iid FastPlayerWindow attrs
+      $ pure
+          [ drawCardUnderneathLocationAction iid attrs
+          | locationClues attrs == 0
+          ]
   getActions iid window (CongregationalChurch_209 attrs) =
     getActions iid window attrs
 

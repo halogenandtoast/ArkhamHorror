@@ -38,10 +38,9 @@ instance HasModifiersFor env CursedShores where
 instance ActionRunner env => HasActions env CursedShores where
   getActions iid NonFast (CursedShores attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ pure
-      [ UseAbility
+      [ locationAbility
           iid
           (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
-      | iid `member` locationInvestigators
       ]
   getActions i window (CursedShores attrs) = getActions i window attrs
 

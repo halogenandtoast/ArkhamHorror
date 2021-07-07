@@ -1,6 +1,6 @@
-module Arkham.Types.Asset.Cards.Switchblade
-  ( Switchblade(..)
-  , switchblade
+module Arkham.Types.Asset.Cards.Switchblade2
+  ( Switchblade2(..)
+  , switchblade2
   ) where
 
 import Arkham.Prelude
@@ -20,17 +20,17 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 
-newtype Switchblade = Switchblade AssetAttrs
+newtype Switchblade2 = Switchblade2 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-switchblade :: AssetCard Switchblade
-switchblade = hand Switchblade Cards.switchblade
+switchblade2 :: AssetCard Switchblade2
+switchblade2 = hand Switchblade2 Cards.switchblade2
 
-instance HasModifiersFor env Switchblade where
+instance HasModifiersFor env Switchblade2 where
   getModifiersFor = noModifiersFor
 
-instance ActionRunner env => HasActions env Switchblade where
-  getActions iid window (Switchblade a) | ownedBy a iid = do
+instance ActionRunner env => HasActions env Switchblade2 where
+  getActions iid window (Switchblade2 a) | ownedBy a iid = do
     let
       ability = mkAbility
         (toSource a)
@@ -40,10 +40,16 @@ instance ActionRunner env => HasActions env Switchblade where
     pure [ UseAbility iid ability | fightAvailable ]
   getActions _ _ _ = pure []
 
-instance (AssetRunner env) => RunMessage env Switchblade where
-  runMessage msg a@(Switchblade attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ push (ChooseFightEnemy iid source SkillCombat mempty False)
+instance (AssetRunner env) => RunMessage env Switchblade2 where
+  runMessage msg a@(Switchblade2 attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+      [ CreateWindowModifierEffect
+        EffectSkillTestWindow
+        (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 2])
+        source
+        (InvestigatorTarget iid)
+      , ChooseFightEnemy iid source SkillCombat mempty False
+      ]
     PassedSkillTest iid (Just Action.Fight) source SkillTestInitiatorTarget{} _ n
       | n >= 2 && isSource attrs source
       -> a <$ push
@@ -53,4 +59,4 @@ instance (AssetRunner env) => RunMessage env Switchblade where
           source
           (InvestigatorTarget iid)
         )
-    _ -> Switchblade <$> runMessage msg attrs
+    _ -> Switchblade2 <$> runMessage msg attrs

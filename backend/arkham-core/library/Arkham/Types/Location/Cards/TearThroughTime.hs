@@ -5,18 +5,14 @@ module Arkham.Types.Location.Cards.TearThroughTime
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (tearThroughTime)
-import Arkham.Types.Ability
-import qualified Arkham.Types.Action as Action
+import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
 import Arkham.Types.Window
 
 newtype TearThroughTime = TearThroughTime LocationAttrs
@@ -33,15 +29,6 @@ tearThroughTime = location
 
 instance HasModifiersFor env TearThroughTime where
   getModifiersFor = noModifiersFor
-
-resignAction :: SourceEntity a => InvestigatorId -> a -> Message
-resignAction iid a = UseAbility
-  iid
-  (mkAbility
-    (toSource a)
-    99
-    (ActionAbility (Just Action.Resign) (Costs [ActionCost 1, ClueCost 2]))
-  )
 
 instance ActionRunner env => HasActions env TearThroughTime where
   getActions iid NonFast (TearThroughTime attrs) =

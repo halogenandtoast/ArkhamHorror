@@ -42,7 +42,7 @@ instance ActionRunner env => HasActions env AlchemyLabs where
           (toSource attrs)
           1
           (ActionAbility (Just Action.Investigate) (ActionCost 1))
-      pure [ UseAbility iid ability | iid `elem` locationInvestigators ]
+      pure [locationAbility iid ability]
   getActions iid window (AlchemyLabs attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env AlchemyLabs where

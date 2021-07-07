@@ -37,10 +37,9 @@ instance HasModifiersFor env MiskatonicUniversity where
 instance ActionRunner env => HasActions env MiskatonicUniversity where
   getActions iid NonFast (MiskatonicUniversity attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ pure
-      [ UseAbility
+      [ locationAbility
           iid
           (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
-      | iid `member` locationInvestigators
       ]
   getActions iid window (MiskatonicUniversity attrs) =
     getActions iid window attrs

@@ -9,6 +9,7 @@ import Arkham.Types.Card.CardType
 import Arkham.Types.Card.Cost
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Name
+import Arkham.Types.PlayRestriction
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -30,6 +31,7 @@ event cardCode name cost classSymbol = CardDef
   , cdAction = Nothing
   , cdRevelation = False
   , cdVictoryPoints = Nothing
+  , cdPlayRestrictions = mempty
   , cdCommitRestrictions = mempty
   , cdAttackOfOpportunityModifiers = mempty
   , cdPermanent = False
@@ -72,6 +74,7 @@ allPlayerEventCards = mapFromList $ map
   , flare1
   , hotStreak2
   , hotStreak4
+  , imOuttaHere
   , iveGotAPlan
   , iveGotAPlan2
   , letMeHandleThis
@@ -88,6 +91,7 @@ allPlayerEventCards = mapFromList $ map
   , seekingAnswers
   , shortcut
   , sneakAttack
+  , standTogether3
   , sureGamble3
   , taunt
   , taunt2
@@ -404,6 +408,21 @@ flare1 = (event "02115" "Flare" 2 Survivor)
   , cdCardTraits = singleton Tactic
   , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
   , cdLevel = 1
+  }
+
+standTogether3 :: CardDef
+standTogether3 = (event "02148" "Stand Together" 0 Guardian)
+  { cdSkills = [SkillWillpower, SkillWillpower]
+  , cdCardTraits = singleton Spirit
+  , cdPlayRestrictions = [AnotherInvestigatorInSameLocation]
+  , cdLevel = 3
+  }
+
+imOuttaHere :: CardDef
+imOuttaHere = (event "02151" "\"I'm outta here!\"" 0 Rogue)
+  { cdSkills = [SkillAgility, SkillAgility]
+  , cdCardTraits = setFromList [Trick, Spirit]
+  , cdPlayRestrictions = [ScenarioCardHasResignAbility]
   }
 
 letMeHandleThis :: CardDef

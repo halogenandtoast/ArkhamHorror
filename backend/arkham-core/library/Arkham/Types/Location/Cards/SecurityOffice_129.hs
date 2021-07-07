@@ -44,7 +44,7 @@ ability attrs =
 instance ActionRunner env => HasActions env SecurityOffice_129 where
   getActions iid NonFast (SecurityOffice_129 attrs) =
     withBaseActions iid NonFast attrs
-      $ pure [ UseAbility iid (ability attrs) | iid `on` attrs ]
+      $ pure [locationAbility iid (ability attrs)]
   getActions iid window (SecurityOffice_129 attrs) =
     getActions iid window attrs
 

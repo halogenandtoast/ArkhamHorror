@@ -38,9 +38,8 @@ forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
 
 instance ActionRunner env => HasActions env FrozenSpring where
-  getActions iid (AfterRevealLocation You) (FrozenSpring attrs)
-    | iid `on` attrs = do
-      pure [UseAbility iid (forcedAbility attrs)]
+  getActions iid (AfterRevealLocation You) (FrozenSpring attrs) =
+    pure [locationAbility iid (forcedAbility attrs)]
   getActions iid window (FrozenSpring attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env FrozenSpring where

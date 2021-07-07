@@ -34,14 +34,13 @@ instance HasModifiersFor env GardenDistrict where
 instance ActionRunner env => HasActions env GardenDistrict where
   getActions iid NonFast (GardenDistrict attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ pure
-      [ UseAbility
+      [ locationAbility
           iid
           (mkAbility
             (LocationSource locationId)
             1
             (ActionAbility Nothing $ ActionCost 1)
           )
-      | iid `member` locationInvestigators
       ]
   getActions i window (GardenDistrict attrs) = getActions i window attrs
 

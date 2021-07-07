@@ -80,6 +80,7 @@ data Effect
   | PushedIntoTheBeyond' PushedIntoTheBeyond
   | ArcaneBarrier' ArcaneBarrier
   | FireExtinguisher1' FireExtinguisher1
+  | Deduction2' Deduction2
   | UndimensionedAndUnseenTabletToken' UndimensionedAndUnseenTabletToken
   | TenAcreMeadow_246' TenAcreMeadow_246
   | LetMeHandleThis' LetMeHandleThis
@@ -162,6 +163,7 @@ allEffects = mapFromList
   , ("02100", PushedIntoTheBeyond' . pushedIntoTheBeyond)
   , ("02102", ArcaneBarrier' . arcaneBarrier)
   , ("02114", FireExtinguisher1' . fireExtinguisher1)
+  , ("02150", Deduction2' . deduction2)
   , ( "02236"
     , UndimensionedAndUnseenTabletToken' . undimensionedAndUnseenTabletToken
     )
@@ -174,12 +176,11 @@ allEffects = mapFromList
   ]
 
 buildTokenValueEffect :: EffectId -> Int -> Source -> Target -> Effect
-buildTokenValueEffect eid n source target = buildWindowModifierEffect
+buildTokenValueEffect eid n source = buildWindowModifierEffect
   eid
   (EffectModifiers [Modifier source $ TokenValueModifier n])
   EffectSkillTestWindow
   source
-  target
 
 buildWindowModifierEffect
   :: EffectId

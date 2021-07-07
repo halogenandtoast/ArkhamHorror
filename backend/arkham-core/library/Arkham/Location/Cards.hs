@@ -27,6 +27,7 @@ location cardCode name encounterSet = CardDef
   , cdAction = Nothing
   , cdRevelation = False
   , cdVictoryPoints = Nothing
+  , cdPlayRestrictions = mempty
   , cdCommitRestrictions = mempty
   , cdAttackOfOpportunityModifiers = mempty
   , cdPermanent = False

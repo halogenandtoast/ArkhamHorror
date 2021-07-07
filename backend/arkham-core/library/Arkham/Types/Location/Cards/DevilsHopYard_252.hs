@@ -47,7 +47,7 @@ instance ActionRunner env => HasActions env DevilsHopYard_252 where
       investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
       pure
-        [ UseAbility iid (ability attrs)
+        [ locationAbility iid (ability attrs)
         | investigatorsWithClues && anyAbominations
         ]
   getActions iid window (DevilsHopYard_252 attrs) = getActions iid window attrs

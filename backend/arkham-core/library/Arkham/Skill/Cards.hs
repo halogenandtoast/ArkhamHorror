@@ -35,6 +35,7 @@ skill cardCode name skills classSymbol = CardDef
   , cdEncounterSetQuantity = Nothing
   , cdUnique = False
   , cdDoubleSided = False
+  , cdLimits = []
   }
 
 allPlayerSkillCards :: HashMap CardCode CardDef

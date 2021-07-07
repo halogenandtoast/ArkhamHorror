@@ -37,6 +37,7 @@ event cardCode name cost classSymbol = CardDef
   , cdEncounterSetQuantity = Nothing
   , cdUnique = False
   , cdDoubleSided = False
+  , cdLimits = []
   }
 
 allPlayerEventCards :: HashMap CardCode CardDef
@@ -68,6 +69,7 @@ allPlayerEventCards = mapFromList $ map
   , evidence
   , extraAmmunition1
   , firstWatch
+  , flare1
   , hotStreak2
   , hotStreak4
   , iveGotAPlan

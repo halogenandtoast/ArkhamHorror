@@ -84,6 +84,7 @@ data ModifierType
   | HorrorDealt Int
   | IgnoreText
   | MaxDamageTaken Int
+  | MayChooseNotToTakeUpkeepResources
   | ModifierIfSucceededBy Int Modifier
   | NegativeToPositive
   | ChangeTokenModifier TokenModifier

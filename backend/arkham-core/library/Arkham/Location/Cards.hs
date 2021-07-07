@@ -34,6 +34,7 @@ location cardCode name encounterSet = CardDef
   , cdEncounterSetQuantity = Just 1
   , cdUnique = False
   , cdDoubleSided = True
+  , cdLimits = []
   }
 
 allLocationCards :: HashMap CardCode CardDef

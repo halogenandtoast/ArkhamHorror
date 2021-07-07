@@ -45,9 +45,14 @@ data CardDef = CardDef
   , cdEncounterSetQuantity :: Maybe Int
   , cdUnique :: Bool
   , cdDoubleSided :: Bool
+  , cdLimits :: [CardLimit]
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
+
+newtype CardLimit = LimitPerInvestigator Int
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (Hashable, FromJSON, ToJSON)
 
 instance Named CardDef where
   toName = cdName
@@ -125,4 +130,5 @@ testCardDef cardType cardCode = CardDef
   , cdEncounterSetQuantity = Nothing
   , cdUnique = False
   , cdDoubleSided = False
+  , cdLimits = []
   }

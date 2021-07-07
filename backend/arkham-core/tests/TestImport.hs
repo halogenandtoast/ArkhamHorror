@@ -9,6 +9,7 @@ module TestImport
 
 import Arkham.Prelude as X
 
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.EncounterCard as X
 import Arkham.Game as X hiding (newGame)
 import Arkham.PlayerCard as X
@@ -21,7 +22,6 @@ import Arkham.Types.Asset.Attrs hiding (body)
 import Arkham.Types.AssetId
 import Arkham.Types.Card as X
 import qualified Arkham.Types.Card.CardDef as CardDef
-import Arkham.Types.Card.Id
 import Arkham.Types.ChaosBag as X
 import qualified Arkham.Types.ChaosBag as ChaosBag
 import Arkham.Types.ClassSymbol
@@ -200,17 +200,11 @@ buildEnemy cardCode = lookupEnemy cardCode <$> getRandom
 buildAsset :: MonadRandom m => CardCode -> m Asset
 buildAsset cardCode = lookupAsset cardCode <$> getRandom
 
-testPlayerCards :: MonadIO m => Int -> m [PlayerCard]
+testPlayerCards :: MonadRandom m => Int -> m [PlayerCard]
 testPlayerCards count' = replicateM count' (testPlayerCard id)
 
-testPlayerCard :: MonadIO m => (CardDef -> CardDef) -> m PlayerCard
-testPlayerCard f = do
-  cardId <- CardId <$> liftIO nextRandom
-  pure $ MkPlayerCard
-    { pcId = cardId
-    , pcDef = f $ basePlayerCard "asset" "Test" 0 AssetType Guardian
-    , pcBearer = Nothing
-    }
+testPlayerCard :: MonadRandom m => (CardDef -> CardDef) -> m PlayerCard
+testPlayerCard f = genPlayerCard (f Cards.placeholderAsset)
 
 testEnemy :: MonadRandom m => (EnemyAttrs -> EnemyAttrs) -> m Enemy
 testEnemy = testEnemyWithDef id

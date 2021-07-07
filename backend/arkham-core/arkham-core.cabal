@@ -142,6 +142,7 @@ library
       Arkham.Types.Asset.Cards.ClarityOfMind
       Arkham.Types.Asset.Cards.DaisysToteBag
       Arkham.Types.Asset.Cards.DaisysToteBagAdvanced
+      Arkham.Types.Asset.Cards.DarkHorse
       Arkham.Types.Asset.Cards.DigDeep
       Arkham.Types.Asset.Cards.DigDeep2
       Arkham.Types.Asset.Cards.DiscOfItzamna2
@@ -214,6 +215,7 @@ library
       Arkham.Types.Asset.Cards.RitualCandles
       Arkham.Types.Asset.Cards.Rolands38Special
       Arkham.Types.Asset.Cards.Scavenging
+      Arkham.Types.Asset.Cards.Scrapper3
       Arkham.Types.Asset.Cards.ScrollOfProphecies
       Arkham.Types.Asset.Cards.Scrying
       Arkham.Types.Asset.Cards.Shotgun4

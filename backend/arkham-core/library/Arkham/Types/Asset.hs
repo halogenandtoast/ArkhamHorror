@@ -125,6 +125,7 @@ data Asset
   | RitualCandles' RitualCandles
   | Rolands38Special' Rolands38Special
   | Scavenging' Scavenging
+  | Scrapper3' Scrapper3
   | ScrollOfProphecies' ScrollOfProphecies
   | Scrying' Scrying
   | Shotgun4' Shotgun4
@@ -359,6 +360,7 @@ allAssets = mapFromList $ map
   , RitualCandles' <$> ritualCandles
   , Rolands38Special' <$> rolands38Special
   , Scavenging' <$> scavenging
+  , Scrapper3' <$> scrapper3
   , ScrollOfProphecies' <$> scrollOfProphecies
   , Scrying' <$> scrying
   , Shotgun4' <$> shotgun4

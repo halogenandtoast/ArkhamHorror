@@ -1452,7 +1452,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   AllDrawCardAndResource | not (a ^. defeatedL || a ^. resignedL) -> do
     unlessM (hasModifier a CannotDrawCards)
       $ push (DrawCards investigatorId 1 False)
-    pure $ a & resourcesL +~ 1
+    mayChooseNotToTakeResources <-
+      elem MayChooseNotToTakeUpkeepResources
+      . map modifierType
+      <$> getModifiersFor (toSource a) (InvestigatorTarget investigatorId) ()
+    if mayChooseNotToTakeResources
+      then a <$ push
+        (chooseOne
+          investigatorId
+          [ Label "Do not take resource(s)" []
+          , Label "Take resource(s)" [TakeResources investigatorId 1 False]
+          ]
+        )
+      else pure $ a & resourcesL +~ 1
   LoadDeck iid deck | iid == investigatorId -> do
     shuffled <- shuffleM $ flip map (unDeck deck) $ \card ->
       if cdWeakness (pcDef card) then card { pcBearer = Just iid } else card

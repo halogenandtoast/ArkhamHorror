@@ -61,6 +61,7 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   , cdEncounterSetQuantity = snd <$> mEncounterSet
   , cdUnique = False
   , cdDoubleSided = False
+  , cdLimits = []
   }
 
 allPlayerAssetCards :: HashMap CardCode CardDef
@@ -84,9 +85,11 @@ allPlayerAssetCards = mapFromList $ map
   , burglary
   , catBurglar1
   , celaenoFragments
+  , charisma3
   , clarityOfMind
   , daisysToteBag
   , daisysToteBagAdvanced
+  , darkHorse
   , digDeep
   , digDeep2
   , discOfItzamna2
@@ -153,6 +156,7 @@ allPlayerAssetCards = mapFromList $ map
   , ritualCandles
   , rolands38Special
   , scavenging
+  , scrapper3
   , scrollOfProphecies
   , scrying
   , shotgun4
@@ -811,6 +815,12 @@ keenEye3 = permanent $ (asset "02185" "Keen Eye" 0 Guardian)
   , cdLevel = 3
   }
 
+scrapper3 :: CardDef
+scrapper3 = permanent $ (asset "02193" "Scrapper" 0 Survivor)
+  { cdCardTraits = setFromList [Talent]
+  , cdLevel = 3
+  }
+
 keyToTheChamber :: CardDef
 keyToTheChamber = (storyAsset "02215" "Key to the Chamber" 0 BloodOnTheAltar)
   { cdCardTraits = setFromList [Item, Key]
@@ -856,6 +866,13 @@ springfieldM19034 = (asset "02226" "Springfield M1903" 4 Guardian)
   { cdCardTraits = setFromList [Item, Weapon, Firearm]
   , cdLevel = 4
   , cdSkills = [SkillCombat, SkillAgility]
+  }
+
+darkHorse :: CardDef
+darkHorse = (asset "02234" "Dark Horse" 3 Survivor)
+  { cdCardTraits = singleton Condition
+  , cdSkills = [SkillWillpower]
+  , cdLimits = [LimitPerInvestigator 1]
   }
 
 esotericFormula :: CardDef

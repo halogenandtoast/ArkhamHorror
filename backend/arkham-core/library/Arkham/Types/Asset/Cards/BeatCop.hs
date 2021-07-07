@@ -12,7 +12,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -33,9 +33,11 @@ ability :: AssetAttrs -> Ability
 ability a =
   mkAbility (toSource a) 1 $ ActionAbility Nothing (DiscardCost $ toTarget a)
 
-instance HasActions env BeatCop where
-  getActions iid _ (BeatCop a) | ownedBy a iid =
-    pure [UseAbility iid (ability a)]
+instance (HasSet EnemyId env LocationId, HasId LocationId env InvestigatorId) => HasActions env BeatCop where
+  getActions iid _ (BeatCop a) | ownedBy a iid = do
+    locationId <- getId @LocationId iid
+    enemyIds <- getSetList @EnemyId locationId
+    pure [ UseAbility iid (ability a) | notNull enemyIds ]
   getActions _ _ _ = pure []
 
 -- | See: PlayerCardWithBehavior

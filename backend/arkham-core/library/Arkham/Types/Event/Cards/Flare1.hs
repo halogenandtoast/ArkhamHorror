@@ -11,6 +11,7 @@ import Arkham.Types.Cost
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 import Arkham.Types.Message
+import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Window
 
@@ -28,13 +29,15 @@ instance HasActions env ActionType => HasActions env Flare1 where
     canFight <- hasFightActions i NonFast
     pure
       $ [ UseAbility i $ mkAbility
-            attrs
+            (PlayerCardSource $ toCardId attrs)
             1
             (ActionAbility (Just Action.Fight) (ActionCost 1))
         | canFight
         ]
-      <> [ UseAbility i
-             $ mkAbility attrs 2 (ActionAbility Nothing (ActionCost 1))
+      <> [ UseAbility i $ mkAbility
+             (PlayerCardSource $ toCardId attrs)
+             2
+             (ActionAbility Nothing (ActionCost 1))
          ]
   getActions i window (Flare1 attrs) = getActions i window attrs
 

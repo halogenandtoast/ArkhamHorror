@@ -4,7 +4,6 @@ module Arkham.PlayerCard
   , genPlayerCard
   , lookupPlayerCardName
   , allPlayerCards
-  , basePlayerCard
   ) where
 
 import Arkham.Prelude
@@ -16,11 +15,8 @@ import Arkham.Skill.Cards (allPlayerSkillCards)
 import Arkham.Treachery.Cards (allPlayerTreacheryCards)
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
-import Arkham.Types.Card.CardType
-import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Name
 
 genPlayerCard :: MonadRandom m => CardDef -> m PlayerCard
@@ -45,30 +41,3 @@ allPlayerCards =
     <> allPlayerAssetCards
     <> allPlayerEventCards
     <> allPlayerSkillCards
-
-basePlayerCard :: CardCode -> Name -> Int -> CardType -> ClassSymbol -> CardDef
-basePlayerCard cardCode name cost cardType classSymbol = CardDef
-  { cdCardCode = cardCode
-  , cdName = name
-  , cdCost = Just (StaticCost cost)
-  , cdLevel = 0
-  , cdCardType = cardType
-  , cdWeakness = False
-  , cdClassSymbol = Just classSymbol
-  , cdSkills = mempty
-  , cdCardTraits = mempty
-  , cdKeywords = mempty
-  , cdFast = False
-  , cdWindows = mempty
-  , cdAction = Nothing
-  , cdRevelation = False
-  , cdVictoryPoints = Nothing
-  , cdCommitRestrictions = mempty
-  , cdAttackOfOpportunityModifiers = mempty
-  , cdPermanent = False
-  , cdEncounterSet = Nothing
-  , cdEncounterSetQuantity = Nothing
-  , cdUnique = False
-  , cdDoubleSided = False
-  , cdLimits = []
-  }

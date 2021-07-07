@@ -27,7 +27,7 @@ scrapper3 :: AssetCard Scrapper3
 scrapper3 = asset Scrapper3 Cards.scrapper3
 
 instance HasActions env Scrapper3 where
-  getActions iid FastPlayerWindow (Scrapper3 a) | ownedBy a iid = do
+  getActions iid (WhenSkillTest _) (Scrapper3 a) | ownedBy a iid = do
     pure
       [ UseAbility
           iid

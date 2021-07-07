@@ -11,6 +11,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Cards
 import Arkham.Types.Event.Runner
 import Arkham.Types.Id
+import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.SkillTest
@@ -46,6 +47,7 @@ data Event
   | Evidence' Evidence
   | ExtraAmmunition1' ExtraAmmunition1
   | FirstWatch' FirstWatch
+  | Flare1' Flare1
   | HotStreak2' HotStreak2
   | HotStreak4' HotStreak4
   | IveGotAPlan' IveGotAPlan
@@ -82,6 +84,7 @@ instance HasCardDef Event where
 deriving anyclass instance
   ( HasCount ActionTakenCount env InvestigatorId
   , GetCardDef env EnemyId
+  , HasActions env ActionType
   , HasSet Trait env EnemyId
   , HasSet AssetId env (InvestigatorId, UseType)
   , HasId LocationId env InvestigatorId
@@ -147,6 +150,7 @@ allEvents = mapFromList $ map
   , Evidence' <$> evidence
   , ExtraAmmunition1' <$> extraAmmunition1
   , FirstWatch' <$> firstWatch
+  , Flare1' <$> flare1
   , HotStreak2' <$> hotStreak2
   , HotStreak4' <$> hotStreak4
   , IveGotAPlan' <$> iveGotAPlan

@@ -53,6 +53,7 @@ data Asset
   | ClarityOfMind' ClarityOfMind
   | DaisysToteBag' DaisysToteBag
   | DaisysToteBagAdvanced' DaisysToteBagAdvanced
+  | DarkHorse' DarkHorse
   | DigDeep' DigDeep
   | DigDeep2' DigDeep2
   | DiscOfItzamna2' DiscOfItzamna2
@@ -288,6 +289,7 @@ allAssets = mapFromList $ map
   , ClarityOfMind' <$> clarityOfMind
   , DaisysToteBag' <$> daisysToteBag
   , DaisysToteBagAdvanced' <$> daisysToteBagAdvanced
+  , DarkHorse' <$> darkHorse
   , DigDeep' <$> digDeep
   , DigDeep2' <$> digDeep2
   , DiscOfItzamna2' <$> discOfItzamna2

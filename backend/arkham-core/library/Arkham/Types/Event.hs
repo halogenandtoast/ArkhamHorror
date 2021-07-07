@@ -15,6 +15,7 @@ import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.SkillTest
+import Arkham.Types.Source
 import Arkham.Types.Trait
 
 createEvent :: IsCard a => a -> InvestigatorId -> Event
@@ -94,7 +95,11 @@ deriving anyclass instance
   )
   => HasActions env Event
 deriving anyclass instance HasCount ClueCount env InvestigatorId => HasModifiersFor env Event
-deriving anyclass instance EventRunner env => RunMessage env Event
+deriving anyclass instance
+  ( EventRunner env
+  , HasSet FightableEnemyId env (InvestigatorId, Source)
+  )
+  => RunMessage env Event
 
 instance Entity Event where
   type EntityId Event = EventId

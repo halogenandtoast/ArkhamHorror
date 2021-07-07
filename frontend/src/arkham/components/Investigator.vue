@@ -67,7 +67,7 @@ export default defineComponent({
       return choices
         .value
         .findIndex((c) => c.tag === MessageType.SEARCH_TOP_OF_DECK
-          && c.contents[1].contents === id.value);
+          && c.contents[2].contents === id.value);
     })
 
     const runSkillTestAction = computed(() => {

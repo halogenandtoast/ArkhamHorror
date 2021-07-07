@@ -39,7 +39,13 @@ instance AssetRunner env => RunMessage env OldBookOfLore where
       a <$ push
         (chooseOne
           iid
-          [ SearchTopOfDeck iid' (InvestigatorTarget iid') 3 [] ShuffleBackIn
+          [ SearchTopOfDeck
+              iid'
+              source
+              (InvestigatorTarget iid')
+              3
+              []
+              (ShuffleBackIn $ DrawFound iid')
           | iid' <- investigatorIds
           ]
         )

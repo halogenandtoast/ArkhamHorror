@@ -42,8 +42,14 @@ instance AssetRunner env => RunMessage env Scrying where
       targets <- map InvestigatorTarget <$> getSetList locationId
       a <$ push
         (chooseOne iid
-        $ SearchTopOfDeck iid EncounterDeckTarget 3 [] PutBackInAnyOrder
-        : [ SearchTopOfDeck iid target 3 [] PutBackInAnyOrder
+        $ SearchTopOfDeck
+            iid
+            source
+            EncounterDeckTarget
+            3
+            []
+            PutBackInAnyOrder
+        : [ SearchTopOfDeck iid source target 3 [] PutBackInAnyOrder
           | target <- targets
           ]
         )

@@ -37,6 +37,13 @@ instance (AssetRunner env) => RunMessage env ArcaneInitiate where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (chooseOne
         iid
-        [SearchTopOfDeck iid (InvestigatorTarget iid) 3 [Spell] ShuffleBackIn]
+        [ SearchTopOfDeck
+            iid
+            source
+            (InvestigatorTarget iid)
+            3
+            [Spell]
+            (ShuffleBackIn $ DrawFound iid)
+        ]
       )
     _ -> ArcaneInitiate <$> runMessage msg attrs

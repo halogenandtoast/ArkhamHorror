@@ -50,9 +50,10 @@ instance (LocationRunner env) => RunMessage env MiskatonicUniversity where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (SearchTopOfDeck
         iid
+        source
         (InvestigatorTarget iid)
         6
         [Tome, Spell]
-        ShuffleBackIn
+        (ShuffleBackIn $ DrawFound iid)
       )
     _ -> MiskatonicUniversity <$> runMessage msg attrs

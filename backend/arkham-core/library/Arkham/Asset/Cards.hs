@@ -153,6 +153,7 @@ allPlayerAssetCards = mapFromList $ map
   , professorWarrenRice
   , rabbitsFoot
   , rabbitsFoot3
+  , relicHunter3
   , researchLibrarian
   , riteOfSeeking
   , ritualCandles
@@ -801,6 +802,12 @@ switchblade2 = (asset "02152" "Switchblade" 1 Rogue)
   , cdFast = True
   , cdWindows = setFromList [DuringTurn You]
   , cdLevel = 2
+  }
+
+relicHunter3 :: CardDef
+relicHunter3 = permanent $ (asset "02157" "Relic Hunter" 0 Neutral)
+  { cdCardTraits = singleton Talent
+  , cdLevel = 3
   }
 
 charisma3 :: CardDef

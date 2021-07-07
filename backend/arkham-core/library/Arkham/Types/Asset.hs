@@ -123,6 +123,7 @@ data Asset
   | ProfessorWarrenRice' ProfessorWarrenRice
   | RabbitsFoot' RabbitsFoot
   | RabbitsFoot3' RabbitsFoot3
+  | RelicHunter3' RelicHunter3
   | ResearchLibrarian' ResearchLibrarian
   | RiteOfSeeking' RiteOfSeeking
   | RitualCandles' RitualCandles
@@ -362,6 +363,7 @@ allAssets = mapFromList $ map
   , ProfessorWarrenRice' <$> professorWarrenRice
   , RabbitsFoot' <$> rabbitsFoot
   , RabbitsFoot3' <$> rabbitsFoot3
+  , RelicHunter3' <$> relicHunter3
   , ResearchLibrarian' <$> researchLibrarian
   , RiteOfSeeking' <$> riteOfSeeking
   , RitualCandles' <$> ritualCandles

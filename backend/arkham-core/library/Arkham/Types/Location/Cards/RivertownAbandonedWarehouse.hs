@@ -51,7 +51,7 @@ ability attrs = base { abilityLimit = GroupLimit PerGame 1 }
 instance ActionRunner env => HasActions env RivertownAbandonedWarehouse where
   getActions iid NonFast (RivertownAbandonedWarehouse attrs)
     | locationRevealed attrs = withBaseActions iid NonFast attrs $ do
-      pure [ UseAbility iid (ability attrs) | iid `on` attrs ]
+      pure [locationAbility iid (ability attrs)]
   getActions iid window (RivertownAbandonedWarehouse attrs) =
     getActions iid window attrs
 

@@ -8,6 +8,7 @@ module Arkham.Types.Location.Attrs
 import Arkham.Prelude
 
 import Arkham.Json
+import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
@@ -312,10 +313,29 @@ withResignAction
   -> location
   -> m [Message]
 withResignAction iid NonFast x | locationRevealed (toAttrs x) =
-  withBaseActions iid NonFast attrs
-    $ pure [ resignAction iid attrs | iid `on` attrs ]
+  withBaseActions iid NonFast attrs $ pure [locationResignAction iid attrs]
   where attrs = toAttrs x
 withResignAction iid window x = getActions iid window (toAttrs x)
+
+locationResignAction :: InvestigatorId -> LocationAttrs -> Message
+locationResignAction iid attrs =
+  toLocationAbility attrs (resignAction iid attrs)
+
+drawCardUnderneathLocationAction :: InvestigatorId -> LocationAttrs -> Message
+drawCardUnderneathLocationAction iid attrs =
+  toLocationAbility attrs (drawCardUnderneathAction iid attrs)
+
+toLocationAbility :: LocationAttrs -> Message -> Message
+toLocationAbility attrs = \case
+  UseAbility iid ability -> UseAbility
+    iid
+    (ability { abilityRestrictions = Just (OnLocation $ toId attrs) })
+  other -> other
+
+locationAbility :: InvestigatorId -> Ability -> Message
+locationAbility iid ability = UseAbility iid $ case abilitySource ability of
+  LocationSource lid -> ability { abilityRestrictions = Just (OnLocation lid) }
+  _ -> ability
 
 withDrawCardUnderneathAction
   :: ( Entity location

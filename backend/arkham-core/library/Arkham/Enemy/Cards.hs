@@ -28,6 +28,7 @@ baseEnemy cardCode name mEncounterSet isWeakness = CardDef
   , cdAction = Nothing
   , cdRevelation = False
   , cdVictoryPoints = Nothing
+  , cdPlayRestrictions = mempty
   , cdCommitRestrictions = mempty
   , cdAttackOfOpportunityModifiers = mempty
   , cdPermanent = False

@@ -46,7 +46,7 @@ instance ActionRunner env => HasActions env FacultyOfficesTheNightIsStillYoung w
   getActions iid FastPlayerWindow (FacultyOfficesTheNightIsStillYoung attrs@LocationAttrs {..})
     | locationRevealed
     = withBaseActions iid FastPlayerWindow attrs $ pure
-      [ UseAbility
+      [ locationAbility
           iid
           (mkAbility
             (toSource attrs)

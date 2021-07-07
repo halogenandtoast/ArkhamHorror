@@ -51,9 +51,9 @@ ability attrs =
     & (abilityLimitL .~ PlayerLimit PerRound 1)
 
 instance ActionRunner env => HasActions env AscendingPath where
-  getActions iid NonFast (AscendingPath attrs) | iid `on` attrs =
+  getActions iid NonFast (AscendingPath attrs) =
     withBaseActions iid NonFast attrs
-      $ pure [ UseAbility iid (ability attrs) | locationRevealed attrs ]
+      $ pure [ locationAbility iid (ability attrs) | locationRevealed attrs ]
   getActions iid window (AscendingPath attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env AscendingPath where

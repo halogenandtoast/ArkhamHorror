@@ -11,6 +11,7 @@ import Arkham.Types.Ability.Type as X
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes.Entity.Source
 import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
 import Arkham.Types.Modifier
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -21,6 +22,7 @@ data Ability = Ability
   , abilityType :: AbilityType
   , abilityLimit :: AbilityLimit
   , abilityMetadata :: Maybe AbilityMetadata
+  , abilityRestrictions :: Maybe AbilityRestriction
   }
   deriving stock (Show, Generic)
 
@@ -47,6 +49,10 @@ data AbilityMetadata = IntMetadata Int | TargetMetadata Target | SourceMetadata 
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+data AbilityRestriction = OnLocation LocationId | OrAbilityRestrictions [AbilityRestriction]
+  deriving stock (Eq, Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 mkAbility :: SourceEntity a => a -> Int -> AbilityType -> Ability
 mkAbility entity idx type' = Ability
   { abilitySource = toSource entity
@@ -56,6 +62,7 @@ mkAbility entity idx type' = Ability
     then PlayerLimit PerWindow 1
     else NoLimit
   , abilityMetadata = Nothing
+  , abilityRestrictions = Nothing
   }
 
 applyAbilityModifiers :: Ability -> [Modifier] -> Ability

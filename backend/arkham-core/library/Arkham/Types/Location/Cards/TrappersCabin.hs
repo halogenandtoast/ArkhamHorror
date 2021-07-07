@@ -44,14 +44,14 @@ instance ActionRunner env => HasActions env TrappersCabin where
       assetNotTaken <- isNothing
         <$> getId @(Maybe StoryAssetId) (CardCode "81020")
       pure
-        [ UseAbility
+        [ locationAbility
             iid
             (mkAbility
               (toSource attrs)
               1
               (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 5])
             )
-        | iid `member` locationInvestigators && assetNotTaken
+        | assetNotTaken
         ]
   getActions i window (TrappersCabin attrs) = getActions i window attrs
 

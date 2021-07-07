@@ -39,10 +39,10 @@ forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
 
 instance ActionRunner env => HasActions env SlaughteredWoods where
-  getActions iid (AfterRevealLocation You) (SlaughteredWoods attrs)
-    | iid `on` attrs = do
-      actionRemainingCount <- unActionRemainingCount <$> getCount iid
-      pure [ UseAbility iid (forcedAbility attrs) | actionRemainingCount == 0 ]
+  getActions iid (AfterRevealLocation You) (SlaughteredWoods attrs) = do
+    actionRemainingCount <- unActionRemainingCount <$> getCount iid
+    pure
+      [ locationAbility iid (forcedAbility attrs) | actionRemainingCount == 0 ]
   getActions iid window (SlaughteredWoods attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env SlaughteredWoods where

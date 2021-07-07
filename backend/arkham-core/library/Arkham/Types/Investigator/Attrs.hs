@@ -23,6 +23,7 @@ import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
+import Arkham.Types.PlayRestriction
 import Arkham.Types.Query
 import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
@@ -33,6 +34,7 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window
+import Control.Monad.Extra (allM)
 import qualified Data.HashSet as HashSet
 import Data.UUID (nil)
 
@@ -500,7 +502,12 @@ getCanAfford a@InvestigatorAttrs {..} actionType = do
   pure $ actionCost <= investigatorRemainingActions
 
 getFastIsPlayable
-  :: (MonadReader env m, HasModifiersFor env ())
+  :: ( MonadReader env m
+     , HasModifiersFor env ()
+     , HasSet InvestigatorId env LocationId
+     , HasActions env ActionType
+     , MonadIO m
+     )
   => InvestigatorAttrs
   -> [Window]
   -> Card
@@ -551,7 +558,12 @@ getModifiedCardCost attrs (EncounterCard MkEncounterCard {..}) = do
   applyModifier _ n = n
 
 getIsPlayable
-  :: (MonadReader env m, HasModifiersFor env ())
+  :: ( MonadReader env m
+     , HasModifiersFor env ()
+     , HasSet InvestigatorId env LocationId
+     , HasActions env ActionType
+     , MonadIO m
+     )
   => InvestigatorAttrs
   -> [Window]
   -> Card
@@ -562,6 +574,7 @@ getIsPlayable attrs@InvestigatorAttrs {..} windows c@(PlayerCard MkPlayerCard {.
     modifiers <-
       map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
     modifiedCardCost <- getModifiedCardCost attrs c
+    passesRestrictions <- allM passesRestriction (cdPlayRestrictions pcDef)
     pure
       $ (cdCardType pcDef /= SkillType)
       && (modifiedCardCost <= investigatorResources)
@@ -570,6 +583,7 @@ getIsPlayable attrs@InvestigatorAttrs {..} windows c@(PlayerCard MkPlayerCard {.
       && (cdAction pcDef /= Just Action.Evade || not
            (null investigatorEngagedEnemies)
          )
+      && passesRestrictions
  where
   prevents (CannotPlay typePairs) = any
     (\(cType, traits) ->
@@ -579,6 +593,23 @@ getIsPlayable attrs@InvestigatorAttrs {..} windows c@(PlayerCard MkPlayerCard {.
     )
     typePairs
   prevents _ = False
+  passesRestriction AnotherInvestigatorInSameLocation =
+    notNull <$> getSet @InvestigatorId investigatorLocation
+  passesRestriction ScenarioCardHasResignAbility = do
+    actions' <- concat . concat <$> sequence
+      [ traverse
+          (getActions investigatorId window)
+          ([minBound .. maxBound] :: [ActionType])
+      | window <- windows
+      ]
+    pure $ flip
+      any
+      actions'
+      \case
+        UseAbility _ ability -> case abilityType ability of
+          ActionAbility (Just Action.Resign) _ -> True
+          _ -> False
+        _ -> False
 
 drawOpeningHand
   :: InvestigatorAttrs -> Int -> ([PlayerCard], [Card], [PlayerCard])
@@ -598,7 +629,12 @@ cardInWindows windows c _ = case c of
   _ -> False
 
 getPlayableCards
-  :: (MonadReader env m, HasModifiersFor env ())
+  :: ( MonadReader env m
+     , HasModifiersFor env ()
+     , HasSet InvestigatorId env LocationId
+     , HasActions env ActionType
+     , MonadIO m
+     )
   => InvestigatorAttrs
   -> [Window]
   -> m [Card]
@@ -608,7 +644,12 @@ getPlayableCards a@InvestigatorAttrs {..} windows = do
   pure $ playableHandCards <> playableDiscards
 
 getPlayableDiscards
-  :: (MonadReader env m, HasModifiersFor env ())
+  :: ( MonadReader env m
+     , HasModifiersFor env ()
+     , HasSet InvestigatorId env LocationId
+     , HasActions env ActionType
+     , MonadIO m
+     )
   => InvestigatorAttrs
   -> [Window]
   -> m [Card]

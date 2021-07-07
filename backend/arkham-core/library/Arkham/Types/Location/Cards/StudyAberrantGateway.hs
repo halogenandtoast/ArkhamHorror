@@ -35,12 +35,11 @@ instance HasModifiersFor env StudyAberrantGateway where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env StudyAberrantGateway where
-  getActions iid NonFast (StudyAberrantGateway attrs)
-    | iid `elem` locationInvestigators attrs
-    = withBaseActions iid NonFast attrs $ do
+  getActions iid NonFast (StudyAberrantGateway attrs) =
+    withBaseActions iid NonFast attrs $ do
       leadInvestigatorId <- getLeadInvestigatorId
       pure
-        [ UseAbility
+        [ locationAbility
             iid
             (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 2)
             )

@@ -35,7 +35,7 @@ instance ActionRunner env => HasActions env StudentUnion where
       let
         ability =
           mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 2)
-      pure [ UseAbility iid ability | iid `elem` locationInvestigators ]
+      pure [locationAbility iid ability]
   getActions iid window (StudentUnion attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env StudentUnion where

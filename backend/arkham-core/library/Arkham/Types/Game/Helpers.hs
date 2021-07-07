@@ -71,6 +71,27 @@ withBaseActions
   -> m [Message]
 withBaseActions iid window a f = (<>) <$> getActions iid window a <*> f
 
+getCanPerformAbility
+  :: (MonadReader env m, HasId LocationId env InvestigatorId)
+  => InvestigatorId
+  -> Ability
+  -> m Bool
+getCanPerformAbility iid Ability {..} = case abilityRestrictions of
+  Nothing -> pure True
+  Just restriction -> getCanPerformAbilityRestriction iid restriction
+
+getCanPerformAbilityRestriction
+  :: (MonadReader env m, HasId LocationId env InvestigatorId)
+  => InvestigatorId
+  -> AbilityRestriction
+  -> m Bool
+getCanPerformAbilityRestriction iid = \case
+  OnLocation lid -> do
+    lid' <- getId @LocationId iid
+    pure $ lid == lid'
+  OrAbilityRestrictions restrictions ->
+    or <$> traverse (getCanPerformAbilityRestriction iid) restrictions
+
 getCanAffordAbility
   :: ( MonadReader env m
      , HasModifiersFor env ()
@@ -226,6 +247,7 @@ instance
   , HasCostPayment env
   , HasSet Trait env Source
   , HasList UsedAbility env ()
+  , HasId LocationId env InvestigatorId
   )
   => HasActions env () where
   getActions iid window _ = do
@@ -259,7 +281,14 @@ instance
             MoveAction _ lid cost _ ->
               getCanAffordCost iid (LocationSource lid) (Just Action.Move) cost
             _ -> pure True
-        filterM canAffordAction actions''
+          canPerformAction = \case
+            UseAbility _ ability -> getCanPerformAbility iid ability
+            _ -> pure True
+        filterM
+          (\action ->
+            liftM2 (&&) (canPerformAction action) (canAffordAction action)
+          )
+          actions''
       else pure forcedActions'
 
 enemyAtInvestigatorLocation

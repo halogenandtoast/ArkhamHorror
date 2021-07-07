@@ -43,10 +43,7 @@ ability attrs =
 instance ActionRunner env => HasActions env SouthsideMasBoardingHouse where
   getActions iid NonFast (SouthsideMasBoardingHouse attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs
-    $ pure
-        [ UseAbility iid (ability attrs)
-        | iid `member` locationInvestigators
-        ]
+    $ pure [locationAbility iid (ability attrs)]
   getActions iid window (SouthsideMasBoardingHouse attrs) =
     getActions iid window attrs
 

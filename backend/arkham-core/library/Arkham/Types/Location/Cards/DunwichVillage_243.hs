@@ -14,7 +14,6 @@ import Arkham.Types.EnemyId
 import Arkham.Types.Exception
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
@@ -42,12 +41,12 @@ ability attrs =
   mkAbility (toSource attrs) 1 (ActionAbility Nothing (ActionCost 1))
 
 instance ActionRunner env => HasActions env DunwichVillage_243 where
-  getActions iid NonFast (DunwichVillage_243 attrs) =
-    withBaseActions iid NonFast attrs $ do
-      broodOfYogSothoth <- getSet @EnemyId (CardCode "02255")
-      pure
-        $ [ resignAction iid attrs | iid `on` attrs ]
-        <> [ UseAbility iid (ability attrs) | notNull broodOfYogSothoth ]
+  getActions iid NonFast (DunwichVillage_243 attrs) = do
+    baseActions <- withResignAction iid NonFast attrs
+    broodOfYogSothoth <- getSet @EnemyId (CardCode "02255")
+    pure
+      $ baseActions
+      <> [ locationAbility iid (ability attrs) | notNull broodOfYogSothoth ]
   getActions iid window (DunwichVillage_243 attrs) =
     getActions iid window attrs
 

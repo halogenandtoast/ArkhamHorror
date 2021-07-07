@@ -34,9 +34,8 @@ instance HasModifiersFor env DimensionalDoorway where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env DimensionalDoorway where
-  getActions iid (AfterEndTurn You) (DimensionalDoorway attrs)
-    | iid `on` attrs = pure
-      [UseAbility iid (mkAbility (toSource attrs) 1 ForcedAbility)]
+  getActions iid (AfterEndTurn You) (DimensionalDoorway attrs) =
+    pure [locationAbility iid (mkAbility (toSource attrs) 1 ForcedAbility)]
   getActions iid window (DimensionalDoorway attrs) =
     getActions iid window attrs
 

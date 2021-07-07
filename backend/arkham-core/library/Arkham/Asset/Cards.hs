@@ -54,6 +54,7 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   , cdAction = Nothing
   , cdRevelation = False
   , cdVictoryPoints = Nothing
+  , cdPlayRestrictions = mempty
   , cdCommitRestrictions = mempty
   , cdAttackOfOpportunityModifiers = mempty
   , cdPermanent = False
@@ -74,6 +75,7 @@ allPlayerAssetCards = mapFromList $ map
   , arcaneInitiate
   , arcaneStudies
   , arcaneStudies2
+  , artStudent
   , bandolier
   , baseballBat
   , beatCop
@@ -168,6 +170,7 @@ allPlayerAssetCards = mapFromList $ map
   , strangeSolution
   , strayCat
   , switchblade
+  , switchblade2
   , theNecronomicon
   , theNecronomiconAdvanced
   , theNecronomiconOlausWormiusTranslation
@@ -784,6 +787,21 @@ adamLynch =
     { cdCardTraits = setFromList [Ally, Miskatonic]
     , cdUnique = True
     }
+
+artStudent :: CardDef
+artStudent = (asset "02149" "Art Student" 2 Seeker)
+  { cdCardTraits = setFromList [Ally, Miskatonic]
+  , cdSkills = [SkillIntellect]
+  }
+
+switchblade2 :: CardDef
+switchblade2 = (asset "02152" "Switchblade" 1 Rogue)
+  { cdSkills = [SkillCombat, SkillAgility]
+  , cdCardTraits = setFromList [Item, Weapon, Melee, Illicit]
+  , cdFast = True
+  , cdWindows = setFromList [DuringTurn You]
+  , cdLevel = 2
+  }
 
 charisma3 :: CardDef
 charisma3 = permanent $ (asset "02158" "Charisma" 0 Neutral)

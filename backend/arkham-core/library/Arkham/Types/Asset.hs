@@ -37,6 +37,7 @@ data Asset
   | ArcaneInitiate' ArcaneInitiate
   | ArcaneStudies' ArcaneStudies
   | ArcaneStudies2' ArcaneStudies2
+  | ArtStudent' ArtStudent
   | Bandolier' Bandolier
   | BaseballBat' BaseballBat
   | BearTrap' BearTrap
@@ -275,6 +276,7 @@ allAssets = mapFromList $ map
   , ArcaneInitiate' <$> arcaneInitiate
   , ArcaneStudies' <$> arcaneStudies
   , ArcaneStudies2' <$> arcaneStudies2
+  , ArtStudent' <$> artStudent
   , Bandolier' <$> bandolier
   , BaseballBat' <$> baseballBat
   , BearTrap' <$> bearTrap

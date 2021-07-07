@@ -47,10 +47,7 @@ instance ActionRunner env => HasActions env CloverClubCardroom where
   getActions iid NonFast (CloverClubCardroom attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ do
       step <- unActStep <$> getStep
-      pure
-        [ UseAbility iid (ability attrs)
-        | iid `member` locationInvestigators && step == 1
-        ]
+      pure [ locationAbility iid (ability attrs) | step == 1 ]
   getActions iid window (CloverClubCardroom attrs) =
     getActions iid window attrs
 

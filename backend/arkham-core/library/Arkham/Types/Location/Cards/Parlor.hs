@@ -34,16 +34,17 @@ instance HasModifiersFor env Parlor where
 
 instance ActionRunner env => HasActions env Parlor where
   getActions iid NonFast (Parlor attrs@LocationAttrs {..}) | locationRevealed =
-    withBaseActions iid NonFast attrs $ do
+    do
+      actions <- withResignAction iid NonFast attrs
       maid <- fmap unStoryAssetId <$> getId (CardCode "01117")
       case maid of
-        Nothing -> pure []
+        Nothing -> pure actions
         Just aid -> do
           miid <- fmap unOwnerId <$> getId aid
           assetLocationId <- getId aid
           investigatorLocationId <- getId @LocationId iid
           pure
-            $ [ resignAction iid attrs | iid `member` locationInvestigators ]
+            $ actions
             <> [ UseAbility
                    iid
                    (mkAbility

@@ -11,11 +11,9 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
@@ -48,11 +46,9 @@ ability attrs =
     & (abilityLimitL .~ PlayerLimit PerRound 1)
 
 instance ActionRunner env => HasActions env BaseOfTheHill where
-  getActions iid NonFast (BaseOfTheHill attrs) | iid `on` attrs =
-    withBaseActions iid NonFast attrs
-      $ pure
-      $ [ UseAbility iid (ability attrs) | locationRevealed attrs ]
-      ++ [resignAction iid attrs]
+  getActions iid NonFast (BaseOfTheHill attrs) | locationRevealed attrs = do
+    actions <- withResignAction iid NonFast attrs
+    pure $ locationAbility iid (ability attrs) : actions
   getActions iid window (BaseOfTheHill attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env BaseOfTheHill where

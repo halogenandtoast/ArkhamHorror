@@ -86,10 +86,6 @@ instance HasCost Card where
   getCost (PlayerCard card) = getCost card
   getCost (EncounterCard _) = 0
 
-isChoiceEvent :: Card -> Bool
-isChoiceEvent (PlayerCard card) = isJust $ cdChoiceEvent (pcDef card)
-isChoiceEvent (EncounterCard _) = False
-
 isDynamic :: Card -> Bool
 isDynamic (PlayerCard card) = case cdCost (pcDef card) of
   Just DynamicCost -> True

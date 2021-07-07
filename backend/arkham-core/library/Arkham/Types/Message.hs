@@ -84,7 +84,11 @@ data EncounterCardSource = FromDiscard | FromEncounterDeck | FromTheVoid
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-data LeftoverCardStrategy = ShuffleBackIn | PutBackInAnyOrder
+data SearchedCardsStrategy = ShuffleBackIn FoundCardStrategy | PutBackInAnyOrder
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+data FoundCardStrategy = DrawFound InvestigatorId | NotifyTargetOfFound Target
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -238,7 +242,7 @@ data Message
   | EndPhase
   | EndRound
   | EndRoundWindow
-  | EndSearch InvestigatorId
+  | EndSearch InvestigatorId Source
   | EndTurn InvestigatorId
   | EndUpkeep
   | EnemiesAttack
@@ -295,7 +299,9 @@ data Message
   | FinishedUpgradingDecks
   | InitiatePlayCard InvestigatorId CardId (Maybe Target) Bool
   | InitiatePlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
-  | InitiatePlayChooseOneCard InvestigatorId CardId (Maybe Target) Bool -- Int is unused for Bool True
+  | InitiatePlayChoiceEvent InvestigatorId CardId (Maybe Target) Bool
+  | InvestigatorPlayChoiceEvent InvestigatorId EventId (Maybe Target)
+  | ChoiceEvent InvestigatorId EventId (Maybe Target) Int
   | Investigate InvestigatorId LocationId Source SkillType Bool
   | InvestigatorAssignDamage InvestigatorId Source DamageStrategy Int Int -- ^ uses the internal method and then checks defeat
   | InvestigatorCommittedCard InvestigatorId CardId
@@ -434,7 +440,9 @@ data Message
   | SearchCollectionForRandom InvestigatorId Source CardMatcher
   | SearchDeckForTraits InvestigatorId Target [Trait]
   | SearchDiscard InvestigatorId Target [Trait]
-  | SearchTopOfDeck InvestigatorId Target Int [Trait] LeftoverCardStrategy
+  | SearchTopOfDeck InvestigatorId Source Target Int [Trait] SearchedCardsStrategy
+  | SearchTopOfDeckFound InvestigatorId Target Card
+  | SearchTopOfDeckNoneFound InvestigatorId Target
   | SetActions InvestigatorId Source Int
   | SetEncounterDeck (Deck EncounterCard)
   | SetLocationLabel LocationId Text

@@ -1975,7 +1975,7 @@ runGameMessage msg g = case msg of
   LookAtTopOfDeck _ EncounterDeckTarget n -> do
     let cards = map EncounterCard . take n $ unDeck (gameEncounterDeck g)
     g <$ pushAll [FocusCards cards, Label "Continue" [UnfocusCards]]
-  SearchTopOfDeck iid EncounterDeckTarget n _traits strategy -> do
+  SearchTopOfDeck iid _ EncounterDeckTarget n _traits strategy -> do
     let (cards, encounterDeck) = splitAt n $ unDeck (gameEncounterDeck g)
     case strategy of
       PutBackInAnyOrder -> do
@@ -1988,7 +1988,7 @@ runGameMessage msg g = case msg of
             ]
           ]
         pure $ g & encounterDeckL .~ Deck encounterDeck
-      ShuffleBackIn -> error "this is not handled yet"
+      ShuffleBackIn _ -> error "this is not handled yet"
   ShuffleAllFocusedIntoDeck _ (InvestigatorTarget iid') -> do
     let cards = mapMaybe toPlayerCard (g ^. focusedCardsL)
     push (ShuffleCardsIntoDeck iid' cards)
@@ -2107,7 +2107,7 @@ runGameMessage msg g = case msg of
             abilityLimitType abilityLimit /= Just PerTestOrAbility
           )
         )
-  EndSearch _ ->
+  EndSearch _ _ ->
     pure
       $ g
       & (usedAbilitiesL %~ filter

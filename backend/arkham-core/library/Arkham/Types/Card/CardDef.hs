@@ -44,7 +44,6 @@ data CardDef = CardDef
   , cdFast :: Bool
   , cdWindows :: HashSet Window
   , cdAction :: Maybe Action
-  , cdChoiceEvent :: Maybe EventChoice
   , cdRevelation :: Bool
   , cdVictoryPoints :: Maybe Int
   , cdCommitRestrictions :: [CommitRestriction]
@@ -129,7 +128,6 @@ testCardDef cardType cardCode = CardDef
   , cdKeywords = mempty
   , cdFast = False
   , cdWindows = mempty
-  , cdChoiceEvent = Nothing
   , cdAction = Nothing
   , cdRevelation = False
   , cdVictoryPoints = Nothing

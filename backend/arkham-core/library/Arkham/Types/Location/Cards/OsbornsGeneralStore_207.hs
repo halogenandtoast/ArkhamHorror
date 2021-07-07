@@ -55,5 +55,12 @@ instance ActionRunner env => HasActions env OsbornsGeneralStore_207 where
 instance LocationRunner env => RunMessage env OsbornsGeneralStore_207 where
   runMessage msg l@(OsbornsGeneralStore_207 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
-      (SearchTopOfDeck iid (InvestigatorTarget iid) 3 [Item] ShuffleBackIn)
+      (SearchTopOfDeck
+        iid
+        source
+        (InvestigatorTarget iid)
+        3
+        [Item]
+        (ShuffleBackIn $ DrawFound iid)
+      )
     _ -> OsbornsGeneralStore_207 <$> runMessage msg attrs

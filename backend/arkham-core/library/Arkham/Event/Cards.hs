@@ -28,7 +28,6 @@ event cardCode name cost classSymbol = CardDef
   , cdFast = False
   , cdWindows = mempty
   , cdAction = Nothing
-  , cdChoiceEvent = Nothing
   , cdRevelation = False
   , cdVictoryPoints = Nothing
   , cdCommitRestrictions = mempty
@@ -403,7 +402,7 @@ flare1 :: CardDef
 flare1 = (event "02115" "Flare" 2 Survivor)
   { cdSkills = [SkillWild]
   , cdCardTraits = singleton Tactic
-  , cdChoiceEvent = Just (EventChooseN 1 EventChoicesNotRepeatable)
+  , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
   , cdLevel = 1
   }
 

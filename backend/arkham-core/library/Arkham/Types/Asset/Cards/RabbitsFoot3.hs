@@ -40,5 +40,12 @@ instance AssetRunner env => RunMessage env RabbitsFoot3 where
   runMessage msg a@(RabbitsFoot3 attrs) = case msg of
     UseCardAbility iid source (Just (IntMetadata x)) 1 _
       | isSource attrs source -> a <$ push
-        (SearchTopOfDeck iid (InvestigatorTarget iid) x mempty ShuffleBackIn)
+        (SearchTopOfDeck
+          iid
+          source
+          (InvestigatorTarget iid)
+          x
+          mempty
+          (ShuffleBackIn $ DrawFound iid)
+        )
     _ -> RabbitsFoot3 <$> runMessage msg attrs

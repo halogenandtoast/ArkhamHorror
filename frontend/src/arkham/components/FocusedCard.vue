@@ -45,6 +45,8 @@ export default defineComponent({
           return c.contents.contents[1] === id.value;
         case MessageType.ADD_FOCUSED_TO_HAND:
           return c.contents[2] === id.value;
+        case MessageType.SEARCH_TOP_OF_DECK_FOUND:
+          return c.contents[2].contents.id === id.value;
         case MessageType.ADD_FOCUSED_TO_TOP_OF_DECK:
           return c.contents[2] === id.value;
         case MessageType.FOUND_AND_DREW_ENCOUNTER_CARD:

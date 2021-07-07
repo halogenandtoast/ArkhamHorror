@@ -54,9 +54,10 @@ instance AssetRunner env => RunMessage env WhittonGreene where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (SearchTopOfDeck
         iid
+        source
         (InvestigatorTarget iid)
         6
         [Tome, Relic]
-        ShuffleBackIn
+        (ShuffleBackIn $ DrawFound iid)
       )
     _ -> WhittonGreene <$> runMessage msg attrs

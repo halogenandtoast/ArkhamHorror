@@ -170,6 +170,7 @@ allPlayerAssetCards = mapFromList $ map
   , shrivelling3
   , shrivelling5
   , smokingPipe
+  , streetwise3
   , painkillers
   , songOfTheDead2
   , springfieldM19034
@@ -890,6 +891,12 @@ loneWolf = (asset "02188" "Lone Wolf" 1 Rogue)
   { cdSkills = [SkillAgility]
   , cdCardTraits = setFromList [Talent]
   , cdLimits = [LimitPerInvestigator 1]
+  }
+
+streetwise3 :: CardDef
+streetwise3 = permanent $ (asset "02189" "Streetwise" 0 Rogue)
+  { cdCardTraits = setFromList [Talent]
+  , cdLevel = 3
   }
 
 scrapper3 :: CardDef

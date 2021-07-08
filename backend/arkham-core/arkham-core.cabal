@@ -422,6 +422,7 @@ library
       Arkham.Types.Event.Cards.Elusive
       Arkham.Types.Event.Cards.EmergencyAid
       Arkham.Types.Event.Cards.EmergencyCache
+      Arkham.Types.Event.Cards.EmergencyCache2
       Arkham.Types.Event.Cards.Evidence
       Arkham.Types.Event.Cards.ExtraAmmunition1
       Arkham.Types.Event.Cards.FirstWatch
@@ -712,6 +713,7 @@ library
       Arkham.Types.Skill.Cards.Opportunist
       Arkham.Types.Skill.Cards.Overpower
       Arkham.Types.Skill.Cards.Perception
+      Arkham.Types.Skill.Cards.RiseToTheOccasion
       Arkham.Types.Skill.Cards.SurvivalInstinct
       Arkham.Types.Skill.Cards.TrueUnderstanding
       Arkham.Types.Skill.Cards.UnexpectedCourage

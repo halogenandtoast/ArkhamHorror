@@ -24,6 +24,7 @@ data Skill
   | Opportunist' Opportunist
   | Overpower' Overpower
   | Perception' Perception
+  | RiseToTheOccasion' RiseToTheOccasion
   | SurvivalInstinct' SurvivalInstinct
   | TrueUnderstanding' TrueUnderstanding
   | UnexpectedCourage' UnexpectedCourage
@@ -71,6 +72,7 @@ allSkills = mapFromList $ map
   , Opportunist' <$> opportunist
   , Overpower' <$> overpower
   , Perception' <$> perception
+  , RiseToTheOccasion' <$> riseToTheOccasion
   , SurvivalInstinct' <$> survivalInstinct
   , TrueUnderstanding' <$> trueUnderstanding
   , UnexpectedCourage' <$> unexpectedCourage

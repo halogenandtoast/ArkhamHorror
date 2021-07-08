@@ -51,7 +51,7 @@ instance AssetRunner env => RunMessage env Shrivelling3 where
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       Shrivelling3 <$> runMessage msg (attrs & usesL .~ Uses Charge 4)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
-      [ skillModifiers
+      [ skillTestModifiers
         attrs
         (InvestigatorTarget iid)
         [SkillModifier SkillWillpower 2, DamageDealt 1]

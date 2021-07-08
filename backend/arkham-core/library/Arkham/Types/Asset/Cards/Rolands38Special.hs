@@ -14,8 +14,6 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Effect.Window
-import Arkham.Types.EffectMetadata
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -55,16 +53,10 @@ instance AssetRunner env => RunMessage env Rolands38Special where
       locationId <- getId @LocationId iid
       anyClues <- (> 0) . unClueCount <$> getCount locationId
       a <$ pushAll
-        [ CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers
-            attrs
-            [ DamageDealt 1
-            , SkillModifier SkillCombat (if anyClues then 3 else 1)
-            ]
-          )
-          source
+        [ skillTestModifiers
+          attrs
           (InvestigatorTarget iid)
+          [DamageDealt 1, SkillModifier SkillCombat (if anyClues then 3 else 1)]
         , ChooseFightEnemy iid source SkillCombat mempty False
         ]
     _ -> Rolands38Special <$> runMessage msg attrs

@@ -5,14 +5,11 @@ import Arkham.Prelude
 import qualified Arkham.Skill.Cards as Cards
 import Arkham.Types.Action
 import Arkham.Types.Classes
-import Arkham.Types.Effect.Window
-import Arkham.Types.EffectMetadata
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
-import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype ViciousBlow = ViciousBlow SkillAttrs
@@ -31,10 +28,5 @@ instance (SkillRunner env) => RunMessage env ViciousBlow where
   runMessage msg s@(ViciousBlow attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest iid (Just Fight) _ (SkillTarget sid) _ _ | sid == skillId ->
       s <$ push
-        (CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [DamageDealt 1])
-          (SkillSource skillId)
-          (InvestigatorTarget iid)
-        )
+        (skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1))
     _ -> ViciousBlow <$> runMessage msg attrs

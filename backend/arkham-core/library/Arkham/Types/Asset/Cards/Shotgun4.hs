@@ -14,8 +14,6 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Effect.Window
-import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -54,33 +52,24 @@ instance (AssetRunner env) => RunMessage env Shotgun4 where
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       Shotgun4 <$> runMessage msg (attrs & usesL .~ Uses Ammo 2)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
-      [ CreateWindowModifierEffect
-        EffectSkillTestWindow
-        (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 3])
-        source
+      [ skillTestModifier
+        attrs
         (InvestigatorTarget iid)
+        (SkillModifier SkillCombat 3)
       , ChooseFightEnemy iid source SkillCombat mempty False
       ]
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
-      | isSource attrs source
-      -> let val = min 1 (max 5 n)
-         in
-           a <$ push
-             (CreateWindowModifierEffect
-               EffectSkillTestWindow
-               (FailedByEffectModifiers $ toModifiers attrs [DamageDealt val])
-               source
-               (InvestigatorTarget iid)
-             )
+      | isSource attrs source -> a <$ push
+        (skillTestModifier
+          attrs
+          (InvestigatorTarget iid)
+          (DamageDealt $ min 1 (max 5 n))
+        )
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
-      | isSource attrs source
-      -> let val = min 1 (max 5 n)
-         in
-           a <$ push
-             (CreateWindowModifierEffect
-               EffectSkillTestWindow
-               (EffectModifiers $ toModifiers attrs [DamageDealt val])
-               source
-               (InvestigatorTarget iid)
-             )
+      | isSource attrs source -> a <$ push
+        (skillTestModifier
+          attrs
+          (InvestigatorTarget iid)
+          (DamageDealt $ min 1 (max 5 n))
+        )
     _ -> Shotgun4 <$> runMessage msg attrs

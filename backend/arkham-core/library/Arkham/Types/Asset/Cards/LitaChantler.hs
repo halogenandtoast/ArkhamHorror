@@ -9,8 +9,6 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Effect.Window
-import Arkham.Types.EffectMetadata
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -53,12 +51,6 @@ instance (AssetRunner env) => RunMessage env LitaChantler where
   runMessage msg a@(LitaChantler attrs) = case msg of
     UseCardAbility _ source (Just (TargetMetadata target)) 1 _
       | isSource attrs source -> do
-        a <$ push
-          (CreateWindowModifierEffect
-            EffectSkillTestWindow
-            (EffectModifiers [toModifier attrs (DamageTaken 1)])
-            source
-            target
-          )
+        a <$ push (skillTestModifier attrs target (DamageTaken 1))
     _ -> LitaChantler <$> runMessage msg attrs
 

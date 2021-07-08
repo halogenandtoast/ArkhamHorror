@@ -11,8 +11,6 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Effect.Window
-import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
@@ -41,10 +39,5 @@ instance HasModifiersFor env RitualCandles where
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env RitualCandles where
   runMessage msg a@(RitualCandles attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
-      [ CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [AnySkillValue 1])
-          source
-          (InvestigatorTarget iid)
-      ]
+      [skillTestModifier attrs (InvestigatorTarget iid) (AnySkillValue 1)]
     _ -> RitualCandles <$> runMessage msg attrs

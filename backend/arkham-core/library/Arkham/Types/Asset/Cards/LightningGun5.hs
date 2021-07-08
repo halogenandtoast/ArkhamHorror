@@ -14,8 +14,6 @@ import Arkham.Types.Asset.Uses (Uses(..), useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Effect.Window
-import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -53,13 +51,10 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env LightningGun5 
       LightningGun5 <$> runMessage msg (attrs & usesL .~ Uses Resource.Ammo 3)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       pushAll
-        [ CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers
-          $ toModifiers attrs [DamageDealt 2, SkillModifier SkillCombat 5]
-          )
-          source
+        [ skillTestModifiers
+          attrs
           (InvestigatorTarget iid)
+          [DamageDealt 2, SkillModifier SkillCombat 5]
         , ChooseFightEnemy iid source SkillCombat mempty False
         ]
       pure $ LightningGun5 $ attrs & usesL %~ Resource.use

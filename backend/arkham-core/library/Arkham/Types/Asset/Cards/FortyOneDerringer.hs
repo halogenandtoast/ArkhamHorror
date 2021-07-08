@@ -14,8 +14,6 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Effect.Window
-import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -53,20 +51,14 @@ instance AssetRunner env => RunMessage env FortyOneDerringer where
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       FortyOneDerringer <$> runMessage msg (attrs & usesL .~ Uses Ammo 3)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
-      [ CreateWindowModifierEffect
-        EffectSkillTestWindow
-        (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 2])
-        source
+      [ skillTestModifier
+        attrs
         (InvestigatorTarget iid)
+        (SkillModifier SkillCombat 2)
       , ChooseFightEnemy iid source SkillCombat mempty False
       ]
     PassedSkillTest iid (Just Action.Fight) source SkillTestInitiatorTarget{} _ n
       | isSource attrs source && n >= 2
       -> a <$ push
-        (CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [DamageDealt 1])
-          source
-          (InvestigatorTarget iid)
-        )
+        (skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1))
     _ -> FortyOneDerringer <$> runMessage msg attrs

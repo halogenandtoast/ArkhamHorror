@@ -13,8 +13,6 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Effect.Window
-import Arkham.Types.EffectMetadata
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -66,18 +64,16 @@ instance (ActionRunner env, HasSkillTest env) => HasActions env FireAxe where
 instance (AssetRunner env) => RunMessage env FireAxe where
   runMessage msg a@(FireAxe attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
-      [ CreateWindowModifierEffect
-        EffectSkillTestWindow
-        (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
-        source
+      [ skillTestModifier
+        attrs
         (InvestigatorTarget iid)
+        (SkillModifier SkillCombat 1)
       , ChooseFightEnemy iid source SkillCombat mempty False
       ]
     UseCardAbility iid source _ 2 _ | isSource attrs source -> a <$ push
-      (CreateWindowModifierEffect
-        EffectSkillTestWindow
-        (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 2])
-        source
+      (skillTestModifier
+        attrs
         (InvestigatorTarget iid)
+        (SkillModifier SkillCombat 2)
       )
     _ -> FireAxe <$> runMessage msg attrs

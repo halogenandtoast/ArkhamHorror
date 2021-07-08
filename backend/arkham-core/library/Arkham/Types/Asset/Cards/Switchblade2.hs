@@ -13,8 +13,6 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Effect.Window
-import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -40,23 +38,17 @@ instance ActionRunner env => HasActions env Switchblade2 where
     pure [ UseAbility iid ability | fightAvailable ]
   getActions _ _ _ = pure []
 
-instance (AssetRunner env) => RunMessage env Switchblade2 where
+instance AssetRunner env => RunMessage env Switchblade2 where
   runMessage msg a@(Switchblade2 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
-      [ CreateWindowModifierEffect
-        EffectSkillTestWindow
-        (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 2])
-        source
+      [ skillTestModifier
+        attrs
         (InvestigatorTarget iid)
+        (SkillModifier SkillCombat 2)
       , ChooseFightEnemy iid source SkillCombat mempty False
       ]
     PassedSkillTest iid (Just Action.Fight) source SkillTestInitiatorTarget{} _ n
       | n >= 2 && isSource attrs source
       -> a <$ push
-        (CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [DamageDealt 1])
-          source
-          (InvestigatorTarget iid)
-        )
+        (skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1))
     _ -> Switchblade2 <$> runMessage msg attrs

@@ -9,8 +9,6 @@ import qualified Arkham.Location.Cards as Cards (foulSwamp)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Effect.Window
-import Arkham.Types.EffectMetadata
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
@@ -79,11 +77,10 @@ instance LocationRunner env => RunMessage env FoulSwamp where
           pure l
     UseCardAbility iid source (Just (IntMetadata n)) 1 _
       | isSource attrs source -> l <$ pushAll
-        [ CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [SkillModifier SkillWillpower n])
-          source
+        [ skillTestModifier
+          attrs
           (InvestigatorTarget iid)
+          (SkillModifier SkillWillpower n)
         , BeginSkillTest iid source (toTarget attrs) Nothing SkillWillpower 7
         ]
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _

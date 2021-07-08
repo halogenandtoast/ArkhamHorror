@@ -38,7 +38,7 @@ instance EnemyRunner env => RunMessage env SwampLeech where
     InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
       bayouLocations <- getSetList @LocationId [Bayou]
       e <$ spawnAtOneOf iid enemyId bayouLocations
-    EnemyMove eid _ lid | eid == enemyId -> do
+    EnemyEntered eid lid | eid == enemyId -> do
       bayouLocations <- getSetList @LocationId [Bayou]
       e <$ when
         (lid `notElem` bayouLocations)

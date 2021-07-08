@@ -476,6 +476,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       pure $ a & treacheriesL %~ insertSet tid
     AttachEvent eid (LocationTarget lid) | lid == locationId ->
       pure $ a & eventsL %~ insertSet eid
+    Discard (AssetTarget aid) -> pure $ a & assetsL %~ deleteSet aid
     Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
     Discard (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
     Discard (EnemyTarget eid) -> pure $ a & enemiesL %~ deleteSet eid

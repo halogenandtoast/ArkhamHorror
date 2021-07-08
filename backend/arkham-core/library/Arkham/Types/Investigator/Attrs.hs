@@ -505,6 +505,7 @@ getFastIsPlayable
   :: ( MonadReader env m
      , HasModifiersFor env ()
      , HasSet InvestigatorId env LocationId
+     , HasCount ClueCount env LocationId
      , HasActions env ActionType
      , MonadIO m
      )
@@ -561,6 +562,7 @@ getIsPlayable
   :: ( MonadReader env m
      , HasModifiersFor env ()
      , HasSet InvestigatorId env LocationId
+     , HasCount ClueCount env LocationId
      , HasActions env ActionType
      , MonadIO m
      )
@@ -593,23 +595,25 @@ getIsPlayable attrs@InvestigatorAttrs {..} windows c@(PlayerCard MkPlayerCard {.
     )
     typePairs
   prevents _ = False
-  passesRestriction AnotherInvestigatorInSameLocation =
-    notNull <$> getSet @InvestigatorId investigatorLocation
-  passesRestriction ScenarioCardHasResignAbility = do
-    actions' <- concat . concat <$> sequence
-      [ traverse
-          (getActions investigatorId window)
-          ([minBound .. maxBound] :: [ActionType])
-      | window <- windows
-      ]
-    pure $ flip
-      any
-      actions'
-      \case
-        UseAbility _ ability -> case abilityType ability of
-          ActionAbility (Just Action.Resign) _ -> True
+  passesRestriction = \case
+    ClueOnLocation -> (> 0) . unClueCount <$> getCount investigatorLocation
+    AnotherInvestigatorInSameLocation ->
+      notNull <$> getSet @InvestigatorId investigatorLocation
+    ScenarioCardHasResignAbility -> do
+      actions' <- concat . concat <$> sequence
+        [ traverse
+            (getActions investigatorId window)
+            ([minBound .. maxBound] :: [ActionType])
+        | window <- windows
+        ]
+      pure $ flip
+        any
+        actions'
+        \case
+          UseAbility _ ability -> case abilityType ability of
+            ActionAbility (Just Action.Resign) _ -> True
+            _ -> False
           _ -> False
-        _ -> False
 
 drawOpeningHand
   :: InvestigatorAttrs -> Int -> ([PlayerCard], [Card], [PlayerCard])
@@ -632,6 +636,7 @@ getPlayableCards
   :: ( MonadReader env m
      , HasModifiersFor env ()
      , HasSet InvestigatorId env LocationId
+     , HasCount ClueCount env LocationId
      , HasActions env ActionType
      , MonadIO m
      )
@@ -647,6 +652,7 @@ getPlayableDiscards
   :: ( MonadReader env m
      , HasModifiersFor env ()
      , HasSet InvestigatorId env LocationId
+     , HasCount ClueCount env LocationId
      , HasActions env ActionType
      , MonadIO m
      )

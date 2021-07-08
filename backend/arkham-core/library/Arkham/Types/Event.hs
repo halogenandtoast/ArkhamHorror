@@ -64,6 +64,8 @@ data Event
   | OnTheLam' OnTheLam
   | Oops' Oops
   | PreparedForTheWorst' PreparedForTheWorst
+  | PreposterousSketches' PreposterousSketches
+  | PreposterousSketches2' PreposterousSketches2
   | SearchForTheTruth' SearchForTheTruth
   | SecondWind' SecondWind
   | SeekingAnswers' SeekingAnswers
@@ -174,6 +176,8 @@ allEvents = mapFromList $ map
   , OnTheLam' <$> onTheLam
   , Oops' <$> oops
   , PreparedForTheWorst' <$> preparedForTheWorst
+  , PreposterousSketches' <$> preposterousSketches
+  , PreposterousSketches2' <$> preposterousSketches2
   , SearchForTheTruth' <$> searchForTheTruth
   , SecondWind' <$> secondWind
   , SeekingAnswers' <$> seekingAnswers

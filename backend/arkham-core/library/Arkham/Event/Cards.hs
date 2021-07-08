@@ -89,6 +89,8 @@ allPlayerEventCards = mapFromList $ map
   , onTheLam
   , oops
   , preparedForTheWorst
+  , preposterousSketches
+  , preposterousSketches2
   , searchForTheTruth
   , secondWind
   , seekingAnswers
@@ -449,6 +451,13 @@ preparedForTheWorst = (event "02184" "Prepared for the Worst" 1 Guardian)
   , cdCardTraits = singleton Tactic
   }
 
+preposterousSketches :: CardDef
+preposterousSketches = (event "02186" "Preposterous Sketches" 2 Seeker)
+  { cdSkills = [SkillWillpower, SkillIntellect]
+  , cdCardTraits = singleton Insight
+  , cdPlayRestrictions = [ClueOnLocation]
+  }
+
 letMeHandleThis :: CardDef
 letMeHandleThis = (event "03022" "\"Let me handle this!\"" 0 Guardian)
   { cdSkills = [SkillWillpower, SkillCombat]
@@ -517,6 +526,14 @@ mindWipe3 = (event "50008" "Mind Wipe" 1 Mystic)
   , cdLevel = 3
   , cdFast = True
   , cdWindows = setFromList [AnyPhaseBegins]
+  }
+
+preposterousSketches2 :: CardDef
+preposterousSketches2 = (event "51003" "Preposterous Sketches" 0 Seeker)
+  { cdSkills = [SkillWillpower, SkillIntellect]
+  , cdCardTraits = singleton Insight
+  , cdPlayRestrictions = [ClueOnLocation]
+  , cdLevel = 2
   }
 
 contraband2 :: CardDef

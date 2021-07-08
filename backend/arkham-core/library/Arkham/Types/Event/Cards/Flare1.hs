@@ -5,8 +5,6 @@ import Arkham.Prelude
 import qualified Arkham.Event.Cards as Cards (flare1)
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Classes
-import Arkham.Types.Effect.Window
-import Arkham.Types.EffectMetadata
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 import Arkham.Types.Id
@@ -60,14 +58,10 @@ instance
           iid
           [ Label
             "Fight"
-            [ CreateWindowModifierEffect
-              EffectSkillTestWindow
-              (EffectModifiers $ toModifiers
-                attrs
-                [SkillModifier SkillCombat 3, DamageDealt 2]
-              )
-              (toSource e)
+            [ skillTestModifiers
+              attrs
               (InvestigatorTarget iid)
+              [SkillModifier SkillCombat 3, DamageDealt 2]
             , ChooseFightEnemy iid (toSource e) SkillCombat mempty False
             , Exile (toTarget e)
             ]

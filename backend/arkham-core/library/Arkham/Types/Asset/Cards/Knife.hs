@@ -13,8 +13,6 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Effect.Window
-import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -49,22 +47,18 @@ instance ActionRunner env => HasActions env Knife where
 instance (AssetRunner env) => RunMessage env Knife where
   runMessage msg a@(Knife attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
-      [ CreateWindowModifierEffect
-        EffectSkillTestWindow
-        (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
-        source
+      [ skillTestModifier
+        attrs
         (InvestigatorTarget iid)
+        (SkillModifier SkillCombat 1)
       , ChooseFightEnemy iid source SkillCombat mempty False
       ]
     UseCardAbility iid source _ 2 _ | isSource attrs source -> a <$ pushAll
       [ Discard (toTarget attrs)
-      , CreateWindowModifierEffect
-        EffectSkillTestWindow
-        (EffectModifiers
-        $ toModifiers attrs [SkillModifier SkillCombat 2, DamageDealt 1]
-        )
-        source
+      , skillTestModifiers
+        attrs
         (InvestigatorTarget iid)
+        [SkillModifier SkillCombat 2, DamageDealt 1]
       , ChooseFightEnemy iid source SkillCombat mempty False
       ]
     _ -> Knife <$> runMessage msg attrs

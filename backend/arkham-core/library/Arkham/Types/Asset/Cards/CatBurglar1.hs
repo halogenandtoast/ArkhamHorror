@@ -11,8 +11,6 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Effect.Window
-import Arkham.Types.EffectMetadata
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -41,11 +39,10 @@ instance HasActions env CatBurglar1 where
 instance AssetRunner env => RunMessage env CatBurglar1 where
   runMessage msg (CatBurglar1 attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
-      push $ CreateWindowModifierEffect
-        EffectSkillTestWindow
-        (EffectModifiers $ toModifiers attrs [SkillModifier SkillAgility 1])
-        (toSource attrs)
+      push $ skillTestModifier
+        attrs
         (InvestigatorTarget iid)
+        (SkillModifier SkillAgility 1)
       CatBurglar1 <$> runMessage msg attrs
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       engagedEnemyIds <- getSetList iid

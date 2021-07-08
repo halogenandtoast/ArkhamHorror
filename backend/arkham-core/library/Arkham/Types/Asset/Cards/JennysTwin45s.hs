@@ -14,8 +14,6 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Effect.Window
-import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -55,13 +53,10 @@ instance AssetRunner env => RunMessage env JennysTwin45s where
     InvestigatorPlayDynamicAsset _ aid _ _ n | aid == assetId attrs ->
       JennysTwin45s <$> runMessage msg (attrs & usesL .~ Uses Ammo n)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
-      [ CreateWindowModifierEffect
-        EffectSkillTestWindow
-        (EffectModifiers
-        $ toModifiers attrs [DamageDealt 1, SkillModifier SkillCombat 2]
-        )
-        source
+      [ skillTestModifiers
+        attrs
         (InvestigatorTarget iid)
+        [DamageDealt 1, SkillModifier SkillCombat 2]
       , ChooseFightEnemy iid source SkillCombat mempty False
       ]
     _ -> JennysTwin45s <$> runMessage msg attrs

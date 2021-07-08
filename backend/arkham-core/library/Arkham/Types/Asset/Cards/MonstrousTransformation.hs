@@ -13,8 +13,6 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Effect.Window
-import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -49,22 +47,19 @@ instance ActionRunner env => HasActions env MonstrousTransformation where
           (mkAbility
             (toSource a)
             1
-            (ActionAbility (Just Action.Fight) (ActionCost 1))
+            (ActionAbility
+              (Just Action.Fight)
+              (Costs [ExhaustCost (toTarget a), ActionCost 1])
+            )
           )
-      | not (assetExhausted a) && fightAvailable
+      | fightAvailable
       ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env MonstrousTransformation where
-  runMessage msg (MonstrousTransformation attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      pushAll
-        [ CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [DamageDealt 1])
-          source
-          (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillCombat mempty False
-        ]
-      pure $ MonstrousTransformation $ attrs & exhaustedL .~ True
+  runMessage msg a@(MonstrousTransformation attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+      [ skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)
+      , ChooseFightEnemy iid source SkillCombat mempty False
+      ]
     _ -> MonstrousTransformation <$> runMessage msg attrs

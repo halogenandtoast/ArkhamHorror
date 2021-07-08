@@ -1,6 +1,6 @@
-module Arkham.Types.Asset.Cards.HigherEducation
-  ( higherEducation
-  , HigherEducation(..)
+module Arkham.Types.Asset.Cards.HigherEducation3
+  ( higherEducation3
+  , HigherEducation3(..)
   ) where
 
 import Arkham.Prelude
@@ -20,14 +20,14 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Window
 
-newtype HigherEducation = HigherEducation AssetAttrs
+newtype HigherEducation3 = HigherEducation3 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-higherEducation :: AssetCard HigherEducation
-higherEducation = asset HigherEducation Cards.higherEducation
+higherEducation3 :: AssetCard HigherEducation3
+higherEducation3 = asset HigherEducation3 Cards.higherEducation3
 
-instance HasList HandCard env InvestigatorId => HasActions env HigherEducation where
-  getActions iid (WhenSkillTest SkillWillpower) (HigherEducation a)
+instance HasList HandCard env InvestigatorId => HasActions env HigherEducation3 where
+  getActions iid (WhenSkillTest SkillWillpower) (HigherEducation3 a)
     | ownedBy a iid = do
       active <- (>= 5) . length <$> getHandOf iid
       pure
@@ -36,7 +36,7 @@ instance HasList HandCard env InvestigatorId => HasActions env HigherEducation w
             (mkAbility (toSource a) 1 (FastAbility $ ResourceCost 1))
         | active
         ]
-  getActions iid (WhenSkillTest SkillIntellect) (HigherEducation a)
+  getActions iid (WhenSkillTest SkillIntellect) (HigherEducation3 a)
     | ownedBy a iid = do
       active <- (>= 5) . length <$> getHandOf iid
       pure
@@ -47,23 +47,23 @@ instance HasList HandCard env InvestigatorId => HasActions env HigherEducation w
         ]
   getActions _ _ _ = pure []
 
-instance HasModifiersFor env HigherEducation where
+instance HasModifiersFor env HigherEducation3 where
   getModifiersFor = noModifiersFor
 
-instance AssetRunner env => RunMessage env HigherEducation where
-  runMessage msg a@(HigherEducation attrs) = case msg of
+instance AssetRunner env => RunMessage env HigherEducation3 where
+  runMessage msg a@(HigherEducation3 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ SpendResources iid 1
       , skillTestModifier
         attrs
         (InvestigatorTarget iid)
-        (SkillModifier SkillWillpower 1)
+        (SkillModifier SkillWillpower 2)
       ]
     UseCardAbility iid source _ 2 _ | isSource attrs source -> a <$ pushAll
       [ SpendResources iid 1
       , skillTestModifier
         attrs
         (InvestigatorTarget iid)
-        (SkillModifier SkillIntellect 1)
+        (SkillModifier SkillIntellect 2)
       ]
-    _ -> HigherEducation <$> runMessage msg attrs
+    _ -> HigherEducation3 <$> runMessage msg attrs

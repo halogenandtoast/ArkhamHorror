@@ -12,8 +12,6 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Effect.Window
-import Arkham.Types.EffectMetadata
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -54,31 +52,25 @@ instance
   => RunMessage env Kukri where
   runMessage msg a@(Kukri attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
-      [ CreateWindowModifierEffect
-        EffectSkillTestWindow
-        (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
-        source
+      [ skillTestModifier
+        attrs
         (InvestigatorTarget iid)
+        (SkillModifier SkillCombat 1)
       , ChooseFightEnemy iid source SkillCombat mempty False
       ]
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         actionRemainingCount <- unActionRemainingCount <$> getCount iid
-        if actionRemainingCount > 0
-          then a <$ push
-            (chooseOne
-              iid
-              [ Label
-                "Spend 1 action to deal +1 damage"
-                [ LoseActions iid source 1
-                , CreateWindowModifierEffect
-                  EffectSkillTestWindow
-                  (EffectModifiers $ toModifiers attrs [DamageDealt 1])
-                  source
-                  (InvestigatorTarget iid)
-                ]
-              , Label "Skip additional Kukri damage" []
+        a <$ when
+          (actionRemainingCount > 0)
+          (push $ chooseOne
+            iid
+            [ Label
+              "Spend 1 action to deal +1 damage"
+              [ LoseActions iid source 1
+              , skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)
               ]
-            )
-          else pure a
+            , Label "Skip additional Kukri damage" []
+            ]
+          )
     _ -> Kukri <$> runMessage msg attrs

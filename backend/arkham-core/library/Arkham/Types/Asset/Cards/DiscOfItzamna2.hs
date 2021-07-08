@@ -9,8 +9,6 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Effect.Window
-import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -39,11 +37,10 @@ instance (AssetRunner env) => RunMessage env DiscOfItzamna2 where
   runMessage msg a@(DiscOfItzamna2 attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       push
-        (CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers [toModifier attrs $ SkillModifier SkillWillpower 1])
-          (toSource attrs)
+        (skillTestModifier
+          attrs
           (InvestigatorTarget iid)
+          (SkillModifier SkillWillpower 1)
         )
       DiscOfItzamna2 <$> runMessage msg attrs
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do

@@ -13,8 +13,6 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Effect.Window
-import Arkham.Types.EffectMetadata
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -55,11 +53,7 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AlchemicalConc
   runMessage msg a@(AlchemicalConcoction attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ pushAll
-        [ CreateWindowModifierEffect
-          EffectSkillTestWindow
-          (EffectModifiers $ toModifiers attrs [DamageDealt 1])
-          source
-          (InvestigatorTarget iid)
+        [ skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)
         , CreateEffect "01060" Nothing source (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillWillpower mempty False
         ]

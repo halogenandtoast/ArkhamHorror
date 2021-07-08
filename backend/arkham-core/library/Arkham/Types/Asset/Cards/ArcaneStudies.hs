@@ -12,8 +12,6 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Effect.Window
-import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -42,17 +40,15 @@ instance HasActions env ArcaneStudies where
 instance AssetRunner env => RunMessage env ArcaneStudies where
   runMessage msg a@(ArcaneStudies attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
-      (CreateWindowModifierEffect
-        EffectSkillTestWindow
-        (EffectModifiers [toModifier attrs $ SkillModifier SkillWillpower 1])
-        source
+      (skillTestModifier
+        attrs
         (InvestigatorTarget iid)
+        (SkillModifier SkillWillpower 1)
       )
     UseCardAbility iid source _ 2 _ | isSource attrs source -> a <$ push
-      (CreateWindowModifierEffect
-        EffectSkillTestWindow
-        (EffectModifiers [toModifier attrs $ SkillModifier SkillIntellect 1])
-        source
+      (skillTestModifier
+        attrs
         (InvestigatorTarget iid)
+        (SkillModifier SkillIntellect 1)
       )
     _ -> ArcaneStudies <$> runMessage msg attrs

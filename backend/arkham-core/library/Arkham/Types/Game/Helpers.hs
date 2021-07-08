@@ -531,13 +531,6 @@ toModifier = Modifier . toSource
 toModifiers :: SourceEntity a => a -> [ModifierType] -> [Modifier]
 toModifiers = map . toModifier
 
-skillModifiers :: SourceEntity a => a -> Target -> [ModifierType] -> Message
-skillModifiers a target modifiers = CreateWindowModifierEffect
-  EffectSkillTestWindow
-  (EffectModifiers $ toModifiers a modifiers)
-  (toSource a)
-  target
-
 targetToSource :: Target -> Source
 targetToSource = \case
   InvestigatorTarget iid -> InvestigatorSource iid

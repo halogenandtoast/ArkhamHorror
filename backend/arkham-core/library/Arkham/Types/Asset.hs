@@ -83,6 +83,7 @@ data Asset
   | HeirloomOfHyperborea' HeirloomOfHyperborea
   | HelplessPassenger' HelplessPassenger
   | HigherEducation' HigherEducation
+  | HigherEducation3' HigherEducation3
   | HiredMuscle1' HiredMuscle1
   | HolyRosary' HolyRosary
   | Hyperawareness' Hyperawareness
@@ -325,6 +326,7 @@ allAssets = mapFromList $ map
   , HeirloomOfHyperborea' <$> heirloomOfHyperborea
   , HelplessPassenger' <$> helplessPassenger
   , HigherEducation' <$> higherEducation
+  , HigherEducation3' <$> higherEducation3
   , HiredMuscle1' <$> hiredMuscle1
   , HolyRosary' <$> holyRosary
   , Hyperawareness' <$> hyperawareness

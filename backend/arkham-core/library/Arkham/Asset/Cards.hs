@@ -117,6 +117,7 @@ allPlayerAssetCards = mapFromList $ map
   , hardKnocks2
   , heirloomOfHyperborea
   , higherEducation
+  , higherEducation3
   , hiredMuscle1
   , holyRosary
   , hyperawareness
@@ -873,6 +874,12 @@ helplessPassenger =
 
 keenEye3 :: CardDef
 keenEye3 = permanent $ (asset "02185" "Keen Eye" 0 Guardian)
+  { cdCardTraits = setFromList [Talent]
+  , cdLevel = 3
+  }
+
+higherEducation3 :: CardDef
+higherEducation3 = permanent $ (asset "02187" "Higher Education" 0 Seeker)
   { cdCardTraits = setFromList [Talent]
   , cdLevel = 3
   }

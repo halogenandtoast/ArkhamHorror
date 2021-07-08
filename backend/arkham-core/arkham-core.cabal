@@ -432,6 +432,7 @@ library
       Arkham.Types.Event.Cards.LookWhatIFound
       Arkham.Types.Event.Cards.Lucky
       Arkham.Types.Event.Cards.Lucky2
+      Arkham.Types.Event.Cards.Lure1
       Arkham.Types.Event.Cards.MindOverMatter
       Arkham.Types.Event.Cards.MindWipe1
       Arkham.Types.Event.Cards.MindWipe3

@@ -13,6 +13,7 @@ import Arkham.Types.Card
 import Arkham.Types.Keyword
 import Arkham.Types.SkillType
 import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait
 
@@ -76,6 +77,7 @@ data ModifierType
   | DoubleNegativeModifiersOnTokens
   | DoubleDifficulty
   | DoubleSuccess
+  | DuringEnemyPhaseMustMoveToward Target
   | EnemyEvade Int
   | EnemyFight Int
   | ForcedTokenChange Token [Token]

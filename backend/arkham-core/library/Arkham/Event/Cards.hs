@@ -82,6 +82,7 @@ allPlayerEventCards = mapFromList $ map
   , lookWhatIFound
   , lucky
   , lucky2
+  , lure1
   , mindOverMatter
   , mindWipe1
   , mindWipe3
@@ -432,6 +433,13 @@ hypnoticGaze = (event "02153" "Hypnotic Gaze" 3 Mystic)
   , cdCardTraits = singleton Spell
   , cdFast = True
   , cdWindows = setFromList [WhenEnemyAttacks InvestigatorAtYourLocation]
+  }
+
+lure1 :: CardDef
+lure1 = (event "02156" "Lure" 1 Survivor)
+  { cdSkills = [SkillAgility, SkillAgility]
+  , cdCardTraits = singleton Trick
+  , cdLevel = 1
   }
 
 letMeHandleThis :: CardDef

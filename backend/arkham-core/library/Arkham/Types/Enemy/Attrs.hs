@@ -31,6 +31,7 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window
+import Data.List.Extra (firstJust)
 import Data.UUID (nil)
 
 type EnemyCard a = CardBuilder EnemyId a
@@ -542,16 +543,29 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
       if Keyword.Hunter `notElem` keywords
         then pure a
         else do
+          modifiers' <-
+            map modifierType
+              <$> getModifiersFor (toSource a) (EnemyTarget enemyId) ()
+          let
+            matchForcedTargetLocation = \case
+              DuringEnemyPhaseMustMoveToward (LocationTarget lid) -> Just lid
+              _ -> Nothing
+            forcedTargetLocation =
+              firstJust matchForcedTargetLocation modifiers'
+
           -- The logic here is an artifact of doing this incorrect
           -- Prey is only used for breaking ties unless we're dealing
           -- with the Only keyword for prey, so here we hardcode prey
           -- to AnyPrey and then find if there are any investigators
           -- who qualify as prey to filter
-          matchingClosestLocationIds <- case enemyPrey of
-            OnlyPrey prey ->
-              map unClosestPathLocationId <$> getSetList (enemyLocation, prey)
-            _prey -> map unClosestPathLocationId
-              <$> getSetList (enemyLocation, AnyPrey)
+          matchingClosestLocationIds <-
+            case (forcedTargetLocation, enemyPrey) of
+              (Just forcedTargetLocationId, _) -> map unClosestPathLocationId
+                <$> getSetList (enemyLocation, forcedTargetLocationId)
+              (Nothing, OnlyPrey prey) ->
+                map unClosestPathLocationId <$> getSetList (enemyLocation, prey)
+              (Nothing, _prey) -> map unClosestPathLocationId
+                <$> getSetList (enemyLocation, AnyPrey)
 
           preyIds <- setFromList . map unPreyId <$> getSetList enemyPrey
 

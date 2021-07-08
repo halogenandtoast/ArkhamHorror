@@ -74,6 +74,7 @@ allPlayerEventCards = mapFromList $ map
   , flare1
   , hotStreak2
   , hotStreak4
+  , hypnoticGaze
   , imOuttaHere
   , iveGotAPlan
   , iveGotAPlan2

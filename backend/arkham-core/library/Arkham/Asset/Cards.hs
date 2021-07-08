@@ -81,6 +81,7 @@ allPlayerAssetCards = mapFromList $ map
   , beatCop
   , beatCop2
   , blackjack
+  , bloodPact3
   , bookOfShadows3
   , brotherXavier1
   , bulletproofVest3
@@ -896,6 +897,12 @@ loneWolf = (asset "02188" "Lone Wolf" 1 Rogue)
 streetwise3 :: CardDef
 streetwise3 = permanent $ (asset "02189" "Streetwise" 0 Rogue)
   { cdCardTraits = setFromList [Talent]
+  , cdLevel = 3
+  }
+
+bloodPact3 :: CardDef
+bloodPact3 = permanent $ (asset "02191" "Blood Pact" 0 Mystic)
+  { cdCardTraits = setFromList [Spell, Pact]
   , cdLevel = 3
   }
 

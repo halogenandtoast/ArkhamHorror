@@ -131,6 +131,7 @@ instance
       DiscardCost target -> e <$ push (Discard target)
       DiscardCardCost cid -> e <$ push (DiscardCard iid cid)
       ExileCost target -> e <$ push (Exile target)
+      DoomCost _ target x -> e <$ push (PlaceDoom target x)
       HorrorCost _ target x -> case target of
         InvestigatorTarget iid' | iid' == iid ->
           e <$ push (InvestigatorAssignDamage iid source DamageAny 0 x)

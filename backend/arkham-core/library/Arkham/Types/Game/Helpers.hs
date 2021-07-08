@@ -241,6 +241,7 @@ getCanAffordCost iid source mAction = \case
   ExileCost _ -> pure True -- TODO: Make better
   HorrorCost{} -> pure True -- TODO: Make better
   DamageCost{} -> pure True -- TODO: Make better
+  DoomCost{} -> pure True -- TODO: Make better
   SkillIconCost n skillTypes -> do
     handCards <- mapMaybe (preview _PlayerCard) <$> getHandOf iid
     let

@@ -142,6 +142,7 @@ data Asset
   | SpringfieldM19034' SpringfieldM19034
   | StrangeSolution' StrangeSolution
   | StrayCat' StrayCat
+  | Streetwise3' Streetwise3
   | Switchblade' Switchblade
   | TheNecronomicon' TheNecronomicon
   | TheNecronomiconAdvanced' TheNecronomiconAdvanced
@@ -386,6 +387,7 @@ allAssets = mapFromList $ map
   , SpringfieldM19034' <$> springfieldM19034
   , StrangeSolution' <$> strangeSolution
   , StrayCat' <$> strayCat
+  , Streetwise3' <$> streetwise3
   , Switchblade' <$> switchblade
   , TheNecronomicon' <$> theNecronomicon
   , TheNecronomiconAdvanced' <$> theNecronomiconAdvanced

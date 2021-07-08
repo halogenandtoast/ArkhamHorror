@@ -409,15 +409,16 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
                       ]
                     )
 
-          when (Keyword.Massive `elem` keywords) $ do
-            investigatorIds <- getSetList @InvestigatorId lid
-            pushAll
-              $ EnemyEntered eid lid
-              : [ EnemyEngageInvestigator eid iid | iid <- investigatorIds ]
-          pure $ a & locationL .~ lid
+          a <$ when
+            (Keyword.Massive `elem` keywords)
+            do
+              investigatorIds <- getSetList @InvestigatorId lid
+              pushAll
+                $ EnemyEntered eid lid
+                : [ EnemyEngageInvestigator eid iid | iid <- investigatorIds ]
     EnemySpawnedAt lid eid | eid == enemyId -> do
-      push $ EnemyEntered eid lid
-      pure $ a & locationL .~ lid
+      a <$ push (EnemyEntered eid lid)
+    EnemyEntered eid lid | eid == enemyId -> pure $ a & locationL .~ lid
     Ready target | isTarget a target -> do
       leadInvestigatorId <- getLeadInvestigatorId
       iids <- getSetList enemyLocation
@@ -511,7 +512,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
       if willMove
         then do
           pushAll [EnemyEntered eid lid, EnemyCheckEngagement eid]
-          pure $ a & locationL .~ lid & engagedInvestigatorsL .~ mempty
+          pure $ a & engagedInvestigatorsL .~ mempty
         else a <$ push (EnemyCheckEngagement eid)
     EnemyCheckEngagement eid | eid == enemyId -> do
       keywords <- getModifiedKeywords a
@@ -698,14 +699,15 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
       a <$ pushAll (map (Discard . AssetTarget) (setToList enemyAssets))
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
       lid <- getId @LocationId iid
-      pure $ a & engagedInvestigatorsL %~ insertSet iid & locationL .~ lid
+      when (lid /= enemyLocation) (push $ EnemyEntered eid lid)
+      pure $ a & engagedInvestigatorsL %~ insertSet iid
     EngageEnemy iid eid False | eid == enemyId ->
       pure $ a & engagedInvestigatorsL .~ singleton iid
     MoveTo iid lid | iid `elem` enemyEngagedInvestigators -> do
       keywords <- getModifiedKeywords a
       willMove <- canEnterLocation enemyId lid
       if Keyword.Massive `notElem` keywords && willMove
-        then pure $ a & locationL .~ lid
+        then a <$ push (EnemyEntered enemyId lid)
         else a <$ push (DisengageEnemy iid enemyId)
     AfterEnterLocation iid lid | lid == enemyLocation -> do
       keywords <- getModifiedKeywords a

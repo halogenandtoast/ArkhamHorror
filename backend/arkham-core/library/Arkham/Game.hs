@@ -284,6 +284,7 @@ runMessages = do
                     runMessages
                   (x : _) -> do
                     atomicWriteIORef gameRef (g & activeInvestigatorIdL .~ x)
+                    pushAll [BeginTurn x, After (BeginTurn x)]
                     runMessages
               else
                 pushAllEnd [PlayerWindow (g ^. activeInvestigatorIdL) []]

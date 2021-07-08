@@ -75,6 +75,7 @@ getCanPerformAbility
   :: ( MonadReader env m
      , MonadIO m
      , HasId LocationId env InvestigatorId
+     , HasSet InvestigatorId env LocationId
      , HasActions env ActionType
      )
   => InvestigatorId
@@ -107,7 +108,10 @@ getCanPerformAbility iid window Ability {..} =
     ForcedAbility -> pure True
 
 getCanPerformAbilityRestriction
-  :: (MonadReader env m, HasId LocationId env InvestigatorId)
+  :: ( MonadReader env m
+     , HasId LocationId env InvestigatorId
+     , HasSet InvestigatorId env LocationId
+     )
   => InvestigatorId
   -> AbilityRestriction
   -> m Bool
@@ -117,6 +121,9 @@ getCanPerformAbilityRestriction iid = \case
     pure $ lid == lid'
   OrAbilityRestrictions restrictions ->
     or <$> traverse (getCanPerformAbilityRestriction iid) restrictions
+  InvestigatorIsAlone -> do
+    lid <- getId @LocationId iid
+    (== 1) . length <$> getSetList @InvestigatorId lid
 
 getCanAffordAbility
   :: ( MonadReader env m

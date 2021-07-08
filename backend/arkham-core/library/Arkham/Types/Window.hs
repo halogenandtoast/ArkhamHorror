@@ -65,6 +65,7 @@ data Window
   | WhenSkillTest SkillType
   | WhenSuccessfulAttackEnemy Who EnemyId
   | WhenSuccessfulInvestigation Who Where
+  | WhenTurnBegins Who
   | WhenWouldFailSkillTest Who
   | WhenWouldLeave Who LocationId
   | WhenWouldReady Target

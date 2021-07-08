@@ -49,7 +49,7 @@ data AbilityMetadata = IntMetadata Int | TargetMetadata Target | SourceMetadata 
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-data AbilityRestriction = OnLocation LocationId | OrAbilityRestrictions [AbilityRestriction]
+data AbilityRestriction = OnLocation LocationId | OrAbilityRestrictions [AbilityRestriction] | InvestigatorIsAlone
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

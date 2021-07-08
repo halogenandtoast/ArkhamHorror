@@ -2410,6 +2410,8 @@ runGameMessage msg g = case msg of
         ]
       <> [ChoosePlayerOrder (gamePlayerOrder g) []]
     pure $ g & phaseL .~ InvestigationPhase
+  BeginTurn x ->
+    g <$ push (CheckWindow x [WhenTurnBegins You, AfterTurnBegins You])
   ChoosePlayerOrder [x] [] -> do
     pushAll [BeginTurn x, After (BeginTurn x)]
     pure $ g & playerOrderL .~ [x] & activeInvestigatorIdL .~ x

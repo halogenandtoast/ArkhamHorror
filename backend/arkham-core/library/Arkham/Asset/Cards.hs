@@ -136,6 +136,7 @@ allPlayerAssetCards = mapFromList $ map
   , lightningGun5
   , liquidCourage
   , litaChantler
+  , loneWolf
   , machete
   , magnifyingGlass
   , magnifyingGlass1
@@ -882,6 +883,13 @@ higherEducation3 :: CardDef
 higherEducation3 = permanent $ (asset "02187" "Higher Education" 0 Seeker)
   { cdCardTraits = setFromList [Talent]
   , cdLevel = 3
+  }
+
+loneWolf :: CardDef
+loneWolf = (asset "02188" "Lone Wolf" 1 Rogue)
+  { cdSkills = [SkillAgility]
+  , cdCardTraits = setFromList [Talent]
+  , cdLimits = [LimitPerInvestigator 1]
   }
 
 scrapper3 :: CardDef

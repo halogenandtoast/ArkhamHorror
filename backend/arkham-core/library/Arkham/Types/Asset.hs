@@ -108,6 +108,7 @@ data Asset
   | MagnifyingGlass1' MagnifyingGlass1
   | MedicalTexts' MedicalTexts
   | MonstrousTransformation' MonstrousTransformation
+  | Newspaper' Newspaper
   | OccultLexicon' OccultLexicon
   | OldBookOfLore' OldBookOfLore
   | Painkillers' Painkillers
@@ -168,6 +169,7 @@ deriving anyclass instance
   , HasCount ResourceCount env InvestigatorId
   , HasCount CardCount env InvestigatorId
   , HasCount ClueCount env EnemyId
+  , HasCount ClueCount env InvestigatorId
   , HasCount AssetCount env (InvestigatorId, [Trait])
   , HasSet Trait env LocationId
   , HasSkillTest env
@@ -348,6 +350,7 @@ allAssets = mapFromList $ map
   , MagnifyingGlass1' <$> magnifyingGlass1
   , MedicalTexts' <$> medicalTexts
   , MonstrousTransformation' <$> monstrousTransformation
+  , Newspaper' <$> newspaper
   , OccultLexicon' <$> occultLexicon
   , OldBookOfLore' <$> oldBookOfLore
   , Painkillers' <$> painkillers

@@ -425,6 +425,14 @@ imOuttaHere = (event "02151" "\"I'm outta here!\"" 0 Rogue)
   , cdPlayRestrictions = [ScenarioCardHasResignAbility]
   }
 
+hypnoticGaze :: CardDef
+hypnoticGaze = (event "02153" "Hypnotic Gaze" 3 Mystic)
+  { cdSkills = [SkillCombat, SkillAgility]
+  , cdCardTraits = setFromList [Trick, Spirit]
+  , cdFast = True
+  , cdWindows = setFromList [WhenEnemyAttacks InvestigatorAtYourLocation]
+  }
+
 letMeHandleThis :: CardDef
 letMeHandleThis = (event "03022" "\"Let me handle this!\"" 0 Guardian)
   { cdSkills = [SkillWillpower, SkillCombat]

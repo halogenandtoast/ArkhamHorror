@@ -164,6 +164,8 @@ allPlayerAssetCards = mapFromList $ map
   , scrying
   , shotgun4
   , shrivelling
+  , shrivelling3
+  , shrivelling5
   , smokingPipe
   , painkillers
   , songOfTheDead2
@@ -804,6 +806,13 @@ switchblade2 = (asset "02152" "Switchblade" 1 Rogue)
   , cdLevel = 2
   }
 
+shrivelling3 :: CardDef
+shrivelling3 = (asset "02154" "Shrivelling" 3 Mystic)
+  { cdSkills = [SkillWillpower, SkillCombat]
+  , cdCardTraits = singleton Spell
+  , cdLevel = 3
+  }
+
 relicHunter3 :: CardDef
 relicHunter3 = permanent $ (asset "02157" "Relic Hunter" 0 Neutral)
   { cdCardTraits = singleton Talent
@@ -814,6 +823,13 @@ charisma3 :: CardDef
 charisma3 = permanent $ (asset "02158" "Charisma" 0 Neutral)
   { cdCardTraits = singleton Talent
   , cdLevel = 3
+  }
+
+shrivelling5 :: CardDef
+shrivelling5 = (asset "02306" "Shrivelling" 3 Mystic)
+  { cdSkills = [SkillWillpower, SkillCombat, SkillCombat]
+  , cdCardTraits = singleton Spell
+  , cdLevel = 5
   }
 
 keenEye :: CardDef

@@ -429,7 +429,7 @@ imOuttaHere = (event "02151" "\"I'm outta here!\"" 0 Rogue)
 hypnoticGaze :: CardDef
 hypnoticGaze = (event "02153" "Hypnotic Gaze" 3 Mystic)
   { cdSkills = [SkillCombat, SkillAgility]
-  , cdCardTraits = setFromList [Trick, Spirit]
+  , cdCardTraits = singleton Spell
   , cdFast = True
   , cdWindows = setFromList [WhenEnemyAttacks InvestigatorAtYourLocation]
   }

@@ -20,7 +20,6 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Duke = Duke AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
@@ -55,13 +54,9 @@ investigateAbility attrs = mkAbility
     (Costs [ActionCost 1, ExhaustCost (toTarget attrs)])
   )
 
-instance ActionRunner env => HasActions env Duke where
-  getActions iid NonFast (Duke a) | ownedBy a iid = do
-    fightAvailable <- hasFightActions iid NonFast
-    investigateAvailable <- hasInvestigateActions iid NonFast
-    pure
-      $ [ UseAbility iid (fightAbility a) | fightAvailable ]
-      <> [ UseAbility iid (investigateAbility a) | investigateAvailable ]
+instance HasActions env Duke where
+  getActions iid _ (Duke a) | ownedBy a iid = pure
+    [UseAbility iid (fightAbility a), UseAbility iid (investigateAbility a)]
   getActions i window (Duke x) = getActions i window x
 
 dukeInvestigate :: AssetAttrs -> InvestigatorId -> LocationId -> Message

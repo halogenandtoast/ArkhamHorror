@@ -37,10 +37,9 @@ investigateAbility attrs = mkAbility
     (Costs [ActionCost 1, UseCost (toId attrs) Supply 1])
   )
 
-instance ActionRunner env => HasActions env Flashlight where
-  getActions iid window (Flashlight a) | ownedBy a iid = do
-    investigateAvailable <- hasInvestigateActions iid window
-    pure [ UseAbility iid (investigateAbility a) | investigateAvailable ]
+instance HasActions env Flashlight where
+  getActions iid _ (Flashlight a) | ownedBy a iid = do
+    pure [UseAbility iid (investigateAbility a)]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Flashlight where

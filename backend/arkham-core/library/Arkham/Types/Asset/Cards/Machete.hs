@@ -28,19 +28,16 @@ machete = hand Machete Cards.machete
 instance HasModifiersFor env Machete where
   getModifiersFor = noModifiersFor
 
-instance ActionRunner env => HasActions env Machete where
-  getActions iid window (Machete a) | ownedBy a iid = do
-    fightAvailable <- hasFightActions iid window
-    pure
-      [ UseAbility
-          iid
-          (mkAbility
-            (toSource a)
-            1
-            (ActionAbility (Just Action.Fight) (ActionCost 1))
-          )
-      | fightAvailable
-      ]
+instance HasActions env Machete where
+  getActions iid _ (Machete a) | ownedBy a iid = pure
+    [ UseAbility
+        iid
+        (mkAbility
+          (toSource a)
+          1
+          (ActionAbility (Just Action.Fight) (ActionCost 1))
+        )
+    ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Machete where

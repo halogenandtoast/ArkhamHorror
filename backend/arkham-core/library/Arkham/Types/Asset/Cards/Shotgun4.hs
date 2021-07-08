@@ -31,22 +31,19 @@ shotgun4 = assetWith Shotgun4 Cards.shotgun4 (slotsL .~ [HandSlot, HandSlot])
 instance HasModifiersFor env Shotgun4 where
   getModifiersFor = noModifiersFor
 
-instance ActionRunner env => HasActions env Shotgun4 where
-  getActions iid window (Shotgun4 a) | ownedBy a iid = do
-    fightAvailable <- hasFightActions iid window
-    pure
-      [ UseAbility
-          iid
-          (mkAbility
-            (toSource a)
-            1
-            (ActionAbility
-              (Just Action.Fight)
-              (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
-            )
+instance HasActions env Shotgun4 where
+  getActions iid _ (Shotgun4 a) | ownedBy a iid = pure
+    [ UseAbility
+        iid
+        (mkAbility
+          (toSource a)
+          1
+          (ActionAbility
+            (Just Action.Fight)
+            (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
           )
-      | fightAvailable
-      ]
+        )
+    ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Shotgun4 where

@@ -38,22 +38,19 @@ instance HasModifiersFor env MonstrousTransformation where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env MonstrousTransformation where
-  getActions iid window (MonstrousTransformation a) | ownedBy a iid = do
-    fightAvailable <- hasFightActions iid window
-    pure
-      [ UseAbility
-          iid
-          (mkAbility
-            (toSource a)
-            1
-            (ActionAbility
-              (Just Action.Fight)
-              (Costs [ExhaustCost (toTarget a), ActionCost 1])
-            )
+instance HasActions env MonstrousTransformation where
+  getActions iid _ (MonstrousTransformation a) | ownedBy a iid = pure
+    [ UseAbility
+        iid
+        (mkAbility
+          (toSource a)
+          1
+          (ActionAbility
+            (Just Action.Fight)
+            (Costs [ExhaustCost (toTarget a), ActionCost 1])
           )
-      | fightAvailable
-      ]
+        )
+    ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env MonstrousTransformation where

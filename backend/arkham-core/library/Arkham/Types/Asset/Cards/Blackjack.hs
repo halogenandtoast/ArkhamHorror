@@ -23,19 +23,16 @@ newtype Blackjack = Blackjack AssetAttrs
 blackjack :: AssetCard Blackjack
 blackjack = hand Blackjack Cards.blackjack
 
-instance ActionRunner env => HasActions env Blackjack where
-  getActions iid window (Blackjack a) | ownedBy a iid = do
-    fightAvailable <- hasFightActions iid window
-    pure
-      [ UseAbility
-          iid
-          (mkAbility
-            (toSource a)
-            1
-            (ActionAbility (Just Action.Fight) (ActionCost 1))
-          )
-      | fightAvailable
-      ]
+instance HasActions env Blackjack where
+  getActions iid _ (Blackjack a) | ownedBy a iid = pure
+    [ UseAbility
+        iid
+        (mkAbility
+          (toSource a)
+          1
+          (ActionAbility (Just Action.Fight) (ActionCost 1))
+        )
+    ]
   getActions _ _ _ = pure []
 
 instance HasModifiersFor env Blackjack where

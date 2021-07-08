@@ -9,7 +9,6 @@ import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -24,22 +23,19 @@ newtype RiteOfSeeking = RiteOfSeeking AssetAttrs
 riteOfSeeking :: AssetCard RiteOfSeeking
 riteOfSeeking = arcane RiteOfSeeking Cards.riteOfSeeking
 
-instance ActionRunner env => HasActions env RiteOfSeeking where
-  getActions iid window (RiteOfSeeking a) | ownedBy a iid = do
-    investigateAvailable <- hasInvestigateActions iid window
-    pure
-      [ UseAbility
-          iid
-          (mkAbility
-            (toSource a)
-            1
-            (ActionAbility
-              (Just Action.Investigate)
-              (Costs [ActionCost 1, UseCost (toId a) Charge 1])
-            )
+instance HasActions env RiteOfSeeking where
+  getActions iid _ (RiteOfSeeking a) | ownedBy a iid = pure
+    [ UseAbility
+        iid
+        (mkAbility
+          (toSource a)
+          1
+          (ActionAbility
+            (Just Action.Investigate)
+            (Costs [ActionCost 1, UseCost (toId a) Charge 1])
           )
-      | useCount (assetUses a) > 0 && investigateAvailable
-      ]
+        )
+    ]
   getActions _ _ _ = pure []
 
 instance HasModifiersFor env RiteOfSeeking where

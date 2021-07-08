@@ -28,22 +28,19 @@ fortyFiveAutomatic = hand FortyFiveAutomatic Cards.fortyFiveAutomatic
 instance HasModifiersFor env FortyFiveAutomatic where
   getModifiersFor = noModifiersFor
 
-instance ActionRunner env => HasActions env FortyFiveAutomatic where
-  getActions iid window (FortyFiveAutomatic a) | ownedBy a iid = do
-    fightAvailable <- hasFightActions iid window
-    pure
-      [ UseAbility
-          iid
-          (mkAbility
-            (toSource a)
-            1
-            (ActionAbility
-              (Just Action.Fight)
-              (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
-            )
+instance HasActions env FortyFiveAutomatic where
+  getActions iid _ (FortyFiveAutomatic a) | ownedBy a iid = pure
+    [ UseAbility
+        iid
+        (mkAbility
+          (toSource a)
+          1
+          (ActionAbility
+            (Just Action.Fight)
+            (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
           )
-      | fightAvailable
-      ]
+        )
+    ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env FortyFiveAutomatic where

@@ -29,22 +29,19 @@ shrivelling5 = arcane Shrivelling5 Cards.shrivelling5
 instance HasModifiersFor env Shrivelling5 where
   getModifiersFor = noModifiersFor
 
-instance ActionRunner env => HasActions env Shrivelling5 where
-  getActions iid window (Shrivelling5 a) | ownedBy a iid = do
-    fightAvailable <- hasFightActions iid window
-    pure
-      [ UseAbility
-          iid
-          (mkAbility
-            (toSource a)
-            1
-            (ActionAbility
-              (Just Action.Fight)
-              (Costs [ActionCost 1, UseCost (toId a) Charge 1])
-            )
+instance HasActions env Shrivelling5 where
+  getActions iid _ (Shrivelling5 a) | ownedBy a iid = pure
+    [ UseAbility
+        iid
+        (mkAbility
+          (toSource a)
+          1
+          (ActionAbility
+            (Just Action.Fight)
+            (Costs [ActionCost 1, UseCost (toId a) Charge 1])
           )
-      | fightAvailable
-      ]
+        )
+    ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Shrivelling5 where

@@ -27,15 +27,14 @@ switchblade2 = hand Switchblade2 Cards.switchblade2
 instance HasModifiersFor env Switchblade2 where
   getModifiersFor = noModifiersFor
 
-instance ActionRunner env => HasActions env Switchblade2 where
-  getActions iid window (Switchblade2 a) | ownedBy a iid = do
+instance HasActions env Switchblade2 where
+  getActions iid _ (Switchblade2 a) | ownedBy a iid = do
     let
       ability = mkAbility
         (toSource a)
         1
         (ActionAbility (Just Action.Fight) (ActionCost 1))
-    fightAvailable <- hasFightActions iid window
-    pure [ UseAbility iid ability | fightAvailable ]
+    pure [UseAbility iid ability]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Switchblade2 where

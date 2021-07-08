@@ -17,7 +17,6 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Knife = Knife AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -28,20 +27,20 @@ knife = hand Knife Cards.knife
 instance HasModifiersFor env Knife where
   getModifiersFor = noModifiersFor
 
-instance ActionRunner env => HasActions env Knife where
-  getActions iid NonFast (Knife a) | ownedBy a iid = do
-    fightAvailable <- hasFightActions iid NonFast
-    pure
-      $ [ UseAbility
-            iid
-            (mkAbility a 1 (ActionAbility (Just Fight) (ActionCost 1)))
-        | fightAvailable
-        ]
-      <> [ UseAbility
-             iid
-             (mkAbility a 2 (ActionAbility (Just Fight) (ActionCost 1)))
-         | fightAvailable
-         ]
+instance HasActions env Knife where
+  getActions iid _ (Knife a) | ownedBy a iid = pure
+    [ UseAbility iid (mkAbility a 1 (ActionAbility (Just Fight) (ActionCost 1)))
+    , UseAbility
+      iid
+      (mkAbility
+        a
+        2
+        (ActionAbility
+          (Just Fight)
+          (Costs [ActionCost 1, DiscardCost (toTarget a)])
+        )
+      )
+    ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Knife where
@@ -54,8 +53,7 @@ instance (AssetRunner env) => RunMessage env Knife where
       , ChooseFightEnemy iid source SkillCombat mempty False
       ]
     UseCardAbility iid source _ 2 _ | isSource attrs source -> a <$ pushAll
-      [ Discard (toTarget attrs)
-      , skillTestModifiers
+      [ skillTestModifiers
         attrs
         (InvestigatorTarget iid)
         [SkillModifier SkillCombat 2, DamageDealt 1]

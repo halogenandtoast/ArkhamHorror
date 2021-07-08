@@ -11,7 +11,6 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Window
@@ -23,31 +22,33 @@ ladyEsprit :: AssetCard LadyEsprit
 ladyEsprit = allyWith LadyEsprit Cards.ladyEsprit (2, 4) (isStoryL .~ True)
 
 ability :: AssetAttrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
+ability attrs = (mkAbility
+                  (toSource attrs)
+                  1
+                  (ActionAbility Nothing $ Costs
+                    [ ActionCost 1
+                    , ExhaustCost (toTarget attrs)
+                    , HorrorCost (toSource attrs) (toTarget attrs) 1
+                    ]
+                  )
+                )
+  { abilityRestrictions = OnLocation <$> assetLocation attrs
+  }
 
 instance HasModifiersFor env LadyEsprit where
   getModifiersFor = noModifiersFor
 
-instance ActionRunner env => HasActions env LadyEsprit where
-  getActions iid NonFast (LadyEsprit a@AssetAttrs {..}) = do
-    locationId <- getId @LocationId iid
-    assetLocationId <- case assetInvestigator of
-      Nothing -> pure $ fromJustNote "must be set" assetLocation
-      Just iid' -> getId iid'
-    pure
-      [ UseAbility iid (ability a)
-      | not assetExhausted && locationId == assetLocationId
-      ]
+instance HasActions env LadyEsprit where
+  getActions iid NonFast (LadyEsprit a) = do
+    pure [UseAbility iid (ability a)]
   getActions _ _ _ = pure []
 
-instance (AssetRunner env) => RunMessage env LadyEsprit where
-  runMessage msg (LadyEsprit attrs) = case msg of
+instance AssetRunner env => RunMessage env LadyEsprit where
+  runMessage msg a@(LadyEsprit attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      push $ chooseOne
-        iid
-        [HealDamage (InvestigatorTarget iid) 2, TakeResources iid 2 False]
-      runMessage
-        (CheckDefeated source)
-        (LadyEsprit $ attrs & exhaustedL .~ True & sanityDamageL +~ 1)
+      a <$ push
+        (chooseOne
+          iid
+          [HealDamage (InvestigatorTarget iid) 2, TakeResources iid 2 False]
+        )
     _ -> LadyEsprit <$> runMessage msg attrs

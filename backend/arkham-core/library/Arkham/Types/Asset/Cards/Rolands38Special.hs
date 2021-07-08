@@ -39,10 +39,9 @@ fightAbility attrs = mkAbility
     (Costs [ActionCost 1, UseCost (toId attrs) Ammo 1])
   )
 
-instance ActionRunner env => HasActions env Rolands38Special where
-  getActions iid window (Rolands38Special a) | ownedBy a iid = do
-    fightAvailable <- hasFightActions iid window
-    pure [ UseAbility iid (fightAbility a) | fightAvailable ]
+instance HasActions env Rolands38Special where
+  getActions iid _ (Rolands38Special a) | ownedBy a iid = do
+    pure [UseAbility iid (fightAbility a)]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Rolands38Special where

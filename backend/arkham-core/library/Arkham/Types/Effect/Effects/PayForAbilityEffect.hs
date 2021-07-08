@@ -134,12 +134,14 @@ instance
       HorrorCost _ target x -> case target of
         InvestigatorTarget iid' | iid' == iid ->
           e <$ push (InvestigatorAssignDamage iid source DamageAny 0 x)
-        AssetTarget aid -> e <$ push (AssetDamage aid source 0 x)
+        AssetTarget aid ->
+          e <$ pushAll [AssetDamage aid source 0 x, CheckDefeated source]
         _ -> error "can't target for horror cost"
       DamageCost _ target x -> case target of
         InvestigatorTarget iid' | iid' == iid ->
           e <$ push (InvestigatorAssignDamage iid source DamageAny x 0)
-        AssetTarget aid -> e <$ push (AssetDamage aid source x 0)
+        AssetTarget aid ->
+          e <$ pushAll [AssetDamage aid source x 0, CheckDefeated source]
         _ -> error "can't target for damage cost"
       ResourceCost x -> e <$ push (SpendResources iid x)
       ActionCost x -> do

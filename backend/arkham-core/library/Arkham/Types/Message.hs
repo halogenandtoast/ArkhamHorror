@@ -156,7 +156,7 @@ data Message
   | AttachStoryTreacheryTo Card Target
   | AttachTreachery TreacheryId Target
   | AttackEnemy InvestigatorId EnemyId Source SkillType
-  | BeforeSkillTest InvestigatorId SkillType
+  | BeforeSkillTest InvestigatorId SkillType Int
   | BeginEnemy
   | BeginInvestigation
   | BeginMythos

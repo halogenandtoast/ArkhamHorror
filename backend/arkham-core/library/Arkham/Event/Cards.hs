@@ -68,6 +68,7 @@ allPlayerEventCards = mapFromList $ map
   , elusive
   , emergencyAid
   , emergencyCache
+  , emergencyCache2
   , evidence
   , extraAmmunition1
   , firstWatch
@@ -456,6 +457,12 @@ preposterousSketches = (event "02186" "Preposterous Sketches" 2 Seeker)
   { cdSkills = [SkillWillpower, SkillIntellect]
   , cdCardTraits = singleton Insight
   , cdPlayRestrictions = [ClueOnLocation]
+  }
+
+emergencyCache2 :: CardDef
+emergencyCache2 = (event "02194" "Emergency Cache" 0 Neutral)
+  { cdCardTraits = setFromList [Supply]
+  , cdLevel = 2
   }
 
 letMeHandleThis :: CardDef

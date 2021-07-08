@@ -1518,7 +1518,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & deckL .~ Deck shuffled
   InvestigatorCommittedCard iid cardId | iid == investigatorId ->
     pure $ a & handL %~ filter ((/= cardId) . toCardId)
-  BeforeSkillTest iid skillType | iid == investigatorId -> do
+  BeforeSkillTest iid skillType skillDifficulty | iid == investigatorId -> do
     committedCardIds <- map unCommittedCardId <$> getSetList iid
     committedCardCodes <- mapSet unCommittedCardCode <$> getSet ()
     actions <- getActions iid (WhenSkillTest skillType) ()
@@ -1530,27 +1530,32 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       <$> getModifiersFor source (InvestigatorTarget investigatorId) ()
     let
       triggerMessage = StartSkillTest investigatorId
-      beginMessage = BeforeSkillTest iid skillType
+      beginMessage = BeforeSkillTest iid skillType skillDifficulty
       committableCards = if cannotCommitCards
         then []
         else flip filter investigatorHand $ \case
           PlayerCard MkPlayerCard {..} ->
-            pcId
+            let
+              passesRestrictions = flip
+                all
+                (cdCommitRestrictions pcDef)
+                \case
+                  MaxOnePerTest ->
+                    cdCardCode pcDef `notElem` committedCardCodes
+                  OnlyYourTest -> True
+                  ScenarioAbility -> isScenarioAbility
+                  MinSkillTestValueDifference n ->
+                    (skillDifficulty - baseSkillValueFor skillType Nothing [] a)
+                      >= n
+            in
+              pcId
               `notElem` committedCardIds
               && (SkillWild
                  `elem` cdSkills pcDef
                  || skillType
                  `elem` cdSkills pcDef
                  )
-              && (MaxOnePerTest
-                 `notElem` cdCommitRestrictions pcDef
-                 || cdCardCode pcDef
-                 `notElem` committedCardCodes
-                 )
-              && (ScenarioAbility
-                 `notElem` cdCommitRestrictions pcDef
-                 || isScenarioAbility
-                 )
+              && passesRestrictions
           _ -> False
     if notNull committableCards || notNull committedCardIds || notNull actions
       then push
@@ -1572,36 +1577,45 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         )
       else push (SkillTestAsk $ chooseOne iid [triggerMessage])
     pure a
-  BeforeSkillTest iid skillType | iid /= investigatorId -> do
+  BeforeSkillTest iid skillType skillDifficulty | iid /= investigatorId -> do
     locationId <- getId iid
     isScenarioAbility <- getIsScenarioAbility
     when (locationId == investigatorLocation) $ do
       committedCardIds <- map unCommittedCardId <$> getSetList investigatorId
       committedCardCodes <- mapSet unCommittedCardCode <$> getSet ()
       let
-        beginMessage = BeforeSkillTest iid skillType
+        beginMessage = BeforeSkillTest iid skillType skillDifficulty
         committableCards = if notNull committedCardIds
           then []
-          else flip filter investigatorHand $ \case
-            PlayerCard MkPlayerCard {..} ->
-              pcId
-                `notElem` committedCardIds
-                && (SkillWild
-                   `elem` cdSkills pcDef
-                   || skillType
-                   `elem` cdSkills pcDef
-                   )
-                && (OnlyYourTest `notElem` cdCommitRestrictions pcDef)
-                && (MaxOnePerTest
-                   `notElem` cdCommitRestrictions pcDef
-                   || cdCardCode pcDef
-                   `notElem` committedCardCodes
-                   )
-                && (ScenarioAbility
-                   `notElem` cdCommitRestrictions pcDef
-                   || isScenarioAbility
-                   )
-            _ -> False
+          else flip
+            filter
+            investigatorHand
+            \case
+              PlayerCard MkPlayerCard {..} ->
+                let
+                  passesRestrictions = flip
+                    all
+                    (cdCommitRestrictions pcDef)
+                    \case
+                      MaxOnePerTest ->
+                        cdCardCode pcDef `notElem` committedCardCodes
+                      OnlyYourTest -> False
+                      ScenarioAbility -> isScenarioAbility
+                      MinSkillTestValueDifference n ->
+                        (skillDifficulty
+                          - baseSkillValueFor skillType Nothing [] a
+                          )
+                          >= n
+                in
+                  pcId
+                  `notElem` committedCardIds
+                  && (SkillWild
+                     `elem` cdSkills pcDef
+                     || skillType
+                     `elem` cdSkills pcDef
+                     )
+                  && passesRestrictions
+              _ -> False
       when (notNull committableCards || notNull committedCardIds) $ push
         (SkillTestAsk $ chooseOne
           investigatorId

@@ -45,6 +45,7 @@ data Event
   | Elusive' Elusive
   | EmergencyAid' EmergencyAid
   | EmergencyCache' EmergencyCache
+  | EmergencyCache2' EmergencyCache2
   | Evidence' Evidence
   | ExtraAmmunition1' ExtraAmmunition1
   | FirstWatch' FirstWatch
@@ -157,6 +158,7 @@ allEvents = mapFromList $ map
   , Elusive' <$> elusive
   , EmergencyAid' <$> emergencyAid
   , EmergencyCache' <$> emergencyCache
+  , EmergencyCache2' <$> emergencyCache2
   , Evidence' <$> evidence
   , ExtraAmmunition1' <$> extraAmmunition1
   , FirstWatch' <$> firstWatch

@@ -51,6 +51,7 @@ allPlayerSkillCards = mapFromList $ map
   , opportunist
   , overpower
   , perception
+  , riseToTheOccasion
   , survivalInstinct
   , trueUnderstanding
   , unexpectedCourage
@@ -126,6 +127,17 @@ deduction2 = (skill "02150" "Deduction" [SkillIntellect, SkillIntellect] Seeker
              )
   { cdCardTraits = setFromList [Practiced, Expert]
   , cdLevel = 2
+  }
+
+riseToTheOccasion :: CardDef
+riseToTheOccasion = (skill
+                      "02192"
+                      "Rise to the Occasion"
+                      [SkillWild, SkillWild, SkillWild]
+                      Survivor
+                    )
+  { cdCardTraits = singleton Innate
+  , cdCommitRestrictions = [OnlyYourTest]
   }
 
 trueUnderstanding :: CardDef

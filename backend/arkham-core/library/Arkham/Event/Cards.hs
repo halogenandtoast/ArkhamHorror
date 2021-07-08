@@ -88,6 +88,7 @@ allPlayerEventCards = mapFromList $ map
   , mindWipe3
   , onTheLam
   , oops
+  , preparedForTheWorst
   , searchForTheTruth
   , secondWind
   , seekingAnswers
@@ -440,6 +441,12 @@ lure1 = (event "02156" "Lure" 1 Survivor)
   { cdSkills = [SkillAgility, SkillAgility]
   , cdCardTraits = singleton Trick
   , cdLevel = 1
+  }
+
+preparedForTheWorst :: CardDef
+preparedForTheWorst = (event "02184" "Prepared for the Worst" 1 Guardian)
+  { cdSkills = [SkillIntellect, SkillCombat]
+  , cdCardTraits = singleton Tactic
   }
 
 letMeHandleThis :: CardDef

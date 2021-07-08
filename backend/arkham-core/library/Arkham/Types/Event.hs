@@ -63,6 +63,7 @@ data Event
   | MindWipe3' MindWipe3
   | OnTheLam' OnTheLam
   | Oops' Oops
+  | PreparedForTheWorst' PreparedForTheWorst
   | SearchForTheTruth' SearchForTheTruth
   | SecondWind' SecondWind
   | SeekingAnswers' SeekingAnswers
@@ -172,6 +173,7 @@ allEvents = mapFromList $ map
   , MindWipe3' <$> mindWipe3
   , OnTheLam' <$> onTheLam
   , Oops' <$> oops
+  , PreparedForTheWorst' <$> preparedForTheWorst
   , SearchForTheTruth' <$> searchForTheTruth
   , SecondWind' <$> secondWind
   , SeekingAnswers' <$> seekingAnswers

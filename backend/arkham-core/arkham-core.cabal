@@ -438,6 +438,7 @@ library
       Arkham.Types.Event.Cards.MindWipe3
       Arkham.Types.Event.Cards.OnTheLam
       Arkham.Types.Event.Cards.Oops
+      Arkham.Types.Event.Cards.PreparedForTheWorst
       Arkham.Types.Event.Cards.SearchForTheTruth
       Arkham.Types.Event.Cards.SecondWind
       Arkham.Types.Event.Cards.SeekingAnswers

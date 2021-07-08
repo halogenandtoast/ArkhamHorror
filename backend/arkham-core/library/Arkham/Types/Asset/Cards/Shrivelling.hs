@@ -28,9 +28,8 @@ shrivelling = arcane Shrivelling Cards.shrivelling
 instance HasModifiersFor env Shrivelling where
   getModifiersFor = noModifiersFor
 
-instance ActionRunner env => HasActions env Shrivelling where
-  getActions iid window (Shrivelling a) | ownedBy a iid = do
-    fightAvailable <- hasFightActions iid window
+instance HasActions env Shrivelling where
+  getActions iid _ (Shrivelling a) | ownedBy a iid = do
     pure
       [ UseAbility
           iid
@@ -42,7 +41,6 @@ instance ActionRunner env => HasActions env Shrivelling where
               (Costs [ActionCost 1, UseCost (toId a) Charge 1])
             )
           )
-      | fightAvailable
       ]
   getActions _ _ _ = pure []
 

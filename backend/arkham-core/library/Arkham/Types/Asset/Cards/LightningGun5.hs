@@ -10,7 +10,7 @@ import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Uses (Uses(..), useCount)
+import Arkham.Types.Asset.Uses (Uses(..))
 import qualified Arkham.Types.Asset.Uses as Resource
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -27,19 +27,19 @@ lightningGun5 :: AssetCard LightningGun5
 lightningGun5 =
   assetWith LightningGun5 Cards.lightningGun5 (slotsL .~ [HandSlot, HandSlot])
 
-instance ActionRunner env => HasActions env LightningGun5 where
-  getActions iid window (LightningGun5 a) | ownedBy a iid = do
-    fightAvailable <- hasFightActions iid window
-    pure
-      [ UseAbility
-          iid
-          (mkAbility
-            (toSource a)
-            1
-            (ActionAbility (Just Action.Fight) (ActionCost 1))
+instance HasActions env LightningGun5 where
+  getActions iid _ (LightningGun5 a) | ownedBy a iid = pure
+    [ UseAbility
+        iid
+        (mkAbility
+          (toSource a)
+          1
+          (ActionAbility
+            (Just Action.Fight)
+            (Costs [ActionCost 1, UseCost (toId a) Resource.Ammo 1])
           )
-      | useCount (assetUses a) > 0 && fightAvailable
-      ]
+        )
+    ]
   getActions _ _ _ = pure []
 
 instance HasModifiersFor env LightningGun5 where

@@ -18,7 +18,6 @@ import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Kukri = Kukri AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -26,19 +25,16 @@ newtype Kukri = Kukri AssetAttrs
 kukri :: AssetCard Kukri
 kukri = hand Kukri Cards.kukri
 
-instance ActionRunner env => HasActions env Kukri where
-  getActions iid NonFast (Kukri a) | ownedBy a iid = do
-    fightAvailable <- hasFightActions iid NonFast
-    pure
-      [ UseAbility
-          iid
-          (mkAbility
-            (toSource a)
-            1
-            (ActionAbility (Just Action.Fight) (ActionCost 1))
-          )
-      | fightAvailable
-      ]
+instance HasActions env Kukri where
+  getActions iid _ (Kukri a) | ownedBy a iid = pure
+    [ UseAbility
+        iid
+        (mkAbility
+          (toSource a)
+          1
+          (ActionAbility (Just Action.Fight) (ActionCost 1))
+        )
+    ]
   getActions _ _ _ = pure []
 
 instance HasModifiersFor env Kukri where

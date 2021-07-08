@@ -37,10 +37,9 @@ fightAbility :: AssetAttrs -> Ability
 fightAbility a =
   mkAbility a 1 (ActionAbility (Just Action.Fight) (ActionCost 1))
 
-instance ActionRunner env  => HasActions env BaseballBat where
-  getActions iid window (BaseballBat a) | ownedBy a iid = do
-    fightAvailable <- hasFightActions iid window
-    pure [ UseAbility iid (fightAbility a) | fightAvailable ]
+instance HasActions env BaseballBat where
+  getActions iid _ (BaseballBat a) | ownedBy a iid = do
+    pure [UseAbility iid (fightAbility a)]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env BaseballBat where

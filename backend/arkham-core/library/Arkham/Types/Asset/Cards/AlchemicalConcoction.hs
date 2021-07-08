@@ -27,14 +27,11 @@ newtype AlchemicalConcoction = AlchemicalConcoction AssetAttrs
 alchemicalConcoction :: AssetCard AlchemicalConcoction
 alchemicalConcoction = asset AlchemicalConcoction Cards.alchemicalConcoction
 
-instance ActionRunner env => HasActions env AlchemicalConcoction where
-  getActions iid window (AlchemicalConcoction a) | ownedBy a iid = do
-    fightAvailable <- hasFightActions iid window
-    pure
-      [ UseAbility iid
-          $ mkAbility a 1 (ActionAbility (Just Action.Fight) $ ActionCost 1)
-      | fightAvailable
-      ]
+instance HasActions env AlchemicalConcoction where
+  getActions iid _ (AlchemicalConcoction a) | ownedBy a iid = pure
+    [ UseAbility iid
+        $ mkAbility a 1 (ActionAbility (Just Action.Fight) $ ActionCost 1)
+    ]
   getActions _ _ _ = pure []
 
 instance (HasId CardCode env EnemyId, HasSkillTest env) => HasModifiersFor env AlchemicalConcoction where

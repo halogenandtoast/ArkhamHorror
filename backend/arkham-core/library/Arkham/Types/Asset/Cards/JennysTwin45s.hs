@@ -30,22 +30,19 @@ jennysTwin45s =
 instance HasModifiersFor env JennysTwin45s where
   getModifiersFor = noModifiersFor
 
-instance ActionRunner env => HasActions env JennysTwin45s where
-  getActions iid window (JennysTwin45s a) | ownedBy a iid = do
-    fightAvailable <- hasFightActions iid window
-    pure
-      [ UseAbility
-          iid
-          (mkAbility
-            (toSource a)
-            1
-            (ActionAbility
-              (Just Action.Fight)
-              (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
-            )
+instance HasActions env JennysTwin45s where
+  getActions iid _ (JennysTwin45s a) | ownedBy a iid = pure
+    [ UseAbility
+        iid
+        (mkAbility
+          (toSource a)
+          1
+          (ActionAbility
+            (Just Action.Fight)
+            (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
           )
-      | fightAvailable
-      ]
+        )
+    ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env JennysTwin45s where

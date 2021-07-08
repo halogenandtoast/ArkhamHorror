@@ -29,22 +29,19 @@ springfieldM19034 =
     $ slotsL
     .~ [HandSlot, HandSlot]
 
-instance ActionRunner env => HasActions env SpringfieldM19034 where
-  getActions iid window (SpringfieldM19034 a) | ownedBy a iid = do
-    fightAvailable <- hasFightActions iid window
-    pure
-      [ UseAbility
-          iid
-          (mkAbility
-            (toSource a)
-            1
-            (ActionAbility
-              (Just Action.Fight)
-              (Costs [ActionCost 1, UseCost (toId a) Resource.Ammo 1])
-            )
+instance HasActions env SpringfieldM19034 where
+  getActions iid _ (SpringfieldM19034 a) | ownedBy a iid = pure
+    [ UseAbility
+        iid
+        (mkAbility
+          (toSource a)
+          1
+          (ActionAbility
+            (Just Action.Fight)
+            (Costs [ActionCost 1, UseCost (toId a) Resource.Ammo 1])
           )
-      | fightAvailable
-      ]
+        )
+    ]
   getActions _ _ _ = pure []
 
 instance HasModifiersFor env SpringfieldM19034 where

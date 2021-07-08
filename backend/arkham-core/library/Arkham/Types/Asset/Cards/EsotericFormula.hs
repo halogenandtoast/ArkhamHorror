@@ -28,10 +28,9 @@ newtype EsotericFormula = EsotericFormula AssetAttrs
 esotericFormula :: AssetCard EsotericFormula
 esotericFormula = asset EsotericFormula Cards.esotericFormula
 
-instance (HasActions env ActionType, HasSet Trait env EnemyId, HasSet FightableEnemyId env (InvestigatorId, Source)) => HasActions env EsotericFormula where
+instance (HasSet Trait env EnemyId, HasSet FightableEnemyId env (InvestigatorId, Source)) => HasActions env EsotericFormula where
   getActions iid window (EsotericFormula attrs) | ownedBy attrs iid =
     withBaseActions iid window attrs $ do
-      fightAvailable <- hasFightActions iid window
       fightableEnemies <- map unFightableEnemyId
         <$> getSetList (iid, toSource attrs)
       anyAbominations <- anyM
@@ -45,7 +44,7 @@ instance (HasActions env ActionType, HasSet Trait env EnemyId, HasSet FightableE
               1
               (ActionAbility (Just Action.Fight) (ActionCost 1))
             )
-        | fightAvailable && anyAbominations
+        | anyAbominations
         ]
   getActions iid window (EsotericFormula attrs) = getActions iid window attrs
 

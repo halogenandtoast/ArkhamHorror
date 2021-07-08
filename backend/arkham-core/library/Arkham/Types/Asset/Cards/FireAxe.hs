@@ -47,10 +47,9 @@ instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env FireAx
       pure $ toModifiers a [ DamageDealt 1 | resourceCount == 0 ]
   getModifiersFor _ _ _ = pure []
 
-instance (ActionRunner env, HasSkillTest env) => HasActions env FireAxe where
-  getActions iid NonFast (FireAxe a) | ownedBy a iid = do
-    fightAvailable <- hasFightActions iid NonFast
-    pure [ UseAbility iid (fightAbility a) | fightAvailable ]
+instance HasSkillTest env => HasActions env FireAxe where
+  getActions iid NonFast (FireAxe a) | ownedBy a iid =
+    pure [UseAbility iid (fightAbility a)]
   getActions iid (WhenSkillTest _) (FireAxe a) | ownedBy a iid = do
     msource <- getSkillTestSource
     let

@@ -22,13 +22,9 @@ newtype SongOfTheDead2 = SongOfTheDead2 AssetAttrs
 songOfTheDead2 :: AssetCard SongOfTheDead2
 songOfTheDead2 = arcane SongOfTheDead2 Cards.songOfTheDead2
 
-instance ActionRunner env => HasActions env SongOfTheDead2 where
-  getActions iid window (SongOfTheDead2 a) = whenOwnedBy a iid $ do
-    fightAvailable <- hasFightActions iid window
-    pure
-      $ [ fightAction iid a 1 [ActionCost 1, UseCost (toId a) Charge 1]
-        | fightAvailable
-        ]
+instance HasActions env SongOfTheDead2 where
+  getActions iid _ (SongOfTheDead2 a) = whenOwnedBy a iid
+    $ pure [fightAction iid a 1 [ActionCost 1, UseCost (toId a) Charge 1]]
 
 instance HasModifiersFor env SongOfTheDead2 where
   getModifiersFor = noModifiersFor

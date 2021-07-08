@@ -5,7 +5,7 @@ module Arkham.Types.Game.Helpers where
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.Action hiding (Ability)
+import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.CampaignLogKey
@@ -72,13 +72,39 @@ withBaseActions
 withBaseActions iid window a f = (<>) <$> getActions iid window a <*> f
 
 getCanPerformAbility
-  :: (MonadReader env m, HasId LocationId env InvestigatorId)
+  :: ( MonadReader env m
+     , MonadIO m
+     , HasId LocationId env InvestigatorId
+     , HasActions env ActionType
+     )
   => InvestigatorId
+  -> Window
   -> Ability
   -> m Bool
-getCanPerformAbility iid Ability {..} = case abilityRestrictions of
-  Nothing -> pure True
-  Just restriction -> getCanPerformAbilityRestriction iid restriction
+getCanPerformAbility iid window Ability {..} =
+  (&&) <$> meetsAbilityRestrictions <*> meetsActionRestrictions
+ where
+  meetsAbilityRestrictions = case abilityRestrictions of
+    Nothing -> pure True
+    Just restriction -> getCanPerformAbilityRestriction iid restriction
+  meetsActionRestrictions = case abilityType of
+    ActionAbility (Just action) _ -> case action of
+      Action.Fight -> hasFightActions iid window
+      Action.Evade -> hasEvadeActions iid window
+      Action.Investigate -> hasInvestigateActions iid window
+      -- The below actions may not be handled correctly yet
+      Action.Ability -> pure True
+      Action.Draw -> pure True
+      Action.Engage -> pure True
+      Action.Move -> pure True
+      Action.Parley -> pure True
+      Action.Play -> pure True
+      Action.Resign -> pure True
+      Action.Resource -> pure True
+    ActionAbility Nothing _ -> pure True
+    FastAbility _ -> pure True
+    ReactionAbility _ -> pure True
+    ForcedAbility -> pure True
 
 getCanPerformAbilityRestriction
   :: (MonadReader env m, HasId LocationId env InvestigatorId)
@@ -282,7 +308,7 @@ instance
               getCanAffordCost iid (LocationSource lid) (Just Action.Move) cost
             _ -> pure True
           canPerformAction = \case
-            UseAbility _ ability -> getCanPerformAbility iid ability
+            UseAbility _ ability -> getCanPerformAbility iid window ability
             _ -> pure True
         filterM
           (\action ->
@@ -655,3 +681,36 @@ fightAction iid source n costs = UseAbility
     n
     (ActionAbility (Just Action.Fight) (Costs costs))
   )
+
+hasFightActions
+  :: forall env m
+   . (MonadIO m, MonadReader env m, HasActions env ActionType)
+  => InvestigatorId
+  -> Window
+  -> m Bool
+hasFightActions i NonFast = do
+  enemyActions <- getActions i NonFast EnemyActionType
+  pure $ or [ True | FightEnemy{} <- enemyActions ]
+hasFightActions _ _ = pure False
+
+hasEvadeActions
+  :: forall env m
+   . (MonadIO m, MonadReader env m, HasActions env ActionType)
+  => InvestigatorId
+  -> Window
+  -> m Bool
+hasEvadeActions i NonFast = do
+  enemyActions <- getActions i NonFast EnemyActionType
+  pure $ or [ True | EvadeEnemy{} <- enemyActions ]
+hasEvadeActions _ _ = pure False
+
+hasInvestigateActions
+  :: forall env m
+   . (MonadIO m, MonadReader env m, HasActions env ActionType)
+  => InvestigatorId
+  -> Window
+  -> m Bool
+hasInvestigateActions i NonFast = do
+  locationActions <- getActions i NonFast LocationActionType
+  pure $ or [ True | Investigate{} <- locationActions ]
+hasInvestigateActions _ _ = pure False

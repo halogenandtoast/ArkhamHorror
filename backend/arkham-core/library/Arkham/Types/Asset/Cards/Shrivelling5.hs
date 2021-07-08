@@ -1,6 +1,6 @@
-module Arkham.Types.Asset.Cards.Shrivelling
-  ( Shrivelling(..)
-  , shrivelling
+module Arkham.Types.Asset.Cards.Shrivelling5
+  ( Shrivelling5(..)
+  , shrivelling5
   ) where
 
 import Arkham.Prelude
@@ -14,22 +14,23 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 
-newtype Shrivelling = Shrivelling AssetAttrs
+newtype Shrivelling5 = Shrivelling5 AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
-shrivelling :: AssetCard Shrivelling
-shrivelling = arcane Shrivelling Cards.shrivelling
+shrivelling5 :: AssetCard Shrivelling5
+shrivelling5 = arcane Shrivelling5 Cards.shrivelling5
 
-instance HasModifiersFor env Shrivelling where
+instance HasModifiersFor env Shrivelling5 where
   getModifiersFor = noModifiersFor
 
-instance ActionRunner env => HasActions env Shrivelling where
-  getActions iid window (Shrivelling a) | ownedBy a iid = do
+instance ActionRunner env => HasActions env Shrivelling5 where
+  getActions iid window (Shrivelling5 a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid window
     pure
       [ UseAbility
@@ -46,13 +47,21 @@ instance ActionRunner env => HasActions env Shrivelling where
       ]
   getActions _ _ _ = pure []
 
-instance AssetRunner env => RunMessage env Shrivelling where
-  runMessage msg a@(Shrivelling attrs) = case msg of
+instance AssetRunner env => RunMessage env Shrivelling5 where
+  runMessage msg a@(Shrivelling5 attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      Shrivelling <$> runMessage msg (attrs & usesL .~ Uses Charge 4)
+      Shrivelling5 <$> runMessage msg (attrs & usesL .~ Uses Charge 4)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
-      [ skillModifiers attrs (InvestigatorTarget iid) [DamageDealt 1]
-      , CreateEffect "01060" Nothing source (InvestigatorTarget iid)
+      [ skillModifiers
+        attrs
+        (InvestigatorTarget iid)
+        [SkillModifier SkillWillpower 3, DamageDealt 2]
+      , CreateEffect
+        "01060"
+        (Just $ EffectInt 2)
+        source
+        (InvestigatorTarget iid)
+      -- ^ reusing shrivelling(0)'s effect with a damage override
       , ChooseFightEnemy iid source SkillWillpower mempty False
       ]
-    _ -> Shrivelling <$> runMessage msg attrs
+    _ -> Shrivelling5 <$> runMessage msg attrs

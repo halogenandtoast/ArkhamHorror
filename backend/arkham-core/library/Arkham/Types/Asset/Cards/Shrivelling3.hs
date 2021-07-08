@@ -1,6 +1,6 @@
-module Arkham.Types.Asset.Cards.Shrivelling
-  ( Shrivelling(..)
-  , shrivelling
+module Arkham.Types.Asset.Cards.Shrivelling3
+  ( Shrivelling3(..)
+  , shrivelling3
   ) where
 
 import Arkham.Prelude
@@ -19,17 +19,17 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 
-newtype Shrivelling = Shrivelling AssetAttrs
+newtype Shrivelling3 = Shrivelling3 AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
-shrivelling :: AssetCard Shrivelling
-shrivelling = arcane Shrivelling Cards.shrivelling
+shrivelling3 :: AssetCard Shrivelling3
+shrivelling3 = arcane Shrivelling3 Cards.shrivelling3
 
-instance HasModifiersFor env Shrivelling where
+instance HasModifiersFor env Shrivelling3 where
   getModifiersFor = noModifiersFor
 
-instance ActionRunner env => HasActions env Shrivelling where
-  getActions iid window (Shrivelling a) | ownedBy a iid = do
+instance ActionRunner env => HasActions env Shrivelling3 where
+  getActions iid window (Shrivelling3 a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid window
     pure
       [ UseAbility
@@ -46,13 +46,17 @@ instance ActionRunner env => HasActions env Shrivelling where
       ]
   getActions _ _ _ = pure []
 
-instance AssetRunner env => RunMessage env Shrivelling where
-  runMessage msg a@(Shrivelling attrs) = case msg of
+instance AssetRunner env => RunMessage env Shrivelling3 where
+  runMessage msg a@(Shrivelling3 attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      Shrivelling <$> runMessage msg (attrs & usesL .~ Uses Charge 4)
+      Shrivelling3 <$> runMessage msg (attrs & usesL .~ Uses Charge 4)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
-      [ skillModifiers attrs (InvestigatorTarget iid) [DamageDealt 1]
+      [ skillModifiers
+        attrs
+        (InvestigatorTarget iid)
+        [SkillModifier SkillWillpower 2, DamageDealt 1]
       , CreateEffect "01060" Nothing source (InvestigatorTarget iid)
+      -- reusing shrivelling(0)'s effect
       , ChooseFightEnemy iid source SkillWillpower mempty False
       ]
-    _ -> Shrivelling <$> runMessage msg attrs
+    _ -> Shrivelling3 <$> runMessage msg attrs

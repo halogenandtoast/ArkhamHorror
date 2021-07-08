@@ -65,6 +65,7 @@ executables:
       - classy-prelude
       - arkham-core
       - aeson
+      - directory
       - text
       - MonadRandom
 

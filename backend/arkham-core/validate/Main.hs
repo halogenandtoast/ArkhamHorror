@@ -25,6 +25,7 @@ import Control.Exception
 import Control.Monad.Random.Lazy
 import Data.Aeson
 import qualified Data.Text as T
+import System.Directory
 import Text.Read (readEither)
 
 data CardJson = CardJson
@@ -385,6 +386,29 @@ runValidations cards = do
             assetStats
           )
 
+normalizeImageCardCode :: CardCode -> Text
+normalizeImageCardCode "02214" = "02214b"
+normalizeImageCardCode other = unCardCode other
+
+runMissingImages :: IO ()
+runMissingImages = do
+  missing <- catMaybes <$> for
+    (keys . filterTest $ mapToList allCards)
+    \ccode -> do
+      let
+        filename = unpack $ normalizeImageCardCode ccode <> ".jpg"
+        filepath =
+          ".."
+            </> "frontend"
+            </> "public"
+            </> "img"
+            </> "arkham"
+            </> "cards"
+            </> filename
+      exists <- doesFileExist filepath
+      pure $ if exists then Nothing else Just (unCardCode ccode)
+  traverse_ putStrLn (sort missing)
+
 main :: IO ()
 main = do
   ecards <- eitherDecodeFileStrict @[CardJson] ("data" </> "cards.json")
@@ -395,4 +419,5 @@ main = do
     ["validate"] -> runValidations cards
     ["missing"] -> runMissing Nothing cards
     ["missing", packCode] -> runMissing (Just packCode) cards
+    ["images"] -> runMissingImages
     _ -> error "Usage: [validate] | missing [pack_code]"

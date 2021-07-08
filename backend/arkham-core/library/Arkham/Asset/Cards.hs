@@ -140,6 +140,7 @@ allPlayerAssetCards = mapFromList $ map
   , magnifyingGlass1
   , medicalTexts
   , monstrousTransformation
+  , newspaper
   , occultLexicon
   , oldBookOfLore
   , pathfinder1
@@ -811,6 +812,12 @@ shrivelling3 = (asset "02154" "Shrivelling" 3 Mystic)
   { cdSkills = [SkillWillpower, SkillCombat]
   , cdCardTraits = singleton Spell
   , cdLevel = 3
+  }
+
+newspaper :: CardDef
+newspaper = (asset "02155" "Newspaper" 1 Survivor)
+  { cdSkills = [SkillIntellect]
+  , cdCardTraits = singleton Item
   }
 
 relicHunter3 :: CardDef

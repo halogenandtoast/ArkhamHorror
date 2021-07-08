@@ -14,6 +14,8 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Effect.Window
+import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -59,12 +61,17 @@ instance (AssetRunner env) => RunMessage env Shotgun4 where
       , ChooseFightEnemy iid source SkillCombat mempty False
       ]
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
-      | isSource attrs source -> a <$ push
-        (skillTestModifier
-          attrs
-          (InvestigatorTarget iid)
-          (DamageDealt $ min 1 (max 5 n))
-        )
+      | isSource attrs source
+      -> let val = min 1 (max 5 n)
+         in
+           -- This has to be handled specially for cards like Oops!
+           a <$ push
+             (CreateWindowModifierEffect
+               EffectSkillTestWindow
+               (FailedByEffectModifiers $ toModifiers attrs [DamageDealt val])
+               source
+               (InvestigatorTarget iid)
+             )
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> a <$ push
         (skillTestModifier

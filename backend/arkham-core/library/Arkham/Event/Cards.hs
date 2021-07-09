@@ -76,6 +76,7 @@ allPlayerEventCards = mapFromList $ map
   , hotStreak2
   , hotStreak4
   , hypnoticGaze
+  , ifItBleeds
   , imOuttaHere
   , iveGotAPlan
   , iveGotAPlan2
@@ -463,6 +464,13 @@ emergencyCache2 :: CardDef
 emergencyCache2 = (event "02194" "Emergency Cache" 0 Neutral)
   { cdCardTraits = setFromList [Supply]
   , cdLevel = 2
+  }
+
+ifItBleeds :: CardDef
+ifItBleeds = (event "02225" "\"If it bleeds...\"" 1 Guardian)
+  { cdSkills = [SkillWillpower, SkillCombat]
+  , cdFast = True
+  , cdWindows = setFromList [AfterEnemyDefeatedOfType You Monster]
   }
 
 letMeHandleThis :: CardDef

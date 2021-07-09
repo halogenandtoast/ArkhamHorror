@@ -43,7 +43,7 @@ data CardDef = CardDef
   , cdCardTraits :: HashSet Trait
   , cdKeywords :: HashSet Keyword
   , cdFast :: Bool
-  , cdWindows :: HashSet Window
+  , cdWindows :: HashSet WindowType
   , cdAction :: Maybe Action
   , cdRevelation :: Bool
   , cdVictoryPoints :: Maybe Int

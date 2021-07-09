@@ -34,7 +34,7 @@ import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.Window (Who, Window)
+import Arkham.Types.Window (Who, Window, WindowType)
 import qualified Arkham.Types.Window as Window
 import qualified Data.HashSet as HashSet
 import GHC.Generics
@@ -211,7 +211,7 @@ type ActionRunner env
     )
 
 class HasActions1 env f where
-  getActions1 :: (MonadReader env m, MonadIO m) => InvestigatorId -> Window -> f p -> m [Message]
+  getActions1 :: (MonadReader env m, MonadIO m) => InvestigatorId -> WindowType -> f p -> m [Message]
 
 instance HasActions1 env f => HasActions1 env (M1 i c f) where
   getActions1 iid window (M1 x) = getActions1 iid window x
@@ -226,14 +226,14 @@ instance (HasActions env p) => HasActions1 env (K1 R p) where
 defaultGetActions
   :: (Generic a, HasActions1 env (Rep a), MonadReader env m, MonadIO m)
   => InvestigatorId
-  -> Window
+  -> WindowType
   -> a
   -> m [Message]
 defaultGetActions iid window = getActions1 iid window . from
 
 class HasActions env a where
-  getActions :: (MonadReader env m, MonadIO m) => InvestigatorId -> Window -> a -> m [Message]
-  default getActions :: (Generic a, HasActions1 env (Rep a), MonadReader env m, MonadIO m) => InvestigatorId -> Window -> a -> m [Message]
+  getActions :: (MonadReader env m, MonadIO m) => InvestigatorId -> WindowType -> a -> m [Message]
+  default getActions :: (Generic a, HasActions1 env (Rep a), MonadReader env m, MonadIO m) => InvestigatorId -> WindowType -> a -> m [Message]
   getActions = defaultGetActions
 
 class HasModifiersFor1 env f where

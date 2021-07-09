@@ -16,11 +16,20 @@ import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 
-data Window
+data Window = Window
+  { windowSource :: Maybe Source
+  , windowTarget :: Maybe Target
+  , windowType :: WindowType
+  }
+  deriving stock (Show, Generic, Eq)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data WindowType
   = AfterDiscoveringClues Who Where -- name conflict resolution
   | AfterDrawCard Who CardId
   | AfterEndTurn Who
   | AfterEnemyDefeated Who EnemyId
+  | AfterEnemyDefeatedOfType Who Trait
   | AfterEnemyEngageInvestigator Who EnemyId
   | AfterEnemyEvaded Who EnemyId
   | AfterFailInvestigationSkillTest Who Int

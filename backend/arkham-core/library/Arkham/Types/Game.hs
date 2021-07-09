@@ -2346,8 +2346,15 @@ runGameMessage msg g = case msg of
       Nothing -> error "enemy was not in void"
   EnemyDefeated eid iid _ _ _ _ -> do
     broadcastWindow Fast.WhenEnemyDefeated iid g
-    afterMsgs <- checkWindows iid (\who -> pure [AfterEnemyDefeated who eid])
     enemy <- getEnemy eid
+    traits <- getSetList @Trait eid
+    afterMsgs <- checkWindows
+      iid
+      (\who ->
+        pure
+          $ AfterEnemyDefeated who eid
+          : [ AfterEnemyDefeatedOfType who trait | trait <- traits ]
+      )
     let card = toCard enemy
     if isJust (getEnemyVictory enemy)
       then do

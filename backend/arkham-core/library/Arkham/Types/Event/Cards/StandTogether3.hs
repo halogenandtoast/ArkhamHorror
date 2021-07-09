@@ -30,7 +30,7 @@ instance
   )
   => RunMessage env StandTogether3 where
   runMessage msg e@(StandTogether3 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId attrs -> do
+    InvestigatorPlayEvent iid eid _ _ | eid == eventId attrs -> do
       locationId <- getId @LocationId iid
       investigatorIds <- filter (/= iid)
         <$> getSetList @InvestigatorId locationId

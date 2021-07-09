@@ -629,7 +629,7 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
 cardInWindows :: [WindowType] -> Card -> InvestigatorAttrs -> Bool
 cardInWindows windows c _ = case c of
   PlayerCard pc ->
-    notNull $ cdWindows (pcDef pc) `intersect` setFromList windows
+    notNull $ cdFastWindows (pcDef pc) `intersect` setFromList windows
   _ -> False
 
 getPlayableCards
@@ -1331,7 +1331,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
          , PayCardCost iid cardId
          ]
         <> aooMessage
-        <> [PlayCard iid cardId mtarget window False]
+        <> [PlayCard iid cardId mtarget windows False]
         )
       else pure a
   PlayedCard iid cardId _ _ | iid == investigatorId ->
@@ -1922,7 +1922,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
              && CannotDrawCards
              `notElem` modifiers
            ]
-        <> [ InitiatePlayCard iid (toCardId c) Nothing True
+        <> [ PlayCard
+               iid
+               (toCardId c)
+               Nothing
+               [ Window Nothing Nothing (DuringTurn You)
+               , Window Nothing Nothing NonFast
+               ]
+               True
            | c <- investigatorHand
            , canAffordPlayCard || fastIsPlayable c
            , isPlayable c && not (isDynamic c)

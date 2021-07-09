@@ -33,7 +33,7 @@ instance (EventRunner env) => RunMessage env DarkMemory where
         0
         2
       ]
-    InvestigatorPlayEvent _ eid _ | eid == eventId -> do
+    InvestigatorPlayEvent _ eid _ _ | eid == eventId -> do
       e <$ pushAll
         [ PlaceDoomOnAgenda
         , AdvanceAgendaIfThresholdSatisfied

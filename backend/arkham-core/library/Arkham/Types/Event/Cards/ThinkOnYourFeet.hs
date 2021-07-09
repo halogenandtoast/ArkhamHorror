@@ -31,7 +31,7 @@ instance
   )
   => RunMessage env ThinkOnYourFeet where
   runMessage msg e@(ThinkOnYourFeet attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       lid <- getId @LocationId iid
       connectedLocationIds <- map unAccessibleLocationId <$> getSetList lid
       e <$ pushAll

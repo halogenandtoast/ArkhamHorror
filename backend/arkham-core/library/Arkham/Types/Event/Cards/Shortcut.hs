@@ -32,7 +32,7 @@ instance
   )
   => RunMessage env Shortcut where
   runMessage msg e@(Shortcut attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       lid <- getId @LocationId iid
       investigatorIds <- getSetList lid
       connectingLocations <- map unAccessibleLocationId <$> getSetList lid

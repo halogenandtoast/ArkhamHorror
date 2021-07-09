@@ -27,7 +27,7 @@ instance HasModifiersFor env PreparedForTheWorst where
 
 instance RunMessage env PreparedForTheWorst where
   runMessage msg e@(PreparedForTheWorst attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
       e <$ pushAll
         [ SearchTopOfDeck
           iid

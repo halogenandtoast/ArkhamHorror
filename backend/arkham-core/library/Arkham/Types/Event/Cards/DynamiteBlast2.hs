@@ -26,7 +26,7 @@ instance HasActions env DynamiteBlast2 where
 instance (EventRunner env) => RunMessage env DynamiteBlast2 where
   -- TODO: Does not provoke attacks of opportunity
   runMessage msg e@(DynamiteBlast2 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       currentLocationId <- getId @LocationId iid
       connectedLocationIds <- map unConnectedLocationId
         <$> getSetList currentLocationId

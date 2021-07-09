@@ -35,7 +35,7 @@ instance
   )
   => RunMessage env Contraband where
   runMessage msg e@(Contraband attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       locationId <- getId @LocationId iid
       investigatorIds <- getSetList @InvestigatorId locationId
       ammoAssets <- concat

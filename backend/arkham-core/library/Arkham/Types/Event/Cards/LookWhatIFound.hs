@@ -23,7 +23,7 @@ instance HasActions env LookWhatIFound where
 
 instance (EventRunner env) => RunMessage env LookWhatIFound where
   runMessage msg e@(LookWhatIFound attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       lid <- getId iid
       e
         <$ pushAll

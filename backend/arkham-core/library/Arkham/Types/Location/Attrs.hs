@@ -526,6 +526,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
                   InvestigatorAtAConnectedLocation ->
                     WhenDiscoverClues who ConnectedLocation
                   InvestigatorInGame -> WhenDiscoverClues who LocationInGame
+                  Anyone -> WhenDiscoverClues who LocationInGame
           ]
         )
       a <$ pushAll
@@ -543,6 +544,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
                     AfterDiscoveringClues who ConnectedLocation
                   InvestigatorInGame ->
                     AfterDiscoveringClues who LocationInGame
+                  Anyone -> AfterDiscoveringClues who LocationInGame
           ]
         )
       pushAll checkWindowMsgs

@@ -7,8 +7,9 @@ import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 import Arkham.Types.Message
-import Arkham.Types.Target
--- import Arkham.Types.Window
+import Arkham.Types.Window
+import Data.List.Extra (firstJust)
+import Data.Maybe (fromJust)
 
 newtype SureGamble3 = SureGamble3 EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -28,8 +29,16 @@ instance HasActions env SureGamble3 where
 
 instance EventRunner env => RunMessage env SureGamble3 where
   runMessage msg e@(SureGamble3 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent _ eid (Just target@(TokenTarget _))
-      | eid == eventId -> e <$ pushAll
+    InvestigatorPlayEvent _ eid _ windows | eid == eventId -> do
+      let
+        target = fromJust $ flip
+          firstJust
+          windows
+          \window -> case windowType window of
+            AfterRevealToken You TokenWithNegativeModifier ->
+              windowTarget window
+            _ -> Nothing
+      e <$ pushAll
         [ CreateEffect "01088" Nothing (toSource attrs) target
         , Discard (toTarget attrs)
         ]

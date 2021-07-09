@@ -41,7 +41,7 @@ instance HasModifiersFor env Lure1 where
 
 instance HasId LocationId env InvestigatorId => RunMessage env Lure1 where
   runMessage msg e@(Lure1 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
       lid <- getId iid
       e <$ push (AttachEvent eid (LocationTarget lid))
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do

@@ -41,7 +41,7 @@ instance
   )
   => RunMessage env Teamwork where
   runMessage msg e@(Teamwork attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid mtarget | eid == eventId ->
+    InvestigatorPlayEvent iid eid mtarget _ | eid == eventId ->
       e <$ push (ResolveEvent iid eid mtarget)
     ResolveEvent iid eid mtarget | eid == eventId -> do
       locationId <- getId @LocationId iid

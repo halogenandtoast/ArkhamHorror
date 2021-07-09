@@ -23,7 +23,7 @@ instance HasActions env SearchForTheTruth where
 
 instance (HasQueue env, HasCount ClueCount env InvestigatorId) => RunMessage env SearchForTheTruth where
   runMessage msg e@(SearchForTheTruth attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       clueCount' <- unClueCount <$> getCount iid
       e <$ pushAll
         [DrawCards iid (min 5 clueCount') False, Discard (toTarget attrs)]

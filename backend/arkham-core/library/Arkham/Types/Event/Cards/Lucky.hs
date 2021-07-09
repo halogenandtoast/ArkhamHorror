@@ -24,7 +24,7 @@ instance HasActions env Lucky where
 
 instance (EventRunner env) => RunMessage env Lucky where
   runMessage msg e@(Lucky attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ pushAll
+    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> e <$ pushAll
       [ Discard (EventTarget eid)
       , CreateEffect "01080" Nothing (EventSource eid) (InvestigatorTarget iid)
       ]

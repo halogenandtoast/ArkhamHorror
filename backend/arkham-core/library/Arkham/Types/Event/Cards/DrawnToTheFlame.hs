@@ -23,7 +23,7 @@ instance HasActions env DrawnToTheFlame where
 
 instance (EventRunner env) => RunMessage env DrawnToTheFlame where
   runMessage msg e@(DrawnToTheFlame attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ pushAll
+    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> e <$ pushAll
       [ InvestigatorDrawEncounterCard iid
       , InvestigatorDiscoverCluesAtTheirLocation iid 2 Nothing
       , Discard (EventTarget eid)

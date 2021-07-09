@@ -18,6 +18,9 @@ storyAsset :: CardCode -> Name -> Int -> EncounterSet -> CardDef
 storyAsset cardCode name cost encounterSet =
   baseAsset (Just (encounterSet, 1)) cardCode name cost Neutral
 
+fast :: CardDef -> CardDef
+fast def = def { cdFastWindow = Just (DuringTurn You) }
+
 asset :: CardCode -> Name -> Int -> ClassSymbol -> CardDef
 asset = baseAsset Nothing
 
@@ -49,8 +52,7 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   , cdSkills = mempty
   , cdCardTraits = mempty
   , cdKeywords = mempty
-  , cdFast = False
-  , cdWindows = mempty
+  , cdFastWindow = Nothing
   , cdAction = Nothing
   , cdRevelation = False
   , cdVictoryPoints = Nothing
@@ -305,11 +307,9 @@ shotgun4 = (asset "01029" "Shotgun" 5 Guardian)
   }
 
 magnifyingGlass :: CardDef
-magnifyingGlass = (asset "01030" "Magnifying Glass" 1 Seeker)
+magnifyingGlass = fast $ (asset "01030" "Magnifying Glass" 1 Seeker)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Item, Tool]
-  , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
   }
 
 oldBookOfLore :: CardDef
@@ -350,11 +350,9 @@ medicalTexts = (asset "01035" "Medical Texts" 2 Seeker)
   }
 
 magnifyingGlass1 :: CardDef
-magnifyingGlass1 = (asset "01040" "Magnifying Glass" 0 Seeker)
+magnifyingGlass1 = fast $ (asset "01040" "Magnifying Glass" 0 Seeker)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Item, Tool]
-  , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
   , cdLevel = 1
   }
 
@@ -375,11 +373,9 @@ encyclopedia2 = (asset "01042" "Encyclopedia" 2 Seeker)
   }
 
 switchblade :: CardDef
-switchblade = (asset "01044" "Switchblade" 1 Rogue)
+switchblade = fast $ (asset "01044" "Switchblade" 1 Rogue)
   { cdSkills = [SkillAgility]
   , cdCardTraits = setFromList [Item, Weapon, Melee, Illicit]
-  , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
   }
 
 burglary :: CardDef
@@ -806,8 +802,6 @@ switchblade2 :: CardDef
 switchblade2 = (asset "02152" "Switchblade" 1 Rogue)
   { cdSkills = [SkillCombat, SkillAgility]
   , cdCardTraits = setFromList [Item, Weapon, Melee, Illicit]
-  , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
   , cdLevel = 2
   }
 
@@ -1097,10 +1091,8 @@ fishingNet = (storyAsset "81021" "Fishing Net" 0 TheBayou)
 
 monstrousTransformation :: CardDef
 monstrousTransformation =
-  (storyAsset "81030" "Monstrous Transformation" 0 CurseOfTheRougarou)
+  fast $ (storyAsset "81030" "Monstrous Transformation" 0 CurseOfTheRougarou)
     { cdCardTraits = setFromList [Talent]
-    , cdFast = True
-    , cdWindows = setFromList [DuringTurn You]
     }
 
 daisysToteBagAdvanced :: CardDef

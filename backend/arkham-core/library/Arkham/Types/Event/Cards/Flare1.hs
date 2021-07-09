@@ -49,7 +49,7 @@ instance
   )
   => RunMessage env Flare1 where
   runMessage msg e@(Flare1 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       investigatorIds <- getInvestigatorIds
       fightableEnemies <- getSetList @FightableEnemyId (iid, toSource e)
       e <$ if null fightableEnemies
@@ -68,7 +68,7 @@ instance
           , Label "Search for Ally" $ findAllyMessages iid investigatorIds e
           ]
     SearchTopOfDeckFound iid target card | isTarget e target ->
-      e <$ pushAll [PutCardIntoPlay iid card Nothing, Exile target]
+      e <$ pushAll [PutCardIntoPlay iid card Nothing [], Exile target]
     SearchTopOfDeckNoneFound _ target | isTarget e target ->
       e <$ push (Discard target)
     _ -> Flare1 <$> runMessage msg attrs

@@ -32,7 +32,7 @@ dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
 
 instance HasCount HealthDamageCount env EnemyId => RunMessage env HypnoticGaze where
   runMessage msg e@(HypnoticGaze (attrs `With` mEnemyId)) = case msg of
-    InvestigatorPlayEvent iid eventId _ | eventId == toId attrs -> do
+    InvestigatorPlayEvent iid eventId _ _ | eventId == toId attrs -> do
       enemyId <- withQueue $ \queue ->
         let PerformEnemyAttack _ eid : queue' = dropUntilAttack queue
         in (queue', eid)

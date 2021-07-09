@@ -38,7 +38,7 @@ instance (HasCount ClueCount env InvestigatorId) => HasModifiersFor env IveGotAP
 
 instance HasQueue env => RunMessage env IveGotAPlan2 where
   runMessage msg e@(IveGotAPlan2 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       e <$ push
         (ChooseFightEnemy iid (EventSource eid) SkillIntellect mempty False)
     _ -> IveGotAPlan2 <$> runMessage msg attrs

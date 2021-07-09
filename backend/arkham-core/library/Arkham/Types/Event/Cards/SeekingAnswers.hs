@@ -26,7 +26,7 @@ instance HasModifiersFor env SeekingAnswers where
 
 instance (HasQueue env, HasId LocationId env InvestigatorId) => RunMessage env SeekingAnswers where
   runMessage msg e@(SeekingAnswers attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       lid <- getId @LocationId iid
       e <$ pushAll
         [ CreateEffect

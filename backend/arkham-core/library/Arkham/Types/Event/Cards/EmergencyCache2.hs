@@ -25,7 +25,7 @@ instance HasActions env EmergencyCache2 where
 
 instance HasQueue env => RunMessage env EmergencyCache2 where
   runMessage msg e@(EmergencyCache2 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ pushAll
+    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> e <$ pushAll
       [ TakeResources iid 3 False
       , DrawCards iid 1 False
       , Discard (EventTarget eid)

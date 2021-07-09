@@ -36,7 +36,7 @@ instance HasModifiersFor env SecondWind where
 
 instance (HasQueue env, HasRoundHistory env) => RunMessage env SecondWind where
   runMessage msg e@(SecondWind attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       roundHistory <- getRoundHistory
       let
         didDrawTreachery = \case

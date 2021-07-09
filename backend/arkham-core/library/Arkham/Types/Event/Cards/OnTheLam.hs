@@ -23,6 +23,6 @@ instance HasActions env OnTheLam where
 
 instance (EventRunner env) => RunMessage env OnTheLam where
   runMessage msg e@(OnTheLam attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       e <$ unshiftEffect attrs (InvestigatorTarget iid)
     _ -> OnTheLam <$> runMessage msg attrs

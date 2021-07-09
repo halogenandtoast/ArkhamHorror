@@ -27,7 +27,7 @@ instance HasModifiersFor env Taunt2 where
 
 instance (EventRunner env) => RunMessage env Taunt2 where
   runMessage msg e@(Taunt2 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       lid <- getId @LocationId iid
       enemyIds <- getSetList lid
       e <$ push

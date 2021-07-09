@@ -17,6 +17,8 @@ createSkill a iid = lookupSkill (toCardCode a) iid (SkillId $ toCardId a)
 
 data Skill
   = Deduction' Deduction
+  | Deduction2' Deduction2
+  | Defiance' Defiance
   | DoubleOrNothing' DoubleOrNothing
   | Fearless' Fearless
   | Guts' Guts
@@ -65,6 +67,8 @@ allSkills :: HashMap CardCode (InvestigatorId -> SkillId -> Skill)
 allSkills = mapFromList $ map
   (cbCardCode &&& (curry . cbCardBuilder))
   [ Deduction' <$> deduction
+  , Deduction2' <$> deduction2
+  , Defiance' <$> defiance
   , DoubleOrNothing' <$> doubleOrNothing
   , Fearless' <$> fearless
   , Guts' <$> guts

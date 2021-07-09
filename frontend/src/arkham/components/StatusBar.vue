@@ -24,7 +24,19 @@
       </div>
 
       <div v-if="choice.tag === MessageType.LABEL">
-        <button @click="$emit('choose', index)">{{choice.contents[0]}}</button>
+        <button v-if="choice.contents[0] == 'Choose {skull}'" @click="$emit('choose', index)">
+          Choose <i class="iconSkull"></i>
+        </button>
+        <button v-else-if="choice.contents[0] == 'Choose {cultist}'" @click="$emit('choose', index)">
+          Choose <i class="iconCultist"></i>
+        </button>
+        <button v-else-if="choice.contents[0] == 'Choose {tablet}'" @click="$emit('choose', index)">
+          Choose <i class="iconTablet"></i>
+        </button>
+        <button v-else-if="choice.contents[0] == 'Choose {elderThing}'" @click="$emit('choose', index)">
+          Choose <i class="iconElderThing"></i>
+        </button>
+        <button v-else @click="$emit('choose', index)">{{choice.contents[0]}}</button>
       </div>
 
       <a
@@ -89,7 +101,9 @@ export default defineComponent({
       return choices.value.findIndex((c) => c.tag === MessageType.SKILL_TEST_RESULTS);
     })
 
-    return { choices, skillTestMessageTypes, applyResultsAction, shouldShow, MessageType }
+    const arkhamify = (text: string) => text.replace('{skull}', "\u004E").replace('{cultist}', "\u0042").replace('{tablet}', "\u0056").replace('{elderThing}', "\u0043").replace('{autoFail}', "\u005A").replace('{elderSign}', "\u0058")
+
+    return { arkhamify, choices, skillTestMessageTypes, applyResultsAction, shouldShow, MessageType }
   }
 })
 </script>
@@ -106,6 +120,34 @@ i {
   -webkit-font-smoothing: antialiased;
   position: relative;
 
+}
+
+i.iconSkull {
+  &:before {
+    font-family: "Arkham";
+    content: "\004E";
+  }
+}
+
+i.iconCultist {
+  &:before {
+    font-family: "Arkham";
+    content: "\0042";
+  }
+}
+
+i.iconTablet {
+  &:before {
+    font-family: "Arkham";
+    content: "\0056";
+  }
+}
+
+i.iconElderThing {
+  &:before {
+    font-family: "Arkham";
+    content: "\0043";
+  }
 }
 
 i.iconSkillWillpower {

@@ -265,7 +265,7 @@ instance (HasQueue env, HasId LeadInvestigatorId env ()) => RunMessage env Chaos
           push (RunBag source miid strategy)
           pushAll msgs
           pure $ c & choiceL ?~ choice''
-        else c <$ push (RunDrawFromBag source miid strategy)
+        else c <$ pushAll [BeforeRevealTokens, RunDrawFromBag source miid strategy]
     NextChaosBagStep source miid strategy -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' -> do

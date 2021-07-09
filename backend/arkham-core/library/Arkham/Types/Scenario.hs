@@ -14,6 +14,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
@@ -22,6 +23,7 @@ import Arkham.Types.Scenario.Runner
 import Arkham.Types.Scenario.Scenarios
 import Arkham.Types.ScenarioId
 import Arkham.Types.ScenarioLogKey
+import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait (Trait)
 
@@ -45,13 +47,46 @@ data Scenario
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, HasRecord)
 
-deriving anyclass instance
-  (HasId (Maybe LocationId) env LocationMatcher
-  , HasStep env ActStep
-  , ScenarioRunner env
+instance
+  ( HasModifiersFor env ()
+  , HasId (Maybe LocationId) env LocationMatcher
+  , HasStep env ActStep, ScenarioRunner env
   )
-  => RunMessage env Scenario
-deriving anyclass instance
+  => RunMessage env Scenario where
+  runMessage msg s = case msg of
+    ResolveToken _ tokenFace _ -> do
+      modifiers' <-
+        map modifierType
+          <$> getModifiersFor
+                (toSource $ toAttrs s)
+                (TokenFaceTarget tokenFace)
+                ()
+      if IgnoreTokenEffects `elem` modifiers'
+        then pure s
+        else defaultRunMessage msg s
+    FailedSkillTest _ _ _ (DrawnTokenTarget token) _ _ -> do
+      modifiers' <-
+        map modifierType
+          <$> getModifiersFor
+                (toSource $ toAttrs s)
+                (TokenFaceTarget $ drawnTokenFace token)
+                ()
+      if IgnoreTokenEffects `elem` modifiers'
+        then pure s
+        else defaultRunMessage msg s
+    PassedSkillTest _ _ _ (DrawnTokenTarget token) _ _ -> do
+      modifiers' <-
+        map modifierType
+          <$> getModifiersFor
+                (toSource $ toAttrs s)
+                (TokenFaceTarget $ drawnTokenFace token)
+                ()
+      if IgnoreTokenEffects `elem` modifiers'
+        then pure s
+        else defaultRunMessage msg s
+    _ -> defaultRunMessage msg s
+
+instance
   ( HasCount DiscardCount env InvestigatorId
   , HasCount DoomCount env ()
   , HasCount DoomCount env EnemyId
@@ -69,8 +104,19 @@ deriving anyclass instance
   , HasId LocationId env InvestigatorId
   , HasId CardCode env EnemyId
   , HasStep env AgendaStep
+  , HasModifiersFor env ()
   )
-  => HasTokenValue env Scenario
+  => HasTokenValue env Scenario where
+  getTokenValue s iid tokenFace = do
+    modifiers' <-
+      map modifierType
+        <$> getModifiersFor
+              (toSource $ toAttrs s)
+              (TokenFaceTarget tokenFace)
+              ()
+    if IgnoreTokenEffects `elem` modifiers'
+      then pure $ TokenValue tokenFace NoModifier
+      else defaultGetTokenValue s iid tokenFace
 
 instance Entity Scenario where
   type EntityId Scenario = ScenarioId

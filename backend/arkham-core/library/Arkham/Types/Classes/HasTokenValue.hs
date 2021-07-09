@@ -33,5 +33,5 @@ defaultGetTokenValue
   -> InvestigatorId
   -> Token
   -> m TokenValue
-defaultGetTokenValue a iid token = getTokenValue1 (from a) iid token
+defaultGetTokenValue a = getTokenValue1 (from a)
 

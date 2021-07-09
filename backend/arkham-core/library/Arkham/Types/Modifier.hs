@@ -85,6 +85,7 @@ data ModifierType
   | HealthModifier Int
   | HorrorDealt Int
   | IgnoreText
+  | IgnoreTokenEffects
   | MaxDamageTaken Int
   | MayChooseNotToTakeUpkeepResources
   | ModifierIfSucceededBy Int Modifier

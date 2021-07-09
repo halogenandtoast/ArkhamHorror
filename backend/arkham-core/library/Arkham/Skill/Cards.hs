@@ -44,6 +44,7 @@ allPlayerSkillCards = mapFromList $ map
   (toCardCode &&& id)
   [ deduction
   , deduction2
+  , defiance
   , doubleOrNothing
   , fearless
   , guts
@@ -57,6 +58,7 @@ allPlayerSkillCards = mapFromList $ map
   , unexpectedCourage
   , viciousBlow
   ]
+
 viciousBlow :: CardDef
 viciousBlow = (skill "01025" "Vicious Blow" [SkillCombat] Guardian)
   { cdCardTraits = setFromList [Practiced]
@@ -127,6 +129,11 @@ deduction2 = (skill "02150" "Deduction" [SkillIntellect, SkillIntellect] Seeker
              )
   { cdCardTraits = setFromList [Practiced, Expert]
   , cdLevel = 2
+  }
+
+defiance :: CardDef
+defiance = (skill "02190" "Defiance" [SkillWild] Mystic)
+  { cdCardTraits = singleton Innate
   }
 
 riseToTheOccasion :: CardDef

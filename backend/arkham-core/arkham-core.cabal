@@ -706,6 +706,7 @@ library
       Arkham.Types.Skill.Cards
       Arkham.Types.Skill.Cards.Deduction
       Arkham.Types.Skill.Cards.Deduction2
+      Arkham.Types.Skill.Cards.Defiance
       Arkham.Types.Skill.Cards.DoubleOrNothing
       Arkham.Types.Skill.Cards.Fearless
       Arkham.Types.Skill.Cards.Guts

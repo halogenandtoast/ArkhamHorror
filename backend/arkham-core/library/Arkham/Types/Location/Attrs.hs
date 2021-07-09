@@ -309,7 +309,7 @@ withResignAction
      , ActionRunner env
      )
   => InvestigatorId
-  -> Window
+  -> WindowType
   -> location
   -> m [Message]
 withResignAction iid NonFast x | locationRevealed (toAttrs x) =
@@ -345,7 +345,7 @@ withDrawCardUnderneathAction
      , ActionRunner env
      )
   => InvestigatorId
-  -> Window
+  -> WindowType
   -> location
   -> m [Message]
 withDrawCardUnderneathAction iid NonFast x | locationRevealed (toAttrs x) =
@@ -415,9 +415,17 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       a <$ unless
         (AlternateSuccessfullInvestigation `elem` modifiers')
         (pushAll
-          [ CheckWindow iid [WhenSuccessfulInvestigation You YourLocation]
+          [ CheckWindow
+            iid
+            [ Window (Just $ InvestigatorSource iid) (Just $ toTarget a)
+                $ WhenSuccessfulInvestigation You YourLocation
+            ]
           , InvestigatorDiscoverClues iid lid 1 (Just Action.Investigate)
-          , CheckWindow iid [AfterSuccessfulInvestigation You YourLocation]
+          , CheckWindow
+            iid
+            [ Window (Just $ InvestigatorSource iid) (Just $ toTarget a)
+                $ AfterSuccessfulInvestigation You YourLocation
+            ]
           ]
         )
     PlaceUnderneath target cards | isTarget a target ->
@@ -509,26 +517,33 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       let discoveredClues = min n locationClues
       checkWindowMsgs <- checkWindows
         iid
-        (\who -> pure $ case who of
-          You -> [WhenDiscoverClues You YourLocation]
-          InvestigatorAtYourLocation -> [WhenDiscoverClues who YourLocation]
-          InvestigatorAtAConnectedLocation ->
-            [WhenDiscoverClues who ConnectedLocation]
-          InvestigatorInGame -> [WhenDiscoverClues who LocationInGame]
+        (\who -> pure
+          [ Window (Just $ InvestigatorSource iid) (Just $ toTarget a)
+              $ case who of
+                  You -> WhenDiscoverClues You YourLocation
+                  InvestigatorAtYourLocation ->
+                    WhenDiscoverClues who YourLocation
+                  InvestigatorAtAConnectedLocation ->
+                    WhenDiscoverClues who ConnectedLocation
+                  InvestigatorInGame -> WhenDiscoverClues who LocationInGame
+          ]
         )
-
       a <$ pushAll
         (checkWindowMsgs <> [DiscoverClues iid lid discoveredClues maction])
     AfterDiscoverClues iid lid n | lid == locationId -> do
       checkWindowMsgs <- checkWindows
         iid
-        (\who -> pure $ case who of
-          You -> [AfterDiscoveringClues You YourLocation]
-          InvestigatorAtYourLocation ->
-            [AfterDiscoveringClues who YourLocation]
-          InvestigatorAtAConnectedLocation ->
-            [AfterDiscoveringClues who ConnectedLocation]
-          InvestigatorInGame -> [AfterDiscoveringClues who LocationInGame]
+        (\who -> pure
+          [ Window (Just $ InvestigatorSource iid) (Just $ toTarget a)
+              $ case who of
+                  You -> AfterDiscoveringClues You YourLocation
+                  InvestigatorAtYourLocation ->
+                    AfterDiscoveringClues who YourLocation
+                  InvestigatorAtAConnectedLocation ->
+                    AfterDiscoveringClues who ConnectedLocation
+                  InvestigatorInGame ->
+                    AfterDiscoveringClues who LocationInGame
+          ]
         )
       pushAll checkWindowMsgs
       pure $ a & cluesL -~ n
@@ -608,7 +623,11 @@ instance LocationRunner env => RunMessage env LocationAttrs where
         else fromGameValue locationRevealClues . unPlayerCount <$> getCount ()
       pushAll
         $ AddConnection lid locationRevealedSymbol
-        : [ CheckWindow iid [AfterRevealLocation You]
+        : [ CheckWindow
+              iid
+              [ Window (Just $ InvestigatorSource iid) (Just $ toTarget a)
+                  $ AfterRevealLocation You
+              ]
           | iid <- maybeToList miid
           ]
       pure $ a & cluesL +~ locationClueCount & revealedL .~ True

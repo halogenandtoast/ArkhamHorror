@@ -8,7 +8,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Window
+-- import Arkham.Types.Window
 
 newtype SureGamble3 = SureGamble3 EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -20,10 +20,10 @@ instance HasModifiersFor env SureGamble3 where
   getModifiersFor = noModifiersFor
 
 instance HasActions env SureGamble3 where
-  getActions iid (InHandWindow ownerId (WhenRevealTokenWithNegativeModifier You tid)) (SureGamble3 attrs)
-    | ownerId == iid
-    = pure
-      [InitiatePlayCard iid (toCardId attrs) (Just $ TokenTarget tid) False]
+  -- getActions iid (InHandWindow ownerId (WhenRevealTokenWithNegativeModifier You tid)) (SureGamble3 attrs)
+  --   | ownerId == iid
+  --   = pure
+  --     [InitiatePlayCard iid (toCardId attrs) (Just $ TokenTarget tid) False]
   getActions i window (SureGamble3 attrs) = getActions i window attrs
 
 instance EventRunner env => RunMessage env SureGamble3 where

@@ -317,7 +317,11 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs whe
     Exile target | a `isTarget` target ->
       a <$ pushAll [RemovedFromPlay $ toSource a, Exiled target (toCard a)]
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
-      push $ CheckWindow iid [WhenEnterPlay $ toTarget a]
+      push $ CheckWindow
+        iid
+        [ Window (Just $ InvestigatorSource iid) (Just $ toTarget a)
+            $ WhenEnterPlay (toTarget a)
+        ]
       pure $ a & investigatorL ?~ iid
     TakeControlOfAsset iid aid | aid == assetId ->
       pure $ a & investigatorL ?~ iid

@@ -65,7 +65,7 @@ replaceToken token = withQueue $ \queue ->
 withBaseActions
   :: (MonadIO m, HasActions env a, MonadReader env m)
   => InvestigatorId
-  -> Window
+  -> WindowType
   -> a
   -> m [Message]
   -> m [Message]
@@ -79,7 +79,7 @@ getCanPerformAbility
      , HasActions env ActionType
      )
   => InvestigatorId
-  -> Window
+  -> WindowType
   -> Ability
   -> m Bool
 getCanPerformAbility iid window Ability {..} =
@@ -694,7 +694,7 @@ hasFightActions
   :: forall env m
    . (MonadIO m, MonadReader env m, HasActions env ActionType)
   => InvestigatorId
-  -> Window
+  -> WindowType
   -> m Bool
 hasFightActions i NonFast = do
   enemyActions <- getActions i NonFast EnemyActionType
@@ -705,7 +705,7 @@ hasEvadeActions
   :: forall env m
    . (MonadIO m, MonadReader env m, HasActions env ActionType)
   => InvestigatorId
-  -> Window
+  -> WindowType
   -> m Bool
 hasEvadeActions i NonFast = do
   enemyActions <- getActions i NonFast EnemyActionType
@@ -716,7 +716,7 @@ hasInvestigateActions
   :: forall env m
    . (MonadIO m, MonadReader env m, HasActions env ActionType)
   => InvestigatorId
-  -> Window
+  -> WindowType
   -> m Bool
 hasInvestigateActions i NonFast = do
   locationActions <- getActions i NonFast LocationActionType

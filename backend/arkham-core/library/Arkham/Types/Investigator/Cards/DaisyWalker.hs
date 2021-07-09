@@ -39,7 +39,7 @@ daisyWalker =
     , agility = 2
     }
 
-instance InvestigatorRunner env => HasActions env DaisyWalker where
+instance HasActions env DaisyWalker where
   getActions i window (DaisyWalker attrs) = getActions i window attrs
 
 instance HasTokenValue env DaisyWalker where

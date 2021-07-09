@@ -31,7 +31,7 @@ stellaClark = StellaClark $ baseAttrs
     }
   [Chosen, Civic]
 
-instance InvestigatorRunner env => HasActions env StellaClark where
+instance HasActions env StellaClark where
   getActions i window (StellaClark attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env StellaClark where

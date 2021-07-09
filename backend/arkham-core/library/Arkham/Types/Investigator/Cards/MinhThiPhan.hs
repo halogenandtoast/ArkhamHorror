@@ -31,7 +31,7 @@ minhThiPhan = MinhThiPhan $ baseAttrs
     }
   [Assistant]
 
-instance InvestigatorRunner env => HasActions env MinhThiPhan where
+instance HasActions env MinhThiPhan where
   getActions i window (MinhThiPhan attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env MinhThiPhan where

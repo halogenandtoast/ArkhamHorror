@@ -41,7 +41,7 @@ instance HasModifiersFor env BindMonster2 where
 
 instance HasQueue env => RunMessage env BindMonster2 where
   runMessage msg e@(BindMonster2 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ pushAll
+    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> e <$ pushAll
       [ CreateEffect "02031" Nothing (toSource attrs) SkillTestTarget
       , ChooseEvadeEnemy iid (EventSource eid) SkillWillpower False
       ]

@@ -261,7 +261,11 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         for_ tokenFaces $ \tokenFace -> do
           checkWindowMsgs <- checkWindows
             iid
-            (\who -> pure [WhenRevealToken who tokenFace])
+            (\who -> pure
+              [ Window (Just $ toSource s) (Just $ TokenFaceTarget tokenFace)
+                  $ WhenRevealToken who tokenFace
+              ]
+            )
           pushAll $ checkWindowMsgs <> resolve
             (RevealToken
               (SkillTestSource siid skillType source target maction)
@@ -538,7 +542,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         withQueue_ $ filter $ \case
           Will FailedSkillTest{} -> False
           Will PassedSkillTest{} -> False
-          CheckWindow _ [WhenWouldFailSkillTest _] -> False
+          CheckWindow _ [Window _ _ (WhenWouldFailSkillTest _)] -> False
           Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResults])
             | skillTestInvestigator == skillTestInvestigator' -> False
           _ -> True

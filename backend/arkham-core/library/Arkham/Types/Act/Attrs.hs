@@ -134,7 +134,9 @@ advanceActSideA investigatorIds requiredClues attrs = do
   totalRequiredClues <- getPlayerCountValue requiredClues
   pure
     ([ SpendClues totalRequiredClues investigatorIds | totalRequiredClues > 0 ]
-    <> [ CheckWindow leadInvestigatorId [WhenActAdvance (toId attrs)]
+    <> [ CheckWindow
+         leadInvestigatorId
+         [Window Nothing (Just $ toTarget attrs) $ WhenActAdvance (toId attrs)]
        , chooseOne leadInvestigatorId [AdvanceAct (toId attrs) (toSource attrs)]
        ]
     )

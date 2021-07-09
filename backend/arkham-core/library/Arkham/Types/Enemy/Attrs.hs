@@ -394,7 +394,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
                   else pure []
                 leadInvestigatorId <- getLeadInvestigatorId
                 case preyIds <> investigatorIds of
-                  [] -> pure ()
+                  [] -> push $ EnemyEntered eid lid
                   [iid] -> pushAll
                     [EnemyEntered eid lid, EnemyEngageInvestigator eid iid]
                   iids -> push
@@ -615,10 +615,18 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
       -> do
         whenWindows <- checkWindows
           iid
-          (\who -> pure [WhenSuccessfulAttackEnemy who enemyId])
+          (\who -> pure
+            [ Window (Just $ InvestigatorSource iid) (Just $ toTarget a)
+                $ WhenSuccessfulAttackEnemy who enemyId
+            ]
+          )
         afterWindows <- checkWindows
           iid
-          (\who -> pure [AfterSuccessfulAttackEnemy who enemyId])
+          (\who -> pure
+            [ Window (Just $ InvestigatorSource iid) (Just $ toTarget a)
+                $ AfterSuccessfulAttackEnemy who enemyId
+            ]
+          )
         a
           <$ pushAll
                (whenWindows

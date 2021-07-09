@@ -46,7 +46,7 @@ instance HasActions env TheNecronomicon where
 instance (AssetRunner env) => RunMessage env TheNecronomicon where
   runMessage msg a@(TheNecronomicon attrs) = case msg of
     Revelation iid source | isSource attrs source ->
-      a <$ push (PlayCard iid (toCardId attrs) Nothing False)
+      a <$ push (PlayCard iid (toCardId attrs) Nothing [] False)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       push $ InvestigatorDamage iid source 0 1
       if fromJustNote "Must be set" (assetHorror attrs) == 1

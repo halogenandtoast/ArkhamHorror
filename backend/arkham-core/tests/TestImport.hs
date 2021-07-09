@@ -314,7 +314,7 @@ getActionsOf
      , HasQueue env
      )
   => Investigator
-  -> Window
+  -> WindowType
   -> a
   -> m [Message]
 getActionsOf investigator window e = do

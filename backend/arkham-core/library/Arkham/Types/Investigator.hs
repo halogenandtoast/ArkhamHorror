@@ -76,7 +76,7 @@ instance HasModifiersFor env BaseInvestigator where
   getModifiersFor source target (BaseInvestigator attrs) =
     getModifiersFor source target attrs
 
-instance InvestigatorRunner env => HasActions env BaseInvestigator where
+instance HasActions env BaseInvestigator where
   getActions iid window (BaseInvestigator attrs) = getActions iid window attrs
 
 instance InvestigatorRunner env => RunMessage env BaseInvestigator where

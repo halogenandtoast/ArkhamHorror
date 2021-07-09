@@ -12,7 +12,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
+-- import Arkham.Types.Window
 
 newtype LetMeHandleThis = LetMeHandleThis EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -24,10 +24,10 @@ instance HasModifiersFor env LetMeHandleThis where
   getModifiersFor = noModifiersFor
 
 instance HasActions env LetMeHandleThis where
-  getActions iid (InHandWindow ownerId (WhenDrawNonPerilTreachery who tid)) (LetMeHandleThis attrs)
-    | who /= You && iid == ownerId
-    = pure
-      [InitiatePlayCard iid (toCardId attrs) (Just $ TreacheryTarget tid) False]
+  -- getActions iid (InHandWindow ownerId (WhenDrawNonPerilTreachery who tid)) (LetMeHandleThis attrs)
+  --   | who /= You && iid == ownerId
+  --   = pure
+  --     [InitiatePlayCard iid (toCardId attrs) (Just $ TreacheryTarget tid) False]
   getActions iid window (LetMeHandleThis attrs) = getActions iid window attrs
 
 instance HasQueue env => RunMessage env LetMeHandleThis where

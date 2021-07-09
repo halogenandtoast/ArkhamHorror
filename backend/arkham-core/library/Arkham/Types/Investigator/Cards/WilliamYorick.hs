@@ -31,7 +31,7 @@ williamYorick = WilliamYorick $ baseAttrs
     }
   [Warden]
 
-instance InvestigatorRunner env => HasActions env WilliamYorick where
+instance HasActions env WilliamYorick where
   getActions i window (WilliamYorick attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env WilliamYorick where

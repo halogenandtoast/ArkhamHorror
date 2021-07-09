@@ -122,7 +122,9 @@ instance
     AdvanceAgenda aid | aid == agendaId && agendaSide agendaSequence == A -> do
       leadInvestigatorId <- getLeadInvestigatorId
       pushAll
-        [ CheckWindow leadInvestigatorId [WhenAgendaAdvance agendaId]
+        [ CheckWindow
+          leadInvestigatorId
+          [Window Nothing (Just $ toTarget a) $ WhenAgendaAdvance agendaId]
         , chooseOne leadInvestigatorId [AdvanceAgenda agendaId]
         ]
       pure

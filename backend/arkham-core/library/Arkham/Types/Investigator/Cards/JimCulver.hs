@@ -40,7 +40,7 @@ jimCulver = JimCulver $ baseAttrs
     }
   [Performer]
 
-instance InvestigatorRunner env => HasActions env JimCulver where
+instance HasActions env JimCulver where
   getActions i window (JimCulver attrs) = getActions i window attrs
 
 instance HasTokenValue env JimCulver where

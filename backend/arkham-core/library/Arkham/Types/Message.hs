@@ -298,11 +298,7 @@ data Message
   | InitDeck InvestigatorId (Deck PlayerCard) -- used to initialize the deck for the campaign
   | UpgradeDeck InvestigatorId (Deck PlayerCard) -- used to upgrade deck during campaign
   | FinishedUpgradingDecks
-  | InitiatePlayCard InvestigatorId CardId (Maybe Target) Bool
   | InitiatePlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
-  | InitiatePlayChoiceEvent InvestigatorId CardId (Maybe Target) Bool
-  | InvestigatorPlayChoiceEvent InvestigatorId EventId (Maybe Target)
-  | ChoiceEvent InvestigatorId EventId (Maybe Target) Int
   | Investigate InvestigatorId LocationId Source SkillType Bool
   | InvestigatorAssignDamage InvestigatorId Source DamageStrategy Int Int -- ^ uses the internal method and then checks defeat
   | InvestigatorCommittedCard InvestigatorId CardId
@@ -327,8 +323,8 @@ data Message
   | InvestigatorPlaceCluesOnLocation InvestigatorId Int
   | InvestigatorPlayAsset InvestigatorId AssetId [SlotType] [Trait]
   | InvestigatorPlayDynamicAsset InvestigatorId AssetId [SlotType] [Trait] Int
-  | InvestigatorPlayDynamicEvent InvestigatorId EventId Int
-  | InvestigatorPlayEvent InvestigatorId EventId (Maybe Target)
+  | InvestigatorPlayDynamicEvent InvestigatorId EventId Int [Window]
+  | InvestigatorPlayEvent InvestigatorId EventId (Maybe Target) [Window]
   | InvestigatorResigned InvestigatorId
   | InvestigatorSpendClues InvestigatorId Int
   | InvestigatorTakeDamage InvestigatorId Source Int Int
@@ -374,11 +370,11 @@ data Message
   | PlaceUnderneath Target [Card]
   | PlacedLocation Name CardCode LocationId
   | PlacedLocationDirection LocationId Direction LocationId
-  | PlayCard InvestigatorId CardId (Maybe Target) Bool
+  | PlayCard InvestigatorId CardId (Maybe Target) [Window] Bool
   | PlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
   | PlayedCard InvestigatorId CardId Name CardCode
   | PlayerWindow InvestigatorId [Message]
-  | PutCardIntoPlay InvestigatorId Card (Maybe Target)
+  | PutCardIntoPlay InvestigatorId Card (Maybe Target) [Window]
   | PutOnTopOfDeck InvestigatorId PlayerCard
   | PutOnTopOfEncounterDeck InvestigatorId EncounterCard
   | PutSetAsideIntoPlay Target

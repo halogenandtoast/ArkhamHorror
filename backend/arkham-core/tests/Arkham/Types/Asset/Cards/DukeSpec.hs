@@ -57,7 +57,7 @@ spec = describe "Duke" $ do
         $ do
             runMessages
             duke' <- updated duke
-            [investigateAction] <- getActionsOf investigator NonFast duke'
+            [_, investigateAction] <- getActionsOf investigator NonFast duke'
             pushAll [moveTo investigator location, investigateAction]
             runMessages
             chooseOnlyOption "Start skill test"
@@ -85,7 +85,10 @@ spec = describe "Duke" $ do
             $ do
                 runMessages
                 duke' <- updated duke
-                [investigateAction] <- getActionsOf investigator NonFast duke'
+                [_, investigateAction] <- getActionsOf
+                  investigator
+                  NonFast
+                  duke'
                 pushAll [moveTo investigator location1, investigateAction]
                 runMessages
                 chooseOptionMatching

@@ -33,7 +33,7 @@ jennyBarnes = JennyBarnes $ baseAttrs
     }
   [Drifter]
 
-instance InvestigatorRunner env => HasActions env JennyBarnes where
+instance HasActions env JennyBarnes where
   getActions i window (JennyBarnes attrs) = getActions i window attrs
 
 instance HasTokenValue env JennyBarnes where

@@ -81,7 +81,11 @@ instance (InvestigatorRunner env) => RunMessage env WendyAdams where
           ]
     When (DrawToken iid token) | iid == investigatorId -> i <$ pushAll
       [ FocusTokens [token]
-      , CheckWindow investigatorId [WhenDrawToken You token]
+      , CheckWindow
+        investigatorId
+        [ Window (Just $ toSource attrs) (Just $ TokenFaceTarget token)
+            $ WhenDrawToken You token
+        ]
       , UnfocusTokens
       ]
     ResolveToken _drawnToken ElderSign iid | iid == investigatorId -> do

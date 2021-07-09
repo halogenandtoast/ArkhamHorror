@@ -34,7 +34,9 @@ spec = describe "\"Ashcan\" Pete" $ do
           , drawCards ashcanPete 1
           , playAsset ashcanPete asset
           , Exhaust (toTarget asset)
-          , CheckWindow (toId ashcanPete) [FastPlayerWindow]
+          , CheckWindow
+            (toId ashcanPete)
+            [Window Nothing Nothing FastPlayerWindow]
           ]
           (assetsL %~ insertEntity asset)
         $ do

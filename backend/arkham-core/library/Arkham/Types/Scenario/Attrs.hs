@@ -259,7 +259,9 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioAttrsRunner env)
           a <$ pushAll
             [ CheckWindow
               leadInvestigatorId
-              [WhenChosenRandomLocation randomLocationId]
+              [ Window Nothing (Just $ LocationTarget randomLocationId)
+                  $ WhenChosenRandomLocation randomLocationId
+              ]
             , ChosenRandomLocation target randomLocationId
             ]
     PlaceLocation _ cardDef -> pure $ a & setAsideCardsL %~ deleteFirstMatch

@@ -31,7 +31,7 @@ ritaYoung = RitaYoung $ baseAttrs
     }
   [Miskatonic]
 
-instance InvestigatorRunner env => HasActions env RitaYoung where
+instance HasActions env RitaYoung where
   getActions i window (RitaYoung attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env RitaYoung where

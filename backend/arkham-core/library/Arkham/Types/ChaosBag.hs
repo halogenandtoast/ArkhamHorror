@@ -15,6 +15,7 @@ import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Window
 import Control.Monad.State
@@ -159,7 +160,11 @@ decideFirstUndecided source miid strategy f = \case
   Undecided step -> case step of
     Draw ->
       ( f $ Undecided Draw
-      , [ CheckWindow iid [WhenWouldRevealChaosToken source You]
+      , [ CheckWindow
+            iid
+            [ Window (Just source) Nothing
+                $ WhenWouldRevealChaosToken source You
+            ]
         | iid <- maybeToList miid
         ]
       <> [NextChaosBagStep source miid strategy]
@@ -265,7 +270,8 @@ instance (HasQueue env, HasId LeadInvestigatorId env ()) => RunMessage env Chaos
           push (RunBag source miid strategy)
           pushAll msgs
           pure $ c & choiceL ?~ choice''
-        else c <$ pushAll [BeforeRevealTokens, RunDrawFromBag source miid strategy]
+        else c
+          <$ pushAll [BeforeRevealTokens, RunDrawFromBag source miid strategy]
     NextChaosBagStep source miid strategy -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' -> do
@@ -293,7 +299,12 @@ instance (HasQueue env, HasId LeadInvestigatorId env ()) => RunMessage env Chaos
           (FocusTokens tokenFaces'
           : [ CheckWindow
                 iid
-                [ WhenRevealToken You token | token <- tokenFaces' ]
+                [ Window
+                      (Just $ InvestigatorSource iid)
+                      (Just $ TokenFaceTarget token)
+                    $ WhenRevealToken You token
+                | token <- tokenFaces'
+                ]
             | iid <- maybeToList miid
             ]
           <> [RequestedTokens source miid tokenFaces', UnfocusTokens]

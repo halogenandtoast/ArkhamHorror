@@ -31,7 +31,7 @@ lukeRobinson = LukeRobinson $ baseAttrs
     }
   [Dreamer, Drifter, Wayfarer]
 
-instance InvestigatorRunner env => HasActions env LukeRobinson where
+instance HasActions env LukeRobinson where
   getActions i window (LukeRobinson attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env LukeRobinson where

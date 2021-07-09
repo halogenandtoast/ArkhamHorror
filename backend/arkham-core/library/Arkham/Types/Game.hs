@@ -1801,7 +1801,10 @@ broadcastWindow builder currentInvestigatorId g =
     then push
       (CheckWindow
         currentInvestigatorId
-        [Fast.DuringTurn You, builder You, builder InvestigatorAtYourLocation]
+        [ Window Nothing Nothing (Fast.DuringTurn You)
+        , builder You
+        , builder InvestigatorAtYourLocation
+        ]
       )
     else do
       lid1 <- getId @LocationId currentInvestigatorId
@@ -1809,7 +1812,7 @@ broadcastWindow builder currentInvestigatorId g =
       when (lid1 == lid2) $ push
         (CheckWindow
           currentInvestigatorId
-          [ Fast.DuringTurn InvestigatorAtYourLocation
+          [ Window Nothing Nothing (Fast.DuringTurn InvestigatorAtYourLocation)
           , builder InvestigatorAtYourLocation
           ]
         )
@@ -1919,10 +1922,22 @@ runGameMessage msg g = case msg of
       & (modeL %~ setScenario (lookupScenario sid difficulty))
       & (phaseL .~ InvestigationPhase)
   Will (MoveFrom iid lid) -> do
-    msgs <- checkWindows iid (\who -> pure [WhenWouldLeave who lid])
+    msgs <- checkWindows
+      iid
+      (\who -> pure
+        [ Window (Just $ InvestigatorSource iid) (Just $ LocationTarget lid)
+            $ WhenWouldLeave who lid
+        ]
+      )
     g <$ pushAll msgs
   After (MoveFrom iid lid) -> do
-    msgs <- checkWindows iid (\who -> pure [AfterLeaving who lid])
+    msgs <- checkWindows
+      iid
+      (\who -> pure
+        [ Window (Just $ InvestigatorSource iid) (Just $ LocationTarget lid)
+            $ AfterLeaving who lid
+        ]
+      )
     g <$ pushAll msgs
   CreateEffect cardCode meffectMetadata source target -> do
     (effectId, effect) <- createEffect cardCode meffectMetadata source target
@@ -2032,7 +2047,10 @@ runGameMessage msg g = case msg of
   SetEncounterDeck encounterDeck -> pure $ g & encounterDeckL .~ encounterDeck
   RemoveEnemy eid -> pure $ g & enemiesL %~ deleteMap eid
   When (RemoveLocation lid) -> g <$ push
-    (CheckWindow (g ^. leadInvestigatorIdL) [WhenLocationLeavesPlay lid])
+    (CheckWindow
+      (g ^. leadInvestigatorIdL)
+      [Window Nothing (Just $ LocationTarget lid) $ WhenLocationLeavesPlay lid]
+    )
   RemoveLocation lid -> do
     treacheryIds <- getSetList lid
     pushAll $ concatMap (resolve . Discard . TreacheryTarget) treacheryIds
@@ -2128,7 +2146,7 @@ runGameMessage msg g = case msg of
       PlayerCard card -> push (ShuffleCardsIntoDeck iid [card])
       EncounterCard _ -> error "Unhandled"
     pure $ g & treacheriesL %~ deleteMap treacheryId
-  PlayDynamicCard iid cardId n _mtarget False -> do
+  PlayDynamicCard iid cardId n _mtarget windows False -> do
     investigator <- getInvestigator iid
     let
       card = fromJustNote "could not find card in hand"
@@ -2159,17 +2177,17 @@ runGameMessage msg g = case msg of
             eid = toId event
           pushAll
             [ PlayedCard iid cardId (toName event) (cdCardCode (pcDef pc))
-            , InvestigatorPlayDynamicEvent iid eid n
+            , InvestigatorPlayDynamicEvent iid eid n windows
             ]
           pure $ g & eventsL %~ insertMap eid event
         _ -> pure g
       EncounterCard _ -> pure g
-  PlayCard iid cardId mtarget False -> do
+  PlayCard iid cardId mtarget windows False -> do
     investigator <- getInvestigator iid
     case find ((== cardId) . toCardId) (handOf investigator) of
       Nothing -> pure g -- card was discarded before playing
-      Just card -> runGameMessage (PutCardIntoPlay iid card mtarget) g
-  PutCardIntoPlay iid card mtarget -> do
+      Just card -> runGameMessage (PutCardIntoPlay iid card mtarget windows) g
+  PutCardIntoPlay iid card mtarget windows -> do
     let cardId = toCardId card
     case card of
       PlayerCard pc -> case cdCardType (pcDef pc) of
@@ -2201,7 +2219,7 @@ runGameMessage msg g = case msg of
             eid = toId event
           pushAll
             [ PlayedCard iid cardId (toName event) (cdCardCode (pcDef pc))
-            , InvestigatorPlayEvent iid eid mtarget
+            , InvestigatorPlayEvent iid eid mtarget windows
             ]
           pure $ g & eventsL %~ insertMap eid event
         _ -> pure g
@@ -2235,9 +2253,24 @@ runGameMessage msg g = case msg of
           (_ : xs) -> xs
       in before <> remaining
     pure g
-  EnemyAttack iid _ -> g <$ broadcastWindow Fast.WhenEnemyAttacks iid g
+  EnemyAttack iid eid ->
+    g
+      <$ broadcastWindow
+           (Window (Just $ EnemySource eid) (Just $ InvestigatorTarget iid)
+           . Fast.WhenEnemyAttacks
+           )
+           iid
+           g
   EnemyEngageInvestigator eid iid ->
-    g <$ broadcastWindow (`Fast.AfterEnemyEngageInvestigator` eid) iid g
+    g
+      <$ broadcastWindow
+           (\who -> Window
+             (Just $ InvestigatorSource iid)
+             (Just $ EnemyTarget eid)
+             (Fast.AfterEnemyEngageInvestigator who eid)
+           )
+           iid
+           g
   SkillTestAsk (Ask iid1 (ChooseOne c1)) -> do
     mNextMessage <- peekMessage
     case mNextMessage of
@@ -2326,7 +2359,11 @@ runGameMessage msg g = case msg of
       _ -> push (chooseOneAtATime (gameLeadInvestigatorId g) as)
     pure g
   When (AssetDefeated aid) -> g <$ pushAll
-    [ CheckWindow iid [Fast.WhenDefeated (AssetSource aid)]
+    [ CheckWindow
+        iid
+        [ Window Nothing (Just $ AssetTarget aid)
+            $ Fast.WhenDefeated (AssetSource aid)
+        ]
     | iid <- keys (view investigatorsL g)
     ]
   RemoveFromGame (AssetTarget aid) -> pure $ g & assetsL %~ deleteMap aid
@@ -2345,15 +2382,26 @@ runGameMessage msg g = case msg of
           & (enemiesL %~ insertMap eid enemy)
       Nothing -> error "enemy was not in void"
   EnemyDefeated eid iid _ _ _ _ -> do
-    broadcastWindow Fast.WhenEnemyDefeated iid g
+    broadcastWindow
+      (Window (Just $ InvestigatorSource iid) (Just $ EnemyTarget eid)
+      . Fast.WhenEnemyDefeated
+      )
+      iid
+      g
     enemy <- getEnemy eid
     traits <- getSetList @Trait eid
     afterMsgs <- checkWindows
       iid
       (\who ->
         pure
-          $ AfterEnemyDefeated who eid
-          : [ AfterEnemyDefeatedOfType who trait | trait <- traits ]
+          $ Window
+              (Just $ InvestigatorSource iid)
+              (Just $ EnemyTarget eid)
+              (AfterEnemyDefeated who eid)
+          : [ Window (Just $ InvestigatorSource iid) (Just $ EnemyTarget eid)
+                $ AfterEnemyDefeatedOfType who trait
+            | trait <- traits
+            ]
       )
     let card = toCard enemy
     if isJust (getEnemyVictory enemy)
@@ -2412,13 +2460,18 @@ runGameMessage msg g = case msg of
       Just (EncounterCard _) -> error "can not be encounter card"
   BeginInvestigation -> do
     pushAll
-      $ [ CheckWindow iid [Fast.AnyPhaseBegins]
+      $ [ CheckWindow iid [Window Nothing Nothing Fast.AnyPhaseBegins]
         | iid <- g ^. investigatorsL . to keys
         ]
       <> [ChoosePlayerOrder (gamePlayerOrder g) []]
     pure $ g & phaseL .~ InvestigationPhase
-  BeginTurn x ->
-    g <$ push (CheckWindow x [WhenTurnBegins You, AfterTurnBegins You])
+  BeginTurn x -> g <$ push
+    (CheckWindow
+      x
+      [ Window Nothing (Just $ InvestigatorTarget x) $ WhenTurnBegins You
+      , Window Nothing (Just $ InvestigatorTarget x) $ AfterTurnBegins You
+      ]
+    )
   ChoosePlayerOrder [x] [] -> do
     pushAll [BeginTurn x, After (BeginTurn x)]
     pure $ g & playerOrderL .~ [x] & activeInvestigatorIdL .~ x
@@ -2456,7 +2509,7 @@ runGameMessage msg g = case msg of
       & (phaseMessageHistoryL .~ [])
   BeginEnemy -> do
     pushAllEnd
-      $ [ CheckWindow iid [Fast.AnyPhaseBegins]
+      $ [ CheckWindow iid [Window Nothing Nothing Fast.AnyPhaseBegins]
         | iid <- g ^. investigatorsL . to keys
         ]
       <> [HuntersMove, EnemiesAttack, EndEnemy]
@@ -2475,7 +2528,7 @@ runGameMessage msg g = case msg of
       & (phaseMessageHistoryL .~ [])
   BeginUpkeep -> do
     pushAllEnd
-      $ [ CheckWindow iid [Fast.AnyPhaseBegins]
+      $ [ CheckWindow iid [Window Nothing Nothing Fast.AnyPhaseBegins]
         | iid <- g ^. investigatorsL . to keys
         ]
       <> [ReadyExhausted, AllDrawCardAndResource, AllCheckHandSize, EndUpkeep]
@@ -2492,8 +2545,11 @@ runGameMessage msg g = case msg of
              )
         )
       & (phaseMessageHistoryL .~ [])
-  EndRoundWindow ->
-    g <$ push (CheckWindow (g ^. leadInvestigatorIdL) [AtEndOfRound])
+  EndRoundWindow -> g <$ push
+    (CheckWindow
+      (g ^. leadInvestigatorIdL)
+      [Window Nothing Nothing AtEndOfRound]
+    )
   EndRound -> do
     pushEnd BeginRound
     pure
@@ -2508,11 +2564,13 @@ runGameMessage msg g = case msg of
   BeginRound -> g <$ pushEnd BeginMythos
   BeginMythos -> do
     pushAllEnd
-      $ [ CheckWindow iid [Fast.AnyPhaseBegins]
+      $ [ CheckWindow iid [Window Nothing Nothing Fast.AnyPhaseBegins]
         | iid <- g ^. investigatorsL . to keys
         ]
       <> [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
-      <> [ CheckWindow iid [Fast.WhenAllDrawEncounterCard]
+      <> [ CheckWindow
+             iid
+             [Window Nothing Nothing Fast.WhenAllDrawEncounterCard]
          | iid <- g ^. investigatorsL . to keys
          ]
       <> [AllDrawEncounterCard, EndMythos]
@@ -2880,8 +2938,15 @@ runGameMessage msg g = case msg of
       treacheryId = toId treachery
     checkWindowMessages <- checkWindows iid $ \who ->
       pure
-        $ [Fast.WhenDrawTreachery who]
-        <> [ Fast.WhenDrawNonPerilTreachery who treacheryId
+        $ [ Window
+                (Just $ InvestigatorSource iid)
+                (Just $ TreacheryTarget treacheryId)
+              $ Fast.WhenDrawTreachery who
+          ]
+        <> [ Window
+                 (Just $ InvestigatorSource iid)
+                 (Just $ TreacheryTarget treacheryId)
+               $ Fast.WhenDrawNonPerilTreachery who treacheryId
            | Keyword.Peril `notMember` toKeywords treachery
            ]
     pushAll

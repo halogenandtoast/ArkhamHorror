@@ -1553,6 +1553,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     committedCardCodes <- mapSet unCommittedCardCode <$> getSet ()
     actions <- getActions iid (WhenSkillTest skillType) ()
     isScenarioAbility <- getIsScenarioAbility
+    clueCount <- unClueCount <$> getCount investigatorLocation
     source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
     cannotCommitCards <-
       elem CannotCommitCards
@@ -1573,6 +1574,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   MaxOnePerTest ->
                     cdCardCode pcDef `notElem` committedCardCodes
                   OnlyYourTest -> True
+                  OnlyIfYourLocationHasClues -> clueCount > 0
                   ScenarioAbility -> isScenarioAbility
                   MinSkillTestValueDifference n ->
                     (skillDifficulty - baseSkillValueFor skillType Nothing [] a)
@@ -1610,6 +1612,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   BeforeSkillTest iid skillType skillDifficulty | iid /= investigatorId -> do
     locationId <- getId iid
     isScenarioAbility <- getIsScenarioAbility
+    clueCount <- unClueCount <$> getCount locationId
     when (locationId == investigatorLocation) $ do
       committedCardIds <- map unCommittedCardId <$> getSetList investigatorId
       committedCardCodes <- mapSet unCommittedCardCode <$> getSet ()
@@ -1630,6 +1633,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                       MaxOnePerTest ->
                         cdCardCode pcDef `notElem` committedCardCodes
                       OnlyYourTest -> False
+                      OnlyIfYourLocationHasClues -> clueCount > 0
                       ScenarioAbility -> isScenarioAbility
                       MinSkillTestValueDifference n ->
                         (skillDifficulty

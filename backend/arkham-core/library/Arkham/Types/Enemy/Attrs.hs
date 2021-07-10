@@ -394,7 +394,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
                   else pure []
                 leadInvestigatorId <- getLeadInvestigatorId
                 case preyIds <> investigatorIds of
-                  [] -> pure ()
+                  [] -> push $ EnemyEntered eid lid
                   [iid] -> pushAll
                     [EnemyEntered eid lid, EnemyEngageInvestigator eid iid]
                   iids -> push

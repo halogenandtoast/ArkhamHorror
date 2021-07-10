@@ -24,8 +24,7 @@ newtype Knife = Knife AssetAttrs
 knife :: AssetCard Knife
 knife = hand Knife Cards.knife
 
-instance HasModifiersFor env Knife where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Knife
 
 instance HasActions env Knife where
   getActions iid _ (Knife a) | ownedBy a iid = pure

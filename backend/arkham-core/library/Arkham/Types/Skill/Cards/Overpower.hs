@@ -15,8 +15,7 @@ newtype Overpower = Overpower SkillAttrs
 overpower :: SkillCard Overpower
 overpower = skill Overpower Cards.overpower
 
-instance HasModifiersFor env Overpower where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Overpower
 
 instance HasActions env Overpower where
   getActions i window (Overpower attrs) = getActions i window attrs

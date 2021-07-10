@@ -30,8 +30,7 @@ dimensionalDoorway = location
   Squiggle
   [Triangle, Moon]
 
-instance HasModifiersFor env DimensionalDoorway where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env DimensionalDoorway
 
 instance ActionRunner env => HasActions env DimensionalDoorway where
   getActions iid (AfterEndTurn You) (DimensionalDoorway attrs) =

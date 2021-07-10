@@ -20,8 +20,7 @@ newtype HuntedDown = HuntedDown TreacheryAttrs
 huntedDown :: TreacheryCard HuntedDown
 huntedDown = treachery HuntedDown Cards.huntedDown
 
-instance HasModifiersFor env HuntedDown where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env HuntedDown
 
 instance HasActions env HuntedDown where
   getActions i window (HuntedDown attrs) = getActions i window attrs

@@ -55,7 +55,9 @@ data Act
 
 deriving anyclass instance ActionRunner env => HasActions env Act
 deriving anyclass instance (HasName env LocationId, ActRunner env) => RunMessage env Act
-deriving anyclass instance HasSet Trait env LocationId => HasModifiersFor env Act
+
+instance HasSet Trait env LocationId => HasModifiersFor env Act where
+  getModifiersFor = genericGetModifiersFor
 
 instance HasStep Act ActStep where
   getStep = ask >>= runReaderT getStep . toAttrs

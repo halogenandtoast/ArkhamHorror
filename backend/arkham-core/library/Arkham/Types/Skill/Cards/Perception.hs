@@ -15,8 +15,7 @@ newtype Perception = Perception SkillAttrs
 perception :: SkillCard Perception
 perception = skill Perception Cards.perception
 
-instance HasModifiersFor env Perception where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Perception
 
 instance HasActions env Perception where
   getActions i window (Perception attrs) = getActions i window attrs

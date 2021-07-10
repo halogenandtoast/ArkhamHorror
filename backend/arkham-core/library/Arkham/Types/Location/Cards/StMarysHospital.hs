@@ -30,8 +30,7 @@ stMarysHospital = location
   Plus
   [Diamond, Square]
 
-instance HasModifiersFor env StMarysHospital where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env StMarysHospital
 
 ability :: LocationAttrs -> Ability
 ability attrs =

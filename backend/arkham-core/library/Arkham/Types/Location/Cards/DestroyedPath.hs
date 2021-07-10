@@ -37,8 +37,7 @@ destroyedPath = locationWith
   . (unrevealedNameL .~ "Diverging Path")
   )
 
-instance HasModifiersFor env DestroyedPath where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env DestroyedPath
 
 forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility

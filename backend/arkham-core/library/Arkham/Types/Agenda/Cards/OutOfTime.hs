@@ -19,8 +19,7 @@ newtype OutOfTime = OutOfTime AgendaAttrs
 outOfTime :: OutOfTime
 outOfTime = OutOfTime $ baseAttrs "02164" "Out of Time" (Agenda 5 A) (Static 3)
 
-instance HasModifiersFor env OutOfTime where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env OutOfTime
 
 instance HasActions env OutOfTime where
   getActions i window (OutOfTime x) = getActions i window x

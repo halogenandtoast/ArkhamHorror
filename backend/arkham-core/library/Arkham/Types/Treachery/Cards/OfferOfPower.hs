@@ -14,8 +14,7 @@ newtype OfferOfPower = OfferOfPower TreacheryAttrs
 offerOfPower :: TreacheryCard OfferOfPower
 offerOfPower = treachery OfferOfPower Cards.offerOfPower
 
-instance HasModifiersFor env OfferOfPower where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env OfferOfPower
 
 instance HasActions env OfferOfPower where
   getActions i window (OfferOfPower attrs) = getActions i window attrs

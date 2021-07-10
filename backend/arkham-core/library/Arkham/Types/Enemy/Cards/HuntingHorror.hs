@@ -22,8 +22,7 @@ newtype HuntingHorror = HuntingHorror EnemyAttrs
 huntingHorror :: EnemyCard HuntingHorror
 huntingHorror = enemy HuntingHorror Cards.huntingHorror (2, Static 3, 2) (1, 1)
 
-instance HasModifiersFor env HuntingHorror where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env HuntingHorror
 
 instance ActionRunner env => HasActions env HuntingHorror where
   getActions i window (HuntingHorror attrs) = getActions i window attrs

@@ -26,8 +26,7 @@ arkhamWoodsCliffside = locationWith
   . (revealedSymbolL .~ Hourglass)
   )
 
-instance HasModifiersFor env ArkhamWoodsCliffside where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ArkhamWoodsCliffside
 
 instance ActionRunner env => HasActions env ArkhamWoodsCliffside where
   getActions i window (ArkhamWoodsCliffside attrs) = getActions i window attrs

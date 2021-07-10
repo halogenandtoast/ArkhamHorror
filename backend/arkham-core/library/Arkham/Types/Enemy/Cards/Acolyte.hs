@@ -17,8 +17,7 @@ newtype Acolyte = Acolyte EnemyAttrs
 acolyte :: EnemyCard Acolyte
 acolyte = enemy Acolyte Cards.acolyte (3, Static 1, 2) (1, 0)
 
-instance HasModifiersFor env Acolyte where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Acolyte
 
 instance ActionRunner env => HasActions env Acolyte where
   getActions i window (Acolyte attrs) = getActions i window attrs

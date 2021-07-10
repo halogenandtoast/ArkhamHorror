@@ -24,8 +24,7 @@ relentlessDarkYoung = enemyWith
   (2, 1)
   (preyL .~ LowestSkill SkillAgility)
 
-instance HasModifiersFor env RelentlessDarkYoung where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env RelentlessDarkYoung
 
 instance ActionRunner env => HasActions env RelentlessDarkYoung where
   getActions i window (RelentlessDarkYoung attrs) = getActions i window attrs

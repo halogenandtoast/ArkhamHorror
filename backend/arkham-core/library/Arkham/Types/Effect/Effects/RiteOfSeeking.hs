@@ -18,8 +18,7 @@ newtype RiteOfSeeking = RiteOfSeeking EffectAttrs
 riteOfSeeking :: EffectArgs -> RiteOfSeeking
 riteOfSeeking = RiteOfSeeking . uncurry4 (baseAttrs "02028")
 
-instance HasModifiersFor env RiteOfSeeking where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env RiteOfSeeking
 
 instance (HasQueue env) => RunMessage env RiteOfSeeking where
   runMessage msg e@(RiteOfSeeking attrs@EffectAttrs {..}) = case msg of

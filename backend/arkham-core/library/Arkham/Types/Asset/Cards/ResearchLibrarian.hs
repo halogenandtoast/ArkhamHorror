@@ -19,8 +19,7 @@ newtype ResearchLibrarian = ResearchLibrarian AssetAttrs
 researchLibrarian :: AssetCard ResearchLibrarian
 researchLibrarian = ally ResearchLibrarian Cards.researchLibrarian (1, 1)
 
-instance HasModifiersFor env ResearchLibrarian where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ResearchLibrarian
 
 instance HasActions env ResearchLibrarian where
   getActions i (WhenEnterPlay target) (ResearchLibrarian x)

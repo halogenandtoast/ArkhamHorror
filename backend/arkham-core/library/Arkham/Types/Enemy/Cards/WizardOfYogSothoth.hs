@@ -24,8 +24,7 @@ wizardOfYogSothoth = enemyWith
   (1, 2)
   (preyL .~ FewestCards)
 
-instance HasModifiersFor env WizardOfYogSothoth where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env WizardOfYogSothoth
 
 instance ActionRunner env => HasActions env WizardOfYogSothoth where
   getActions i window (WizardOfYogSothoth attrs) = getActions i window attrs

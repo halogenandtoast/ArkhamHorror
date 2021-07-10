@@ -28,8 +28,7 @@ darkenedHall = locationWith
   .~ setFromList [Triangle, T, Hourglass, Plus, Squiggle]
   )
 
-instance HasModifiersFor env DarkenedHall where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env DarkenedHall
 
 instance ActionRunner env => HasActions env DarkenedHall where
   getActions iid window (DarkenedHall attrs) = getActions iid window attrs

@@ -30,8 +30,7 @@ instance HasSet EnemyId env InvestigatorId => HasActions env Pathfinder1 where
     pure [ UseAbility iid (ability attrs) | null engagedEnemies ]
   getActions _ _ _ = pure []
 
-instance HasModifiersFor env Pathfinder1 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Pathfinder1
 
 instance
   ( HasQueue env

@@ -17,8 +17,7 @@ newtype OnWingsOfDarkness = OnWingsOfDarkness TreacheryAttrs
 onWingsOfDarkness :: TreacheryCard OnWingsOfDarkness
 onWingsOfDarkness = treachery OnWingsOfDarkness Cards.onWingsOfDarkness
 
-instance HasModifiersFor env OnWingsOfDarkness where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env OnWingsOfDarkness
 
 instance HasActions env OnWingsOfDarkness where
   getActions i window (OnWingsOfDarkness attrs) = getActions i window attrs

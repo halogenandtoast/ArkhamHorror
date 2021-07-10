@@ -18,8 +18,7 @@ newtype BeastOfTheBayou = BeastOfTheBayou TreacheryAttrs
 beastOfTheBayou :: TreacheryCard BeastOfTheBayou
 beastOfTheBayou = treachery BeastOfTheBayou Cards.beastOfTheBayou
 
-instance HasModifiersFor env BeastOfTheBayou where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BeastOfTheBayou
 
 instance HasActions env BeastOfTheBayou where
   getActions i window (BeastOfTheBayou attrs) = getActions i window attrs

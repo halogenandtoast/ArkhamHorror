@@ -39,8 +39,7 @@ instance HasActions env SmokingPipe where
     pure [UseAbility iid (fastAbility iid a)]
   getActions _ _ _ = pure []
 
-instance HasModifiersFor env SmokingPipe where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SmokingPipe
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env SmokingPipe where
   runMessage msg a@(SmokingPipe attrs) = case msg of

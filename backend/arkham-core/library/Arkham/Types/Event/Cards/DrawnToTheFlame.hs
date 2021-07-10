@@ -15,8 +15,7 @@ newtype DrawnToTheFlame = DrawnToTheFlame EventAttrs
 drawnToTheFlame :: EventCard DrawnToTheFlame
 drawnToTheFlame = event DrawnToTheFlame Cards.drawnToTheFlame
 
-instance HasModifiersFor env DrawnToTheFlame where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env DrawnToTheFlame
 
 instance HasActions env DrawnToTheFlame where
   getActions i window (DrawnToTheFlame attrs) = getActions i window attrs

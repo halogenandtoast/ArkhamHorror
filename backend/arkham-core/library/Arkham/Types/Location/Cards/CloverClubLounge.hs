@@ -32,8 +32,7 @@ cloverClubLounge = location
   Circle
   [Moon, Square, Triangle]
 
-instance HasModifiersFor env CloverClubLounge where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env CloverClubLounge
 
 ability :: LocationAttrs -> Ability
 ability attrs =

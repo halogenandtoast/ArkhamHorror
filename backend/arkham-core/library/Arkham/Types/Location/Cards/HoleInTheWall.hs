@@ -23,8 +23,7 @@ holeInTheWall = location
   Square
   [T, Triangle, Plus, Diamond]
 
-instance HasModifiersFor env HoleInTheWall where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env HoleInTheWall
 
 instance ActionRunner env => HasActions env HoleInTheWall where
   getActions i window (HoleInTheWall attrs) = getActions i window attrs

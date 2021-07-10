@@ -22,8 +22,7 @@ rollingBackwards :: RollingBackwards
 rollingBackwards = RollingBackwards
   $ baseAttrs "02162" "Rolling Backwards" (Agenda 3 A) (Static 4)
 
-instance HasModifiersFor env RollingBackwards where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env RollingBackwards
 
 instance HasActions env RollingBackwards where
   getActions i window (RollingBackwards x) = getActions i window x

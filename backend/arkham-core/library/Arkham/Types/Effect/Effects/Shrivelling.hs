@@ -18,8 +18,7 @@ newtype Shrivelling = Shrivelling EffectAttrs
 shrivelling :: EffectArgs -> Shrivelling
 shrivelling = Shrivelling . uncurry4 (baseAttrs "01060")
 
-instance HasModifiersFor env Shrivelling where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Shrivelling
 
 intFromMetadata :: EffectMetadata a -> Int
 intFromMetadata = \case

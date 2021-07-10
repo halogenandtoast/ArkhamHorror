@@ -16,8 +16,7 @@ newtype SwarmOfRats = SwarmOfRats EnemyAttrs
 swarmOfRats :: EnemyCard SwarmOfRats
 swarmOfRats = enemy SwarmOfRats Cards.swarmOfRats (1, Static 1, 3) (1, 0)
 
-instance HasModifiersFor env SwarmOfRats where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SwarmOfRats
 
 instance ActionRunner env => HasActions env SwarmOfRats where
   getActions i window (SwarmOfRats attrs) = getActions i window attrs

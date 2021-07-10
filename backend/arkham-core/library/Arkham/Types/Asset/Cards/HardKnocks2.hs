@@ -24,8 +24,7 @@ newtype HardKnocks2 = HardKnocks2 AssetAttrs
 hardKnocks2 :: AssetCard HardKnocks2
 hardKnocks2 = asset HardKnocks2 Cards.hardKnocks2
 
-instance HasModifiersFor env HardKnocks2 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env HardKnocks2
 
 ability :: Int -> AssetAttrs -> Ability
 ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)

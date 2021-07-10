@@ -23,8 +23,7 @@ newtype GrotesqueStatue4 = GrotesqueStatue4 AssetAttrs
 grotesqueStatue4 :: AssetCard GrotesqueStatue4
 grotesqueStatue4 = hand GrotesqueStatue4 Cards.grotesqueStatue4
 
-instance HasModifiersFor env GrotesqueStatue4 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env GrotesqueStatue4
 
 ability :: AssetAttrs -> Source -> Ability
 ability attrs source = base

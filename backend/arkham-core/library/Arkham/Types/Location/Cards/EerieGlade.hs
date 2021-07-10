@@ -32,8 +32,7 @@ eerieGlade = locationWith
   . (unrevealedNameL .~ "Diverging Path")
   )
 
-instance HasModifiersFor env EerieGlade where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env EerieGlade
 
 forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility

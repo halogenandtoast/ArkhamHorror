@@ -21,8 +21,7 @@ thinkOnYourFeet = event ThinkOnYourFeet Cards.thinkOnYourFeet
 instance HasActions env ThinkOnYourFeet where
   getActions iid window (ThinkOnYourFeet attrs) = getActions iid window attrs
 
-instance HasModifiersFor env ThinkOnYourFeet where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ThinkOnYourFeet
 
 instance
   ( HasQueue env

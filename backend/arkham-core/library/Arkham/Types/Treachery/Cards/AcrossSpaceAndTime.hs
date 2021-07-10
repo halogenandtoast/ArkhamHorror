@@ -17,8 +17,7 @@ newtype AcrossSpaceAndTime = AcrossSpaceAndTime TreacheryAttrs
 acrossSpaceAndTime :: TreacheryCard AcrossSpaceAndTime
 acrossSpaceAndTime = treachery AcrossSpaceAndTime Cards.acrossSpaceAndTime
 
-instance HasModifiersFor env AcrossSpaceAndTime where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env AcrossSpaceAndTime
 
 instance HasActions env AcrossSpaceAndTime where
   getActions i window (AcrossSpaceAndTime attrs) = getActions i window attrs

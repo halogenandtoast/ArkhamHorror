@@ -17,8 +17,7 @@ newtype ChillFromBelow = ChillFromBelow TreacheryAttrs
 chillFromBelow :: TreacheryCard ChillFromBelow
 chillFromBelow = treachery ChillFromBelow Cards.chillFromBelow
 
-instance HasModifiersFor env ChillFromBelow where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ChillFromBelow
 
 instance HasActions env ChillFromBelow where
   getActions i window (ChillFromBelow attrs) = getActions i window attrs

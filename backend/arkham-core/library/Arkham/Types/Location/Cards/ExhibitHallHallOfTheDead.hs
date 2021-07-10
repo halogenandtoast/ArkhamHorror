@@ -26,8 +26,7 @@ exhibitHallHallOfTheDead = location
   Squiggle
   [Square, Hourglass]
 
-instance HasModifiersFor env ExhibitHallHallOfTheDead where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ExhibitHallHallOfTheDead
 
 instance ActionRunner env => HasActions env ExhibitHallHallOfTheDead where
   getActions iid window (ExhibitHallHallOfTheDead attrs) =

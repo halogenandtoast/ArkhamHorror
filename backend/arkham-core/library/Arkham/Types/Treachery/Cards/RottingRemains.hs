@@ -16,8 +16,7 @@ newtype RottingRemains = RottingRemains TreacheryAttrs
 rottingRemains :: TreacheryCard RottingRemains
 rottingRemains = treachery RottingRemains Cards.rottingRemains
 
-instance HasModifiersFor env RottingRemains where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env RottingRemains
 
 instance HasActions env RottingRemains where
   getActions i window (RottingRemains attrs) = getActions i window attrs

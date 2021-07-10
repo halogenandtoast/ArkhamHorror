@@ -18,8 +18,7 @@ ritualSite :: LocationCard RitualSite
 ritualSite =
   location RitualSite Cards.ritualSite 3 (PerPlayer 2) Plus [Squiggle]
 
-instance HasModifiersFor env RitualSite where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env RitualSite
 
 instance ActionRunner env => HasActions env RitualSite where
   getActions i window (RitualSite attrs) = getActions i window attrs

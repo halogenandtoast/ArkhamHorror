@@ -18,8 +18,7 @@ newtype BaseballBat = BaseballBat EffectAttrs
 baseballBat :: EffectArgs -> BaseballBat
 baseballBat = BaseballBat . uncurry4 (baseAttrs "01074")
 
-instance HasModifiersFor env BaseballBat where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BaseballBat
 
 instance HasQueue env => RunMessage env BaseballBat where
   runMessage msg e@(BaseballBat attrs@EffectAttrs {..}) = case msg of

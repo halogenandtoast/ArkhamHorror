@@ -20,8 +20,7 @@ newtype BeyondTheVeil = BeyondTheVeil TreacheryAttrs
 beyondTheVeil :: TreacheryCard BeyondTheVeil
 beyondTheVeil = treachery BeyondTheVeil Cards.beyondTheVeil
 
-instance HasModifiersFor env BeyondTheVeil where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BeyondTheVeil
 
 instance HasActions env BeyondTheVeil where
   getActions i window (BeyondTheVeil attrs) = getActions i window attrs

@@ -15,8 +15,7 @@ newtype SearchForTheTruth = SearchForTheTruth EventAttrs
 searchForTheTruth :: EventCard SearchForTheTruth
 searchForTheTruth = event SearchForTheTruth Cards.searchForTheTruth
 
-instance HasModifiersFor env SearchForTheTruth where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SearchForTheTruth
 
 instance HasActions env SearchForTheTruth where
   getActions i window (SearchForTheTruth attrs) = getActions i window attrs

@@ -32,8 +32,7 @@ aTearInThePath = locationWith
   . (unrevealedNameL .~ "Altered Path")
   )
 
-instance HasModifiersFor env ATearInThePath where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ATearInThePath
 
 forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility

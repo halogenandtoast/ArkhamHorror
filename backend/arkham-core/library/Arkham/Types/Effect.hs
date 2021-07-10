@@ -93,7 +93,9 @@ data Effect
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-deriving anyclass instance HasId Difficulty env () => HasModifiersFor env Effect
+instance HasId Difficulty env () => HasModifiersFor env Effect where
+  getModifiersFor = genericGetModifiersFor
+
 deriving anyclass instance
   ( HasQueue env
   , HasSet ConnectedLocationId env LocationId

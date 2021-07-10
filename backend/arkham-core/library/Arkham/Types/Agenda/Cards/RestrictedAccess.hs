@@ -28,8 +28,7 @@ restrictedAccess = RestrictedAccess
 instance HasActions env RestrictedAccess where
   getActions i window (RestrictedAccess x) = getActions i window x
 
-instance HasModifiersFor env RestrictedAccess where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env RestrictedAccess
 
 instance AgendaRunner env => RunMessage env RestrictedAccess where
   runMessage msg a@(RestrictedAccess attrs@AgendaAttrs {..}) = case msg of

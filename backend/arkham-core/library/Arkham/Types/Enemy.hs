@@ -121,8 +121,7 @@ instance ActionRunner env => HasActions env BaseEnemy where
   getActions investigator window (BaseEnemy attrs) =
     getActions investigator window attrs
 
-instance HasModifiersFor env BaseEnemy where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BaseEnemy
 
 instance (EnemyRunner env) => RunMessage env BaseEnemy where
   runMessage msg (BaseEnemy attrs) = BaseEnemy <$> runMessage msg attrs
@@ -155,7 +154,7 @@ instance ActionRunner env => HasActions env Enemy where
       (\action -> not $ any (preventedByModifier (toAttrs x) action) modifiers')
       actions
 
-deriving anyclass instance
+instance
   ( HasId LocationId env InvestigatorId
   , HasCount RemainingSanity env InvestigatorId
   , HasCount CardCount env InvestigatorId
@@ -165,7 +164,8 @@ deriving anyclass instance
   , HasSet Trait env AssetId
   , HasSet Trait env LocationId
   )
-  => HasModifiersFor env Enemy
+  => HasModifiersFor env Enemy where
+  getModifiersFor = genericGetModifiersFor
 
 instance Entity Enemy where
   type EntityId Enemy = EnemyId

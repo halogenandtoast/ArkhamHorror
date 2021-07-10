@@ -27,8 +27,7 @@ inEveryShadow =
 instance HasActions env InEveryShadow where
   getActions i window (InEveryShadow x) = getActions i window x
 
-instance HasModifiersFor env InEveryShadow where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env InEveryShadow
 
 instance AgendaRunner env => RunMessage env InEveryShadow where
   runMessage msg a@(InEveryShadow attrs@AgendaAttrs {..}) = case msg of

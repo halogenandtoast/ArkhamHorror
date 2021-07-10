@@ -22,8 +22,7 @@ theMawWidens :: TheMawWidens
 theMawWidens =
   TheMawWidens $ baseAttrs "02161" "The Maw Widens" (Agenda 2 A) (Static 3)
 
-instance HasModifiersFor env TheMawWidens where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env TheMawWidens
 
 instance HasActions env TheMawWidens where
   getActions i window (TheMawWidens x) = getActions i window x

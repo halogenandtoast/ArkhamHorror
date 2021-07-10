@@ -29,8 +29,7 @@ congregationalChurch_209 = location
   Diamond
   [Plus, Triangle, Squiggle]
 
-instance HasModifiersFor env CongregationalChurch_209 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env CongregationalChurch_209
 
 ability :: LocationAttrs -> Ability
 ability attrs = mkAbility

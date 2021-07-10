@@ -24,8 +24,7 @@ discipleOfTheDevourer = enemyWith
   (1, 0)
   (spawnAtL ?~ FarthestLocationFromYou EmptyLocation)
 
-instance HasModifiersFor env DiscipleOfTheDevourer where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env DiscipleOfTheDevourer
 
 instance ActionRunner env => HasActions env DiscipleOfTheDevourer where
   getActions i window (DiscipleOfTheDevourer attrs) = getActions i window attrs

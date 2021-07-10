@@ -19,8 +19,7 @@ newtype SordidAndSilent = SordidAndSilent TreacheryAttrs
 sordidAndSilent :: TreacheryCard SordidAndSilent
 sordidAndSilent = treachery SordidAndSilent Cards.sordidAndSilent
 
-instance HasModifiersFor env SordidAndSilent where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SordidAndSilent
 
 instance HasActions env SordidAndSilent where
   getActions i window (SordidAndSilent attrs) = getActions i window attrs

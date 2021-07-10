@@ -22,8 +22,7 @@ newtype Scrying = Scrying AssetAttrs
 scrying :: AssetCard Scrying
 scrying = arcane Scrying Cards.scrying
 
-instance HasModifiersFor env Scrying where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Scrying
 
 instance HasActions env Scrying where
   getActions iid NonFast (Scrying a) | ownedBy a iid = pure

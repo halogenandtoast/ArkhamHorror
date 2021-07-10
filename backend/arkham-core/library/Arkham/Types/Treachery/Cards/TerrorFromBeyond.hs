@@ -20,8 +20,7 @@ newtype TerrorFromBeyond = TerrorFromBeyond TreacheryAttrs
 terrorFromBeyond :: TreacheryCard TerrorFromBeyond
 terrorFromBeyond = treachery TerrorFromBeyond Cards.terrorFromBeyond
 
-instance HasModifiersFor env TerrorFromBeyond where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env TerrorFromBeyond
 
 instance HasActions env TerrorFromBeyond where
   getActions i window (TerrorFromBeyond attrs) = getActions i window attrs

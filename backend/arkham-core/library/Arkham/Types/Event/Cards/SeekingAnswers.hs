@@ -21,8 +21,7 @@ seekingAnswers = event SeekingAnswers Cards.seekingAnswers
 instance HasActions env SeekingAnswers where
   getActions iid window (SeekingAnswers attrs) = getActions iid window attrs
 
-instance HasModifiersFor env SeekingAnswers where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SeekingAnswers
 
 instance (HasQueue env, HasId LocationId env InvestigatorId) => RunMessage env SeekingAnswers where
   runMessage msg e@(SeekingAnswers attrs@EventAttrs {..}) = case msg of

@@ -17,8 +17,7 @@ newtype EmergencyCache = EmergencyCache EventAttrs
 emergencyCache :: EventCard EmergencyCache
 emergencyCache = event EmergencyCache Cards.emergencyCache
 
-instance HasModifiersFor env EmergencyCache where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env EmergencyCache
 
 instance HasActions env EmergencyCache where
   getActions i window (EmergencyCache attrs) = getActions i window attrs

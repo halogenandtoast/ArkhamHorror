@@ -17,8 +17,7 @@ newtype GraveEater = GraveEater EnemyAttrs
 graveEater :: EnemyCard GraveEater
 graveEater = enemy GraveEater Cards.graveEater (2, Static 2, 2) (1, 1)
 
-instance HasModifiersFor env GraveEater where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env GraveEater
 
 instance ActionRunner env => HasActions env GraveEater where
   getActions i window (GraveEater attrs) = getActions i window attrs

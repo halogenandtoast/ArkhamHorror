@@ -26,8 +26,7 @@ studentUnion :: LocationCard StudentUnion
 studentUnion =
   location StudentUnion Cards.studentUnion 1 (Static 2) Diamond [Plus, Equals]
 
-instance HasModifiersFor env StudentUnion where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env StudentUnion
 
 instance ActionRunner env => HasActions env StudentUnion where
   getActions iid NonFast (StudentUnion attrs@LocationAttrs {..})

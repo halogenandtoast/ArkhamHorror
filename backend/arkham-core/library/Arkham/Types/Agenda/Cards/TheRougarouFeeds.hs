@@ -24,8 +24,7 @@ theRougarouFeeds :: TheRougarouFeeds
 theRougarouFeeds = TheRougarouFeeds
   $ baseAttrs "81003" "The Rougarou Feeds" (Agenda 2 A) (Static 6)
 
-instance HasModifiersFor env TheRougarouFeeds where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env TheRougarouFeeds
 
 instance HasActions env TheRougarouFeeds where
   getActions i window (TheRougarouFeeds x) = getActions i window x

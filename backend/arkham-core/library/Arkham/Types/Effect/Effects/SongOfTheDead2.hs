@@ -19,8 +19,7 @@ newtype SongOfTheDead2 = SongOfTheDead2 EffectAttrs
 shrivelling :: EffectArgs -> SongOfTheDead2
 shrivelling = SongOfTheDead2 . uncurry4 (baseAttrs "02112")
 
-instance HasModifiersFor env SongOfTheDead2 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SongOfTheDead2
 
 instance HasQueue env => RunMessage env SongOfTheDead2 where
   runMessage msg e@(SongOfTheDead2 attrs@EffectAttrs {..}) = case msg of

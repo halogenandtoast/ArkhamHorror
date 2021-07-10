@@ -39,8 +39,7 @@ instance HasActions env Painkillers where
     pure [UseAbility iid (fastAbility iid a)]
   getActions _ _ _ = pure []
 
-instance HasModifiersFor env Painkillers where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Painkillers
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Painkillers where
   runMessage msg a@(Painkillers attrs) = case msg of

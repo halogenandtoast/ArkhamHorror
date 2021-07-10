@@ -33,8 +33,7 @@ instance HasActions env RitualCandles where
     ]
   getActions iid window (RitualCandles x) = getActions iid window x
 
-instance HasModifiersFor env RitualCandles where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env RitualCandles
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env RitualCandles where
   runMessage msg a@(RitualCandles attrs) = case msg of

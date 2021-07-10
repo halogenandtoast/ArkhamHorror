@@ -22,8 +22,7 @@ rampagingCreatures :: RampagingCreatures
 rampagingCreatures = RampagingCreatures
   $ baseAttrs "02237" "Rampaging Creatures" (Agenda 1 A) (Static 5)
 
-instance HasModifiersFor env RampagingCreatures where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env RampagingCreatures
 
 instance HasActions env RampagingCreatures where
   getActions i window (RampagingCreatures x) = getActions i window x

@@ -17,8 +17,7 @@ newtype Evidence = Evidence EventAttrs
 evidence :: EventCard Evidence
 evidence = event Evidence Cards.evidence
 
-instance HasModifiersFor env Evidence where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Evidence
 
 instance HasActions env Evidence where
   getActions i window (Evidence attrs) = getActions i window attrs

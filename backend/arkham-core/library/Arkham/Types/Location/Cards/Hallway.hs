@@ -16,8 +16,7 @@ hallway :: LocationCard Hallway
 hallway =
   location Hallway Cards.hallway 1 (Static 0) Square [Triangle, Plus, Diamond]
 
-instance HasModifiersFor env Hallway where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Hallway
 
 instance ActionRunner env => HasActions env Hallway where
   getActions i window (Hallway attrs) = getActions i window attrs

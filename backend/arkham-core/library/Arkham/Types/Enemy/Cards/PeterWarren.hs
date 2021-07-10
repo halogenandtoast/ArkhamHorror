@@ -30,8 +30,7 @@ peterWarren = enemyWith
   (1, 0)
   (spawnAtL ?~ LocationWithTitle "Miskatonic University")
 
-instance HasModifiersFor env PeterWarren where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env PeterWarren
 
 instance ActionRunner env => HasActions env PeterWarren where
   getActions iid NonFast (PeterWarren attrs@EnemyAttrs {..}) =

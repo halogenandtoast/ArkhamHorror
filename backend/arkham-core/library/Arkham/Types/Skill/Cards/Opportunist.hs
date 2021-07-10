@@ -15,8 +15,7 @@ newtype Opportunist = Opportunist SkillAttrs
 opportunist :: SkillCard Opportunist
 opportunist = skill Opportunist Cards.opportunist
 
-instance HasModifiersFor env Opportunist where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Opportunist
 
 instance HasActions env Opportunist where
   getActions i window (Opportunist attrs) = getActions i window attrs

@@ -23,8 +23,7 @@ humanitiesBuilding = location
   Square
   [Plus, Triangle]
 
-instance HasModifiersFor env HumanitiesBuilding where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env HumanitiesBuilding
 
 instance ActionRunner env => HasActions env HumanitiesBuilding where
   getActions i window (HumanitiesBuilding attrs) = getActions i window attrs

@@ -25,8 +25,7 @@ newtype Flashlight = Flashlight AssetAttrs
 flashlight :: AssetCard Flashlight
 flashlight = hand Flashlight Cards.flashlight
 
-instance HasModifiersFor env Flashlight where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Flashlight
 
 investigateAbility :: AssetAttrs -> Ability
 investigateAbility attrs = mkAbility

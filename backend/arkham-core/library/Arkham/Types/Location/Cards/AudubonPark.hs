@@ -22,8 +22,7 @@ audubonPark = location
   Squiggle
   [Triangle, Squiggle]
 
-instance HasModifiersFor env AudubonPark where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env AudubonPark
 
 instance ActionRunner env => HasActions env AudubonPark where
   getActions i window (AudubonPark attrs) = getActions i window attrs

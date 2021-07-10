@@ -20,8 +20,7 @@ newtype DarkYoungHost = DarkYoungHost EnemyAttrs
 darkYoungHost :: EnemyCard DarkYoungHost
 darkYoungHost = enemy DarkYoungHost Cards.darkYoungHost (4, Static 5, 2) (2, 2)
 
-instance HasModifiersFor env DarkYoungHost where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env DarkYoungHost
 
 instance ActionRunner env => HasActions env DarkYoungHost where
   getActions i window (DarkYoungHost attrs) = getActions i window attrs

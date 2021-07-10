@@ -21,8 +21,7 @@ standTogether3 = event StandTogether3 Cards.standTogether3
 instance HasActions env StandTogether3 where
   getActions iid window (StandTogether3 attrs) = getActions iid window attrs
 
-instance HasModifiersFor env StandTogether3 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env StandTogether3
 
 instance
   ( HasId LocationId env InvestigatorId

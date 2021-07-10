@@ -21,8 +21,7 @@ newtype PsychopompsSong = PsychopompsSong TreacheryAttrs
 psychopompsSong :: TreacheryCard PsychopompsSong
 psychopompsSong = treachery PsychopompsSong Cards.psychopompsSong
 
-instance HasModifiersFor env PsychopompsSong where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env PsychopompsSong
 
 ability :: TreacheryAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 ForcedAbility

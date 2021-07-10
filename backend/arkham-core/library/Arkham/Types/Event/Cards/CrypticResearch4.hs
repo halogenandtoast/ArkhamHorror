@@ -16,8 +16,7 @@ newtype CrypticResearch4 = CrypticResearch4 EventAttrs
 crypticResearch4 :: EventCard CrypticResearch4
 crypticResearch4 = event CrypticResearch4 Cards.crypticResearch4
 
-instance HasModifiersFor env CrypticResearch4 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env CrypticResearch4
 
 instance HasActions env CrypticResearch4 where
   getActions i window (CrypticResearch4 attrs) = getActions i window attrs

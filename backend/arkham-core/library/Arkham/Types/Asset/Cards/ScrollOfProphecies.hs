@@ -24,8 +24,7 @@ newtype ScrollOfProphecies = ScrollOfProphecies AssetAttrs
 scrollOfProphecies :: AssetCard ScrollOfProphecies
 scrollOfProphecies = hand ScrollOfProphecies Cards.scrollOfProphecies
 
-instance HasModifiersFor env ScrollOfProphecies where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ScrollOfProphecies
 
 instance HasActions env ScrollOfProphecies where
   getActions iid NonFast (ScrollOfProphecies a) | ownedBy a iid = pure

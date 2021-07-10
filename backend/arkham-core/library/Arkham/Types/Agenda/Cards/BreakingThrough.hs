@@ -22,8 +22,7 @@ breakingThrough :: BreakingThrough
 breakingThrough =
   BreakingThrough $ baseAttrs "02314" "Breaking Through" (Agenda 3 A) (Static 6)
 
-instance HasModifiersFor env BreakingThrough where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BreakingThrough
 
 instance HasActions env BreakingThrough where
   getActions i window (BreakingThrough x) = getActions i window x

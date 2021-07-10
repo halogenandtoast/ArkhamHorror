@@ -25,8 +25,7 @@ theBeastUnleashed = TheBeastUnleashed
 instance HasActions env TheBeastUnleashed where
   getActions i window (TheBeastUnleashed x) = getActions i window x
 
-instance HasModifiersFor env TheBeastUnleashed where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env TheBeastUnleashed
 
 instance AgendaRunner env => RunMessage env TheBeastUnleashed where
   runMessage msg a@(TheBeastUnleashed attrs@AgendaAttrs {..}) = case msg of

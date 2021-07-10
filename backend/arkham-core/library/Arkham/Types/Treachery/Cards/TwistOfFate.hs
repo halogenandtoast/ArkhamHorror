@@ -19,8 +19,7 @@ newtype TwistOfFate = TwistOfFate TreacheryAttrs
 twistOfFate :: TreacheryCard TwistOfFate
 twistOfFate = treachery TwistOfFate Cards.twistOfFate
 
-instance HasModifiersFor env TwistOfFate where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env TwistOfFate
 
 instance HasActions env TwistOfFate where
   getActions i window (TwistOfFate attrs) = getActions i window attrs

@@ -15,8 +15,7 @@ newtype HuntingShadow = HuntingShadow TreacheryAttrs
 huntingShadow :: TreacheryCard HuntingShadow
 huntingShadow = treachery HuntingShadow Cards.huntingShadow
 
-instance HasModifiersFor env HuntingShadow where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env HuntingShadow
 
 instance HasActions env HuntingShadow where
   getActions i window (HuntingShadow attrs) = getActions i window attrs

@@ -22,8 +22,7 @@ ravenousGhoul = enemyWith
   (1, 1)
   (preyL .~ LowestRemainingHealth)
 
-instance HasModifiersFor env RavenousGhoul where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env RavenousGhoul
 
 instance ActionRunner env => HasActions env RavenousGhoul where
   getActions i window (RavenousGhoul attrs) = getActions i window attrs

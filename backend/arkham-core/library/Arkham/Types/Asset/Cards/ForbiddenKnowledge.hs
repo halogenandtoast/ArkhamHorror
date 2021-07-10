@@ -19,8 +19,7 @@ newtype ForbiddenKnowledge = ForbiddenKnowledge AssetAttrs
 forbiddenKnowledge :: AssetCard ForbiddenKnowledge
 forbiddenKnowledge = asset ForbiddenKnowledge Cards.forbiddenKnowledge
 
-instance HasModifiersFor env ForbiddenKnowledge where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ForbiddenKnowledge
 
 instance HasActions env ForbiddenKnowledge where
   getActions iid FastPlayerWindow (ForbiddenKnowledge a) | ownedBy a iid = pure

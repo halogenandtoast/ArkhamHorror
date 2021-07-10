@@ -14,8 +14,7 @@ newtype AbandonedAndAlone = AbandonedAndAlone TreacheryAttrs
 abandonedAndAlone :: TreacheryCard AbandonedAndAlone
 abandonedAndAlone = treachery AbandonedAndAlone Cards.abandonedAndAlone
 
-instance HasModifiersFor env AbandonedAndAlone where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env AbandonedAndAlone
 
 instance HasActions env AbandonedAndAlone where
   getActions i window (AbandonedAndAlone attrs) = getActions i window attrs

@@ -22,8 +22,7 @@ arcaneInitiate = ally ArcaneInitiate Cards.arcaneInitiate (1, 2)
 fastAbility :: AssetAttrs -> Ability
 fastAbility a = mkAbility a 1 . FastAbility . ExhaustCost $ toTarget a
 
-instance HasModifiersFor env ArcaneInitiate where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ArcaneInitiate
 
 instance HasActions env ArcaneInitiate where
   getActions iid FastPlayerWindow (ArcaneInitiate a) | ownedBy a iid =

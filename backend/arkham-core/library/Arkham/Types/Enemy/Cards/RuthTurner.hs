@@ -23,8 +23,7 @@ ruthTurner = enemyWith
   (1, 0)
   (spawnAtL ?~ LocationWithTitle "St. Mary's Hospital")
 
-instance HasModifiersFor env RuthTurner where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env RuthTurner
 
 instance ActionRunner env => HasActions env RuthTurner where
   getActions i window (RuthTurner attrs) = getActions i window attrs

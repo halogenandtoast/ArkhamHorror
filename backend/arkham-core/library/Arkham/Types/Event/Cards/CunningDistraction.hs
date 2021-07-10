@@ -16,8 +16,7 @@ newtype CunningDistraction = CunningDistraction EventAttrs
 cunningDistraction :: EventCard CunningDistraction
 cunningDistraction = event CunningDistraction Cards.cunningDistraction
 
-instance HasModifiersFor env CunningDistraction where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env CunningDistraction
 
 instance HasActions env CunningDistraction where
   getActions i window (CunningDistraction attrs) = getActions i window attrs

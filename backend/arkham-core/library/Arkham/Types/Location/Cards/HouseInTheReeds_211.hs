@@ -29,8 +29,7 @@ houseInTheReeds_211 = location
   Squiggle
   [Diamond, Moon]
 
-instance HasModifiersFor env HouseInTheReeds_211 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env HouseInTheReeds_211
 
 instance ActionRunner env => HasActions env HouseInTheReeds_211 where
   getActions = withDrawCardUnderneathAction

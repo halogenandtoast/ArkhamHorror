@@ -17,8 +17,7 @@ newtype SneakAttack = SneakAttack EventAttrs
 sneakAttack :: EventCard SneakAttack
 sneakAttack = event SneakAttack Cards.sneakAttack
 
-instance HasModifiersFor env SneakAttack where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SneakAttack
 
 instance HasActions env SneakAttack where
   getActions i window (SneakAttack attrs) = getActions i window attrs

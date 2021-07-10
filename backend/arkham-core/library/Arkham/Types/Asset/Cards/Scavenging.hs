@@ -24,8 +24,7 @@ newtype Scavenging = Scavenging AssetAttrs
 scavenging :: AssetCard Scavenging
 scavenging = asset Scavenging Cards.scavenging
 
-instance HasModifiersFor env Scavenging where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Scavenging
 
 ability :: AssetAttrs -> Ability
 ability a =

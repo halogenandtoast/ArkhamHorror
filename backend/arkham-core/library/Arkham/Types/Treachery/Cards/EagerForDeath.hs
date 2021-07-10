@@ -20,8 +20,7 @@ newtype EagerForDeath = EagerForDeath TreacheryAttrs
 eagerForDeath :: TreacheryCard EagerForDeath
 eagerForDeath = treachery EagerForDeath Cards.eagerForDeath
 
-instance HasModifiersFor env EagerForDeath where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env EagerForDeath
 
 instance HasActions env EagerForDeath where
   getActions i window (EagerForDeath attrs) = getActions i window attrs

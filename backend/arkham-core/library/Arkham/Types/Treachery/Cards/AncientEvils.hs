@@ -15,8 +15,7 @@ newtype AncientEvils = AncientEvils TreacheryAttrs
 ancientEvils :: TreacheryCard AncientEvils
 ancientEvils = treachery AncientEvils Cards.ancientEvils
 
-instance HasModifiersFor env AncientEvils where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env AncientEvils
 
 instance HasActions env AncientEvils where
   getActions i window (AncientEvils attrs) = getActions i window attrs

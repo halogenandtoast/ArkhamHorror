@@ -27,8 +27,7 @@ tearThroughTime = location
   Moon
   [Circle, Plus, Squiggle]
 
-instance HasModifiersFor env TearThroughTime where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env TearThroughTime
 
 instance ActionRunner env => HasActions env TearThroughTime where
   getActions iid NonFast (TearThroughTime attrs) =

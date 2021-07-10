@@ -29,8 +29,7 @@ arkhamWoodsGreatWillow = locationWith
   . (revealedSymbolL .~ Heart)
   )
 
-instance HasModifiersFor env ArkhamWoodsGreatWillow where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ArkhamWoodsGreatWillow
 
 instance ActionRunner env => HasActions env ArkhamWoodsGreatWillow where
   getActions i window (ArkhamWoodsGreatWillow attrs) =

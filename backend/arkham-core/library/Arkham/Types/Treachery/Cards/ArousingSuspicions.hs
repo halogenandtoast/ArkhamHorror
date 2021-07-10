@@ -20,8 +20,7 @@ newtype ArousingSuspicions = ArousingSuspicions TreacheryAttrs
 arousingSuspicions :: TreacheryCard ArousingSuspicions
 arousingSuspicions = treachery ArousingSuspicions Cards.arousingSuspicions
 
-instance HasModifiersFor env ArousingSuspicions where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ArousingSuspicions
 
 instance HasActions env ArousingSuspicions where
   getActions i window (ArousingSuspicions attrs) = getActions i window attrs

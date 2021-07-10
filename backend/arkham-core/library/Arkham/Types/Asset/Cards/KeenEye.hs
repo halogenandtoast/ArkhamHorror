@@ -36,8 +36,7 @@ instance HasActions env KeenEye where
       ]
   getActions _ _ _ = pure []
 
-instance HasModifiersFor env KeenEye where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env KeenEye
 
 instance AssetRunner env => RunMessage env KeenEye where
   runMessage msg a@(KeenEye attrs) = case msg of

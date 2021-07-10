@@ -99,7 +99,10 @@ deriving anyclass instance
   , HasSkillTest env
   )
   => HasActions env Event
-deriving anyclass instance HasCount ClueCount env InvestigatorId => HasModifiersFor env Event
+
+instance HasCount ClueCount env InvestigatorId => HasModifiersFor env Event where
+  getModifiersFor = genericGetModifiersFor
+
 deriving anyclass instance
   ( EventRunner env
   , HasSet FightableEnemyId env (InvestigatorId, Source)

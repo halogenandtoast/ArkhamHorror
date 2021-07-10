@@ -30,8 +30,7 @@ downtownFirstBankOfArkham = location
   Triangle
   [Moon, T]
 
-instance HasModifiersFor env DowntownFirstBankOfArkham where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env DowntownFirstBankOfArkham
 
 ability :: LocationAttrs -> Ability
 ability attrs =

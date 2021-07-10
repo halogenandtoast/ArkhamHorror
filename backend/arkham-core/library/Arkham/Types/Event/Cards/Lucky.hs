@@ -16,8 +16,7 @@ newtype Lucky = Lucky EventAttrs
 lucky :: EventCard Lucky
 lucky = event Lucky Cards.lucky
 
-instance HasModifiersFor env Lucky where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Lucky
 
 instance HasActions env Lucky where
   getActions i window (Lucky attrs) = getActions i window attrs

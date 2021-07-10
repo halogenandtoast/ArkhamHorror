@@ -20,8 +20,7 @@ relicHunter3 = asset RelicHunter3 Cards.relicHunter3
 instance HasActions env RelicHunter3 where
   getActions iid window (RelicHunter3 attrs) = getActions iid window attrs
 
-instance HasModifiersFor env RelicHunter3 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env RelicHunter3
 
 slot :: AssetAttrs -> Slot
 slot attrs = Slot (toSource attrs) Nothing

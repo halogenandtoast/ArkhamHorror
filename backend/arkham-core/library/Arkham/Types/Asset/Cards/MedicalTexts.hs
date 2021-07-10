@@ -23,8 +23,7 @@ newtype MedicalTexts = MedicalTexts AssetAttrs
 medicalTexts :: AssetCard MedicalTexts
 medicalTexts = hand MedicalTexts Cards.medicalTexts
 
-instance HasModifiersFor env MedicalTexts where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env MedicalTexts
 
 instance HasActions env MedicalTexts where
   getActions iid NonFast (MedicalTexts a) | ownedBy a iid = pure

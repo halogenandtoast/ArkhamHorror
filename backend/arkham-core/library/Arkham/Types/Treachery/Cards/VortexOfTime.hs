@@ -21,8 +21,7 @@ newtype VortexOfTime = VortexOfTime TreacheryAttrs
 vortexOfTime :: TreacheryCard VortexOfTime
 vortexOfTime = treachery VortexOfTime Cards.vortexOfTime
 
-instance HasModifiersFor env VortexOfTime where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env VortexOfTime
 
 instance HasActions env VortexOfTime where
   getActions i window (VortexOfTime attrs) = getActions i window attrs

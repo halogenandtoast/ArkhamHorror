@@ -19,8 +19,7 @@ corpseHungryGhoul :: EnemyCard CorpseHungryGhoul
 corpseHungryGhoul =
   enemy CorpseHungryGhoul Cards.corpseHungryGhoul (4, Static 3, 3) (2, 2)
 
-instance HasModifiersFor env CorpseHungryGhoul where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env CorpseHungryGhoul
 
 instance ActionRunner env => HasActions env CorpseHungryGhoul where
   getActions i window (CorpseHungryGhoul attrs) = getActions i window attrs

@@ -24,8 +24,7 @@ theyreGettingOut = TheyreGettingOut
 instance HasActions env TheyreGettingOut where
   getActions i window (TheyreGettingOut x) = getActions i window x
 
-instance HasModifiersFor env TheyreGettingOut where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env TheyreGettingOut
 
 instance AgendaRunner env => RunMessage env TheyreGettingOut where
   runMessage msg a@(TheyreGettingOut attrs@AgendaAttrs {..}) = case msg of

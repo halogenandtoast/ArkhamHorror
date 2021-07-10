@@ -21,8 +21,7 @@ newtype PassageIntoTheVeil = PassageIntoTheVeil TreacheryAttrs
 passageIntoTheVeil :: TreacheryCard PassageIntoTheVeil
 passageIntoTheVeil = treachery PassageIntoTheVeil Cards.passageIntoTheVeil
 
-instance HasModifiersFor env PassageIntoTheVeil where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env PassageIntoTheVeil
 
 instance HasActions env PassageIntoTheVeil where
   getActions i window (PassageIntoTheVeil attrs) = getActions i window attrs

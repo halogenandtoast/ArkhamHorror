@@ -175,7 +175,8 @@ instance IsCard Location where
   toCardId = toCardId . toAttrs
 
 deriving anyclass instance ActionRunner env => HasActions env Location
-deriving anyclass instance
+
+instance
   ( HasPhase env
   , HasCount CardCount env InvestigatorId
   , HasCount ClueCount env LocationId
@@ -183,7 +184,8 @@ deriving anyclass instance
   , HasId (Maybe StoryEnemyId) env CardCode
   , HasId (Maybe StoryAssetId) env CardCode
   )
-  => HasModifiersFor env Location
+  => HasModifiersFor env Location where
+  getModifiersFor = genericGetModifiersFor
 
 instance (HasSet UnengagedEnemyId env LocationId, LocationRunner env) => RunMessage env Location where
   runMessage msg l = do
@@ -212,8 +214,7 @@ newtype BaseLocation = BaseLocation LocationAttrs
 instance HasCardDef Location where
   toCardDef = toCardDef . toAttrs
 
-instance HasModifiersFor env BaseLocation where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BaseLocation
 
 instance HasName env Location where
   getName = getName . toAttrs

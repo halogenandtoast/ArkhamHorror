@@ -26,8 +26,7 @@ coverUpClues :: TreacheryAttrs -> Int
 coverUpClues TreacheryAttrs { treacheryClues } =
   fromJustNote "must be set" treacheryClues
 
-instance HasModifiersFor env CoverUp where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env CoverUp
 
 instance ActionRunner env => HasActions env CoverUp where
   getActions iid (WhenDiscoverClues You YourLocation) (CoverUp a) =

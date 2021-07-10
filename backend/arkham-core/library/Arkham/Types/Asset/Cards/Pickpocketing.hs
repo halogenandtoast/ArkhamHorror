@@ -18,8 +18,7 @@ newtype Pickpocketing = Pickpocketing AssetAttrs
 pickpoketing :: AssetCard Pickpocketing
 pickpoketing = asset Pickpocketing Cards.pickpoketing
 
-instance HasModifiersFor env Pickpocketing where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Pickpocketing
 
 instance HasActions env Pickpocketing where
   getActions iid (WhenEnemyEvaded You) (Pickpocketing a) =

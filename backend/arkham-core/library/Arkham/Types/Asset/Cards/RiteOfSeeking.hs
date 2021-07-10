@@ -38,8 +38,7 @@ instance HasActions env RiteOfSeeking where
     ]
   getActions _ _ _ = pure []
 
-instance HasModifiersFor env RiteOfSeeking where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env RiteOfSeeking
 
 instance (HasQueue env, HasModifiersFor env (), HasId LocationId env InvestigatorId) => RunMessage env RiteOfSeeking where
   runMessage msg a@(RiteOfSeeking attrs) = case msg of

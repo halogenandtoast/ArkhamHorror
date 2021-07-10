@@ -19,8 +19,7 @@ newtype RexsCurse = RexsCurse TreacheryAttrs
 rexsCurse :: TreacheryCard RexsCurse
 rexsCurse = treachery RexsCurse Cards.rexsCurse
 
-instance HasModifiersFor env RexsCurse where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env RexsCurse
 
 instance HasActions env RexsCurse where
   getActions _ _ _ = pure []

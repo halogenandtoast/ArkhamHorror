@@ -40,8 +40,7 @@ instance (HasId LocationId env InvestigatorId, HasSet ConnectedLocationId env Lo
         Nothing -> pure []
   getActions iid window (KeyToTheChamber attrs) = getActions iid window attrs
 
-instance HasModifiersFor env KeyToTheChamber where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env KeyToTheChamber
 
 instance (HasQueue env, HasModifiersFor env (), HasId (Maybe LocationId) env LocationMatcher) => RunMessage env KeyToTheChamber where
   runMessage msg a@(KeyToTheChamber attrs) = case msg of

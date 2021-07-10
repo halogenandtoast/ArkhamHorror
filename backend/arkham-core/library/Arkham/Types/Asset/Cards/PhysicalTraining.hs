@@ -24,8 +24,7 @@ newtype PhysicalTraining = PhysicalTraining AssetAttrs
 physicalTraining :: AssetCard PhysicalTraining
 physicalTraining = asset PhysicalTraining Cards.physicalTraining
 
-instance HasModifiersFor env PhysicalTraining where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env PhysicalTraining
 
 ability :: Int -> AssetAttrs -> Ability
 ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)

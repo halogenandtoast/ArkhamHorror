@@ -21,8 +21,7 @@ mainPath :: LocationCard MainPath
 mainPath =
   location MainPath Cards.mainPath 2 (Static 0) Squiggle [Square, Plus]
 
-instance HasModifiersFor env MainPath where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env MainPath
 
 instance ActionRunner env => HasActions env MainPath where
   getActions = withResignAction

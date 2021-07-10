@@ -24,8 +24,7 @@ pastPresentAndFuture :: PastPresentAndFuture
 pastPresentAndFuture = PastPresentAndFuture
   $ baseAttrs "02313" "Past, Present and Future" (Agenda 2 A) (Static 4)
 
-instance HasModifiersFor env PastPresentAndFuture where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env PastPresentAndFuture
 
 instance HasActions env PastPresentAndFuture where
   getActions i window (PastPresentAndFuture x) = getActions i window x

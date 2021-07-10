@@ -20,8 +20,7 @@ newtype StrangeSigns = StrangeSigns TreacheryAttrs
 strangeSigns :: TreacheryCard StrangeSigns
 strangeSigns = treachery StrangeSigns Cards.strangeSigns
 
-instance HasModifiersFor env StrangeSigns where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env StrangeSigns
 
 instance HasActions env StrangeSigns where
   getActions i window (StrangeSigns attrs) = getActions i window attrs

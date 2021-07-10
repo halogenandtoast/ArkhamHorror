@@ -19,8 +19,7 @@ newtype BillyCooper = BillyCooper EnemyAttrs
 billyCooper :: EnemyCard BillyCooper
 billyCooper = enemy BillyCooper Cards.billyCooper (5, Static 4, 2) (2, 0)
 
-instance HasModifiersFor env BillyCooper where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BillyCooper
 
 instance ActionRunner env => HasActions env BillyCooper where
   getActions iid window (BillyCooper attrs) = getActions iid window attrs

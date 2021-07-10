@@ -19,8 +19,7 @@ newtype BrokenRails = BrokenRails TreacheryAttrs
 brokenRails :: TreacheryCard BrokenRails
 brokenRails = treachery BrokenRails Cards.brokenRails
 
-instance HasModifiersFor env BrokenRails where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BrokenRails
 
 instance HasActions env BrokenRails where
   getActions i window (BrokenRails attrs) = getActions i window attrs

@@ -35,8 +35,7 @@ instance HasActions env Blackjack where
     ]
   getActions _ _ _ = pure []
 
-instance HasModifiersFor env Blackjack where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Blackjack
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Blackjack where
   runMessage msg a@(Blackjack attrs) = case msg of

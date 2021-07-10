@@ -17,8 +17,7 @@ newtype MaskedHorrors = MaskedHorrors TreacheryAttrs
 maskedHorrors :: TreacheryCard MaskedHorrors
 maskedHorrors = treachery MaskedHorrors Cards.maskedHorrors
 
-instance HasModifiersFor env MaskedHorrors where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env MaskedHorrors
 
 instance HasActions env MaskedHorrors where
   getActions i window (MaskedHorrors attrs) = getActions i window attrs

@@ -23,8 +23,7 @@ newtype Psychosis = Psychosis TreacheryAttrs
 psychosis :: TreacheryCard Psychosis
 psychosis = treachery Psychosis Cards.psychosis
 
-instance HasModifiersFor env Psychosis where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Psychosis
 
 instance ActionRunner env => HasActions env Psychosis where
   getActions iid NonFast (Psychosis a) =

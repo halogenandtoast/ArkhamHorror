@@ -30,8 +30,7 @@ northsideTrainStation = location
   T
   [Diamond, Triangle]
 
-instance HasModifiersFor env NorthsideTrainStation where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env NorthsideTrainStation
 
 ability :: LocationAttrs -> Ability
 ability attrs =

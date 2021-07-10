@@ -691,8 +691,7 @@ getPossibleSkillTypeChoices skillType attrs = do
     | toReplace == skillType = toUse : skills
   applyModifier _ skills = skills
 
-instance HasModifiersFor env InvestigatorAttrs where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env InvestigatorAttrs
 
 instance (ActionRunner env, HasSkillTest env) => HasActions env InvestigatorAttrs where
   getActions iid window attrs | iid == investigatorId attrs = concat <$> for

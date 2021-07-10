@@ -23,8 +23,7 @@ newtype Chronophobia = Chronophobia TreacheryAttrs
 chronophobia :: TreacheryCard Chronophobia
 chronophobia = treachery Chronophobia Cards.chronophobia
 
-instance HasModifiersFor env Chronophobia where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Chronophobia
 
 instance ActionRunner env => HasActions env Chronophobia where
   getActions iid NonFast (Chronophobia a) =

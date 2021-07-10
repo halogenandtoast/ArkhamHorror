@@ -19,8 +19,7 @@ strangeDisappearances :: StrangeDisappearances
 strangeDisappearances = StrangeDisappearances
   $ baseAttrs "02196" "Strange Disappearances" (Agenda 1 A) (Static 6)
 
-instance HasModifiersFor env StrangeDisappearances where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env StrangeDisappearances
 
 instance HasActions env StrangeDisappearances where
   getActions i window (StrangeDisappearances x) = getActions i window x

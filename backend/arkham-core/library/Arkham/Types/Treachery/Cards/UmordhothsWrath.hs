@@ -18,8 +18,7 @@ newtype UmordhothsWrath = UmordhothsWrath TreacheryAttrs
 umordhothsWrath :: TreacheryCard UmordhothsWrath
 umordhothsWrath = treachery UmordhothsWrath Cards.umordhothsWrath
 
-instance HasModifiersFor env UmordhothsWrath where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env UmordhothsWrath
 
 instance HasActions env UmordhothsWrath where
   getActions i window (UmordhothsWrath attrs) = getActions i window attrs

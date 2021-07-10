@@ -25,8 +25,7 @@ backAlley = locationWith
   [Diamond]
   (revealedSymbolL .~ Squiggle)
 
-instance HasModifiersFor env BackAlley where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BackAlley
 
 instance ActionRunner env => HasActions env BackAlley where
   getActions = withResignAction

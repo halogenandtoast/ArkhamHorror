@@ -18,8 +18,7 @@ newtype TheYellowSign = TheYellowSign TreacheryAttrs
 theYellowSign :: TreacheryCard TheYellowSign
 theYellowSign = treachery TheYellowSign Cards.theYellowSign
 
-instance HasModifiersFor env TheYellowSign where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env TheYellowSign
 
 instance HasActions env TheYellowSign where
   getActions i window (TheYellowSign attrs) = getActions i window attrs

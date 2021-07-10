@@ -21,8 +21,7 @@ newtype OldBookOfLore = OldBookOfLore AssetAttrs
 oldBookOfLore :: AssetCard OldBookOfLore
 oldBookOfLore = hand OldBookOfLore Cards.oldBookOfLore
 
-instance HasModifiersFor env OldBookOfLore where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env OldBookOfLore
 
 instance HasActions env OldBookOfLore where
   getActions iid NonFast (OldBookOfLore a) | ownedBy a iid = pure

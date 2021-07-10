@@ -34,8 +34,7 @@ instance HasActions env Streetwise3 where
       ]
   getActions _ _ _ = pure []
 
-instance HasModifiersFor env Streetwise3 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Streetwise3
 
 instance AssetRunner env => RunMessage env Streetwise3 where
   runMessage msg a@(Streetwise3 attrs) = case msg of

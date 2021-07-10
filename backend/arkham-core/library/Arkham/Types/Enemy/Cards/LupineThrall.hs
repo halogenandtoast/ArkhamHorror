@@ -28,8 +28,7 @@ lupineThrall = enemyWith
 instance ActionRunner env => HasActions env LupineThrall where
   getActions i window (LupineThrall attrs) = getActions i window attrs
 
-instance HasModifiersFor env LupineThrall where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env LupineThrall
 
 instance EnemyRunner env => RunMessage env LupineThrall where
   runMessage msg e@(LupineThrall attrs@EnemyAttrs {..}) = case msg of

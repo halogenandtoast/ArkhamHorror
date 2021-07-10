@@ -14,8 +14,7 @@ bulletproofVest3 :: AssetCard BulletproofVest3
 bulletproofVest3 =
   bodyWith BulletproofVest3 Cards.bulletproofVest3 (healthL ?~ 4)
 
-instance HasModifiersFor env BulletproofVest3 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BulletproofVest3
 
 instance HasActions env BulletproofVest3 where
   getActions i window (BulletproofVest3 x) = getActions i window x

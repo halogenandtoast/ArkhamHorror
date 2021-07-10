@@ -25,8 +25,7 @@ newtype AlmaHill = AlmaHill EnemyAttrs
 almaHill :: EnemyCard AlmaHill
 almaHill = enemy AlmaHill Cards.almaHill (3, Static 3, 3) (0, 2)
 
-instance HasModifiersFor env AlmaHill where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env AlmaHill
 
 instance ActionRunner env => HasActions env AlmaHill where
   getActions iid NonFast (AlmaHill attrs@EnemyAttrs {..}) =

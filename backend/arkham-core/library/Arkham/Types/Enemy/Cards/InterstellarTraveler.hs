@@ -26,8 +26,7 @@ interstellarTraveler = enemyWith
   (1, 2)
   (spawnAtL ?~ LocationWithTrait Extradimensional)
 
-instance HasModifiersFor env InterstellarTraveler where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env InterstellarTraveler
 
 instance EnemyAttrsHasActions env => HasActions env InterstellarTraveler where
   getActions i window (InterstellarTraveler attrs) = getActions i window attrs

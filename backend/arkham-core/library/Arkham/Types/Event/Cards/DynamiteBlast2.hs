@@ -17,8 +17,7 @@ newtype DynamiteBlast2 = DynamiteBlast2 EventAttrs
 dynamiteBlast2 :: EventCard DynamiteBlast2
 dynamiteBlast2 = event DynamiteBlast2 Cards.dynamiteBlast2
 
-instance HasModifiersFor env DynamiteBlast2 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env DynamiteBlast2
 
 instance HasActions env DynamiteBlast2 where
   getActions i window (DynamiteBlast2 attrs) = getActions i window attrs

@@ -21,8 +21,7 @@ newtype PushedIntoTheBeyond = PushedIntoTheBeyond TreacheryAttrs
 pushedIntoTheBeyond :: TreacheryCard PushedIntoTheBeyond
 pushedIntoTheBeyond = treachery PushedIntoTheBeyond Cards.pushedIntoTheBeyond
 
-instance HasModifiersFor env PushedIntoTheBeyond where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env PushedIntoTheBeyond
 
 instance HasActions env PushedIntoTheBeyond where
   getActions i window (PushedIntoTheBeyond attrs) = getActions i window attrs

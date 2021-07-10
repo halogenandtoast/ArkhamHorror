@@ -28,8 +28,7 @@ gardenDistrict :: LocationCard GardenDistrict
 gardenDistrict =
   location GardenDistrict Cards.gardenDistrict 1 (Static 0) Plus [Square, Plus]
 
-instance HasModifiersFor env GardenDistrict where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env GardenDistrict
 
 instance ActionRunner env => HasActions env GardenDistrict where
   getActions iid NonFast (GardenDistrict attrs@LocationAttrs {..})

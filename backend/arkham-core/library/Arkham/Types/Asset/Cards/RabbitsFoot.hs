@@ -17,8 +17,7 @@ newtype RabbitsFoot = RabbitsFoot AssetAttrs
 rabbitsFoot :: AssetCard RabbitsFoot
 rabbitsFoot = accessory RabbitsFoot Cards.rabbitsFoot
 
-instance HasModifiersFor env RabbitsFoot where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env RabbitsFoot
 
 instance HasActions env RabbitsFoot where
   getActions iid (AfterFailSkillTest You _) (RabbitsFoot a) = pure

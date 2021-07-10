@@ -20,8 +20,7 @@ newtype BindMonster2 = BindMonster2 EffectAttrs
 bindMonster2 :: EffectArgs -> BindMonster2
 bindMonster2 = BindMonster2 . uncurry4 (baseAttrs "02031")
 
-instance HasModifiersFor env BindMonster2 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BindMonster2
 
 instance (HasQueue env, HasSet Trait env EnemyId) => RunMessage env BindMonster2 where
   runMessage msg e@(BindMonster2 attrs@EffectAttrs {..}) = case msg of

@@ -28,8 +28,7 @@ shadowsDeepen =
 instance HasActions env ShadowsDeepen where
   getActions i window (ShadowsDeepen x) = getActions i window x
 
-instance HasModifiersFor env ShadowsDeepen where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ShadowsDeepen
 
 instance AgendaRunner env => RunMessage env ShadowsDeepen where
   runMessage msg a@(ShadowsDeepen attrs@AgendaAttrs {..}) = case msg of

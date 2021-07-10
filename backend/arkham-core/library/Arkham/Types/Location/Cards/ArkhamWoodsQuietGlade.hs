@@ -34,8 +34,7 @@ arkhamWoodsQuietGlade = locationWith
   . (revealedSymbolL .~ Moon)
   )
 
-instance HasModifiersFor env ArkhamWoodsQuietGlade where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ArkhamWoodsQuietGlade
 
 ability :: LocationAttrs -> Ability
 ability attrs =

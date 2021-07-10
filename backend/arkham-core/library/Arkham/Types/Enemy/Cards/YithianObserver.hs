@@ -25,8 +25,7 @@ yithianObserver = enemyWith
   (1, 1)
   (preyL .~ FewestCards)
 
-instance HasModifiersFor env YithianObserver where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env YithianObserver
 
 instance ActionRunner env => HasActions env YithianObserver where
   getActions i window (YithianObserver attrs) = getActions i window attrs

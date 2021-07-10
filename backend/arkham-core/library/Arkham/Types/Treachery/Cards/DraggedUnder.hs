@@ -17,8 +17,7 @@ newtype DraggedUnder = DraggedUnder TreacheryAttrs
 draggedUnder :: TreacheryCard DraggedUnder
 draggedUnder = treachery DraggedUnder Cards.draggedUnder
 
-instance HasModifiersFor env DraggedUnder where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env DraggedUnder
 
 instance HasActions env DraggedUnder where
   getActions i window (DraggedUnder attrs) = getActions i window attrs

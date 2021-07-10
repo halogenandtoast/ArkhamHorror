@@ -29,8 +29,7 @@ congregationalChurch_208 = location
   Diamond
   [Plus, Triangle, Squiggle]
 
-instance HasModifiersFor env CongregationalChurch_208 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env CongregationalChurch_208
 
 instance ActionRunner env => HasActions env CongregationalChurch_208 where
   getActions = withDrawCardUnderneathAction

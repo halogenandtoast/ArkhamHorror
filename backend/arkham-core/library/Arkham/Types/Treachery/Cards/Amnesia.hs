@@ -15,8 +15,7 @@ newtype Amnesia = Amnesia TreacheryAttrs
 amnesia :: TreacheryCard Amnesia
 amnesia = treachery Amnesia Cards.amnesia
 
-instance HasModifiersFor env Amnesia where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Amnesia
 
 instance HasActions env Amnesia where
   getActions i window (Amnesia attrs) = getActions i window attrs

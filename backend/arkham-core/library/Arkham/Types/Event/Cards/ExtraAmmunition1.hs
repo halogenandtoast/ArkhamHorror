@@ -19,8 +19,7 @@ newtype ExtraAmmunition1 = ExtraAmmunition1 EventAttrs
 extraAmmunition1 :: EventCard ExtraAmmunition1
 extraAmmunition1 = event ExtraAmmunition1 Cards.extraAmmunition1
 
-instance HasModifiersFor env ExtraAmmunition1 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ExtraAmmunition1
 
 instance HasActions env ExtraAmmunition1 where
   getActions i window (ExtraAmmunition1 attrs) = getActions i window attrs

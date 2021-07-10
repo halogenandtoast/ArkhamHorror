@@ -19,8 +19,7 @@ huntingNightgaunt :: EnemyCard HuntingNightgaunt
 huntingNightgaunt =
   enemy HuntingNightgaunt Cards.huntingNightgaunt (3, Static 4, 1) (1, 1)
 
-instance HasModifiersFor env HuntingNightgaunt where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env HuntingNightgaunt
 
 instance ActionRunner env => HasActions env HuntingNightgaunt where
   getActions i window (HuntingNightgaunt attrs) = getActions i window attrs

@@ -39,8 +39,7 @@ instance HasId LocationId env InvestigatorId => HasActions env HelplessPassenger
       _ -> pure mempty
   getActions iid window (HelplessPassenger attrs) = getActions iid window attrs
 
-instance HasModifiersFor env HelplessPassenger where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env HelplessPassenger
 
 instance
   ( HasQueue env

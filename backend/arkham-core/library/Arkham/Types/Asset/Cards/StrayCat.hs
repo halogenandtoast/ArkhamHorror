@@ -23,8 +23,7 @@ newtype StrayCat = StrayCat AssetAttrs
 strayCat :: AssetCard StrayCat
 strayCat = ally StrayCat Cards.strayCat (1, 0)
 
-instance HasModifiersFor env StrayCat where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env StrayCat
 
 ability :: AssetAttrs -> Ability
 ability a = mkAbility (toSource a) 1 (FastAbility (DiscardCost $ toTarget a))

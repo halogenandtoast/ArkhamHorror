@@ -19,8 +19,7 @@ newtype MarshGug = MarshGug EnemyAttrs
 marshGug :: EnemyCard MarshGug
 marshGug = enemy MarshGug Cards.marshGug (3, Static 4, 3) (2, 1)
 
-instance HasModifiersFor env MarshGug where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env MarshGug
 
 instance ActionRunner env => HasActions env MarshGug where
   getActions i window (MarshGug attrs) = getActions i window attrs

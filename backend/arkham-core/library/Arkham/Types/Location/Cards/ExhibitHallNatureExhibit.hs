@@ -26,8 +26,7 @@ exhibitHallNatureExhibit = location
   Hourglass
   [Square, Squiggle]
 
-instance HasModifiersFor env ExhibitHallNatureExhibit where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ExhibitHallNatureExhibit
 
 instance ActionRunner env => HasActions env ExhibitHallNatureExhibit where
   getActions iid window (ExhibitHallNatureExhibit attrs) =

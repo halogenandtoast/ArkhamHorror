@@ -23,8 +23,7 @@ wolfManDrew = enemyWith
   (2, 0)
   (spawnAtL ?~ LocationWithTitle "Downtown")
 
-instance HasModifiersFor env WolfManDrew where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env WolfManDrew
 
 instance ActionRunner env => HasActions env WolfManDrew where
   getActions i window (WolfManDrew attrs) = getActions i window attrs

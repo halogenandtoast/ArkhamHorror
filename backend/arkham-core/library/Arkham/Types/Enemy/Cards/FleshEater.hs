@@ -22,8 +22,7 @@ fleshEater = enemyWith
   (1, 2)
   (spawnAtL ?~ LocationWithTitle "Attic")
 
-instance HasModifiersFor env FleshEater where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env FleshEater
 
 instance ActionRunner env => HasActions env FleshEater where
   getActions i window (FleshEater attrs) = getActions i window attrs

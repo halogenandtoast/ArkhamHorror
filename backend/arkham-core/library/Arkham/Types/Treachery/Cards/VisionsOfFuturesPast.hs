@@ -21,8 +21,7 @@ visionsOfFuturesPast :: TreacheryCard VisionsOfFuturesPast
 visionsOfFuturesPast =
   treachery VisionsOfFuturesPast Cards.visionsOfFuturesPast
 
-instance HasModifiersFor env VisionsOfFuturesPast where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env VisionsOfFuturesPast
 
 instance HasActions env VisionsOfFuturesPast where
   getActions i window (VisionsOfFuturesPast attrs) = getActions i window attrs

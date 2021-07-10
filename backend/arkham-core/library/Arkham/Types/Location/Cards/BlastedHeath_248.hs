@@ -33,8 +33,7 @@ blastedHeath_248 = location
   Square
   [Circle, Hourglass]
 
-instance HasModifiersFor env BlastedHeath_248 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BlastedHeath_248
 
 ability :: LocationAttrs -> Ability
 ability attrs =

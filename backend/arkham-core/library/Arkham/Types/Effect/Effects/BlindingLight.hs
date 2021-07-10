@@ -19,8 +19,7 @@ newtype BlindingLight = BlindingLight EffectAttrs
 blindingLight :: EffectArgs -> BlindingLight
 blindingLight = BlindingLight . uncurry4 (baseAttrs "01066")
 
-instance HasModifiersFor env BlindingLight where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BlindingLight
 
 instance HasQueue env => RunMessage env BlindingLight where
   runMessage msg e@(BlindingLight attrs@EffectAttrs {..}) = case msg of

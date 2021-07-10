@@ -24,8 +24,7 @@ newtype ClawsOfSteam = ClawsOfSteam TreacheryAttrs
 clawsOfSteam :: TreacheryCard ClawsOfSteam
 clawsOfSteam = treachery ClawsOfSteam Cards.clawsOfSteam
 
-instance HasModifiersFor env ClawsOfSteam where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ClawsOfSteam
 
 instance HasActions env ClawsOfSteam where
   getActions i window (ClawsOfSteam attrs) = getActions i window attrs

@@ -22,8 +22,7 @@ emergencyAid = event EmergencyAid Cards.emergencyAid
 instance HasActions env EmergencyAid where
   getActions iid window (EmergencyAid attrs) = getActions iid window attrs
 
-instance HasModifiersFor env EmergencyAid where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env EmergencyAid
 
 instance
   ( HasQueue env

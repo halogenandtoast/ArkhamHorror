@@ -25,8 +25,7 @@ blastedHeath_249 = location
   Square
   [Circle, Hourglass]
 
-instance HasModifiersFor env BlastedHeath_249 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BlastedHeath_249
 
 instance ActionRunner env => HasActions env BlastedHeath_249 where
   getActions iid window (BlastedHeath_249 attrs) = getActions iid window attrs

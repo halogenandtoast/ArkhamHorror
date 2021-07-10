@@ -39,8 +39,7 @@ instance HasActions env AstoundingRevelation where
   getActions iid window (AstoundingRevelation attrs) =
     getActions iid window attrs
 
-instance HasModifiersFor env AstoundingRevelation where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env AstoundingRevelation
 
 instance (HasQueue env, HasSet AssetId env (InvestigatorId, UseType)) => RunMessage env AstoundingRevelation where
   runMessage msg e@(AstoundingRevelation attrs) = case msg of

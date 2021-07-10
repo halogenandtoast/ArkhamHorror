@@ -19,8 +19,7 @@ newtype Thrall = Thrall EnemyAttrs
 thrall :: EnemyCard Thrall
 thrall = enemy Thrall Cards.thrall (2, Static 2, 2) (1, 1)
 
-instance HasModifiersFor env Thrall where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Thrall
 
 instance ActionRunner env => HasActions env Thrall where
   getActions i window (Thrall attrs) = getActions i window attrs

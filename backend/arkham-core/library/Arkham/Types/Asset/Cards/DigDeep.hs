@@ -24,8 +24,7 @@ newtype DigDeep = DigDeep AssetAttrs
 digDeep :: AssetCard DigDeep
 digDeep = asset DigDeep Cards.digDeep
 
-instance HasModifiersFor env DigDeep where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env DigDeep
 
 ability :: Int -> AssetAttrs -> Ability
 ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)

@@ -24,8 +24,7 @@ burnedRuins_205 = location
   Triangle
   [Square, Diamond]
 
-instance HasModifiersFor env BurnedRuins_205 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BurnedRuins_205
 
 instance ActionRunner env => HasActions env BurnedRuins_205 where
   getActions = withDrawCardUnderneathAction

@@ -18,8 +18,7 @@ newtype UmordhothsHunger = UmordhothsHunger TreacheryAttrs
 umordhothsHunger :: TreacheryCard UmordhothsHunger
 umordhothsHunger = treachery UmordhothsHunger Cards.umordhothsHunger
 
-instance HasModifiersFor env UmordhothsHunger where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env UmordhothsHunger
 
 instance HasActions env UmordhothsHunger where
   getActions i window (UmordhothsHunger attrs) = getActions i window attrs

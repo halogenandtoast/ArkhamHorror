@@ -21,8 +21,7 @@ newtype GuardDog = GuardDog AssetAttrs
 guardDog :: AssetCard GuardDog
 guardDog = ally GuardDog Cards.guardDog (3, 1)
 
-instance HasModifiersFor env GuardDog where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env GuardDog
 
 ability :: Source -> AssetAttrs -> Ability
 ability source attrs = base

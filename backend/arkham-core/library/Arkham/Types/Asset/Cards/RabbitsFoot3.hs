@@ -21,8 +21,7 @@ newtype RabbitsFoot3 = RabbitsFoot3 AssetAttrs
 rabbitsFoot3 :: AssetCard RabbitsFoot3
 rabbitsFoot3 = accessory RabbitsFoot3 Cards.rabbitsFoot3
 
-instance HasModifiersFor env RabbitsFoot3 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env RabbitsFoot3
 
 ability :: AssetAttrs -> Int -> Ability
 ability attrs n =

@@ -18,8 +18,7 @@ newtype MysteriousChanting = MysteriousChanting TreacheryAttrs
 mysteriousChanting :: TreacheryCard MysteriousChanting
 mysteriousChanting = treachery MysteriousChanting Cards.mysteriousChanting
 
-instance HasModifiersFor env MysteriousChanting where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env MysteriousChanting
 
 instance HasActions env MysteriousChanting where
   getActions i window (MysteriousChanting attrs) = getActions i window attrs

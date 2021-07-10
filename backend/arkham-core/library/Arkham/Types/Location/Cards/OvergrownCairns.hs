@@ -30,8 +30,7 @@ overgrownCairns = location
   Equals
   [Hourglass, Equals]
 
-instance HasModifiersFor env OvergrownCairns where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env OvergrownCairns
 
 ability :: LocationAttrs -> Ability
 ability attrs = base { abilityLimit = PlayerLimit PerGame 1 }

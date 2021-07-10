@@ -24,8 +24,7 @@ instance HasActions env ArtStudent where
     pure [UseAbility i (mkAbility (toSource x) 1 (ReactionAbility Free))]
   getActions iid window (ArtStudent attrs) = getActions iid window attrs
 
-instance HasModifiersFor env ArtStudent where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ArtStudent
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env ArtStudent where
   runMessage msg a@(ArtStudent attrs) = case msg of

@@ -23,8 +23,7 @@ newtype OnTheProwl = OnTheProwl TreacheryAttrs
 onTheProwl :: TreacheryCard OnTheProwl
 onTheProwl = treachery OnTheProwl Cards.onTheProwl
 
-instance HasModifiersFor env OnTheProwl where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env OnTheProwl
 
 instance HasActions env OnTheProwl where
   getActions i window (OnTheProwl attrs) = getActions i window attrs

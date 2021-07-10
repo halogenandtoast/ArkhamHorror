@@ -24,8 +24,7 @@ miskatonicQuad = location
   Plus
   [Triangle, Hourglass, Square, Diamond, Circle]
 
-instance HasModifiersFor env MiskatonicQuad where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env MiskatonicQuad
 
 instance ActionRunner env => HasActions env MiskatonicQuad where
   getActions = withResignAction

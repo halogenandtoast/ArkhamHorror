@@ -15,8 +15,7 @@ newtype Guts = Guts SkillAttrs
 guts :: SkillCard Guts
 guts = skill Guts Cards.guts
 
-instance HasModifiersFor env Guts where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Guts
 
 instance HasActions env Guts where
   getActions i window (Guts attrs) = getActions i window attrs

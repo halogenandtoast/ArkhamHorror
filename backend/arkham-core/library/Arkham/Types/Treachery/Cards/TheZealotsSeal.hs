@@ -19,8 +19,7 @@ newtype TheZealotsSeal = TheZealotsSeal TreacheryAttrs
 theZealotsSeal :: TreacheryCard TheZealotsSeal
 theZealotsSeal = treachery TheZealotsSeal Cards.theZealotsSeal
 
-instance HasModifiersFor env TheZealotsSeal where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env TheZealotsSeal
 
 instance HasActions env TheZealotsSeal where
   getActions i window (TheZealotsSeal attrs) = getActions i window attrs

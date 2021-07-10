@@ -13,8 +13,7 @@ newtype LeatherCoat = LeatherCoat AssetAttrs
 leatherCoat :: AssetCard LeatherCoat
 leatherCoat = bodyWith LeatherCoat Cards.leatherCoat (healthL ?~ 2)
 
-instance HasModifiersFor env LeatherCoat where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env LeatherCoat
 
 instance HasActions env LeatherCoat where
   getActions i window (LeatherCoat x) = getActions i window x

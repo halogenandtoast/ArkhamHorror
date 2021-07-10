@@ -20,8 +20,7 @@ newtype AttractingAttention = AttractingAttention TreacheryAttrs
 attractingAttention :: TreacheryCard AttractingAttention
 attractingAttention = treachery AttractingAttention Cards.attractingAttention
 
-instance HasModifiersFor env AttractingAttention where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env AttractingAttention
 
 instance HasActions env AttractingAttention where
   getActions i window (AttractingAttention attrs) = getActions i window attrs

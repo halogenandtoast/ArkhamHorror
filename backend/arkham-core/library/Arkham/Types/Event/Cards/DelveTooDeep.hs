@@ -19,8 +19,7 @@ delveTooDeep = event DelveTooDeep Cards.delveTooDeep
 instance HasActions env DelveTooDeep where
   getActions iid window (DelveTooDeep attrs) = getActions iid window attrs
 
-instance HasModifiersFor env DelveTooDeep where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env DelveTooDeep
 
 instance HasQueue env => RunMessage env DelveTooDeep where
   runMessage msg e@(DelveTooDeep attrs@EventAttrs {..}) = case msg of

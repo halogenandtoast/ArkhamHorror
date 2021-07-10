@@ -21,8 +21,7 @@ shortcut = event Shortcut Cards.shortcut
 instance HasActions env Shortcut where
   getActions iid window (Shortcut attrs) = getActions iid window attrs
 
-instance HasModifiersFor env Shortcut where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Shortcut
 
 instance
   ( HasQueue env

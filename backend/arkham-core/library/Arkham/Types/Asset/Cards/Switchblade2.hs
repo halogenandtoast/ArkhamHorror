@@ -24,8 +24,7 @@ newtype Switchblade2 = Switchblade2 AssetAttrs
 switchblade2 :: AssetCard Switchblade2
 switchblade2 = hand Switchblade2 Cards.switchblade2
 
-instance HasModifiersFor env Switchblade2 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Switchblade2
 
 instance HasActions env Switchblade2 where
   getActions iid _ (Switchblade2 a) | ownedBy a iid = do

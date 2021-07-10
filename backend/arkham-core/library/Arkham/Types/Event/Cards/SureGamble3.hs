@@ -16,8 +16,7 @@ newtype SureGamble3 = SureGamble3 EventAttrs
 sureGamble3 :: EventCard SureGamble3
 sureGamble3 = event SureGamble3 Cards.sureGamble3
 
-instance HasModifiersFor env SureGamble3 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SureGamble3
 
 instance HasActions env SureGamble3 where
   getActions iid (InHandWindow ownerId (WhenRevealTokenWithNegativeModifier You tid)) (SureGamble3 attrs)

@@ -31,8 +31,7 @@ frozenSpring = locationWith
   . (unrevealedNameL .~ "Diverging Path")
   )
 
-instance HasModifiersFor env FrozenSpring where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env FrozenSpring
 
 forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility

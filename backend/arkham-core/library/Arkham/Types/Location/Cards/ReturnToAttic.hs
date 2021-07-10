@@ -25,8 +25,7 @@ returnToAttic = location
   Triangle
   [Square, Moon]
 
-instance HasModifiersFor env ReturnToAttic where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ReturnToAttic
 
 instance ActionRunner env => HasActions env ReturnToAttic where
   getActions i window (ReturnToAttic attrs) = getActions i window attrs

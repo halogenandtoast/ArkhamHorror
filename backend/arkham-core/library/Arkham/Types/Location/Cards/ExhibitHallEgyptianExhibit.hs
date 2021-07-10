@@ -26,8 +26,7 @@ exhibitHallEgyptianExhibit = location
   Moon
   [Square, T]
 
-instance HasModifiersFor env ExhibitHallEgyptianExhibit where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ExhibitHallEgyptianExhibit
 
 instance ActionRunner env => HasActions env ExhibitHallEgyptianExhibit where
   getActions iid window (ExhibitHallEgyptianExhibit attrs) =

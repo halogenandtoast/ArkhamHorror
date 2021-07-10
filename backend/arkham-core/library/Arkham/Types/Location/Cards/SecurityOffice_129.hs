@@ -32,8 +32,7 @@ securityOffice_129 = location
   Diamond
   [Square]
 
-instance HasModifiersFor env SecurityOffice_129 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SecurityOffice_129
 
 ability :: LocationAttrs -> Ability
 ability attrs =

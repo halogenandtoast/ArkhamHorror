@@ -44,8 +44,7 @@ instance HasActions env SpringfieldM19034 where
     ]
   getActions _ _ _ = pure []
 
-instance HasModifiersFor env SpringfieldM19034 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SpringfieldM19034
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env SpringfieldM19034 where
   runMessage msg a@(SpringfieldM19034 attrs) = case msg of

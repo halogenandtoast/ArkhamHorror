@@ -32,8 +32,7 @@ tenAcreMeadow_246 = location
   Diamond
   [Circle, Triangle, Plus]
 
-instance HasModifiersFor env TenAcreMeadow_246 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env TenAcreMeadow_246
 
 ability :: LocationAttrs -> Ability
 ability attrs =

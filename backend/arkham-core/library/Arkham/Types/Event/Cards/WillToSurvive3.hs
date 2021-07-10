@@ -14,8 +14,7 @@ newtype WillToSurvive3 = WillToSurvive3 EventAttrs
 willToSurvive3 :: EventCard WillToSurvive3
 willToSurvive3 = event WillToSurvive3 Cards.willToSurvive3
 
-instance HasModifiersFor env WillToSurvive3 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env WillToSurvive3
 
 instance HasActions env WillToSurvive3 where
   getActions i window (WillToSurvive3 attrs) = getActions i window attrs

@@ -31,8 +31,7 @@ stepsOfYhagharl = location
   Plus
   [Diamond, Moon]
 
-instance HasModifiersFor env StepsOfYhagharl where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env StepsOfYhagharl
 
 instance ActionRunner env => HasActions env StepsOfYhagharl where
   getActions iid (WhenWouldLeave You lid) (StepsOfYhagharl attrs) = pure

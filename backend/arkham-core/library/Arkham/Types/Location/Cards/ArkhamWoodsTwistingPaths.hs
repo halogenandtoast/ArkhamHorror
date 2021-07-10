@@ -28,8 +28,7 @@ arkhamWoodsTwistingPaths = locationWith
   . (revealedSymbolL .~ T)
   )
 
-instance HasModifiersFor env ArkhamWoodsTwistingPaths where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ArkhamWoodsTwistingPaths
 
 instance ActionRunner env => HasActions env ArkhamWoodsTwistingPaths where
   getActions i window (ArkhamWoodsTwistingPaths attrs) =

@@ -25,8 +25,7 @@ farAboveYourHouse = location
   Moon
   [Triangle]
 
-instance HasModifiersFor env FarAboveYourHouse where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env FarAboveYourHouse
 
 instance ActionRunner env => HasActions env FarAboveYourHouse where
   getActions i window (FarAboveYourHouse attrs) = getActions i window attrs

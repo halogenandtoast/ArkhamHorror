@@ -29,8 +29,7 @@ hermanCollins = enemyWith
   (1, 1)
   (spawnAtL ?~ LocationWithTitle "Graveyard")
 
-instance HasModifiersFor env HermanCollins where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env HermanCollins
 
 instance ActionRunner env => HasActions env HermanCollins where
   getActions iid NonFast (HermanCollins attrs@EnemyAttrs {..}) =

@@ -24,8 +24,7 @@ servantOfTheLurker = enemyWith
   (2, 2)
   (preyL .~ LowestSkill SkillAgility)
 
-instance HasModifiersFor env ServantOfTheLurker where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ServantOfTheLurker
 
 instance ActionRunner env => HasActions env ServantOfTheLurker where
   getActions i window (ServantOfTheLurker attrs) = getActions i window attrs

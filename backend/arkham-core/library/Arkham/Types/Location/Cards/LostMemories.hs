@@ -32,8 +32,7 @@ lostMemories = locationWith
   . (unrevealedNameL .~ "Altered Path")
   )
 
-instance HasModifiersFor env LostMemories where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env LostMemories
 
 forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility

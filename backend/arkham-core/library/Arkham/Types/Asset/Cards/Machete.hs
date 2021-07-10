@@ -25,8 +25,7 @@ newtype Machete = Machete AssetAttrs
 machete :: AssetCard Machete
 machete = hand Machete Cards.machete
 
-instance HasModifiersFor env Machete where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Machete
 
 instance HasActions env Machete where
   getActions iid _ (Machete a) | ownedBy a iid = pure

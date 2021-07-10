@@ -18,8 +18,7 @@ newtype ViciousBlow = ViciousBlow SkillAttrs
 viciousBlow :: SkillCard ViciousBlow
 viciousBlow = skill ViciousBlow Cards.viciousBlow
 
-instance HasModifiersFor env ViciousBlow where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ViciousBlow
 
 instance HasActions env ViciousBlow where
   getActions i window (ViciousBlow attrs) = getActions i window attrs

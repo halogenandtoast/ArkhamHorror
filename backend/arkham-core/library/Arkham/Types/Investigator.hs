@@ -39,7 +39,9 @@ data Investigator
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-deriving anyclass instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor env Investigator
+instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor env Investigator where
+  getModifiersFor = genericGetModifiersFor
+
 deriving anyclass instance HasCount ClueCount env LocationId => HasTokenValue env Investigator
 
 instance Eq Investigator where

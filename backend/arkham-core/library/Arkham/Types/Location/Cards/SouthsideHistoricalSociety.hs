@@ -29,8 +29,7 @@ southsideHistoricalSociety = location
   Square
   [Diamond, Plus, Circle]
 
-instance HasModifiersFor env SouthsideHistoricalSociety where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SouthsideHistoricalSociety
 
 ability :: LocationAttrs -> Ability
 ability attrs =

@@ -22,8 +22,7 @@ theEndOfAllThings :: TheEndOfAllThings
 theEndOfAllThings = TheEndOfAllThings
   $ baseAttrs "02315" "The End of All Things" (Agenda 4 A) (Static 2)
 
-instance HasModifiersFor env TheEndOfAllThings where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env TheEndOfAllThings
 
 instance HasActions env TheEndOfAllThings where
   getActions i window (TheEndOfAllThings x) = getActions i window x

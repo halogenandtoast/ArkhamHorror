@@ -47,8 +47,7 @@ instance ToJSON ActAttrs where
 instance FromJSON ActAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "act"
 
-instance HasModifiersFor env ActAttrs where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ActAttrs
 
 instance HasStep ActAttrs ActStep where
   getStep = asks $ actStep . actSequence

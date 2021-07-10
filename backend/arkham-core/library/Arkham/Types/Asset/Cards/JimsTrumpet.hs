@@ -24,8 +24,7 @@ newtype JimsTrumpet = JimsTrumpet AssetAttrs
 jimsTrumpet :: AssetCard JimsTrumpet
 jimsTrumpet = hand JimsTrumpet Cards.jimsTrumpet
 
-instance HasModifiersFor env JimsTrumpet where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env JimsTrumpet
 
 ability :: AssetAttrs -> Ability
 ability attrs =

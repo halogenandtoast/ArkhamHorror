@@ -35,8 +35,7 @@ instance HasActions env BloodPact3 where
       ]
   getActions _ _ _ = pure []
 
-instance HasModifiersFor env BloodPact3 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BloodPact3
 
 instance AssetRunner env => RunMessage env BloodPact3 where
   runMessage msg a@(BloodPact3 attrs) = case msg of

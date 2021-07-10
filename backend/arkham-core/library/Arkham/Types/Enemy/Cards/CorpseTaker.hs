@@ -25,8 +25,7 @@ corpseTaker = enemyWith
   (1, 2)
   (spawnAtL ?~ FarthestLocationFromYou EmptyLocation)
 
-instance HasModifiersFor env CorpseTaker where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env CorpseTaker
 
 instance ActionRunner env => HasActions env CorpseTaker where
   getActions i window (CorpseTaker attrs) = getActions i window attrs

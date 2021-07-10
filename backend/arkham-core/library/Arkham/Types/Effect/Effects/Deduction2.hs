@@ -18,8 +18,7 @@ newtype Deduction2 = Deduction2 EffectAttrs
 deduction2 :: EffectArgs -> Deduction2
 deduction2 = Deduction2 . uncurry4 (baseAttrs "02150")
 
-instance HasModifiersFor env Deduction2 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Deduction2
 
 instance HasQueue env => RunMessage env Deduction2 where
   runMessage msg e@(Deduction2 attrs@EffectAttrs {..}) = case msg of

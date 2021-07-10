@@ -24,8 +24,7 @@ villageCommons = location
   Plus
   [Square, Circle, Moon]
 
-instance HasModifiersFor env VillageCommons where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env VillageCommons
 
 instance ActionRunner env => HasActions env VillageCommons where
   getActions = withResignAction

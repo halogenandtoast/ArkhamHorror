@@ -21,8 +21,7 @@ newtype RuinAndDestruction = RuinAndDestruction TreacheryAttrs
 ruinAndDestruction :: TreacheryCard RuinAndDestruction
 ruinAndDestruction = treachery RuinAndDestruction Cards.ruinAndDestruction
 
-instance HasModifiersFor env RuinAndDestruction where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env RuinAndDestruction
 
 instance HasActions env RuinAndDestruction where
   getActions i window (RuinAndDestruction attrs) = getActions i window attrs

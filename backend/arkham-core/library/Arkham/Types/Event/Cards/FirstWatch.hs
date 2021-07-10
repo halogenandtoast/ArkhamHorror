@@ -32,8 +32,7 @@ instance HasActions env FirstWatch where
   getActions iid window (FirstWatch (attrs `With` _)) =
     getActions iid window attrs
 
-instance HasModifiersFor env FirstWatch where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env FirstWatch
 
 instance (HasQueue env, HasSet InvestigatorId env (), HasCount PlayerCount env ()) => RunMessage env FirstWatch where
   runMessage msg e@(FirstWatch (attrs@EventAttrs {..} `With` metadata@FirstWatchMetadata {..}))

@@ -25,8 +25,7 @@ newtype FortyFiveAutomatic = FortyFiveAutomatic AssetAttrs
 fortyFiveAutomatic :: AssetCard FortyFiveAutomatic
 fortyFiveAutomatic = hand FortyFiveAutomatic Cards.fortyFiveAutomatic
 
-instance HasModifiersFor env FortyFiveAutomatic where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env FortyFiveAutomatic
 
 instance HasActions env FortyFiveAutomatic where
   getActions iid _ (FortyFiveAutomatic a) | ownedBy a iid = pure

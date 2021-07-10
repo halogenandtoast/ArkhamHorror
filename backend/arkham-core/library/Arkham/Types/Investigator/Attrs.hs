@@ -507,6 +507,7 @@ getFastIsPlayable
   :: ( MonadReader env m
      , HasModifiersFor env ()
      , HasSet InvestigatorId env LocationId
+     , HasSet EnemyId env LocationId
      , HasSet Trait env EnemyId
      , HasCount ClueCount env LocationId
      , HasActions env ActionType
@@ -567,6 +568,7 @@ getIsPlayable
   :: ( MonadReader env m
      , HasModifiersFor env ()
      , HasSet InvestigatorId env LocationId
+     , HasSet EnemyId env LocationId
      , HasSet Trait env EnemyId
      , HasCount ClueCount env LocationId
      , HasActions env ActionType
@@ -609,9 +611,18 @@ getIsPlayable attrs@InvestigatorAttrs {..} windows c@(PlayerCard MkPlayerCard {.
     typePairs
   prevents _ = False
   passesRestriction = \case
-    ClueOnLocation -> (> 0) . unClueCount <$> getCount investigatorLocation
-    AnotherInvestigatorInSameLocation ->
-      notNull <$> getSet @InvestigatorId investigatorLocation
+    ClueOnLocation -> liftA2
+      (&&)
+      (pure $ investigatorLocation /= LocationId (CardId nil))
+      ((> 0) . unClueCount <$> getCount investigatorLocation)
+    EnemyAtYourLocation -> liftA2
+      (&&)
+      (pure $ investigatorLocation /= LocationId (CardId nil))
+      (notNull <$> getSet @EnemyId investigatorLocation)
+    AnotherInvestigatorInSameLocation -> liftA2
+      (&&)
+      (pure $ investigatorLocation /= LocationId (CardId nil))
+      (notNull <$> getSet @InvestigatorId investigatorLocation)
     ScenarioCardHasResignAbility -> do
       actions' <- concat . concat <$> sequence
         [ traverse
@@ -655,9 +666,16 @@ cardInFastWindows
 cardInFastWindows _ _ windows matcher = anyM (matches matcher) windows
  where
   matches matcher' window' = case (matcher', window') of
-    (Matcher.AfterEnemyDefeated Matcher.You enemyMatcher, AfterEnemyDefeated You enemyId)
-      -> enemyMatches enemyId enemyMatcher
+    (Matcher.AfterEnemyDefeated whoMatcher enemyMatcher, AfterEnemyDefeated who enemyId)
+      -> liftA2
+        (&&)
+        (enemyMatches enemyId enemyMatcher)
+        (matchWho who whoMatcher)
     (Matcher.AfterEnemyDefeated _ _, _) -> pure False
+    (Matcher.FastPlayerWindow _, window) -> pure $ window == FastPlayerWindow
+  matchWho who = \case
+    Matcher.Anyone -> pure True
+    Matcher.You -> pure $ who == You
   enemyMatches enemyId = \case
     Matcher.EnemyWithTrait t -> member t <$> getSet enemyId
 
@@ -665,6 +683,7 @@ getPlayableCards
   :: ( MonadReader env m
      , HasModifiersFor env ()
      , HasSet InvestigatorId env LocationId
+     , HasSet EnemyId env LocationId
      , HasSet Trait env EnemyId
      , HasCount ClueCount env LocationId
      , HasActions env ActionType
@@ -682,6 +701,7 @@ getPlayableDiscards
   :: ( MonadReader env m
      , HasModifiersFor env ()
      , HasSet InvestigatorId env LocationId
+     , HasSet EnemyId env LocationId
      , HasSet Trait env EnemyId
      , HasCount ClueCount env LocationId
      , HasActions env ActionType
@@ -1259,7 +1279,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       card = fromJustNote "not in hand"
         $ find ((== cardId) . toCardId) investigatorHand
       isFast = case card of
-        PlayerCard pc -> cdFast (pcDef pc)
+        PlayerCard pc -> cdFast (pcDef pc) || isJust (cdFastWindow $ pcDef pc)
         _ -> False
       maction = case card of
         PlayerCard pc -> cdAction (pcDef pc)
@@ -1286,17 +1306,25 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       [ TakeAction iid (Just Action.Play) (ActionCost actionCost)
       , PayDynamicCardCost iid cardId 0 aooMessage
       ]
-  InitiatePlayCard iid cardId mtarget asAction | iid == investigatorId ->
+  InitiatePlayCard iid cardId mtarget asAction | iid == investigatorId -> do
+    let
+      card = fromJustNote "not in hand"
+        $ find ((== cardId) . toCardId) investigatorHand
+      isFastEvent = case card of
+        PlayerCard pc -> isJust (cdFastWindow $ pcDef pc)
+        _ -> False
     a <$ pushAll
       [ CheckWindow iid [WhenPlayCard You cardId]
-      , PlayCard iid cardId mtarget asAction
+      , if isFastEvent
+        then PlayFastEvent iid cardId mtarget [FastPlayerWindow]
+        else PlayCard iid cardId mtarget asAction
       ]
   PlayCard iid cardId mtarget True | iid == investigatorId -> do
     let
       card = fromJustNote "not in hand"
         $ find ((== cardId) . toCardId) investigatorHand
       isFast = case card of
-        PlayerCard pc -> cdFast (pcDef pc)
+        PlayerCard pc -> cdFast (pcDef pc) || isJust (cdFastWindow $ pcDef pc)
         _ -> False
       maction = case card of
         PlayerCard pc -> cdAction (pcDef pc)
@@ -1878,14 +1906,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     isPlayableMap :: HashMap Card Bool <- mapFromList <$> for
       investigatorHand
       (\c -> do
-        isPlayable <- getIsPlayable a [DuringTurn You] c
+        isPlayable <- getIsPlayable a [DuringTurn You, FastPlayerWindow] c
         pure (c, isPlayable)
       )
     let isPlayable c = findWithDefault False c isPlayableMap
     fastIsPlayableMap :: HashMap Card Bool <- mapFromList <$> for
       investigatorHand
       (\c -> do
-        fastIsPlayable <- getFastIsPlayable a [DuringTurn You] c
+        fastIsPlayable <- getFastIsPlayable
+          a
+          [DuringTurn You, FastPlayerWindow]
+          c
         pure (c, fastIsPlayable)
       )
     let fastIsPlayable c = findWithDefault False c fastIsPlayableMap

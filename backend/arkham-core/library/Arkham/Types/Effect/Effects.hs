@@ -13,6 +13,7 @@ import Arkham.Types.Effect.Effects.CurseOfTheRougarouTabletToken as X
 import Arkham.Types.Effect.Effects.CursedShores as X
 import Arkham.Types.Effect.Effects.Deduction as X
 import Arkham.Types.Effect.Effects.Deduction2 as X
+import Arkham.Types.Effect.Effects.ExposeWeakness1 as X
 import Arkham.Types.Effect.Effects.FireExtinguisher1 as X
 import Arkham.Types.Effect.Effects.HuntingNightgaunt as X
 import Arkham.Types.Effect.Effects.JeremiahPierce as X

@@ -6,6 +6,7 @@ module Arkham.Types.Investigator.Cards.RexMurphy
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -42,7 +43,7 @@ rexMurphy = RexMurphy $ baseAttrs
   [Reporter]
 
 instance InvestigatorRunner env => HasActions env RexMurphy where
-  getActions iid (AfterPassSkillTest _ _ You n) (RexMurphy attrs@InvestigatorAttrs {..})
+  getActions iid (AfterPassSkillTest (Just Action.Investigate) _ You n) (RexMurphy attrs@InvestigatorAttrs {..})
     | iid == investigatorId && n >= 2
     = do
       let ability = mkAbility (toSource attrs) 1 (ReactionAbility Free)

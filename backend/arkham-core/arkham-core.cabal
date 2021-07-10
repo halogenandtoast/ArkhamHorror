@@ -299,6 +299,7 @@ library
       Arkham.Types.Effect.Effects.CurseOfTheRougarouTabletToken
       Arkham.Types.Effect.Effects.Deduction
       Arkham.Types.Effect.Effects.Deduction2
+      Arkham.Types.Effect.Effects.ExposeWeakness1
       Arkham.Types.Effect.Effects.FireExtinguisher1
       Arkham.Types.Effect.Effects.HuntingNightgaunt
       Arkham.Types.Effect.Effects.JeremiahPierce
@@ -424,6 +425,7 @@ library
       Arkham.Types.Event.Cards.EmergencyCache
       Arkham.Types.Event.Cards.EmergencyCache2
       Arkham.Types.Event.Cards.Evidence
+      Arkham.Types.Event.Cards.ExposeWeakness1
       Arkham.Types.Event.Cards.ExtraAmmunition1
       Arkham.Types.Event.Cards.FirstWatch
       Arkham.Types.Event.Cards.Flare1

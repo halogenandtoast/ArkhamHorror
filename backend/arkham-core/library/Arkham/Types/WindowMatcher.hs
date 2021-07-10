@@ -4,7 +4,9 @@ import Arkham.Prelude
 
 import Arkham.Types.Trait
 
-data WindowMatcher = AfterEnemyDefeated Who WindowEnemyMatcher
+data WindowMatcher
+  = AfterEnemyDefeated Who WindowEnemyMatcher
+  | FastPlayerWindow Who
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -14,6 +16,6 @@ newtype WindowEnemyMatcher = EnemyWithTrait Trait
 
 type Who = WindowInvestigatorMatcher
 
-data WindowInvestigatorMatcher = You
+data WindowInvestigatorMatcher = You | Anyone
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

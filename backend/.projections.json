@@ -235,8 +235,7 @@
       "instance HasActions env {dot} where",
       "  getActions iid window ({dot} attrs) = getActions iid window attrs",
       "",
-      "instance HasModifiersFor env {dot} where",
-      "  getModifiersFor = noModifiersFor",
+      "instance HasModifiersFor env {dot}",
       "",
       "instance RunMessage env {dot} where",
       "  runMessage msg ({dot} attrs) = {dot} <$> runMessage msg attrs"

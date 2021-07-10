@@ -58,9 +58,11 @@ mkAbility entity idx type' = Ability
   { abilitySource = toSource entity
   , abilityIndex = idx
   , abilityType = type'
-  , abilityLimit = if type' == ForcedAbility
-    then PlayerLimit PerWindow 1
-    else NoLimit
+  , abilityLimit = case type' of
+    ForcedAbility -> PlayerLimit PerWindow 1
+    ReactionAbility _ -> PlayerLimit PerWindow 1
+    FastAbility _ -> NoLimit
+    ActionAbility _ _ -> NoLimit
   , abilityMetadata = Nothing
   , abilityRestrictions = Nothing
   }

@@ -81,6 +81,7 @@ data Effect
   | ArcaneBarrier' ArcaneBarrier
   | FireExtinguisher1' FireExtinguisher1
   | Deduction2' Deduction2
+  | ExposeWeakness1' ExposeWeakness1
   | UndimensionedAndUnseenTabletToken' UndimensionedAndUnseenTabletToken
   | TenAcreMeadow_246' TenAcreMeadow_246
   | LetMeHandleThis' LetMeHandleThis
@@ -166,6 +167,7 @@ allEffects = mapFromList
   , ("02102", ArcaneBarrier' . arcaneBarrier)
   , ("02114", FireExtinguisher1' . fireExtinguisher1)
   , ("02150", Deduction2' . deduction2)
+  , ("02228", ExposeWeakness1' . exposeWeakness1)
   , ( "02236"
     , UndimensionedAndUnseenTabletToken' . undimensionedAndUnseenTabletToken
     )

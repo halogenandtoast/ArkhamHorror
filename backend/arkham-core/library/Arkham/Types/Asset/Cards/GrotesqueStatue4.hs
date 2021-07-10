@@ -14,8 +14,7 @@ import Arkham.Types.ChaosBagStepState
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
-import Arkham.Types.Source
-import Arkham.Types.Window
+import Arkham.Types.WindowMatcher
 
 newtype GrotesqueStatue4 = GrotesqueStatue4 AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
@@ -23,24 +22,18 @@ newtype GrotesqueStatue4 = GrotesqueStatue4 AssetAttrs
 grotesqueStatue4 :: AssetCard GrotesqueStatue4
 grotesqueStatue4 = hand GrotesqueStatue4 Cards.grotesqueStatue4
 
-instance HasModifiersFor env GrotesqueStatue4 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env GrotesqueStatue4
 
-ability :: AssetAttrs -> Source -> Ability
-ability attrs source = base
-  { abilityMetadata = Just (SourceMetadata source)
-  , abilityLimit = PlayerLimit PerTestOrAbility 1 -- TODO: not a real limit
+ability :: AssetAttrs -> Ability
+ability attrs = base
+  { abilityLimit = PlayerLimit PerTestOrAbility 1 -- TODO: not a real limit
+  , abilityResponseWindow = Just (WhenWouldRevealChaosToken You AnySkillTest)
   }
  where
-  base = mkAbility
-    (toSource attrs)
-    1
-    (ReactionAbility $ UseCost (toId attrs) Charge 1)
+  base = assetAbility attrs 1 (ReactionAbility $ UseCost (toId attrs) Charge 1)
 
-instance HasActions env GrotesqueStatue4 where
-  getActions iid (WhenWouldRevealChaosToken source You) (GrotesqueStatue4 a)
-    | ownedBy a iid = pure [UseAbility iid (ability a source)]
-  getActions _ _ _ = pure []
+instance HasAbilities GrotesqueStatue4 where
+  getAbilities (GrotesqueStatue4 a) = [ability a]
 
 instance AssetRunner env => RunMessage env GrotesqueStatue4 where
   runMessage msg a@(GrotesqueStatue4 attrs) = case msg of

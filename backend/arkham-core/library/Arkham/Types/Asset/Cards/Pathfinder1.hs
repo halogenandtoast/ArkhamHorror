@@ -12,7 +12,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
-import Arkham.Types.Window
+import Arkham.Types.WindowMatcher
 
 newtype Pathfinder1 = Pathfinder1 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -21,23 +21,27 @@ pathfinder1 :: AssetCard Pathfinder1
 pathfinder1 = asset Pathfinder1 Cards.pathfinder1
 
 ability :: AssetAttrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (FastAbility $ ExhaustCost (toTarget attrs))
+ability attrs = (assetAbility
+                  attrs
+                  1
+                  (FreeAbility (Just $ DuringTurn You)
+                  $ ExhaustCost (toTarget attrs)
+                  )
+                )
+  { abilityRestrictions = Just InvestigatorNotEngaged
+  }
 
-instance HasSet EnemyId env InvestigatorId => HasActions env Pathfinder1 where
-  getActions iid (DuringTurn You) (Pathfinder1 attrs) = do
-    engagedEnemies <- getSet @EnemyId iid
-    pure [ UseAbility iid (ability attrs) | null engagedEnemies ]
-  getActions _ _ _ = pure []
+instance HasAbilities Pathfinder1 where
+  getAbilities (Pathfinder1 attrs) = [ability attrs]
 
-instance HasModifiersFor env Pathfinder1 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Pathfinder1
 
 instance
   ( HasQueue env
   , HasModifiersFor env ()
   , HasSet AccessibleLocationId env LocationId
   , HasId LocationId env InvestigatorId
+  , HasSet InvestigatorId env ()
   )
   => RunMessage env Pathfinder1 where
   runMessage msg a@(Pathfinder1 attrs) = case msg of

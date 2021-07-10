@@ -38,7 +38,7 @@ instance HasActions env Blackjack where
 instance HasModifiersFor env Blackjack where
   getModifiersFor = noModifiersFor
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Blackjack where
+instance (HasSet InvestigatorId env (), HasQueue env, HasModifiersFor env ()) => RunMessage env Blackjack where
   runMessage msg a@(Blackjack attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifiers

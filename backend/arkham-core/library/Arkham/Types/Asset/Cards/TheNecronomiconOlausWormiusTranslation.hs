@@ -41,7 +41,7 @@ instance HasModifiersFor env TheNecronomiconOlausWormiusTranslation where
     = pure $ toModifiers a [ SkillModifier SkillIntellect 1 | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env TheNecronomiconOlausWormiusTranslation where
+instance (HasSet InvestigatorId env (), HasQueue env, HasModifiersFor env ()) => RunMessage env TheNecronomiconOlausWormiusTranslation where
   runMessage msg a@(TheNecronomiconOlausWormiusTranslation attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (TakeResources iid 2 False)

@@ -42,5 +42,5 @@ instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env DarkHo
 
   getModifiersFor _ _ _ = pure []
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env DarkHorse where
+instance (HasSet InvestigatorId env (), HasQueue env, HasModifiersFor env ()) => RunMessage env DarkHorse where
   runMessage msg (DarkHorse attrs) = DarkHorse <$> runMessage msg attrs

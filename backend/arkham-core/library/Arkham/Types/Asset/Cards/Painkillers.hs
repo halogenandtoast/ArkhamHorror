@@ -42,7 +42,7 @@ instance HasActions env Painkillers where
 instance HasModifiersFor env Painkillers where
   getModifiersFor = noModifiersFor
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Painkillers where
+instance (HasSet InvestigatorId env (), HasQueue env, HasModifiersFor env ()) => RunMessage env Painkillers where
   runMessage msg a@(Painkillers attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       Painkillers <$> runMessage msg (attrs & usesL .~ Uses Supply 3)

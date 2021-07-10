@@ -38,7 +38,7 @@ instance HasId (Maybe LocationId) env LocationMatcher => HasModifiersFor env Ada
         [ ActionCostSetToModifier 1 | isSecurityOffice && ownedBy attrs iid ]
   getModifiersFor _ _ _ = pure []
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AdamLynch where
+instance (HasSet InvestigatorId env (), HasQueue env, HasModifiersFor env ()) => RunMessage env AdamLynch where
   runMessage msg a@(AdamLynch attrs) = case msg of
     Discard target | isTarget attrs target ->
       a <$ pushAll [AddToken Tablet, RemoveFromGame target]

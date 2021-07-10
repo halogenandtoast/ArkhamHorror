@@ -15,7 +15,6 @@ import Arkham.Types.Direction
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype HelplessPassenger = HelplessPassenger AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -26,26 +25,20 @@ helplessPassenger =
 
 ability :: AssetAttrs -> Ability
 ability attrs =
-  mkAbility (toSource attrs) 1 (ActionAbility (Just Parley) $ ActionCost 1)
+  (assetAbility attrs 1 (ActionAbility (Just Parley) $ ActionCost 1))
+    { abilityRestrictions = Just IsUnowned
+    }
 
-instance HasId LocationId env InvestigatorId => HasActions env HelplessPassenger where
-  getActions iid NonFast (HelplessPassenger attrs) = do
-    lid <- getId iid
-    case assetLocation attrs of
-      Just location -> pure
-        [ UseAbility iid (ability attrs)
-        | lid == location && isNothing (assetInvestigator attrs)
-        ]
-      _ -> pure mempty
-  getActions iid window (HelplessPassenger attrs) = getActions iid window attrs
+instance HasAbilities HelplessPassenger where
+  getAbilities (HelplessPassenger attrs) = [ability attrs]
 
-instance HasModifiersFor env HelplessPassenger where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env HelplessPassenger
 
 instance
   ( HasQueue env
   , HasModifiersFor env ()
   , HasId LocationId env InvestigatorId
+  , HasSet InvestigatorId env ()
   , HasSet InScenarioInvestigatorId env ()
   , HasId (Maybe LocationId) env (Direction, LocationId)
   )

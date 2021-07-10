@@ -9,11 +9,10 @@ import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
-import Arkham.Types.Window
+import Arkham.Types.WindowMatcher
 
 newtype DrHenryArmitage = DrHenryArmitage AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -21,19 +20,20 @@ newtype DrHenryArmitage = DrHenryArmitage AssetAttrs
 drHenryArmitage :: AssetCard DrHenryArmitage
 drHenryArmitage = ally DrHenryArmitage Cards.drHenryArmitage (2, 2)
 
-fastAbility :: AssetAttrs -> CardId -> Ability
-fastAbility a cid = mkAbility
-  (toSource a)
-  1
-  (FastAbility $ Costs [DiscardCardCost cid, ExhaustCost (toTarget a)])
+fastAbility :: AssetAttrs -> Ability
+fastAbility a =
+  (assetAbility
+      a
+      1
+      (FastAbility $ Costs [DiscardJustDrawnCard, ExhaustCost (toTarget a)])
+    )
+    { abilityResponseWindow = Just (AfterDrawCard You AnyCard)
+    }
 
-instance HasModifiersFor env DrHenryArmitage where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env DrHenryArmitage
 
-instance HasActions env DrHenryArmitage where
-  getActions iid (AfterDrawCard You cid) (DrHenryArmitage a) | ownedBy a iid =
-    pure [UseAbility iid (fastAbility a cid)]
-  getActions _ _ _ = pure []
+instance HasAbilities DrHenryArmitage where
+  getAbilities (DrHenryArmitage a) = [fastAbility a]
 
 instance (AssetRunner env) => RunMessage env DrHenryArmitage where
   runMessage msg a@(DrHenryArmitage attrs) = case msg of

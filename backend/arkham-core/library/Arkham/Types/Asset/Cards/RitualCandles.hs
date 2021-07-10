@@ -36,7 +36,7 @@ instance HasActions env RitualCandles where
 instance HasModifiersFor env RitualCandles where
   getModifiersFor = noModifiersFor
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env RitualCandles where
+instance (HasSet InvestigatorId env (), HasQueue env, HasModifiersFor env ()) => RunMessage env RitualCandles where
   runMessage msg a@(RitualCandles attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [skillTestModifier attrs (InvestigatorTarget iid) (AnySkillValue 1)]

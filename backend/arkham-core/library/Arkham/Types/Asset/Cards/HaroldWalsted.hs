@@ -43,7 +43,7 @@ instance
         [ SkillModifier SkillIntellect 2 | isMiskatonic && ownedBy attrs iid ]
   getModifiersFor _ _ _ = pure []
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env HaroldWalsted where
+instance (HasSet InvestigatorId env (), HasQueue env, HasModifiersFor env ()) => RunMessage env HaroldWalsted where
   runMessage msg a@(HaroldWalsted attrs) = case msg of
     Discard target | isTarget attrs target ->
       a <$ pushAll [AddToken Tablet, RemoveFromGame target]

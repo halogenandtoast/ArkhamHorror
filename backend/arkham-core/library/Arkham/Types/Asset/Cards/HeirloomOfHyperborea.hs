@@ -10,7 +10,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Trait
-import Arkham.Types.Window
+import Arkham.Types.WindowMatcher
 
 newtype HeirloomOfHyperborea = HeirloomOfHyperborea AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -19,17 +19,15 @@ heirloomOfHyperborea :: AssetCard HeirloomOfHyperborea
 heirloomOfHyperborea =
   accessory HeirloomOfHyperborea Cards.heirloomOfHyperborea
 
-instance HasModifiersFor env HeirloomOfHyperborea where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env HeirloomOfHyperborea
 
 reactionAbility :: AssetAttrs -> Ability
-reactionAbility attrs = mkAbility (toSource attrs) 1 (FastAbility Free)
+reactionAbility attrs = (assetAbility attrs 1 (FastAbility Free))
+  { abilityResponseWindow = Just (AfterPlayCard You $ CardWithTrait Spell)
+  }
 
-instance HasActions env HeirloomOfHyperborea where
-  getActions iid (AfterPlayCard You traits) (HeirloomOfHyperborea a)
-    | ownedBy a iid = pure
-      [ UseAbility iid (reactionAbility a) | Spell `elem` traits ]
-  getActions i window (HeirloomOfHyperborea x) = getActions i window x
+instance HasAbilities HeirloomOfHyperborea where
+  getAbilities (HeirloomOfHyperborea a) = [reactionAbility a]
 
 instance (AssetRunner env) => RunMessage env HeirloomOfHyperborea where
   runMessage msg a@(HeirloomOfHyperborea attrs) = case msg of

@@ -29,7 +29,7 @@ instance HasActions env SongOfTheDead2 where
 instance HasModifiersFor env SongOfTheDead2 where
   getModifiersFor = noModifiersFor
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env SongOfTheDead2 where
+instance (HasSet InvestigatorId env (), HasQueue env, HasModifiersFor env ()) => RunMessage env SongOfTheDead2 where
   runMessage msg a@(SongOfTheDead2 attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       SongOfTheDead2 <$> runMessage msg (attrs & usesL .~ Uses Charge 5)

@@ -14,7 +14,6 @@ import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype ClarityOfMind = ClarityOfMind AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -22,28 +21,22 @@ newtype ClarityOfMind = ClarityOfMind AssetAttrs
 clarityOfMind :: AssetCard ClarityOfMind
 clarityOfMind = arcane ClarityOfMind Cards.clarityOfMind
 
-instance HasActions env ClarityOfMind where
-  getActions iid NonFast (ClarityOfMind a) = pure
-    [ UseAbility
-        iid
-        (mkAbility
-          (toSource a)
-          1
-          (ActionAbility Nothing
-          $ Costs [ActionCost 1, UseCost (toId a) Charge 1]
-          )
+instance HasAbilities ClarityOfMind where
+  getAbilities (ClarityOfMind a) =
+    [ assetAbility
+        a
+        1
+        (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (toId a) Charge 1]
         )
-    | ownedBy a iid
     ]
-  getActions _ _ _ = pure []
 
-instance HasModifiersFor env ClarityOfMind where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ClarityOfMind
 
 instance
   ( HasQueue env
   , HasModifiersFor env ()
   , HasSet InvestigatorId env LocationId
+  , HasSet InvestigatorId env ()
   , HasId LocationId env InvestigatorId
   )
   => RunMessage env ClarityOfMind where

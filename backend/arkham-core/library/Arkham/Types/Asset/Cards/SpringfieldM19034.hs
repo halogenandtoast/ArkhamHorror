@@ -47,7 +47,7 @@ instance HasActions env SpringfieldM19034 where
 instance HasModifiersFor env SpringfieldM19034 where
   getModifiersFor = noModifiersFor
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env SpringfieldM19034 where
+instance (HasSet InvestigatorId env (), HasQueue env, HasModifiersFor env ()) => RunMessage env SpringfieldM19034 where
   runMessage msg a@(SpringfieldM19034 attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       SpringfieldM19034

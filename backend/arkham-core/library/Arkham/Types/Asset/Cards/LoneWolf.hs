@@ -10,8 +10,9 @@ import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Id
 import Arkham.Types.Message
-import Arkham.Types.Window
+import Arkham.Types.WindowMatcher
 
 newtype LoneWolf = LoneWolf AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -20,19 +21,17 @@ loneWolf :: AssetCard LoneWolf
 loneWolf = asset LoneWolf Cards.loneWolf
 
 ability :: AssetAttrs -> Ability
-ability x = (mkAbility (toSource x) 1 (ReactionAbility Free))
-  { abilityRestrictions = Just InvestigatorIsAlone
+ability x = (assetAbility x 1 (ReactionAbility (WhenTurnBegins You) Free))
+  { abilityRestrictions = Just
+    $ AllAbilityRestrictions [InvestigatorIsAlone, InvestigatorIsOwner]
   }
 
-instance HasActions env LoneWolf where
-  getActions i (WhenTurnBegins You) (LoneWolf x) | ownedBy x i =
-    pure [UseAbility i (ability x)]
-  getActions iid window (LoneWolf attrs) = getActions iid window attrs
+instance HasAbilities LoneWolf where
+  getAbilities (LoneWolf x) = [ability x]
 
-instance HasModifiersFor env LoneWolf where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env LoneWolf
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env LoneWolf where
+instance (HasSet InvestigatorId env (), HasQueue env, HasModifiersFor env ()) => RunMessage env LoneWolf where
   runMessage msg a@(LoneWolf attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (TakeResources iid 1 False)

@@ -5,10 +5,11 @@ import Arkham.Prelude
 import Arkham.Types.Action
 import Arkham.Types.Cost
 import Arkham.Types.Modifier
+import Arkham.Types.WindowMatcher
 
 data AbilityType
-  = FastAbility Cost
-  | ReactionAbility Cost
+  = FreeAbility (Maybe WindowMatcher) Cost
+  | ReactionAbility WindowMatcher Cost
   | ActionAbility (Maybe Action) Cost
   | ForcedAbility
   deriving stock (Show, Generic, Eq)
@@ -16,8 +17,10 @@ data AbilityType
 
 applyAbilityTypeModifiers :: AbilityType -> [Modifier] -> AbilityType
 applyAbilityTypeModifiers aType modifiers = case aType of
-  FastAbility cost -> FastAbility $ applyCostModifiers cost modifiers
-  ReactionAbility cost -> ReactionAbility $ applyCostModifiers cost modifiers
+  FreeAbility mwindow cost ->
+    FreeAbility mwindow $ applyCostModifiers cost modifiers
+  ReactionAbility window cost ->
+    ReactionAbility window (applyCostModifiers cost modifiers)
   ActionAbility mAction cost ->
     ActionAbility mAction $ applyCostModifiers cost modifiers
   ForcedAbility -> ForcedAbility

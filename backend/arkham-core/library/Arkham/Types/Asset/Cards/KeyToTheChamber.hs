@@ -15,7 +15,6 @@ import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype KeyToTheChamber = KeyToTheChamber AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -24,26 +23,24 @@ keyToTheChamber :: AssetCard KeyToTheChamber
 keyToTheChamber =
   assetWith KeyToTheChamber Cards.keyToTheChamber (isStoryL .~ True)
 
-instance (HasId LocationId env InvestigatorId, HasSet ConnectedLocationId env LocationId, HasId (Maybe LocationId) env LocationMatcher) => HasActions env KeyToTheChamber where
-  getActions iid FastPlayerWindow (KeyToTheChamber attrs) | ownedBy attrs iid =
-    do
-      mHiddenChamberId <- getId @(Maybe LocationId)
-        (LocationWithTitle "The Hidden Chamber")
-      case mHiddenChamberId of
-        Just hiddenChamberId -> do
-          lid <- getId @LocationId iid
-          connectedLocationIds <- map unConnectedLocationId <$> getSetList lid
-          pure
-            [ UseAbility iid (mkAbility (toSource attrs) 1 (FastAbility Free))
-            | hiddenChamberId `elem` connectedLocationIds
-            ]
-        Nothing -> pure []
-  getActions iid window (KeyToTheChamber attrs) = getActions iid window attrs
+instance HasAbilities KeyToTheChamber where
+  getAbilities (KeyToTheChamber attrs) =
+    [ (assetAbility attrs 1 (FastAbility Free))
+        { abilityRestrictions =
+          Just $ InvestigatorOnLocationAdjacentTo
+            (LocationWithTitle "The Hidden Chamber")
+        }
+    ]
 
-instance HasModifiersFor env KeyToTheChamber where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env KeyToTheChamber
 
-instance (HasQueue env, HasModifiersFor env (), HasId (Maybe LocationId) env LocationMatcher) => RunMessage env KeyToTheChamber where
+instance
+  ( HasQueue env
+  , HasModifiersFor env ()
+  , HasId (Maybe LocationId) env LocationMatcher
+  , HasSet InvestigatorId env ()
+  )
+  => RunMessage env KeyToTheChamber where
   runMessage msg a@(KeyToTheChamber attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       a <$ push (TakeControlOfAsset iid $ toId a)

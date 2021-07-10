@@ -56,7 +56,7 @@ instance HasCount ClueCount env EnemyId => HasModifiersFor env EsotericFormula w
       pure $ toModifiers attrs [SkillModifier SkillWillpower (clueCount * 2)]
   getModifiersFor _ _ _ = pure []
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env EsotericFormula where
+instance (HasSet InvestigatorId env (), HasQueue env, HasModifiersFor env ()) => RunMessage env EsotericFormula where
   runMessage msg a@(EsotericFormula attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a

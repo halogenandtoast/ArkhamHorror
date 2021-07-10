@@ -42,7 +42,7 @@ instance HasActions env SmokingPipe where
 instance HasModifiersFor env SmokingPipe where
   getModifiersFor = noModifiersFor
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env SmokingPipe where
+instance (HasSet InvestigatorId env (), HasQueue env, HasModifiersFor env ()) => RunMessage env SmokingPipe where
   runMessage msg a@(SmokingPipe attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       SmokingPipe <$> runMessage msg (attrs & usesL .~ Uses Supply 3)

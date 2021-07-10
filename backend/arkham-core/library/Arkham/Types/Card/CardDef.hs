@@ -17,7 +17,7 @@ import Arkham.Types.Name
 import Arkham.Types.PlayRestriction
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
-import Arkham.Types.Window
+import Arkham.Types.WindowMatcher (WindowMatcher)
 
 data AttackOfOpportunityModifier = DoesNotProvokeAttacksOfOpportunity
   deriving stock (Show, Eq, Generic)

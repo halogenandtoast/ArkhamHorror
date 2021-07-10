@@ -8,11 +8,12 @@ import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.CardType
 import Arkham.Types.Card.Cost
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Keyword
 import Arkham.Types.Name
 import Arkham.Types.PlayRestriction
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
-import Arkham.Types.Window
+import Arkham.Types.WindowMatcher
 
 event :: CardCode -> Name -> Int -> ClassSymbol -> CardDef
 event cardCode name cost classSymbol = CardDef
@@ -470,7 +471,7 @@ secondWind :: CardDef
 secondWind = (event "04149" "Second Wind" 1 Guardian)
   { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Spirit, Bold]
-  , cdFastWindow = mempty -- handle via behavior since must be first action
+  , cdPlayRestrictions = [FirstAction]
   }
 
 bloodRite :: CardDef
@@ -490,7 +491,7 @@ astoundingRevelation :: CardDef
 astoundingRevelation = (event "06023" "Astounding Revelation" 0 Seeker)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Research]
-  , cdFastWindow = mempty -- cannot be played
+  , cdPlayRestrictions = [CannotBePlayed]
   , cdCost = Nothing
   }
 

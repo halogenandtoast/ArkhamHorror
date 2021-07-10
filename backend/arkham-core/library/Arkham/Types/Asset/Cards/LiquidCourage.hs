@@ -6,7 +6,6 @@ module Arkham.Types.Asset.Cards.LiquidCourage
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
-import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
@@ -15,7 +14,6 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype LiquidCourage = LiquidCourage AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -23,28 +21,17 @@ newtype LiquidCourage = LiquidCourage AssetAttrs
 liquidCourage :: AssetCard LiquidCourage
 liquidCourage = asset LiquidCourage Cards.liquidCourage
 
-instance HasActions env LiquidCourage where
-  getActions iid NonFast (LiquidCourage a) = pure
-    [ UseAbility
-        iid
-        (mkAbility
-          (toSource a)
-          1
-          (ActionAbility Nothing
-          $ Costs [ActionCost 1, UseCost (toId a) Supply 1]
-          )
-        )
-    | ownedBy a iid
-    ]
-  getActions iid window (LiquidCourage attrs) = getActions iid window attrs
+instance HasAbilities LiquidCourage where
+  getAbilities (LiquidCourage a) =
+    [assetAction a 1 Nothing $ Costs [ActionCost 1, UseCost (toId a) Supply 1]]
 
-instance HasModifiersFor env LiquidCourage where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env LiquidCourage
 
 instance
   ( HasQueue env
   , HasModifiersFor env ()
   , HasSet InvestigatorId env LocationId
+  , HasSet InvestigatorId env ()
   , HasId LocationId env InvestigatorId
   )
   => RunMessage env LiquidCourage where

@@ -43,6 +43,10 @@ data AssetAttrs = AssetAttrs
   }
   deriving stock (Show, Eq, Generic)
 
+assetAbility :: AssetAttrs -> Int -> AbilityType -> Ability
+assetAbility attrs idx cost =
+  (mkAbility attrs idx cost) { abilityRestrictions = Just InvestigatorIsOwner }
+
 canLeavePlayByNormalMeansL :: Lens' AssetAttrs Bool
 canLeavePlayByNormalMeansL = lens assetCanLeavePlayByNormalMeans
   $ \m x -> m { assetCanLeavePlayByNormalMeans = x }
@@ -231,10 +235,9 @@ whenOwnedBy
   :: Applicative m => AssetAttrs -> InvestigatorId -> m [Message] -> m [Message]
 whenOwnedBy a iid f = if ownedBy a iid then f else pure []
 
-assetAction
-  :: InvestigatorId -> AssetAttrs -> Int -> Maybe Action -> Cost -> Message
-assetAction iid attrs idx mAction cost =
-  UseAbility iid $ mkAbility (toSource attrs) idx (ActionAbility mAction cost)
+assetAction :: AssetAttrs -> Int -> Maybe Action -> Cost -> Ability
+assetAction attrs idx mAction cost =
+  assetAbility attrs idx (ActionAbility mAction cost)
 
 getInvestigator :: HasCallStack => AssetAttrs -> InvestigatorId
 getInvestigator = fromJustNote "asset must be owned" . view investigatorL
@@ -243,9 +246,6 @@ defeated :: AssetAttrs -> Bool
 defeated AssetAttrs {..} =
   maybe False (assetHealthDamage >=) assetHealth
     || maybe False (assetSanityDamage >=) assetSanity
-
-instance HasActions env AssetAttrs where
-  getActions _ _ _ = pure []
 
 instance IsAsset AssetAttrs where
   slotsOf = assetSlots
@@ -258,7 +258,7 @@ instance IsAsset AssetAttrs where
     Just n -> n > assetSanityDamage a
   isStory = assetIsStory
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs where
+instance (HasSet InvestigatorId env (), HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs where
   runMessage msg a@AssetAttrs {..} = case msg of
     ReadyExhausted -> case assetInvestigator of
       Just iid -> do
@@ -317,11 +317,7 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs whe
     Exile target | a `isTarget` target ->
       a <$ pushAll [RemovedFromPlay $ toSource a, Exiled target (toCard a)]
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
-      push $ CheckWindow
-        iid
-        [ Window (Just $ InvestigatorSource iid) (Just $ toTarget a)
-            $ WhenEnterPlay (toTarget a)
-        ]
+      checkWindows [WhenEnterPlay (toTarget a)]
       pure $ a & investigatorL ?~ iid
     TakeControlOfAsset iid aid | aid == assetId ->
       pure $ a & investigatorL ?~ iid

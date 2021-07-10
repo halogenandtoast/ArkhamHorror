@@ -10,6 +10,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.EnemyMatcher
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Trait
@@ -26,21 +27,19 @@ peterClover =
 
 ability :: AssetAttrs -> Ability
 ability attrs =
-  mkAbility (toSource attrs) 1 (FastAbility $ ExhaustCost (toTarget attrs))
+  (assetAbility attrs 1 (FreeAbility Nothing $ ExhaustCost (toTarget attrs)))
+    { abilityRestrictions = Just
+      (AllAbilityRestrictions
+        [ InvestigatorIsOwner
+        , InvestigatorAtLocationWithEnemyMatcher $ EnemyWithTrait Criminal
+        ]
+      )
+    }
 
-instance
-  ( HasSet EnemyId env ([Trait], LocationId)
-  , HasId LocationId env InvestigatorId
-  )
-  => HasActions env PeterClover where
-  getActions iid FastPlayerWindow (PeterClover attrs) = do
-    lid <- getId @LocationId iid
-    criminals <- getSet @EnemyId ([Criminal], lid)
-    pure [ UseAbility iid (ability attrs) | notNull criminals ]
-  getActions iid window (PeterClover attrs) = getActions iid window attrs
+instance HasAbilities PeterClover where
+  getAbilities (PeterClover attrs) = [ability attrs]
 
-instance HasModifiersFor env PeterClover where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env PeterClover
 
 instance
   ( HasQueue env

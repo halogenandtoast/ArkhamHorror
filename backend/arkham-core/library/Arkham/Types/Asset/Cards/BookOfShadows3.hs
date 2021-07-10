@@ -16,7 +16,6 @@ import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype BookOfShadows3 = BookOfShadows3 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -24,18 +23,14 @@ newtype BookOfShadows3 = BookOfShadows3 AssetAttrs
 bookOfShadows3 :: AssetCard BookOfShadows3
 bookOfShadows3 = hand BookOfShadows3 Cards.bookOfShadows3
 
-instance HasModifiersFor env BookOfShadows3 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BookOfShadows3
 
 slot :: AssetAttrs -> Slot
 slot AssetAttrs { assetId } = Slot (AssetSource assetId) Nothing
 
-instance HasActions env BookOfShadows3 where
-  getActions iid NonFast (BookOfShadows3 a) | ownedBy a iid = pure
-    [ assetAction iid a 1 Nothing
-        $ Costs [ActionCost 1, ExhaustCost (toTarget a)]
-    ]
-  getActions _ _ _ = pure []
+instance HasAbilities BookOfShadows3 where
+  getAbilities (BookOfShadows3 a) =
+    [assetAction a 1 Nothing $ Costs [ActionCost 1, ExhaustCost (toTarget a)]]
 
 instance AssetRunner env => RunMessage env BookOfShadows3 where
   runMessage msg a@(BookOfShadows3 attrs) = case msg of

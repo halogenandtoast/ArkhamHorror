@@ -63,6 +63,7 @@ data Cost
   | DamageCost Source Target Int
   | DiscardCost Target
   | DiscardCardCost CardId
+  | DiscardJustDrawnCard
   | DoomCost Source Target Int
   | ExileCost Target
   | HandDiscardCost Int (Maybe CardType) (HashSet Trait) (HashSet SkillType)

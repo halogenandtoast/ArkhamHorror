@@ -13,7 +13,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype LadyEsprit = LadyEsprit AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -32,16 +31,13 @@ ability attrs = (mkAbility
                     ]
                   )
                 )
-  { abilityRestrictions = OnLocation <$> assetLocation attrs
+  { abilityRestrictions = InvestigatorOnLocation <$> assetLocation attrs
   }
 
-instance HasModifiersFor env LadyEsprit where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env LadyEsprit
 
-instance HasActions env LadyEsprit where
-  getActions iid NonFast (LadyEsprit a) = do
-    pure [UseAbility iid (ability a)]
-  getActions _ _ _ = pure []
+instance HasAbilities LadyEsprit where
+  getAbilities (LadyEsprit a) = [ability a]
 
 instance AssetRunner env => RunMessage env LadyEsprit where
   runMessage msg a@(LadyEsprit attrs) = case msg of

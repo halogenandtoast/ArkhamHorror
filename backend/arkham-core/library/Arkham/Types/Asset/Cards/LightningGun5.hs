@@ -45,7 +45,7 @@ instance HasActions env LightningGun5 where
 instance HasModifiersFor env LightningGun5 where
   getModifiersFor = noModifiersFor
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env LightningGun5 where
+instance (HasSet InvestigatorId env (), HasQueue env, HasModifiersFor env ()) => RunMessage env LightningGun5 where
   runMessage msg (LightningGun5 attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       LightningGun5 <$> runMessage msg (attrs & usesL .~ Uses Resource.Ammo 3)

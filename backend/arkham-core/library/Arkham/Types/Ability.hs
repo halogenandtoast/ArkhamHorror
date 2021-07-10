@@ -12,6 +12,7 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes.Entity.Source
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Modifier
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -49,7 +50,15 @@ data AbilityMetadata = IntMetadata Int | TargetMetadata Target | SourceMetadata 
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-data AbilityRestriction = OnLocation LocationId | OrAbilityRestrictions [AbilityRestriction] | InvestigatorIsAlone
+data AbilityRestriction
+  = InvestigatorOnLocation LocationId
+  | OrAbilityRestrictions [AbilityRestriction]
+  | InvestigatorIsAlone
+  | InvestigatorIsOwner
+  | InvestigatorNotEngaged
+  | AllAbilityRestrictions [AbilityRestriction]
+  | IsUnowned
+  | InvestigatorOnLocationAdjacentTo LocationMatcher
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

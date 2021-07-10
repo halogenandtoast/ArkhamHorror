@@ -28,7 +28,7 @@ instance HasModifiersFor env HiredMuscle1 where
     pure [ toModifier a (SkillModifier SkillCombat 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env HiredMuscle1 where
+instance (HasSet InvestigatorId env (), HasQueue env, HasModifiersFor env ()) => RunMessage env HiredMuscle1 where
   runMessage msg a@(HiredMuscle1 attrs@AssetAttrs {..}) = case msg of
     EndUpkeep -> do
       let iid = fromJustNote "must be owned" assetInvestigator

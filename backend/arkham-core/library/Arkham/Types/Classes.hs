@@ -1,4 +1,4 @@
-{-# LANGUAGE DefaultSignatures #-}
+
 module Arkham.Types.Classes
   ( module Arkham.Types.Classes
   , module X
@@ -34,47 +34,18 @@ import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.Window (Who, Window, WindowType)
-import qualified Arkham.Types.Window as Window
-import qualified Data.HashSet as HashSet
+import Arkham.Types.Window (Window)
 import GHC.Generics
 
 newtype Distance = Distance { unDistance :: Int }
 
-pairInvestigatorIdsForWindow
-  :: ( MonadReader env m
-     , HasSet InvestigatorId env ()
-     , HasSet ConnectedLocationId env LocationId
-     , HasId LocationId env InvestigatorId
-     )
-  => InvestigatorId
-  -> m [(InvestigatorId, Window.Who)]
-pairInvestigatorIdsForWindow iid = do
-  investigatorIds <- getSetList @InvestigatorId ()
-  lid <- getId iid
-  connectedLocationIds <- HashSet.map unConnectedLocationId <$> getSet lid
-  for investigatorIds $ \iid2 -> do
-    lid2 <- getId iid2
-    pure $ if iid2 == iid
-      then (iid2, Window.You)
-      else if lid2 == lid
-        then (iid2, Window.InvestigatorAtYourLocation)
-        else if lid2 `member` connectedLocationIds
-          then (iid2, Window.InvestigatorAtAConnectedLocation)
-          else (iid2, Window.InvestigatorInGame)
-
 checkWindows
-  :: ( MonadReader env m
-     , HasSet InvestigatorId env ()
-     , HasSet ConnectedLocationId env LocationId
-     , HasId LocationId env InvestigatorId
-     )
-  => InvestigatorId
-  -> (Who -> m [Window])
-  -> m [Message]
-checkWindows iid f = do
-  windowPairings <- pairInvestigatorIdsForWindow iid
-  sequence [ CheckWindow iid' <$> f who | (iid', who) <- windowPairings ]
+  :: (MonadIO m, HasQueue env, MonadReader env m, HasSet InvestigatorId env ())
+  => [Window]
+  -> m ()
+checkWindows windows = do
+  investigatorIds <- getSetList ()
+  pushAll [ CheckWindow iid windows | iid <- investigatorIds ]
 
 class HasPhase env where
   getPhase :: MonadReader env m => m Phase
@@ -154,7 +125,7 @@ instance HasVictoryPoints PlayerCard where
 
 type ActionRunner env
   = ( HasQueue env
-    , HasActions env ActionType
+    , GetActions env
     , HasCount AssetCount env (InvestigatorId, [Trait])
     , HasCount ActionRemainingCount env InvestigatorId
     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
@@ -210,31 +181,28 @@ type ActionRunner env
     , GetCardDef env EnemyId
     )
 
-class HasActions1 env f where
-  getActions1 :: (MonadReader env m, MonadIO m) => InvestigatorId -> WindowType -> f p -> m [Message]
+class HasAbilities1 f where
+  getAbilities1 :: f p -> [Ability]
 
-instance HasActions1 env f => HasActions1 env (M1 i c f) where
-  getActions1 iid window (M1 x) = getActions1 iid window x
+instance HasAbilities1 f => HasAbilities1 (M1 i c f) where
+  getAbilities1 (M1 x) = getAbilities1 x
 
-instance (HasActions1 env l, HasActions1 env r) => HasActions1 env (l :+: r) where
-  getActions1 iid window (L1 x) = getActions1 iid window x
-  getActions1 iid window (R1 x) = getActions1 iid window x
+instance (HasAbilities1 l, HasAbilities1 r) => HasAbilities1 (l :+: r) where
+  getAbilities1 (L1 x) = getAbilities1 x
+  getAbilities1 (R1 x) = getAbilities1 x
 
-instance (HasActions env p) => HasActions1 env (K1 R p) where
-  getActions1 iid window (K1 x) = getActions iid window x
+instance (HasAbilities p) => HasAbilities1 (K1 R p) where
+  getAbilities1 (K1 x) = getAbilities x
 
-defaultGetActions
-  :: (Generic a, HasActions1 env (Rep a), MonadReader env m, MonadIO m)
-  => InvestigatorId
-  -> WindowType
-  -> a
-  -> m [Message]
-defaultGetActions iid window = getActions1 iid window . from
+genericGetAbilities :: (Generic a, HasAbilities1 (Rep a)) => a -> [Ability]
+genericGetAbilities = getAbilities1 . from
 
-class HasActions env a where
-  getActions :: (MonadReader env m, MonadIO m) => InvestigatorId -> WindowType -> a -> m [Message]
-  default getActions :: (Generic a, HasActions1 env (Rep a), MonadReader env m, MonadIO m) => InvestigatorId -> WindowType -> a -> m [Message]
-  getActions = defaultGetActions
+class GetActions env where
+  getActions :: (MonadReader env m) => m [Message]
+
+class HasAbilities a where
+  getAbilities :: a -> [Ability]
+  getAbilities _ = []
 
 class HasModifiersFor1 env f where
   getModifiersFor1 :: MonadReader env m => Source -> Target -> f p -> m [Modifier]
@@ -249,21 +217,17 @@ instance (HasModifiersFor1 env l, HasModifiersFor1 env r) => HasModifiersFor1 en
 instance (HasModifiersFor env p) => HasModifiersFor1 env (K1 R p) where
   getModifiersFor1 source target (K1 x) = getModifiersFor source target x
 
-defaultGetModifiersFor
+genericGetModifiersFor
   :: (Generic a, HasModifiersFor1 env (Rep a), MonadReader env m)
   => Source
   -> Target
   -> a
   -> m [Modifier]
-defaultGetModifiersFor source target = getModifiersFor1 source target . from
+genericGetModifiersFor source target = getModifiersFor1 source target . from
 
 class HasModifiersFor env a where
   getModifiersFor :: MonadReader env m => Source -> Target -> a -> m [Modifier]
-  default getModifiersFor :: (Generic a, HasModifiersFor1 env (Rep a), MonadReader env m) => Source -> Target -> a -> m [Modifier]
-  getModifiersFor = defaultGetModifiersFor
-
-noModifiersFor :: (MonadReader env m) => Source -> Target -> a -> m [Modifier]
-noModifiersFor _ _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 class IsEnemy enemy where
   isAloof :: enemy -> Bool

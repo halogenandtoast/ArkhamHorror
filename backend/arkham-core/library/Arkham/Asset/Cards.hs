@@ -12,7 +12,7 @@ import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
-import Arkham.Types.Window
+import Arkham.Types.WindowMatcher
 
 storyAsset :: CardCode -> Name -> Int -> EncounterSet -> CardDef
 storyAsset cardCode name cost encounterSet =

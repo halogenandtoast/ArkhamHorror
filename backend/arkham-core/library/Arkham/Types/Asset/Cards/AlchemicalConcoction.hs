@@ -46,7 +46,7 @@ instance (HasId CardCode env EnemyId, HasSkillTest env) => HasModifiersFor env A
         _ -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AlchemicalConcoction where
+instance (HasSet InvestigatorId env (), HasQueue env, HasModifiersFor env ()) => RunMessage env AlchemicalConcoction where
   runMessage msg a@(AlchemicalConcoction attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ pushAll

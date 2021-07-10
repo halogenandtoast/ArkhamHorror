@@ -430,6 +430,7 @@ library
       Arkham.Types.Event.Cards.HotStreak2
       Arkham.Types.Event.Cards.HotStreak4
       Arkham.Types.Event.Cards.HypnoticGaze
+      Arkham.Types.Event.Cards.IfItBleeds
       Arkham.Types.Event.Cards.ImOuttaHere
       Arkham.Types.Event.Cards.IveGotAPlan
       Arkham.Types.Event.Cards.IveGotAPlan2
@@ -824,6 +825,7 @@ library
       Arkham.Types.Treachery.Runner
       Arkham.Types.TreacheryId
       Arkham.Types.Window
+      Arkham.Types.WindowMatcher
   other-modules:
       Paths_arkham_core
   hs-source-dirs:

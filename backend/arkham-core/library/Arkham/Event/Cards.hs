@@ -13,6 +13,7 @@ import Arkham.Types.PlayRestriction
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
 import Arkham.Types.Window
+import qualified Arkham.Types.WindowMatcher as Matcher
 
 event :: CardCode -> Name -> Int -> ClassSymbol -> CardDef
 event cardCode name cost classSymbol = CardDef
@@ -28,6 +29,7 @@ event cardCode name cost classSymbol = CardDef
   , cdKeywords = mempty
   , cdFast = False
   , cdWindows = mempty
+  , cdFastWindow = Nothing
   , cdAction = Nothing
   , cdRevelation = False
   , cdVictoryPoints = Nothing
@@ -76,6 +78,7 @@ allPlayerEventCards = mapFromList $ map
   , hotStreak2
   , hotStreak4
   , hypnoticGaze
+  , ifItBleeds
   , imOuttaHere
   , iveGotAPlan
   , iveGotAPlan2
@@ -463,6 +466,13 @@ emergencyCache2 :: CardDef
 emergencyCache2 = (event "02194" "Emergency Cache" 0 Neutral)
   { cdCardTraits = setFromList [Supply]
   , cdLevel = 2
+  }
+
+ifItBleeds :: CardDef
+ifItBleeds = (event "02225" "\"If it bleeds...\"" 1 Guardian)
+  { cdSkills = [SkillWillpower, SkillCombat]
+  , cdFastWindow = Just
+    (Matcher.AfterEnemyDefeated Matcher.You $ Matcher.EnemyWithTrait Monster)
   }
 
 letMeHandleThis :: CardDef

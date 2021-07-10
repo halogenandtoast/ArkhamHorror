@@ -34,7 +34,9 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window
-import Control.Monad.Extra (allM)
+import Arkham.Types.WindowMatcher (WindowMatcher)
+import qualified Arkham.Types.WindowMatcher as Matcher
+import Control.Monad.Extra (allM, anyM)
 import qualified Data.HashSet as HashSet
 import Data.UUID (nil)
 
@@ -505,6 +507,7 @@ getFastIsPlayable
   :: ( MonadReader env m
      , HasModifiersFor env ()
      , HasSet InvestigatorId env LocationId
+     , HasSet Trait env EnemyId
      , HasCount ClueCount env LocationId
      , HasActions env ActionType
      , MonadIO m
@@ -518,7 +521,9 @@ getFastIsPlayable attrs windows c@(PlayerCard MkPlayerCard {..}) = do
   modifiers <-
     map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
   isPlayable <- getIsPlayable attrs windows c
-  pure $ (cdFast pcDef || canBecomeFast modifiers) && isPlayable
+  pure
+    $ (cdFast pcDef || canBecomeFast modifiers || isJust (cdFastWindow pcDef))
+    && isPlayable
  where
   canBecomeFast modifiers = foldr applyModifier False modifiers
   applyModifier (CanBecomeFast (mcardType, traits)) _
@@ -562,6 +567,7 @@ getIsPlayable
   :: ( MonadReader env m
      , HasModifiersFor env ()
      , HasSet InvestigatorId env LocationId
+     , HasSet Trait env EnemyId
      , HasCount ClueCount env LocationId
      , HasActions env ActionType
      , MonadIO m
@@ -577,11 +583,18 @@ getIsPlayable attrs@InvestigatorAttrs {..} windows c@(PlayerCard MkPlayerCard {.
       map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
     modifiedCardCost <- getModifiedCardCost attrs c
     passesRestrictions <- allM passesRestriction (cdPlayRestrictions pcDef)
+    inFastWindow <- maybe
+      (pure False)
+      (cardInFastWindows attrs c windows)
+      (cdFastWindow pcDef)
     pure
       $ (cdCardType pcDef /= SkillType)
       && (modifiedCardCost <= investigatorResources)
       && none prevents modifiers
-      && (not (cdFast pcDef) || (cdFast pcDef && cardInWindows windows c attrs))
+      && (not (cdFast pcDef || isJust (cdFastWindow pcDef))
+         || (cdFast pcDef && cardInWindows windows c attrs)
+         || inFastWindow
+         )
       && (cdAction pcDef /= Just Action.Evade || not
            (null investigatorEngagedEnemies)
          )
@@ -632,10 +645,27 @@ cardInWindows windows c _ = case c of
     notNull $ cdWindows (pcDef pc) `intersect` setFromList windows
   _ -> False
 
+cardInFastWindows
+  :: (MonadReader env m, HasSet Trait env EnemyId)
+  => InvestigatorAttrs
+  -> Card
+  -> [Window]
+  -> WindowMatcher
+  -> m Bool
+cardInFastWindows _ _ windows matcher = anyM (matches matcher) windows
+ where
+  matches matcher' window' = case (matcher', window') of
+    (Matcher.AfterEnemyDefeated Matcher.You enemyMatcher, AfterEnemyDefeated You enemyId)
+      -> enemyMatches enemyId enemyMatcher
+    (Matcher.AfterEnemyDefeated _ _, _) -> pure False
+  enemyMatches enemyId = \case
+    Matcher.EnemyWithTrait t -> member t <$> getSet enemyId
+
 getPlayableCards
   :: ( MonadReader env m
      , HasModifiersFor env ()
      , HasSet InvestigatorId env LocationId
+     , HasSet Trait env EnemyId
      , HasCount ClueCount env LocationId
      , HasActions env ActionType
      , MonadIO m
@@ -652,6 +682,7 @@ getPlayableDiscards
   :: ( MonadReader env m
      , HasModifiersFor env ()
      , HasSet InvestigatorId env LocationId
+     , HasSet Trait env EnemyId
      , HasCount ClueCount env LocationId
      , HasActions env ActionType
      , MonadIO m
@@ -1647,7 +1678,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           (chooseOne iid
           $ [ Run
                 [ PayCardCost iid (toCardId c)
-                , PlayCard iid (toCardId c) Nothing False
+                , if isJust (cdFastWindow $ toCardDef c)
+                  then PlayFastEvent iid (toCardId c) Nothing windows
+                  else PlayCard iid (toCardId c) Nothing False
                 , CheckWindow iid windows
                 ]
             | c <- playableCards

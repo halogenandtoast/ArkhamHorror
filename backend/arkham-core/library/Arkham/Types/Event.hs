@@ -53,6 +53,7 @@ data Event
   | HotStreak2' HotStreak2
   | HotStreak4' HotStreak4
   | HypnoticGaze' HypnoticGaze
+  | IfItBleeds' IfItBleeds
   | IveGotAPlan' IveGotAPlan
   | IveGotAPlan2' IveGotAPlan2
   | LetMeHandleThis' LetMeHandleThis
@@ -107,6 +108,7 @@ deriving anyclass instance
   ( EventRunner env
   , HasSet FightableEnemyId env (InvestigatorId, Source)
   , HasCount HealthDamageCount env EnemyId
+  , HasCount SanityDamageCount env EnemyId
   )
   => RunMessage env Event
 
@@ -169,6 +171,7 @@ allEvents = mapFromList $ map
   , HotStreak2' <$> hotStreak2
   , HotStreak4' <$> hotStreak4
   , HypnoticGaze' <$> hypnoticGaze
+  , IfItBleeds' <$> ifItBleeds
   , IveGotAPlan' <$> iveGotAPlan
   , IveGotAPlan2' <$> iveGotAPlan2
   , LetMeHandleThis' <$> letMeHandleThis

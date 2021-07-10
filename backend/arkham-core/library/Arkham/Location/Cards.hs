@@ -24,6 +24,7 @@ location cardCode name encounterSet = CardDef
   , cdKeywords = mempty
   , cdFast = False
   , cdWindows = mempty
+  , cdFastWindow = Nothing
   , cdAction = Nothing
   , cdRevelation = False
   , cdVictoryPoints = Nothing

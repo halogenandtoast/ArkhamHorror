@@ -51,6 +51,7 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   , cdKeywords = mempty
   , cdFast = False
   , cdWindows = mempty
+  , cdFastWindow = Nothing
   , cdAction = Nothing
   , cdRevelation = False
   , cdVictoryPoints = Nothing

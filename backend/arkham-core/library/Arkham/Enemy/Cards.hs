@@ -25,6 +25,7 @@ baseEnemy cardCode name mEncounterSet isWeakness = CardDef
   , cdKeywords = mempty
   , cdFast = False
   , cdWindows = mempty
+  , cdFastWindow = Nothing
   , cdAction = Nothing
   , cdRevelation = False
   , cdVictoryPoints = Nothing

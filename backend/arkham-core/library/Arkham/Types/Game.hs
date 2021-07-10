@@ -2169,6 +2169,19 @@ runGameMessage msg g = case msg of
     case find ((== cardId) . toCardId) (handOf investigator) of
       Nothing -> pure g -- card was discarded before playing
       Just card -> runGameMessage (PutCardIntoPlay iid card mtarget) g
+  PlayFastEvent iid cardId mtarget windows -> do
+    investigator <- getInvestigator iid
+    case find ((== cardId) . toCardId) (handOf investigator) of
+      Nothing -> pure g -- card was discarded before playing
+      Just card -> do
+        let
+          event = createEvent card iid
+          eid = toId event
+        pushAll
+          [ PlayedCard iid cardId (toName event) (cdCardCode (toCardDef card))
+          , InvestigatorPlayFastEvent iid eid mtarget windows
+          ]
+        pure $ g & eventsL %~ insertMap eid event
   PutCardIntoPlay iid card mtarget -> do
     let cardId = toCardId card
     case card of

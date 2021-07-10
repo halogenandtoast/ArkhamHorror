@@ -19,8 +19,7 @@ newtype TheCreaturesTracks = TheCreaturesTracks TreacheryAttrs
 theCreaturesTracks :: TreacheryCard TheCreaturesTracks
 theCreaturesTracks = treachery TheCreaturesTracks Cards.theCreaturesTracks
 
-instance HasModifiersFor env TheCreaturesTracks where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env TheCreaturesTracks
 
 instance HasActions env TheCreaturesTracks where
   getActions i window (TheCreaturesTracks attrs) = getActions i window attrs

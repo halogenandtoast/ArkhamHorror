@@ -23,8 +23,7 @@ silverTwilightAcolyte = enemyWith
   (1, 0)
   (preyL .~ SetToBearer)
 
-instance HasModifiersFor env SilverTwilightAcolyte where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SilverTwilightAcolyte
 
 instance ActionRunner env => HasActions env SilverTwilightAcolyte where
   getActions i window (SilverTwilightAcolyte attrs) = getActions i window attrs

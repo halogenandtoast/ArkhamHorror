@@ -24,8 +24,7 @@ devoteeOfTheKey = enemyWith
   (1, 1)
   (spawnAtL ?~ LocationWithTitle "Base of the Hill")
 
-instance HasModifiersFor env DevoteeOfTheKey where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env DevoteeOfTheKey
 
 instance EnemyAttrsHasActions env => HasActions env DevoteeOfTheKey where
   getActions i window (DevoteeOfTheKey attrs) = getActions i window attrs

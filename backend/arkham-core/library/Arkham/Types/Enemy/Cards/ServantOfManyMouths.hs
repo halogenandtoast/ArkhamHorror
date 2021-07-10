@@ -23,8 +23,7 @@ servantOfManyMouths :: EnemyCard ServantOfManyMouths
 servantOfManyMouths =
   enemy ServantOfManyMouths Cards.servantOfManyMouths (3, Static 2, 1) (2, 0)
 
-instance HasModifiersFor env ServantOfManyMouths where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ServantOfManyMouths
 
 ability :: EnemyAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)

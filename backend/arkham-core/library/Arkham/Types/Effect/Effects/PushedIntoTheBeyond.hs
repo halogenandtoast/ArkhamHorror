@@ -19,8 +19,7 @@ newtype PushedIntoTheBeyond = PushedIntoTheBeyond EffectAttrs
 pushedIntoTheBeyond :: EffectArgs -> PushedIntoTheBeyond
 pushedIntoTheBeyond = PushedIntoTheBeyond . uncurry4 (baseAttrs "02100")
 
-instance HasModifiersFor env PushedIntoTheBeyond where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env PushedIntoTheBeyond
 
 instance HasQueue env => RunMessage env PushedIntoTheBeyond where
   runMessage msg e@(PushedIntoTheBeyond attrs@EffectAttrs {..}) = case msg of

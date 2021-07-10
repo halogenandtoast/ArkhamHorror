@@ -23,8 +23,7 @@ contraband = event Contraband Cards.contraband
 instance HasActions env Contraband where
   getActions iid window (Contraband attrs) = getActions iid window attrs
 
-instance HasModifiersFor env Contraband where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Contraband
 
 instance
   ( HasQueue env

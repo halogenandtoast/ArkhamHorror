@@ -21,8 +21,7 @@ newtype MindWipe1 = MindWipe1 EventAttrs
 mindWipe1 :: EventCard MindWipe1
 mindWipe1 = event MindWipe1 Cards.mindWipe1
 
-instance HasModifiersFor env MindWipe1 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env MindWipe1
 
 instance HasActions env MindWipe1 where
   getActions i window (MindWipe1 attrs) = getActions i window attrs

@@ -28,8 +28,7 @@ tearThroughSpace = location
   Square
   [Diamond, Triangle, Square]
 
-instance HasModifiersFor env TearThroughSpace where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env TearThroughSpace
 
 forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility

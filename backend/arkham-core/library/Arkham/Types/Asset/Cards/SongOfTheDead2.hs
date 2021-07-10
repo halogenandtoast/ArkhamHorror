@@ -26,8 +26,7 @@ instance HasActions env SongOfTheDead2 where
   getActions iid _ (SongOfTheDead2 a) = whenOwnedBy a iid
     $ pure [fightAction iid a 1 [ActionCost 1, UseCost (toId a) Charge 1]]
 
-instance HasModifiersFor env SongOfTheDead2 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SongOfTheDead2
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env SongOfTheDead2 where
   runMessage msg a@(SongOfTheDead2 attrs) = case msg of

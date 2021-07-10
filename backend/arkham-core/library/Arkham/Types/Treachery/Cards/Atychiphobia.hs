@@ -23,8 +23,7 @@ newtype Atychiphobia = Atychiphobia TreacheryAttrs
 atychiphobia :: TreacheryCard Atychiphobia
 atychiphobia = treachery Atychiphobia Cards.atychiphobia
 
-instance HasModifiersFor env Atychiphobia where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Atychiphobia
 
 instance ActionRunner env => HasActions env Atychiphobia where
   getActions iid NonFast (Atychiphobia a) =

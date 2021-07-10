@@ -30,8 +30,7 @@ anotherDimension = location
   Circle
   [Square, Diamond, Triangle]
 
-instance HasModifiersFor env AnotherDimension where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env AnotherDimension
 
 forcedAbility :: LocationAttrs -> LocationId -> Ability
 forcedAbility a lid =

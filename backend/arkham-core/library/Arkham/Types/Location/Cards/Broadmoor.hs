@@ -19,8 +19,7 @@ broadmoor :: LocationCard Broadmoor
 broadmoor =
   location Broadmoor Cards.broadmoor 3 (PerPlayer 1) Plus [Square, Plus]
 
-instance HasModifiersFor env Broadmoor where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Broadmoor
 
 instance ActionRunner env => HasActions env Broadmoor where
   getActions = withResignAction

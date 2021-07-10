@@ -31,8 +31,7 @@ osbornsGeneralStore_207 = location
   Circle
   [Moon, Square]
 
-instance HasModifiersFor env OsbornsGeneralStore_207 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env OsbornsGeneralStore_207
 
 ability :: LocationAttrs -> Ability
 ability attrs = mkAbility

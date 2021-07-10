@@ -39,8 +39,7 @@ instance
     pure [ UseAbility iid (ability attrs) | notNull criminals ]
   getActions iid window (PeterClover attrs) = getActions iid window attrs
 
-instance HasModifiersFor env PeterClover where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env PeterClover
 
 instance
   ( HasQueue env

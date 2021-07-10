@@ -29,8 +29,7 @@ arkhamWoodsLakeside = locationWith
   . (revealedSymbolL .~ Star)
   )
 
-instance HasModifiersFor env ArkhamWoodsLakeside where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ArkhamWoodsLakeside
 
 instance ActionRunner env => HasActions env ArkhamWoodsLakeside where
   getActions i window (ArkhamWoodsLakeside attrs) = getActions i window attrs

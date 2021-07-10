@@ -101,8 +101,7 @@ instance FromJSON SkillTest where
   parseJSON = genericParseJSON $ aesonOptions $ Just "skillTest"
 
 -- TODO: Cursed Swamp would apply to anyone trying to commit skill cards
-instance HasModifiersFor env SkillTest where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SkillTest
 
 instance HasSet CommittedCardId env (InvestigatorId, SkillTest) where
   getSet (iid, st) =

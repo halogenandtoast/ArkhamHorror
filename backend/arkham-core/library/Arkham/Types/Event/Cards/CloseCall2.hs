@@ -21,8 +21,7 @@ newtype CloseCall2 = CloseCall2 EventAttrs
 closeCall2 :: EventCard CloseCall2
 closeCall2 = event CloseCall2 Cards.closeCall2
 
-instance HasModifiersFor env CloseCall2 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env CloseCall2
 
 instance (GetCardDef env EnemyId, HasSet Trait env EnemyId) => HasActions env CloseCall2 where
   getActions iid (InHandWindow ownerId (AfterEnemyEvaded You eid)) (CloseCall2 attrs)

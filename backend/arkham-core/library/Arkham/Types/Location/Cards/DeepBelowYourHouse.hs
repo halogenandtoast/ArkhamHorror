@@ -25,8 +25,7 @@ deepBelowYourHouse = location
   Squiggle
   [Plus]
 
-instance HasModifiersFor env DeepBelowYourHouse where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env DeepBelowYourHouse
 
 instance ActionRunner env => HasActions env DeepBelowYourHouse where
   getActions i window (DeepBelowYourHouse attrs) = getActions i window attrs

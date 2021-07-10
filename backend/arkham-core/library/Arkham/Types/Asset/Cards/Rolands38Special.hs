@@ -27,8 +27,7 @@ newtype Rolands38Special = Rolands38Special AssetAttrs
 rolands38Special :: AssetCard Rolands38Special
 rolands38Special = hand Rolands38Special Cards.rolands38Special
 
-instance HasModifiersFor env Rolands38Special where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Rolands38Special
 
 fightAbility :: AssetAttrs -> Ability
 fightAbility attrs = mkAbility

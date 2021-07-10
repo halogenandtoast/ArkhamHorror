@@ -19,8 +19,7 @@ newtype Bandolier = Bandolier AssetAttrs
 bandolier :: AssetCard Bandolier
 bandolier = bodyWith Bandolier Cards.bandolier (healthL ?~ 1)
 
-instance HasModifiersFor env Bandolier where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Bandolier
 
 instance HasActions env Bandolier where
   getActions iid window (Bandolier x) = getActions iid window x

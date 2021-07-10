@@ -30,8 +30,7 @@ instance HasActions env StrangeSolution where
     ]
   getActions iid window (StrangeSolution attrs) = getActions iid window attrs
 
-instance HasModifiersFor env StrangeSolution where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env StrangeSolution
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env StrangeSolution where
   runMessage msg a@(StrangeSolution attrs) = case msg of

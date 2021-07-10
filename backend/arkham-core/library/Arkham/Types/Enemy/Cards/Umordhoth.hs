@@ -26,8 +26,7 @@ newtype Umordhoth = Umordhoth EnemyAttrs
 umordhoth :: EnemyCard Umordhoth
 umordhoth = enemy Umordhoth Cards.umordhoth (5, Static 6, 6) (3, 3)
 
-instance HasModifiersFor env Umordhoth where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Umordhoth
 
 instance ActionRunner env => HasActions env Umordhoth where
   getActions iid NonFast (Umordhoth attrs@EnemyAttrs {..}) =

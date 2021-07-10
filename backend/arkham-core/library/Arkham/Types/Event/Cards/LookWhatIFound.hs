@@ -15,8 +15,7 @@ newtype LookWhatIFound = LookWhatIFound EventAttrs
 lookWhatIFound :: EventCard LookWhatIFound
 lookWhatIFound = event LookWhatIFound Cards.lookWhatIFound
 
-instance HasModifiersFor env LookWhatIFound where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env LookWhatIFound
 
 instance HasActions env LookWhatIFound where
   getActions i window (LookWhatIFound attrs) = getActions i window attrs

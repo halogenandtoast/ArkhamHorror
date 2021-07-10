@@ -20,8 +20,7 @@ newtype ArcaneBarrier = ArcaneBarrier TreacheryAttrs
 arcaneBarrier :: TreacheryCard ArcaneBarrier
 arcaneBarrier = treachery ArcaneBarrier Cards.arcaneBarrier
 
-instance HasModifiersFor env ArcaneBarrier where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ArcaneBarrier
 
 instance HasActions env ArcaneBarrier where
   getActions i window (ArcaneBarrier attrs) = getActions i window attrs

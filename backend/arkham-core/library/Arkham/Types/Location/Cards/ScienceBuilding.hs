@@ -26,8 +26,7 @@ scienceBuilding = location
   Hourglass
   [Plus, Squiggle]
 
-instance HasModifiersFor env ScienceBuilding where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ScienceBuilding
 
 instance ActionRunner env => HasActions env ScienceBuilding where
   getActions i window (ScienceBuilding attrs) = getActions i window attrs

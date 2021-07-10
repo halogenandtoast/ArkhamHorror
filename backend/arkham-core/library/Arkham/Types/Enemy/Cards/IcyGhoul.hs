@@ -22,8 +22,7 @@ icyGhoul = enemyWith
   (2, 1)
   (spawnAtL ?~ LocationWithTitle "Cellar")
 
-instance HasModifiersFor env IcyGhoul where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env IcyGhoul
 
 instance ActionRunner env => HasActions env IcyGhoul where
   getActions i window (IcyGhoul attrs) = getActions i window attrs

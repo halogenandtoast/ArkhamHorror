@@ -20,8 +20,7 @@ somethingInTheDrinks :: TreacheryCard SomethingInTheDrinks
 somethingInTheDrinks =
   treachery SomethingInTheDrinks Cards.somethingInTheDrinks
 
-instance HasModifiersFor env SomethingInTheDrinks where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SomethingInTheDrinks
 
 instance HasActions env SomethingInTheDrinks where
   getActions i window (SomethingInTheDrinks attrs) = getActions i window attrs

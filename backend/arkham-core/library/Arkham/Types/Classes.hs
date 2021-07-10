@@ -249,21 +249,17 @@ instance (HasModifiersFor1 env l, HasModifiersFor1 env r) => HasModifiersFor1 en
 instance (HasModifiersFor env p) => HasModifiersFor1 env (K1 R p) where
   getModifiersFor1 source target (K1 x) = getModifiersFor source target x
 
-defaultGetModifiersFor
+genericGetModifiersFor
   :: (Generic a, HasModifiersFor1 env (Rep a), MonadReader env m)
   => Source
   -> Target
   -> a
   -> m [Modifier]
-defaultGetModifiersFor source target = getModifiersFor1 source target . from
+genericGetModifiersFor source target = getModifiersFor1 source target . from
 
 class HasModifiersFor env a where
   getModifiersFor :: MonadReader env m => Source -> Target -> a -> m [Modifier]
-  default getModifiersFor :: (Generic a, HasModifiersFor1 env (Rep a), MonadReader env m) => Source -> Target -> a -> m [Modifier]
-  getModifiersFor = defaultGetModifiersFor
-
-noModifiersFor :: (MonadReader env m) => Source -> Target -> a -> m [Modifier]
-noModifiersFor _ _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 class IsEnemy enemy where
   isAloof :: enemy -> Bool

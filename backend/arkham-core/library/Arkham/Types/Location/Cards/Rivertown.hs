@@ -21,8 +21,7 @@ rivertown = location
   Circle
   [Moon, Diamond, Square, Squiggle, Hourglass]
 
-instance HasModifiersFor env Rivertown where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Rivertown
 
 instance ActionRunner env => HasActions env Rivertown where
   getActions i window (Rivertown attrs) = getActions i window attrs

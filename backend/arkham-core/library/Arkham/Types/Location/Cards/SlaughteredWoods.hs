@@ -32,8 +32,7 @@ slaugteredWoods = locationWith
   . (unrevealedNameL .~ "Diverging Path")
   )
 
-instance HasModifiersFor env SlaughteredWoods where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SlaughteredWoods
 
 forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility

@@ -20,8 +20,7 @@ emergentMonstrosity :: EnemyCard EmergentMonstrosity
 emergentMonstrosity =
   enemy EmergentMonstrosity Cards.emergentMonstrosity (4, Static 5, 3) (2, 2)
 
-instance HasModifiersFor env EmergentMonstrosity where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env EmergentMonstrosity
 
 instance ActionRunner env => HasActions env EmergentMonstrosity where
   getActions i window (EmergentMonstrosity attrs) = getActions i window attrs

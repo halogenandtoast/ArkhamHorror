@@ -28,8 +28,7 @@ newtype Shotgun4 = Shotgun4 AssetAttrs
 shotgun4 :: AssetCard Shotgun4
 shotgun4 = assetWith Shotgun4 Cards.shotgun4 (slotsL .~ [HandSlot, HandSlot])
 
-instance HasModifiersFor env Shotgun4 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Shotgun4
 
 instance HasActions env Shotgun4 where
   getActions iid _ (Shotgun4 a) | ownedBy a iid = pure

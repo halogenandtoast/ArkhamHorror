@@ -15,8 +15,7 @@ newtype Paranoia = Paranoia TreacheryAttrs
 paranoia :: TreacheryCard Paranoia
 paranoia = treachery Paranoia Cards.paranoia
 
-instance HasModifiersFor env Paranoia where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Paranoia
 
 instance HasActions env Paranoia where
   getActions i window (Paranoia attrs) = getActions i window attrs

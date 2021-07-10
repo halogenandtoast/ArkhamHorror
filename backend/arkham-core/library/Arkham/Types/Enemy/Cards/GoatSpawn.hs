@@ -18,8 +18,7 @@ newtype GoatSpawn = GoatSpawn EnemyAttrs
 goatSpawn :: EnemyCard GoatSpawn
 goatSpawn = enemy GoatSpawn Cards.goatSpawn (3, Static 3, 2) (1, 0)
 
-instance HasModifiersFor env GoatSpawn where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env GoatSpawn
 
 instance ActionRunner env => HasActions env GoatSpawn where
   getActions i window (GoatSpawn attrs) = getActions i window attrs

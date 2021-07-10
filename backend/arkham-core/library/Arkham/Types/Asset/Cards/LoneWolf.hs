@@ -29,8 +29,7 @@ instance HasActions env LoneWolf where
     pure [UseAbility i (ability x)]
   getActions iid window (LoneWolf attrs) = getActions iid window attrs
 
-instance HasModifiersFor env LoneWolf where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env LoneWolf
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env LoneWolf where
   runMessage msg a@(LoneWolf attrs) = case msg of

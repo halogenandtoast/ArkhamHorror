@@ -21,8 +21,7 @@ newtype Defiance = Defiance SkillAttrs
 defiance :: SkillCard Defiance
 defiance = skill Defiance Cards.defiance
 
-instance HasModifiersFor env Defiance where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Defiance
 
 instance HasActions env Defiance where
   getActions iid window (Defiance attrs) = getActions iid window attrs

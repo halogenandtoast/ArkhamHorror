@@ -26,8 +26,7 @@ returnToPredatorOrPrey :: ReturnToPredatorOrPrey
 returnToPredatorOrPrey = ReturnToPredatorOrPrey
   $ baseAttrs "50026" "Predator or Prey?" (Agenda 1 A) (Static 6)
 
-instance HasModifiersFor env ReturnToPredatorOrPrey where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ReturnToPredatorOrPrey
 
 instance HasActions env ReturnToPredatorOrPrey where
   getActions iid NonFast (ReturnToPredatorOrPrey attrs) = pure

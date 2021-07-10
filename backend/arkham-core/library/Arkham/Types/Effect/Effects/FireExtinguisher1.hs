@@ -18,8 +18,7 @@ newtype FireExtinguisher1 = FireExtinguisher1 EffectAttrs
 fireExtinguisher1 :: EffectArgs -> FireExtinguisher1
 fireExtinguisher1 = FireExtinguisher1 . uncurry4 (baseAttrs "02114")
 
-instance HasModifiersFor env FireExtinguisher1 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env FireExtinguisher1
 
 instance HasSet EnemyId env InvestigatorId => RunMessage env FireExtinguisher1 where
   runMessage msg e@(FireExtinguisher1 attrs@EffectAttrs {..}) = case msg of

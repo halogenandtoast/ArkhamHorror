@@ -20,8 +20,7 @@ charisma3 = asset Charisma3 Cards.charisma3
 instance HasActions env Charisma3 where
   getActions iid window (Charisma3 attrs) = getActions iid window attrs
 
-instance HasModifiersFor env Charisma3 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Charisma3
 
 slot :: AssetAttrs -> Slot
 slot attrs = Slot (toSource attrs) Nothing

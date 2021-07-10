@@ -15,8 +15,7 @@ newtype Fearless = Fearless SkillAttrs
 fearless :: SkillCard Fearless
 fearless = skill Fearless Cards.fearless
 
-instance HasModifiersFor env Fearless where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Fearless
 
 instance HasActions env Fearless where
   getActions i window (Fearless attrs) = getActions i window attrs

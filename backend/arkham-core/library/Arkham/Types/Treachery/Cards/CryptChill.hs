@@ -17,8 +17,7 @@ newtype CryptChill = CryptChill TreacheryAttrs
 cryptChill :: TreacheryCard CryptChill
 cryptChill = treachery CryptChill Cards.cryptChill
 
-instance HasModifiersFor env CryptChill where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env CryptChill
 
 instance HasActions env CryptChill where
   getActions i window (CryptChill attrs) = getActions i window attrs

@@ -22,8 +22,7 @@ newtype DiscOfItzamna2 = DiscOfItzamna2 AssetAttrs
 discOfItzamna2 :: AssetCard DiscOfItzamna2
 discOfItzamna2 = accessory DiscOfItzamna2 Cards.discOfItzamna2
 
-instance HasModifiersFor env DiscOfItzamna2 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env DiscOfItzamna2
 
 instance HasActions env DiscOfItzamna2 where
   getActions iid (WhenEnemySpawns YourLocation traits) (DiscOfItzamna2 a)

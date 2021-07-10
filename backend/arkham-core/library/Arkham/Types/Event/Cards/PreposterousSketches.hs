@@ -20,8 +20,7 @@ instance HasActions env PreposterousSketches where
   getActions iid window (PreposterousSketches attrs) =
     getActions iid window attrs
 
-instance HasModifiersFor env PreposterousSketches where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env PreposterousSketches
 
 instance RunMessage env PreposterousSketches where
   runMessage msg e@(PreposterousSketches attrs) = case msg of

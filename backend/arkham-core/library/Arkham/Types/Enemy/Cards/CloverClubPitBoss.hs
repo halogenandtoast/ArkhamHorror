@@ -24,8 +24,7 @@ cloverClubPitBoss = enemyWith
   (2, 0)
   (preyL .~ HighestSkill SkillIntellect)
 
-instance HasModifiersFor env CloverClubPitBoss where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env CloverClubPitBoss
 
 instance ActionRunner env => HasActions env CloverClubPitBoss where
   getActions i window (CloverClubPitBoss attrs) = getActions i window attrs

@@ -16,8 +16,7 @@ newtype Cellar = Cellar LocationAttrs
 cellar :: LocationCard Cellar
 cellar = location Cellar Cards.cellar 4 (PerPlayer 2) Plus [Square]
 
-instance HasModifiersFor env Cellar where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Cellar
 
 instance ActionRunner env => HasActions env Cellar where
   getActions i window (Cellar attrs) = getActions i window attrs

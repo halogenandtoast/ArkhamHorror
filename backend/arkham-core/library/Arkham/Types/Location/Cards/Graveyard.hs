@@ -21,8 +21,7 @@ graveyard :: LocationCard Graveyard
 graveyard =
   location Graveyard Cards.graveyard 1 (PerPlayer 2) Hourglass [Circle]
 
-instance HasModifiersFor env Graveyard where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Graveyard
 
 instance ActionRunner env => HasActions env Graveyard where
   getActions i window (Graveyard attrs) = getActions i window attrs

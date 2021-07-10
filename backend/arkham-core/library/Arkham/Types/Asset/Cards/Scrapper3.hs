@@ -36,8 +36,7 @@ instance HasActions env Scrapper3 where
       ]
   getActions _ _ _ = pure []
 
-instance HasModifiersFor env Scrapper3 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Scrapper3
 
 instance AssetRunner env => RunMessage env Scrapper3 where
   runMessage msg a@(Scrapper3 attrs) = case msg of

@@ -20,8 +20,7 @@ newtype AlteredBeast = AlteredBeast TreacheryAttrs
 alteredBeast :: TreacheryCard AlteredBeast
 alteredBeast = treachery AlteredBeast Cards.alteredBeast
 
-instance HasModifiersFor env AlteredBeast where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env AlteredBeast
 
 instance HasActions env AlteredBeast where
   getActions i window (AlteredBeast attrs) = getActions i window attrs

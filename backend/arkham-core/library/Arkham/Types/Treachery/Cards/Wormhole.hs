@@ -20,8 +20,7 @@ newtype Wormhole = Wormhole TreacheryAttrs
 wormhole :: TreacheryCard Wormhole
 wormhole = treachery Wormhole Cards.wormhole
 
-instance HasModifiersFor env Wormhole where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Wormhole
 
 instance HasActions env Wormhole where
   getActions i window (Wormhole attrs) = getActions i window attrs

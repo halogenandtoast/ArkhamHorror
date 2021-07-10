@@ -24,8 +24,7 @@ yithianStarseeker = enemyWith
   (2, 1)
   (spawnAtL ?~ LocationWithTitle "Another Dimension")
 
-instance HasModifiersFor env YithianStarseeker where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env YithianStarseeker
 
 instance EnemyAttrsHasActions env => HasActions env YithianStarseeker where
   getActions i window (YithianStarseeker attrs) = getActions i window attrs

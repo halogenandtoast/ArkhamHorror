@@ -28,8 +28,7 @@ endlessBridge = location
   Triangle
   [Square, Squiggle]
 
-instance HasModifiersFor env EndlessBridge where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env EndlessBridge
 
 forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility

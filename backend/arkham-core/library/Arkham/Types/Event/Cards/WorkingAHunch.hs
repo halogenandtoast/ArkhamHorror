@@ -17,8 +17,7 @@ newtype WorkingAHunch = WorkingAHunch EventAttrs
 workingAHunch :: EventCard WorkingAHunch
 workingAHunch = event WorkingAHunch Cards.workingAHunch
 
-instance HasModifiersFor env WorkingAHunch where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env WorkingAHunch
 
 instance HasActions env WorkingAHunch where
   getActions i window (WorkingAHunch attrs) = getActions i window attrs

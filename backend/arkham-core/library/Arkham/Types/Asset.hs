@@ -165,7 +165,7 @@ instance (ActionRunner env, HasSkillTest env) => HasActions env Asset where
       then getActions iid window (toAttrs x)
       else defaultGetActions iid window x
 
-deriving anyclass instance
+instance
   ( HasId LocationId env InvestigatorId
   , HasId CardCode env EnemyId
   , HasId (Maybe LocationId) env LocationMatcher
@@ -176,9 +176,9 @@ deriving anyclass instance
   , HasCount AssetCount env (InvestigatorId, [Trait])
   , HasSet Trait env LocationId
   , HasSkillTest env
-  , HasModifiersFor env ()
   )
-  => HasModifiersFor env Asset
+  => HasModifiersFor env Asset where
+  getModifiersFor = genericGetModifiersFor
 
 instance AssetRunner env => RunMessage env Asset where
   runMessage msg x = do
@@ -233,8 +233,7 @@ instance HasDamage Asset where
 instance HasActions env BaseAsset where
   getActions iid window (BaseAsset attrs) = getActions iid window attrs
 
-instance HasModifiersFor env BaseAsset where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BaseAsset
 
 instance AssetRunner env => RunMessage env BaseAsset where
   runMessage msg (BaseAsset attrs) = BaseAsset <$> runMessage msg attrs

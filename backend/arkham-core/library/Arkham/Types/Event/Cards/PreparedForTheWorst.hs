@@ -22,8 +22,7 @@ instance HasActions env PreparedForTheWorst where
   getActions iid window (PreparedForTheWorst attrs) =
     getActions iid window attrs
 
-instance HasModifiersFor env PreparedForTheWorst where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env PreparedForTheWorst
 
 instance RunMessage env PreparedForTheWorst where
   runMessage msg e@(PreparedForTheWorst attrs) = case msg of

@@ -17,8 +17,7 @@ newtype BlindingLight = BlindingLight EventAttrs
 blindingLight :: EventCard BlindingLight
 blindingLight = event BlindingLight Cards.blindingLight
 
-instance HasModifiersFor env BlindingLight where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BlindingLight
 
 instance HasActions env BlindingLight where
   getActions i window (BlindingLight attrs) = getActions i window attrs

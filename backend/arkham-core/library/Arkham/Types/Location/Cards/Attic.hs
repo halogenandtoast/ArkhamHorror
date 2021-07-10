@@ -17,8 +17,7 @@ newtype Attic = Attic LocationAttrs
 attic :: LocationCard Attic
 attic = location Attic Cards.attic 1 (PerPlayer 2) Triangle [Square]
 
-instance HasModifiersFor env Attic where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Attic
 
 instance ActionRunner env => HasActions env Attic where
   getActions i window (Attic attrs) = getActions i window attrs

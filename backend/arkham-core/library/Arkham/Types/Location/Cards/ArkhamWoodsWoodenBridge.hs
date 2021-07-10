@@ -29,8 +29,7 @@ arkhamWoodsWoodenBridge = locationWith
   . (revealedSymbolL .~ Circle)
   )
 
-instance HasModifiersFor env ArkhamWoodsWoodenBridge where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ArkhamWoodsWoodenBridge
 
 instance ActionRunner env => HasActions env ArkhamWoodsWoodenBridge where
   getActions i window (ArkhamWoodsWoodenBridge attrs) =

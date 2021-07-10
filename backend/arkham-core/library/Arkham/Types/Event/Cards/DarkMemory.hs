@@ -16,8 +16,7 @@ newtype DarkMemory = DarkMemory EventAttrs
 darkMemory :: EventCard DarkMemory
 darkMemory = event DarkMemory Cards.darkMemory
 
-instance HasModifiersFor env DarkMemory where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env DarkMemory
 
 instance HasActions env DarkMemory where
   getActions i window (DarkMemory attrs) = getActions i window attrs

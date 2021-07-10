@@ -29,8 +29,7 @@ twistedUnderbrush = location
   Moon
   [Diamond, Moon]
 
-instance HasModifiersFor env TwistedUnderbrush where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env TwistedUnderbrush
 
 instance ActionRunner env => HasActions env TwistedUnderbrush where
   getActions iid NonFast (TwistedUnderbrush attrs@LocationAttrs {..})

@@ -47,8 +47,7 @@ instance HasList HandCard env InvestigatorId => HasActions env HigherEducation w
         ]
   getActions _ _ _ = pure []
 
-instance HasModifiersFor env HigherEducation where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env HigherEducation
 
 instance AssetRunner env => RunMessage env HigherEducation where
   runMessage msg a@(HigherEducation attrs) = case msg of

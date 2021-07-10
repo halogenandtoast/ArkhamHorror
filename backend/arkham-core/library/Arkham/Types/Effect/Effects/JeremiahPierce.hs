@@ -18,8 +18,7 @@ newtype JeremiahPierce = JeremiahPierce EffectAttrs
 jeremiahPierce :: EffectArgs -> JeremiahPierce
 jeremiahPierce = JeremiahPierce . uncurry4 (baseAttrs "50044")
 
-instance HasModifiersFor env JeremiahPierce where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env JeremiahPierce
 
 instance HasQueue env => RunMessage env JeremiahPierce where
   runMessage msg e@(JeremiahPierce attrs) = case msg of

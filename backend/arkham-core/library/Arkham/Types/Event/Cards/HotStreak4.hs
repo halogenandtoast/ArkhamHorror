@@ -15,8 +15,7 @@ newtype HotStreak4 = HotStreak4 EventAttrs
 hotStreak4 :: EventCard HotStreak4
 hotStreak4 = event HotStreak4 Cards.hotStreak4
 
-instance HasModifiersFor env HotStreak4 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env HotStreak4
 
 instance HasActions env HotStreak4 where
   getActions i window (HotStreak4 attrs) = getActions i window attrs

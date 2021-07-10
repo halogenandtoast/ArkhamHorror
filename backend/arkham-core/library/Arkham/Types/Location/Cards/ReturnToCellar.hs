@@ -25,8 +25,7 @@ returnToCellar = location
   Plus
   [Square, Squiggle]
 
-instance HasModifiersFor env ReturnToCellar where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ReturnToCellar
 
 instance ActionRunner env => HasActions env ReturnToCellar where
   getActions i window (ReturnToCellar attrs) = getActions i window attrs

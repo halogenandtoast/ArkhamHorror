@@ -27,8 +27,7 @@ arkhamWoodsUnhallowedGround = locationWith
   . (revealedSymbolL .~ Triangle)
   )
 
-instance HasModifiersFor env ArkhamWoodsUnhallowedGround where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ArkhamWoodsUnhallowedGround
 
 instance ActionRunner env => HasActions env ArkhamWoodsUnhallowedGround where
   getActions i window (ArkhamWoodsUnhallowedGround attrs) =

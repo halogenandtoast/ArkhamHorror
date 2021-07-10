@@ -30,8 +30,7 @@ mobEnforcer = enemyWith
   (1, 0)
   (preyL .~ SetToBearer)
 
-instance HasModifiersFor env MobEnforcer where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env MobEnforcer
 
 instance ActionRunner env => HasActions env MobEnforcer where
   getActions iid NonFast (MobEnforcer attrs@EnemyAttrs {..}) =

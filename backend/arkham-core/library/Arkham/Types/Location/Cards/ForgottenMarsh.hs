@@ -22,8 +22,7 @@ forgottenMarsh = location
   Diamond
   [Moon, Square, Triangle, Hourglass]
 
-instance HasModifiersFor env ForgottenMarsh where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ForgottenMarsh
 
 instance ActionRunner env => HasActions env ForgottenMarsh where
   getActions i window (ForgottenMarsh attrs) = getActions i window attrs

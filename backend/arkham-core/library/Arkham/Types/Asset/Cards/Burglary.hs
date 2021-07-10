@@ -21,8 +21,7 @@ newtype Burglary = Burglary AssetAttrs
 burglary :: AssetCard Burglary
 burglary = asset Burglary Cards.burglary
 
-instance HasModifiersFor env Burglary where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Burglary
 
 instance HasActions env Burglary where
   getActions iid NonFast (Burglary a) | ownedBy a iid = pure

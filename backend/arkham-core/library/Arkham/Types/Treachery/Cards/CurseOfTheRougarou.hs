@@ -25,8 +25,7 @@ curseOfTheRougarou = treachery
   (CurseOfTheRougarou . (`with` Metadata False))
   Cards.curseOfTheRougarou
 
-instance HasModifiersFor env CurseOfTheRougarou where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env CurseOfTheRougarou
 
 instance HasActions env CurseOfTheRougarou where
   getActions iid window (CurseOfTheRougarou (attrs `With` _)) =

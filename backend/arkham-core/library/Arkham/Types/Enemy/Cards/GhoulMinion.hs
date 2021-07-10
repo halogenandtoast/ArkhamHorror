@@ -16,8 +16,7 @@ newtype GhoulMinion = GhoulMinion EnemyAttrs
 ghoulMinion :: EnemyCard GhoulMinion
 ghoulMinion = enemy GhoulMinion Cards.ghoulMinion (2, Static 2, 2) (1, 1)
 
-instance HasModifiersFor env GhoulMinion where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env GhoulMinion
 
 instance ActionRunner env => HasActions env GhoulMinion where
   getActions i window (GhoulMinion attrs) = getActions i window attrs

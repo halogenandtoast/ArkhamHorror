@@ -20,8 +20,7 @@ newtype StalkedInTheDark = StalkedInTheDark TreacheryAttrs
 stalkedInTheDark :: TreacheryCard StalkedInTheDark
 stalkedInTheDark = treachery StalkedInTheDark Cards.stalkedInTheDark
 
-instance HasModifiersFor env StalkedInTheDark where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env StalkedInTheDark
 
 instance HasActions env StalkedInTheDark where
   getActions i window (StalkedInTheDark attrs) = getActions i window attrs

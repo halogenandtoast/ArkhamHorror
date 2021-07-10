@@ -47,8 +47,7 @@ instance
         ]
   getActions iid window (PowderOfIbnGhazi attrs) = getActions iid window attrs
 
-instance HasModifiersFor env PowderOfIbnGhazi where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env PowderOfIbnGhazi
 
 instance
   ( HasQueue env

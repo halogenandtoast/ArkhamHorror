@@ -19,8 +19,7 @@ beckoningForPower :: BeckoningForPower
 beckoningForPower = BeckoningForPower
   $ baseAttrs "02276" "Beckoning for Power" (Agenda 2 A) (Static 10)
 
-instance HasModifiersFor env BeckoningForPower where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BeckoningForPower
 
 instance HasActions env BeckoningForPower where
   getActions i window (BeckoningForPower x) = getActions i window x

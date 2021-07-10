@@ -31,8 +31,7 @@ studyAberrantGateway = location
   Circle
   [T]
 
-instance HasModifiersFor env StudyAberrantGateway where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env StudyAberrantGateway
 
 instance ActionRunner env => HasActions env StudyAberrantGateway where
   getActions iid NonFast (StudyAberrantGateway attrs) =

@@ -34,8 +34,7 @@ baseOfTheHill = location
   Triangle
   [Square, Plus, Squiggle, Hourglass]
 
-instance HasModifiersFor env BaseOfTheHill where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BaseOfTheHill
 
 ability :: LocationAttrs -> Ability
 ability attrs =

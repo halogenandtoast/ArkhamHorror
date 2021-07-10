@@ -24,8 +24,7 @@ northside :: LocationCard Northside
 northside =
   location Northside Cards.northside 3 (PerPlayer 2) T [Diamond, Triangle]
 
-instance HasModifiersFor env Northside where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Northside
 
 ability :: LocationAttrs -> Ability
 ability attrs = base { abilityLimit = GroupLimit PerGame 1 }

@@ -22,8 +22,7 @@ aTearInReality :: ATearInReality
 aTearInReality =
   ATearInReality $ baseAttrs "02160" "A Tear in Reality" (Agenda 1 A) (Static 4)
 
-instance HasModifiersFor env ATearInReality where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ATearInReality
 
 instance HasActions env ATearInReality where
   getActions i window (ATearInReality x) = getActions i window x

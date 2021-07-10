@@ -113,7 +113,8 @@ instance HasCardDef Treachery where
 
 deriving anyclass instance ActionRunner env => HasActions env Treachery
 deriving anyclass instance (GetCardDef env LocationId, TreacheryRunner env) => RunMessage env Treachery
-deriving anyclass instance
+
+instance
   ( HasCount PlayerCount env ()
   , HasId LocationId env InvestigatorId
   , HasId (Maybe OwnerId) env AssetId
@@ -122,7 +123,8 @@ deriving anyclass instance
   , HasSet UniqueEnemyId env ()
   , HasCount ResourceCount env TreacheryId
   )
-  => HasModifiersFor env Treachery
+  => HasModifiersFor env Treachery where
+  getModifiersFor = genericGetModifiersFor
 
 instance Entity Treachery where
   type EntityId Treachery = TreacheryId
@@ -263,8 +265,7 @@ baseTreachery cardCode iid tid = BaseTreachery' $ cbCardBuilder
 instance HasActions env BaseTreachery where
   getActions x window (BaseTreachery attrs) = getActions x window attrs
 
-instance HasModifiersFor env BaseTreachery where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BaseTreachery
 
 instance (TreacheryRunner env) => RunMessage env BaseTreachery where
   runMessage msg (BaseTreachery attrs) = BaseTreachery <$> runMessage msg attrs

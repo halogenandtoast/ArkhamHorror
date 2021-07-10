@@ -20,8 +20,7 @@ newtype SpacesBetween = SpacesBetween TreacheryAttrs
 spacesBetween :: TreacheryCard SpacesBetween
 spacesBetween = treachery SpacesBetween Cards.spacesBetween
 
-instance HasModifiersFor env SpacesBetween where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SpacesBetween
 
 instance HasActions env SpacesBetween where
   getActions i window (SpacesBetween attrs) = getActions i window attrs

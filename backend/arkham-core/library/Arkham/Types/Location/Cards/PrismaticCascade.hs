@@ -28,8 +28,7 @@ prismaticCascade = location
   Diamond
   [Square, Plus]
 
-instance HasModifiersFor env PrismaticCascade where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env PrismaticCascade
 
 forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility

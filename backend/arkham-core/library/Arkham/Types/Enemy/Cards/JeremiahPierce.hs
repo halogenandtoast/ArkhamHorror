@@ -28,8 +28,7 @@ jeremiahPierce :: EnemyCard JeremiahPierce
 jeremiahPierce =
   enemy JeremiahPierce Cards.jeremiahPierce (4, Static 3, 4) (1, 1)
 
-instance HasModifiersFor env JeremiahPierce where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env JeremiahPierce
 
 instance ActionRunner env => HasActions env JeremiahPierce where
   getActions iid NonFast (JeremiahPierce attrs@EnemyAttrs {..}) =

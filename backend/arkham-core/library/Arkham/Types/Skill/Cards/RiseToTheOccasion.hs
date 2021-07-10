@@ -16,8 +16,7 @@ newtype RiseToTheOccasion = RiseToTheOccasion SkillAttrs
 riseToTheOccasion :: SkillCard RiseToTheOccasion
 riseToTheOccasion = skill RiseToTheOccasion Cards.riseToTheOccasion
 
-instance HasModifiersFor env RiseToTheOccasion where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env RiseToTheOccasion
 
 instance HasActions env RiseToTheOccasion where
   getActions iid window (RiseToTheOccasion attrs) = getActions iid window attrs

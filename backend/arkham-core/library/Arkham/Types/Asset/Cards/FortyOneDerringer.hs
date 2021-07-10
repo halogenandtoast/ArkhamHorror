@@ -25,8 +25,7 @@ newtype FortyOneDerringer = FortyOneDerringer AssetAttrs
 fortyOneDerringer :: AssetCard FortyOneDerringer
 fortyOneDerringer = hand FortyOneDerringer Cards.fortyOneDerringer
 
-instance HasModifiersFor env FortyOneDerringer where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env FortyOneDerringer
 
 instance HasActions env FortyOneDerringer where
   getActions iid _ (FortyOneDerringer a) | ownedBy a iid = pure

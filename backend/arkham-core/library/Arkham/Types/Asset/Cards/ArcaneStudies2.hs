@@ -24,8 +24,7 @@ newtype ArcaneStudies2 = ArcaneStudies2 AssetAttrs
 arcaneStudies2 :: AssetCard ArcaneStudies2
 arcaneStudies2 = asset ArcaneStudies2 Cards.arcaneStudies2
 
-instance HasModifiersFor env ArcaneStudies2 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ArcaneStudies2
 
 ability :: Int -> AssetAttrs -> Ability
 ability idx a = mkAbility a idx $ FastAbility (ResourceCost 1)

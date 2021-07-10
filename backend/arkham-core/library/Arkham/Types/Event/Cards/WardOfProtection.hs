@@ -16,8 +16,7 @@ newtype WardOfProtection = WardOfProtection EventAttrs
 wardOfProtection :: EventCard WardOfProtection
 wardOfProtection = event WardOfProtection Cards.wardOfProtection
 
-instance HasModifiersFor env WardOfProtection where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env WardOfProtection
 
 instance HasActions env WardOfProtection where
   getActions i window (WardOfProtection attrs) = getActions i window attrs

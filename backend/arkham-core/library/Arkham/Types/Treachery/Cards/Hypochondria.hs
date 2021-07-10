@@ -23,8 +23,7 @@ newtype Hypochondria = Hypochondria TreacheryAttrs
 hypochondria :: TreacheryCard Hypochondria
 hypochondria = treachery Hypochondria Cards.hypochondria
 
-instance HasModifiersFor env Hypochondria where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Hypochondria
 
 instance ActionRunner env => HasActions env Hypochondria where
   getActions iid NonFast (Hypochondria a) =

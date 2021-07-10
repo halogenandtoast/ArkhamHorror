@@ -32,8 +32,7 @@ cursedShores = location
   Square
   [Plus, Triangle, Diamond, Hourglass]
 
-instance HasModifiersFor env CursedShores where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env CursedShores
 
 instance ActionRunner env => HasActions env CursedShores where
   getActions iid NonFast (CursedShores attrs@LocationAttrs {..})

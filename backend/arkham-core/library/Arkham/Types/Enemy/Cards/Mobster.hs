@@ -17,8 +17,7 @@ newtype Mobster = Mobster EnemyAttrs
 mobster :: EnemyCard Mobster
 mobster = enemy Mobster Cards.mobster (2, Static 2, 2) (1, 0)
 
-instance HasModifiersFor env Mobster where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Mobster
 
 instance ActionRunner env => HasActions env Mobster where
   getActions i window (Mobster attrs) = getActions i window attrs

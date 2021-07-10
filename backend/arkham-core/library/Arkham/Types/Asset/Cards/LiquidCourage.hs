@@ -38,8 +38,7 @@ instance HasActions env LiquidCourage where
     ]
   getActions iid window (LiquidCourage attrs) = getActions iid window attrs
 
-instance HasModifiersFor env LiquidCourage where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env LiquidCourage
 
 instance
   ( HasQueue env

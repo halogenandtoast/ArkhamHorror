@@ -25,8 +25,7 @@ youngDeepOne = enemyWith
   (1, 1)
   (preyL .~ LowestSkill SkillCombat)
 
-instance HasModifiersFor env YoungDeepOne where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env YoungDeepOne
 
 instance ActionRunner env => HasActions env YoungDeepOne where
   getActions i window (YoungDeepOne attrs) = getActions i window attrs

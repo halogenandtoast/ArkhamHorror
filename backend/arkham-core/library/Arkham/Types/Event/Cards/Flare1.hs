@@ -21,8 +21,7 @@ newtype Flare1 = Flare1 EventAttrs
 flare1 :: EventCard Flare1
 flare1 = event Flare1 Cards.flare1
 
-instance HasModifiersFor env Flare1 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Flare1
 
 findAllyMessages :: InvestigatorId -> [InvestigatorId] -> Flare1 -> [Message]
 findAllyMessages iid investigatorIds e =

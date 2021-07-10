@@ -26,8 +26,7 @@ newtype SearchingForIzzie = SearchingForIzzie TreacheryAttrs
 searchingForIzzie :: TreacheryCard SearchingForIzzie
 searchingForIzzie = treachery SearchingForIzzie Cards.searchingForIzzie
 
-instance HasModifiersFor env SearchingForIzzie where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SearchingForIzzie
 
 instance ActionRunner env => HasActions env SearchingForIzzie where
   getActions iid NonFast (SearchingForIzzie attrs) = do

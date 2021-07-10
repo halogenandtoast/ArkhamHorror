@@ -31,8 +31,7 @@ miskatonicUniversity = location
   Diamond
   [T, Plus, Circle, Square]
 
-instance HasModifiersFor env MiskatonicUniversity where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env MiskatonicUniversity
 
 instance ActionRunner env => HasActions env MiskatonicUniversity where
   getActions iid NonFast (MiskatonicUniversity attrs@LocationAttrs {..})

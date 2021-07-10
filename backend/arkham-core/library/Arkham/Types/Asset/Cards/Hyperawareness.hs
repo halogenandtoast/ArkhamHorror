@@ -24,8 +24,7 @@ newtype Hyperawareness = Hyperawareness AssetAttrs
 hyperawareness :: AssetCard Hyperawareness
 hyperawareness = asset Hyperawareness Cards.hyperawareness
 
-instance HasModifiersFor env Hyperawareness where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Hyperawareness
 
 ability :: Int -> AssetAttrs -> Ability
 ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)

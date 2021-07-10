@@ -26,8 +26,7 @@ slimeCoveredDhole = enemyWith
   (1, 1)
   (preyL .~ LowestRemainingHealth)
 
-instance HasModifiersFor env SlimeCoveredDhole where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SlimeCoveredDhole
 
 instance ActionRunner env => HasActions env SlimeCoveredDhole where
   getActions i window (SlimeCoveredDhole attrs) = getActions i window attrs

@@ -19,8 +19,7 @@ newtype EphemeralExhibits = EphemeralExhibits TreacheryAttrs
 ephemeralExhibits :: TreacheryCard EphemeralExhibits
 ephemeralExhibits = treachery EphemeralExhibits Cards.ephemeralExhibits
 
-instance HasModifiersFor env EphemeralExhibits where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env EphemeralExhibits
 
 instance HasActions env EphemeralExhibits where
   getActions i window (EphemeralExhibits attrs) = getActions i window attrs

@@ -26,8 +26,7 @@ newtype Shrivelling5 = Shrivelling5 AssetAttrs
 shrivelling5 :: AssetCard Shrivelling5
 shrivelling5 = arcane Shrivelling5 Cards.shrivelling5
 
-instance HasModifiersFor env Shrivelling5 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Shrivelling5
 
 instance HasActions env Shrivelling5 where
   getActions iid _ (Shrivelling5 a) | ownedBy a iid = pure

@@ -27,8 +27,7 @@ chaosInTheCloverClub = ChaosInTheCloverClub
 instance HasActions env ChaosInTheCloverClub where
   getActions i window (ChaosInTheCloverClub x) = getActions i window x
 
-instance HasModifiersFor env ChaosInTheCloverClub where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ChaosInTheCloverClub
 
 instance AgendaRunner env => RunMessage env ChaosInTheCloverClub where
   runMessage msg a@(ChaosInTheCloverClub attrs@AgendaAttrs {..}) = case msg of

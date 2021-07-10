@@ -37,8 +37,7 @@ instance HasActions env ClarityOfMind where
     ]
   getActions _ _ _ = pure []
 
-instance HasModifiersFor env ClarityOfMind where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ClarityOfMind
 
 instance
   ( HasQueue env

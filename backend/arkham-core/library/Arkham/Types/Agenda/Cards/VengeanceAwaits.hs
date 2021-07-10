@@ -22,8 +22,7 @@ vengeanceAwaits :: VengeanceAwaits
 vengeanceAwaits =
   VengeanceAwaits $ baseAttrs "01145" "Vengeance Awaits" (Agenda 3 A) (Static 5)
 
-instance HasModifiersFor env VengeanceAwaits where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env VengeanceAwaits
 
 instance HasActions env VengeanceAwaits where
   getActions i window (VengeanceAwaits x) = getActions i window x

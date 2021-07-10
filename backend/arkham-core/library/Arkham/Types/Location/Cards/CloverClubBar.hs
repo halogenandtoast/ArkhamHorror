@@ -31,8 +31,7 @@ cloverClubBar = location
   Square
   [Triangle, Circle]
 
-instance HasModifiersFor env CloverClubBar where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env CloverClubBar
 
 ability :: LocationAttrs -> Ability
 ability attrs = (mkAbility

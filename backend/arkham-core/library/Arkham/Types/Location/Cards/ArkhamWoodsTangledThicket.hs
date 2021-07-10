@@ -26,8 +26,7 @@ arkhamWoodsTangledThicket = locationWith
   . (revealedSymbolL .~ Equals)
   )
 
-instance HasModifiersFor env ArkhamWoodsTangledThicket where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ArkhamWoodsTangledThicket
 
 instance ActionRunner env => HasActions env ArkhamWoodsTangledThicket where
   getActions i window (ArkhamWoodsTangledThicket attrs) =

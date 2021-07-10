@@ -18,8 +18,7 @@ newtype SmiteTheWicked = SmiteTheWicked TreacheryAttrs
 smiteTheWicked :: TreacheryCard SmiteTheWicked
 smiteTheWicked = treachery SmiteTheWicked Cards.smiteTheWicked
 
-instance HasModifiersFor env SmiteTheWicked where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SmiteTheWicked
 
 instance HasActions env SmiteTheWicked where
   getActions i window (SmiteTheWicked attrs) = getActions i window attrs

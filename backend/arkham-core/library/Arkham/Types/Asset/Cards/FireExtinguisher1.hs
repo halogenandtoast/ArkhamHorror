@@ -21,8 +21,7 @@ newtype FireExtinguisher1 = FireExtinguisher1 AssetAttrs
 fireExtinguisher1 :: AssetCard FireExtinguisher1
 fireExtinguisher1 = hand FireExtinguisher1 Cards.fireExtinguisher1
 
-instance HasModifiersFor env FireExtinguisher1 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env FireExtinguisher1
 
 instance HasActions env FireExtinguisher1 where
   getActions iid _ (FireExtinguisher1 a) | ownedBy a iid = do

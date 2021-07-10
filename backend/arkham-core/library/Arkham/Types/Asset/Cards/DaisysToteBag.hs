@@ -19,8 +19,7 @@ newtype DaisysToteBag = DaisysToteBag AssetAttrs
 daisysToteBag :: AssetCard DaisysToteBag
 daisysToteBag = asset DaisysToteBag Cards.daisysToteBag
 
-instance HasModifiersFor env DaisysToteBag where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env DaisysToteBag
 
 instance HasActions env DaisysToteBag where
   getActions i window (DaisysToteBag x) = getActions i window x

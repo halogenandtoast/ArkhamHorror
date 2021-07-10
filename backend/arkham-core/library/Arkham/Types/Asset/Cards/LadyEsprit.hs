@@ -35,8 +35,7 @@ ability attrs = (mkAbility
   { abilityRestrictions = OnLocation <$> assetLocation attrs
   }
 
-instance HasModifiersFor env LadyEsprit where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env LadyEsprit
 
 instance HasActions env LadyEsprit where
   getActions iid NonFast (LadyEsprit a) = do

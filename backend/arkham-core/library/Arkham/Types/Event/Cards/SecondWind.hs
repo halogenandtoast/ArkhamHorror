@@ -30,8 +30,7 @@ instance HasCount ActionTakenCount env InvestigatorId => HasActions env SecondWi
         ]
   getActions iid window (SecondWind attrs) = getActions iid window attrs
 
-instance HasModifiersFor env SecondWind where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SecondWind
 
 instance (HasQueue env, HasRoundHistory env) => RunMessage env SecondWind where
   runMessage msg e@(SecondWind attrs@EventAttrs {..}) = case msg of

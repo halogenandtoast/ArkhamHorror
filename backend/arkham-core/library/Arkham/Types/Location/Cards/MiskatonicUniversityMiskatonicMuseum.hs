@@ -31,8 +31,7 @@ miskatonicUniversityMiskatonicMuseum = location
   Diamond
   [T, Plus, Circle, Square]
 
-instance HasModifiersFor env MiskatonicUniversityMiskatonicMuseum where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env MiskatonicUniversityMiskatonicMuseum
 
 ability :: LocationAttrs -> Ability
 ability attrs = base { abilityLimit = PlayerLimit PerGame 1 }

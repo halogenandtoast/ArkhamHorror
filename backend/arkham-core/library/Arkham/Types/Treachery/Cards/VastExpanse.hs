@@ -21,8 +21,7 @@ newtype VastExpanse = VastExpanse TreacheryAttrs
 vastExpanse :: TreacheryCard VastExpanse
 vastExpanse = treachery VastExpanse Cards.vastExpanse
 
-instance HasModifiersFor env VastExpanse where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env VastExpanse
 
 instance HasActions env VastExpanse where
   getActions i window (VastExpanse attrs) = getActions i window attrs

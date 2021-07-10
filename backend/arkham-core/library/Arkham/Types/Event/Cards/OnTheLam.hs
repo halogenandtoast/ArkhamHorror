@@ -15,8 +15,7 @@ newtype OnTheLam = OnTheLam EventAttrs
 onTheLam :: EventCard OnTheLam
 onTheLam = event OnTheLam Cards.onTheLam
 
-instance HasModifiersFor env OnTheLam where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env OnTheLam
 
 instance HasActions env OnTheLam where
   getActions i window (OnTheLam attrs) = getActions i window attrs

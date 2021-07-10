@@ -24,8 +24,7 @@ timeIsRunningShort :: TimeIsRunningShort
 timeIsRunningShort = TimeIsRunningShort
   $ baseAttrs "01122" "Time Is Running Short" (Agenda 2 A) (Static 8)
 
-instance HasModifiersFor env TimeIsRunningShort where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env TimeIsRunningShort
 
 instance HasActions env TimeIsRunningShort where
   getActions iid NonFast (TimeIsRunningShort _) = pure

@@ -18,8 +18,7 @@ callingForthTheOldOnes :: CallingForthTheOldOnes
 callingForthTheOldOnes = CallingForthTheOldOnes
   $ baseAttrs "02275" "Calling Forth the Old Ones" (Agenda 1 A) (Static 12)
 
-instance HasModifiersFor env CallingForthTheOldOnes where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env CallingForthTheOldOnes
 
 instance HasActions env CallingForthTheOldOnes where
   getActions i window (CallingForthTheOldOnes x) = getActions i window x

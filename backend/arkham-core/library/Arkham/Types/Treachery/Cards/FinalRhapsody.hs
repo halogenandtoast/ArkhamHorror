@@ -16,8 +16,7 @@ newtype FinalRhapsody = FinalRhapsody TreacheryAttrs
 finalRhapsody :: TreacheryCard FinalRhapsody
 finalRhapsody = treachery FinalRhapsody Cards.finalRhapsody
 
-instance HasModifiersFor env FinalRhapsody where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env FinalRhapsody
 
 instance HasActions env FinalRhapsody where
   getActions i window (FinalRhapsody attrs) = getActions i window attrs

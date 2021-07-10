@@ -22,8 +22,7 @@ newtype BloodRite = BloodRite EventAttrs
 bloodRite :: EventCard BloodRite
 bloodRite = event BloodRite Cards.bloodRite
 
-instance HasModifiersFor env BloodRite where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BloodRite
 
 instance HasActions env BloodRite where
   getActions i window (BloodRite attrs) = getActions i window attrs

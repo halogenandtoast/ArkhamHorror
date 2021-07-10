@@ -18,8 +18,7 @@ newtype FalseLead = FalseLead TreacheryAttrs
 falseLead :: TreacheryCard FalseLead
 falseLead = treachery FalseLead Cards.falseLead
 
-instance HasModifiersFor env FalseLead where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env FalseLead
 
 instance HasActions env FalseLead where
   getActions i window (FalseLead attrs) = getActions i window attrs

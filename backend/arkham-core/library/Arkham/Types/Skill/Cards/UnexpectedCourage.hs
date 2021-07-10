@@ -13,8 +13,7 @@ newtype UnexpectedCourage = UnexpectedCourage SkillAttrs
 unexpectedCourage :: SkillCard UnexpectedCourage
 unexpectedCourage = skill UnexpectedCourage Cards.unexpectedCourage
 
-instance HasModifiersFor env UnexpectedCourage where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env UnexpectedCourage
 
 instance HasActions env UnexpectedCourage where
   getActions i window (UnexpectedCourage attrs) = getActions i window attrs

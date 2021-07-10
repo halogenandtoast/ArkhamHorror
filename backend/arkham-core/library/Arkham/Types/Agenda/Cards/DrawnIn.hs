@@ -21,8 +21,7 @@ newtype DrawnIn = DrawnIn AgendaAttrs
 drawnIn :: DrawnIn
 drawnIn = DrawnIn $ baseAttrs "02163" "Drawn In" (Agenda 4 A) (Static 3)
 
-instance HasModifiersFor env DrawnIn where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env DrawnIn
 
 instance HasActions env DrawnIn where
   getActions i window (DrawnIn x) = getActions i window x

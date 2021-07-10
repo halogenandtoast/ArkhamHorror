@@ -32,8 +32,7 @@ dunwichVillage_242 = location
   Circle
   [Triangle, Square, Diamond]
 
-instance HasModifiersFor env DunwichVillage_242 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env DunwichVillage_242
 
 ability :: LocationAttrs -> Ability
 ability attrs =

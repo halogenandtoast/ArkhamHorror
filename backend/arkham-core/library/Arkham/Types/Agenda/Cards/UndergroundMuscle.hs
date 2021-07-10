@@ -29,8 +29,7 @@ undergroundMuscle = UndergroundMuscle
 instance HasActions env UndergroundMuscle where
   getActions i window (UndergroundMuscle x) = getActions i window x
 
-instance HasModifiersFor env UndergroundMuscle where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env UndergroundMuscle
 
 instance AgendaRunner env => RunMessage env UndergroundMuscle where
   runMessage msg (UndergroundMuscle attrs@AgendaAttrs {..}) = case msg of

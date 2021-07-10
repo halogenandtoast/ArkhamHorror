@@ -25,8 +25,7 @@ schoolhouse_213 = location
   Moon
   [Plus, Squiggle, Circle]
 
-instance HasModifiersFor env Schoolhouse_213 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Schoolhouse_213
 
 
 instance ActionRunner env => HasActions env Schoolhouse_213 where

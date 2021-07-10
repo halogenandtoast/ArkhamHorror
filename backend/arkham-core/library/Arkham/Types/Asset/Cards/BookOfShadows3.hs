@@ -24,8 +24,7 @@ newtype BookOfShadows3 = BookOfShadows3 AssetAttrs
 bookOfShadows3 :: AssetCard BookOfShadows3
 bookOfShadows3 = hand BookOfShadows3 Cards.bookOfShadows3
 
-instance HasModifiersFor env BookOfShadows3 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BookOfShadows3
 
 slot :: AssetAttrs -> Slot
 slot AssetAttrs { assetId } = Slot (AssetSource assetId) Nothing

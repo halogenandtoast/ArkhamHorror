@@ -18,8 +18,7 @@ wizardOfTheOrder :: EnemyCard WizardOfTheOrder
 wizardOfTheOrder =
   enemy WizardOfTheOrder Cards.wizardOfTheOrder (4, Static 2, 2) (1, 0)
 
-instance HasModifiersFor env WizardOfTheOrder where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env WizardOfTheOrder
 
 instance ActionRunner env => HasActions env WizardOfTheOrder where
   getActions i window (WizardOfTheOrder attrs) = getActions i window attrs

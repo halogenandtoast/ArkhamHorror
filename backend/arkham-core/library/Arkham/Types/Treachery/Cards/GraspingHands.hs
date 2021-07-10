@@ -20,8 +20,7 @@ newtype GraspingHands = GraspingHands TreacheryAttrs
 graspingHands :: TreacheryCard GraspingHands
 graspingHands = treachery GraspingHands Cards.graspingHands
 
-instance HasModifiersFor env GraspingHands where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env GraspingHands
 
 instance HasActions env GraspingHands where
   getActions i window (GraspingHands attrs) = getActions i window attrs

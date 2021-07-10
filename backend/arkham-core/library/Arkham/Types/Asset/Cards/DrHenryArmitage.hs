@@ -27,8 +27,7 @@ fastAbility a cid = mkAbility
   1
   (FastAbility $ Costs [DiscardCardCost cid, ExhaustCost (toTarget a)])
 
-instance HasModifiersFor env DrHenryArmitage where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env DrHenryArmitage
 
 instance HasActions env DrHenryArmitage where
   getActions iid (AfterDrawCard You cid) (DrHenryArmitage a) | ownedBy a iid =

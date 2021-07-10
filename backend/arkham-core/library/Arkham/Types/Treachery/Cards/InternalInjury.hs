@@ -23,8 +23,7 @@ newtype InternalInjury = InternalInjury TreacheryAttrs
 internalInjury :: TreacheryCard InternalInjury
 internalInjury = treachery InternalInjury Cards.internalInjury
 
-instance HasModifiersFor env InternalInjury where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env InternalInjury
 
 instance ActionRunner env => HasActions env InternalInjury where
   getActions iid NonFast (InternalInjury a) =

@@ -19,8 +19,7 @@ ghoulFromTheDepths :: EnemyCard GhoulFromTheDepths
 ghoulFromTheDepths =
   enemy GhoulFromTheDepths Cards.ghoulFromTheDepths (3, Static 4, 2) (1, 1)
 
-instance HasModifiersFor env GhoulFromTheDepths where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env GhoulFromTheDepths
 
 instance ActionRunner env => HasActions env GhoulFromTheDepths where
   getActions i window (GhoulFromTheDepths attrs) = getActions i window attrs

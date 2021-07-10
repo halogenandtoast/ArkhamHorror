@@ -15,8 +15,7 @@ newtype Dodge = Dodge EventAttrs
 dodge :: EventCard Dodge
 dodge = event Dodge Cards.dodge
 
-instance HasModifiersFor env Dodge where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Dodge
 
 instance HasActions env Dodge where
   getActions i window (Dodge attrs) = getActions i window attrs

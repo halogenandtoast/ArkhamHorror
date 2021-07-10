@@ -24,8 +24,7 @@ newtype FirstAid = FirstAid AssetAttrs
 firstAid :: AssetCard FirstAid
 firstAid = asset FirstAid Cards.firstAid
 
-instance HasModifiersFor env FirstAid where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env FirstAid
 
 ability :: AssetAttrs -> Ability
 ability attrs = mkAbility

@@ -36,8 +36,7 @@ instance HasActions env BindMonster2 where
       ]
   getActions iid window (BindMonster2 attrs) = getActions iid window attrs
 
-instance HasModifiersFor env BindMonster2 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BindMonster2
 
 instance HasQueue env => RunMessage env BindMonster2 where
   runMessage msg e@(BindMonster2 attrs@EventAttrs {..}) = case msg of

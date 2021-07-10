@@ -19,8 +19,7 @@ heirloomOfHyperborea :: AssetCard HeirloomOfHyperborea
 heirloomOfHyperborea =
   accessory HeirloomOfHyperborea Cards.heirloomOfHyperborea
 
-instance HasModifiersFor env HeirloomOfHyperborea where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env HeirloomOfHyperborea
 
 reactionAbility :: AssetAttrs -> Ability
 reactionAbility attrs = mkAbility (toSource attrs) 1 (FastAbility Free)

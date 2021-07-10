@@ -22,8 +22,7 @@ theCurseSpreads :: TheCurseSpreads
 theCurseSpreads = TheCurseSpreads
   $ baseAttrs "81004" "The Curse Spreads" (Agenda 3 A) (Static 8)
 
-instance HasModifiersFor env TheCurseSpreads where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env TheCurseSpreads
 
 instance HasActions env TheCurseSpreads where
   getActions i window (TheCurseSpreads x) = getActions i window x

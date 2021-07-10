@@ -20,8 +20,7 @@ newtype CollapsingReality = CollapsingReality TreacheryAttrs
 collapsingReality :: TreacheryCard CollapsingReality
 collapsingReality = treachery CollapsingReality Cards.collapsingReality
 
-instance HasModifiersFor env CollapsingReality where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env CollapsingReality
 
 instance HasActions env CollapsingReality where
   getActions i window (CollapsingReality attrs) = getActions i window attrs

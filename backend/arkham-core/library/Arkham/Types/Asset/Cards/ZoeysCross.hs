@@ -22,8 +22,7 @@ newtype ZoeysCross = ZoeysCross AssetAttrs
 zoeysCross :: AssetCard ZoeysCross
 zoeysCross = accessory ZoeysCross Cards.zoeysCross
 
-instance HasModifiersFor env ZoeysCross where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ZoeysCross
 
 ability :: AssetAttrs -> EnemyId -> Ability
 ability attrs eid = base

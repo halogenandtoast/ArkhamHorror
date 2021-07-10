@@ -15,8 +15,7 @@ newtype TenAcreMeadow_246 = TenAcreMeadow_246 EffectAttrs
 tenAcreMeadow_246 :: EffectArgs -> TenAcreMeadow_246
 tenAcreMeadow_246 = TenAcreMeadow_246 . uncurry4 (baseAttrs "02246")
 
-instance HasModifiersFor env TenAcreMeadow_246 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env TenAcreMeadow_246
 
 instance HasQueue env => RunMessage env TenAcreMeadow_246 where
   runMessage msg e@(TenAcreMeadow_246 attrs) = case msg of

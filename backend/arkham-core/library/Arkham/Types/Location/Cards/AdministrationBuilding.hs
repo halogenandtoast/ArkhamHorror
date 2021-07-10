@@ -23,8 +23,7 @@ administrationBuilding = location
   Circle
   [Plus, T]
 
-instance HasModifiersFor env AdministrationBuilding where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env AdministrationBuilding
 
 instance ActionRunner env => HasActions env AdministrationBuilding where
   getActions i window (AdministrationBuilding attrs) =

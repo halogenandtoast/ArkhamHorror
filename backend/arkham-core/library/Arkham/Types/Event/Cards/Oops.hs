@@ -53,8 +53,7 @@ instance
         _ -> pure []
   getActions iid window (Oops attrs) = getActions iid window attrs
 
-instance HasModifiersFor env Oops where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Oops
 
 instance RunMessage env Oops where
   runMessage msg e@(Oops attrs) = case msg of

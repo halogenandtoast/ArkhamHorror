@@ -20,8 +20,7 @@ newtype LetMeHandleThis = LetMeHandleThis EventAttrs
 letMeHandleThis :: EventCard LetMeHandleThis
 letMeHandleThis = event LetMeHandleThis Cards.letMeHandleThis
 
-instance HasModifiersFor env LetMeHandleThis where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env LetMeHandleThis
 
 instance HasActions env LetMeHandleThis where
   getActions iid (InHandWindow ownerId (WhenDrawNonPerilTreachery who tid)) (LetMeHandleThis attrs)

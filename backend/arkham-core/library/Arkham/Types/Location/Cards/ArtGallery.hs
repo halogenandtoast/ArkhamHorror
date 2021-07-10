@@ -28,8 +28,7 @@ artGallery = locationWith
   [Diamond]
   (revealedSymbolL .~ Hourglass)
 
-instance HasModifiersFor env ArtGallery where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ArtGallery
 
 instance ActionRunner env => HasActions env ArtGallery where
   getActions iid window (ArtGallery attrs) = getActions iid window attrs

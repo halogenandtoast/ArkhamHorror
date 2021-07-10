@@ -19,8 +19,7 @@ newtype Bathroom = Bathroom LocationAttrs
 bathroom :: LocationCard Bathroom
 bathroom = location Bathroom Cards.bathroom 1 (PerPlayer 1) Star [T]
 
-instance HasModifiersFor env Bathroom where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Bathroom
 
 instance ActionRunner env => HasActions env Bathroom where
   getActions i window (Bathroom attrs) = getActions i window attrs

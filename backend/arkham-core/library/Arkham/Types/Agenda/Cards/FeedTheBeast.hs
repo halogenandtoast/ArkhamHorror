@@ -19,8 +19,7 @@ feedTheBeast :: FeedTheBeast
 feedTheBeast =
   FeedTheBeast $ baseAttrs "02198" "Feed the Beast" (Agenda 3 A) (Static 7)
 
-instance HasModifiersFor env FeedTheBeast where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env FeedTheBeast
 
 instance HasActions env FeedTheBeast where
   getActions i window (FeedTheBeast x) = getActions i window x

@@ -42,8 +42,7 @@ instance HasActions env LightningGun5 where
     ]
   getActions _ _ _ = pure []
 
-instance HasModifiersFor env LightningGun5 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env LightningGun5
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env LightningGun5 where
   runMessage msg (LightningGun5 attrs) = case msg of

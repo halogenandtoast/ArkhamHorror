@@ -19,8 +19,7 @@ imOuttaHere = event ImOuttaHere Cards.imOuttaHere
 instance HasActions env ImOuttaHere where
   getActions iid window (ImOuttaHere attrs) = getActions iid window attrs
 
-instance HasModifiersFor env ImOuttaHere where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ImOuttaHere
 
 instance RunMessage env ImOuttaHere where
   runMessage msg e@(ImOuttaHere attrs) = case msg of

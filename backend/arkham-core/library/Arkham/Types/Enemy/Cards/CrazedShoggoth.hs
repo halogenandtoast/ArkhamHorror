@@ -21,8 +21,7 @@ crazedShoggoth =
 
 deriving newtype instance EnemyAttrsHasActions env => HasActions env CrazedShoggoth
 
-instance HasModifiersFor env CrazedShoggoth where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env CrazedShoggoth
 
 instance
   ( HasSet ClosestLocationId env (LocationId , [Trait])

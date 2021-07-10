@@ -28,8 +28,7 @@ theRougarou = enemy
   (3, PerPlayer 5, 3)
   (2, 2)
 
-instance HasModifiersFor env TheRougarou where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env TheRougarou
 
 isEngage :: Message -> Bool
 isEngage = \case

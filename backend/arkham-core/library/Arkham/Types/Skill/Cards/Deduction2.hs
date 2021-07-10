@@ -19,8 +19,7 @@ newtype Deduction2 = Deduction2 SkillAttrs
 deduction2 :: SkillCard Deduction2
 deduction2 = skill Deduction2 Cards.deduction2
 
-instance HasModifiersFor env Deduction2 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Deduction2
 
 instance HasActions env Deduction2 where
   getActions i window (Deduction2 attrs) = getActions i window attrs

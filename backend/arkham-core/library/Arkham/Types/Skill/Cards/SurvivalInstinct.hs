@@ -18,8 +18,7 @@ newtype SurvivalInstinct = SurvivalInstinct SkillAttrs
 survivalInstinct :: SkillCard SurvivalInstinct
 survivalInstinct = skill SurvivalInstinct Cards.survivalInstinct
 
-instance HasModifiersFor env SurvivalInstinct where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SurvivalInstinct
 
 instance HasActions env SurvivalInstinct where
   getActions i window (SurvivalInstinct attrs) = getActions i window attrs

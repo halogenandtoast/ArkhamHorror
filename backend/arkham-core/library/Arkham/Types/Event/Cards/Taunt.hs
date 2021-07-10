@@ -21,8 +21,7 @@ taunt = event Taunt Cards.taunt
 instance HasActions env Taunt where
   getActions iid window (Taunt attrs) = getActions iid window attrs
 
-instance HasModifiersFor env Taunt where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Taunt
 
 instance (EventRunner env) => RunMessage env Taunt where
   runMessage msg e@(Taunt attrs@EventAttrs {..}) = case msg of

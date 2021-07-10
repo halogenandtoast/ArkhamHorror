@@ -15,8 +15,7 @@ newtype MindOverMatter = MindOverMatter EventAttrs
 mindOverMatter :: EventCard MindOverMatter
 mindOverMatter = event MindOverMatter Cards.mindOverMatter
 
-instance HasModifiersFor env MindOverMatter where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env MindOverMatter
 
 instance HasActions env MindOverMatter where
   getActions i window (MindOverMatter attrs) = getActions i window attrs

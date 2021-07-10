@@ -27,8 +27,7 @@ jennysTwin45s :: AssetCard JennysTwin45s
 jennysTwin45s =
   assetWith JennysTwin45s Cards.jennysTwin45s (slotsL .~ [HandSlot, HandSlot])
 
-instance HasModifiersFor env JennysTwin45s where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env JennysTwin45s
 
 instance HasActions env JennysTwin45s where
   getActions iid _ (JennysTwin45s a) | ownedBy a iid = pure

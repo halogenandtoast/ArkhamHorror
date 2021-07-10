@@ -32,8 +32,7 @@ cloverClubCardroom = location
   Triangle
   [Circle, Square, Diamond]
 
-instance HasModifiersFor env CloverClubCardroom where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env CloverClubCardroom
 
 ability :: LocationAttrs -> Ability
 ability attrs = base { abilityLimit = GroupLimit PerRound 1 }

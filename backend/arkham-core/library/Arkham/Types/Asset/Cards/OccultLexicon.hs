@@ -17,8 +17,7 @@ newtype OccultLexicon = OccultLexicon AssetAttrs
 occultLexicon :: AssetCard OccultLexicon
 occultLexicon = hand OccultLexicon Cards.occultLexicon
 
-instance HasModifiersFor env OccultLexicon where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env OccultLexicon
 
 instance HasActions env OccultLexicon where
   getActions i window (OccultLexicon x) = getActions i window x

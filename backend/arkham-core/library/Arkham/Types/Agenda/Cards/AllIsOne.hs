@@ -21,8 +21,7 @@ newtype AllIsOne = AllIsOne AgendaAttrs
 allIsOne :: AllIsOne
 allIsOne = AllIsOne $ baseAttrs "02312" "All is One" (Agenda 1 A) (Static 4)
 
-instance HasModifiersFor env AllIsOne where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env AllIsOne
 
 instance HasActions env AllIsOne where
   getActions i window (AllIsOne x) = getActions i window x

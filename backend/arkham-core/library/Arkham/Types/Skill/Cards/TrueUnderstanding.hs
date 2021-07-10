@@ -18,8 +18,7 @@ newtype TrueUnderstanding = TrueUnderstanding SkillAttrs
 trueUnderstanding :: SkillCard TrueUnderstanding
 trueUnderstanding = skill TrueUnderstanding Cards.trueUnderstanding
 
-instance HasModifiersFor env TrueUnderstanding where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env TrueUnderstanding
 
 instance HasActions env TrueUnderstanding where
   getActions iid window (TrueUnderstanding attrs) = getActions iid window attrs

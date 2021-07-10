@@ -22,8 +22,7 @@ teamwork = event Teamwork Cards.teamwork
 instance HasActions env Teamwork where
   getActions iid window (Teamwork attrs) = getActions iid window attrs
 
-instance HasModifiersFor env Teamwork where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Teamwork
 
 -- | Resolve Teamwork Event
 --

@@ -25,8 +25,7 @@ yourHouse :: LocationCard YourHouse
 yourHouse =
   location YourHouse Cards.yourHouse 2 (PerPlayer 1) Squiggle [Circle]
 
-instance HasModifiersFor env YourHouse where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env YourHouse
 
 ability :: LocationAttrs -> Ability
 ability attrs =

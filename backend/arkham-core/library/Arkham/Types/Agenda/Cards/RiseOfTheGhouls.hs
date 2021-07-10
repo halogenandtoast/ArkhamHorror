@@ -19,8 +19,7 @@ riseOfTheGhouls :: RiseOfTheGhouls
 riseOfTheGhouls = RiseOfTheGhouls
   $ baseAttrs "01106" "Rise of the Ghouls" (Agenda 2 A) (Static 7)
 
-instance HasModifiersFor env RiseOfTheGhouls where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env RiseOfTheGhouls
 
 instance HasActions env RiseOfTheGhouls where
   getActions i window (RiseOfTheGhouls x) = getActions i window x

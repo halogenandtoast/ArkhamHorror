@@ -27,8 +27,7 @@ bidingItsTime :: BidingItsTime
 bidingItsTime =
   BidingItsTime $ baseAttrs "02238" "Biding Its Time" (Agenda 2 A) (Static 6)
 
-instance HasModifiersFor env BidingItsTime where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BidingItsTime
 
 instance HasActions env BidingItsTime where
   getActions i window (BidingItsTime x) = getActions i window x

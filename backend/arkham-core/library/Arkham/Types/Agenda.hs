@@ -119,7 +119,9 @@ data Agenda
 
 deriving anyclass instance ActionRunner env => HasActions env Agenda
 deriving anyclass instance (HasId (Maybe EnemyId) env EnemyMatcher, HasRecord env, AgendaRunner env) => RunMessage env Agenda
-deriving anyclass instance (HasSet EnemyId env (), HasSet Trait env EnemyId) => HasModifiersFor env Agenda
+
+instance (HasSet EnemyId env (), HasSet Trait env EnemyId) => HasModifiersFor env Agenda where
+  getModifiersFor = genericGetModifiersFor
 
 instance Entity Agenda where
   type EntityId Agenda = AgendaId
@@ -148,8 +150,7 @@ baseAgenda
   -> Agenda
 baseAgenda a b c d f = BaseAgenda' . BaseAgenda . f $ baseAttrs a b c d
 
-instance HasModifiersFor env BaseAgenda where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BaseAgenda
 
 instance HasActions env BaseAgenda where
   getActions iid window (BaseAgenda attrs) = getActions iid window attrs

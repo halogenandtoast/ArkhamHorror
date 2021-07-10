@@ -16,8 +16,7 @@ newtype Elusive = Elusive EventAttrs
 elusive :: EventCard Elusive
 elusive = event Elusive Cards.elusive
 
-instance HasModifiersFor env Elusive where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Elusive
 
 instance HasActions env Elusive where
   getActions i window (Elusive attrs) = getActions i window attrs

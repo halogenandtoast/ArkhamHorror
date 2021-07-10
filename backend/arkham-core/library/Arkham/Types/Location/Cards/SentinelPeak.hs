@@ -30,8 +30,7 @@ sentinelPeak = locationWith
   .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 2) Nothing]
   )
 
-instance HasModifiersFor env SentinelPeak where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SentinelPeak
 
 instance ActionRunner env => HasActions env SentinelPeak where
   getActions iid window (SentinelPeak attrs) = getActions iid window attrs

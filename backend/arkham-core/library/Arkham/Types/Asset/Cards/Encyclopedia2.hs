@@ -26,8 +26,7 @@ newtype Encyclopedia2 = Encyclopedia2 AssetAttrs
 encyclopedia2 :: AssetCard Encyclopedia2
 encyclopedia2 = hand Encyclopedia2 Cards.encyclopedia2
 
-instance HasModifiersFor env Encyclopedia2 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Encyclopedia2
 
 instance HasActions env Encyclopedia2 where
   getActions iid NonFast (Encyclopedia2 a) | ownedBy a iid = pure

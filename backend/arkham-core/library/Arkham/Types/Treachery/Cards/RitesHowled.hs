@@ -21,8 +21,7 @@ newtype RitesHowled = RitesHowled TreacheryAttrs
 ritesHowled :: TreacheryCard RitesHowled
 ritesHowled = treachery RitesHowled Cards.ritesHowled
 
-instance HasModifiersFor env RitesHowled where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env RitesHowled
 
 instance HasActions env RitesHowled where
   getActions i window (RitesHowled attrs) = getActions i window attrs

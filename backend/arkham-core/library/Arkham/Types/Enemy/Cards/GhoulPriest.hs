@@ -23,8 +23,7 @@ ghoulPriest = enemyWith
   (2, 2)
   (preyL .~ HighestSkill SkillCombat)
 
-instance HasModifiersFor env GhoulPriest where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env GhoulPriest
 
 instance ActionRunner env => HasActions env GhoulPriest where
   getActions i window (GhoulPriest attrs) = getActions i window attrs

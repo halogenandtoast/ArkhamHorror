@@ -39,7 +39,9 @@ instance HasCardDef Skill where
 
 deriving anyclass instance ActionRunner env => HasActions env Skill
 deriving anyclass instance SkillRunner env => RunMessage env Skill
-deriving anyclass instance HasModifiersFor env Skill
+
+instance HasModifiersFor env Skill where
+  getModifiersFor = genericGetModifiersFor
 
 instance Entity Skill where
   type EntityId Skill = SkillId

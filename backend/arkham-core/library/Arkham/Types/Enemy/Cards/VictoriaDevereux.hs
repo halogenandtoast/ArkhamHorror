@@ -30,8 +30,7 @@ victoriaDevereux = enemyWith
   (1, 0)
   (spawnAtL ?~ LocationWithTitle "Northside")
 
-instance HasModifiersFor env VictoriaDevereux where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env VictoriaDevereux
 
 instance ActionRunner env => HasActions env VictoriaDevereux where
   getActions iid NonFast (VictoriaDevereux attrs@EnemyAttrs {..}) =

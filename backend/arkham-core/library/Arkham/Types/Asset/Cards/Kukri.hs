@@ -37,8 +37,7 @@ instance HasActions env Kukri where
     ]
   getActions _ _ _ = pure []
 
-instance HasModifiersFor env Kukri where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Kukri
 
 instance
   ( HasQueue env

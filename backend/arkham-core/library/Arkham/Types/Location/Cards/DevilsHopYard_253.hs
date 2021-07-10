@@ -32,8 +32,7 @@ devilsHopYard_253 = location
   Hourglass
   [Square, Plus]
 
-instance HasModifiersFor env DevilsHopYard_253 where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env DevilsHopYard_253
 
 ability :: LocationAttrs -> Ability
 ability attrs =

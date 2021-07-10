@@ -19,8 +19,7 @@ newtype BaitAndSwitch = BaitAndSwitch EventAttrs
 baitAndSwitch :: EventCard BaitAndSwitch
 baitAndSwitch = event BaitAndSwitch Cards.baitAndSwitch
 
-instance HasModifiersFor env BaitAndSwitch where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env BaitAndSwitch
 
 instance HasActions env BaitAndSwitch where
   getActions i window (BaitAndSwitch attrs) = getActions i window attrs

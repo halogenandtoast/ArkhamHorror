@@ -19,8 +19,7 @@ newtype ArcaneBarrier = ArcaneBarrier EffectAttrs
 arcaneBarrier :: EffectArgs -> ArcaneBarrier
 arcaneBarrier = ArcaneBarrier . uncurry4 (baseAttrs "02102")
 
-instance HasModifiersFor env ArcaneBarrier where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ArcaneBarrier
 
 instance HasQueue env => RunMessage env ArcaneBarrier where
   runMessage msg e@(ArcaneBarrier attrs@EffectAttrs {..}) = case msg of

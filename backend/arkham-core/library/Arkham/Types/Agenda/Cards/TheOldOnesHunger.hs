@@ -19,8 +19,7 @@ theOldOnesHunger :: TheOldOnesHunger
 theOldOnesHunger = TheOldOnesHunger
   $ baseAttrs "02197" "The Old Ones Hunger" (Agenda 2 A) (Static 6)
 
-instance HasModifiersFor env TheOldOnesHunger where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env TheOldOnesHunger
 
 instance HasActions env TheOldOnesHunger where
   getActions i window (TheOldOnesHunger x) = getActions i window x

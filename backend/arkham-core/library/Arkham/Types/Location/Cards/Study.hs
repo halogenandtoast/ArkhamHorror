@@ -15,8 +15,7 @@ newtype Study = Study LocationAttrs
 study :: LocationCard Study
 study = location Study Cards.study 2 (PerPlayer 2) Circle []
 
-instance HasModifiersFor env Study where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Study
 
 instance ActionRunner env => HasActions env Study where
   getActions i window (Study attrs) = getActions i window attrs

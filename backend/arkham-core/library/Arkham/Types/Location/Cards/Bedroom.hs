@@ -17,8 +17,7 @@ newtype Bedroom = Bedroom LocationAttrs
 bedroom :: LocationCard Bedroom
 bedroom = location Bedroom Cards.bedroom 2 (PerPlayer 1) Heart [T]
 
-instance HasModifiersFor env Bedroom where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Bedroom
 
 instance ActionRunner env => HasActions env Bedroom where
   getActions i window (Bedroom attrs) = getActions i window attrs

@@ -24,8 +24,7 @@ instance HasActions env HypnoticGaze where
   getActions iid window (HypnoticGaze (attrs `With` _)) =
     getActions iid window attrs
 
-instance HasModifiersFor env HypnoticGaze where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env HypnoticGaze
 
 dropUntilAttack :: [Message] -> [Message]
 dropUntilAttack = dropWhile (notElem AttackMessage . messageType)

@@ -22,8 +22,7 @@ ritualGrounds = location
   Equals
   [Hourglass, Equals]
 
-instance HasModifiersFor env RitualGrounds where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env RitualGrounds
 
 instance ActionRunner env => HasActions env RitualGrounds where
   getActions i window (RitualGrounds attrs) = getActions i window attrs

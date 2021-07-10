@@ -31,8 +31,7 @@ southsideMasBoardingHouse = location
   Square
   [Diamond, Plus, Circle]
 
-instance HasModifiersFor env SouthsideMasBoardingHouse where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SouthsideMasBoardingHouse
 
 ability :: LocationAttrs -> Ability
 ability attrs =

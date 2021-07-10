@@ -26,8 +26,7 @@ conglomerationOfSpheres = enemyWith
   (1, 1)
   (preyL .~ LowestSkill SkillWillpower)
 
-instance HasModifiersFor env ConglomerationOfSpheres where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ConglomerationOfSpheres
 
 instance ActionRunner env => HasActions env ConglomerationOfSpheres where
   getActions i window (ConglomerationOfSpheres attrs) =

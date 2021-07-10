@@ -20,8 +20,7 @@ newtype SwampLeech = SwampLeech EnemyAttrs
 swampLeech :: EnemyCard SwampLeech
 swampLeech = enemy SwampLeech Cards.swampLeech (4, Static 1, 0) (1, 0)
 
-instance HasModifiersFor env SwampLeech where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SwampLeech
 
 isEvade :: Message -> Bool
 isEvade = \case

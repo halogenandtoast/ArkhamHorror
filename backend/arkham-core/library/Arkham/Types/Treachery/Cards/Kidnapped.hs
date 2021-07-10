@@ -23,8 +23,7 @@ newtype Kidnapped = Kidnapped TreacheryAttrs
 kidnapped :: TreacheryCard Kidnapped
 kidnapped = treachery Kidnapped Cards.kidnapped
 
-instance HasModifiersFor env Kidnapped where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env Kidnapped
 
 instance HasActions env Kidnapped where
   getActions i (WhenAgendaAdvance aid) (Kidnapped attrs)

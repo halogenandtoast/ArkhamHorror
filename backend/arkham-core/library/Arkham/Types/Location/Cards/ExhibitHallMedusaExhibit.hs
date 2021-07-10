@@ -26,8 +26,7 @@ exhibitHallMedusaExhibit = location
   T
   [Square, Moon]
 
-instance HasModifiersFor env ExhibitHallMedusaExhibit where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env ExhibitHallMedusaExhibit
 
 instance ActionRunner env => HasActions env ExhibitHallMedusaExhibit where
   getActions iid window (ExhibitHallMedusaExhibit attrs) =

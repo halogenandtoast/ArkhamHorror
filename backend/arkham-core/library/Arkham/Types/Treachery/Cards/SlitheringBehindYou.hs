@@ -20,8 +20,7 @@ newtype SlitheringBehindYou = SlitheringBehindYou TreacheryAttrs
 slitheringBehindYou :: TreacheryCard SlitheringBehindYou
 slitheringBehindYou = treachery SlitheringBehindYou Cards.slitheringBehindYou
 
-instance HasModifiersFor env SlitheringBehindYou where
-  getModifiersFor = noModifiersFor
+instance HasModifiersFor env SlitheringBehindYou
 
 instance HasActions env SlitheringBehindYou where
   getActions i window (SlitheringBehindYou attrs) = getActions i window attrs

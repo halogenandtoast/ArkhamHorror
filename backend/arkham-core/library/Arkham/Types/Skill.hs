@@ -22,6 +22,7 @@ data Skill
   | DoubleOrNothing' DoubleOrNothing
   | Fearless' Fearless
   | Guts' Guts
+  | InquiringMind' InquiringMind
   | ManualDexterity' ManualDexterity
   | Opportunist' Opportunist
   | Overpower' Overpower
@@ -74,6 +75,7 @@ allSkills = mapFromList $ map
   , DoubleOrNothing' <$> doubleOrNothing
   , Fearless' <$> fearless
   , Guts' <$> guts
+  , InquiringMind' <$> inquiringMind
   , ManualDexterity' <$> manualDexterity
   , Opportunist' <$> opportunist
   , Overpower' <$> overpower

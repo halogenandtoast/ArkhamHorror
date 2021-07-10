@@ -711,6 +711,7 @@ library
       Arkham.Types.Skill.Cards.DoubleOrNothing
       Arkham.Types.Skill.Cards.Fearless
       Arkham.Types.Skill.Cards.Guts
+      Arkham.Types.Skill.Cards.InquiringMind
       Arkham.Types.Skill.Cards.ManualDexterity
       Arkham.Types.Skill.Cards.Opportunist
       Arkham.Types.Skill.Cards.Overpower

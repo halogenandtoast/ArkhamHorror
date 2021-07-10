@@ -49,6 +49,7 @@ allPlayerSkillCards = mapFromList $ map
   , doubleOrNothing
   , fearless
   , guts
+  , inquiringMind
   , manualDexterity
   , opportunist
   , overpower
@@ -147,6 +148,13 @@ riseToTheOccasion = (skill
   { cdCardTraits = singleton Innate
   , cdCommitRestrictions = [OnlyYourTest]
   }
+
+inquiringMind :: CardDef
+inquiringMind =
+  (skill "02227" "Inquiring Mind" [SkillWild, SkillWild, SkillWild] Seeker)
+    { cdCardTraits = singleton Innate
+    , cdCommitRestrictions = [OnlyIfYourLocationHasClues]
+    }
 
 trueUnderstanding :: CardDef
 trueUnderstanding = (skill "04153" "True Understanding" [SkillWild] Seeker)

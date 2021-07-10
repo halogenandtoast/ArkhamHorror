@@ -47,6 +47,7 @@ data Event
   | EmergencyCache' EmergencyCache
   | EmergencyCache2' EmergencyCache2
   | Evidence' Evidence
+  | ExposeWeakness1' ExposeWeakness1
   | ExtraAmmunition1' ExtraAmmunition1
   | FirstWatch' FirstWatch
   | Flare1' Flare1
@@ -109,6 +110,7 @@ deriving anyclass instance
   , HasSet FightableEnemyId env (InvestigatorId, Source)
   , HasCount HealthDamageCount env EnemyId
   , HasCount SanityDamageCount env EnemyId
+  , HasCount FightCount env EnemyId
   )
   => RunMessage env Event
 
@@ -165,6 +167,7 @@ allEvents = mapFromList $ map
   , EmergencyCache' <$> emergencyCache
   , EmergencyCache2' <$> emergencyCache2
   , Evidence' <$> evidence
+  , ExposeWeakness1' <$> exposeWeakness1
   , ExtraAmmunition1' <$> extraAmmunition1
   , FirstWatch' <$> firstWatch
   , Flare1' <$> flare1

@@ -702,6 +702,9 @@ instance HasGame env => HasId LocationId env InvestigatorId where
 instance HasGame env => HasId LocationId env EnemyId where
   getId = getId <=< getEnemy
 
+instance HasGame env => HasCount FightCount env EnemyId where
+  getCount = getCount <=< getEnemy
+
 instance HasGame env => HasCount ActsRemainingCount env () where
   getCount _ = do
     actIds <-

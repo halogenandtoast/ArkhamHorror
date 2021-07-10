@@ -48,6 +48,8 @@ newtype SanityDamageCount = SanityDamageCount { unSanityDamageCount :: Int }
 
 newtype HealthDamageCount = HealthDamageCount { unHealthDamageCount :: Int }
 
+newtype FightCount = FightCount { unFightCount :: Int }
+
 instance Semigroup ClueCount where
   (ClueCount a) <> (ClueCount b) = ClueCount (a + b)
 

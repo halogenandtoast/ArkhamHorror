@@ -47,6 +47,7 @@ type InvestigatorRunner env
       , HasCount DamageCount env InvestigatorId
       , HasCount DiscardCount env InvestigatorId
       , HasCount EnemyCount env InvestigatorId
+      , HasCount FightCount env EnemyId
       , HasCount HealthDamageCount env EnemyId
       , HasCount HorrorCount env InvestigatorId
       , HasCount PlayerCount env ()

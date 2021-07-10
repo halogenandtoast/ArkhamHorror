@@ -72,6 +72,7 @@ allPlayerEventCards = mapFromList $ map
   , emergencyCache
   , emergencyCache2
   , evidence
+  , exposeWeakness1
   , extraAmmunition1
   , firstWatch
   , flare1
@@ -473,6 +474,13 @@ ifItBleeds = (event "02225" "\"If it bleeds...\"" 1 Guardian)
   { cdSkills = [SkillWillpower, SkillCombat]
   , cdFastWindow = Just
     (Matcher.AfterEnemyDefeated Matcher.You $ Matcher.EnemyWithTrait Monster)
+  }
+
+exposeWeakness1 :: CardDef
+exposeWeakness1 = (event "02228" "Expose Weakness" 0 Seeker)
+  { cdSkills = [SkillIntellect, SkillCombat, SkillCombat]
+  , cdFastWindow = Just (Matcher.FastPlayerWindow Matcher.Anyone)
+  , cdPlayRestrictions = [EnemyAtYourLocation]
   }
 
 letMeHandleThis :: CardDef

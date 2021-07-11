@@ -377,7 +377,7 @@ data Message
   | PlayFastEvent InvestigatorId CardId (Maybe Target) [Window]
   | PlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
   | PlayedCard InvestigatorId CardId Name CardCode
-  | PlayerWindow InvestigatorId [Message]
+  | PlayerWindow InvestigatorId [Message] Bool
   | PutCardIntoPlay InvestigatorId Card (Maybe Target)
   | PutOnTopOfDeck InvestigatorId PlayerCard
   | PutOnTopOfEncounterDeck InvestigatorId EncounterCard

@@ -287,7 +287,7 @@ runMessages = do
                     pushAll [BeginTurn x, After (BeginTurn x)]
                     runMessages
               else
-                pushAllEnd [PlayerWindow (g ^. activeInvestigatorIdL) []]
+                pushAllEnd [PlayerWindow (g ^. activeInvestigatorIdL) [] False]
                   >> runMessages
         Just msg -> do
           case msg of

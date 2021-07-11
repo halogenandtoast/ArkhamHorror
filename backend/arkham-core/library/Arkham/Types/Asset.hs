@@ -144,6 +144,7 @@ data Asset
   | StrayCat' StrayCat
   | Streetwise3' Streetwise3
   | Switchblade' Switchblade
+  | Switchblade2' Switchblade2
   | TheNecronomicon' TheNecronomicon
   | TheNecronomiconAdvanced' TheNecronomiconAdvanced
   | TheNecronomiconOlausWormiusTranslation' TheNecronomiconOlausWormiusTranslation
@@ -388,6 +389,7 @@ allAssets = mapFromList $ map
   , StrayCat' <$> strayCat
   , Streetwise3' <$> streetwise3
   , Switchblade' <$> switchblade
+  , Switchblade2' <$> switchblade2
   , TheNecronomicon' <$> theNecronomicon
   , TheNecronomiconAdvanced' <$> theNecronomiconAdvanced
   , TheNecronomiconOlausWormiusTranslation'

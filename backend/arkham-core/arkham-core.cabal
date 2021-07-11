@@ -718,6 +718,7 @@ library
       Arkham.Types.Skill.Cards.Opportunist
       Arkham.Types.Skill.Cards.Overpower
       Arkham.Types.Skill.Cards.Perception
+      Arkham.Types.Skill.Cards.QuickThinking
       Arkham.Types.Skill.Cards.RiseToTheOccasion
       Arkham.Types.Skill.Cards.SurvivalInstinct
       Arkham.Types.Skill.Cards.TrueUnderstanding

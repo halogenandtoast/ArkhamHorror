@@ -38,7 +38,7 @@ instance HasQueue env => RunMessage env LuckyDice2 where
         when
           (not hasDrawn && tokenFace token == AutoFail)
           (case effectSource of
-            AssetSource aid -> push (Discard $ AssetTarget aid)
+            AssetSource aid -> push (RemoveFromGame $ AssetTarget aid)
             _ -> error "wrong source"
           )
         pure $ LuckyDice2 $ attrs `with` Metadata True

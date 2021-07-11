@@ -64,6 +64,7 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   , cdUnique = False
   , cdDoubleSided = False
   , cdLimits = []
+  , cdExceptional = False
   }
 
 allPlayerAssetCards :: HashMap CardCode CardDef
@@ -139,6 +140,7 @@ allPlayerAssetCards = mapFromList $ map
   , liquidCourage
   , litaChantler
   , loneWolf
+  , luckyDice2
   , machete
   , magnifyingGlass
   , magnifyingGlass1
@@ -958,6 +960,13 @@ springfieldM19034 = (asset "02226" "Springfield M1903" 4 Guardian)
   { cdCardTraits = setFromList [Item, Weapon, Firearm]
   , cdLevel = 4
   , cdSkills = [SkillCombat, SkillAgility]
+  }
+
+luckyDice2 :: CardDef
+luckyDice2 = (asset "02230" ("Lucky Dice" <:> "... Or Are They?") 2 Rogue)
+  { cdCardTraits = setFromList [Item, Relic]
+  , cdSkills = [SkillWillpower, SkillAgility]
+  , cdExceptional = True
   }
 
 darkHorse :: CardDef

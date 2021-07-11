@@ -9,6 +9,7 @@ import Arkham.Prelude hiding (to)
 import Arkham.Types.Classes.Entity.Source as X
 import Arkham.Types.Message
 import Arkham.Types.Target
+import Arkham.Types.Token
 import GHC.Generics
 
 class Entity a where
@@ -73,3 +74,9 @@ insertEntity
   -> HashMap k v
   -> HashMap k v
 insertEntity a = insertMap (toId a) a
+
+instance TargetEntity Token where
+  toTarget = TokenTarget
+  isTarget t (TokenTarget t') = t == t'
+  isTarget _ _ = False
+

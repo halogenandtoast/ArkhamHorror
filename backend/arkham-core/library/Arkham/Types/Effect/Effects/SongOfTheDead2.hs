@@ -23,7 +23,8 @@ instance HasModifiersFor env SongOfTheDead2
 
 instance HasQueue env => RunMessage env SongOfTheDead2 where
   runMessage msg e@(SongOfTheDead2 attrs@EffectAttrs {..}) = case msg of
-    RevealToken _ iid Skull | InvestigatorTarget iid == effectTarget ->
-      e <$ push (skillTestModifier attrs effectTarget (DamageDealt 2))
+    RevealToken _ iid (Token _ Skull)
+      | InvestigatorTarget iid == effectTarget -> e
+      <$ push (skillTestModifier attrs effectTarget (DamageDealt 2))
     SkillTestEnds _ -> e <$ push (DisableEffect effectId)
     _ -> SongOfTheDead2 <$> runMessage msg attrs

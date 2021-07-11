@@ -22,7 +22,7 @@ nightOfTheZealot difficulty = NightOfTheZealot $ baseAttrs
   difficulty
   (nightOfTheZealotChaosBagContents difficulty)
 
-nightOfTheZealotChaosBagContents :: Difficulty -> [Token]
+nightOfTheZealotChaosBagContents :: Difficulty -> [TokenFace]
 nightOfTheZealotChaosBagContents difficulty =
   if difficulty `elem` [Easy, Standard]
     then

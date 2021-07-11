@@ -99,7 +99,7 @@ instance
     ElderThing -> pure $ toTokenValue attrs ElderThing 3 3
     otherFace -> getTokenValue attrs iid otherFace
 
-standaloneTokens :: [Token]
+standaloneTokens :: [TokenFace]
 standaloneTokens =
   [ PlusOne
   , Zero
@@ -276,8 +276,8 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       ResolveToken _ Tablet _ | isHardExpert attrs -> do
         cultists <- getSetList @EnemyId Trait.Cultist
         s <$ pushAll [ PlaceDoom (EnemyTarget eid) 1 | eid <- cultists ]
-      FailedSkillTest iid _ _ (DrawnTokenTarget token) _ n ->
-        s <$ case drawnTokenFace token of
+      FailedSkillTest iid _ _ (TokenTarget token) _ n ->
+        s <$ case tokenFace token of
           Cultist ->
             pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
           ElderThing | isEasyStandard attrs -> push $ ChooseAndDiscardCard iid

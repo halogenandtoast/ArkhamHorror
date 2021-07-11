@@ -233,10 +233,14 @@ choiceL = lens chaosBagChoice $ \m x -> m { chaosBagChoice = x }
 instance HasList Token env ChaosBag where
   getList = pure . chaosBagTokens
 
+createToken :: MonadRandom m => TokenFace -> m Token
+createToken face = Token <$> getRandom <*> pure face
+
 instance (HasQueue env, HasId LeadInvestigatorId env ()) => RunMessage env ChaosBag where
   runMessage msg c@ChaosBag {..} = case msg of
-    SetTokens tokens' ->
-      pure $ c & tokensL .~ tokens' & setAsideTokensL .~ mempty
+    SetTokens tokens' -> do
+      tokens'' <- traverse createToken tokens'
+      pure $ c & tokensL .~ tokens'' & setAsideTokensL .~ mempty
     ResetTokens _source ->
       pure
         $ c
@@ -265,7 +269,8 @@ instance (HasQueue env, HasId LeadInvestigatorId env ()) => RunMessage env Chaos
           push (RunBag source miid strategy)
           pushAll msgs
           pure $ c & choiceL ?~ choice''
-        else c <$ pushAll [BeforeRevealTokens, RunDrawFromBag source miid strategy]
+        else c
+          <$ pushAll [BeforeRevealTokens, RunDrawFromBag source miid strategy]
     NextChaosBagStep source miid strategy -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' -> do
@@ -317,5 +322,7 @@ instance (HasQueue env, HasId LeadInvestigatorId env ()) => RunMessage env Chaos
       pure $ c & revealedTokensL %~ (token :)
     ReturnTokens tokens' ->
       pure $ c & tokensL %~ (<> tokens') & setAsideTokensL %~ (\\ tokens')
-    AddToken token -> pure $ c & tokensL %~ (token :)
+    AddToken tokenFace -> do
+      token <- createToken tokenFace
+      pure $ c & tokensL %~ (token :)
     _ -> pure c

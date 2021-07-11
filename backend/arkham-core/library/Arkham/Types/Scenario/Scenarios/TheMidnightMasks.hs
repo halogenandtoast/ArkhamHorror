@@ -217,8 +217,8 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       s <$ case cultists of
         [] -> push (DrawAnotherToken iid)
         xs -> pushAll [ PlaceDoom (EnemyTarget eid) 1 | eid <- xs ]
-    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _
-      | drawnTokenFace token == Tablet -> if isEasyStandard attrs
+    FailedSkillTest iid _ _ (TokenTarget token) _ _
+      | tokenFace token == Tablet -> if isEasyStandard attrs
         then s <$ push (InvestigatorPlaceAllCluesOnLocation iid)
         else s <$ push (InvestigatorPlaceCluesOnLocation iid 1)
     ScenarioResolution NoResolution ->

@@ -20,6 +20,7 @@ import Arkham.Types.Effect.Effects.JeremiahPierce as X
 import Arkham.Types.Effect.Effects.LetMeHandleThis as X
 import Arkham.Types.Effect.Effects.Lucky as X
 import Arkham.Types.Effect.Effects.Lucky2 as X
+import Arkham.Types.Effect.Effects.LuckyDice2 as X
 import Arkham.Types.Effect.Effects.MindOverMatter as X
 import Arkham.Types.Effect.Effects.MindWipe1 as X
 import Arkham.Types.Effect.Effects.MindWipe3 as X
@@ -31,6 +32,7 @@ import Arkham.Types.Effect.Effects.SeekingAnswers as X
 import Arkham.Types.Effect.Effects.Shrivelling as X
 import Arkham.Types.Effect.Effects.SureGamble3 as X
 import Arkham.Types.Effect.Effects.TenAcreMeadow_246 as X
+import Arkham.Types.Effect.Effects.TokenEffect as X
 import Arkham.Types.Effect.Effects.UndimensionedAndUnseenTabletToken as X
 import Arkham.Types.Effect.Effects.WillToSurvive3 as X
 import Arkham.Types.Effect.Effects.WindowModifierEffect as X

@@ -28,7 +28,7 @@ data CampaignAttrs = CampaignAttrs
   , campaignDecks :: HashMap InvestigatorId (Deck PlayerCard)
   , campaignStoryCards :: HashMap InvestigatorId [PlayerCard]
   , campaignDifficulty :: Difficulty
-  , campaignChaosBag :: [Token]
+  , campaignChaosBag :: [TokenFace]
   , campaignLog :: CampaignLog
   , campaignStep :: Maybe CampaignStep
   , campaignCompletedSteps :: [CampaignStep]
@@ -40,7 +40,7 @@ completedStepsL :: Lens' CampaignAttrs [CampaignStep]
 completedStepsL =
   lens campaignCompletedSteps $ \m x -> m { campaignCompletedSteps = x }
 
-chaosBagL :: Lens' CampaignAttrs [Token]
+chaosBagL :: Lens' CampaignAttrs [TokenFace]
 chaosBagL = lens campaignChaosBag $ \m x -> m { campaignChaosBag = x }
 
 storyCardsL :: Lens' CampaignAttrs (HashMap InvestigatorId [PlayerCard])
@@ -148,7 +148,7 @@ instance CampaignRunner env => RunMessage env CampaignAttrs where
       (singleton $ unInvestigatorId iid)
     _ -> pure a
 
-baseAttrs :: CampaignId -> Text -> Difficulty -> [Token] -> CampaignAttrs
+baseAttrs :: CampaignId -> Text -> Difficulty -> [TokenFace] -> CampaignAttrs
 baseAttrs campaignId' name difficulty chaosBagContents = CampaignAttrs
   { campaignId = campaignId'
   , campaignName = name

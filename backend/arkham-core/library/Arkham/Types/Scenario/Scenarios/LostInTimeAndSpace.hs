@@ -67,7 +67,7 @@ instance
       pure $ toTokenValue attrs ElderThing shroud (shroud * 2)
     otherFace -> getTokenValue attrs iid otherFace
 
-standaloneTokens :: [Token]
+standaloneTokens :: [TokenFace]
 standaloneTokens =
   [ PlusOne
   , Zero
@@ -197,8 +197,8 @@ instance
               ]
           )
         )
-    After (PassedSkillTest iid _ _ (DrawnTokenTarget token) _ _) ->
-      s <$ case (isHardExpert attrs, drawnTokenFace token) of
+    After (PassedSkillTest iid _ _ (TokenTarget token) _ _) ->
+      s <$ case (isHardExpert attrs, tokenFace token) of
         (True, Cultist) -> push
           (DiscardEncounterUntilFirst
             (toSource attrs)
@@ -210,8 +210,8 @@ instance
             Nothing -> pure ()
             Just eid -> push (EnemyAttack iid eid)
         _ -> pure ()
-    After (FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _) ->
-      s <$ case drawnTokenFace token of
+    After (FailedSkillTest iid _ _ (TokenTarget token) _ _) ->
+      s <$ case tokenFace token of
         Cultist -> push
           (DiscardEncounterUntilFirst
             (ProxySource (toSource attrs) (InvestigatorSource iid))

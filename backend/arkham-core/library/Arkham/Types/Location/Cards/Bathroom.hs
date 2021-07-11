@@ -26,9 +26,9 @@ instance ActionRunner env => HasActions env Bathroom where
 
 instance (LocationRunner env) => RunMessage env Bathroom where
   runMessage msg l@(Bathroom attrs) = case msg of
-    After (RevealToken (SkillTestSource _ _ source _ (Just Action.Investigate)) iid tokenFace)
+    After (RevealToken (SkillTestSource _ _ source _ (Just Action.Investigate)) iid token)
       | isSource attrs source
       -> l <$ when
-        (tokenFace `elem` [Skull, Cultist, Tablet, AutoFail])
+        (tokenFace token `elem` [Skull, Cultist, Tablet, AutoFail])
         (pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid])
     _ -> Bathroom <$> runMessage msg attrs

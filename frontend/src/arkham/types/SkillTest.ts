@@ -1,8 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 import { SkillType, skillTypeDecoder } from '@/arkham/types/SkillType';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
-// import { SkillTestResult, skillTestResultDecoder } from '@/arkham/types/SkillTestResult';
-// import { Card, cardDecoder } from '@/arkham/types/Card';
 
 export interface Source {
   tag: string;

@@ -42,6 +42,7 @@ event cardCode name cost classSymbol = CardDef
   , cdUnique = False
   , cdDoubleSided = False
   , cdLimits = []
+  , cdExceptional = False
   }
 
 allPlayerEventCards :: HashMap CardCode CardDef

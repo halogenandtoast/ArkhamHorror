@@ -29,8 +29,8 @@ data Source
   | ScenarioSource ScenarioId
   | InvestigatorSource InvestigatorId
   | CardCodeSource CardCode
-  | TokenSource TokenId
-  | TokenEffectSource Token
+  | TokenSource Token
+  | TokenEffectSource TokenFace
   | AgendaSource AgendaId
   | LocationSource LocationId
   | SkillTestSource InvestigatorId SkillType Source Target (Maybe Action)
@@ -45,7 +45,6 @@ data Source
   | PlayerCardSource CardId
   | EncounterCardSource CardId
   | TestSource (HashSet Trait)
-  | DrawnTokenSource DrawnToken
   | ProxySource Source Source
   | EffectSource EffectId
   | ResourceSource

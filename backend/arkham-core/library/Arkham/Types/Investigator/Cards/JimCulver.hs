@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
+import Arkham.Types.EffectMetadata
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
@@ -19,8 +20,8 @@ newtype JimCulver = JimCulver InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env JimCulver where
-  getModifiersFor (SkillTestSource iid _ _ _ _) (DrawnTokenTarget token) (JimCulver attrs)
-    | iid == investigatorId attrs && drawnTokenFace token == Skull
+  getModifiersFor (SkillTestSource iid _ _ _ _) (TokenTarget token) (JimCulver attrs)
+    | iid == investigatorId attrs && tokenFace token == Skull
     = pure $ toModifiers attrs [ChangeTokenModifier $ PositiveModifier 0]
   getModifiersFor source target (JimCulver attrs) =
     getModifiersFor source target attrs
@@ -50,15 +51,21 @@ instance HasTokenValue env JimCulver where
 
 instance InvestigatorRunner env => RunMessage env JimCulver where
   runMessage msg i@(JimCulver attrs@InvestigatorAttrs {..}) = case msg of
-    When (RevealToken source iid ElderSign) | iid == investigatorId -> do
-      mmsg <- popMessage
-      case mmsg of
-        Just RevealToken{} -> i <$ push
+    When (RevealToken _ iid token)
+      | iid == investigatorId && tokenFace token == ElderSign -> do
+        i <$ push
           (chooseOne
             iid
-            [ Label "Resolve as Elder Sign" [RevealToken source iid ElderSign]
-            , Label "Resolve as Skull" [RevealToken source iid Skull]
+            [ Label "Resolve as Elder Sign" []
+            , Label
+              "Resolve as Skull"
+              [ CreateTokenEffect
+                  (EffectModifiers
+                  $ toModifiers attrs [TokenFaceModifier [Skull]]
+                  )
+                  (toSource attrs)
+                  token
+              ]
             ]
           )
-        _ -> error "wrong message type"
     _ -> JimCulver <$> runMessage msg attrs

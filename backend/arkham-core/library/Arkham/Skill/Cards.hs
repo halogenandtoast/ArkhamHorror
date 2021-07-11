@@ -38,6 +38,7 @@ skill cardCode name skills classSymbol = CardDef
   , cdUnique = False
   , cdDoubleSided = False
   , cdLimits = []
+  , cdExceptional = False
   }
 
 allPlayerSkillCards :: HashMap CardCode CardDef

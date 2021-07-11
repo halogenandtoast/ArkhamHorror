@@ -25,7 +25,7 @@ instance HasQueue env => RunMessage env BaseballBat where
     RevealToken _ iid token | InvestigatorTarget iid == effectTarget ->
       case effectSource of
         AssetSource assetId -> e <$ when
-          (token `elem` [Skull, AutoFail])
+          (tokenFace token `elem` [Skull, AutoFail])
           (pushAll [Discard (AssetTarget assetId), DisableEffect effectId])
         _ -> error "wrong source"
     SkillTestEnds _ -> e <$ push (DisableEffect effectId)

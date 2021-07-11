@@ -19,6 +19,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Target
+import Arkham.Types.Token
 import Arkham.Types.Trait
 
 createEffect
@@ -52,6 +53,16 @@ createWindowModifierEffect effectWindow effectMetadata source target = do
     , buildWindowModifierEffect eid effectMetadata effectWindow source target
     )
 
+createTokenEffect
+  :: MonadRandom m
+  => EffectMetadata Message
+  -> Source
+  -> Token
+  -> m (EffectId, Effect)
+createTokenEffect effectMetadata source token = do
+  eid <- getRandom
+  pure (eid, buildTokenEffect eid effectMetadata source token)
+
 createPayForAbilityEffect
   :: MonadRandom m => Maybe Ability -> Source -> Target -> m (EffectId, Effect)
 createPayForAbilityEffect mAbility source target = do
@@ -82,6 +93,7 @@ data Effect
   | FireExtinguisher1' FireExtinguisher1
   | Deduction2' Deduction2
   | ExposeWeakness1' ExposeWeakness1
+  | LuckyDice2' LuckyDice2
   | UndimensionedAndUnseenTabletToken' UndimensionedAndUnseenTabletToken
   | TenAcreMeadow_246' TenAcreMeadow_246
   | LetMeHandleThis' LetMeHandleThis
@@ -91,6 +103,7 @@ data Effect
   | CursedShores' CursedShores
   | WindowModifierEffect' WindowModifierEffect
   | PayForAbilityEffect' PayForAbilityEffect
+  | TokenEffect' TokenEffect
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -168,6 +181,7 @@ allEffects = mapFromList
   , ("02114", FireExtinguisher1' . fireExtinguisher1)
   , ("02150", Deduction2' . deduction2)
   , ("02228", ExposeWeakness1' . exposeWeakness1)
+  , ("02230", LuckyDice2' . luckyDice2)
   , ( "02236"
     , UndimensionedAndUnseenTabletToken' . undimensionedAndUnseenTabletToken
     )
@@ -196,6 +210,11 @@ buildWindowModifierEffect
 buildWindowModifierEffect eid metadata effectWindow source target =
   WindowModifierEffect'
     $ windowModifierEffect eid metadata effectWindow source target
+
+buildTokenEffect
+  :: EffectId -> EffectMetadata Message -> Source -> Token -> Effect
+buildTokenEffect eid metadata source token =
+  TokenEffect' $ tokenEffect eid metadata source token
 
 buildPayForAbilityEffect
   :: EffectId -> Maybe Ability -> Source -> Target -> Effect

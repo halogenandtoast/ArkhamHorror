@@ -38,7 +38,7 @@ spec = describe "Grotesque Statue (4)" $ do
             chooseOptionMatching
               "choose zero token"
               (\case
-                ChooseTokenGroups _ _ (Choose 1 _ [[Zero]]) -> True
+                ChooseTokenGroups _ _ (Choose 1 _ [[Token _ Zero]]) -> True
                 _ -> False
               )
             chooseOnlyOption "apply results"

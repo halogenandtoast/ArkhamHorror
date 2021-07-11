@@ -64,22 +64,22 @@ instance
       if IgnoreTokenEffects `elem` modifiers'
         then pure s
         else defaultRunMessage msg s
-    FailedSkillTest _ _ _ (DrawnTokenTarget token) _ _ -> do
+    FailedSkillTest _ _ _ (TokenTarget token) _ _ -> do
       modifiers' <-
         map modifierType
           <$> getModifiersFor
                 (toSource $ toAttrs s)
-                (TokenFaceTarget $ drawnTokenFace token)
+                (TokenFaceTarget $ tokenFace token)
                 ()
       if IgnoreTokenEffects `elem` modifiers'
         then pure s
         else defaultRunMessage msg s
-    PassedSkillTest _ _ _ (DrawnTokenTarget token) _ _ -> do
+    PassedSkillTest _ _ _ (TokenTarget token) _ _ -> do
       modifiers' <-
         map modifierType
           <$> getModifiersFor
                 (toSource $ toAttrs s)
-                (TokenFaceTarget $ drawnTokenFace token)
+                (TokenFaceTarget $ tokenFace token)
                 ()
       if IgnoreTokenEffects `elem` modifiers'
         then pure s

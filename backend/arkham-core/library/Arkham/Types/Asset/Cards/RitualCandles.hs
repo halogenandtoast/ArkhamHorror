@@ -29,7 +29,7 @@ ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 instance HasActions env RitualCandles where
   getActions iid (WhenRevealToken You token) (RitualCandles x) = pure
     [ UseAbility iid (ability x)
-    | token `elem` [Skull, Cultist, Tablet, ElderSign]
+    | tokenFace token `elem` [Skull, Cultist, Tablet, ElderSign]
     ]
   getActions iid window (RitualCandles x) = getActions iid window x
 

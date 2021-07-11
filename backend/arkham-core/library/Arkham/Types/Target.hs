@@ -43,9 +43,8 @@ data Target
   | EventTarget EventId
   | SkillTarget SkillId
   | SkillTestInitiatorTarget Target
-  | TokenTarget TokenId
-  | TokenFaceTarget Token
-  | DrawnTokenTarget DrawnToken
+  | TokenTarget Token
+  | TokenFaceTarget TokenFace
   | TestTarget
   | ResourceTarget
   | InvestigationTarget InvestigatorId LocationId

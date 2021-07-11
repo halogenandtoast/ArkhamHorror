@@ -127,7 +127,7 @@ data Message
   | AddToScenarioDeck Target
   | AddCardToScenarioDeck Card
   | AddToVictory Target
-  | AddToken Token
+  | AddToken TokenFace
   | AddTraits Target [Trait]
   | AddUses Target UseType Int
   | AddedConnection LocationId LocationId
@@ -201,6 +201,7 @@ data Message
   | CreateEnemyEngagedWithPrey Card
   | CreatePayAbilityCostEffect (Maybe Ability) Source Target
   | CreateWindowModifierEffect EffectWindow (EffectMetadata Message) Source Target
+  | CreateTokenEffect (EffectMetadata Message) Source Token
   | CreateStoryAssetAt Card LocationId
   | CreateStoryAssetAtLocationMatching Card LocationMatcher
   | CreateTokenValueEffect Int Source Target
@@ -421,7 +422,7 @@ data Message
   | Resign InvestigatorId
   | ResignWith Target
   | ResolveEvent InvestigatorId EventId (Maybe Target)
-  | ResolveToken DrawnToken Token InvestigatorId
+  | ResolveToken Token TokenFace InvestigatorId -- since tokens can have their face changed we use this to represent that; TODO: use a real modifier
   | ReturnSkillTestRevealedTokens
   | ReturnToHand InvestigatorId Target
   | ReturnTokens [Token]
@@ -447,7 +448,7 @@ data Message
   | SetActions InvestigatorId Source Int
   | SetEncounterDeck (Deck EncounterCard)
   | SetLocationLabel LocationId Text
-  | SetTokens [Token]
+  | SetTokens [TokenFace]
   | SetTokensForScenario
   | Setup
   | EndSetup

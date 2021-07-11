@@ -589,7 +589,6 @@ targetToSource = \case
   SkillTestInitiatorTarget _ -> error "can not convert"
   TokenTarget tid -> TokenSource tid
   TokenFaceTarget _ -> error "Not convertable"
-  DrawnTokenTarget dt -> DrawnTokenSource dt
   TestTarget -> TestSource mempty
   ResourceTarget -> ResourceSource
   InvestigationTarget{} -> error "not converted"
@@ -617,7 +616,6 @@ sourceToTarget = \case
   PlayerCardSource cid -> CardIdTarget cid
   EncounterCardSource _ -> error "not implemented"
   TestSource{} -> TestTarget
-  DrawnTokenSource dt -> DrawnTokenTarget dt
   ProxySource _ source -> sourceToTarget source
   EffectSource eid -> EffectTarget eid
   ResourceSource -> ResourceTarget

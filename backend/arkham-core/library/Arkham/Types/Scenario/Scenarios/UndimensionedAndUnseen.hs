@@ -113,7 +113,7 @@ undimensionedAndUnseenPart2 = FlavorText
     \ be more than one such creature on the loose…."
   ]
 
-standaloneTokens :: [Token]
+standaloneTokens :: [TokenFace]
 standaloneTokens =
   [ PlusOne
   , Zero
@@ -317,8 +317,8 @@ instance
       (CreateEffect
         "02236"
         Nothing
-        (DrawnTokenSource drawnToken)
-        (DrawnTokenTarget drawnToken)
+        (TokenSource drawnToken)
+        (TokenTarget drawnToken)
       )
     ResolveToken _ ElderThing iid -> do
       msource <- getSkillTestSource

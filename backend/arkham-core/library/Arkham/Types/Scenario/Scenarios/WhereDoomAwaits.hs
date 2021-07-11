@@ -99,7 +99,7 @@ whereDoomAwaitsPart1 = FlavorText
     \ same. These mobsters don’t know what they’re getting into."
   ]
 
-standaloneTokens :: [Token]
+standaloneTokens :: [TokenFace]
 standaloneTokens =
   [ PlusOne
   , Zero
@@ -272,7 +272,7 @@ instance
       [ CreateWindowModifierEffect
         EffectSkillTestWindow
         (EffectModifiers $ toModifiers attrs [CancelSkills])
-        (DrawnTokenSource drawnToken)
+        (TokenSource drawnToken)
         SkillTestTarget
       , CancelSkillEffects
       , DrawAnotherToken iid
@@ -281,10 +281,10 @@ instance
       (DiscardTopOfDeck
         iid
         (if isEasyStandard attrs then 2 else 3)
-        (Just $ DrawnTokenTarget drawnToken)
+        (Just $ TokenTarget drawnToken)
       )
-    DiscardedTopOfDeck _iid cards target@(DrawnTokenTarget token) ->
-      s <$ case drawnTokenFace token of
+    DiscardedTopOfDeck _iid cards target@(TokenTarget token) ->
+      s <$ case tokenFace token of
         ElderThing -> do
           let
             n = sum $ map

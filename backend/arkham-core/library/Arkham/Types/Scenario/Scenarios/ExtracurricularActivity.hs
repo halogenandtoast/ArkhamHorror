@@ -135,17 +135,17 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       (DiscardTopOfDeck
         iid
         (if isEasyStandard attrs then 2 else 3)
-        (Just $ DrawnTokenTarget drawnToken)
+        (Just $ TokenTarget drawnToken)
       )
-    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _ ->
-      s <$ case drawnTokenFace token of
+    FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
+      s <$ case tokenFace token of
         Skull -> push $ DiscardTopOfDeck
           iid
           (if isEasyStandard attrs then 3 else 5)
           Nothing
         _ -> pure ()
-    DiscardedTopOfDeck _iid cards target@(DrawnTokenTarget token) ->
-      s <$ case drawnTokenFace token of
+    DiscardedTopOfDeck _iid cards target@(TokenTarget token) ->
+      s <$ case tokenFace token of
         ElderThing -> do
           let
             n = sum $ map

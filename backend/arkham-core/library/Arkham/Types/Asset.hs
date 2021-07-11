@@ -105,6 +105,7 @@ data Asset
   | LiquidCourage' LiquidCourage
   | LitaChantler' LitaChantler
   | LoneWolf' LoneWolf
+  | LuckyDice2' LuckyDice2
   | Machete' Machete
   | MagnifyingGlass' MagnifyingGlass
   | MagnifyingGlass1' MagnifyingGlass1
@@ -350,6 +351,7 @@ allAssets = mapFromList $ map
   , LiquidCourage' <$> liquidCourage
   , LitaChantler' <$> litaChantler
   , LoneWolf' <$> loneWolf
+  , LuckyDice2' <$> luckyDice2
   , Machete' <$> machete
   , MagnifyingGlass' <$> magnifyingGlass
   , MagnifyingGlass1' <$> magnifyingGlass1

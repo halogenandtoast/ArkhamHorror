@@ -3,7 +3,7 @@ module Arkham.Types.Token where
 import Arkham.Prelude
 
 newtype TokenId = TokenId { getTokenId :: UUID }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Hashable)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Hashable, Random)
 
 data TokenModifier = PositiveModifier Int | NegativeModifier Int | ZeroModifier | DoubleNegativeModifier Int | AutoFailModifier | NoModifier
   deriving stock (Show, Eq, Generic)
@@ -28,7 +28,7 @@ instance Semigroup TokenModifier where
         GT -> PositiveModifier calc
         LT -> NegativeModifier calc
 
-data TokenValue = TokenValue Token TokenModifier
+data TokenValue = TokenValue TokenFace TokenModifier
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -44,14 +44,14 @@ tokenModifierToInt = \case
   NoModifier -> Just 0
   ZeroModifier -> Just 0
 
-data DrawnToken = DrawnToken
-  { drawnTokenId :: TokenId
-  , drawnTokenFace :: Token
+data Token = Token
+  { tokenId :: TokenId
+  , tokenFace :: TokenFace
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data Token
+data TokenFace
   = PlusOne
   | Zero
   | MinusOne

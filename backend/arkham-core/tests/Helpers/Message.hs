@@ -2,6 +2,7 @@ module Helpers.Message where
 
 import Arkham.Prelude
 
+import Arkham.Types.Action (Action)
 import Arkham.Types.Asset
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -74,3 +75,7 @@ investigate i l =
 beginSkillTest :: Investigator -> SkillType -> Int -> Message
 beginSkillTest i =
   BeginSkillTest (toId i) (TestSource mempty) TestTarget Nothing
+
+beginActionSkillTest :: Investigator -> Action -> SkillType -> Int -> Message
+beginActionSkillTest i a =
+  BeginSkillTest (toId i) (TestSource mempty) TestTarget (Just a)

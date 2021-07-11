@@ -4,6 +4,7 @@ module Arkham.Types.Investigator.Cards.RexMurphySpec
 
 import TestImport.Lifted
 
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Location.Attrs as Location
 
 spec :: Spec
@@ -16,7 +17,7 @@ spec = describe "Rex Murphy" $ do
           rexMurphy
           [ SetTokens [Zero]
           , moveTo rexMurphy location1
-          , beginSkillTest rexMurphy SkillIntellect 2
+          , beginActionSkillTest rexMurphy Action.Investigate SkillIntellect 2
           ]
           (locationsL %~ insertEntity location1)
         $ do

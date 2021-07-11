@@ -54,6 +54,7 @@ allPlayerSkillCards = mapFromList $ map
   , opportunist
   , overpower
   , perception
+  , quickThinking
   , riseToTheOccasion
   , survivalInstinct
   , trueUnderstanding
@@ -155,6 +156,11 @@ inquiringMind =
     { cdCardTraits = singleton Innate
     , cdCommitRestrictions = [OnlyIfYourLocationHasClues]
     }
+
+quickThinking :: CardDef
+quickThinking = (skill "02229" "Quick Thinking" [SkillWild] Rogue)
+  { cdCardTraits = singleton Innate
+  }
 
 trueUnderstanding :: CardDef
 trueUnderstanding = (skill "04153" "True Understanding" [SkillWild] Seeker)

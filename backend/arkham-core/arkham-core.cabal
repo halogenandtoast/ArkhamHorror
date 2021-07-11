@@ -195,6 +195,7 @@ library
       Arkham.Types.Asset.Cards.LiquidCourage
       Arkham.Types.Asset.Cards.LitaChantler
       Arkham.Types.Asset.Cards.LoneWolf
+      Arkham.Types.Asset.Cards.LuckyDice2
       Arkham.Types.Asset.Cards.Machete
       Arkham.Types.Asset.Cards.MagnifyingGlass
       Arkham.Types.Asset.Cards.MagnifyingGlass1
@@ -306,6 +307,7 @@ library
       Arkham.Types.Effect.Effects.LetMeHandleThis
       Arkham.Types.Effect.Effects.Lucky
       Arkham.Types.Effect.Effects.Lucky2
+      Arkham.Types.Effect.Effects.LuckyDice2
       Arkham.Types.Effect.Effects.MindOverMatter
       Arkham.Types.Effect.Effects.MindWipe1
       Arkham.Types.Effect.Effects.MindWipe3
@@ -318,6 +320,7 @@ library
       Arkham.Types.Effect.Effects.SongOfTheDead2
       Arkham.Types.Effect.Effects.SureGamble3
       Arkham.Types.Effect.Effects.TenAcreMeadow_246
+      Arkham.Types.Effect.Effects.TokenEffect
       Arkham.Types.Effect.Effects.UndimensionedAndUnseenTabletToken
       Arkham.Types.Effect.Effects.WillToSurvive3
       Arkham.Types.Effect.Effects.WindowModifierEffect

@@ -39,8 +39,8 @@ data SkillTest = SkillTest
   , skillTestSkillType :: SkillType
   , skillTestDifficulty :: Int
   , skillTestSetAsideTokens :: [Token]
-  , skillTestRevealedTokens :: [DrawnToken] -- tokens may change from physical representation
-  , skillTestResolvedTokens :: [DrawnToken]
+  , skillTestRevealedTokens :: [Token] -- tokens may change from physical representation
+  , skillTestResolvedTokens :: [Token]
   , skillTestValueModifier :: Int
   , skillTestResult :: SkillTestResult
   , skillTestCommittedCards :: HashMap CardId (InvestigatorId, Card)
@@ -59,11 +59,11 @@ setAsideTokensL :: Lens' SkillTest [Token]
 setAsideTokensL =
   lens skillTestSetAsideTokens $ \m x -> m { skillTestSetAsideTokens = x }
 
-resolvedTokensL :: Lens' SkillTest [DrawnToken]
+resolvedTokensL :: Lens' SkillTest [Token]
 resolvedTokensL =
   lens skillTestResolvedTokens $ \m x -> m { skillTestResolvedTokens = x }
 
-revealedTokensL :: Lens' SkillTest [DrawnToken]
+revealedTokensL :: Lens' SkillTest [Token]
 revealedTokensL =
   lens skillTestRevealedTokens $ \m x -> m { skillTestRevealedTokens = x }
 
@@ -187,11 +187,11 @@ getModifiedTokenValue
      , MonadIO m
      )
   => SkillTest
-  -> DrawnToken
+  -> Token
   -> m Int
 getModifiedTokenValue s t = do
   tokenModifiers' <-
-    map modifierType <$> getModifiersFor (toSource s) (DrawnTokenTarget t) ()
+    map modifierType <$> getModifiersFor (toSource s) (TokenTarget t) ()
   modifiedTokenFaces' <- getModifiedTokenFaces s t
   getSum . mconcat <$> for
     modifiedTokenFaces'
@@ -221,14 +221,14 @@ getModifiedTokenValue s t = do
 getModifiedTokenFaces
   :: (HasModifiersFor env (), MonadReader env m)
   => SkillTest
-  -> DrawnToken
-  -> m [Token]
+  -> Token
+  -> m [TokenFace]
 getModifiedTokenFaces s token = do
   tokenModifiers' <-
-    map modifierType
-      <$> getModifiersFor (toSource s) (DrawnTokenTarget token) ()
-  pure $ foldr applyModifier [drawnTokenFace token] tokenModifiers'
+    map modifierType <$> getModifiersFor (toSource s) (TokenTarget token) ()
+  pure $ foldr applyModifier [tokenFace token] tokenModifiers'
  where
+  applyModifier (TokenFaceModifier ts) _ = ts
   applyModifier (ForcedTokenChange t ts) [t'] | t == t' = ts
   applyModifier _ ts = ts
 
@@ -250,10 +250,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
     DrawAnotherToken iid -> do
       pushAll
         [RequestTokens (toSource s) (Just iid) 1 SetAside, RunSkillTest iid]
-      pure
-        $ s
-        & (resolvedTokensL %~ (<> skillTestRevealedTokens))
-        & (revealedTokensL .~ mempty)
+      pure $ s & (resolvedTokensL %~ (<> skillTestRevealedTokens))
     RequestedTokens (SkillTestSource siid skillType source target maction) (Just iid) tokenFaces
       -> do
         push (RevealSkillTestTokens iid)
@@ -268,9 +265,9 @@ instance SkillTestRunner env => RunMessage env SkillTest where
               tokenFace
             )
         pure $ s & (setAsideTokensL %~ (tokenFaces <>))
-    RevealToken SkillTestSource{} _iid tokenFace -> do
-      token' <- flip DrawnToken tokenFace . TokenId <$> getRandom
-      pure $ s & revealedTokensL %~ (token' :)
+    RevealToken SkillTestSource{} iid token -> do
+      push (CheckWindow iid [AfterRevealToken You token])
+      pure $ s & revealedTokensL %~ (token :)
     RevealSkillTestTokens iid -> do
       revealedTokenFaces <- concatMapM
         (\t -> map (t, ) <$> getModifiedTokenFaces s t)
@@ -282,10 +279,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
       pure
         $ s
         & (subscribersL
-          %~ (<> [ DrawnTokenTarget token'
-                 | token' <- skillTestRevealedTokens
-                 ]
-             )
+          %~ (<> [ TokenTarget token' | token' <- skillTestRevealedTokens ])
           )
     AddSkillTestSubscriber target -> pure $ s & subscribersL %~ (target :)
     PassSkillTest -> do

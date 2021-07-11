@@ -92,7 +92,7 @@ instance HasCount SetAsideCount env (ScenarioAttrs, CardCode) where
 instance HasList SetAsideCard env ScenarioAttrs where
   getList = pure . map SetAsideCard . scenarioSetAsideCards
 
-toTokenValue :: ScenarioAttrs -> Token -> Int -> Int -> TokenValue
+toTokenValue :: ScenarioAttrs -> TokenFace -> Int -> Int -> TokenValue
 toTokenValue attrs t esVal heVal = TokenValue
   t
   (NegativeModifier $ if isEasyStandard attrs then esVal else heVal)

@@ -361,11 +361,18 @@ instance ToJSON Game where
     , "discard" .= toJSON gameDiscard
     , "chaosBag" .= toJSON gameChaosBag
     , "skillTest" .= toJSON gameSkillTest
+    , "skillTestTokens" .= toJSON
+      (runReader
+        (traverse withModifiers $ maybe [] skillTestSetAsideTokens gameSkillTest
+        )
+        g
+      )
     , "usedAbilities" .= toJSON gameUsedAbilities
     , "resignedCardCodes" .= toJSON gameResignedCardCodes
     , "focusedCards" .= toJSON gameFocusedCards
     , "focusedTargets" .= toJSON gameFocusedTargets
-    , "focusedTokens" .= toJSON gameFocusedTokens
+    , "focusedTokens"
+      .= toJSON (runReader (traverse withModifiers gameFocusedTokens) g)
     , "activeCard" .= toJSON gameActiveCard
     , "victoryDisplay" .= toJSON gameVictoryDisplay
     , "gameState" .= toJSON gameGameState
@@ -1110,7 +1117,6 @@ instance HasGame env => HasSet Trait env Source where
     PlayerCardSource _ -> pure mempty
     EncounterCardSource _ -> pure mempty
     TestSource traits -> pure traits
-    DrawnTokenSource _ -> pure mempty
     ProxySource _ _ -> pure mempty
     ResourceSource -> pure mempty
 
@@ -1953,12 +1959,17 @@ runGameMessage msg g = case msg of
       target
     push (CreatedEffect effectId (Just effectMetadata) source target)
     pure $ g & effectsL %~ insertMap effectId effect
+  CreateTokenEffect effectMetadata source token -> do
+    (effectId, effect) <- createTokenEffect effectMetadata source token
+    push
+      (CreatedEffect effectId (Just effectMetadata) source (TokenTarget token))
+    pure $ g & effectsL %~ insertMap effectId effect
   DisableEffect effectId -> pure $ g & effectsL %~ deleteMap effectId
   FocusCards cards -> pure $ g & focusedCardsL .~ cards
   UnfocusCards -> pure $ g & focusedCardsL .~ mempty
   FocusTargets targets -> pure $ g & focusedTargetsL .~ targets
   UnfocusTargets -> pure $ g & focusedTargetsL .~ mempty
-  FocusTokens tokens -> pure $ g & focusedTokensL .~ tokens
+  FocusTokens tokens -> pure $ g & focusedTokensL <>~ tokens
   UnfocusTokens -> pure $ g & focusedTokensL .~ mempty
   ChooseLeadInvestigator -> if length (g ^. investigatorsL) == 1
     then pure g
@@ -2943,7 +2954,11 @@ runGameMessage msg g = case msg of
       EncounterCard ec ->
         pure $ g & treacheriesL %~ deleteMap tid & discardL %~ (ec :)
   EndCheckWindow -> pure $ g & usedAbilitiesL %~ filter
-    (\(_, Ability {..}) -> abilityLimit /= NoLimit)
+    (\(_, Ability {..}) -> case abilityLimit of
+      NoLimit -> False
+      PlayerLimit PerWindow _ -> False
+      _ -> True
+    )
   _ -> pure g
 
 instance (HasQueue env, HasGame env) => RunMessage env Game where

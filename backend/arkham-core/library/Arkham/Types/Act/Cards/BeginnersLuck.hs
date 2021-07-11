@@ -11,10 +11,12 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.EffectMetadata
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Target
@@ -32,14 +34,15 @@ beginnersLuck = BeginnersLuck $ baseAttrs
   (Act 1 A)
   (Just $ RequiredClues (PerPlayer 4) Nothing)
 
-ability :: ActAttrs -> Ability
-ability attrs = (mkAbility (toSource attrs) 1 (ReactionAbility Free))
+ability :: Token -> ActAttrs -> Ability
+ability token attrs = (mkAbility (toSource attrs) 1 (ReactionAbility Free))
   { abilityLimit = GroupLimit PerRound 1
+  , abilityMetadata = Just (TargetMetadata $ TokenTarget token)
   }
 
 instance ActionRunner env => HasActions env BeginnersLuck where
-  getActions iid (WhenRevealToken You _) (BeginnersLuck x) =
-    pure [UseAbility iid (ability x)]
+  getActions iid (WhenRevealToken You token) (BeginnersLuck x) =
+    pure [UseAbility iid (ability token x)]
   getActions iid window (BeginnersLuck x) = getActions iid window x
 
 instance
@@ -62,29 +65,30 @@ instance
       darkenedHallId <- fromJustNote "missing darkened hall"
         <$> getId (LocationWithTitle "Darkened Hall")
       a <$ push (SpawnEnemyAt (EncounterCard ec) darkenedHallId)
-    UseCardAbility iid source Nothing 1 payments | isSource attrs source -> do
-      tokensInBag <- getList @Token ()
-      a <$ pushAll
-        [ FocusTokens tokensInBag
-        , chooseOne
-          iid
-          [ TargetLabel
-              (TokenFaceTarget token)
-              [ UseCardAbility
-                  iid
-                  source
-                  (Just . TargetMetadata $ TokenFaceTarget token)
-                  1
-                  payments
-              ]
-          | token <- tokensInBag
+    UseCardAbility iid source (Just (TargetMetadata (TokenTarget token))) 1 _
+      | isSource attrs source -> do
+        tokensInBag <- getList @Token ()
+        a <$ pushAll
+          [ FocusTokens tokensInBag
+          , chooseOne
+            iid
+            [ TargetLabel
+                (TokenFaceTarget $ tokenFace token')
+                [ CreateEffect
+                    "02066"
+                    (Just
+                      (EffectModifiers $ toModifiers
+                        attrs
+                        [TokenFaceModifier [tokenFace token']]
+                      )
+                    )
+                    source
+                    (TokenTarget token)
+                ]
+            | token' <- tokensInBag
+            ]
+          , Remember $ Cheated iid
           ]
-        ]
-    UseCardAbility iid source (Just (TargetMetadata (TokenFaceTarget token))) 1 _
-      | isSource attrs source
-      -> do
-        replaceToken token
-        a <$ pushAll [FocusTokens [token], Remember $ Cheated iid]
     After (GainClues _ _) -> do
       totalClues <- unSpendableClueCount <$> getCount ()
       requiredClues <- getPlayerCountValue (PerPlayer 4)

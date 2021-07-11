@@ -131,19 +131,19 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
             [ SpendResources iid requiredResources
             , CreateTokenValueEffect
               (if isEasyStandard attrs then 2 else 3)
-              (DrawnTokenSource drawnToken)
-              (DrawnTokenTarget drawnToken)
+              (TokenSource drawnToken)
+              (TokenTarget drawnToken)
             ]
           , Label "Do not spend resources" []
           ]
         else pure ()
       s <$ push (SpendResources iid 3)
-    PassedSkillTest iid _ _ (DrawnTokenTarget token) _ _ ->
-      s <$ case drawnTokenFace token of
+    PassedSkillTest iid _ _ (TokenTarget token) _ _ ->
+      s <$ case tokenFace token of
         Cultist | isEasyStandard attrs -> push $ TakeResources iid 3 False
         _ -> pure ()
-    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _ ->
-      s <$ case drawnTokenFace token of
+    FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
+      s <$ case tokenFace token of
         Cultist | isHardExpert attrs -> push $ SpendResources iid 3
         Tablet | isEasyStandard attrs -> push $ SpendResources iid 3
         _ -> pure ()

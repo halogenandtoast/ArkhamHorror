@@ -60,7 +60,7 @@ instance InvestigatorRunner env => RunMessage env SkidsOToole where
   runMessage msg i@(SkidsOToole attrs@InvestigatorAttrs {..}) = case msg of
     UseCardAbility _ (InvestigatorSource iid) _ 1 _ | iid == investigatorId ->
       pure . SkidsOToole $ attrs & remainingActionsL +~ 1
-    PassedSkillTest iid _ _ (DrawnTokenTarget token) _ _
-      | iid == investigatorId && drawnTokenFace token == ElderSign -> i
+    PassedSkillTest iid _ _ (TokenTarget token) _ _
+      | iid == investigatorId && tokenFace token == ElderSign -> i
       <$ push (TakeResources iid 2 False)
     _ -> SkidsOToole <$> runMessage msg attrs

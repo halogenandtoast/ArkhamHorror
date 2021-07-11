@@ -115,7 +115,7 @@ instance
     ElderThing -> pure $ toTokenValue attrs ElderThing 3 5
     otherFace -> getTokenValue attrs iid otherFace
 
-standaloneTokens :: [Token]
+standaloneTokens :: [TokenFace]
 standaloneTokens =
   [ PlusOne
   , Zero
@@ -248,8 +248,8 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           (huntingHorrorId `elem` enemyIds)
           (push $ EnemyAttack iid huntingHorrorId)
         Nothing -> pure s
-    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _ ->
-      s <$ case drawnTokenFace token of
+    FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
+      s <$ case tokenFace token of
         Cultist -> push $ FindEncounterCard
           iid
           (toTarget attrs)

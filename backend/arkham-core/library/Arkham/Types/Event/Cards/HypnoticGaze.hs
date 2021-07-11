@@ -40,8 +40,9 @@ instance HasCount HealthDamageCount env EnemyId => RunMessage env HypnoticGaze w
     RequestedTokens source (Just iid) faces | isSource attrs source -> do
       let
         enemyId = fromMaybe (error "missing enemy id") mEnemyId
-        shouldDamageEnemy =
-          any (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) faces
+        shouldDamageEnemy = any
+          ((`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) . tokenFace)
+          faces
       if shouldDamageEnemy
         then do
           healthDamage' <- unHealthDamageCount <$> getCount enemyId

@@ -24,7 +24,7 @@ instance (HasQueue env) => RunMessage env RiteOfSeeking where
   runMessage msg e@(RiteOfSeeking attrs@EffectAttrs {..}) = case msg of
     RevealToken _ iid token -> case effectTarget of
       InvestigationTarget iid' _ | iid == iid' -> e <$ when
-        (token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
+        (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
         (push $ CreateEffect
           "02028"
           Nothing

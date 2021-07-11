@@ -268,12 +268,12 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           <$> for (lid : connectedLocationIds) (getSetList @EnemyId)
         mrougarou <- findM (((== "81028") <$>) . getId @CardCode) enemyIds
         s <$ for_ mrougarou (push . EnemyWillAttack iid)
-    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _ -> s <$ when
-      (drawnTokenFace token == Tablet)
+    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> s <$ when
+      (tokenFace token == Tablet)
       (push $ CreateEffect
         "81001"
         Nothing
-        (DrawnTokenSource token)
+        (TokenSource token)
         (InvestigatorTarget iid)
       )
     ScenarioResolution NoResolution ->

@@ -58,6 +58,7 @@ data CardDef = CardDef
   , cdUnique :: Bool
   , cdDoubleSided :: Bool
   , cdLimits :: [CardLimit]
+  , cdExceptional :: Bool
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
@@ -145,4 +146,5 @@ testCardDef cardType cardCode = CardDef
   , cdUnique = False
   , cdDoubleSided = False
   , cdLimits = []
+  , cdExceptional = False
   }

@@ -26,7 +26,7 @@ undimensionedAndUnseenTabletToken =
   UndimensionedAndUnseenTabletToken . uncurry4 (baseAttrs "02236")
 
 instance HasId Difficulty env () => HasModifiersFor env UndimensionedAndUnseenTabletToken where
-  getModifiersFor _ (DrawnTokenTarget (DrawnToken _ Tablet)) (UndimensionedAndUnseenTabletToken attrs)
+  getModifiersFor _ (TokenTarget (Token _ Tablet)) (UndimensionedAndUnseenTabletToken attrs)
     = do
       difficulty <- getId @Difficulty ()
       pure

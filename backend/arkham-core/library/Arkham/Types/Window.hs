@@ -61,7 +61,8 @@ data Window
   | WhenLocationLeavesPlay LocationId
   | WhenPlayCard Who CardId
   | WhenRevealToken Who Token
-  | WhenRevealTokenWithNegativeModifier Who TokenId
+  | AfterRevealToken Who Token
+  | WhenRevealTokenWithNegativeModifier Who Token
   | WhenSkillTest SkillType
   | WhenSuccessfulAttackEnemy Who EnemyId
   | WhenSuccessfulInvestigation Who Where

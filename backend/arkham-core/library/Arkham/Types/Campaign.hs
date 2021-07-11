@@ -55,5 +55,5 @@ lookupCampaign cid =
 difficultyOf :: Campaign -> Difficulty
 difficultyOf = campaignDifficulty . toAttrs
 
-chaosBagOf :: Campaign -> [Token]
+chaosBagOf :: Campaign -> [TokenFace]
 chaosBagOf = campaignChaosBag . toAttrs

@@ -1,22 +1,7 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Card, cardDecoder } from '@/arkham/types/Card';
+import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 import { CardDef, cardDefDecoder } from '@/arkham/types/CardDef';
-
-interface ModifierType {
-  tag: string;
-}
-
-interface Modifier {
-  type: ModifierType;
-}
-
-const modifierTypeDecoder = JsonDecoder.object<ModifierType>({
-  tag: JsonDecoder.string
-}, 'ModifierType')
-
-const modifierDecoder = JsonDecoder.object<Modifier>({
-  type: modifierTypeDecoder
-}, 'Modifier')
 
 export interface Location {
   tag: string;

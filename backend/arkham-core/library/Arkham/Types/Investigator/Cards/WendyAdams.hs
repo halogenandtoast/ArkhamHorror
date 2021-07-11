@@ -52,7 +52,7 @@ instance HasTokenValue env WendyAdams where
 ability :: InvestigatorAttrs -> Token -> Ability
 ability attrs token = base
   { abilityLimit = PlayerLimit PerTestOrAbility 1
-  , abilityMetadata = Just (TargetMetadata $ TokenFaceTarget token)
+  , abilityMetadata = Just (TargetMetadata $ TokenTarget token)
   }
  where
   base = mkAbility
@@ -68,7 +68,7 @@ instance InvestigatorRunner env => HasActions env WendyAdams where
 
 instance (InvestigatorRunner env) => RunMessage env WendyAdams where
   runMessage msg i@(WendyAdams attrs@InvestigatorAttrs {..}) = case msg of
-    UseCardAbility _ (InvestigatorSource iid) (Just (TargetMetadata (TokenFaceTarget token))) 1 _
+    UseCardAbility _ (InvestigatorSource iid) (Just (TargetMetadata (TokenTarget token))) 1 _
       | iid == investigatorId
       -> do
         cancelToken token

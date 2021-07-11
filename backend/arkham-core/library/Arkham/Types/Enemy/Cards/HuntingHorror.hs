@@ -32,7 +32,10 @@ instance EnemyRunner env => RunMessage env HuntingHorror where
     BeginEnemy -> e <$ push (RequestTokens (toSource attrs) Nothing 1 SetAside)
     RequestedTokens source _ tokens | isSource attrs source -> do
       e <$ when
-        (any (`elem` tokens) [Skull, Cultist, Tablet, ElderThing, AutoFail])
+        (any
+          (`elem` map tokenFace tokens)
+          [Skull, Cultist, Tablet, ElderThing, AutoFail]
+        )
         (push (Ready $ toTarget attrs))
     When (RemoveEnemy eid) | eid == enemyId -> do
       _ <- popMessage

@@ -12,11 +12,12 @@
         :src="imageFor(revealedToken)"
         @click="$emit('choose', revealedTokenAction(revealedToken))"
       />
-      <img
-        v-else
-        class="token"
-        :src="imageFor(revealedToken)"
-      />
+      <div v-else class="token-container" :class="{ ignored: isIgnored(revealedToken) }">
+        <img
+          class="token"
+          :src="imageFor(revealedToken)"
+        />
+      </div>
     </template>
     <img
       v-if="tokenAction !== -1"
@@ -33,6 +34,7 @@ import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { SkillTest } from '@/arkham/types/SkillTest';
 import { MessageType } from '@/arkham/types/Message';
+import { ChaosToken } from '@/arkham/types/ChaosToken';
 
 
 export default defineComponent({
@@ -42,8 +44,8 @@ export default defineComponent({
     investigatorId: { type: String, required: true }
   },
   setup(props) {
-    function imageFor(token: string) {
-      switch (token) {
+    function imageFor(token: ChaosToken) {
+      switch (token.tokenFace) {
         case 'PlusOne':
           return '/img/arkham/ct_plus1.png';
         case 'Zero':
@@ -86,8 +88,8 @@ export default defineComponent({
         return props.game.currentData.focusedTokens;
       }
 
-      if (props.game.currentData.skillTest !== null) {
-        return props.game.currentData.skillTest.setAsideTokens;
+      if (props.game.currentData.skillTestTokens !== []) {
+        return props.game.currentData.skillTestTokens;
       }
 
       return [];
@@ -114,7 +116,9 @@ export default defineComponent({
       return null;
     })
 
-    return { revealedTokens, tokenAction, revealedTokenAction, investigatorPortrait, imageFor }
+    const isIgnored = (token: ChaosToken) => token.modifiers?.some(modifier => modifier.type.tag == 'IgnoreTokenEffects') || false
+
+    return { isIgnored, revealedTokens, tokenAction, revealedTokenAction, investigatorPortrait, imageFor }
   }
 })
 </script>
@@ -139,5 +143,25 @@ export default defineComponent({
   border: 5px solid #ff00ff;
   border-radius: 500px;
   cursor: pointer;
+}
+
+.ignored {
+  position: relative;
+  &::after {
+    pointer-events: none;
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #FFF;
+    opacity: .85;
+    mix-blend-mode: saturation;
+  }
+}
+
+.token-container {
+  display: inline-block;
 }
 </style>

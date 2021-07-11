@@ -31,16 +31,18 @@ ability attrs =
   mkAbility (toSource attrs) 1 (ReactionAbility $ ExhaustCost (toTarget attrs))
 
 instance ActionRunner env => HasActions env JimsTrumpet where
-  getActions iid (WhenRevealToken _ Skull) (JimsTrumpet a) | ownedBy a iid = do
-    locationId <- getId @LocationId iid
-    connectedLocationIds <- map unConnectedLocationId <$> getSetList locationId
-    investigatorIds <- for
-      (locationId : connectedLocationIds)
-      (getSetList @InvestigatorId)
-    horrorCounts <- for
-      (concat investigatorIds)
-      ((unHorrorCount <$>) . getCount)
-    pure [ UseAbility iid (ability a) | any (> 0) horrorCounts ]
+  getActions iid (WhenRevealToken _ token) (JimsTrumpet a)
+    | ownedBy a iid && tokenFace token == Skull = do
+      locationId <- getId @LocationId iid
+      connectedLocationIds <- map unConnectedLocationId
+        <$> getSetList locationId
+      investigatorIds <- for
+        (locationId : connectedLocationIds)
+        (getSetList @InvestigatorId)
+      horrorCounts <- for
+        (concat investigatorIds)
+        ((unHorrorCount <$>) . getCount)
+      pure [ UseAbility iid (ability a) | any (> 0) horrorCounts ]
   getActions i window (JimsTrumpet x) = getActions i window x
 
 instance AssetRunner env => RunMessage env JimsTrumpet where

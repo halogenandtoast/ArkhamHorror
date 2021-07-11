@@ -80,7 +80,7 @@ data ModifierType
   | DuringEnemyPhaseMustMoveToward Target
   | EnemyEvade Int
   | EnemyFight Int
-  | ForcedTokenChange Token [Token]
+  | ForcedTokenChange TokenFace [TokenFace]
   | HandSize Int
   | HealthModifier Int
   | HorrorDealt Int
@@ -99,6 +99,7 @@ data ModifierType
   | SkillModifier SkillType Int
   | StartingResources Int
   | TokenValueModifier Int
+  | TokenFaceModifier [TokenFace]
   | TreatAllDamageAsDirect
   | SpawnNonEliteAtConnectingInstead
   | UseSkillInPlaceOf SkillType SkillType

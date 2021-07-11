@@ -117,14 +117,14 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           1
           (if isEasyStandard attrs then 0 else 1)
         )
-    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _ -> do
-      case drawnTokenFace token of
+    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
+      case tokenFace token of
         Skull | isHardExpert attrs -> push $ FindAndDrawEncounterCard
           iid
           (CardMatchByType (EnemyType, singleton Trait.Ghoul))
         Cultist -> push $ InvestigatorAssignDamage
           iid
-          (DrawnTokenSource token)
+          (TokenSource token)
           DamageAny
           0
           (if isEasyStandard attrs then 1 else 2)

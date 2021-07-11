@@ -25,7 +25,7 @@ instance HasQueue env => RunMessage env BlindingLight2 where
   runMessage msg e@(BlindingLight2 attrs@EffectAttrs {..}) = case msg of
     RevealToken _ iid token | InvestigatorTarget iid == effectTarget ->
       e <$ when
-        (token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
+        (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
         (pushAll
           [ LoseActions iid (toSource attrs) 1
           , InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1

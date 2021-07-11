@@ -30,7 +30,7 @@ instance HasQueue env => RunMessage env Shrivelling where
     RevealToken _ iid token | InvestigatorTarget iid == effectTarget -> do
       let damage = maybe 1 intFromMetadata effectMetadata
       e <$ when
-        (token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
+        (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
         (pushAll
           [ InvestigatorAssignDamage iid effectSource DamageAny 0 damage
           , DisableEffect effectId

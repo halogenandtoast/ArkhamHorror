@@ -171,8 +171,8 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
     ResolveToken _ ElderThing iid -> do
       ancientOneCount <- unEnemyCount <$> getCount [AncientOne]
       s <$ when (ancientOneCount > 0) (push $ DrawAnotherToken iid)
-    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _
-      | isHardExpert attrs && drawnTokenFace token == Skull -> s <$ push
+    FailedSkillTest iid _ _ (TokenTarget token) _ _
+      | isHardExpert attrs && tokenFace token == Skull -> s <$ push
         (FindAndDrawEncounterCard
           iid
           (CardMatchByType (EnemyType, singleton Monster))

@@ -130,7 +130,7 @@ getTokenValue
      )
   => a
   -> InvestigatorId
-  -> Token
+  -> TokenFace
   -> m TokenValue
 getTokenValue a iid token =
   toGameEnv >>= runReaderT (Arkham.getTokenValue a iid token)
@@ -322,8 +322,9 @@ getActionsOf investigator window e = do
   toGameEnv >>= runReaderT (getActions (toId investigator) window e')
 
 getChaosBagTokens
-  :: (HasGameRef env, MonadIO m, MonadReader env m) => m [Token]
-getChaosBagTokens = view (chaosBagL . ChaosBag.tokensL) <$> getTestGame
+  :: (HasGameRef env, MonadIO m, MonadReader env m) => m [TokenFace]
+getChaosBagTokens =
+  map tokenFace . view (chaosBagL . ChaosBag.tokensL) <$> getTestGame
 
 createMessageMatcher :: MonadIO m => Message -> m (IORef Bool, Message -> m ())
 createMessageMatcher msg = do

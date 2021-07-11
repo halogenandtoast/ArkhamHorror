@@ -64,8 +64,8 @@ instance InvestigatorRunner env => RunMessage env DaisyWalker where
               }
             )
           else DaisyWalker <$> runMessage msg attrs
-    PassedSkillTest iid _ _ (DrawnTokenTarget token) _ _
-      | iid == investigatorId -> case drawnTokenFace token of
+    PassedSkillTest iid _ _ (TokenTarget token) _ _ | iid == investigatorId ->
+      case tokenFace token of
         ElderSign -> do
           tomeCount <- unAssetCount <$> getCount (iid, [Tome])
           i <$ when

@@ -479,8 +479,10 @@ ifItBleeds = (event "02225" "\"If it bleeds...\"" 1 Guardian)
 exposeWeakness1 :: CardDef
 exposeWeakness1 = (event "02228" "Expose Weakness" 0 Seeker)
   { cdSkills = [SkillIntellect, SkillCombat, SkillCombat]
+  , cdCardTraits = singleton Insight
   , cdFastWindow = Just (Matcher.FastPlayerWindow Matcher.Anyone)
   , cdPlayRestrictions = [EnemyAtYourLocation]
+  , cdLevel = 1
   }
 
 letMeHandleThis :: CardDef

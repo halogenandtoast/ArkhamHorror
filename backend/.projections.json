@@ -238,7 +238,6 @@
       "instance HasModifiersFor env {dot}",
       "",
       "instance RunMessage env {dot} where",
-      "  runMessage msg ({dot} attrs) = {dot} <$> runMessage msg attrs",
       "  runMessage msg e@({dot} attrs) = case msg of",
       "    InvestigatorPlayEvent _ eid _ | eid == toId attrs -> do",
       "      e <$ pushAll [Discard (toTarget attrs)]",

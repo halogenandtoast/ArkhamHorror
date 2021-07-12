@@ -57,7 +57,10 @@ instance
       a <$ push
         (chooseOne
           iid
-          [ InitiatePlayCard iid (toCardId item) Nothing False
+          [ Run
+              [ PayCardCost iid (toCardId item)
+              , InitiatePlayCard iid (toCardId item) Nothing False
+              ]
           | item <- playableItems
           ]
         )

@@ -68,6 +68,7 @@ data Asset
   | Encyclopedia' Encyclopedia
   | Encyclopedia2' Encyclopedia2
   | EsotericFormula' EsotericFormula
+  | FineClothes' FineClothes
   | FireAxe' FireAxe
   | FireExtinguisher1' FireExtinguisher1
   | FirstAid' FirstAid
@@ -92,6 +93,7 @@ data Asset
   | JazzMulligan' JazzMulligan
   | JennysTwin45s' JennysTwin45s
   | JimsTrumpet' JimsTrumpet
+  | JoeyTheRatVigil' JoeyTheRatVigil
   | KeenEye' KeenEye
   | KeenEye3' KeenEye3
   | KeyToTheChamber' KeyToTheChamber
@@ -187,7 +189,12 @@ instance
   => HasModifiersFor env Asset where
   getModifiersFor = genericGetModifiersFor
 
-instance AssetRunner env => RunMessage env Asset where
+instance
+  ( HasActions env ActionType
+  , HasList HandCard env InvestigatorId
+  , AssetRunner env
+  )
+  => RunMessage env Asset where
   runMessage msg x = do
     inPlay <- member (toId x) <$> getSet ()
     modifiers' <- if inPlay
@@ -319,6 +326,7 @@ allAssets = mapFromList $ map
   , Encyclopedia' <$> encyclopedia
   , Encyclopedia2' <$> encyclopedia2
   , EsotericFormula' <$> esotericFormula
+  , FineClothes' <$> fineClothes
   , FireAxe' <$> fireAxe
   , FireExtinguisher1' <$> fireExtinguisher1
   , FirstAid' <$> firstAid
@@ -343,6 +351,7 @@ allAssets = mapFromList $ map
   , JazzMulligan' <$> jazzMulligan
   , JennysTwin45s' <$> jennysTwin45s
   , JimsTrumpet' <$> jimsTrumpet
+  , JoeyTheRatVigil' <$> joeyTheRatVigil
   , KeenEye' <$> keenEye
   , KeenEye3' <$> keenEye3
   , KeyToTheChamber' <$> keyToTheChamber

@@ -108,6 +108,7 @@ allPlayerAssetCards = mapFromList $ map
   , encyclopedia
   , encyclopedia2
   , esotericFormula
+  , fineClothes
   , fireAxe
   , fireExtinguisher1
   , firstAid
@@ -1036,6 +1037,12 @@ joeyTheRatVigil =
     , cdSkills = [SkillIntellect, SkillAgility]
     , cdUnique = True
     }
+
+fineClothes :: CardDef
+fineClothes = (asset "02272" "Fine Clothes" 1 Neutral)
+  { cdCardTraits = setFromList [Item, Clothing]
+  , cdSkills = [SkillAgility]
+  }
 
 lightningGun5 :: CardDef
 lightningGun5 = (asset "02301" "Lightning Gun" 6 Guardian)

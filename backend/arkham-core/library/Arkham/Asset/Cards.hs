@@ -164,6 +164,7 @@ allPlayerAssetCards = mapFromList $ map
   , relicHunter3
   , researchLibrarian
   , riteOfSeeking
+  , riteOfSeeking4
   , ritualCandles
   , rolands38Special
   , scavenging
@@ -978,6 +979,13 @@ alyssaGraham =
     , cdSkills = [SkillIntellect]
     , cdUnique = True
     }
+
+riteOfSeeking4 :: CardDef
+riteOfSeeking4 = (asset "02233" "Rite of Seeking" 5 Mystic)
+  { cdCardTraits = singleton Spell
+  , cdSkills = [SkillIntellect, SkillIntellect]
+  , cdLevel = 4
+  }
 
 darkHorse :: CardDef
 darkHorse = (asset "02234" "Dark Horse" 3 Survivor)

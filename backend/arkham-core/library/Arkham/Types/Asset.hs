@@ -131,6 +131,7 @@ data Asset
   | RelicHunter3' RelicHunter3
   | ResearchLibrarian' ResearchLibrarian
   | RiteOfSeeking' RiteOfSeeking
+  | RiteOfSeeking4' RiteOfSeeking4
   | RitualCandles' RitualCandles
   | Rolands38Special' Rolands38Special
   | Scavenging' Scavenging
@@ -378,6 +379,7 @@ allAssets = mapFromList $ map
   , RelicHunter3' <$> relicHunter3
   , ResearchLibrarian' <$> researchLibrarian
   , RiteOfSeeking' <$> riteOfSeeking
+  , RiteOfSeeking4' <$> riteOfSeeking4
   , RitualCandles' <$> ritualCandles
   , Rolands38Special' <$> rolands38Special
   , Scavenging' <$> scavenging

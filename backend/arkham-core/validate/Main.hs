@@ -167,9 +167,13 @@ toClassSymbol = \case
   "Neutral" -> Just Neutral
   _ -> Nothing
 
-normalizeName :: Text -> Text
-normalizeName "Powder of Ibn Ghazi" = "Powder of Ibn-Ghazi"
-normalizeName a = a
+normalizeName :: CardCode -> Text -> Text
+normalizeName "02219" _ = "Powder of Ibn-Ghazi"
+normalizeName _ a = a
+
+normalizeSubname :: CardCode -> Maybe Text -> Maybe Text
+normalizeSubname "02230" _ = Just "... Or Are They?"
+normalizeSubname _ a = a
 
 normalizeCost :: CardCode -> Maybe Int -> Maybe CardCost
 normalizeCost "02178" _ = Nothing
@@ -255,8 +259,14 @@ runValidations cards = do
       Nothing -> throw $ UnknownCard (cdCardCode card)
       Just cardJson@CardJson {..} -> do
         when
-          (Name (normalizeName name) subname /= cdName card)
-          (throw $ NameMismatch code (Name name subname) (cdName card))
+          (Name (normalizeName code name) (normalizeSubname code subname)
+          /= cdName card
+          )
+          (throw $ NameMismatch
+            code
+            (Name (normalizeName code name) (normalizeSubname code subname))
+            (cdName card)
+          )
         when
           (isJust (cdEncounterSet card)
           && Just quantity
@@ -287,7 +297,9 @@ runValidations cards = do
             (cdClassSymbol card)
           )
         when
-          (sort (getSkills cardJson) /= sort (cdSkills card))
+          (sort (normalizeSkills code $ getSkills cardJson)
+          /= sort (cdSkills card)
+          )
           (throw $ SkillsMismatch
             code
             (cdName card)
@@ -389,6 +401,10 @@ runValidations cards = do
 normalizeImageCardCode :: CardCode -> Text
 normalizeImageCardCode "02214" = "02214b"
 normalizeImageCardCode other = unCardCode other
+
+normalizeSkills :: CardCode -> [SkillType] -> [SkillType]
+normalizeSkills "02230" _ = [SkillWillpower, SkillAgility]
+normalizeSkills _ skills = skills
 
 runMissingImages :: IO ()
 runMissingImages = do

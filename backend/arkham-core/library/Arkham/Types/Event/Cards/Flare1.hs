@@ -66,7 +66,7 @@ instance
             ]
           , Label "Search for Ally" $ findAllyMessages iid investigatorIds e
           ]
-    SearchTopOfDeckFound iid target card | isTarget e target ->
+    SearchTopOfDeckFound iid target _ card | isTarget e target ->
       e <$ pushAll [PutCardIntoPlay iid card Nothing, Exile target]
     SearchTopOfDeckNoneFound _ target | isTarget e target ->
       e <$ push (Discard target)

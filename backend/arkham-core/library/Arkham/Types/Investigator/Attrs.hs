@@ -1508,6 +1508,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     , CheckAttackOfOpportunity iid False
     , DrawCards iid n False
     ]
+  MoveTopOfDeckToBottom _ (InvestigatorDeck iid) n | iid == investigatorId -> do
+    let (cards, deck) = splitAt n (unDeck investigatorDeck)
+    pure $ a & deckL .~ Deck (deck <> cards)
   DrawCards iid 0 False | iid == investigatorId -> pure a
   DrawCards iid n False | iid == investigatorId ->
     if null (unDeck investigatorDeck)
@@ -1784,6 +1787,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         traits' = setFromList traits
       push $ EndSearch iid source
       case strategy of
+        DeferSearchedToTarget target -> pushAll
+          [ SearchTopOfDeckFound
+              iid
+              target
+              (InvestigatorDeck iid)
+              (PlayerCard card)
+          | card <- cards
+          ]
         PutBackInAnyOrder -> push
           (chooseOneAtATime iid
           $ [ AddFocusedToTopOfDeck
@@ -1819,7 +1830,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           let
             choices =
               [ Run
-                  [ SearchTopOfDeckFound iid target (PlayerCard card)
+                  [ SearchTopOfDeckFound
+                    iid
+                    target
+                    (InvestigatorDeck iid)
+                    (PlayerCard card)
                   , ShuffleAllFocusedIntoDeck iid (InvestigatorTarget iid')
                   ]
               | card <- cards

@@ -72,6 +72,7 @@ allPlayerAssetCards = mapFromList $ map
   (toCardCode &&& id)
   [ placeholderAsset
   , adaptable1
+  , alyssaGraham
   , aquinnah1
   , arcaneEnlightenment
   , arcaneInitiate
@@ -969,6 +970,14 @@ luckyDice2 = (asset "02230" ("Lucky Dice" <:> "... Or Are They?") 2 Rogue)
   , cdExceptional = True
   , cdLevel = 2
   }
+
+alyssaGraham :: CardDef
+alyssaGraham =
+  (asset "02232" ("Alyssa Graham" <:> "Speaker to the Dead") 4 Mystic)
+    { cdCardTraits = setFromList [Ally, Sorcerer]
+    , cdSkills = [SkillIntellect]
+    , cdUnique = True
+    }
 
 darkHorse :: CardDef
 darkHorse = (asset "02234" "Dark Horse" 3 Survivor)

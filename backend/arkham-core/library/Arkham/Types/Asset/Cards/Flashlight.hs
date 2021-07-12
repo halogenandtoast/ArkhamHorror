@@ -23,7 +23,8 @@ newtype Flashlight = Flashlight AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 flashlight :: AssetCard Flashlight
-flashlight = hand Flashlight Cards.flashlight
+flashlight =
+  handWith Flashlight Cards.flashlight (startingUsesL ?~ Uses Supply 3)
 
 instance HasModifiersFor env Flashlight
 
@@ -43,8 +44,6 @@ instance HasActions env Flashlight where
 
 instance (AssetRunner env) => RunMessage env Flashlight where
   runMessage msg a@(Flashlight attrs) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      Flashlight <$> runMessage msg (attrs & usesL .~ Uses Supply 3)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId iid
       a <$ pushAll

@@ -21,7 +21,10 @@ newtype GrotesqueStatue4 = GrotesqueStatue4 AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 grotesqueStatue4 :: AssetCard GrotesqueStatue4
-grotesqueStatue4 = hand GrotesqueStatue4 Cards.grotesqueStatue4
+grotesqueStatue4 = handWith
+  GrotesqueStatue4
+  Cards.grotesqueStatue4
+  (startingUsesL ?~ Uses Charge 4)
 
 instance HasModifiersFor env GrotesqueStatue4
 
@@ -43,8 +46,6 @@ instance HasActions env GrotesqueStatue4 where
 
 instance AssetRunner env => RunMessage env GrotesqueStatue4 where
   runMessage msg a@(GrotesqueStatue4 attrs) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      GrotesqueStatue4 <$> runMessage msg (attrs & usesL .~ Uses Charge 4)
     UseCardAbility iid source (Just (SourceMetadata drawSource)) 1 _
       | isSource attrs source -> do
         when (useCount (assetUses attrs) == 1) $ push (Discard (toTarget attrs))

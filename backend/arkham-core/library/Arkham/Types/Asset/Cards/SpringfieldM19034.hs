@@ -26,8 +26,8 @@ newtype SpringfieldM19034 = SpringfieldM19034 AssetAttrs
 springfieldM19034 :: AssetCard SpringfieldM19034
 springfieldM19034 =
   assetWith SpringfieldM19034 Cards.springfieldM19034
-    $ slotsL
-    .~ [HandSlot, HandSlot]
+    $ (slotsL .~ [HandSlot, HandSlot])
+    . (startingUsesL ?~ Uses Resource.Ammo 3)
 
 instance HasActions env SpringfieldM19034 where
   getActions iid _ (SpringfieldM19034 a) | ownedBy a iid = pure
@@ -48,9 +48,6 @@ instance HasModifiersFor env SpringfieldM19034
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env SpringfieldM19034 where
   runMessage msg a@(SpringfieldM19034 attrs) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      SpringfieldM19034
-        <$> runMessage msg (attrs & usesL .~ Uses Resource.Ammo 3)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifiers
         attrs

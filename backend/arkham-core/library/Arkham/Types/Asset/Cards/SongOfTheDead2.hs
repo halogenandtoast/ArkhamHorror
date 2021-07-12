@@ -20,7 +20,10 @@ newtype SongOfTheDead2 = SongOfTheDead2 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 songOfTheDead2 :: AssetCard SongOfTheDead2
-songOfTheDead2 = arcane SongOfTheDead2 Cards.songOfTheDead2
+songOfTheDead2 = arcaneWith
+  SongOfTheDead2
+  Cards.songOfTheDead2
+  (startingUsesL ?~ Uses Charge 5)
 
 instance HasActions env SongOfTheDead2 where
   getActions iid _ (SongOfTheDead2 a) = whenOwnedBy a iid
@@ -30,8 +33,6 @@ instance HasModifiersFor env SongOfTheDead2
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env SongOfTheDead2 where
   runMessage msg a@(SongOfTheDead2 attrs) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      SongOfTheDead2 <$> runMessage msg (attrs & usesL .~ Uses Charge 5)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier
         source

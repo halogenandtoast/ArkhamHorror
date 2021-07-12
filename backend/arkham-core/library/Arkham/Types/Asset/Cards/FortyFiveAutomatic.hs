@@ -23,7 +23,10 @@ newtype FortyFiveAutomatic = FortyFiveAutomatic AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fortyFiveAutomatic :: AssetCard FortyFiveAutomatic
-fortyFiveAutomatic = hand FortyFiveAutomatic Cards.fortyFiveAutomatic
+fortyFiveAutomatic = handWith
+  FortyFiveAutomatic
+  Cards.fortyFiveAutomatic
+  (startingUsesL ?~ Uses Ammo 4)
 
 instance HasModifiersFor env FortyFiveAutomatic
 
@@ -44,8 +47,6 @@ instance HasActions env FortyFiveAutomatic where
 
 instance AssetRunner env => RunMessage env FortyFiveAutomatic where
   runMessage msg a@(FortyFiveAutomatic attrs) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      FortyFiveAutomatic <$> runMessage msg (attrs & usesL .~ Uses Ammo 4)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifiers
         attrs

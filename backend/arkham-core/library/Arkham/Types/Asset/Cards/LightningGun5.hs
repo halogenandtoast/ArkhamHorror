@@ -25,7 +25,9 @@ newtype LightningGun5 = LightningGun5 AssetAttrs
 
 lightningGun5 :: AssetCard LightningGun5
 lightningGun5 =
-  assetWith LightningGun5 Cards.lightningGun5 (slotsL .~ [HandSlot, HandSlot])
+  assetWith LightningGun5 Cards.lightningGun5
+    $ (slotsL .~ [HandSlot, HandSlot])
+    . (startingUsesL ?~ Uses Resource.Ammo 3)
 
 instance HasActions env LightningGun5 where
   getActions iid _ (LightningGun5 a) | ownedBy a iid = pure
@@ -46,8 +48,6 @@ instance HasModifiersFor env LightningGun5
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env LightningGun5 where
   runMessage msg (LightningGun5 attrs) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      LightningGun5 <$> runMessage msg (attrs & usesL .~ Uses Resource.Ammo 3)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       pushAll
         [ skillTestModifiers

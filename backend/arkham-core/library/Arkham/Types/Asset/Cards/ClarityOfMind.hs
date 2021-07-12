@@ -20,7 +20,8 @@ newtype ClarityOfMind = ClarityOfMind AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 clarityOfMind :: AssetCard ClarityOfMind
-clarityOfMind = arcane ClarityOfMind Cards.clarityOfMind
+clarityOfMind =
+  arcaneWith ClarityOfMind Cards.clarityOfMind (startingUsesL ?~ Uses Charge 3)
 
 instance HasActions env ClarityOfMind where
   getActions iid NonFast (ClarityOfMind a) = pure
@@ -47,8 +48,6 @@ instance
   )
   => RunMessage env ClarityOfMind where
   runMessage msg a@(ClarityOfMind attrs) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      ClarityOfMind <$> runMessage msg (attrs & usesL .~ Uses Charge 3)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId @LocationId iid
       iids <- getSetList @InvestigatorId lid

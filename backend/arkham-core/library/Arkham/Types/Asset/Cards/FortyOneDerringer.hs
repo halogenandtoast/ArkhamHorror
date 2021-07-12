@@ -23,7 +23,10 @@ newtype FortyOneDerringer = FortyOneDerringer AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fortyOneDerringer :: AssetCard FortyOneDerringer
-fortyOneDerringer = hand FortyOneDerringer Cards.fortyOneDerringer
+fortyOneDerringer = handWith
+  FortyOneDerringer
+  Cards.fortyOneDerringer
+  (startingUsesL ?~ Uses Ammo 3)
 
 instance HasModifiersFor env FortyOneDerringer
 
@@ -44,8 +47,6 @@ instance HasActions env FortyOneDerringer where
 
 instance AssetRunner env => RunMessage env FortyOneDerringer where
   runMessage msg a@(FortyOneDerringer attrs) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      FortyOneDerringer <$> runMessage msg (attrs & usesL .~ Uses Ammo 3)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier
         attrs

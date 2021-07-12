@@ -19,7 +19,8 @@ newtype SmokingPipe = SmokingPipe AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 smokingPipe :: AssetCard SmokingPipe
-smokingPipe = asset SmokingPipe Cards.smokingPipe
+smokingPipe =
+  assetWith SmokingPipe Cards.smokingPipe (startingUsesL ?~ Uses Supply 3)
 
 fastAbility :: InvestigatorId -> AssetAttrs -> Ability
 fastAbility iid attrs = mkAbility
@@ -43,8 +44,6 @@ instance HasModifiersFor env SmokingPipe
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env SmokingPipe where
   runMessage msg a@(SmokingPipe attrs) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      SmokingPipe <$> runMessage msg (attrs & usesL .~ Uses Supply 3)
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (HealHorror (InvestigatorTarget iid) 1)
     _ -> SmokingPipe <$> runMessage msg attrs

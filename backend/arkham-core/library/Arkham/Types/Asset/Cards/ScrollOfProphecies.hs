@@ -22,7 +22,11 @@ newtype ScrollOfProphecies = ScrollOfProphecies AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 scrollOfProphecies :: AssetCard ScrollOfProphecies
-scrollOfProphecies = hand ScrollOfProphecies Cards.scrollOfProphecies
+scrollOfProphecies = handWith
+  ScrollOfProphecies
+  Cards.scrollOfProphecies
+  (startingUsesL ?~ Uses Resource.Secret 4)
+
 
 instance HasModifiersFor env ScrollOfProphecies
 
@@ -36,10 +40,7 @@ instance HasActions env ScrollOfProphecies where
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env ScrollOfProphecies where
-  runMessage msg (ScrollOfProphecies attrs@AssetAttrs {..}) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
-      ScrollOfProphecies
-        <$> runMessage msg (attrs & usesL .~ Uses Resource.Secret 4)
+  runMessage msg (ScrollOfProphecies attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid
       investigatorIds <- getSetList locationId

@@ -21,7 +21,8 @@ newtype LiquidCourage = LiquidCourage AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 liquidCourage :: AssetCard LiquidCourage
-liquidCourage = asset LiquidCourage Cards.liquidCourage
+liquidCourage =
+  assetWith LiquidCourage Cards.liquidCourage (startingUsesL ?~ Uses Supply 4)
 
 instance HasActions env LiquidCourage where
   getActions iid NonFast (LiquidCourage a) = pure
@@ -48,8 +49,6 @@ instance
   )
   => RunMessage env LiquidCourage where
   runMessage msg a@(LiquidCourage attrs) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      LiquidCourage <$> runMessage msg (attrs & usesL .~ Uses Supply 4)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId @LocationId iid
       iids <- getSetList @InvestigatorId lid

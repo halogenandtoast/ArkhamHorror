@@ -116,7 +116,6 @@ deriving anyclass instance
   , HasCount DoomCount env AssetId
   , HasCount DoomCount env InvestigatorId
   , HasList DiscardedPlayerCard env InvestigatorId
-  , HasSet InvestigatorId env ()
   , HasCount FightCount env EnemyId
   )
   => RunMessage env Event

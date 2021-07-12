@@ -25,6 +25,7 @@ data Skill
   | InquiringMind' InquiringMind
   | ManualDexterity' ManualDexterity
   | Opportunist' Opportunist
+  | Opportunist2' Opportunist2
   | Overpower' Overpower
   | Perception' Perception
   | QuickThinking' QuickThinking
@@ -79,6 +80,7 @@ allSkills = mapFromList $ map
   , InquiringMind' <$> inquiringMind
   , ManualDexterity' <$> manualDexterity
   , Opportunist' <$> opportunist
+  , Opportunist2' <$> opportunist2
   , Overpower' <$> overpower
   , Perception' <$> perception
   , QuickThinking' <$> quickThinking

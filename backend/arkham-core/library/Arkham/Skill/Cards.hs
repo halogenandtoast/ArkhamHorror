@@ -53,6 +53,7 @@ allPlayerSkillCards = mapFromList $ map
   , inquiringMind
   , manualDexterity
   , opportunist
+  , opportunist2
   , overpower
   , perception
   , quickThinking
@@ -161,6 +162,13 @@ inquiringMind =
 quickThinking :: CardDef
 quickThinking = (skill "02229" "Quick Thinking" [SkillWild] Rogue)
   { cdCardTraits = singleton Innate
+  }
+
+opportunist2 :: CardDef
+opportunist2 = (skill "02231" "Opportunist" [SkillWild] Rogue)
+  { cdCardTraits = setFromList [Innate, Developed]
+  , cdCommitRestrictions = [OnlyYourTest]
+  , cdLevel = 2
   }
 
 trueUnderstanding :: CardDef

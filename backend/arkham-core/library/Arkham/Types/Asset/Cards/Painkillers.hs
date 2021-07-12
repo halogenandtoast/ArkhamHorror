@@ -19,7 +19,8 @@ newtype Painkillers = Painkillers AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 painkillers :: AssetCard Painkillers
-painkillers = asset Painkillers Cards.painkillers
+painkillers =
+  assetWith Painkillers Cards.painkillers (startingUsesL ?~ Uses Supply 3)
 
 fastAbility :: InvestigatorId -> AssetAttrs -> Ability
 fastAbility iid attrs = mkAbility
@@ -43,8 +44,6 @@ instance HasModifiersFor env Painkillers
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Painkillers where
   runMessage msg a@(Painkillers attrs) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      Painkillers <$> runMessage msg (attrs & usesL .~ Uses Supply 3)
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (HealDamage (InvestigatorTarget iid) 1)
     _ -> Painkillers <$> runMessage msg attrs

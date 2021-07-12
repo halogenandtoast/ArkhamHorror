@@ -33,6 +33,7 @@ data AssetAttrs = AssetAttrs
   , assetSanity :: Maybe Int
   , assetHealthDamage :: Int
   , assetSanityDamage :: Int
+  , assetStartingUses :: Maybe Uses
   , assetUses :: Uses
   , assetExhausted :: Bool
   , assetDoom :: Int
@@ -76,6 +77,9 @@ sanityDamageL = lens assetSanityDamage $ \m x -> m { assetSanityDamage = x }
 
 usesL :: Lens' AssetAttrs Uses
 usesL = lens assetUses $ \m x -> m { assetUses = x }
+
+startingUsesL :: Lens' AssetAttrs (Maybe Uses)
+startingUsesL = lens assetStartingUses $ \m x -> m { assetStartingUses = x }
 
 locationL :: Lens' AssetAttrs (Maybe LocationId)
 locationL = lens assetLocation $ \m x -> m { assetLocation = x }
@@ -191,6 +195,7 @@ assetWith f cardDef g = CardBuilder
     , assetHealthDamage = 0
     , assetSanityDamage = 0
     , assetUses = NoUses
+    , assetStartingUses = Nothing
     , assetExhausted = False
     , assetDoom = 0
     , assetClues = 0
@@ -319,7 +324,10 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs whe
       a <$ pushAll [RemovedFromPlay $ toSource a, Exiled target (toCard a)]
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       push $ CheckWindow iid [WhenEnterPlay $ toTarget a]
-      pure $ a & investigatorL ?~ iid
+      pure
+        $ a
+        & (investigatorL ?~ iid)
+        & (usesL .~ fromMaybe NoUses assetStartingUses)
     TakeControlOfAsset iid aid | aid == assetId ->
       pure $ a & investigatorL ?~ iid
     AddToScenarioDeck target | isTarget a target -> do

@@ -17,7 +17,11 @@ newtype ForbiddenKnowledge = ForbiddenKnowledge AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 forbiddenKnowledge :: AssetCard ForbiddenKnowledge
-forbiddenKnowledge = asset ForbiddenKnowledge Cards.forbiddenKnowledge
+forbiddenKnowledge = assetWith
+  ForbiddenKnowledge
+  Cards.forbiddenKnowledge
+  (startingUsesL ?~ Uses Secret 4)
+
 
 instance HasModifiersFor env ForbiddenKnowledge
 
@@ -40,8 +44,6 @@ instance HasActions env ForbiddenKnowledge where
 
 instance (AssetRunner env) => RunMessage env ForbiddenKnowledge where
   runMessage msg a@(ForbiddenKnowledge attrs) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      ForbiddenKnowledge <$> runMessage msg (attrs & usesL .~ Uses Secret 4)
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (TakeResources iid 1 False)
     _ -> ForbiddenKnowledge <$> runMessage msg attrs

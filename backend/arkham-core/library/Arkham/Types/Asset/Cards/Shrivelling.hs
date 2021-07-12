@@ -23,7 +23,8 @@ newtype Shrivelling = Shrivelling AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 shrivelling :: AssetCard Shrivelling
-shrivelling = arcane Shrivelling Cards.shrivelling
+shrivelling =
+  arcaneWith Shrivelling Cards.shrivelling (startingUsesL ?~ Uses Charge 4)
 
 instance HasModifiersFor env Shrivelling
 
@@ -45,8 +46,6 @@ instance HasActions env Shrivelling where
 
 instance AssetRunner env => RunMessage env Shrivelling where
   runMessage msg a@(Shrivelling attrs) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      Shrivelling <$> runMessage msg (attrs & usesL .~ Uses Charge 4)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifiers attrs (InvestigatorTarget iid) [DamageDealt 1]
       , CreateEffect "01060" Nothing source (InvestigatorTarget iid)

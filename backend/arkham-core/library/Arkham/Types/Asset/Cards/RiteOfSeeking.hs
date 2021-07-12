@@ -21,7 +21,8 @@ newtype RiteOfSeeking = RiteOfSeeking AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riteOfSeeking :: AssetCard RiteOfSeeking
-riteOfSeeking = arcane RiteOfSeeking Cards.riteOfSeeking
+riteOfSeeking =
+  arcaneWith RiteOfSeeking Cards.riteOfSeeking (startingUsesL ?~ Uses Charge 3)
 
 instance HasActions env RiteOfSeeking where
   getActions iid _ (RiteOfSeeking a) | ownedBy a iid = pure
@@ -42,8 +43,6 @@ instance HasModifiersFor env RiteOfSeeking
 
 instance (HasQueue env, HasModifiersFor env (), HasId LocationId env InvestigatorId) => RunMessage env RiteOfSeeking where
   runMessage msg a@(RiteOfSeeking attrs) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      RiteOfSeeking <$> runMessage msg (attrs & usesL .~ Uses Charge 3)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId @LocationId iid
       a <$ pushAll

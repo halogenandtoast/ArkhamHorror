@@ -25,7 +25,10 @@ newtype Rolands38Special = Rolands38Special AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rolands38Special :: AssetCard Rolands38Special
-rolands38Special = hand Rolands38Special Cards.rolands38Special
+rolands38Special = handWith
+  Rolands38Special
+  Cards.rolands38Special
+  (startingUsesL ?~ Uses Ammo 4)
 
 instance HasModifiersFor env Rolands38Special
 
@@ -45,8 +48,6 @@ instance HasActions env Rolands38Special where
 
 instance AssetRunner env => RunMessage env Rolands38Special where
   runMessage msg a@(Rolands38Special attrs) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      Rolands38Special <$> runMessage msg (attrs & usesL .~ Uses Ammo 4)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid
       anyClues <- (> 0) . unClueCount <$> getCount locationId

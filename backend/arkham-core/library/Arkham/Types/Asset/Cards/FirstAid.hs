@@ -22,7 +22,7 @@ newtype FirstAid = FirstAid AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 firstAid :: AssetCard FirstAid
-firstAid = asset FirstAid Cards.firstAid
+firstAid = assetWith FirstAid Cards.firstAid (startingUsesL ?~ Uses Supply 3)
 
 instance HasModifiersFor env FirstAid
 
@@ -39,8 +39,6 @@ instance HasActions env FirstAid where
 
 instance AssetRunner env => RunMessage env FirstAid where
   runMessage msg a@(FirstAid attrs@AssetAttrs {..}) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
-      FirstAid <$> runMessage msg (attrs & usesL .~ Uses Supply 3)
     UseCardAbility iid (AssetSource aid) _ 1 _ | aid == assetId -> do
       lid <- getId @LocationId iid
       investigatorTargets <- map InvestigatorTarget <$> getSetList lid

@@ -26,7 +26,10 @@ newtype Shotgun4 = Shotgun4 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shotgun4 :: AssetCard Shotgun4
-shotgun4 = assetWith Shotgun4 Cards.shotgun4 (slotsL .~ [HandSlot, HandSlot])
+shotgun4 =
+  assetWith Shotgun4 Cards.shotgun4
+    $ (slotsL .~ [HandSlot, HandSlot])
+    . (startingUsesL ?~ Uses Ammo 2)
 
 instance HasModifiersFor env Shotgun4
 
@@ -47,8 +50,6 @@ instance HasActions env Shotgun4 where
 
 instance (AssetRunner env) => RunMessage env Shotgun4 where
   runMessage msg a@(Shotgun4 attrs) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      Shotgun4 <$> runMessage msg (attrs & usesL .~ Uses Ammo 2)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier
         attrs

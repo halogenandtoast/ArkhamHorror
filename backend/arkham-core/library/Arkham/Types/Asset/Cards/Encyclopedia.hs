@@ -25,7 +25,8 @@ newtype Encyclopedia = Encyclopedia AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 encyclopedia :: AssetCard Encyclopedia
-encyclopedia = hand Encyclopedia Cards.encyclopedia
+encyclopedia =
+  handWith Encyclopedia Cards.encyclopedia (startingUsesL ?~ Uses Secret 5)
 
 instance HasModifiersFor env Encyclopedia
 
@@ -39,8 +40,6 @@ instance HasActions env Encyclopedia where
 
 instance AssetRunner env => RunMessage env Encyclopedia where
   runMessage msg a@(Encyclopedia attrs) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      Encyclopedia <$> runMessage msg (attrs & usesL .~ Uses Secret 5)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid
       investigatorTargets <- map InvestigatorTarget <$> getSetList locationId

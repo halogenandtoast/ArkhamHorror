@@ -20,7 +20,7 @@ newtype Scrying = Scrying AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 scrying :: AssetCard Scrying
-scrying = arcane Scrying Cards.scrying
+scrying = arcaneWith Scrying Cards.scrying (startingUsesL ?~ Uses Charge 3)
 
 instance HasModifiersFor env Scrying
 
@@ -34,8 +34,6 @@ instance HasActions env Scrying where
 
 instance AssetRunner env => RunMessage env Scrying where
   runMessage msg a@(Scrying attrs) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      Scrying <$> runMessage msg (attrs & usesL .~ Uses Charge 3)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid
       targets <- map InvestigatorTarget <$> getSetList locationId

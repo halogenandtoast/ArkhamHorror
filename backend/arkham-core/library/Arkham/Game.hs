@@ -27,7 +27,7 @@ newCampaign
   => CampaignId
   -> Int
   -> Int
-  -> HashMap Int (Investigator, [PlayerCard])
+  -> Map Int (Investigator, [PlayerCard])
   -> Difficulty
   -> m (IORef [Message], Game)
 newCampaign = newGame . Right
@@ -37,7 +37,7 @@ newScenario
   => ScenarioId
   -> Int
   -> Int
-  -> HashMap Int (Investigator, [PlayerCard])
+  -> Map Int (Investigator, [PlayerCard])
   -> Difficulty
   -> m (IORef [Message], Game)
 newScenario = newGame . Left
@@ -47,14 +47,18 @@ newGame
   => Either ScenarioId CampaignId
   -> Int
   -> Int
-  -> HashMap Int (Investigator, [PlayerCard])
+  -> Map Int (Investigator, [PlayerCard])
   -> Difficulty
   -> m (IORef [Message], Game)
 newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
-  ref <-
-    newIORef
-    $ map (uncurry InitDeck . bimap toId Deck) (toList investigatorsList)
-    <> [StartCampaign]
+  let
+    state =
+      if length investigatorsMap /= playerCount then IsPending else IsActive
+  ref <- newIORef $ if state == IsActive
+    then
+      map (uncurry InitDeck . bimap toId Deck) (toList investigatorsList)
+        <> [StartCampaign]
+    else []
 
   pure
     ( ref
@@ -76,7 +80,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameEnemiesInVoid = mempty
       , gameAssets = mempty
       , gameInvestigators = investigatorsMap
-      , gamePlayers = playersMap
+      , gamePlayers = mapFromList (mapToList playersMap)
       , gameActiveInvestigatorId = initialInvestigatorId
       , gameLeadInvestigatorId = initialInvestigatorId
       , gamePhase = CampaignPhase
@@ -90,9 +94,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameSkills = mempty
       , gameActs = mempty
       , gameChaosBag = emptyChaosBag
-      , gameGameState = if length investigatorsMap /= playerCount
-        then IsPending
-        else IsActive
+      , gameGameState = state
       , gameUsedAbilities = mempty
       , gameResignedCardCodes = mempty
       , gameFocusedCards = mempty
@@ -106,7 +108,8 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       }
     )
  where
-  initialInvestigatorId = headNote "No investigators" $ keys investigatorsMap
+  initialInvestigatorId =
+    toId . fst . headNote "No investigators" $ toList investigatorsList
   playersMap = map (toId . fst) investigatorsList
   investigatorsMap =
     mapFromList $ map (toFst toId . fst) (toList investigatorsList)
@@ -130,9 +133,7 @@ addInvestigator uid i d = do
   gameRef <- view gameRefL
   game <- liftIO $ readIORef gameRef
   queueRef <- view messageQueue
-  atomicModifyIORef'
-    queueRef
-    (\queue -> (InitDeck (toId i) (Deck d) : queue, ()))
+
   let
     iid = toId i
     g' =
@@ -144,14 +145,33 @@ addInvestigator uid i d = do
     gameState = if length (g' ^. playersL) < g' ^. playerCountL
       then IsPending
       else IsActive
-  atomicWriteIORef gameRef (g' & gameStateL .~ gameState)
 
-startGame :: MonadIO m => Game -> m Game
-startGame g =
-  pure
-    $ g
-    & (gameStateL .~ IsActive)
-    & (playerCountL .~ length (g ^. investigatorsL))
+  let
+    GameParams scenarioOrCampaignId playerCount investigatorsList difficulty =
+      gameParams game
+    investigatorsList' = investigatorsList <> mapFromList [(uid, (i, d))]
+
+  when (gameState == IsActive) $ atomicWriteIORef
+    queueRef
+    (map (uncurry InitDeck . bimap toId Deck) (toList investigatorsList')
+    <> [StartCampaign]
+    )
+
+  atomicWriteIORef
+    gameRef
+    (g'
+    & (gameStateL .~ gameState)
+    -- Adding players causes RNG split so we reset the initial seed on each player
+    -- being added so that choices can replay correctly
+    & (initialSeedL .~ gameSeed game)
+    & (paramsL
+      .~ GameParams
+           scenarioOrCampaignId
+           playerCount
+           investigatorsList'
+           difficulty
+      )
+    )
 
 -- TODO: Rename this
 toExternalGame

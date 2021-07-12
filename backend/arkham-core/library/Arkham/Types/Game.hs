@@ -147,7 +147,7 @@ data GameChoice = AskChoice InvestigatorId Int
 data GameParams = GameParams
   (Either ScenarioId CampaignId)
   Int
-  (HashMap Int (Investigator, [PlayerCard]))
+  (Map Int (Investigator, [PlayerCard])) -- Map for order
   Difficulty
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -206,6 +206,12 @@ data Game = Game
 
 choicesL :: Lens' Game [GameChoice]
 choicesL = lens gameChoices $ \m x -> m { gameChoices = x }
+
+initialSeedL :: Lens' Game Int
+initialSeedL = lens gameInitialSeed $ \m x -> m { gameInitialSeed = x }
+
+paramsL :: Lens' Game GameParams
+paramsL = lens gameParams $ \m x -> m { gameParams = x }
 
 playerCountL :: Lens' Game Int
 playerCountL = lens gamePlayerCount $ \m x -> m { gamePlayerCount = x }

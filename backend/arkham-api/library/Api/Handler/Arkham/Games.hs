@@ -112,8 +112,7 @@ postApiV1ArkhamGamesR = do
   (iid, decklist) <- liftIO $ loadDecklist deck
   let
     hashKey = fromIntegral $ fromSqlKey userId
-    investigators =
-      HashMap.singleton hashKey (lookupInvestigator iid, decklist)
+    investigators = singletonMap hashKey (lookupInvestigator iid, decklist)
   newGameSeed <- liftIO getRandom
   genRef <- newIORef (mkStdGen newGameSeed)
   case campaignId of

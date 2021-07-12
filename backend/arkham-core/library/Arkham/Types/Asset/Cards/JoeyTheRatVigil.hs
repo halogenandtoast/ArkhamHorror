@@ -46,6 +46,8 @@ instance
   , HasCount ResourceCount env InvestigatorId
   , HasCount DoomCount env AssetId
   , HasCount DoomCount env InvestigatorId
+  , HasList DiscardedPlayerCard env InvestigatorId
+  , HasSet InvestigatorId env ()
   , HasSet AssetId env InvestigatorId
   , HasQueue env, HasModifiersFor env ()
   )

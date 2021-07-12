@@ -195,6 +195,7 @@ instance
   , HasList HandCard env InvestigatorId
   , HasCount DoomCount env AssetId
   , HasCount DoomCount env InvestigatorId
+  , HasList DiscardedPlayerCard env InvestigatorId
   , AssetRunner env
   )
   => RunMessage env Asset where

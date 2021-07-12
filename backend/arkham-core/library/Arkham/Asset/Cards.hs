@@ -182,6 +182,9 @@ allPlayerAssetCards = mapFromList $ map
   , songOfTheDead2
   , springfieldM19034
   , strangeSolution
+  , strangeSolutionAcidicIchor4
+  , strangeSolutionFreezingVariant4
+  , strangeSolutionRestorativeConcoction4
   , strayCat
   , switchblade
   , switchblade2
@@ -1002,11 +1005,36 @@ esotericFormula =
     , cdEncounterSetQuantity = Just 4
     }
 
+strangeSolutionRestorativeConcoction4 :: CardDef
+strangeSolutionRestorativeConcoction4 =
+  (asset "02262" ("Strange Solution" <:> "Restorative Concoction") 1 Seeker)
+    { cdCardTraits = setFromList [Item, Science]
+    , cdSkills = [SkillWillpower, SkillWillpower]
+    , cdLevel = 4
+    }
+
+strangeSolutionAcidicIchor4 :: CardDef
+strangeSolutionAcidicIchor4 =
+  (asset "02263" ("Strange Solution" <:> "Acidic Ichor") 1 Seeker)
+    { cdCardTraits = setFromList [Item, Science]
+    , cdSkills = [SkillCombat, SkillCombat]
+    , cdLevel = 4
+    }
+
+strangeSolutionFreezingVariant4 :: CardDef
+strangeSolutionFreezingVariant4 =
+  (asset "02264" ("Strange Solution" <:> "Freezing Variant") 1 Seeker)
+    { cdCardTraits = setFromList [Item, Science]
+    , cdSkills = [SkillAgility, SkillAgility]
+    , cdLevel = 4
+    }
+
 joeyTheRatVigil :: CardDef
 joeyTheRatVigil =
   (asset "02265" ("Joey \"The Rat\" Vigil" <:> "Lookin' Out for #1") 4 Rogue)
     { cdCardTraits = setFromList [Ally, Criminal]
     , cdSkills = [SkillIntellect, SkillAgility]
+    , cdUnique = True
     }
 
 lightningGun5 :: CardDef

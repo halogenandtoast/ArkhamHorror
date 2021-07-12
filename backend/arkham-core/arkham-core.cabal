@@ -297,6 +297,7 @@ library
       Arkham.Types.Effect
       Arkham.Types.Effect.Attrs
       Arkham.Types.Effect.Effects
+      Arkham.Types.Effect.Effects.AChanceEncounter
       Arkham.Types.Effect.Effects.ArcaneBarrier
       Arkham.Types.Effect.Effects.ArkhamWoodsTwistingPaths
       Arkham.Types.Effect.Effects.BaseballBat

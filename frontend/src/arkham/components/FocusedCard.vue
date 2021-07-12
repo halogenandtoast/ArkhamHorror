@@ -56,8 +56,7 @@ export default defineComponent({
         case MessageType.FOUND_ENEMY_IN_VOID:
           return c.contents[2] === id.value;
         case MessageType.TARGET_LABEL:
-          console.log(c)
-          return c.contents[0].tag === "EncounterCardTarget" && c.contents[0].contents.id === id.value
+          return (c.contents[0].tag === "EncounterCardTarget" && c.contents[0].contents.id === id.value) || (c.contents[0].tag === "CardIdTarget" && c.contents[0].contents === id.value)
         case MessageType.RUN:
           return c.contents.some((c1: Message) => canInteract(c1));
         default:

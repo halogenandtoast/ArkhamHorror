@@ -96,6 +96,7 @@ data Effect
   | LuckyDice2' LuckyDice2
   | UndimensionedAndUnseenTabletToken' UndimensionedAndUnseenTabletToken
   | TenAcreMeadow_246' TenAcreMeadow_246
+  | AChanceEncounter' AChanceEncounter
   | LetMeHandleThis' LetMeHandleThis
   | MindWipe3' MindWipe3
   | JeremiahPierce' JeremiahPierce
@@ -186,6 +187,7 @@ allEffects = mapFromList
     , UndimensionedAndUnseenTabletToken' . undimensionedAndUnseenTabletToken
     )
   , ("02246", TenAcreMeadow_246' . tenAcreMeadow_246)
+  , ("02270", AChanceEncounter' . aChanceEncounter)
   , ("03022", LetMeHandleThis' . letMeHandleThis)
   , ("50008", MindWipe3' . mindWipe3)
   , ("50044", JeremiahPierce' . jeremiahPierce)

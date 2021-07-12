@@ -321,7 +321,8 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs whe
     RemoveFromGame target | a `isTarget` target ->
       a <$ push (RemovedFromPlay $ toSource a)
     Discard target | a `isTarget` target ->
-      a <$ pushAll [RemovedFromPlay $ toSource a, Discarded target (toCard a)]
+      a <$ pushAll
+        [RemovedFromPlay $ toSource a, Discarded (toTarget a) (toCard a)]
     Exile target | a `isTarget` target ->
       a <$ pushAll [RemovedFromPlay $ toSource a, Exiled target (toCard a)]
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do

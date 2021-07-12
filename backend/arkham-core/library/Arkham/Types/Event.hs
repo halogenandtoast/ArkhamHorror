@@ -22,7 +22,9 @@ createEvent :: IsCard a => a -> InvestigatorId -> Event
 createEvent a iid = lookupEvent (toCardCode a) iid (EventId $ toCardId a)
 
 data Event
-  = AstoundingRevelation' AstoundingRevelation
+  = AChanceEncounter' AChanceEncounter
+  | AceInTheHole3' AceInTheHole3
+  | AstoundingRevelation' AstoundingRevelation
   | Backstab' Backstab
   | BaitAndSwitch' BaitAndSwitch
   | Barricade' Barricade
@@ -113,6 +115,8 @@ deriving anyclass instance
   , HasCount SanityDamageCount env EnemyId
   , HasCount DoomCount env AssetId
   , HasCount DoomCount env InvestigatorId
+  , HasList DiscardedPlayerCard env InvestigatorId
+  , HasSet InvestigatorId env ()
   , HasCount FightCount env EnemyId
   )
   => RunMessage env Event
@@ -145,7 +149,9 @@ lookupEvent cardCode =
 allEvents :: HashMap CardCode (InvestigatorId -> EventId -> Event)
 allEvents = mapFromList $ map
   (cbCardCode &&& (curry . cbCardBuilder))
-  [ AstoundingRevelation' <$> astoundingRevelation
+  [ AChanceEncounter' <$> aChanceEncounter
+  , AceInTheHole3' <$> aceInTheHole3
+  , AstoundingRevelation' <$> astoundingRevelation
   , Backstab' <$> backstab
   , BaitAndSwitch' <$> baitAndSwitch
   , Barricade' <$> barricade

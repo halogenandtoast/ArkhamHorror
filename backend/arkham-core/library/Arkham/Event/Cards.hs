@@ -48,7 +48,8 @@ event cardCode name cost classSymbol = CardDef
 allPlayerEventCards :: HashMap CardCode CardDef
 allPlayerEventCards = mapFromList $ map
   (toCardCode &&& id)
-  [ aceInTheHole3
+  [ aChanceEncounter
+  , aceInTheHole3
   , astoundingRevelation
   , backstab
   , baitAndSwitch
@@ -501,6 +502,13 @@ moonlightRitual = (event "02267" "Moonlight Ritual" 0 Mystic)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = setFromList [Spell, Insight]
   , cdPlayRestrictions = [OwnCardWithDoom]
+  }
+
+aChanceEncounter :: CardDef
+aChanceEncounter = (event "02270" "A Chance Encounter" 1 Survivor)
+  { cdSkills = [SkillWillpower, SkillIntellect]
+  , cdCardTraits = singleton Fortune
+  , cdPlayRestrictions = [CardInDiscard AnyPlayerDiscard [Ally]]
   }
 
 letMeHandleThis :: CardDef

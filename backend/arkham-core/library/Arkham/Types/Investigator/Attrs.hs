@@ -513,6 +513,8 @@ getFastIsPlayable
      , HasCount ResourceCount env InvestigatorId
      , HasCount DoomCount env AssetId
      , HasCount DoomCount env InvestigatorId
+     , HasList DiscardedPlayerCard env InvestigatorId
+     , HasSet InvestigatorId env ()
      , HasSet AssetId env InvestigatorId
      , HasActions env ActionType
      , MonadIO m
@@ -561,6 +563,8 @@ getPlayableCards
      , HasCount ResourceCount env InvestigatorId
      , HasCount DoomCount env AssetId
      , HasCount DoomCount env InvestigatorId
+     , HasList DiscardedPlayerCard env InvestigatorId
+     , HasSet InvestigatorId env ()
      , HasSet AssetId env InvestigatorId
      , MonadIO m
      )
@@ -584,6 +588,8 @@ getPlayableDiscards
      , HasCount ResourceCount env InvestigatorId
      , HasCount DoomCount env AssetId
      , HasCount DoomCount env InvestigatorId
+     , HasList DiscardedPlayerCard env InvestigatorId
+     , HasSet InvestigatorId env ()
      , HasSet AssetId env InvestigatorId
      , HasActions env ActionType
      , MonadIO m

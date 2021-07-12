@@ -742,6 +742,8 @@ getIsPlayable
      , HasCount DoomCount env AssetId
      , HasCount DoomCount env InvestigatorId
      , HasSet AssetId env InvestigatorId
+     , HasList DiscardedPlayerCard env InvestigatorId
+     , HasSet InvestigatorId env ()
      , MonadIO m
      )
   => InvestigatorId
@@ -784,6 +786,19 @@ getIsPlayable iid windows c@(PlayerCard MkPlayerCard {..}) = do
     typePairs
   prevents _ = False
   passesRestriction location = \case
+    CardInDiscard AnyPlayerDiscard traits -> do
+      investigatorIds <- getInvestigatorIds
+      discards <-
+        concat
+          <$> traverse
+                (fmap (map unDiscardedPlayerCard) . getList)
+                investigatorIds
+      let
+        filteredDiscards = case traits of
+          [] -> discards
+          traitsToMatch ->
+            filter (any (`elem` traitsToMatch) . toTraits) discards
+      pure $ notNull filteredDiscards
     ClueOnLocation -> liftA2
       (&&)
       (pure $ location /= LocationId (CardId nil))

@@ -103,6 +103,7 @@ data ModifierType
   | TreatAllDamageAsDirect
   | SpawnNonEliteAtConnectingInstead
   | UseSkillInPlaceOf SkillType SkillType
+  | AddSkillIcons [SkillType]
   | XPModifier Int
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON, Hashable)

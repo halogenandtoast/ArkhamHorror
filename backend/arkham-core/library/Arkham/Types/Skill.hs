@@ -23,6 +23,7 @@ data Skill
   | Fearless' Fearless
   | Guts' Guts
   | InquiringMind' InquiringMind
+  | Leadership' Leadership
   | ManualDexterity' ManualDexterity
   | Opportunist' Opportunist
   | Opportunist2' Opportunist2
@@ -78,6 +79,7 @@ allSkills = mapFromList $ map
   , Fearless' <$> fearless
   , Guts' <$> guts
   , InquiringMind' <$> inquiringMind
+  , Leadership' <$> leadership
   , ManualDexterity' <$> manualDexterity
   , Opportunist' <$> opportunist
   , Opportunist2' <$> opportunist2

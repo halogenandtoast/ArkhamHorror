@@ -1989,9 +1989,16 @@ runGameMessage msg g = case msg of
   LookAtTopOfDeck _ EncounterDeckTarget n -> do
     let cards = map EncounterCard . take n $ unDeck (gameEncounterDeck g)
     g <$ pushAll [FocusCards cards, Label "Continue" [UnfocusCards]]
+  MoveTopOfDeckToBottom _ EncounterDeck n -> do
+    let (cards, deck) = splitAt n (unDeck $ gameEncounterDeck g)
+    pure $ g & encounterDeckL .~ Deck (deck <> cards)
   SearchTopOfDeck iid _ EncounterDeckTarget n _traits strategy -> do
     let (cards, encounterDeck) = splitAt n $ unDeck (gameEncounterDeck g)
     case strategy of
+      DeferSearchedToTarget target -> g <$ pushAll
+        [ SearchTopOfDeckFound iid target EncounterDeck (EncounterCard card)
+        | card <- cards
+        ]
       PutBackInAnyOrder -> do
         pushAll
           [ FocusCards (map EncounterCard cards)
@@ -2204,8 +2211,11 @@ runGameMessage msg g = case msg of
           let
             tid = TreacheryId cardId
             treachery = lookupTreachery (cdCardCode (pcDef pc)) iid tid
-          pushAll [Revelation iid (TreacherySource tid)]
-          pure $ g & treacheriesL %~ insertMap tid treachery
+          pushAll [Revelation iid (TreacherySource tid), UnsetActiveCard]
+          pure
+            $ g
+            & (treacheriesL %~ insertMap tid treachery)
+            & (activeCardL ?~ card)
         AssetType -> do
           let
             aid = AssetId cardId
@@ -2925,8 +2935,12 @@ runGameMessage msg g = case msg of
       $ [ RemoveCardFromHand iid (toCardCode card) | cdRevelation (pcDef card) ]
       <> [ Revelation iid (TreacherySource treacheryId)
          , AfterRevelation iid treacheryId
+         , UnsetActiveCard
          ]
-    pure $ g & treacheriesL %~ insertMap treacheryId treachery
+    pure
+      $ g
+      & (treacheriesL %~ insertMap treacheryId treachery)
+      & (activeCardL ?~ PlayerCard card)
   UnsetActiveCard -> pure $ g & activeCardL .~ Nothing
   AfterRevelation{} -> pure $ g & activeCardL .~ Nothing
   ResignWith (AssetTarget aid) -> do

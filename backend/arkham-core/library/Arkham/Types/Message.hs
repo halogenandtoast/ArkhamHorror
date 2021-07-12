@@ -84,7 +84,7 @@ data EncounterCardSource = FromDiscard | FromEncounterDeck | FromTheVoid
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-data SearchedCardsStrategy = ShuffleBackIn FoundCardStrategy | PutBackInAnyOrder
+data SearchedCardsStrategy = ShuffleBackIn FoundCardStrategy | PutBackInAnyOrder | DeferSearchedToTarget Target
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -101,6 +101,10 @@ data ActionType
   | AgendaActionType
   | InvestigatorActionType
   deriving stock (Bounded, Enum, Show)
+
+data DeckSignifier = InvestigatorDeck InvestigatorId | EncounterDeck
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 -- TODO: Better handle in play and out of play
 -- Out of play refers to player's hand, in any deck,
@@ -348,6 +352,7 @@ data Message
   | MoveFrom InvestigatorId LocationId
   | MoveTo InvestigatorId LocationId
   | MoveToward Target LocationMatcher
+  | MoveTopOfDeckToBottom Source DeckSignifier Int
   | MoveUntil LocationId Target
   | NextAct ActId ActId
   | NextAdvanceActStep ActId Int
@@ -443,7 +448,7 @@ data Message
   | SearchDeckForTraits InvestigatorId Target [Trait]
   | SearchDiscard InvestigatorId Target [Trait]
   | SearchTopOfDeck InvestigatorId Source Target Int [Trait] SearchedCardsStrategy
-  | SearchTopOfDeckFound InvestigatorId Target Card
+  | SearchTopOfDeckFound InvestigatorId Target DeckSignifier Card
   | SearchTopOfDeckNoneFound InvestigatorId Target
   | SetActions InvestigatorId Source Int
   | SetEncounterDeck (Deck EncounterCard)

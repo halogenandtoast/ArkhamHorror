@@ -26,11 +26,10 @@ instance TreacheryRunner env => RunMessage env FinalRhapsody where
     Revelation iid source | isSource attrs source -> do
       t <$ push (RequestTokens source (Just iid) 5 SetAside)
     RequestedTokens source (Just iid) tokens | isSource attrs source -> do
-      let
-        damageCount =
-          count ((`elem` [Skull, AutoFail]) . tokenFace) tokens
+      let damageCount = count ((`elem` [Skull, AutoFail]) . tokenFace) tokens
       t <$ pushAll
-        [ InvestigatorAssignDamage iid source DamageAny damageCount damageCount
+        [ chooseOne iid [Continue ("Take " <> tshow damageCount <> " damage")]
+        , InvestigatorAssignDamage iid source DamageAny damageCount damageCount
         , ResetTokens source
         , Discard $ toTarget attrs
         ]

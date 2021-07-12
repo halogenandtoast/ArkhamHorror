@@ -410,6 +410,7 @@ library
       Arkham.Types.Event
       Arkham.Types.Event.Attrs
       Arkham.Types.Event.Cards
+      Arkham.Types.Event.Cards.AceInTheHole3
       Arkham.Types.Event.Cards.AstoundingRevelation
       Arkham.Types.Event.Cards.Backstab
       Arkham.Types.Event.Cards.BaitAndSwitch

@@ -18,7 +18,8 @@ newtype FineClothes = FineClothes AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fineClothes :: AssetCard FineClothes
-fineClothes = asset FineClothes Cards.fineClothes
+fineClothes =
+  bodyWith FineClothes Cards.fineClothes $ (healthL ?~ 1) . (sanityL ?~ 1)
 
 instance HasActions env FineClothes where
   getActions iid window (FineClothes attrs) = getActions iid window attrs

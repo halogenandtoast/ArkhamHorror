@@ -44,6 +44,9 @@ instance
   , HasSet EnemyId env InvestigatorId
   , HasCount ClueCount env LocationId
   , HasCount ResourceCount env InvestigatorId
+  , HasCount DoomCount env AssetId
+  , HasCount DoomCount env InvestigatorId
+  , HasSet AssetId env InvestigatorId
   , HasQueue env, HasModifiersFor env ()
   )
   => RunMessage env JoeyTheRatVigil where

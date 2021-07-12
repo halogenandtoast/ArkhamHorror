@@ -277,6 +277,8 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs whe
     RemoveAllDoom -> pure $ a & doomL .~ 0
     PlaceClues target n | isTarget a target -> pure $ a & cluesL +~ n
     PlaceDoom target n | isTarget a target -> pure $ a & doomL +~ n
+    RemoveDoom target n | isTarget a target ->
+      pure $ a & doomL %~ min 0 . subtract n
     RemoveClues target n | isTarget a target ->
       pure $ a & cluesL %~ max 0 . subtract n
     CheckDefeated _ ->

@@ -500,6 +500,7 @@ moonlightRitual :: CardDef
 moonlightRitual = (event "02267" "Moonlight Ritual" 0 Mystic)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = setFromList [Spell, Insight]
+  , cdPlayRestrictions = [OwnCardWithDoom]
   }
 
 letMeHandleThis :: CardDef

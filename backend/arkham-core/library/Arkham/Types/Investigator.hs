@@ -153,6 +153,9 @@ instance HasList DiscardableHandCard env Investigator where
 instance HasCount MentalTraumaCount env Investigator where
   getCount = pure . MentalTraumaCount . investigatorMentalTrauma . toAttrs
 
+instance HasCount DoomCount env Investigator where
+  getCount = pure . DoomCount . investigatorDoom . toAttrs
+
 instance HasCount ActionTakenCount env Investigator where
   getCount =
     pure . ActionTakenCount . length . investigatorActionsTaken . toAttrs

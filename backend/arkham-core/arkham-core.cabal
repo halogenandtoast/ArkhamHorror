@@ -158,6 +158,7 @@ library
       Arkham.Types.Asset.Cards.Encyclopedia
       Arkham.Types.Asset.Cards.Encyclopedia2
       Arkham.Types.Asset.Cards.EsotericFormula
+      Arkham.Types.Asset.Cards.FineClothes
       Arkham.Types.Asset.Cards.FireAxe
       Arkham.Types.Asset.Cards.FireExtinguisher1
       Arkham.Types.Asset.Cards.FirstAid

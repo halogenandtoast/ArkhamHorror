@@ -967,6 +967,7 @@ luckyDice2 = (asset "02230" ("Lucky Dice" <:> "... Or Are They?") 2 Rogue)
   { cdCardTraits = setFromList [Item, Relic]
   , cdSkills = [SkillWillpower, SkillAgility]
   , cdExceptional = True
+  , cdLevel = 2
   }
 
 darkHorse :: CardDef

@@ -93,6 +93,7 @@ allPlayerEventCards = mapFromList $ map
   , mindOverMatter
   , mindWipe1
   , mindWipe3
+  , moonlightRitual
   , onTheLam
   , oops
   , preparedForTheWorst
@@ -493,6 +494,12 @@ aceInTheHole3 = (event "02266" "Ace in the Hole" 0 Rogue)
   , cdFastWindow = Just (Matcher.FastPlayerWindow Matcher.You)
   , cdLevel = 3
   , cdExceptional = True
+  }
+
+moonlightRitual :: CardDef
+moonlightRitual = (event "02267" "Moonlight Ritual" 0 Mystic)
+  { cdSkills = [SkillIntellect, SkillAgility]
+  , cdCardTraits = setFromList [Spell, Insight]
   }
 
 letMeHandleThis :: CardDef

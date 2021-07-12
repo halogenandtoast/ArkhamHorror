@@ -455,6 +455,7 @@ library
       Arkham.Types.Event.Cards.MindOverMatter
       Arkham.Types.Event.Cards.MindWipe1
       Arkham.Types.Event.Cards.MindWipe3
+      Arkham.Types.Event.Cards.MoonlightRitual
       Arkham.Types.Event.Cards.OnTheLam
       Arkham.Types.Event.Cards.Oops
       Arkham.Types.Event.Cards.PreparedForTheWorst

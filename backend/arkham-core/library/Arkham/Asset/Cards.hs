@@ -128,6 +128,7 @@ allPlayerAssetCards = mapFromList $ map
   , hyperawareness
   , hyperawareness2
   , jennysTwin45s
+  , jewelOfAureolus3
   , jimsTrumpet
   , joeyTheRatVigil
   , keenEye
@@ -1035,6 +1036,15 @@ joeyTheRatVigil =
   (asset "02265" ("Joey \"The Rat\" Vigil" <:> "Lookin' Out for #1") 4 Rogue)
     { cdCardTraits = setFromList [Ally, Criminal]
     , cdSkills = [SkillIntellect, SkillAgility]
+    , cdUnique = True
+    }
+
+jewelOfAureolus3 :: CardDef
+jewelOfAureolus3 =
+  (asset "02269" ("Jewel of Aureolus" <:> "Gift of the Homunculi") 3 Mystic)
+    { cdCardTraits = setFromList [Item, Relic]
+    , cdSkills = [SkillWild]
+    , cdLevel = 3
     , cdUnique = True
     }
 

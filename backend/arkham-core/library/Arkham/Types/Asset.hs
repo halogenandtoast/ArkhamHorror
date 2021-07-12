@@ -92,6 +92,7 @@ data Asset
   | Hyperawareness2' Hyperawareness2
   | JazzMulligan' JazzMulligan
   | JennysTwin45s' JennysTwin45s
+  | JewelOfAureolus3' JewelOfAureolus3
   | JimsTrumpet' JimsTrumpet
   | JoeyTheRatVigil' JoeyTheRatVigil
   | KeenEye' KeenEye
@@ -352,6 +353,7 @@ allAssets = mapFromList $ map
   , Hyperawareness2' <$> hyperawareness2
   , JazzMulligan' <$> jazzMulligan
   , JennysTwin45s' <$> jennysTwin45s
+  , JewelOfAureolus3' <$> jewelOfAureolus3
   , JimsTrumpet' <$> jimsTrumpet
   , JoeyTheRatVigil' <$> joeyTheRatVigil
   , KeenEye' <$> keenEye

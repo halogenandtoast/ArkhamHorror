@@ -144,6 +144,9 @@ data Asset
   | SongOfTheDead2' SongOfTheDead2
   | SpringfieldM19034' SpringfieldM19034
   | StrangeSolution' StrangeSolution
+  | StrangeSolutionAcidicIchor4' StrangeSolutionAcidicIchor4
+  | StrangeSolutionFreezingVariant4' StrangeSolutionFreezingVariant4
+  | StrangeSolutionRestorativeConcoction4' StrangeSolutionRestorativeConcoction4
   | StrayCat' StrayCat
   | Streetwise3' Streetwise3
   | Switchblade' Switchblade
@@ -392,6 +395,10 @@ allAssets = mapFromList $ map
   , SongOfTheDead2' <$> songOfTheDead2
   , SpringfieldM19034' <$> springfieldM19034
   , StrangeSolution' <$> strangeSolution
+  , StrangeSolutionAcidicIchor4' <$> strangeSolutionAcidicIchor4
+  , StrangeSolutionFreezingVariant4' <$> strangeSolutionFreezingVariant4
+  , StrangeSolutionRestorativeConcoction4'
+    <$> strangeSolutionRestorativeConcoction4
   , StrayCat' <$> strayCat
   , Streetwise3' <$> streetwise3
   , Switchblade' <$> switchblade

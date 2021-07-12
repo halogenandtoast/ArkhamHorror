@@ -128,6 +128,7 @@ allPlayerAssetCards = mapFromList $ map
   , hyperawareness2
   , jennysTwin45s
   , jimsTrumpet
+  , joeyTheRatVigil
   , keenEye
   , keenEye3
   , knife
@@ -999,6 +1000,13 @@ esotericFormula =
   (storyAsset "02254" "Esoteric Formula" 0 UndimensionedAndUnseen)
     { cdCardTraits = singleton Spell
     , cdEncounterSetQuantity = Just 4
+    }
+
+joeyTheRatVigil :: CardDef
+joeyTheRatVigil =
+  (asset "02265" ("Joey \"The Rat\" Vigil" <:> "Lookin' Out for #1") 4 Rogue)
+    { cdCardTraits = setFromList [Ally, Criminal]
+    , cdSkills = [SkillIntellect, SkillAgility]
     }
 
 lightningGun5 :: CardDef

@@ -10,6 +10,8 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
+import Arkham.Types.Card.Cost
+import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -24,6 +26,7 @@ import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
+import Arkham.Types.PlayRestriction
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
@@ -31,6 +34,10 @@ import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait (Trait, toTraits)
 import Arkham.Types.Window
+import Arkham.Types.WindowMatcher (WindowMatcher)
+import qualified Arkham.Types.WindowMatcher as Matcher
+import Control.Monad.Extra (allM, anyM)
+import Data.UUID (nil)
 
 cancelToken :: (HasQueue env, MonadIO m, MonadReader env m) => Token -> m ()
 cancelToken token = withQueue $ \queue ->
@@ -720,3 +727,147 @@ hasInvestigateActions i NonFast = do
   locationActions <- getActions i NonFast LocationActionType
   pure $ or [ True | Investigate{} <- locationActions ]
 hasInvestigateActions _ _ = pure False
+
+getIsPlayable
+  :: ( MonadReader env m
+     , HasModifiersFor env ()
+     , HasSet InvestigatorId env LocationId
+     , HasSet EnemyId env LocationId
+     , HasSet Trait env EnemyId
+     , HasCount ClueCount env LocationId
+     , HasActions env ActionType
+     , HasId LocationId env InvestigatorId
+     , HasSet EnemyId env InvestigatorId
+     , HasCount ResourceCount env InvestigatorId
+     , MonadIO m
+     )
+  => InvestigatorId
+  -> [Window]
+  -> Card
+  -> m Bool
+getIsPlayable _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
+getIsPlayable iid windows c@(PlayerCard MkPlayerCard {..}) = do
+  modifiers <-
+    map modifierType
+      <$> getModifiersFor (InvestigatorSource iid) (InvestigatorTarget iid) ()
+  availableResources <- unResourceCount <$> getCount iid
+  engagedEnemies <- getSet @EnemyId iid
+  location <- getId @LocationId iid
+  modifiedCardCost <- getModifiedCardCost iid c
+  passesRestrictions <- allM
+    (passesRestriction location)
+    (cdPlayRestrictions pcDef)
+  inFastWindow <- maybe
+    (pure False)
+    (cardInFastWindows iid c windows)
+    (cdFastWindow pcDef)
+  pure
+    $ (cdCardType pcDef /= SkillType)
+    && (modifiedCardCost <= availableResources)
+    && none prevents modifiers
+    && (not (cdFast pcDef || isJust (cdFastWindow pcDef))
+       || (cdFast pcDef && cardInWindows windows c iid)
+       || inFastWindow
+       )
+    && (cdAction pcDef /= Just Action.Evade || notNull engagedEnemies)
+    && passesRestrictions
+ where
+  prevents (CannotPlay typePairs) = any
+    (\(cType, traits) ->
+      cdCardType pcDef
+        == cType
+        && (null traits || notNull (intersection (toTraits pcDef) traits))
+    )
+    typePairs
+  prevents _ = False
+  passesRestriction location = \case
+    ClueOnLocation -> liftA2
+      (&&)
+      (pure $ location /= LocationId (CardId nil))
+      ((> 0) . unClueCount <$> getCount location)
+    EnemyAtYourLocation -> liftA2
+      (&&)
+      (pure $ location /= LocationId (CardId nil))
+      (notNull <$> getSet @EnemyId location)
+    AnotherInvestigatorInSameLocation -> liftA2
+      (&&)
+      (pure $ location /= LocationId (CardId nil))
+      (notNull <$> getSet @InvestigatorId location)
+    ScenarioCardHasResignAbility -> do
+      actions' <- concat . concat <$> sequence
+        [ traverse
+            (getActions iid window)
+            ([minBound .. maxBound] :: [ActionType])
+        | window <- windows
+        ]
+      pure $ flip
+        any
+        actions'
+        \case
+          UseAbility _ ability -> case abilityType ability of
+            ActionAbility (Just Action.Resign) _ -> True
+            _ -> False
+          _ -> False
+
+getModifiedCardCost
+  :: (MonadReader env m, HasModifiersFor env ())
+  => InvestigatorId
+  -> Card
+  -> m Int
+getModifiedCardCost iid (PlayerCard MkPlayerCard {..}) = do
+  modifiers <-
+    map modifierType
+      <$> getModifiersFor (InvestigatorSource iid) (InvestigatorTarget iid) ()
+  pure $ foldr applyModifier startingCost modifiers
+ where
+  startingCost = case cdCost pcDef of
+    Just (StaticCost n) -> n
+    Just DynamicCost -> 0
+    Nothing -> 0
+  applyModifier (ReduceCostOf traits m) n
+    | notNull (setFromList traits `intersection` toTraits pcDef) = max 0 (n - m)
+  applyModifier (ReduceCostOfCardType cardType m) n
+    | cardType == cdCardType pcDef = max 0 (n - m)
+  applyModifier _ n = n
+getModifiedCardCost iid (EncounterCard MkEncounterCard {..}) = do
+  modifiers <-
+    map modifierType
+      <$> getModifiersFor (InvestigatorSource iid) (InvestigatorTarget iid) ()
+  pure $ foldr
+    applyModifier
+    (error "we need so specify ecCost for this to work")
+    modifiers
+ where
+  applyModifier (ReduceCostOf traits m) n
+    | notNull (setFromList traits `intersection` toTraits ecDef) = max 0 (n - m)
+  applyModifier _ n = n
+
+cardInWindows :: [Window] -> Card -> InvestigatorId -> Bool
+cardInWindows windows c _ = case c of
+  PlayerCard pc ->
+    notNull $ cdWindows (pcDef pc) `intersect` setFromList windows
+  _ -> False
+
+cardInFastWindows
+  :: (MonadReader env m, HasSet Trait env EnemyId)
+  => InvestigatorId
+  -> Card
+  -> [Window]
+  -> WindowMatcher
+  -> m Bool
+cardInFastWindows _ _ windows matcher = anyM (matches matcher) windows
+ where
+  matches matcher' window' = case (matcher', window') of
+    (Matcher.AfterEnemyDefeated whoMatcher enemyMatcher, AfterEnemyDefeated who enemyId)
+      -> liftA2
+        (&&)
+        (enemyMatches enemyId enemyMatcher)
+        (matchWho who whoMatcher)
+    (Matcher.AfterEnemyDefeated _ _, _) -> pure False
+    (Matcher.FastPlayerWindow _, window) -> pure $ window == FastPlayerWindow
+  matchWho who = \case
+    Matcher.Anyone -> pure True
+    Matcher.You -> pure $ who == You
+  enemyMatches enemyId = \case
+    Matcher.EnemyWithTrait t -> member t <$> getSet enemyId
+

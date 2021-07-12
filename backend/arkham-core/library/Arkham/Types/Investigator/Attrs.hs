@@ -8,7 +8,6 @@ import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
-import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes hiding (discard)
@@ -16,6 +15,7 @@ import Arkham.Types.CommitRestriction
 import Arkham.Types.Cost
 import Arkham.Types.EnemyId
 import Arkham.Types.EntityInstance
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.InvestigatorId
@@ -23,7 +23,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
-import Arkham.Types.PlayRestriction
 import Arkham.Types.Query
 import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
@@ -34,9 +33,6 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window
-import Arkham.Types.WindowMatcher (WindowMatcher)
-import qualified Arkham.Types.WindowMatcher as Matcher
-import Control.Monad.Extra (allM, anyM)
 import qualified Data.HashSet as HashSet
 import Data.UUID (nil)
 
@@ -510,6 +506,9 @@ getFastIsPlayable
      , HasSet EnemyId env LocationId
      , HasSet Trait env EnemyId
      , HasCount ClueCount env LocationId
+     , HasId LocationId env InvestigatorId
+     , HasSet EnemyId env InvestigatorId
+     , HasCount ResourceCount env InvestigatorId
      , HasActions env ActionType
      , MonadIO m
      )
@@ -521,7 +520,7 @@ getFastIsPlayable _ _ (EncounterCard _) = pure False -- TODO: there might be som
 getFastIsPlayable attrs windows c@(PlayerCard MkPlayerCard {..}) = do
   modifiers <-
     map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
-  isPlayable <- getIsPlayable attrs windows c
+  isPlayable <- getIsPlayable (toId attrs) windows c
   pure
     $ (cdFast pcDef || canBecomeFast modifiers || isJust (cdFastWindow pcDef))
     && isPlayable
@@ -532,112 +531,6 @@ getFastIsPlayable attrs windows c@(PlayerCard MkPlayerCard {..}) = do
       && notNull (setFromList traits `intersect` toTraits pcDef)
     = True
   applyModifier _ val = val
-
-getModifiedCardCost
-  :: (MonadReader env m, HasModifiersFor env ())
-  => InvestigatorAttrs
-  -> Card
-  -> m Int
-getModifiedCardCost attrs (PlayerCard MkPlayerCard {..}) = do
-  modifiers <-
-    map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
-  pure $ foldr applyModifier startingCost modifiers
- where
-  startingCost = case cdCost pcDef of
-    Just (StaticCost n) -> n
-    Just DynamicCost -> 0
-    Nothing -> 0
-  applyModifier (ReduceCostOf traits m) n
-    | notNull (setFromList traits `intersection` toTraits pcDef) = max 0 (n - m)
-  applyModifier (ReduceCostOfCardType cardType m) n
-    | cardType == cdCardType pcDef = max 0 (n - m)
-  applyModifier _ n = n
-getModifiedCardCost attrs (EncounterCard MkEncounterCard {..}) = do
-  modifiers <-
-    map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
-  pure $ foldr
-    applyModifier
-    (error "we need so specify ecCost for this to work")
-    modifiers
- where
-  applyModifier (ReduceCostOf traits m) n
-    | notNull (setFromList traits `intersection` toTraits ecDef) = max 0 (n - m)
-  applyModifier _ n = n
-
-getIsPlayable
-  :: ( MonadReader env m
-     , HasModifiersFor env ()
-     , HasSet InvestigatorId env LocationId
-     , HasSet EnemyId env LocationId
-     , HasSet Trait env EnemyId
-     , HasCount ClueCount env LocationId
-     , HasActions env ActionType
-     , MonadIO m
-     )
-  => InvestigatorAttrs
-  -> [Window]
-  -> Card
-  -> m Bool
-getIsPlayable _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
-getIsPlayable attrs@InvestigatorAttrs {..} windows c@(PlayerCard MkPlayerCard {..})
-  = do
-    modifiers <-
-      map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
-    modifiedCardCost <- getModifiedCardCost attrs c
-    passesRestrictions <- allM passesRestriction (cdPlayRestrictions pcDef)
-    inFastWindow <- maybe
-      (pure False)
-      (cardInFastWindows attrs c windows)
-      (cdFastWindow pcDef)
-    pure
-      $ (cdCardType pcDef /= SkillType)
-      && (modifiedCardCost <= investigatorResources)
-      && none prevents modifiers
-      && (not (cdFast pcDef || isJust (cdFastWindow pcDef))
-         || (cdFast pcDef && cardInWindows windows c attrs)
-         || inFastWindow
-         )
-      && (cdAction pcDef /= Just Action.Evade || not
-           (null investigatorEngagedEnemies)
-         )
-      && passesRestrictions
- where
-  prevents (CannotPlay typePairs) = any
-    (\(cType, traits) ->
-      cdCardType pcDef
-        == cType
-        && (null traits || notNull (intersection (toTraits pcDef) traits))
-    )
-    typePairs
-  prevents _ = False
-  passesRestriction = \case
-    ClueOnLocation -> liftA2
-      (&&)
-      (pure $ investigatorLocation /= LocationId (CardId nil))
-      ((> 0) . unClueCount <$> getCount investigatorLocation)
-    EnemyAtYourLocation -> liftA2
-      (&&)
-      (pure $ investigatorLocation /= LocationId (CardId nil))
-      (notNull <$> getSet @EnemyId investigatorLocation)
-    AnotherInvestigatorInSameLocation -> liftA2
-      (&&)
-      (pure $ investigatorLocation /= LocationId (CardId nil))
-      (notNull <$> getSet @InvestigatorId investigatorLocation)
-    ScenarioCardHasResignAbility -> do
-      actions' <- concat . concat <$> sequence
-        [ traverse
-            (getActions investigatorId window)
-            ([minBound .. maxBound] :: [ActionType])
-        | window <- windows
-        ]
-      pure $ flip
-        any
-        actions'
-        \case
-          UseAbility _ ability -> case abilityType ability of
-            ActionAbility (Just Action.Resign) _ -> True
-            _ -> False
-          _ -> False
 
 drawOpeningHand
   :: InvestigatorAttrs -> Int -> ([PlayerCard], [Card], [PlayerCard])
@@ -650,35 +543,6 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
     then go m (c : d, h, cs)
     else go (m - 1) (d, PlayerCard c : h, cs)
 
-cardInWindows :: [Window] -> Card -> InvestigatorAttrs -> Bool
-cardInWindows windows c _ = case c of
-  PlayerCard pc ->
-    notNull $ cdWindows (pcDef pc) `intersect` setFromList windows
-  _ -> False
-
-cardInFastWindows
-  :: (MonadReader env m, HasSet Trait env EnemyId)
-  => InvestigatorAttrs
-  -> Card
-  -> [Window]
-  -> WindowMatcher
-  -> m Bool
-cardInFastWindows _ _ windows matcher = anyM (matches matcher) windows
- where
-  matches matcher' window' = case (matcher', window') of
-    (Matcher.AfterEnemyDefeated whoMatcher enemyMatcher, AfterEnemyDefeated who enemyId)
-      -> liftA2
-        (&&)
-        (enemyMatches enemyId enemyMatcher)
-        (matchWho who whoMatcher)
-    (Matcher.AfterEnemyDefeated _ _, _) -> pure False
-    (Matcher.FastPlayerWindow _, window) -> pure $ window == FastPlayerWindow
-  matchWho who = \case
-    Matcher.Anyone -> pure True
-    Matcher.You -> pure $ who == You
-  enemyMatches enemyId = \case
-    Matcher.EnemyWithTrait t -> member t <$> getSet enemyId
-
 getPlayableCards
   :: ( MonadReader env m
      , HasModifiersFor env ()
@@ -687,6 +551,9 @@ getPlayableCards
      , HasSet Trait env EnemyId
      , HasCount ClueCount env LocationId
      , HasActions env ActionType
+     , HasId LocationId env InvestigatorId
+     , HasSet EnemyId env InvestigatorId
+     , HasCount ResourceCount env InvestigatorId
      , MonadIO m
      )
   => InvestigatorAttrs
@@ -704,6 +571,9 @@ getPlayableDiscards
      , HasSet EnemyId env LocationId
      , HasSet Trait env EnemyId
      , HasCount ClueCount env LocationId
+     , HasId LocationId env InvestigatorId
+     , HasSet EnemyId env InvestigatorId
+     , HasCount ResourceCount env InvestigatorId
      , HasActions env ActionType
      , MonadIO m
      )
@@ -1926,7 +1796,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     isPlayableMap :: HashMap Card Bool <- mapFromList <$> for
       investigatorHand
       (\c -> do
-        isPlayable <- getIsPlayable a windows c
+        isPlayable <- getIsPlayable (toId a) windows c
         pure (c, isPlayable)
       )
     let isPlayable c = findWithDefault False c isPlayableMap

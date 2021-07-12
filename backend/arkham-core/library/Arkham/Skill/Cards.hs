@@ -59,6 +59,7 @@ allPlayerSkillCards = mapFromList $ map
   , quickThinking
   , riseToTheOccasion
   , survivalInstinct
+  , survivalInstinct2
   , trueUnderstanding
   , unexpectedCourage
   , viciousBlow
@@ -170,6 +171,13 @@ opportunist2 = (skill "02231" "Opportunist" [SkillWild] Rogue)
   , cdCommitRestrictions = [OnlyYourTest]
   , cdLevel = 2
   }
+
+survivalInstinct2 :: CardDef
+survivalInstinct2 =
+  (skill "02235" "Survival Instinct" [SkillAgility, SkillAgility] Survivor)
+    { cdCardTraits = setFromList [Innate, Developed]
+    , cdLevel = 2
+    }
 
 trueUnderstanding :: CardDef
 trueUnderstanding = (skill "04153" "True Understanding" [SkillWild] Seeker)

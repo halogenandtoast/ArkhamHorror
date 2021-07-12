@@ -192,6 +192,8 @@ instance
 instance
   ( HasActions env ActionType
   , HasList HandCard env InvestigatorId
+  , HasCount DoomCount env AssetId
+  , HasCount DoomCount env InvestigatorId
   , AssetRunner env
   )
   => RunMessage env Asset where

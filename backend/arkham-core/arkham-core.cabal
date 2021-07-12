@@ -724,6 +724,7 @@ library
       Arkham.Types.Skill.Cards.Defiance
       Arkham.Types.Skill.Cards.DoubleOrNothing
       Arkham.Types.Skill.Cards.Fearless
+      Arkham.Types.Skill.Cards.Fearless2
       Arkham.Types.Skill.Cards.Guts
       Arkham.Types.Skill.Cards.InquiringMind
       Arkham.Types.Skill.Cards.Leadership

@@ -49,6 +49,7 @@ allPlayerSkillCards = mapFromList $ map
   , defiance
   , doubleOrNothing
   , fearless
+  , fearless2
   , guts
   , inquiringMind
   , leadership
@@ -183,6 +184,12 @@ survivalInstinct2 =
 leadership :: CardDef
 leadership = (skill "02260" "Leadership" [SkillWild] Guardian)
   { cdCardTraits = singleton Practiced
+  }
+
+fearless2 :: CardDef
+fearless2 = (skill "02268" "Fearless" [SkillWillpower, SkillWillpower] Mystic)
+  { cdCardTraits = setFromList [Innate, Developed]
+  , cdLevel = 2
   }
 
 trueUnderstanding :: CardDef

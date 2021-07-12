@@ -21,6 +21,7 @@ data Skill
   | Defiance' Defiance
   | DoubleOrNothing' DoubleOrNothing
   | Fearless' Fearless
+  | Fearless2' Fearless2
   | Guts' Guts
   | InquiringMind' InquiringMind
   | Leadership' Leadership
@@ -77,6 +78,7 @@ allSkills = mapFromList $ map
   , Defiance' <$> defiance
   , DoubleOrNothing' <$> doubleOrNothing
   , Fearless' <$> fearless
+  , Fearless2' <$> fearless2
   , Guts' <$> guts
   , InquiringMind' <$> inquiringMind
   , Leadership' <$> leadership

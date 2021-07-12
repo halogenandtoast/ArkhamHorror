@@ -49,6 +49,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorHealthDamage :: Int
   , investigatorSanityDamage :: Int
   , investigatorClues :: Int
+  , investigatorDoom :: Int
   , investigatorResources :: Int
   , investigatorLocation :: LocationId
   , investigatorActionsTaken :: [Action]
@@ -398,6 +399,7 @@ baseAttrs iid name classSymbol Stats {..} traits = InvestigatorAttrs
   , investigatorHealthDamage = 0
   , investigatorSanityDamage = 0
   , investigatorClues = 0
+  , investigatorDoom = 0
   , investigatorResources = 0
   , investigatorLocation = LocationId $ CardId nil
   , investigatorActionsTaken = mempty
@@ -509,6 +511,9 @@ getFastIsPlayable
      , HasId LocationId env InvestigatorId
      , HasSet EnemyId env InvestigatorId
      , HasCount ResourceCount env InvestigatorId
+     , HasCount DoomCount env AssetId
+     , HasCount DoomCount env InvestigatorId
+     , HasSet AssetId env InvestigatorId
      , HasActions env ActionType
      , MonadIO m
      )
@@ -554,6 +559,9 @@ getPlayableCards
      , HasId LocationId env InvestigatorId
      , HasSet EnemyId env InvestigatorId
      , HasCount ResourceCount env InvestigatorId
+     , HasCount DoomCount env AssetId
+     , HasCount DoomCount env InvestigatorId
+     , HasSet AssetId env InvestigatorId
      , MonadIO m
      )
   => InvestigatorAttrs
@@ -574,6 +582,9 @@ getPlayableDiscards
      , HasId LocationId env InvestigatorId
      , HasSet EnemyId env InvestigatorId
      , HasCount ResourceCount env InvestigatorId
+     , HasCount DoomCount env AssetId
+     , HasCount DoomCount env InvestigatorId
+     , HasSet AssetId env InvestigatorId
      , HasActions env ActionType
      , MonadIO m
      )

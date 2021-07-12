@@ -784,6 +784,12 @@ instance HasGame env => HasCount ClueCount env EnemyId where
 instance HasGame env => HasCount DoomCount env EnemyId where
   getCount = getCount <=< getEnemy
 
+instance HasGame env => HasCount DoomCount env InvestigatorId where
+  getCount = getCount <=< getInvestigator
+
+instance HasGame env => HasCount DoomCount env AssetId where
+  getCount = getCount <=< getAsset
+
 instance HasGame env => HasCount DoomCount env AgendaId where
   getCount = getCount <=< getAgenda
 

@@ -64,6 +64,7 @@ data Event
   | MindOverMatter' MindOverMatter
   | MindWipe1' MindWipe1
   | MindWipe3' MindWipe3
+  | MoonlightRitual' MoonlightRitual
   | OnTheLam' OnTheLam
   | Oops' Oops
   | PreparedForTheWorst' PreparedForTheWorst
@@ -110,6 +111,8 @@ deriving anyclass instance
   , HasSet FightableEnemyId env (InvestigatorId, Source)
   , HasCount HealthDamageCount env EnemyId
   , HasCount SanityDamageCount env EnemyId
+  , HasCount DoomCount env AssetId
+  , HasCount DoomCount env InvestigatorId
   , HasCount FightCount env EnemyId
   )
   => RunMessage env Event
@@ -184,6 +187,7 @@ allEvents = mapFromList $ map
   , MindOverMatter' <$> mindOverMatter
   , MindWipe1' <$> mindWipe1
   , MindWipe3' <$> mindWipe3
+  , MoonlightRitual' <$> moonlightRitual
   , OnTheLam' <$> onTheLam
   , Oops' <$> oops
   , PreparedForTheWorst' <$> preparedForTheWorst

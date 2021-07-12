@@ -739,6 +739,9 @@ getIsPlayable
      , HasId LocationId env InvestigatorId
      , HasSet EnemyId env InvestigatorId
      , HasCount ResourceCount env InvestigatorId
+     , HasCount DoomCount env AssetId
+     , HasCount DoomCount env InvestigatorId
+     , HasSet AssetId env InvestigatorId
      , MonadIO m
      )
   => InvestigatorId
@@ -793,6 +796,13 @@ getIsPlayable iid windows c@(PlayerCard MkPlayerCard {..}) = do
       (&&)
       (pure $ location /= LocationId (CardId nil))
       (notNull <$> getSet @InvestigatorId location)
+    OwnCardWithDoom -> do
+      assetIds <- getSetList @AssetId iid
+      investigatorDoomCount <- unDoomCount <$> getCount iid
+      assetsWithDoomCount <- filterM
+        (fmap ((> 0) . unDoomCount) . getCount)
+        assetIds
+      pure $ investigatorDoomCount > 0 || notNull assetsWithDoomCount
     ScenarioCardHasResignAbility -> do
       actions' <- concat . concat <$> sequence
         [ traverse

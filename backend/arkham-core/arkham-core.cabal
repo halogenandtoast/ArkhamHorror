@@ -719,6 +719,7 @@ library
       Arkham.Types.Skill.Cards.InquiringMind
       Arkham.Types.Skill.Cards.ManualDexterity
       Arkham.Types.Skill.Cards.Opportunist
+      Arkham.Types.Skill.Cards.Opportunist2
       Arkham.Types.Skill.Cards.Overpower
       Arkham.Types.Skill.Cards.Perception
       Arkham.Types.Skill.Cards.QuickThinking

@@ -1,4 +1,7 @@
-module Arkham.Types.Skill.Cards.Opportunist where
+module Arkham.Types.Skill.Cards.Opportunist
+  ( opportunist
+  , Opportunist(..)
+  ) where
 
 import Arkham.Prelude
 

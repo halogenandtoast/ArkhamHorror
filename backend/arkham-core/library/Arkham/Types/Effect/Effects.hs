@@ -2,6 +2,7 @@ module Arkham.Types.Effect.Effects
   ( module X
   ) where
 
+import Arkham.Types.Effect.Effects.AChanceEncounter as X
 import Arkham.Types.Effect.Effects.ArcaneBarrier as X
 import Arkham.Types.Effect.Effects.ArkhamWoodsTwistingPaths as X
 import Arkham.Types.Effect.Effects.BaseballBat as X

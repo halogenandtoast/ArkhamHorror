@@ -51,6 +51,7 @@ allPlayerSkillCards = mapFromList $ map
   , fearless
   , guts
   , inquiringMind
+  , leadership
   , manualDexterity
   , opportunist
   , opportunist2
@@ -178,6 +179,11 @@ survivalInstinct2 =
     { cdCardTraits = setFromList [Innate, Developed]
     , cdLevel = 2
     }
+
+leadership :: CardDef
+leadership = (skill "02260" "Leadership" [SkillWild] Guardian)
+  { cdCardTraits = singleton Practiced
+  }
 
 trueUnderstanding :: CardDef
 trueUnderstanding = (skill "04153" "True Understanding" [SkillWild] Seeker)

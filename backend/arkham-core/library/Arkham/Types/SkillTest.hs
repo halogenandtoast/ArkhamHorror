@@ -145,15 +145,21 @@ initSkillTest iid source target maction skillType' _skillValue' difficulty' =
     , skillTestSubscribers = [InvestigatorTarget iid]
     }
 
-skillIconCount :: SkillTest -> Int
-skillIconCount SkillTest {..} = length . filter matches $ concatMap
+skillIconCount
+  :: (MonadReader env m, HasModifiersFor env ()) => SkillTest -> m Int
+skillIconCount st@SkillTest {..} = length . filter matches <$> concatMapM
   (iconsForCard . snd)
   (toList skillTestCommittedCards)
  where
-  iconsForCard (PlayerCard MkPlayerCard {..}) = cdSkills pcDef
-  iconsForCard _ = []
+  iconsForCard (PlayerCard MkPlayerCard {..}) = do
+    modifiers' <-
+      map modifierType <$> getModifiersFor (toSource st) (CardIdTarget pcId) ()
+    pure $ foldr applySkillModifiers (cdSkills pcDef) modifiers'
+  iconsForCard _ = pure []
   matches SkillWild = True
   matches s = s == skillTestSkillType
+  applySkillModifiers (AddSkillIcons xs) ys = xs <> ys
+  applySkillModifiers _ ys = ys
 
 getModifiedSkillTestDifficulty
   :: (MonadReader env m, HasModifiersFor env ()) => SkillTest -> m Int
@@ -284,10 +290,11 @@ instance SkillTestRunner env => RunMessage env SkillTest where
     AddSkillTestSubscriber target -> pure $ s & subscribersL %~ (target :)
     PassSkillTest -> do
       stats <- getStats (skillTestInvestigator, skillTestAction) (toSource s)
+      iconCount <- skillIconCount s
       let
         currentSkillValue = statsSkillValue stats skillTestSkillType
         modifiedSkillValue' =
-          max 0 (currentSkillValue + skillTestValueModifier + skillIconCount s)
+          max 0 (currentSkillValue + skillTestValueModifier + iconCount)
       pushAll
         [ chooseOne skillTestInvestigator [SkillTestApplyResults]
         , SkillTestEnds skillTestSource
@@ -552,6 +559,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         (getModifiedTokenValue s)
       stats <- getStats (skillTestInvestigator, skillTestAction) (toSource s)
       modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
+      iconCount <- skillIconCount s
       let
         currentSkillValue = statsSkillValue stats skillTestSkillType
         totaledTokenValues = tokenValues + skillTestValueModifier
@@ -559,7 +567,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
           0
           (currentSkillValue
           + totaledTokenValues
-          + (if CancelSkills `elem` modifiers' then 0 else skillIconCount s)
+          + (if CancelSkills `elem` modifiers' then 0 else iconCount)
           )
       push SkillTestResults
       liftIO $ whenM
@@ -571,7 +579,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         <> "\n+ totaled token values: "
         <> show totaledTokenValues
         <> "\n+ skill icon count: "
-        <> show (skillIconCount s)
+        <> show iconCount
         <> "\n-------------------------"
         <> "\n= Modified skill value: "
         <> show modifiedSkillValue'

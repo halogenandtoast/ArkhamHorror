@@ -48,7 +48,8 @@ event cardCode name cost classSymbol = CardDef
 allPlayerEventCards :: HashMap CardCode CardDef
 allPlayerEventCards = mapFromList $ map
   (toCardCode &&& id)
-  [ astoundingRevelation
+  [ aceInTheHole3
+  , astoundingRevelation
   , backstab
   , baitAndSwitch
   , barricade
@@ -484,6 +485,14 @@ exposeWeakness1 = (event "02228" "Expose Weakness" 0 Seeker)
   , cdFastWindow = Just (Matcher.FastPlayerWindow Matcher.Anyone)
   , cdPlayRestrictions = [EnemyAtYourLocation]
   , cdLevel = 1
+  }
+
+aceInTheHole3 :: CardDef
+aceInTheHole3 = (event "02266" "Ace in the Hole" 0 Rogue)
+  { cdCardTraits = singleton Trick
+  , cdFastWindow = Just (Matcher.FastPlayerWindow Matcher.You)
+  , cdLevel = 3
+  , cdExceptional = True
   }
 
 letMeHandleThis :: CardDef

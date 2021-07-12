@@ -727,6 +727,7 @@ library
       Arkham.Types.Skill.Cards.QuickThinking
       Arkham.Types.Skill.Cards.RiseToTheOccasion
       Arkham.Types.Skill.Cards.SurvivalInstinct
+      Arkham.Types.Skill.Cards.SurvivalInstinct2
       Arkham.Types.Skill.Cards.TrueUnderstanding
       Arkham.Types.Skill.Cards.UnexpectedCourage
       Arkham.Types.Skill.Cards.ViciousBlow

@@ -1,6 +1,6 @@
-module Arkham.Types.Skill.Cards.SurvivalInstinct
-  ( survivalInstinct
-  , SurvivalInstinct(..)
+module Arkham.Types.Skill.Cards.SurvivalInstinct2
+  ( survivalInstinct2
+  , SurvivalInstinct2(..)
   ) where
 
 import Arkham.Prelude
@@ -15,19 +15,19 @@ import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
 import Arkham.Types.Target
 
-newtype SurvivalInstinct = SurvivalInstinct SkillAttrs
+newtype SurvivalInstinct2 = SurvivalInstinct2 SkillAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-survivalInstinct :: SkillCard SurvivalInstinct
-survivalInstinct = skill SurvivalInstinct Cards.survivalInstinct
+survivalInstinct2 :: SkillCard SurvivalInstinct2
+survivalInstinct2 = skill SurvivalInstinct2 Cards.survivalInstinct2
 
-instance HasModifiersFor env SurvivalInstinct
+instance HasModifiersFor env SurvivalInstinct2
 
-instance HasActions env SurvivalInstinct where
-  getActions i window (SurvivalInstinct attrs) = getActions i window attrs
+instance HasActions env SurvivalInstinct2 where
+  getActions i window (SurvivalInstinct2 attrs) = getActions i window attrs
 
-instance SkillRunner env => RunMessage env SurvivalInstinct where
-  runMessage msg s@(SurvivalInstinct attrs@SkillAttrs {..}) = case msg of
+instance SkillRunner env => RunMessage env SurvivalInstinct2 where
+  runMessage msg s@(SurvivalInstinct2 attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest iid (Just Evade) _ (SkillTarget sid) _ _ | sid == skillId ->
       do
         engagedEnemyIds <- getSetList iid
@@ -54,11 +54,11 @@ instance SkillRunner env => RunMessage env SurvivalInstinct where
             ([ chooseOne
                  iid
                  [ Label
-                   "Disengage from each other enemy"
-                   [ DisengageEnemy iid eid | eid <- es ]
+                   "Evade each other enemy"
+                   [ EnemyEvaded iid eid | eid <- es ]
                  , Label "Skip" []
                  ]
              ]
             <> [ moveOptions | notNull unblockedConnectedLocationIds ]
             )
-    _ -> SurvivalInstinct <$> runMessage msg attrs
+    _ -> SurvivalInstinct2 <$> runMessage msg attrs

@@ -116,6 +116,7 @@ allPlayerEventCards = mapFromList $ map
   , teamwork
   , thinkOnYourFeet
   , wardOfProtection
+  , wardOfProtection5
   , willToSurvive3
   , workingAHunch
   ]
@@ -493,7 +494,7 @@ exposeWeakness1 = (event "02228" "Expose Weakness" 0 Seeker)
   }
 
 iveHadWorse4 :: CardDef
-iveHadWorse4 = (event "02261" "\"I've had worse...\"" 0 Guardian)
+iveHadWorse4 = (event "02261" "\"I've had worse…\"" 0 Guardian)
   { cdSkills = [SkillWillpower, SkillWillpower, SkillAgility]
   , cdCardTraits = singleton Spirit
   , cdFastWindow = Just (Matcher.DealtDamageOrHorror Matcher.You)
@@ -535,6 +536,15 @@ monsterSlayer5 = (event "02300" "Monster Slayer" 1 Guardian)
   { cdSkills = [SkillCombat, SkillWild]
   , cdCardTraits = singleton Spirit
   , cdAction = Just Action.Fight
+  , cdLevel = 5
+  }
+
+wardOfProtection5 :: CardDef
+wardOfProtection5 = (event "02307" "Ward of Protection" 1 Mystic)
+  { cdSkills = [SkillWild]
+  , cdCardTraits = setFromList [Spell, Spirit]
+  , cdFastWindow = Just
+    (Matcher.WhenDrawEncounterCard Matcher.You Matcher.NonWeakness)
   , cdLevel = 5
   }
 

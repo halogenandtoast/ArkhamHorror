@@ -52,6 +52,7 @@ data MessageType
   | ResolveTokenMessage
   | EnemySpawnMessage
   | DamageMessage
+  | DrawEncounterCardMessage
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -64,6 +65,7 @@ messageType EnemySpawn{} = Just EnemySpawnMessage
 messageType RevealToken{} = Just RevealTokenMessage
 messageType InvestigatorDamage{} = Just DamageMessage
 messageType InvestigatorDoAssignDamage{} = Just DamageMessage
+messageType InvestigatorDrewEncounterCard{} = Just DrawEncounterCardMessage
 messageType _ = Nothing
 
 isBlanked :: Message -> Bool

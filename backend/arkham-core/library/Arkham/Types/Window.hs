@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Types.ActId
 import Arkham.Types.Action
 import Arkham.Types.AgendaId
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
@@ -50,6 +51,7 @@ data Window
   | WhenDealtHorror Source Target
   | WhenDefeated Source
   | WhenDiscoverClues Who Where
+  | WhenDrawEncounterCard Who CardCode
   | WhenDrawNonPerilTreachery Who TreacheryId
   | WhenDrawToken Who Token
   | WhenDrawTreachery Who

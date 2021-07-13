@@ -51,6 +51,7 @@ data MessageType
   | RevealTokenMessage
   | ResolveTokenMessage
   | EnemySpawnMessage
+  | DamageMessage
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -61,6 +62,8 @@ messageType DrawToken{} = Just DrawTokenMessage
 messageType ResolveToken{} = Just ResolveTokenMessage
 messageType EnemySpawn{} = Just EnemySpawnMessage
 messageType RevealToken{} = Just RevealTokenMessage
+messageType InvestigatorDamage{} = Just DamageMessage
+messageType InvestigatorDoAssignDamage{} = Just DamageMessage
 messageType _ = Nothing
 
 isBlanked :: Message -> Bool
@@ -175,6 +178,8 @@ data Message
   | CampaignStep (Maybe CampaignStep)
   | CancelNext MessageType
   | CancelSkillEffects
+  | CancelHorror InvestigatorId Int
+  | CancelDamage InvestigatorId Int
   | CancelFailedByModifierEffects
   | ChangeCardToFast InvestigatorId CardId
   | CheckAttackOfOpportunity InvestigatorId Bool

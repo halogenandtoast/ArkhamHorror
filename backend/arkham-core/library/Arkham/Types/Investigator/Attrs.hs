@@ -978,6 +978,26 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   Will (FailedSkillTest iid _ _ (InvestigatorTarget iid') _ _)
     | iid == iid' && iid == investigatorId -> a
     <$ push (CheckWindow investigatorId [WhenWouldFailSkillTest You])
+  CancelDamage iid n | iid == investigatorId -> do
+    a <$ withQueue_ \queue -> flip
+      map
+      queue
+      \case
+        InvestigatorDamage iid' s damage' horror' ->
+          InvestigatorDamage iid' s (max 0 (damage' - n)) horror'
+        InvestigatorDoAssignDamage iid' s t damage' horror' aa b ->
+          InvestigatorDoAssignDamage iid' s t (max 0 (damage' - n)) horror' aa b
+        other -> other
+  CancelHorror iid n | iid == investigatorId -> do
+    a <$ withQueue_ \queue -> flip
+      map
+      queue
+      \case
+        InvestigatorDamage iid' s damage' horror' ->
+          InvestigatorDamage iid' s damage' (max 0 (horror' - n))
+        InvestigatorDoAssignDamage iid' s t damage' horror' aa b ->
+          InvestigatorDoAssignDamage iid' s t damage' (max 0 (horror' - n)) aa b
+        other -> other
   InvestigatorDirectDamage iid source damage horror
     | iid == investigatorId && not
       (investigatorDefeated || investigatorResigned)
@@ -987,6 +1007,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
        ]
       <> [ CheckWindow iid [WhenWouldTakeHorror source (toTarget a)]
          | horror > 0
+         ]
+      <> [ CheckWindow
+             iid
+             [WhenWouldTakeDamageOrHorror source (toTarget a) damage horror]
+         | horror > 0 || damage > 0
          ]
       <> [InvestigatorDamage iid source damage horror, CheckDefeated source]
       <> [After (InvestigatorTakeDamage iid source damage horror)]
@@ -1008,6 +1033,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
            ]
           <> [ CheckWindow iid [WhenWouldTakeHorror source (toTarget a)]
              | horror > 0
+             ]
+          <> [ CheckWindow
+                 iid
+                 [ WhenWouldTakeDamageOrHorror
+                     source
+                     (toTarget a)
+                     damage
+                     horror
+                 ]
+             | horror > 0 || damage > 0
              ]
           <> [ InvestigatorDoAssignDamage
                iid

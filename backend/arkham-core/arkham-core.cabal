@@ -450,6 +450,7 @@ library
       Arkham.Types.Event.Cards.ImOuttaHere
       Arkham.Types.Event.Cards.IveGotAPlan
       Arkham.Types.Event.Cards.IveGotAPlan2
+      Arkham.Types.Event.Cards.IveHadWorse4
       Arkham.Types.Event.Cards.LetMeHandleThis
       Arkham.Types.Event.Cards.LookWhatIFound
       Arkham.Types.Event.Cards.Lucky
@@ -458,6 +459,7 @@ library
       Arkham.Types.Event.Cards.MindOverMatter
       Arkham.Types.Event.Cards.MindWipe1
       Arkham.Types.Event.Cards.MindWipe3
+      Arkham.Types.Event.Cards.MomentOfRespite3
       Arkham.Types.Event.Cards.MoonlightRitual
       Arkham.Types.Event.Cards.OnTheLam
       Arkham.Types.Event.Cards.Oops

@@ -746,6 +746,7 @@ library
       Arkham.Types.Skill.Cards.TrueUnderstanding
       Arkham.Types.Skill.Cards.UnexpectedCourage
       Arkham.Types.Skill.Cards.ViciousBlow
+      Arkham.Types.Skill.Cards.ViciousBlow2
       Arkham.Types.Skill.Runner
       Arkham.Types.SkillId
       Arkham.Types.SkillTest

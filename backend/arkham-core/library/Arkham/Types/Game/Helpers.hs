@@ -4,6 +4,7 @@ module Arkham.Types.Game.Helpers where
 
 import Arkham.Prelude
 
+import Arkham.EncounterCard (allEncounterCards)
 import Arkham.Types.Ability
 import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
@@ -899,6 +900,12 @@ cardInFastWindows iid _ windows matcher = anyM (matches matcher) windows
     (Matcher.DealtDamageOrHorror Matcher.You, WhenWouldTakeDamageOrHorror _ (InvestigatorTarget iid') _ _)
       -> pure $ iid == iid'
     (Matcher.DealtDamageOrHorror _, _) -> pure False
+    (Matcher.WhenDrawEncounterCard Matcher.You treacheryMatcher, WhenDrawEncounterCard You cardCode)
+      -> do
+        case treacheryMatcher of
+          Matcher.NonWeakness ->
+            pure $ isJust (lookup cardCode allEncounterCards)
+    (Matcher.WhenDrawEncounterCard _ _, _) -> pure False
   matchWho who = \case
     Matcher.Anyone -> pure True
     Matcher.You -> pure $ who == You

@@ -2839,8 +2839,17 @@ runGameMessage msg g = case msg of
     else do
       let (card : encounterDeck) = unDeck $ g ^. encounterDeckL
       when (null encounterDeck) (push ShuffleEncounterDiscardBackIn)
-      push (InvestigatorDrewEncounterCard iid card)
-      pure $ g & encounterDeckL .~ Deck encounterDeck
+      pushAll
+        [ CheckWindow iid [WhenDrawEncounterCard You (toCardCode card)]
+        , UnsetActiveCard
+        , InvestigatorDrewEncounterCard iid card
+        ]
+      pure
+        $ g
+        & encounterDeckL
+        .~ Deck encounterDeck
+        & activeCardL
+        ?~ EncounterCard card
   AddToEncounterDeck card -> do
     encounterDeck <- shuffleM $ card : unDeck (view encounterDeckL g)
     pure $ g & encounterDeckL .~ Deck encounterDeck

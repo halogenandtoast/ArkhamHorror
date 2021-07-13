@@ -9,6 +9,11 @@ data WindowMatcher
   | FastPlayerWindow Who
   | OrWindowMatcher [WindowMatcher]
   | DealtDamageOrHorror Who
+  | WhenDrawEncounterCard Who EncounterCardMatcher
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data EncounterCardMatcher = NonWeakness
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

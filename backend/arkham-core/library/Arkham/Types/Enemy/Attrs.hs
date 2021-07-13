@@ -695,6 +695,15 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
             (setToList $ toTraits a)
           )
         )
+    DefeatEnemy eid iid source | eid == enemyId -> a <$ push
+      (EnemyDefeated
+        eid
+        iid
+        enemyLocation
+        (toCardCode a)
+        source
+        (setToList $ toTraits a)
+      )
     EnemyDefeated eid _ _ _ _ _ | eid == enemyId ->
       a <$ pushAll (map (Discard . AssetTarget) (setToList enemyAssets))
     EnemyEngageInvestigator eid iid | eid == enemyId -> do

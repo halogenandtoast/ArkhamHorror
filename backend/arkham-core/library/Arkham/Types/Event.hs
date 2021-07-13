@@ -70,6 +70,7 @@ data Event
   | MindWipe1' MindWipe1
   | MindWipe3' MindWipe3
   | MomentOfRespite3' MomentOfRespite3
+  | MonsterSlayer5' MonsterSlayer5
   | MoonlightRitual' MoonlightRitual
   | OnTheLam' OnTheLam
   | Oops' Oops
@@ -201,6 +202,7 @@ allEvents = mapFromList $ map
   , MindWipe1' <$> mindWipe1
   , MindWipe3' <$> mindWipe3
   , MomentOfRespite3' <$> momentOfRespite3
+  , MonsterSlayer5' <$> monsterSlayer5
   , MoonlightRitual' <$> moonlightRitual
   , OnTheLam' <$> onTheLam
   , Oops' <$> oops

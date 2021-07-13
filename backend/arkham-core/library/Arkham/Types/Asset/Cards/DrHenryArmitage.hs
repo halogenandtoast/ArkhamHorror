@@ -9,9 +9,10 @@ import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Card.Id
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Window
 
@@ -21,17 +22,19 @@ newtype DrHenryArmitage = DrHenryArmitage AssetAttrs
 drHenryArmitage :: AssetCard DrHenryArmitage
 drHenryArmitage = ally DrHenryArmitage Cards.drHenryArmitage (2, 2)
 
-fastAbility :: AssetAttrs -> CardId -> Ability
-fastAbility a cid = mkAbility
+fastAbility :: AssetAttrs -> Card -> Ability
+fastAbility a card = mkAbility
   (toSource a)
   1
-  (FastAbility $ Costs [DiscardCardCost cid, ExhaustCost (toTarget a)])
+  (FastAbility $ Costs [DiscardCardCost card, ExhaustCost (toTarget a)])
 
 instance HasModifiersFor env DrHenryArmitage
 
-instance HasActions env DrHenryArmitage where
+instance HasList HandCard env InvestigatorId => HasActions env DrHenryArmitage where
   getActions iid (AfterDrawCard You cid) (DrHenryArmitage a) | ownedBy a iid =
-    pure [UseAbility iid (fastAbility a cid)]
+    do
+      mCard <- find ((== cid) . toCardId) . map unHandCard <$> getList iid
+      pure [ UseAbility iid (fastAbility a card) | card <- maybeToList mCard ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env DrHenryArmitage where

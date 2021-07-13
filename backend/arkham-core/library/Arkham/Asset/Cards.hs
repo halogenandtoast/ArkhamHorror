@@ -93,6 +93,7 @@ allPlayerAssetCards = mapFromList $ map
   , catBurglar1
   , celaenoFragments
   , charisma3
+  , chicagoTypewriter4
   , clarityOfMind
   , daisysToteBag
   , daisysToteBagAdvanced
@@ -1073,6 +1074,12 @@ drWilliamTMaleson = (asset
   { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Ally, Miskatonic]
   , cdUnique = True
+  }
+
+chicagoTypewriter4 :: CardDef
+chicagoTypewriter4 = (asset "02304" "Chicago Typewriter" 5 Rogue)
+  { cdSkills = [SkillCombat, SkillCombat]
+  , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
   }
 
 aquinnah3 :: CardDef

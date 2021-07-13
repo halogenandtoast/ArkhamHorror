@@ -56,8 +56,8 @@ instance ActionRunner env => HasActions env RivertownAbandonedWarehouse where
     getActions iid window attrs
 
 willpowerCount :: Payment -> Int
-willpowerCount (DiscardPayment cards) =
-  sum $ map (count (== SkillWillpower) . cdSkills . pcDef) cards
+willpowerCount (DiscardCardPayment cards) =
+  sum $ map (count (== SkillWillpower) . cdSkills . toCardDef) cards
 willpowerCount (Payments xs) = sum $ map willpowerCount xs
 willpowerCount _ = 0
 

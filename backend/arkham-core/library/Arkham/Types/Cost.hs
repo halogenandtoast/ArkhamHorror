@@ -6,9 +6,7 @@ import Arkham.Prelude
 
 import Arkham.Types.Asset.Uses
 import Arkham.Types.AssetId
-import Arkham.Types.Card.CardType
-import Arkham.Types.Card.Id
-import Arkham.Types.Card.PlayerCard
+import Arkham.Types.Card
 import Arkham.Types.GameValue
 import Arkham.Types.LocationMatcher
 import Arkham.Types.SkillType
@@ -42,13 +40,18 @@ decreaseActionCost other _ = other
 
 data Payment
   = ActionPayment Int
+  | AdditionalActionPayment
   | CluePayment Int
+  | DoomPayment Int
   | ResourcePayment Int
-  | DiscardPayment [PlayerCard]
+  | DiscardPayment [Target]
+  | DiscardCardPayment [Card]
   | ExhaustPayment [Target]
+  | ExilePayment [Target]
   | UsesPayment Int
   | HorrorPayment Int
   | DamagePayment Int
+  | SkillIconPayment [SkillType]
   | Payments [Payment]
   | NoPayment
   deriving stock (Show, Eq, Generic)
@@ -56,6 +59,7 @@ data Payment
 
 data Cost
   = ActionCost Int
+  | AdditionalActionsCost
   | ClueCost Int
   | GroupClueCost (GameValue Int) (Maybe LocationMatcher)
   | PlaceClueOnLocationCost Int
@@ -63,7 +67,7 @@ data Cost
   | Costs [Cost]
   | DamageCost Source Target Int
   | DiscardCost Target
-  | DiscardCardCost CardId
+  | DiscardCardCost Card
   | DoomCost Source Target Int
   | ExileCost Target
   | HandDiscardCost Int (Maybe CardType) (HashSet Trait) (HashSet SkillType)

@@ -19,6 +19,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -73,6 +74,12 @@ getActionCostModifier iid (Just a) = do
     if matchTarget takenActions match a then n + m else n
   applyModifier _ _ n = n
 
+countAdditionalActionPayments :: Payment -> Int
+countAdditionalActionPayments AdditionalActionPayment = 1
+countAdditionalActionPayments (Payments ps) =
+  sum $ map countAdditionalActionPayments ps
+countAdditionalActionPayments _ = 0
+
 instance
   ( HasQueue env
   , HasSet InScenarioInvestigatorId env ()
@@ -80,6 +87,7 @@ instance
   , HasSet Trait env Source
   , HasModifiersFor env ()
   , HasList Action.TakenAction env InvestigatorId
+  , HasCount ActionRemainingCount env InvestigatorId
   )
   => RunMessage env PayForAbilityEffect where
   runMessage msg e@(PayForAbilityEffect (attrs `With` payments)) = case msg of
@@ -109,107 +117,188 @@ instance
                 (PayAbilityCost abilitySource iid mAction cost
                 : [ TakenAction iid action | action <- maybeToList mAction ]
                 )
-    PayAbilityCost source iid mAction cost -> case cost of
-      Costs xs ->
-        e <$ pushAll [ PayAbilityCost source iid mAction x | x <- xs ]
-      UpTo 0 _ -> pure e
-      UpTo n cost' -> do
-        canAfford <- getCanAffordCost iid source mAction cost'
-        e <$ when
-          canAfford
-          (push $ chooseOne
-            iid
-            [ Label
-              "Pay dynamic cost"
-              [ PayAbilityCost source iid mAction cost'
-              , PayAbilityCost source iid mAction (UpTo (n - 1) cost')
-              ]
-            , Label "Done with dynamic cost" []
-            ]
-          )
-      ExhaustCost target -> e <$ push (Exhaust target)
-      DiscardCost target -> e <$ push (Discard target)
-      DiscardCardCost cid -> e <$ push (DiscardCard iid cid)
-      ExileCost target -> e <$ push (Exile target)
-      DoomCost _ target x -> e <$ push (PlaceDoom target x)
-      HorrorCost _ target x -> case target of
-        InvestigatorTarget iid' | iid' == iid ->
-          e <$ push (InvestigatorAssignDamage iid source DamageAny 0 x)
-        AssetTarget aid ->
-          e <$ pushAll [AssetDamage aid source 0 x, CheckDefeated source]
-        _ -> error "can't target for horror cost"
-      DamageCost _ target x -> case target of
-        InvestigatorTarget iid' | iid' == iid ->
-          e <$ push (InvestigatorAssignDamage iid source DamageAny x 0)
-        AssetTarget aid ->
-          e <$ pushAll [AssetDamage aid source x 0, CheckDefeated source]
-        _ -> error "can't target for damage cost"
-      ResourceCost x -> e <$ push (SpendResources iid x)
-      ActionCost x -> do
-        costModifier <- getActionCostModifier iid mAction
-        let modifiedActionCost = max 0 (x + costModifier)
-        e <$ push (SpendActions iid source modifiedActionCost)
-      UseCost aid uType n -> e <$ push (SpendUses (AssetTarget aid) uType n)
-      ClueCost x -> e <$ push (InvestigatorSpendClues iid x)
-      PlaceClueOnLocationCost x ->
-        e <$ push (InvestigatorPlaceCluesOnLocation iid x)
-      GroupClueCost x Nothing -> do
-        investigatorIds <- map unInScenarioInvestigatorId <$> getSetList ()
-        totalClues <- getPlayerCountValue x
-        e <$ push (SpendClues totalClues investigatorIds)
-      GroupClueCost x (Just locationMatcher) -> do
-        mLocationId <- getId @(Maybe LocationId) locationMatcher
-        totalClues <- getPlayerCountValue x
-        case mLocationId of
-          Just lid -> do
-            iids <- getSetList @InvestigatorId lid
-            e <$ push (SpendClues totalClues iids)
-          Nothing -> error "could not pay cost"
-      HandDiscardCost x mPlayerCardType traits skillTypes -> do
-        handCards <- mapMaybe (preview _PlayerCard . unHandCard) <$> getList iid
-        let
-          cards = filter
-            (and . sequence
-              [ maybe (const True) (==) mPlayerCardType . cdCardType . pcDef
-              , (|| null traits) . notNull . intersection traits . toTraits
-              , (|| null skillTypes)
-              . not
-              . null
-              . intersection (insertSet SkillWild skillTypes)
-              . setFromList
-              . cdSkills
-              . pcDef
-              ]
-            )
-            handCards
-        e <$ push
-          (chooseN iid x [ DiscardCard iid (toCardId card) | card <- cards ])
-      SkillIconCost x skillTypes -> do
-        handCards <- mapMaybe (preview _PlayerCard . unHandCard) <$> getList iid
-        let
-          cards = filter ((> 0) . fst) $ map
-            (toFst
-              (count (`member` insertSet SkillWild skillTypes)
-              . cdSkills
-              . pcDef
-              )
-            )
-            handCards
-          cardMsgs = map
-            (\(n, card) -> if n >= x
-              then DiscardCard iid (toCardId card)
-              else Run
-                [ DiscardCard iid (toCardId card)
-                , PayAbilityCost
-                  source
-                  iid
-                  mAction
-                  (SkillIconCost (x - n) skillTypes)
+    PayAbilityCost source iid mAction cost -> do
+      let
+        withPayment payment =
+          pure $ PayForAbilityEffect (attrs `With` (payments <> payment))
+      case cost of
+        Costs xs ->
+          e <$ pushAll [ PayAbilityCost source iid mAction x | x <- xs ]
+        UpTo 0 _ -> pure e
+        UpTo n cost' -> do
+          canAfford <- getCanAffordCost iid source mAction cost'
+          e <$ when
+            canAfford
+            (push $ chooseOne
+              iid
+              [ Label
+                "Pay dynamic cost"
+                [ PayAbilityCost source iid mAction cost'
+                , PayAbilityCost source iid mAction (UpTo (n - 1) cost')
                 ]
+              , Label "Done with dynamic cost" []
+              ]
             )
-            cards
-        e <$ push (chooseOne iid cardMsgs)
-      Free -> pure e
+        ExhaustCost target -> do
+          push (Exhaust target)
+          withPayment $ ExhaustPayment [target]
+        DiscardCost target -> do
+          push (Discard target)
+          withPayment $ DiscardPayment [target]
+        DiscardCardCost card -> do
+          push (DiscardCard iid (toCardId card))
+          withPayment $ DiscardCardPayment [card]
+        ExileCost target -> do
+          push (Exile target)
+          withPayment $ ExilePayment [target]
+        DoomCost _ target x -> do
+          push (PlaceDoom target x)
+          withPayment $ DoomPayment x
+        HorrorCost _ target x -> case target of
+          InvestigatorTarget iid' | iid' == iid -> do
+            push (InvestigatorAssignDamage iid source DamageAny 0 x)
+            withPayment $ HorrorPayment x
+          AssetTarget aid -> do
+            pushAll [AssetDamage aid source 0 x, CheckDefeated source]
+            withPayment $ HorrorPayment x
+          _ -> error "can't target for horror cost"
+        DamageCost _ target x -> case target of
+          InvestigatorTarget iid' | iid' == iid -> do
+            push (InvestigatorAssignDamage iid source DamageAny x 0)
+            withPayment $ DamagePayment x
+          AssetTarget aid -> do
+            pushAll [AssetDamage aid source x 0, CheckDefeated source]
+            withPayment $ DamagePayment x
+          _ -> error "can't target for damage cost"
+        ResourceCost x -> do
+          push (SpendResources iid x)
+          withPayment $ ResourcePayment x
+        AdditionalActionsCost -> do
+          actionRemainingCount <- unActionRemainingCount <$> getCount iid
+          let currentlyPaid = countAdditionalActionPayments payments
+          e <$ if actionRemainingCount == 0
+            then pure ()
+            else push
+              (chooseOne
+                iid
+                [ Label
+                  "Spend 1 additional action"
+                  [ PayAbilityCost
+                    (InvestigatorSource iid)
+                    iid
+                    Nothing
+                    (ActionCost 1)
+                  , PaidAbilityCost iid Nothing AdditionalActionPayment
+                  , msg
+                  ]
+                , Label
+                  ("Done spending additional actions ("
+                  <> tshow currentlyPaid
+                  <> " spent so far)"
+                  )
+                  []
+                ]
+              )
+        ActionCost x -> do
+          costModifier <- getActionCostModifier iid mAction
+          let modifiedActionCost = max 0 (x + costModifier)
+          push (SpendActions iid source modifiedActionCost)
+          withPayment $ ActionPayment x
+        UseCost aid uType n -> do
+          push (SpendUses (AssetTarget aid) uType n)
+          withPayment $ UsesPayment n
+        ClueCost x -> do
+          push (InvestigatorSpendClues iid x)
+          withPayment $ CluePayment x
+        PlaceClueOnLocationCost x -> do
+          push (InvestigatorPlaceCluesOnLocation iid x)
+          withPayment $ CluePayment x
+        GroupClueCost x Nothing -> do
+          investigatorIds <- map unInScenarioInvestigatorId <$> getSetList ()
+          totalClues <- getPlayerCountValue x
+          push (SpendClues totalClues investigatorIds)
+          withPayment $ CluePayment totalClues
+        GroupClueCost x (Just locationMatcher) -> do
+          mLocationId <- getId @(Maybe LocationId) locationMatcher
+          totalClues <- getPlayerCountValue x
+          case mLocationId of
+            Just lid -> do
+              iids <- getSetList @InvestigatorId lid
+              push (SpendClues totalClues iids)
+              withPayment $ CluePayment totalClues
+            Nothing -> error "could not pay cost"
+        HandDiscardCost x mPlayerCardType traits skillTypes -> do
+          handCards <- mapMaybe (preview _PlayerCard . unHandCard)
+            <$> getList iid
+          let
+            cards = filter
+              (and . sequence
+                [ maybe (const True) (==) mPlayerCardType . cdCardType . pcDef
+                , (|| null traits) . notNull . intersection traits . toTraits
+                , (|| null skillTypes)
+                . not
+                . null
+                . intersection (insertSet SkillWild skillTypes)
+                . setFromList
+                . cdSkills
+                . pcDef
+                ]
+              )
+              handCards
+          e <$ push
+            (chooseN
+              iid
+              x
+              [ TargetLabel
+                  (CardIdTarget $ toCardId card)
+                  [ PayAbilityCost
+                      (InvestigatorSource iid)
+                      iid
+                      Nothing
+                      (DiscardCardCost $ PlayerCard card)
+                  ]
+              | card <- cards
+              ]
+            )
+        SkillIconCost x skillTypes -> do
+          handCards <- mapMaybe (preview _PlayerCard . unHandCard)
+            <$> getList iid
+          let
+            cards = filter ((> 0) . fst) $ map
+              (toFst
+                (count (`member` insertSet SkillWild skillTypes)
+                . cdSkills
+                . pcDef
+                )
+              )
+              handCards
+            cardMsgs = map
+              (\(n, card) -> if n >= x
+                then Run
+                  [ DiscardCard iid (toCardId card)
+                  , PaidAbilityCost
+                    iid
+                    Nothing
+                    (SkillIconPayment $ cdSkills $ toCardDef card)
+                  ]
+                else Run
+                  [ DiscardCard iid (toCardId card)
+                  , PaidAbilityCost
+                    iid
+                    Nothing
+                    (SkillIconPayment $ cdSkills $ toCardDef card)
+                  , PayAbilityCost
+                    source
+                    iid
+                    mAction
+                    (SkillIconCost (x - n) skillTypes)
+                  ]
+              )
+              cards
+          e <$ push (chooseOne iid cardMsgs)
+        Free -> pure e
+    PaidAbilityCost _ _ payment ->
+      pure $ PayForAbilityEffect (attrs `with` (payments <> payment))
     PayAbilityCostFinished source iid -> case effectMetadata attrs of
       Just (EffectAbility Ability {..}) -> e <$ pushAll
         [ DisableEffect $ toId attrs

@@ -42,7 +42,7 @@ instance
         maximum . ncons 0 <$> traverse (fmap unShroud . getCount) locationIds
       e <$ pushAll
         [ skillTestModifier attrs SkillTestTarget (SetDifficulty maxShroud)
-        , ChooseInvestigate iid False
+        , ChooseInvestigate iid (toSource attrs) False
         ]
     SuccessfulInvestigation iid _ _ -> do
       locationIds <- map unRevealedLocationId <$> getSetList ()

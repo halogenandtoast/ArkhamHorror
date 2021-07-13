@@ -1066,7 +1066,7 @@ lightningGun5 = (asset "02301" "Lightning Gun" 6 Guardian)
 drWilliamTMaleson :: CardDef
 drWilliamTMaleson = (asset
                       "02302"
-                      ("Dr. Willaim T. Maleson" <:> "Working on Something Big")
+                      ("Dr. William T. Maleson" <:> "Working on Something Big")
                       1
                       Seeker
                     )

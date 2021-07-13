@@ -192,7 +192,7 @@ data Message
   | ChooseAndDiscardAsset InvestigatorId
   | ChooseAndDiscardCard InvestigatorId
   | ChooseEndTurn InvestigatorId
-  | ChooseInvestigate InvestigatorId Bool
+  | ChooseInvestigate InvestigatorId Source Bool
   | ChooseEvadeEnemy InvestigatorId Source SkillType Bool
   | ChooseFightEnemy InvestigatorId Source SkillType (HashSet Trait) Bool
   | ChooseFightEnemyNotEngagedWithInvestigator InvestigatorId Source SkillType Bool

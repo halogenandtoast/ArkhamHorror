@@ -57,7 +57,7 @@ library:
 
 executables:
   validate:
-    main: main.hs
+    main: Main.hs
     source-dirs: validate
     ghc-options: -threaded -O2 "-with-rtsopts=-N -T -I0"
     other-modules: []

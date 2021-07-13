@@ -88,6 +88,9 @@ COPY ./backend /opt/arkham/src/backend
 COPY --from=frontend /opt/arkham/src/frontend/dist /opt/arkham/src/frontend/dist
 COPY --from=dependencies /root/.stack /root/.stack
 
+WORKDIR /opt/arkham/src/backend/cards-discover
+RUN stack --no-terminal build --ghc-options '-j4 +RTS -A64m -n2m -RTS' cards-discover
+
 WORKDIR /opt/arkham/src/backend/arkham-api
 RUN stack --no-terminal build --ghc-options '-j4 +RTS -A64m -n2m -RTS'
 RUN stack --no-terminal --local-bin-path /opt/arkham/bin install

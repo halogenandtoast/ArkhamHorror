@@ -103,6 +103,7 @@ allPlayerAssetCards = mapFromList $ map
   , drFrancisMorgan
   , drHenryArmitage
   , drMilanChristopher
+  , drWilliamTMaleson
   , duke
   , earlSawyer
   , elderSignAmulet3
@@ -1060,6 +1061,18 @@ lightningGun5 = (asset "02301" "Lightning Gun" 6 Guardian)
   { cdCardTraits = setFromList [Item, Weapon, Firearm]
   , cdLevel = 5
   , cdSkills = [SkillIntellect, SkillCombat]
+  }
+
+drWilliamTMaleson :: CardDef
+drWilliamTMaleson = (asset
+                      "02302"
+                      ("Dr. Willaim T. Maleson" <:> "Working on Something Big")
+                      1
+                      Seeker
+                    )
+  { cdSkills = [SkillWillpower]
+  , cdCardTraits = setFromList [Ally, Miskatonic]
+  , cdUnique = True
   }
 
 aquinnah3 :: CardDef

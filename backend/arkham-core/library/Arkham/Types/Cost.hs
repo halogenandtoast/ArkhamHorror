@@ -58,6 +58,7 @@ data Cost
   = ActionCost Int
   | ClueCost Int
   | GroupClueCost (GameValue Int) (Maybe LocationMatcher)
+  | PlaceClueOnLocationCost Int
   | ExhaustCost Target
   | Costs [Cost]
   | DamageCost Source Target Int

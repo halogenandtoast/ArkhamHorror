@@ -227,6 +227,9 @@ getCanAffordCost iid source mAction = \case
   ClueCost n -> do
     spendableClues <- unSpendableClueCount <$> getCount iid
     pure $ spendableClues >= n
+  PlaceClueOnLocationCost n -> do
+    spendableClues <- unSpendableClueCount <$> getCount iid
+    pure $ spendableClues >= n
   GroupClueCost n Nothing -> do
     totalSpendableClues <- unSpendableClueCount <$> getCount ()
     cost <- getPlayerCountValue n

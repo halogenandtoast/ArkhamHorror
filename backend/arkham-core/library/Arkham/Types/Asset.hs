@@ -64,6 +64,7 @@ data Asset
   | DrFrancisMorgan' DrFrancisMorgan
   | DrHenryArmitage' DrHenryArmitage
   | DrMilanChristopher' DrMilanChristopher
+  | DrWilliamTMaleson' DrWilliamTMaleson
   | Duke' Duke
   | EarlSawyer' EarlSawyer
   | ElderSignAmulet3' ElderSignAmulet3
@@ -330,6 +331,7 @@ allAssets = mapFromList $ map
   , DrFrancisMorgan' <$> drFrancisMorgan
   , DrHenryArmitage' <$> drHenryArmitage
   , DrMilanChristopher' <$> drMilanChristopher
+  , DrWilliamTMaleson' <$> drWilliamTMaleson
   , Duke' <$> duke
   , EarlSawyer' <$> earlSawyer
   , ElderSignAmulet3' <$> elderSignAmulet3

@@ -153,6 +153,7 @@ library
       Arkham.Types.Asset.Cards.DrFrancisMorgan
       Arkham.Types.Asset.Cards.DrHenryArmitage
       Arkham.Types.Asset.Cards.DrMilanChristopher
+      Arkham.Types.Asset.Cards.DrWilliamTMaleson
       Arkham.Types.Asset.Cards.Duke
       Arkham.Types.Asset.Cards.EarlSawyer
       Arkham.Types.Asset.Cards.ElderSignAmulet3

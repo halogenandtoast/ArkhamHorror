@@ -151,6 +151,8 @@ instance
         e <$ push (SpendActions iid source modifiedActionCost)
       UseCost aid uType n -> e <$ push (SpendUses (AssetTarget aid) uType n)
       ClueCost x -> e <$ push (InvestigatorSpendClues iid x)
+      PlaceClueOnLocationCost x ->
+        e <$ push (InvestigatorPlaceCluesOnLocation iid x)
       GroupClueCost x Nothing -> do
         investigatorIds <- map unInScenarioInvestigatorId <$> getSetList ()
         totalClues <- getPlayerCountValue x

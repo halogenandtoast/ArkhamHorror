@@ -34,6 +34,7 @@ data Asset
   | AlchemicalConcoction' AlchemicalConcoction
   | AlyssaGraham' AlyssaGraham
   | Aquinnah1' Aquinnah1
+  | Aquinnah3' Aquinnah3
   | ArcaneEnlightenment' ArcaneEnlightenment
   | ArcaneInitiate' ArcaneInitiate
   | ArcaneStudies' ArcaneStudies
@@ -299,6 +300,7 @@ allAssets = mapFromList $ map
   , AlchemicalConcoction' <$> alchemicalConcoction
   , AlyssaGraham' <$> alyssaGraham
   , Aquinnah1' <$> aquinnah1
+  , Aquinnah3' <$> aquinnah3
   , ArcaneEnlightenment' <$> arcaneEnlightenment
   , ArcaneInitiate' <$> arcaneInitiate
   , ArcaneStudies' <$> arcaneStudies

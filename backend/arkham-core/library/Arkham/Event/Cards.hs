@@ -541,7 +541,7 @@ monsterSlayer5 = (event "02300" "Monster Slayer" 1 Guardian)
 
 wardOfProtection5 :: CardDef
 wardOfProtection5 = (event "02307" "Ward of Protection" 1 Mystic)
-  { cdSkills = [SkillWild]
+  { cdSkills = [SkillWillpower, SkillWild]
   , cdCardTraits = setFromList [Spell, Spirit]
   , cdFastWindow = Just
     (Matcher.WhenDrawEncounterCard Matcher.You Matcher.NonWeakness)

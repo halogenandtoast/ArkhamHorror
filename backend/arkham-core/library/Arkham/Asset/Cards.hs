@@ -74,6 +74,7 @@ allPlayerAssetCards = mapFromList $ map
   , adaptable1
   , alyssaGraham
   , aquinnah1
+  , aquinnah3
   , arcaneEnlightenment
   , arcaneInitiate
   , arcaneStudies
@@ -1059,6 +1060,15 @@ lightningGun5 = (asset "02301" "Lightning Gun" 6 Guardian)
   { cdCardTraits = setFromList [Item, Weapon, Firearm]
   , cdLevel = 5
   , cdSkills = [SkillIntellect, SkillCombat]
+  }
+
+aquinnah3 :: CardDef
+aquinnah3 = (asset "02308" ("Aquinnah" <:> "The Forgotten Daughter") 4 Survivor
+            )
+  { cdSkills = [SkillWillpower, SkillAgility]
+  , cdCardTraits = setFromList [Ally]
+  , cdLevel = 3
+  , cdUnique = True
   }
 
 toothOfEztli :: CardDef

@@ -43,6 +43,8 @@ export default defineComponent({
       switch (c.tag) {
         case MessageType.PLAY_CARD:
           return c.contents[1] === id.value
+        case MessageType.PLAY_DYNAMIC_CARD:
+          return c.contents[1] === id.value
         case MessageType.PLAY_FAST_EVENT:
           return c.contents[1] === id.value
         case MessageType.LEGACY_PLAY_CARD:

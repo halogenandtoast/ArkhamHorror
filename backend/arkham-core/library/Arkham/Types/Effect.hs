@@ -124,6 +124,7 @@ deriving anyclass instance
   , HasCount ClueCount env EnemyId
   , HasSet StoryEnemyId env CardCode
   , HasSet EnemyId env InvestigatorId
+  , HasCount ActionRemainingCount env InvestigatorId
   )
   => RunMessage env Effect
 

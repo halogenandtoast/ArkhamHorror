@@ -54,6 +54,7 @@ data Asset
   | CatBurglar1' CatBurglar1
   | CelaenoFragments' CelaenoFragments
   | Charisma3' Charisma3
+  | ChicagoTypewriter4' ChicagoTypewriter4
   | ClarityOfMind' ClarityOfMind
   | DaisysToteBag' DaisysToteBag
   | DaisysToteBagAdvanced' DaisysToteBagAdvanced
@@ -321,6 +322,7 @@ allAssets = mapFromList $ map
   , CatBurglar1' <$> catBurglar1
   , CelaenoFragments' <$> celaenoFragments
   , Charisma3' <$> charisma3
+  , ChicagoTypewriter4' <$> chicagoTypewriter4
   , ClarityOfMind' <$> clarityOfMind
   , DaisysToteBag' <$> daisysToteBag
   , DaisysToteBagAdvanced' <$> daisysToteBagAdvanced

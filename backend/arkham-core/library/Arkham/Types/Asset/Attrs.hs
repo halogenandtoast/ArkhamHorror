@@ -330,7 +330,12 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs whe
       pure
         $ a
         & (investigatorL ?~ iid)
-        & (usesL .~ fromMaybe NoUses assetStartingUses)
+        & (usesL .~ if assetUses == NoUses
+            then fromMaybe NoUses assetStartingUses
+            else assetUses
+          )
+    InvestigatorPlayDynamicAsset iid aid slots traits _ | aid == assetId ->
+      a <$ push (InvestigatorPlayAsset iid aid slots traits)
     TakeControlOfAsset iid aid | aid == assetId ->
       pure $ a & investigatorL ?~ iid
     AddToScenarioDeck target | isTarget a target -> do

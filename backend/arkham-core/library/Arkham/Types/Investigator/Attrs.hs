@@ -948,8 +948,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let
       investigateActions = mapMaybe
         \case
-          Investigate iid lid _ skillType _ ->
-            Just $ Investigate iid lid source skillType action
+          Investigate iid' lid _ skillType _ ->
+            Just $ Investigate iid' lid source skillType action
           _ -> Nothing
         actions
     a <$ push (chooseOne iid investigateActions)

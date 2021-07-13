@@ -2,6 +2,7 @@ export enum ArkhamActionTypes {
   DRAW_CARD = 'DrawCardAction',
   TAKE_RESOURCE = 'TakeResourceAction',
   PLAY_CARD = 'InitiatePlayCard',
+  PLAY_DYNAMIC_CARD = 'InitiatePlayDynamicCard',
   // Activate a card ability
   MOVE = 'MoveAction',
   INVESTIGATE = 'InvestigateAction',

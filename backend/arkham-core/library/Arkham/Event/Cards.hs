@@ -65,6 +65,7 @@ allPlayerEventCards = mapFromList $ map
   , crypticResearch4
   , cunningDistraction
   , darkMemory
+  , decipheredReality5
   , delveTooDeep
   , dodge
   , drawnToTheFlame
@@ -536,6 +537,14 @@ monsterSlayer5 = (event "02300" "Monster Slayer" 1 Guardian)
   { cdSkills = [SkillCombat, SkillWild]
   , cdCardTraits = singleton Spirit
   , cdAction = Just Action.Fight
+  , cdLevel = 5
+  }
+
+decipheredReality5 :: CardDef
+decipheredReality5 = (event "02303" "Deciphered Reality" 4 Seeker)
+  { cdSkills = [SkillIntellect, SkillIntellect, SkillWillpower]
+  , cdCardTraits = singleton Insight
+  , cdAction = Just Action.Investigate
   , cdLevel = 5
   }
 

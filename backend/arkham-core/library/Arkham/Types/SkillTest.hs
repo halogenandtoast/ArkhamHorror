@@ -166,11 +166,16 @@ getModifiedSkillTestDifficulty
 getModifiedSkillTestDifficulty s = do
   modifiers' <-
     map modifierType <$> getModifiersFor (toSource s) SkillTestTarget ()
-  pure $ foldr applyModifier (skillTestDifficulty s) modifiers'
+  let
+    preModifiedDifficulty =
+      foldr applyPreModifier (skillTestDifficulty s) modifiers'
+  pure $ foldr applyModifier preModifiedDifficulty modifiers'
  where
   applyModifier (Difficulty m) n = max 0 (n + m)
   applyModifier DoubleDifficulty n = n * 2
   applyModifier _ n = n
+  applyPreModifier (SetDifficulty m) _ = m
+  applyPreModifier _ n = n
 
 type SkillTestRunner env
   = ( HasQueue env

@@ -943,6 +943,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     push (CheckWindow iid [AfterEnemyEvaded You eid])
     pure $ a & engagedEnemiesL %~ deleteSet eid
   AddToVictory (EnemyTarget eid) -> pure $ a & engagedEnemiesL %~ deleteSet eid
+  ChooseInvestigate iid action | iid == investigatorId -> do
+    actions <- getActions iid NonFast ()
+    let
+      investigateActions = mapMaybe
+        \case
+          Investigate iid lid source skillType _ ->
+            Just $ Investigate iid lid source skillType action
+          _ -> Nothing
+        actions
+    a <$ push (chooseOne iid investigateActions)
   ChooseEvadeEnemy iid source skillType isAction | iid == investigatorId ->
     a <$ push
       (chooseOne

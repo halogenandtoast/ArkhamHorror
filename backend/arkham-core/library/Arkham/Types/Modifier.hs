@@ -71,6 +71,7 @@ data ModifierType
   | DamageDealt Int
   | DamageTaken Int
   | Difficulty Int
+  | SetDifficulty Int
   | DiscoveredClues Int
   | DoNotDrawChaosTokensForSkillChecks
   | DoesNotDamageOtherInvestigator

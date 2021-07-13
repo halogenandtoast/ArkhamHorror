@@ -7,6 +7,8 @@ import Arkham.Types.Trait
 data WindowMatcher
   = AfterEnemyDefeated Who WindowEnemyMatcher
   | FastPlayerWindow Who
+  | OrWindowMatcher [WindowMatcher]
+  | DealtDamageOrHorror Who
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

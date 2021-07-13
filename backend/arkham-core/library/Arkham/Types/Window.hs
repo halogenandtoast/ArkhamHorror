@@ -73,6 +73,7 @@ data Window
   | WhenWouldRevealChaosToken Source Who
   | WhenWouldTakeDamage Source Target
   | WhenWouldTakeHorror Source Target
+  | WhenWouldTakeDamageOrHorror Source Target Int Int
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

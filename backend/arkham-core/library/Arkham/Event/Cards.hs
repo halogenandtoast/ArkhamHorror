@@ -86,6 +86,7 @@ allPlayerEventCards = mapFromList $ map
   , imOuttaHere
   , iveGotAPlan
   , iveGotAPlan2
+  , iveHadWorse4
   , letMeHandleThis
   , lookWhatIFound
   , lucky
@@ -94,6 +95,7 @@ allPlayerEventCards = mapFromList $ map
   , mindOverMatter
   , mindWipe1
   , mindWipe3
+  , momentOfRespite3
   , moonlightRitual
   , onTheLam
   , oops
@@ -489,6 +491,14 @@ exposeWeakness1 = (event "02228" "Expose Weakness" 0 Seeker)
   , cdLevel = 1
   }
 
+iveHadWorse4 :: CardDef
+iveHadWorse4 = (event "02261" "\"I've had worse...\"" 0 Guardian)
+  { cdSkills = [SkillWillpower, SkillWillpower, SkillAgility]
+  , cdCardTraits = singleton Spirit
+  , cdFastWindow = Just (Matcher.DealtDamageOrHorror Matcher.You)
+  , cdLevel = 4
+  }
+
 aceInTheHole3 :: CardDef
 aceInTheHole3 = (event "02266" "Ace in the Hole" 0 Rogue)
   { cdCardTraits = singleton Trick
@@ -509,6 +519,14 @@ aChanceEncounter = (event "02270" "A Chance Encounter" 1 Survivor)
   { cdSkills = [SkillWillpower, SkillIntellect]
   , cdCardTraits = singleton Fortune
   , cdPlayRestrictions = [CardInDiscard AnyPlayerDiscard [Ally]]
+  }
+
+momentOfRespite3 :: CardDef
+momentOfRespite3 = (event "02273" "Moment of Respite" 3 Neutral)
+  { cdSkills = [SkillWillpower, SkillWillpower]
+  , cdCardTraits = singleton Spirit
+  , cdPlayRestrictions = [NoEnemiesAtYourLocation]
+  , cdLevel = 3
   }
 
 letMeHandleThis :: CardDef

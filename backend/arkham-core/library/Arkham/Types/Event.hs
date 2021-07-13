@@ -60,6 +60,7 @@ data Event
   | ImOuttaHere' ImOuttaHere
   | IveGotAPlan' IveGotAPlan
   | IveGotAPlan2' IveGotAPlan2
+  | IveHadWorse4' IveHadWorse4
   | LetMeHandleThis' LetMeHandleThis
   | LookWhatIFound' LookWhatIFound
   | Lucky' Lucky
@@ -68,6 +69,7 @@ data Event
   | MindOverMatter' MindOverMatter
   | MindWipe1' MindWipe1
   | MindWipe3' MindWipe3
+  | MomentOfRespite3' MomentOfRespite3
   | MoonlightRitual' MoonlightRitual
   | OnTheLam' OnTheLam
   | Oops' Oops
@@ -189,6 +191,7 @@ allEvents = mapFromList $ map
   , ImOuttaHere' <$> imOuttaHere
   , IveGotAPlan' <$> iveGotAPlan
   , IveGotAPlan2' <$> iveGotAPlan2
+  , IveHadWorse4' <$> iveHadWorse4
   , LetMeHandleThis' <$> letMeHandleThis
   , LookWhatIFound' <$> lookWhatIFound
   , Lucky' <$> lucky
@@ -197,6 +200,7 @@ allEvents = mapFromList $ map
   , MindOverMatter' <$> mindOverMatter
   , MindWipe1' <$> mindWipe1
   , MindWipe3' <$> mindWipe3
+  , MomentOfRespite3' <$> momentOfRespite3
   , MoonlightRitual' <$> moonlightRitual
   , OnTheLam' <$> onTheLam
   , Oops' <$> oops

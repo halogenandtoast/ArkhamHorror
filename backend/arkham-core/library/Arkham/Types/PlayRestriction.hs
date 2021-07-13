@@ -13,6 +13,7 @@ data PlayRestriction
   | ScenarioCardHasResignAbility
   | ClueOnLocation
   | EnemyAtYourLocation
+  | NoEnemiesAtYourLocation
   | OwnCardWithDoom
   | CardInDiscard DiscardSignifier [Trait]
   deriving stock (Show, Eq, Generic)

@@ -807,6 +807,10 @@ getIsPlayable iid windows c@(PlayerCard MkPlayerCard {..}) = do
       (&&)
       (pure $ location /= LocationId (CardId nil))
       (notNull <$> getSet @EnemyId location)
+    NoEnemiesAtYourLocation -> liftA2
+      (&&)
+      (pure $ location /= LocationId (CardId nil))
+      (null <$> getSet @EnemyId location)
     AnotherInvestigatorInSameLocation -> liftA2
       (&&)
       (pure $ location /= LocationId (CardId nil))
@@ -880,9 +884,11 @@ cardInFastWindows
   -> [Window]
   -> WindowMatcher
   -> m Bool
-cardInFastWindows _ _ windows matcher = anyM (matches matcher) windows
+cardInFastWindows iid _ windows matcher = anyM (matches matcher) windows
  where
   matches matcher' window' = case (matcher', window') of
+    (Matcher.OrWindowMatcher matchers, window'') ->
+      anyM (`matches` window'') matchers
     (Matcher.AfterEnemyDefeated whoMatcher enemyMatcher, AfterEnemyDefeated who enemyId)
       -> liftA2
         (&&)
@@ -890,6 +896,9 @@ cardInFastWindows _ _ windows matcher = anyM (matches matcher) windows
         (matchWho who whoMatcher)
     (Matcher.AfterEnemyDefeated _ _, _) -> pure False
     (Matcher.FastPlayerWindow _, window) -> pure $ window == FastPlayerWindow
+    (Matcher.DealtDamageOrHorror Matcher.You, WhenWouldTakeDamageOrHorror _ (InvestigatorTarget iid') _ _)
+      -> pure $ iid == iid'
+    (Matcher.DealtDamageOrHorror _, _) -> pure False
   matchWho who = \case
     Matcher.Anyone -> pure True
     Matcher.You -> pure $ who == You

@@ -38,6 +38,7 @@ data Skill
   | TrueUnderstanding' TrueUnderstanding
   | UnexpectedCourage' UnexpectedCourage
   | ViciousBlow' ViciousBlow
+  | ViciousBlow2' ViciousBlow2
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -97,6 +98,7 @@ allSkills = mapFromList $ map
   , TrueUnderstanding' <$> trueUnderstanding
   , UnexpectedCourage' <$> unexpectedCourage
   , ViciousBlow' <$> viciousBlow
+  , ViciousBlow2' <$> viciousBlow2
   ]
 
 ownerOfSkill :: Skill -> InvestigatorId

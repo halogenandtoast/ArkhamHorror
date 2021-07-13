@@ -66,6 +66,7 @@ allPlayerSkillCards = mapFromList $ map
   , trueUnderstanding
   , unexpectedCourage
   , viciousBlow
+  , viciousBlow2
   ]
 
 viciousBlow :: CardDef
@@ -199,6 +200,13 @@ strokeOfLuck2 = (skill "02271" "Stroke of Luck" [SkillWild] Survivor)
   , cdLevel = 2
   , cdCommitRestrictions = [OnlyYourTest]
   }
+
+viciousBlow2 :: CardDef
+viciousBlow2 =
+  (skill "02299" "Vicious Blow" [SkillCombat, SkillCombat] Guardian)
+    { cdCardTraits = setFromList [Practiced, Expert]
+    , cdLevel = 2
+    }
 
 trueUnderstanding :: CardDef
 trueUnderstanding = (skill "04153" "True Understanding" [SkillWild] Seeker)

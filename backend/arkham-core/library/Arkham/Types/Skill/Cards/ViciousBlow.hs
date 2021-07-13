@@ -1,4 +1,7 @@
-module Arkham.Types.Skill.Cards.ViciousBlow where
+module Arkham.Types.Skill.Cards.ViciousBlow
+  ( viciousBlow
+  , ViciousBlow(..)
+  ) where
 
 import Arkham.Prelude
 

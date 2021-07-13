@@ -39,6 +39,7 @@ data Event
   | CrypticResearch4' CrypticResearch4
   | CunningDistraction' CunningDistraction
   | DarkMemory' DarkMemory
+  | DecipheredReality5' DecipheredReality5
   | DelveTooDeep' DelveTooDeep
   | Dodge' Dodge
   | DrawnToTheFlame' DrawnToTheFlame
@@ -122,6 +123,7 @@ deriving anyclass instance
   , HasCount SanityDamageCount env EnemyId
   , HasCount DoomCount env AssetId
   , HasCount DoomCount env InvestigatorId
+  , HasCount Shroud env LocationId
   , HasList DiscardedPlayerCard env InvestigatorId
   , HasCount FightCount env EnemyId
   )
@@ -172,6 +174,7 @@ allEvents = mapFromList $ map
   , CrypticResearch4' <$> crypticResearch4
   , CunningDistraction' <$> cunningDistraction
   , DarkMemory' <$> darkMemory
+  , DecipheredReality5' <$> decipheredReality5
   , DelveTooDeep' <$> delveTooDeep
   , Dodge' <$> dodge
   , DrawnToTheFlame' <$> drawnToTheFlame

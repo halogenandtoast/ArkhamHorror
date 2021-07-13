@@ -96,6 +96,7 @@ allPlayerEventCards = mapFromList $ map
   , mindWipe1
   , mindWipe3
   , momentOfRespite3
+  , monsterSlayer5
   , moonlightRitual
   , onTheLam
   , oops
@@ -527,6 +528,14 @@ momentOfRespite3 = (event "02273" "Moment of Respite" 3 Neutral)
   , cdCardTraits = singleton Spirit
   , cdPlayRestrictions = [NoEnemiesAtYourLocation]
   , cdLevel = 3
+  }
+
+monsterSlayer5 :: CardDef
+monsterSlayer5 = (event "02300" "Monster Slayer" 1 Guardian)
+  { cdSkills = [SkillCombat, SkillWild]
+  , cdCardTraits = singleton Spirit
+  , cdAction = Just Action.Fight
+  , cdLevel = 5
   }
 
 letMeHandleThis :: CardDef

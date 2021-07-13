@@ -263,6 +263,7 @@ data Message
   | EnemyCheckEngagement EnemyId
   | EnemyDamage EnemyId InvestigatorId Source Int
   | EnemySetDamage EnemyId Source Int
+  | DefeatEnemy EnemyId InvestigatorId Source
   | EnemyDefeated EnemyId InvestigatorId LocationId CardCode Source [Trait]
   | EnemyEngageInvestigator EnemyId InvestigatorId
   | EnemyEvaded InvestigatorId EnemyId

@@ -57,12 +57,14 @@ data Event
   | HotStreak4' HotStreak4
   | HypnoticGaze' HypnoticGaze
   | IfItBleeds' IfItBleeds
+  | ImOuttaHere' ImOuttaHere
   | IveGotAPlan' IveGotAPlan
   | IveGotAPlan2' IveGotAPlan2
   | LetMeHandleThis' LetMeHandleThis
   | LookWhatIFound' LookWhatIFound
   | Lucky' Lucky
   | Lucky2' Lucky2
+  | Lure1' Lure1
   | MindOverMatter' MindOverMatter
   | MindWipe1' MindWipe1
   | MindWipe3' MindWipe3
@@ -77,6 +79,7 @@ data Event
   | SeekingAnswers' SeekingAnswers
   | Shortcut' Shortcut
   | SneakAttack' SneakAttack
+  | StandTogether3' StandTogether3
   | SureGamble3' SureGamble3
   | Taunt' Taunt
   | Taunt2' Taunt2
@@ -183,12 +186,14 @@ allEvents = mapFromList $ map
   , HotStreak4' <$> hotStreak4
   , HypnoticGaze' <$> hypnoticGaze
   , IfItBleeds' <$> ifItBleeds
+  , ImOuttaHere' <$> imOuttaHere
   , IveGotAPlan' <$> iveGotAPlan
   , IveGotAPlan2' <$> iveGotAPlan2
   , LetMeHandleThis' <$> letMeHandleThis
   , LookWhatIFound' <$> lookWhatIFound
   , Lucky' <$> lucky
   , Lucky2' <$> lucky2
+  , Lure1' <$> lure1
   , MindOverMatter' <$> mindOverMatter
   , MindWipe1' <$> mindWipe1
   , MindWipe3' <$> mindWipe3
@@ -203,6 +208,7 @@ allEvents = mapFromList $ map
   , SeekingAnswers' <$> seekingAnswers
   , Shortcut' <$> shortcut
   , SneakAttack' <$> sneakAttack
+  , StandTogether3' <$> standTogether3
   , SureGamble3' <$> sureGamble3
   , Taunt' <$> taunt
   , Taunt2' <$> taunt2

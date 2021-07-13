@@ -2,8 +2,13 @@ module Main where
 
 import ClassyPrelude
 
+import qualified Arkham.Asset.Cards as Assets
 import Arkham.EncounterCard
+import qualified Arkham.Enemy.Cards as Enemies
+import qualified Arkham.Event.Cards as Events
 import Arkham.PlayerCard
+import qualified Arkham.Skill.Cards as Skills
+import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.Asset
 import Arkham.Types.Asset.Attrs (assetHealth, assetSanity)
 import Arkham.Types.Card.CardCode
@@ -15,12 +20,15 @@ import Arkham.Types.EncounterSet
 import Arkham.Types.Enemy
 import Arkham.Types.Enemy.Attrs
   (enemyEvade, enemyFight, enemyHealth, enemyHealthDamage, enemySanityDamage)
+import Arkham.Types.Event
 import Arkham.Types.GameValue
 import Arkham.Types.Location
 import Arkham.Types.Location.Attrs (locationRevealClues, locationShroud)
 import Arkham.Types.Name
+import Arkham.Types.Skill
 import Arkham.Types.SkillType
 import Arkham.Types.Trait hiding (Dunwich)
+import Arkham.Types.Treachery
 import Control.Exception
 import Control.Monad.Random.Lazy
 import Data.Aeson
@@ -64,6 +72,9 @@ data InternalCardCodeMismatch = InternalCardCodeMismatch CardCode CardCode
   deriving stock Show
 
 newtype UnknownCard = UnknownCard CardCode
+  deriving stock Show
+
+data MissingImplementation = MissingImplementation CardCode Name
   deriving stock Show
 
 data NameMismatch = NameMismatch CardCode Name Name
@@ -130,6 +141,7 @@ data ClueMismatch = ClueMismatch CardCode Name Int Int
 
 instance Exception InternalCardCodeMismatch
 instance Exception UnknownCard
+instance Exception MissingImplementation
 instance Exception NameMismatch
 instance Exception UniqueMismatch
 instance Exception CardCostMismatch
@@ -357,6 +369,13 @@ runValidations cards = do
             enemyDamage
           )
 
+  for_ (Enemies.allPlayerEnemyCards <> Enemies.allEncounterEnemyCards)
+    $ \def -> do
+        let mfunc = lookup (toCardCode def) allEnemies
+        when
+          (isNothing mfunc)
+          (throw $ MissingImplementation (toCardCode def) (cdName def))
+
   -- validate locations
   for_ (filterTestEntities $ mapToList allLocations) $ \(ccode, builder) -> do
     attrs <- toAttrs . builder <$> getRandom
@@ -397,6 +416,36 @@ runValidations cards = do
             cardStats
             assetStats
           )
+
+  for_ (Assets.allPlayerAssetCards <> Assets.allEncounterAssetCards) $ \def ->
+    do
+      let mfunc = lookup (toCardCode def) allAssets
+      when
+        (isNothing mfunc)
+        (throw $ MissingImplementation (toCardCode def) (cdName def))
+
+  -- validate events
+  for_ Events.allPlayerEventCards $ \def -> do
+    let mfunc = lookup (toCardCode def) allEvents
+    when
+      (isNothing mfunc)
+      (throw $ MissingImplementation (toCardCode def) (cdName def))
+
+  for_ Skills.allPlayerSkillCards $ \def -> do
+    let mfunc = lookup (toCardCode def) allSkills
+    when
+      (isNothing mfunc)
+      (throw $ MissingImplementation (toCardCode def) (cdName def))
+
+  for_
+      (Treacheries.allPlayerTreacheryCards
+      <> Treacheries.allEncounterTreacheryCards
+      )
+    $ \def -> do
+        let mfunc = lookup (toCardCode def) allTreacheries
+        when
+          (isNothing mfunc)
+          (throw $ MissingImplementation (toCardCode def) (cdName def))
 
 normalizeImageCardCode :: CardCode -> Text
 normalizeImageCardCode "02214" = "02214b"

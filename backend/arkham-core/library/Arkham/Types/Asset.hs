@@ -45,6 +45,7 @@ data Asset
   | BeatCop' BeatCop
   | BeatCop2' BeatCop2
   | Blackjack' Blackjack
+  | BloodPact3' BloodPact3
   | BookOfShadows3' BookOfShadows3
   | BrotherXavier1' BrotherXavier1
   | BulletproofVest3' BulletproofVest3
@@ -143,6 +144,8 @@ data Asset
   | Scrying' Scrying
   | Shotgun4' Shotgun4
   | Shrivelling' Shrivelling
+  | Shrivelling3' Shrivelling3
+  | Shrivelling5' Shrivelling5
   | SmokingPipe' SmokingPipe
   | SongOfTheDead2' SongOfTheDead2
   | SpringfieldM19034' SpringfieldM19034
@@ -307,6 +310,7 @@ allAssets = mapFromList $ map
   , BeatCop' <$> beatCop
   , BeatCop2' <$> beatCop2
   , Blackjack' <$> blackjack
+  , BloodPact3' <$> bloodPact3
   , BookOfShadows3' <$> bookOfShadows3
   , BrotherXavier1' <$> brotherXavier1
   , BulletproofVest3' <$> bulletproofVest3
@@ -405,6 +409,8 @@ allAssets = mapFromList $ map
   , Scrying' <$> scrying
   , Shotgun4' <$> shotgun4
   , Shrivelling' <$> shrivelling
+  , Shrivelling3' <$> shrivelling3
+  , Shrivelling5' <$> shrivelling5
   , SmokingPipe' <$> smokingPipe
   , SongOfTheDead2' <$> songOfTheDead2
   , SpringfieldM19034' <$> springfieldM19034

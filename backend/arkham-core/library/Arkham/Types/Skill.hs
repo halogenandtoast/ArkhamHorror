@@ -34,6 +34,7 @@ data Skill
   | RiseToTheOccasion' RiseToTheOccasion
   | StrokeOfLuck2' StrokeOfLuck2
   | SurvivalInstinct' SurvivalInstinct
+  | SurvivalInstinct2' SurvivalInstinct2
   | TrueUnderstanding' TrueUnderstanding
   | UnexpectedCourage' UnexpectedCourage
   | ViciousBlow' ViciousBlow
@@ -92,6 +93,7 @@ allSkills = mapFromList $ map
   , RiseToTheOccasion' <$> riseToTheOccasion
   , StrokeOfLuck2' <$> strokeOfLuck2
   , SurvivalInstinct' <$> survivalInstinct
+  , SurvivalInstinct2' <$> survivalInstinct2
   , TrueUnderstanding' <$> trueUnderstanding
   , UnexpectedCourage' <$> unexpectedCourage
   , ViciousBlow' <$> viciousBlow

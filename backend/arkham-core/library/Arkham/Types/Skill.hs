@@ -32,6 +32,7 @@ data Skill
   | Perception' Perception
   | QuickThinking' QuickThinking
   | RiseToTheOccasion' RiseToTheOccasion
+  | StrokeOfLuck2' StrokeOfLuck2
   | SurvivalInstinct' SurvivalInstinct
   | TrueUnderstanding' TrueUnderstanding
   | UnexpectedCourage' UnexpectedCourage
@@ -89,6 +90,7 @@ allSkills = mapFromList $ map
   , Perception' <$> perception
   , QuickThinking' <$> quickThinking
   , RiseToTheOccasion' <$> riseToTheOccasion
+  , StrokeOfLuck2' <$> strokeOfLuck2
   , SurvivalInstinct' <$> survivalInstinct
   , TrueUnderstanding' <$> trueUnderstanding
   , UnexpectedCourage' <$> unexpectedCourage

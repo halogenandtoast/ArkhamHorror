@@ -60,6 +60,7 @@ allPlayerSkillCards = mapFromList $ map
   , perception
   , quickThinking
   , riseToTheOccasion
+  , strokeOfLuck2
   , survivalInstinct
   , survivalInstinct2
   , trueUnderstanding
@@ -190,6 +191,13 @@ fearless2 :: CardDef
 fearless2 = (skill "02268" "Fearless" [SkillWillpower, SkillWillpower] Mystic)
   { cdCardTraits = setFromList [Innate, Developed]
   , cdLevel = 2
+  }
+
+strokeOfLuck2 :: CardDef
+strokeOfLuck2 = (skill "02271" "Stroke of Luck" [SkillWild] Survivor)
+  { cdCardTraits = setFromList [Innate, Fortune]
+  , cdLevel = 2
+  , cdCommitRestrictions = [OnlyYourTest]
   }
 
 trueUnderstanding :: CardDef

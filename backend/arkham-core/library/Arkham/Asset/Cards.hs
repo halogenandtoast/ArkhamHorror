@@ -193,6 +193,7 @@ allPlayerAssetCards = mapFromList $ map
   , strayCat
   , switchblade
   , switchblade2
+  , theGoldPocketWatch4
   , theNecronomicon
   , theNecronomiconAdvanced
   , theNecronomiconOlausWormiusTranslation
@@ -850,19 +851,6 @@ charisma3 = permanent $ (asset "02158" "Charisma" 0 Neutral)
   , cdLevel = 3
   }
 
-shrivelling5 :: CardDef
-shrivelling5 = (asset "02306" "Shrivelling" 3 Mystic)
-  { cdSkills = [SkillWillpower, SkillCombat, SkillCombat]
-  , cdCardTraits = singleton Spell
-  , cdLevel = 5
-  }
-
-keenEye :: CardDef
-keenEye = (asset "07152" "Keen Eye" 2 Guardian)
-  { cdCardTraits = setFromList [Talent]
-  , cdSkills = [SkillIntellect, SkillCombat]
-  }
-
 theNecronomiconOlausWormiusTranslation :: CardDef
 theNecronomiconOlausWormiusTranslation =
   (storyAsset
@@ -1080,7 +1068,26 @@ chicagoTypewriter4 :: CardDef
 chicagoTypewriter4 = (asset "02304" "Chicago Typewriter" 5 Rogue)
   { cdSkills = [SkillCombat, SkillCombat]
   , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
+  , cdLevel = 4
   }
+
+theGoldPocketWatch4 :: CardDef
+theGoldPocketWatch4 =
+  (asset "02305" ("The Gold Pocket Watch" <:> "Stealing Time") 2 Rogue)
+    { cdSkills = [SkillWillpower, SkillWild]
+    , cdCardTraits = setFromList [Item, Relic]
+    , cdLevel = 4
+    , cdUnique = True
+    , cdExceptional = True
+    }
+
+shrivelling5 :: CardDef
+shrivelling5 = (asset "02306" "Shrivelling" 3 Mystic)
+  { cdSkills = [SkillWillpower, SkillCombat, SkillCombat]
+  , cdCardTraits = singleton Spell
+  , cdLevel = 5
+  }
+
 
 aquinnah3 :: CardDef
 aquinnah3 = (asset "02308" ("Aquinnah" <:> "The Forgotten Daughter") 4 Survivor
@@ -1108,6 +1115,12 @@ scrollOfProphecies :: CardDef
 scrollOfProphecies = (asset "06116" "Scroll of Prophecies" 3 Mystic)
   { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Item, Tome]
+  }
+
+keenEye :: CardDef
+keenEye = (asset "07152" "Keen Eye" 2 Guardian)
+  { cdCardTraits = setFromList [Talent]
+  , cdSkills = [SkillIntellect, SkillCombat]
   }
 
 physicalTraining2 :: CardDef

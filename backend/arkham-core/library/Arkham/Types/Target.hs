@@ -14,6 +14,7 @@ import Arkham.Types.EnemyId
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
+import Arkham.Types.Phase
 import Arkham.Types.ScenarioId
 import Arkham.Types.SkillId
 import Arkham.Types.Token
@@ -44,6 +45,7 @@ data Target
   | SkillTarget SkillId
   | SkillTestInitiatorTarget Target
   | TokenTarget Token
+  | PhaseTarget Phase
   | TokenFaceTarget TokenFace
   | TestTarget
   | ResourceTarget

@@ -160,6 +160,7 @@ data Asset
   | Streetwise3' Streetwise3
   | Switchblade' Switchblade
   | Switchblade2' Switchblade2
+  | TheGoldPocketWatch4' TheGoldPocketWatch4
   | TheNecronomicon' TheNecronomicon
   | TheNecronomiconAdvanced' TheNecronomiconAdvanced
   | TheNecronomiconOlausWormiusTranslation' TheNecronomiconOlausWormiusTranslation
@@ -429,6 +430,7 @@ allAssets = mapFromList $ map
   , Streetwise3' <$> streetwise3
   , Switchblade' <$> switchblade
   , Switchblade2' <$> switchblade2
+  , TheGoldPocketWatch4' <$> theGoldPocketWatch4
   , TheNecronomicon' <$> theNecronomicon
   , TheNecronomiconAdvanced' <$> theNecronomiconAdvanced
   , TheNecronomiconOlausWormiusTranslation'

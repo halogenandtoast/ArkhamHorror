@@ -2454,7 +2454,9 @@ runGameMessage msg g = case msg of
       Just (EncounterCard _) -> error "can not be encounter card"
   BeginInvestigation -> do
     pushAll
-      $ [ CheckWindow iid [Fast.AnyPhaseBegins]
+      $ [ CheckWindow
+            iid
+            [Fast.AnyPhaseBegins, Fast.PhaseBegins InvestigationPhase]
         | iid <- g ^. investigatorsL . to keys
         ]
       <> [ChoosePlayerOrder (gamePlayerOrder g) []]
@@ -2484,9 +2486,21 @@ runGameMessage msg g = case msg of
     (\(iid', Ability {..}) ->
       iid' /= iid || abilityLimitType abilityLimit /= Just PerTurn
     )
+  EndPhase -> do
+    clearQueue
+    case g ^. phaseL of
+      MythosPhase -> g <$ pushEnd BeginInvestigation
+      InvestigationPhase -> g <$ pushEnd BeginEnemy
+      EnemyPhase -> g <$ pushEnd BeginUpkeep
+      UpkeepPhase -> g <$ pushAllEnd [EndRoundWindow, EndRound]
+      ResolutionPhase -> error "should not be called in this situation"
+      CampaignPhase -> error "should not be called in this situation"
   EndInvestigation -> do
-    push EndPhase
-    pushEnd BeginEnemy
+    pushAll
+      $ [ CheckWindow iid [Fast.PhaseEnds InvestigationPhase]
+        | iid <- g ^. investigatorsL . to keys
+        ]
+      <> [EndPhase]
     pure
       $ g
       & (usedAbilitiesL
@@ -2498,14 +2512,17 @@ runGameMessage msg g = case msg of
       & (phaseMessageHistoryL .~ [])
   BeginEnemy -> do
     pushAllEnd
-      $ [ CheckWindow iid [Fast.AnyPhaseBegins]
+      $ [ CheckWindow iid [Fast.AnyPhaseBegins, Fast.PhaseBegins EnemyPhase]
         | iid <- g ^. investigatorsL . to keys
         ]
       <> [HuntersMove, EnemiesAttack, EndEnemy]
     pure $ g & phaseL .~ EnemyPhase
   EndEnemy -> do
-    push EndPhase
-    pushEnd BeginUpkeep
+    pushAll
+      $ [ CheckWindow iid [Fast.PhaseEnds EnemyPhase]
+        | iid <- g ^. investigatorsL . to keys
+        ]
+      <> [EndPhase]
     pure
       $ g
       & (usedAbilitiesL
@@ -2517,14 +2534,17 @@ runGameMessage msg g = case msg of
       & (phaseMessageHistoryL .~ [])
   BeginUpkeep -> do
     pushAllEnd
-      $ [ CheckWindow iid [Fast.AnyPhaseBegins]
+      $ [ CheckWindow iid [Fast.AnyPhaseBegins, Fast.PhaseBegins UpkeepPhase]
         | iid <- g ^. investigatorsL . to keys
         ]
       <> [ReadyExhausted, AllDrawCardAndResource, AllCheckHandSize, EndUpkeep]
     pure $ g & phaseL .~ UpkeepPhase
   EndUpkeep -> do
-    push EndPhase
-    pushAllEnd [EndRoundWindow, EndRound]
+    pushAll
+      $ [ CheckWindow iid [Fast.PhaseEnds UpkeepPhase]
+        | iid <- g ^. investigatorsL . to keys
+        ]
+      <> [EndPhase]
     pure
       $ g
       & (usedAbilitiesL
@@ -2550,7 +2570,7 @@ runGameMessage msg g = case msg of
   BeginRound -> g <$ pushEnd BeginMythos
   BeginMythos -> do
     pushAllEnd
-      $ [ CheckWindow iid [Fast.AnyPhaseBegins]
+      $ [ CheckWindow iid [Fast.AnyPhaseBegins, Fast.PhaseBegins MythosPhase]
         | iid <- g ^. investigatorsL . to keys
         ]
       <> [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
@@ -2566,8 +2586,11 @@ runGameMessage msg g = case msg of
     g <$ pushAll
       [ chooseOne iid [InvestigatorDrawEncounterCard iid] | iid <- playerIds ]
   EndMythos -> do
-    push EndPhase
-    pushEnd BeginInvestigation
+    pushAll
+      $ [ CheckWindow iid [Fast.PhaseEnds MythosPhase]
+        | iid <- g ^. investigatorsL . to keys
+        ]
+      <> [EndPhase]
     pure
       $ g
       & (usedAbilitiesL

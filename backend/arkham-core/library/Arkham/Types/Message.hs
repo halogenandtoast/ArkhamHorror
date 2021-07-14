@@ -244,6 +244,7 @@ data Message
   | DrewTreachery InvestigatorId Card
   | DrivenInsane InvestigatorId
   | EmptyDeck InvestigatorId
+  | EndPhase
   | EndCheckWindow
   | EndEnemy
   | EndInvestigation
@@ -253,7 +254,6 @@ data Message
   | Exiled Target Card
   | ScenarioResolution Resolution
   | EndOfScenario
-  | EndPhase
   | EndRound
   | EndRoundWindow
   | EndSearch InvestigatorId Source

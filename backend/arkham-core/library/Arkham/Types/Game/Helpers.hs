@@ -251,6 +251,7 @@ getCanAffordCost iid source mAction = \case
   DiscardCost _ -> pure True -- TODO: Make better
   DiscardCardCost _ -> pure True -- TODO: Make better
   ExileCost _ -> pure True -- TODO: Make better
+  RemoveCost _ -> pure True -- TODO: Make better
   HorrorCost{} -> pure True -- TODO: Make better
   DamageCost{} -> pure True -- TODO: Make better
   DoomCost{} -> pure True -- TODO: Make better
@@ -584,6 +585,7 @@ targetToSource = \case
   EnemyTarget eid -> EnemySource eid
   ScenarioTarget sid -> ScenarioSource sid
   EffectTarget eid -> EffectSource eid
+  PhaseTarget _ -> error "no need"
   LocationTarget lid -> LocationSource lid
   (SetAsideLocationsTarget _) -> error "can not convert"
   SkillTestTarget -> error "can not convert"

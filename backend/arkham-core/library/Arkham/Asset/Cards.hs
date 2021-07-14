@@ -198,6 +198,7 @@ allPlayerAssetCards = mapFromList $ map
   , theNecronomiconAdvanced
   , theNecronomiconOlausWormiusTranslation
   , toothOfEztli
+  , tryAndTryAgain3
   , wendysAmulet
   , whittonGreene
   , zebulonWhateley
@@ -1096,6 +1097,13 @@ aquinnah3 = (asset "02308" ("Aquinnah" <:> "The Forgotten Daughter") 4 Survivor
   , cdCardTraits = setFromList [Ally]
   , cdLevel = 3
   , cdUnique = True
+  }
+
+tryAndTryAgain3 :: CardDef
+tryAndTryAgain3 = (asset "02309" "Try and Try Again" 2 Survivor)
+  { cdSkills = [SkillWillpower, SkillWillpower]
+  , cdCardTraits = singleton Talent
+  , cdLevel = 3
   }
 
 toothOfEztli :: CardDef

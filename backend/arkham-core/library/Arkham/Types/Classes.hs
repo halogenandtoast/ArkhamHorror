@@ -178,6 +178,7 @@ type ActionRunner env
     , HasId LeadInvestigatorId env ()
     , HasId LocationId env InvestigatorId
     , HasId LocationId env EnemyId
+    , HasList CommittedCard env InvestigatorId
     , HasList DiscardedPlayerCard env InvestigatorId
     , HasList HandCard env InvestigatorId
     , HasList InPlayCard env InvestigatorId

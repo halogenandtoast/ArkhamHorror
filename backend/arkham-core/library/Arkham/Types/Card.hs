@@ -32,6 +32,9 @@ instance Functor (CardBuilder ident) where
 newtype SetAsideCard = SetAsideCard { unSetAsideCard :: Card }
   deriving newtype (Show, Eq, ToJSON, FromJSON)
 
+newtype CommittedCard = CommittedCard { unCommittedCard :: Card }
+  deriving newtype (Show, Eq, ToJSON, FromJSON)
+
 data Card
   = PlayerCard PlayerCard
   | EncounterCard EncounterCard

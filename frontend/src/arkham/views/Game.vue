@@ -5,7 +5,7 @@
     </div>
     <div class="game">
       <Campaign
-        v-if="game.currentData.campaign"
+        v-if="game.campaign"
         :game="game"
         :gameLog="gameLog"
         :investigatorId="investigatorId"
@@ -13,7 +13,7 @@
         @update="update"
       />
       <Scenario
-        v-else-if="!game.currentData.gameOver"
+        v-else-if="!game.gameOver"
         :game="game"
         :gameLog="gameLog"
         :investigatorId="investigatorId"
@@ -24,14 +24,14 @@
         <CardOverlay />
         <GameLog :game="game" :gameLog="gameLog" />
       </div>
-      <div v-if="game.currentData.gameOver">
+      <div v-if="game.gameOver">
         <p>Game over</p>
 
-        <div v-for="entry in game.currentData.campaign.contents.log.recorded" :key="entry">
+        <div v-for="entry in game.campaign.contents.log.recorded" :key="entry">
           {{entry}}
         </div>
 
-        <div v-for="(entry, idx) in game.currentData.campaign.contents.log.recordedSets" :key="idx">
+        <div v-for="(entry, idx) in game.campaign.contents.log.recordedSets" :key="idx">
           {{entry[0]}}: {{entry[1].join(", ")}}
         </div>
       </div>
@@ -99,7 +99,7 @@ export default defineComponent({
     });
 
     async function choose(idx: number) {
-      if (idx !== -1 && game.value && game.value.currentData) {
+      if (idx !== -1 && game.value) {
         updateGame(props.gameId, idx);
       }
     }

@@ -18,7 +18,7 @@ import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Map.Strict as Map
 import Json
 
-data ApiResponse = GameUpdate (Entity ArkhamGame) | GameMessage Text
+data ApiResponse = GameUpdate (PublicGame ArkhamGameId) | GameMessage Text
   deriving stock Generic
   deriving anyclass ToJSON
 

@@ -62,7 +62,7 @@ catchingConnectionException f =
 
 data GetGameJson = GetGameJson
   { investigatorId :: Maybe InvestigatorId
-  , game :: Entity ArkhamGame
+  , game :: PublicGame ArkhamGameId
   }
   deriving stock (Show, Generic)
   deriving anyclass ToJSON
@@ -76,7 +76,14 @@ getApiV1ArkhamGameR gameId = do
     Game {..} = arkhamGameCurrentData ge
     investigatorId =
       HashMap.lookup (fromIntegral $ fromSqlKey userId) gamePlayers
-  pure $ GetGameJson investigatorId (Entity gameId ge)
+  pure $ GetGameJson
+    investigatorId
+    (PublicGame
+      gameId
+      (arkhamGameName ge)
+      (arkhamGameLog ge)
+      (arkhamGameCurrentData ge)
+    )
 
 getApiV1ArkhamGamesR :: Handler [Entity ArkhamGame]
 getApiV1ArkhamGamesR = do
@@ -208,11 +215,7 @@ putApiV1ArkhamGameR gameId = do
   updatedLog <- (arkhamGameLog <>) <$> readIORef logRef
   liftIO $ atomically $ writeTChan
     writeChannel
-    (encode
-      (GameUpdate
-      $ Entity gameId (ArkhamGame arkhamGameName ge updatedQueue updatedLog)
-      )
-    )
+    (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedLog ge)
   Entity gameId (ArkhamGame arkhamGameName ge updatedQueue updatedLog)
     <$ runDB
          (replace gameId (ArkhamGame arkhamGameName ge updatedQueue updatedLog))
@@ -251,10 +254,7 @@ putApiV1ArkhamGameRawR gameId = do
   updatedQueue <- readIORef queueRef
   liftIO $ atomically $ writeTChan
     writeChannel
-    (encode $ GameUpdate $ Entity
-      gameId
-      (ArkhamGame arkhamGameName ge updatedQueue updatedMessages)
-    )
+    (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedMessages ge)
   runDB
     (replace gameId (ArkhamGame arkhamGameName ge updatedQueue updatedMessages))
 

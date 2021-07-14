@@ -14,7 +14,7 @@ import { Game } from '@/arkham/types/Game';
 export default defineComponent({
   props: { game: { type: Object as () => Game, required: true } },
   setup(props) {
-    const victoryDisplay = computed(() => props.game.currentData.victoryDisplay)
+    const victoryDisplay = computed(() => props.game.victoryDisplay)
     const topOfVictoryDisplay = computed(() => {
       if (victoryDisplay.value[0]) {
         const { cardCode } = victoryDisplay.value[0].contents.def;

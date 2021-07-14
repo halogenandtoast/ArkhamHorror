@@ -385,6 +385,56 @@ instance ToJSON Game where
     , "question" .= toJSON gameQuestion
     ]
 
+data PublicGame gid = PublicGame gid Text [Text] Game
+  deriving stock Show
+
+instance ToJSON gid => ToJSON (PublicGame gid) where
+  toJSON (PublicGame gid name glog g@Game {..}) = object
+    [ "name" .= toJSON name
+    , "id" .= toJSON gid
+    , "log" .= toJSON glog
+    , "mode" .= toJSON gameMode
+    , "locations" .= toJSON (runReader (traverse withModifiers gameLocations) g)
+    , "investigators"
+      .= toJSON (runReader (traverse withModifiers gameInvestigators) g)
+    , "players" .= toJSON gamePlayers
+    , "enemies" .= toJSON (runReader (traverse withModifiers gameEnemies) g)
+    , "enemiesInVoid"
+      .= toJSON (runReader (traverse withModifiers gameEnemiesInVoid) g)
+    , "assets" .= toJSON (runReader (traverse withModifiers gameAssets) g)
+    , "acts" .= toJSON (runReader (traverse withModifiers gameActs) g)
+    , "agendas" .= toJSON (runReader (traverse withModifiers gameAgendas) g)
+    , "treacheries"
+      .= toJSON (runReader (traverse withModifiers gameTreacheries) g)
+    , "events" .= toJSON (runReader (traverse withModifiers gameEvents) g)
+    , "skills" .= toJSON gameSkills -- no need for modifiers... yet
+    , "playerCount" .= toJSON gamePlayerCount
+    , "activeInvestigatorId" .= toJSON gameActiveInvestigatorId
+    , "leadInvestigatorId" .= toJSON gameLeadInvestigatorId
+    , "playerOrder" .= toJSON gamePlayerOrder
+    , "playerTurnOrder" .= toJSON gamePlayerTurnOrder
+    , "phase" .= toJSON gamePhase
+    , "discard" .= toJSON gameDiscard
+    , "chaosBag" .= toJSON gameChaosBag
+    , "skillTest" .= toJSON gameSkillTest
+    , "skillTestTokens" .= toJSON
+      (runReader
+        (traverse withModifiers $ maybe [] skillTestSetAsideTokens gameSkillTest
+        )
+        g
+      )
+    , "resignedCardCodes" .= toJSON gameResignedCardCodes
+    , "focusedCards" .= toJSON gameFocusedCards
+    , "focusedTargets" .= toJSON gameFocusedTargets
+    , "focusedTokens"
+      .= toJSON (runReader (traverse withModifiers gameFocusedTokens) g)
+    , "activeCard" .= toJSON gameActiveCard
+    , "victoryDisplay" .= toJSON gameVictoryDisplay
+    , "gameState" .= toJSON gameGameState
+    , "question" .= toJSON gameQuestion
+    ]
+
+
 instance FromJSON Game where
   parseJSON = genericParseJSON $ aesonOptions $ Just "game"
 

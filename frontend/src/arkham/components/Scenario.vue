@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!game.currentData.gameOver" id="scenario" class="scenario">
+  <div v-if="!game.gameOver" id="scenario" class="scenario">
     <StatusBar :game="game" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
     <PlayerOrder :game="game" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
     <PlayerSelector
@@ -36,7 +36,7 @@
       />
 
       <Agenda
-        v-for="(agenda, key) in game.currentData.agendas"
+        v-for="(agenda, key) in game.agendas"
         :key="key"
         :agenda="agenda"
         :game="game"
@@ -45,7 +45,7 @@
       />
 
       <Act
-        v-for="(act, key) in game.currentData.acts"
+        v-for="(act, key) in game.acts"
         :key="key"
         :act="act"
         :game="game"
@@ -58,7 +58,7 @@
       />
       <ChaosBag
         :game="game"
-        :skillTest="game.currentData.skillTest"
+        :skillTest="game.skillTest"
         :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
       />
@@ -71,7 +71,7 @@
 
     <div class="location-cards" :style="locationStyles">
       <Location
-        v-for="(location, key) in game.currentData.locations"
+        v-for="(location, key) in game.locations"
         class="location"
         :key="key"
         :game="game"
@@ -127,7 +127,7 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const scenarioGuide = computed(() => {
-      const { scenario } = props.game.currentData;
+      const { scenario } = props.game;
       if (!scenario) {
         return '';
       }
@@ -141,7 +141,7 @@ export default defineComponent({
     })
 
     const scenarioDeck = computed(() => {
-      const { scenario } = props.game.currentData;
+      const { scenario } = props.game;
       if (!scenario || !scenario.contents.deck) {
         return null;
       }
@@ -157,7 +157,7 @@ export default defineComponent({
     })
 
     const locationStyles = computed(() => {
-      const { scenario } = props.game.currentData;
+      const { scenario } = props.game;
       if (!scenario) {
         return null;
       }
@@ -173,19 +173,19 @@ export default defineComponent({
     })
 
     const activeCard = computed(() => {
-      if (props.game.currentData.activeCard) {
-        const { cardCode } = props.game.currentData.activeCard.contents.def;
+      if (props.game.activeCard) {
+        const { cardCode } = props.game.activeCard.contents.def;
         return `/img/arkham/cards/${cardCode}.jpg`;
       }
 
       return null;
     })
 
-    const players = computed(() => props.game.currentData.investigators)
+    const players = computed(() => props.game.investigators)
 
     const topOfEncounterDiscard = computed(() => {
-      if (props.game.currentData.discard[0]) {
-        const { cardCode } = props.game.currentData.discard[0].def;
+      if (props.game.discard[0]) {
+        const { cardCode } = props.game.discard[0].def;
 
         return `/img/arkham/cards/${cardCode}.jpg`;
       }
@@ -193,8 +193,8 @@ export default defineComponent({
       return null;
     })
 
-    const topEnemyInVoid = computed(() => Object.values(props.game.currentData.enemiesInVoid)[0])
-    const activePlayerId = computed(() => props.game.currentData.activeInvestigatorId)
+    const topEnemyInVoid = computed(() => Object.values(props.game.enemiesInVoid)[0])
+    const activePlayerId = computed(() => props.game.activeInvestigatorId)
 
     function update(game: Game) {
       emit('update', game);

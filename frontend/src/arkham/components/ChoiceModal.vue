@@ -41,7 +41,7 @@ export default defineComponent({
   },
   setup(props) {
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
-    const focusedCards = computed(() => props.game.currentData.focusedCards)
+    const focusedCards = computed(() => props.game.focusedCards)
 
     const resolutions = computed(() => {
       return choices

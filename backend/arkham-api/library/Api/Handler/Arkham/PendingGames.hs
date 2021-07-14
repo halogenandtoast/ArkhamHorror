@@ -49,9 +49,11 @@ putApiV1ArkhamPendingGameR gameId = do
   writeChannel <- getChannel gameId
   liftIO $ atomically $ writeTChan
     writeChannel
-    (encode $ GameUpdate $ Entity
+    (encode $ GameUpdate $ PublicGame
       gameId
-      (ArkhamGame arkhamGameName updatedGame updatedQueue updatedMessages)
+      arkhamGameName
+      updatedMessages
+      updatedGame
     )
 
   Entity

@@ -10,6 +10,7 @@ import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
+import Arkham.Types.Phase
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -36,6 +37,8 @@ data Window
   | AfterSuccessfulInvestigation Who Where
   | AfterTurnBegins Who
   | AnyPhaseBegins
+  | PhaseBegins Phase
+  | PhaseEnds Phase
   | AtEndOfRound
   | DuringTurn Who
   | FastPlayerWindow

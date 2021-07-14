@@ -47,6 +47,7 @@ data Payment
   | DiscardPayment [Target]
   | DiscardCardPayment [Card]
   | ExhaustPayment [Target]
+  | RemovePayment [Target]
   | ExilePayment [Target]
   | UsesPayment Int
   | HorrorPayment Int
@@ -64,6 +65,7 @@ data Cost
   | GroupClueCost (GameValue Int) (Maybe LocationMatcher)
   | PlaceClueOnLocationCost Int
   | ExhaustCost Target
+  | RemoveCost Target
   | Costs [Cost]
   | DamageCost Source Target Int
   | DiscardCost Target

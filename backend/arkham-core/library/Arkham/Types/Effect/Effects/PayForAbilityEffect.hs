@@ -151,6 +151,9 @@ instance
         ExileCost target -> do
           push (Exile target)
           withPayment $ ExilePayment [target]
+        RemoveCost target -> do
+          push (RemoveFromGame target)
+          withPayment $ RemovePayment [target]
         DoomCost _ target x -> do
           push (PlaceDoom target x)
           withPayment $ DoomPayment x

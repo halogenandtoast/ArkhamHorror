@@ -12,4 +12,4 @@ data Phase
   | ResolutionPhase
   | CampaignPhase
   deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)

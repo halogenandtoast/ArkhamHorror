@@ -36,9 +36,6 @@ putApiV1ArkhamGameUndoR gameId = do
   updatedQueue <- readIORef queueRef
   liftIO $ atomically $ writeTChan
     writeChannel
-    (encode $ GameUpdate $ Entity
-      gameId
-      (ArkhamGame arkhamGameName ge updatedQueue arkhamGameLog)
-    )
+    (encode $ GameUpdate $ PublicGame gameId arkhamGameName arkhamGameLog ge)
   runDB
     (replace gameId (ArkhamGame arkhamGameName ge updatedQueue arkhamGameLog))

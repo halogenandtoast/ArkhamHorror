@@ -41,7 +41,7 @@
       <Treachery
         v-for="treacheryId in location.contents.treacheries"
         :key="treacheryId"
-        :treachery="game.currentData.treacheries[treacheryId]"
+        :treachery="game.treacheries[treacheryId]"
         :game="game"
         :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
@@ -61,7 +61,7 @@
     <div class="location-asset-column">
       <Asset
         v-for="assetId in location.contents.assets"
-        :asset="game.currentData.assets[assetId]"
+        :asset="game.assets[assetId]"
         :game="game"
         :investigatorId="investigatorId"
         :key="assetId"
@@ -70,7 +70,7 @@
       <Enemy
         v-for="enemyId in enemies"
         :key="enemyId"
-        :enemy="game.currentData.enemies[enemyId]"
+        :enemy="game.enemies[enemyId]"
         :game="game"
         :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
@@ -242,7 +242,7 @@ export default defineComponent({
     const enemies = computed(() => {
       const enemyIds = props.location.contents.enemies;
       return enemyIds
-        .filter((e) => props.game.currentData.enemies[e].contents.engagedInvestigators.length === 0);
+        .filter((e) => props.game.enemies[e].contents.engagedInvestigators.length === 0);
     })
 
     const blocked = computed(() => props.location.modifiers.some(modifier => modifier.type.tag == "Blocked"))

@@ -22,57 +22,8 @@ import {
 export interface Game {
   id: string;
   name: string;
-  currentData: GameState;
   log: string[];
-}
 
-export function choices(game: Game, investigatorId: string) {
-  if (!game.currentData.question[investigatorId]) {
-    return [];
-  }
-
-  const question = game.currentData.question[investigatorId];
-
-  switch (question.tag) {
-    case 'ChooseOne':
-      return question.contents;
-    case 'ChooseN':
-      return question.contents;
-    case 'ChooseOneAtATime':
-      return question.contents;
-    case 'ChooseOneFromSource':
-    {
-      const { choices: sourceChoices } = question.contents;
-      return sourceChoices;
-    }
-    default:
-      return [];
-  }
-}
-
-export function choicesSource(game: Game, investigatorId: string) {
-  if (!game.currentData.question[investigatorId]) {
-    return null;
-  }
-
-  const question = game.currentData.question[investigatorId];
-
-  switch (question.tag) {
-    case 'ChooseOne':
-      return null;
-    case 'ChooseOneAtATime':
-      return null;
-    case 'ChooseOneFromSource':
-    {
-      const { source } = question.contents;
-      return source;
-    }
-    default:
-      return null;
-  }
-}
-
-export interface GameState {
   activeInvestigatorId: string;
   acts: Record<string, Act>;
   agendas: Record<string, Agenda>;
@@ -97,6 +48,52 @@ export interface GameState {
   victoryDisplay: Card[];
 }
 
+export function choices(game: Game, investigatorId: string) {
+  if (!game.question[investigatorId]) {
+    return [];
+  }
+
+  const question = game.question[investigatorId];
+
+  switch (question.tag) {
+    case 'ChooseOne':
+      return question.contents;
+    case 'ChooseN':
+      return question.contents;
+    case 'ChooseOneAtATime':
+      return question.contents;
+    case 'ChooseOneFromSource':
+    {
+      const { choices: sourceChoices } = question.contents;
+      return sourceChoices;
+    }
+    default:
+      return [];
+  }
+}
+
+export function choicesSource(game: Game, investigatorId: string) {
+  if (!game.question[investigatorId]) {
+    return null;
+  }
+
+  const question = game.question[investigatorId];
+
+  switch (question.tag) {
+    case 'ChooseOne':
+      return null;
+    case 'ChooseOneAtATime':
+      return null;
+    case 'ChooseOneFromSource':
+    {
+      const { source } = question.contents;
+      return source;
+    }
+    default:
+      return null;
+  }
+}
+
 interface Mode {
   This?: Campaign;
   That?: Scenario;
@@ -110,8 +107,12 @@ export const modeDecoder = JsonDecoder.object<Mode>(
   'Mode'
 );
 
-export const gameStateDecoder = JsonDecoder.object<GameState>(
+export const gameDecoder = JsonDecoder.object<Game>(
   {
+    id: JsonDecoder.string,
+    name: JsonDecoder.string,
+    log: JsonDecoder.array(JsonDecoder.string, 'LogEntry[]'),
+
     activeInvestigatorId: JsonDecoder.string,
     acts: JsonDecoder.dictionary<Act>(actDecoder, 'Dict<UUID, Act>'),
     agendas: JsonDecoder.dictionary<Agenda>(agendaDecoder, 'Dict<UUID, Agenda>'),
@@ -135,19 +136,9 @@ export const gameStateDecoder = JsonDecoder.object<GameState>(
     activeCard: JsonDecoder.nullable(cardDecoder),
     victoryDisplay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
   },
-  'GameState',
+  'Game',
   {
     scenario: 'mode',
     campaign: 'mode'
   }
-);
-
-export const gameDecoder = JsonDecoder.object<Game>(
-  {
-    id: JsonDecoder.string,
-    name: JsonDecoder.string,
-    currentData: gameStateDecoder,
-    log: JsonDecoder.array(JsonDecoder.string, 'LogEntry[]')
-  },
-  'Game',
 );

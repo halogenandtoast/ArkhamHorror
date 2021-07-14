@@ -84,12 +84,12 @@ export default defineComponent({
     }
 
     const revealedTokens = computed(() => {
-      if (props.game.currentData.focusedTokens.length > 0) {
-        return props.game.currentData.focusedTokens;
+      if (props.game.focusedTokens.length > 0) {
+        return props.game.focusedTokens;
       }
 
-      if (props.game.currentData.skillTestTokens !== []) {
-        return props.game.currentData.skillTestTokens;
+      if (props.game.skillTestTokens !== []) {
+        return props.game.skillTestTokens;
       }
 
       return [];

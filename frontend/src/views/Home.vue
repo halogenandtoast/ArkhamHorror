@@ -7,22 +7,22 @@
     </div>
 
     <div v-for="game in games" class="game" :key="game.id">
-      <div class="campaign-icon-container" v-if="game.currentData.campaign">
-        <img class="campaign-icon" :src="`/img/arkham/sets/${game.currentData.campaign.contents.id}.png`" />
+      <div class="campaign-icon-container" v-if="game.campaign">
+        <img class="campaign-icon" :src="`/img/arkham/sets/${game.campaign.contents.id}.png`" />
       </div>
-      <div class="campaign-icon-container" v-else-if="game.currentData.scenario">
-        <img class="campaign-icon" :src="`/img/arkham/sets/${game.currentData.scenario.contents.id.slice(0,2)}.png`" />
+      <div class="campaign-icon-container" v-else-if="game.scenario">
+        <img class="campaign-icon" :src="`/img/arkham/sets/${game.scenario.contents.id.slice(0,2)}.png`" />
       </div>
       <div class="game-details">
         <router-link class="title" :to="`/games/${game.id}`">{{game.name}}</router-link>
-        <div v-if="game.currentData.scenario" class="scenario-details">
-          <img class="scenario-icon" :src="`/img/arkham/sets/${game.currentData.scenario.contents.id}.png`" />
-          <span>{{game.currentData.scenario.contents.name.title}}</span>
+        <div v-if="game.scenario" class="scenario-details">
+          <img class="scenario-icon" :src="`/img/arkham/sets/${game.scenario.contents.id}.png`" />
+          <span>{{game.scenario.contents.name.title}}</span>
         </div>
         <div>
           <span>Investigators: </span>
           <span
-            v-for="investigator in game.currentData.investigators"
+            v-for="investigator in game.investigators"
             :key="investigator.contents.id"
             class="investigator-name"
           >

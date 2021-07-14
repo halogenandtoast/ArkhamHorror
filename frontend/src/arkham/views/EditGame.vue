@@ -22,11 +22,11 @@ export default defineComponent({
     const gameMessage = computed(() => messageDecoder.onDecode(rawGameMessage.value, (res: Message) => res, () => null))
 
     fetchGameRaw(props.gameId).then(({ game }) => {
-      json.value = game.currentData;
+      json.value = game;
       const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`;
       socket.value = new WebSocket(`${baseURL}/api/v1/arkham/games/${props.gameId}`.replace(/https/, 'wss').replace(/http/, 'ws'));
       socket.value.addEventListener('message', (event: MessageEvent) => {
-        json.value = JSON.parse(event.data).currentData;
+        json.value = JSON.parse(event.data);
       });
       ready.value = true;
     })

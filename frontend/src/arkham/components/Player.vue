@@ -3,7 +3,7 @@
     <section class="in-play">
       <Asset
         v-for="asset in player.contents.assets"
-        :asset="game.currentData.assets[asset]"
+        :asset="game.assets[asset]"
         :game="game"
         :investigatorId="investigatorId"
         :key="asset"
@@ -13,7 +13,7 @@
       <Enemy
         v-for="enemyId in player.contents.engagedEnemies"
         :key="enemyId"
-        :enemy="game.currentData.enemies[enemyId]"
+        :enemy="game.enemies[enemyId]"
         :game="game"
         :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
@@ -22,7 +22,7 @@
       <Treachery
         v-for="treacheryId in player.contents.treacheries"
         :key="treacheryId"
-        :treachery="game.currentData.treacheries[treacheryId]"
+        :treachery="game.treacheries[treacheryId]"
         :game="game"
         :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"

@@ -3,9 +3,9 @@
   <div v-if="upgradeDeck" id="game" class="game">
     <UpgradeDeck :game="game" :investigatorId="investigatorId" />
   </div>
-  <div v-else-if="game.currentData.gameState === 'IsActive'" id="game" class="game">
+  <div v-else-if="game.gameState === 'IsActive'" id="game" class="game">
     <Scenario
-      v-if="game.currentData.scenario"
+      v-if="game.scenario"
 
       :game="game"
       :investigatorId="investigatorId"
@@ -27,10 +27,10 @@
       />
     </template>
   </div>
-  <div v-else-if="game.currentData.gameState === 'IsPending'">
+  <div v-else-if="game.gameState === 'IsPending'">
     <div id='invite'>
       <h3>Waiting for more players</h3>
-      <div v-if="investigatorId == game.currentData.leadInvestigatorId">
+      <div v-if="investigatorId == game.leadInvestigatorId">
         <p>Invite them with this url: {{inviteLink}}</p>
       </div>
     </div>
@@ -67,7 +67,7 @@ export default defineComponent({
       emit('update', game);
     }
 
-    const upgradeDeck = computed(() => props.game.currentData.campaign && props.game.currentData.campaign.contents.step.tag === 'UpgradeDeckStep')
+    const upgradeDeck = computed(() => props.game.campaign && props.game.campaign.contents.step.tag === 'UpgradeDeckStep')
 
     return { inviteLink, update, upgradeDeck }
   }

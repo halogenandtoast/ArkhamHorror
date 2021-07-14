@@ -15,7 +15,7 @@
     <Treachery
       v-for="treacheryId in agenda.contents.treacheries"
       :key="treacheryId"
-      :treachery="game.currentData.treacheries[treacheryId]"
+      :treachery="game.treacheries[treacheryId]"
       :game="game"
       :investigatorId="investigatorId"
       @choose="$emit('choose', $event)"

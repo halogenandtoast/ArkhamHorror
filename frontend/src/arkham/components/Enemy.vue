@@ -8,7 +8,7 @@
     <Treachery
       v-for="treacheryId in enemy.contents.treacheries"
       :key="treacheryId"
-      :treachery="game.currentData.treacheries[treacheryId]"
+      :treachery="game.treacheries[treacheryId]"
       :game="game"
       :investigatorId="investigatorId"
       @choose="$emit('choose', $event)"
@@ -16,7 +16,7 @@
     <Asset
       v-for="assetId in enemy.contents.assets"
       :key="assetId"
-      :asset="game.currentData.assets[assetId]"
+      :asset="game.assets[assetId]"
       :game="game"
       :investigatorId="investigatorId"
       @choose="$emit('choose', $event)"

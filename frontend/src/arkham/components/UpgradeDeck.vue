@@ -46,7 +46,7 @@ export default defineComponent({
     const waiting = ref(false)
     const deck = ref<string | null>(null)
     const deckUrl = ref<string | null>(null)
-    const investigator = computed(() => props.game.currentData.investigators[props.investigatorId])
+    const investigator = computed(() => props.game.investigators[props.investigatorId])
     const xp = computed(() => investigator.value.contents.xp)
     const skipping = ref(false)
 

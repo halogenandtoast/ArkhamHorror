@@ -82,10 +82,7 @@ putApiV1ArkhamGameDecksR gameId = do
   writeChannel <- getChannel gameId
   liftIO $ atomically $ writeTChan
     writeChannel
-    (encode $ GameUpdate $ Entity
-      gameId
-      (ArkhamGame arkhamGameName ge updatedQueue updatedMessages)
-    )
+    (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedMessages ge)
   void $ runDB
     (replace gameId (ArkhamGame arkhamGameName ge updatedQueue updatedMessages))
 

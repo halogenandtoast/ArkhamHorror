@@ -51,9 +51,8 @@ library
   default-language: Haskell2010
 
 executable cards-discover
-  main-is: main.hs
+  main-is: Main.hs
   other-modules:
-      Main
       Paths_cards_discover
   hs-source-dirs:
       app

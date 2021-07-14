@@ -20,6 +20,7 @@ spec = describe "Final Rhapsody" $ do
         id
       $ do
           runMessages
+          chooseFirstOption "acknowledge damage"
           chooseFirstOption "take damage"
           chooseFirstOption "take damage"
           chooseFirstOption "take damage"

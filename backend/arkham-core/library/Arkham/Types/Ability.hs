@@ -13,6 +13,7 @@ import Arkham.Types.Classes.Entity.Source
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Modifier
+import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 
@@ -45,7 +46,12 @@ instance FromJSON Ability where
 
 newtype UsedAbility = UsedAbility { unUsedAbility :: (InvestigatorId, Ability) }
 
-data AbilityMetadata = IntMetadata Int | TargetMetadata Target | SourceMetadata Source | EncounterCardMetadata EncounterCard
+data AbilityMetadata
+  = IntMetadata Int
+  | TargetMetadata Target
+  | SourceMetadata Source
+  | EncounterCardMetadata EncounterCard
+  | SkillChoiceMetadata [SkillType]
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

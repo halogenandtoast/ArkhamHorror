@@ -164,6 +164,7 @@ data Asset
   | TheNecronomicon' TheNecronomicon
   | TheNecronomiconAdvanced' TheNecronomiconAdvanced
   | TheNecronomiconOlausWormiusTranslation' TheNecronomiconOlausWormiusTranslation
+  | TheRedGlovedMan5' TheRedGlovedMan5
   | ToothOfEztli' ToothOfEztli
   | TryAndTryAgain3' TryAndTryAgain3
   | WendysAmulet' WendysAmulet
@@ -437,6 +438,7 @@ allAssets = mapFromList $ map
   , TheNecronomiconAdvanced' <$> theNecronomiconAdvanced
   , TheNecronomiconOlausWormiusTranslation'
     <$> theNecronomiconOlausWormiusTranslation
+  , TheRedGlovedMan5' <$> theRedGlovedMan5
   , ToothOfEztli' <$> toothOfEztli
   , TryAndTryAgain3' <$> tryAndTryAgain3
   , WendysAmulet' <$> wendysAmulet

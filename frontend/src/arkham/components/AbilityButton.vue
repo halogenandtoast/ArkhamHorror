@@ -1,7 +1,7 @@
 <template>
     <button
       class="button"
-      :class="{ 'ability-button': isSingleActionAbility, 'double-ability-button': isDoubleActionAbility, 'fast-ability-button': isFastActionAbility, 'reaction-ability-button': isReactionAbility }"
+      :class="{ 'ability-button': isSingleActionAbility, 'double-ability-button': isDoubleActionAbility, 'fast-ability-button': isFastActionAbility, 'reaction-ability-button': isReactionAbility, 'forced-ability-button': isForcedAbility }"
       @click="$emit('choose', ability)"
       >{{abilityLabel}}</button>
 </template>
@@ -15,14 +15,22 @@ export default defineComponent({
   props: {
     ability: { type: Object as () => Message, required: true }
   },
+
   setup(props) {
+    console.log(props.ability.contents[0])
 
     const ability: ComputedRef<Message> = computed(() => props.ability.tag == 'Run' ? props.ability.contents[0] : props.ability)
 
     const abilityLabel = computed(() => {
       const label = ability.value.tag === 'Run'
-        ? ability.value.contents[0].contents[1].type.contents[0]
-        : ability.value.contents[1].type.contents[0]
+        ? (ability.value.contents[1]?.type?.tag === "ForcedAbility"
+          ? "Forced"
+          : ability.value.contents[0].contents[1].type.contents[0]
+          )
+        : (ability.value.contents[1]?.type?.tag === "ForcedAbility"
+          ? "Forced"
+          : ability.value.contents[1].type.contents[0]
+          )
       if (label) {
         return typeof label === "string" ? label : label.contents
       }
@@ -54,8 +62,16 @@ export default defineComponent({
     })
     const isFastActionAbility = computed(() => ability.value.contents[1].type.tag === "FastAbility")
     const isReactionAbility = computed(() => ability.value.contents[1].type.tag === "ReactionAbility")
+    const isForcedAbility = computed(() => ability.value.contents[1].type.tag === "ForcedAbility")
 
-    return { abilityLabel, isSingleActionAbility, isDoubleActionAbility, isFastActionAbility, isReactionAbility }
+    return {
+      abilityLabel,
+      isSingleActionAbility,
+      isDoubleActionAbility,
+      isFastActionAbility,
+      isReactionAbility,
+      isForcedAbility,
+    }
   }
 })
 </script>
@@ -85,6 +101,11 @@ export default defineComponent({
     content: "\0075";
     margin-right: 5px;
   }
+}
+
+.forced-ability-button {
+  background-color: #222;
+  color: #fff;
 }
 
 .reaction-ability-button {

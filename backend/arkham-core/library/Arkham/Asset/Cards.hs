@@ -197,6 +197,7 @@ allPlayerAssetCards = mapFromList $ map
   , theNecronomicon
   , theNecronomiconAdvanced
   , theNecronomiconOlausWormiusTranslation
+  , theRedGlovedMan5
   , toothOfEztli
   , tryAndTryAgain3
   , wendysAmulet
@@ -1105,6 +1106,17 @@ tryAndTryAgain3 = (asset "02309" "Try and Try Again" 2 Survivor)
   , cdCardTraits = singleton Talent
   , cdLevel = 3
   }
+
+theRedGlovedMan5 :: CardDef
+theRedGlovedMan5 =
+  (asset "02310" ("The Red-Gloved Man" <:> "He Was Never There") 2 Neutral)
+    { cdSkills = [SkillWild]
+    , cdCardTraits = setFromList [Ally, Conspirator]
+    , cdLevel = 5
+    , cdFast = True
+    , cdWindows = setFromList [DuringTurn You]
+    , cdUnique = True
+    }
 
 toothOfEztli :: CardDef
 toothOfEztli = (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker

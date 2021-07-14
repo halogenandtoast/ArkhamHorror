@@ -103,6 +103,14 @@ instance FromJSON SkillTest where
 -- TODO: Cursed Swamp would apply to anyone trying to commit skill cards
 instance HasModifiersFor env SkillTest
 
+instance HasList CommittedCard env (InvestigatorId, SkillTest) where
+  getList (iid, st) =
+    pure
+      . map (CommittedCard . snd)
+      . filter ((== iid) . fst)
+      . toList
+      $ skillTestCommittedCards st
+
 instance HasSet CommittedCardId env (InvestigatorId, SkillTest) where
   getSet (iid, st) =
     pure

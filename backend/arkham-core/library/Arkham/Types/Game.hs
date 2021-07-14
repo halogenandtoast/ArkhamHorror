@@ -1346,6 +1346,10 @@ instance HasGame env => HasSet CommittedCardId env InvestigatorId where
   getSet iid =
     maybe (pure mempty) (getSet . (iid, )) . view skillTestL =<< getGame
 
+instance HasGame env => HasList CommittedCard env InvestigatorId where
+  getList iid =
+    maybe (pure mempty) (getList . (iid, )) . view skillTestL =<< getGame
+
 instance HasGame env => HasSet CommittedCardCode env () where
   getSet _ = maybe (pure mempty) getSet . view skillTestL =<< getGame
 

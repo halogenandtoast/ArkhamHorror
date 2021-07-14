@@ -78,13 +78,15 @@ type InvestigatorRunner env
       , HasId LocationId env EnemyId
       , HasId LocationId env InvestigatorId
       )
-    , ( HasList DiscardedEncounterCard env ()
+    , ( HasList CommittedCard env InvestigatorId
+      , HasList DiscardedEncounterCard env ()
       , HasList DiscardableHandCard env InvestigatorId
       , HasList DiscardedPlayerCard env InvestigatorId
       , HasList HandCard env InvestigatorId
       , HasList InPlayCard env InvestigatorId
       , HasList LocationName env ()
       , HasList UsedAbility env ()
+      , HasList SetAsideCard env ()
       )
     , HasModifiersFor env ()
     , (HasName env AssetId, HasName env LocationId)
@@ -149,7 +151,6 @@ type InvestigatorRunner env
         , HasSet PreyId env (Prey, LocationId)
         , HasSet RevealedLocationId env ()
         , HasSet SanityDamageableAssetId env InvestigatorId
-        , HasList SetAsideCard env ()
         , HasSet ScenarioLogKey env ()
         , HasSet StoryAssetId env InvestigatorId
         , HasSet StoryEnemyId env CardCode

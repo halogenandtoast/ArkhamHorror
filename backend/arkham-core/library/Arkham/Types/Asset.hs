@@ -165,6 +165,7 @@ data Asset
   | TheNecronomiconAdvanced' TheNecronomiconAdvanced
   | TheNecronomiconOlausWormiusTranslation' TheNecronomiconOlausWormiusTranslation
   | ToothOfEztli' ToothOfEztli
+  | TryAndTryAgain3' TryAndTryAgain3
   | WendysAmulet' WendysAmulet
   | WhittonGreene' WhittonGreene
   | ZebulonWhateley' ZebulonWhateley
@@ -172,7 +173,7 @@ data Asset
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-instance (ActionRunner env, HasSkillTest env) => HasActions env Asset where
+instance (ActionRunner env , HasSkillTest env) => HasActions env Asset where
   getActions iid window x = do
     inPlay <- member (toId x) <$> getSet ()
     modifiers' <- if inPlay
@@ -203,6 +204,7 @@ instance
   , HasCount DoomCount env AssetId
   , HasCount DoomCount env InvestigatorId
   , HasList DiscardedPlayerCard env InvestigatorId
+  , HasList CommittedCard env InvestigatorId
   , AssetRunner env
   )
   => RunMessage env Asset where
@@ -436,6 +438,7 @@ allAssets = mapFromList $ map
   , TheNecronomiconOlausWormiusTranslation'
     <$> theNecronomiconOlausWormiusTranslation
   , ToothOfEztli' <$> toothOfEztli
+  , TryAndTryAgain3' <$> tryAndTryAgain3
   , WendysAmulet' <$> wendysAmulet
   , WhittonGreene' <$> whittonGreene
   , ZebulonWhateley' <$> zebulonWhateley

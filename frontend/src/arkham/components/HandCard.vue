@@ -71,6 +71,8 @@ export default defineComponent({
       switch (c.tag) {
         case MessageType.DISCARD_CARD:
           return c.contents[1] === id.value;
+        case MessageType.TARGET_LABEL:
+          return c.contents[0].contents === id.value
         case MessageType.RUN:
           return c.contents.some((c1: Message) => canDiscard(c1));
         default:

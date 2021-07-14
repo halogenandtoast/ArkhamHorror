@@ -85,19 +85,26 @@ getApiV1ArkhamGameR gameId = do
       (arkhamGameCurrentData ge)
     )
 
-getApiV1ArkhamGamesR :: Handler [Entity ArkhamGame]
+toPublicGame :: Entity ArkhamGame -> PublicGame ArkhamGameId
+toPublicGame (Entity gId ArkhamGame {..}) =
+  PublicGame gId arkhamGameName arkhamGameLog arkhamGameCurrentData
+
+getApiV1ArkhamGamesR :: Handler [PublicGame ArkhamGameId]
 getApiV1ArkhamGamesR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
-  runDB $ select $ do
-    (players :& games) <-
-      from
-      $ table @ArkhamPlayer
-      `InnerJoin` table @ArkhamGame
-      `on` (\(players :& games) ->
-             players ^. ArkhamPlayerArkhamGameId ==. games ^. persistIdField
-           )
-    where_ (players ^. ArkhamPlayerUserId ==. val userId)
-    pure games
+  games <- runDB
+    (select $ do
+      (players :& games) <-
+        from
+        $ table @ArkhamPlayer
+        `InnerJoin` table @ArkhamGame
+        `on` (\(players :& games) ->
+               players ^. ArkhamPlayerArkhamGameId ==. games ^. persistIdField
+             )
+      where_ (players ^. ArkhamPlayerUserId ==. val userId)
+      pure games
+    )
+  pure $ map toPublicGame games
 
 data CreateGamePost = CreateGamePost
   { deckId :: ArkhamDeckId
@@ -110,7 +117,7 @@ data CreateGamePost = CreateGamePost
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
 
-postApiV1ArkhamGamesR :: Handler (Entity ArkhamGame)
+postApiV1ArkhamGamesR :: Handler (PublicGame ArkhamGameId)
 postApiV1ArkhamGamesR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   CreateGamePost {..} <- requireCheckJsonBody
@@ -134,7 +141,9 @@ postApiV1ArkhamGamesR = do
         gameId <- insert $ ArkhamGame campaignName ge updatedQueue []
         insert_ $ ArkhamPlayer userId gameId
         pure gameId
-      pure $ Entity key (ArkhamGame campaignName ge updatedQueue [])
+      pure $ toPublicGame $ Entity
+        key
+        (ArkhamGame campaignName ge updatedQueue [])
     Nothing -> case scenarioId of
       Just sid -> do
         (queueRef, game) <- liftIO
@@ -149,7 +158,9 @@ postApiV1ArkhamGamesR = do
           gameId <- insert $ ArkhamGame campaignName ge updatedQueue []
           insert_ $ ArkhamPlayer userId gameId
           pure gameId
-        pure $ Entity key (ArkhamGame campaignName ge updatedQueue [])
+        pure $ toPublicGame $ Entity
+          key
+          (ArkhamGame campaignName ge updatedQueue [])
       Nothing -> error "missing either campaign id or scenario id"
 
 newtype QuestionReponse = QuestionResponse { qrChoice :: Int }

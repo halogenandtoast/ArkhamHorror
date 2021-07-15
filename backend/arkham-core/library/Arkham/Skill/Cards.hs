@@ -154,7 +154,7 @@ riseToTheOccasion = (skill
                       Survivor
                     )
   { cdCardTraits = singleton Innate
-  , cdCommitRestrictions = [OnlyYourTest]
+  , cdCommitRestrictions = [OnlyYourTest, MinSkillTestValueDifference 2]
   }
 
 inquiringMind :: CardDef

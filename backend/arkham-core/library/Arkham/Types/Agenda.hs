@@ -63,6 +63,7 @@ allAgendas = mapFrom
   , ACreatureOfTheBayou' aCreatureOfTheBayou
   , TheRougarouFeeds' theRougarouFeeds
   , TheCurseSpreads' theCurseSpreads
+  , TheFestivitiesBegin' theFestivitiesBegin
   ]
 
 instance HasList UnderneathCard env Agenda where
@@ -113,6 +114,7 @@ data Agenda
   | ACreatureOfTheBayou' ACreatureOfTheBayou
   | TheRougarouFeeds' TheRougarouFeeds
   | TheCurseSpreads' TheCurseSpreads
+  | TheFestivitiesBegin' TheFestivitiesBegin
   | BaseAgenda' BaseAgenda
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

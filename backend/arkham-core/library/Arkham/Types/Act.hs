@@ -50,6 +50,7 @@ data Act
   | MysteriousGateway' MysteriousGateway
   | FindingLadyEsprit' FindingLadyEsprit
   | HuntingTheRougarou' HuntingTheRougarou
+  | TheCarnevaleConspiracy' TheCarnevaleConspiracy
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -119,4 +120,5 @@ allActs = mapFrom
   , MysteriousGateway' mysteriousGateway
   , FindingLadyEsprit' findingLadyEsprit
   , HuntingTheRougarou' huntingTheRougarou
+  , TheCarnevaleConspiracy' theCarnevaleConspiracy
   ]

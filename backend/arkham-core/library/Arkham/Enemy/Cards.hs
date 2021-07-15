@@ -92,6 +92,7 @@ allEncounterEnemyCards = mapFromList $ map
   , narogath
   , oBannionsThug
   , peterWarren
+  , poleman
   , ravenousGhoul
   , relentlessDarkYoung
   , ruthTurner
@@ -569,4 +570,9 @@ darkYoungHost :: CardDef
 darkYoungHost = (enemy "81033" "Dark Young Host" CurseOfTheRougarou 1)
   { cdCardTraits = setFromList [Monster, DarkYoung]
   , cdVictoryPoints = Just 1
+  }
+
+poleman :: CardDef
+poleman = (enemy "82028" "Poleman" CarnevaleOfHorrors 2)
+  { cdCardTraits = setFromList [Monster, DeepOne]
   }

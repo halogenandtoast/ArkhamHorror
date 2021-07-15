@@ -31,6 +31,7 @@ import Arkham.Types.Agenda.Cards.TheBeastUnleashed as X
 import Arkham.Types.Agenda.Cards.TheCloverClub as X
 import Arkham.Types.Agenda.Cards.TheCurseSpreads as X
 import Arkham.Types.Agenda.Cards.TheEndOfAllThings as X
+import Arkham.Types.Agenda.Cards.TheFestivitiesBegin as X
 import Arkham.Types.Agenda.Cards.TheMawWidens as X
 import Arkham.Types.Agenda.Cards.TheOldOnesHunger as X
 import Arkham.Types.Agenda.Cards.TheRitualBegins as X

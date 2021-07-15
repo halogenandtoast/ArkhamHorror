@@ -3,6 +3,7 @@ module Arkham.Types.Scenario.Scenarios
   ) where
 
 import Arkham.Types.Scenario.Scenarios.BloodOnTheAltar as X
+import Arkham.Types.Scenario.Scenarios.CarnevaleOfHorrors as X
 import Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou as X
 import Arkham.Types.Scenario.Scenarios.ExtracurricularActivity as X
 import Arkham.Types.Scenario.Scenarios.LostInTimeAndSpace as X

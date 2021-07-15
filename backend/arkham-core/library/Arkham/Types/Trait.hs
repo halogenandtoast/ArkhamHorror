@@ -26,6 +26,7 @@ data Trait
   | Blunder
   | Bold
   | Boon
+  | Bridge
   | Byakhee
   | Bystander
   | Cave
@@ -152,6 +153,7 @@ data Trait
   | Witch
   | Woods
   | Unhallowed
+  | Venice
   | Yithian
   deriving stock (Show, Eq, Generic, Read)
   deriving anyclass (ToJSON, FromJSON, Hashable)

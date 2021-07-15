@@ -118,7 +118,6 @@ data DeckSignifier = InvestigatorDeck InvestigatorId | EncounterDeck
 
 data Message
   = UseAbility InvestigatorId Ability
-  | AddAbility Source Ability
   | AddAct ActId
   | AddAgenda AgendaId
   | AddCampaignCardToDeck InvestigatorId CardDef
@@ -155,7 +154,6 @@ data Message
   | AllDrawEncounterCard
   | AllInvestigatorsResigned
   | AllRandomDiscard
-  | ApplyModifiers Target
   | Ask InvestigatorId Question
   | AskMap (HashMap InvestigatorId Question)
   | AssetDamage AssetId Source Int Int
@@ -188,7 +186,6 @@ data Message
   | CheckDefeated Source
   | CheckHandSize InvestigatorId
   | CheckWindow InvestigatorId [Window]
-  | ChooseUseAbility InvestigatorId
   | ChooseAndDiscardAsset InvestigatorId
   | ChooseAndDiscardCard InvestigatorId
   | ChooseEndTurn InvestigatorId
@@ -203,7 +200,6 @@ data Message
   | ChosenRandomLocation Target LocationId
   | ChooseTokenGroups Source InvestigatorId ChaosBagStep
   | CommitCard InvestigatorId CardId
-  | CompleteObjective
   | Continue Text
   | CreateEffect CardCode (Maybe (EffectMetadata Message)) Source Target
   | CreateEnemy Card
@@ -406,7 +402,6 @@ data Message
   | RecordSet CampaignLogKey [CardCode]
   | RefillSlots InvestigatorId SlotType [AssetId]
   | Remember ScenarioLogKey
-  | RemoveAbilitiesFrom Source
   | RemoveAllCopiesOfCardFromGame InvestigatorId CardCode
   | RemoveAllClues Target
   | RemoveAllDoom
@@ -516,29 +511,23 @@ data Message
   | WhenEnterLocation InvestigatorId LocationId
   | WhenEvadeEnemy InvestigatorId EnemyId
   | Will Message
-  | WithCount Int Message
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-chooseOne :: HasCallStack => InvestigatorId -> [Message] -> Message
-chooseOne _ [] = throw $ InvalidState $ "No messages for chooseOne\n" <> pack
-  (prettyCallStack callStack)
+chooseOne :: InvestigatorId -> [Message] -> Message
+chooseOne _ [] = throw $ InvalidState "No messages for chooseOne"
 chooseOne iid msgs = Ask iid (ChooseOne msgs)
 
-chooseOneAtATime :: HasCallStack => InvestigatorId -> [Message] -> Message
-chooseOneAtATime _ [] =
-  throw $ InvalidState $ "No messages for chooseOneAtATime\n" <> pack
-    (prettyCallStack callStack)
+chooseOneAtATime :: InvestigatorId -> [Message] -> Message
+chooseOneAtATime _ [] = throw $ InvalidState "No messages for chooseOneAtATime"
 chooseOneAtATime iid msgs = Ask iid (ChooseOneAtATime msgs)
 
-chooseSome :: HasCallStack => InvestigatorId -> [Message] -> Message
-chooseSome _ [] = throw $ InvalidState $ "No messages for chooseSome\n" <> pack
-  (prettyCallStack callStack)
+chooseSome :: InvestigatorId -> [Message] -> Message
+chooseSome _ [] = throw $ InvalidState "No messages for chooseSome"
 chooseSome iid msgs = Ask iid (ChooseSome $ Done : msgs)
 
-chooseN :: HasCallStack => InvestigatorId -> Int -> [Message] -> Message
-chooseN _ _ [] = throw $ InvalidState $ "No messages for chooseN\n" <> pack
-  (prettyCallStack callStack)
+chooseN :: InvestigatorId -> Int -> [Message] -> Message
+chooseN _ _ [] = throw $ InvalidState "No messages for chooseN"
 chooseN iid n msgs = Ask iid (ChooseN n msgs)
 
 chooseUpgradeDeck :: InvestigatorId -> Message

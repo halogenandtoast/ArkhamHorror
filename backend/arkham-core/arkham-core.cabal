@@ -58,6 +58,7 @@ library
       Arkham.Types.Act.Cards.SearchingForTheTome
       Arkham.Types.Act.Cards.SkinGame
       Arkham.Types.Act.Cards.TheBarrier
+      Arkham.Types.Act.Cards.TheCarnevaleConspiracy
       Arkham.Types.Act.Cards.TheChamberOfTheBeast
       Arkham.Types.Act.Cards.TheGateOpens
       Arkham.Types.Act.Cards.ThePathToTheHill
@@ -102,6 +103,7 @@ library
       Arkham.Types.Agenda.Cards.TheCloverClub
       Arkham.Types.Agenda.Cards.TheCurseSpreads
       Arkham.Types.Agenda.Cards.TheEndOfAllThings
+      Arkham.Types.Agenda.Cards.TheFestivitiesBegin
       Arkham.Types.Agenda.Cards.TheMawWidens
       Arkham.Types.Agenda.Cards.TheOldOnesHunger
       Arkham.Types.Agenda.Cards.TheRitualBegins
@@ -383,6 +385,7 @@ library
       Arkham.Types.Enemy.Cards.Narogath
       Arkham.Types.Enemy.Cards.OBannionsThug
       Arkham.Types.Enemy.Cards.PeterWarren
+      Arkham.Types.Enemy.Cards.Poleman
       Arkham.Types.Enemy.Cards.RavenousGhoul
       Arkham.Types.Enemy.Cards.RelentlessDarkYoung
       Arkham.Types.Enemy.Cards.RuthTurner
@@ -552,6 +555,7 @@ library
       Arkham.Types.Location
       Arkham.Types.Location.Attrs
       Arkham.Types.Location.Cards
+      Arkham.Types.Location.Cards.AccademiaBridge
       Arkham.Types.Location.Cards.AdministrationBuilding
       Arkham.Types.Location.Cards.AdministrationOffice_130
       Arkham.Types.Location.Cards.AdministrationOffice_131
@@ -581,9 +585,11 @@ library
       Arkham.Types.Location.Cards.BlastedHeath_248
       Arkham.Types.Location.Cards.BlastedHeath_249
       Arkham.Types.Location.Cards.BrackishWaters
+      Arkham.Types.Location.Cards.BridgeOfSighs
       Arkham.Types.Location.Cards.Broadmoor
       Arkham.Types.Location.Cards.BurnedRuins_204
       Arkham.Types.Location.Cards.BurnedRuins_205
+      Arkham.Types.Location.Cards.CanalSide
       Arkham.Types.Location.Cards.Cellar
       Arkham.Types.Location.Cards.CloverClubBar
       Arkham.Types.Location.Cards.CloverClubCardroom
@@ -623,6 +629,7 @@ library
       Arkham.Types.Location.Cards.FacultyOfficesTheNightIsStillYoung
       Arkham.Types.Location.Cards.FarAboveYourHouse
       Arkham.Types.Location.Cards.FauborgMarigny
+      Arkham.Types.Location.Cards.FloodedSquare
       Arkham.Types.Location.Cards.ForgottenMarsh
       Arkham.Types.Location.Cards.FoulSwamp
       Arkham.Types.Location.Cards.FrozenSpring
@@ -658,10 +665,12 @@ library
       Arkham.Types.Location.Cards.PrismaticCascade
       Arkham.Types.Location.Cards.ReturnToAttic
       Arkham.Types.Location.Cards.ReturnToCellar
+      Arkham.Types.Location.Cards.RialtoBridge
       Arkham.Types.Location.Cards.RitualGrounds
       Arkham.Types.Location.Cards.RitualSite
       Arkham.Types.Location.Cards.Rivertown
       Arkham.Types.Location.Cards.RivertownAbandonedWarehouse
+      Arkham.Types.Location.Cards.SanMarcoBasilica
       Arkham.Types.Location.Cards.Schoolhouse_212
       Arkham.Types.Location.Cards.Schoolhouse_213
       Arkham.Types.Location.Cards.ScienceBuilding
@@ -674,6 +683,7 @@ library
       Arkham.Types.Location.Cards.SouthsideMasBoardingHouse
       Arkham.Types.Location.Cards.StepsOfYhagharl
       Arkham.Types.Location.Cards.StMarysHospital
+      Arkham.Types.Location.Cards.StreetsOfVenice
       Arkham.Types.Location.Cards.StudentUnion
       Arkham.Types.Location.Cards.Study
       Arkham.Types.Location.Cards.StudyAberrantGateway
@@ -682,10 +692,12 @@ library
       Arkham.Types.Location.Cards.TenAcreMeadow_246
       Arkham.Types.Location.Cards.TenAcreMeadow_247
       Arkham.Types.Location.Cards.TheEdgeOfTheUniverse
+      Arkham.Types.Location.Cards.TheGuardian
       Arkham.Types.Location.Cards.TheHiddenChamber
       Arkham.Types.Location.Cards.TrappersCabin
       Arkham.Types.Location.Cards.TwistedUnderbrush
       Arkham.Types.Location.Cards.UprootedWoods
+      Arkham.Types.Location.Cards.VenetianGarden
       Arkham.Types.Location.Cards.VillageCommons
       Arkham.Types.Location.Cards.VipArea
       Arkham.Types.Location.Cards.WhateleyRuins_250
@@ -714,6 +726,7 @@ library
       Arkham.Types.Scenario.Runner
       Arkham.Types.Scenario.Scenarios
       Arkham.Types.Scenario.Scenarios.BloodOnTheAltar
+      Arkham.Types.Scenario.Scenarios.CarnevaleOfHorrors
       Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
       Arkham.Types.Scenario.Scenarios.ExtracurricularActivity
       Arkham.Types.Scenario.Scenarios.LostInTimeAndSpace

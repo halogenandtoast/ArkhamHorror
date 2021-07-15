@@ -31,6 +31,7 @@ import Arkham.Types.Act.Cards.SearchingForAnswers as X
 import Arkham.Types.Act.Cards.SearchingForTheTome as X
 import Arkham.Types.Act.Cards.SkinGame as X
 import Arkham.Types.Act.Cards.TheBarrier as X
+import Arkham.Types.Act.Cards.TheCarnevaleConspiracy as X
 import Arkham.Types.Act.Cards.TheChamberOfTheBeast as X
 import Arkham.Types.Act.Cards.TheGateOpens as X
 import Arkham.Types.Act.Cards.ThePathToTheHill as X

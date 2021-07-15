@@ -45,6 +45,7 @@ data EncounterSet
   | ReturnCultOfUmordhoth
   | TheBayou
   | CurseOfTheRougarou
+  | CarnevaleOfHorrors
   | Test
   deriving stock (Show, Eq, Generic, Bounded, Enum)
   deriving anyclass (ToJSON, FromJSON, Hashable)

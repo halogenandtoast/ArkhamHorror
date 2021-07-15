@@ -977,3 +977,48 @@ overgrownCairns :: CardDef
 overgrownCairns = (location "81018" "Overgrown Cairns" TheBayou)
   { cdCardTraits = setFromList [Unhallowed]
   }
+
+sanMarcoBasilica :: CardDef
+sanMarcoBasilica = (location "82008" "San Marco Basilica" CarnevaleOfHorrors)
+  { cdCardTraits = setFromList [Venice]
+  }
+
+canalSide :: CardDef
+canalSide = (location "82009" "Canal-side" CarnevaleOfHorrors)
+  { cdCardTraits = setFromList [Venice]
+  }
+
+streetsOfVenice :: CardDef
+streetsOfVenice = (location "82010" "Streets of Venice" CarnevaleOfHorrors)
+  { cdCardTraits = setFromList [Venice]
+  }
+
+rialtoBridge :: CardDef
+rialtoBridge = (location "82011" "Rialto Bridge" CarnevaleOfHorrors)
+  { cdCardTraits = setFromList [Venice, Bridge]
+  }
+
+venetianGarden :: CardDef
+venetianGarden = (location "82012" "Venetian Garden" CarnevaleOfHorrors)
+  { cdCardTraits = setFromList [Venice]
+  }
+
+bridgeOfSighs :: CardDef
+bridgeOfSighs = (location "82013" "Bridge of Sighs" CarnevaleOfHorrors)
+  { cdCardTraits = setFromList [Venice, Bridge]
+  }
+
+floodedSquare :: CardDef
+floodedSquare = (location "82014" "Flooded Square" CarnevaleOfHorrors)
+  { cdCardTraits = setFromList [Venice]
+  }
+
+accademiaBridge :: CardDef
+accademiaBridge = (location "82015" "Accademia Bridge" CarnevaleOfHorrors)
+  { cdCardTraits = setFromList [Venice, Bridge]
+  }
+
+theGuardian :: CardDef
+theGuardian = (location "82016" "The Guardian" CarnevaleOfHorrors)
+  { cdCardTraits = setFromList [Venice]
+  }

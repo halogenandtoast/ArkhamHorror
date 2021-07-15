@@ -43,6 +43,7 @@ data Scenario
   | ReturnToTheMidnightMasks' ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow' ReturnToTheDevourerBelow
   | CurseOfTheRougarou' CurseOfTheRougarou
+  | CarnevaleOfHorrors' CarnevaleOfHorrors
   | BaseScenario' BaseScenario
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, HasRecord)
@@ -194,4 +195,5 @@ allScenarios = mapFromList
   , ("50025", ReturnToTheMidnightMasks' . returnToTheMidnightMasks)
   , ("50032", ReturnToTheDevourerBelow' . returnToTheDevourerBelow)
   , ("81001", CurseOfTheRougarou' . curseOfTheRougarou)
+  , ("82001", CarnevaleOfHorrors' . carnevaleOfHorrors)
   ]

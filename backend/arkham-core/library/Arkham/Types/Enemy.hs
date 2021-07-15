@@ -65,6 +65,7 @@ data Enemy
   | Narogath' Narogath
   | OBannionsThug' OBannionsThug
   | PeterWarren' PeterWarren
+  | Poleman' Poleman
   | RavenousGhoul' RavenousGhoul
   | RelentlessDarkYoung' RelentlessDarkYoung
   | RuthTurner' RuthTurner
@@ -275,6 +276,7 @@ allEnemies = mapFromList $ map
   , Narogath' <$> narogath
   , OBannionsThug' <$> oBannionsThug
   , PeterWarren' <$> peterWarren
+  , Poleman' <$> poleman
   , RavenousGhoul' <$> ravenousGhoul
   , RelentlessDarkYoung' <$> relentlessDarkYoung
   , RuthTurner' <$> ruthTurner

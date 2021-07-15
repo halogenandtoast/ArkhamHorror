@@ -30,6 +30,7 @@ toLocationSymbol = locationSymbol . toAttrs
 data Location
   = BaseLocation' BaseLocation
   | ATearInThePath' ATearInThePath
+  | AccademiaBridge' AccademiaBridge
   | AdministrationBuilding' AdministrationBuilding
   | AdministrationOffice_130' AdministrationOffice_130
   | AdministrationOffice_131' AdministrationOffice_131
@@ -58,9 +59,11 @@ data Location
   | BlastedHeath_248' BlastedHeath_248
   | BlastedHeath_249' BlastedHeath_249
   | BrackishWaters' BrackishWaters
+  | BridgeOfSighs' BridgeOfSighs
   | Broadmoor' Broadmoor
   | BurnedRuins_204' BurnedRuins_204
   | BurnedRuins_205' BurnedRuins_205
+  | CanalSide' CanalSide
   | Cellar' Cellar
   | CloverClubBar' CloverClubBar
   | CloverClubCardroom' CloverClubCardroom
@@ -100,6 +103,7 @@ data Location
   | FacultyOfficesTheNightIsStillYoung' FacultyOfficesTheNightIsStillYoung
   | FarAboveYourHouse' FarAboveYourHouse
   | FauborgMarigny' FauborgMarigny
+  | FloodedSquare' FloodedSquare
   | ForgottenMarsh' ForgottenMarsh
   | FoulSwamp' FoulSwamp
   | FrozenSpring' FrozenSpring
@@ -135,10 +139,12 @@ data Location
   | PrismaticCascade' PrismaticCascade
   | ReturnToAttic' ReturnToAttic
   | ReturnToCellar' ReturnToCellar
+  | RialtoBridge' RialtoBridge
   | RitualGrounds' RitualGrounds
   | RitualSite' RitualSite
   | Rivertown' Rivertown
   | RivertownAbandonedWarehouse' RivertownAbandonedWarehouse
+  | SanMarcoBasilica' SanMarcoBasilica
   | Schoolhouse_212' Schoolhouse_212
   | Schoolhouse_213' Schoolhouse_213
   | ScienceBuilding' ScienceBuilding
@@ -151,6 +157,7 @@ data Location
   | SouthsideMasBoardingHouse' SouthsideMasBoardingHouse
   | StMarysHospital' StMarysHospital
   | StepsOfYhagharl' StepsOfYhagharl
+  | StreetsOfVenice' StreetsOfVenice
   | StudentUnion' StudentUnion
   | Study' Study
   | StudyAberrantGateway' StudyAberrantGateway
@@ -159,10 +166,12 @@ data Location
   | TenAcreMeadow_246' TenAcreMeadow_246
   | TenAcreMeadow_247' TenAcreMeadow_247
   | TheEdgeOfTheUniverse' TheEdgeOfTheUniverse
+  | TheGuardian' TheGuardian
   | TheHiddenChamber' TheHiddenChamber
   | TrappersCabin' TrappersCabin
   | TwistedUnderbrush' TwistedUnderbrush
   | UprootedWoods' UprootedWoods
+  | VenetianGarden' VenetianGarden
   | VillageCommons' VillageCommons
   | VipArea' VipArea
   | WhateleyRuins_250' WhateleyRuins_250
@@ -306,6 +315,7 @@ allLocations = mapFromList $ map
       baseLocation lid "location" 0 (Static 0) NoSymbol [] id id
     }
   , ATearInThePath' <$> aTearInThePath
+  , AccademiaBridge' <$> accademiaBridge
   , AdministrationBuilding' <$> administrationBuilding
   , AdministrationOffice_130' <$> administrationOffice_130
   , AdministrationOffice_131' <$> administrationOffice_131
@@ -334,9 +344,11 @@ allLocations = mapFromList $ map
   , BlastedHeath_248' <$> blastedHeath_248
   , BlastedHeath_249' <$> blastedHeath_249
   , BrackishWaters' <$> brackishWaters
+  , BridgeOfSighs' <$> bridgeOfSighs
   , Broadmoor' <$> broadmoor
   , BurnedRuins_204' <$> burnedRuins_204
   , BurnedRuins_205' <$> burnedRuins_205
+  , CanalSide' <$> canalSide
   , Cellar' <$> cellar
   , CloverClubBar' <$> cloverClubBar
   , CloverClubCardroom' <$> cloverClubCardroom
@@ -376,6 +388,7 @@ allLocations = mapFromList $ map
   , FacultyOfficesTheNightIsStillYoung' <$> facultyOfficesTheNightIsStillYoung
   , FarAboveYourHouse' <$> farAboveYourHouse
   , FauborgMarigny' <$> fauborgMarigny
+  , FloodedSquare' <$> floodedSquare
   , ForgottenMarsh' <$> forgottenMarsh
   , FoulSwamp' <$> foulSwamp
   , FrozenSpring' <$> frozenSpring
@@ -412,10 +425,12 @@ allLocations = mapFromList $ map
   , PrismaticCascade' <$> prismaticCascade
   , ReturnToAttic' <$> returnToAttic
   , ReturnToCellar' <$> returnToCellar
+  , RialtoBridge' <$> rialtoBridge
   , RitualGrounds' <$> ritualGrounds
   , RitualSite' <$> ritualSite
   , Rivertown' <$> rivertown
   , RivertownAbandonedWarehouse' <$> rivertownAbandonedWarehouse
+  , SanMarcoBasilica' <$> sanMarcoBasilica
   , Schoolhouse_212' <$> schoolhouse_212
   , Schoolhouse_213' <$> schoolhouse_213
   , ScienceBuilding' <$> scienceBuilding
@@ -428,6 +443,7 @@ allLocations = mapFromList $ map
   , SouthsideMasBoardingHouse' <$> southsideMasBoardingHouse
   , StMarysHospital' <$> stMarysHospital
   , StepsOfYhagharl' <$> stepsOfYhagharl
+  , StreetsOfVenice' <$> streetsOfVenice
   , StudentUnion' <$> studentUnion
   , Study' <$> study
   , StudyAberrantGateway' <$> studyAberrantGateway
@@ -436,10 +452,12 @@ allLocations = mapFromList $ map
   , TenAcreMeadow_246' <$> tenAcreMeadow_246
   , TenAcreMeadow_247' <$> tenAcreMeadow_247
   , TheEdgeOfTheUniverse' <$> theEdgeOfTheUniverse
+  , TheGuardian' <$> theGuardian
   , TheHiddenChamber' <$> theHiddenChamber
   , TrappersCabin' <$> trappersCabin
   , TwistedUnderbrush' <$> twistedUnderbrush
   , UprootedWoods' <$> uprootedWoods
+  , VenetianGarden' <$> venetianGarden
   , VillageCommons' <$> villageCommons
   , VipArea' <$> vipArea
   , WhateleyRuins_250' <$> whateleyRuins_250

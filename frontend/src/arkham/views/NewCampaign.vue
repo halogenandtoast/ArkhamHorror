@@ -114,6 +114,10 @@ const scenarios = [
     id: '81001',
     name: 'Curse of the Rougarou',
   },
+  {
+    id: '82001',
+    name: 'Carnevale of Horrors',
+  },
 ]
 
 const campaigns = [

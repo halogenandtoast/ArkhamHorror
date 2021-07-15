@@ -88,7 +88,9 @@ loadDecklist arkhamDeck = (investigatorId, ) <$> loadDecklistCards decklist
     Nothing -> investigator_code decklist
     Just meta' -> case decode (encodeUtf8 $ fromStrict meta') of
       Nothing -> investigator_code decklist
-      Just ArkhamDBDecklistMeta {..} -> alternate_front
+      Just ArkhamDBDecklistMeta {..} -> if alternate_front == ""
+        then investigator_code decklist
+        else alternate_front
 
 displayName :: Name -> Text
 displayName (Name title Nothing) = title

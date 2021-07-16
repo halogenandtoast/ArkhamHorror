@@ -8,15 +8,15 @@
 
     <div v-for="game in games" class="game" :key="game.id">
       <div class="campaign-icon-container" v-if="game.campaign">
-        <img class="campaign-icon" :src="`/img/arkham/sets/${game.campaign.contents.id}.png`" />
+        <img class="campaign-icon" :src="`${baseUrl}/img/arkham/sets/${game.campaign.contents.id}.png`" />
       </div>
       <div class="campaign-icon-container" v-else-if="game.scenario">
-        <img class="campaign-icon" :src="`/img/arkham/sets/${game.scenario.contents.id.slice(0,2)}.png`" />
+        <img class="campaign-icon" :src="`${baseUrl}/img/arkham/sets/${game.scenario.contents.id.slice(0,2)}.png`" />
       </div>
       <div class="game-details">
         <router-link class="title" :to="`/games/${game.id}`">{{game.name}}</router-link>
         <div v-if="game.scenario" class="scenario-details">
-          <img class="scenario-icon" :src="`/img/arkham/sets/${game.scenario.contents.id}.png`" />
+          <img class="scenario-icon" :src="`${baseUrl}/img/arkham/sets/${game.scenario.contents.id}.png`" />
           <span>{{game.scenario.contents.name.title}}</span>
         </div>
         <div>
@@ -73,7 +73,9 @@ export default defineComponent({
       }
     }
 
-    return { currentUser, deleteId, games, deleteGameEvent }
+    const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
+
+    return { baseUrl, currentUser, deleteId, games, deleteGameEvent }
   }
 })
 </script>

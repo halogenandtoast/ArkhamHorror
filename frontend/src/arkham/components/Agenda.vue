@@ -49,11 +49,13 @@ export default defineComponent({
   setup(props) {
     const id = computed(() => props.agenda.contents.id)
     const image = computed(() => {
+      const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
+
       if (props.agenda.contents.flipped) {
-        return `/img/arkham/cards/${id.value}b.jpg`;
+        return `${baseUrl}/img/arkham/cards/${id.value}b.jpg`;
       }
 
-      return `/img/arkham/cards/${id.value}.jpg`;
+      return `${baseUrl}/img/arkham/cards/${id.value}.jpg`;
     })
 
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))

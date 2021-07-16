@@ -125,7 +125,8 @@ export default defineComponent({
 
     const image = computed(() => {
       const { cardCode } = props.card.contents.def;
-      return `/img/arkham/cards/${cardCode}.jpg`;
+      const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
+      return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
     })
 
     return { image, classObject, cardAction }

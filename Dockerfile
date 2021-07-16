@@ -27,6 +27,7 @@ COPY ./frontend/yarn.lock /opt/arkham/src/frontend/yarn.lock
 RUN yarn install --frozen-lockfile
 WORKDIR /opt/arkham/src/frontend
 COPY ./frontend /opt/arkham/src/frontend
+ENV VUE_APP_ASSET_HOST ${ASSET_HOST:-""}
 RUN yarn build
 
 FROM heroku/heroku:18 as dependencies

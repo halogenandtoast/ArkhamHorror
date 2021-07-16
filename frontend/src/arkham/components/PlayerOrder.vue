@@ -51,7 +51,8 @@ export default defineComponent({
 
     const investigatorPortrait = (choice: Message) => {
       const iid = choice.contents[1].slice(-1);
-      return `/img/arkham/portraits/${iid}.jpg`;
+      const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
+      return `${baseUrl}/img/arkham/portraits/${iid}.jpg`;
     }
 
     return { investigatorPortrait, ordinal, playerOrderChoices }

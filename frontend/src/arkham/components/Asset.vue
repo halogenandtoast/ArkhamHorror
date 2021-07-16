@@ -72,7 +72,10 @@ export default defineComponent({
 
     const exhausted = computed(() => props.asset.contents.exhausted)
     const cardCode = computed(() => props.asset.contents.cardDef.cardCode)
-    const image = computed(() => `/img/arkham/cards/${cardCode.value}.jpg`)
+    const image = computed(() => {
+      const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
+      return `${baseUrl}/img/arkham/cards/${cardCode.value}.jpg`
+    })
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
     function canInteract(c: Message): boolean {

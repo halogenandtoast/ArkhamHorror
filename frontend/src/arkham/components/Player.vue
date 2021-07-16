@@ -55,7 +55,7 @@
       <img
         :class="{ 'deck--can-draw': drawCardsAction !== -1 }"
         class="deck"
-        src="/img/arkham/player_back.jpg"
+        :src="`${baseUrl}/img/arkham/player_back.jpg`"
         width="150px"
         @click="$emit('choose', drawCardsAction)"
       />
@@ -114,11 +114,12 @@ export default defineComponent({
   setup(props) {
 
     const discards = computed(() => props.player.contents.discard)
+    const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
 
     const topOfDiscard = computed(() => {
       if (discards.value.length > 0) {
         const { cardCode } = discards.value[0].def;
-        return `/img/arkham/cards/${cardCode}.jpg`;
+        return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
       }
 
       return null;
@@ -138,7 +139,7 @@ export default defineComponent({
         .findIndex((c) => c.tag === MessageType.DRAW_CARDS && c.contents[0] === id.value);
     })
 
-    return { discards, topOfDiscard, drawCardsAction, toggleDiscard, viewingDiscard, viewDiscardLabel }
+    return { baseUrl, discards, topOfDiscard, drawCardsAction, toggleDiscard, viewingDiscard, viewDiscardLabel }
   }
 })
 </script>

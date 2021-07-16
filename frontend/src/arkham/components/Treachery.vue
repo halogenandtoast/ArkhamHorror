@@ -35,7 +35,10 @@ export default defineComponent({
     investigatorId: { type: String, required: true },
   },
   setup(props) {
-    const image = computed(() => `/img/arkham/cards/${props.treachery.contents.cardDef.cardCode}.jpg`)
+    const image = computed(() => {
+      const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
+      return `${baseUrl}/img/arkham/cards/${props.treachery.contents.cardDef.cardCode}.jpg`
+    })
     const id = computed(() => props.treachery.contents.id)
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 

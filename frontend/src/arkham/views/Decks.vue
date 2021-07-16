@@ -3,7 +3,7 @@
     <div>
       <h2>New Deck</h2>
       <div class="new-deck">
-        <img v-if="investigator" class="portrait" :src="`/img/arkham/portraits/${investigator}.jpg`" />
+        <img v-if="investigator" class="portrait" :src="`${baseUrl}/img/arkham/portraits/${investigator}.jpg`" />
         <div class="fields">
           <input
             type="url"
@@ -45,6 +45,7 @@ export default defineComponent({
   setup() {
     const ready = ref(false)
     const decks = ref<Arkham.Deck[]>([])
+    const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
 
     const deck = ref<string | null>(null)
     const investigator = ref<string | null>(null)
@@ -118,7 +119,7 @@ export default defineComponent({
       }
     }
 
-    return { pasteDeck, createDeck, deleteDeckEvent, deleteId, deck, decks, loadDeck, investigator, deckName }
+    return { baseUrl, pasteDeck, createDeck, deleteDeckEvent, deleteId, deck, decks, loadDeck, investigator, deckName }
   }
 })
 </script>

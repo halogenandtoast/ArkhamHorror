@@ -22,7 +22,7 @@
     <img
       v-if="tokenAction !== -1"
       class="token token--can-draw"
-      src="/img/arkham/ct_blank.png"
+      :src="`${baseUrl}/img/arkham/ct_blank.png`"
       @click="$emit('choose', tokenAction)"
     />
   </div>
@@ -44,42 +44,44 @@ export default defineComponent({
     investigatorId: { type: String, required: true }
   },
   setup(props) {
+    const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
+
     function imageFor(token: ChaosToken) {
       switch (token.tokenFace) {
         case 'PlusOne':
-          return '/img/arkham/ct_plus1.png';
+          return `${baseUrl}/img/arkham/ct_plus1.png`;
         case 'Zero':
-          return '/img/arkham/ct_0.png';
+          return `${baseUrl}/img/arkham/ct_0.png`;
         case 'MinusOne':
-          return '/img/arkham/ct_minus1.png';
+          return `${baseUrl}/img/arkham/ct_minus1.png`;
         case 'MinusTwo':
-          return '/img/arkham/ct_minus2.png';
+          return `${baseUrl}/img/arkham/ct_minus2.png`;
         case 'MinusThree':
-          return '/img/arkham/ct_minus3.png';
+          return `${baseUrl}/img/arkham/ct_minus3.png`;
         case 'MinusFour':
-          return '/img/arkham/ct_minus4.png';
+          return `${baseUrl}/img/arkham/ct_minus4.png`;
         case 'MinusFive':
-          return '/img/arkham/ct_minus5.png';
+          return `${baseUrl}/img/arkham/ct_minus5.png`;
         case 'MinusSix':
-          return '/img/arkham/ct_minus6.png';
+          return `${baseUrl}/img/arkham/ct_minus6.png`;
         case 'MinusSeven':
-          return '/img/arkham/ct_minus7.png';
+          return `${baseUrl}/img/arkham/ct_minus7.png`;
         case 'MinusEight':
-          return '/img/arkham/ct_minus8.png';
+          return `${baseUrl}/img/arkham/ct_minus8.png`;
         case 'AutoFail':
-          return '/img/arkham/ct_autofail.png';
+          return `${baseUrl}/img/arkham/ct_autofail.png`;
         case 'ElderSign':
-          return '/img/arkham/ct_eldersign.png';
+          return `${baseUrl}/img/arkham/ct_eldersign.png`;
         case 'Skull':
-          return '/img/arkham/ct_skull.png';
+          return `${baseUrl}/img/arkham/ct_skull.png`;
         case 'Cultist':
-          return '/img/arkham/ct_cultist.png';
+          return `${baseUrl}/img/arkham/ct_cultist.png`;
         case 'Tablet':
-          return '/img/arkham/ct_tablet.png';
+          return `${baseUrl}/img/arkham/ct_tablet.png`;
         case 'ElderThing':
-          return '/img/arkham/ct_elderthing.png';
+          return `${baseUrl}/img/arkham/ct_elderthing.png`;
         default:
-          return '/img/arkham/ct_blank.png';
+          return `${baseUrl}/img/arkham/ct_blank.png`;
       }
     }
 
@@ -106,11 +108,11 @@ export default defineComponent({
     const investigatorPortrait = computed(() => {
       const choice = choices.value.find((c) => c.tag === MessageType.START_SKILL_TEST);
       if (choice) {
-        return `/img/arkham/portraits/${choice.contents}.jpg`;
+        return `${baseUrl}/img/arkham/portraits/${choice.contents}.jpg`;
       }
 
       if (props.skillTest) {
-        return `/img/arkham/portraits/${props.skillTest.investigator}.jpg`;
+        return `${baseUrl}/img/arkham/portraits/${props.skillTest.investigator}.jpg`;
       }
 
       return null;
@@ -118,7 +120,7 @@ export default defineComponent({
 
     const isIgnored = (token: ChaosToken) => token.modifiers?.some(modifier => modifier.type.tag == 'IgnoreTokenEffects') || false
 
-    return { isIgnored, revealedTokens, tokenAction, revealedTokenAction, investigatorPortrait, imageFor }
+    return { baseUrl, isIgnored, revealedTokens, tokenAction, revealedTokenAction, investigatorPortrait, imageFor }
   }
 })
 </script>

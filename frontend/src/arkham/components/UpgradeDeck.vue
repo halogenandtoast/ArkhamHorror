@@ -3,7 +3,7 @@
     <div>
       <h2>Upgrade Deck ({{xp}} xp)</h2>
       <div v-if="!waiting" class="upgrade-deck">
-        <img class="portrait" :src="`/img/arkham/portraits/${investigatorId}.jpg`" />
+        <img class="portrait" :src="`${baseUrl}/img/arkham/portraits/${investigatorId}.jpg`" />
         <div class="fields">
           <input
             type="url"
@@ -46,6 +46,7 @@ export default defineComponent({
     const waiting = ref(false)
     const deck = ref<string | null>(null)
     const deckUrl = ref<string | null>(null)
+    const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
     const investigator = computed(() => props.game.investigators[props.investigatorId])
     const xp = computed(() => investigator.value.contents.xp)
     const skipping = ref(false)
@@ -87,7 +88,7 @@ export default defineComponent({
       upgradeDeck(props.game.id).then(() => waiting.value = true);
     }
 
-    return { pasteDeck, upgrade, deck, loadDeck, investigator, xp, skip, skipping, waiting }
+    return { baseUrl, pasteDeck, upgrade, deck, loadDeck, investigator, xp, skip, skipping, waiting }
   }
 })
 </script>

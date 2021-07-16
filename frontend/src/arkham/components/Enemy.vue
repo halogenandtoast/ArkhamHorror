@@ -70,7 +70,8 @@ export default defineComponent({
   setup(props) {
     const image = computed(() => {
       const { cardCode } = props.enemy.contents.cardDef;
-      return `/img/arkham/cards/${cardCode}.jpg`;
+      const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
+      return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
     })
 
     const id = computed(() => props.enemy.contents.id)

@@ -14,11 +14,12 @@ import { Game } from '@/arkham/types/Game';
 export default defineComponent({
   props: { game: { type: Object as () => Game, required: true } },
   setup(props) {
+    const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
     const victoryDisplay = computed(() => props.game.victoryDisplay)
     const topOfVictoryDisplay = computed(() => {
       if (victoryDisplay.value[0]) {
         const { cardCode } = victoryDisplay.value[0].contents.def;
-        return `/img/arkham/cards/${cardCode}.jpg`;
+        return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
       }
 
       return null;

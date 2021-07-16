@@ -126,6 +126,7 @@ export default defineComponent({
     investigatorId: { type: String, required: true },
   },
   setup(props, { emit }) {
+    const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
     const scenarioGuide = computed(() => {
       const { scenario } = props.game;
       if (!scenario) {
@@ -137,7 +138,7 @@ export default defineComponent({
         ? 'b'
         : '';
 
-      return `/img/arkham/cards/${id}${difficultySuffix}.jpg`;
+      return `${baseUrl}/img/arkham/cards/${id}${difficultySuffix}.jpg`;
     })
 
     const scenarioDeck = computed(() => {
@@ -150,7 +151,7 @@ export default defineComponent({
 
       switch(tag) {
         case 'ExhibitDeck':
-          return `/img/arkham/cards/02132b.jpg`;
+          return `${baseUrl}/img/arkham/cards/02132b.jpg`;
         default:
           return null;
       }
@@ -175,7 +176,7 @@ export default defineComponent({
     const activeCard = computed(() => {
       if (props.game.activeCard) {
         const { cardCode } = props.game.activeCard.contents.def;
-        return `/img/arkham/cards/${cardCode}.jpg`;
+        return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
       }
 
       return null;
@@ -187,7 +188,7 @@ export default defineComponent({
       if (props.game.discard[0]) {
         const { cardCode } = props.game.discard[0].def;
 
-        return `/img/arkham/cards/${cardCode}.jpg`;
+        return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
       }
 
       return null;

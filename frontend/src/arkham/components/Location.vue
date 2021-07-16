@@ -106,12 +106,14 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const clues = computed(() => props.location.contents.clues)
+    const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
+
     const image = computed(() => {
       const { cardDef, revealed } = props.location.contents
       const { cardCode } = cardDef
       const suffix = revealed ? '' : 'b'
 
-      return `/img/arkham/cards/${cardCode}${suffix}.jpg`
+      return `${baseUrl}/img/arkham/cards/${cardCode}${suffix}.jpg`
     })
 
     const id = computed(() => props.location.contents.id)
@@ -261,7 +263,7 @@ export default defineComponent({
       }
     }
 
-    const portrait = (cardCode: string) => `/img/arkham/portraits/${cardCode}.jpg`
+    const portrait = (cardCode: string) => `${baseUrl}/img/arkham/portraits/${cardCode}.jpg`
 
     return {
       portrait,

@@ -14,7 +14,10 @@ export default defineComponent({
     amount: { type: Number, required: true },
   },
   setup(props) {
-    const image = computed(() => `/img/arkham/${props.type}.png`)
+    const image = computed(() => {
+      const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
+      return `${baseUrl}/img/arkham/${props.type}.png`
+    })
     return { image }
   }
 })

@@ -188,7 +188,8 @@ export default defineComponent({
 
     const image = computed(() => {
       const { id } = props.player.contents;
-      return `/img/arkham/cards/${id}.jpg`;
+      const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
+      return `${baseUrl}/img/arkham/cards/${id}.jpg`;
     })
 
     return {

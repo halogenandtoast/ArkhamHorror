@@ -7,7 +7,7 @@
     />
     <img
       class="deck"
-      src="/img/arkham/back.png"
+      :src="`${baseUrl}/img/arkham/back.png`"
       :class="{ 'can-interact': deckAction !== -1 }"
       @click="$emit('choose', deckAction)"
     />
@@ -26,6 +26,7 @@ export default defineComponent({
     investigatorId: { type: String, required: true }
   },
   setup(props) {
+    const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
     const drawEncounterCardAction = computed(() => {
       return choices.value.findIndex((c) => c.tag === MessageType.INVESTIGATOR_DRAW_ENCOUNTER_CARD)
@@ -58,15 +59,15 @@ export default defineComponent({
 
       switch (choice.tag) {
         case MessageType.INVESTIGATOR_DRAW_ENCOUNTER_CARD:
-          return `/img/arkham/portraits/${choice.contents}.jpg`;
+          return `${baseUrl}/img/arkham/portraits/${choice.contents}.jpg`;
         case MessageType.SURGE:
-          return `/img/arkham/portraits/${choice.contents}.jpg`;
+          return `${baseUrl}/img/arkham/portraits/${choice.contents}.jpg`;
         default:
-          return `/img/arkham/portraits/${choice.contents[0]}.jpg`;
+          return `${baseUrl}/img/arkham/portraits/${choice.contents[0]}.jpg`;
       }
     })
 
-    return { investigatorPortrait, deckAction, surgeAction, searchTopOfEncounterCardAction, drawEncounterCardAction }
+    return { baseUrl, investigatorPortrait, deckAction, surgeAction, searchTopOfEncounterCardAction, drawEncounterCardAction }
   }
 })
 </script>

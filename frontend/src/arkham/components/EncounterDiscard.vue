@@ -23,7 +23,8 @@ export default defineComponent({
   setup() {
     const image = (card: EncounterCardContents) => {
       const { cardCode } = card;
-      return `/img/arkham/cards/${cardCode}.jpg`;
+      const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
+      return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
     }
 
     return { image }

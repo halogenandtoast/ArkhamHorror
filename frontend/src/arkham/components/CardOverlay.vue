@@ -10,6 +10,7 @@ import { defineComponent, ref } from 'vue';
 export default defineComponent({
   setup() {
     const card = ref<string | null>(null);
+    const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
 
     document.addEventListener('mousemove', (event) => {
       if (event.target instanceof HTMLImageElement) {
@@ -22,7 +23,7 @@ export default defineComponent({
         }
       } else if (event.target instanceof HTMLSpanElement) {
         if(event.target.dataset.imageId) {
-          card.value = `/img/arkham/cards/${event.target.dataset.imageId}.jpg`
+          card.value = `${baseUrl}/img/arkham/cards/${event.target.dataset.imageId}.jpg`
         }
       }
     })

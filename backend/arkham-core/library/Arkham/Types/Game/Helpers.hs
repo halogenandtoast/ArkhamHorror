@@ -918,3 +918,20 @@ cardInFastWindows iid _ windows matcher = anyM (matches matcher) windows
   enemyMatches enemyId = \case
     Matcher.EnemyWithTrait t -> member t <$> getSet enemyId
 
+getModifiedTokenFaces
+  :: (SourceEntity source, MonadReader env m, HasModifiersFor env ())
+  => source
+  -> [Token]
+  -> m [TokenFace]
+getModifiedTokenFaces source tokens = flip
+  concatMapM
+  tokens
+  \token -> do
+    modifiers' <-
+      map modifierType
+        <$> getModifiersFor (toSource source) (TokenTarget token) ()
+    pure $ foldl' applyModifier [tokenFace token] modifiers'
+ where
+  applyModifier _ (TokenFaceModifier fs') = fs'
+  applyModifier [f'] (ForcedTokenChange f fs) | f == f' = fs
+  applyModifier fs _ = fs

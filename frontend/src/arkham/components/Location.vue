@@ -16,6 +16,7 @@
 
       <div
         :class="{ 'location--can-interact': cardAction !== -1 }"
+        :data-id="id"
         class="card-container"
         @click="$emit('choose', cardAction)">
         <div
@@ -266,6 +267,7 @@ export default defineComponent({
     const portrait = (cardCode: string) => `${baseUrl}/img/arkham/portraits/${cardCode}.jpg`
 
     return {
+      id,
       portrait,
       doInvestigate,
       blocked,

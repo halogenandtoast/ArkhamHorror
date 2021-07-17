@@ -173,7 +173,7 @@ extract :: Int -> [a] -> (Maybe a, [a])
 extract n xs =
   let a = xs !!? n in (a, [ x | (i, x) <- zip [0 ..] xs, i /= n ])
 
-putApiV1ArkhamGameR :: ArkhamGameId -> Handler (Entity ArkhamGame)
+putApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameR gameId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   ArkhamGame {..} <- runDB $ get404 gameId
@@ -227,9 +227,8 @@ putApiV1ArkhamGameR gameId = do
   liftIO $ atomically $ writeTChan
     writeChannel
     (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedLog ge)
-  Entity gameId (ArkhamGame arkhamGameName ge updatedQueue updatedLog)
-    <$ runDB
-         (replace gameId (ArkhamGame arkhamGameName ge updatedQueue updatedLog))
+  void $ runDB
+    (replace gameId (ArkhamGame arkhamGameName ge updatedQueue updatedLog))
 
 data RawGameJsonPut = RawGameJsonPut
   { gameJson :: Game

@@ -17,8 +17,6 @@ export default defineComponent({
   },
 
   setup(props) {
-    console.log(props.ability.contents[0])
-
     const ability: ComputedRef<Message> = computed(() => props.ability.tag == 'Run' ? props.ability.contents[0] : props.ability)
 
     const abilityLabel = computed(() => {

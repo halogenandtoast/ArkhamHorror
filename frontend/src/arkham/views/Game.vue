@@ -13,7 +13,7 @@
         @update="update"
       />
       <Scenario
-        v-else-if="!game.gameOver"
+        v-else-if="game.scenario && !game.gameOver"
         :game="game"
         :gameLog="gameLog"
         :investigatorId="investigatorId"

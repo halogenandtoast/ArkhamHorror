@@ -44,7 +44,7 @@ export default defineComponent({
     investigatorId: { type: String, required: true }
   },
   setup(props) {
-    const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
+    const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
 
     function imageFor(token: ChaosToken) {
       switch (token.tokenFace) {

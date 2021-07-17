@@ -36,7 +36,7 @@ export default defineComponent({
   },
   setup(props) {
     const image = computed(() => {
-      const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
+      const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
       return `${baseUrl}/img/arkham/cards/${props.treachery.contents.cardDef.cardCode}.jpg`
     })
     const id = computed(() => props.treachery.contents.id)

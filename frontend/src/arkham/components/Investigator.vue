@@ -188,7 +188,7 @@ export default defineComponent({
 
     const image = computed(() => {
       const { id } = props.player.contents;
-      const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
+      const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
       return `${baseUrl}/img/arkham/cards/${id}.jpg`;
     })
 

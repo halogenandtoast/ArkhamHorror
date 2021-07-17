@@ -106,7 +106,7 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const clues = computed(() => props.location.contents.clues)
-    const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
+    const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
 
     const image = computed(() => {
       const { cardDef, revealed } = props.location.contents

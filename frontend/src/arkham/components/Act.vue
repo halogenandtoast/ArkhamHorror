@@ -43,7 +43,7 @@ export default defineComponent({
     const id = computed(() => props.act.contents.id)
     const image = computed(() => {
       const side = props.act.contents.sequence.side.toLowerCase().replace('a', '')
-      const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
+      const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
       return `${baseUrl}/img/arkham/cards/${id.value}${side}.jpg`
     })
 

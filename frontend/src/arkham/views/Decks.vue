@@ -45,7 +45,7 @@ export default defineComponent({
   setup() {
     const ready = ref(false)
     const decks = ref<Arkham.Deck[]>([])
-    const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
+    const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
 
     const deck = ref<string | null>(null)
     const investigator = ref<string | null>(null)

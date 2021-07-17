@@ -49,7 +49,7 @@ export default defineComponent({
   setup(props) {
     const id = computed(() => props.agenda.contents.id)
     const image = computed(() => {
-      const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
+      const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
 
       if (props.agenda.contents.flipped) {
         return `${baseUrl}/img/arkham/cards/${id.value}b.jpg`;

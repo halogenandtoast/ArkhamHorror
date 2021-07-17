@@ -39,7 +39,6 @@ export const deleteDeck = (deckId: string) => api
 
 export const updateGame = (gameId: string, choice: number) => api
   .put(`arkham/games/${gameId}`, { choice })
-  .then((resp) => gameDecoder.decodePromise(resp.data));
 
 export const upgradeDeck = (gameId: string, deckUrl?: string) => api
   .put(`arkham/games/${gameId}/decks`, { deckUrl });

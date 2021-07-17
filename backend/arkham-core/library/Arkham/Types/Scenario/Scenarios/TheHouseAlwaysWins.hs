@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Assets
 import Arkham.Card
+import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Classes
@@ -40,9 +41,12 @@ theHouseAlwaysWins difficulty =
                          difficulty
                        )
     { scenarioLocationLayout = Just
-      [ ".           .                .             .                  backHallDoorway1 ."
-      , "laBellaLuna cloverClubLounge cloverClubBar cloverClubCardroom darkenedHall     backHallDoorway2"
-      , ".           .                .             .                  backHallDoorway3 ."
+      [ ".           .                .                  backHallDoorway1 ."
+      , ".           .                cloverClubCardroom backHallDoorway1 ."
+      , "laBellaLuna cloverClubLounge cloverClubCardroom darkenedHall     backHallDoorway2"
+      , "laBellaLuna cloverClubLounge cloverClubBar      darkenedHall     backHallDoorway2"
+      , ".           .                cloverClubBar      backHallDoorway3 ."
+      , ".           .                .                  backHallDoorway3 ."
       ]
     }
 
@@ -74,7 +78,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
     Setup -> do
       investigatorIds <- getInvestigatorIds
       encounterDeck <- buildEncounterDeckExcluding
-        [Assets.peterClover]
+        [Assets.peterClover, Enemies.cloverClubPitBoss]
         [ EncounterSet.TheHouseAlwaysWins
         , EncounterSet.BadLuck
         , EncounterSet.NaomisCrew

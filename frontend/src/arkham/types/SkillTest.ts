@@ -22,6 +22,11 @@ export interface SkillTest {
   source: Source;
 }
 
+export interface SkillTestResults {
+  skillTestResultsSkillValue: number;
+  skillTestResultsDifficulty: number;
+}
+
 export const skillTestDecoder = JsonDecoder.object<SkillTest>(
   {
     investigator: JsonDecoder.string,
@@ -33,4 +38,12 @@ export const skillTestDecoder = JsonDecoder.object<SkillTest>(
     source: sourceDecoder,
   },
   'SkillTest',
+);
+
+export const skillTestResultsDecoder = JsonDecoder.object<SkillTestResults>(
+  {
+    skillTestResultsSkillValue: JsonDecoder.number,
+    skillTestResultsDifficulty: JsonDecoder.number,
+  },
+  'SkillTestResults',
 );

@@ -380,34 +380,35 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
       if lid `notElem` locations'
         then a <$ push (Discard (EnemyTarget eid))
         else do
-          when
-              (Keyword.Aloof
-              `notElem` keywords
-              && Keyword.Massive
-              `notElem` keywords
-              && not enemyExhausted
-              )
-            $ do
-                preyIds <- map unPreyId <$> getSetList (enemyPrey, lid)
-                investigatorIds <- if null preyIds
-                  then getSetList @InvestigatorId lid
-                  else pure []
-                leadInvestigatorId <- getLeadInvestigatorId
-                case preyIds <> investigatorIds of
-                  [] -> push $ EnemyEntered eid lid
-                  [iid] -> pushAll
-                    [EnemyEntered eid lid, EnemyEngageInvestigator eid iid]
-                  iids -> push
-                    (chooseOne
-                      leadInvestigatorId
-                      [ TargetLabel
-                          (InvestigatorTarget iid)
-                          [ EnemyEntered eid lid
-                          , EnemyEngageInvestigator eid iid
-                          ]
-                      | iid <- iids
-                      ]
-                    )
+          if Keyword.Aloof
+            `notElem` keywords
+            && Keyword.Massive
+            `notElem` keywords
+            && not enemyExhausted
+          then
+            do
+              preyIds <- map unPreyId <$> getSetList (enemyPrey, lid)
+              investigatorIds <- if null preyIds
+                then getSetList @InvestigatorId lid
+                else pure []
+              leadInvestigatorId <- getLeadInvestigatorId
+              case preyIds <> investigatorIds of
+                [] -> push $ EnemyEntered eid lid
+                [iid] -> pushAll
+                  [EnemyEntered eid lid, EnemyEngageInvestigator eid iid]
+                iids -> push
+                  (chooseOne
+                    leadInvestigatorId
+                    [ TargetLabel
+                        (InvestigatorTarget iid)
+                        [EnemyEntered eid lid, EnemyEngageInvestigator eid iid]
+                    | iid <- iids
+                    ]
+                  )
+          else
+            when
+              (Keyword.Massive `notElem` keywords)
+              (push $ EnemyEntered eid lid)
 
           a <$ when
             (Keyword.Massive `elem` keywords)

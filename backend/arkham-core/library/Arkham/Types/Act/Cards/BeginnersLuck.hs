@@ -74,16 +74,14 @@ instance
             iid
             [ TargetLabel
                 (TokenFaceTarget $ tokenFace token')
-                [ CreateEffect
-                    "02066"
-                    (Just
-                      (EffectModifiers $ toModifiers
-                        attrs
-                        [TokenFaceModifier [tokenFace token']]
-                      )
-                    )
-                    source
-                    (TokenTarget token)
+                [ CreateTokenEffect
+                  (EffectModifiers
+                  $ toModifiers attrs [TokenFaceModifier [tokenFace token']]
+                  )
+                  source
+                  token
+                , UnfocusTokens
+                , FocusTokens [token']
                 ]
             | token' <- tokensInBag
             ]

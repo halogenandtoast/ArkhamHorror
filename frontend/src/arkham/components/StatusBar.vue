@@ -1,5 +1,23 @@
 <template>
   <section class="status-bar">
+    <div v-if="skillTestResults" class="skill-test-results">
+      <dl>
+        <dt>Modified Skill Value (skill value - tokens):</dt>
+        <dd>{{skillTestResults.skillTestResultsSkillValue}}</dd>
+        <dt>Modified Difficulty:</dt>
+        <dd>{{skillTestResults.skillTestResultsDifficulty}}</dd>
+        <dt>Result:</dt>
+        <dd v-if="skillTestResults.skillTestResultsSkillValue - skillTestResults.skillTestResultsDifficulty >= 0">
+          Succeed by {{skillTestResults.skillTestResultsSkillValue - skillTestResults.skillTestResultsDifficulty}}
+        </dd>
+        <dd v-else>
+          Fail by {{skillTestResults.skillTestResultsDifficulty - skillTestResults.skillTestResultsSkillValue}}
+        </dd>
+      </dl>
+    </div>
+
+    <div v-if="skillTestResults" class="skill-test-results-break"></div>
+
     <div class="choices" v-for="(choice, index) in choices" :key="index">
       <div v-if="choice.tag === MessageType.AFTER_DISCOVER_CLUES">
         <span>You got some clues</span> <button @click="$emit('choose', index)">Continue</button>
@@ -103,7 +121,9 @@ export default defineComponent({
 
     const arkhamify = (text: string) => text.replace('{skull}', "\u004E").replace('{cultist}', "\u0042").replace('{tablet}', "\u0056").replace('{elderThing}', "\u0043").replace('{autoFail}', "\u005A").replace('{elderSign}', "\u0058")
 
-    return { arkhamify, choices, skillTestMessageTypes, applyResultsAction, shouldShow, MessageType }
+    const skillTestResults = computed(() => props.game.skillTestResults)
+
+    return { skillTestResults, arkhamify, choices, skillTestMessageTypes, applyResultsAction, shouldShow, MessageType }
   }
 })
 </script>
@@ -180,6 +200,7 @@ i.iconSkillAgility {
 
 section {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   padding: 5px;
@@ -229,6 +250,44 @@ section {
 
   p {
     margin: 10px;
+  }
+}
+
+.skill-test-results {
+  background: rgba(255,255,255,0.6);
+  border-radius: 5px;
+  margin-bottom: 5px;
+  padding: 10px;
+  text-align: left;
+  dl { padding: 0; margin: 0; display: flex; flex-wrap: wrap;}
+  dt { flex: 0 0 50%; font-weight: bold;}
+  &:after {
+    display: block;
+    content: "";
+    flex-basis: 100%;
+  }
+}
+
+.skill-test-results-break {
+  flex-basis: 100%;
+  height: 0;
+}
+
+.status-bar {
+  text-align: center;
+}
+
+button {
+  border: 0;
+  padding: 10px;
+  text-transform: uppercase;
+  background-color: #532e61;
+  font-weight: bold;
+  border-radius: 0.6em;
+  color: #EEE;
+  font: Arial, sans-serif;
+  &:hover {
+    background-color: #4d2b61;
   }
 }
 </style>

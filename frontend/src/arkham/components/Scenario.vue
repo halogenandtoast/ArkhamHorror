@@ -69,6 +69,10 @@
       />
     </div>
 
+    <svg id="svg">
+      <line id="line" class="line original" stroke-dasharray="5, 5"/>
+    </svg>
+
     <div class="location-cards" :style="locationStyles">
       <Location
         v-for="(location, key) in game.locations"
@@ -93,7 +97,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
+import { defineComponent, computed, onMounted, onUnmounted } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import Act from '@/arkham/components/Act.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
@@ -106,6 +110,54 @@ import PlayerSelector from '@/arkham/components/PlayerSelector.vue';
 import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
 import Location from '@/arkham/components/Location.vue';
+
+function handleConnections(game: Game) {
+  const makeLine = function(div1: HTMLElement, div2: HTMLElement) {
+    const { id: div1Id } = div1.dataset
+    const { id: div2Id } = div2.dataset
+    if(div1Id && div2Id) {
+      const [left, right] = [div1Id, div2Id].sort()
+      const connection = left + ":" + right
+      const line = document.querySelector<HTMLElement>(".line")
+      const parentNode = line?.parentNode
+      if(line && parentNode && !document.querySelector(`[data-connection="${connection}"]`)) {
+        const node = line.cloneNode(true) as HTMLElement
+        node.dataset.connection = connection
+        node.classList.remove("original")
+        parentNode.insertBefore(node, line.nextSibling)
+        const {left: bodyLeft, top: bodyTop} = document.body.getBoundingClientRect()
+        const {left: div1Left, top: div1Top, right: div1Right, bottom: div1Bottom } = div1.getBoundingClientRect();
+        const {left: div2Left, top: div2Top, right: div2Right, bottom: div2Bottom } = div2.getBoundingClientRect();
+        const div1Width = div1Right - div1Left;
+        const div2Width = div2Right - div2Left;
+        const div1Height = div1Bottom - div1Top;
+        const div2Height = div2Bottom - div2Top;
+        const x1 = (div1Left - bodyLeft) + (div1Width/2)
+        const y1 = (div1Top - bodyTop) + (div1Height/2)
+        const x2 = (div2Left - bodyLeft) + (div2Width/2)
+        const y2 = (div2Top - bodyTop) + (div2Height/2)
+
+        node.setAttribute('x1',x1.toString())
+        node.setAttribute('y1',y1.toString())
+        node.setAttribute('x2',x2.toString())
+        node.setAttribute('y2',y2.toString())
+      }
+    }
+  }
+
+  document.querySelectorAll(".line:not(.original").forEach((node) => node.parentNode?.removeChild(node))
+
+  for(const [id,location] of Object.entries(game.locations)) {
+    const connections = location.contents.connectedLocations
+    connections.forEach((connection) => {
+      const start = document.querySelector(`[data-id="${id}"]`) as HTMLElement
+      const end = document.querySelector(`[data-id="${connection}"]`) as HTMLElement
+      if(start && end) {
+        makeLine(start, end)
+      }
+    });
+  }
+}
 
 export default defineComponent({
   components: {
@@ -127,6 +179,19 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
+
+    let connectionInterval: number | null = null
+
+    onMounted(() => {
+      connectionInterval = setInterval(() => handleConnections(props.game), 1000)
+    })
+
+    onUnmounted(() => {
+      if (connectionInterval) {
+        clearInterval(connectionInterval)
+      }
+    })
+
     const scenarioGuide = computed(() => {
       const { scenario } = props.game;
       if (!scenario) {
@@ -201,6 +266,7 @@ export default defineComponent({
       emit('update', game);
     }
 
+
     return {
       update,
       activePlayerId,
@@ -212,7 +278,8 @@ export default defineComponent({
       scenarioDeck,
       topEnemyInVoid
     }
-  }
+  },
+
 })
 </script>
 
@@ -316,5 +383,21 @@ export default defineComponent({
     opacity: .85;
     mix-blend-mode: saturation;
   }
+}
+
+svg {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: -100000000;
+}
+
+#line{
+  stroke-width:6px;
+  /* stroke:#a6b5bb; */
+  stroke:rgba(0,0,0, 0.2);
 }
 </style>

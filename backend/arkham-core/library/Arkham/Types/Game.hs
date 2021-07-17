@@ -198,6 +198,7 @@ data Game = Game
   , gameActiveCard :: Maybe Card
   , gameVictoryDisplay :: [Card]
   , gameGameState :: GameState
+  , gameSkillTestResults :: Maybe SkillTestResultsData
 
   -- Active questions
   , gameQuestion :: HashMap InvestigatorId Question
@@ -317,6 +318,10 @@ skillsL = lens gameSkills $ \m x -> m { gameSkills = x }
 skillTestL :: Lens' Game (Maybe SkillTest)
 skillTestL = lens gameSkillTest $ \m x -> m { gameSkillTest = x }
 
+skillTestResultsL :: Lens' Game (Maybe SkillTestResultsData)
+skillTestResultsL =
+  lens gameSkillTestResults $ \m x -> m { gameSkillTestResults = x }
+
 discardL :: Lens' Game [EncounterCard]
 discardL = lens gameDiscard $ \m x -> m { gameDiscard = x }
 
@@ -382,6 +387,7 @@ instance ToJSON Game where
     , "activeCard" .= toJSON gameActiveCard
     , "victoryDisplay" .= toJSON gameVictoryDisplay
     , "gameState" .= toJSON gameGameState
+    , "skillTestResults" .= toJSON gameSkillTestResults
     , "question" .= toJSON gameQuestion
     ]
 
@@ -431,6 +437,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     , "activeCard" .= toJSON gameActiveCard
     , "victoryDisplay" .= toJSON gameVictoryDisplay
     , "gameState" .= toJSON gameGameState
+    , "skillTestResults" .= toJSON gameSkillTestResults
     , "question" .= toJSON gameQuestion
     ]
 
@@ -1965,6 +1972,7 @@ runGameMessage msg g = case msg of
       & (discardL .~ mempty)
       & (chaosBagL .~ emptyChaosBag)
       & (skillTestL .~ Nothing)
+      & (skillTestResultsL .~ Nothing)
       & (actsL .~ mempty)
       & (agendasL .~ mempty)
       & (treacheriesL .~ mempty)
@@ -2177,6 +2185,11 @@ runGameMessage msg g = case msg of
           pure $ g & skillsL %~ insertMap skillId skill
         _ -> pure g
       _ -> pure g
+  SkillTestResults skillValue skillDifficulty ->
+    pure
+      $ g
+      & skillTestResultsL
+      ?~ SkillTestResultsData skillValue skillDifficulty
   SkillTestEnds _ -> do
     let
       skillCardsWithOwner =
@@ -2189,6 +2202,7 @@ runGameMessage msg g = case msg of
       $ g
       & (skillsL .~ mempty)
       & (skillTestL .~ Nothing)
+      & (skillTestResultsL .~ Nothing)
       & (usedAbilitiesL %~ filter
           (\(_, Ability {..}) ->
             abilityLimitType abilityLimit /= Just PerTestOrAbility

@@ -99,8 +99,8 @@ export default defineComponent({
 
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-    function revealedTokenAction(token: string) {
-      return choices.value.findIndex((c) => c.tag === MessageType.TARGET_LABEL && c.contents[0].contents == token)
+    function revealedTokenAction(token: ChaosToken) {
+      return choices.value.findIndex((c) => c.tag === MessageType.TARGET_LABEL && c.contents[0].contents == token.tokenFace)
     }
 
     const tokenAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.START_SKILL_TEST))

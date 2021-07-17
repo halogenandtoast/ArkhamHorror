@@ -105,6 +105,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gamePlayerTurnOrder = toList playersMap
       , gameVictoryDisplay = mempty
       , gameQuestion = mempty
+      , gameSkillTestResults = Nothing
       }
     )
  where

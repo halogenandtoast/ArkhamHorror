@@ -9,6 +9,7 @@ import Arkham.Types.Action (Action)
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
@@ -33,6 +34,13 @@ getSkillTestTarget = fmap skillTestTarget <$> getSkillTest
 
 getSkillTestSource :: (MonadReader env m, HasSkillTest env) => m (Maybe Source)
 getSkillTestSource = fmap toSource <$> getSkillTest
+
+data SkillTestResultsData = SkillTestResultsData
+  { skillTestResultsSkillValue :: Int
+  , skillTestResultsDifficulty :: Int
+  }
+  deriving stock (Eq, Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 data SkillTest = SkillTest
   { skillTestInvestigator :: InvestigatorId
@@ -211,7 +219,7 @@ getModifiedTokenValue
 getModifiedTokenValue s t = do
   tokenModifiers' <-
     map modifierType <$> getModifiersFor (toSource s) (TokenTarget t) ()
-  modifiedTokenFaces' <- getModifiedTokenFaces s t
+  modifiedTokenFaces' <- getModifiedTokenFaces s [t]
   getSum . mconcat <$> for
     modifiedTokenFaces'
     (\tokenFace -> do
@@ -236,21 +244,6 @@ getModifiedTokenValue s t = do
     = TokenValue token (NegativeModifier (max 0 (n - m)))
   applyModifier _ currentTokenValue = currentTokenValue
 
--- really just looking for forced token changes here
-getModifiedTokenFaces
-  :: (HasModifiersFor env (), MonadReader env m)
-  => SkillTest
-  -> Token
-  -> m [TokenFace]
-getModifiedTokenFaces s token = do
-  tokenModifiers' <-
-    map modifierType <$> getModifiersFor (toSource s) (TokenTarget token) ()
-  pure $ foldr applyModifier [tokenFace token] tokenModifiers'
- where
-  applyModifier (TokenFaceModifier ts) _ = ts
-  applyModifier (ForcedTokenChange t ts) [t'] | t == t' = ts
-  applyModifier _ ts = ts
-
 instance SkillTestRunner env => RunMessage env SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
     TriggerSkillTest iid -> do
@@ -274,10 +267,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
       -> do
         push (RevealSkillTestTokens iid)
         for_ tokenFaces $ \tokenFace -> do
-          checkWindowMsgs <- checkWindows
-            iid
-            (\who -> pure [WhenRevealToken who tokenFace])
-          pushAll $ checkWindowMsgs <> resolve
+          pushAll $ resolve
             (RevealToken
               (SkillTestSource siid skillType source target maction)
               iid
@@ -288,9 +278,12 @@ instance SkillTestRunner env => RunMessage env SkillTest where
       push (CheckWindow iid [AfterRevealToken You token])
       pure $ s & revealedTokensL %~ (token :)
     RevealSkillTestTokens iid -> do
-      revealedTokenFaces <- concatMapM
-        (\t -> map (t, ) <$> getModifiedTokenFaces s t)
+      revealedTokenFaces <- flip
+        concatMapM
         skillTestRevealedTokens
+        \token -> do
+          faces <- getModifiedTokenFaces s [token]
+          pure [ (token, face) | face <- faces ]
       pushAll
         [ ResolveToken drawnToken tokenFace iid
         | (drawnToken, tokenFace) <- revealedTokenFaces
@@ -375,7 +368,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
           (s ^. committedCardsL . to toList)
       s <$ pushAll
         (ResetTokens (toSource s) : map (uncurry AddToDiscard) discards)
-    SkillTestResults -> do
+    SkillTestResults _ _ -> do
       push (chooseOne skillTestInvestigator [SkillTestApplyResults])
       case skillTestResult of
         SucceededBy _ n -> pushAll
@@ -582,7 +575,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
           + totaledTokenValues
           + (if CancelSkills `elem` modifiers' then 0 else iconCount)
           )
-      push SkillTestResults
+      push $ SkillTestResults modifiedSkillValue' modifiedSkillTestDifficulty
       liftIO $ whenM
         (isJust <$> lookupEnv "DEBUG")
         (putStrLn

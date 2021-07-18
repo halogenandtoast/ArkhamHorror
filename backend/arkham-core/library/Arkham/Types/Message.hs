@@ -1,6 +1,6 @@
-module Arkham.Types.Message (
-    module Arkham.Types.Message,
-) where
+module Arkham.Types.Message
+  ( module Arkham.Types.Message
+  ) where
 
 import Arkham.Prelude
 
@@ -76,11 +76,10 @@ resolve :: Message -> [Message]
 resolve msg = [When msg, msg, After msg]
 
 story :: [InvestigatorId] -> Message -> Message
-story iids msg =
-    AskMap
-        ( mapFromList
-            [(iid, ChooseOne [Run [Continue "Continue", msg]]) | iid <- iids]
-        )
+story iids msg = AskMap
+  (mapFromList
+    [ (iid, ChooseOne [Run [Continue "Continue", msg]]) | iid <- iids ]
+  )
 
 data DamageStrategy = DamageAny | DamageAssetsFirst | DamageFirst CardDef
     deriving stock (Show, Eq, Generic)
@@ -351,7 +350,7 @@ data Message
     | InvestigatorWhenEliminated Source InvestigatorId
     | Label Text [Message]
     | LoadDeck InvestigatorId (Deck PlayerCard) -- used to reset the deck of the investigator
-    | LookAtRevealed LocationId
+    | LookAtRevealed Source Target
     | LookAtTopOfDeck InvestigatorId Target Int
     | LoseActions InvestigatorId Source Int
     | LoseResources InvestigatorId Int
@@ -549,5 +548,5 @@ data Question
     deriving anyclass (FromJSON, ToJSON)
 
 data ChoosePlayerChoice = SetLeadInvestigator
-    deriving stock (Show, Eq, Generic)
-    deriving anyclass (FromJSON, ToJSON)
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (FromJSON, ToJSON)

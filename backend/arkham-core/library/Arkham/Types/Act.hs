@@ -8,9 +8,11 @@ import Arkham.Prelude hiding (fold)
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Cards
 import Arkham.Types.Act.Runner
-import Arkham.Types.ActId
+import Arkham.Types.AssetMatcher
+import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.LocationId
+import Arkham.Types.Decks
+import Arkham.Types.Id
 import Arkham.Types.Name
 import Arkham.Types.Trait
 
@@ -55,7 +57,13 @@ data Act
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance ActionRunner env => HasActions env Act
-deriving anyclass instance (HasName env LocationId, ActRunner env) => RunMessage env Act
+deriving anyclass instance
+  ( HasSet AssetId env AssetMatcher
+  , HasName env LocationId, ActRunner env
+  , HasList UnderneathCard env ActDeck
+  , HasList UnderneathCard env AgendaDeck
+  )
+  => RunMessage env Act
 
 instance HasSet Trait env LocationId => HasModifiersFor env Act where
   getModifiersFor = genericGetModifiersFor

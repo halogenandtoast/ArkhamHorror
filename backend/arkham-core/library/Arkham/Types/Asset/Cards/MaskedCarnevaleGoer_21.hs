@@ -9,15 +9,17 @@ import qualified Arkham.Asset.Cards as Cards
 import Arkham.PlayerCard
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
+import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Window
 
 newtype MaskedCarnevaleGoer_21 = MaskedCarnevaleGoer_21 AssetAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, TargetEntity)
 
 maskedCarnevaleGoer_21 :: AssetCard MaskedCarnevaleGoer_21
 maskedCarnevaleGoer_21 =
@@ -40,6 +42,7 @@ instance HasModifiersFor env MaskedCarnevaleGoer_21
 instance
   ( HasQueue env
   , HasModifiersFor env ()
+  , HasId LeadInvestigatorId env ()
   )
   => RunMessage env MaskedCarnevaleGoer_21 where
   runMessage msg a@(MaskedCarnevaleGoer_21 attrs) = case msg of
@@ -56,4 +59,13 @@ instance
             , CreateStoryAssetAt innocentReveler lid
             ]
         Nothing -> error "not possible"
+    LookAtRevealed _ target | isTarget a target -> do
+      let
+        innocentReveler =
+          PlayerCard $ lookupPlayerCard Cards.innocentReveler (toCardId attrs)
+      leadInvestigatorId <- getLeadInvestigatorId
+      a <$ pushAll
+        [ FocusCards [innocentReveler]
+        , chooseOne leadInvestigatorId [Label "Continue" [UnfocusCards]]
+        ]
     _ -> MaskedCarnevaleGoer_21 <$> runMessage msg attrs

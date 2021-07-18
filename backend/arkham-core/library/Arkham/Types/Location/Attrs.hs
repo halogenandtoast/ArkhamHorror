@@ -612,10 +612,10 @@ instance LocationRunner env => RunMessage env LocationAttrs where
           | iid <- maybeToList miid
           ]
       pure $ a & cluesL +~ locationClueCount & revealedL .~ True
-    LookAtRevealed lid | lid == locationId -> do
-      push (Label "Continue" [After (LookAtRevealed lid)])
+    LookAtRevealed source target | isTarget a target -> do
+      push (Label "Continue" [After (LookAtRevealed source target)])
       pure $ a & revealedL .~ True
-    After (LookAtRevealed lid) | lid == locationId ->
+    After (LookAtRevealed _ target) | isTarget a target ->
       pure $ a & revealedL .~ False
     RevealLocation _ lid | lid /= locationId ->
       if lid `notElem` toList (a ^. directionsL)

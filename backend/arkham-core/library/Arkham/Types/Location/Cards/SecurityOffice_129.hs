@@ -58,7 +58,7 @@ instance LocationRunner env => RunMessage env SecurityOffice_129 where
           (TargetLabel
               ScenarioDeckTarget
               [LookAtTopOfDeck iid ScenarioDeckTarget 1]
-          : [ LookAtRevealed exhibitHall
+          : [ LookAtRevealed (toSource attrs) (LocationTarget exhibitHall)
             | exhibitHall <- unrevealedExhibitHalls
             ]
           )

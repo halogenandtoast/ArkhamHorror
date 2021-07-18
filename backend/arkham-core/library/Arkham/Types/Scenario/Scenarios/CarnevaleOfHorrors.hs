@@ -6,7 +6,6 @@ module Arkham.Types.Scenario.Scenarios.CarnevaleOfHorrors
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Assets
-import Arkham.EncounterCard
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
 import Arkham.PlayerCard
@@ -126,7 +125,6 @@ instance
 
       -- Assets
       abbess <- PlayerCard <$> genPlayerCard Assets.abbessAllegriaDiBiase
-      balefulReveler <- genEncounterCard Enemies.balefulReveler
 
       pushAllEnd
         $ [SetEncounterDeck encounterDeck, AddAgenda "82002", AddAct "82005"]
@@ -152,9 +150,6 @@ instance
         <> [ CreateStoryAssetAt abbess sanMarcoBasilicaId
            , RevealLocation Nothing sanMarcoBasilicaId
            , MoveAllTo sanMarcoBasilicaId
-           , InvestigatorDrewEncounterCard
-             (fromMaybe (error "boop") $ headMay investigatorIds)
-             balefulReveler
            , AskMap
            . mapFromList
            $ [ ( iid

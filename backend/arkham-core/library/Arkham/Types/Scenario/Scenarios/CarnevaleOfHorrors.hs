@@ -20,6 +20,8 @@ import Arkham.Types.Message
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
+import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Token
 import qualified Data.List.NonEmpty as NE
 
@@ -55,13 +57,27 @@ carnevaleOfHorrors difficulty = CarnevaleOfHorrors $ (baseAttrs
 
 instance HasTokenValue env InvestigatorId => HasTokenValue env CarnevaleOfHorrors where
   getTokenValue (CarnevaleOfHorrors attrs) iid = \case
-    Skull -> pure $ TokenValue Skull (NegativeModifier 2) -- TODO: innocent reveler count
+    Skull -> do
+      let
+        countInnocentRevelers = count ((== Assets.innocentReveler) . toCardDef)
+        innocentRevelerCount =
+          countInnocentRevelers (scenarioCardsUnderAgendaDeck attrs)
+            + (if isEasyStandard attrs
+                then 0
+                else countInnocentRevelers (scenarioCardsUnderActDeck attrs)
+              )
+      pure $ TokenValue Skull (NegativeModifier $ 2 + innocentRevelerCount)
     Cultist -> pure $ TokenValue Cultist NoModifier
     Tablet -> pure $ toTokenValue attrs Tablet 3 4
     ElderThing -> pure $ toTokenValue attrs ElderThing 4 6
     otherFace -> getTokenValue attrs iid otherFace
 
-instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env CarnevaleOfHorrors where
+instance
+  ( HasSet ClosestAssetId env (InvestigatorId, CardDef)
+  , HasId (Maybe LocationId) env LocationMatcher
+  , ScenarioRunner env
+  )
+  => RunMessage env CarnevaleOfHorrors where
   runMessage msg s@(CarnevaleOfHorrors attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds
@@ -225,4 +241,69 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
             , ElderSign
             ]
       s <$ push (SetTokens tokens)
+    ResolveToken _ Cultist iid -> s <$ push (DrawAnotherToken iid)
+    ResolveToken token Tablet iid | isHardExpert attrs -> do
+      closestInnocentRevelers <- map unClosestAssetId
+        <$> getSetList (iid, Assets.innocentReveler)
+      case closestInnocentRevelers of
+        [] -> pure ()
+        [x] -> push
+          (chooseOne
+            iid
+            [ AssetDamage x (TokenSource token) 1 0
+            , AssetDamage x (TokenSource token) 0 1
+            ]
+          )
+        xs -> push
+          (chooseOne
+            iid
+            [ TargetLabel
+                (AssetTarget x)
+                [ chooseOne
+                    iid
+                    [ AssetDamage x (TokenSource token) 1 0
+                    , AssetDamage x (TokenSource token) 0 1
+                    ]
+                ]
+            | x <- xs
+            ]
+          )
+      pure s
+    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
+      case tokenFace token of
+        Cultist -> push $ InvestigatorDrawEncounterCard iid
+        Tablet -> do
+          closestInnocentRevelers <- map unClosestAssetId
+            <$> getSetList (iid, Assets.innocentReveler)
+          case closestInnocentRevelers of
+            [] -> pure ()
+            [x] -> push
+              (chooseOne
+                iid
+                [ AssetDamage x (TokenSource token) 1 0
+                , AssetDamage x (TokenSource token) 0 1
+                ]
+              )
+            xs -> push
+              (chooseOne
+                iid
+                [ TargetLabel
+                    (AssetTarget x)
+                    [ chooseOne
+                        iid
+                        [ AssetDamage x (TokenSource token) 1 0
+                        , AssetDamage x (TokenSource token) 0 1
+                        ]
+                    ]
+                | x <- xs
+                ]
+              )
+        ElderThing -> do
+          mCnidathquaId <- fmap unStoryEnemyId
+            <$> getId (toCardCode Enemies.cnidathqua)
+          case mCnidathquaId of
+            Just cnidathquaId -> push $ EnemyAttack iid cnidathquaId
+            Nothing -> pure ()
+        _ -> pure ()
+      pure s
     _ -> CarnevaleOfHorrors <$> runMessage msg attrs

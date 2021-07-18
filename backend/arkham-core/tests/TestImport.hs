@@ -472,6 +472,7 @@ newGame investigator = do
     , gameEncounterDeck = mempty
     , gameDiscard = mempty
     , gameSkillTest = Nothing
+    , gameSkillTestResults = Nothing
     , gameAgendas = mempty
     , gameTreacheries = mempty
     , gameEvents = mempty

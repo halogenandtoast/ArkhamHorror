@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Json
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Decks
 import Arkham.Types.Difficulty
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
@@ -33,6 +34,8 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioDifficulty :: Difficulty
   -- These types are to handle complex scenarios with multiple stacks
   , scenarioAgendaStack :: [(Int, [AgendaId])] -- These types are to handle complex scenarios with multiple stacks
+  , scenarioCardsUnderAgendaDeck :: [Card]
+  , scenarioCardsUnderActDeck :: [Card]
   , scenarioActStack :: [(Int, [ActId])]
   , scenarioLocationLayout :: Maybe [GridTemplateRow]
   , scenarioDeck :: Maybe ScenarioDeck
@@ -45,6 +48,14 @@ data ScenarioAttrs = ScenarioAttrs
 locationNameMap :: [CardDef] -> HashMap LocationName [CardDef]
 locationNameMap defs = unionsWith (<>) $ map toMap defs
   where toMap = liftM2 singletonMap (LocationName . toName) pure
+
+cardsUnderneathAgendaDeckL :: Lens' ScenarioAttrs [Card]
+cardsUnderneathAgendaDeckL = lens scenarioCardsUnderAgendaDeck
+  $ \m x -> m { scenarioCardsUnderAgendaDeck = x }
+
+cardsUnderneathActDeckL :: Lens' ScenarioAttrs [Card]
+cardsUnderneathActDeckL =
+  lens scenarioCardsUnderActDeck $ \m x -> m { scenarioCardsUnderActDeck = x }
 
 locationsL :: Lens' ScenarioAttrs (HashMap LocationName [CardDef])
 locationsL = lens scenarioLocations $ \m x -> m { scenarioLocations = x }
@@ -92,6 +103,12 @@ instance HasCount SetAsideCount env (ScenarioAttrs, CardCode) where
 instance HasList SetAsideCard env ScenarioAttrs where
   getList = pure . map SetAsideCard . scenarioSetAsideCards
 
+instance HasList UnderneathCard env (ScenarioAttrs, ActDeck) where
+  getList (s, _) = pure $ map UnderneathCard (scenarioCardsUnderActDeck s)
+
+instance HasList UnderneathCard env (ScenarioAttrs, AgendaDeck) where
+  getList (s, _) = pure $ map UnderneathCard (scenarioCardsUnderAgendaDeck s)
+
 toTokenValue :: ScenarioAttrs -> TokenFace -> Int -> Int -> TokenValue
 toTokenValue attrs t esVal heVal = TokenValue
   t
@@ -113,6 +130,8 @@ baseAttrs cardCode name agendaStack actStack' difficulty = ScenarioAttrs
   , scenarioDifficulty = difficulty
   , scenarioAgendaStack = [(1, agendaStack)]
   , scenarioActStack = [(1, actStack')]
+  , scenarioCardsUnderAgendaDeck = mempty
+  , scenarioCardsUnderActDeck = mempty
   , scenarioLocationLayout = Nothing
   , scenarioDeck = Nothing
   , scenarioLog = mempty
@@ -264,6 +283,10 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioAttrsRunner env)
             ]
     PlaceLocation _ cardDef -> pure $ a & setAsideCardsL %~ deleteFirstMatch
       ((== toCardCode cardDef) . toCardCode)
+    PlaceUnderneath AgendaDeckTarget cards ->
+      pure $ a & cardsUnderneathAgendaDeckL <>~ cards
+    PlaceUnderneath ActDeckTarget cards ->
+      pure $ a & cardsUnderneathActDeckL <>~ cards
     RequestSetAsideCard target cardCode -> do
       let
         (before, rest) =

@@ -605,6 +605,8 @@ targetToSource = \case
   TokenFaceTarget _ -> error "Not convertable"
   TestTarget -> TestSource mempty
   ResourceTarget -> ResourceSource
+  ActDeckTarget -> ActDeckSource
+  AgendaDeckTarget -> AgendaDeckSource
   InvestigationTarget{} -> error "not converted"
 
 sourceToTarget :: Source -> Target
@@ -634,6 +636,8 @@ sourceToTarget = \case
   EffectSource eid -> EffectTarget eid
   ResourceSource -> ResourceTarget
   AbilitySource{} -> error "not implemented"
+  ActDeckSource -> ActDeckTarget
+  AgendaDeckSource -> AgendaDeckTarget
 
 addCampaignCardToDeckChoice
   :: InvestigatorId -> [InvestigatorId] -> CardDef -> Message

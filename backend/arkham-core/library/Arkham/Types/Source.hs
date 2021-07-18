@@ -49,5 +49,7 @@ data Source
   | EffectSource EffectId
   | ResourceSource
   | AbilitySource Source Int
+  | ActDeckSource
+  | AgendaDeckSource
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

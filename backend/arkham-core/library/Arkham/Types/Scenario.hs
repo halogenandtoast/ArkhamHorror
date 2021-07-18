@@ -4,14 +4,11 @@ module Arkham.Types.Scenario
 
 import Arkham.Prelude
 
-import Arkham.Types.ActId
-import Arkham.Types.AgendaId
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Decks
 import Arkham.Types.Difficulty
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -21,7 +18,6 @@ import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.Scenario.Scenarios
-import Arkham.Types.ScenarioId
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Target
 import Arkham.Types.Token
@@ -49,7 +45,8 @@ data Scenario
   deriving anyclass (ToJSON, FromJSON, HasRecord)
 
 instance
-  ( HasModifiersFor env ()
+  ( HasSet ClosestAssetId env (InvestigatorId, CardDef)
+  , HasModifiersFor env ()
   , HasId (Maybe LocationId) env LocationMatcher
   , HasStep env ActStep, ScenarioRunner env
   )
@@ -134,6 +131,12 @@ instance HasCount SetAsideCount env (Scenario, CardCode) where
 
 instance HasList SetAsideCard env Scenario where
   getList = getList . toAttrs
+
+instance HasList UnderneathCard env (Scenario, ActDeck) where
+  getList (s, _) = getList (toAttrs s, ActDeck)
+
+instance HasList UnderneathCard env (Scenario, AgendaDeck) where
+  getList (s, _) = getList (toAttrs s, AgendaDeck)
 
 instance HasName env Scenario where
   getName = getName . toAttrs

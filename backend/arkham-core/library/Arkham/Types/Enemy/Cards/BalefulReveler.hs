@@ -6,12 +6,16 @@ module Arkham.Types.Enemy.Cards.BalefulReveler
 import Arkham.Prelude
 
 import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
+import Arkham.Types.RequestedTokenStrategy
+import Arkham.Types.Token
+import Arkham.Types.Window
 import Control.Monad.Extra (findM)
 
 newtype BalefulReveler = BalefulReveler EnemyAttrs
@@ -24,6 +28,8 @@ balefulReveler =
 instance HasModifiersFor env BalefulReveler
 
 instance EnemyAttrsHasActions env => HasActions env BalefulReveler where
+  getActions i (AfterMoveFromHunter eid) (BalefulReveler attrs) | eid == toId attrs =
+    pure [UseAbility i (mkAbility attrs 1 ForcedAbility)]
   getActions i window (BalefulReveler attrs) = getActions i window attrs
 
 getCounterClockwiseLocations
@@ -49,7 +55,7 @@ getCounterClockwiseLocations end = do
     current : buildList (lookup current flippedMap) flippedMap
 
 instance EnemyAttrsRunMessage env => RunMessage env BalefulReveler where
-  runMessage msg (BalefulReveler attrs) = case msg of
+  runMessage msg e@(BalefulReveler attrs) = case msg of
     InvestigatorDrawEnemy _ _ eid | eid == toId attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       start <- getId @LocationId leadInvestigatorId
@@ -62,4 +68,9 @@ instance EnemyAttrsRunMessage env => RunMessage env BalefulReveler where
           msg
           (attrs & spawnAtL ?~ LocationWithId spawnLocation)
         Nothing -> error "could not find location for baleful reveler"
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      e <$ push (RequestTokens source (Just iid) 1 SetAside)
+    RequestedTokens source _ tokens | isSource attrs source -> do
+      tokenFaces <- getModifiedTokenFaces source tokens
+      e <$ when (any (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) tokenFaces) (push $ HunterMove (toId attrs))
     _ -> BalefulReveler <$> runMessage msg attrs

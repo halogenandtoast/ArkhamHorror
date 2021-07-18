@@ -368,6 +368,7 @@ library
       Arkham.Types.Enemy.Cards.BogGator
       Arkham.Types.Enemy.Cards.BroodOfYogSothoth
       Arkham.Types.Enemy.Cards.CloverClubPitBoss
+      Arkham.Types.Enemy.Cards.Cnidathqua
       Arkham.Types.Enemy.Cards.ConglomerationOfSpheres
       Arkham.Types.Enemy.Cards.CorpseHungryGhoul
       Arkham.Types.Enemy.Cards.CorpseTaker

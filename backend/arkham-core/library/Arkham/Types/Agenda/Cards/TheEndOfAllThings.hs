@@ -34,7 +34,7 @@ instance (HasId (Maybe EnemyId) env EnemyMatcher, AgendaRunner env) => RunMessag
       yogSothoth <- fromJustNote "defeated?"
         <$> getId (EnemyWithTitle "Yog-Sothoth")
       a <$ pushAll
-        ([ EnemyAttack iid yogSothoth | iid <- investigatorIds ]
+        ([ EnemyAttack iid yogSothoth DamageAny | iid <- investigatorIds ]
         <> [RevertAgenda aid]
         )
     EnemyDefeated _ _ _ "02323" _ _ ->

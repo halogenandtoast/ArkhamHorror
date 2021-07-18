@@ -302,7 +302,10 @@ instance
           mCnidathquaId <- fmap unStoryEnemyId
             <$> getId (toCardCode Enemies.cnidathqua)
           case mCnidathquaId of
-            Just cnidathquaId -> push $ EnemyAttack iid cnidathquaId
+            Just cnidathquaId -> push $ EnemyAttack
+              iid
+              cnidathquaId
+              (DamageFirst Assets.innocentReveler)
             Nothing -> pure ()
         _ -> pure ()
       pure s

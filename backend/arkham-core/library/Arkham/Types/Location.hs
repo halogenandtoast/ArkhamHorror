@@ -466,10 +466,12 @@ allLocations = mapFromList $ map
   ]
 
 isEmptyLocation :: Location -> Bool
-isEmptyLocation l = null enemies' && null investigators'
- where
-  enemies' = locationEnemies $ toAttrs l
-  investigators' = locationInvestigators $ toAttrs l
+isEmptyLocation l = null enemies' && noInvestigatorsAtLocation l
+  where enemies' = locationEnemies $ toAttrs l
+
+noInvestigatorsAtLocation :: Location -> Bool
+noInvestigatorsAtLocation l = null investigators'
+  where investigators' = locationInvestigators $ toAttrs l
 
 isRevealed :: Location -> Bool
 isRevealed = locationRevealed . toAttrs

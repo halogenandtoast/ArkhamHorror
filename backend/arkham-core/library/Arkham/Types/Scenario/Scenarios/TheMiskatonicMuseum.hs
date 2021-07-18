@@ -246,7 +246,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       case mHuntingHorrorId of
         Just huntingHorrorId -> s <$ when
           (huntingHorrorId `elem` enemyIds)
-          (push $ EnemyAttack iid huntingHorrorId)
+          (push $ EnemyAttack iid huntingHorrorId DamageAny)
         Nothing -> pure s
     FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
       s <$ case tokenFace token of

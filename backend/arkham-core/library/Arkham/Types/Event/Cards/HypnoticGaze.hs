@@ -33,7 +33,7 @@ instance HasCount HealthDamageCount env EnemyId => RunMessage env HypnoticGaze w
   runMessage msg e@(HypnoticGaze (attrs `With` mEnemyId)) = case msg of
     InvestigatorPlayEvent iid eventId _ | eventId == toId attrs -> do
       enemyId <- withQueue $ \queue ->
-        let PerformEnemyAttack _ eid : queue' = dropUntilAttack queue
+        let PerformEnemyAttack _ eid _ : queue' = dropUntilAttack queue
         in (queue', eid)
       push (RequestTokens (toSource attrs) (Just iid) 1 SetAside)
       pure $ HypnoticGaze (attrs `with` Just enemyId)

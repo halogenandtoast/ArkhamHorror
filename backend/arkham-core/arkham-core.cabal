@@ -81,6 +81,7 @@ library
       Arkham.Types.Agenda.Cards.BidingItsTime
       Arkham.Types.Agenda.Cards.BreakingThrough
       Arkham.Types.Agenda.Cards.CallingForthTheOldOnes
+      Arkham.Types.Agenda.Cards.ChaosInTheCarnevale
       Arkham.Types.Agenda.Cards.ChaosInTheCloverClub
       Arkham.Types.Agenda.Cards.DeadOfNight
       Arkham.Types.Agenda.Cards.DrawnIn
@@ -108,6 +109,7 @@ library
       Arkham.Types.Agenda.Cards.TheOldOnesHunger
       Arkham.Types.Agenda.Cards.TheRitualBegins
       Arkham.Types.Agenda.Cards.TheRougarouFeeds
+      Arkham.Types.Agenda.Cards.TheShadowOfTheEclipse
       Arkham.Types.Agenda.Cards.TheyreGettingOut
       Arkham.Types.Agenda.Cards.TimeIsRunningShort
       Arkham.Types.Agenda.Cards.UndergroundMuscle
@@ -273,6 +275,7 @@ library
       Arkham.Types.Asset.Runner
       Arkham.Types.Asset.Uses
       Arkham.Types.AssetId
+      Arkham.Types.AssetMatcher
       Arkham.Types.Campaign
       Arkham.Types.Campaign.Attrs
       Arkham.Types.Campaign.Campaigns
@@ -360,6 +363,7 @@ library
       Arkham.Types.Enemy.Cards.AcolyteOfUmordhoth
       Arkham.Types.Enemy.Cards.AlmaHill
       Arkham.Types.Enemy.Cards.AvianThrall
+      Arkham.Types.Enemy.Cards.BalefulReveler
       Arkham.Types.Enemy.Cards.BillyCooper
       Arkham.Types.Enemy.Cards.BogGator
       Arkham.Types.Enemy.Cards.BroodOfYogSothoth

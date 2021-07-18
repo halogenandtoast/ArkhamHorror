@@ -31,7 +31,7 @@ instance EnemyAttrsHasActions env => HasActions env YithianStarseeker where
 
 instance (HasCount DiscardCount env InvestigatorId, EnemyAttrsRunMessage env) => RunMessage env YithianStarseeker where
   runMessage msg (YithianStarseeker attrs) = case msg of
-    PerformEnemyAttack iid eid | eid == enemyId attrs -> do
+    PerformEnemyAttack iid eid _ | eid == enemyId attrs -> do
       discardCount <- unDiscardCount <$> getCount iid
       YithianStarseeker <$> runMessage
         msg

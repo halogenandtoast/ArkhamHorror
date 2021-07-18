@@ -588,17 +588,21 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
             <$> traverse (getSetList . (enemyLocation, )) destinationLocationIds
           case pathIds of
             [] -> pure a
-            [lid] -> a <$ push (EnemyMove enemyId enemyLocation lid)
-            ls ->
-              a
-                <$ push
-                     (chooseOne leadInvestigatorId
-                     $ map (EnemyMove enemyId enemyLocation) ls
-                     )
+            [lid] -> a <$ pushAll
+              [ EnemyMove enemyId enemyLocation lid
+              , CheckWindow leadInvestigatorId [AfterMoveFromHunter enemyId]
+              ]
+            ls -> a <$ pushAll
+              (chooseOne
+                  leadInvestigatorId
+                  (map (EnemyMove enemyId enemyLocation) ls)
+              : [CheckWindow leadInvestigatorId [AfterMoveFromHunter enemyId]]
+              )
     EnemiesAttack | notNull enemyEngagedInvestigators && not enemyExhausted ->
       do
-        pushAll $ map (`EnemyWillAttack` enemyId) $ setToList
-          enemyEngagedInvestigators
+        pushAll
+          $ map (\iid -> EnemyWillAttack iid enemyId DamageAny)
+          $ setToList enemyEngagedInvestigators
         pure a
     AttackEnemy iid eid source skillType | eid == enemyId -> do
       enemyFight' <- modifiedEnemyFight a
@@ -631,17 +635,16 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
       -> do
         keywords <- getModifiedKeywords a
         a <$ if Keyword.Retaliate `elem` keywords
-          then push (EnemyAttack iid enemyId)
+          then push (EnemyAttack iid enemyId DamageAny)
           else push (FailedAttackEnemy iid enemyId)
     EnemyAttackIfEngaged eid miid | eid == enemyId -> a <$ case miid of
       Just iid | iid `elem` enemyEngagedInvestigators ->
-        push (EnemyAttack iid enemyId)
+        push (EnemyAttack iid enemyId DamageAny)
       Just _ -> pure ()
-      Nothing ->
-        pushAll
-          [ EnemyAttack iid enemyId
-          | iid <- setToList enemyEngagedInvestigators
-          ]
+      Nothing -> pushAll
+        [ EnemyAttack iid enemyId DamageAny
+        | iid <- setToList enemyEngagedInvestigators
+        ]
     EnemyEvaded iid eid | eid == enemyId ->
       pure $ a & engagedInvestigatorsL %~ deleteSet iid & exhaustedL .~ True
     TryEvadeEnemy iid eid source skillType | eid == enemyId -> do
@@ -664,18 +667,19 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
         keywords <- getModifiedKeywords a
         a <$ when
           (Keyword.Alert `elem` keywords)
-          (push $ EnemyAttack iid enemyId)
-    EnemyAttack iid eid | eid == enemyId ->
-      a <$ pushAll
-        [PerformEnemyAttack iid eid, After (PerformEnemyAttack iid eid)]
-    PerformEnemyAttack iid eid | eid == enemyId -> a <$ pushAll
+          (push $ EnemyAttack iid enemyId DamageAny)
+    EnemyAttack iid eid damageStrategy | eid == enemyId -> a <$ pushAll
+      [ PerformEnemyAttack iid eid damageStrategy
+      , After (PerformEnemyAttack iid eid damageStrategy)
+      ]
+    PerformEnemyAttack iid eid damageStrategy | eid == enemyId -> a <$ pushAll
       [ InvestigatorAssignDamage
         iid
         (EnemySource enemyId)
-        DamageAny
+        damageStrategy
         enemyHealthDamage
         enemySanityDamage
-      , After (EnemyAttack iid enemyId)
+      , After (EnemyAttack iid enemyId damageStrategy)
       ]
     HealDamage (EnemyTarget eid) n | eid == enemyId ->
       pure $ a & damageL %~ max 0 . subtract n
@@ -739,7 +743,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
             <$> getModifiersFor (toSource a) (EnemyTarget enemyId) ()
         a <$ unless
           (CannotMakeAttacksOfOpportunity `elem` modifiers')
-          (push (EnemyWillAttack iid enemyId))
+          (push (EnemyWillAttack iid enemyId DamageAny))
     InvestigatorDrawEnemy iid lid eid | eid == enemyId ->
       a
         <$ (case enemySpawnAt of

@@ -208,7 +208,7 @@ instance
           mYogSothothId <- getId (EnemyWithTitle "Yog-Sothoth")
           case mYogSothothId of
             Nothing -> pure ()
-            Just eid -> push (EnemyAttack iid eid)
+            Just eid -> push (EnemyAttack iid eid DamageAny)
         _ -> pure ()
     After (FailedSkillTest iid _ _ (TokenTarget token) _ _) ->
       s <$ case tokenFace token of
@@ -221,7 +221,7 @@ instance
           mYogSothothId <- getId (EnemyWithTitle "Yog-Sothoth")
           case mYogSothothId of
             Nothing -> pure ()
-            Just eid -> push (EnemyAttack iid eid)
+            Just eid -> push (EnemyAttack iid eid DamageAny)
         _ -> pure ()
     RequestedEncounterCard (ProxySource source (InvestigatorSource iid)) mcard
       | isSource attrs source -> s <$ case mcard of

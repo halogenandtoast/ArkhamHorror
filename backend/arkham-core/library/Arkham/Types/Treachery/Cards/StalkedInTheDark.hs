@@ -35,7 +35,7 @@ instance TreacheryRunner env => RunMessage env StalkedInTheDark where
           iids <- getSetList @InvestigatorId lid
           t <$ pushAll
             ([Ready (EnemyTarget eid), EnemyEngageInvestigator eid iid]
-            <> [ EnemyAttack iid' eid | iid' <- iids ]
+            <> [ EnemyAttack iid' eid DamageAny | iid' <- iids ]
             )
         Nothing -> t <$ pushAll [Surge iid source, Discard $ toTarget attrs]
     _ -> StalkedInTheDark <$> runMessage msg attrs

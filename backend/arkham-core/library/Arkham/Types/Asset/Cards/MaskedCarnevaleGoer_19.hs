@@ -15,6 +15,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
+import Arkham.Types.Source
 import Arkham.Types.Window
 
 newtype MaskedCarnevaleGoer_19 = MaskedCarnevaleGoer_19 AssetAttrs
@@ -38,6 +39,11 @@ instance HasActions env MaskedCarnevaleGoer_19 where
 
 instance HasModifiersFor env MaskedCarnevaleGoer_19
 
+locationOf :: AssetAttrs -> LocationId
+locationOf AssetAttrs { assetLocation } = case assetLocation of
+  Just lid -> lid
+  Nothing -> error "impossible"
+
 instance
   ( HasSet InvestigatorId env LocationId
   , HasQueue env
@@ -45,19 +51,22 @@ instance
   )
   => RunMessage env MaskedCarnevaleGoer_19 where
   runMessage msg a@(MaskedCarnevaleGoer_19 attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      case assetLocation attrs of
-        Just lid -> do
-          investigatorIds <- getSetList lid
-          let
-            salvatoreNeriId = EnemyId $ toCardId attrs
-            salvatoreNeri = EncounterCard
-              $ lookupEncounterCard Enemies.salvatoreNeri (toCardId attrs)
-          a <$ pushAll
-            ([ RemoveFromGame (toTarget attrs)
-             , CreateEnemyAt salvatoreNeri lid Nothing
-             ]
-            <> [ EnemyAttack iid salvatoreNeriId | iid <- investigatorIds ]
-            )
-        Nothing -> error "not possible"
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      let
+        lid = locationOf attrs
+        enemyId = EnemyId $ toCardId attrs
+      investigatorIds <- getSetList lid
+      a <$ pushAll
+        (Flip (InvestigatorSource iid) (toTarget attrs)
+        : [ EnemyAttack iid' enemyId DamageAny | iid' <- investigatorIds ]
+        )
+    Flip _ target | isTarget attrs target -> do
+      let
+        lid = locationOf attrs
+        salvatoreNeri = EncounterCard
+          $ lookupEncounterCard Enemies.salvatoreNeri (toCardId attrs)
+      a <$ pushAll
+        [ RemoveFromGame (toTarget attrs)
+        , CreateEnemyAt salvatoreNeri lid Nothing
+        ]
     _ -> MaskedCarnevaleGoer_19 <$> runMessage msg attrs

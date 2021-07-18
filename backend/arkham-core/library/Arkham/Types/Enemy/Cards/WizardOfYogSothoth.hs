@@ -34,8 +34,8 @@ instance (EnemyRunner env) => RunMessage env WizardOfYogSothoth where
     InvestigatorDrewEncounterCard iid card
       | iid `elem` enemyEngagedInvestigators -> e <$ when
         (any (`member` toTraits card) [Hex, Pact])
-        (push (EnemyAttack iid enemyId))
+        (push (EnemyAttack iid enemyId DamageAny))
     InvestigatorDrewPlayerCard iid card -> e <$ when
       (any (`member` toTraits card) [Hex, Pact])
-      (push (EnemyAttack iid enemyId))
+      (push (EnemyAttack iid enemyId DamageAny))
     _ -> WizardOfYogSothoth <$> runMessage msg attrs

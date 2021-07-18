@@ -13,6 +13,7 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
+import Arkham.Types.Source
 import Arkham.Types.Window
 
 newtype MaskedCarnevaleGoer_21 = MaskedCarnevaleGoer_21 AssetAttrs
@@ -42,7 +43,9 @@ instance
   )
   => RunMessage env MaskedCarnevaleGoer_21 where
   runMessage msg a@(MaskedCarnevaleGoer_21 attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      a <$ push (Flip (InvestigatorSource iid) (toTarget attrs))
+    Flip _ target | isTarget attrs target -> do
       case assetLocation attrs of
         Just lid -> do
           let

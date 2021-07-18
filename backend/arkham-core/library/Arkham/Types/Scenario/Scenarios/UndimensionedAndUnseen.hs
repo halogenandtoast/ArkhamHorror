@@ -330,7 +330,7 @@ instance
             == "02255"
             && (action `elem` [Action.Evade, Action.Fight])
             )
-            (push $ EnemyAttack iid eid)
+            (push $ EnemyAttack iid eid DamageAny)
         _ -> pure s
     RequestedPlayerCard iid source mcard | isSource attrs source ->
       case mcard of

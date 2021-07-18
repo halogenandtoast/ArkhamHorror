@@ -5,7 +5,10 @@ module Arkham.Types.Agenda.Cards.TheFestivitiesBegin
 
 import Arkham.Prelude
 
+import Arkham.EncounterCard
+import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
@@ -25,6 +28,11 @@ instance HasActions env TheFestivitiesBegin where
 
 instance AgendaRunner env => RunMessage env TheFestivitiesBegin where
   runMessage msg a@(TheFestivitiesBegin attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B ->
-      a <$ pushAll [NextAgenda aid "82003"]
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      balefulReveler <- genEncounterCard Enemies.balefulReveler
+      a <$ pushAll
+        [ InvestigatorDrewEncounterCard leadInvestigatorId balefulReveler
+        , NextAgenda aid "82003"
+        ]
     _ -> TheFestivitiesBegin <$> runMessage msg attrs

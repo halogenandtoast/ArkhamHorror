@@ -30,6 +30,6 @@ instance ActionRunner env => HasActions env WolfManDrew where
 
 instance (EnemyRunner env) => RunMessage env WolfManDrew where
   runMessage msg (WolfManDrew attrs) = case msg of
-    PerformEnemyAttack _ eid | eid == enemyId attrs ->
+    PerformEnemyAttack _ eid _ | eid == enemyId attrs ->
       WolfManDrew <$> runMessage msg (attrs & damageL %~ max 0 . subtract 1)
     _ -> WolfManDrew <$> runMessage msg attrs

@@ -71,6 +71,7 @@ allPlayerAssetCards :: HashMap CardCode CardDef
 allPlayerAssetCards = mapFromList $ map
   (toCardCode &&& id)
   [ placeholderAsset
+  , abbessAllegriaDiBiase
   , adaptable1
   , alyssaGraham
   , aquinnah1
@@ -130,6 +131,7 @@ allPlayerAssetCards = mapFromList $ map
   , holyRosary
   , hyperawareness
   , hyperawareness2
+  , innocentReveler
   , jennysTwin45s
   , jewelOfAureolus3
   , jimsTrumpet
@@ -151,6 +153,11 @@ allPlayerAssetCards = mapFromList $ map
   , machete
   , magnifyingGlass
   , magnifyingGlass1
+  , maskedCarnevaleGoer_17
+  , maskedCarnevaleGoer_18
+  , maskedCarnevaleGoer_19
+  , maskedCarnevaleGoer_20
+  , maskedCarnevaleGoer_21
   , medicalTexts
   , monstrousTransformation
   , newspaper
@@ -1245,6 +1252,41 @@ monstrousTransformation =
     { cdCardTraits = setFromList [Talent]
     , cdFast = True
     , cdWindows = setFromList [DuringTurn You]
+    }
+
+maskedCarnevaleGoer_17 :: CardDef
+maskedCarnevaleGoer_17 =
+  (storyAsset "82017b" "Masked Carnevale-Goer" 0 CarnevaleOfHorrors)
+    { cdCardTraits = singleton Carnevale
+    }
+
+maskedCarnevaleGoer_18 :: CardDef
+maskedCarnevaleGoer_18 =
+  (storyAsset "82018b" "Masked Carnevale-Goer" 0 CarnevaleOfHorrors)
+    { cdCardTraits = singleton Carnevale
+    }
+
+maskedCarnevaleGoer_19 :: CardDef
+maskedCarnevaleGoer_19 =
+  (storyAsset "82019b" "Masked Carnevale-Goer" 0 CarnevaleOfHorrors)
+    { cdCardTraits = singleton Carnevale
+    }
+
+maskedCarnevaleGoer_20 :: CardDef
+maskedCarnevaleGoer_20 =
+  (storyAsset "82020b" "Masked Carnevale-Goer" 0 CarnevaleOfHorrors)
+    { cdCardTraits = singleton Carnevale
+    }
+
+innocentReveler :: CardDef
+innocentReveler = (storyAsset "82021" "Innocent Reveler" 0 CarnevaleOfHorrors)
+  { cdCardTraits = setFromList [Ally, Bystander, Carnevale]
+  }
+
+maskedCarnevaleGoer_21 :: CardDef
+maskedCarnevaleGoer_21 =
+  (storyAsset "82021b" "Masked Carnevale-Goer" 0 CarnevaleOfHorrors)
+    { cdCardTraits = singleton Carnevale
     }
 
 abbessAllegriaDiBiase :: CardDef

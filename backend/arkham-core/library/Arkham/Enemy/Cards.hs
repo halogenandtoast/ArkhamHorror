@@ -72,6 +72,8 @@ allEncounterEnemyCards = mapFromList $ map
   , darkYoungHost
   , devoteeOfTheKey
   , discipleOfTheDevourer
+  , donLagorio
+  , elisabettaMagro
   , emergentMonstrosity
   , fleshEater
   , ghoulFromTheDepths
@@ -96,6 +98,8 @@ allEncounterEnemyCards = mapFromList $ map
   , ravenousGhoul
   , relentlessDarkYoung
   , ruthTurner
+  , salvatoreNeri
+  , savioCorvi
   , screechingByakhee
   , servantOfManyMouths
   , servantOfTheLurker
@@ -571,6 +575,57 @@ darkYoungHost = (enemy "81033" "Dark Young Host" CurseOfTheRougarou 1)
   { cdCardTraits = setFromList [Monster, DarkYoung]
   , cdVictoryPoints = Just 1
   }
+
+donLagorio :: CardDef
+donLagorio =
+  (enemy "82017" ("Don Lagorio" <:> "Secret Servant") CarnevaleOfHorrors 1)
+    { cdCardTraits = setFromList [Humanoid, Servitor, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdVictoryPoints = Just 1
+    , cdUnique = True
+    }
+
+elisabettaMagro :: CardDef
+elisabettaMagro = (enemy
+                    "82018"
+                    ("Elisabetta Magro" <:> "High Servant of the Order")
+                    CarnevaleOfHorrors
+                    1
+                  )
+  { cdCardTraits = setFromList [Humanoid, Lodge, Elite]
+  , cdKeywords = setFromList [Keyword.Aloof]
+  , cdVictoryPoints = Just 1
+  , cdUnique = True
+  }
+
+salvatoreNeri :: CardDef
+salvatoreNeri = (enemy
+                  "82019"
+                  ("Salvatore Neri" <:> "Master of Illusions")
+                  CarnevaleOfHorrors
+                  1
+                )
+  { cdCardTraits = setFromList [Humanoid, Sorcerer, Elite]
+  , cdKeywords = setFromList [Keyword.Retaliate]
+  , cdVictoryPoints = Just 1
+  , cdUnique = True
+  }
+
+savioCorvi :: CardDef
+savioCorvi =
+  (enemy "82020" ("Savio Corvi" <:> "Dark Lurker") CarnevaleOfHorrors 1)
+    { cdCardTraits = setFromList [Humanoid, Cultist, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdVictoryPoints = Just 1
+    , cdUnique = True
+    }
+
+cnidathqua :: CardDef
+cnidathqua =
+  (enemy "82027" ("Cnidathqua" <:> "The Many-armed Beast") CarnevaleOfHorrors 1)
+    { cdCardTraits = setFromList [Monster, AncientOne, Elite]
+    , cdUnique = True
+    }
 
 poleman :: CardDef
 poleman = (enemy "82028" "Poleman" CarnevaleOfHorrors 2)

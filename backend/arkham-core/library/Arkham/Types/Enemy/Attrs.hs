@@ -81,7 +81,8 @@ locationL :: Lens' EnemyAttrs LocationId
 locationL = lens enemyLocation $ \m x -> m { enemyLocation = x }
 
 asSelfLocationL :: Lens' EnemyAttrs (Maybe Text)
-asSelfLocationL = lens enemyAsSelfLocation $ \m x -> m { enemyAsSelfLocation = x }
+asSelfLocationL =
+  lens enemyAsSelfLocation $ \m x -> m { enemyAsSelfLocation = x }
 
 preyL :: Lens' EnemyAttrs Prey
 preyL = lens enemyPrey $ \m x -> m { enemyPrey = x }
@@ -547,7 +548,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
         )
     HuntersMove | null enemyEngagedInvestigators && not enemyExhausted -> do
       keywords <- getModifiedKeywords a
-      a <$ when (Keyword.Hunter `notElem` keywords) (push $ HunterMove (toId a))
+      a <$ when (Keyword.Hunter `elem` keywords) (push $ HunterMove (toId a))
     HunterMove eid | eid == toId a -> do
       modifiers' <-
         map modifierType
@@ -556,22 +557,20 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
         matchForcedTargetLocation = \case
           DuringEnemyPhaseMustMoveToward (LocationTarget lid) -> Just lid
           _ -> Nothing
-        forcedTargetLocation =
-          firstJust matchForcedTargetLocation modifiers'
+        forcedTargetLocation = firstJust matchForcedTargetLocation modifiers'
 
       -- The logic here is an artifact of doing this incorrect
       -- Prey is only used for breaking ties unless we're dealing
       -- with the Only keyword for prey, so here we hardcode prey
       -- to AnyPrey and then find if there are any investigators
       -- who qualify as prey to filter
-      matchingClosestLocationIds <-
-        case (forcedTargetLocation, enemyPrey) of
-          (Just forcedTargetLocationId, _) -> map unClosestPathLocationId
-            <$> getSetList (enemyLocation, forcedTargetLocationId)
-          (Nothing, OnlyPrey prey) ->
-            map unClosestPathLocationId <$> getSetList (enemyLocation, prey)
-          (Nothing, _prey) -> map unClosestPathLocationId
-            <$> getSetList (enemyLocation, AnyPrey)
+      matchingClosestLocationIds <- case (forcedTargetLocation, enemyPrey) of
+        (Just forcedTargetLocationId, _) -> map unClosestPathLocationId
+          <$> getSetList (enemyLocation, forcedTargetLocationId)
+        (Nothing, OnlyPrey prey) ->
+          map unClosestPathLocationId <$> getSetList (enemyLocation, prey)
+        (Nothing, _prey) ->
+          map unClosestPathLocationId <$> getSetList (enemyLocation, AnyPrey)
 
       preyIds <- setFromList . map unPreyId <$> getSetList enemyPrey
 

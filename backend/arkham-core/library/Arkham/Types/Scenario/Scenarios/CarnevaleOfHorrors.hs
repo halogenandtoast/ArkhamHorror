@@ -126,7 +126,7 @@ instance
 
       -- Assets
       abbess <- PlayerCard <$> genPlayerCard Assets.abbessAllegriaDiBiase
-      cnidathqua <- EncounterCard <$> genEncounterCard Enemies.cnidathqua -- TODO: this is a test
+      balefulReveler <- genEncounterCard Enemies.balefulReveler
 
       pushAllEnd
         $ [SetEncounterDeck encounterDeck, AddAgenda "82002", AddAct "82005"]
@@ -152,7 +152,9 @@ instance
         <> [ CreateStoryAssetAt abbess sanMarcoBasilicaId
            , RevealLocation Nothing sanMarcoBasilicaId
            , MoveAllTo sanMarcoBasilicaId
-           , CreateEnemy cnidathqua
+           , InvestigatorDrewEncounterCard
+             (fromMaybe (error "boop") $ headMay investigatorIds)
+             balefulReveler
            , AskMap
            . mapFromList
            $ [ ( iid

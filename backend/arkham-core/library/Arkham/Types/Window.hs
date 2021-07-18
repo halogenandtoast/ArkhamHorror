@@ -29,6 +29,7 @@ data Window
   | AfterFailSkillTest Who Int
   | AfterFailSkillTestAtOrLess Who Int
   | AfterLeaving Who LocationId
+  | AfterMoveFromHunter EnemyId
   | AfterEntering Who LocationId
   | AfterPassSkillTest (Maybe Action) Source Who Int
   | AfterPlayCard Who [Trait]

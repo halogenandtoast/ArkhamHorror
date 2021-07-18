@@ -260,14 +260,14 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         lid <- getId @LocationId iid
         enemyIds <- getSetList @EnemyId lid
         mrougarou <- findM (((== "81028") <$>) . getId @CardCode) enemyIds
-        s <$ for_ mrougarou (push . EnemyWillAttack iid)
+        s <$ for_ mrougarou (\eid -> push $ EnemyWillAttack iid eid DamageAny)
       else do
         lid <- getId @LocationId iid
         connectedLocationIds <- map unConnectedLocationId <$> getSetList lid
         enemyIds <- concat
           <$> for (lid : connectedLocationIds) (getSetList @EnemyId)
         mrougarou <- findM (((== "81028") <$>) . getId @CardCode) enemyIds
-        s <$ for_ mrougarou (push . EnemyWillAttack iid)
+        s <$ for_ mrougarou (\eid -> push $ EnemyWillAttack iid eid DamageAny)
     FailedSkillTest iid _ _ (TokenTarget token) _ _ -> s <$ when
       (tokenFace token == Tablet)
       (push $ CreateEffect

@@ -43,7 +43,7 @@ instance AssetRunner env => RunMessage env Aquinnah3 where
   runMessage msg a@(Aquinnah3 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       enemyId <- withQueue $ \queue ->
-        let PerformEnemyAttack _ eid : queue' = dropUntilAttack queue
+        let PerformEnemyAttack _ eid _ : queue' = dropUntilAttack queue
         in (queue', eid)
       healthDamage' <- unHealthDamageCount <$> getCount enemyId
       sanityDamage' <- unSanityDamageCount <$> getCount enemyId

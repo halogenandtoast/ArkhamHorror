@@ -81,7 +81,7 @@ story iids msg = AskMap
     [ (iid, ChooseOne [Run [Continue "Continue", msg]]) | iid <- iids ]
   )
 
-data DamageStrategy = DamageAny | DamageAssetsFirst
+data DamageStrategy = DamageAny | DamageAssetsFirst | DamageFirst CardDef
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -256,7 +256,7 @@ data Message
   | EndTurn InvestigatorId
   | EndUpkeep
   | EnemiesAttack
-  | EnemyAttack InvestigatorId EnemyId
+  | EnemyAttack InvestigatorId EnemyId DamageStrategy
   | EnemyAttackIfEngaged EnemyId (Maybe InvestigatorId)
   | EnemyAttacks [Message]
   | EnemyCheckEngagement EnemyId
@@ -274,7 +274,7 @@ data Message
   | EnemySpawnEngagedWithPrey EnemyId
   | EnemySpawnFromVoid (Maybe InvestigatorId) LocationId EnemyId
   | EnemySpawnedAt LocationId EnemyId
-  | EnemyWillAttack InvestigatorId EnemyId
+  | EnemyWillAttack InvestigatorId EnemyId DamageStrategy
   | EngageEnemy InvestigatorId EnemyId Bool
   | EvadeEnemy InvestigatorId EnemyId Source SkillType Bool
   | Exhaust Target
@@ -308,6 +308,7 @@ data Message
   | InitDeck InvestigatorId (Deck PlayerCard) -- used to initialize the deck for the campaign
   | UpgradeDeck InvestigatorId (Deck PlayerCard) -- used to upgrade deck during campaign
   | FinishedUpgradingDecks
+  | Flip Source Target
   | InitiatePlayCard InvestigatorId CardId (Maybe Target) Bool
   | InitiatePlayFastEvent InvestigatorId CardId (Maybe Target) Bool
   | InitiatePlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
@@ -373,7 +374,7 @@ data Message
   | PayDynamicCardCost InvestigatorId CardId Int [Message]
   | PayForCardAbility InvestigatorId Source (Maybe AbilityMetadata) Int
   | PayedForDynamicCard InvestigatorId CardId Int Bool
-  | PerformEnemyAttack InvestigatorId EnemyId
+  | PerformEnemyAttack InvestigatorId EnemyId DamageStrategy
   | PlaceClues Target Int
   | PlaceDoom Target Int
   | PlaceDoomOnAgenda

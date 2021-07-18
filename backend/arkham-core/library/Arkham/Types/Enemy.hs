@@ -33,6 +33,7 @@ data Enemy
   | AcolyteOfUmordhoth' AcolyteOfUmordhoth
   | AlmaHill' AlmaHill
   | AvianThrall' AvianThrall
+  | BalefulReveler' BalefulReveler
   | BillyCooper' BillyCooper
   | BogGator' BogGator
   | BroodOfYogSothoth' BroodOfYogSothoth
@@ -244,6 +245,7 @@ allEnemies = mapFromList $ map
   , AcolyteOfUmordhoth' <$> acolyteOfUmordhoth
   , AlmaHill' <$> almaHill
   , AvianThrall' <$> avianThrall
+  , BalefulReveler' <$> balefulReveler
   , BillyCooper' <$> billyCooper
   , BogGator' <$> bogGator
   , BroodOfYogSothoth' <$> broodOfYogSothoth

@@ -24,6 +24,6 @@ instance ActionRunner env => HasActions env GraveEater where
 
 instance (EnemyRunner env) => RunMessage env GraveEater where
   runMessage msg e@(GraveEater attrs) = case msg of
-    After (EnemyAttack iid eid) | eid == enemyId attrs ->
+    After (EnemyAttack iid eid _) | eid == enemyId attrs ->
       e <$ push (RandomDiscard iid)
     _ -> GraveEater <$> runMessage msg attrs

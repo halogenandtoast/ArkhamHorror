@@ -15,6 +15,7 @@ import Arkham.Types.Action (Action, TakenAction)
 import Arkham.Types.Agenda
 import Arkham.Types.Asset
 import Arkham.Types.Asset.Uses (UseType)
+import Arkham.Types.AssetMatcher
 import Arkham.Types.Campaign
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
@@ -499,6 +500,19 @@ getLocationsMatching = \case
       <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
     filter ((`member` matches) . toId) . toList . view locationsL <$> getGame
 
+getAssetsMatching
+  :: (MonadReader env m, HasGame env) => AssetMatcher -> m [Asset]
+getAssetsMatching = \case
+  AssetWithTitle title ->
+    filter ((== title) . nameTitle . toName) . toList . view assetsL <$> getGame
+  AssetWithFullTitle title subtitle ->
+    filter ((== Name title (Just subtitle)) . toName)
+      . toList
+      . view assetsL
+      <$> getGame
+  AssetWithId assetId ->
+    filter ((== assetId) . toId) . toList . view assetsL <$> getGame
+
 getSkill
   :: (HasCallStack, MonadReader env m, HasGame env) => SkillId -> m Skill
 getSkill sid =
@@ -668,6 +682,9 @@ instance HasGame env => HasId (Maybe LocationId) env (Direction, LocationId) whe
 
 instance HasGame env => HasId (Maybe LocationId) env LocationMatcher where
   getId = (fmap toId <$>) . getLocationMatching
+
+instance HasGame env => HasSet AssetId env AssetMatcher where
+  getSet = fmap (setFromList . map toId) . getAssetsMatching
 
 instance HasGame env => HasSet EnemyId env LocationMatcher where
   getSet locationMatcher = do
@@ -2399,7 +2416,7 @@ runGameMessage msg g = case msg of
           (_ : xs) -> xs
       in before <> remaining
     pure g
-  EnemyAttack iid _ -> g <$ broadcastWindow Fast.WhenEnemyAttacks iid g
+  EnemyAttack iid _ _ -> g <$ broadcastWindow Fast.WhenEnemyAttacks iid g
   EnemyEngageInvestigator eid iid ->
     g <$ broadcastWindow (`Fast.AfterEnemyEngageInvestigator` eid) iid g
   SkillTestAsk (Ask iid1 (ChooseOne c1)) -> do
@@ -2429,7 +2446,7 @@ runGameMessage msg g = case msg of
           )
       _ -> push (AskMap askMap)
     pure g
-  EnemyWillAttack iid eid -> do
+  EnemyWillAttack iid eid damageStrategy -> do
     modifiers' <-
       map modifierType
         <$> getModifiersFor (EnemySource eid) (InvestigatorTarget iid) ()
@@ -2446,12 +2463,12 @@ runGameMessage msg g = case msg of
         case mNextMessage of
           Just (EnemyAttacks as) -> do
             _ <- popMessage
-            push (EnemyAttacks (EnemyAttack iid eid : as))
+            push (EnemyAttacks (EnemyAttack iid eid damageStrategy : as))
           Just aoo@(CheckAttackOfOpportunity _ _) -> do
             _ <- popMessage
             push msg
             push aoo
-          Just (EnemyWillAttack iid2 eid2) -> do
+          Just (EnemyWillAttack iid2 eid2 damageStrategy2) -> do
             _ <- popMessage
             modifiers2' <-
               map modifierType
@@ -2469,9 +2486,13 @@ runGameMessage msg g = case msg of
                   || (Elite `elem` toTraits enemy2)
             if canAttack2
               then push
-                (EnemyAttacks [EnemyAttack iid eid, EnemyAttack iid2 eid2])
-              else push (EnemyAttacks [EnemyAttack iid eid])
-          _ -> push (EnemyAttack iid eid)
+                (EnemyAttacks
+                  [ EnemyAttack iid eid damageStrategy
+                  , EnemyAttack iid2 eid2 damageStrategy2
+                  ]
+                )
+              else push (EnemyAttacks [EnemyAttack iid eid damageStrategy])
+          _ -> push (EnemyAttack iid eid damageStrategy)
         pure g
       else pure g
   EnemyAttacks as -> do
@@ -2484,9 +2505,9 @@ runGameMessage msg g = case msg of
         _ <- popMessage
         push msg
         push aoo
-      Just (EnemyWillAttack iid2 eid2) -> do
+      Just (EnemyWillAttack iid2 eid2 damageStrategy2) -> do
         _ <- popMessage
-        push (EnemyAttacks (EnemyAttack iid2 eid2 : as))
+        push (EnemyAttacks (EnemyAttack iid2 eid2 damageStrategy2 : as))
       _ -> push (chooseOneAtATime (gameLeadInvestigatorId g) as)
     pure g
   When (AssetDefeated aid) -> g <$ pushAll

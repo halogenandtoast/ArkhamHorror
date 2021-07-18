@@ -61,6 +61,7 @@ allEncounterEnemyCards = mapFromList $ map
   , acolyteOfUmordhoth
   , almaHill
   , avianThrall
+  , balefulReveler
   , billyCooper
   , bogGator
   , broodOfYogSothoth
@@ -575,6 +576,16 @@ darkYoungHost = (enemy "81033" "Dark Young Host" CurseOfTheRougarou 1)
   { cdCardTraits = setFromList [Monster, DarkYoung]
   , cdVictoryPoints = Just 1
   }
+
+balefulReveler :: CardDef
+balefulReveler =
+  (enemy "82002b" ("Baleful Reveler" <:> "Spreading Chaos") CarnevaleOfHorrors 1
+    )
+    { cdCardTraits = setFromList [Humanoid, Cultist, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    , cdVictoryPoints = Just 2
+    , cdUnique = True
+    }
 
 donLagorio :: CardDef
 donLagorio =

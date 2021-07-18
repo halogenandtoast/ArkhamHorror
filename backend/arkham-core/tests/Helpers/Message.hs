@@ -43,7 +43,7 @@ chooseEndTurn :: Investigator -> Message
 chooseEndTurn i = ChooseEndTurn (toId i)
 
 enemyAttack :: Investigator -> Enemy -> Message
-enemyAttack i e = EnemyAttack (toId i) (toId e)
+enemyAttack i e = EnemyAttack (toId i) (toId e) DamageAny
 
 fightEnemy :: Investigator -> Enemy -> Message
 fightEnemy i e =

@@ -7,12 +7,12 @@ import Arkham.Prelude
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Cards
 import Arkham.Types.Agenda.Runner
-import Arkham.Types.AgendaId
+import Arkham.Types.AssetMatcher
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
 import Arkham.Types.EnemyMatcher
 import Arkham.Types.GameValue
+import Arkham.Types.Id
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Trait (Trait)
@@ -64,6 +64,7 @@ allAgendas = mapFrom
   , TheRougarouFeeds' theRougarouFeeds
   , TheCurseSpreads' theCurseSpreads
   , TheFestivitiesBegin' theFestivitiesBegin
+  , TheShadowOfTheEclipse' theShadowOfTheEclipse
   ]
 
 instance HasList UnderneathCard env Agenda where
@@ -115,12 +116,13 @@ data Agenda
   | TheRougarouFeeds' TheRougarouFeeds
   | TheCurseSpreads' TheCurseSpreads
   | TheFestivitiesBegin' TheFestivitiesBegin
+  | TheShadowOfTheEclipse' TheShadowOfTheEclipse
   | BaseAgenda' BaseAgenda
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance ActionRunner env => HasActions env Agenda
-deriving anyclass instance (HasId (Maybe EnemyId) env EnemyMatcher, HasRecord env, AgendaRunner env) => RunMessage env Agenda
+deriving anyclass instance (HasSet AssetId env AssetMatcher, HasId (Maybe EnemyId) env EnemyMatcher, HasRecord env, AgendaRunner env) => RunMessage env Agenda
 
 instance (HasSet EnemyId env (), HasSet Trait env EnemyId) => HasModifiersFor env Agenda where
   getModifiersFor = genericGetModifiersFor

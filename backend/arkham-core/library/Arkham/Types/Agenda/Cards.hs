@@ -36,6 +36,7 @@ import Arkham.Types.Agenda.Cards.TheMawWidens as X
 import Arkham.Types.Agenda.Cards.TheOldOnesHunger as X
 import Arkham.Types.Agenda.Cards.TheRitualBegins as X
 import Arkham.Types.Agenda.Cards.TheRougarouFeeds as X
+import Arkham.Types.Agenda.Cards.TheShadowOfTheEclipse as X
 import Arkham.Types.Agenda.Cards.TheyreGettingOut as X
 import Arkham.Types.Agenda.Cards.TimeIsRunningShort as X
 import Arkham.Types.Agenda.Cards.UndergroundMuscle as X

@@ -40,7 +40,7 @@ instance TreacheryRunner env => RunMessage env BeastOfTheBayou where
             [] -> pushAll [PlaceDoomOnAgenda, Discard (toTarget attrs)]
             xs ->
               pushAll
-                ([ EnemyAttack iid' eid | iid' <- xs ]
+                ([ EnemyAttack iid' eid DamageAny | iid' <- xs ]
                 <> [Discard (toTarget attrs)]
                 )
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n

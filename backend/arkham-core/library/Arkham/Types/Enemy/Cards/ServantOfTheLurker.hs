@@ -31,7 +31,7 @@ instance ActionRunner env => HasActions env ServantOfTheLurker where
 
 instance (EnemyRunner env) => RunMessage env ServantOfTheLurker where
   runMessage msg (ServantOfTheLurker attrs@EnemyAttrs {..}) = case msg of
-    PerformEnemyAttack iid eid | eid == enemyId -> do
+    PerformEnemyAttack iid eid _ | eid == enemyId -> do
       push $ DiscardTopOfDeck iid 2 Nothing
       ServantOfTheLurker <$> runMessage msg attrs
     _ -> ServantOfTheLurker <$> runMessage msg attrs

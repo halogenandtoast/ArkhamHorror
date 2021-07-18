@@ -30,7 +30,7 @@ instance ActionRunner env => HasActions env SilverTwilightAcolyte where
 
 instance (EnemyRunner env) => RunMessage env SilverTwilightAcolyte where
   runMessage msg (SilverTwilightAcolyte attrs@EnemyAttrs {..}) = case msg of
-    EnemyAttack _ eid | eid == enemyId -> do
+    EnemyAttack _ eid _ | eid == enemyId -> do
       push PlaceDoomOnAgenda
       SilverTwilightAcolyte <$> runMessage msg attrs
     _ -> SilverTwilightAcolyte <$> runMessage msg attrs

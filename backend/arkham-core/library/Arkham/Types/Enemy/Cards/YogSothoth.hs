@@ -36,7 +36,7 @@ instance EnemyAttrsHasActions env => HasActions env YogSothoth where
 
 instance EnemyAttrsRunMessage env => RunMessage env YogSothoth where
   runMessage msg e@(YogSothoth attrs@EnemyAttrs {..}) = case msg of
-    PerformEnemyAttack iid eid | eid == enemyId -> e <$ pushAll
+    PerformEnemyAttack iid eid _ | eid == enemyId -> e <$ pushAll
       (chooseOne
           iid
           [ Label
@@ -56,7 +56,7 @@ instance EnemyAttrsRunMessage env => RunMessage env YogSothoth where
               ]
           | discardCount <- [0 .. enemySanityDamage]
           ]
-      : [After (EnemyAttack iid eid)]
+      : [After (EnemyAttack iid eid DamageAny)]
       )
     DeckHasNoCards iid (Just target) | isTarget attrs target ->
       e <$ push (DrivenInsane iid)

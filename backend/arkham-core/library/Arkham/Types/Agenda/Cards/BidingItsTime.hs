@@ -80,5 +80,5 @@ instance AgendaRunner env => RunMessage env BidingItsTime where
         )
     FailedSkillTest iid _ source (SkillTestInitiatorTarget (EnemyTarget eid)) _ _
       | isSource attrs source
-      -> a <$ push (EnemyAttack iid eid)
+      -> a <$ push (EnemyAttack iid eid DamageAny)
     _ -> BidingItsTime <$> runMessage msg attrs

@@ -24,6 +24,6 @@ instance ActionRunner env => HasActions env Mobster where
 
 instance (EnemyRunner env) => RunMessage env Mobster where
   runMessage msg e@(Mobster attrs@EnemyAttrs {..}) = case msg of
-    After (PerformEnemyAttack iid eid) | eid == enemyId ->
+    After (PerformEnemyAttack iid eid _) | eid == enemyId ->
       e <$ push (SpendResources iid 1)
     _ -> Mobster <$> runMessage msg attrs

@@ -18,7 +18,7 @@ spec = do
       dodge <- genPlayerCard Cards.dodge
 
       (didRunMessage, logger) <- createMessageMatcher
-        (PerformEnemyAttack "00000" (toId enemy))
+        (PerformEnemyAttack "00000" (toId enemy) DamageAny)
 
       gameTestWithLogger
           logger

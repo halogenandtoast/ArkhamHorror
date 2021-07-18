@@ -36,7 +36,7 @@ instance ActionRunner env => HasActions env Aquinnah1 where
   getActions iid (WhenEnemyAttacks You) (Aquinnah1 a) | ownedBy a iid = do
     locationId <- getId @LocationId iid
     enemyId <- fromQueue $ \queue ->
-      let PerformEnemyAttack iid' eid : _ = dropUntilAttack queue
+      let PerformEnemyAttack iid' eid _ : _ = dropUntilAttack queue
       in if iid' == iid then eid else error "mismatch"
     enemyIds <- filterSet (/= enemyId) <$> getSet locationId
     pure [ UseAbility iid (reactionAbility a) | notNull enemyIds ]
@@ -46,7 +46,7 @@ instance AssetRunner env => RunMessage env Aquinnah1 where
   runMessage msg a@(Aquinnah1 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       enemyId <- withQueue $ \queue ->
-        let PerformEnemyAttack _ eid : queue' = dropUntilAttack queue
+        let PerformEnemyAttack _ eid _ : queue' = dropUntilAttack queue
         in (queue', eid)
       healthDamage' <- unHealthDamageCount <$> getCount enemyId
       sanityDamage' <- unSanityDamageCount <$> getCount enemyId

@@ -36,6 +36,8 @@ data Target
   | TreacheryTarget TreacheryId
   | EncounterDeckTarget
   | ScenarioDeckTarget
+  | AgendaDeckTarget
+  | ActDeckTarget
   | AgendaTarget AgendaId
   | ActTarget ActId
   | CardIdTarget CardId

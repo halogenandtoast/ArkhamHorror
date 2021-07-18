@@ -21,6 +21,7 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.ChaosBag
 import Arkham.Types.Classes hiding (discard)
+import Arkham.Types.Decks
 import Arkham.Types.Difficulty
 import Arkham.Types.Direction
 import Arkham.Types.Effect
@@ -1155,11 +1156,27 @@ instance HasGame env => HasSet Keyword env EnemyId where
 instance HasGame env => HasList UnderneathCard env LocationId where
   getList = getList <=< getLocation
 
+instance HasGame env => HasList UnderneathCard env AgendaDeck where
+  getList _ = do
+    mode <- view modeL <$> getGame
+    case modeScenario mode of
+      Just s -> getList (s, AgendaDeck)
+      Nothing -> pure []
+
+instance HasGame env => HasList UnderneathCard env ActDeck where
+  getList _ = do
+    mode <- view modeL <$> getGame
+    case modeScenario mode of
+      Just s -> getList (s, ActDeck)
+      Nothing -> pure []
+
 instance HasGame env => HasSet Trait env LocationId where
   getSet lid = toTraits <$> getLocation lid
 
 instance HasGame env => HasSet Trait env Source where
   getSet = \case
+    ActDeckSource{} -> pure mempty
+    AgendaDeckSource{} -> pure mempty
     AbilitySource{} -> pure mempty
     AssetSource aid -> toTraits <$> getAsset aid
     EventSource eid -> toTraits <$> getEvent eid
@@ -1510,6 +1527,36 @@ instance HasGame env => HasSet ClosestPathLocationId env (LocationId, Prey) wher
   getSet (start, prey) = do
     let matcher lid = notNull <$> getSet @PreyId (prey, lid)
     setFromList . coerce <$> getShortestPath start matcher
+
+instance HasGame env => HasSet ClosestAssetId env (InvestigatorId, CardDef) where
+  getSet (iid, cardDef) = do
+    start <- locationFor iid
+    currentAssets <- traverse getAsset =<< getSetList @AssetId start
+    if notNull $ matches currentAssets
+      then pure $ setFromList $ map
+        (ClosestAssetId . toId)
+        (matches currentAssets)
+      else do
+        locations <- coerce <$> getShortestPath start matcher
+        case locations of
+          [] -> pure mempty
+          lids ->
+            unions
+              <$> traverse
+                    (\lid ->
+                      setFromList
+                        . map (ClosestAssetId . toId)
+                        . matches
+                        <$> (traverse getAsset =<< getSetList @AssetId
+                              (unClosestLocationId lid)
+                            )
+                    )
+                    lids
+   where
+    matches = filter ((== cardDef) . toCardDef)
+    matcher lid = do
+      assets <- traverse getAsset =<< getSetList @AssetId lid
+      pure $ notNull (matches assets)
 
 instance HasGame env => HasSet ClosestEnemyId env LocationId where
   getSet start = do

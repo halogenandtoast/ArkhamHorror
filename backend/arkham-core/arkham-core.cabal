@@ -306,6 +306,7 @@ library
       Arkham.Types.ClassSymbol
       Arkham.Types.CommitRestriction
       Arkham.Types.Cost
+      Arkham.Types.Decks
       Arkham.Types.Difficulty
       Arkham.Types.Direction
       Arkham.Types.Effect

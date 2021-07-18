@@ -280,7 +280,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
     RevealSkillTestTokens iid -> do
       revealedTokenFaces <- flip
         concatMapM
-        skillTestRevealedTokens
+        (skillTestRevealedTokens \\ skillTestResolvedTokens)
         \token -> do
           faces <- getModifiedTokenFaces s [token]
           pure [ (token, face) | face <- faces ]

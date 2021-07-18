@@ -283,9 +283,11 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioAttrsRunner env)
             ]
     PlaceLocation _ cardDef -> pure $ a & setAsideCardsL %~ deleteFirstMatch
       ((== toCardCode cardDef) . toCardCode)
-    PlaceUnderneath AgendaDeckTarget cards ->
+    PlaceUnderneath AgendaDeckTarget cards -> do
+      push (After msg)
       pure $ a & cardsUnderneathAgendaDeckL <>~ cards
-    PlaceUnderneath ActDeckTarget cards ->
+    PlaceUnderneath ActDeckTarget cards -> do
+      push (After msg)
       pure $ a & cardsUnderneathActDeckL <>~ cards
     RequestSetAsideCard target cardCode -> do
       let

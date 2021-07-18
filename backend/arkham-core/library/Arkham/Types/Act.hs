@@ -53,6 +53,7 @@ data Act
   | FindingLadyEsprit' FindingLadyEsprit
   | HuntingTheRougarou' HuntingTheRougarou
   | TheCarnevaleConspiracy' TheCarnevaleConspiracy
+  | GetToTheBoats' GetToTheBoats
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -62,6 +63,7 @@ deriving anyclass instance
   , HasName env LocationId, ActRunner env
   , HasList UnderneathCard env ActDeck
   , HasList UnderneathCard env AgendaDeck
+  , HasId LocationId env InvestigatorId
   )
   => RunMessage env Act
 
@@ -129,4 +131,5 @@ allActs = mapFrom
   , FindingLadyEsprit' findingLadyEsprit
   , HuntingTheRougarou' huntingTheRougarou
   , TheCarnevaleConspiracy' theCarnevaleConspiracy
+  , GetToTheBoats' getToTheBoats
   ]

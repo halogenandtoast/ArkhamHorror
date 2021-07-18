@@ -104,6 +104,7 @@ type InvestigatorRunner env
         , HasSet AssetId env ()
         , HasSet AssetId env (InvestigatorId, UseType)
         , HasSet AssetId env (InvestigatorId, [Trait])
+        , HasSet AssetId env (InvestigatorId, CardDef)
         , HasSet AssetId env InvestigatorId
         , HasSet AssetId env LocationId
         , HasSet BlockedLocationId env ()

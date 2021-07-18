@@ -1,4 +1,5 @@
 import { JsonDecoder } from 'ts.data.json';
+import { Card, cardDecoder } from '@/arkham/types/Card';
 
 export interface ScenarioName {
   title: string;
@@ -28,6 +29,8 @@ export interface ScenarioContents {
   difficulty: string;
   locationLayout: string[] | null;
   deck: ScenarioDeck | null;
+  cardsUnderAgendaDeck: Card[];
+  cardsUnderActDeck: Card[];
 }
 
 export const scenarioDeckDecoder = JsonDecoder.object<ScenarioDeck>({
@@ -40,6 +43,8 @@ export const scenarioContentsDecoder = JsonDecoder.object<ScenarioContents>({
   difficulty: JsonDecoder.string,
   locationLayout: JsonDecoder.nullable(JsonDecoder.array<string>(JsonDecoder.string, 'GridLayout[]')),
   deck: JsonDecoder.nullable(scenarioDeckDecoder),
+  cardsUnderAgendaDeck: JsonDecoder.array<Card>(cardDecoder, 'UnderneathAgendaCards'),
+  cardsUnderActDeck: JsonDecoder.array<Card>(cardDecoder, 'UnderneathActCards'),
 }, 'ScenarioContents');
 
 export const scenarioDecoder = JsonDecoder.object<Scenario>({

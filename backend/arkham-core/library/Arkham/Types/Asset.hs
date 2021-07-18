@@ -95,6 +95,7 @@ data Asset
   | HolyRosary' HolyRosary
   | Hyperawareness' Hyperawareness
   | Hyperawareness2' Hyperawareness2
+  | InnocentReveler' InnocentReveler
   | JazzMulligan' JazzMulligan
   | JennysTwin45s' JennysTwin45s
   | JewelOfAureolus3' JewelOfAureolus3
@@ -212,6 +213,7 @@ instance
   , HasCount DoomCount env InvestigatorId
   , HasList DiscardedPlayerCard env InvestigatorId
   , HasList CommittedCard env InvestigatorId
+  , HasId LeadInvestigatorId env ()
   , AssetRunner env
   )
   => RunMessage env Asset where
@@ -373,6 +375,7 @@ allAssets = mapFromList $ map
   , HolyRosary' <$> holyRosary
   , Hyperawareness' <$> hyperawareness
   , Hyperawareness2' <$> hyperawareness2
+  , InnocentReveler' <$> innocentReveler
   , JazzMulligan' <$> jazzMulligan
   , JennysTwin45s' <$> jennysTwin45s
   , JewelOfAureolus3' <$> jewelOfAureolus3

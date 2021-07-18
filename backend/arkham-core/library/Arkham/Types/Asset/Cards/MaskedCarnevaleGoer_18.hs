@@ -10,16 +10,18 @@ import Arkham.EncounterCard
 import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
+import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Window
 
 newtype MaskedCarnevaleGoer_18 = MaskedCarnevaleGoer_18 AssetAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, TargetEntity)
 
 maskedCarnevaleGoer_18 :: AssetCard MaskedCarnevaleGoer_18
 maskedCarnevaleGoer_18 =
@@ -48,6 +50,7 @@ instance
   ( HasSet InvestigatorId env LocationId
   , HasQueue env
   , HasModifiersFor env ()
+  , HasId LeadInvestigatorId env ()
   )
   => RunMessage env MaskedCarnevaleGoer_18 where
   runMessage msg a@(MaskedCarnevaleGoer_18 attrs) = case msg of
@@ -68,5 +71,14 @@ instance
       a <$ pushAll
         [ RemoveFromGame (toTarget attrs)
         , CreateEnemyAt elisabettaMagro lid Nothing
+        ]
+    LookAtRevealed _ target | isTarget a target -> do
+      let
+        elisabettaMagro = EncounterCard
+          $ lookupEncounterCard Enemies.elisabettaMagro (toCardId attrs)
+      leadInvestigatorId <- getLeadInvestigatorId
+      a <$ pushAll
+        [ FocusCards [elisabettaMagro]
+        , chooseOne leadInvestigatorId [Label "Continue" [UnfocusCards]]
         ]
     _ -> MaskedCarnevaleGoer_18 <$> runMessage msg attrs

@@ -86,6 +86,8 @@ export default defineComponent({
           return c.contents.contents === id.value
         case MessageType.REMOVE_DOOM:
           return c.contents[0].contents === id.value
+        case MessageType.LOOK_AT_REVEALED:
+          return c.contents[1].contents === id.value
         case MessageType.ADD_USES:
           return c.contents[0].contents === id.value
         case MessageType.USE_CARD_ABILITY:

@@ -6,6 +6,7 @@ module Arkham.Types.Scenario.Scenarios.CarnevaleOfHorrors
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Assets
+import Arkham.EncounterCard
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
 import Arkham.PlayerCard
@@ -45,13 +46,13 @@ carnevaleOfHorrors difficulty = CarnevaleOfHorrors $ (baseAttrs
                                                        difficulty
                                                      )
   { scenarioLocationLayout = Just
-    [ ".         .         .         location1 .         .         ."
-    , ".         location8 location8 location1 location2 location2 ."
-    , ".         location8 location8 .         location2 location2 ."
-    , "location7 location7 .         .         .         location3 location3"
-    , ".         location6 location6 .         location4 location4 ."
-    , ".         location6 location6 location5 location4 location4 ."
-    , ".         .         .         location5 .         .         ."
+    [ ".         .         .         location1  .         .         ."
+    , ".         location8 location8 location1  location2 location2 ."
+    , ".         location8 location8 .          location2 location2 ."
+    , "location7 location7 .         cnidathqua .         location3 location3"
+    , ".         location6 location6 .          location4 location4 ."
+    , ".         location6 location6 location5  location4 location4 ."
+    , ".         .         .         location5  .         .         ."
     ]
   }
 
@@ -125,6 +126,7 @@ instance
 
       -- Assets
       abbess <- PlayerCard <$> genPlayerCard Assets.abbessAllegriaDiBiase
+      cnidathqua <- EncounterCard <$> genEncounterCard Enemies.cnidathqua -- TODO: this is a test
 
       pushAllEnd
         $ [SetEncounterDeck encounterDeck, AddAgenda "82002", AddAct "82005"]
@@ -150,6 +152,7 @@ instance
         <> [ CreateStoryAssetAt abbess sanMarcoBasilicaId
            , RevealLocation Nothing sanMarcoBasilicaId
            , MoveAllTo sanMarcoBasilicaId
+           , CreateEnemy cnidathqua
            , AskMap
            . mapFromList
            $ [ ( iid

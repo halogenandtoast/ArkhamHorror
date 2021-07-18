@@ -84,6 +84,15 @@
         :style="{ 'grid-area': location.contents.label, 'justify-self': 'center' }"
         @choose="$emit('choose', $event)"
       />
+      <Enemy
+        v-for="enemy in enemiesAsLocations"
+        :key="enemy.contents.id"
+        :enemy="enemy"
+        :game="game"
+        :investigatorId="investigatorId"
+        :style="{ 'grid-area': enemy.contents.asSelfLocation, 'justify-self': 'center' }"
+        @choose="$emit('choose', $event)"
+      />
     </div>
 
     <PlayerTabs
@@ -266,6 +275,8 @@ export default defineComponent({
       emit('update', game);
     }
 
+    const enemiesAsLocations = computed(() => Object.values(props.game.enemies).filter((enemy) => enemy.contents.asSelfLocation !== null))
+
 
     return {
       update,
@@ -276,7 +287,8 @@ export default defineComponent({
       locationStyles,
       scenarioGuide,
       scenarioDeck,
-      topEnemyInVoid
+      topEnemyInVoid,
+      enemiesAsLocations
     }
   },
 

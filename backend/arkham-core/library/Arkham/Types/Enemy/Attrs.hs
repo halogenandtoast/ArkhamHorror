@@ -55,6 +55,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyDoom :: Int
   , enemyClues :: Int
   , enemySpawnAt :: Maybe LocationMatcher
+  , enemyAsSelfLocation :: Maybe Text
   }
   deriving stock (Show, Eq, Generic)
 
@@ -78,6 +79,9 @@ evadeL = lens enemyEvade $ \m x -> m { enemyEvade = x }
 
 locationL :: Lens' EnemyAttrs LocationId
 locationL = lens enemyLocation $ \m x -> m { enemyLocation = x }
+
+asSelfLocationL :: Lens' EnemyAttrs (Maybe Text)
+asSelfLocationL = lens enemyAsSelfLocation $ \m x -> m { enemyAsSelfLocation = x }
 
 preyL :: Lens' EnemyAttrs Prey
 preyL = lens enemyPrey $ \m x -> m { enemyPrey = x }
@@ -157,6 +161,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
       , enemyDoom = 0
       , enemyClues = 0
       , enemySpawnAt = Nothing
+      , enemyAsSelfLocation = Nothing
       }
     }
 
@@ -542,62 +547,61 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
         )
     HuntersMove | null enemyEngagedInvestigators && not enemyExhausted -> do
       keywords <- getModifiedKeywords a
-      if Keyword.Hunter `notElem` keywords
-        then pure a
-        else do
-          modifiers' <-
-            map modifierType
-              <$> getModifiersFor (toSource a) (EnemyTarget enemyId) ()
-          let
-            matchForcedTargetLocation = \case
-              DuringEnemyPhaseMustMoveToward (LocationTarget lid) -> Just lid
-              _ -> Nothing
-            forcedTargetLocation =
-              firstJust matchForcedTargetLocation modifiers'
+      a <$ when (Keyword.Hunter `notElem` keywords) (push $ HunterMove (toId a))
+    HunterMove eid | eid == toId a -> do
+      modifiers' <-
+        map modifierType
+          <$> getModifiersFor (toSource a) (EnemyTarget enemyId) ()
+      let
+        matchForcedTargetLocation = \case
+          DuringEnemyPhaseMustMoveToward (LocationTarget lid) -> Just lid
+          _ -> Nothing
+        forcedTargetLocation =
+          firstJust matchForcedTargetLocation modifiers'
 
-          -- The logic here is an artifact of doing this incorrect
-          -- Prey is only used for breaking ties unless we're dealing
-          -- with the Only keyword for prey, so here we hardcode prey
-          -- to AnyPrey and then find if there are any investigators
-          -- who qualify as prey to filter
-          matchingClosestLocationIds <-
-            case (forcedTargetLocation, enemyPrey) of
-              (Just forcedTargetLocationId, _) -> map unClosestPathLocationId
-                <$> getSetList (enemyLocation, forcedTargetLocationId)
-              (Nothing, OnlyPrey prey) ->
-                map unClosestPathLocationId <$> getSetList (enemyLocation, prey)
-              (Nothing, _prey) -> map unClosestPathLocationId
-                <$> getSetList (enemyLocation, AnyPrey)
+      -- The logic here is an artifact of doing this incorrect
+      -- Prey is only used for breaking ties unless we're dealing
+      -- with the Only keyword for prey, so here we hardcode prey
+      -- to AnyPrey and then find if there are any investigators
+      -- who qualify as prey to filter
+      matchingClosestLocationIds <-
+        case (forcedTargetLocation, enemyPrey) of
+          (Just forcedTargetLocationId, _) -> map unClosestPathLocationId
+            <$> getSetList (enemyLocation, forcedTargetLocationId)
+          (Nothing, OnlyPrey prey) ->
+            map unClosestPathLocationId <$> getSetList (enemyLocation, prey)
+          (Nothing, _prey) -> map unClosestPathLocationId
+            <$> getSetList (enemyLocation, AnyPrey)
 
-          preyIds <- setFromList . map unPreyId <$> getSetList enemyPrey
+      preyIds <- setFromList . map unPreyId <$> getSetList enemyPrey
 
-          filteredClosestLocationIds <- flip filterM matchingClosestLocationIds
-            $ \lid -> notNull . intersect preyIds <$> getSet lid
+      filteredClosestLocationIds <- flip filterM matchingClosestLocationIds
+        $ \lid -> notNull . intersect preyIds <$> getSet lid
 
-          -- If we have any locations with prey, that takes priority, otherwise
-          -- we return all locations which may have matched via AnyPrey
-          let
-            destinationLocationIds = if null filteredClosestLocationIds
-              then matchingClosestLocationIds
-              else filteredClosestLocationIds
+      -- If we have any locations with prey, that takes priority, otherwise
+      -- we return all locations which may have matched via AnyPrey
+      let
+        destinationLocationIds = if null filteredClosestLocationIds
+          then matchingClosestLocationIds
+          else filteredClosestLocationIds
 
-          leadInvestigatorId <- getLeadInvestigatorId
-          pathIds <-
-            map unClosestPathLocationId
-            . concat
-            <$> traverse (getSetList . (enemyLocation, )) destinationLocationIds
-          case pathIds of
-            [] -> pure a
-            [lid] -> a <$ pushAll
-              [ EnemyMove enemyId enemyLocation lid
-              , CheckWindow leadInvestigatorId [AfterMoveFromHunter enemyId]
-              ]
-            ls -> a <$ pushAll
-              (chooseOne
-                  leadInvestigatorId
-                  (map (EnemyMove enemyId enemyLocation) ls)
-              : [CheckWindow leadInvestigatorId [AfterMoveFromHunter enemyId]]
-              )
+      leadInvestigatorId <- getLeadInvestigatorId
+      pathIds <-
+        map unClosestPathLocationId
+        . concat
+        <$> traverse (getSetList . (enemyLocation, )) destinationLocationIds
+      case pathIds of
+        [] -> pure a
+        [lid] -> a <$ pushAll
+          [ EnemyMove enemyId enemyLocation lid
+          , CheckWindow leadInvestigatorId [AfterMoveFromHunter enemyId]
+          ]
+        ls -> a <$ pushAll
+          (chooseOne
+              leadInvestigatorId
+              (map (EnemyMove enemyId enemyLocation) ls)
+          : [CheckWindow leadInvestigatorId [AfterMoveFromHunter enemyId]]
+          )
     EnemiesAttack | notNull enemyEngagedInvestigators && not enemyExhausted ->
       do
         pushAll

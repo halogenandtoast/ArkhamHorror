@@ -6,6 +6,7 @@ module Arkham.Types.Scenario.Scenarios.CarnevaleOfHorrors
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Assets
+import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
 import Arkham.PlayerCard
 import Arkham.Types.Card
@@ -66,7 +67,14 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       investigatorIds <- getInvestigatorIds
 
       -- Encounter Deck
-      encounterDeck <- buildEncounterDeck [EncounterSet.CarnevaleOfHorrors]
+      encounterDeck <- buildEncounterDeckExcluding
+        [ Enemies.donLagorio
+        , Enemies.elisabettaMagro
+        , Enemies.salvatoreNeri
+        , Enemies.savioCorvi
+        , Enemies.cnidathqua
+        ]
+        [EncounterSet.CarnevaleOfHorrors]
 
       -- Locations
       let locationLabels = [ "location" <> tshow @Int n | n <- [1 .. 8] ]
@@ -82,6 +90,20 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       sanMarcoBasilicaId <- getRandom
       unshuffled <- zip <$> getRandoms <*> pure
         (Locations.canalSide : randomLocations)
+      let nonSanMarcoBasilicaLocationIds = map fst unshuffled
+      locationIdsWithMaskedCarnevaleGoers <-
+        zip nonSanMarcoBasilicaLocationIds
+          <$> (shuffleM =<< traverse
+                (fmap PlayerCard . genPlayerCard)
+                [ Assets.maskedCarnevaleGoer_17
+                , Assets.maskedCarnevaleGoer_18
+                , Assets.maskedCarnevaleGoer_19
+                , Assets.maskedCarnevaleGoer_20
+                , Assets.maskedCarnevaleGoer_21
+                , Assets.maskedCarnevaleGoer_21
+                , Assets.maskedCarnevaleGoer_21
+                ]
+              )
       locations <- ((sanMarcoBasilicaId, Locations.sanMarcoBasilica) :|)
         <$> shuffleM unshuffled
 
@@ -105,6 +127,9 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
                (fst $ NE.last locations)
                LeftOf
                (fst $ NE.head locations)
+           ]
+        <> [ CreateStoryAssetAt asset locationId
+           | (locationId, asset) <- locationIdsWithMaskedCarnevaleGoers
            ]
         <> [ CreateStoryAssetAt abbess sanMarcoBasilicaId
            , RevealLocation Nothing sanMarcoBasilicaId

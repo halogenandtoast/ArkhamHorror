@@ -29,6 +29,7 @@ data Trait
   | Bridge
   | Byakhee
   | Bystander
+  | Carnevale
   | Cave
   | Central
   | Charm
@@ -88,6 +89,7 @@ data Trait
   | Item
   | Job
   | Key
+  | Lodge
   | Lunatic
   | Madness
   | Mask

@@ -1155,9 +1155,6 @@ instance HasGame env => HasSet Keyword env EnemyId where
 instance HasGame env => HasList UnderneathCard env LocationId where
   getList = getList <=< getLocation
 
-instance HasGame env => HasList UnderneathCard env AgendaId where
-  getList = getList <=< getAgenda
-
 instance HasGame env => HasSet Trait env LocationId where
   getSet lid = toTraits <$> getLocation lid
 

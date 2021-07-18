@@ -118,6 +118,11 @@ data Asset
   | Machete' Machete
   | MagnifyingGlass' MagnifyingGlass
   | MagnifyingGlass1' MagnifyingGlass1
+  | MaskedCarnevaleGoer_17' MaskedCarnevaleGoer_17
+  | MaskedCarnevaleGoer_18' MaskedCarnevaleGoer_18
+  | MaskedCarnevaleGoer_19' MaskedCarnevaleGoer_19
+  | MaskedCarnevaleGoer_20' MaskedCarnevaleGoer_20
+  | MaskedCarnevaleGoer_21' MaskedCarnevaleGoer_21
   | MedicalTexts' MedicalTexts
   | MonstrousTransformation' MonstrousTransformation
   | Newspaper' Newspaper
@@ -391,6 +396,11 @@ allAssets = mapFromList $ map
   , Machete' <$> machete
   , MagnifyingGlass' <$> magnifyingGlass
   , MagnifyingGlass1' <$> magnifyingGlass1
+  , MaskedCarnevaleGoer_17' <$> maskedCarnevaleGoer_17
+  , MaskedCarnevaleGoer_18' <$> maskedCarnevaleGoer_18
+  , MaskedCarnevaleGoer_19' <$> maskedCarnevaleGoer_19
+  , MaskedCarnevaleGoer_20' <$> maskedCarnevaleGoer_20
+  , MaskedCarnevaleGoer_21' <$> maskedCarnevaleGoer_21
   , MedicalTexts' <$> medicalTexts
   , MonstrousTransformation' <$> monstrousTransformation
   , Newspaper' <$> newspaper

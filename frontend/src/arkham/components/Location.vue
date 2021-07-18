@@ -226,6 +226,24 @@ export default defineComponent({
         .findIndex((c) => c.tag === MessageType.INVESTIGATE && c.contents[1] === id.value);
     })
 
+    function isAbility(v: Message) {
+      if (v.tag !== 'UseAbility') {
+        return false
+      }
+
+      const { tag, contents } = v.contents[1].source;
+
+      if (tag === 'LocationSource' && contents === id.value) {
+        return true
+      }
+
+      if (tag === 'ProxySource' && contents[0].tag === 'LocationSource' && contents[0].contents === id.value) {
+        return true
+      }
+
+      return false
+    }
+
     const abilities = computed(() => {
       return choices
         .value
@@ -235,6 +253,14 @@ export default defineComponent({
           }
 
           if (v.tag === 'UseAbility' && v.contents[1].source.tag === 'ProxySource' && v.contents[1].source.contents[0].tag === 'LocationSource' && v.contents[1].source.contents[0].contents === id.value) {
+            return [...acc, i];
+          }
+
+          if (v.tag === 'UseAbility' && v.contents[1].source.tag === 'ProxySource' && v.contents[1].source.contents[0].tag === 'LocationSource' && v.contents[1].source.contents[0].contents === id.value) {
+            return [...acc, i];
+          }
+
+          if (v.tag === 'Run' && isAbility(v.contents[0])) {
             return [...acc, i];
           }
 

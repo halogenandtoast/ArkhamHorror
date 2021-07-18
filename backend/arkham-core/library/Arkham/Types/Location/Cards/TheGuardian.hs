@@ -20,8 +20,8 @@ theGuardian :: LocationCard TheGuardian
 theGuardian = locationWith
   TheGuardian
   Cards.theGuardian
-  0
-  (Static 0)
+  3
+  (PerPlayer 2)
   NoSymbol
   []
   (connectsToL .~ singleton RightOf)

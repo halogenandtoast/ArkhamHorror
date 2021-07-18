@@ -1247,6 +1247,17 @@ monstrousTransformation =
     , cdWindows = setFromList [DuringTurn You]
     }
 
+abbessAllegriaDiBiase :: CardDef
+abbessAllegriaDiBiase = (storyAsset
+                          "82022"
+                          ("Abbess Allegria Di Biase" <:> "Most Blessed")
+                          4
+                          CarnevaleOfHorrors
+                        )
+  { cdCardTraits = setFromList [Ally, Believer]
+  , cdUnique = True
+  }
+
 daisysToteBagAdvanced :: CardDef
 daisysToteBagAdvanced = (asset "90002" "Daisy's Tote Bag" 2 Neutral)
   { cdSkills = [SkillWillpower, SkillIntellect, SkillWild, SkillWild]

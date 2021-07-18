@@ -20,8 +20,8 @@ rialtoBridge :: LocationCard RialtoBridge
 rialtoBridge = locationWith
   RialtoBridge
   Cards.rialtoBridge
-  0
-  (Static 0)
+  2
+  (Static 1)
   NoSymbol
   []
   (connectsToL .~ singleton RightOf)

@@ -20,8 +20,8 @@ streetsOfVenice :: LocationCard StreetsOfVenice
 streetsOfVenice = locationWith
   StreetsOfVenice
   Cards.streetsOfVenice
-  0
-  (Static 0)
+  2
+  (Static 2)
   NoSymbol
   []
   (connectsToL .~ singleton RightOf)

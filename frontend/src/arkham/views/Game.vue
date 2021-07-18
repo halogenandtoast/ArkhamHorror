@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, onUnmounted } from 'vue'
 import * as Arkham from '@/arkham/types/Game'
 import { fetchGame, updateGame } from '@/arkham/api'
 import GameLog from '@/arkham/components/GameLog.vue'
@@ -109,6 +109,7 @@ export default defineComponent({
     }
 
     onBeforeRouteLeave(() => { if (socket.value) { socket.value.close() } })
+    onUnmounted(() => { if (socket.value) { socket.value.close() }})
 
     return { socketError, ready, game, investigatorId, choose, update, gameLog }
   }

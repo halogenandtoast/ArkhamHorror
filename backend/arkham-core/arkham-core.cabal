@@ -120,6 +120,7 @@ library
       Arkham.Types.Asset
       Arkham.Types.Asset.Attrs
       Arkham.Types.Asset.Cards
+      Arkham.Types.Asset.Cards.AbbessAllegriaDiBiase
       Arkham.Types.Asset.Cards.AdamLynch
       Arkham.Types.Asset.Cards.Adaptable1
       Arkham.Types.Asset.Cards.AlchemicalConcoction

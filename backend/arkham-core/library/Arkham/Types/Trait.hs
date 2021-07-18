@@ -24,6 +24,7 @@ data Trait
   | Believer
   | Blessed
   | Blunder
+  | Boat
   | Bold
   | Boon
   | Bridge

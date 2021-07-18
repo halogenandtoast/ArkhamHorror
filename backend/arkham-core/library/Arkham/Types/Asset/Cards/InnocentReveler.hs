@@ -30,8 +30,8 @@ ability :: AssetAttrs -> Ability
 ability a = mkAbility a 1 (ActionAbility (Just Parley) (ActionCost 1))
 
 instance HasActions env InnocentReveler where
-  getActions iid NonFast (InnocentReveler attrs) =
-    pure [UseAbility iid (ability attrs)]
+  getActions iid NonFast (InnocentReveler attrs) = pure
+    [ UseAbility iid (ability attrs) | isNothing (assetInvestigator attrs) ]
   getActions iid window (InnocentReveler attrs) = getActions iid window attrs
 
 instance HasModifiersFor env InnocentReveler

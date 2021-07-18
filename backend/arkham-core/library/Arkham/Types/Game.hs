@@ -1796,6 +1796,13 @@ instance HasGame env => HasSet AssetId env (InvestigatorId, UseType) where
     setFromList <$> filterM ((isCorrectUseType <$>) . getAsset) assetIds
     where isCorrectUseType asset = useTypeOf asset == Just useType
 
+instance HasGame env => HasSet AssetId env (InvestigatorId, CardDef) where
+  getSet (iid, cardDef) = do
+    investigator <- getInvestigator iid
+    assetIds <- getSetList @AssetId investigator
+    setFromList
+      <$> filterM (fmap ((== cardDef) . toCardDef) . getAsset) assetIds
+
 instance (HasGame env, HasSet Trait env AssetId) => HasSet AssetId env (InvestigatorId, [Trait]) where
   getSet (iid, traits) = do
     investigator <- getInvestigator iid
@@ -2991,9 +2998,11 @@ runGameMessage msg g = case msg of
   Surge iid _ -> g <$ push (InvestigatorDrawEncounterCard iid)
   InvestigatorEliminated iid -> pure $ g & playerOrderL %~ filter (/= iid)
   InvestigatorDrawEncounterCard iid -> if null (unDeck $ g ^. encounterDeckL)
-    then
-      g <$ pushAll
+    then g <$ when
+      (notNull $ gameDiscard g)
+      (pushAll
         [ShuffleEncounterDiscardBackIn, InvestigatorDrawEncounterCard iid]
+      )
       -- This case should not happen but this safeguards against it
     else do
       let (card : encounterDeck) = unDeck $ g ^. encounterDeckL

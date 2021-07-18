@@ -44,6 +44,7 @@ library
       Arkham.Types.Act.Cards.FindingLadyEsprit
       Arkham.Types.Act.Cards.Fold
       Arkham.Types.Act.Cards.GetTheEngineRunning
+      Arkham.Types.Act.Cards.GetToTheBoats
       Arkham.Types.Act.Cards.HuntingTheRougarou
       Arkham.Types.Act.Cards.IntoTheBeyond
       Arkham.Types.Act.Cards.IntoTheDarkness
@@ -647,6 +648,7 @@ library
       Arkham.Types.Location.Cards.FoulSwamp
       Arkham.Types.Location.Cards.FrozenSpring
       Arkham.Types.Location.Cards.GardenDistrict
+      Arkham.Types.Location.Cards.Gondola
       Arkham.Types.Location.Cards.Graveyard
       Arkham.Types.Location.Cards.GuestHall
       Arkham.Types.Location.Cards.Hallway

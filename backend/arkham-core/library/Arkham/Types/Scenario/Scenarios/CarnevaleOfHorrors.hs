@@ -48,7 +48,7 @@ carnevaleOfHorrors difficulty = CarnevaleOfHorrors $ (baseAttrs
     [ ".         .         .         location1  .         .         ."
     , ".         location8 location8 location1  location2 location2 ."
     , ".         location8 location8 .          location2 location2 ."
-    , "location7 location7 .         cnidathqua .         location3 location3"
+    , "location7 location7 .         cnidathqua gondola   location3 location3"
     , ".         location6 location6 .          location4 location4 ."
     , ".         location6 location6 location5  location4 location4 ."
     , ".         .         .         location5  .         .         ."

@@ -5,17 +5,22 @@ module Arkham.Types.Location.Cards.SanMarcoBasilica
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Location.Cards as Cards
+import Arkham.PlayerCard
 import Arkham.Types.Ability
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Direction
 import Arkham.Types.GameValue
+import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
+import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype SanMarcoBasilica = SanMarcoBasilica LocationAttrs
@@ -45,6 +50,24 @@ instance ActionRunner env => HasActions env SanMarcoBasilica where
       pure [UseAbility iid (ability attrs)]
   getActions iid window (SanMarcoBasilica attrs) = getActions iid window attrs
 
-instance LocationRunner env => RunMessage env SanMarcoBasilica where
-  runMessage msg (SanMarcoBasilica attrs) =
-    SanMarcoBasilica <$> runMessage msg attrs
+instance (HasSet AssetId env (InvestigatorId, CardDef), LocationRunner env) => RunMessage env SanMarcoBasilica where
+  runMessage msg l@(SanMarcoBasilica attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      innocentRevelerIds <- getSetList (iid, Assets.innocentReveler)
+      l <$ push
+        (chooseOne
+          iid
+          [ TargetLabel
+              (AssetTarget innocentRevelerId)
+              [ PlaceUnderneath
+                ActDeckTarget
+                [ PlayerCard $ lookupPlayerCard
+                    Assets.innocentReveler
+                    (unAssetId innocentRevelerId)
+                ]
+              , RemoveFromGame (AssetTarget innocentRevelerId)
+              ]
+          | innocentRevelerId <- innocentRevelerIds
+          ]
+        )
+    _ -> SanMarcoBasilica <$> runMessage msg attrs

@@ -17,6 +17,7 @@ import Arkham.Types.Act.Cards.FindingAWayInside as X
 import Arkham.Types.Act.Cards.FindingLadyEsprit as X
 import Arkham.Types.Act.Cards.Fold as X
 import Arkham.Types.Act.Cards.GetTheEngineRunning as X
+import Arkham.Types.Act.Cards.GetToTheBoats as X
 import Arkham.Types.Act.Cards.HuntingTheRougarou as X
 import Arkham.Types.Act.Cards.IntoTheBeyond as X
 import Arkham.Types.Act.Cards.IntoTheDarkness as X

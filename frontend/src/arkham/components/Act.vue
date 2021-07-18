@@ -20,12 +20,15 @@
       class="button ability-button"
       @click="$emit('choose', ability)"
       >{{abilityLabel(ability)}}</button>
+
+    <button v-if="cardsUnder.length > 0" class="view-cards-under-button" @click="toggleUnder">{{viewUnderLabel}}</button>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
+import { defineComponent, computed, ref } from 'vue'
 import { Game } from '@/arkham/types/Game'
+import { Card } from '@/arkham/types/Card'
 import Treachery from '@/arkham/components/Treachery.vue';
 import * as ArkhamGame from '@/arkham/types/Game'
 import { Message, MessageType } from '@/arkham/types/Message'
@@ -36,6 +39,7 @@ export default defineComponent({
   props: {
     act: { type: Object as () => Arkham.Act, required: true },
     game: { type: Object as () => Game, required: true },
+    cardsUnder: { type: Array as () => Card[], required: true },
     investigatorId: { type: String, required: true }
   },
 
@@ -48,6 +52,10 @@ export default defineComponent({
     })
 
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+
+    const viewingUnder = ref(false)
+    const toggleUnder = function() { viewingUnder.value = !viewingUnder.value }
+    const viewUnderLabel = computed(() => viewingUnder.value ? "Close" : `${props.cardsUnder.length} Cards Underneath`)
 
     function canInteract(c: Message): boolean {
       switch (c.tag) {
@@ -86,7 +94,7 @@ export default defineComponent({
         }, [])
     })
 
-    return { abilities, abilityLabel, interactAction, choices, image, id }
+    return { viewUnderLabel, toggleUnder, abilities, abilityLabel, interactAction, choices, image, id }
   }
 })
 </script>

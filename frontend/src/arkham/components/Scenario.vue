@@ -39,15 +39,18 @@
         v-for="(agenda, key) in game.agendas"
         :key="key"
         :agenda="agenda"
+        :cardsUnder="cardsUnderAgenda"
         :game="game"
         :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
       />
 
+
       <Act
         v-for="(act, key) in game.acts"
         :key="key"
         :act="act"
+        :cardsUnder="cardsUnderAct"
         :game="game"
         :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
@@ -277,6 +280,23 @@ export default defineComponent({
 
     const enemiesAsLocations = computed(() => Object.values(props.game.enemies).filter((enemy) => enemy.contents.asSelfLocation !== null))
 
+    const cardsUnderAgenda = computed(() => {
+      const { scenario } = props.game;
+      if (!scenario) {
+        return [];
+      }
+
+      return scenario.contents.cardsUnderAgendaDeck;
+    })
+
+    const cardsUnderAct = computed(() => {
+      const { scenario } = props.game;
+      if (!scenario) {
+        return [];
+      }
+
+      return scenario.contents.cardsUnderActDeck;
+    })
 
     return {
       update,
@@ -288,7 +308,9 @@ export default defineComponent({
       scenarioGuide,
       scenarioDeck,
       topEnemyInVoid,
-      enemiesAsLocations
+      enemiesAsLocations,
+      cardsUnderAgenda,
+      cardsUnderAct
     }
   },
 

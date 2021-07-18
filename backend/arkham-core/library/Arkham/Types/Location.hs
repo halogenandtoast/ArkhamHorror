@@ -108,6 +108,7 @@ data Location
   | FoulSwamp' FoulSwamp
   | FrozenSpring' FrozenSpring
   | GardenDistrict' GardenDistrict
+  | Gondola' Gondola
   | Graveyard' Graveyard
   | GuestHall' GuestHall
   | Hallway' Hallway
@@ -196,7 +197,12 @@ instance
   => HasModifiersFor env Location where
   getModifiersFor = genericGetModifiersFor
 
-instance (HasSet UnengagedEnemyId env LocationId, LocationRunner env) => RunMessage env Location where
+instance
+  ( HasSet UnengagedEnemyId env LocationId
+  , HasSet AssetId env (InvestigatorId, CardDef)
+  , LocationRunner env
+  )
+  => RunMessage env Location where
   runMessage msg l = do
     modifiers' <- getModifiersFor (toSource l) (toTarget l) ()
     let msg' = if any isBlank modifiers' then Blanked msg else msg
@@ -393,6 +399,7 @@ allLocations = mapFromList $ map
   , FoulSwamp' <$> foulSwamp
   , FrozenSpring' <$> frozenSpring
   , GardenDistrict' <$> gardenDistrict
+  , Gondola' <$> gondola
   , Graveyard' <$> graveyard
   , GuestHall' <$> guestHall
   , Hallway' <$> hallway

@@ -20,7 +20,7 @@ sanMarcoBasilica :: LocationCard SanMarcoBasilica
 sanMarcoBasilica = locationWith
   SanMarcoBasilica
   Cards.sanMarcoBasilica
-  0
+  3
   (Static 0)
   NoSymbol
   []

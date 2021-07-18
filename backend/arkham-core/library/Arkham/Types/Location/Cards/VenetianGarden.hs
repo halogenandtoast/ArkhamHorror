@@ -20,8 +20,8 @@ venetianGarden :: LocationCard VenetianGarden
 venetianGarden = locationWith
   VenetianGarden
   Cards.venetianGarden
-  0
-  (Static 0)
+  3
+  (PerPlayer 1)
   NoSymbol
   []
   (connectsToL .~ singleton RightOf)

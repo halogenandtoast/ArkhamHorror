@@ -5,7 +5,10 @@ module Arkham.Types.Scenario.Scenarios.CarnevaleOfHorrors
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Location.Cards as Locations
+import Arkham.PlayerCard
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Direction
@@ -82,6 +85,9 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       locations <- ((sanMarcoBasilicaId, Locations.sanMarcoBasilica) :|)
         <$> shuffleM unshuffled
 
+      -- Assets
+      abbess <- PlayerCard <$> genPlayerCard Assets.abbessAllegriaDiBiase
+
       pushAllEnd
         $ [SetEncounterDeck encounterDeck, AddAgenda "82002", AddAct "82005"]
         <> [ PlaceLocation locationId cardDef
@@ -100,7 +106,8 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
                LeftOf
                (fst $ NE.head locations)
            ]
-        <> [ RevealLocation Nothing sanMarcoBasilicaId
+        <> [ CreateStoryAssetAt abbess sanMarcoBasilicaId
+           , RevealLocation Nothing sanMarcoBasilicaId
            , MoveAllTo sanMarcoBasilicaId
            , AskMap
            . mapFromList

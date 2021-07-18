@@ -20,8 +20,8 @@ accademiaBridge :: LocationCard AccademiaBridge
 accademiaBridge = locationWith
   AccademiaBridge
   Cards.accademiaBridge
-  0
-  (Static 0)
+  2
+  (PerPlayer 1)
   NoSymbol
   []
   (connectsToL .~ singleton RightOf)

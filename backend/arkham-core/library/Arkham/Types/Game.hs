@@ -2007,6 +2007,9 @@ runGameMessage msg g = case msg of
   After (MoveFrom iid lid) -> do
     msgs <- checkWindows iid (\who -> pure [AfterLeaving who lid])
     g <$ pushAll msgs
+  AfterEnterLocation iid lid -> do
+    msgs <- checkWindows iid (\who -> pure [AfterEntering who lid])
+    g <$ pushAll msgs
   CreateEffect cardCode meffectMetadata source target -> do
     (effectId, effect) <- createEffect cardCode meffectMetadata source target
     push (CreatedEffect effectId meffectMetadata source target)

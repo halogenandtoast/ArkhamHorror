@@ -29,6 +29,7 @@ createAsset a = lookupAsset (toCardCode a) (AssetId $ toCardId a)
 
 data Asset
   = BaseAsset' BaseAsset
+  | AbbessAllegriaDiBiase' AbbessAllegriaDiBiase
   | AdamLynch' AdamLynch
   | Adaptable1' Adaptable1
   | AlchemicalConcoction' AlchemicalConcoction
@@ -301,6 +302,7 @@ allAssets = mapFromList $ map
     { cbCardCode = "asset"
     , cbCardBuilder = \aid -> baseAsset aid "asset" id id
     }
+  , AbbessAllegriaDiBiase' <$> abbessAllegriaDiBiase
   , AdamLynch' <$> adamLynch
   , Adaptable1' <$> adaptable1
   , AlchemicalConcoction' <$> alchemicalConcoction

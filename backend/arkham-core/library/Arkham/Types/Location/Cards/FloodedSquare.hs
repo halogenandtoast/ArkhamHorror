@@ -20,8 +20,8 @@ floodedSquare :: LocationCard FloodedSquare
 floodedSquare = locationWith
   FloodedSquare
   Cards.floodedSquare
-  0
-  (Static 0)
+  4
+  (PerPlayer 1)
   NoSymbol
   []
   (connectsToL .~ singleton RightOf)

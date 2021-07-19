@@ -181,7 +181,6 @@ data Message
     | CancelHorror InvestigatorId Int
     | CancelDamage InvestigatorId Int
     | CancelFailedByModifierEffects
-    | ChangeCardToFast InvestigatorId CardId
     | CheckAttackOfOpportunity InvestigatorId Bool
     | CheckDefeated Source
     | CheckHandSize InvestigatorId

@@ -5,12 +5,12 @@ module Arkham.Types.Act.Cards.SearchingForAnswers
 
 import Arkham.Prelude
 
-import Arkham.EncounterCard
 import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.ActId
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.LocationId

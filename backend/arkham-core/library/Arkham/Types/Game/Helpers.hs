@@ -259,7 +259,7 @@ getCanAffordCost iid source mAction = \case
     handCards <- mapMaybe (preview _PlayerCard) <$> getHandOf iid
     let
       total = sum $ map
-        (count (`member` insertSet SkillWild skillTypes) . cdSkills . pcDef)
+        (count (`member` insertSet SkillWild skillTypes) . cdSkills . toCardDef)
         handCards
     pure $ total >= n
   HandDiscardCost n mCardType traits skillTypes -> do
@@ -279,7 +279,7 @@ getCanAffordCost iid source mAction = \case
           . intersect (insertSet SkillWild skillTypes)
           . setFromList
           . cdSkills
-          . pcDef
+          . toCardDef
     pure
       $ length
           (filter
@@ -765,7 +765,7 @@ getIsPlayable
   -> Card
   -> m Bool
 getIsPlayable _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
-getIsPlayable iid windows c@(PlayerCard MkPlayerCard {..}) = do
+getIsPlayable iid windows c@(PlayerCard _) = do
   modifiers <-
     map modifierType
       <$> getModifiersFor (InvestigatorSource iid) (InvestigatorTarget iid) ()
@@ -791,6 +791,7 @@ getIsPlayable iid windows c@(PlayerCard MkPlayerCard {..}) = do
     && (cdAction pcDef /= Just Action.Evade || notNull engagedEnemies)
     && passesRestrictions
  where
+  pcDef = toCardDef c
   prevents (CannotPlay typePairs) = any
     (\(cType, traits) ->
       cdCardType pcDef
@@ -857,12 +858,13 @@ getModifiedCardCost
   => InvestigatorId
   -> Card
   -> m Int
-getModifiedCardCost iid (PlayerCard MkPlayerCard {..}) = do
+getModifiedCardCost iid c@(PlayerCard _) = do
   modifiers <-
     map modifierType
       <$> getModifiersFor (InvestigatorSource iid) (InvestigatorTarget iid) ()
   pure $ foldr applyModifier startingCost modifiers
  where
+  pcDef = toCardDef c
   startingCost = case cdCost pcDef of
     Just (StaticCost n) -> n
     Just DynamicCost -> 0
@@ -872,7 +874,7 @@ getModifiedCardCost iid (PlayerCard MkPlayerCard {..}) = do
   applyModifier (ReduceCostOfCardType cardType m) n
     | cardType == cdCardType pcDef = max 0 (n - m)
   applyModifier _ n = n
-getModifiedCardCost iid (EncounterCard MkEncounterCard {..}) = do
+getModifiedCardCost iid c@(EncounterCard _) = do
   modifiers <-
     map modifierType
       <$> getModifiersFor (InvestigatorSource iid) (InvestigatorTarget iid) ()
@@ -882,13 +884,15 @@ getModifiedCardCost iid (EncounterCard MkEncounterCard {..}) = do
     modifiers
  where
   applyModifier (ReduceCostOf traits m) n
-    | notNull (setFromList traits `intersection` toTraits ecDef) = max 0 (n - m)
+    | notNull (setFromList traits `intersection` toTraits (toCardDef c)) = max
+      0
+      (n - m)
   applyModifier _ n = n
 
 cardInWindows :: [Window] -> Card -> InvestigatorId -> Bool
 cardInWindows windows c _ = case c of
   PlayerCard pc ->
-    notNull $ cdWindows (pcDef pc) `intersect` setFromList windows
+    notNull $ cdWindows (toCardDef pc) `intersect` setFromList windows
   _ -> False
 
 cardInFastWindows

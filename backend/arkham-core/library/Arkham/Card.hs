@@ -10,18 +10,16 @@ import Arkham.Types.Card.Id
 buildCard :: MonadRandom m => CardCode -> m Card
 buildCard cardCode = lookupCard cardCode <$> getRandom
 
-lookupCard :: CardCode -> (CardId -> Card)
-lookupCard cardCode =
-  let
-    encounterCard = do
-      f <- lookup cardCode allEncounterCards
-      pure \cardId ->
-        EncounterCard $ MkEncounterCard { ecId = cardId, ecDef = f }
-    playerCard = do
-      f <- lookup cardCode allPlayerCards
-      pure \cardId -> PlayerCard
-        $ MkPlayerCard { pcId = cardId, pcDef = f, pcBearer = Nothing }
-  in
-    fromJustNote ("Missing card " <> show cardCode)
-    $ encounterCard
-    <|> playerCard
+lookupCard :: CardCode -> CardId -> Card
+lookupCard cardCode cardId =
+  case (lookup cardCode allEncounterCards, lookup cardCode allPlayerCards) of
+    (Nothing, Nothing) -> error $ "Missing card " <> show cardCode
+    (Just _, Just _) ->
+      error $ "card is both encounter and player " <> show cardCode
+    (Just _, Nothing) ->
+      EncounterCard $ MkEncounterCard { ecId = cardId, ecCardCode = cardCode }
+    (Nothing, Just _) -> PlayerCard $ MkPlayerCard
+      { pcId = cardId
+      , pcBearer = Nothing
+      , pcCardCode = cardCode
+      }

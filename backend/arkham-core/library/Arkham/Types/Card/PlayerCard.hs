@@ -3,6 +3,7 @@ module Arkham.Types.Card.PlayerCard where
 import Arkham.Prelude
 
 import Arkham.Json
+import Arkham.PlayerCard
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.Class
@@ -18,7 +19,7 @@ newtype DiscardedPlayerCard = DiscardedPlayerCard { unDiscardedPlayerCard :: Pla
 data PlayerCard = MkPlayerCard
   { pcId :: CardId
   , pcBearer :: Maybe InvestigatorId
-  , pcDef :: CardDef
+  , pcCardCode :: CardCode
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
@@ -31,13 +32,27 @@ instance FromJSON PlayerCard where
   parseJSON = genericParseJSON $ aesonOptions $ Just "pc"
 
 instance HasSkillIcons PlayerCard where
-  getSkillIcons = cdSkills . pcDef
+  getSkillIcons = cdSkills . toCardDef
 
 instance HasCost PlayerCard where
-  getCost c = case cdCost (pcDef c) of
+  getCost c = case cdCost (toCardDef c) of
     Just (StaticCost n) -> n
     Just DynamicCost -> 0
     Nothing -> 0
 
 instance HasCardDef PlayerCard where
-  toCardDef = pcDef
+  toCardDef c = case lookup (pcCardCode c) allPlayerCards of
+    Just def -> def
+    Nothing ->
+      error $ "missing card def for player card " <> show (pcCardCode c)
+
+lookupPlayerCard :: CardDef -> CardId -> PlayerCard
+lookupPlayerCard cardDef cardId = MkPlayerCard
+  { pcId = cardId
+  , pcCardCode = toCardCode cardDef
+  , pcBearer = Nothing
+  }
+
+genPlayerCard :: MonadRandom m => CardDef -> m PlayerCard
+genPlayerCard cardDef = lookupPlayerCard cardDef <$> getRandom
+

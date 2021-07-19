@@ -5,13 +5,13 @@ module Arkham.Types.Agenda.Cards.ReturnToPredatorOrPrey
 
 import Arkham.Prelude
 
-import Arkham.EncounterCard
 import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.GameValue

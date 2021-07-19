@@ -6,15 +6,15 @@ module Arkham.Types.Act.Cards.FindingLadyEsprit
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Assets
-import Arkham.EncounterCard
 import Arkham.EncounterSet
 import qualified Arkham.Enemy.Cards as Enemies
-import Arkham.PlayerCard
 import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCard
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue

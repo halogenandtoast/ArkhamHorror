@@ -10,9 +10,7 @@ module TestImport
 import Arkham.Prelude as X
 
 import qualified Arkham.Asset.Cards as Cards
-import Arkham.EncounterCard as X
 import Arkham.Game as X hiding (newGame)
-import Arkham.PlayerCard as X
 import Arkham.Types.Action
 import Arkham.Types.Agenda as X
 import Arkham.Types.Agenda.Attrs
@@ -22,6 +20,8 @@ import Arkham.Types.Asset.Attrs hiding (body)
 import Arkham.Types.AssetId
 import Arkham.Types.Card as X
 import qualified Arkham.Types.Card.CardDef as CardDef
+import Arkham.Types.Card.EncounterCard as X
+import Arkham.Types.Card.PlayerCard as X
 import Arkham.Types.ChaosBag as X
 import qualified Arkham.Types.ChaosBag as ChaosBag
 import Arkham.Types.ClassSymbol

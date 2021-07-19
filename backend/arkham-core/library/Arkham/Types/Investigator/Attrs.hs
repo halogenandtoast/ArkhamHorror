@@ -524,7 +524,7 @@ getFastIsPlayable
   -> Card
   -> m Bool
 getFastIsPlayable _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
-getFastIsPlayable attrs windows c@(PlayerCard MkPlayerCard {..}) = do
+getFastIsPlayable attrs windows c@(PlayerCard _) = do
   modifiers <-
     map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
   isPlayable <- getIsPlayable (toId attrs) windows c
@@ -532,6 +532,7 @@ getFastIsPlayable attrs windows c@(PlayerCard MkPlayerCard {..}) = do
     $ (cdFast pcDef || canBecomeFast modifiers || isJust (cdFastWindow pcDef))
     && isPlayable
  where
+  pcDef = toCardDef c
   canBecomeFast modifiers = foldr applyModifier False modifiers
   applyModifier (CanBecomeFast (mcardType, traits)) _
     | maybe True (== cdCardType pcDef) mcardType
@@ -546,7 +547,7 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
   go 0 (d, h, cs) = (d, h, cs)
   go _ (_, _, []) =
     error "this should never happen, it means the deck was empty during drawing"
-  go m (d, h, c : cs) = if cdWeakness (pcDef c)
+  go m (d, h, c : cs) = if cdWeakness (toCardDef c)
     then go m (c : d, h, cs)
     else go (m - 1) (d, PlayerCard c : h, cs)
 
@@ -607,10 +608,11 @@ getPlayableDiscards attrs@InvestigatorAttrs {..} windows = do
     (zip @_ @Int [0 ..] investigatorDiscard)
   canPlayFromDiscard modifiers (n, card) =
     any (allowsPlayFromDiscard n card) modifiers
-  allowsPlayFromDiscard 0 MkPlayerCard {..} (CanPlayTopOfDiscard (mcardType, traits))
-    = maybe True (== cdCardType pcDef) mcardType
+  allowsPlayFromDiscard 0 card (CanPlayTopOfDiscard (mcardType, traits)) =
+    maybe True (== cdCardType (toCardDef card)) mcardType
       && (null traits
-         || (setFromList traits `HashSet.isSubsetOf` toTraits pcDef)
+         || (setFromList traits `HashSet.isSubsetOf` toTraits (toCardDef card)
+            )
          )
   allowsPlayFromDiscard _ _ _ = False
 
@@ -704,7 +706,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   SetupInvestigators -> do
     let
       (permanentCards, deck') =
-        partition (cdPermanent . pcDef) (unDeck investigatorDeck)
+        partition (cdPermanent . toCardDef) (unDeck investigatorDeck)
       (discard, hand, deck) = drawOpeningHand (a & deckL .~ Deck deck') 5
     pushAll
       $ [ PutCardIntoPlay investigatorId (PlayerCard card) Nothing
@@ -811,7 +813,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       (chooseOne
         iid
         [ Run [DiscardCard iid (toCardId card), CheckHandSize iid]
-        | card <- filter (not . cdWeakness . pcDef)
+        | card <- filter (not . cdWeakness . toCardDef)
           $ mapMaybe (preview _PlayerCard) investigatorHand
         ]
       )
@@ -1211,10 +1213,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       card = fromJustNote "not in hand"
         $ find ((== cardId) . toCardId) investigatorHand
       isFast = case card of
-        PlayerCard pc -> cdFast (pcDef pc) || isJust (cdFastWindow $ pcDef pc)
+        PlayerCard pc ->
+          cdFast (toCardDef pc) || isJust (cdFastWindow $ toCardDef pc)
         _ -> False
       maction = case card of
-        PlayerCard pc -> cdAction (pcDef pc)
+        PlayerCard pc -> cdAction (toCardDef pc)
         _ -> Nothing
       actionProvokesAttackOfOpportunities =
         maction
@@ -1227,7 +1230,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         PlayerCard pc ->
           actionProvokesAttackOfOpportunities
             && DoesNotProvokeAttacksOfOpportunity
-            `notElem` cdAttackOfOpportunityModifiers (pcDef pc)
+            `notElem` cdAttackOfOpportunityModifiers (toCardDef pc)
         _ -> actionProvokesAttackOfOpportunities
       aooMessage =
         [ CheckAttackOfOpportunity iid isFast | provokesAttackOfOpportunities ]
@@ -1243,7 +1246,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       card = fromJustNote "not in hand"
         $ find ((== cardId) . toCardId) investigatorHand
       isFastEvent = case card of
-        PlayerCard pc -> isJust (cdFastWindow $ pcDef pc)
+        PlayerCard pc -> isJust (cdFastWindow $ toCardDef pc)
         _ -> False
     a <$ pushAll
       [ CheckWindow iid [WhenPlayCard You cardId]
@@ -1256,10 +1259,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       card = fromJustNote "not in hand"
         $ find ((== cardId) . toCardId) investigatorHand
       isFast = case card of
-        PlayerCard pc -> cdFast (pcDef pc) || isJust (cdFastWindow $ pcDef pc)
+        PlayerCard pc ->
+          cdFast (toCardDef pc) || isJust (cdFastWindow $ toCardDef pc)
         _ -> False
       maction = case card of
-        PlayerCard pc -> cdAction (pcDef pc)
+        PlayerCard pc -> cdAction (toCardDef pc)
         _ -> Nothing
       actionProvokesAttackOfOpportunities =
         maction
@@ -1272,7 +1276,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         PlayerCard pc ->
           actionProvokesAttackOfOpportunities
             && DoesNotProvokeAttacksOfOpportunity
-            `notElem` cdAttackOfOpportunityModifiers (pcDef pc)
+            `notElem` cdAttackOfOpportunityModifiers (toCardDef pc)
         _ -> actionProvokesAttackOfOpportunities
       aooMessage =
         [ CheckAttackOfOpportunity iid isFast | provokesAttackOfOpportunities ]
@@ -1319,15 +1323,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             | aid' <- assetsThatCanProvideSlots
             ]
           )
-  ChangeCardToFast iid cardId | iid == investigatorId -> do
-    let
-      updateCard card = if toCardId card == cardId
-        then case card of
-          PlayerCard pc ->
-            PlayerCard $ pc { pcDef = (pcDef pc) { cdFast = True } }
-          EncounterCard ec -> EncounterCard ec
-        else card
-    pure $ a & handL %~ map updateCard
   RemoveAllCopiesOfCardFromGame iid cardCode | iid == investigatorId -> do
     for_ investigatorAssets $ \assetId -> do
       cardCode' <- getId @CardCode assetId
@@ -1454,12 +1449,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           (mcard, deck) = drawCard (coerce investigatorDeck)
           handUpdate = maybe id ((:) . PlayerCard) mcard
         case mcard of
-          Just card@MkPlayerCard {..} -> do
-            when (cdCardType pcDef == PlayerTreacheryType)
+          Just card -> do
+            when (toCardType card == PlayerTreacheryType)
               $ push (DrewTreachery iid $ PlayerCard card)
-            when (cdCardType pcDef == PlayerEnemyType)
+            when (toCardType card == PlayerEnemyType)
               $ push (DrewPlayerEnemy iid $ PlayerCard card)
-            when (cdCardType pcDef /= PlayerTreacheryType && cdWeakness pcDef)
+            when
+                (toCardType card /= PlayerTreacheryType && cdWeakness
+                  (toCardDef card)
+                )
               $ push (Revelation iid (PlayerCardSource $ toCardId card))
           Nothing -> pure ()
         pushAll
@@ -1506,8 +1504,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         )
       else pure $ a & resourcesL +~ 1
   LoadDeck iid deck | iid == investigatorId -> do
-    shuffled <- shuffleM $ flip map (unDeck deck) $ \card ->
-      if cdWeakness (pcDef card) then card { pcBearer = Just iid } else card
+    shuffled <-
+      shuffleM
+      $ flip map (unDeck deck)
+      $ \card -> if cdWeakness (toCardDef card)
+          then card { pcBearer = Just iid }
+          else card
     pure $ a & deckL .~ Deck shuffled
   InvestigatorCommittedCard iid cardId | iid == investigatorId ->
     pure $ a & handL %~ filter ((/= cardId) . toCardId)
@@ -1528,14 +1530,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       committableCards = if cannotCommitCards
         then []
         else flip filter investigatorHand $ \case
-          PlayerCard MkPlayerCard {..} ->
+          PlayerCard card ->
             let
               passesRestrictions = flip
                 all
-                (cdCommitRestrictions pcDef)
+                (cdCommitRestrictions $ toCardDef card)
                 \case
-                  MaxOnePerTest ->
-                    cdCardCode pcDef `notElem` committedCardCodes
+                  MaxOnePerTest -> toCardCode card `notElem` committedCardCodes
                   OnlyYourTest -> True
                   OnlyIfYourLocationHasClues -> clueCount > 0
                   ScenarioAbility -> isScenarioAbility
@@ -1543,12 +1544,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                     (skillDifficulty - baseSkillValueFor skillType Nothing [] a)
                       >= n
             in
-              pcId
+              toCardId card
               `notElem` committedCardIds
               && (SkillWild
-                 `elem` cdSkills pcDef
+                 `elem` cdSkills (toCardDef card)
                  || skillType
-                 `elem` cdSkills pcDef
+                 `elem` cdSkills (toCardDef card)
                  )
               && passesRestrictions
           _ -> False
@@ -1587,14 +1588,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             filter
             investigatorHand
             \case
-              PlayerCard MkPlayerCard {..} ->
+              PlayerCard card ->
                 let
                   passesRestrictions = flip
                     all
-                    (cdCommitRestrictions pcDef)
+                    (cdCommitRestrictions $ toCardDef card)
                     \case
                       MaxOnePerTest ->
-                        cdCardCode pcDef `notElem` committedCardCodes
+                        toCardCode card `notElem` committedCardCodes
                       OnlyYourTest -> False
                       OnlyIfYourLocationHasClues -> clueCount > 0
                       ScenarioAbility -> isScenarioAbility
@@ -1604,12 +1605,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                           )
                           >= n
                 in
-                  pcId
+                  toCardId card
                   `notElem` committedCardIds
                   && (SkillWild
-                     `elem` cdSkills pcDef
+                     `elem` cdSkills (toCardDef card)
                      || skillType
-                     `elem` cdSkills pcDef
+                     `elem` cdSkills (toCardDef card)
                      )
                   && passesRestrictions
               _ -> False
@@ -1678,7 +1679,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   AddToHand iid card | iid == investigatorId -> do
     case card of
       PlayerCard card' ->
-        when (cdRevelation (pcDef card'))
+        when (cdRevelation (toCardDef card'))
           $ if toCardType card' == PlayerTreacheryType
               then push (DrewTreachery iid card)
               else push (Revelation iid (PlayerCardSource $ toCardId card'))
@@ -1692,12 +1693,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       card = fromJustNote "card did not exist"
         $ find ((== cardId) . toCardId) (unDeck investigatorDeck)
     deck <- shuffleM $ filter ((/= cardId) . toCardId) (unDeck investigatorDeck)
-    case card of
-      MkPlayerCard {..} -> do
-        when (cdCardType pcDef == PlayerTreacheryType)
-          $ push (DrewTreachery iid $ PlayerCard card)
-        when (cdCardType pcDef == PlayerEnemyType)
-          $ push (DrewPlayerEnemy iid $ PlayerCard card)
+    when (toCardType card == PlayerTreacheryType)
+      $ push (DrewTreachery iid $ PlayerCard card)
+    when (toCardType card == PlayerEnemyType)
+      $ push (DrewPlayerEnemy iid $ PlayerCard card)
     pure $ a & deckL .~ Deck deck & handL %~ (PlayerCard card :)
   DisengageEnemy iid eid | iid == investigatorId ->
     pure $ a & engagedEnemiesL %~ deleteSet eid

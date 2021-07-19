@@ -5,11 +5,11 @@ module Arkham.Types.Agenda.Cards.InEveryShadow
 
 import Arkham.Prelude
 
-import Arkham.EncounterCard
 import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId

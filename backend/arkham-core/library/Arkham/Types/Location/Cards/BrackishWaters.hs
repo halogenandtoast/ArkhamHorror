@@ -7,11 +7,11 @@ import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Location.Cards as Cards
-import Arkham.PlayerCard (genPlayerCard)
 import Arkham.Types.Ability
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.GameValue
@@ -56,7 +56,7 @@ instance ActionRunner env => HasActions env BrackishWaters where
       hand <- getHandOf iid
       inPlayAssetsCount <- getInPlayOf iid <&> count
         (\case
-          PlayerCard pc -> cdCardType (pcDef pc) == AssetType
+          PlayerCard pc -> cdCardType (toCardDef pc) == AssetType
           EncounterCard _ -> False
         )
       let
@@ -64,7 +64,7 @@ instance ActionRunner env => HasActions env BrackishWaters where
           count
               (maybe
                   False
-                  (cardMatch (CardMatchByType (AssetType, mempty)) . pcDef)
+                  (cardMatch (CardMatchByType (AssetType, mempty)) . toCardDef)
               . toPlayerCard
               )
               hand

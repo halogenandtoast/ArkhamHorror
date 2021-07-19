@@ -46,7 +46,7 @@ instance EnemyRunner env => RunMessage env CorpseTaker where
         else do
           leadInvestigatorId <- getLeadInvestigatorId
           closestLocationIds <- map unClosestPathLocationId
-            <$> getSetList (enemyLocation, locationId)
+            <$> getSetList (enemyLocation, locationId, emptyLocationMap)
           case closestLocationIds of
             [lid] -> e <$ push (EnemyMove enemyId enemyLocation lid)
             lids -> e <$ push

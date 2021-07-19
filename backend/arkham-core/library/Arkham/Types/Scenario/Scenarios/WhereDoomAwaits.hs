@@ -5,13 +5,13 @@ module Arkham.Types.Scenario.Scenarios.WhereDoomAwaits
 
 import Arkham.Prelude
 
-import Arkham.EncounterCard
 import Arkham.EncounterSet (gatherEncounterSet)
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Effect.Window
@@ -288,7 +288,7 @@ instance
         ElderThing -> do
           let
             n = sum $ map
-              (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . pcDef)
+              (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . toCardDef)
               cards
           push $ CreateTokenValueEffect (-n) (toSource attrs) target
         _ -> pure ()

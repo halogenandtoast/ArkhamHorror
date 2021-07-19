@@ -22,7 +22,7 @@ export default defineComponent({
   },
   setup() {
     const image = (card: PlayerCardContents) => {
-      const { cardCode } = card.def;
+      const { cardCode } = card;
       const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
       return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
     }

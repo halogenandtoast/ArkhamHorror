@@ -25,6 +25,7 @@ data Window
   | AfterEnemyDefeated Who EnemyId
   | AfterEnemyEngageInvestigator Who EnemyId
   | AfterEnemyEvaded Who EnemyId
+  | AfterFailAttackEnemy Who EnemyId
   | AfterFailInvestigationSkillTest Who Int
   | AfterFailSkillTest Who Int
   | AfterFailSkillTestAtOrLess Who Int

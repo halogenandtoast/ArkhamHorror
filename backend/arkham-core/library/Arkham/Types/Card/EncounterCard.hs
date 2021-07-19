@@ -2,7 +2,9 @@ module Arkham.Types.Card.EncounterCard where
 
 import Arkham.Prelude
 
+import Arkham.EncounterCard
 import Arkham.Json
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.Id
 
@@ -10,13 +12,16 @@ newtype DiscardedEncounterCard = DiscardedEncounterCard { unDiscardedEncounterCa
 
 data EncounterCard = MkEncounterCard
   { ecId :: CardId
-  , ecDef :: CardDef
+  , ecCardCode :: CardCode
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
 
 instance HasCardDef EncounterCard where
-  toCardDef = ecDef
+  toCardDef c = case lookup (ecCardCode c) allEncounterCards of
+    Just def -> def
+    Nothing ->
+      error $ "missing card def for encounter card " <> show (ecCardCode c)
 
 instance ToJSON EncounterCard where
   toJSON = genericToJSON $ aesonOptions $ Just "ec"
@@ -24,3 +29,11 @@ instance ToJSON EncounterCard where
 
 instance FromJSON EncounterCard where
   parseJSON = genericParseJSON $ aesonOptions $ Just "ec"
+
+genEncounterCard :: MonadRandom m => CardDef -> m EncounterCard
+genEncounterCard cardDef = lookupEncounterCard cardDef <$> getRandom
+
+lookupEncounterCard :: CardDef -> CardId -> EncounterCard
+lookupEncounterCard cardDef cardId =
+  MkEncounterCard { ecId = cardId, ecCardCode = toCardCode cardDef }
+

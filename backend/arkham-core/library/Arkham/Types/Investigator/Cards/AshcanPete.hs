@@ -83,7 +83,7 @@ instance (InvestigatorRunner env) => RunMessage env AshcanPete where
     SetupInvestigators -> do
       let
         (before, after) =
-          break ((== "02014") . cdCardCode . pcDef) (unDeck investigatorDeck)
+          break ((== "02014") . cdCardCode . toCardDef) (unDeck investigatorDeck)
       case after of
         (card : rest) -> do
           push (PutCardIntoPlay investigatorId (PlayerCard card) Nothing)

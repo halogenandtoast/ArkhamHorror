@@ -4,10 +4,10 @@ import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
 import qualified Arkham.Event.Cards as Events
-import Arkham.PlayerCard
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Card
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Message
 

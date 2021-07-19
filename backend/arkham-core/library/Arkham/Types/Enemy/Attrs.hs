@@ -5,6 +5,7 @@ module Arkham.Types.Enemy.Attrs
 
 import Arkham.Prelude
 
+import Arkham.Enemy.Cards
 import Arkham.Json
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
@@ -38,7 +39,7 @@ type EnemyCard a = CardBuilder EnemyId a
 
 data EnemyAttrs = EnemyAttrs
   { enemyId :: EnemyId
-  , enemyCardDef :: CardDef
+  , enemyCardCode :: CardCode
   , enemyEngagedInvestigators :: HashSet InvestigatorId
   , enemyLocation :: LocationId
   , enemyFight :: Int
@@ -109,8 +110,13 @@ doomL = lens enemyDoom $ \m x -> m { enemyDoom = x }
 cluesL :: Lens' EnemyAttrs Int
 cluesL = lens enemyClues $ \m x -> m { enemyClues = x }
 
+allEnemyCards :: HashMap CardCode CardDef
+allEnemyCards = allPlayerEnemyCards <> allEncounterEnemyCards
+
 instance HasCardDef EnemyAttrs where
-  toCardDef = enemyCardDef
+  toCardDef e = case lookup (enemyCardCode e) allEnemyCards of
+    Just def -> def
+    Nothing -> error $ "missing card def for enemy " <> show (enemyCardCode e)
 
 spawned :: EnemyAttrs -> Bool
 spawned EnemyAttrs { enemyLocation } = enemyLocation /= LocationId (CardId nil)
@@ -145,7 +151,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
     { cbCardCode = cdCardCode cardDef
     , cbCardBuilder = \eid -> f . g $ EnemyAttrs
       { enemyId = eid
-      , enemyCardDef = cardDef
+      , enemyCardCode = toCardCode cardDef
       , enemyEngagedInvestigators = mempty
       , enemyLocation = LocationId $ CardId nil
       , enemyFight = fight
@@ -252,12 +258,12 @@ getModifiedKeywords
   :: (MonadReader env m, HasModifiersFor env (), HasSkillTest env)
   => EnemyAttrs
   -> m (HashSet Keyword)
-getModifiedKeywords EnemyAttrs {..} = do
+getModifiedKeywords e@EnemyAttrs {..} = do
   msource <- getSkillTestSource
   let source = fromMaybe (EnemySource enemyId) msource
   modifiers' <-
     map modifierType <$> getModifiersFor source (EnemyTarget enemyId) ()
-  pure $ foldr applyModifier (toKeywords enemyCardDef) modifiers'
+  pure $ foldr applyModifier (toKeywords $ toCardDef e) modifiers'
  where
   applyModifier (AddKeyword k) n = insertSet k n
   applyModifier _ n = n
@@ -343,6 +349,9 @@ getModifiedHealth EnemyAttrs {..} = do
   applyModifier (HealthModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
+emptyLocationMap :: HashMap LocationId [LocationId]
+emptyLocationMap = mempty
+
 type EnemyAttrsRunMessage env
   = ( HasQueue env
     , HasCount PlayerCount env ()
@@ -350,8 +359,14 @@ type EnemyAttrsRunMessage env
     , HasId LeadInvestigatorId env ()
     , HasId LocationId env InvestigatorId
     , HasModifiersFor env ()
-    , HasSet ClosestPathLocationId env (LocationId, LocationId)
-    , HasSet ClosestPathLocationId env (LocationId, Prey)
+    , HasSet
+        ClosestPathLocationId
+        env
+        (LocationId, LocationId, HashMap LocationId [LocationId])
+    , HasSet
+        ClosestPathLocationId
+        env
+        (LocationId, Prey, HashMap LocationId [LocationId])
     , HasSet ConnectedLocationId env LocationId
     , HasSet InvestigatorId env ()
     , HasSet InvestigatorId env LocationId
@@ -474,7 +489,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
           adjacentLocationIds <- map unConnectedLocationId
             <$> getSetList enemyLocation
           closestLocationIds <- map unClosestPathLocationId
-            <$> getSetList (enemyLocation, lid)
+            <$> getSetList (enemyLocation, lid, emptyLocationMap)
           if lid `elem` adjacentLocationIds
             then
               a
@@ -497,7 +512,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
         adjacentLocationIds <- map unConnectedLocationId
           <$> getSetList enemyLocation
         closestLocationIds <- map unClosestPathLocationId
-          <$> getSetList (enemyLocation, lid)
+          <$> getSetList (enemyLocation, lid, emptyLocationMap)
         if lid `elem` adjacentLocationIds
           then
             a
@@ -558,6 +573,11 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
           DuringEnemyPhaseMustMoveToward (LocationTarget lid) -> Just lid
           _ -> Nothing
         forcedTargetLocation = firstJust matchForcedTargetLocation modifiers'
+        applyConnectionMapModifier connectionMap (HunterConnectedTo lid') =
+          unionWith (<>) connectionMap $ singletonMap enemyLocation [lid']
+        applyConnectionMapModifier connectionMap _ = connectionMap
+        extraConnectionsMap :: HashMap LocationId [LocationId] =
+          foldl' applyConnectionMapModifier mempty modifiers'
 
       -- The logic here is an artifact of doing this incorrect
       -- Prey is only used for breaking ties unless we're dealing
@@ -565,12 +585,13 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
       -- to AnyPrey and then find if there are any investigators
       -- who qualify as prey to filter
       matchingClosestLocationIds <- case (forcedTargetLocation, enemyPrey) of
-        (Just forcedTargetLocationId, _) -> map unClosestPathLocationId
-          <$> getSetList (enemyLocation, forcedTargetLocationId)
-        (Nothing, OnlyPrey prey) ->
-          map unClosestPathLocationId <$> getSetList (enemyLocation, prey)
-        (Nothing, _prey) ->
-          map unClosestPathLocationId <$> getSetList (enemyLocation, AnyPrey)
+        (Just forcedTargetLocationId, _) ->
+          map unClosestPathLocationId <$> getSetList
+            (enemyLocation, forcedTargetLocationId, extraConnectionsMap)
+        (Nothing, OnlyPrey prey) -> map unClosestPathLocationId
+          <$> getSetList (enemyLocation, prey, extraConnectionsMap)
+        (Nothing, _prey) -> map unClosestPathLocationId
+          <$> getSetList (enemyLocation, AnyPrey, extraConnectionsMap)
 
       preyIds <- setFromList . map unPreyId <$> getSetList enemyPrey
 
@@ -588,7 +609,9 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
       pathIds <-
         map unClosestPathLocationId
         . concat
-        <$> traverse (getSetList . (enemyLocation, )) destinationLocationIds
+        <$> traverse
+              (getSetList . (enemyLocation, , emptyLocationMap))
+              destinationLocationIds
       case pathIds of
         [] -> pure a
         [lid] -> a <$ pushAll
@@ -639,7 +662,10 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
         keywords <- getModifiedKeywords a
         a <$ if Keyword.Retaliate `elem` keywords
           then push (EnemyAttack iid enemyId DamageAny)
-          else push (FailedAttackEnemy iid enemyId)
+          else pushAll
+            [ FailedAttackEnemy iid enemyId
+            , CheckWindow iid [AfterFailAttackEnemy You enemyId]
+            ]
     EnemyAttackIfEngaged eid miid | eid == enemyId -> a <$ case miid of
       Just iid | iid `elem` enemyEngagedInvestigators ->
         push (EnemyAttack iid enemyId DamageAny)

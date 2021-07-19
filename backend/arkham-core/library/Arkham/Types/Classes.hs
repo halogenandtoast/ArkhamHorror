@@ -131,8 +131,8 @@ type HasCostPayment env
 class HasStats env a where
   getStats :: MonadReader env m => a -> Source -> m Stats
 
-class HasSkillValue a where
-  toSkillValue :: SkillType -> a -> Int
+class HasSkillValue env a where
+  getSkillValue :: (HasModifiersFor env (), MonadReader env m) => SkillType -> a -> m Int
 
 class HasVictoryPoints a where
   getVictoryPoints :: a -> Maybe Int
@@ -148,10 +148,10 @@ instance HasVictoryPoints Card where
   getVictoryPoints (EncounterCard card) = getVictoryPoints card
 
 instance HasVictoryPoints EncounterCard where
-  getVictoryPoints MkEncounterCard {..} = cdVictoryPoints ecDef
+  getVictoryPoints = cdVictoryPoints . toCardDef
 
 instance HasVictoryPoints PlayerCard where
-  getVictoryPoints MkPlayerCard {..} = cdVictoryPoints pcDef
+  getVictoryPoints = cdVictoryPoints . toCardDef
 
 type ActionRunner env
   = ( HasQueue env

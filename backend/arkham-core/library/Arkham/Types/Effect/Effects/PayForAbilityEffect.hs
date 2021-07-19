@@ -236,7 +236,9 @@ instance
           let
             cards = filter
               (and . sequence
-                [ maybe (const True) (==) mPlayerCardType . cdCardType . pcDef
+                [ maybe (const True) (==) mPlayerCardType
+                . cdCardType
+                . toCardDef
                 , (|| null traits) . notNull . intersection traits . toTraits
                 , (|| null skillTypes)
                 . not
@@ -244,7 +246,7 @@ instance
                 . intersection (insertSet SkillWild skillTypes)
                 . setFromList
                 . cdSkills
-                . pcDef
+                . toCardDef
                 ]
               )
               handCards
@@ -271,7 +273,7 @@ instance
               (toFst
                 (count (`member` insertSet SkillWild skillTypes)
                 . cdSkills
-                . pcDef
+                . toCardDef
                 )
               )
               handCards

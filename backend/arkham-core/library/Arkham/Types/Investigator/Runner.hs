@@ -113,6 +113,14 @@ type InvestigatorRunner env
         , HasSet ClosestLocationId env (LocationId, [Trait])
         , HasSet ClosestPathLocationId env (LocationId, LocationId)
         , HasSet ClosestPathLocationId env (LocationId, Prey)
+        , HasSet
+            ClosestPathLocationId
+            env
+            (LocationId, LocationId, HashMap LocationId [LocationId])
+        , HasSet
+            ClosestPathLocationId
+            env
+            (LocationId, Prey, HashMap LocationId [LocationId])
         , HasSet CommittedCardCode env ()
         , HasSet CommittedCardId env InvestigatorId
         , HasSet ConnectedLocationId env LocationId

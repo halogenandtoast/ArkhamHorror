@@ -7,10 +7,10 @@ import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Location.Cards as Cards
-import Arkham.PlayerCard (genPlayerCard)
 import Arkham.Types.Ability
 import Arkham.Types.AssetId
 import Arkham.Types.Card
+import Arkham.Types.Card.PlayerCard (genPlayerCard)
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.GameValue

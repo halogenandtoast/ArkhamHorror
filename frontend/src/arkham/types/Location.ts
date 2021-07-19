@@ -1,7 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Card, cardDecoder } from '@/arkham/types/Card';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
-import { CardDef, cardDefDecoder } from '@/arkham/types/CardDef';
 
 export interface Location {
   tag: string;
@@ -10,7 +9,7 @@ export interface Location {
 }
 
 export interface LocationContents {
-  cardDef: CardDef;
+  cardCode: string;
   label: string;
   id: string;
   clues: number;
@@ -27,7 +26,7 @@ export interface LocationContents {
 
 export const locationContentsDecoder = JsonDecoder.object<LocationContents>(
   {
-    cardDef: cardDefDecoder,
+    cardCode: JsonDecoder.string,
     label: JsonDecoder.string,
     id: JsonDecoder.string,
     clues: JsonDecoder.number,

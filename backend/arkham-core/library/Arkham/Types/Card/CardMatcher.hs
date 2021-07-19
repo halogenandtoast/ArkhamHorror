@@ -6,6 +6,9 @@ import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
 
-data CardMatcher = CardMatchByType (CardType, HashSet Trait) | CardMatchByCardCode CardCode
+data CardMatcher
+  = CardMatchByType (CardType, HashSet Trait)
+  | CardMatchByCardCode CardCode
+  | CardMatchByTitle Text
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

@@ -90,7 +90,7 @@ instance HasCost Card where
   getCost (EncounterCard _) = 0
 
 isDynamic :: Card -> Bool
-isDynamic (PlayerCard card) = case cdCost (pcDef card) of
+isDynamic (PlayerCard card) = case cdCost (toCardDef card) of
   Just DynamicCost -> True
   _ -> False
 isDynamic (EncounterCard _) = False
@@ -105,7 +105,7 @@ toEncounterCard (PlayerCard _) = Nothing
 
 cardIsWeakness :: Card -> Bool
 cardIsWeakness (EncounterCard _) = False
-cardIsWeakness (PlayerCard pc) = cdWeakness (pcDef pc)
+cardIsWeakness (PlayerCard pc) = cdWeakness (toCardDef pc)
 
 filterCardType :: HasCardDef a => CardType -> [a] -> [a]
 filterCardType cardType' = filter ((== cardType') . cdCardType . toCardDef)

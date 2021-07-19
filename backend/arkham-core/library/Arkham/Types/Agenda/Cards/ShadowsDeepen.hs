@@ -5,11 +5,11 @@ module Arkham.Types.Agenda.Cards.ShadowsDeepen
 
 import Arkham.Prelude
 
-import Arkham.EncounterCard
 import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue

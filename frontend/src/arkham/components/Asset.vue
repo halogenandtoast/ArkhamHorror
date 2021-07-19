@@ -71,7 +71,7 @@ export default defineComponent({
     })
 
     const exhausted = computed(() => props.asset.contents.exhausted)
-    const cardCode = computed(() => props.asset.contents.cardDef.cardCode)
+    const cardCode = computed(() => props.asset.contents.cardCode)
     const image = computed(() => {
       const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
       return `${baseUrl}/img/arkham/cards/${cardCode.value}.jpg`
@@ -84,6 +84,8 @@ export default defineComponent({
           return c.contents.contents === id.value
         case MessageType.READY:
           return c.contents.contents === id.value
+        case MessageType.FLIP:
+          return c.contents[1].contents === id.value
         case MessageType.REMOVE_DOOM:
           return c.contents[0].contents === id.value
         case MessageType.LOOK_AT_REVEALED:

@@ -1,9 +1,8 @@
 import { JsonDecoder } from 'ts.data.json';
-import { CardDef, cardDefDecoder } from '@/arkham/types/CardDef';
 
 export interface EnemyContents {
   id: string;
-  cardDef: CardDef;
+  cardCode: string;
   damage: number;
   doom: number;
   engagedInvestigators: string[];
@@ -14,7 +13,7 @@ export interface EnemyContents {
 
 export const enemyContentsDecoder = JsonDecoder.object<EnemyContents>({
   id: JsonDecoder.string,
-  cardDef: cardDefDecoder,
+  cardCode: JsonDecoder.string,
   damage: JsonDecoder.number,
   doom: JsonDecoder.number,
   engagedInvestigators: JsonDecoder.array<string>(JsonDecoder.string, 'InvestigatorIds[]'),

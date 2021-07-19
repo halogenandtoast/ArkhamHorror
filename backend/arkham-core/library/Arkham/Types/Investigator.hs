@@ -147,7 +147,7 @@ instance HasList DiscardableHandCard env Investigator where
       . toAttrs
    where
     isWeakness = \case
-      PlayerCard pc -> cdWeakness (pcDef pc)
+      PlayerCard pc -> cdWeakness (toCardDef pc)
       EncounterCard _ -> True -- maybe?
 
 instance HasCount MentalTraumaCount env Investigator where
@@ -204,8 +204,15 @@ getInvestigatorSpendableClueCount =
 instance HasSet AssetId env Investigator where
   getSet = pure . investigatorAssets . toAttrs
 
-instance HasSkillValue Investigator where
-  toSkillValue skillType = skillValueFor skillType Nothing [] . toAttrs
+instance HasSkillValue env Investigator where
+  getSkillValue skillType i = do
+    modifiers' <-
+      map modifierType <$> getModifiersFor (toSource i) (toTarget i) ()
+    let base = skillValueFor skillType Nothing [] (toAttrs i)
+    pure $ foldl' applyModifier base modifiers'
+   where
+    applyModifier _ (BaseSkillOf skillType' n) | skillType == skillType' = n
+    applyModifier n _ = n
 
 allInvestigators :: HashMap InvestigatorId Investigator
 allInvestigators = mapFromList $ map

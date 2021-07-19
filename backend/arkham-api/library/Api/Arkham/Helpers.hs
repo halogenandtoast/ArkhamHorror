@@ -5,6 +5,7 @@ import Import hiding (appLogger)
 
 import Arkham.PlayerCard
 import Arkham.Types.Card
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes.HasQueue
 import Arkham.Types.Game
 import Arkham.Types.InvestigatorId

@@ -167,10 +167,10 @@ skillIconCount st@SkillTest {..} = length . filter matches <$> concatMapM
   (iconsForCard . snd)
   (toList skillTestCommittedCards)
  where
-  iconsForCard (PlayerCard MkPlayerCard {..}) = do
+  iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
     modifiers' <-
       map modifierType <$> getModifiersFor (toSource st) (CardIdTarget pcId) ()
-    pure $ foldr applySkillModifiers (cdSkills pcDef) modifiers'
+    pure $ foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers'
   iconsForCard _ = pure []
   matches SkillWild = True
   matches s = s == skillTestSkillType
@@ -362,7 +362,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         discards = mapMaybe
           (\case
             (iid, PlayerCard pc) ->
-              (iid, pc) <$ guard (cdCardType (pcDef pc) /= SkillType)
+              (iid, pc) <$ guard (cdCardType (toCardDef pc) /= SkillType)
             (_, EncounterCard _) -> Nothing
           )
           (s ^. committedCardsL . to toList)

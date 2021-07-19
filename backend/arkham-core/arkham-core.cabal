@@ -329,6 +329,7 @@ library
       Arkham.Types.Effect.Effects.Burglary
       Arkham.Types.Effect.Effects.CursedShores
       Arkham.Types.Effect.Effects.CurseOfTheRougarouTabletToken
+      Arkham.Types.Effect.Effects.DaisysToteBagAdvanced
       Arkham.Types.Effect.Effects.Deduction
       Arkham.Types.Effect.Effects.Deduction2
       Arkham.Types.Effect.Effects.ExposeWeakness1
@@ -380,6 +381,8 @@ library
       Arkham.Types.Enemy.Cards.DarkYoungHost
       Arkham.Types.Enemy.Cards.DevoteeOfTheKey
       Arkham.Types.Enemy.Cards.DiscipleOfTheDevourer
+      Arkham.Types.Enemy.Cards.DonLagorio
+      Arkham.Types.Enemy.Cards.ElisabettaMagro
       Arkham.Types.Enemy.Cards.EmergentMonstrosity
       Arkham.Types.Enemy.Cards.FleshEater
       Arkham.Types.Enemy.Cards.GhoulFromTheDepths
@@ -405,6 +408,8 @@ library
       Arkham.Types.Enemy.Cards.RavenousGhoul
       Arkham.Types.Enemy.Cards.RelentlessDarkYoung
       Arkham.Types.Enemy.Cards.RuthTurner
+      Arkham.Types.Enemy.Cards.SalvatoreNeri
+      Arkham.Types.Enemy.Cards.SavioCorvi
       Arkham.Types.Enemy.Cards.ScreechingByakhee
       Arkham.Types.Enemy.Cards.ServantOfManyMouths
       Arkham.Types.Enemy.Cards.ServantOfTheLurker

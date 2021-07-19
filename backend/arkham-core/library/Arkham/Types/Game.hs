@@ -20,6 +20,7 @@ import Arkham.Types.Campaign
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ChaosBag
 import Arkham.Types.Classes hiding (discard)
 import Arkham.Types.Decks
@@ -1468,11 +1469,14 @@ getShortestPath
   :: (HasGame env, MonadReader env m)
   => LocationId
   -> (LocationId -> m Bool)
+  -> HashMap LocationId [LocationId]
   -> m [LocationId]
-getShortestPath !initialLocation !target = do
+getShortestPath !initialLocation !target !extraConnectionsMap = do
   let
     !state' = LPState (pure initialLocation) (singleton initialLocation) mempty
-  !result <- evalStateT (markDistances initialLocation target) state'
+  !result <- evalStateT
+    (markDistances initialLocation target extraConnectionsMap)
+    state'
   pure
     $ fromMaybe []
     . headMay
@@ -1496,7 +1500,7 @@ getLongestPath
 getLongestPath !initialLocation !target = do
   let
     !state' = LPState (pure initialLocation) (singleton initialLocation) mempty
-  !result <- evalStateT (markDistances initialLocation target) state'
+  !result <- evalStateT (markDistances initialLocation target mempty) state'
   pure
     $ fromMaybe []
     . headMay
@@ -1509,8 +1513,9 @@ markDistances
   :: (HasGame env, MonadReader env m)
   => LocationId
   -> (LocationId -> m Bool)
+  -> HashMap LocationId [LocationId]
   -> StateT LPState m (HashMap Int [LocationId])
-markDistances initialLocation target = do
+markDistances initialLocation target extraConnectionsMap = do
   LPState searchQueue visitedSet parentsMap <- get
   if Seq.null searchQueue
     then do
@@ -1520,7 +1525,12 @@ markDistances initialLocation target = do
       let
         nextLoc = Seq.index searchQueue 0
         newVisitedSet = insertSet nextLoc visitedSet
-      adjacentCells <- map unConnectedLocationId <$> getSetList nextLoc
+        extraConnections = findWithDefault [] nextLoc extraConnectionsMap
+      adjacentCells <-
+        nub
+        . (<> extraConnections)
+        . map unConnectedLocationId
+        <$> getSetList nextLoc
       let
         unvisitedNextCells = filter (`notMember` visitedSet) adjacentCells
         newSearchQueue =
@@ -1530,7 +1540,7 @@ markDistances initialLocation target = do
           parentsMap
           unvisitedNextCells
       put (LPState newSearchQueue newVisitedSet newParentsMap)
-      markDistances initialLocation target
+      markDistances initialLocation target extraConnectionsMap
  where
   getDistances map' = do
     locationIds <- filterM target (keys map')
@@ -1547,9 +1557,15 @@ markDistances initialLocation target = do
       Just parent -> unwindPath parentsMap (parent : currentPath)
 
 instance HasGame env => HasSet ClosestPathLocationId env (LocationId, Prey) where
-  getSet (start, prey) = do
+  getSet (start, prey) = getSet (start, prey, emptyConnectionsMap)
+   where
+    emptyConnectionsMap :: HashMap LocationId [LocationId]
+    emptyConnectionsMap = mempty
+
+instance HasGame env => HasSet ClosestPathLocationId env (LocationId, Prey, HashMap LocationId [LocationId]) where
+  getSet (start, prey, extraConnectionsMap) = do
     let matcher lid = notNull <$> getSet @PreyId (prey, lid)
-    setFromList . coerce <$> getShortestPath start matcher
+    setFromList . coerce <$> getShortestPath start matcher extraConnectionsMap
 
 instance HasGame env => HasSet ClosestAssetId env (InvestigatorId, CardDef) where
   getSet (iid, cardDef) = do
@@ -1560,7 +1576,7 @@ instance HasGame env => HasSet ClosestAssetId env (InvestigatorId, CardDef) wher
         (ClosestAssetId . toId)
         (matches currentAssets)
       else do
-        locations <- coerce <$> getShortestPath start matcher
+        locations <- coerce <$> getShortestPath start matcher mempty
         case locations of
           [] -> pure mempty
           lids ->
@@ -1587,7 +1603,7 @@ instance HasGame env => HasSet ClosestEnemyId env LocationId where
     if notNull currentEnemies
       then pure $ setFromList currentEnemies
       else do
-        locations <- coerce <$> getShortestPath start matcher
+        locations <- coerce <$> getShortestPath start matcher mempty
         case locations of
           [] -> pure mempty
           lids -> do
@@ -1610,7 +1626,7 @@ instance HasGame env => HasSet ClosestLocationId env (LocationId, [Trait]) where
   getSet (start, traits) = do
     currentTraits <- getSet start
     if null (setFromList traits `intersect` currentTraits)
-      then setFromList . coerce <$> getShortestPath start matcher
+      then setFromList . coerce <$> getShortestPath start matcher mempty
       else pure $ singleton (ClosestLocationId start)
    where
     matcher lid = notNull . (setFromList traits `intersect`) <$> getSet lid
@@ -1621,7 +1637,7 @@ instance HasGame env => HasSet ClosestEnemyId env (LocationId, [Trait]) where
     if notNull currentEnemies
       then pure $ setFromList currentEnemies
       else do
-        locations <- coerce <$> getShortestPath start matcher
+        locations <- coerce <$> getShortestPath start matcher mempty
         case locations of
           [] -> pure mempty
           lids -> do
@@ -1645,7 +1661,13 @@ instance HasGame env => HasSet ClosestEnemyId env (InvestigatorId, [Trait]) wher
   getSet (iid, traits) = getSet . (, traits) =<< locationFor iid
 
 instance HasGame env => HasSet ClosestPathLocationId env (LocationId, LocationId) where
-  getSet (start, destination) = do
+  getSet (start, prey) = getSet (start, prey, emptyConnectionsMap)
+   where
+    emptyConnectionsMap :: HashMap LocationId [LocationId]
+    emptyConnectionsMap = mempty
+
+instance HasGame env => HasSet ClosestPathLocationId env (LocationId, LocationId, HashMap LocationId [LocationId]) where
+  getSet (start, destination, extraConnectionsMap) = do
     -- logic is to get each adjacent location and determine which is closest to
     -- the destination
     connectedLocationIds <- map unConnectedLocationId <$> getSetList start
@@ -1660,7 +1682,11 @@ instance HasGame env => HasSet ClosestPathLocationId env (LocationId, LocationId
                 (singleton initialLocation)
                 mempty
             result <- evalStateT
-              (markDistances initialLocation (pure . (== destination)))
+              (markDistances
+                initialLocation
+                (pure . (== destination))
+                extraConnectionsMap
+              )
               state'
             let
               mdistance :: Maybe Int =
@@ -1711,7 +1737,7 @@ instance HasGame env => HasList (InvestigatorId, Distance) env EnemyTrait where
         =<< (getSetList =<< getLocation lid)
     getDistance start =
       Distance . fromJustNote "error" . minimumMay . keys <$> evalStateT
-        (markDistances start hasMatchingEnemy)
+        (markDistances start hasMatchingEnemy mempty)
         (LPState (pure start) (singleton start) mempty)
 
 distanceSingletons :: HashMap Int [LocationId] -> HashMap LocationId Int
@@ -1729,7 +1755,7 @@ instance HasGame env => HasSet FarthestLocationId env [InvestigatorId] where
     distances <- for iids $ \iid -> do
       start <- locationFor iid
       distanceSingletons <$> evalStateT
-        (markDistances start (pure . const True))
+        (markDistances start (pure . const True) mempty)
         (LPState (pure start) (singleton start) mempty)
     let
       overallDistances =
@@ -1746,10 +1772,14 @@ instance HasGame env => HasSet FarthestLocationId env [InvestigatorId] where
 instance HasGame env => HasSet Int env SkillType where
   getSet skillType =
     setFromList
-      . map (toSkillValue skillType)
-      . toList
-      . view investigatorsL
-      <$> getGame
+      <$> (traverse (getSkillValue skillType)
+          . toList
+          . view investigatorsL
+          =<< getGame
+          )
+
+instance HasGame env => HasSkillValue env InvestigatorId where
+  getSkillValue skillType = getSkillValue skillType <=< getInvestigator
 
 instance HasGame env => HasSet PreyId env Prey where
   getSet preyType = do
@@ -2253,7 +2283,7 @@ runGameMessage msg g = case msg of
         $ find ((== cardId) . toCardId) (handOf investigator)
     push (InvestigatorCommittedCard iid cardId)
     case card of
-      PlayerCard pc -> case cdCardType (pcDef pc) of
+      PlayerCard pc -> case toCardType pc of
         SkillType -> do
           let
             skill = createSkill pc iid
@@ -2312,17 +2342,17 @@ runGameMessage msg g = case msg of
       card = fromJustNote "could not find card in hand"
         $ find ((== cardId) . toCardId) (handOf investigator)
     case card of
-      PlayerCard pc -> case cdCardType (pcDef pc) of
+      PlayerCard pc -> case toCardType pc of
         PlayerTreacheryType -> error "unhandled"
         AssetType -> do
           let
             aid = AssetId cardId
             asset = fromJustNote
               "could not find asset"
-              (lookup (cdCardCode (pcDef pc)) allAssets)
+              (lookup (toCardCode pc) allAssets)
               aid
           pushAll
-            [ PlayedCard iid cardId (toName asset) (cdCardCode (pcDef pc))
+            [ PlayedCard iid cardId (toName asset) (toCardCode pc)
             , InvestigatorPlayDynamicAsset
               iid
               aid
@@ -2336,7 +2366,7 @@ runGameMessage msg g = case msg of
             event = createEvent pc iid
             eid = toId event
           pushAll
-            [ PlayedCard iid cardId (toName event) (cdCardCode (pcDef pc))
+            [ PlayedCard iid cardId (toName event) (toCardCode pc)
             , InvestigatorPlayDynamicEvent iid eid n
             ]
           pure $ g & eventsL %~ insertMap eid event
@@ -2363,11 +2393,11 @@ runGameMessage msg g = case msg of
   PutCardIntoPlay iid card mtarget -> do
     let cardId = toCardId card
     case card of
-      PlayerCard pc -> case cdCardType (pcDef pc) of
+      PlayerCard pc -> case toCardType pc of
         PlayerTreacheryType -> do
           let
             tid = TreacheryId cardId
-            treachery = lookupTreachery (cdCardCode (pcDef pc)) iid tid
+            treachery = lookupTreachery (toCardCode pc) iid tid
           pushAll [Revelation iid (TreacherySource tid), UnsetActiveCard]
           pure
             $ g
@@ -2378,10 +2408,10 @@ runGameMessage msg g = case msg of
             aid = AssetId cardId
             asset = fromJustNote
               "could not find asset"
-              (lookup (cdCardCode (pcDef pc)) allAssets)
+              (lookup (toCardCode pc) allAssets)
               aid
           pushAll
-            [ PlayedCard iid cardId (toName asset) (cdCardCode (pcDef pc))
+            [ PlayedCard iid cardId (toName asset) (toCardCode pc)
             , InvestigatorPlayAsset
               iid
               aid
@@ -2394,7 +2424,7 @@ runGameMessage msg g = case msg of
             event = createEvent pc iid
             eid = toId event
           pushAll
-            [ PlayedCard iid cardId (toName event) (cdCardCode (pcDef pc))
+            [ PlayedCard iid cardId (toName event) (toCardCode pc)
             , InvestigatorPlayEvent iid eid mtarget
             ]
           pure $ g & eventsL %~ insertMap eid event
@@ -2590,17 +2620,10 @@ runGameMessage msg g = case msg of
     event <- getEvent eid
     let
       cardId = unEventId eid
-      playerCard = do
-        f <- lookup (toCardCode event) allPlayerCards
-        pure $ PlayerCard $ MkPlayerCard cardId Nothing f
-    case playerCard of
-      Nothing -> error "missing"
-      Just (PlayerCard pc) ->
-        pure
-          $ g
-          & (eventsL %~ deleteMap eid)
-          & (victoryDisplayL %~ (PlayerCard pc :))
-      Just (EncounterCard _) -> error "can not be encounter card"
+      playerCard = case lookup (toCardCode event) allPlayerCards of
+        Just _ -> PlayerCard $ MkPlayerCard cardId Nothing (toCardCode event)
+        Nothing -> error "missing player card"
+    pure $ g & (eventsL %~ deleteMap eid) & (victoryDisplayL %~ (playerCard :))
   BeginInvestigation -> do
     pushAll
       $ [ CheckWindow
@@ -3132,7 +3155,9 @@ runGameMessage msg g = case msg of
       treacheryId = toId treachery
     -- player treacheries will not trigger draw treachery windows
     pushAll
-      $ [ RemoveCardFromHand iid (toCardCode card) | cdRevelation (pcDef card) ]
+      $ [ RemoveCardFromHand iid (toCardCode card)
+        | cdRevelation (toCardDef card)
+        ]
       <> [ Revelation iid (TreacherySource treacheryId)
          , AfterRevelation iid treacheryId
          , UnsetActiveCard

@@ -12,6 +12,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
 
 newtype RialtoBridge = RialtoBridge LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -32,4 +33,7 @@ instance ActionRunner env => HasActions env RialtoBridge where
   getActions iid window (RialtoBridge attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env RialtoBridge where
-  runMessage msg (RialtoBridge attrs) = RialtoBridge <$> runMessage msg attrs
+  runMessage msg l@(RialtoBridge attrs) = case msg of
+    MoveFrom iid lid | lid == toId attrs ->
+      l <$ push (LoseActions iid (toSource attrs) 1)
+    _ -> RialtoBridge <$> runMessage msg attrs

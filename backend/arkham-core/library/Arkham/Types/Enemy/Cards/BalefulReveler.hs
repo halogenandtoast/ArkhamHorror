@@ -6,6 +6,7 @@ module Arkham.Types.Enemy.Cards.BalefulReveler
 import Arkham.Prelude
 
 import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
@@ -35,28 +36,6 @@ instance EnemyAttrsHasActions env => HasActions env BalefulReveler where
   getActions i (AfterMoveFromHunter eid) (BalefulReveler attrs)
     | eid == toId attrs = pure [UseAbility i (forcedAbility attrs)]
   getActions i window (BalefulReveler attrs) = getActions i window attrs
-
-getCounterClockwiseLocations
-  :: ( MonadReader env m
-     , HasSet LocationId env ()
-     , HasSet ConnectedLocationId env LocationId
-     )
-  => LocationId
-  -> m [LocationId]
-getCounterClockwiseLocations end = do
-  lids <- getSetList @LocationId ()
-  flippedMap :: HashMap LocationId LocationId <-
-    mapFromList
-    . concat
-    <$> traverse
-          (\lid -> map ((, lid) . unConnectedLocationId) <$> getSetList lid)
-          lids
-  pure $ buildList (lookup end flippedMap) flippedMap
- where
-  buildList Nothing _ = []
-  buildList (Just current) _ | current == end = [end]
-  buildList (Just current) flippedMap =
-    current : buildList (lookup current flippedMap) flippedMap
 
 instance EnemyAttrsRunMessage env => RunMessage env BalefulReveler where
   runMessage msg e@(BalefulReveler attrs) = case msg of

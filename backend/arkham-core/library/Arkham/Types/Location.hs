@@ -9,6 +9,7 @@ import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Direction
+import Arkham.Types.EnemyMatcher
 import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
@@ -200,6 +201,7 @@ instance
 instance
   ( HasSet UnengagedEnemyId env LocationId
   , HasSet AssetId env (InvestigatorId, CardDef)
+  , HasSet EnemyId env EnemyMatcher
   , LocationRunner env
   )
   => RunMessage env Location where

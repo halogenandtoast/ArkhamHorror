@@ -20,6 +20,7 @@ import Arkham.Types.Classes.HasRecord as X
 import Arkham.Types.Classes.HasTokenValue as X
 import Arkham.Types.Classes.RunMessage as X
 import Arkham.Types.EnemyId
+import Arkham.Types.EnemyMatcher
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword
 import Arkham.Types.LocationId
@@ -154,6 +155,7 @@ instance HasVictoryPoints PlayerCard where
 
 type ActionRunner env
   = ( HasQueue env
+    , HasSet LocationId env ()
     , HasActions env ActionType
     , HasCount AssetCount env (InvestigatorId, [Trait])
     , HasCount ActionRemainingCount env InvestigatorId
@@ -191,6 +193,7 @@ type ActionRunner env
     , HasSet EnemyId env CardCode
     , HasSet EnemyId env InvestigatorId
     , HasSet EnemyId env LocationId
+    , HasSet EnemyId env EnemyMatcher
     , HasSet EnemyId env ([Trait], LocationId)
     , HasSet ExhaustedAssetId env InvestigatorId
     , HasSet ExhaustedAssetId env ()

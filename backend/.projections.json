@@ -1,4 +1,32 @@
 {
+  "arkham-core/library/Arkham/Types/Act/Cards/*.hs": {
+    "type": "act",
+    "alternate": "arkham-core/tests/Arkham/Types/Act/Cards/{}Spec.hs",
+    "template": [
+       "module Arkham.Types.Act.Cards.{dot}",
+       "  ( {dot}(..)",
+       "  , {dot|snakecase|camelcase}",
+       "  ) where",
+       "",
+       "import Arkham.Prelude",
+       "",
+       "import Arkham.Types.Act.Attrs",
+       "import Arkham.Types.Act.Runner",
+       "import Arkham.Types.Classes",
+       "",
+       "newtype {dot} = {dot} ActAttrs",
+       "  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)",
+       "",
+       "{dot|snakecase|camelcase} :: {dot}",
+       "{dot|snakecase|camelcase} = {dot} $ baseAttrs \"TODO: ID\" \"TODO: Name\" (Act 1 A) Nothing",
+       "",
+       "instance ActionRunner env => HasActions env {dot} where",
+       "  getActions iid window ({dot} x) = getActions iid window x",
+       "",
+       "instance ActRunner env => RunMessage env {dot} where",
+       "  runMessage msg ({dot} attrs) = {dot} <$> runMessage msg attrs"
+    ]
+  },
   "arkham-core/library/Arkham/Types/Scenario/Scenarios/*.hs": {
     "type": "scenario",
     "alternate": "arkham-core/tests/Arkham/Types/Scenario/Scenarios/{}Spec.hs",

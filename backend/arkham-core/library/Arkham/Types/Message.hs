@@ -329,6 +329,7 @@ data Message
     | -- | meant to be used internally by investigators                  ^ damage ^ horror
       InvestigatorDoAssignDamage InvestigatorId Source DamageStrategy Int Int [Target] [Target]
     | InvestigatorDrawEncounterCard InvestigatorId
+    | InvestigatorDoDrawEncounterCard InvestigatorId
     | InvestigatorDrawEnemy InvestigatorId LocationId EnemyId
     | InvestigatorDrewEncounterCard InvestigatorId EncounterCard
     | InvestigatorDrewPlayerCard InvestigatorId PlayerCard

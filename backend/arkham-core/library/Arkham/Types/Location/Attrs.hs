@@ -56,6 +56,7 @@ data LocationAttrs = LocationAttrs
   , locationRevealClues :: GameValue Int
   , locationClues :: Int
   , locationDoom :: Int
+  , locationResources :: Int
   , locationShroud :: Int
   , locationRevealed :: Bool
   , locationInvestigators :: HashSet InvestigatorId
@@ -125,6 +126,9 @@ doomL = lens locationDoom $ \m x -> m { locationDoom = x }
 
 cluesL :: Lens' LocationAttrs Int
 cluesL = lens locationClues $ \m x -> m { locationClues = x }
+
+resourcesL :: Lens' LocationAttrs Int
+resourcesL = lens locationResources $ \m x -> m { locationResources = x }
 
 revealedL :: Lens' LocationAttrs Bool
 revealedL = lens locationRevealed $ \m x -> m { locationRevealed = x }
@@ -228,6 +232,7 @@ locationWith f def shroud' revealClues symbol' connectedSymbols' g =
       , locationRevealClues = revealClues
       , locationClues = 0
       , locationDoom = 0
+      , locationResources = 0
       , locationShroud = shroud'
       , locationRevealed = False
       , locationInvestigators = mempty
@@ -597,6 +602,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
         then pure a
         else pure $ a & cluesL +~ n
     PlaceDoom target n | isTarget a target -> pure $ a & doomL +~ n
+    PlaceResources target n | isTarget a target -> pure $ a & resourcesL +~ n
     RemoveClues (LocationTarget lid) n | lid == locationId ->
       pure $ a & cluesL %~ max 0 . subtract n
     RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0

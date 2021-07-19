@@ -21,6 +21,7 @@ library
       Arkham.Location.Cards
       Arkham.PlayerCard
       Arkham.Prelude
+      Arkham.Scenarios.CarnevaleOfHorrors.Helpers
       Arkham.Skill.Cards
       Arkham.Treachery.Cards
       Arkham.Types.Ability

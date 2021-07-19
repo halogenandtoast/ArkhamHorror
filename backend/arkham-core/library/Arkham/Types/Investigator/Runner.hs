@@ -14,6 +14,7 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Direction
 import Arkham.Types.EnemyId
+import Arkham.Types.EnemyMatcher
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword
@@ -124,6 +125,7 @@ type InvestigatorRunner env
         , HasSet EnemyId env Trait
         , HasSet EnemyId env ()
         , HasSet EnemyId env ([Trait], LocationId)
+        , HasSet EnemyId env EnemyMatcher
         , HasSet EventId env ()
         , HasSet ExhaustedAssetId env InvestigatorId
         , HasSet ExhaustedAssetId env ()

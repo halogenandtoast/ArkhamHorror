@@ -6,12 +6,21 @@ module Arkham.Types.Location.Cards.FloodedSquare
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards
+import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
+import Arkham.Types.Ability
 import Arkham.Types.Classes
+import Arkham.Types.Cost
 import Arkham.Types.Direction
+import Arkham.Types.EnemyMatcher
 import Arkham.Types.GameValue
+import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype FloodedSquare = FloodedSquare LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -28,8 +37,33 @@ floodedSquare = locationWith
 
 instance HasModifiersFor env FloodedSquare
 
+ability :: LocationAttrs -> Ability
+ability a = mkAbility a 1 (ActionAbility Nothing $ ActionCost 1)
+
 instance ActionRunner env => HasActions env FloodedSquare where
+  getActions iid NonFast (FloodedSquare attrs) =
+    withBaseActions iid NonFast attrs $ do
+      counterClockwiseLocation <- getCounterClockwiseLocation (toId attrs)
+      nonEliteEnemies <- getSet @EnemyId $ EnemyMatchAll
+        [NonEliteEnemy, EnemyAtLocation counterClockwiseLocation]
+      pure [ UseAbility iid (ability attrs) | notNull nonEliteEnemies ]
   getActions iid window (FloodedSquare attrs) = getActions iid window attrs
 
-instance LocationRunner env => RunMessage env FloodedSquare where
-  runMessage msg (FloodedSquare attrs) = FloodedSquare <$> runMessage msg attrs
+instance
+  ( HasSet EnemyId env EnemyMatcher
+  , LocationRunner env
+  )
+  => RunMessage env FloodedSquare where
+  runMessage msg l@(FloodedSquare attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      counterClockwiseLocation <- getCounterClockwiseLocation (toId attrs)
+      nonEliteEnemies <- getSetList @EnemyId $ EnemyMatchAll
+        [NonEliteEnemy, EnemyAtLocation counterClockwiseLocation]
+      l <$ push
+        (chooseOne
+          iid
+          [ TargetLabel (EnemyTarget eid) [EnemyEvaded iid eid]
+          | eid <- nonEliteEnemies
+          ]
+        )
+    _ -> FloodedSquare <$> runMessage msg attrs

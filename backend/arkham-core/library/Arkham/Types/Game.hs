@@ -61,7 +61,7 @@ import Arkham.Types.Treachery
 import Arkham.Types.Treachery.Attrs (treacheryOwner)
 import Arkham.Types.Window
 import qualified Arkham.Types.Window as Fast
-import Control.Monad.Extra (anyM, mapMaybeM)
+import Control.Monad.Extra (allM, anyM, mapMaybeM)
 import Control.Monad.Random.Lazy hiding (filterM)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (filterM, foldM)
@@ -530,20 +530,23 @@ getEnemyMatching
 getEnemyMatching = (listToMaybe <$>) . getEnemiesMatching
 
 getEnemiesMatching
-  :: (MonadReader env m, HasGame env) => EnemyMatcher -> m [Enemy]
-getEnemiesMatching = \case
-  EnemyWithTitle title ->
-    filter ((== title) . nameTitle . toName)
-      . toList
-      . view enemiesL
-      <$> getGame
-  EnemyWithFullTitle title subtitle ->
-    filter ((== Name title (Just subtitle)) . toName)
-      . toList
-      . view enemiesL
-      <$> getGame
-  EnemyWithId enemyId ->
-    filter ((== enemyId) . toId) . toList . view enemiesL <$> getGame
+  :: forall m env
+   . (MonadReader env m, HasGame env)
+  => EnemyMatcher
+  -> m [Enemy]
+getEnemiesMatching matcher = do
+  allGameEnemies <- toList . view enemiesL <$> getGame
+  filterM (matcherFilter matcher) allGameEnemies
+ where
+  matcherFilter :: EnemyMatcher -> Enemy -> m Bool
+  matcherFilter = \case
+    EnemyWithTitle title -> pure . (== title) . nameTitle . toName
+    EnemyWithFullTitle title subtitle ->
+      pure . (== Name title (Just subtitle)) . toName
+    EnemyWithId enemyId -> pure . (== enemyId) . toId
+    NonEliteEnemy -> fmap (notElem Elite) . getSet . toId
+    EnemyAtLocation lid -> fmap (== lid) . getId
+    EnemyMatchAll ms -> \enemy -> allM (`matcherFilter` enemy) ms
 
 getAgenda
   :: (HasCallStack, MonadReader env m, HasGame env) => AgendaId -> m Agenda

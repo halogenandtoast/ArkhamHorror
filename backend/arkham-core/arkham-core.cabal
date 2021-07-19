@@ -53,6 +53,7 @@ library
       Arkham.Types.Act.Cards.NightAtTheMuseum
       Arkham.Types.Act.Cards.OutOfThisWorld
       Arkham.Types.Act.Cards.RicesWhereabouts
+      Arkham.Types.Act.Cards.Row
       Arkham.Types.Act.Cards.Run
       Arkham.Types.Act.Cards.SaracenicScript
       Arkham.Types.Act.Cards.SearchingForAnswers

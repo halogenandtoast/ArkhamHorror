@@ -2997,7 +2997,12 @@ runGameMessage msg g = case msg of
         pure $ g & encounterDeckL .~ Deck xs & discardL %~ (reverse discards <>)
   Surge iid _ -> g <$ push (InvestigatorDrawEncounterCard iid)
   InvestigatorEliminated iid -> pure $ g & playerOrderL %~ filter (/= iid)
-  InvestigatorDrawEncounterCard iid -> if null (unDeck $ g ^. encounterDeckL)
+  InvestigatorDrawEncounterCard iid -> do
+    g <$ pushAll
+      [ When (InvestigatorDoDrawEncounterCard iid)
+      , InvestigatorDoDrawEncounterCard iid
+      ]
+  InvestigatorDoDrawEncounterCard iid -> if null (unDeck $ g ^. encounterDeckL)
     then g <$ when
       (notNull $ gameDiscard g)
       (pushAll

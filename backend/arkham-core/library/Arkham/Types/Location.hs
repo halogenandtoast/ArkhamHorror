@@ -259,6 +259,9 @@ instance HasVictoryPoints Location where
     let LocationAttrs { locationClues } = toAttrs l
     in if locationClues == 0 then cdVictoryPoints (toCardDef l) else Nothing
 
+instance HasCount ResourceCount env Location where
+  getCount = pure . ResourceCount . locationResources . toAttrs
+
 instance HasCount ClueCount env Location where
   getCount = pure . ClueCount . locationClues . toAttrs
 

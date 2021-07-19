@@ -935,6 +935,9 @@ instance HasGame env => HasCount SpendableClueCount env () where
 instance HasGame env => HasCount ResourceCount env InvestigatorId where
   getCount = getCount <=< getInvestigator
 
+instance HasGame env => HasCount ResourceCount env LocationId where
+  getCount = getCount <=< getLocation
+
 instance HasGame env => HasCount ResourceCount env TreacheryId where
   getCount = getCount <=< getTreachery
 
@@ -2999,7 +3002,7 @@ runGameMessage msg g = case msg of
   InvestigatorEliminated iid -> pure $ g & playerOrderL %~ filter (/= iid)
   InvestigatorDrawEncounterCard iid -> do
     g <$ pushAll
-      [ When (InvestigatorDoDrawEncounterCard iid)
+      [ CheckWindow iid [WhenWouldDrawEncounterCard You]
       , InvestigatorDoDrawEncounterCard iid
       ]
   InvestigatorDoDrawEncounterCard iid -> if null (unDeck $ g ^. encounterDeckL)

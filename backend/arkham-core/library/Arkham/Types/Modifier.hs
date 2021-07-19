@@ -47,6 +47,7 @@ data ModifierType
   | Blocked
   | CancelSkills
   | CanBeAssignedDamage
+  | CanBeFoughtAsIfAtYourLocation
   | CanBecomeFast (Maybe CardType, [Trait])
   | CanPlayTopOfDiscard (Maybe CardType, [Trait])
   | CannotBeAttackedByNonElite

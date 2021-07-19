@@ -26,6 +26,7 @@ import Arkham.Types.Act.Cards.MysteriousGateway as X
 import Arkham.Types.Act.Cards.NightAtTheMuseum as X
 import Arkham.Types.Act.Cards.OutOfThisWorld as X
 import Arkham.Types.Act.Cards.RicesWhereabouts as X
+import Arkham.Types.Act.Cards.Row as X
 import Arkham.Types.Act.Cards.Run as X
 import Arkham.Types.Act.Cards.SaracenicScript as X
 import Arkham.Types.Act.Cards.SearchingForAnswers as X

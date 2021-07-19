@@ -57,6 +57,7 @@ data Window
   | WhenDefeated Source
   | WhenDiscoverClues Who Where
   | WhenDrawEncounterCard Who CardCode
+  | WhenWouldDrawEncounterCard Who
   | WhenDrawNonPerilTreachery Who TreacheryId
   | WhenDrawToken Who Token
   | WhenDrawTreachery Who

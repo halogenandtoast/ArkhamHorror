@@ -5,9 +5,11 @@ module Arkham.Types.Investigator
 import Arkham.Prelude
 
 import Arkham.Types.Action (Action, TakenAction)
+import Arkham.Types.AssetMatcher
 import Arkham.Types.Card
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers (getInvestigatorIds)
 import Arkham.Types.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Investigator.Attrs
@@ -260,6 +262,8 @@ getIsPrey
      , HasSet RemainingSanity env ()
      , HasSet RemainingHealth env ()
      , HasSet Int env SkillType -- hmmm
+     , HasSet InvestigatorId env ()
+     , HasSet AssetId env (InvestigatorId, AssetMatcher)
      , HasModifiersFor env ()
      )
   => Prey
@@ -309,6 +313,13 @@ getIsPrey (NearestToEnemyWithTrait trait) i = do
       (investigatorId $ toAttrs i)
       mappingsMap
   pure $ investigatorDistance == minDistance
+getIsPrey (HasMostMatchingAsset assetMatcher) i = do
+  selfCount <- length <$> getSetList @AssetId (toId i, assetMatcher)
+  allCounts <-
+    traverse (\iid' -> length <$> getSetList @AssetId (iid', assetMatcher))
+      =<< getInvestigatorIds
+  pure $ selfCount == maximum (ncons selfCount allCounts)
+
 getIsPrey SetToBearer _ = error "The bearer was not correctly set"
 
 getAvailableSkillsFor

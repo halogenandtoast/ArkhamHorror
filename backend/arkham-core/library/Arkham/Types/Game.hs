@@ -690,6 +690,12 @@ instance HasGame env => HasId (Maybe LocationId) env LocationMatcher where
 instance HasGame env => HasSet AssetId env AssetMatcher where
   getSet = fmap (setFromList . map toId) . getAssetsMatching
 
+instance HasGame env => HasSet AssetId env (InvestigatorId, AssetMatcher) where
+  getSet (iid, matcher) = do
+    matchingAssetIds <- setFromList . map toId <$> getAssetsMatching matcher
+    investigatorAssetIds <- getSet @AssetId iid
+    pure $ matchingAssetIds `intersection` investigatorAssetIds
+
 instance HasGame env => HasSet EnemyId env LocationMatcher where
   getSet locationMatcher = do
     location <- fromJustNote missingLocation

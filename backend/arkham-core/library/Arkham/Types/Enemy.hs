@@ -37,6 +37,7 @@ data Enemy
     | BillyCooper' BillyCooper
     | BogGator' BogGator
     | BroodOfYogSothoth' BroodOfYogSothoth
+    | CarnevaleSentinel' CarnevaleSentinel
     | CloverClubPitBoss' CloverClubPitBoss
     | Cnidathqua' Cnidathqua
     | ConglomerationOfSpheres' ConglomerationOfSpheres
@@ -259,6 +260,7 @@ allEnemies = mapFromList $ map
   , BillyCooper' <$> billyCooper
   , BogGator' <$> bogGator
   , BroodOfYogSothoth' <$> broodOfYogSothoth
+  , CarnevaleSentinel' <$> carnevaleSentinel
   , CloverClubPitBoss' <$> cloverClubPitBoss
   , Cnidathqua' <$> cnidathqua
   , ConglomerationOfSpheres' <$> conglomerationOfSpheres

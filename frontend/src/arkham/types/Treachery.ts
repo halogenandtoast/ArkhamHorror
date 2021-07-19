@@ -1,9 +1,8 @@
 import { JsonDecoder } from 'ts.data.json';
-import { CardDef, cardDefDecoder } from '@/arkham/types/CardDef';
 
 export interface TreacheryContents {
   id: string;
-  cardDef: CardDef;
+  cardCode: string;
   clues?: number;
   resources?: number;
 }
@@ -11,7 +10,7 @@ export interface TreacheryContents {
 
 export const treacheryContentsDecoder = JsonDecoder.object<TreacheryContents>({
   id: JsonDecoder.string,
-  cardDef: cardDefDecoder,
+  cardCode: JsonDecoder.string,
   clues: JsonDecoder.optional(JsonDecoder.number),
   resources: JsonDecoder.optional(JsonDecoder.number),
 }, 'TreacheryContents');

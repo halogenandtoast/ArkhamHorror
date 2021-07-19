@@ -10,6 +10,7 @@ import Arkham.Prelude
 import Arkham.Json
 import Arkham.Types.Action
 import Arkham.Types.Card
+import Arkham.Types.Id
 import Arkham.Types.Keyword
 import Arkham.Types.SkillType
 import Arkham.Types.Source
@@ -43,6 +44,7 @@ data ModifierType
   | AlternativeReady Source
   | AnySkillValue Int
   | BaseSkillOf SkillType Int
+  | BecomesFast
   | Blank
   | Blocked
   | CancelSkills
@@ -86,6 +88,7 @@ data ModifierType
   | HandSize Int
   | HealthModifier Int
   | HorrorDealt Int
+  | HunterConnectedTo LocationId
   | IgnoreText
   | IgnoreTokenEffects
   | MaxDamageTaken Int

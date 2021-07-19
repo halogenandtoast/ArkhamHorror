@@ -31,7 +31,7 @@ export default defineComponent({
   },
   setup(props) {
     const image = computed(() => {
-      const { cardCode } = props.card.contents.def;
+      const { cardCode } = props.card.contents;
       const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
       return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
     })

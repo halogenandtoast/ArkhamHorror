@@ -6,12 +6,12 @@ module Arkham.Types.Asset.Cards.MaskedCarnevaleGoer_18
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
-import Arkham.EncounterCard
 import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
@@ -72,7 +72,7 @@ instance
         [ RemoveFromGame (toTarget attrs)
         , CreateEnemyAt elisabettaMagro lid Nothing
         ]
-    LookAtRevealed _ target | isTarget a target -> do
+    LookAtRevealed iid target | isTarget a target -> do
       let
         elisabettaMagro = EncounterCard
           $ lookupEncounterCard Enemies.elisabettaMagro (toCardId attrs)
@@ -80,5 +80,6 @@ instance
       a <$ pushAll
         [ FocusCards [elisabettaMagro]
         , chooseOne leadInvestigatorId [Label "Continue" [UnfocusCards]]
+        , Flip iid target
         ]
     _ -> MaskedCarnevaleGoer_18 <$> runMessage msg attrs

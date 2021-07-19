@@ -41,7 +41,7 @@ instance EnemyAttrsRunMessage env => RunMessage env DevoteeOfTheKey where
             [Discard (toTarget attrs), PlaceDoomOnAgenda, PlaceDoomOnAgenda]
         else do
           choices <- map unClosestPathLocationId
-            <$> getSetList (enemyLocation, sentinelPeak)
+            <$> getSetList (enemyLocation, sentinelPeak, emptyLocationMap)
           case choices of
             [] -> error "should not happen"
             [x] -> e <$ push (EnemyMove enemyId enemyLocation x)

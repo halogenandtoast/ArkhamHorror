@@ -56,7 +56,7 @@ instance AssetRunner env => RunMessage env DaisysToteBagAdvanced where
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       pushAll $ replicate 2 (AddSlot iid HandSlot (slot attrs))
       DaisysToteBagAdvanced <$> runMessage msg attrs
-    UseCardAbility iid source (Just (TargetMetadata (CardIdTarget cardId))) 1 _
-      | isSource attrs source
-      -> a <$ push (ChangeCardToFast iid cardId)
+    UseCardAbility _ source (Just (TargetMetadata (CardIdTarget cardId))) 1 _
+      | isSource attrs source -> a
+      <$ push (CreateEffect "90002" Nothing source (CardIdTarget cardId))
     _ -> DaisysToteBagAdvanced <$> runMessage msg attrs

@@ -118,7 +118,7 @@ export default defineComponent({
 
     const topOfDiscard = computed(() => {
       if (discards.value.length > 0) {
-        const { cardCode } = discards.value[0].def;
+        const { cardCode } = discards.value[0];
         return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
       }
 

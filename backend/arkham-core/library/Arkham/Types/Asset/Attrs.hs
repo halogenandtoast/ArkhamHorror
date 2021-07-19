@@ -2,6 +2,7 @@ module Arkham.Types.Asset.Attrs where
 
 import Arkham.Prelude
 
+import Arkham.Asset.Cards
 import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.Action
@@ -23,7 +24,7 @@ type AssetCard a = CardBuilder AssetId a
 
 data AssetAttrs = AssetAttrs
   { assetId :: AssetId
-  , assetCardDef :: CardDef
+  , assetCardCode :: CardCode
   , assetInvestigator :: Maybe InvestigatorId
   , assetLocation :: Maybe LocationId
   , assetEnemy :: Maybe EnemyId
@@ -93,8 +94,13 @@ investigatorL = lens assetInvestigator $ \m x -> m { assetInvestigator = x }
 exhaustedL :: Lens' AssetAttrs Bool
 exhaustedL = lens assetExhausted $ \m x -> m { assetExhausted = x }
 
+allAssetCards :: HashMap CardCode CardDef
+allAssetCards = allPlayerAssetCards <> allEncounterAssetCards
+
 instance HasCardDef AssetAttrs where
-  toCardDef = assetCardDef
+  toCardDef a = case lookup (assetCardCode a) allAssetCards of
+    Just def -> def
+    Nothing -> error $ "missing card def for asset " <> show (assetCardCode a)
 
 instance ToJSON AssetAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "asset"
@@ -184,7 +190,7 @@ assetWith f cardDef g = CardBuilder
   { cbCardCode = cdCardCode cardDef
   , cbCardBuilder = \aid -> f . g $ AssetAttrs
     { assetId = aid
-    , assetCardDef = cardDef
+    , assetCardCode = toCardCode cardDef
     , assetInvestigator = Nothing
     , assetLocation = Nothing
     , assetEnemy = Nothing

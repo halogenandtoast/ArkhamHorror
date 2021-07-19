@@ -8,6 +8,7 @@ module Arkham.Types.Location.Attrs
 import Arkham.Prelude
 
 import Arkham.Json
+import Arkham.Location.Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
@@ -50,7 +51,7 @@ type LocationCard a = CardBuilder LocationId a
 
 data LocationAttrs = LocationAttrs
   { locationId :: LocationId
-  , locationCardDef :: CardDef
+  , locationCardCode :: CardCode
   , locationUnrevealedName :: LocationName
   , locationLabel :: Text
   , locationRevealClues :: GameValue Int
@@ -145,7 +146,10 @@ cardsUnderneathL =
   lens locationCardsUnderneath $ \m x -> m { locationCardsUnderneath = x }
 
 instance HasCardDef LocationAttrs where
-  toCardDef = locationCardDef
+  toCardDef a = case lookup (locationCardCode a) allLocationCards of
+    Just def -> def
+    Nothing ->
+      error $ "missing card def for location " <> show (locationCardCode a)
 
 instance ToJSON LocationAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "location"
@@ -226,7 +230,7 @@ locationWith f def shroud' revealClues symbol' connectedSymbols' g =
     { cbCardCode = cdCardCode def
     , cbCardBuilder = \lid -> f . g $ LocationAttrs
       { locationId = lid
-      , locationCardDef = def
+      , locationCardCode = toCardCode def
       , locationUnrevealedName = LocationName (cdName def)
       , locationLabel = nameToLabel (cdName def)
       , locationRevealClues = revealClues
@@ -485,6 +489,11 @@ instance LocationRunner env => RunMessage env LocationAttrs where
     Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
     Discard (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
     Discard (EnemyTarget eid) -> pure $ a & enemiesL %~ deleteSet eid
+    RemoveFromGame (AssetTarget aid) -> pure $ a & assetsL %~ deleteSet aid
+    RemoveFromGame (TreacheryTarget tid) ->
+      pure $ a & treacheriesL %~ deleteSet tid
+    RemoveFromGame (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
+    RemoveFromGame (EnemyTarget eid) -> pure $ a & enemiesL %~ deleteSet eid
     Discard target | isTarget a target ->
       a <$ pushAll (resolve (RemoveLocation $ toId a))
     AttachAsset aid (LocationTarget lid) | lid == locationId ->

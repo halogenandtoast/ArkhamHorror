@@ -252,7 +252,7 @@ export default defineComponent({
 
     const activeCard = computed(() => {
       if (props.game.activeCard) {
-        const { cardCode } = props.game.activeCard.contents.def;
+        const { cardCode } = props.game.activeCard.contents;
         return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
       }
 
@@ -263,7 +263,7 @@ export default defineComponent({
 
     const topOfEncounterDiscard = computed(() => {
       if (props.game.discard[0]) {
-        const { cardCode } = props.game.discard[0].def;
+        const { cardCode } = props.game.discard[0];
 
         return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
       }

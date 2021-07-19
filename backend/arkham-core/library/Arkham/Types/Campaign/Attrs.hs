@@ -2,14 +2,14 @@ module Arkham.Types.Campaign.Attrs where
 
 import Arkham.Prelude
 
-import Arkham.EncounterCard
 import Arkham.Json
-import Arkham.PlayerCard
 import Arkham.Types.Campaign.Runner
 import Arkham.Types.CampaignLog
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.CampaignStep
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCard
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Game.Helpers
@@ -114,7 +114,7 @@ instance CampaignRunner env => RunMessage env CampaignAttrs where
       pure
         $ a
         & storyCardsL
-        %~ adjustMap (filter ((/= cardCode) . cdCardCode . pcDef)) iid
+        %~ adjustMap (filter ((/= cardCode) . cdCardCode . toCardDef)) iid
     AddToken token -> pure $ a & chaosBagL %~ (token :)
     InitDeck iid deck -> pure $ a & decksL %~ insertMap iid deck
     UpgradeDeck iid deck -> pure $ a & decksL %~ insertMap iid deck

@@ -5,11 +5,11 @@ module Arkham.Types.Agenda.Cards.BreakingThrough
 
 import Arkham.Prelude
 
-import Arkham.EncounterCard
 import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue

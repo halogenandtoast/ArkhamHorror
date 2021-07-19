@@ -118,6 +118,8 @@ cardMatch (CardMatchByType (cardType', traits)) a =
   (toCardType a == cardType')
     && (null traits || notNull (intersection (toTraits a) traits))
 cardMatch (CardMatchByCardCode cardCode) card = toCardCode card == cardCode
+cardMatch (CardMatchByTitle title) card =
+  (nameTitle . cdName $ toCardDef card) == title
 
 testCardDef :: CardType -> CardCode -> CardDef
 testCardDef cardType cardCode = CardDef

@@ -14,12 +14,13 @@
       :investigatorId="investigatorId"
       @choose="$emit('choose', $event)"
     />
-    <button
+
+    <AbilityButton
       v-for="ability in abilities"
       :key="ability"
-      class="button ability-button"
+      :ability="choices[ability]"
       @click="$emit('choose', ability)"
-      >{{abilityLabel(ability)}}</button>
+      />
 
     <button v-if="cardsUnder.length > 0" class="view-cards-under-button" @click="toggleUnder">{{viewUnderLabel}}</button>
   </div>
@@ -29,13 +30,14 @@
 import { defineComponent, computed, ref } from 'vue'
 import { Game } from '@/arkham/types/Game'
 import { Card } from '@/arkham/types/Card'
+import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Treachery from '@/arkham/components/Treachery.vue';
 import * as ArkhamGame from '@/arkham/types/Game'
 import { Message, MessageType } from '@/arkham/types/Message'
 import * as Arkham from '@/arkham/types/Act'
 
 export default defineComponent({
-  components: { Treachery },
+  components: { Treachery, AbilityButton },
   props: {
     act: { type: Object as () => Arkham.Act, required: true },
     game: { type: Object as () => Game, required: true },
@@ -83,10 +85,16 @@ export default defineComponent({
       return choices.value[idx].label
     }
 
+    function isAbility(v: Message) {
+     return (v.tag === 'UseAbility' && v.contents[1].source.tag === 'ActSource' && v.contents[1].source.contents === id.value)
+    }
+
     const abilities = computed(() => {
       return choices.value
         .reduce<number[]>((acc, v, i) => {
-          if (v.tag === 'UseAbility' && v.contents[1].source.tag === 'ActSource' && v.contents[1].source.contents === id.value) {
+          if (v.tag === 'Run' && isAbility(v.contents[0])) {
+            return [...acc, i];
+          } else if (isAbility(v)) {
             return [...acc, i];
           }
 

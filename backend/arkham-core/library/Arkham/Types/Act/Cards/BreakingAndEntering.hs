@@ -6,11 +6,11 @@ module Arkham.Types.Act.Cards.BreakingAndEntering
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Assets
-import Arkham.PlayerCard
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.LocationId

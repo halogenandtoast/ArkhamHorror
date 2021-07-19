@@ -6,12 +6,12 @@ module Arkham.Types.Asset.Cards.MaskedCarnevaleGoer_19
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
-import Arkham.EncounterCard
 import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id

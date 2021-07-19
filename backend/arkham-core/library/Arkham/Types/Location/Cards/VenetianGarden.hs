@@ -42,7 +42,8 @@ ability a =
 
 instance ActionRunner env => HasActions env VenetianGarden where
   getActions iid NonFast (VenetianGarden attrs) =
-    withBaseActions iid NonFast attrs $ pure [UseAbility iid (ability attrs)]
+    withBaseActions iid NonFast attrs
+      $ pure [locationAbility iid (ability attrs)]
   getActions iid window (VenetianGarden attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env VenetianGarden where

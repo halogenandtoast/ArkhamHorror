@@ -6,13 +6,13 @@ module Arkham.Types.Scenario.Scenarios.BloodOnTheAltar
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Assets
-import Arkham.EncounterCard
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
-import Arkham.PlayerCard
 import Arkham.Types.AgendaId
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCard
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet

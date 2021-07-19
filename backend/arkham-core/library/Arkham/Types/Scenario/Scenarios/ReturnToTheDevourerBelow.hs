@@ -2,12 +2,12 @@ module Arkham.Types.Scenario.Scenarios.ReturnToTheDevourerBelow where
 
 import Arkham.Prelude
 
-import Arkham.EncounterCard
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
 import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet

@@ -149,7 +149,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         ElderThing -> do
           let
             n = sum $ map
-              (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . pcDef)
+              (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . toCardDef)
               cards
           push $ CreateTokenValueEffect (-n) (toSource attrs) target
         _ -> pure ()

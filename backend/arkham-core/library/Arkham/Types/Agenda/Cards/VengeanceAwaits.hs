@@ -2,13 +2,13 @@ module Arkham.Types.Agenda.Cards.VengeanceAwaits where
 
 import Arkham.Prelude
 
-import Arkham.EncounterCard
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Message

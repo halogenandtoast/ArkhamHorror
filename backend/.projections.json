@@ -114,10 +114,6 @@
       "      _ -> {dot} <$> runMessage msg attrs"
     ]
   },
-  "arkham-core/library/Arkham/Types/Act/Cards/*.hs": {
-    "type": "act",
-    "alternate": "arkham-core/tests/Arkham/Types/Act/Cards/{}Spec.hs"
-  },
   "arkham-core/library/Arkham/Types/Effect/Effects/*.hs": {
     "type": "effect",
     "alternate": "arkham-core/tests/Arkham/Types/Effect/Effects/{}Spec.hs"
@@ -289,8 +285,8 @@
       "instance HasModifiersFor env {dot}",
       "",
       "instance ActionRunner env => HasActions env {dot} where",
-      "  -- getActions iid NonFast ({dot} attrs) = withBaseActions iid NonFast attrs do",
-      "  --  pure [UseAbility iid (ability attrs)]",
+      "  -- getActions iid NonFast ({dot} attrs) = withBaseActions iid NonFast attrs $ do",
+      "  --  pure [locationAbility iid (ability attrs)]",
       "  getActions iid window ({dot} attrs) =",
       "    getActions iid window attrs",
       "",

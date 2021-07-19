@@ -46,6 +46,8 @@ data Enemy
     | DarkYoungHost' DarkYoungHost
     | DevoteeOfTheKey' DevoteeOfTheKey
     | DiscipleOfTheDevourer' DiscipleOfTheDevourer
+    | DonLagorio' DonLagorio
+    | ElisabettaMagro' ElisabettaMagro
     | EmergentMonstrosity' EmergentMonstrosity
     | FleshEater' FleshEater
     | GhoulFromTheDepths' GhoulFromTheDepths
@@ -71,6 +73,8 @@ data Enemy
     | RavenousGhoul' RavenousGhoul
     | RelentlessDarkYoung' RelentlessDarkYoung
     | RuthTurner' RuthTurner
+    | SalvatoreNeri' SalvatoreNeri
+    | SavioCorvi' SavioCorvi
     | ScreechingByakhee' ScreechingByakhee
     | ServantOfManyMouths' ServantOfManyMouths
     | ServantOfTheLurker' ServantOfTheLurker
@@ -136,12 +140,12 @@ actionFromMessage (UseAbility _ ability) = case abilityType ability of
 actionFromMessage _ = Nothing
 
 preventedByModifier :: EnemyAttrs -> Message -> Modifier -> Bool
-preventedByModifier EnemyAttrs {..} msg (Modifier _ (CannotTakeAction matcher))
-  = case actionFromMessage msg of
+preventedByModifier e msg (Modifier _ (CannotTakeAction matcher)) =
+  case actionFromMessage msg of
     Just action -> case matcher of
       IsAction a -> a == action
       EnemyAction a traits -> a == action && notNull
-        (setFromList traits `intersect` toTraits enemyCardDef)
+        (setFromList traits `intersect` toTraits (toCardDef e))
       FirstOneOf _ -> False -- TODO: We can't tell here
     Nothing -> False
 preventedByModifier _ _ _ = False
@@ -166,6 +170,9 @@ instance
     , HasSet ConnectedLocationId env LocationId
     , HasSet Trait env AssetId
     , HasSet Trait env LocationId
+    , HasSet LocationId env ()
+    , HasModifiersFor env ()
+    , HasSkillValue env InvestigatorId
     ) =>
     HasModifiersFor env Enemy
     where
@@ -261,6 +268,8 @@ allEnemies = mapFromList $ map
   , DarkYoungHost' <$> darkYoungHost
   , DevoteeOfTheKey' <$> devoteeOfTheKey
   , DiscipleOfTheDevourer' <$> discipleOfTheDevourer
+  , DonLagorio' <$> donLagorio
+  , ElisabettaMagro' <$> elisabettaMagro
   , EmergentMonstrosity' <$> emergentMonstrosity
   , FleshEater' <$> fleshEater
   , GhoulFromTheDepths' <$> ghoulFromTheDepths
@@ -286,6 +295,8 @@ allEnemies = mapFromList $ map
   , RavenousGhoul' <$> ravenousGhoul
   , RelentlessDarkYoung' <$> relentlessDarkYoung
   , RuthTurner' <$> ruthTurner
+  , SalvatoreNeri' <$> salvatoreNeri
+  , SavioCorvi' <$> savioCorvi
   , ScreechingByakhee' <$> screechingByakhee
   , ServantOfManyMouths' <$> servantOfManyMouths
   , ServantOfTheLurker' <$> servantOfTheLurker

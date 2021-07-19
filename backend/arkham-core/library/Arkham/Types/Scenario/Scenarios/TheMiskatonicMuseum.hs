@@ -3,11 +3,11 @@ module Arkham.Types.Scenario.Scenarios.TheMiskatonicMuseum where
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Assets
-import Arkham.EncounterCard
 import qualified Arkham.Location.Cards as Locations
 import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet

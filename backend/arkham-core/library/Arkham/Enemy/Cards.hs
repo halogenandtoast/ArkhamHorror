@@ -642,3 +642,15 @@ poleman :: CardDef
 poleman = (enemy "82028" "Poleman" CarnevaleOfHorrors 2)
   { cdCardTraits = setFromList [Monster, DeepOne]
   }
+
+carnevaleSentinel :: CardDef
+carnevaleSentinel = (enemy "82029" "Carnevale Sentinel" CarnevaleOfHorrors 3)
+  { cdCardTraits = setFromList [Humanoid, Cultist]
+  , cdKeywords = setFromList [Keyword.Retaliate]
+  }
+
+writhingAppendage :: CardDef
+writhingAppendage = (enemy "82030" "Writhing Appendage" CarnevaleOfHorrors 3)
+  { cdCardTraits = setFromList [Monster, Tentacle]
+  , cdKeywords = setFromList [Keyword.Hunter]
+  }

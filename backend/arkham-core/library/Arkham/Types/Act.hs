@@ -14,6 +14,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Decks
 import Arkham.Types.Id
 import Arkham.Types.Name
+import Arkham.Types.Query
 import Arkham.Types.Trait
 
 data Act
@@ -54,16 +55,19 @@ data Act
   | HuntingTheRougarou' HuntingTheRougarou
   | TheCarnevaleConspiracy' TheCarnevaleConspiracy
   | GetToTheBoats' GetToTheBoats
+  | Row' Row
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance ActionRunner env => HasActions env Act
 deriving anyclass instance
   ( HasSet AssetId env AssetMatcher
-  , HasName env LocationId, ActRunner env
+  , HasName env LocationId
+  , ActRunner env
   , HasList UnderneathCard env ActDeck
   , HasList UnderneathCard env AgendaDeck
   , HasId LocationId env InvestigatorId
+  , HasCount ResourceCount env LocationId
   )
   => RunMessage env Act
 
@@ -132,4 +136,5 @@ allActs = mapFrom
   , HuntingTheRougarou' huntingTheRougarou
   , TheCarnevaleConspiracy' theCarnevaleConspiracy
   , GetToTheBoats' getToTheBoats
+  , Row' row
   ]

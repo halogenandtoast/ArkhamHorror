@@ -428,6 +428,9 @@ getCanFight
   -> m Bool
 getCanFight eid iid = do
   locationId <- getId @LocationId iid
+  enemyModifiers <-
+    map modifierType
+      <$> getModifiersFor (InvestigatorSource iid) (EnemyTarget eid) ()
   sameLocation <- (== locationId) <$> getId @LocationId eid
   keywords <- getSet eid
   canAffordActions <- getCanAffordCost
@@ -439,7 +442,7 @@ getCanFight eid iid = do
   pure
     $ canAffordActions
     && (Keyword.Aloof `notMember` keywords || iid `member` engagedInvestigators)
-    && sameLocation
+    && (sameLocation || CanBeFoughtAsIfAtYourLocation `elem` enemyModifiers)
 
 getCanEngage
   :: ( MonadReader env m

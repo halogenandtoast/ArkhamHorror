@@ -140,6 +140,7 @@ data Trait
   | Talent
   | Tarot
   | Task
+  | Tentacle
   | Terror
   | Tindalos
   | Tome

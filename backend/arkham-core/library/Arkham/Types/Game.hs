@@ -194,7 +194,7 @@ data Game = Game
   , gameDiscard :: [EncounterCard]
   , gameChaosBag :: ChaosBag
   , gameSkillTest :: Maybe SkillTest
-  , gameUsedAbilities :: [(InvestigatorId, Ability)]
+  , gameUsedAbilities :: [(InvestigatorId, Ability, Int)]
   , gameResignedCardCodes :: [CardCode]
   , gameFocusedCards :: [Card]
   , gameFocusedTargets :: [Target]
@@ -280,7 +280,7 @@ resignedCardCodesL :: Lens' Game [CardCode]
 resignedCardCodesL =
   lens gameResignedCardCodes $ \m x -> m { gameResignedCardCodes = x }
 
-usedAbilitiesL :: Lens' Game [(InvestigatorId, Ability)]
+usedAbilitiesL :: Lens' Game [(InvestigatorId, Ability, Int)]
 usedAbilitiesL = lens gameUsedAbilities $ \m x -> m { gameUsedAbilities = x }
 
 chaosBagL :: Lens' Game ChaosBag
@@ -348,6 +348,7 @@ withModifiers a = do
 instance ToJSON Game where
   toJSON g@Game {..} = object
     [ "choices" .= toJSON gameChoices
+    , "windowDepth" .= toJSON gameWindowDepth
     , "params" .= toJSON gameParams
     , "roundMessageHistory" .= toJSON gameRoundMessageHistory
     , "phaseMessageHistory" .= toJSON gamePhaseMessageHistory
@@ -1162,7 +1163,8 @@ instance HasGame env => HasList Location env () where
   getList _ = toList . view locationsL <$> getGame
 
 instance HasGame env => HasList UsedAbility env () where
-  getList _ = view (usedAbilitiesL . to coerce) <$> getGame
+  getList _ =
+    map (\(a, b, _) -> UsedAbility (a, b)) . view usedAbilitiesL <$> getGame
 
 instance HasGame env => HasList Enemy env () where
   getList _ = toList . view enemiesL <$> getGame
@@ -2358,7 +2360,7 @@ runGameMessage msg g = case msg of
       & (skillTestL .~ Nothing)
       & (skillTestResultsL .~ Nothing)
       & (usedAbilitiesL %~ filter
-          (\(_, Ability {..}) ->
+          (\(_, Ability {..}, _) ->
             abilityLimitType abilityLimit /= Just PerTestOrAbility
           )
         )
@@ -2366,7 +2368,7 @@ runGameMessage msg g = case msg of
     pure
       $ g
       & (usedAbilitiesL %~ filter
-          (\(_, Ability {..}) -> case abilityLimitType abilityLimit of
+          (\(_, Ability {..}, _) -> case abilityLimitType abilityLimit of
             Just (PerSearch _) -> False
             _ -> True
           )
@@ -2477,9 +2479,10 @@ runGameMessage msg g = case msg of
           pure $ g & eventsL %~ insertMap eid event
         _ -> pure g
       EncounterCard _ -> pure g
-  UseAbility iid ability -> pure $ g & usedAbilitiesL %~ ((iid, ability) :)
+  UseAbility iid ability ->
+    pure $ g & usedAbilitiesL %~ ((iid, ability, gameWindowDepth g) :)
   UseLimitedAbility iid ability ->
-    pure $ g & usedAbilitiesL %~ ((iid, ability) :)
+    pure $ g & usedAbilitiesL %~ ((iid, ability, gameWindowDepth g) :)
   DrewPlayerEnemy iid card -> do
     lid <- locationFor iid
     let
@@ -2702,7 +2705,7 @@ runGameMessage msg g = case msg of
     pure g
   ChooseEndTurn iid -> g <$ push (EndTurn iid)
   EndTurn iid -> pure $ g & usedAbilitiesL %~ filter
-    (\(iid', Ability {..}) ->
+    (\(iid', Ability {..}, _) ->
       iid' /= iid || abilityLimitType abilityLimit /= Just PerTurn
     )
   EndPhase -> do
@@ -2724,7 +2727,7 @@ runGameMessage msg g = case msg of
       $ g
       & (usedAbilitiesL
         %~ filter
-             (\(_, Ability {..}) ->
+             (\(_, Ability {..}, _) ->
                abilityLimitType abilityLimit /= Just PerPhase
              )
         )
@@ -2746,7 +2749,7 @@ runGameMessage msg g = case msg of
       $ g
       & (usedAbilitiesL
         %~ filter
-             (\(_, Ability {..}) ->
+             (\(_, Ability {..}, _) ->
                abilityLimitType abilityLimit /= Just PerPhase
              )
         )
@@ -2768,7 +2771,7 @@ runGameMessage msg g = case msg of
       $ g
       & (usedAbilitiesL
         %~ filter
-             (\(_, Ability {..}) ->
+             (\(_, Ability {..}, _) ->
                abilityLimitType abilityLimit /= Just PerPhase
              )
         )
@@ -2781,7 +2784,7 @@ runGameMessage msg g = case msg of
       $ g
       & (usedAbilitiesL
         %~ filter
-             (\(_, Ability {..}) ->
+             (\(_, Ability {..}, _) ->
                abilityLimitType abilityLimit /= Just PerRound
              )
         )
@@ -2814,7 +2817,7 @@ runGameMessage msg g = case msg of
       $ g
       & (usedAbilitiesL
         %~ filter
-             (\(_, Ability {..}) ->
+             (\(_, Ability {..}, _) ->
                abilityLimitType abilityLimit /= Just PerPhase
              )
         )
@@ -3246,9 +3249,9 @@ runGameMessage msg g = case msg of
       EncounterCard ec ->
         pure $ g & treacheriesL %~ deleteMap tid & discardL %~ (ec :)
   EndCheckWindow -> pure $ g & usedAbilitiesL %~ filter
-    (\(_, Ability {..}) -> case abilityLimit of
+    (\(_, Ability {..}, n) -> case abilityLimit of
       NoLimit -> False
-      PlayerLimit PerWindow _ -> False
+      PlayerLimit PerWindow _ | n >= gameWindowDepth g -> False
       _ -> True
     )
   _ -> pure g

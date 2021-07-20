@@ -4,6 +4,7 @@ module Arkham.Types.Treachery
 
 import Arkham.Prelude
 
+import Arkham.Types.AssetMatcher
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Id
@@ -64,6 +65,7 @@ data Treachery
   | LockedDoor' LockedDoor
   | MaskOfUmordhoth' MaskOfUmordhoth
   | MaskedHorrors' MaskedHorrors
+  | MassHysteria' MassHysteria
   | MysteriousChanting' MysteriousChanting
   | ObscuringFog' ObscuringFog
   | OfferOfPower' OfferOfPower
@@ -112,7 +114,12 @@ instance HasCardDef Treachery where
   toCardDef = toCardDef . toAttrs
 
 deriving anyclass instance ActionRunner env => HasActions env Treachery
-deriving anyclass instance (GetCardDef env LocationId, TreacheryRunner env) => RunMessage env Treachery
+deriving anyclass instance
+  ( HasSet AssetId env AssetMatcher
+  , GetCardDef env LocationId
+  , TreacheryRunner env
+  )
+  => RunMessage env Treachery
 
 instance
   ( HasCount PlayerCount env ()
@@ -211,6 +218,7 @@ allTreacheries = mapFromList $ map
   , LockedDoor' <$> lockedDoor
   , MaskOfUmordhoth' <$> maskOfUmordhoth
   , MaskedHorrors' <$> maskedHorrors
+  , MassHysteria' <$> massHysteria
   , MysteriousChanting' <$> mysteriousChanting
   , ObscuringFog' <$> obscuringFog
   , OfferOfPower' <$> offerOfPower

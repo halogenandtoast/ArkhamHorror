@@ -1,0 +1,57 @@
+module Arkham.Types.Treachery.Cards.MassHysteria
+  ( massHysteria
+  , MassHysteria(..)
+  ) where
+
+import Arkham.Prelude
+
+import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
+import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Types.AssetMatcher
+import Arkham.Types.Classes
+import Arkham.Types.Id
+import Arkham.Types.Message
+import Arkham.Types.Target
+import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Runner
+
+newtype MassHysteria = MassHysteria TreacheryAttrs
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+massHysteria :: TreacheryCard MassHysteria
+massHysteria = treachery MassHysteria Cards.massHysteria
+
+instance HasModifiersFor env MassHysteria
+
+instance HasActions env MassHysteria where
+  getActions i window (MassHysteria attrs) = getActions i window attrs
+
+instance
+  ( HasSet AssetId env AssetMatcher
+  , TreacheryRunner env
+  )
+  => RunMessage env MassHysteria where
+  runMessage msg t@(MassHysteria attrs) = case msg of
+    Revelation iid source | isSource attrs source -> t <$ push
+      (chooseOne
+        iid
+        [ Label
+          "Take 2 damage"
+          [InvestigatorAssignDamage iid source DamageAny 2 0]
+        , Label "Shuffle Masked Carnevale-Goers" [RevelationChoice iid source 2]
+        ]
+      )
+    RevelationChoice iid source 2 | isSource attrs source -> do
+      locationId <- getId @LocationId iid
+      maskedCarnevaleGoers <- getSetList @AssetId
+        (AssetWithTitle "Masked Carnevale-Goer")
+      clockwiseLocations <- getClockwiseLocations locationId
+      case maskedCarnevaleGoers of
+        [] -> pure t
+        xs -> do
+          shuffled <- shuffleM xs
+          t <$ pushAll
+            [ AttachAsset aid (LocationTarget lid)
+            | (aid, lid) <- zip shuffled clockwiseLocations
+            ]
+    _ -> MassHysteria <$> runMessage msg attrs

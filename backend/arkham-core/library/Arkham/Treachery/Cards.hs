@@ -78,6 +78,8 @@ allEncounterTreacheryCards :: HashMap CardCode CardDef
 allEncounterTreacheryCards = mapFromList $ map
   (toCardCode &&& id)
   [ placeholderTreachery
+  , abduction
+  , acridMiasma
   , alteredBeast
   , ancientEvils
   , arcaneBarrier
@@ -86,6 +88,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , beastOfTheBayou
   , beyondTheVeil
   , brokenRails
+  , chaosInTheWater
   , chillFromBelow
   , clawsOfSteam
   , collapsingReality
@@ -106,8 +109,11 @@ allEncounterTreacheryCards = mapFromList $ map
   , kidnapped
   , lightOfAforgomon
   , lockedDoor
+  , lostInVenice
   , maskOfUmordhoth
   , maskedHorrors
+  , massHysteria
+  , mesmerize
   , mysteriousChanting
   , obscuringFog
   , offerOfPower
@@ -142,6 +148,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , vaultOfEarthlyDemise
   , visionsOfFuturesPast
   , vortexOfTime
+  , watchersGaze
   , wormhole
   ]
 
@@ -566,3 +573,40 @@ beastOfTheBayou = treachery "81035" "Beast of the Bayou" CurseOfTheRougarou 2
 insatiableBloodlust :: CardDef
 insatiableBloodlust =
   treachery "81036" "Insatiable Bloodlust" CurseOfTheRougarou 3
+
+massHysteria :: CardDef
+massHysteria = (treachery "82031" "Mass Hysteria" CarnevaleOfHorrors 3)
+  { cdCardTraits = singleton Hazard
+  , cdKeywords = singleton Keyword.Peril
+  }
+
+lostInVenice :: CardDef
+lostInVenice = (treachery "82032" "Lost in Venice" CarnevaleOfHorrors 3)
+  { cdCardTraits = singleton Blunder
+  , cdKeywords = singleton Keyword.Peril
+  }
+
+watchersGaze :: CardDef
+watchersGaze = (treachery "82033" "Watcher's Gaze" CarnevaleOfHorrors 3)
+  { cdCardTraits = singleton Terror
+  }
+
+chaosInTheWater :: CardDef
+chaosInTheWater = (treachery "82034" "Chaos in the Water" CarnevaleOfHorrors 3)
+  { cdCardTraits = singleton Hazard
+  }
+
+mesmerize :: CardDef
+mesmerize = (treachery "82035" "Mesmerize" CarnevaleOfHorrors 2)
+  { cdCardTraits = singleton Hex
+  }
+
+abduction :: CardDef
+abduction = (treachery "82036" "Abduction" CarnevaleOfHorrors 2)
+  { cdCardTraits = singleton Scheme
+  }
+
+acridMiasma :: CardDef
+acridMiasma = (treachery "82037" "Acrid Miasma" CarnevaleOfHorrors 2)
+  { cdCardTraits = singleton Hazard
+  }

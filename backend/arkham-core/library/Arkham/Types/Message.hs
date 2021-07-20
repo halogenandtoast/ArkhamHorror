@@ -445,6 +445,7 @@ data Message
     | RevealSkillTestTokens InvestigatorId
     | RevealToken Source InvestigatorId Token
     | Revelation InvestigatorId Source
+    | RevelationChoice InvestigatorId Source Int
     | RevelationSkillTest InvestigatorId Source SkillType Int
     | RevertAct ActId
     | RevertAgenda AgendaId

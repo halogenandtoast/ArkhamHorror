@@ -564,7 +564,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
     HuntersMove | null enemyEngagedInvestigators && not enemyExhausted -> do
       keywords <- getModifiedKeywords a
       a <$ when (Keyword.Hunter `elem` keywords) (push $ HunterMove (toId a))
-    HunterMove eid | eid == toId a -> do
+    HunterMove eid | eid == toId a && not enemyExhausted -> do
       modifiers' <-
         map modifierType
           <$> getModifiersFor (toSource a) (EnemyTarget enemyId) ()

@@ -1,7 +1,7 @@
 <template>
   <div class="enemy">
     <img :src="image"
-      :class="{'enemy--can-interact': cardAction !== -1 }"
+      :class="{'enemy--can-interact': cardAction !== -1, exhausted: isExhausted }"
       class="card enemy"
       @click="$emit('choose', cardAction)"
     />
@@ -199,7 +199,9 @@ export default defineComponent({
         }, []);
     })
 
-    return { abilities, choices, engageAction, fightAction, evadeAction, cardAction, image }
+    const isExhausted = computed(() => props.enemy.contents.exhausted)
+
+    return { abilities, choices, engageAction, fightAction, evadeAction, cardAction, image, isExhausted }
   }
 })
 </script>
@@ -276,5 +278,13 @@ export default defineComponent({
   object-position: 0 -74px;
   height: 68px;
   margin-top: 2px;
+}
+
+.exhausted {
+  transform: rotate(90deg);
+  margin-left: 13px;
+  margin-bottom: -10px;
+  height: 80px;
+  width: auto;
 }
 </style>

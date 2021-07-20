@@ -50,8 +50,8 @@ export const fetchGameRaw = (gameId: string) => api
   .get(`arkham/games/${gameId}`)
   .then((resp) => resp.data);
 
-export const updateGameRaw = (gameId: string, gameJson: string, gameMessage: Message | null) => api
-  .put(`arkham/games/${gameId}/raw`, { gameJson, gameMessage });
+export const updateGameRaw = (gameId: string, gameMessage: any) => api
+  .put(`arkham/games/${gameId}/raw`, { gameMessage });
 
 export const newGame = (
   deckId: string,

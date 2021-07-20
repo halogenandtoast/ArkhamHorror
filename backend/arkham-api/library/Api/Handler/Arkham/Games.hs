@@ -230,9 +230,8 @@ putApiV1ArkhamGameR gameId = do
   void $ runDB
     (replace gameId (ArkhamGame arkhamGameName ge updatedQueue updatedLog))
 
-data RawGameJsonPut = RawGameJsonPut
-  { gameJson :: Game
-  , gameMessage :: Maybe Message
+newtype RawGameJsonPut = RawGameJsonPut
+  { gameMessage :: Message
   }
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
@@ -250,23 +249,25 @@ putApiV1ArkhamGameRawR gameId = do
   void $ fromJustNote "Not authenticated" <$> getRequestUserId
   ArkhamGame {..} <- runDB $ get404 gameId
   response <- requireCheckJsonBody
-  let message = fromMaybe (Continue "edited") (gameMessage response)
-  gameRef <- newIORef (gameJson response)
+  let
+    gameJson@Game {..} = arkhamGameCurrentData
+    message = gameMessage response
+  gameRef <- newIORef (gameJson & choicesL %~ (DebugMessage message :))
   queueRef <- newIORef (message : arkhamGameQueue)
-  genRef <- newIORef (mkStdGen (gameSeed arkhamGameCurrentData))
   logRef <- newIORef []
+  genRef <- newIORef (mkStdGen gameSeed)
   writeChannel <- getChannel gameId
   runGameApp
-    (GameApp gameRef queueRef genRef $ handleMessageLog logRef writeChannel)
+    (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel))
     runMessages
   ge <- readIORef gameRef
-  updatedMessages <- (arkhamGameLog <>) <$> readIORef logRef
   updatedQueue <- readIORef queueRef
+  updatedLog <- (arkhamGameLog <>) <$> readIORef logRef
   liftIO $ atomically $ writeTChan
     writeChannel
-    (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedMessages ge)
-  runDB
-    (replace gameId (ArkhamGame arkhamGameName ge updatedQueue updatedMessages))
+    (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedLog ge)
+  void $ runDB
+    (replace gameId (ArkhamGame arkhamGameName ge updatedQueue updatedLog))
 
 deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 deleteApiV1ArkhamGameR gameId = void $ runDB $ do

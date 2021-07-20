@@ -143,7 +143,7 @@ class HasMessageLogger a where
 getGame :: (HasGame env, MonadReader env m) => m Game
 getGame = view gameL
 
-data GameChoice = AskChoice InvestigatorId Int
+data GameChoice = AskChoice InvestigatorId Int | DebugMessage Message
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -727,8 +727,13 @@ instance HasGame env => HasSet EnemyId env LocationMatcher where
 
 instance HasGame env => HasSet FightableEnemyId env (InvestigatorId, Source) where
   getSet (iid, source) = do
+    fightAnywhereEnemyIds <- getSetList () >>= filterM \eid -> do
+      modifiers' <-
+        map modifierType <$> getModifiersFor source (EnemyTarget eid) ()
+      pure $ CanBeFoughtAsIfAtYourLocation `elem` modifiers'
     locationId <- getId @LocationId iid
-    enemyIds <- getSet @EnemyId locationId
+    enemyIds <- union (setFromList fightAnywhereEnemyIds)
+      <$> getSet @EnemyId locationId
     investigatorEnemyIds <- getSet @EnemyId iid
     aloofEnemyIds <- mapSet unAloofEnemyId <$> getSet locationId
     let
@@ -2990,13 +2995,16 @@ runGameMessage msg g = case msg of
           filter ((== cardCode) . toCardCode) . toList $ g ^. enemiesInVoidL
         _ -> []
 
-    push
-      (chooseOne iid
-      $ map (FoundEncounterCardFrom iid target FromDiscard) matchingDiscards
-      <> map
-           (FoundEncounterCardFrom iid target FromEncounterDeck)
-           matchingDeckCards
-      <> map (FoundEnemyInVoid iid target . toId) matchingVoidEnemies
+    when
+      (any notNull [matchingDiscards, matchingDeckCards, matchingVoidEnemies])
+      (push
+        (chooseOne iid
+        $ map (FoundEncounterCardFrom iid target FromDiscard) matchingDiscards
+        <> map
+             (FoundEncounterCardFrom iid target FromEncounterDeck)
+             matchingDeckCards
+        <> map (FoundEnemyInVoid iid target . toId) matchingVoidEnemies
+        )
       )
 
     -- TODO: show where focused cards are from

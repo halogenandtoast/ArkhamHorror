@@ -35,7 +35,7 @@ getCounterClockwiseLocation lid = do
   counterClockwiseMap <- getCounterClockwiseMap
   case lookup lid counterClockwiseMap of
     Just x -> pure x
-    Nothing -> error "must be connected"
+    Nothing -> error $ show lid <> "was not connected for some reason"
 
 getCounterClockwiseLocations
   :: ( MonadReader env m

@@ -2,6 +2,11 @@ import { JsonDecoder } from 'ts.data.json';
 
 export type Card = PlayerCard | EncounterCard;
 
+export interface CardContents {
+  id: string;
+  cardCode: string;
+}
+
 export interface PlayerCardContents {
   id: string;
   cardCode: string;

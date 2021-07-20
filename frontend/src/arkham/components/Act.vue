@@ -22,7 +22,7 @@
       @click="$emit('choose', ability)"
       />
 
-    <button v-if="cardsUnder.length > 0" class="view-cards-under-button" @click="toggleUnder">{{viewUnderLabel}}</button>
+    <button v-if="cardsUnder.length > 0" class="view-cards-under-button" @click="$emit('show', $event, cardsUnder, 'Cards Under Act', false)">{{viewUnderLabel}}</button>
   </div>
 </template>
 

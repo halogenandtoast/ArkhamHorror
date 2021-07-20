@@ -34,7 +34,7 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .discards {
-  background: white;
+  background: #759686;
   display: flex;
   align-items: center;
   padding: 10px 0;
@@ -43,9 +43,8 @@ export default defineComponent({
 }
 
 .discard {
-  padding-left: 10px;
+  margin-left: 10px;
   position: relative;
-  width: 110px;
   &::after {
     pointer-events: none;
     content: "";

@@ -656,5 +656,5 @@ carnevaleSentinel = (enemy "82029" "Carnevale Sentinel" CarnevaleOfHorrors 3)
 writhingAppendage :: CardDef
 writhingAppendage = (enemy "82030" "Writhing Appendage" CarnevaleOfHorrors 3)
   { cdCardTraits = setFromList [Monster, Tentacle]
-  , cdKeywords = setFromList [Keyword.Hunter]
+  , cdKeywords = setFromList [Keyword.Retaliate]
   }

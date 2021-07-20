@@ -30,7 +30,7 @@ instance HasActions env TheShadowOfTheEclipse where
 
 instance (HasSet AssetId env AssetMatcher, AgendaRunner env) => RunMessage env TheShadowOfTheEclipse where
   runMessage msg a@(TheShadowOfTheEclipse attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       maskedCarnevaleGoers <- getSetList @AssetId
         (AssetWithTitle "Masked Carnevale-Goer")
       leadInvestigatorId <- getLeadInvestigatorId

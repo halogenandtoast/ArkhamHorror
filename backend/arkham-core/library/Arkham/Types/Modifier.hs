@@ -56,6 +56,7 @@ data ModifierType
   | CannotBeDiscarded
   | CannotBeEnteredByNonElite
   | CannotBeEvaded
+  | CannotBeRevealed
   | CannotCancelHorror
   | CannotCommitCards
   | CannotDiscoverClues

@@ -431,6 +431,7 @@ library
       Arkham.Types.Enemy.Cards.WizardOfTheOrder
       Arkham.Types.Enemy.Cards.WizardOfYogSothoth
       Arkham.Types.Enemy.Cards.WolfManDrew
+      Arkham.Types.Enemy.Cards.WrithingAppendage
       Arkham.Types.Enemy.Cards.YithianObserver
       Arkham.Types.Enemy.Cards.YithianStarseeker
       Arkham.Types.Enemy.Cards.YogSothoth

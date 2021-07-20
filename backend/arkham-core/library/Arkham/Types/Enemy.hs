@@ -96,6 +96,7 @@ data Enemy
     | WizardOfTheOrder' WizardOfTheOrder
     | WizardOfYogSothoth' WizardOfYogSothoth
     | WolfManDrew' WolfManDrew
+    | WrithingAppendage' WrithingAppendage
     | YithianObserver' YithianObserver
     | YithianStarseeker' YithianStarseeker
     | YogSothoth' YogSothoth
@@ -201,6 +202,7 @@ instance
     , HasName env AssetId
     , HasSet ClosestLocationId env (LocationId, [Trait])
     , HasCount DiscardCount env InvestigatorId
+    , HasId (Maybe StoryEnemyId) env CardCode
     ) =>
     RunMessage env Enemy
     where
@@ -321,6 +323,7 @@ allEnemies = mapFromList $ map
   , WizardOfTheOrder' <$> wizardOfTheOrder
   , WizardOfYogSothoth' <$> wizardOfYogSothoth
   , WolfManDrew' <$> wolfManDrew
+  , WrithingAppendage' <$> writhingAppendage
   , YithianObserver' <$> yithianObserver
   , YithianStarseeker' <$> yithianStarseeker
   , YogSothoth' <$> yogSothoth

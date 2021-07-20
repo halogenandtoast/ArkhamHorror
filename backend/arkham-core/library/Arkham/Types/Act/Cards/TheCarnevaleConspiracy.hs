@@ -9,6 +9,7 @@ import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
+import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.AssetMatcher
 import Arkham.Types.Card
@@ -64,8 +65,19 @@ instance
   => RunMessage env TheCarnevaleConspiracy where
   runMessage msg a@(TheCarnevaleConspiracy attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+      leadInvestigatorId <- getLeadInvestigatorId
       cnidathqua <- EncounterCard <$> genEncounterCard Enemies.cnidathqua
-      a <$ pushAll [CreateEnemy cnidathqua, NextAct actId "82006"]
+      maskedCarnevaleGoers <- getSetList @AssetId
+        (AssetWithTitle "Masked Carnevale-Goer")
+      let
+        flipMsg = case maskedCarnevaleGoers of
+          [] -> []
+          xs ->
+            [ chooseOne
+                leadInvestigatorId
+                [ Flip (toSource attrs) (AssetTarget x) | x <- xs ]
+            ]
+      a <$ pushAll ([CreateEnemy cnidathqua, NextAct actId "82006"] <> flipMsg)
     After (PlaceUnderneath _ _) -> do
       cardsUnderneathAgenda <- map unUnderneathCard <$> getList AgendaDeck
       cardsUnderneathAct <- map unUnderneathCard <$> getList ActDeck

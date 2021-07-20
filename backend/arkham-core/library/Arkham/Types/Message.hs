@@ -185,6 +185,7 @@ data Message
     | CheckDefeated Source
     | CheckHandSize InvestigatorId
     | CheckWindow InvestigatorId [Window]
+    | RunWindow InvestigatorId [Window]
     | ChooseAndDiscardAsset InvestigatorId
     | ChooseAndDiscardCard InvestigatorId
     | ChooseEndTurn InvestigatorId

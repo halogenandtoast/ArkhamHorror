@@ -162,6 +162,7 @@ data Game = Game
   , gameSeed :: Int
   , gameChoices :: [GameChoice]
   , gameParams :: GameParams
+  , gameWindowDepth :: Int
 
   -- Active Scenario/Campaign
   , gameMode :: GameMode
@@ -207,6 +208,9 @@ data Game = Game
   , gameQuestion :: HashMap InvestigatorId Question
   }
   deriving stock (Eq, Show, Generic)
+
+windowDepthL :: Lens' Game Int
+windowDepthL = lens gameWindowDepth $ \m x -> m { gameWindowDepth = x }
 
 choicesL :: Lens' Game [GameChoice]
 choicesL = lens gameChoices $ \m x -> m { gameChoices = x }
@@ -2090,8 +2094,11 @@ instance (HasQueue env, HasActions env ActionType, HasGame env) => HasActions en
 runPreGameMessage
   :: (GameRunner env, MonadReader env m, MonadIO m) => Message -> Game -> m Game
 runPreGameMessage msg g = case msg of
-  CheckWindow{} -> g <$ push EndCheckWindow
+  CheckWindow{} -> do
+    push EndCheckWindow
+    pure $ g & windowDepthL +~ 1
   -- We want to empty the queue for triggering a resolution
+  EndCheckWindow -> pure $ g & windowDepthL -~ 1
   ScenarioResolution _ -> g <$ clearQueue
   _ -> pure g
 
@@ -2996,7 +3003,10 @@ runGameMessage msg g = case msg of
         _ -> []
 
     when
-      (any notNull [matchingDiscards, matchingDeckCards, matchingVoidEnemies])
+      (notNull matchingDiscards
+      || notNull matchingDeckCards
+      || notNull matchingVoidEnemies
+      )
       (push
         (chooseOne iid
         $ map (FoundEncounterCardFrom iid target FromDiscard) matchingDiscards

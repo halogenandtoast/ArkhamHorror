@@ -1652,13 +1652,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         )
     pure a
   CheckWindow iid windows | iid == investigatorId -> do
+    a <$ push (RunWindow iid windows)
+  RunWindow iid windows | iid == investigatorId -> do
     actions <- fmap concat <$> for windows $ \window -> getActions iid window ()
     playableCards <- getPlayableCards a windows
     if notNull playableCards || notNull actions
       then if any isForced actions
         then
           a <$ push
-            (chooseOne iid $ map (Run . (: [CheckWindow iid windows])) actions)
+            (chooseOne iid $ map (Run . (: [RunWindow iid windows])) actions)
         else a <$ push
           (chooseOne iid
           $ [ Run
@@ -1666,11 +1668,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 , if isJust (cdFastWindow $ toCardDef c)
                   then PlayFastEvent iid (toCardId c) Nothing windows
                   else PlayCard iid (toCardId c) Nothing False
-                , CheckWindow iid windows
+                , RunWindow iid windows
                 ]
             | c <- playableCards
             ]
-          <> map (Run . (: [CheckWindow iid windows])) actions
+          <> map (Run . (: [RunWindow iid windows])) actions
           <> [Continue "Skip playing fast cards or using reactions"]
           )
       else pure a

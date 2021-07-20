@@ -9,6 +9,7 @@ data EnemyMatcher
   | EnemyWithFullTitle Text Text
   | EnemyWithId EnemyId
   | NonEliteEnemy
+  | HunterEnemies
   | EnemyAtLocation LocationId
   | EnemyMatchAll [EnemyMatcher]
   deriving stock (Show, Eq, Generic)

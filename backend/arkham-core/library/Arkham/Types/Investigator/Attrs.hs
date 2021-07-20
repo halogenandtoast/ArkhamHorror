@@ -1486,6 +1486,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & resourcesL %~ max 0 . subtract n
   LoseResources iid n | iid == investigatorId ->
     pure $ a & resourcesL %~ max 0 . subtract n
+  LoseAllResources iid | iid == investigatorId -> pure $ a & resourcesL .~ 0
   TakeResources iid n True | iid == investigatorId -> do
     unlessM (hasModifier a CannotGainResources) $ pushAll
       [ TakeAction iid (Just Action.Resource) (ActionCost 1)

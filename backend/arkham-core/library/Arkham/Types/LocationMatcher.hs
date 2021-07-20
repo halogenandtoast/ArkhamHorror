@@ -2,6 +2,7 @@ module Arkham.Types.LocationMatcher where
 
 import Arkham.Prelude
 
+import Arkham.Types.Card.CardDef
 import Arkham.Types.LocationId
 import Arkham.Types.Trait
 
@@ -11,6 +12,7 @@ data LocationMatcher
   | LocationWithId LocationId
   | AnyLocation
   | EmptyLocation
+  | LocationWithoutInvestigators
   | FarthestLocationFromYou LocationMatcher
   -- | FarthestLocationFromAllInvestigators LocationMatcher
   -- | NearestLocation LocationMatcher
@@ -18,6 +20,7 @@ data LocationMatcher
   -- | LocationToYourRight
   -- | LocationToYourLeft
   | LocationWithTrait Trait
+  | LocationWithoutTreachery CardDef
   -- | Revealed LocationMatcher
   -- | Unrevealed LocationMatcher
   | LocationMatchers (NonEmpty LocationMatcher)

@@ -811,6 +811,8 @@ library
       Arkham.Types.Treachery.Attrs
       Arkham.Types.Treachery.Cards
       Arkham.Types.Treachery.Cards.AbandonedAndAlone
+      Arkham.Types.Treachery.Cards.Abduction
+      Arkham.Types.Treachery.Cards.AcridMiasma
       Arkham.Types.Treachery.Cards.AcrossSpaceAndTime
       Arkham.Types.Treachery.Cards.AlteredBeast
       Arkham.Types.Treachery.Cards.Amnesia
@@ -856,6 +858,7 @@ library
       Arkham.Types.Treachery.Cards.MaskedHorrors
       Arkham.Types.Treachery.Cards.MaskOfUmordhoth
       Arkham.Types.Treachery.Cards.MassHysteria
+      Arkham.Types.Treachery.Cards.Mesmerize
       Arkham.Types.Treachery.Cards.MysteriousChanting
       Arkham.Types.Treachery.Cards.ObscuringFog
       Arkham.Types.Treachery.Cards.OfferOfPower

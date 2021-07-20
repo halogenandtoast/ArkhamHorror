@@ -217,6 +217,8 @@ replayChoices = do
 
   for_ (reverse choices) $ \case
     DebugMessage msg -> do
+      gameState <- readIORef gameRef
+      writeIORef genRef (mkStdGen (gameSeed gameState))
       push msg >> runMessages
     AskChoice iid idx -> do
       gameState <- readIORef gameRef

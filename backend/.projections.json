@@ -149,7 +149,7 @@
       "",
       "instance TreacheryRunner env => RunMessage env {dot} where",
       "  runMessage msg t@({dot} attrs) = case msg of",
-      "    Revelation _iid source | isSource attrs source -> pure t",
+      "    Revelation _iid source | isSource attrs source -> t <$ push (Discard $ toTarget attrs)",
       "    _ -> {dot} <$> runMessage msg attrs"
     ]
   },

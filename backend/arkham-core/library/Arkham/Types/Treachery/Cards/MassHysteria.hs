@@ -32,15 +32,16 @@ instance
   )
   => RunMessage env MassHysteria where
   runMessage msg t@(MassHysteria attrs) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ push
-      (chooseOne
+    Revelation iid source | isSource attrs source -> t <$ pushAll
+      [ chooseOne
         iid
         [ Label
           "Take 2 damage"
           [InvestigatorAssignDamage iid source DamageAny 2 0]
         , Label "Shuffle Masked Carnevale-Goers" [RevelationChoice iid source 2]
         ]
-      )
+      , Discard (toTarget attrs)
+      ]
     RevelationChoice iid source 2 | isSource attrs source -> do
       locationId <- getId @LocationId iid
       maskedCarnevaleGoers <- getSetList @AssetId

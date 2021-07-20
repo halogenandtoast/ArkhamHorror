@@ -63,6 +63,7 @@ data Treachery
   | Kidnapped' Kidnapped
   | LightOfAforgomon' LightOfAforgomon
   | LockedDoor' LockedDoor
+  | LostInVenice' LostInVenice
   | MaskOfUmordhoth' MaskOfUmordhoth
   | MaskedHorrors' MaskedHorrors
   | MassHysteria' MassHysteria
@@ -216,6 +217,7 @@ allTreacheries = mapFromList $ map
   , Kidnapped' <$> kidnapped
   , LightOfAforgomon' <$> lightOfAforgomon
   , LockedDoor' <$> lockedDoor
+  , LostInVenice' <$> lostInVenice
   , MaskOfUmordhoth' <$> maskOfUmordhoth
   , MaskedHorrors' <$> maskedHorrors
   , MassHysteria' <$> massHysteria

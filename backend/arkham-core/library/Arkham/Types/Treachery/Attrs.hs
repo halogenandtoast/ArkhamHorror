@@ -3,6 +3,7 @@ module Arkham.Types.Treachery.Attrs where
 import Arkham.Prelude
 
 import Arkham.Json
+import Arkham.Treachery.Cards
 import Arkham.Types.AgendaId
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -22,7 +23,7 @@ type TreacheryCard a = CardBuilder (InvestigatorId, TreacheryId) a
 
 data TreacheryAttrs = TreacheryAttrs
   { treacheryId :: TreacheryId
-  , treacheryCardDef :: CardDef
+  , treacheryCardCode :: CardCode
   , treacheryAttachedTarget :: Maybe Target
   , treacheryOwner :: Maybe InvestigatorId
   , treacheryDoom :: Int
@@ -42,7 +43,10 @@ resourcesL :: Lens' TreacheryAttrs (Maybe Int)
 resourcesL = lens treacheryResources $ \m x -> m { treacheryResources = x }
 
 instance HasCardDef TreacheryAttrs where
-  toCardDef = treacheryCardDef
+  toCardDef a = case lookup (treacheryCardCode a) allTreacheryCards of
+    Just def -> def
+    Nothing ->
+      error $ "missing card def for treachery " <> show (treacheryCardCode a)
 
 instance ToJSON TreacheryAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "treachery"
@@ -137,7 +141,7 @@ treachery f cardDef = CardBuilder
   { cbCardCode = cdCardCode cardDef
   , cbCardBuilder = \(iid, tid) -> f $ TreacheryAttrs
     { treacheryId = tid
-    , treacheryCardDef = cardDef
+    , treacheryCardCode = toCardCode cardDef
     , treacheryAttachedTarget = Nothing
     , treacheryOwner = if cdWeakness cardDef then Just iid else Nothing
     , treacheryDoom = 0

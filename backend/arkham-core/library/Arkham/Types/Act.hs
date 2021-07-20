@@ -59,7 +59,7 @@ data Act
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-deriving anyclass instance ActionRunner env => HasActions env Act
+deriving anyclass instance (HasSet AssetId env AssetMatcher, ActionRunner env) => HasActions env Act
 deriving anyclass instance
   ( HasSet AssetId env AssetMatcher
   , HasName env LocationId
@@ -68,6 +68,7 @@ deriving anyclass instance
   , HasList UnderneathCard env AgendaDeck
   , HasId LocationId env InvestigatorId
   , HasCount ResourceCount env LocationId
+  , HasModifiersFor env ()
   )
   => RunMessage env Act
 

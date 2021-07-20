@@ -173,6 +173,8 @@ instance
     , HasSet Trait env LocationId
     , HasSet LocationId env ()
     , HasModifiersFor env ()
+    , HasName env AssetId
+    , HasId (Maybe LocationId) env AssetId
     , HasSkillValue env InvestigatorId
     ) =>
     HasModifiersFor env Enemy

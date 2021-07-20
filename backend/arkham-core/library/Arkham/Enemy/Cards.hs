@@ -641,6 +641,7 @@ cnidathqua =
 poleman :: CardDef
 poleman = (enemy "82028" "Poleman" CarnevaleOfHorrors 2)
   { cdCardTraits = setFromList [Monster, DeepOne]
+  , cdKeywords = setFromList [Keyword.Hunter]
   }
 
 carnevaleSentinel :: CardDef

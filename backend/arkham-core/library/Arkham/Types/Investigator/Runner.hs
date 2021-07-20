@@ -8,6 +8,7 @@ import Arkham.Types.Action
 import Arkham.Types.AgendaId
 import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.AssetId
+import Arkham.Types.AssetMatcher
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
@@ -106,6 +107,7 @@ type InvestigatorRunner env
         , HasSet AssetId env (InvestigatorId, UseType)
         , HasSet AssetId env (InvestigatorId, [Trait])
         , HasSet AssetId env (InvestigatorId, CardDef)
+        , HasSet AssetId env AssetMatcher
         , HasSet AssetId env InvestigatorId
         , HasSet AssetId env LocationId
         , HasSet BlockedLocationId env ()

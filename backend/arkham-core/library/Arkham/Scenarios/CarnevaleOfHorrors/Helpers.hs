@@ -53,6 +53,22 @@ getCounterClockwiseLocations end = do
   buildList (Just current) counterClockwiseMap =
     current : buildList (lookup current counterClockwiseMap) counterClockwiseMap
 
+getClockwiseLocations
+  :: ( MonadReader env m
+     , HasSet LocationId env ()
+     , HasSet ConnectedLocationId env LocationId
+     )
+  => LocationId
+  -> m [LocationId]
+getClockwiseLocations end = do
+  clockwiseMap <- getClockwiseMap
+  pure $ buildList (lookup end clockwiseMap) clockwiseMap
+ where
+  buildList Nothing _ = []
+  buildList (Just current) _ | current == end = [end]
+  buildList (Just current) clockwiseMap =
+    current : buildList (lookup current clockwiseMap) clockwiseMap
+
 getClockwiseMap
   :: ( MonadReader env m
      , HasSet LocationId env ()

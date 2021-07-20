@@ -853,6 +853,7 @@ library
       Arkham.Types.Treachery.Cards.LockedDoor
       Arkham.Types.Treachery.Cards.MaskedHorrors
       Arkham.Types.Treachery.Cards.MaskOfUmordhoth
+      Arkham.Types.Treachery.Cards.MassHysteria
       Arkham.Types.Treachery.Cards.MysteriousChanting
       Arkham.Types.Treachery.Cards.ObscuringFog
       Arkham.Types.Treachery.Cards.OfferOfPower

@@ -851,6 +851,7 @@ library
       Arkham.Types.Treachery.Cards.Kidnapped
       Arkham.Types.Treachery.Cards.LightOfAforgomon
       Arkham.Types.Treachery.Cards.LockedDoor
+      Arkham.Types.Treachery.Cards.LostInVenice
       Arkham.Types.Treachery.Cards.MaskedHorrors
       Arkham.Types.Treachery.Cards.MaskOfUmordhoth
       Arkham.Types.Treachery.Cards.MassHysteria
@@ -893,6 +894,7 @@ library
       Arkham.Types.Treachery.Cards.VaultOfEarthlyDemise
       Arkham.Types.Treachery.Cards.VisionsOfFuturesPast
       Arkham.Types.Treachery.Cards.VortexOfTime
+      Arkham.Types.Treachery.Cards.WatchersGaze
       Arkham.Types.Treachery.Cards.Wormhole
       Arkham.Types.Treachery.Cards.WrackedByNightmares
       Arkham.Types.Treachery.Helpers

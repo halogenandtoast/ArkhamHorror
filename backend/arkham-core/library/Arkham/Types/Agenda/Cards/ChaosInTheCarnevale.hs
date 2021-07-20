@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.ChaosInTheCarnevale
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
@@ -36,7 +37,10 @@ instance AgendaRunner env => RunMessage env ChaosInTheCarnevale where
       a <$ case mCnidathquaId of
         Just cnidathquaId ->
           pushAll
-            $ [ EnemyAttack iid cnidathquaId DamageAny
+            $ [ EnemyAttack
+                  iid
+                  cnidathquaId
+                  (DamageFirst Assets.innocentReveler)
               | iid <- investigatorIds
               ]
             <> [RevertAgenda (toId attrs)]

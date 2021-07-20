@@ -1088,25 +1088,33 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               strategy
               (health - 1)
               sanity
-            mustAssignDamageToAssets =
-              strategy == DamageAssetsFirst && notNull healthDamageableAssets
-          pure
-            $ [ Run
-                  [ InvestigatorDamage investigatorId source 1 0
-                  , assignRestOfHealthDamage
-                    (InvestigatorTarget investigatorId : damageTargets)
-                    horrorTargets
-                  ]
-              | not mustAssignDamageToAssets
+            damageAsset aid = Run
+              [ AssetDamage aid source 1 0
+              , assignRestOfHealthDamage
+                (AssetTarget aid : damageTargets)
+                horrorTargets
               ]
-            <> [ Run
-                   [ AssetDamage aid source 1 0
-                   , assignRestOfHealthDamage
-                     (AssetTarget aid : damageTargets)
-                     horrorTargets
-                   ]
-               | aid <- healthDamageableAssets
-               ]
+            damageInvestigator = Run
+              [ InvestigatorDamage investigatorId source 1 0
+              , assignRestOfHealthDamage
+                (InvestigatorTarget investigatorId : damageTargets)
+                horrorTargets
+              ]
+          case strategy of
+            DamageAssetsFirst -> do
+              pure
+                $ [ damageInvestigator | null healthDamageableAssets ]
+                <> map damageAsset healthDamageableAssets
+            DamageAny ->
+              pure $ damageInvestigator : map damageAsset healthDamageableAssets
+            DamageFirst def -> do
+              validAssets <-
+                setToList
+                . intersection (setFromList healthDamageableAssets)
+                <$> getSet (investigatorId, def)
+              pure
+                $ [ damageInvestigator | null validAssets ]
+                <> map damageAsset validAssets
         else pure []
       sanityDamageMessages <- if sanity > 0
         then do
@@ -1119,25 +1127,33 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               strategy
               health
               (sanity - 1)
-            mustAssignDamageToAssets =
-              strategy == DamageAssetsFirst && notNull sanityDamageableAssets
-          pure
-            $ [ Run
-                  [ InvestigatorDamage investigatorId source 0 1
-                  , assignRestOfSanityDamage
-                    damageTargets
-                    (InvestigatorTarget investigatorId : horrorTargets)
-                  ]
-              | not mustAssignDamageToAssets
+            damageInvestigator = Run
+              [ InvestigatorDamage investigatorId source 0 1
+              , assignRestOfSanityDamage
+                damageTargets
+                (InvestigatorTarget investigatorId : horrorTargets)
               ]
-            <> [ Run
-                   [ AssetDamage aid source 0 1
-                   , assignRestOfSanityDamage
-                     damageTargets
-                     (AssetTarget aid : horrorTargets)
-                   ]
-               | aid <- sanityDamageableAssets
-               ]
+            damageAsset aid = Run
+              [ AssetDamage aid source 0 1
+              , assignRestOfSanityDamage
+                damageTargets
+                (AssetTarget aid : horrorTargets)
+              ]
+          case strategy of
+            DamageAssetsFirst ->
+              pure
+                $ [ damageInvestigator | null sanityDamageableAssets ]
+                <> map damageAsset sanityDamageableAssets
+            DamageAny ->
+              pure $ damageInvestigator : map damageAsset sanityDamageableAssets
+            DamageFirst def -> do
+              validAssets <-
+                setToList
+                . intersection (setFromList sanityDamageableAssets)
+                <$> getSet (investigatorId, def)
+              pure
+                $ [ damageInvestigator | null validAssets ]
+                <> map damageAsset validAssets
         else pure []
       a <$ push (chooseOne iid $ healthDamageMessages <> sanityDamageMessages)
   Investigate iid lid source skillType True | iid == investigatorId -> do

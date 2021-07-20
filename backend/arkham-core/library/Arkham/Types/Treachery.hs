@@ -34,6 +34,7 @@ data Treachery
   | BeastOfTheBayou' BeastOfTheBayou
   | BeyondTheVeil' BeyondTheVeil
   | BrokenRails' BrokenRails
+  | ChaosInTheWater' ChaosInTheWater
   | ChillFromBelow' ChillFromBelow
   | Chronophobia' Chronophobia
   | ClawsOfSteam' ClawsOfSteam
@@ -106,6 +107,7 @@ data Treachery
   | VaultOfEarthlyDemise' VaultOfEarthlyDemise
   | VisionsOfFuturesPast' VisionsOfFuturesPast
   | VortexOfTime' VortexOfTime
+  | WatchersGaze' WatchersGaze
   | Wormhole' Wormhole
   | WrackedByNightmares' WrackedByNightmares
   deriving stock (Show, Eq, Generic)
@@ -188,6 +190,7 @@ allTreacheries = mapFromList $ map
   , BeastOfTheBayou' <$> beastOfTheBayou
   , BeyondTheVeil' <$> beyondTheVeil
   , BrokenRails' <$> brokenRails
+  , ChaosInTheWater' <$> chaosInTheWater
   , ChillFromBelow' <$> chillFromBelow
   , Chronophobia' <$> chronophobia
   , ClawsOfSteam' <$> clawsOfSteam
@@ -260,6 +263,7 @@ allTreacheries = mapFromList $ map
   , VaultOfEarthlyDemise' <$> vaultOfEarthlyDemise
   , VisionsOfFuturesPast' <$> visionsOfFuturesPast
   , VortexOfTime' <$> vortexOfTime
+  , WatchersGaze' <$> watchersGaze
   , Wormhole' <$> wormhole
   , WrackedByNightmares' <$> wrackedByNightmares
   ]

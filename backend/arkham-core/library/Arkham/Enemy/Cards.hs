@@ -66,6 +66,7 @@ allEncounterEnemyCards = mapFromList $ map
   , bogGator
   , broodOfYogSothoth
   , cloverClubPitBoss
+  , cnidathqua
   , conglomerationOfSpheres
   , corpseHungryGhoul
   , corpseTaker

@@ -587,7 +587,7 @@ lostInVenice = (treachery "82032" "Lost in Venice" CarnevaleOfHorrors 3)
   }
 
 watchersGaze :: CardDef
-watchersGaze = (treachery "82033" "Watcher's Gaze" CarnevaleOfHorrors 3)
+watchersGaze = (treachery "82033" "Watchers' Gaze" CarnevaleOfHorrors 3)
   { cdCardTraits = singleton Terror
   }
 

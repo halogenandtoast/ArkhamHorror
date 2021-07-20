@@ -25,8 +25,8 @@ cnidathqua :: EnemyCard Cnidathqua
 cnidathqua = enemyWith
   Cnidathqua
   Cards.cnidathqua
-  (0, Static 1, 0)
-  (0, 0)
+  (4, PerPlayer 8, 0)
+  (2, 2)
   (asSelfLocationL ?~ "cnidathqua")
 
 instance HasModifiersFor env Cnidathqua where

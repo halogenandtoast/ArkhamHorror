@@ -1,58 +1,44 @@
 <template>
-  <div id="edit-game" class="edit-game" v-if="ready">
-    <input :v-model="rawGameMessage" type="text" />
+  <div id="edit-game" class="edit-game">
+    <textarea v-model="rawGameMessage"></textarea><br />
     <button @click="save">Save</button>
-    <button @click="undo">Undo</button>
+    <div>{{rawGameMessage}}</div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue'
-import { fetchGameRaw, updateGameRaw, undoChoice } from '@/arkham/api'
-import { Message, messageDecoder } from '@/arkham/types/Message'
+import { defineComponent, ref } from 'vue'
+import { updateGameRaw } from '@/arkham/api'
 
 export default defineComponent({
   props: { gameId: { type: String, required: true } },
   setup(props) {
-    const ready = ref(false)
-    const socket = ref<WebSocket | null>(null)
-    const json = ref<string | null>(null)
     const rawGameMessage = ref("")
 
-    const gameMessage = computed(() => messageDecoder.onDecode(rawGameMessage.value, (res: Message) => res, () => null))
-
-    fetchGameRaw(props.gameId).then(({ game }) => {
-      json.value = game;
-      const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`;
-      socket.value = new WebSocket(`${baseURL}/api/v1/arkham/games/${props.gameId}`.replace(/https/, 'wss').replace(/http/, 'ws'));
-      socket.value.addEventListener('message', (event: MessageEvent) => {
-        json.value = JSON.parse(event.data);
-      });
-      ready.value = true;
-    })
-
     async function save() {
-      if (json.value) {
-        updateGameRaw(props.gameId, json.value, gameMessage.value);
-      }
+      console.log(rawGameMessage.value)
+      const json = JSON.parse(rawGameMessage.value)
+      updateGameRaw(props.gameId, json)
     }
 
-    async function undo() {
-      undoChoice(props.gameId);
-    }
-
-    return { undo, save, ready, json }
+    return { rawGameMessage, save }
   }
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .action { border: 5px solid #FF00FF; border-radius: 15px; }
 
-.game {
-  width: 100vw;
-  height: calc(100vh - 40px);
-  display: grid;
-  grid-template-rows: min-content 1fr min-content;
+.edit-game {
+  font-size: 2em;
+}
+
+textarea {
+  width: 1000px;
+  font-size: 2em;
+}
+
+button {
+  font-size: 2em;
 }
 </style>

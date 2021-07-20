@@ -7,6 +7,15 @@
       :investigatorId="investigatorId"
       @choose="$emit('choose', $event)"
     />
+    <CardRow
+      v-if="showCards.length > 0"
+      :game="game"
+      :cards="showCards"
+      :isDiscards="viewingDiscard"
+      :title="cardRowTitle"
+      @choose="$emit('choose', $event)"
+      @close="showCards = []"
+    />
     <div class="scenario-cards">
       <div v-if="topEnemyInVoid">
         <Enemy
@@ -21,12 +30,14 @@
         :src="scenarioDeck"
         class="card"
       />
-      <VictoryDisplay :game="game" />
+      <VictoryDisplay :game="game" @show="doShowCards" />
       <div v-if="topOfEncounterDiscard" class="discard">
         <img
           :src="topOfEncounterDiscard"
           class="card"
         />
+
+        <button v-if="discards.length > 0" class="view-discard-button" @click="doShowCards($event, discards, 'Encounter Discard', true)">{{viewDiscardLabel}}</button>
       </div>
 
       <EncounterDeck
@@ -54,6 +65,7 @@
         :game="game"
         :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
+        @show="doShowCards"
       />
       <img
         class="card"
@@ -109,11 +121,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, onMounted, onUnmounted } from 'vue';
+import { defineComponent, computed, onMounted, onUnmounted, onUpdated, nextTick, ref } from 'vue';
 import { Game } from '@/arkham/types/Game';
+import { CardContents } from '@/arkham/types/Card';
 import Act from '@/arkham/components/Act.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
+import CardRow from '@/arkham/components/CardRow.vue';
 import StatusBar from '@/arkham/components/StatusBar.vue';
 import ChaosBag from '@/arkham/components/ChaosBag.vue';
 import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
@@ -179,6 +193,7 @@ export default defineComponent({
     StatusBar,
     ChaosBag,
     PlayerTabs,
+    CardRow,
     EncounterDeck,
     PlayerOrder,
     PlayerSelector,
@@ -192,16 +207,19 @@ export default defineComponent({
   setup(props, { emit }) {
     const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
 
-    let connectionInterval: number | null = null
+    const resizeHandler = () => handleConnections(props.game)
 
-    onMounted(() => {
-      connectionInterval = setInterval(() => handleConnections(props.game), 1000)
+    onMounted(async () => {
+      window.addEventListener("resize", resizeHandler)
+      await nextTick()
+      handleConnections(props.game)
     })
 
-    onUnmounted(() => {
-      if (connectionInterval) {
-        clearInterval(connectionInterval)
-      }
+    onUnmounted(() => window.removeEventListener("resize", resizeHandler))
+
+    onUpdated(async () => {
+      await nextTick()
+      handleConnections(props.game)
     })
 
     const scenarioGuide = computed(() => {
@@ -260,7 +278,19 @@ export default defineComponent({
     })
 
     const players = computed(() => props.game.investigators)
+    const discards = computed(() => props.game.discard)
 
+    const showCards = ref<CardContents[]>([])
+    const viewingDiscard = ref(false)
+    const cardRowTitle = ref("")
+
+    const doShowCards = (event: Event, cards: CardContents[], title: string, isDiscards: boolean) => {
+      cardRowTitle.value = title
+      showCards.value = cards
+      viewingDiscard.value = isDiscards
+    }
+
+    const viewDiscardLabel = computed(() => `${discards.value.length} Cards`)
     const topOfEncounterDiscard = computed(() => {
       if (props.game.discard[0]) {
         const { cardCode } = props.game.discard[0];
@@ -281,21 +311,21 @@ export default defineComponent({
     const enemiesAsLocations = computed(() => Object.values(props.game.enemies).filter((enemy) => enemy.contents.asSelfLocation !== null))
 
     const cardsUnderAgenda = computed(() => {
-      const { scenario } = props.game;
+      const { scenario } = props.game
       if (!scenario) {
-        return [];
+        return []
       }
 
-      return scenario.contents.cardsUnderAgendaDeck;
+      return scenario.contents.cardsUnderAgendaDeck
     })
 
     const cardsUnderAct = computed(() => {
-      const { scenario } = props.game;
+      const { scenario } = props.game
       if (!scenario) {
-        return [];
+        return []
       }
 
-      return scenario.contents.cardsUnderActDeck;
+      return scenario.contents.cardsUnderActDeck.map(c => c.contents)
     })
 
     return {
@@ -310,7 +340,13 @@ export default defineComponent({
       topEnemyInVoid,
       enemiesAsLocations,
       cardsUnderAgenda,
-      cardsUnderAct
+      cardsUnderAct,
+      doShowCards,
+      viewDiscardLabel,
+      viewingDiscard,
+      showCards,
+      discards,
+      cardRowTitle,
     }
   },
 
@@ -404,6 +440,8 @@ export default defineComponent({
 .discard {
   height: 100%;
   position: relative;
+  display: flex;
+  flex-direction: column;
   &::after {
     pointer-events: none;
     content: "";

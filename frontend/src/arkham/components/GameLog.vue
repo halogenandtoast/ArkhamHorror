@@ -1,7 +1,7 @@
 <template>
   <div class="game-log">
     <ul ref="messages">
-      <li class="log-entry" v-for="(msg, i) in gameLog" :key="i"><GameMessage :game="game" :msg="msg" /></li>
+      <li class="log-entry" v-for="(msg, i) in truncatedGameLog" :key="i"><GameMessage :game="game" :msg="msg" /></li>
     </ul>
     <div>
       <input type="text">
@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watch, ref, toRefs, nextTick, onMounted } from 'vue';
+import { defineComponent, watch, ref, computed, nextTick, onMounted } from 'vue';
 import { undoChoice } from '@/arkham/api'
 import { Game } from '@/arkham/types/Game';
 import GameMessage from '@/arkham/components/GameMessage.vue';
@@ -24,7 +24,7 @@ export default defineComponent({
   },
   setup(props) {
     const messages = ref<Element | null>(null)
-    const { gameLog } = toRefs(props)
+    const truncatedGameLog = computed(() => props.gameLog.slice(-10))
 
     onMounted(async () => {
       const el = messages.value
@@ -38,7 +38,7 @@ export default defineComponent({
       }
     })
 
-    watch(gameLog, async () => {
+    watch(truncatedGameLog, async () => {
       const el = messages.value
       if (el) {
         const child = el.lastElementChild
@@ -54,7 +54,7 @@ export default defineComponent({
       undoChoice(props.game.id);
     }
 
-    return { messages, undo }
+    return { truncatedGameLog, messages, undo }
   }
 })
 </script>

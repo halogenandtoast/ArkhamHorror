@@ -61,7 +61,7 @@ export default defineComponent({
         case MessageType.INVESTIGATOR_DRAW_ENCOUNTER_CARD:
           return `${baseUrl}/img/arkham/portraits/${choice.contents}.jpg`;
         case MessageType.SURGE:
-          return `${baseUrl}/img/arkham/portraits/${choice.contents}.jpg`;
+          return `${baseUrl}/img/arkham/portraits/${choice.contents[0]}.jpg`;
         default:
           return `${baseUrl}/img/arkham/portraits/${choice.contents[0]}.jpg`;
       }

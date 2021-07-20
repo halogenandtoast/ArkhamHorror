@@ -4,6 +4,8 @@
       :src="topOfVictoryDisplay"
       class="card"
     />
+
+    <button @click="$emit('show', $event, victoryDisplay, 'Victory Display', true)">{{viewVictoryDisplayLabel}}</button>
   </div>
 </template>
 
@@ -12,33 +14,40 @@ import { defineComponent, computed } from 'vue';
 import { Game } from '@/arkham/types/Game';
 
 export default defineComponent({
-  props: { game: { type: Object as () => Game, required: true } },
+  props: {
+    game: { type: Object as () => Game, required: true },
+  },
   setup(props) {
     const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
-    const victoryDisplay = computed(() => props.game.victoryDisplay)
+    const victoryDisplay = computed(() => props.game.victoryDisplay.map(c => c.contents))
     const topOfVictoryDisplay = computed(() => {
       if (victoryDisplay.value[0]) {
-        const { cardCode } = victoryDisplay.value[0].contents;
+        const { cardCode } = victoryDisplay.value[0];
         return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
       }
 
       return null;
     })
 
-    return { topOfVictoryDisplay }
+    const viewVictoryDisplayLabel = computed(() => `${victoryDisplay.value.length} Cards`)
+
+    return { victoryDisplay, topOfVictoryDisplay, viewVictoryDisplayLabel }
   }
 })
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 .card {
   width: 100px;
   border-radius: 6px;
+  margin: 2px;
 }
 
 .victory-display {
   height: 100%;
   position: relative;
+  display: flex;
+  flex-direction: column;
   &::after {
     pointer-events: none;
     content: "";

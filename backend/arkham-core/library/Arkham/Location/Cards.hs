@@ -45,6 +45,7 @@ allLocationCards = mapFromList $ map
   (toCardCode &&& id)
   ([ placeholderLocation
    , aTearInThePath
+   , accademiaBridge
    , administrationBuilding
    , administrationOffice_130
    , administrationOffice_131
@@ -73,9 +74,11 @@ allLocationCards = mapFromList $ map
    , blastedHeath_248
    , blastedHeath_249
    , brackishWaters
+   , bridgeOfSighs
    , broadmoor
    , burnedRuins_204
    , burnedRuins_205
+   , canalSide
    , cellar
    , cloverClubBar
    , cloverClubCardroom
@@ -115,6 +118,7 @@ allLocationCards = mapFromList $ map
    , facultyOfficesTheNightIsStillYoung
    , farAboveYourHouse
    , fauborgMarigny
+   , floodedSquare
    , forgottenMarsh
    , foulSwamp
    , frozenSpring
@@ -151,10 +155,12 @@ allLocationCards = mapFromList $ map
    , prismaticCascade
    , returnToAttic
    , returnToCellar
+   , rialtoBridge
    , ritualGrounds
    , ritualSite
    , rivertown
    , rivertownAbandonedWarehouse
+   , sanMarcoBasilica
    , schoolhouse_212
    , schoolhouse_213
    , scienceBuilding
@@ -167,6 +173,7 @@ allLocationCards = mapFromList $ map
    , southsideMasBoardingHouse
    , stMarysHospital
    , stepsOfYhagharl
+   , streetsOfVenice
    , studentUnion
    , study
    , studyAberrantGateway
@@ -175,10 +182,12 @@ allLocationCards = mapFromList $ map
    , tenAcreMeadow_246
    , tenAcreMeadow_247
    , theEdgeOfTheUniverse
+   , theGuardian
    , theHiddenChamber
    , trappersCabin
    , twistedUnderbrush
    , uprootedWoods
+   , venetianGarden
    , villageCommons
    , vipArea
    , whateleyRuins_250

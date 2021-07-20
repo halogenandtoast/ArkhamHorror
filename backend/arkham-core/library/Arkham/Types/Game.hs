@@ -486,6 +486,17 @@ getLocationsMatching = \case
   AnyLocation -> toList . view locationsL <$> getGame
   EmptyLocation ->
     filter isEmptyLocation . toList . view locationsL <$> getGame
+  LocationWithoutInvestigators ->
+    filter noInvestigatorsAtLocation . toList . view locationsL <$> getGame
+  LocationWithoutTreachery cardDef ->
+    filterM
+        (fmap (toCardCode cardDef `notElem`)
+        . traverse getId
+        <=< getSetList @TreacheryId
+        )
+      . toList
+      . view locationsL
+      =<< getGame
   FarthestLocationFromYou matcher -> do
     start <- locationFor . view activeInvestigatorIdL =<< getGame
     matchingLocationIds <- map toId <$> getLocationsMatching matcher
@@ -546,6 +557,7 @@ getEnemiesMatching matcher = do
       pure . (== Name title (Just subtitle)) . toName
     EnemyWithId enemyId -> pure . (== enemyId) . toId
     NonEliteEnemy -> fmap (notElem Elite) . getSet . toId
+    HunterEnemies -> fmap (elem Keyword.Hunter) . getSet . toId
     EnemyAtLocation lid -> fmap (== lid) . getId
     EnemyMatchAll ms -> \enemy -> allM (`matcherFilter` enemy) ms
 
@@ -646,6 +658,9 @@ instance HasGame env => HasId CardCode env LocationId where
 instance HasGame env => HasId CardCode env AssetId where
   getId = (toCardCode <$>) . getAsset
 
+instance HasGame env => HasId CardCode env TreacheryId where
+  getId = (toCardCode <$>) . getTreachery
+
 instance HasGame env => HasCount ScenarioDeckCount env () where
   getCount _ =
     getCount
@@ -695,6 +710,12 @@ instance HasGame env => HasSet AssetId env (InvestigatorId, AssetMatcher) where
     matchingAssetIds <- setFromList . map toId <$> getAssetsMatching matcher
     investigatorAssetIds <- getSet @AssetId iid
     pure $ matchingAssetIds `intersection` investigatorAssetIds
+
+instance HasGame env => HasSet AssetId env (LocationId, AssetMatcher) where
+  getSet (lid, matcher) = do
+    matchingAssetIds <- setFromList . map toId <$> getAssetsMatching matcher
+    locationAssetIds <- getSet @AssetId lid
+    pure $ matchingAssetIds `intersection` locationAssetIds
 
 instance HasGame env => HasSet EnemyId env LocationMatcher where
   getSet locationMatcher = do
@@ -1636,6 +1657,14 @@ instance HasGame env => HasSet ClosestLocationId env (LocationId, [Trait]) where
       else pure $ singleton (ClosestLocationId start)
    where
     matcher lid = notNull . (setFromList traits `intersect`) <$> getSet lid
+
+instance HasGame env => HasSet ClosestLocationId env (InvestigatorId, LocationMatcher) where
+  getSet (iid, matcher) = do
+    start <- locationFor iid
+    matchingLocationIds <- map toId <$> getLocationsMatching matcher
+    setFromList
+      . coerce
+      <$> getShortestPath start (pure . (`elem` matchingLocationIds)) mempty
 
 instance HasGame env => HasSet ClosestEnemyId env (LocationId, [Trait]) where
   getSet (start, traits) = do

@@ -7,7 +7,9 @@ import Arkham.Prelude
 import Arkham.Types.AssetMatcher
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.EnemyMatcher
 import Arkham.Types.Id
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Target
@@ -23,6 +25,8 @@ createTreachery a iid =
 data Treachery
   = BaseTreachery' BaseTreachery
   | AbandonedAndAlone' AbandonedAndAlone
+  | Abduction' Abduction
+  | AcridMiasma' AcridMiasma
   | AcrossSpaceAndTime' AcrossSpaceAndTime
   | AlteredBeast' AlteredBeast
   | Amnesia' Amnesia
@@ -68,6 +72,7 @@ data Treachery
   | MaskOfUmordhoth' MaskOfUmordhoth
   | MaskedHorrors' MaskedHorrors
   | MassHysteria' MassHysteria
+  | Mesmerize' Mesmerize
   | MysteriousChanting' MysteriousChanting
   | ObscuringFog' ObscuringFog
   | OfferOfPower' OfferOfPower
@@ -120,6 +125,12 @@ deriving anyclass instance ActionRunner env => HasActions env Treachery
 deriving anyclass instance
   ( HasSet AssetId env AssetMatcher
   , GetCardDef env LocationId
+  , HasId (Maybe OwnerId) env AssetId
+  , HasSet AssetId env (InvestigatorId, CardDef)
+  , HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)
+  , HasSet AssetId env (LocationId, AssetMatcher)
+  , HasSet ClosestLocationId env (InvestigatorId, LocationMatcher)
+  , HasSet EnemyId env EnemyMatcher
   , TreacheryRunner env
   )
   => RunMessage env Treachery
@@ -179,6 +190,8 @@ allTreacheries = mapFromList $ map
     , cbCardBuilder = uncurry (baseTreachery "treachery")
     }
   , AbandonedAndAlone' <$> abandonedAndAlone
+  , Abduction' <$> abduction
+  , AcridMiasma' <$> acridMiasma
   , AcrossSpaceAndTime' <$> acrossSpaceAndTime
   , AlteredBeast' <$> alteredBeast
   , Amnesia' <$> amnesia
@@ -224,6 +237,7 @@ allTreacheries = mapFromList $ map
   , MaskOfUmordhoth' <$> maskOfUmordhoth
   , MaskedHorrors' <$> maskedHorrors
   , MassHysteria' <$> massHysteria
+  , Mesmerize' <$> mesmerize
   , MysteriousChanting' <$> mysteriousChanting
   , ObscuringFog' <$> obscuringFog
   , OfferOfPower' <$> offerOfPower

@@ -192,6 +192,8 @@ findLocationKey locationMatcher locations = fst
     FarthestLocationFromYou _ -> error "needs to find a singular location"
     LocationMatchers _ -> error "not implemented"
     LocationWithTrait _ -> error "not implemented"
+    LocationWithoutInvestigators -> error "needs to find a singular location"
+    LocationWithoutTreachery _ -> error "needs to find a singular location"
 
 type ScenarioAttrsRunner env
   = ( HasSet InScenarioInvestigatorId env ()

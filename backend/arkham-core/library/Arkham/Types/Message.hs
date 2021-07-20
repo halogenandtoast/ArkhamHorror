@@ -354,6 +354,7 @@ data Message
     | LookAtTopOfDeck InvestigatorId Target Int
     | LoseActions InvestigatorId Source Int
     | LoseResources InvestigatorId Int
+    | LoseAllResources InvestigatorId
     | SpendActions InvestigatorId Source Int
     | Move InvestigatorId LocationId LocationId
     | MoveAction InvestigatorId LocationId Cost Bool

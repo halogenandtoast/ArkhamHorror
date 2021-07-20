@@ -108,11 +108,13 @@ type InvestigatorRunner env
         , HasSet AssetId env (InvestigatorId, [Trait])
         , HasSet AssetId env (InvestigatorId, CardDef)
         , HasSet AssetId env AssetMatcher
+        , HasSet AssetId env (LocationId, AssetMatcher)
         , HasSet AssetId env InvestigatorId
         , HasSet AssetId env LocationId
         , HasSet BlockedLocationId env ()
         , HasSet ClosestEnemyId env (LocationId, [Trait])
         , HasSet ClosestLocationId env (LocationId, [Trait])
+        , HasSet ClosestLocationId env (InvestigatorId, LocationMatcher)
         , HasSet ClosestPathLocationId env (LocationId, LocationId)
         , HasSet ClosestPathLocationId env (LocationId, Prey)
         , HasSet
@@ -142,6 +144,7 @@ type InvestigatorRunner env
         , HasSet ExhaustedEnemyId env LocationId
         , HasSet FarthestEnemyId env (InvestigatorId, EnemyTrait)
         , HasSet FarthestLocationId env InvestigatorId
+        , HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)
         , HasSet FarthestLocationId env [InvestigatorId]
         , HasSet FightableEnemyId env (InvestigatorId, Source)
         , HasSet HandCardId env (InvestigatorId, CardType)

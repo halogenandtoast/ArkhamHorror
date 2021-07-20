@@ -50,6 +50,9 @@ treachery :: CardCode -> Name -> EncounterSet -> Int -> CardDef
 treachery cardCode name encounterSet encounterSetQuantity =
   baseTreachery cardCode name (Just (encounterSet, encounterSetQuantity)) False
 
+allTreacheryCards :: HashMap CardCode CardDef
+allTreacheryCards = allPlayerTreacheryCards <> allEncounterTreacheryCards
+
 allPlayerTreacheryCards :: HashMap CardCode CardDef
 allPlayerTreacheryCards = mapFromList $ map
   (toCardCode &&& id)

@@ -343,14 +343,15 @@ runValidations cards = do
       Just CardJson {..} -> do
         let
           cardStats =
-            ( fromMaybe 0 enemy_fight
+            ( max 0 $ fromMaybe 0 enemy_fight
             , toGameVal
               (fromMaybe False health_per_investigator)
               (fromMaybe 0 health)
-            , fromMaybe 0 enemy_evade
+            , max 0 $ fromMaybe 0 enemy_evade
             )
           enemyStats = (enemyFight attrs, enemyHealth attrs, enemyEvade attrs)
-          cardDamage = (fromMaybe 0 enemy_damage, fromMaybe 0 enemy_horror)
+          cardDamage =
+            (max 0 $ fromMaybe 0 enemy_damage, max 0 $ fromMaybe 0 enemy_horror)
           enemyDamage = (enemyHealthDamage attrs, enemySanityDamage attrs)
         when
           (cardStats /= enemyStats)

@@ -18,6 +18,10 @@ storyAsset :: CardCode -> Name -> Int -> EncounterSet -> CardDef
 storyAsset cardCode name cost encounterSet =
   baseAsset (Just (encounterSet, 1)) cardCode name cost Neutral
 
+storyAssetWithMany :: CardCode -> Name -> Int -> EncounterSet -> Int -> CardDef
+storyAssetWithMany cardCode name cost encounterSet encounterSetCount =
+  baseAsset (Just (encounterSet, encounterSetCount)) cardCode name cost Neutral
+
 asset :: CardCode -> Name -> Int -> ClassSymbol -> CardDef
 asset = baseAsset Nothing
 
@@ -1279,9 +1283,11 @@ maskedCarnevaleGoer_20 =
     }
 
 innocentReveler :: CardDef
-innocentReveler = (storyAsset "82021" "Innocent Reveler" 0 CarnevaleOfHorrors)
-  { cdCardTraits = setFromList [Ally, Bystander, Carnevale]
-  }
+innocentReveler =
+  (storyAssetWithMany "82021" "Innocent Reveler" 0 CarnevaleOfHorrors 3)
+    { cdCardTraits = setFromList [Ally, Bystander, Carnevale]
+    , cdCost = Nothing
+    }
 
 maskedCarnevaleGoer_21 :: CardDef
 maskedCarnevaleGoer_21 =

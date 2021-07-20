@@ -69,6 +69,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
         investigatorsList
         difficulty
       , gameChoices = []
+      , gameWindowDepth = 0
       , gameRoundMessageHistory = []
       , gamePhaseMessageHistory = []
       , gameInitialSeed = seed

@@ -65,6 +65,7 @@ allEncounterEnemyCards = mapFromList $ map
   , billyCooper
   , bogGator
   , broodOfYogSothoth
+  , carnevaleSentinel
   , cloverClubPitBoss
   , cnidathqua
   , conglomerationOfSpheres
@@ -120,6 +121,7 @@ allEncounterEnemyCards = mapFromList $ map
   , wizardOfTheOrder
   , wizardOfYogSothoth
   , wolfManDrew
+  , writhingAppendage
   , yithianObserver
   , yithianStarseeker
   , yogSothoth

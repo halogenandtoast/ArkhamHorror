@@ -1298,6 +1298,7 @@ abbessAllegriaDiBiase = (storyAsset
                         )
   { cdCardTraits = setFromList [Ally, Believer]
   , cdUnique = True
+  , cdSkills = [SkillWillpower, SkillIntellect, SkillWild]
   }
 
 daisysToteBagAdvanced :: CardDef

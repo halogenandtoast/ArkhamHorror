@@ -209,7 +209,7 @@ instance
   runMessage msg e = do
     modifiers' <- getModifiersFor (toSource e) (toTarget e) ()
     let msg' = if any isBlank modifiers' then Blanked msg else msg
-    defaultRunMessage msg' e
+    genericRunMessage msg' e
 
 instance HasVictoryPoints Enemy where
   getVictoryPoints = getEnemyVictory

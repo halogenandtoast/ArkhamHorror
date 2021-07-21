@@ -12,6 +12,9 @@
       :ability="choices[ability]"
       @click="$emit('choose', ability)"
       />
+    <template v-if="debug">
+      <button v-if="!asset.contents.investigator" @click="debugChoose({tag: 'TakeControlOfAsset', contents: [investigatorId, id]})">Take control</button>
+    </template>
     <div v-if="hasPool" class="pool">
       <PoolItem
         v-if="asset.contents.uses && asset.contents.uses.amount > 0"
@@ -43,7 +46,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
+import { defineComponent, computed, inject } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { Message, MessageType } from '@/arkham/types/Message';
@@ -164,7 +167,10 @@ export default defineComponent({
         }, []);
     })
 
-    return { id, hasPool, exhausted, image, abilities, sanityAction, healthAction, cardAction, choices }
+    const debug = inject('debug')
+    const debugChoose = inject('debugChoose')
+
+    return { debug, debugChoose, id, hasPool, exhausted, image, abilities, sanityAction, healthAction, cardAction, choices }
   }
 })
 </script>

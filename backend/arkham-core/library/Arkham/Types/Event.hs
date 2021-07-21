@@ -116,7 +116,7 @@ deriving anyclass instance
 instance HasCount ClueCount env InvestigatorId => HasModifiersFor env Event where
   getModifiersFor = genericGetModifiersFor
 
-deriving anyclass instance
+instance
   ( EventRunner env
   , HasSet FightableEnemyId env (InvestigatorId, Source)
   , HasCount HealthDamageCount env EnemyId
@@ -127,7 +127,8 @@ deriving anyclass instance
   , HasList DiscardedPlayerCard env InvestigatorId
   , HasCount FightCount env EnemyId
   )
-  => RunMessage env Event
+  => RunMessage env Event where
+  runMessage = genericRunMessage
 
 instance Entity Event where
   type EntityId Event = EventId

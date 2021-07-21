@@ -1,12 +1,43 @@
-<template>
+<template>;
   <div class="home">
     <div v-if="currentUser" class="new-game">
       <router-link to="/campaigns/new" custom v-slot="{ navigate }">
-        <button @click="navigate">+ New Game</button>
+        <button @click="navigate" class="new-game-button">+ New Game</button>
       </router-link>
     </div>
 
-    <div v-for="game in games" class="game" :key="game.id">
+    <h2>Active Games</h2>
+    <div v-for="game in activeGames" class="game" :key="game.id">
+      <div class="campaign-icon-container" v-if="game.campaign">
+        <img class="campaign-icon" :src="`${baseUrl}/img/arkham/sets/${game.campaign.contents.id}.png`" />
+      </div>
+      <div class="campaign-icon-container" v-else-if="game.scenario">
+        <img class="campaign-icon" :src="`${baseUrl}/img/arkham/sets/${game.scenario.contents.id.slice(0,2)}.png`" />
+      </div>
+      <div class="game-details">
+        <router-link class="title" :to="`/games/${game.id}`">{{game.name}}</router-link>
+        <div v-if="game.scenario" class="scenario-details">
+          <img class="scenario-icon" :src="`${baseUrl}/img/arkham/sets/${game.scenario.contents.id}.png`" />
+          <span>{{game.scenario.contents.name.title}}</span>
+        </div>
+        <div>
+          <span>Investigators: </span>
+          <span
+            v-for="investigator in game.investigators"
+            :key="investigator.contents.id"
+            class="investigator-name"
+          >
+            {{investigator.contents.name.title}}
+          </span>
+        </div>
+      </div>
+      <div class="game-delete">
+        <a href="#delete" @click.prevent="deleteId = game.id"><font-awesome-icon icon="trash" /></a>
+      </div>
+    </div>
+
+    <h2>Finished Games</h2>
+    <div v-for="game in finishedGames" class="game finished-game" :key="game.id">
       <div class="campaign-icon-container" v-if="game.campaign">
         <img class="campaign-icon" :src="`${baseUrl}/img/arkham/sets/${game.campaign.contents.id}.png`" />
       </div>
@@ -61,6 +92,9 @@ export default defineComponent({
     const deleteId = ref<string | null>(null)
     const games: Ref<Game[]> = ref([])
 
+    const activeGames = computed(() => games.value.filter(g => g.gameState !== 'IsOver'))
+    const finishedGames = computed(() => games.value.filter(g => g.gameState === 'IsOver'))
+
     fetchGames().then((result) => games.value = result)
 
     async function deleteGameEvent() {
@@ -75,12 +109,17 @@ export default defineComponent({
 
     const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
 
-    return { baseUrl, currentUser, deleteId, games, deleteGameEvent }
+    return { baseUrl, currentUser, deleteId, games, deleteGameEvent, activeGames, finishedGames }
   }
 })
 </script>
 
 <style lang="scss" scoped>
+h2 {
+  color: #6E8644;
+  font-size: 2em;
+  text-transform: uppercase;
+}
 .game {
   display: flex;
   background-color: #15192C;
@@ -95,6 +134,25 @@ export default defineComponent({
     &:hover {
       color: lighten(#365488, 20%);
     }
+  }
+}
+
+.finished-game {
+  border-left: 10px solid #999;
+  background: #333;
+  color: #999;
+
+  a {
+    color: #494949;
+  }
+
+  .game-delete a {
+    color: #111;
+  }
+
+  .campaign-icon {
+    filter: invert(28%) sepia(0%) hue-rotate(-180deg) saturate(3);
+    width: 50px;
   }
 }
 
@@ -150,6 +208,7 @@ export default defineComponent({
     text-transform: uppercase;
     color: white;
     border: 0;
+    width: 100%;
     &:hover {
       background: darken(#6E8640, 7%);
     }

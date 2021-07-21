@@ -14,28 +14,43 @@
         :class="{ 'resource--can-take': takeResourceAction !== -1 }"
         @choose="$emit('choose', takeResourceAction)"
       />
+      <template v-if="debug">
+        <button @click="debugChoose({tag: 'TakeResources', contents: [id, 1, false]})">+</button>
+      </template>
       <PoolItem
         type="clue"
         :amount="player.contents.clues"
         :class="{ 'resource--can-spend': spendCluesAction !== -1 }"
         @choose="$emit('choose', spendCluesAction)"
       />
+      <template v-if="debug">
+        <button @click="debugChoose({tag: 'GainClues', contents: [id, 1]})">+</button>
+      </template>
       <PoolItem
         type="health"
         :amount="player.contents.healthDamage"
         :class="{ 'health--can-interact': healthAction !== -1 }"
         @choose="$emit('choose', healthAction)"
       />
+      <template v-if="debug">
+        <button @click="debugChoose({tag: 'HealDamage', contents: [{tag: 'InvestigatorTarget', contents: id}, 1]})">-</button>
+      </template>
       <PoolItem
         type="sanity"
         :amount="player.contents.sanityDamage"
         :class="{ 'sanity--can-interact': sanityAction !== -1 }"
         @choose="$emit('choose', sanityAction)"
       />
+      <template v-if="debug">
+        <button @click="debugChoose({tag: 'HealHorror', contents: [{tag: 'InvestigatorTarget', contents: id}, 1]})">-</button>
+      </template>
       <span><i class="action" v-for="n in player.contents.remainingActions" :key="n"></i></span>
       <span v-if="player.contents.tomeActions && player.contents.tomeActions > 0">
         <i class="action tomeAction" v-for="n in player.contents.tomeActions" :key="n"></i>
       </span>
+      <template v-if="debug">
+        <button @click="debugChoose({tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 1]})">+</button>
+      </template>
       <button
         :disabled="endTurnAction === -1"
         @click="$emit('choose', endTurnAction)"
@@ -45,7 +60,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
+import { defineComponent, computed, inject } from 'vue'
 import * as Arkham from '@/arkham/types/Investigator'
 import { Game } from '@/arkham/types/Game'
 import * as ArkhamGame from '@/arkham/types/Game'
@@ -62,6 +77,8 @@ export default defineComponent({
   setup(props) {
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
     const id = computed(() => props.player.contents.id)
+    const debug = inject('debug')
+    const debugChoose = inject('debugChoose')
 
     const searchTopOfDeckAction = computed(() => {
       return choices
@@ -187,12 +204,14 @@ export default defineComponent({
     })
 
     const image = computed(() => {
-      const { id } = props.player.contents;
       const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
-      return `${baseUrl}/img/arkham/cards/${id}.jpg`;
+      return `${baseUrl}/img/arkham/cards/${id.value}.jpg`;
     })
 
     return {
+      id,
+      debug,
+      debugChoose,
       image,
       endTurnAction,
       spendCluesAction,

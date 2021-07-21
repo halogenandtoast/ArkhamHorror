@@ -223,7 +223,7 @@ instance
       then getModifiersFor (toSource x) (toTarget x) ()
       else pure []
     let msg' = if any isBlank modifiers' then Blanked msg else msg
-    defaultRunMessage msg' x
+    genericRunMessage msg' x
 
 instance Entity Asset where
   type EntityId Asset = AssetId

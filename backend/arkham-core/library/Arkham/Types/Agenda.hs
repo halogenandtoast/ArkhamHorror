@@ -122,7 +122,9 @@ data Agenda
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance ActionRunner env => HasActions env Agenda
-deriving anyclass instance (HasSet AssetId env AssetMatcher, HasId (Maybe EnemyId) env EnemyMatcher, HasRecord env, AgendaRunner env) => RunMessage env Agenda
+
+instance (HasSet AssetId env AssetMatcher, HasId (Maybe EnemyId) env EnemyMatcher, HasRecord env, AgendaRunner env) => RunMessage env Agenda where
+  runMessage = genericRunMessage
 
 instance (HasSet EnemyId env (), HasSet Trait env EnemyId) => HasModifiersFor env Agenda where
   getModifiersFor = genericGetModifiersFor

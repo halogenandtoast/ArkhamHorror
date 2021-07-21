@@ -453,6 +453,7 @@ newGame investigator = do
   seed <- liftIO getRandom
   pure $ Game
     { gameParams = GameParams (Left "00000") 1 mempty Easy -- Not used in tests
+    , gameWindowDepth = 0
     , gameChoices = []
     , gameRoundMessageHistory = []
     , gamePhaseMessageHistory = []

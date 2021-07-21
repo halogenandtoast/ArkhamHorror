@@ -208,7 +208,7 @@ instance
   runMessage msg l = do
     modifiers' <- getModifiersFor (toSource l) (toTarget l) ()
     let msg' = if any isBlank modifiers' then Blanked msg else msg
-    defaultRunMessage msg' l
+    genericRunMessage msg' l
 
 instance Entity Location where
   type EntityId Location = LocationId

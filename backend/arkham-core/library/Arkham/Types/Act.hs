@@ -60,7 +60,8 @@ data Act
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance (HasSet AssetId env AssetMatcher, ActionRunner env) => HasActions env Act
-deriving anyclass instance
+
+instance
   ( HasSet AssetId env AssetMatcher
   , HasName env LocationId
   , ActRunner env
@@ -70,7 +71,8 @@ deriving anyclass instance
   , HasCount ResourceCount env LocationId
   , HasModifiersFor env ()
   )
-  => RunMessage env Act
+  => RunMessage env Act where
+  runMessage = genericRunMessage
 
 instance HasSet Trait env LocationId => HasModifiersFor env Act where
   getModifiersFor = genericGetModifiersFor

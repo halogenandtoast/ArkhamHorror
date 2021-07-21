@@ -8,6 +8,7 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
+import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
@@ -17,12 +18,15 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
+import Arkham.Types.Query
+import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
+import Arkham.Types.Trait hiding (Cultist)
 import qualified Data.List.NonEmpty as NE
 
 newtype CarnevaleOfHorrors = CarnevaleOfHorrors ScenarioAttrs
@@ -76,9 +80,9 @@ masks :: [CardDef]
 masks =
   [Assets.pantalone, Assets.medicoDellaPeste, Assets.bauta, Assets.gildedVolto]
 
-proceedToSacrificesMade
+sacrificesMade
   :: InvestigatorId -> [InvestigatorId] -> ScenarioAttrs -> [Message]
-proceedToSacrificesMade leadInvestigatorId investigatorIds s =
+sacrificesMade leadInvestigatorId investigatorIds s =
   chooseOne
       leadInvestigatorId
       [ Run
@@ -122,7 +126,13 @@ abbessSatisfied leadInvestigatorId investigatorIds =
           Assets.abbessAllegriaDiBiase
       ]
 
-additionalRewards :: ScenarioAttrs -> m [Message]
+additionalRewards
+  :: ( MonadReader env m
+     , HasId LeadInvestigatorId env ()
+     , HasSet InvestigatorId env ()
+     )
+  => ScenarioAttrs
+  -> m [Message]
 additionalRewards s = do
   leadInvestigatorId <- getLeadInvestigatorId
   investigatorIds <- getInvestigatorIds
@@ -133,15 +143,13 @@ additionalRewards s = do
         then sacrificesMade leadInvestigatorId investigatorIds s
         else []
     proceedToAbbessSatisfied =
-      if null scenarioCardsUnderAgendaDeck
-        && length scenarioCardsUnderAgendaDeck
-        == 3
-      then
-        abbessSatisfied leadInvestigatorId investigatorIds
-      else
-        []
+      if null (scenarioCardsUnderAgendaDeck s)
+          && length (scenarioCardsUnderAgendaDeck s)
+          == 3
+        then abbessSatisfied leadInvestigatorId investigatorIds
+        else []
   pure
-    $ [ChooseOneRewardByEachPlayer masks investigatorId]
+    $ [ChooseOneRewardByEachPlayer masks investigatorIds]
     <> proceedToSacrificesMade
     <> proceedToAbbessSatisfied
 
@@ -384,7 +392,15 @@ instance
       pure s
     ScenarioResolution NoResolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
+      investigatorIds <- getInvestigatorIds
       xp <- getXp
+      additionalRewardsMsg <- additionalRewards
+        (attrs
+        & (cardsUnderneathActDeckL %~ drop 1)
+        & (cardsUnderneathAgendaDeckL
+          <>~ take 1 (scenarioCardsUnderActDeck attrs)
+          )
+        )
       s <$ pushAll
         ([ chooseOne
              leadInvestigatorId
@@ -398,16 +414,19 @@ instance
                      \ all over. The city is devastated. Most of the boats in the canal are\
                      \  wrecked, and the streets are covered not in confetti, but in blood..."
                    ]
-                 , Record ManyWereSacrificedToCnidathquaDuringTheVarnivale
+                 , Record ManyWereSacrificedToCnidathquaDuringTheCarnivale
                  ]
              ]
          ]
+        <> additionalRewardsMsg
         <> [ GainXP iid xp | iid <- investigatorIds ]
         <> [EndOfGame]
         )
     ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
+      investigatorIds <- getInvestigatorIds
       xp <- getXp
+      additionalRewardsMsg <- additionalRewards attrs
       s <$ pushAll
         ([ chooseOne
              leadInvestigatorId
@@ -426,12 +445,15 @@ instance
                  ]
              ]
          ]
+        <> additionalRewardsMsg
         <> [ GainXP iid xp | iid <- investigatorIds ]
         <> [EndOfGame]
         )
     ScenarioResolution (Resolution 2) -> do
       leadInvestigatorId <- getLeadInvestigatorId
+      investigatorIds <- getInvestigatorIds
       xp <- getXp
+      additionalRewardsMsg <- additionalRewards attrs
       s <$ pushAll
         ([ chooseOne
              leadInvestigatorId
@@ -450,6 +472,7 @@ instance
                  ]
              ]
          ]
+        <> additionalRewardsMsg
         <> [ GainXP iid xp | iid <- investigatorIds ]
         <> [EndOfGame]
         )

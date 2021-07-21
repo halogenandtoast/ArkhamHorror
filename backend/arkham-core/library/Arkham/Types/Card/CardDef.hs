@@ -63,7 +63,7 @@ data CardDef = CardDef
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
 
-newtype CardLimit = LimitPerInvestigator Int
+data CardLimit = LimitPerInvestigator Int | LimitPerTrait Trait Int
   deriving stock (Show, Eq, Generic)
   deriving anyclass (Hashable, FromJSON, ToJSON)
 

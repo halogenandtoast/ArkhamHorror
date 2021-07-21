@@ -1307,6 +1307,35 @@ abbessAllegriaDiBiase = (storyAsset
   , cdSkills = [SkillWillpower, SkillIntellect, SkillWild]
   }
 
+bauta :: CardDef
+bauta = (storyAsset "82023" "Bauta" 1 CarnevaleOfHorrors)
+  { cdCardTraits = setFromList [Item, Mask]
+  , cdSkills = [SkillCombat, SkillWild]
+  , cdLimits = [LimitPerTrait Mask 1]
+  }
+
+medicoDellaPeste :: CardDef
+medicoDellaPeste =
+  (storyAsset "82024" "Medico Della Peste" 1 CarnevaleOfHorrors)
+    { cdCardTraits = setFromList [Item, Mask]
+    , cdSkills = [SkillWillpower, SkillWild]
+    , cdLimits = [LimitPerTrait Mask 1]
+    }
+
+pantalone :: CardDef
+pantalone = (storyAsset "82025" "Pantalone" 1 CarnevaleOfHorrors)
+  { cdCardTraits = setFromList [Item, Mask]
+  , cdSkills = [SkillIntellect, SkillWild]
+  , cdLimits = [LimitPerTrait Mask 1]
+  }
+
+gildedVolto :: CardDef
+gildedVolto = (storyAsset "82026" "Gilded Volto" 1 CarnevaleOfHorrors)
+  { cdCardTraits = setFromList [Item, Mask]
+  , cdSkills = [SkillAgility, SkillWild]
+  , cdLimits = [LimitPerTrait Mask 1]
+  }
+
 daisysToteBagAdvanced :: CardDef
 daisysToteBagAdvanced = (asset "90002" "Daisy's Tote Bag" 2 Neutral)
   { cdSkills = [SkillWillpower, SkillIntellect, SkillWild, SkillWild]

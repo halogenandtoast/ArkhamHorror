@@ -185,6 +185,7 @@ data Message
     | CheckDefeated Source
     | CheckHandSize InvestigatorId
     | CheckWindow InvestigatorId [Window]
+    | ChooseOneRewardByEachPlayer [CardDef] [InvestigatorId]
     | RunWindow InvestigatorId [Window]
     | ChooseAndDiscardAsset InvestigatorId
     | ChooseAndDiscardCard InvestigatorId

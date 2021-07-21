@@ -52,6 +52,9 @@ data CampaignLogKey
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
   | TheRougarouEscapedAndYouEmbracedTheCurse
+  | ManyWereSacrificedToCnidathquaDuringTheCarnivale
+  | TheSunBanishedCnidathquaIntoTheDepths
+  | CnidathquaRetreatedToNurseItsWounds
   | YouHaveIdentifiedTheSolution
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)

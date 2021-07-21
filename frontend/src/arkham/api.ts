@@ -1,11 +1,15 @@
 import api from '@/api';
-import { gameDecoder } from '@/arkham/types/Game';
-import { deckDecoder } from '@/arkham/types/Deck';
+import { Game, gameDecoder } from '@/arkham/types/Game';
+import { Deck, deckDecoder } from '@/arkham/types/Deck';
 import { Difficulty } from '@/arkham/types/Difficulty';
-import { Message } from '@/arkham/types/Message';
 import { JsonDecoder } from 'ts.data.json';
 
-export const fetchGame = (gameId: string) => api
+interface FetchData {
+  investigatorId: string
+  game: Game
+}
+
+export const fetchGame = (gameId: string): Promise<FetchData> => api
   .get(`arkham/games/${gameId}`)
   .then((resp) => {
     const { investigatorId, game } = resp.data;
@@ -14,11 +18,11 @@ export const fetchGame = (gameId: string) => api
       .then((gameData) => Promise.resolve({ investigatorId, game: gameData }));
   });
 
-export const fetchGames = () => api
+export const fetchGames = (): Promise<Game[]> => api
   .get('arkham/games')
   .then((resp) => JsonDecoder.array(gameDecoder, 'ArkhamGame[]').decodePromise(resp.data));
 
-export const fetchDecks = () => api
+export const fetchDecks = (): Promise<Deck[]> => api
   .get('arkham/decks')
   .then((resp) => JsonDecoder.array(deckDecoder, 'ArkhamDeck[]').decodePromise(resp.data));
 
@@ -26,7 +30,7 @@ export const newDeck = (
   deckId: string,
   deckName: string,
   deckUrl: string,
-) => api
+): Promise<Deck> => api
   .post('arkham/decks', {
     deckId,
     deckName,
@@ -34,23 +38,21 @@ export const newDeck = (
   })
   .then((resp) => deckDecoder.decodePromise(resp.data));
 
-export const deleteDeck = (deckId: string) => api
+export const deleteDeck = (deckId: string): Promise<void> => api
   .delete(`arkham/decks/${deckId}`);
 
-export const updateGame = (gameId: string, choice: number) => api
+export const updateGame = (gameId: string, choice: number): Promise<void> => api
   .put(`arkham/games/${gameId}`, { choice })
 
-export const upgradeDeck = (gameId: string, deckUrl?: string) => api
+export const upgradeDeck = (gameId: string, deckUrl?: string): Promise<void> => api
   .put(`arkham/games/${gameId}/decks`, { deckUrl });
 
-export const deleteGame = (gameId: string) => api
+export const deleteGame = (gameId: string): Promise<void> => api
   .delete(`arkham/games/${gameId}`);
 
-export const fetchGameRaw = (gameId: string) => api
-  .get(`arkham/games/${gameId}`)
-  .then((resp) => resp.data);
-
-export const updateGameRaw = (gameId: string, gameMessage: any) => api
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+/* eslint-disable  @typescript-eslint/explicit-module-boundary-types */
+export const updateGameRaw = (gameId: string, gameMessage: any): Promise<void> => api
   .put(`arkham/games/${gameId}/raw`, { gameMessage });
 
 export const newGame = (
@@ -60,7 +62,7 @@ export const newGame = (
   scenarioId: string | null,
   difficulty: Difficulty,
   campaignName: string,
-) => api
+): Promise<Game> => api
   .post('arkham/games', {
     deckId,
     playerCount,
@@ -71,9 +73,9 @@ export const newGame = (
   })
   .then((resp) => gameDecoder.decodePromise(resp.data));
 
-export const joinGame = (gameId: string, deckId: string) => api
+export const joinGame = (gameId: string, deckId: string): Promise<Game> => api
   .put(`arkham/games/${gameId}/join`, { deckId })
   .then((resp) => gameDecoder.decodePromise(resp.data));
 
-export const undoChoice = (gameId: string) => api
+export const undoChoice = (gameId: string): Promise<void> => api
   .put(`arkham/games/${gameId}/undo`)

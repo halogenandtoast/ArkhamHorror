@@ -116,7 +116,7 @@ const scenarios = [
   },
   {
     id: '82001',
-    name: 'Carnevale of Horrors',
+    name: 'Carnevale of Horrors [BETA]',
   },
 ]
 

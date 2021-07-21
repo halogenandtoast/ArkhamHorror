@@ -2,6 +2,8 @@ import { JsonDecoder } from 'ts.data.json';
 import { Investigator, investigatorDecoder } from '@/arkham/types/Investigator';
 import { Enemy, enemyDecoder } from '@/arkham/types/Enemy';
 import { Location, locationDecoder } from '@/arkham/types/Location';
+import { Message } from '@/arkham/types/Message';
+import { Source } from '@/arkham/types/Source';
 import { Scenario, scenarioDecoder } from '@/arkham/types/Scenario';
 import { Campaign, campaignDecoder } from '@/arkham/types/Campaign';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
@@ -49,7 +51,7 @@ export interface Game {
   victoryDisplay: Card[];
 }
 
-export function choices(game: Game, investigatorId: string) {
+export function choices(game: Game, investigatorId: string): Message[] {
   if (!game.question[investigatorId]) {
     return [];
   }
@@ -73,7 +75,7 @@ export function choices(game: Game, investigatorId: string) {
   }
 }
 
-export function choicesSource(game: Game, investigatorId: string) {
+export function choicesSource(game: Game, investigatorId: string): Source | null {
   if (!game.question[investigatorId]) {
     return null;
   }

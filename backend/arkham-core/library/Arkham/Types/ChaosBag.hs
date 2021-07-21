@@ -264,7 +264,10 @@ createToken face = Token <$> getRandom <*> pure face
 
 instance (HasQueue env, HasId LeadInvestigatorId env ()) => RunMessage env ChaosBag where
   runMessage msg c@ChaosBag {..} = case msg of
-    ForceTokenDraw face -> pure $ c & forceDrawL ?~ face
+    ForceTokenDraw face -> do
+      leadInvestigatorIdL <- getLeadInvestigatorId -- TODO: active
+      push $ StartSkillTest leadInvestigatorIdL
+      pure $ c & forceDrawL ?~ face
     SetTokens tokens' -> do
       tokens'' <- traverse createToken tokens'
       pure $ c & tokensL .~ tokens'' & setAsideTokensL .~ mempty

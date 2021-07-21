@@ -1,4 +1,3 @@
-{-# LANGUAGE DefaultSignatures #-}
 module Arkham.Types.Classes.RunMessage
   ( module Arkham.Types.Classes.RunMessage
   ) where
@@ -7,7 +6,6 @@ import Arkham.Prelude hiding (to)
 
 import Arkham.Types.Classes.HasQueue
 import Arkham.Types.Message
-import Control.Monad.State
 import GHC.Generics
 
 class RunMessage1 env f where
@@ -25,10 +23,8 @@ instance RunMessage env p => RunMessage1 env (K1 R p) where
 
 class RunMessage env a where
   runMessage :: (MonadIO m, MonadRandom m, MonadReader env m, HasQueue env) => Message -> a -> m a
-  default runMessage :: (Generic a, RunMessage1 env (Rep a), MonadIO m, MonadRandom m, MonadReader env m, HasQueue env) => Message -> a -> m a
-  runMessage = defaultRunMessage
 
-defaultRunMessage
+genericRunMessage
   :: ( Generic a
      , RunMessage1 env (Rep a)
      , MonadIO m
@@ -39,7 +35,4 @@ defaultRunMessage
   => Message
   -> a
   -> m a
-defaultRunMessage msg = fmap to . runMessage1 msg . from
-
-runMessageState :: Monad m => (s -> StateT s m a) -> s -> m s
-runMessageState f s = execStateT (f s) s
+genericRunMessage msg = fmap to . runMessage1 msg . from

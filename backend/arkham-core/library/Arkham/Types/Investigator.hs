@@ -101,7 +101,7 @@ instance InvestigatorRunner env => RunMessage env Investigator where
   runMessage msg i = do
     modifiers' <- getModifiersFor (toSource i) (toTarget i) ()
     let msg' = if any isBlank modifiers' then Blanked msg else msg
-    defaultRunMessage msg' i
+    genericRunMessage msg' i
 
 instance HasId InvestigatorId () Investigator where
   getId = pure . toId

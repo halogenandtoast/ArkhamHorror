@@ -61,7 +61,7 @@ instance
                 ()
       if IgnoreTokenEffects `elem` modifiers'
         then pure s
-        else defaultRunMessage msg s
+        else genericRunMessage msg s
     FailedSkillTest _ _ _ (TokenTarget token) _ _ -> do
       modifiers' <-
         map modifierType
@@ -71,7 +71,7 @@ instance
                 ()
       if IgnoreTokenEffects `elem` modifiers'
         then pure s
-        else defaultRunMessage msg s
+        else genericRunMessage msg s
     PassedSkillTest _ _ _ (TokenTarget token) _ _ -> do
       modifiers' <-
         map modifierType
@@ -81,8 +81,8 @@ instance
                 ()
       if IgnoreTokenEffects `elem` modifiers'
         then pure s
-        else defaultRunMessage msg s
-    _ -> defaultRunMessage msg s
+        else genericRunMessage msg s
+    _ -> genericRunMessage msg s
 
 instance
   ( HasCount DiscardCount env InvestigatorId

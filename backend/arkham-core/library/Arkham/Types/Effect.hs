@@ -111,7 +111,7 @@ data Effect
 instance HasId Difficulty env () => HasModifiersFor env Effect where
   getModifiersFor = genericGetModifiersFor
 
-deriving anyclass instance
+instance
   ( HasQueue env
   , HasSet ConnectedLocationId env LocationId
   , HasSet Trait env EnemyId
@@ -126,7 +126,8 @@ deriving anyclass instance
   , HasSet EnemyId env InvestigatorId
   , HasCount ActionRemainingCount env InvestigatorId
   )
-  => RunMessage env Effect
+  => RunMessage env Effect where
+  runMessage = genericRunMessage
 
 instance Entity Effect where
   type EntityId Effect = EffectId

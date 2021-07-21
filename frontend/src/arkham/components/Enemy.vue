@@ -42,6 +42,9 @@
       :ability="choices[ability]"
       @click="$emit('choose', ability)"
       />
+    <template v-if="debug">
+      <button @click="debugChoose({tag: 'DefeatEnemy', contents: [id, investigatorId, {tag: 'TestSource', contents:[]}]})">Defeat</button>
+    </template>
     <div class="pool">
       <PoolItem type="health" :amount="enemy.contents.damage" />
       <PoolItem v-if="enemy.contents.doom > 0" type="doom" :amount="enemy.contents.doom" />
@@ -50,7 +53,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
+import { defineComponent, computed, inject } from 'vue'
 import { Game } from '@/arkham/types/Game'
 import * as ArkhamGame from '@/arkham/types/Game'
 import { Message, MessageType } from '@/arkham/types/Message'
@@ -201,7 +204,10 @@ export default defineComponent({
 
     const isExhausted = computed(() => props.enemy.contents.exhausted)
 
-    return { abilities, choices, engageAction, fightAction, evadeAction, cardAction, image, isExhausted }
+    const debug = inject('debug')
+    const debugChoose = inject('debugChoose')
+
+    return { id, debug, debugChoose, abilities, choices, engageAction, fightAction, evadeAction, cardAction, image, isExhausted }
   }
 })
 </script>

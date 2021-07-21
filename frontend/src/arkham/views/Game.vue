@@ -23,6 +23,7 @@
       <div class="sidebar">
         <CardOverlay />
         <GameLog :game="game" :gameLog="gameLog" />
+        <button @click="toggleDebug">Toggle Debug</button>
       </div>
       <div v-if="game.gameOver">
         <p>Game over</p>
@@ -40,9 +41,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onUnmounted } from 'vue'
+import { defineComponent, ref, provide, onUnmounted } from 'vue'
 import * as Arkham from '@/arkham/types/Game'
-import { fetchGame, updateGame } from '@/arkham/api'
+import { fetchGame, updateGame, updateGameRaw } from '@/arkham/api'
 import GameLog from '@/arkham/components/GameLog.vue'
 import CardOverlay from '@/arkham/components/CardOverlay.vue';
 import Scenario from '@/arkham/components/Scenario.vue'
@@ -53,6 +54,8 @@ export default defineComponent({
   components: { Scenario, Campaign, GameLog, CardOverlay },
   props: { gameId: { type: String, required: true } },
   setup(props) {
+    const debug = ref(false)
+    provide('debug', debug)
     const ready = ref(false)
     const socketError = ref(false)
     const socket = ref<WebSocket | null>(null)
@@ -104,6 +107,10 @@ export default defineComponent({
       }
     }
 
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    const debugChoose = async (message: any) => updateGameRaw(props.gameId, message)
+    provide('debugChoose', debugChoose)
+
     async function update(state: Arkham.Game) {
       game.value = state;
     }
@@ -111,7 +118,9 @@ export default defineComponent({
     onBeforeRouteLeave(() => { if (socket.value) { socket.value.close() } })
     onUnmounted(() => { if (socket.value) { socket.value.close() }})
 
-    return { socketError, ready, game, investigatorId, choose, update, gameLog }
+    const toggleDebug = () => debug.value = !debug.value
+
+    return { debug, toggleDebug, socketError, ready, game, investigatorId, choose, update, gameLog }
   }
 })
 </script>

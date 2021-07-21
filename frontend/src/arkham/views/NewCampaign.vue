@@ -4,7 +4,10 @@
       No decks, please add one first here <router-link to="/decks">here</router-link>
     </div>
     <div v-else>
-      <h2>New Game</h2>
+      <header>
+        <router-link to="/" class="back-link">‹</router-link>
+        <h2>New Game</h2>
+      </header>
       <form id="new-campaign" @submit.prevent="start">
         <p>Number of Players</p>
         <div class="options">
@@ -345,6 +348,16 @@ input[type=radio] + label {
 
 input[type=radio]:checked + label {
   background: #6E8640;
+}
+
+header {
+  display: flex;
+}
+
+.back-link {
+  font-size: 2em;
+  color: #ff00ff;
+  text-decoration: none;
 }
 
 .options {

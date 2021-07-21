@@ -19,7 +19,8 @@ data Campaign
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 
-deriving anyclass instance CampaignRunner env => RunMessage env Campaign
+instance CampaignRunner env => RunMessage env Campaign where
+  runMessage = genericRunMessage
 
 instance HasRecord Campaign where
   hasRecord key = ask >>= runReaderT (hasRecord key) . campaignLog . toAttrs

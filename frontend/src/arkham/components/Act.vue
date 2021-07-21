@@ -22,12 +22,16 @@
       @click="$emit('choose', ability)"
       />
 
+    <template v-if="debug">
+      <button @click="debugChoose({tag: 'AdvanceAct', contents: [id, {tag: 'TestSource', contents:[]}]})">Advance</button>
+    </template>
+
     <button v-if="cardsUnder.length > 0" class="view-cards-under-button" @click="$emit('show', $event, cardsUnder, 'Cards Under Act', false)">{{viewUnderLabel}}</button>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref } from 'vue'
+import { defineComponent, computed, ref, inject } from 'vue'
 import { Game } from '@/arkham/types/Game'
 import { Card } from '@/arkham/types/Card'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
@@ -102,7 +106,10 @@ export default defineComponent({
         }, [])
     })
 
-    return { viewUnderLabel, toggleUnder, abilities, abilityLabel, interactAction, choices, image, id }
+    const debug = inject('debug')
+    const debugChoose = inject('debugChoose')
+
+    return { debug, debugChoose, viewUnderLabel, toggleUnder, abilities, abilityLabel, interactAction, choices, image, id }
   }
 })
 </script>

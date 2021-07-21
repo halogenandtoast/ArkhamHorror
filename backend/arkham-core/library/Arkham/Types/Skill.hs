@@ -46,7 +46,9 @@ instance HasCardDef Skill where
   toCardDef = toCardDef . toAttrs
 
 deriving anyclass instance ActionRunner env => HasActions env Skill
-deriving anyclass instance SkillRunner env => RunMessage env Skill
+
+instance SkillRunner env => RunMessage env Skill where
+  runMessage = genericRunMessage
 
 instance HasModifiersFor env Skill where
   getModifiersFor = genericGetModifiersFor

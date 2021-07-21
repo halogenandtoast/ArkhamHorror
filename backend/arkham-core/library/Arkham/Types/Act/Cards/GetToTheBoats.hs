@@ -49,7 +49,7 @@ instance
       leadInvestigatorId <- getLeadInvestigatorId
       a <$ pushAll
         [ InvestigatorDrewEncounterCard leadInvestigatorId gondola
-        , NextAct actId "82006"
+        , NextAct actId "82007"
         ]
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       maskedCarnevaleGoers <- getSetList @AssetId

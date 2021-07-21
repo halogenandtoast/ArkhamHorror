@@ -122,7 +122,8 @@ instance HasCardDef Treachery where
   toCardDef = toCardDef . toAttrs
 
 deriving anyclass instance ActionRunner env => HasActions env Treachery
-deriving anyclass instance
+
+instance
   ( HasSet AssetId env AssetMatcher
   , GetCardDef env LocationId
   , HasId (Maybe OwnerId) env AssetId
@@ -133,7 +134,8 @@ deriving anyclass instance
   , HasSet EnemyId env EnemyMatcher
   , TreacheryRunner env
   )
-  => RunMessage env Treachery
+  => RunMessage env Treachery where
+  runMessage = genericRunMessage
 
 instance
   ( HasCount PlayerCount env ()

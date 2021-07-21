@@ -476,4 +476,21 @@ instance
         <> [ GainXP iid xp | iid <- investigatorIds ]
         <> [EndOfGame]
         )
+    ChooseOneRewardByEachPlayer rewards@(_ : _) (currentInvestigatorId : rest)
+      -> do
+        s <$ push
+          (chooseOne
+            currentInvestigatorId
+            (Label
+                "Do not add a mask"
+                [ChooseOneRewardByEachPlayer rewards rest]
+            : [ CardLabel
+                  (toCardCode reward)
+                  [ AddCampaignCardToDeck currentInvestigatorId reward
+                  , ChooseOneRewardByEachPlayer (delete reward rewards) rest
+                  ]
+              | reward <- rewards
+              ]
+            )
+          )
     _ -> CarnevaleOfHorrors <$> runMessage msg attrs

@@ -351,6 +351,7 @@ data Message
     | InvestigatorWhenDefeated Source InvestigatorId
     | InvestigatorWhenEliminated Source InvestigatorId
     | Label Text [Message]
+    | CardLabel CardCode [Message]
     | LoadDeck InvestigatorId (Deck PlayerCard) -- used to reset the deck of the investigator
     | LookAtRevealed Source Target
     | LookAtTopOfDeck InvestigatorId Target Int

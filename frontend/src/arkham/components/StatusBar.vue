@@ -18,57 +18,68 @@
 
     <div v-if="skillTestResults" class="skill-test-results-break"></div>
 
-    <div class="choices" v-for="(choice, index) in choices" :key="index">
-      <div v-if="choice.tag === MessageType.AFTER_DISCOVER_CLUES">
-        <span>You got some clues</span> <button @click="$emit('choose', index)">Continue</button>
-      </div>
+    <div v-if="cardLabels.length > 0">
+      <template v-for="[choice, index] in cardLabels" :key="index">
+        <a href='#' @click="$emit('choose', index)">
+          <img class="card" :src="cardLabelImage(choice.contents[0])"/>
+        </a>
+      </template>
+    </div>
 
-      <div v-if="choice.tag === MessageType.CONTINUE">
-        <button @click="$emit('choose', index)">{{choice.contents}}</button>
-      </div>
 
-      <div
-        v-if="choice.tag === MessageType.RUN
-          && (choice.contents[0] && choice.contents[0].tag === MessageType.CONTINUE)"
-        >
-        <div v-if="choice.contents[1].tag === MessageType.FLAVOR_TEXT" class="intro-text">
-          <h1 v-if="choice.contents[1].contents[0]">{{choice.contents[1].contents[0]}}</h1>
-          <p
-            v-for="(paragraph, index) in choice.contents[1].contents[1]"
-            :key="index"
-          >{{paragraph}}</p>
+    <div class="choices">
+      <template v-for="(choice, index) in choices" :key="index">
+        <div v-if="choice.tag === MessageType.AFTER_DISCOVER_CLUES">
+          <span>You got some clues</span> <button @click="$emit('choose', index)">Continue</button>
         </div>
-        <button @click="$emit('choose', index)">{{choice.contents[0].contents}}</button>
-      </div>
 
-      <div v-if="choice.tag === MessageType.LABEL">
-        <button v-if="choice.contents[0] == 'Choose {skull}'" @click="$emit('choose', index)">
-          Choose <i class="iconSkull"></i>
-        </button>
-        <button v-else-if="choice.contents[0] == 'Choose {cultist}'" @click="$emit('choose', index)">
-          Choose <i class="iconCultist"></i>
-        </button>
-        <button v-else-if="choice.contents[0] == 'Choose {tablet}'" @click="$emit('choose', index)">
-          Choose <i class="iconTablet"></i>
-        </button>
-        <button v-else-if="choice.contents[0] == 'Choose {elderThing}'" @click="$emit('choose', index)">
-          Choose <i class="iconElderThing"></i>
-        </button>
-        <button v-else @click="$emit('choose', index)">{{choice.contents[0]}}</button>
-      </div>
+        <div v-if="choice.tag === MessageType.CONTINUE">
+          <button @click="$emit('choose', index)">{{choice.contents}}</button>
+        </div>
 
-      <a
-        v-if="skillTestMessageTypes.includes(choice.tag)"
-        class="button"
-        @click="$emit('choose', index)"
-      >
-        Use <i :class="`icon${choice.contents[4]}`"></i>
-      </a>
+        <div
+          v-if="choice.tag === MessageType.RUN
+            && (choice.contents[0] && choice.contents[0].tag === MessageType.CONTINUE)"
+          >
+          <div v-if="choice.contents[1].tag === MessageType.FLAVOR_TEXT" class="intro-text">
+            <h1 v-if="choice.contents[1].contents[0]">{{choice.contents[1].contents[0]}}</h1>
+            <p
+              v-for="(paragraph, index) in choice.contents[1].contents[1]"
+              :key="index"
+            >{{paragraph}}</p>
+          </div>
+          <button @click="$emit('choose', index)">{{choice.contents[0].contents}}</button>
+        </div>
 
-      <button
-        v-if="applyResultsAction !== -1"
-        @click="$emit('choose', applyResultsAction)"
-      >Apply Results</button>
+        <div v-if="choice.tag === MessageType.LABEL">
+          <button v-if="choice.contents[0] == 'Choose {skull}'" @click="$emit('choose', index)">
+            Choose <i class="iconSkull"></i>
+          </button>
+          <button v-else-if="choice.contents[0] == 'Choose {cultist}'" @click="$emit('choose', index)">
+            Choose <i class="iconCultist"></i>
+          </button>
+          <button v-else-if="choice.contents[0] == 'Choose {tablet}'" @click="$emit('choose', index)">
+            Choose <i class="iconTablet"></i>
+          </button>
+          <button v-else-if="choice.contents[0] == 'Choose {elderThing}'" @click="$emit('choose', index)">
+            Choose <i class="iconElderThing"></i>
+          </button>
+          <button v-else @click="$emit('choose', index)">{{choice.contents[0]}}</button>
+        </div>
+
+        <a
+          v-if="skillTestMessageTypes.includes(choice.tag)"
+          class="button"
+          @click="$emit('choose', index)"
+        >
+          Use <i :class="`icon${choice.contents[4]}`"></i>
+        </a>
+
+        <button
+          v-if="applyResultsAction !== -1"
+          @click="$emit('choose', applyResultsAction)"
+        >Apply Results</button>
+      </template>
     </div>
   </section>
 </template>
@@ -123,7 +134,17 @@ export default defineComponent({
 
     const skillTestResults = computed(() => props.game.skillTestResults)
 
-    return { skillTestResults, arkhamify, choices, skillTestMessageTypes, applyResultsAction, shouldShow, MessageType }
+    const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
+    const cardLabelImage = (cardCode: string) => {
+      return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
+    }
+
+    const cardLabels = computed(() =>
+      choices.value.
+        flatMap<[Message, number][]>((choice, index) =>
+          choice.tag === MessageType.CARD_LABEL ? [[choice, index]] : []))
+
+    return { cardLabels, cardLabelImage, skillTestResults, arkhamify, choices, skillTestMessageTypes, applyResultsAction, shouldShow, MessageType }
   }
 })
 </script>
@@ -287,7 +308,12 @@ button {
   color: #EEE;
   font: Arial, sans-serif;
   &:hover {
-    background-color: #4d2b61;
+    background-color: #311b3e;
   }
+}
+
+.card {
+  width: 100px;
+  margin: 2px;
 }
 </style>

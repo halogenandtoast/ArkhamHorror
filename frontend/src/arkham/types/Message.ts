@@ -72,6 +72,7 @@ export enum MessageType {
   FOUND_ENCOUNTER_CARD_FROM = 'FoundEncounterCardFrom',
   FOUND_ENEMY_IN_VOID = 'FoundEnemyInVoid',
   LABEL = 'Label',
+  CARD_LABEL = 'CardLabel',
   ADD_USES = 'AddUses',
 }
 
@@ -87,6 +88,7 @@ export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
     JsonDecoder.isExactly('Ask').then(() => JsonDecoder.constant(MessageType.ASK)),
     JsonDecoder.isExactly('Run').then(() => JsonDecoder.constant(MessageType.RUN)),
     JsonDecoder.isExactly('Label').then(() => JsonDecoder.constant(MessageType.LABEL)),
+    JsonDecoder.isExactly('CardLabel').then(() => JsonDecoder.constant(MessageType.CARD_LABEL)),
     JsonDecoder.isExactly('RemoveDoom').then(() => JsonDecoder.constant(MessageType.REMOVE_DOOM)),
     JsonDecoder.isExactly('RevealInHand').then(() => JsonDecoder.constant(MessageType.REVEAL_CARD)),
     JsonDecoder.isExactly('Flip').then(() => JsonDecoder.constant(MessageType.FLIP)),

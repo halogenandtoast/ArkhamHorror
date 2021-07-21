@@ -72,6 +72,79 @@ instance HasTokenValue env InvestigatorId => HasTokenValue env CarnevaleOfHorror
     ElderThing -> pure $ toTokenValue attrs ElderThing 4 6
     otherFace -> getTokenValue attrs iid otherFace
 
+masks :: [CardDef]
+masks =
+  [Assets.pantalone, Assets.medicoDellaPeste, Assets.bauta, Assets.gildedVolto]
+
+proceedToSacrificesMade
+  :: InvestigatorId -> [InvestigatorId] -> ScenarioAttrs -> [Message]
+proceedToSacrificesMade leadInvestigatorId investigatorIds s =
+  chooseOne
+      leadInvestigatorId
+      [ Run
+          [ Continue "Continue"
+          , FlavorText
+            Nothing
+            [ "Too many lives were lost during the eclipse to stop the machinations\
+                \ of Cindathqua's servants. The beast has been fed, its minions empowered.\
+                \ You find yourself hoping you don\'t live long enough to see the fallout\
+                \ of your failure."
+            ]
+          ]
+      ]
+    : [ SearchCollectionForRandom
+          iid
+          (toSource s)
+          (CardMatchByType
+            (PlayerTreacheryType, setFromList [Madness, Injury, Monster])
+          )
+      | iid <- investigatorIds
+      ]
+
+abbessSatisfied :: InvestigatorId -> [InvestigatorId] -> [Message]
+abbessSatisfied leadInvestigatorId investigatorIds =
+  chooseOne
+      leadInvestigatorId
+      [ Run
+          [ Continue "Continue"
+          , FlavorText
+            Nothing
+            [ "\"Grazie mille - thank you for all your help,\" Allegria says as you return\
+            \ to the basilica. \"Thanks to you, there were few casualties. I shudder to think\
+            \ what might have happened had you not arrived. Should you ever require assistance,\
+            \ please do not hesitate to ask."
+            ]
+          ]
+      ]
+    : [ addCampaignCardToDeckChoice
+          leadInvestigatorId
+          investigatorIds
+          Assets.abbessAllegriaDiBiase
+      ]
+
+additionalRewards :: ScenarioAttrs -> m [Message]
+additionalRewards s = do
+  leadInvestigatorId <- getLeadInvestigatorId
+  investigatorIds <- getInvestigatorIds
+  let
+    proceedToSacrificesMade =
+      if null (scenarioCardsUnderActDeck s)
+          && notNull (scenarioCardsUnderAgendaDeck s)
+        then sacrificesMade leadInvestigatorId investigatorIds s
+        else []
+    proceedToAbbessSatisfied =
+      if null scenarioCardsUnderAgendaDeck
+        && length scenarioCardsUnderAgendaDeck
+        == 3
+      then
+        abbessSatisfied leadInvestigatorId investigatorIds
+      else
+        []
+  pure
+    $ [ChooseOneRewardByEachPlayer masks investigatorId]
+    <> proceedToSacrificesMade
+    <> proceedToAbbessSatisfied
+
 instance
   ( HasSet ClosestAssetId env (InvestigatorId, CardDef)
   , HasId (Maybe LocationId) env LocationMatcher
@@ -309,4 +382,75 @@ instance
             Nothing -> pure ()
         _ -> pure ()
       pure s
+    ScenarioResolution NoResolution -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      xp <- getXp
+      s <$ pushAll
+        ([ chooseOne
+             leadInvestigatorId
+             [ Run
+                 [ Continue "Continue"
+                 , FlavorText
+                   Nothing
+                   [ "You sputter awake as an oar gently taps your shoulder. \"Tutto bene?\"\
+                     \ The gondolier holding the oar says with a concerned expression. You nod\
+                     \ and drag yourself onto the docks from his gondola, drenched and aching\
+                     \ all over. The city is devastated. Most of the boats in the canal are\
+                     \  wrecked, and the streets are covered not in confetti, but in blood..."
+                   ]
+                 , Record ManyWereSacrificedToCnidathquaDuringTheVarnivale
+                 ]
+             ]
+         ]
+        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [EndOfGame]
+        )
+    ScenarioResolution (Resolution 1) -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      xp <- getXp
+      s <$ pushAll
+        ([ chooseOne
+             leadInvestigatorId
+             [ Run
+                 [ Continue "Continue"
+                 , FlavorText
+                   Nothing
+                   [ "The city is still recovering from the events during the eclipse. With\
+                     \ nearly all evidence of the creature melted away by the hot sun, many\
+                     \ attribute the violence during the Carnevale to local crime lord Cascio\
+                     \ Di Boerio and his crew. Those that know the truth know better than the\
+                     \ speak of the elder creature that lives in Laguna Veneta. With any luck,\
+                     \ its name will never be spoken again."
+                   ]
+                 , Record TheSunBanishedCnidathquaIntoTheDepths
+                 ]
+             ]
+         ]
+        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [EndOfGame]
+        )
+    ScenarioResolution (Resolution 2) -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      xp <- getXp
+      s <$ pushAll
+        ([ chooseOne
+             leadInvestigatorId
+             [ Run
+                 [ Continue "Continue"
+                 , FlavorText
+                   Nothing
+                   [ "The creature recoils as globules of its jelly-like flesh rip and tear\
+                     \ from its body, splashing into the lagoon. It makes no sound as its torn\
+                     \ body sinks into the depths. The chanting in the city plunges into mournful\
+                     \ silence. As you return it to the canal-side streets, black feathers fall\
+                     \ from the sky where bright confetti once fluttered. You can only wonder how\
+                     \ long it will take for the creature to recover."
+                   ]
+                 , Record CnidathquaRetreatedToNurseItsWounds
+                 ]
+             ]
+         ]
+        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [EndOfGame]
+        )
     _ -> CarnevaleOfHorrors <$> runMessage msg attrs

@@ -25,11 +25,20 @@
       :src="`${baseUrl}/img/arkham/ct_blank.png`"
       @click="$emit('choose', tokenAction)"
     />
+    <template v-if="debug && tokenAction !== -1">
+      <button @click="debugChoose({tag: 'ForceTokenDraw', contents: 'Skull'})">Draw Skull</button>
+      <button @click="debugChoose({tag: 'ForceTokenDraw', contents: 'Cultist'})">Draw Cultist</button>
+      <button @click="debugChoose({tag: 'ForceTokenDraw', contents: 'Tablet'})">Draw Tablet</button>
+      <button @click="debugChoose({tag: 'ForceTokenDraw', contents: 'ElderThing'})">Draw Elder Thing</button>
+      <button @click="debugChoose({tag: 'ForceTokenDraw', contents: 'ElderSign'})">Draw Elder Sign</button>
+      <button @click="debugChoose({tag: 'ForceTokenDraw', contents: 'AutoFail'})">Draw Auto Fail</button>
+      <button @click="debugChoose({tag: 'ForceTokenDraw', contents: 'Zero'})">Draw Zero</button>
+    </template>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
+import { defineComponent, computed, inject } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { SkillTest } from '@/arkham/types/SkillTest';
@@ -120,7 +129,10 @@ export default defineComponent({
 
     const isIgnored = (token: ChaosToken) => token.modifiers?.some(modifier => modifier.type.tag == 'IgnoreTokenEffects') || false
 
-    return { baseUrl, isIgnored, revealedTokens, tokenAction, revealedTokenAction, investigatorPortrait, imageFor }
+    const debug = inject('debug')
+    const debugChoose = inject('debugChoose')
+
+    return { debug, debugChoose, baseUrl, isIgnored, revealedTokens, tokenAction, revealedTokenAction, investigatorPortrait, imageFor }
   }
 })
 </script>

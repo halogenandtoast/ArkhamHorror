@@ -467,6 +467,7 @@ data Message
     | SetActions InvestigatorId Source Int
     | SetEncounterDeck (Deck EncounterCard)
     | SetLocationLabel LocationId Text
+    | ForceTokenDraw TokenFace
     | SetTokens [TokenFace]
     | SetTokensForScenario
     | Setup

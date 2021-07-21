@@ -97,9 +97,30 @@ resolveFirstUnresolved source miid strategy = \case
   Decided step -> case step of
     Draw -> do
       bagTokens <- gets chaosBagTokens
-      (drawn, remaining) <- splitAt 1 <$> shuffleM bagTokens
-      modify' ((tokensL .~ remaining) . (setAsideTokensL %~ (drawn <>)))
-      pure (Resolved drawn, [])
+      forceDraw <- gets chaosBagForceDraw
+      case forceDraw of
+        Just face -> do
+          case find ((== face) . tokenFace) bagTokens of
+            Nothing -> do
+              (drawn, remaining) <- splitAt 1 <$> shuffleM bagTokens
+              modify'
+                ((forceDrawL .~ Nothing)
+                . (tokensL .~ remaining)
+                . (setAsideTokensL %~ (drawn <>))
+                )
+              pure (Resolved drawn, [])
+            Just drawn -> do
+              let remaining = delete drawn bagTokens
+              modify'
+                ((forceDrawL .~ Nothing)
+                . (tokensL .~ remaining)
+                . (setAsideTokensL %~ ([drawn] <>))
+                )
+              pure (Resolved [drawn], [])
+        Nothing -> do
+          (drawn, remaining) <- splitAt 1 <$> shuffleM bagTokens
+          modify' ((tokensL .~ remaining) . (setAsideTokensL %~ (drawn <>)))
+          pure (Resolved drawn, [])
     Choose n steps tokens' -> if length tokens' == n
       then pure (Resolved $ concat tokens', [])
       else if all isResolved steps
@@ -198,6 +219,7 @@ data ChaosBag = ChaosBag
   , chaosBagSetAsideTokens :: [Token]
   , chaosBagRevealedTokens :: [Token]
   , chaosBagChoice :: Maybe ChaosBagStepState
+  , chaosBagForceDraw :: Maybe TokenFace
   }
   deriving stock (Show, Eq, Generic)
 
@@ -214,10 +236,14 @@ emptyChaosBag = ChaosBag
   , chaosBagSetAsideTokens = []
   , chaosBagRevealedTokens = []
   , chaosBagChoice = Nothing
+  , chaosBagForceDraw = Nothing
   }
 
 tokensL :: Lens' ChaosBag [Token]
 tokensL = lens chaosBagTokens $ \m x -> m { chaosBagTokens = x }
+
+forceDrawL :: Lens' ChaosBag (Maybe TokenFace)
+forceDrawL = lens chaosBagForceDraw $ \m x -> m { chaosBagForceDraw = x }
 
 setAsideTokensL :: Lens' ChaosBag [Token]
 setAsideTokensL =
@@ -238,6 +264,7 @@ createToken face = Token <$> getRandom <*> pure face
 
 instance (HasQueue env, HasId LeadInvestigatorId env ()) => RunMessage env ChaosBag where
   runMessage msg c@ChaosBag {..} = case msg of
+    ForceTokenDraw face -> pure $ c & forceDrawL ?~ face
     SetTokens tokens' -> do
       tokens'' <- traverse createToken tokens'
       pure $ c & tokensL .~ tokens'' & setAsideTokensL .~ mempty

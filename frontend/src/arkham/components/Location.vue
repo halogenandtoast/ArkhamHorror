@@ -57,6 +57,9 @@
         <div v-if="location.contents.cardsUnderneath.length > 0" class="pool">
           <PoolItem type="card" :amount="location.contents.cardsUnderneath.length" />
         </div>
+        <div v-if="location.contents.resources > 0" class="pool">
+          <PoolItem type="resource" :amount="location.contents.resources" />
+        </div>
       </div>
     </div>
     <div class="location-asset-column">

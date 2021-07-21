@@ -88,7 +88,7 @@
       <line id="line" class="line original" stroke-dasharray="5, 5"/>
     </svg>
 
-    <div class="location-cards" :style="locationStyles">
+    <div ref="locationMap" class="location-cards" :style="locationStyles">
       <Location
         v-for="(location, key) in game.locations"
         class="location"
@@ -121,6 +121,7 @@
 </template>
 
 <script lang="ts">
+import throttle from 'lodash/throttle'
 import { defineComponent, computed, onMounted, onUnmounted, onUpdated, nextTick, ref } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import { CardContents } from '@/arkham/types/Card';
@@ -206,16 +207,21 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
+    const locationMap = ref<Element | null>(null)
 
-    const resizeHandler = () => handleConnections(props.game)
+    const drawHandler = throttle(() => handleConnections(props.game), 10)
 
     onMounted(async () => {
-      window.addEventListener("resize", resizeHandler)
+      window.addEventListener("resize", drawHandler)
       await nextTick()
+      locationMap.value?.addEventListener("scroll", drawHandler)
       handleConnections(props.game)
     })
 
-    onUnmounted(() => window.removeEventListener("resize", resizeHandler))
+    onUnmounted(() => {
+      window.removeEventListener("resize", drawHandler)
+      locationMap.value?.removeEventListener("scroll", drawHandler)
+    })
 
     onUpdated(async () => {
       await nextTick()
@@ -329,6 +335,7 @@ export default defineComponent({
     })
 
     return {
+      locationMap,
       update,
       activePlayerId,
       topOfEncounterDiscard,

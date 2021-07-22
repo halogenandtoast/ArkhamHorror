@@ -10,7 +10,7 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
-import Arkham.Types.Card.PlayerCard
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.LocationMatcher
@@ -44,7 +44,7 @@ instance ActRunner env => RunMessage env FindingAWayInside where
       | aid == actId && onSide B attrs && isSource attrs source -> do
         leadInvestigatorId <- getLeadInvestigatorId
         investigatorIds <- getInvestigatorIds
-        adamLynch <- PlayerCard <$> genPlayerCard Assets.adamLynch
+        adamLynch <- EncounterCard <$> genEncounterCard Assets.adamLynch
         museumHallsId <- fromJustNote "missing museum halls"
           <$> getId (LocationWithTitle "Museum Halls")
         a <$ pushAll

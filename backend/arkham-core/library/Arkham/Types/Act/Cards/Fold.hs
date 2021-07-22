@@ -59,16 +59,6 @@ instance ActRunner env => RunMessage env Fold where
       a <$ when
         (null investigatorIds)
         (push $ AdvanceAct actId (toSource attrs))
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      investigatorIds <- getInvestigatorIds
-      requiredClueCount <- getPlayerCountValue (PerPlayer 2)
-      pushAll
-        (SpendClues requiredClueCount investigatorIds
-        : [ chooseOne iid [AdvanceAct aid (toSource attrs)]
-          | iid <- investigatorIds
-          ]
-        )
-      pure $ Fold $ attrs & sequenceL .~ Act 3 B
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       maid <- fmap unStoryAssetId <$> getId (CardCode "02079")
       a <$ case maid of

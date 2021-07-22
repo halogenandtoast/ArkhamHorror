@@ -2120,6 +2120,7 @@ runGameMessage msg g = case msg of
       $ g
       & (locationsL .~ mempty)
       & (enemiesL .~ mempty)
+      & (enemiesInVoidL .~ mempty)
       & (assetsL .~ mempty)
       & (encounterDeckL .~ mempty)
       & (discardL .~ mempty)

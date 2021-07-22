@@ -511,6 +511,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
     Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
     Discard (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
     Discard (EnemyTarget eid) -> pure $ a & enemiesL %~ deleteSet eid
+    PlaceEnemyInVoid eid -> pure $ a & enemiesL %~ deleteSet eid
     RemoveFromGame (AssetTarget aid) -> pure $ a & assetsL %~ deleteSet aid
     RemoveFromGame (TreacheryTarget tid) ->
       pure $ a & treacheriesL %~ deleteSet tid

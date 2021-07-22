@@ -2609,6 +2609,7 @@ runGameMessage msg g = case msg of
     ]
   RemoveFromGame (AssetTarget aid) -> pure $ g & assetsL %~ deleteMap aid
   PlaceEnemyInVoid eid -> do
+    withQueue_ $ filter (/= Discard (EnemyTarget eid))
     enemy <- getEnemy eid
     pure $ g & enemiesL %~ deleteMap eid & enemiesInVoidL %~ insertMap eid enemy
   EnemySpawnFromVoid miid lid eid -> do

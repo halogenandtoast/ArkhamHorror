@@ -39,6 +39,9 @@
         :ability="choices[ability]"
         @click="$emit('choose', ability)"
         />
+      <template v-if="debug">
+        <button v-if="!location.contents.revealed" @click="debugChoose({tag: 'RevealLocation', contents: [null, id]})">Reveal</button>
+      </template>
       <Treachery
         v-for="treacheryId in location.contents.treacheries"
         :key="treacheryId"
@@ -84,7 +87,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
+import { defineComponent, computed, inject } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { Message, MessageType } from '@/arkham/types/Message';
@@ -294,7 +297,12 @@ export default defineComponent({
 
     const portrait = (cardCode: string) => `${baseUrl}/img/arkham/portraits/${cardCode}.jpg`
 
+    const debug = inject('debug')
+    const debugChoose = inject('debugChoose')
+
     return {
+      debug,
+      debugChoose,
       id,
       portrait,
       doInvestigate,

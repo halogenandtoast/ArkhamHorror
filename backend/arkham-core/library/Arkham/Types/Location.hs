@@ -258,8 +258,11 @@ baseLocation a b c d e f attrsF defF = BaseLocation' $ cbCardBuilder
 
 instance HasVictoryPoints Location where
   getVictoryPoints l =
-    let LocationAttrs { locationClues } = toAttrs l
-    in if locationClues == 0 then cdVictoryPoints (toCardDef l) else Nothing
+    let LocationAttrs { locationClues, locationRevealed } = toAttrs l
+    in
+      if locationClues == 0 && locationRevealed
+        then cdVictoryPoints (toCardDef l)
+        else Nothing
 
 instance HasCount ResourceCount env Location where
   getCount = pure . ResourceCount . locationResources . toAttrs

@@ -33,6 +33,7 @@
         @choose="$emit('choose', healthAction)"
       />
       <template v-if="debug">
+        <button @click="debugChoose({tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 1, 0]})">+</button>
         <button @click="debugChoose({tag: 'HealDamage', contents: [{tag: 'InvestigatorTarget', contents: id}, 1]})">-</button>
       </template>
       <PoolItem
@@ -42,6 +43,7 @@
         @choose="$emit('choose', sanityAction)"
       />
       <template v-if="debug">
+        <button @click="debugChoose({tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 0, 1]})">+</button>
         <button @click="debugChoose({tag: 'HealHorror', contents: [{tag: 'InvestigatorTarget', contents: id}, 1]})">-</button>
       </template>
       <span><i class="action" v-for="n in player.contents.remainingActions" :key="n"></i></span>

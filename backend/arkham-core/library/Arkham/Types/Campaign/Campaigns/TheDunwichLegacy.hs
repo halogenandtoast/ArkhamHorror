@@ -451,11 +451,11 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
             Just (ScenarioStep "02041") ->
               if ScenarioStep "02062" `elem` campaignCompletedSteps
                 then Just $ InterludeStep 1
-                else Just $ ScenarioStep "02062"
+                else Just (UpgradeDeckStep $ ScenarioStep "02062")
             Just (ScenarioStep "02062") ->
               if ScenarioStep "02041" `elem` campaignCompletedSteps
                 then Just $ InterludeStep 1
-                else Just $ ScenarioStep "02041"
+                else Just (UpgradeDeckStep $ ScenarioStep "02041")
             Just (InterludeStep 1) -> Just (ScenarioStep "02118")
             Just (ScenarioStep "02118") -> Just (ScenarioStep "02159")
             Just (ScenarioStep "02159") -> Just (ScenarioStep "02195")

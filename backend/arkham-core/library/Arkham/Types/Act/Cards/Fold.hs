@@ -60,15 +60,10 @@ instance ActRunner env => RunMessage env Fold where
         (null investigatorIds)
         (push $ AdvanceAct actId (toSource attrs))
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
-      maid <- fmap unStoryAssetId <$> getId (CardCode "02079")
-      a <$ case maid of
-        Nothing -> push (ScenarioResolution $ Resolution 1)
-        Just assetId -> do
-          miid <- fmap unOwnerId <$> getId assetId
-          push
-            (ScenarioResolution
-            $ maybe (Resolution 1) (const (Resolution 2)) miid
-            )
+      resignedCardCodes <- map unResignedCardCode <$> getList ()
+      a <$ if "02079" `elem` resignedCardCodes
+        then push (ScenarioResolution $ Resolution 3)
+        else push (ScenarioResolution $ Resolution 1)
     UseCardAbility iid (ProxySource _ source) _ 1 _
       | isSource attrs source && actSequence == Act 3 A -> do
         maid <- fmap unStoryAssetId <$> getId (CardCode "02079")

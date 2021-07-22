@@ -2626,11 +2626,12 @@ runGameMessage msg g = case msg of
     broadcastWindow Fast.WhenEnemyDefeated iid g
     afterMsgs <- checkWindows iid (\who -> pure [AfterEnemyDefeated who eid])
     enemy <- getEnemy eid
-    let card = toCard enemy
     if isJust (getEnemyVictory enemy)
-      then do
-        pushAll $ [After msg] <> afterMsgs <> [RemoveEnemy eid]
-        pure $ g & (victoryDisplayL %~ (card :))
+      then g <$ pushAll
+        ([When msg, After msg]
+        <> afterMsgs
+        <> [AddToVictory (EnemyTarget eid), RemoveEnemy eid]
+        )
       else
         g <$ pushAll
           ([When msg, After msg] <> afterMsgs <> [Discard (EnemyTarget eid)])
@@ -2659,6 +2660,7 @@ runGameMessage msg g = case msg of
     let
       cardId = unEnemyId eid
       card = lookupCard (toCardCode enemy) cardId
+    push $ After msg
     case card of
       PlayerCard _ -> error "can not be player card yet?"
       EncounterCard ec ->
@@ -2668,6 +2670,7 @@ runGameMessage msg g = case msg of
           & (victoryDisplayL %~ (EncounterCard ec :))
   AddToVictory (EventTarget eid) -> do
     event <- getEvent eid
+    push $ After msg
     let
       cardId = unEventId eid
       playerCard = case lookup (toCardCode event) allPlayerCards of

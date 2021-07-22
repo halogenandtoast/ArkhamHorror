@@ -25,12 +25,15 @@
         type="doom"
         :amount="agenda.contents.doom"
       />
+      <template v-if="debug">
+        <button @click="debugChoose({tag: 'PlaceDoom', contents: [{'tag': 'AgendaTarget', 'contents': id}, 1]})">+</button>
+      </template>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
+import { defineComponent, computed, inject } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { Message, MessageType } from '@/arkham/types/Message';
@@ -89,7 +92,10 @@ export default defineComponent({
         }, [])
     })
 
-    return { abilities, choices, interactAction, image, id }
+    const debug = inject('debug')
+    const debugChoose = inject('debugChoose')
+
+    return { debug, debugChoose, abilities, choices, interactAction, image, id }
   }
 })
 </script>

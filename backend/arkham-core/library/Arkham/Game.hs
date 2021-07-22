@@ -214,13 +214,13 @@ replayChoices = do
   writeIORef currentQueueRef newQueue
   writeIORef gameRef (replayedGame & choicesL .~ choices)
 
-  runMessages
+  runMessages True
 
   for_ (reverse choices) $ \case
     DebugMessage msg -> do
       gameState <- readIORef gameRef
       writeIORef genRef (mkStdGen (gameSeed gameState))
-      push msg >> runMessages
+      push msg >> runMessages True
     AskChoice iid idx -> do
       gameState <- readIORef gameRef
       writeIORef genRef (mkStdGen (gameSeed gameState))
@@ -253,7 +253,7 @@ replayChoices = do
                 rest -> [m', Ask iid $ ChooseSome rest]
               (Nothing, msgs'') -> [Ask iid $ ChooseSome msgs'']
           _ -> []
-      pushAll messages >> runMessages
+      pushAll messages >> runMessages True
  where
   extract n xs =
     let a = xs !!? n in (a, [ x | (i, x) <- zip [0 ..] xs, i /= n ])
@@ -266,16 +266,20 @@ runMessages
      , MonadReader env m
      , HasMessageLogger env
      )
-  => m ()
-runMessages = do
+  => Bool
+  -> m ()
+runMessages isReplay = do
   logger <- view messageLoggerL
   gameRef <- view gameRefL
   queueRef <- view messageQueue
   g <- liftIO $ readIORef gameRef
 
-  liftIO $ whenM
-    (isJust <$> lookupEnv "DEBUG")
-    (readIORef queueRef >>= pPrint >> putStrLn "\n")
+  unless
+    isReplay
+    (liftIO $ whenM
+      (isJust <$> lookupEnv "DEBUG")
+      (readIORef queueRef >>= pPrint >> putStrLn "\n")
+    )
 
   if g ^. gameStateL /= IsActive
     then toGameEnv >>= flip
@@ -307,14 +311,14 @@ runMessages = do
                 case playingInvestigators of
                   [] -> do
                     pushEnd EndInvestigation
-                    runMessages
+                    runMessages isReplay
                   (x : _) -> do
                     atomicWriteIORef gameRef (g & activeInvestigatorIdL .~ x)
                     pushAll [BeginTurn x, After (BeginTurn x)]
-                    runMessages
+                    runMessages isReplay
               else
                 pushAllEnd [PlayerWindow (g ^. activeInvestigatorIdL) [] False]
-                  >> runMessages
+                  >> runMessages isReplay
         Just msg -> do
           case msg of
             Ask iid q -> do
@@ -339,4 +343,4 @@ runMessages = do
                 )
               atomicWriteIORef gameRef g'
               liftIO $ logger msg
-              runMessages
+              runMessages isReplay

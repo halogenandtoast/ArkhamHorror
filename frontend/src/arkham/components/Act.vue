@@ -27,6 +27,14 @@
     </template>
 
     <button v-if="cardsUnder.length > 0" class="view-cards-under-button" @click="$emit('show', $event, cardsUnder, 'Cards Under Act', false)">{{viewUnderLabel}}</button>
+
+    <div class="pool">
+      <PoolItem
+        v-if="act.contents.clues && act.contents.clues > 0"
+        type="clue"
+        :amount="act.contents.clues"
+      />
+    </div>
   </div>
 </template>
 
@@ -35,13 +43,14 @@ import { defineComponent, computed, ref, inject } from 'vue'
 import { Game } from '@/arkham/types/Game'
 import { Card } from '@/arkham/types/Card'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
+import PoolItem from '@/arkham/components/PoolItem.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import * as ArkhamGame from '@/arkham/types/Game'
 import { Message, MessageType } from '@/arkham/types/Message'
 import * as Arkham from '@/arkham/types/Act'
 
 export default defineComponent({
-  components: { Treachery, AbilityButton },
+  components: { Treachery, AbilityButton, PoolItem },
   props: {
     act: { type: Object as () => Arkham.Act, required: true },
     game: { type: Object as () => Game, required: true },

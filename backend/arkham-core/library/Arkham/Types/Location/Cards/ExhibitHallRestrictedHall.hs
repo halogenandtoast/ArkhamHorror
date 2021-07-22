@@ -20,11 +20,13 @@ newtype ExhibitHallRestrictedHall = ExhibitHallRestrictedHall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallRestrictedHall :: LocationCard ExhibitHallRestrictedHall
-exhibitHallRestrictedHall = location
+exhibitHallRestrictedHall = locationWithRevealedSideConnections
   ExhibitHallRestrictedHall
   Cards.exhibitHallRestrictedHall
   3
   (PerPlayer 2)
+  NoSymbol
+  [Square]
   Equals
   [Square]
 

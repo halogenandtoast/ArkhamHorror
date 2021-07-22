@@ -18,16 +18,15 @@ newtype ArkhamWoodsLakeside = ArkhamWoodsLakeside LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsLakeside :: LocationCard ArkhamWoodsLakeside
-arkhamWoodsLakeside = locationWith
+arkhamWoodsLakeside = locationWithRevealedSideConnections
   ArkhamWoodsLakeside
   Cards.arkhamWoodsLakeside
   2
   (PerPlayer 1)
   Square
   [Squiggle]
-  ((revealedConnectedSymbolsL .~ setFromList [Squiggle, Heart])
-  . (revealedSymbolL .~ Star)
-  )
+  Star
+  [Squiggle, Heart]
 
 instance HasModifiersFor env ArkhamWoodsLakeside
 

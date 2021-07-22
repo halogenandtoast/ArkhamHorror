@@ -216,6 +216,28 @@ location
 location f def shroud' revealClues symbol' connectedSymbols' =
   locationWith f def shroud' revealClues symbol' connectedSymbols' id
 
+locationWithRevealedSideConnections
+  :: (LocationAttrs -> a)
+  -> CardDef
+  -> Int
+  -> GameValue Int
+  -> LocationSymbol
+  -> [LocationSymbol]
+  -> LocationSymbol
+  -> [LocationSymbol]
+  -> CardBuilder LocationId a
+locationWithRevealedSideConnections f def shroud' revealClues symbol' connectedSymbols' revealedSymbol' revealedConnectedSymbols'
+  = locationWith
+    f
+    def
+    shroud'
+    revealClues
+    symbol'
+    connectedSymbols'
+    ((revealedConnectedSymbolsL .~ setFromList revealedConnectedSymbols')
+    . (revealedSymbolL .~ revealedSymbol')
+    )
+
 locationWith
   :: (LocationAttrs -> a)
   -> CardDef

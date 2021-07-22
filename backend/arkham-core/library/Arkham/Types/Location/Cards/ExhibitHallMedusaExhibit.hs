@@ -18,11 +18,13 @@ newtype ExhibitHallMedusaExhibit = ExhibitHallMedusaExhibit LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallMedusaExhibit :: LocationCard ExhibitHallMedusaExhibit
-exhibitHallMedusaExhibit = location
+exhibitHallMedusaExhibit = locationWithRevealedSideConnections
   ExhibitHallMedusaExhibit
   Cards.exhibitHallMedusaExhibit
   2
   (PerPlayer 1)
+  NoSymbol
+  [Square]
   T
   [Square, Moon]
 

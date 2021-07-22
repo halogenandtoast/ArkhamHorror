@@ -857,7 +857,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (discardL %~ (card :))
       & (slotsL %~ removeFromSlots aid)
   Discarded (AssetTarget aid) (EncounterCard _)
-    | aid `elem` investigatorAssets -> error "Not handled"
+    | aid `elem` investigatorAssets
+    -> pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   Exiled (AssetTarget aid) _ | aid `elem` investigatorAssets ->
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   RemoveFromGame (AssetTarget aid) -> pure $ a & assetsL %~ deleteSet aid

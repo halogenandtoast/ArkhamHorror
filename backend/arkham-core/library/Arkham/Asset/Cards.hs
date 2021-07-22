@@ -720,6 +720,7 @@ jazzMulligan = (storyAsset
                )
   { cdCardTraits = setFromList [Ally, Miskatonic]
   , cdUnique = True
+  , cdCardType = EncounterAssetType
   }
 
 professorWarrenRice :: CardDef

@@ -10,6 +10,7 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
@@ -50,7 +51,7 @@ instance ActRunner env => RunMessage env SkinGame where
       completedExtracurricularActivity <-
         elem "02041" . map unCompletedScenarioId <$> getSetList ()
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
-      peterClover <- PlayerCard <$> genPlayerCard Assets.peterClover
+      peterClover <- EncounterCard <$> genEncounterCard Assets.peterClover
       drFrancisMorgan <- PlayerCard <$> genPlayerCard Assets.drFrancisMorgan
       cloverClubBarId <- getJustLocationIdByName "Clover Club Bar"
       vipAreaId <- getJustLocationIdByName "VIP Area"
@@ -61,7 +62,7 @@ instance ActRunner env => RunMessage env SkinGame where
             leadInvestigatorId
             (toTarget attrs)
             (CardMatchByType (EnemyType, singleton Abomination))
-          , NextAct actId "02068"
+          , NextAct actId "02069"
           ]
         else
           pushAll

@@ -2960,8 +2960,10 @@ runGameMessage msg g = case msg of
     pure $ g & activeCardL .~ Nothing & enemiesInVoidL %~ deleteMap eid
   DiscardTopOfEncounterDeck iid n mtarget ->
     g <$ push (DiscardTopOfEncounterDeckWithDiscardedCards iid n mtarget [])
-  DiscardTopOfEncounterDeckWithDiscardedCards iid 0 (Just target) cards ->
-    g <$ push (DiscardedTopOfEncounterDeck iid cards target)
+  DiscardTopOfEncounterDeckWithDiscardedCards iid 0 mtarget cards ->
+    g <$ case mtarget of
+      Nothing -> pure ()
+      Just target -> push (DiscardedTopOfEncounterDeck iid cards target)
   DiscardTopOfEncounterDeckWithDiscardedCards iid n mtarget discardedCards ->
     do
       let (card : cards) = unDeck $ g ^. encounterDeckL
@@ -3186,7 +3188,12 @@ runGameMessage msg g = case msg of
         , Revelation iid (LocationSource locationId)
         ]
       pure $ g & (locationsL . at locationId ?~ location)
-    _ -> error "Unhandled card type"
+    _ ->
+      error
+        $ "Unhandled card type: "
+        <> show (toCardType card)
+        <> ": "
+        <> show card
   DrewTreachery iid (EncounterCard card) -> do
     let
       treachery = createTreachery card iid

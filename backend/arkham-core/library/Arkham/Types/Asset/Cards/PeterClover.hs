@@ -33,7 +33,7 @@ instance
   , HasId LocationId env InvestigatorId
   )
   => HasActions env PeterClover where
-  getActions iid FastPlayerWindow (PeterClover attrs) = do
+  getActions iid FastPlayerWindow (PeterClover attrs) | ownedBy attrs iid = do
     lid <- getId @LocationId iid
     criminals <- getSet @EnemyId ([Criminal], lid)
     pure [ UseAbility iid (ability attrs) | notNull criminals ]

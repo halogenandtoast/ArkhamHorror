@@ -849,6 +849,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       %~ removeFromSlots aid
   Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
   Discard (EnemyTarget eid) -> pure $ a & engagedEnemiesL %~ deleteSet eid
+  PlaceEnemyInVoid eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
   Discarded (AssetTarget aid) (PlayerCard card)
     | aid `elem` investigatorAssets
     -> pure

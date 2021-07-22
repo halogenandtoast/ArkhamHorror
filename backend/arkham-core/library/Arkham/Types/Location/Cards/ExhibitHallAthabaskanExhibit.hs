@@ -21,11 +21,13 @@ newtype ExhibitHallAthabaskanExhibit = ExhibitHallAthabaskanExhibit LocationAttr
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallAthabaskanExhibit :: LocationCard ExhibitHallAthabaskanExhibit
-exhibitHallAthabaskanExhibit = location
+exhibitHallAthabaskanExhibit = locationWithRevealedSideConnections
   ExhibitHallAthabaskanExhibit
   Cards.exhibitHallAthabaskanExhibit
   1
   (Static 0)
+  NoSymbol
+  [Square]
   Plus
   [Square]
 

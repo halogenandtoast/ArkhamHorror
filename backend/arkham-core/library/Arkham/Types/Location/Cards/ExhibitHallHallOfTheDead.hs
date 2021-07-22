@@ -18,11 +18,13 @@ newtype ExhibitHallHallOfTheDead = ExhibitHallHallOfTheDead LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallHallOfTheDead :: LocationCard ExhibitHallHallOfTheDead
-exhibitHallHallOfTheDead = location
+exhibitHallHallOfTheDead = locationWithRevealedSideConnections
   ExhibitHallHallOfTheDead
   Cards.exhibitHallHallOfTheDead
   3
   (PerPlayer 2)
+  NoSymbol
+  [Square]
   Squiggle
   [Square, Hourglass]
 

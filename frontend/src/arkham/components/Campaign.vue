@@ -67,7 +67,7 @@ export default defineComponent({
       emit('update', game);
     }
 
-    const upgradeDeck = computed(() => props.game.campaign && props.game.campaign.contents.step.tag === 'UpgradeDeckStep')
+    const upgradeDeck = computed(() => props.game.campaign && props.game.campaign.contents.step?.tag === 'UpgradeDeckStep')
 
     return { inviteLink, update, upgradeDeck }
   }

@@ -134,7 +134,9 @@ postApiV1ArkhamGamesR = do
       (queueRef, game) <- liftIO
         $ newCampaign cid newGameSeed playerCount investigators difficulty
       gameRef <- newIORef game
-      runGameApp (GameApp gameRef queueRef genRef $ pure . const ()) runMessages
+      runGameApp
+        (GameApp gameRef queueRef genRef $ pure . const ())
+        (runMessages False)
       ge <- readIORef gameRef
       updatedQueue <- readIORef queueRef
       key <- runDB $ do
@@ -151,7 +153,7 @@ postApiV1ArkhamGamesR = do
         gameRef <- newIORef game
         runGameApp
           (GameApp gameRef queueRef genRef $ pure . const ())
-          runMessages
+          (runMessages False)
         ge <- readIORef gameRef
         updatedQueue <- readIORef queueRef
         key <- runDB $ do
@@ -220,7 +222,7 @@ putApiV1ArkhamGameR gameId = do
   writeChannel <- getChannel gameId
   runGameApp
     (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel))
-    runMessages
+    (runMessages False)
   ge <- readIORef gameRef
   updatedQueue <- readIORef queueRef
   updatedLog <- (arkhamGameLog <>) <$> readIORef logRef
@@ -259,7 +261,7 @@ putApiV1ArkhamGameRawR gameId = do
   writeChannel <- getChannel gameId
   runGameApp
     (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel))
-    runMessages
+    (runMessages False)
   ge <- readIORef gameRef
   updatedQueue <- readIORef queueRef
   updatedLog <- (arkhamGameLog <>) <$> readIORef logRef

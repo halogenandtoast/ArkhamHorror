@@ -13,6 +13,7 @@ export interface ActSequence {
 export interface ActContents {
   id: string;
   name: string;
+  clues: number | null;
   sequence: ActSequence;
   treacheries: string[];
 }
@@ -24,6 +25,7 @@ export const actSequenceDecoder = JsonDecoder.
 export const actContentsDecoder = JsonDecoder.object<ActContents>({
   id: JsonDecoder.string,
   name: JsonDecoder.string,
+  clues: JsonDecoder.nullable(JsonDecoder.number),
   sequence: actSequenceDecoder,
   treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
 }, 'ActContents');

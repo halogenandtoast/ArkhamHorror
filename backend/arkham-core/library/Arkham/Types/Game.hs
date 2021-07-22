@@ -2644,6 +2644,7 @@ runGameMessage msg g = case msg of
         push (AddToDiscard iid pc)
         pure $ g & focusedCardsL %~ filter (/= card)
       _ -> error "should not be an option for other cards"
+  Discard (ActTarget _) -> pure $ g & actsL .~ mempty
   Discard (EnemyTarget eid) -> do
     enemy <- getEnemy eid
     let card = toCard enemy

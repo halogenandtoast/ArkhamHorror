@@ -932,6 +932,7 @@ keyToTheChamber :: CardDef
 keyToTheChamber = (storyAsset "02215" "Key to the Chamber" 0 BloodOnTheAltar)
   { cdCardTraits = setFromList [Item, Key]
   , cdUnique = True
+  , cdCardType = EncounterAssetType
   }
 
 zebulonWhateley :: CardDef

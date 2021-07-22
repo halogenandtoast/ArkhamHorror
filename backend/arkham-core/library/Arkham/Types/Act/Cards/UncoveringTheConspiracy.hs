@@ -52,7 +52,7 @@ instance ActRunner env => RunMessage env UncoveringTheConspiracy where
       pure $ UncoveringTheConspiracy $ attrs & sequenceL .~ Act 1 B
     AdvanceAct aid _ | aid == actId && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 1)
-    AddToVictory _ -> do
+    After (AddToVictory _) -> do
       victoryDisplay <- mapSet unVictoryDisplayCardCode <$> getSet ()
       let
         cultists =

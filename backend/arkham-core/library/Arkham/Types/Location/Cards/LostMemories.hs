@@ -29,7 +29,6 @@ lostMemories = locationWith
   []
   ((revealedSymbolL .~ T)
   . (revealedConnectedSymbolsL .~ setFromList [Square, Moon])
-  . (unrevealedNameL .~ "Altered Path")
   )
 
 instance HasModifiersFor env LostMemories

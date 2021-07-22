@@ -28,6 +28,9 @@ createLocation a = lookupLocation (toCardCode a) (LocationId $ toCardId a)
 toLocationSymbol :: Location -> LocationSymbol
 toLocationSymbol = locationSymbol . toAttrs
 
+toLocationLabel :: Location -> Text
+toLocationLabel = locationLabel . toAttrs
+
 data Location
   = BaseLocation' BaseLocation
   | ATearInThePath' ATearInThePath
@@ -307,11 +310,6 @@ instance HasId LocationSymbol env Location where
 instance HasId (Maybe LocationId) env (Direction, Location) where
   getId (dir, location') = getId (dir, toAttrs location')
 
-getLocationName :: Location -> LocationName
-getLocationName l = if locationRevealed attrs
-  then LocationName $ cdName (toCardDef l)
-  else locationUnrevealedName attrs
-  where attrs = toAttrs l
 
 lookupLocationStub :: CardCode -> Location
 lookupLocationStub = ($ LocationId (CardId nil)) . lookupLocation

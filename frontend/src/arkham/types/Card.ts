@@ -5,6 +5,7 @@ export type Card = PlayerCard | EncounterCard;
 export interface CardContents {
   id: string;
   cardCode: string;
+  isFlipped?: boolean;
 }
 
 export interface PlayerCardContents {
@@ -15,6 +16,7 @@ export interface PlayerCardContents {
 export interface EncounterCardContents {
   id: string;
   cardCode: string;
+  isFlipped?: boolean;
 }
 
 export interface PlayerCard {
@@ -39,6 +41,7 @@ export const encounterCardContentsDecoder = JsonDecoder.object<EncounterCardCont
   {
     id: JsonDecoder.string,
     cardCode: JsonDecoder.string,
+    isFlipped: JsonDecoder.optional(JsonDecoder.boolean),
   },
   'EncounterCard',
 );

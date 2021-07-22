@@ -31,12 +31,29 @@ newtype LostInTimeAndSpace = LostInTimeAndSpace ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lostInTimeAndSpace :: Difficulty -> LostInTimeAndSpace
-lostInTimeAndSpace difficulty = LostInTimeAndSpace $ baseAttrs
-  "02311"
-  "Lost in Time and Space"
-  ["02312", "02313", "02314", "02315"]
-  ["02316", "02317", "02318", "02319"]
-  difficulty
+lostInTimeAndSpace difficulty =
+  LostInTimeAndSpace $ (baseAttrs
+                         "02311"
+                         "Lost in Time and Space"
+                         ["02312", "02313", "02314", "02315"]
+                         ["02316", "02317", "02318", "02319"]
+                         difficulty
+                       )
+    { scenarioLocationLayout = Just
+      [ ".              .                  .                  tearThroughSpace2 tearThroughSpace2    tearThroughSpace1    tearThroughSpace1  .                 .                 ."
+      , ".              .                  .                  tearThroughSpace2 tearThroughSpace2    tearThroughSpace1    tearThroughSpace1  .                 .                 ."
+      , ".              tearThroughSpace3  tearThroughSpace3  .                 .                    .                    .                  tearThroughSpace4 tearThroughSpace4 ."
+      , ".              tearThroughSpace3  tearThroughSpace3  .                 .                    .                    .                  tearThroughSpace4 tearThroughSpace4 ."
+      , "endlessBridge2 endlessBridge2     endlessBridge1     endlessBridge1    .                    .                    prismaticCascade1  prismaticCascade1 prismaticCascade2 prismaticCascade2"
+      , "endlessBridge2 endlessBridge2     endlessBridge1     endlessBridge1    .                    .                    prismaticCascade1  prismaticCascade1 prismaticCascade2 prismaticCascade2"
+      , ".              dimensionalDoorway dimensionalDoorway .                 anotherDimension     anotherDimension     .                  stepsOfYhagharl   stepsOfYhagharl   ."
+      , ".              dimensionalDoorway dimensionalDoorway .                 anotherDimension     anotherDimension     .                  stepsOfYhagharl   stepsOfYhagharl   ."
+      , ".              .                  .                  .                 tearThroughTime      tearThroughTime      .                  .                 .                 ."
+      , ".              .                  .                  .                 tearThroughTime      tearThroughTime      .                  .                 .                 ."
+      , ".              .                  .                  .                 theEdgeOfTheUniverse theEdgeOfTheUniverse .                  .                 .                 ."
+      , ".              .                  .                  .                 theEdgeOfTheUniverse theEdgeOfTheUniverse .                  .                 .                 ."
+      ]
+    }
 
 instance HasRecord LostInTimeAndSpace where
   hasRecord _ = pure False

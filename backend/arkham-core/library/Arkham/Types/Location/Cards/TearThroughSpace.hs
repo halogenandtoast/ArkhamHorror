@@ -10,11 +10,15 @@ import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Window
+import Control.Monad.Extra (findM)
 
 newtype TearThroughSpace = TearThroughSpace LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -44,6 +48,15 @@ instance ActionRunner env => HasActions env TearThroughSpace where
 
 instance LocationRunner env => RunMessage env TearThroughSpace where
   runMessage msg l@(TearThroughSpace attrs) = case msg of
+    Revelation _ source | isSource attrs source -> do
+      let
+        labels = [ nameToLabel (toName attrs) <> tshow @Int n | n <- [1 .. 4] ]
+      availableLabel <- findM
+        (fmap isNothing . getId @(Maybe LocationId) . LocationWithLabel)
+        labels
+      case availableLabel of
+        Just label -> pure . TearThroughSpace $ attrs & labelL .~ label
+        Nothing -> error "could not find label"
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (chooseOne
         iid

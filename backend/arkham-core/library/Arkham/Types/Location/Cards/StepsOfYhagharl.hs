@@ -73,6 +73,12 @@ instance LocationRunner env => RunMessage env StepsOfYhagharl where
             _ -> False
           )
           (const [])
+        replaceMessageMatching
+          (\case
+            After (Move iid' _ _) | iid == iid' -> True
+            _ -> False
+          )
+          (const [])
         l <$ replaceMessageMatching
           (\case
             MoveTo iid' _ | iid == iid' -> True

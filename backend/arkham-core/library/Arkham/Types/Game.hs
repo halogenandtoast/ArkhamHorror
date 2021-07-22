@@ -143,7 +143,7 @@ class HasMessageLogger a where
 getGame :: (HasGame env, MonadReader env m) => m Game
 getGame = view gameL
 
-data GameChoice = AskChoice InvestigatorId Int | DebugMessage Message
+data GameChoice = AskChoice InvestigatorId Int | DebugMessage Message | UpgradeChoice Message
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -337,6 +337,7 @@ withModifiers
      , TargetEntity a
      , HasModifiersFor env ()
      , HasId ActiveInvestigatorId env ()
+     , HasCallStack
      )
   => a
   -> m (With a ModifierData)
@@ -476,6 +477,8 @@ getLocationMatching = (listToMaybe <$>) . getLocationsMatching
 getLocationsMatching
   :: (MonadReader env m, HasGame env) => LocationMatcher -> m [Location]
 getLocationsMatching = \case
+  LocationWithLabel label ->
+    filter ((== label) . toLocationLabel) . toList . view locationsL <$> getGame
   LocationWithTitle title ->
     filter ((== title) . nameTitle . toName)
       . toList
@@ -1372,7 +1375,8 @@ instance HasGame env => HasId (Maybe EnemyId) env EnemyMatcher where
   getId = fmap (fmap toId) . getEnemyMatching
 
 instance HasGame env => HasList LocationName env () where
-  getList _ = map getLocationName . toList . view locationsL <$> getGame
+  getList _ =
+    map (LocationName . toName) . toList . view locationsL <$> getGame
 
 instance HasGame env => HasSet EmptyLocationId env () where
   getSet _ =

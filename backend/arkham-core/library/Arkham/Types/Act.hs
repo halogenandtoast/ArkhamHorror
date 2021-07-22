@@ -41,6 +41,7 @@ data Act
   | SearchingForAnswers' SearchingForAnswers
   | TheChamberOfTheBeast' TheChamberOfTheBeast
   | SaracenicScript' SaracenicScript
+  | TheyMustBeDestroyed' TheyMustBeDestroyed
   | ThePathToTheHill' ThePathToTheHill
   | AscendingTheHillV1' AscendingTheHillV1
   | AscendingTheHillV2' AscendingTheHillV2
@@ -125,6 +126,7 @@ allActs = mapFrom
   , SearchingForAnswers' searchingForAnswers
   , TheChamberOfTheBeast' theChamberOfTheBeast
   , SaracenicScript' saracenicScript
+  , TheyMustBeDestroyed' theyMustBeDestroyed
   , ThePathToTheHill' thePathToTheHill
   , AscendingTheHillV1' ascendingTheHillV1
   , AscendingTheHillV2' ascendingTheHillV2

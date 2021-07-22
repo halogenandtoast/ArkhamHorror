@@ -29,7 +29,6 @@ eerieGlade = locationWith
   []
   ((revealedSymbolL .~ Hourglass)
   . (revealedConnectedSymbolsL .~ setFromList [Triangle, Plus])
-  . (unrevealedNameL .~ "Diverging Path")
   )
 
 instance HasModifiersFor env EerieGlade

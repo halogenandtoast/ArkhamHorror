@@ -288,6 +288,12 @@ getCanAffordCost iid source mAction = \case
           )
       >= n
 
+isForcedAction :: Message -> Bool
+isForcedAction = \case
+  Force _ -> True
+  UseAbility _ ability -> abilityType ability == ForcedAbility
+  _ -> False
+
 instance
   ( HasActions env ActionType
   , HasModifiersFor env ()
@@ -309,11 +315,7 @@ instance
           ()
         pure $ UseAbility iid' (applyAbilityModifiers ability modifiers')
       other -> pure other -- TODO: dynamic abilities
-    let
-      fromForcedAction = \case
-        Force msg -> Just msg
-        _ -> Nothing
-      forcedActions = mapMaybe fromForcedAction actions''
+    let forcedActions = nub $ filter isForcedAction actions''
     forcedActions' <- filterM
       (\case
         UseAbility iid' ability -> getCanAffordAbility iid' ability
@@ -496,6 +498,7 @@ getCanMoveTo
      , HasSet Trait env Source
      , HasId LocationId env InvestigatorId
      , HasModifiersFor env ()
+     , HasCallStack
      )
   => LocationId
   -> InvestigatorId

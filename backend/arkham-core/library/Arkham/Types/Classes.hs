@@ -215,7 +215,7 @@ type ActionRunner env
     )
 
 class HasActions1 env f where
-  getActions1 :: (MonadReader env m, MonadIO m) => InvestigatorId -> Window -> f p -> m [Message]
+  getActions1 :: (HasCallStack, MonadReader env m, MonadIO m) => InvestigatorId -> Window -> f p -> m [Message]
 
 instance HasActions1 env f => HasActions1 env (M1 i c f) where
   getActions1 iid window (M1 x) = getActions1 iid window x
@@ -228,7 +228,12 @@ instance (HasActions env p) => HasActions1 env (K1 R p) where
   getActions1 iid window (K1 x) = getActions iid window x
 
 defaultGetActions
-  :: (Generic a, HasActions1 env (Rep a), MonadReader env m, MonadIO m)
+  :: ( HasCallStack
+     , Generic a
+     , HasActions1 env (Rep a)
+     , MonadReader env m
+     , MonadIO m
+     )
   => InvestigatorId
   -> Window
   -> a
@@ -236,12 +241,12 @@ defaultGetActions
 defaultGetActions iid window = getActions1 iid window . from
 
 class HasActions env a where
-  getActions :: (MonadReader env m, MonadIO m) => InvestigatorId -> Window -> a -> m [Message]
-  default getActions :: (Generic a, HasActions1 env (Rep a), MonadReader env m, MonadIO m) => InvestigatorId -> Window -> a -> m [Message]
+  getActions :: (HasCallStack, MonadReader env m, MonadIO m) => InvestigatorId -> Window -> a -> m [Message]
+  default getActions :: (HasCallStack, Generic a, HasActions1 env (Rep a), MonadReader env m, MonadIO m) => InvestigatorId -> Window -> a -> m [Message]
   getActions = defaultGetActions
 
 class HasModifiersFor1 env f where
-  getModifiersFor1 :: MonadReader env m => Source -> Target -> f p -> m [Modifier]
+  getModifiersFor1 :: (HasCallStack, MonadReader env m) => Source -> Target -> f p -> m [Modifier]
 
 instance HasModifiersFor1 env f => HasModifiersFor1 env (M1 i c f) where
   getModifiersFor1 source target (M1 x) = getModifiersFor1 source target x
@@ -254,7 +259,7 @@ instance (HasModifiersFor env p) => HasModifiersFor1 env (K1 R p) where
   getModifiersFor1 source target (K1 x) = getModifiersFor source target x
 
 genericGetModifiersFor
-  :: (Generic a, HasModifiersFor1 env (Rep a), MonadReader env m)
+  :: (HasCallStack, Generic a, HasModifiersFor1 env (Rep a), MonadReader env m)
   => Source
   -> Target
   -> a
@@ -262,7 +267,7 @@ genericGetModifiersFor
 genericGetModifiersFor source target = getModifiersFor1 source target . from
 
 class HasModifiersFor env a where
-  getModifiersFor :: MonadReader env m => Source -> Target -> a -> m [Modifier]
+  getModifiersFor :: (HasCallStack, MonadReader env m) => Source -> Target -> a -> m [Modifier]
   getModifiersFor _ _ _ = pure []
 
 class IsEnemy enemy where

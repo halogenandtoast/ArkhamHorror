@@ -19,6 +19,7 @@ event :: CardCode -> Name -> Int -> ClassSymbol -> CardDef
 event cardCode name cost classSymbol = CardDef
   { cdCardCode = cardCode
   , cdName = name
+  , cdRevealedName = Nothing
   , cdCost = Just (StaticCost cost)
   , cdLevel = 0
   , cdCardType = EventType

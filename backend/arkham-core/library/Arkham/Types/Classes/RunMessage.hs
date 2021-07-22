@@ -9,7 +9,7 @@ import Arkham.Types.Message
 import GHC.Generics
 
 class RunMessage1 env f where
-  runMessage1 :: (MonadIO m, MonadReader env m, MonadRandom m, HasQueue env) => Message -> f p -> m (f p)
+  runMessage1 :: (HasCallStack, MonadIO m, MonadReader env m, MonadRandom m, HasQueue env) => Message -> f p -> m (f p)
 
 instance RunMessage1 env f => RunMessage1 env (M1 i c f) where
   runMessage1 msg (M1 x) = M1 <$> runMessage1 msg x
@@ -22,7 +22,7 @@ instance RunMessage env p => RunMessage1 env (K1 R p) where
   runMessage1 msg (K1 x) = K1 <$> runMessage msg x
 
 class RunMessage env a where
-  runMessage :: (MonadIO m, MonadRandom m, MonadReader env m, HasQueue env) => Message -> a -> m a
+  runMessage :: (HasCallStack, MonadIO m, MonadRandom m, MonadReader env m, HasQueue env) => Message -> a -> m a
 
 genericRunMessage
   :: ( Generic a
@@ -31,6 +31,7 @@ genericRunMessage
      , MonadRandom m
      , MonadReader env m
      , HasQueue env
+     , HasCallStack
      )
   => Message
   -> a

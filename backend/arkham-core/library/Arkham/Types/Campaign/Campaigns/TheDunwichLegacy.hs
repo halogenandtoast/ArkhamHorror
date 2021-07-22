@@ -456,16 +456,23 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
               if ScenarioStep "02041" `elem` campaignCompletedSteps
                 then Just $ InterludeStep 1
                 else Just (UpgradeDeckStep $ ScenarioStep "02041")
-            Just (InterludeStep 1) -> Just (ScenarioStep "02118")
-            Just (ScenarioStep "02118") -> Just (ScenarioStep "02159")
-            Just (ScenarioStep "02159") -> Just (ScenarioStep "02195")
+            Just (InterludeStep 1) ->
+              Just (UpgradeDeckStep $ ScenarioStep "02118")
+            Just (ScenarioStep "02118") ->
+              Just (UpgradeDeckStep $ ScenarioStep "02159")
+            Just (ScenarioStep "02159") ->
+              Just (UpgradeDeckStep $ ScenarioStep "02195")
             Just (ScenarioStep "02195") ->
               case lookup "02195" campaignResolutions of
-                Just NoResolution -> Just (ScenarioStep "02236")
+                Just NoResolution ->
+                  Just (UpgradeDeckStep $ ScenarioStep "02236")
                 _ -> Just $ InterludeStep 2
-            Just (InterludeStep 2) -> Just (ScenarioStep "02236")
-            Just (ScenarioStep "02236") -> Just (ScenarioStep "02274")
-            Just (ScenarioStep "02274") -> Just (ScenarioStep "02311")
+            Just (InterludeStep 2) ->
+              Just (UpgradeDeckStep $ ScenarioStep "02236")
+            Just (ScenarioStep "02236") ->
+              Just (UpgradeDeckStep $ ScenarioStep "02274")
+            Just (ScenarioStep "02274") ->
+              Just (UpgradeDeckStep $ ScenarioStep "02311")
             Just (ScenarioStep "02311") -> Nothing
             _ -> Nothing
       pushAll [CampaignStep nextStep]

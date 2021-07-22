@@ -12,6 +12,7 @@ import Arkham.Game
 import Arkham.Types.Game
 import Arkham.Types.Helpers
 import Arkham.Types.Message
+import Control.Lens ((%~), (&))
 import Control.Monad.Random (mkStdGen)
 import Database.Esqueleto.Experimental
 import Json
@@ -72,7 +73,8 @@ putApiV1ArkhamGameDecksR gameId = do
           cards <- liftIO $ loadDecklistCards decklist
           pure $ UpgradeDeck investigatorId (Deck cards)
 
-  gameRef <- newIORef arkhamGameCurrentData
+  gameRef <- newIORef
+    (arkhamGameCurrentData & choicesL %~ (UpgradeChoice msg :))
   queueRef <- newIORef (msg : arkhamGameQueue)
   genRef <- newIORef (mkStdGen gameSeed)
   runGameApp

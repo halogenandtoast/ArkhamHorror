@@ -34,7 +34,6 @@ destroyedPath = locationWith
   []
   ((revealedSymbolL .~ Squiggle)
   . (revealedConnectedSymbolsL .~ setFromList [Triangle, Equals])
-  . (unrevealedNameL .~ "Diverging Path")
   )
 
 instance HasModifiersFor env DestroyedPath

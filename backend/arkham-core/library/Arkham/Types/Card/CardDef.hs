@@ -35,6 +35,7 @@ data EventChoice = EventChooseN Int EventChoicesRepeatable
 data CardDef = CardDef
   { cdCardCode :: CardCode
   , cdName :: Name
+  , cdRevealedName :: Maybe Name
   , cdCost :: Maybe CardCost
   , cdLevel :: Int
   , cdCardType :: CardType
@@ -125,6 +126,7 @@ testCardDef :: CardType -> CardCode -> CardDef
 testCardDef cardType cardCode = CardDef
   { cdCardCode = cardCode
   , cdName = "Test"
+  , cdRevealedName = Nothing
   , cdCost = Nothing
   , cdLevel = 0
   , cdCardType = cardType

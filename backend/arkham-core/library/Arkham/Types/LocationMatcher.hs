@@ -10,6 +10,7 @@ data LocationMatcher
   = LocationWithTitle Text
   | LocationWithFullTitle Text Text
   | LocationWithId LocationId
+  | LocationWithLabel Text
   | AnyLocation
   | EmptyLocation
   | LocationWithoutInvestigators

@@ -15,6 +15,7 @@ skill :: CardCode -> Name -> [SkillType] -> ClassSymbol -> CardDef
 skill cardCode name skills classSymbol = CardDef
   { cdCardCode = cardCode
   , cdName = name
+  , cdRevealedName = Nothing
   , cdCost = Nothing
   , cdLevel = 0
   , cdCardType = SkillType

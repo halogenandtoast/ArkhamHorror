@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.GetTheEngineRunning
 
 import Arkham.Prelude
 
+import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
@@ -26,14 +27,14 @@ instance ActionRunner env => HasActions env GetTheEngineRunning where
       Just engineCar -> do
         mustAdvance <- (== 0) . unClueCount <$> getCount engineCar
         if mustAdvance
-          then pure [Force $ AdvanceAct (actId x) (toSource x)]
+          then pure [UseAbility i (mkAbility x 1 ForcedAbility)]
           else getActions i window x
       Nothing -> getActions i window x
 
 instance ActRunner env => RunMessage env GetTheEngineRunning where
   runMessage msg a@(GetTheEngineRunning attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide A attrs ->
-      pure . GetTheEngineRunning $ attrs & (sequenceL .~ Act 2 B)
     AdvanceAct aid _ | aid == actId && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 1)
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      a <$ push (AdvanceAct (toId attrs) source)
     _ -> GetTheEngineRunning <$> runMessage msg attrs

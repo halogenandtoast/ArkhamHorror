@@ -13,6 +13,7 @@ newtype DiscardedEncounterCard = DiscardedEncounterCard { unDiscardedEncounterCa
 data EncounterCard = MkEncounterCard
   { ecId :: CardId
   , ecCardCode :: CardCode
+  , ecIsFlipped :: Maybe Bool
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
@@ -34,6 +35,9 @@ genEncounterCard :: MonadRandom m => CardDef -> m EncounterCard
 genEncounterCard cardDef = lookupEncounterCard cardDef <$> getRandom
 
 lookupEncounterCard :: CardDef -> CardId -> EncounterCard
-lookupEncounterCard cardDef cardId =
-  MkEncounterCard { ecId = cardId, ecCardCode = toCardCode cardDef }
+lookupEncounterCard cardDef cardId = MkEncounterCard
+  { ecId = cardId
+  , ecCardCode = toCardCode cardDef
+  , ecIsFlipped = Just $ isJust (cdRevealedName cardDef)
+  }
 

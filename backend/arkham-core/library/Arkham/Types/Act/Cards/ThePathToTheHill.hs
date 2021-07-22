@@ -5,10 +5,10 @@ module Arkham.Types.Act.Cards.ThePathToTheHill
 
 import Arkham.Prelude
 
+import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
-import Arkham.Types.ActId
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
@@ -20,26 +20,24 @@ newtype ThePathToTheHill = ThePathToTheHill ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 thePathToTheHill :: ThePathToTheHill
-thePathToTheHill =
-  ThePathToTheHill $ baseAttrs "02277" "The Path to the Hill" (Act 1 A) Nothing
+thePathToTheHill = ThePathToTheHill $ baseAttrs
+  "02277"
+  "The Path to the Hill"
+  (Act 1 A)
+  (Just $ RequiredClues (PerPlayer 2) Nothing)
 
 instance ActionRunner env => HasActions env ThePathToTheHill where
   getActions i window (ThePathToTheHill x) = do
     clueCount <- unSpendableClueCount <$> getCount ()
     requiredClueCount <- getPlayerCountValue (PerPlayer 2)
     if clueCount >= requiredClueCount
-      then pure [Force $ AdvanceAct (actId x) (toSource x)]
+      then pure [UseAbility i (mkAbility x 1 ForcedAbility)]
       else getActions i window x
 
 instance ActRunner env => RunMessage env ThePathToTheHill where
   runMessage msg a@(ThePathToTheHill attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      investigatorIds <- getInvestigatorIds
-      pushAll =<< advanceActSideA investigatorIds (PerPlayer 2) attrs
-      pure
-        . ThePathToTheHill
-        $ attrs
-        & (sequenceL .~ Act (unActStep $ actStep actSequence) B)
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      a <$ push (AdvanceAct (toId attrs) (toSource attrs))
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       locationIds <- getSetList ()
       ascendingPathId <- fromJustNote "must exist"

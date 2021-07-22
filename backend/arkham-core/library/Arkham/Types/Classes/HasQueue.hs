@@ -73,7 +73,7 @@ replaceMessageMatching
   -> (Message -> [Message])
   -> m ()
 replaceMessageMatching matcher replacer = withQueue \queue ->
-  let (before, after) = span matcher queue
+  let (before, after) = break matcher queue
   in
     case after of
       [] -> (before, ())

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="encounter-deck">
     <img
       v-if="investigatorPortrait"
       class="portrait"
@@ -11,11 +11,14 @@
       :class="{ 'can-interact': deckAction !== -1 }"
       @click="$emit('choose', deckAction)"
     />
+    <template v-if="debug">
+      <button @click="debugChoose({tag: 'InvestigatorDrawEncounterCard', contents: investigatorId})">Draw</button>
+    </template>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
+import { defineComponent, computed, inject } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
@@ -67,7 +70,10 @@ export default defineComponent({
       }
     })
 
-    return { baseUrl, investigatorPortrait, deckAction, surgeAction, searchTopOfEncounterCardAction, drawEncounterCardAction }
+    const debug = inject('debug')
+    const debugChoose = inject('debugChoose')
+
+    return { debug, debugChoose, baseUrl, investigatorPortrait, deckAction, surgeAction, searchTopOfEncounterCardAction, drawEncounterCardAction }
   }
 })
 </script>
@@ -85,5 +91,10 @@ export default defineComponent({
 .can-interact {
   border: 3px solid #FF00FF;
   cursor: pointer;
+}
+
+.encounter-deck {
+  display: flex;
+  flex-direction: column;
 }
 </style>

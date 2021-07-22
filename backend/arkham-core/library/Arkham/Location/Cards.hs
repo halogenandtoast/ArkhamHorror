@@ -10,10 +10,15 @@ import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Name
 import Arkham.Types.Trait
 
+locationWithUnrevealed :: CardCode -> Name -> Name -> EncounterSet -> CardDef
+locationWithUnrevealed cardCode unrevealedName name encounterSet =
+  (location cardCode unrevealedName encounterSet) { cdRevealedName = Just name }
+
 location :: CardCode -> Name -> EncounterSet -> CardDef
 location cardCode name encounterSet = CardDef
   { cdCardCode = cardCode
   , cdName = name
+  , cdRevealedName = Just name
   , cdCost = Nothing
   , cdLevel = 0
   , cdCardType = LocationType
@@ -730,44 +735,79 @@ sentinelPeak = (location "02284" "Sentinel Peak" WhereDoomAwaits)
   }
 
 slaugteredWoods :: CardDef
-slaugteredWoods = (location "02285" "Slaughtered Woods" WhereDoomAwaits)
+slaugteredWoods = (locationWithUnrevealed
+                    "02285"
+                    "Diverging Path"
+                    "Slaughtered Woods"
+                    WhereDoomAwaits
+                  )
   { cdCardTraits = setFromList [Dunwich, Woods]
   }
 
 eerieGlade :: CardDef
-eerieGlade = (location "02286" "Eerie Glade" WhereDoomAwaits)
-  { cdCardTraits = setFromList [Dunwich, Woods]
-  }
+eerieGlade =
+  (locationWithUnrevealed "02286" "Diverging Path" "Eerie Glade" WhereDoomAwaits
+    )
+    { cdCardTraits = setFromList [Dunwich, Woods]
+    }
 
 destroyedPath :: CardDef
-destroyedPath = (location "02287" "Destroyed Path" WhereDoomAwaits)
+destroyedPath = (locationWithUnrevealed
+                  "02287"
+                  "Diverging Path"
+                  "Destroyed Path"
+                  WhereDoomAwaits
+                )
   { cdCardTraits = setFromList [Dunwich, Woods]
   }
 
 frozenSpring :: CardDef
-frozenSpring = (location "02288" "Frozen Spring" WhereDoomAwaits)
+frozenSpring = (locationWithUnrevealed
+                 "02288"
+                 "Diverging Path"
+                 "Frozen Spring"
+                 WhereDoomAwaits
+               )
   { cdCardTraits = setFromList [Dunwich, Woods]
   }
 
 dimensionalGap :: CardDef
-dimensionalGap = (location "02289" "Dimensional Gap" WhereDoomAwaits)
+dimensionalGap = (locationWithUnrevealed
+                   "02289"
+                   "Altered Path"
+                   "Dimensional Gap"
+                   WhereDoomAwaits
+                 )
   { cdCardTraits = setFromList [Dunwich, Woods, Altered]
   }
 
 aTearInThePath :: CardDef
-aTearInThePath = (location "02290" "A Tear in the Path" WhereDoomAwaits)
+aTearInThePath = (locationWithUnrevealed
+                   "02290"
+                   "Altered Path"
+                   "A Tear in the Path"
+                   WhereDoomAwaits
+                 )
   { cdCardTraits = setFromList [Dunwich, Woods, Altered]
   }
 
 uprootedWoods :: CardDef
-uprootedWoods = (location "02291" "Uprooted Woods" WhereDoomAwaits)
-  { cdCardTraits = setFromList [Dunwich, Woods, Altered]
-  }
+uprootedWoods =
+  (locationWithUnrevealed
+      "02291"
+      "Altered Path"
+      "Uprooted Woods"
+      WhereDoomAwaits
+    )
+    { cdCardTraits = setFromList [Dunwich, Woods, Altered]
+    }
 
 lostMemories :: CardDef
-lostMemories = (location "02292" "Lost Memories" WhereDoomAwaits)
-  { cdCardTraits = setFromList [Dunwich, Woods, Altered]
-  }
+lostMemories =
+  (locationWithUnrevealed "02292" "Altered Path" "Lost Memories" WhereDoomAwaits
+    )
+    { cdCardTraits = setFromList [Dunwich, Woods, Altered]
+    }
 
 anotherDimension :: CardDef
 anotherDimension = (location
@@ -814,12 +854,16 @@ endlessBridge = (location "02326" "Endless Bridge" LostInTimeAndSpace)
 stepsOfYhagharl :: CardDef
 stepsOfYhagharl = (location "02327" "Steps of Y'hagharl" LostInTimeAndSpace)
   { cdCardTraits = setFromList [Otherworld, Extradimensional]
+  , cdDoubleSided = False
+  , cdEncounterSetQuantity = Just 1
   }
 
 dimensionalDoorway :: CardDef
 dimensionalDoorway = (location "02328" "Dimensional Doorway" LostInTimeAndSpace
                      )
   { cdCardTraits = setFromList [Otherworld, Extradimensional]
+  , cdDoubleSided = False
+  , cdEncounterSetQuantity = Just 1
   }
 
 studyAberrantGateway :: CardDef

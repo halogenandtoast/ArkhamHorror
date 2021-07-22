@@ -29,9 +29,10 @@ export default defineComponent({
   },
   setup() {
     const image = (card: CardContents) => {
-      const { cardCode } = card;
-      const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
-      return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
+      const { cardCode, isFlipped } = card
+      const suffix = isFlipped === true ? 'b' : ''
+      const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : ''
+      return `${baseUrl}/img/arkham/cards/${cardCode}${suffix}.jpg`;
     }
 
     return { image }
@@ -45,7 +46,6 @@ export default defineComponent({
   width: 100%;
   overflow-x: auto;
   text-align: center;
-  margin-bottom: 10px;
 
   header {
     padding: 10px;

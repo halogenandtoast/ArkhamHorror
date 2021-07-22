@@ -17,7 +17,7 @@ import Arkham.Types.Query
 import Arkham.Types.Resolution
 
 newtype TheyMustBeDestroyed = TheyMustBeDestroyed ActAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 theyMustBeDestroyed :: TheyMustBeDestroyed
 theyMustBeDestroyed = TheyMustBeDestroyed
@@ -43,4 +43,6 @@ instance ActRunner env => RunMessage env TheyMustBeDestroyed where
   runMessage msg a@(TheyMustBeDestroyed attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 2)
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      a <$ push (AdvanceAct (toId attrs) (toSource attrs))
     _ -> TheyMustBeDestroyed <$> runMessage msg attrs

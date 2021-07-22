@@ -33,8 +33,9 @@ instance AgendaRunner env => RunMessage env RampagingCreatures where
       leadInvestigatorId <- getLeadInvestigatorId
       broodOfYogSothoth <- map EnemyTarget
         <$> getSetList (EnemyWithTitle "Brood of Yog-Sothoth")
-      a <$ push
-        (chooseOneAtATime
+      a <$ when
+        (notNull broodOfYogSothoth)
+        (push $ chooseOneAtATime
           leadInvestigatorId
           [ TargetLabel target [ChooseRandomLocation target mempty]
           | target <- broodOfYogSothoth

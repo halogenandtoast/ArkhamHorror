@@ -29,7 +29,6 @@ uprootedWoods = locationWith
   []
   ((revealedSymbolL .~ Moon)
   . (revealedConnectedSymbolsL .~ setFromList [Square, T])
-  . (unrevealedNameL .~ "Altered Path")
   )
 
 instance HasModifiersFor env UprootedWoods

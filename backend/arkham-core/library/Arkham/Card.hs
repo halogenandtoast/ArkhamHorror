@@ -5,7 +5,9 @@ import Arkham.Prelude
 import Arkham.EncounterCard
 import Arkham.PlayerCard
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
+import Arkham.Types.Card.PlayerCard
 
 buildCard :: MonadRandom m => CardCode -> m Card
 buildCard cardCode = lookupCard cardCode <$> getRandom
@@ -16,10 +18,5 @@ lookupCard cardCode cardId =
     (Nothing, Nothing) -> error $ "Missing card " <> show cardCode
     (Just _, Just _) ->
       error $ "card is both encounter and player " <> show cardCode
-    (Just _, Nothing) ->
-      EncounterCard $ MkEncounterCard { ecId = cardId, ecCardCode = cardCode }
-    (Nothing, Just _) -> PlayerCard $ MkPlayerCard
-      { pcId = cardId
-      , pcBearer = Nothing
-      , pcCardCode = cardCode
-      }
+    (Just def, Nothing) -> EncounterCard $ lookupEncounterCard def cardId
+    (Nothing, Just def) -> PlayerCard $ lookupPlayerCard def cardId

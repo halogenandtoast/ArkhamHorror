@@ -8,7 +8,6 @@ import Arkham.Prelude
 import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
-import Arkham.Types.ActId
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
@@ -38,13 +37,6 @@ instance ActionRunner env => HasActions env AscendingTheHillV3 where
 
 instance (HasName env LocationId, ActRunner env) => RunMessage env AscendingTheHillV3 where
   runMessage msg a@(AscendingTheHillV3 attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      push $ chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
-      pure
-        . AscendingTheHillV3
-        $ attrs
-        & (sequenceL .~ Act (unActStep $ actStep actSequence) B)
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       sentinelPeak <- fromJustNote "must exist"
         <$> getLocationIdWithTitle "Sentinel Peak"
@@ -59,6 +51,6 @@ instance (HasName env LocationId, ActRunner env) => RunMessage env AscendingTheH
     WhenEnterLocation _ lid -> do
       name <- getName lid
       a <$ when
-        (name == "Sentinel Hill")
+        (name == "Sentinel Peak")
         (push $ AdvanceAct actId (toSource attrs))
     _ -> AscendingTheHillV3 <$> runMessage msg attrs

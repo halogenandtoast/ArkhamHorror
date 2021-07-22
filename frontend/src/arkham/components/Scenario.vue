@@ -56,7 +56,6 @@
         @choose="$emit('choose', $event)"
       />
 
-
       <Act
         v-for="(act, key) in game.acts"
         :key="key"
@@ -82,6 +81,8 @@
         :src="activeCard"
         class="card"
       />
+
+      <button v-if="outOfPlay.length > 0" class="view-out-of-play-button" @click="doShowCards($event, outOfPlay, 'Out of Play', true)"><font-awesome-icon icon="eye" /> Out of Play</button>
     </div>
 
     <svg id="svg">
@@ -285,6 +286,7 @@ export default defineComponent({
 
     const players = computed(() => props.game.investigators)
     const discards = computed(() => props.game.discard)
+    const outOfPlay = computed(() => (props.game.scenario?.contents?.setAsideCards || []).map(c => c.contents))
 
     const showCards = ref<CardContents[]>([])
     const viewingDiscard = ref(false)
@@ -335,6 +337,7 @@ export default defineComponent({
     })
 
     return {
+      outOfPlay,
       locationMap,
       update,
       activePlayerId,
@@ -375,10 +378,12 @@ export default defineComponent({
 
 .scenario-cards {
   display: flex;
-  align-self: center;
+  align-self: start;
   align-items: flex-start;
   justify-content: center;
+  padding-top: 10px;
   padding-bottom: 10px;
+  position: relative;
 }
 
 .clue--can-investigate {
@@ -464,7 +469,7 @@ export default defineComponent({
   }
 }
 
-svg {
+#svg {
   pointer-events: none;
   position: absolute;
   top: 0;
@@ -478,5 +483,22 @@ svg {
   stroke-width:6px;
   /* stroke:#a6b5bb; */
   stroke:rgba(0,0,0, 0.2);
+}
+
+.view-out-of-play-button {
+  text-decoration: none;
+  position: absolute;
+  transform: translate(100%, -50%) rotate(90deg) translate(0%, 50%) translate(0%, 10px);
+  svg {
+    transform: rotate(-90deg)
+  }
+  transform-origin: center left;
+  top: 0px;
+  right: 0px;
+  border: 0;
+  color: white;
+  background: #a5b5bc;
+  font-size: 1.2em;
+  padding: 5px 15px;
 }
 </style>

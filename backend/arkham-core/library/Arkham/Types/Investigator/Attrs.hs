@@ -1656,7 +1656,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   CheckWindow iid windows | iid == investigatorId -> do
     a <$ push (RunWindow iid windows)
   RunWindow iid windows | iid == investigatorId -> do
-    actions <- fmap concat <$> for windows $ \window -> getActions iid window ()
+    actions <- fmap (nub . concat) <$> for windows $ \window ->
+      getActions iid window ()
     playableCards <- getPlayableCards a windows
     if notNull playableCards || notNull actions
       then if any isForced actions
@@ -1863,62 +1864,70 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   PlayerWindow iid additionalActions isAdditional | iid == investigatorId -> do
     isCurrentPlayer <- (== iid) . unActiveInvestigatorId <$> getId ()
     actions <- getActions iid NonFast ()
-    fastActions <- getActions iid (DuringTurn You) ()
-    playerWindowActions <- getActions iid FastPlayerWindow ()
-    modifiers <-
-      map modifierType
-        <$> getModifiersFor (InvestigatorSource iid) (InvestigatorTarget iid) ()
-    canAffordTakeResources <- getCanAfford a Action.Resource
-    canAffordDrawCards <- getCanAfford a Action.Draw
-    canAffordPlayCard <- getCanAfford a Action.Play
-    let
-      windows = if isCurrentPlayer
-        then [DuringTurn You, FastPlayerWindow]
-        else [FastPlayerWindow]
-    isPlayableMap :: HashMap Card Bool <- mapFromList <$> for
-      investigatorHand
-      (\c -> do
-        isPlayable <- getIsPlayable (toId a) windows c
-        pure (c, isPlayable)
-      )
-    let isPlayable c = findWithDefault False c isPlayableMap
-    fastIsPlayableMap :: HashMap Card Bool <- mapFromList <$> for
-      investigatorHand
-      (\c -> do
-        fastIsPlayable <- getFastIsPlayable a windows c
-        pure (c, fastIsPlayable)
-      )
-    let
-      fastIsPlayable c = findWithDefault False c fastIsPlayableMap
-      usesAction = not isAdditional
-    a <$ push
-      (chooseOne
-        iid
-        (additionalActions
-        <> [ TakeResources iid 1 usesAction
-           | canAffordTakeResources && CannotGainResources `notElem` modifiers
-           ]
-        <> [ DrawCards iid 1 usesAction
-           | canAffordDrawCards
-             && CannotTakeAction (IsAction Action.Draw)
-             `notElem` modifiers
-             && CannotDrawCards
-             `notElem` modifiers
-           ]
-        <> [ InitiatePlayCard iid (toCardId c) Nothing usesAction
-           | c <- investigatorHand
-           , canAffordPlayCard || fastIsPlayable c
-           , isPlayable c && not (isDynamic c)
-           ]
-        <> [ InitiatePlayDynamicCard iid (toCardId c) 0 Nothing usesAction
-           | c <- investigatorHand
-           , canAffordPlayCard || fastIsPlayable c
-           , isPlayable c && isDynamic c
-           ]
-        <> [ ChooseEndTurn iid | isCurrentPlayer ]
-        <> actions
-        <> fastActions
-        <> playerWindowActions
-        )
-      )
+    if any isForcedAction actions
+      then a <$ push (chooseOne iid actions)
+      else do
+        fastActions <- getActions iid (DuringTurn You) ()
+        playerWindowActions <- getActions iid FastPlayerWindow ()
+        modifiers <-
+          map modifierType
+            <$> getModifiersFor
+                  (InvestigatorSource iid)
+                  (InvestigatorTarget iid)
+                  ()
+        canAffordTakeResources <- getCanAfford a Action.Resource
+        canAffordDrawCards <- getCanAfford a Action.Draw
+        canAffordPlayCard <- getCanAfford a Action.Play
+        let
+          windows = if isCurrentPlayer
+            then [DuringTurn You, FastPlayerWindow]
+            else [FastPlayerWindow]
+        isPlayableMap :: HashMap Card Bool <- mapFromList <$> for
+          investigatorHand
+          (\c -> do
+            isPlayable <- getIsPlayable (toId a) windows c
+            pure (c, isPlayable)
+          )
+        let isPlayable c = findWithDefault False c isPlayableMap
+        fastIsPlayableMap :: HashMap Card Bool <- mapFromList <$> for
+          investigatorHand
+          (\c -> do
+            fastIsPlayable <- getFastIsPlayable a windows c
+            pure (c, fastIsPlayable)
+          )
+        let
+          fastIsPlayable c = findWithDefault False c fastIsPlayableMap
+          usesAction = not isAdditional
+        a <$ push
+          (chooseOne
+            iid
+            (additionalActions
+            <> [ TakeResources iid 1 usesAction
+               | canAffordTakeResources
+                 && CannotGainResources
+                 `notElem` modifiers
+               ]
+            <> [ DrawCards iid 1 usesAction
+               | canAffordDrawCards
+                 && CannotTakeAction (IsAction Action.Draw)
+                 `notElem` modifiers
+                 && CannotDrawCards
+                 `notElem` modifiers
+               ]
+            <> [ InitiatePlayCard iid (toCardId c) Nothing usesAction
+               | c <- investigatorHand
+               , canAffordPlayCard || fastIsPlayable c
+               , isPlayable c && not (isDynamic c)
+               ]
+            <> [ InitiatePlayDynamicCard iid (toCardId c) 0 Nothing usesAction
+               | c <- investigatorHand
+               , canAffordPlayCard || fastIsPlayable c
+               , isPlayable c && isDynamic c
+               ]
+            <> [ ChooseEndTurn iid | isCurrentPlayer ]
+            <> actions
+            <> fastActions
+            <> playerWindowActions
+            )
+          )
   _ -> pure a

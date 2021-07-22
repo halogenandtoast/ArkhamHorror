@@ -31,6 +31,7 @@ export interface ScenarioContents {
   deck: ScenarioDeck | null;
   cardsUnderAgendaDeck: Card[];
   cardsUnderActDeck: Card[];
+  setAsideCards: Card[];
 }
 
 export const scenarioDeckDecoder = JsonDecoder.object<ScenarioDeck>({
@@ -45,6 +46,7 @@ export const scenarioContentsDecoder = JsonDecoder.object<ScenarioContents>({
   deck: JsonDecoder.nullable(scenarioDeckDecoder),
   cardsUnderAgendaDeck: JsonDecoder.array<Card>(cardDecoder, 'UnderneathAgendaCards'),
   cardsUnderActDeck: JsonDecoder.array<Card>(cardDecoder, 'UnderneathActCards'),
+  setAsideCards: JsonDecoder.array<Card>(cardDecoder, 'SetAsideCards'),
 }, 'ScenarioContents');
 
 export const scenarioDecoder = JsonDecoder.object<Scenario>({

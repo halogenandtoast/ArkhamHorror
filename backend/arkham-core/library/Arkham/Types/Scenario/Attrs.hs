@@ -185,6 +185,7 @@ findLocationKey locationMatcher locations = fst
     LocationWithTitle title' -> title == title'
     LocationWithFullTitle title' subtitle' ->
       title == title' && Just subtitle' == msubtitle
+    LocationWithLabel _ -> error "can not use label"
     LocationWithId _ -> error "can not use id"
     AnyLocation -> True
     -- TODO: Encode these into an either?
@@ -294,7 +295,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioAttrsRunner env)
     RequestSetAsideCard target cardCode -> do
       let
         (before, rest) =
-          span ((== cardCode) . toCardCode) scenarioSetAsideCards
+          break ((== cardCode) . toCardCode) scenarioSetAsideCards
       case rest of
         [] -> error "requested a card that is not set aside"
         (x : xs) -> do

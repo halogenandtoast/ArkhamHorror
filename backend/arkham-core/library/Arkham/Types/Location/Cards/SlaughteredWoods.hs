@@ -29,7 +29,6 @@ slaugteredWoods = locationWith
   []
   ((revealedSymbolL .~ Plus)
   . (revealedConnectedSymbolsL .~ setFromList [Triangle, Hourglass])
-  . (unrevealedNameL .~ "Diverging Path")
   )
 
 instance HasModifiersFor env SlaughteredWoods

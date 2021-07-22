@@ -29,7 +29,6 @@ aTearInThePath = locationWith
   []
   ((revealedSymbolL .~ Equals)
   . (revealedConnectedSymbolsL .~ setFromList [Square, Squiggle])
-  . (unrevealedNameL .~ "Altered Path")
   )
 
 instance HasModifiersFor env ATearInThePath

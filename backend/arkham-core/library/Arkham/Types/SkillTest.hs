@@ -24,7 +24,6 @@ import Arkham.Types.Token
 import Arkham.Types.Window
 import qualified Data.HashMap.Strict as HashMap
 import Data.Semigroup
-import System.Environment
 
 class HasSkillTest env where
   getSkillTest :: MonadReader env m => m (Maybe SkillTest)
@@ -576,24 +575,6 @@ instance SkillTestRunner env => RunMessage env SkillTest where
           + (if CancelSkills `elem` modifiers' then 0 else iconCount)
           )
       push $ SkillTestResults modifiedSkillValue' modifiedSkillTestDifficulty
-      liftIO $ whenM
-        (isJust <$> lookupEnv "DEBUG")
-        (putStrLn
-        . pack
-        $ "skill value: "
-        <> show currentSkillValue
-        <> "\n+ totaled token values: "
-        <> show totaledTokenValues
-        <> "\n+ skill icon count: "
-        <> show iconCount
-        <> "\n-------------------------"
-        <> "\n= Modified skill value: "
-        <> show modifiedSkillValue'
-        <> "\nDifficulty: "
-        <> show skillTestDifficulty
-        <> "\nModified Skill Difficulty: "
-        <> show modifiedSkillTestDifficulty
-        )
       if modifiedSkillValue' >= modifiedSkillTestDifficulty
         then
           pure

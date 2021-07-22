@@ -32,7 +32,7 @@ instance ActionRunner env => HasActions env SearchingForAnswers where
 instance ActRunner env => RunMessage env SearchingForAnswers where
   runMessage msg a@(SearchingForAnswers attrs@ActAttrs {..}) = case msg of
     WhenEnterLocation _ lid -> do
-      mHiddenChamberId <- getLocationIdByName "Hidden Chamber"
+      mHiddenChamberId <- getLocationIdByName "The Hidden Chamber"
       a <$ when
         (Just lid == mHiddenChamberId)
         (push $ AdvanceAct actId (toSource attrs))

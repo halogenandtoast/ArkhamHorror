@@ -17,6 +17,7 @@ baseTreachery
 baseTreachery cardCode name mEncounterSet isWeakness = CardDef
   { cdCardCode = cardCode
   , cdName = name
+  , cdRevealedName = Nothing
   , cdCost = Nothing
   , cdLevel = 0
   , cdCardType = if isWeakness then PlayerTreacheryType else TreacheryType

@@ -45,6 +45,7 @@ baseAsset
 baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   { cdCardCode = cardCode
   , cdName = name
+  , cdRevealedName = Nothing
   , cdCost = Just (StaticCost cost)
   , cdLevel = 0
   , cdCardType = AssetType

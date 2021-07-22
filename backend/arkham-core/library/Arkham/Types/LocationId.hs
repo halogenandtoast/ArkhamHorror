@@ -4,6 +4,9 @@ import Arkham.Prelude
 
 import Arkham.Types.Card.Id
 
+newtype LocationLabel = LocationLabel { unLocationLabel :: Text }
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+
 newtype LocationId = LocationId { unLocationId :: CardId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, Random)
 

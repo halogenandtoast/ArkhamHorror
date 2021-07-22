@@ -202,12 +202,19 @@ instance
     , HasName env AssetId
     , HasSet ClosestLocationId env (LocationId, [Trait])
     , HasCount DiscardCount env InvestigatorId
+    , HasSet EnemyId env ()
     , HasId (Maybe StoryEnemyId) env CardCode
     ) =>
     RunMessage env Enemy
     where
   runMessage msg e = do
-    modifiers' <- getModifiersFor (toSource e) (toTarget e) ()
+    -- we must check that an enemy exists when grabbing modifiers
+    -- as some messages are not masked when targetting cards in the
+    -- discard.
+    allEnemyIds <- getSet @EnemyId ()
+    modifiers' <- if toId e `member` allEnemyIds
+      then getModifiersFor (toSource e) (toTarget e) ()
+      else pure []
     let msg' = if any isBlank modifiers' then Blanked msg else msg
     genericRunMessage msg' e
 

@@ -52,7 +52,6 @@ type LocationCard a = CardBuilder LocationId a
 data LocationAttrs = LocationAttrs
   { locationId :: LocationId
   , locationCardCode :: CardCode
-  , locationUnrevealedName :: LocationName
   , locationLabel :: Text
   , locationRevealClues :: GameValue Int
   , locationClues :: Int
@@ -90,10 +89,6 @@ costToEnterUnrevealedL = lens locationCostToEnterUnrevealed
 
 connectsToL :: Lens' LocationAttrs (HashSet Direction)
 connectsToL = lens locationConnectsTo $ \m x -> m { locationConnectsTo = x }
-
-unrevealedNameL :: Lens' LocationAttrs LocationName
-unrevealedNameL =
-  lens locationUnrevealedName $ \m x -> m { locationUnrevealedName = x }
 
 revealedConnectedSymbolsL :: Lens' LocationAttrs (HashSet LocationSymbol)
 revealedConnectedSymbolsL = lens locationRevealedConnectedSymbols
@@ -165,7 +160,10 @@ instance Entity LocationAttrs where
   toAttrs = id
 
 instance Named LocationAttrs where
-  toName = toName . toCardDef
+  toName l = if locationRevealed l
+    then fromMaybe baseName (cdRevealedName $ toCardDef l)
+    else baseName
+    where baseName = toName (toCardDef l)
 
 instance TargetEntity LocationAttrs where
   toTarget = LocationTarget . toId
@@ -184,11 +182,7 @@ instance IsCard LocationAttrs where
   toCardId = unLocationId . locationId
 
 instance HasName env LocationAttrs where
-  getName attrs = pure $ locationNameFunc attrs
-   where
-    locationNameFunc = if locationRevealed attrs
-      then toName
-      else unLocationName . locationUnrevealedName
+  getName = pure . toName
 
 instance HasId (Maybe LocationId) env (Direction, LocationAttrs) where
   getId (dir, LocationAttrs {..}) = pure $ lookup dir locationDirections
@@ -253,7 +247,6 @@ locationWith f def shroud' revealClues symbol' connectedSymbols' g =
     , cbCardBuilder = \lid -> f . g $ LocationAttrs
       { locationId = lid
       , locationCardCode = toCardCode def
-      , locationUnrevealedName = LocationName (cdName def)
       , locationLabel = nameToLabel (cdName def)
       , locationRevealClues = revealClues
       , locationClues = 0

@@ -15,6 +15,7 @@ baseEnemy :: CardCode -> Name -> Maybe (EncounterSet, Int) -> Bool -> CardDef
 baseEnemy cardCode name mEncounterSet isWeakness = CardDef
   { cdCardCode = cardCode
   , cdName = name
+  , cdRevealedName = Nothing
   , cdCost = Nothing
   , cdLevel = 0
   , cdCardType = if isWeakness then PlayerEnemyType else EnemyType

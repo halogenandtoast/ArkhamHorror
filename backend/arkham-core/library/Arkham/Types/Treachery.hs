@@ -91,6 +91,7 @@ data Treachery
   | RuinAndDestruction' RuinAndDestruction
   | SearchingForIzzie' SearchingForIzzie
   | ShadowSpawned' ShadowSpawned
+  | ShellShock' ShellShock
   | SlitheringBehindYou' SlitheringBehindYou
   | SmiteTheWicked' SmiteTheWicked
   | SomethingInTheDrinks' SomethingInTheDrinks
@@ -258,6 +259,7 @@ allTreacheries = mapFromList $ map
   , RuinAndDestruction' <$> ruinAndDestruction
   , SearchingForIzzie' <$> searchingForIzzie
   , ShadowSpawned' <$> shadowSpawned
+  , ShellShock' <$> shellShock
   , SlitheringBehindYou' <$> slitheringBehindYou
   , SmiteTheWicked' <$> smiteTheWicked
   , SomethingInTheDrinks' <$> somethingInTheDrinks

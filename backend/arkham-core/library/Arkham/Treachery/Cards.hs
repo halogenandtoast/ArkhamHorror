@@ -74,6 +74,7 @@ allPlayerTreacheryCards = mapFromList $ map
   , psychosis
   , rexsCurse
   , searchingForIzzie
+  , shellShock
   , smiteTheWicked
   , wrackedByNightmares
   ]
@@ -502,6 +503,10 @@ vastExpanse :: CardDef
 vastExpanse = (treachery "02333" "Vast Expanse" LostInTimeAndSpace 3)
   { cdCardTraits = setFromList [Terror]
   }
+
+shellShock :: CardDef
+shellShock =
+  (weakness "03008" "Shell Shock") { cdCardTraits = setFromList [Flaw] }
 
 theZealotsSeal :: CardDef
 theZealotsSeal = (treachery "50024" "The Zealot's Seal" ReturnToTheGathering 2)

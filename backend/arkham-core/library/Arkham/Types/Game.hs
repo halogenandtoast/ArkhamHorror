@@ -2916,6 +2916,12 @@ runGameMessage msg g = case msg of
       assetId = toId asset
     push (TakeControlOfAsset iid assetId)
     pure $ g & assetsL . at assetId ?~ asset
+  ReplaceInvestigatorAsset iid card -> do
+    let
+      asset = createAsset card
+      assetId = toId asset
+    push (ReplacedInvestigatorAsset iid assetId)
+    pure $ g & assetsL . at assetId ?~ asset
   SpawnEnemyAt card lid -> do
     let
       enemy = createEnemy card

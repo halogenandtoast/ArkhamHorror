@@ -8,9 +8,11 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Id
 import Arkham.Types.Name
+import Arkham.Types.Query
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Cards
 import Arkham.Types.Skill.Runner
+import Arkham.Types.SkillTest
 
 createSkill :: IsCard a => a -> InvestigatorId -> Skill
 createSkill a iid = lookupSkill (toCardCode a) iid (SkillId $ toCardId a)
@@ -35,6 +37,7 @@ data Skill
   | StrokeOfLuck2' StrokeOfLuck2
   | SurvivalInstinct' SurvivalInstinct
   | SurvivalInstinct2' SurvivalInstinct2
+  | TheHomeFront' TheHomeFront
   | TrueUnderstanding' TrueUnderstanding
   | UnexpectedCourage' UnexpectedCourage
   | ViciousBlow' ViciousBlow
@@ -47,7 +50,12 @@ instance HasCardDef Skill where
 
 deriving anyclass instance ActionRunner env => HasActions env Skill
 
-instance SkillRunner env => RunMessage env Skill where
+instance
+  ( HasSkillTest env
+  , HasCount DamageCount env InvestigatorId
+  , SkillRunner env
+  )
+  => RunMessage env Skill where
   runMessage = genericRunMessage
 
 instance HasModifiersFor env Skill where
@@ -97,6 +105,7 @@ allSkills = mapFromList $ map
   , StrokeOfLuck2' <$> strokeOfLuck2
   , SurvivalInstinct' <$> survivalInstinct
   , SurvivalInstinct2' <$> survivalInstinct2
+  , TheHomeFront' <$> theHomeFront
   , TrueUnderstanding' <$> trueUnderstanding
   , UnexpectedCourage' <$> unexpectedCourage
   , ViciousBlow' <$> viciousBlow

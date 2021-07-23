@@ -32,6 +32,7 @@ data Investigator
   | DaisyWalkerParallel' DaisyWalkerParallel
   | JennyBarnes' JennyBarnes
   | JimCulver' JimCulver
+  | MarkHarrigan' MarkHarrigan
   | RexMurphy' RexMurphy
   | RolandBanks' RolandBanks
   | SkidsOToole' SkidsOToole
@@ -225,6 +226,7 @@ allInvestigators = mapFromList $ map
   , DaisyWalkerParallel' daisyWalkerParallel
   , JennyBarnes' jennyBarnes
   , JimCulver' jimCulver
+  , MarkHarrigan' markHarrigan
   , RexMurphy' rexMurphy
   , RolandBanks' rolandBanks
   , SkidsOToole' skidsOToole

@@ -255,6 +255,8 @@ library
       Arkham.Types.Asset.Cards.Shrivelling5
       Arkham.Types.Asset.Cards.SmokingPipe
       Arkham.Types.Asset.Cards.SongOfTheDead2
+      Arkham.Types.Asset.Cards.SophieInLovingMemory
+      Arkham.Types.Asset.Cards.SophieItWasAllMyFault
       Arkham.Types.Asset.Cards.SpringfieldM19034
       Arkham.Types.Asset.Cards.StrangeSolution
       Arkham.Types.Asset.Cards.StrangeSolutionAcidicIchor4
@@ -790,6 +792,7 @@ library
       Arkham.Types.Skill.Cards.StrokeOfLuck2
       Arkham.Types.Skill.Cards.SurvivalInstinct
       Arkham.Types.Skill.Cards.SurvivalInstinct2
+      Arkham.Types.Skill.Cards.TheHomeFront
       Arkham.Types.Skill.Cards.TrueUnderstanding
       Arkham.Types.Skill.Cards.UnexpectedCourage
       Arkham.Types.Skill.Cards.ViciousBlow
@@ -878,6 +881,7 @@ library
       Arkham.Types.Treachery.Cards.RuinAndDestruction
       Arkham.Types.Treachery.Cards.SearchingForIzzie
       Arkham.Types.Treachery.Cards.ShadowSpawned
+      Arkham.Types.Treachery.Cards.ShellShock
       Arkham.Types.Treachery.Cards.SlitheringBehindYou
       Arkham.Types.Treachery.Cards.SmiteTheWicked
       Arkham.Types.Treachery.Cards.SomethingInTheDrinks

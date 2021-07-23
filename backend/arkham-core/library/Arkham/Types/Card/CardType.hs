@@ -12,5 +12,6 @@ data CardType
   | EnemyType
   | LocationType
   | EncounterAssetType
+  | ActType
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

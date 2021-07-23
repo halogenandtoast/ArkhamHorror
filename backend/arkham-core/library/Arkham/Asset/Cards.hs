@@ -710,6 +710,7 @@ alchemicalConcoction :: CardDef
 alchemicalConcoction =
   (storyAsset "02059" "Alchemical Concoction" 0 ExtracurricularActivity)
     { cdCardTraits = setFromList [Item, Science]
+    , cdCardType = EncounterAssetType
     }
 
 jazzMulligan :: CardDef

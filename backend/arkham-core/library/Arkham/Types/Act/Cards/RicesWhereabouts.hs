@@ -14,7 +14,6 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.AgendaId
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
-import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Exception
@@ -71,8 +70,8 @@ instance ActRunner env => RunMessage env RicesWhereabouts where
       completedTheHouseAlwaysWins <-
         elem "02062" . map unCompletedScenarioId <$> getSetList ()
       theExperiment <- EncounterCard <$> genEncounterCard Enemies.theExperiment
-      alchemicalConcoction <- PlayerCard
-        <$> genPlayerCard Assets.alchemicalConcoction
+      alchemicalConcoction <- EncounterCard
+        <$> genEncounterCard Assets.alchemicalConcoction
 
       pushAll
         $ [ PlaceLocationMatching (LocationWithTitle "Alchemy Labs")

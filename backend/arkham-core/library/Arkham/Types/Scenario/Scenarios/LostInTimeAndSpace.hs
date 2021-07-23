@@ -246,23 +246,25 @@ instance
         Just card -> pushAll
           [ PlaceLocation (LocationId $ toCardId card) (toCardDef card)
           , MoveTo iid (LocationId $ toCardId card)
+          , MovedBy iid (toSource attrs)
           ]
     ScenarioResolution NoResolution -> do
       step <- unActStep <$> getStep
-      s <$ push (ScenarioResolution . Resolution $ if step == 4 then 2 else 4)
+      push (ScenarioResolution . Resolution $ if step == 4 then 2 else 4)
+      pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution 1) -> do
       msgs <- investigatorDefeat
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
-      s <$ pushAll
+      pushAll
         (msgs
         <> [ chooseOne
              leadInvestigatorId
              [ Run
                  [ Continue "Continue"
                  , FlavorText
-                   Nothing
+                   (Just "Resolution 1")
                    [ "Lying on your back in a patch of wet grass, you\
                    \ find yourself staring longingly at the night sky. Somehow, you\
                    \ are once again atop Sentinel Hill, unable to recall exactly how\
@@ -285,17 +287,18 @@ instance
         <> [ GainXP iid (xp + 5) | iid <- investigatorIds ]
         <> [EndOfGame]
         )
+      pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution 2) -> do
       msgs <- investigatorDefeat
       leadInvestigatorId <- getLeadInvestigatorId
-      s <$ pushAll
+      pushAll
         (msgs
         <> [ chooseOne
              leadInvestigatorId
              [ Run
                  [ Continue "Continue"
                  , FlavorText
-                   Nothing
+                   (Just "Resolution 2")
                    [ "Several of the villagers from Dunwich heard\
                      \ the ruckus on Sentinel Hill and went to investigate. What they\
                      \ found there answered none of their questions."
@@ -319,18 +322,19 @@ instance
            , EndOfGame
            ]
         )
+      pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution 3) -> do
       msgs <- investigatorDefeat
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      s <$ pushAll
+      pushAll
         (msgs
         <> [ chooseOne
              leadInvestigatorId
              [ Run
                  [ Continue "Continue"
                  , FlavorText
-                   Nothing
+                   (Just "Resolution 3")
                    [ "The creature erupts in a cosmic fury of sound,\
                      \ color, and distorted space, hurling you back and away from it.\
                      \ You watch in horror as one of its arms tears through the fabric\
@@ -347,18 +351,19 @@ instance
         <> [ InvestigatorKilled iid | iid <- investigatorIds ]
         <> [EndOfGame]
         )
+      pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution 4) -> do
       msgs <- investigatorDefeat
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      s <$ pushAll
+      pushAll
         (msgs
         <> [ chooseOne
              leadInvestigatorId
              [ Run
                  [ Continue "Continue"
                  , FlavorText
-                   Nothing
+                   (Just "Resolution 4")
                    [ "The sorcerers from Dunwich, seeking arcane\
                      \ power from beyond this realm, have accomplished what\
                      \ Wilbur and Old Whateley could not. Through blood sacrifice\
@@ -379,4 +384,5 @@ instance
         <> [ DrivenInsane iid | iid <- investigatorIds ]
         <> [EndOfGame]
         )
+      pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     _ -> LostInTimeAndSpace <$> runMessage msg attrs

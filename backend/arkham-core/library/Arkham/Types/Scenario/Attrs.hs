@@ -42,6 +42,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioLog :: HashSet ScenarioLogKey
   , scenarioLocations :: HashMap LocationName [CardDef]
   , scenarioSetAsideCards :: [Card]
+  , scenarioInResolution :: Bool
   }
   deriving stock (Show, Generic, Eq)
 
@@ -59,6 +60,10 @@ cardsUnderneathActDeckL =
 
 locationsL :: Lens' ScenarioAttrs (HashMap LocationName [CardDef])
 locationsL = lens scenarioLocations $ \m x -> m { scenarioLocations = x }
+
+inResolutionL :: Lens' ScenarioAttrs Bool
+inResolutionL =
+  lens scenarioInResolution $ \m x -> m { scenarioInResolution = x }
 
 deckL :: Lens' ScenarioAttrs (Maybe ScenarioDeck)
 deckL = lens scenarioDeck $ \m x -> m { scenarioDeck = x }
@@ -137,6 +142,7 @@ baseAttrs cardCode name agendaStack actStack' difficulty = ScenarioAttrs
   , scenarioLog = mempty
   , scenarioLocations = mempty
   , scenarioSetAsideCards = mempty
+  , scenarioInResolution = False
   }
 
 instance Entity ScenarioAttrs where
@@ -221,18 +227,22 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioAttrsRunner env)
       standalone <- getIsStandalone
       a <$ if standalone then push $ LoadDeck iid deck else pure ()
     PlaceLocationMatching locationMatcher -> do
-      let
-        locations =
-          fromMaybe []
-            $ findLocationKey locationMatcher scenarioLocations
-            >>= flip lookup scenarioLocations
-      a <$ case locations of
-        [] -> error "There were no locations with that name"
-        [cardDef] -> do
-          lid <- getRandom
-          push (PlaceLocation lid cardDef)
-        _ ->
-          error "We want there to be only one location when targetting names"
+      mlid <- getId @(Maybe LocationId) locationMatcher
+      case mlid of
+        Just _ -> pure a
+        Nothing -> do
+          let
+            locations =
+              fromMaybe []
+                $ findLocationKey locationMatcher scenarioLocations
+                >>= flip lookup scenarioLocations
+          a <$ case locations of
+            [] -> error "There were no locations with that name"
+            [cardDef] -> do
+              lid <- getRandom
+              push (PlaceLocation lid cardDef)
+            _ -> error
+              "We want there to be only one location when targetting names"
     EnemySpawnAtLocationMatching miid locationMatcher eid -> do
       mlid <- getId locationMatcher
       a <$ case mlid of
@@ -249,10 +259,11 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioAttrsRunner env)
     -- is that the act deck has been replaced.
     InvestigatorDefeated _ -> do
       investigatorIds <- getSet @InScenarioInvestigatorId ()
-      if null investigatorIds
+      if null investigatorIds && not scenarioInResolution
         then do
           clearQueue
-          a <$ push (ScenarioResolution NoResolution)
+          push (ScenarioResolution NoResolution)
+          pure $ a & inResolutionL .~ True -- must set to avoid redundancy when scenario kills investigator
         else pure a
     AllInvestigatorsResigned -> a <$ push (ScenarioResolution NoResolution)
     InvestigatorWhenEliminated _ iid -> a <$ push (InvestigatorEliminated iid)

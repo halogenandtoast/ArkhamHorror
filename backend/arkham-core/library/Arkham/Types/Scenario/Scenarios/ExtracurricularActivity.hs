@@ -190,7 +190,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            [ Run
                [ Continue "Continue"
                , FlavorText
-                 Nothing
+                 (Just "Resolution 1")
                  [ "You find Professor Rice bound and gagged\
                   \ in the closet of his office. When you free him, he informs you\
                   \ that the strange men and women wandering around the\
@@ -236,7 +236,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            [ Run
                [ Continue "Continue"
                , FlavorText
-                 Nothing
+                 (Just "Resolution 2")
                  [ "You pull each of the dormitory’s fire alarms\
                   \ and usher the students out of the building’s north exit,\
                   \ hoping to make your way off campus. Many of the students\
@@ -267,7 +267,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            [ Run
                [ Continue "Continue"
                , FlavorText
-                 Nothing
+                 (Just "Resolution 3")
                  [ "After defeating the strange and terrifying\
                   \ creature from the Department of Alchemy, you rush to the\
                   \ faculty offices to find Professor Rice. By the time you get to his\
@@ -291,7 +291,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            [ Run
                [ Continue "Continue"
                , FlavorText
-                 Nothing
+                 (Just "Resolution 3")
                  [ "You awaken hours later, exhausted and\
                   \ injured. You’re not sure what you saw, but the sight of it filled\
                   \ your mind with terror. From other survivors, you learn that\

@@ -368,6 +368,7 @@ data Message
     | MoveToward Target LocationMatcher
     | MoveTopOfDeckToBottom Source DeckSignifier Int
     | MoveUntil LocationId Target
+    | MovedBy InvestigatorId Source
     | NextAct ActId ActId
     | NextAdvanceActStep ActId Int
     | NextAgenda AgendaId AgendaId

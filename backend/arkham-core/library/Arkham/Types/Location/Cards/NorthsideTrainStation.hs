@@ -15,6 +15,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
+import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
@@ -49,5 +50,13 @@ instance LocationRunner env => RunMessage env NorthsideTrainStation where
   runMessage msg l@(NorthsideTrainStation attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationIds <- getSetList [Arkham]
-      l <$ push (chooseOne iid [ MoveTo iid lid | lid <- locationIds ])
+      l <$ push
+        (chooseOne
+          iid
+          [ TargetLabel
+              (LocationTarget lid)
+              [MoveTo iid lid, MovedBy iid (toSource attrs)]
+          | lid <- locationIds
+          ]
+        )
     _ -> NorthsideTrainStation <$> runMessage msg attrs

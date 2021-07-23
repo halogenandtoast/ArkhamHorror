@@ -47,6 +47,6 @@ instance (HasName env LocationId, ActRunner env) => RunMessage env AscendingTheH
     WhenEnterLocation _ lid -> do
       name <- getName lid
       a <$ when
-        (name == "Sentinel Hill")
+        (name == "Sentinel Peak")
         (push $ AdvanceAct actId (toSource attrs))
     _ -> AscendingTheHillV1 <$> runMessage msg attrs

@@ -40,8 +40,8 @@ instance TreacheryRunner env => RunMessage env ToweringBeasts where
         xs -> do
           locationId <- getId @LocationId iid
           broodWithLocationIds <- for xs $ \x -> (x, ) <$> getId @LocationId x
-          t <$ pushAll
-            [ chooseOne
+          t <$ push
+            (chooseOne
               iid
               [ TargetLabel
                   (EnemyTarget eid)
@@ -52,6 +52,5 @@ instance TreacheryRunner env => RunMessage env ToweringBeasts where
                   )
               | (eid, lid) <- broodWithLocationIds
               ]
-            , Discard (toTarget attrs)
-            ]
+            )
     _ -> ToweringBeasts <$> runMessage msg attrs

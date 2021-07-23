@@ -93,12 +93,9 @@ loadDecklist arkhamDeck = (investigatorId, ) <$> loadDecklistCards decklist
         then investigator_code decklist
         else alternate_front
 
-displayName :: Name -> Text
-displayName (Name title Nothing) = title
-displayName (Name title (Just subtitle)) = title <> ": " <> subtitle
-
 displayCardType :: CardType -> Text
 displayCardType = \case
+  ActType -> "act"
   AssetType -> "asset"
   EventType -> "event"
   SkillType -> "skill"
@@ -115,7 +112,7 @@ toHumanReadable = \case
   BeginInvestigation -> Just "Begin investigation phase"
   BeginMythos -> Just "Begin mythos phase"
   BeginUpkeep -> Just "Begin upkeep phase"
-  StartScenario name _ -> Just $ "Begin scenario " <> displayName name
+  StartScenario name _ -> Just $ "Begin scenario " <> display name
   PlayedCard iid cardId name cardCode ->
     Just $ investigator iid <> " played " <> card name cardCode cardId
   InvestigatorMulligan iid ->
@@ -173,7 +170,7 @@ toHumanReadable = \case
   investigator iid = "{investigator:" <> tshow iid <> "}"
   card name cardCode cardId =
     "{card:\""
-      <> displayName name
+      <> display name
       <> "\":"
       <> tshow cardCode
       <> ":\""

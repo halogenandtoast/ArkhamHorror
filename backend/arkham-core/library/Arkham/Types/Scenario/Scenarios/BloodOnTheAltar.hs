@@ -375,7 +375,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
                [ Run
                  $ [ Continue "Continue"
                    , FlavorText
-                     Nothing
+                     (Just "Resolution 1")
                      [ "As you land the finishing blow, the creature’s\
                      \ body explodes into hundreds of squirming ropelike\
                      \ appendages, wriggling across the ground and climbing up the\
@@ -405,7 +405,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
                [ Run
                  $ [ Continue "Continue"
                    , FlavorText
-                     Nothing
+                     (Just "Resolution 2")
                      [ "With the creature that once was Silas\
                      \ lashing out at you from its chains, you have little time to\
                      \ react. Knowing that the Necronomicon might have a spell\
@@ -442,7 +442,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
                [ Run
                  $ [ Continue "Continue"
                    , FlavorText
-                     Nothing
+                     (Just "Resolution 3")
                      [ "With the creature that once was Silas lashing\
                      \ out at you from its chains, you have little time to react.\
                      \ Hoping there is something in the chamber you can use to your\

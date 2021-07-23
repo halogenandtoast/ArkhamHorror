@@ -651,7 +651,7 @@ addCampaignCardToDeckChoice leadInvestigatorId investigatorIds cardDef =
   chooseOne
     leadInvestigatorId
     [ Label
-      ("Add " <> tshow name <> " to a deck")
+      ("Add " <> display name <> " to a deck")
       [ chooseOne
           leadInvestigatorId
           [ TargetLabel
@@ -660,7 +660,7 @@ addCampaignCardToDeckChoice leadInvestigatorId investigatorIds cardDef =
           | iid <- investigatorIds
           ]
       ]
-    , Label ("Do not add " <> tshow name <> " to any deck") []
+    , Label ("Do not add " <> display name <> " to any deck") []
     ]
   where name = cdName cardDef
 

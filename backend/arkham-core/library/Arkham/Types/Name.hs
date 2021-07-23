@@ -23,6 +23,10 @@ instance Named a => Named (a `With` b) where
 instance IsString Name where
   fromString = mkName . fromString
 
+display :: Name -> Text
+display (Name title (Just subtitle)) = title <> ": " <> subtitle
+display (Name title Nothing) = title
+
 mkName :: Text -> Name
 mkName = flip Name Nothing
 

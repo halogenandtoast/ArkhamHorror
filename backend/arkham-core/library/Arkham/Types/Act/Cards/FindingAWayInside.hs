@@ -16,6 +16,7 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
+import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype FindingAWayInside = FindingAWayInside ActAttrs
@@ -33,6 +34,12 @@ instance ActionRunner env => HasActions env FindingAWayInside where
 
 instance ActRunner env => RunMessage env FindingAWayInside where
   runMessage msg a@(FindingAWayInside attrs@ActAttrs {..}) = case msg of
+    AdvanceAct aid source@(LocationSource _) | aid == actId && onSide A attrs ->
+      do
+      -- When advanced from Museum Halls we don't spend clues
+        leadInvestigatorId <- getLeadInvestigatorId
+        push (chooseOne leadInvestigatorId [AdvanceAct aid source])
+        pure $ FindingAWayInside $ attrs & sequenceL .~ Act 1 B
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds

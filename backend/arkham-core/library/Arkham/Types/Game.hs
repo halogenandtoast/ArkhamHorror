@@ -2105,7 +2105,9 @@ runPreGameMessage msg g = case msg of
     pure $ g & windowDepthL +~ 1
   -- We want to empty the queue for triggering a resolution
   EndCheckWindow -> pure $ g & windowDepthL -~ 1
-  ScenarioResolution _ -> g <$ clearQueue
+  ScenarioResolution _ -> do
+    clearQueue
+    pure $ g & (skillTestL .~ Nothing) & (skillTestResultsL .~ Nothing)
   _ -> pure g
 
 runGameMessage

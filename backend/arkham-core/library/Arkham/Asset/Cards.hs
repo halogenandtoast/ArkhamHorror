@@ -817,6 +817,7 @@ haroldWalsted = (storyAsset
                 )
   { cdCardTraits = setFromList [Ally, Miskatonic]
   , cdUnique = True
+  , cdCardType = EncounterAssetType
   }
 
 adamLynch :: CardDef

@@ -2,6 +2,7 @@ module Arkham.Types.Act.Cards.CampusSafety where
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
@@ -11,9 +12,8 @@ import Arkham.Types.Resolution
 newtype CampusSafety = CampusSafety ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-campusSafety :: CampusSafety
-campusSafety =
-  CampusSafety $ baseAttrs "02047" "CampusSafety" (Act 3 A) Nothing
+campusSafety :: ActCard CampusSafety
+campusSafety = act (3, A) CampusSafety Cards.campusSafety Nothing
 
 instance ActionRunner env => HasActions env CampusSafety where
   getActions i window (CampusSafety x) = getActions i window x

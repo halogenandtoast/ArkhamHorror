@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.ThePathToTheHill
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -19,11 +20,11 @@ import Arkham.Types.Target
 newtype ThePathToTheHill = ThePathToTheHill ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-thePathToTheHill :: ThePathToTheHill
-thePathToTheHill = ThePathToTheHill $ baseAttrs
-  "02277"
-  "The Path to the Hill"
-  (Act 1 A)
+thePathToTheHill :: ActCard ThePathToTheHill
+thePathToTheHill = act
+  (1, A)
+  ThePathToTheHill
+  Cards.thePathToTheHill
   (Just $ RequiredClues (PerPlayer 2) Nothing)
 
 instance ActionRunner env => HasActions env ThePathToTheHill where

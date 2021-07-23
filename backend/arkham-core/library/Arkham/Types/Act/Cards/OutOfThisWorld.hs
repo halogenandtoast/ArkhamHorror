@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.OutOfThisWorld
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
@@ -21,11 +22,11 @@ import Arkham.Types.Window
 newtype OutOfThisWorld = OutOfThisWorld ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-outOfThisWorld :: OutOfThisWorld
-outOfThisWorld = OutOfThisWorld $ baseAttrs
-  "02316"
-  "Out of this World"
-  (Act 1 A)
+outOfThisWorld :: ActCard OutOfThisWorld
+outOfThisWorld = act
+  (1, A)
+  OutOfThisWorld
+  Cards.outOfThisWorld
   (Just $ RequiredClues (PerPlayer 2) Nothing)
 
 instance ActionRunner env => HasActions env OutOfThisWorld where

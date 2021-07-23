@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.IntoTheBeyond
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
@@ -20,9 +21,8 @@ import Arkham.Types.Window
 newtype IntoTheBeyond = IntoTheBeyond ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-intoTheBeyond :: IntoTheBeyond
-intoTheBeyond =
-  IntoTheBeyond $ baseAttrs "02317" "Into the Beyond" (Act 2 A) Nothing
+intoTheBeyond :: ActCard IntoTheBeyond
+intoTheBeyond = act (2, A) IntoTheBeyond Cards.intoTheBeyond Nothing
 
 instance ActionRunner env => HasActions env IntoTheBeyond where
   getActions iid NonFast (IntoTheBeyond x) = withBaseActions iid NonFast x $ do

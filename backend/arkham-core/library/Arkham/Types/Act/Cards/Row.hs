@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.Row
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
@@ -22,8 +23,8 @@ import Arkham.Types.Window
 newtype Row = Row ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-row :: Row
-row = Row $ baseAttrs "82007" "Row!" (Act 3 A) Nothing
+row :: ActCard Row
+row = act (3, A) Row Cards.row Nothing
 
 instance ActionRunner env => HasActions env Row where
   getActions iid (WhenWouldDrawEncounterCard You) (Row x) =

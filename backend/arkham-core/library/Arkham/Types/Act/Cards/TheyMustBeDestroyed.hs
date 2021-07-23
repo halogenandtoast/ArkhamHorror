@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.TheyMustBeDestroyed
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
@@ -19,9 +20,9 @@ import Arkham.Types.Resolution
 newtype TheyMustBeDestroyed = TheyMustBeDestroyed ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-theyMustBeDestroyed :: TheyMustBeDestroyed
-theyMustBeDestroyed = TheyMustBeDestroyed
-  $ baseAttrs "02241" "They Must Be Destroyed!" (Act 2 A) Nothing
+theyMustBeDestroyed :: ActCard TheyMustBeDestroyed
+theyMustBeDestroyed =
+  act (2, A) TheyMustBeDestroyed Cards.theyMustBeDestroyed Nothing
 
 instance ActionRunner env => HasActions env TheyMustBeDestroyed where
   getActions i window (TheyMustBeDestroyed x) = do

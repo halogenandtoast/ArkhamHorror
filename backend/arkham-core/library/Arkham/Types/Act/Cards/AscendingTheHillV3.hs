@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.AscendingTheHillV3
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
@@ -22,9 +23,9 @@ import Arkham.Types.Trait
 newtype AscendingTheHillV3 = AscendingTheHillV3 ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-ascendingTheHillV3 :: AscendingTheHillV3
-ascendingTheHillV3 = AscendingTheHillV3
-  $ baseAttrs "02280" "Ascending the Hill (v. III)" (Act 2 A) Nothing
+ascendingTheHillV3 :: ActCard AscendingTheHillV3
+ascendingTheHillV3 =
+  act (2, A) AscendingTheHillV3 Cards.ascendingTheHillV3 Nothing
 
 instance HasSet Trait env LocationId => HasModifiersFor env AscendingTheHillV3 where
   getModifiersFor _ (LocationTarget lid) (AscendingTheHillV3 attrs) = do

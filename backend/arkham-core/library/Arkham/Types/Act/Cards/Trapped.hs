@@ -2,6 +2,7 @@ module Arkham.Types.Act.Cards.Trapped where
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -14,12 +15,9 @@ import Arkham.Types.Target
 newtype Trapped = Trapped ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-trapped :: Trapped
-trapped = Trapped $ baseAttrs
-  "01108"
-  "Trapped"
-  (Act 1 A)
-  (Just $ RequiredClues (PerPlayer 2) Nothing)
+trapped :: ActCard Trapped
+trapped =
+  act (1, A) Trapped Cards.trapped (Just $ RequiredClues (PerPlayer 2) Nothing)
 
 instance ActionRunner env => HasActions env Trapped where
   getActions i window (Trapped x) = getActions i window x

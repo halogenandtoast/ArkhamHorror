@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.SearchingForTheTome
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
@@ -18,9 +19,9 @@ import Arkham.Types.Resolution
 newtype SearchingForTheTome = SearchingForTheTome ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-searchingForTheTome :: SearchingForTheTome
-searchingForTheTome = SearchingForTheTome
-  $ baseAttrs "02125" "Searching for the Tome" (Act 3 A) Nothing
+searchingForTheTome :: ActCard SearchingForTheTome
+searchingForTheTome =
+  act (3, A) SearchingForTheTome Cards.searchingForTheTome Nothing
 
 instance ActionRunner env => HasActions env SearchingForTheTome where
   getActions i window (SearchingForTheTome x) = do

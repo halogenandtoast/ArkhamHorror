@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.TheGateOpens
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
@@ -16,11 +17,11 @@ import Arkham.Types.Resolution
 newtype TheGateOpens = TheGateOpens ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-theGateOpens :: TheGateOpens
-theGateOpens = TheGateOpens $ baseAttrs
-  "02281"
-  "The Gate Opens"
-  (Act 3 A)
+theGateOpens :: ActCard TheGateOpens
+theGateOpens = act
+  (3, A)
+  TheGateOpens
+  Cards.theGateOpens
   (Just $ RequiredClues (PerPlayer 2) (Just $ LocationWithTitle "Sentinel Peak")
   )
 

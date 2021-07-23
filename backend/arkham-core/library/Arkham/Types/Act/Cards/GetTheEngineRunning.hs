@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.GetTheEngineRunning
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
@@ -16,9 +17,9 @@ import Arkham.Types.Resolution
 newtype GetTheEngineRunning = GetTheEngineRunning ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-getTheEngineRunning :: GetTheEngineRunning
-getTheEngineRunning = GetTheEngineRunning
-  $ baseAttrs "02166" "Get the Engine Running!" (Act 2 A) Nothing
+getTheEngineRunning :: ActCard GetTheEngineRunning
+getTheEngineRunning =
+  act (2, A) GetTheEngineRunning Cards.getTheEngineRunning Nothing
 
 instance ActionRunner env => HasActions env GetTheEngineRunning where
   getActions i window (GetTheEngineRunning x) = do

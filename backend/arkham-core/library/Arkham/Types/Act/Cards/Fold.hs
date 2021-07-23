@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.Fold
 
 import Arkham.Prelude hiding (fold)
 
+import qualified Arkham.Act.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -28,8 +29,8 @@ import Arkham.Types.Window
 newtype Fold = Fold ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-fold :: Fold
-fold = Fold $ baseAttrs "02069" "Fold" (Act 3 A) Nothing
+fold :: ActCard Fold
+fold = act (3, A) Fold Cards.fold Nothing
 
 instance ActionRunner env => HasActions env Fold where
   getActions iid NonFast (Fold attrs) = withBaseActions iid NonFast attrs $ do

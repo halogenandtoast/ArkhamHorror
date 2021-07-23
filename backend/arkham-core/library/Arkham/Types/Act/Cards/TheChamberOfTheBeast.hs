@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.TheChamberOfTheBeast
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -21,9 +22,9 @@ import Arkham.Types.Resolution
 newtype TheChamberOfTheBeast = TheChamberOfTheBeast ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-theChamberOfTheBeast :: TheChamberOfTheBeast
-theChamberOfTheBeast = TheChamberOfTheBeast
-  $ baseAttrs "02200" "The Chamber of the Beast" (Act 2 A) Nothing
+theChamberOfTheBeast :: ActCard TheChamberOfTheBeast
+theChamberOfTheBeast =
+  act (2, A) TheChamberOfTheBeast Cards.theChamberOfTheBeast Nothing
 
 instance ActionRunner env => HasActions env TheChamberOfTheBeast where
   getActions i window (TheChamberOfTheBeast x) = do

@@ -2,6 +2,7 @@ module Arkham.Types.Act.Cards.AfterHours where
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Asset.Cards as Assets
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
@@ -12,11 +13,11 @@ import Arkham.Types.Message
 newtype AfterHours = AfterHours ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-afterHours :: AfterHours
-afterHours = AfterHours $ baseAttrs
-  "02045"
-  "After Hours"
-  (Act 1 A)
+afterHours :: ActCard AfterHours
+afterHours = act
+  (1, A)
+  AfterHours
+  Cards.afterHours
   (Just $ RequiredClues (PerPlayer 3) Nothing)
 
 instance ActionRunner env => HasActions env AfterHours where

@@ -2,6 +2,7 @@ module Arkham.Types.Act.Cards.IntoTheDarkness where
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
@@ -13,9 +14,8 @@ import Arkham.Types.Source
 newtype IntoTheDarkness = IntoTheDarkness ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-intoTheDarkness :: IntoTheDarkness
-intoTheDarkness =
-  IntoTheDarkness $ baseAttrs "01147" "Into the Darkness" (Act 2 A) Nothing
+intoTheDarkness :: ActCard IntoTheDarkness
+intoTheDarkness = act (2, A) IntoTheDarkness Cards.intoTheDarkness Nothing
 
 instance ActionRunner env => HasActions env IntoTheDarkness where
   getActions i window (IntoTheDarkness x) = getActions i window x

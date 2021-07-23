@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.Run
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
@@ -16,8 +17,8 @@ import Arkham.Types.Target
 newtype Run = Run ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-run :: Run
-run = Run $ baseAttrs "02165" "Run!" (Act 1 A) Nothing
+run :: ActCard Run
+run = act (1, A) Run Cards.run Nothing
 
 instance ActionRunner env => HasActions env Run where
   getActions iid window (Run attrs) = getActions iid window attrs

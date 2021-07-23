@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.CloseTheRift
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
@@ -22,11 +23,11 @@ import Arkham.Types.Window
 newtype CloseTheRift = CloseTheRift ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-closeTheRift :: CloseTheRift
-closeTheRift = CloseTheRift $ baseAttrs
-  "02318"
-  "Close the Rift"
-  (Act 3 A)
+closeTheRift :: ActCard CloseTheRift
+closeTheRift = act
+  (3, A)
+  CloseTheRift
+  Cards.closeTheRift
   (Just $ RequiredClues
     (PerPlayer 3)
     (Just $ LocationWithTitle "The Edge of the Universe")

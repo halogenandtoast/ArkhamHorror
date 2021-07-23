@@ -2,6 +2,7 @@ module Arkham.Types.Act.Cards.DisruptingTheRitual where
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -19,12 +20,13 @@ import Arkham.Types.Window
 newtype DisruptingTheRitual = DisruptingTheRitual ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-disruptingTheRitual :: DisruptingTheRitual
-disruptingTheRitual =
+disruptingTheRitual :: ActCard DisruptingTheRitual
+disruptingTheRitual = actWith
+  (3, A)
   DisruptingTheRitual
-    $ (baseAttrs "01148" "Disrupting the Ritual" (Act 3 A) Nothing)
-        { actClues = Just 0
-        }
+  Cards.disruptingTheRitual
+  Nothing
+  (cluesL ?~ 0)
 
 instance ActionRunner env => HasActions env DisruptingTheRitual where
   getActions iid NonFast (DisruptingTheRitual a) = pure

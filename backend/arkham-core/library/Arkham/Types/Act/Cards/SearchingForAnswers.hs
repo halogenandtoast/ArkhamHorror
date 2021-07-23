@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.SearchingForAnswers
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
@@ -21,9 +22,9 @@ import Arkham.Types.Target
 newtype SearchingForAnswers = SearchingForAnswers ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-searchingForAnswers :: SearchingForAnswers
-searchingForAnswers = SearchingForAnswers
-  $ baseAttrs "02199" "Searching for Answers" (Act 1 A) Nothing
+searchingForAnswers :: ActCard SearchingForAnswers
+searchingForAnswers =
+  act (1, A) SearchingForAnswers Cards.searchingForAnswers Nothing
 
 instance ActionRunner env => HasActions env SearchingForAnswers where
   getActions iid window (SearchingForAnswers attrs) =

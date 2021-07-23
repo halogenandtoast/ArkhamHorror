@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.FindingAWayInside
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Asset.Cards as Assets
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -20,11 +21,11 @@ import Arkham.Types.Target
 newtype FindingAWayInside = FindingAWayInside ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-findingAWayInside :: FindingAWayInside
-findingAWayInside = FindingAWayInside $ baseAttrs
-  "02122"
-  "Finding A Way Inside"
-  (Act 1 A)
+findingAWayInside :: ActCard FindingAWayInside
+findingAWayInside = act
+  (1, A)
+  FindingAWayInside
+  Cards.findingAWayInside
   (Just $ RequiredClues (Static 2) Nothing)
 
 instance ActionRunner env => HasActions env FindingAWayInside where

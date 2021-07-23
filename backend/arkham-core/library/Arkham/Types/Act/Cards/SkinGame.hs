@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.SkinGame
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Asset.Cards as Assets
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -23,11 +24,11 @@ import Arkham.Types.Trait
 newtype SkinGame = SkinGame ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-skinGame :: SkinGame
-skinGame = SkinGame $ baseAttrs
-  "02067"
-  "Skin Game"
-  (Act 2 A)
+skinGame :: ActCard SkinGame
+skinGame = act
+  (2, A)
+  SkinGame
+  Cards.skinGame
   (Just $ RequiredClues (PerPlayer 2) (Just $ LocationWithTitle "VIP Area"))
 
 instance ActionRunner env => HasActions env SkinGame where

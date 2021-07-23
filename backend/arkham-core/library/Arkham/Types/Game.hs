@@ -3268,7 +3268,7 @@ runGameMessage msg g = case msg of
   EndCheckWindow -> pure $ g & usedAbilitiesL %~ filter
     (\(_, Ability {..}, n) -> case abilityLimit of
       NoLimit -> False
-      PlayerLimit PerWindow _ | n < gameWindowDepth g -> False
+      PlayerLimit PerWindow _ -> gameWindowDepth g >= n
       _ -> True
     )
   _ -> pure g

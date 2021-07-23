@@ -43,12 +43,19 @@ instance AgendaRunner env => RunMessage env TheBeastUnleashed where
             (LocationWithTitle "Dormitories")
           ]
         )
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
       investigatorIds <- getInvestigatorIds
       a <$ pushAll
         ([ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 3
          | iid <- investigatorIds
          ]
-        <> [Label "Resolution 3" [ScenarioResolution $ Resolution 3]]
+        <> [Label "Resolution 4" [ScenarioResolution $ Resolution 4]]
         )
+    EnemyEntered eid lid -> do
+      experimentId <- unStoryEnemyId . fromJustNote "must be in play" <$> getId
+        (CardCode "02058")
+      mDormitoriesId <- getId (LocationWithTitle "Dormitories")
+      a <$ when
+        (mDormitoriesId == Just lid && eid == experimentId)
+        (push $ AdvanceAgenda (toId attrs))
     _ -> TheBeastUnleashed <$> runMessage msg attrs

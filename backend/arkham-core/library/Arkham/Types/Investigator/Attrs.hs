@@ -1384,7 +1384,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     push (InvestigatorDefeated iid)
     pure $ a & defeatedL .~ True & endedTurnL .~ True
   InvestigatorKilled iid | iid == investigatorId -> do
-    push (InvestigatorDefeated iid)
+    unless investigatorDefeated $ push (InvestigatorDefeated iid)
     pure $ a & defeatedL .~ True & endedTurnL .~ True
   MoveAllTo lid | not (a ^. defeatedL || a ^. resignedL) ->
     a <$ push (MoveTo investigatorId lid)

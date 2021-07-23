@@ -52,6 +52,7 @@ instance ActRunner env => RunMessage env MysteriousGateway where
              [ TargetLabel
                  (InvestigatorTarget iid')
                  [ MoveTo iid' holeInTheWallId
+                 , MovedBy iid' (toSource attrs)
                  , BeginSkillTest
                    iid'
                    (ActSource aid)

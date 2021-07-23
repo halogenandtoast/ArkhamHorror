@@ -135,6 +135,8 @@ instance
       a <$ when
         (totalDoom >= perPlayerDoomThreshold)
         (pushAll [AdvanceAgenda agendaId, RemoveAllDoom])
+    RemoveAllDoom -> do
+      pure $ a & doomL .~ 0
     RevertAgenda aid | aid == agendaId && onSide B a ->
       pure
         $ a

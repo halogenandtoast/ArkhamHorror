@@ -46,7 +46,9 @@ instance (LocationRunner env) => RunMessage env Graveyard where
           (chooseOne
             iid
             [ InvestigatorAssignDamage iid source DamageAny 0 2
-            , MoveTo iid rivertownId
+            , TargetLabel
+              (LocationTarget rivertownId)
+              [MoveTo iid rivertownId, MovedBy iid (toSource attrs)]
             ]
           )
     _ -> Graveyard <$> runMessage msg attrs

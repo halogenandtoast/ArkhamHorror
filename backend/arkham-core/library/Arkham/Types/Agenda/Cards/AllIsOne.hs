@@ -14,6 +14,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Message
+import Arkham.Types.Source
 
 newtype AllIsOne = AllIsOne AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -25,6 +26,16 @@ instance HasModifiersFor env AllIsOne
 
 instance HasActions env AllIsOne where
   getActions i window (AllIsOne x) = getActions i window x
+
+isEncounterCardSource :: Source -> Bool
+isEncounterCardSource = \case
+  ActSource _ -> True
+  AgendaSource _ -> True
+  EnemySource _ -> True
+  LocationSource _ -> True
+  ScenarioSource _ -> True
+  TreacherySource _ -> True
+  _ -> False
 
 instance (HasRecord env, AgendaRunner env) => RunMessage env AllIsOne where
   runMessage msg a@(AllIsOne attrs@AgendaAttrs {..}) = case msg of
@@ -47,4 +58,6 @@ instance (HasRecord env, AgendaRunner env) => RunMessage env AllIsOne where
     RequestedEncounterCard source (Just card) | isSource attrs source -> do
       leadInvestigator <- getLeadInvestigatorId
       a <$ push (InvestigatorDrewEncounterCard leadInvestigator card)
+    MovedBy iid source | isEncounterCardSource source ->
+      a <$ push (InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1)
     _ -> AllIsOne <$> runMessage msg attrs

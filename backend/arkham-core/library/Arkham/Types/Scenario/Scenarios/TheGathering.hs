@@ -177,7 +177,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            [ Run
                [ Continue "Continue"
                , FlavorText
-                 Nothing
+                 (Just "Resolution 1")
                  [ "You nod and allow the red-haired woman to\
                   \ set the walls and floor of your house ablaze. The fire spreads\
                   \ quickly, and you run out the front door to avoid being caught\
@@ -211,7 +211,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            [ Run
                [ Continue "Continue"
                , FlavorText
-                 Nothing
+                 (Just "Resolution 2")
                  [ "You refuse to follow the overzealous woman’s\
                   \ order and kick her out of your home for fear that she will set\
                   \ it ablaze without your permission. “Fools! You are making\
@@ -237,7 +237,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           [ Run
               [ Continue "Continue"
               , FlavorText
-                Nothing
+                (Just "Resolution 3")
                 [ "You run to the hallway to try to find a way to\
                   \ escape the house, but the burning-hot barrier still blocks your\
                   \ path. Trapped, the horde of feral creatures that have invaded\

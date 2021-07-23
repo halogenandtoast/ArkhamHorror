@@ -39,6 +39,7 @@ import Text.Read (readEither)
 data CardJson = CardJson
   { code :: CardCode
   , name :: Text
+  , back_name :: Maybe Text
   , subname :: Maybe Text
   , cost :: Maybe Int
   , exceptional :: Bool
@@ -270,15 +271,34 @@ runValidations cards = do
     case lookup ccode cards of
       Nothing -> throw $ UnknownCard (cdCardCode card)
       Just cardJson@CardJson {..} -> do
-        when
-          (Name (normalizeName code name) (normalizeSubname code subname)
-          /= cdName card
-          )
-          (throw $ NameMismatch
-            code
-            (Name (normalizeName code name) (normalizeSubname code subname))
-            (cdName card)
-          )
+        if type_code == "location"
+          then do
+            for_ back_name $ \name' -> when
+              (Name (normalizeName code name') Nothing /= cdName card)
+              (throw $ NameMismatch
+                code
+                (Name (normalizeName code name') Nothing)
+                (cdName card)
+              )
+            for_ (cdRevealedName card) $ \revealedName -> when
+              (Name (normalizeName code name) (normalizeSubname code subname)
+              /= revealedName
+              )
+              (throw $ NameMismatch
+                code
+                (Name (normalizeName code name) (normalizeSubname code subname))
+                revealedName
+              )
+          else do
+            when
+              (Name (normalizeName code name) (normalizeSubname code subname)
+              /= cdName card
+              )
+              (throw $ NameMismatch
+                code
+                (Name (normalizeName code name) (normalizeSubname code subname))
+                (cdName card)
+              )
         when
           (isJust (cdEncounterSet card)
           && Just quantity

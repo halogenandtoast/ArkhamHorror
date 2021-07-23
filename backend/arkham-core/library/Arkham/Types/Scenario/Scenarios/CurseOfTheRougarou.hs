@@ -288,7 +288,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           [ Run
             $ [ Continue "Continue"
               , FlavorText
-                Nothing
+                (Just "Resolution 1")
                 [ "Somehow, you manage to make it back safely before daybreak,\
                     \ resting until late in the afternoon. It isn't until you seek\
                     \ out Lady Esprit the next day that you realize who last night's\
@@ -312,7 +312,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           [ Run
             $ [ Continue "Continue"
               , FlavorText
-                Nothing
+                (Just "Resolution 2")
                 [ "The creature gives a pitiful wail as dark miry blood oozes from\
                   \ its wounds. By the time its body collapses into the mud, it has\
                   \ transformed back into its original form—the form of a yound dark\
@@ -345,7 +345,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           [ Run
             $ [ Continue "Continue"
               , FlavorText
-                Nothing
+                (Just "Resolution 3")
                 [ "Somehow, you have managed to quell the rage and bloodlust\
                   \ of the curse within the creature, and in moments the shape\
                   \ of a young, dark-skinned man stands before you, panting and\

@@ -240,7 +240,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           [ Run
             $ [ Continue "Continue"
               , FlavorText
-                Nothing
+                (Just "Resolution 1")
                 [ "You’ve managed to obtain some useful\
                   \ information about the cult and its plans. You can only hope\
                   \ it’s enough."
@@ -272,7 +272,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           [ Run
             $ [ Continue "Continue"
               , FlavorText
-                Nothing
+                (Just "Resolution 2")
                 [ "Twelve bells ring out, signaling midnight. You’re\
                   \ out of time; the cult’s ritual will begin shortly. You’ve managed\
                   \ to obtain some useful information about the cult and its plans.\

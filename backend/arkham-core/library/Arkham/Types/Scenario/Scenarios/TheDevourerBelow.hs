@@ -68,7 +68,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           , Locations.arkhamWoodsTangledThicket
           , Locations.arkhamWoodsQuietGlade
           ]
-        woodsLabels = ["woods1", "woods2", "woods3", "woods4"]
+        woodsLabels = [ "woods" <> tshow @Int n | n <- [1 .. 4] ]
         ghoulPriestMessages =
           [ AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive ]
         pastMidnightMessages =
@@ -207,7 +207,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           [ Run
             $ [ Continue "Continue"
               , FlavorText
-                Nothing
+                (Just "Resolution 1")
                 [ "You have managed to prevent the cult from\
                   \ summoning its master. Although you’re unsure what would\
                   \ have happened had the cult succeeded, you’re relieved that—at\
@@ -228,7 +228,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           [ Run
             $ [ Continue "Continue"
               , FlavorText
-                Nothing
+                (Just "Resolution 2")
                 [ "Through force of arms and strength of will,\
                   \ you are somehow able to harm Umôrdhoth enough to send it\
                   \ reeling back to the dimension from which it emerged. Warmth\
@@ -255,7 +255,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           [ Run
             $ [ Continue "Continue"
               , FlavorText
-                Nothing
+                (Just "Resolution 3")
                 [ "In the face of this horror, you don’t believe there\
                   \ is anything you can do to stop it. You have but one hope if you\
                   \ are to survive. You turn on Lita and throw her at the terrible\

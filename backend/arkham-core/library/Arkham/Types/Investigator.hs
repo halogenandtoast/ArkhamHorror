@@ -33,6 +33,7 @@ data Investigator
   | JennyBarnes' JennyBarnes
   | JimCulver' JimCulver
   | MarkHarrigan' MarkHarrigan
+  | MinhThiPhan' MinhThiPhan
   | RexMurphy' RexMurphy
   | RolandBanks' RolandBanks
   | SkidsOToole' SkidsOToole
@@ -227,6 +228,7 @@ allInvestigators = mapFromList $ map
   , JennyBarnes' jennyBarnes
   , JimCulver' jimCulver
   , MarkHarrigan' markHarrigan
+  , MinhThiPhan' minhThiPhan
   , RexMurphy' rexMurphy
   , RolandBanks' rolandBanks
   , SkidsOToole' skidsOToole

@@ -25,6 +25,7 @@ import Arkham.Types.Effect.Effects.LuckyDice2 as X
 import Arkham.Types.Effect.Effects.MindOverMatter as X
 import Arkham.Types.Effect.Effects.MindWipe1 as X
 import Arkham.Types.Effect.Effects.MindWipe3 as X
+import Arkham.Types.Effect.Effects.MinhThiPhan as X
 import Arkham.Types.Effect.Effects.OnTheLam as X
 import Arkham.Types.Effect.Effects.PayForAbilityEffect as X
 import Arkham.Types.Effect.Effects.PushedIntoTheBeyond as X

@@ -10,12 +10,10 @@ import Arkham.Types.Asset.Cards
 import Arkham.Types.Asset.Class as X
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
-import Arkham.Types.AssetId
 import Arkham.Types.Card
+import Arkham.Types.Card.Id
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -34,6 +32,7 @@ data Asset
   | Adaptable1' Adaptable1
   | AlchemicalConcoction' AlchemicalConcoction
   | AlyssaGraham' AlyssaGraham
+  | AnalyticalMind' AnalyticalMind
   | Aquinnah1' Aquinnah1
   | Aquinnah3' Aquinnah3
   | ArcaneEnlightenment' ArcaneEnlightenment
@@ -170,6 +169,7 @@ data Asset
   | Switchblade' Switchblade
   | Switchblade2' Switchblade2
   | TheGoldPocketWatch4' TheGoldPocketWatch4
+  | TheKingInYellow' TheKingInYellow
   | TheNecronomicon' TheNecronomicon
   | TheNecronomiconAdvanced' TheNecronomiconAdvanced
   | TheNecronomiconOlausWormiusTranslation' TheNecronomiconOlausWormiusTranslation
@@ -207,6 +207,7 @@ instance
   , HasCount ClueCount env InvestigatorId
   , HasCount AssetCount env (InvestigatorId, [Trait])
   , HasSet Trait env LocationId
+  , HasSet CommittedCardId env InvestigatorId
   , HasSkillTest env
   )
   => HasModifiersFor env Asset where
@@ -320,6 +321,7 @@ allAssets = mapFromList $ map
   , Adaptable1' <$> adaptable1
   , AlchemicalConcoction' <$> alchemicalConcoction
   , AlyssaGraham' <$> alyssaGraham
+  , AnalyticalMind' <$> analyticalMind
   , Aquinnah1' <$> aquinnah1
   , Aquinnah3' <$> aquinnah3
   , ArcaneEnlightenment' <$> arcaneEnlightenment
@@ -457,6 +459,7 @@ allAssets = mapFromList $ map
   , Switchblade' <$> switchblade
   , Switchblade2' <$> switchblade2
   , TheGoldPocketWatch4' <$> theGoldPocketWatch4
+  , TheKingInYellow' <$> theKingInYellow
   , TheNecronomicon' <$> theNecronomicon
   , TheNecronomiconAdvanced' <$> theNecronomiconAdvanced
   , TheNecronomiconOlausWormiusTranslation'

@@ -10,8 +10,7 @@ import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.RequestedTokenStrategy
@@ -125,6 +124,30 @@ instance HasSet CommittedCardId env (InvestigatorId, SkillTest) where
       . keysSet
       . filterMap ((== iid) . fst)
       $ skillTestCommittedCards st
+
+instance HasSet CommittedSkillId env (InvestigatorId, SkillTest) where
+  getSet (iid, st) =
+    pure
+      . mapSet (CommittedSkillId . SkillId)
+      . keysSet
+      . filterMap
+          (\(iid', card') -> iid' == iid && toCardType card' == SkillType)
+      $ skillTestCommittedCards st
+
+instance HasModifiersFor env () => HasList CommittedSkillIcon env (InvestigatorId, SkillTest) where
+  getList (iid, st) = do
+    let
+      cards = toList . filterMap ((== iid) . fst) $ skillTestCommittedCards st
+    concatMapM (fmap (map CommittedSkillIcon) . iconsForCard . snd) cards
+   where
+    iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
+      modifiers' <-
+        map modifierType
+          <$> getModifiersFor (toSource st) (CardIdTarget pcId) ()
+      pure $ foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers'
+    iconsForCard _ = pure []
+    applySkillModifiers (AddSkillIcons xs) ys = xs <> ys
+    applySkillModifiers _ ys = ys
 
 instance HasSet CommittedCardCode env SkillTest where
   getSet =

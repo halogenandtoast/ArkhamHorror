@@ -3,23 +3,17 @@ module Arkham.Types.Investigator.Runner where
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.ActId
 import Arkham.Types.Action
-import Arkham.Types.AgendaId
 import Arkham.Types.Asset.Uses (UseType)
-import Arkham.Types.AssetId
 import Arkham.Types.AssetMatcher
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Direction
-import Arkham.Types.EnemyId
 import Arkham.Types.EnemyMatcher
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Keyword
-import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
@@ -28,9 +22,9 @@ import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.SkillTest
+import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Trait
-import Arkham.Types.TreacheryId
 
 type InvestigatorRunner env
   = ( CanBeWeakness env TreacheryId
@@ -81,6 +75,7 @@ type InvestigatorRunner env
       , HasId LocationId env InvestigatorId
       )
     , ( HasList CommittedCard env InvestigatorId
+      , HasList CommittedSkillIcon env InvestigatorId
       , HasList DiscardedEncounterCard env ()
       , HasList DiscardableHandCard env InvestigatorId
       , HasList DiscardedPlayerCard env InvestigatorId
@@ -127,6 +122,7 @@ type InvestigatorRunner env
             (LocationId, Prey, HashMap LocationId [LocationId])
         , HasSet CommittedCardCode env ()
         , HasSet CommittedCardId env InvestigatorId
+        , HasSet CommittedSkillId env InvestigatorId
         , HasSet ConnectedLocationId env LocationId
         , HasSet DiscardableAssetId env InvestigatorId
         , HasSet EmptyLocationId env ()

@@ -131,6 +131,7 @@ library
       Arkham.Types.Asset.Cards.Adaptable1
       Arkham.Types.Asset.Cards.AlchemicalConcoction
       Arkham.Types.Asset.Cards.AlyssaGraham
+      Arkham.Types.Asset.Cards.AnalyticalMind
       Arkham.Types.Asset.Cards.Aquinnah1
       Arkham.Types.Asset.Cards.Aquinnah3
       Arkham.Types.Asset.Cards.ArcaneEnlightenment
@@ -267,6 +268,7 @@ library
       Arkham.Types.Asset.Cards.Switchblade
       Arkham.Types.Asset.Cards.Switchblade2
       Arkham.Types.Asset.Cards.TheGoldPocketWatch4
+      Arkham.Types.Asset.Cards.TheKingInYellow
       Arkham.Types.Asset.Cards.TheNecronomicon
       Arkham.Types.Asset.Cards.TheNecronomiconAdvanced
       Arkham.Types.Asset.Cards.TheNecronomiconOlausWormiusTranslation
@@ -346,6 +348,7 @@ library
       Arkham.Types.Effect.Effects.MindOverMatter
       Arkham.Types.Effect.Effects.MindWipe1
       Arkham.Types.Effect.Effects.MindWipe3
+      Arkham.Types.Effect.Effects.MinhThiPhan
       Arkham.Types.Effect.Effects.OnTheLam
       Arkham.Types.Effect.Effects.PayForAbilityEffect
       Arkham.Types.Effect.Effects.PushedIntoTheBeyond

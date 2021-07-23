@@ -179,6 +179,13 @@ getCanAffordUse iid ability = case abilityLimit ability of
       <$> getList ()
   PlayerLimit _ n ->
     (< n) . count (== (iid, ability)) . map unUsedAbility <$> getList ()
+  PerInvestigatorLimit _ _ n -> do
+    usedAbilities <- map unUsedAbility <$> getList ()
+    let
+      matchingAbilities = filter (== (iid, ability)) usedAbilities
+      matchingPerInvestigatorCount =
+        count ((== abilityLimit ability) . abilityLimit . snd) matchingAbilities
+    pure $ matchingPerInvestigatorCount < n
   GroupLimit _ n ->
     (< n) . count (== ability) . map (snd . unUsedAbility) <$> getList ()
 

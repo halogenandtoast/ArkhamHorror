@@ -2,6 +2,9 @@ module Arkham.Types.SkillType where
 
 import Arkham.Prelude
 
+newtype CommittedSkillIcon = CommittedSkillIcon { unCommittedSkillIcon :: SkillType }
+  deriving newtype (Show, Eq, Generic, Ord, ToJSON, FromJSON, Hashable)
+
 data SkillType
   = SkillWillpower
   | SkillIntellect

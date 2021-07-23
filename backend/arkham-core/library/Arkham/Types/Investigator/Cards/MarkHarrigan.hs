@@ -1,4 +1,7 @@
-module Arkham.Types.Investigator.Cards.MarkHarrigan where
+module Arkham.Types.Investigator.Cards.MarkHarrigan
+  ( markHarrigan
+  , MarkHarrigan(..)
+  ) where
 
 import Arkham.Prelude
 

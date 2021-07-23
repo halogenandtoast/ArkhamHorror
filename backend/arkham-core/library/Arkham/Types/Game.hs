@@ -1483,6 +1483,14 @@ instance HasGame env => HasSet CommittedCardId env InvestigatorId where
   getSet iid =
     maybe (pure mempty) (getSet . (iid, )) . view skillTestL =<< getGame
 
+instance HasGame env => HasList CommittedSkillIcon env InvestigatorId where
+  getList iid =
+    maybe (pure mempty) (getList . (iid, )) . view skillTestL =<< getGame
+
+instance HasGame env => HasSet CommittedSkillId env InvestigatorId where
+  getSet iid =
+    maybe (pure mempty) (getSet . (iid, )) . view skillTestL =<< getGame
+
 instance HasGame env => HasList CommittedCard env InvestigatorId where
   getList iid =
     maybe (pure mempty) (getList . (iid, )) . view skillTestL =<< getGame
@@ -2337,7 +2345,8 @@ runGameMessage msg g = case msg of
     let
       card = fromJustNote "could not find card in hand"
         $ find ((== cardId) . toCardId) (handOf investigator)
-    push (InvestigatorCommittedCard iid cardId)
+    afterMsgs <- checkWindows iid (\who -> pure [AfterCommitedCard who cardId])
+    pushAll (InvestigatorCommittedCard iid cardId : afterMsgs)
     case card of
       PlayerCard pc -> case toCardType pc of
         SkillType -> do
@@ -2354,16 +2363,22 @@ runGameMessage msg g = case msg of
       & skillTestResultsL
       ?~ SkillTestResultsData skillValue skillDifficulty
   SkillTestEnds _ -> do
-    let
-      skillCardsWithOwner =
-        flip map (mapToList $ g ^. skillsL) $ \(skillId, skill) ->
-          ( lookupPlayerCard (toCardDef skill) (unSkillId skillId)
-          , ownerOfSkill skill
+    skillPairs <- for (mapToList $ g ^. skillsL) $ \(skillId, skill) -> do
+      modifiers' <-
+        map modifierType <$> getModifiersFor GameSource (SkillTarget skillId) ()
+      pure $ if ReturnToHandAfterTest `elem` modifiers'
+        then (ReturnToHand (ownerOfSkill skill) (SkillTarget skillId), Nothing)
+        else
+          ( AddToDiscard
+            (ownerOfSkill skill)
+            (lookupPlayerCard (toCardDef skill) (unSkillId skillId))
+          , Just skillId
           )
-    pushAll [ AddToDiscard iid card | (card, iid) <- skillCardsWithOwner ]
+    pushAll $ map fst skillPairs
+    let skillsToRemove = mapMaybe snd skillPairs
     pure
       $ g
-      & (skillsL .~ mempty)
+      & (skillsL %~ HashMap.filterWithKey (\k _ -> k `notElem` skillsToRemove))
       & (skillTestL .~ Nothing)
       & (skillTestResultsL .~ Nothing)
       & (usedAbilitiesL %~ filter

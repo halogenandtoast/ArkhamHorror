@@ -7,6 +7,13 @@
       :investigatorId="investigatorId"
       @choose="$emit('choose', $event)"
     />
+    <CommittedSkills
+      v-if="skills.length > 0"
+      :game="game"
+      :cards="skills"
+      :investigatorId="investigatorId"
+      @choose="$emit('choose', $event)"
+    />
     <CardRow
       v-if="showCards.length > 0"
       :game="game"
@@ -56,6 +63,7 @@
         @choose="$emit('choose', $event)"
       />
 
+
       <Act
         v-for="(act, key) in game.acts"
         :key="key"
@@ -81,8 +89,6 @@
         :src="activeCard"
         class="card"
       />
-
-      <button v-if="outOfPlay.length > 0" class="view-out-of-play-button" @click="doShowCards($event, outOfPlay, 'Out of Play', true)"><font-awesome-icon icon="eye" /> Out of Play</button>
     </div>
 
     <svg id="svg">
@@ -130,6 +136,7 @@ import Act from '@/arkham/components/Act.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
 import CardRow from '@/arkham/components/CardRow.vue';
+import CommittedSkills from '@/arkham/components/CommittedSkills.vue';
 import StatusBar from '@/arkham/components/StatusBar.vue';
 import ChaosBag from '@/arkham/components/ChaosBag.vue';
 import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
@@ -196,6 +203,7 @@ export default defineComponent({
     ChaosBag,
     PlayerTabs,
     CardRow,
+    CommittedSkills,
     EncounterDeck,
     PlayerOrder,
     PlayerSelector,
@@ -286,7 +294,6 @@ export default defineComponent({
 
     const players = computed(() => props.game.investigators)
     const discards = computed(() => props.game.discard)
-    const outOfPlay = computed(() => (props.game.scenario?.contents?.setAsideCards || []).map(c => c.contents))
 
     const showCards = ref<CardContents[]>([])
     const viewingDiscard = ref(false)
@@ -336,8 +343,10 @@ export default defineComponent({
       return scenario.contents.cardsUnderActDeck.map(c => c.contents)
     })
 
+    const skills = computed(() => Object.values(props.game.skills).map(skill => skill.contents))
+
     return {
-      outOfPlay,
+      skills,
       locationMap,
       update,
       activePlayerId,
@@ -378,12 +387,10 @@ export default defineComponent({
 
 .scenario-cards {
   display: flex;
-  align-self: start;
+  align-self: center;
   align-items: flex-start;
   justify-content: center;
-  padding-top: 10px;
   padding-bottom: 10px;
-  position: relative;
 }
 
 .clue--can-investigate {
@@ -469,7 +476,7 @@ export default defineComponent({
   }
 }
 
-#svg {
+svg {
   pointer-events: none;
   position: absolute;
   top: 0;
@@ -483,22 +490,5 @@ export default defineComponent({
   stroke-width:6px;
   /* stroke:#a6b5bb; */
   stroke:rgba(0,0,0, 0.2);
-}
-
-.view-out-of-play-button {
-  text-decoration: none;
-  position: absolute;
-  transform: translate(100%, -50%) rotate(90deg) translate(0%, 50%) translate(0%, 10px);
-  svg {
-    transform: rotate(-90deg)
-  }
-  transform-origin: center left;
-  top: 0px;
-  right: 0px;
-  border: 0;
-  color: white;
-  background: #a5b5bc;
-  font-size: 1.2em;
-  padding: 5px 15px;
 }
 </style>

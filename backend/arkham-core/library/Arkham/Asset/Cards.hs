@@ -194,6 +194,8 @@ allPlayerAssetCards = mapFromList $ map
   , shrivelling3
   , shrivelling5
   , smokingPipe
+  , sophieInLovingMemory
+  , sophieItWasAllMyFault
   , streetwise3
   , painkillers
   , songOfTheDead2
@@ -1131,6 +1133,20 @@ theRedGlovedMan5 =
     , cdLevel = 5
     , cdFast = True
     , cdWindows = setFromList [DuringTurn You]
+    , cdUnique = True
+    }
+
+sophieInLovingMemory :: CardDef
+sophieInLovingMemory =
+  (asset "03009" ("Sophie" <:> "In Loving Memory") 0 Neutral)
+    { cdCardTraits = setFromList [Item, Spirit]
+    , cdUnique = True
+    }
+
+sophieItWasAllMyFault :: CardDef
+sophieItWasAllMyFault =
+  (asset "03009b" ("Sophie" <:> "It Was All My Fault") 0 Neutral)
+    { cdCardTraits = setFromList [Item, Madness]
     , cdUnique = True
     }
 

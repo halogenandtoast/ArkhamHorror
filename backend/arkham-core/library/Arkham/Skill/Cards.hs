@@ -64,6 +64,7 @@ allPlayerSkillCards = mapFromList $ map
   , strokeOfLuck2
   , survivalInstinct
   , survivalInstinct2
+  , theHomeFront
   , trueUnderstanding
   , unexpectedCourage
   , viciousBlow
@@ -207,6 +208,12 @@ viciousBlow2 =
   (skill "02299" "Vicious Blow" [SkillCombat, SkillCombat] Guardian)
     { cdCardTraits = setFromList [Practiced, Expert]
     , cdLevel = 2
+    }
+
+theHomeFront :: CardDef
+theHomeFront =
+  (skill "03007" "The Home Front" (replicate 4 SkillCombat) Neutral)
+    { cdCardTraits = setFromList [Practiced, Expert]
     }
 
 trueUnderstanding :: CardDef

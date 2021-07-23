@@ -69,10 +69,15 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorXp :: Int
   , investigatorPhysicalTrauma :: Int
   , investigatorMentalTrauma :: Int
+  , investigatorStartsWith :: [CardDef]
   -- investigator-specific fields
   , investigatorTomeActions :: Maybe Int
   }
   deriving stock (Show, Generic)
+
+startsWithL :: Lens' InvestigatorAttrs [CardDef]
+startsWithL =
+  lens investigatorStartsWith $ \m x -> m { investigatorStartsWith = x }
 
 willpowerL :: Lens' InvestigatorAttrs Int
 willpowerL =
@@ -433,6 +438,7 @@ baseAttrs iid name classSymbol Stats {..} traits = InvestigatorAttrs
   , investigatorXp = 0
   , investigatorPhysicalTrauma = 0
   , investigatorMentalTrauma = 0
+  , investigatorStartsWith = []
   , investigatorTomeActions = Nothing
   }
 
@@ -702,16 +708,39 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     , investigatorMentalTrauma = investigatorMentalTrauma
     , investigatorSanityDamage = investigatorMentalTrauma
     , investigatorHealthDamage = investigatorPhysicalTrauma
+    , investigatorStartsWith = investigatorStartsWith
     }
   SetupInvestigators -> do
     let
-      (permanentCards, deck') =
-        partition (cdPermanent . toCardDef) (unDeck investigatorDeck)
-      (discard, hand, deck) = drawOpeningHand (a & deckL .~ Deck deck') 5
+      (startsWithMsgs, deck') = foldl'
+        (\(msgs, currentDeck) cardDef ->
+          let
+            (before, after) =
+              break ((== cardDef) . toCardDef) (unDeck currentDeck)
+          in
+            case after of
+              (card : rest) ->
+                ( PutCardIntoPlay investigatorId (PlayerCard card) Nothing
+                  : msgs
+                , Deck (before <> rest)
+                )
+              _ ->
+                error
+                  $ "Did not find starting card "
+                  <> show (toName cardDef)
+                  <> " in deck"
+        )
+        ([], investigatorDeck)
+        investigatorStartsWith
+    let
+      (permanentCards, deck'') =
+        partition (cdPermanent . toCardDef) (unDeck deck')
+      (discard, hand, deck) = drawOpeningHand (a & deckL .~ Deck deck'') 5
     pushAll
-      $ [ PutCardIntoPlay investigatorId (PlayerCard card) Nothing
-        | card <- permanentCards
-        ]
+      $ startsWithMsgs
+      <> [ PutCardIntoPlay investigatorId (PlayerCard card) Nothing
+         | card <- permanentCards
+         ]
       <> [TakeStartingResources investigatorId]
     pure $ a & (discardL .~ discard) & (handL .~ hand) & (deckL .~ Deck deck)
   TakeStartingResources iid | iid == investigatorId -> do
@@ -1031,6 +1060,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       <> [After (InvestigatorTakeDamage iid source damage horror)]
       <> [ CheckWindow iid [WhenDealtHorror source (toTarget a)]
          | horror > 0
+         ]
+      <> [ CheckWindow iid [WhenDealtDamage source (toTarget a)]
+         | damage > 0
          ]
       )
   InvestigatorAssignDamage iid source strategy damage horror

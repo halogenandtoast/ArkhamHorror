@@ -158,6 +158,8 @@ data Asset
   | Shrivelling5' Shrivelling5
   | SmokingPipe' SmokingPipe
   | SongOfTheDead2' SongOfTheDead2
+  | SophieInLovingMemory' SophieInLovingMemory
+  | SophieItWasAllMyFault' SophieItWasAllMyFault
   | SpringfieldM19034' SpringfieldM19034
   | StrangeSolution' StrangeSolution
   | StrangeSolutionAcidicIchor4' StrangeSolutionAcidicIchor4
@@ -181,7 +183,11 @@ data Asset
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-instance (ActionRunner env , HasSkillTest env) => HasActions env Asset where
+instance
+  ( ActionRunner env
+  , HasSkillTest env
+  )
+  => HasActions env Asset where
   getActions iid window x = do
     inPlay <- member (toId x) <$> getSet ()
     modifiers' <- if inPlay
@@ -438,6 +444,8 @@ allAssets = mapFromList $ map
   , Shrivelling5' <$> shrivelling5
   , SmokingPipe' <$> smokingPipe
   , SongOfTheDead2' <$> songOfTheDead2
+  , SophieInLovingMemory' <$> sophieInLovingMemory
+  , SophieItWasAllMyFault' <$> sophieItWasAllMyFault
   , SpringfieldM19034' <$> springfieldM19034
   , StrangeSolution' <$> strangeSolution
   , StrangeSolutionAcidicIchor4' <$> strangeSolutionAcidicIchor4

@@ -503,6 +503,8 @@ data Message
     | Surge InvestigatorId Source
     | TakeAction InvestigatorId (Maybe Action) Cost
     | TakeControlOfAsset InvestigatorId AssetId
+    | ReplaceInvestigatorAsset InvestigatorId Card
+    | ReplacedInvestigatorAsset InvestigatorId AssetId
     | TakeControlOfSetAsideAsset InvestigatorId Card
     | TakeResources InvestigatorId Int Bool
     | TakeStartingResources InvestigatorId

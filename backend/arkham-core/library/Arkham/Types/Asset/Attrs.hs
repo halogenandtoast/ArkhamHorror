@@ -344,6 +344,8 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs whe
       a <$ push (InvestigatorPlayAsset iid aid slots traits)
     TakeControlOfAsset iid aid | aid == assetId ->
       pure $ a & investigatorL ?~ iid
+    ReplacedInvestigatorAsset iid aid | aid == assetId ->
+      pure $ a & investigatorL ?~ iid
     AddToScenarioDeck target | isTarget a target -> do
       pushAll [AddCardToScenarioDeck (toCard a), RemoveFromGame (toTarget a)]
       pure $ a & investigatorL .~ Nothing

@@ -5,13 +5,12 @@ module Arkham.Types.Investigator.Cards.AshcanPete
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Assets
 import Arkham.Types.Ability
 import Arkham.Types.AssetId
-import Arkham.Types.Card
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -30,19 +29,21 @@ instance HasModifiersFor env AshcanPete where
     getModifiersFor source target attrs
 
 ashcanPete :: AshcanPete
-ashcanPete = AshcanPete $ baseAttrs
-  "02005"
-  "\"Ashcan\" Pete"
-  Survivor
-  Stats
-    { health = 6
-    , sanity = 5
-    , willpower = 4
-    , intellect = 2
-    , combat = 2
-    , agility = 3
-    }
-  [Drifter]
+ashcanPete = AshcanPete $ base & startsWithL .~ [Assets.duke]
+ where
+  base = baseAttrs
+    "02005"
+    "\"Ashcan\" Pete"
+    Survivor
+    Stats
+      { health = 6
+      , sanity = 5
+      , willpower = 4
+      , intellect = 2
+      , combat = 2
+      , agility = 3
+      }
+    [Drifter]
 
 ability :: InvestigatorAttrs -> Ability
 ability attrs = base { abilityLimit = PlayerLimit PerRound 1 }
@@ -80,13 +81,4 @@ instance (InvestigatorRunner env) => RunMessage env AshcanPete where
             investigatorId
             [ Ready (AssetTarget aid) | aid <- exhaustedAssetIds ]
           )
-    SetupInvestigators -> do
-      let
-        (before, after) =
-          break ((== "02014") . cdCardCode . toCardDef) (unDeck investigatorDeck)
-      case after of
-        (card : rest) -> do
-          push (PutCardIntoPlay investigatorId (PlayerCard card) Nothing)
-          AshcanPete <$> runMessage msg (attrs & deckL .~ Deck (before <> rest))
-        _ -> error "Duke must be in deck"
     _ -> AshcanPete <$> runMessage msg attrs

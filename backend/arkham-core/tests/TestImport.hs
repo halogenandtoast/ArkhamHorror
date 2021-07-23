@@ -10,7 +10,8 @@ module TestImport
 import Arkham.Prelude as X
 
 import qualified Arkham.Asset.Cards as Cards
-import Arkham.Game as X hiding (newGame)
+import Arkham.Game as X hiding (newGame, runMessages)
+import qualified Arkham.Game as Game
 import Arkham.Types.Action
 import Arkham.Types.Agenda as X
 import Arkham.Types.Agenda.Attrs
@@ -70,6 +71,17 @@ import Helpers.Matchers as X
 import Helpers.Message as X
 import System.Random (StdGen, mkStdGen)
 import Test.Hspec as X
+
+runMessages
+  :: ( MonadIO m
+     , HasGameRef env
+     , HasStdGen env
+     , HasQueue env
+     , MonadReader env m
+     , HasMessageLogger env
+     )
+  => m ()
+runMessages = Game.runMessages False
 
 shouldSatisfyM
   :: (HasCallStack, Show a, MonadIO m) => m a -> (a -> Bool) -> m ()

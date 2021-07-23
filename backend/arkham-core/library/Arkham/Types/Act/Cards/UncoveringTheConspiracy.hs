@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.UncoveringTheConspiracy
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -22,9 +23,9 @@ import qualified Data.HashSet as HashSet
 newtype UncoveringTheConspiracy = UncoveringTheConspiracy ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-uncoveringTheConspiracy :: UncoveringTheConspiracy
-uncoveringTheConspiracy = UncoveringTheConspiracy
-  $ baseAttrs "01123" "Uncovering the Conspiracy" (Act 1 A) Nothing
+uncoveringTheConspiracy :: ActCard UncoveringTheConspiracy
+uncoveringTheConspiracy =
+  act (1, A) UncoveringTheConspiracy Cards.uncoveringTheConspiracy Nothing
 
 instance ActionRunner env => HasActions env UncoveringTheConspiracy where
   getActions iid NonFast (UncoveringTheConspiracy x@ActAttrs {..}) = do

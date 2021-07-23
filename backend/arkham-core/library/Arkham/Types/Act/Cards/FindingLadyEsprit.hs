@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.FindingLadyEsprit
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Asset.Cards as Assets
 import Arkham.EncounterSet
 import qualified Arkham.Enemy.Cards as Enemies
@@ -29,9 +30,9 @@ import Data.Maybe (fromJust)
 newtype FindingLadyEsprit = FindingLadyEsprit ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-findingLadyEsprit :: FindingLadyEsprit
+findingLadyEsprit :: ActCard FindingLadyEsprit
 findingLadyEsprit =
-  FindingLadyEsprit $ baseAttrs "81005" "Finding Lady Esprit" (Act 1 A) Nothing
+  act (1, A) FindingLadyEsprit Cards.findingLadyEsprit Nothing
 
 instance ActionRunner env => HasActions env FindingLadyEsprit where
   getActions _ FastPlayerWindow (FindingLadyEsprit attrs@ActAttrs {..}) = do

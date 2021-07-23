@@ -5,9 +5,12 @@ module Arkham.Types.Act.Attrs
 
 import Arkham.Prelude
 
+import Arkham.Act.Cards
 import Arkham.Json
 import Arkham.Types.Act.Sequence as X
+import qualified Arkham.Types.Act.Sequence as AS
 import Arkham.Types.ActId
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Exception
 import Arkham.Types.Game.Helpers
@@ -24,9 +27,10 @@ import Arkham.Types.Target
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window
 
+type ActCard a = CardBuilder ActId a
+
 data ActAttrs = ActAttrs
   { actId :: ActId
-  , actName :: Text
   , actSequence :: ActSequence
   , actRequiredClues :: Maybe RequiredClues
   , actClues :: Maybe Int
@@ -37,8 +41,43 @@ data ActAttrs = ActAttrs
 sequenceL :: Lens' ActAttrs ActSequence
 sequenceL = lens actSequence $ \m x -> m { actSequence = x }
 
+cluesL :: Lens' ActAttrs (Maybe Int)
+cluesL = lens actClues $ \m x -> m { actClues = x }
+
 treacheriesL :: Lens' ActAttrs (HashSet TreacheryId)
 treacheriesL = lens actTreacheries $ \m x -> m { actTreacheries = x }
+
+actWith
+  :: (Int, ActSide)
+  -> (ActAttrs -> a)
+  -> CardDef
+  -> Maybe RequiredClues
+  -> (ActAttrs -> ActAttrs)
+  -> CardBuilder ActId a
+actWith (n, side) f cardDef mRequiredClues g = CardBuilder
+  { cbCardCode = cdCardCode cardDef
+  , cbCardBuilder = \aid -> f . g $ ActAttrs
+    { actId = aid
+    , actSequence = AS.Act n side
+    , actClues = Nothing
+    , actRequiredClues = mRequiredClues
+    , actTreacheries = mempty
+    }
+  }
+
+act
+  :: (Int, ActSide)
+  -> (ActAttrs -> a)
+  -> CardDef
+  -> Maybe RequiredClues
+  -> CardBuilder ActId a
+act actSeq f cardDef mRequiredClues =
+  actWith actSeq f cardDef mRequiredClues id
+
+instance HasCardDef ActAttrs where
+  toCardDef e = case lookup (unActId $ actId e) allActCards of
+    Just def -> def
+    Nothing -> error $ "missing card def for act " <> show (unActId $ actId e)
 
 instance ToJSON ActAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "act"
@@ -59,7 +98,7 @@ instance Entity ActAttrs where
   toAttrs = id
 
 instance Named ActAttrs where
-  toName = mkName . actName
+  toName = toName . toCardDef
 
 instance TargetEntity ActAttrs where
   toTarget = ActTarget . toId
@@ -73,16 +112,6 @@ instance SourceEntity ActAttrs where
 
 onSide :: ActSide -> ActAttrs -> Bool
 onSide side ActAttrs {..} = actSide actSequence == side
-
-baseAttrs :: ActId -> Text -> ActSequence -> Maybe RequiredClues -> ActAttrs
-baseAttrs aid name seq' mRequiredClues = ActAttrs
-  { actId = aid
-  , actName = name
-  , actSequence = seq'
-  , actClues = Nothing
-  , actRequiredClues = mRequiredClues
-  , actTreacheries = mempty
-  }
 
 instance ActionRunner env => HasActions env ActAttrs where
   getActions _ FastPlayerWindow attrs@ActAttrs {..} = case actRequiredClues of

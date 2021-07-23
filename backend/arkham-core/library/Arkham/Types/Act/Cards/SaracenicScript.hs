@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.SaracenicScript
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Asset.Cards as Assets
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
@@ -21,11 +22,11 @@ import Arkham.Types.Message
 newtype SaracenicScript = SaracenicScript ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-saracenicScript :: SaracenicScript
-saracenicScript = SaracenicScript $ baseAttrs
-  "02240"
-  "Saracenic Script"
-  (Act 1 A)
+saracenicScript :: ActCard SaracenicScript
+saracenicScript = act
+  (1, A)
+  SaracenicScript
+  Cards.saracenicScript
   (Just
   $ RequiredClues (PerPlayer 2) (Just $ LocationWithTitle "Whateley Ruins")
   )

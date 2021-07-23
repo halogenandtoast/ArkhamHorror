@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.BreakingAndEntering
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Asset.Cards as Assets
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -22,9 +23,9 @@ import Arkham.Types.Target
 newtype BreakingAndEntering = BreakingAndEntering ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-breakingAndEntering :: BreakingAndEntering
-breakingAndEntering = BreakingAndEntering
-  $ baseAttrs "02124" "Breaking and Entering" (Act 2 A) Nothing
+breakingAndEntering :: ActCard BreakingAndEntering
+breakingAndEntering =
+  act (2, A) BreakingAndEntering Cards.breakingAndEntering Nothing
 
 instance ActionRunner env => HasActions env BreakingAndEntering where
   getActions i window (BreakingAndEntering x) = getActions i window x

@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.NightAtTheMuseum
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
@@ -19,9 +20,8 @@ import Arkham.Types.Target
 newtype NightAtTheMuseum = NightAtTheMuseum ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-nightAtTheMuseum :: NightAtTheMuseum
-nightAtTheMuseum =
-  NightAtTheMuseum $ baseAttrs "02123" "Night at the Museum" (Act 2 A) Nothing
+nightAtTheMuseum :: ActCard NightAtTheMuseum
+nightAtTheMuseum = act (2, A) NightAtTheMuseum Cards.nightAtTheMuseum Nothing
 
 instance ActionRunner env => HasActions env NightAtTheMuseum where
   getActions i window (NightAtTheMuseum x) = getActions i window x

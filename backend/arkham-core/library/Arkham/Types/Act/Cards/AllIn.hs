@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.AllIn
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -28,8 +29,8 @@ import Arkham.Types.Window
 newtype AllIn = AllIn ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-allIn :: AllIn
-allIn = AllIn $ baseAttrs "02068" "All In" (Act 3 A) Nothing
+allIn :: ActCard AllIn
+allIn = act (3, A) AllIn Cards.allIn Nothing
 
 instance ActionRunner env => HasActions env AllIn where
   getActions iid NonFast (AllIn attrs) = withBaseActions iid NonFast attrs $ do

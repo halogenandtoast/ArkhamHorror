@@ -2,6 +2,7 @@ module Arkham.Types.Act.Cards.TheBarrier where
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Act.Attrs
@@ -19,8 +20,8 @@ import Arkham.Types.Message
 newtype TheBarrier = TheBarrier ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-theBarrier :: TheBarrier
-theBarrier = TheBarrier $ baseAttrs "01109" "The Barrier" (Act 2 A) Nothing
+theBarrier :: ActCard TheBarrier
+theBarrier = act (2, A) TheBarrier Cards.theBarrier Nothing
 
 instance ActionRunner env => HasActions env TheBarrier where
   getActions i window (TheBarrier x) = getActions i window x

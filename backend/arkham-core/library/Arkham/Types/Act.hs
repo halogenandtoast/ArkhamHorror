@@ -101,45 +101,45 @@ lookupAct actId =
   fromJustNote ("Unknown act: " <> show actId) $ lookup actId allActs
 
 allActs :: HashMap ActId Act
-allActs = mapFrom
-  toId
-  [ Trapped' trapped
-  , TheBarrier' theBarrier
-  , WhatHaveYouDone' whatHaveYouDone
-  , UncoveringTheConspiracy' uncoveringTheConspiracy
-  , InvestigatingTheTrail' investigatingTheTrail
-  , IntoTheDarkness' intoTheDarkness
-  , DisruptingTheRitual' disruptingTheRitual
-  , AfterHours' afterHours
-  , RicesWhereabouts' ricesWhereabouts
-  , CampusSafety' campusSafety
-  , BeginnersLuck' beginnersLuck
-  , SkinGame' skinGame
-  , AllIn' allIn
-  , Fold' fold
-  , FindingAWayInside' findingAWayInside
-  , NightAtTheMuseum' nightAtTheMuseum
-  , BreakingAndEntering' breakingAndEntering
-  , SearchingForTheTome' searchingForTheTome
-  , Run' run
-  , GetTheEngineRunning' getTheEngineRunning
-  , SearchingForAnswers' searchingForAnswers
-  , TheChamberOfTheBeast' theChamberOfTheBeast
-  , SaracenicScript' saracenicScript
-  , TheyMustBeDestroyed' theyMustBeDestroyed
-  , ThePathToTheHill' thePathToTheHill
-  , AscendingTheHillV1' ascendingTheHillV1
-  , AscendingTheHillV2' ascendingTheHillV2
-  , AscendingTheHillV3' ascendingTheHillV3
-  , TheGateOpens' theGateOpens
-  , OutOfThisWorld' outOfThisWorld
-  , IntoTheBeyond' intoTheBeyond
-  , CloseTheRift' closeTheRift
-  , FindingANewWay' findingANewWay
-  , MysteriousGateway' mysteriousGateway
-  , FindingLadyEsprit' findingLadyEsprit
-  , HuntingTheRougarou' huntingTheRougarou
-  , TheCarnevaleConspiracy' theCarnevaleConspiracy
-  , GetToTheBoats' getToTheBoats
-  , Row' row
+allActs = mapFromList $ map
+  (\cb -> (ActId (cbCardCode cb), cbCardBuilder cb (ActId (cbCardCode cb))))
+  [ Trapped' <$> trapped
+  , TheBarrier' <$> theBarrier
+  , WhatHaveYouDone' <$> whatHaveYouDone
+  , UncoveringTheConspiracy' <$> uncoveringTheConspiracy
+  , InvestigatingTheTrail' <$> investigatingTheTrail
+  , IntoTheDarkness' <$> intoTheDarkness
+  , DisruptingTheRitual' <$> disruptingTheRitual
+  , AfterHours' <$> afterHours
+  , RicesWhereabouts' <$> ricesWhereabouts
+  , CampusSafety' <$> campusSafety
+  , BeginnersLuck' <$> beginnersLuck
+  , SkinGame' <$> skinGame
+  , AllIn' <$> allIn
+  , Fold' <$> fold
+  , FindingAWayInside' <$> findingAWayInside
+  , NightAtTheMuseum' <$> nightAtTheMuseum
+  , BreakingAndEntering' <$> breakingAndEntering
+  , SearchingForTheTome' <$> searchingForTheTome
+  , Run' <$> run
+  , GetTheEngineRunning' <$> getTheEngineRunning
+  , SearchingForAnswers' <$> searchingForAnswers
+  , TheChamberOfTheBeast' <$> theChamberOfTheBeast
+  , SaracenicScript' <$> saracenicScript
+  , TheyMustBeDestroyed' <$> theyMustBeDestroyed
+  , ThePathToTheHill' <$> thePathToTheHill
+  , AscendingTheHillV1' <$> ascendingTheHillV1
+  , AscendingTheHillV2' <$> ascendingTheHillV2
+  , AscendingTheHillV3' <$> ascendingTheHillV3
+  , TheGateOpens' <$> theGateOpens
+  , OutOfThisWorld' <$> outOfThisWorld
+  , IntoTheBeyond' <$> intoTheBeyond
+  , CloseTheRift' <$> closeTheRift
+  , FindingANewWay' <$> findingANewWay
+  , MysteriousGateway' <$> mysteriousGateway
+  , FindingLadyEsprit' <$> findingLadyEsprit
+  , HuntingTheRougarou' <$> huntingTheRougarou
+  , TheCarnevaleConspiracy' <$> theCarnevaleConspiracy
+  , GetToTheBoats' <$> getToTheBoats
+  , Row' <$> row
   ]

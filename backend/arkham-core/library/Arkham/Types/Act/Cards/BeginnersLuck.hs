@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.BeginnersLuck
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
@@ -27,11 +28,11 @@ import Arkham.Types.Window
 newtype BeginnersLuck = BeginnersLuck ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-beginnersLuck :: BeginnersLuck
-beginnersLuck = BeginnersLuck $ baseAttrs
-  "02066"
-  "Beginner's Luck"
-  (Act 1 A)
+beginnersLuck :: ActCard BeginnersLuck
+beginnersLuck = act
+  (1, A)
+  BeginnersLuck
+  Cards.beginnersLuck
   (Just $ RequiredClues (PerPlayer 4) Nothing)
 
 ability :: Token -> ActAttrs -> Ability

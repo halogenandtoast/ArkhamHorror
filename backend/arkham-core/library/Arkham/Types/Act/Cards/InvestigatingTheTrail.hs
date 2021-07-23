@@ -2,6 +2,7 @@ module Arkham.Types.Act.Cards.InvestigatingTheTrail where
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import Arkham.EncounterCard
 import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.Act.Attrs
@@ -17,11 +18,11 @@ import Arkham.Types.Message
 newtype InvestigatingTheTrail = InvestigatingTheTrail ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-investigatingTheTrail :: InvestigatingTheTrail
-investigatingTheTrail = InvestigatingTheTrail $ baseAttrs
-  "01146"
-  "Investigating the Trail"
-  (Act 1 A)
+investigatingTheTrail :: ActCard InvestigatingTheTrail
+investigatingTheTrail = act
+  (1, A)
+  InvestigatingTheTrail
+  Cards.investigatingTheTrail
   (Just $ RequiredClues (PerPlayer 3) Nothing)
 
 instance ActionRunner env => HasActions env InvestigatingTheTrail where

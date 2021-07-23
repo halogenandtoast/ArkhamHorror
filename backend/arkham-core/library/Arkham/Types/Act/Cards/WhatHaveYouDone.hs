@@ -2,6 +2,7 @@ module Arkham.Types.Act.Cards.WhatHaveYouDone where
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
@@ -12,9 +13,8 @@ import Arkham.Types.Resolution
 newtype WhatHaveYouDone = WhatHaveYouDone ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-whatHaveYouDone :: WhatHaveYouDone
-whatHaveYouDone =
-  WhatHaveYouDone $ baseAttrs "01110" "What Have You Done?" (Act 3 A) Nothing
+whatHaveYouDone :: ActCard WhatHaveYouDone
+whatHaveYouDone = act (3, A) WhatHaveYouDone Cards.whatHaveYouDone Nothing
 
 instance ActionRunner env => HasActions env WhatHaveYouDone where
   getActions i window (WhatHaveYouDone x) = getActions i window x

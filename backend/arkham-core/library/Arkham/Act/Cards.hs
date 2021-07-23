@@ -1,24 +1,14 @@
 module Arkham.Act.Cards where
 
-import Arkham.Prelude
+import Arkham.Prelude hiding (fold)
 
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.CardType
-import Arkham.Types.Card.Cost
-import Arkham.Types.ClassSymbol
-import Arkham.Types.EncounterSet hiding (Dunwich)
-import qualified Arkham.Types.Keyword as Keyword
+import Arkham.Types.EncounterSet
 import Arkham.Types.Name
-import Arkham.Types.SkillType
-import Arkham.Types.Trait
-import Arkham.Types.Window
 
-act
-  :: CardCode
-  -> Name
-  -. EncounterSet
-  -> CardDef
+act :: CardCode -> Name -> EncounterSet -> CardDef
 act cardCode name encounterSet = CardDef
   { cdCardCode = cardCode
   , cdName = name

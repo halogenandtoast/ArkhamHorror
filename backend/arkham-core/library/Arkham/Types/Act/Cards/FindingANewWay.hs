@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.FindingANewWay
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
@@ -21,9 +22,8 @@ import Arkham.Types.Window
 newtype FindingANewWay = FindingANewWay ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-findingANewWay :: FindingANewWay
-findingANewWay =
-  FindingANewWay $ baseAttrs "02319" "Finding a New Way" (Act 4 A) Nothing
+findingANewWay :: ActCard FindingANewWay
+findingANewWay = act (4, A) FindingANewWay Cards.findingANewWay Nothing
 
 instance ActionRunner env => HasActions env FindingANewWay where
   getActions iid NonFast (FindingANewWay x) =

@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.TheCarnevaleConspiracy
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Ability
@@ -27,9 +28,9 @@ import Arkham.Types.Window
 newtype TheCarnevaleConspiracy = TheCarnevaleConspiracy ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-theCarnevaleConspiracy :: TheCarnevaleConspiracy
-theCarnevaleConspiracy = TheCarnevaleConspiracy
-  $ baseAttrs "82005" "The Carnevale Conspiracy" (Act 1 A) Nothing
+theCarnevaleConspiracy :: ActCard TheCarnevaleConspiracy
+theCarnevaleConspiracy =
+  act (1, A) TheCarnevaleConspiracy Cards.theCarnevaleConspiracy Nothing
 
 ability :: ActAttrs -> Ability
 ability a = mkAbility

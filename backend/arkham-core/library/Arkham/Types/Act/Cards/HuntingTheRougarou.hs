@@ -2,6 +2,7 @@ module Arkham.Types.Act.Cards.HuntingTheRougarou where
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -23,9 +24,9 @@ import Arkham.Types.Window
 newtype HuntingTheRougarou = HuntingTheRougarou ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-huntingTheRougarou :: HuntingTheRougarou
-huntingTheRougarou = HuntingTheRougarou
-  $ baseAttrs "81006" "Hunting the Rougarou" (Act 2 A) Nothing
+huntingTheRougarou :: ActCard HuntingTheRougarou
+huntingTheRougarou =
+  act (2, A) HuntingTheRougarou Cards.huntingTheRougarou Nothing
 
 ability :: ActAttrs -> Ability
 ability attrs = (mkAbility (toSource attrs) 1 (FastAbility Free))

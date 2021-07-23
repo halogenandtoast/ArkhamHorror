@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.GetToTheBoats
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
@@ -23,9 +24,8 @@ import Arkham.Types.Window
 newtype GetToTheBoats = GetToTheBoats ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-getToTheBoats :: GetToTheBoats
-getToTheBoats =
-  GetToTheBoats $ baseAttrs "82006" "Get to the Boats!" (Act 2 A) Nothing
+getToTheBoats :: ActCard GetToTheBoats
+getToTheBoats = act (2, A) GetToTheBoats Cards.getToTheBoats Nothing
 
 ability :: ActAttrs -> Ability
 ability a = mkAbility a 1 ForcedAbility

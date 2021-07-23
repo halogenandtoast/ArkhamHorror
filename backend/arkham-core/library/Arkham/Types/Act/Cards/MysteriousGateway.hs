@@ -2,6 +2,7 @@ module Arkham.Types.Act.Cards.MysteriousGateway where
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -18,11 +19,11 @@ import Arkham.Types.Target
 newtype MysteriousGateway = MysteriousGateway ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
-mysteriousGateway :: MysteriousGateway
-mysteriousGateway = MysteriousGateway $ baseAttrs
-  "50012"
-  "Mysterious Gateway"
-  (Act 1 A)
+mysteriousGateway :: ActCard MysteriousGateway
+mysteriousGateway = act
+  (1, A)
+  MysteriousGateway
+  Cards.mysteriousGateway
   (Just $ RequiredClues (PerPlayer 3) (Just $ LocationWithTitle "Guest Hall"))
 
 instance ActionRunner env => HasActions env MysteriousGateway where

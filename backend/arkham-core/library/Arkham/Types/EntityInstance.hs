@@ -52,6 +52,7 @@ toCardInstance iid card = case toCardType card of
   PlayerTreacheryType -> TreacheryInstance $ createTreachery card iid
   SkillType -> SkillInstance $ createSkill card iid
   TreacheryType -> TreacheryInstance $ createTreachery card iid
+  ActType -> error "Unhandled"
 
 -- UseCardAbility and Revelation are special and need access to the original instance
 -- therefor we do not mask with In{Hand,Discard,etc.}

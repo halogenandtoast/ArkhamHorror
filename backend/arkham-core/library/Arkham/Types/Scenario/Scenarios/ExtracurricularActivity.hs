@@ -291,7 +291,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            [ Run
                [ Continue "Continue"
                , FlavorText
-                 (Just "Resolution 3")
+                 (Just "Resolution 4")
                  [ "You awaken hours later, exhausted and\
                   \ injured. You’re not sure what you saw, but the sight of it filled\
                   \ your mind with terror. From other survivors, you learn that\

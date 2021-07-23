@@ -637,6 +637,23 @@ getPossibleSkillTypeChoices skillType attrs = do
     | toReplace == skillType = toUse : skills
   applyModifier _ skills = skills
 
+canCommitToAnotherLocation
+  :: ( MonadReader env m
+     , HasModifiersFor env ()
+     , HasSet CommittedCardId env InvestigatorId
+     )
+  => InvestigatorAttrs
+  -> m Bool
+canCommitToAnotherLocation attrs = do
+  modifiers <-
+    map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
+  committedCardIds <- map unCommittedCardId <$> getSetList (toId attrs)
+  pure $ any (permit committedCardIds) modifiers
+ where
+  permit n (CanCommitToSkillTestPerformedByAnInvestigatorAtAnotherLocation m) =
+    m > length n
+  permit _ _ = False
+
 instance HasModifiersFor env InvestigatorAttrs
 
 instance (ActionRunner env, HasSkillTest env) => HasActions env InvestigatorAttrs where
@@ -1571,12 +1588,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     isScenarioAbility <- getIsScenarioAbility
     clueCount <- unClueCount <$> getCount investigatorLocation
     source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
+
+    skillTestModifiers' <-
+      map modifierType <$> getModifiersFor (toSource a) SkillTestTarget ()
     cannotCommitCards <-
       elem CannotCommitCards
       . map modifierType
       <$> getModifiersFor source (InvestigatorTarget investigatorId) ()
     let
-      triggerMessage = StartSkillTest investigatorId
+      triggerMessage =
+        [ StartSkillTest investigatorId
+        | CannotPerformSkillTest `notElem` skillTestModifiers'
+        ]
       beginMessage = BeforeSkillTest iid skillType skillDifficulty
       committableCards = if cannotCommitCards
         then []
@@ -1619,16 +1642,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                )
                committedCardIds
           <> map (\action -> Run [action, beginMessage]) actions
-          <> [triggerMessage]
+          <> triggerMessage
           )
         )
-      else push (SkillTestAsk $ chooseOne iid [triggerMessage])
+      else case triggerMessage of
+        (_ : _) -> push (SkillTestAsk $ chooseOne iid triggerMessage)
+        _ -> pure ()
     pure a
   BeforeSkillTest iid skillType skillDifficulty | iid /= investigatorId -> do
     locationId <- getId iid
     isScenarioAbility <- getIsScenarioAbility
     clueCount <- unClueCount <$> getCount locationId
-    when (locationId == investigatorLocation) $ do
+    canCommit <- canCommitToAnotherLocation a
+    when (locationId == investigatorLocation || canCommit) $ do
       committedCardIds <- map unCommittedCardId <$> getSetList investigatorId
       committedCardCodes <- mapSet unCommittedCardCode <$> getSet ()
       let
@@ -1891,8 +1917,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           mAction
       a <$ push (CheckWindow iid (AfterFailSkillTest You n : windows))
   After (PassedSkillTest iid mAction source (InvestigatorTarget iid') _ n)
-    | iid == iid' && iid == investigatorId -> a
-    <$ push (CheckWindow iid [AfterPassSkillTest mAction source You n])
+    | iid == iid' && iid == investigatorId -> do
+      msgs <- checkWindows
+        iid
+        (\who -> pure [AfterPassSkillTest mAction source who n])
+      a <$ pushAll msgs
   PlayerWindow iid additionalActions isAdditional | iid == investigatorId -> do
     isCurrentPlayer <- (== iid) . unActiveInvestigatorId <$> getId ()
     actions <- getActions iid NonFast ()

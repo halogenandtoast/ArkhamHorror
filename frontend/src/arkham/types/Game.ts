@@ -12,6 +12,7 @@ import { Agenda, agendaDecoder } from '@/arkham/types/Agenda';
 import { Phase, phaseDecoder } from '@/arkham/types/Phase';
 import { Asset, assetDecoder } from '@/arkham/types/Asset';
 import { Question, questionDecoder } from '@/arkham/types/Question';
+import { Skill, skillDecoder } from '@/arkham/types/Skill';
 import { Treachery, treacheryDecoder } from '@/arkham/types/Treachery';
 import { SkillTest, skillTestDecoder, SkillTestResults, skillTestResultsDecoder } from '@/arkham/types/SkillTest';
 import {
@@ -41,6 +42,7 @@ export interface Game {
   question: Record<string, Question>;
   scenario: Scenario | null;
   campaign: Campaign | null;
+  skills: Record<string, Skill>;
   skillTest: SkillTest | null;
   skillTestResults: SkillTestResults | null;
   treacheries: Record<string, Treachery>;
@@ -131,6 +133,7 @@ export const gameDecoder = JsonDecoder.object<Game>(
     question: JsonDecoder.dictionary<Question>(questionDecoder, 'Dict<InvestigatorId, Question>'),
     scenario: modeDecoder.map(mode => mode.That || null),
     campaign: modeDecoder.map(mode => mode.This || null),
+    skills: JsonDecoder.dictionary<Skill>(skillDecoder, 'Dict<UUID, Skill>'),
     skillTest: JsonDecoder.nullable(skillTestDecoder),
     skillTestResults: JsonDecoder.nullable(skillTestResultsDecoder),
     treacheries: JsonDecoder.dictionary<Treachery>(treacheryDecoder, 'Dict<UUID, Treachery>'),

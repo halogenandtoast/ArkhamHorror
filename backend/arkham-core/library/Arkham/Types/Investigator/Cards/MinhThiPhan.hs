@@ -1,13 +1,27 @@
-module Arkham.Types.Investigator.Cards.MinhThiPhan where
+module Arkham.Types.Investigator.Cards.MinhThiPhan
+  ( minhThiPhan
+  , MinhThiPhan(..)
+  ) where
 
 import Arkham.Prelude
 
+import Arkham.Types.Ability
+import Arkham.Types.Card.Id
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.Game.Helpers
+import Arkham.Types.Id
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
+import Arkham.Types.Message
+import Arkham.Types.Source
 import Arkham.Types.Stats
+import Arkham.Types.Target
+import Arkham.Types.Token
 import Arkham.Types.Trait
+import Arkham.Types.Window
+import Control.Monad.Extra (findM)
 
 newtype MinhThiPhan = MinhThiPhan InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
@@ -31,8 +45,63 @@ minhThiPhan = MinhThiPhan $ baseAttrs
     }
   [Assistant]
 
+ability :: InvestigatorAttrs -> InvestigatorId -> CardId -> Ability
+ability attrs iid cid =
+  mkAbility attrs 1 (ReactionAbility Free)
+    & (abilityLimitL .~ PerInvestigatorLimit iid PerRound 1)
+    & (abilityMetadataL ?~ TargetMetadata (CardIdTarget cid))
+
 instance InvestigatorRunner env => HasActions env MinhThiPhan where
+  getActions i (AfterCommitedCard InvestigatorAtYourLocation cardId) (MinhThiPhan attrs)
+    = do
+      investigatorIds <- getInvestigatorIds
+      mCommiter <- findM
+        (fmap (member $ CommittedCardId cardId) . getSet)
+        investigatorIds
+      pure
+        [ UseAbility i (ability attrs commiter cardId)
+        | commiter <- maybeToList mCommiter
+        ]
   getActions i window (MinhThiPhan attrs) = getActions i window attrs
 
+instance HasTokenValue env MinhThiPhan where
+  getTokenValue (MinhThiPhan attrs) iid ElderSign
+    | iid == investigatorId attrs = pure
+    $ TokenValue ElderSign (PositiveModifier 1)
+  getTokenValue (MinhThiPhan attrs) iid token = getTokenValue attrs iid token
+
 instance (InvestigatorRunner env) => RunMessage env MinhThiPhan where
-  runMessage msg (MinhThiPhan attrs) = MinhThiPhan <$> runMessage msg attrs
+  runMessage msg i@(MinhThiPhan attrs) = case msg of
+    UseCardAbility _ source (Just (TargetMetadata target)) 1 _
+      | isSource attrs source -> i <$ push
+        (CreateEffect
+          (unInvestigatorId $ toId attrs)
+          Nothing
+          (toSource attrs)
+          target
+        )
+    ResolveToken _ ElderSign iid | iid == toId attrs -> do
+      investigatorIds <- getInvestigatorIds
+      skills <-
+        concat
+          <$> traverse
+                (fmap (map unCommitedSkillId) . getSetList @CommittedSkillId)
+                investigatorIds
+      i <$ when
+        (notNull skills)
+        (push
+          (chooseOne
+            iid
+            [ TargetLabel
+                (SkillTarget skill)
+                [ CreateEffect
+                    (unInvestigatorId $ toId attrs)
+                    Nothing
+                    (TokenEffectSource ElderSign)
+                    (SkillTarget skill)
+                ]
+            | skill <- skills
+            ]
+          )
+        )
+    _ -> MinhThiPhan <$> runMessage msg attrs

@@ -79,6 +79,7 @@ allPlayerAssetCards = mapFromList $ map
   , abbessAllegriaDiBiase
   , adaptable1
   , alyssaGraham
+  , analyticalMind
   , aquinnah1
   , aquinnah3
   , arcaneEnlightenment
@@ -208,6 +209,7 @@ allPlayerAssetCards = mapFromList $ map
   , switchblade
   , switchblade2
   , theGoldPocketWatch4
+  , theKingInYellow
   , theNecronomicon
   , theNecronomiconAdvanced
   , theNecronomiconOlausWormiusTranslation
@@ -1149,6 +1151,18 @@ sophieItWasAllMyFault =
     { cdCardTraits = setFromList [Item, Madness]
     , cdUnique = True
     }
+
+analyticalMind :: CardDef
+analyticalMind =
+  (asset "03010" ("Analytical Mind" <:> "Between the Lines") 3 Neutral)
+    { cdCardTraits = singleton Talent
+    , cdSkills = [SkillWild, SkillWild]
+    }
+
+theKingInYellow :: CardDef
+theKingInYellow = (weakness "03011" ("The King in Yellow" <:> "Act I"))
+  { cdCardTraits = singleton Tome
+  }
 
 toothOfEztli :: CardDef
 toothOfEztli = (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker

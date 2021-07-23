@@ -8,10 +8,8 @@ import Arkham.Prelude hiding (to)
 
 import Arkham.Card
 import Arkham.Types.Ability
-import Arkham.Types.ActId
 import Arkham.Types.Action hiding (Ability)
 import Arkham.Types.Asset.Uses (UseType)
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes.Entity as X
@@ -19,11 +17,9 @@ import Arkham.Types.Classes.HasQueue as X
 import Arkham.Types.Classes.HasRecord as X
 import Arkham.Types.Classes.HasTokenValue as X
 import Arkham.Types.Classes.RunMessage as X
-import Arkham.Types.EnemyId
 import Arkham.Types.EnemyMatcher
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Keyword
-import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -182,6 +178,7 @@ type ActionRunner env
     , HasId LocationId env InvestigatorId
     , HasId LocationId env EnemyId
     , HasList CommittedCard env InvestigatorId
+    , HasList CommittedSkillIcon env InvestigatorId
     , HasList DiscardedPlayerCard env InvestigatorId
     , HasList HandCard env InvestigatorId
     , HasList InPlayCard env InvestigatorId
@@ -190,6 +187,7 @@ type ActionRunner env
     , HasSet AccessibleLocationId env LocationId
     , HasSet AssetId env ()
     , HasSet AssetId env (InvestigatorId, UseType)
+    , HasSet CommittedCardId env InvestigatorId
     , HasSet ConnectedLocationId env LocationId
     , HasSet EnemyId env CardCode
     , HasSet EnemyId env InvestigatorId

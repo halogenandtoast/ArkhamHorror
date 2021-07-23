@@ -51,6 +51,7 @@ data ModifierType
   | CanBeAssignedDamage
   | CanBeFoughtAsIfAtYourLocation
   | CanBecomeFast (Maybe CardType, [Trait])
+  | CanCommitToSkillTestPerformedByAnInvestigatorAtAnotherLocation Int
   | CanPlayTopOfDiscard (Maybe CardType, [Trait])
   | CannotBeAttackedByNonElite
   | CannotBeDiscarded
@@ -67,6 +68,7 @@ data ModifierType
   | CannotInvestigate
   | CannotMakeAttacksOfOpportunity
   | CannotMove
+  | CannotPerformSkillTest
   | CannotPlaceClues
   | CannotPlay [(CardType, HashSet Trait)]
   | CannotSpendClues
@@ -100,6 +102,7 @@ data ModifierType
   | ReduceCostOf [Trait] Int
   | ReduceCostOfCardType CardType Int
   | RemoveKeyword Keyword
+  | ReturnToHandAfterTest
   | SanityModifier Int
   | ShroudModifier Int
   | SkillModifier SkillType Int

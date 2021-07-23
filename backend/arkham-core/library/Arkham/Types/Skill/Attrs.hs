@@ -3,6 +3,7 @@ module Arkham.Types.Skill.Attrs where
 import Arkham.Prelude
 
 import Arkham.Json
+import Arkham.Skill.Cards (allPlayerSkillCards)
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
@@ -14,14 +15,19 @@ import Arkham.Types.Target
 type SkillCard a = CardBuilder (InvestigatorId, SkillId) a
 
 data SkillAttrs = SkillAttrs
-  { skillCardDef :: CardDef
+  { skillCardCode :: CardCode
   , skillId :: SkillId
   , skillOwner :: InvestigatorId
   }
   deriving stock (Show, Eq, Generic)
 
+allSkillCards :: HashMap CardCode CardDef
+allSkillCards = allPlayerSkillCards
+
 instance HasCardDef SkillAttrs where
-  toCardDef = skillCardDef
+  toCardDef a = case lookup (skillCardCode a) allSkillCards of
+    Just def -> def
+    Nothing -> error $ "missing card def for skill " <> show (skillCardCode a)
 
 instance IsCard SkillAttrs where
   toCardId = unSkillId . skillId
@@ -56,8 +62,11 @@ skill
   :: (SkillAttrs -> a) -> CardDef -> CardBuilder (InvestigatorId, SkillId) a
 skill f cardDef = CardBuilder
   { cbCardCode = cdCardCode cardDef
-  , cbCardBuilder = \(iid, sid) ->
-    f $ SkillAttrs { skillCardDef = cardDef, skillId = sid, skillOwner = iid }
+  , cbCardBuilder = \(iid, sid) -> f $ SkillAttrs
+    { skillCardCode = toCardCode cardDef
+    , skillId = sid
+    , skillOwner = iid
+    }
   }
 
 instance HasActions env SkillAttrs where

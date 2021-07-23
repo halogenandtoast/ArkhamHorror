@@ -152,7 +152,7 @@ investigatorDefeat = do
             [ Run
                 [ Continue "Continue"
                 , FlavorText
-                  Nothing
+                  (Just "Investigator Defeat")
                   [ "Your experience beyond the gate is\
                    \ simultaneously terrifying and impossible to recall with clarity.\
                    \ A hypnotic spectacle of lights, otherworldly sensations, and\
@@ -300,7 +300,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
                  [ Run
                      [ Continue "Continue"
                      , FlavorText
-                       Nothing
+                       (Just "Resolution 1")
                        [ "You breathe a sigh of relief as the gate behind\
                      \ the train collapses harmlessly upon itself. The few passengers\
                      \ who survived the ordeal seem unable to comprehend what\
@@ -334,7 +334,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
                [ Run
                    [ Continue "Continue"
                    , FlavorText
-                     Nothing
+                     (Just "Resolution 2")
                      [ "Rattled,\
                      \ you begin walking alongside the train tracks, making your\
                      \ way towards Dunwich."

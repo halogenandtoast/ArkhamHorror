@@ -6,6 +6,7 @@ module Arkham.Types.Act.Cards.SearchingForTheTome
 import Arkham.Prelude
 
 import qualified Arkham.Act.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
@@ -31,7 +32,7 @@ instance ActionRunner env => HasActions env SearchingForTheTome where
       Just restrictedHall -> do
         mustAdvance <- (== 0) . unClueCount <$> getCount restrictedHall
         if mustAdvance
-          then pure [Force $ AdvanceAct (actId x) (toSource x)]
+          then pure [UseAbility i (mkAbility x 1 ForcedAbility)]
           else getActions i window x
       Nothing -> getActions i window x
 
@@ -53,4 +54,6 @@ instance ActRunner env => RunMessage env SearchingForTheTome where
             [ScenarioResolution $ Resolution 2]
           ]
         )
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      a <$ push (AdvanceAct (toId attrs) (toSource attrs))
     _ -> SearchingForTheTome <$> runMessage msg attrs

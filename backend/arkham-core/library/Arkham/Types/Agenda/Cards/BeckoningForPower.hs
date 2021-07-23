@@ -26,6 +26,6 @@ instance HasActions env BeckoningForPower where
 
 instance AgendaRunner env => RunMessage env BeckoningForPower where
   runMessage msg a@(BeckoningForPower attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B ->
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B ->
       a <$ push (ScenarioResolution $ Resolution 2)
     _ -> BeckoningForPower <$> runMessage msg attrs

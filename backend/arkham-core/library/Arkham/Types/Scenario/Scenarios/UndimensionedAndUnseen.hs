@@ -352,7 +352,7 @@ instance
            [ Run
                [ Continue "Continue"
                , FlavorText
-                 Nothing
+                 (Just "Resolution 1")
                  [ "You did all you could to stop the rampaging\
                          \ monsters, but there were more of them than you realized and\
                          \ you weren’t able to slay them all. Exhausted and terrified, you\
@@ -376,7 +376,7 @@ instance
            [ Run
                [ Continue "Continue"
                , FlavorText
-                 Nothing
+                 (Just "Resolution 2")
                  [ "After slaying what seems to be the last of\
                      \ the rampaging monsters you retreat to Zebulon’s home,\
                      \ exhausted and rattled by your experience"

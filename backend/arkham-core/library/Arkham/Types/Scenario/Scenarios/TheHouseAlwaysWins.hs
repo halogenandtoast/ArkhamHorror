@@ -170,7 +170,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            [ Run
                [ Continue "Continue"
                , FlavorText
-                 Nothing
+                 (Just "Resolution 1")
                  [ "You flee to the end of the block and pause to\
                   \ recover. Before you can catch your breath, the ground shakes\
                   \ with a thunderous crash. People emerge from their homes and\
@@ -205,7 +205,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            [ Run
                [ Continue "Continue"
                , FlavorText
-                 Nothing
+                 (Just "Resolution 2")
                  [ "“What in the world…?” Dr. Morgan finally\
                   \ breaks out of his daze as you make your way to safety. You ask\
                   \ him what he remembers, and he sputters and shakes his head.\
@@ -256,7 +256,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            [ Run
                [ Continue "Continue"
                , FlavorText
-                 Nothing
+                 (Just "Resolution 3")
                  [ "Although you were unable to find Dr.\
                   \ Morgan in the club, the man you rescued is grateful for your\
                   \ help. He introduces himself as Peter Clover, the owner of\
@@ -308,7 +308,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
              [ Run
                  [ Continue "Continue"
                  , FlavorText
-                   Nothing
+                   (Just "Resolution 4")
                    [ "You are pulled from the debris by several\
                   \ firefighters, one of whom exclaims, “We’ve got a live one!”\
                   \ A few of them patch you up, and the cops ask you what\

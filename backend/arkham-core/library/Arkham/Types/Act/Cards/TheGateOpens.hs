@@ -31,5 +31,5 @@ instance ActionRunner env => HasActions env TheGateOpens where
 instance ActRunner env => RunMessage env TheGateOpens where
   runMessage msg a@(TheGateOpens attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide B attrs ->
-      a <$ push (ScenarioResolution $ Resolution 2)
+      a <$ push (ScenarioResolution $ Resolution 1)
     _ -> TheGateOpens <$> runMessage msg attrs

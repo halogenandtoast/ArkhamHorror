@@ -11,7 +11,7 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
-import Arkham.Types.Card.PlayerCard
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.LocationId
@@ -36,7 +36,7 @@ instance (HasName env LocationId, ActRunner env) => RunMessage env BreakingAndEn
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       mHuntingHorror <- fmap unStoryEnemyId <$> getId (CardCode "02141")
-      haroldWalsted <- PlayerCard <$> genPlayerCard Assets.haroldWalsted
+      haroldWalsted <- EncounterCard <$> genEncounterCard Assets.haroldWalsted
       case mHuntingHorror of
         Just eid -> do
           lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"

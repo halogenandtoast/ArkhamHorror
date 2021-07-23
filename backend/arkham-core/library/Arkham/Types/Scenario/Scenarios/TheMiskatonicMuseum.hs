@@ -296,7 +296,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            [ Run
                [ Continue "Continue"
                , FlavorText
-                 Nothing
+                 (Just "Resolution 1")
                  [ "As long as this translation of the\
                    \ Necronomicon exists, there will be sorcerers and other foul\
                    \ agents like Whateley seeking it. In the end, you know what\
@@ -325,7 +325,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            [ Run
                [ Continue "Continue"
                , FlavorText
-                 Nothing
+                 (Just "Resolution 2")
                  [ "The Necronomicon is more than just a book;\
                    \ it is a tool. Within its pages is a wealth of information about\
                    \ the forces and creatures you have encountered. Knowing how\

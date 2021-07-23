@@ -39,7 +39,7 @@ leftmostLocation lid = do
 
 instance AgendaRunner env => RunMessage env DrawnIn where
   runMessage msg a@(DrawnIn attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 4 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       investigatorIds <- getInvestigatorIds
       locationId <- getId @LocationId leadInvestigatorId

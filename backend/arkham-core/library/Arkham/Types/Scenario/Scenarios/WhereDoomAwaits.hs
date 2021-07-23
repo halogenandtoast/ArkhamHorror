@@ -304,7 +304,7 @@ instance
            [ Run
                [ Continue "Continue"
                , FlavorText
-                 Nothing
+                 (Just "Resolution 1")
                  [ "The poorly bound tome appears to be the\
                    \ written records of Old Whateley, the man who taught Wilbur\
                    \ the ancient secrets of sorcery. You find a passage describing a\
@@ -330,7 +330,7 @@ instance
            [ Run
                [ Continue "Continue"
                , FlavorText
-                 Nothing
+                 (Just "Resolution 2")
                  [ "The sorcerers from Dunwich, seeking arcane\
                         \ power from beyond this realm, have accomplished what\
                         \ Wilbur and Old Whateley could not. Through blood sacrifice\

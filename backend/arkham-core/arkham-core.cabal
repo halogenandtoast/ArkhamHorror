@@ -10,6 +10,7 @@ build-type:     Simple
 
 library
   exposed-modules:
+      Arkham.Act.Cards
       Arkham.Asset.Cards
       Arkham.Card
       Arkham.EncounterCard

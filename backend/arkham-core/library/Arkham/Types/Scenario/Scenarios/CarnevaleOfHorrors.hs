@@ -433,7 +433,7 @@ instance
              [ Run
                  [ Continue "Continue"
                  , FlavorText
-                   Nothing
+                   (Just "Resolution 1")
                    [ "The city is still recovering from the events during the eclipse. With\
                      \ nearly all evidence of the creature melted away by the hot sun, many\
                      \ attribute the violence during the Carnevale to local crime lord Cascio\
@@ -460,7 +460,7 @@ instance
              [ Run
                  [ Continue "Continue"
                  , FlavorText
-                   Nothing
+                   (Just "Resolution 2")
                    [ "The creature recoils as globules of its jelly-like flesh rip and tear\
                      \ from its body, splashing into the lagoon. It makes no sound as its torn\
                      \ body sinks into the depths. The chanting in the city plunges into mournful\

@@ -420,19 +420,34 @@ darkenedHall = (location "02074" "Darkened Hall" TheHouseAlwaysWins)
   }
 
 artGallery :: CardDef
-artGallery = (location "02075" "Art Gallery" TheHouseAlwaysWins)
+artGallery = (locationWithUnrevealed
+               "02075"
+               "Back Hall Doorway"
+               "Art Gallery"
+               TheHouseAlwaysWins
+             )
   { cdCardTraits = singleton CloverClub
   , cdVictoryPoints = Just 1
   }
 
 vipArea :: CardDef
-vipArea = (location "02076" "VIP Area" TheHouseAlwaysWins)
+vipArea = (locationWithUnrevealed
+            "02076"
+            "Back Hall Doorway"
+            "VIP Area"
+            TheHouseAlwaysWins
+          )
   { cdCardTraits = singleton CloverClub
   , cdVictoryPoints = Just 1
   }
 
 backAlley :: CardDef
-backAlley = (location "02077" "Back Alley" TheHouseAlwaysWins)
+backAlley = (locationWithUnrevealed
+              "02077"
+              "Back Hall Doorway"
+              "Back Alley"
+              TheHouseAlwaysWins
+            )
   { cdCardTraits = singleton CloverClub
   , cdVictoryPoints = Just 1
   }
@@ -470,90 +485,144 @@ administrationOffice_131 =
     }
 
 exhibitHallAthabaskanExhibit :: CardDef
-exhibitHallAthabaskanExhibit =
-  (location
-      "02132"
-      ("Exhibit Hall" <:> "Athabaskan Exhibit")
-      TheMiskatonicMuseum
-    )
-    { cdCardTraits = setFromList [Miskatonic, Exhibit]
-    }
+exhibitHallAthabaskanExhibit = (locationWithUnrevealed
+                                 "02132"
+                                 "Exhibit Hall"
+                                 ("Exhibit Hall" <:> "Athabaskan Exhibit")
+                                 TheMiskatonicMuseum
+                               )
+  { cdCardTraits = setFromList [Miskatonic, Exhibit]
+  }
 
 exhibitHallMedusaExhibit :: CardDef
-exhibitHallMedusaExhibit =
-  (location "02133" ("Exhibit Hall" <:> "Medusa Exhibit") TheMiskatonicMuseum)
-    { cdCardTraits = setFromList [Miskatonic, Exhibit]
-    , cdVictoryPoints = Just 1
-    }
+exhibitHallMedusaExhibit = (locationWithUnrevealed
+                             "02133"
+                             "Exhibit Hall"
+                             ("Exhibit Hall" <:> "Medusa Exhibit")
+                             TheMiskatonicMuseum
+                           )
+  { cdCardTraits = setFromList [Miskatonic, Exhibit]
+  , cdVictoryPoints = Just 1
+  }
 
 exhibitHallNatureExhibit :: CardDef
-exhibitHallNatureExhibit =
-  (location "02134" ("Exhibit Hall" <:> "Nature Exhibit") TheMiskatonicMuseum)
-    { cdCardTraits = setFromList [Miskatonic, Exhibit]
-    , cdVictoryPoints = Just 1
-    }
+exhibitHallNatureExhibit = (locationWithUnrevealed
+                             "02134"
+                             "Exhibit Hall"
+                             ("Exhibit Hall" <:> "Nature Exhibit")
+                             TheMiskatonicMuseum
+                           )
+  { cdCardTraits = setFromList [Miskatonic, Exhibit]
+  , cdVictoryPoints = Just 1
+  }
 
 exhibitHallEgyptianExhibit :: CardDef
-exhibitHallEgyptianExhibit =
-  (location "02135" ("Exhibit Hall" <:> "Egyptian Exhibit") TheMiskatonicMuseum)
-    { cdCardTraits = setFromList [Miskatonic, Exhibit]
-    , cdVictoryPoints = Just 1
-    }
+exhibitHallEgyptianExhibit = (locationWithUnrevealed
+                               "02135"
+                               "Exhibit Hall"
+                               ("Exhibit Hall" <:> "Egyptian Exhibit")
+                               TheMiskatonicMuseum
+                             )
+  { cdCardTraits = setFromList [Miskatonic, Exhibit]
+  , cdVictoryPoints = Just 1
+  }
 
 exhibitHallHallOfTheDead :: CardDef
-exhibitHallHallOfTheDead =
-  (location "02136" ("Exhibit Hall" <:> "Hall of the Dead") TheMiskatonicMuseum)
-    { cdCardTraits = setFromList [Miskatonic, Exhibit]
-    , cdVictoryPoints = Just 1
-    }
+exhibitHallHallOfTheDead = (locationWithUnrevealed
+                             "02136"
+                             "Exhibit Hall"
+                             ("Exhibit Hall" <:> "Hall of the Dead")
+                             TheMiskatonicMuseum
+                           )
+  { cdCardTraits = setFromList [Miskatonic, Exhibit]
+  , cdVictoryPoints = Just 1
+  }
 
 exhibitHallRestrictedHall :: CardDef
-exhibitHallRestrictedHall =
-  (location "02137" ("Exhibit Hall" <:> "Restricted Hall") TheMiskatonicMuseum)
-    { cdCardTraits = setFromList [Miskatonic, Exhibit]
-    , cdVictoryPoints = Just 1
-    }
+exhibitHallRestrictedHall = (locationWithUnrevealed
+                              "02137"
+                              "Exhibit Hall"
+                              ("Exhibit Hall" <:> "Restricted Hall")
+                              TheMiskatonicMuseum
+                            )
+  { cdCardTraits = setFromList [Miskatonic, Exhibit]
+  , cdVictoryPoints = Just 1
+  }
 
 passengerCar_167 :: CardDef
-passengerCar_167 = (location "02167" "Passenger Car" TheEssexCountyExpress)
+passengerCar_167 = (locationWithUnrevealed
+                     "02167"
+                     "Train Car"
+                     "Passenger Car"
+                     TheEssexCountyExpress
+                   )
   { cdCardTraits = singleton Train
   }
 
 passengerCar_168 :: CardDef
-passengerCar_168 = (location "02168" "Passenger Car" TheEssexCountyExpress)
+passengerCar_168 = (locationWithUnrevealed
+                     "02168"
+                     "Train Car"
+                     "Passenger Car"
+                     TheEssexCountyExpress
+                   )
   { cdCardTraits = singleton Train
   }
 
 passengerCar_169 :: CardDef
-passengerCar_169 = (location "02169" "Passenger Car" TheEssexCountyExpress)
+passengerCar_169 = (locationWithUnrevealed
+                     "02169"
+                     "Train Car"
+                     "Passenger Car"
+                     TheEssexCountyExpress
+                   )
   { cdCardTraits = singleton Train
   }
 
 passengerCar_170 :: CardDef
-passengerCar_170 = (location "02170" "Passenger Car" TheEssexCountyExpress)
+passengerCar_170 = (locationWithUnrevealed
+                     "02170"
+                     "Train Car"
+                     "Passenger Car"
+                     TheEssexCountyExpress
+                   )
   { cdCardTraits = singleton Train
   }
 
 passengerCar_171 :: CardDef
-passengerCar_171 = (location "02171" "Passenger Car" TheEssexCountyExpress)
+passengerCar_171 = (locationWithUnrevealed
+                     "02171"
+                     "Train Car"
+                     "Passenger Car"
+                     TheEssexCountyExpress
+                   )
   { cdCardTraits = singleton Train
   }
 
 sleepingCar :: CardDef
-sleepingCar = (location "02172" "Sleeping Car" TheEssexCountyExpress)
+sleepingCar = (locationWithUnrevealed
+                "02172"
+                "Train Car"
+                "Sleeping Car"
+                TheEssexCountyExpress
+              )
   { cdCardTraits = singleton Train
   }
 
 diningCar :: CardDef
-diningCar = (location "02173" "Dining Car" TheEssexCountyExpress)
-  { cdCardTraits = singleton Train
-  }
+diningCar =
+  (locationWithUnrevealed "02173" "Train Car" "Dining Car" TheEssexCountyExpress
+    )
+    { cdCardTraits = singleton Train
+    }
 
 parlorCar :: CardDef
-parlorCar = (location "02174" "Parlor Car" TheEssexCountyExpress)
-  { cdCardTraits = singleton Train
-  , cdVictoryPoints = Just 1
-  }
+parlorCar =
+  (locationWithUnrevealed "02174" "Train Car" "Parlor Car" TheEssexCountyExpress
+    )
+    { cdCardTraits = singleton Train
+    , cdVictoryPoints = Just 1
+    }
 
 engineCar_175 :: CardDef
 engineCar_175 = (location "02175" "Engine Car" TheEssexCountyExpress)
@@ -880,13 +949,22 @@ bathroom :: CardDef
 bathroom = location "50016" "Bathroom" ReturnToTheGathering
 
 holeInTheWall :: CardDef
-holeInTheWall = location "50017" "Hallway" ReturnToTheGathering
+holeInTheWall = locationWithUnrevealed
+  "50017"
+  "Hole in the Wall"
+  "Hallway"
+  ReturnToTheGathering
 
 returnToAttic :: CardDef
 returnToAttic = location "50018" "Attic" ReturnToTheGathering
 
 farAboveYourHouse :: CardDef
-farAboveYourHouse = (location "50019" "Field of Graves" ReturnToTheGathering)
+farAboveYourHouse = (locationWithUnrevealed
+                      "50019"
+                      "Far Above Your House"
+                      "Field of Graves"
+                      ReturnToTheGathering
+                    )
   { cdVictoryPoints = Just 1
   }
 
@@ -894,7 +972,12 @@ returnToCellar :: CardDef
 returnToCellar = location "50020" "Cellar" ReturnToTheGathering
 
 deepBelowYourHouse :: CardDef
-deepBelowYourHouse = (location "50021" "Ghoul Pits" ReturnToTheGathering)
+deepBelowYourHouse = (locationWithUnrevealed
+                       "50021"
+                       "Deep Below Your House"
+                       "Ghoul Pits"
+                       ReturnToTheGathering
+                     )
   { cdVictoryPoints = Just 1
   }
 
@@ -974,12 +1057,13 @@ cursedShores = (location "81007" "Cursed Shores" TheBayou)
   }
 
 gardenDistrict :: CardDef
-gardenDistrict = (location "81008" "Garden District" TheBayou)
-  { cdCardTraits = setFromList [NewOrleans]
-  }
+gardenDistrict =
+  (locationWithUnrevealed "81008" "New Orleans" "Garden District" TheBayou)
+    { cdCardTraits = setFromList [NewOrleans]
+    }
 
 broadmoor :: CardDef
-broadmoor = (location "81009" "Broadmoor" TheBayou)
+broadmoor = (locationWithUnrevealed "81009" "New Orleans" "Broadmoor" TheBayou)
   { cdCardTraits = setFromList [NewOrleans]
   , cdVictoryPoints = Just 1
   }
@@ -990,15 +1074,17 @@ brackishWaters = (location "81010" "Brackish Waters" TheBayou)
   }
 
 audubonPark :: CardDef
-audubonPark = (location "81011" "Audubon Park" TheBayou)
-  { cdCardTraits = setFromList [Riverside]
-  , cdVictoryPoints = Just 1
-  }
+audubonPark =
+  (locationWithUnrevealed "81011" "Riverside" "Audubon Park" TheBayou)
+    { cdCardTraits = setFromList [Riverside]
+    , cdVictoryPoints = Just 1
+    }
 
 fauborgMarigny :: CardDef
-fauborgMarigny = (location "81012" "Fauborg Marigny" TheBayou)
-  { cdCardTraits = setFromList [Riverside]
-  }
+fauborgMarigny =
+  (locationWithUnrevealed "81012" "Riverside" "Fauborg Marigny" TheBayou)
+    { cdCardTraits = setFromList [Riverside]
+    }
 
 forgottenMarsh :: CardDef
 forgottenMarsh = (location "81013" "Forgotten Marsh" TheBayou)
@@ -1006,15 +1092,17 @@ forgottenMarsh = (location "81013" "Forgotten Marsh" TheBayou)
   }
 
 trappersCabin :: CardDef
-trappersCabin = (location "81014" "Trapper's Cabin" TheBayou)
-  { cdCardTraits = setFromList [Wilderness]
-  }
+trappersCabin =
+  (locationWithUnrevealed "81014" "Wilderness" "Trapper's Cabin" TheBayou)
+    { cdCardTraits = setFromList [Wilderness]
+    }
 
 twistedUnderbrush :: CardDef
-twistedUnderbrush = (location "81015" "Twisted Underbrush" TheBayou)
-  { cdCardTraits = setFromList [Wilderness]
-  , cdVictoryPoints = Just 1
-  }
+twistedUnderbrush =
+  (locationWithUnrevealed "81015" "Wilderness" "Twisted Underbrush" TheBayou)
+    { cdCardTraits = setFromList [Wilderness]
+    , cdVictoryPoints = Just 1
+    }
 
 foulSwamp :: CardDef
 foulSwamp = (location "81016" "Foul Swamp" TheBayou)
@@ -1022,15 +1110,17 @@ foulSwamp = (location "81016" "Foul Swamp" TheBayou)
   }
 
 ritualGrounds :: CardDef
-ritualGrounds = (location "81017" "Ritual Grounds" TheBayou)
-  { cdCardTraits = setFromList [Unhallowed]
-  , cdVictoryPoints = Just 1
-  }
+ritualGrounds =
+  (locationWithUnrevealed "81017" "Unhallowed Land" "Ritual Grounds" TheBayou)
+    { cdCardTraits = setFromList [Unhallowed]
+    , cdVictoryPoints = Just 1
+    }
 
 overgrownCairns :: CardDef
-overgrownCairns = (location "81018" "Overgrown Cairns" TheBayou)
-  { cdCardTraits = setFromList [Unhallowed]
-  }
+overgrownCairns =
+  (locationWithUnrevealed "81018" "Unhallowed Land" "Overgrown Cairns" TheBayou)
+    { cdCardTraits = setFromList [Unhallowed]
+    }
 
 gondola :: CardDef
 gondola = (location "82006b" "Gondola" CarnevaleOfHorrors)

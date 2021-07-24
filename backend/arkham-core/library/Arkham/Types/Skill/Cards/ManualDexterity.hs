@@ -10,6 +10,7 @@ import Arkham.Types.Skill.Runner
 import Arkham.Types.Target
 
 newtype ManualDexterity = ManualDexterity SkillAttrs
+  deriving anyclass IsSkill
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 manualDexterity :: SkillCard ManualDexterity

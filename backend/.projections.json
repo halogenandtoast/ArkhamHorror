@@ -313,6 +313,7 @@
       "import Arkham.Types.Skill.Runner",
       "",
       "newtype {dot} = {dot} SkillAttrs",
+      "  deriving anyclass IsSkill",
       "  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)",
       "",
       "{dot|snakecase|camelcase} :: SkillCard {dot}",

@@ -11,6 +11,7 @@ import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
 
 newtype InquiringMind = InquiringMind SkillAttrs
+  deriving anyclass IsSkill
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 inquiringMind :: SkillCard InquiringMind

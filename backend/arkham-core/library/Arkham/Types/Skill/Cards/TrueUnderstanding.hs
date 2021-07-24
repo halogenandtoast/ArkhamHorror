@@ -13,6 +13,7 @@ import Arkham.Types.Skill.Runner
 import Arkham.Types.Target
 
 newtype TrueUnderstanding = TrueUnderstanding SkillAttrs
+  deriving anyclass IsSkill
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 trueUnderstanding :: SkillCard TrueUnderstanding

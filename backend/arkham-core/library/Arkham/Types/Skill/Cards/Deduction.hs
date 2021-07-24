@@ -13,6 +13,7 @@ import Arkham.Types.Skill.Runner
 import Arkham.Types.Target
 
 newtype Deduction = Deduction SkillAttrs
+  deriving anyclass IsSkill
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deduction :: SkillCard Deduction

@@ -54,6 +54,7 @@ library:
     - these-lens
     - semialign
     - pretty-simple
+    - template-haskell
 
 executables:
   validate:

@@ -21,6 +21,8 @@ import Arkham.Types.Name
 import Arkham.Types.Resolution
 import Arkham.Types.Token
 
+class IsCampaign a
+
 data CampaignAttrs = CampaignAttrs
   { campaignId :: CampaignId
   , campaignName :: Text

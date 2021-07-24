@@ -1,4 +1,5 @@
 {-# LANGUAGE DefaultSignatures #-}
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Types.Classes
   ( module Arkham.Types.Classes
   , module X
@@ -35,6 +36,8 @@ import Arkham.Types.Window (Who, Window)
 import qualified Arkham.Types.Window as Window
 import qualified Data.HashSet as HashSet
 import GHC.Generics
+import Language.Haskell.TH.Syntax hiding (Name)
+import qualified Language.Haskell.TH.Syntax as TH
 
 newtype Distance = Distance { unDistance :: Int }
 
@@ -309,3 +312,24 @@ class IsInvestigator a where
   isEliminated = uncurry (||) . (isResigned &&& isDefeated)
   hasEndedTurn :: a -> Bool
   hasResigned :: a -> Bool
+
+buildEntity :: String -> Q [Dec]
+buildEntity nm = do
+  ClassI _ instances <- reify (TH.mkName $ "Is" ++ nm)
+  let conz = mapMaybe extractCon instances
+  pure
+    [ DataD
+        []
+        (TH.mkName nm)
+        []
+        Nothing
+        conz
+        [ DerivClause (Just StockStrategy) (map ConT [''Show, ''Generic, ''Eq])
+        , DerivClause (Just AnyclassStrategy) (map ConT [''ToJSON, ''FromJSON])
+        ]
+    ]
+ where
+  extractCon (InstanceD _ _ (AppT _ con@(ConT name)) _) = Just $ NormalC
+    (TH.mkName $ nameBase name ++ "'")
+    [(Bang TH.NoSourceUnpackedness TH.NoSourceStrictness, con)]
+  extractCon _ = Nothing

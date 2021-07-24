@@ -18,6 +18,7 @@ import Arkham.Types.Resolution
 import qualified Arkham.Types.Token as Token
 
 newtype TheDunwichLegacy = TheDunwichLegacy CampaignAttrs
+  deriving anyclass IsCampaign
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 findOwner

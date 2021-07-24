@@ -961,6 +961,7 @@ library
     , random-shuffle
     , safe
     , semialign
+    , template-haskell
     , text
     , these
     , these-lens

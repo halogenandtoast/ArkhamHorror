@@ -6,20 +6,17 @@ import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes hiding (discard)
 import Arkham.Types.CommitRestriction
 import Arkham.Types.Cost
-import Arkham.Types.EnemyId
 import Arkham.Types.EntityInstance
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Helpers
+import Arkham.Types.Id
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
@@ -31,7 +28,6 @@ import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.TreacheryId
 import Arkham.Types.Window
 import qualified Data.HashSet as HashSet
 import Data.UUID (nil)
@@ -1645,9 +1641,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           <> triggerMessage
           )
         )
-      else case triggerMessage of
-        (_ : _) -> push (SkillTestAsk $ chooseOne iid triggerMessage)
-        _ -> pure ()
+      else when
+        (notNull triggerMessage)
+        (push (SkillTestAsk $ chooseOne iid triggerMessage))
     pure a
   BeforeSkillTest iid skillType skillDifficulty | iid /= investigatorId -> do
     locationId <- getId iid

@@ -12,6 +12,7 @@ import Arkham.Types.Difficulty
 import Arkham.Types.Message
 
 newtype ReturnToNightOfTheZealot = ReturnToNightOfTheZealot NightOfTheZealot
+  deriving anyclass IsCampaign
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 returnToNightOfTheZealot :: Difficulty -> ReturnToNightOfTheZealot

@@ -13,6 +13,7 @@ import Arkham.Types.Token
 import qualified Arkham.Types.Token as Token
 
 newtype NightOfTheZealot = NightOfTheZealot CampaignAttrs
+  deriving anyclass IsCampaign
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 nightOfTheZealot :: Difficulty -> NightOfTheZealot

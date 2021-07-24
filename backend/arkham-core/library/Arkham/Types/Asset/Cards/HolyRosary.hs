@@ -12,6 +12,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype HolyRosary = HolyRosary AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 holyRosary :: AssetCard HolyRosary

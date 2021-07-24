@@ -10,6 +10,7 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype HotStreak4 = HotStreak4 EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hotStreak4 :: EventCard HotStreak4

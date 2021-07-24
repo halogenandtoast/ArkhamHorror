@@ -35,6 +35,8 @@ import Arkham.Types.Window
 import Data.List.Extra (firstJust)
 import Data.UUID (nil)
 
+class IsEnemy a
+
 type EnemyCard a = CardBuilder EnemyId a
 
 data EnemyAttrs = EnemyAttrs

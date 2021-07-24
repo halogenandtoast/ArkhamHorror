@@ -22,6 +22,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype Rolands38Special = Rolands38Special AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rolands38Special :: AssetCard Rolands38Special

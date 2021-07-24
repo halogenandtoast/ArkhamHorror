@@ -18,6 +18,7 @@ import Arkham.Types.Source
 import Arkham.Types.Window
 
 newtype GrotesqueStatue4 = GrotesqueStatue4 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 grotesqueStatue4 :: AssetCard GrotesqueStatue4

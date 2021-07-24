@@ -17,6 +17,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype ClarityOfMind = ClarityOfMind AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 clarityOfMind :: AssetCard ClarityOfMind

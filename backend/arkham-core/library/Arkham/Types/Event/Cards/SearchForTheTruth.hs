@@ -10,6 +10,7 @@ import Arkham.Types.Message
 import Arkham.Types.Query
 
 newtype SearchForTheTruth = SearchForTheTruth EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 searchForTheTruth :: EventCard SearchForTheTruth

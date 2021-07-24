@@ -15,6 +15,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype SecondWind = SecondWind EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 secondWind :: EventCard SecondWind

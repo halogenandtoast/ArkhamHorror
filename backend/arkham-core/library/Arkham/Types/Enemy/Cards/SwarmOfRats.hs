@@ -11,6 +11,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
 newtype SwarmOfRats = SwarmOfRats EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 swarmOfRats :: EnemyCard SwarmOfRats

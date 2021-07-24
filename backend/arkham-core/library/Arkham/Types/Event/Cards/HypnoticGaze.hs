@@ -15,6 +15,7 @@ import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Token
 
 newtype HypnoticGaze = HypnoticGaze (EventAttrs `With` Maybe EnemyId)
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hypnoticGaze :: EventCard HypnoticGaze

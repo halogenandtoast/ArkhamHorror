@@ -22,6 +22,7 @@ import Arkham.Types.Source
 import Arkham.Types.Window
 
 newtype DestroyedPath = DestroyedPath LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 destroyedPath :: LocationCard DestroyedPath

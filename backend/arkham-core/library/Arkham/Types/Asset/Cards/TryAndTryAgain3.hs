@@ -17,6 +17,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype TryAndTryAgain3 = TryAndTryAgain3 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tryAndTryAgain3 :: AssetCard TryAndTryAgain3

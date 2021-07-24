@@ -48,8 +48,7 @@ location cardCode name encounterSet = CardDef
 allLocationCards :: HashMap CardCode CardDef
 allLocationCards = mapFromList $ map
   (toCardCode &&& id)
-  [ placeholderLocation
-  , aTearInThePath
+  [ aTearInThePath
   , accademiaBridge
   , administrationBuilding
   , administrationOffice_130
@@ -172,7 +171,7 @@ allLocationCards = mapFromList $ map
   , securityOffice_128
   , securityOffice_129
   , sentinelPeak
-  , slaugteredWoods
+  , slaughteredWoods
   , sleepingCar
   , southsideHistoricalSociety
   , southsideMasBoardingHouse
@@ -199,9 +198,6 @@ allLocationCards = mapFromList $ map
   , whateleyRuins_251
   , yourHouse
   ]
-
-placeholderLocation :: CardDef
-placeholderLocation = location "location" "Placeholder Location Card" Test
 
 study :: CardDef
 study = location "01111" "Study" TheGathering
@@ -803,13 +799,13 @@ sentinelPeak = (location "02284" "Sentinel Peak" WhereDoomAwaits)
   , cdVictoryPoints = Just 2
   }
 
-slaugteredWoods :: CardDef
-slaugteredWoods = (locationWithUnrevealed
-                    "02285"
-                    "Diverging Path"
-                    "Slaughtered Woods"
-                    WhereDoomAwaits
-                  )
+slaughteredWoods :: CardDef
+slaughteredWoods = (locationWithUnrevealed
+                     "02285"
+                     "Diverging Path"
+                     "Slaughtered Woods"
+                     WhereDoomAwaits
+                   )
   { cdCardTraits = setFromList [Dunwich, Woods]
   }
 

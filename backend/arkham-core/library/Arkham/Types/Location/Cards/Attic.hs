@@ -12,6 +12,7 @@ import Arkham.Types.Message
 import Arkham.Types.Source
 
 newtype Attic = Attic LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 attic :: LocationCard Attic

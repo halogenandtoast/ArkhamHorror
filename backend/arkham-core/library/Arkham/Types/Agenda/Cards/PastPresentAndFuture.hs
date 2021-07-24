@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.PastPresentAndFuture
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.CampaignLogKey
@@ -18,11 +19,12 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype PastPresentAndFuture = PastPresentAndFuture AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-pastPresentAndFuture :: PastPresentAndFuture
-pastPresentAndFuture = PastPresentAndFuture
-  $ baseAttrs "02313" "Past, Present and Future" (Agenda 2 A) (Static 4)
+pastPresentAndFuture :: AgendaCard PastPresentAndFuture
+pastPresentAndFuture =
+  agenda (2, A) PastPresentAndFuture Cards.pastPresentAndFuture (Static 4)
 
 instance HasModifiersFor env PastPresentAndFuture
 

@@ -20,6 +20,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype ArkhamWoodsQuietGlade = ArkhamWoodsQuietGlade LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsQuietGlade :: LocationCard ArkhamWoodsQuietGlade

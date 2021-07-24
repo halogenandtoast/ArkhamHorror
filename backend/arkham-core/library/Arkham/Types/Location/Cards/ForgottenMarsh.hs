@@ -11,6 +11,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 
 newtype ForgottenMarsh = ForgottenMarsh LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 forgottenMarsh :: LocationCard ForgottenMarsh

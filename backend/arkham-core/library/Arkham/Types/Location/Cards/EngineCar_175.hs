@@ -18,6 +18,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Query
 
 newtype EngineCar_175 = EngineCar_175 LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 engineCar_175 :: LocationCard EngineCar_175

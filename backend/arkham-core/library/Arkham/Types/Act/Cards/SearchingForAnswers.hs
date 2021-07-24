@@ -20,6 +20,7 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype SearchingForAnswers = SearchingForAnswers ActAttrs
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 searchingForAnswers :: ActCard SearchingForAnswers

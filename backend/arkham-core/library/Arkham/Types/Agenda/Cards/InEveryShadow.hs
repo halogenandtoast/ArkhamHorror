@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.InEveryShadow
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
@@ -18,11 +19,11 @@ import Arkham.Types.Target
 import Arkham.Types.TreacheryId
 
 newtype InEveryShadow = InEveryShadow AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-inEveryShadow :: InEveryShadow
-inEveryShadow =
-  InEveryShadow $ baseAttrs "02121" "In Every Shadow" (Agenda 3 A) (Static 7)
+inEveryShadow :: AgendaCard InEveryShadow
+inEveryShadow = agenda (3, A) InEveryShadow Cards.inEveryShadow (Static 7)
 
 instance HasActions env InEveryShadow where
   getActions i window (InEveryShadow x) = getActions i window x

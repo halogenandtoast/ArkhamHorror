@@ -14,6 +14,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype TwistOfFate = TwistOfFate TreacheryAttrs
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 twistOfFate :: TreacheryCard TwistOfFate

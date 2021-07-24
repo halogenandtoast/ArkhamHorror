@@ -19,6 +19,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype Switchblade = Switchblade AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 switchblade :: AssetCard Switchblade

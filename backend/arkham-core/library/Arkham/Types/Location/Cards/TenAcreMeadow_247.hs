@@ -21,6 +21,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype TenAcreMeadow_247 = TenAcreMeadow_247 LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tenAcreMeadow_247 :: LocationCard TenAcreMeadow_247

@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Types.Act
   ( Act(..)
   , lookupAct
@@ -17,48 +18,7 @@ import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Trait
 
-data Act
-  = Trapped' Trapped
-  | TheBarrier' TheBarrier
-  | WhatHaveYouDone' WhatHaveYouDone
-  | UncoveringTheConspiracy' UncoveringTheConspiracy
-  | InvestigatingTheTrail' InvestigatingTheTrail
-  | IntoTheDarkness' IntoTheDarkness
-  | DisruptingTheRitual' DisruptingTheRitual
-  | AfterHours' AfterHours
-  | RicesWhereabouts' RicesWhereabouts
-  | CampusSafety' CampusSafety
-  | BeginnersLuck' BeginnersLuck
-  | SkinGame' SkinGame
-  | AllIn' AllIn
-  | Fold' Fold
-  | FindingAWayInside' FindingAWayInside
-  | NightAtTheMuseum' NightAtTheMuseum
-  | BreakingAndEntering' BreakingAndEntering
-  | SearchingForTheTome' SearchingForTheTome
-  | Run' Run
-  | GetTheEngineRunning' GetTheEngineRunning
-  | SearchingForAnswers' SearchingForAnswers
-  | TheChamberOfTheBeast' TheChamberOfTheBeast
-  | SaracenicScript' SaracenicScript
-  | TheyMustBeDestroyed' TheyMustBeDestroyed
-  | ThePathToTheHill' ThePathToTheHill
-  | AscendingTheHillV1' AscendingTheHillV1
-  | AscendingTheHillV2' AscendingTheHillV2
-  | AscendingTheHillV3' AscendingTheHillV3
-  | TheGateOpens' TheGateOpens
-  | OutOfThisWorld' OutOfThisWorld
-  | IntoTheBeyond' IntoTheBeyond
-  | CloseTheRift' CloseTheRift
-  | FindingANewWay' FindingANewWay
-  | MysteriousGateway' MysteriousGateway
-  | FindingLadyEsprit' FindingLadyEsprit
-  | HuntingTheRougarou' HuntingTheRougarou
-  | TheCarnevaleConspiracy' TheCarnevaleConspiracy
-  | GetToTheBoats' GetToTheBoats
-  | Row' Row
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+$(buildEntity "Act")
 
 deriving anyclass instance (HasSet AssetId env AssetMatcher, ActionRunner env) => HasActions env Act
 
@@ -103,43 +63,4 @@ lookupAct actId =
 allActs :: HashMap ActId Act
 allActs = mapFromList $ map
   (\cb -> (ActId (cbCardCode cb), cbCardBuilder cb (ActId (cbCardCode cb))))
-  [ Trapped' <$> trapped
-  , TheBarrier' <$> theBarrier
-  , WhatHaveYouDone' <$> whatHaveYouDone
-  , UncoveringTheConspiracy' <$> uncoveringTheConspiracy
-  , InvestigatingTheTrail' <$> investigatingTheTrail
-  , IntoTheDarkness' <$> intoTheDarkness
-  , DisruptingTheRitual' <$> disruptingTheRitual
-  , AfterHours' <$> afterHours
-  , RicesWhereabouts' <$> ricesWhereabouts
-  , CampusSafety' <$> campusSafety
-  , BeginnersLuck' <$> beginnersLuck
-  , SkinGame' <$> skinGame
-  , AllIn' <$> allIn
-  , Fold' <$> fold
-  , FindingAWayInside' <$> findingAWayInside
-  , NightAtTheMuseum' <$> nightAtTheMuseum
-  , BreakingAndEntering' <$> breakingAndEntering
-  , SearchingForTheTome' <$> searchingForTheTome
-  , Run' <$> run
-  , GetTheEngineRunning' <$> getTheEngineRunning
-  , SearchingForAnswers' <$> searchingForAnswers
-  , TheChamberOfTheBeast' <$> theChamberOfTheBeast
-  , SaracenicScript' <$> saracenicScript
-  , TheyMustBeDestroyed' <$> theyMustBeDestroyed
-  , ThePathToTheHill' <$> thePathToTheHill
-  , AscendingTheHillV1' <$> ascendingTheHillV1
-  , AscendingTheHillV2' <$> ascendingTheHillV2
-  , AscendingTheHillV3' <$> ascendingTheHillV3
-  , TheGateOpens' <$> theGateOpens
-  , OutOfThisWorld' <$> outOfThisWorld
-  , IntoTheBeyond' <$> intoTheBeyond
-  , CloseTheRift' <$> closeTheRift
-  , FindingANewWay' <$> findingANewWay
-  , MysteriousGateway' <$> mysteriousGateway
-  , FindingLadyEsprit' <$> findingLadyEsprit
-  , HuntingTheRougarou' <$> huntingTheRougarou
-  , TheCarnevaleConspiracy' <$> theCarnevaleConspiracy
-  , GetToTheBoats' <$> getToTheBoats
-  , Row' <$> row
-  ]
+  $(buildEntityLookupList "Act")

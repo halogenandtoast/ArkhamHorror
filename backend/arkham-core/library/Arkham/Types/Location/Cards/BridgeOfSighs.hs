@@ -15,6 +15,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 
 newtype BridgeOfSighs = BridgeOfSighs LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bridgeOfSighs :: LocationCard BridgeOfSighs

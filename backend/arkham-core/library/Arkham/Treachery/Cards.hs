@@ -82,8 +82,7 @@ allPlayerTreacheryCards = mapFromList $ map
 allEncounterTreacheryCards :: HashMap CardCode CardDef
 allEncounterTreacheryCards = mapFromList $ map
   (toCardCode &&& id)
-  [ placeholderTreachery
-  , abduction
+  [ abduction
   , acridMiasma
   , alteredBeast
   , ancientEvils
@@ -156,10 +155,6 @@ allEncounterTreacheryCards = mapFromList $ map
   , watchersGaze
   , wormhole
   ]
-
-placeholderTreachery :: CardDef
-placeholderTreachery =
-  treachery "treachery" "Placeholder Treachery Card" Test 2
 
 coverUp :: CardDef
 coverUp = (weakness "01007" "Cover Up") { cdCardTraits = setFromList [Task] }

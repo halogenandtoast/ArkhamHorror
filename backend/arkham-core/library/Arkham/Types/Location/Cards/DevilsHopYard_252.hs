@@ -22,6 +22,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype DevilsHopYard_252 = DevilsHopYard_252 LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 devilsHopYard_252 :: LocationCard DevilsHopYard_252

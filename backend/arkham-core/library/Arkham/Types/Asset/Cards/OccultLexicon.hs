@@ -12,6 +12,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Message
 
 newtype OccultLexicon = OccultLexicon AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 occultLexicon :: AssetCard OccultLexicon

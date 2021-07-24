@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.TheCloverClub
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
@@ -20,11 +21,11 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype TheCloverClub = TheCloverClub AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-theCloverClub :: TheCloverClub
-theCloverClub =
-  TheCloverClub $ baseAttrs "02063" "The Clover Club" (Agenda 1 A) (Static 4)
+theCloverClub :: AgendaCard TheCloverClub
+theCloverClub = agenda (1, A) TheCloverClub Cards.theCloverClub (Static 4)
 
 instance HasActions env TheCloverClub where
   getActions i window (TheCloverClub x) = getActions i window x

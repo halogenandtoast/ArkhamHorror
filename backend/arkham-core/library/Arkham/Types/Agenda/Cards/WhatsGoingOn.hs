@@ -2,6 +2,7 @@ module Arkham.Types.Agenda.Cards.WhatsGoingOn where
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
@@ -11,11 +12,11 @@ import Arkham.Types.Query
 import Arkham.Types.Source
 
 newtype WhatsGoingOn = WhatsGoingOn AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-whatsGoingOn :: WhatsGoingOn
-whatsGoingOn =
-  WhatsGoingOn $ baseAttrs "01105" "What's Going On?!" (Agenda 1 A) (Static 3)
+whatsGoingOn :: AgendaCard WhatsGoingOn
+whatsGoingOn = agenda (1, A) WhatsGoingOn Cards.whatsGoingOn (Static 3)
 
 instance HasModifiersFor env WhatsGoingOn
 

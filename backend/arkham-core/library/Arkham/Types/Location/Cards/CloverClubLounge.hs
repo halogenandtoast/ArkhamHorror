@@ -21,6 +21,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype CloverClubLounge = CloverClubLounge LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cloverClubLounge :: LocationCard CloverClubLounge

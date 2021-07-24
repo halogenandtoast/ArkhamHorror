@@ -22,6 +22,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype Encyclopedia = Encyclopedia AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 encyclopedia :: AssetCard Encyclopedia

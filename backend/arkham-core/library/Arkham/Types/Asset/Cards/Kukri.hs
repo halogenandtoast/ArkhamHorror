@@ -20,6 +20,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype Kukri = Kukri AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 kukri :: AssetCard Kukri

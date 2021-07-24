@@ -18,6 +18,7 @@ import Arkham.Types.Target
 import Arkham.Types.Token
 
 newtype AdamLynch = AdamLynch AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 adamLynch :: AssetCard AdamLynch

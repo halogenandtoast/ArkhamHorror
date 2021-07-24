@@ -12,6 +12,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Message
 
 newtype WizardOfTheOrder = WizardOfTheOrder EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wizardOfTheOrder :: EnemyCard WizardOfTheOrder

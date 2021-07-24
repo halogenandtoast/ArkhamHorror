@@ -16,6 +16,7 @@ import Arkham.Types.Message
 import Arkham.Types.Window
 
 newtype FrozenSpring = FrozenSpring LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 frozenSpring :: LocationCard FrozenSpring

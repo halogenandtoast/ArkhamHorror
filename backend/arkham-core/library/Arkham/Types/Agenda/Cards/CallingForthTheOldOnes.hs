@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.CallingForthTheOldOnes
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
@@ -12,11 +13,12 @@ import Arkham.Types.GameValue
 import Arkham.Types.Message
 
 newtype CallingForthTheOldOnes = CallingForthTheOldOnes AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-callingForthTheOldOnes :: CallingForthTheOldOnes
-callingForthTheOldOnes = CallingForthTheOldOnes
-  $ baseAttrs "02275" "Calling Forth the Old Ones" (Agenda 1 A) (Static 12)
+callingForthTheOldOnes :: AgendaCard CallingForthTheOldOnes
+callingForthTheOldOnes =
+  agenda (1, A) CallingForthTheOldOnes Cards.callingForthTheOldOnes (Static 12)
 
 instance HasModifiersFor env CallingForthTheOldOnes
 

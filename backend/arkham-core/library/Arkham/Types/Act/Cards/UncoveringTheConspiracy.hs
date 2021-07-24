@@ -21,6 +21,7 @@ import Arkham.Types.Window
 import qualified Data.HashSet as HashSet
 
 newtype UncoveringTheConspiracy = UncoveringTheConspiracy ActAttrs
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 uncoveringTheConspiracy :: ActCard UncoveringTheConspiracy

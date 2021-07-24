@@ -28,6 +28,7 @@ import Arkham.Types.Window
 import Data.Maybe (fromJust)
 
 newtype FindingLadyEsprit = FindingLadyEsprit ActAttrs
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 findingLadyEsprit :: ActCard FindingLadyEsprit

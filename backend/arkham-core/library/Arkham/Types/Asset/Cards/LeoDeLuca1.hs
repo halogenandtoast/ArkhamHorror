@@ -13,6 +13,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype LeoDeLuca1 = LeoDeLuca1 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 leoDeLuca1 :: AssetCard LeoDeLuca1

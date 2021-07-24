@@ -16,6 +16,7 @@ import Arkham.Types.Treachery.Runner
 import Arkham.Types.Window
 
 newtype PsychopompsSong = PsychopompsSong TreacheryAttrs
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 psychopompsSong :: TreacheryCard PsychopompsSong

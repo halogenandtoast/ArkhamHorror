@@ -12,6 +12,7 @@ import Arkham.Types.Message
 import Arkham.Types.Slot
 
 newtype Charisma3 = Charisma3 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 charisma3 :: AssetCard Charisma3

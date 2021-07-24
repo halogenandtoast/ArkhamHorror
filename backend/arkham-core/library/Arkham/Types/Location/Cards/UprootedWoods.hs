@@ -17,6 +17,7 @@ import Arkham.Types.Query
 import Arkham.Types.Window
 
 newtype UprootedWoods = UprootedWoods LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 uprootedWoods :: LocationCard UprootedWoods

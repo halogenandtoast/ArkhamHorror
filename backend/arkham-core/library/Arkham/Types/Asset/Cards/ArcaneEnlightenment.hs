@@ -17,6 +17,7 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype ArcaneEnlightenment = ArcaneEnlightenment AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 arcaneEnlightenment :: AssetCard ArcaneEnlightenment

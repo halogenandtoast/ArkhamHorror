@@ -14,6 +14,7 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype Teamwork = Teamwork EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 teamwork :: EventCard Teamwork

@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.UndergroundMuscle
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.EncounterSet
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
@@ -20,11 +21,12 @@ import Arkham.Types.Query
 import Data.Maybe (fromJust)
 
 newtype UndergroundMuscle = UndergroundMuscle AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-undergroundMuscle :: UndergroundMuscle
-undergroundMuscle = UndergroundMuscle
-  $ baseAttrs "02064" "Underground Muscle" (Agenda 2 A) (Static 3)
+undergroundMuscle :: AgendaCard UndergroundMuscle
+undergroundMuscle =
+  agenda (2, A) UndergroundMuscle Cards.undergroundMuscle (Static 3)
 
 instance HasActions env UndergroundMuscle where
   getActions i window (UndergroundMuscle x) = getActions i window x

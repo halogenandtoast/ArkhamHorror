@@ -12,6 +12,7 @@ import Arkham.Types.Message
 import Arkham.Types.Query
 
 newtype HumanitiesBuilding = HumanitiesBuilding LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 humanitiesBuilding :: LocationCard HumanitiesBuilding

@@ -13,6 +13,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 
 newtype LaBellaLuna = LaBellaLuna LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 laBellaLuna :: LocationCard LaBellaLuna

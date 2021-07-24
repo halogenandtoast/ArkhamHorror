@@ -15,6 +15,7 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype DarkYoungHost = DarkYoungHost EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 darkYoungHost :: EnemyCard DarkYoungHost

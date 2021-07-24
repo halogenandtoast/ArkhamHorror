@@ -21,6 +21,7 @@ import Arkham.Types.Trait
 import qualified Arkham.Types.Trait as Trait
 
 newtype Narogath = Narogath EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 narogath :: EnemyCard Narogath

@@ -16,6 +16,7 @@ import Arkham.Types.Prey
 import Arkham.Types.Query
 
 newtype ScreechingByakhee = ScreechingByakhee EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 screechingByakhee :: EnemyCard ScreechingByakhee

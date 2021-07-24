@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.RampagingCreatures
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
@@ -16,11 +17,12 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype RampagingCreatures = RampagingCreatures AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-rampagingCreatures :: RampagingCreatures
-rampagingCreatures = RampagingCreatures
-  $ baseAttrs "02237" "Rampaging Creatures" (Agenda 1 A) (Static 5)
+rampagingCreatures :: AgendaCard RampagingCreatures
+rampagingCreatures =
+  agenda (1, A) RampagingCreatures Cards.rampagingCreatures (Static 5)
 
 instance HasModifiersFor env RampagingCreatures
 

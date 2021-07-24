@@ -12,6 +12,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 
 newtype HoleInTheWall = HoleInTheWall LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 holeInTheWall :: LocationCard HoleInTheWall

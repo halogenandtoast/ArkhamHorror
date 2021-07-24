@@ -16,6 +16,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype CloseCall2 = CloseCall2 EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 closeCall2 :: EventCard CloseCall2

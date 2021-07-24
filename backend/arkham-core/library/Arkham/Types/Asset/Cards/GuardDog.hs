@@ -16,6 +16,7 @@ import Arkham.Types.Source
 import Arkham.Types.Window
 
 newtype GuardDog = GuardDog AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 guardDog :: AssetCard GuardDog

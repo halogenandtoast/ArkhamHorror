@@ -22,6 +22,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype JeremiahPierce = JeremiahPierce EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jeremiahPierce :: EnemyCard JeremiahPierce

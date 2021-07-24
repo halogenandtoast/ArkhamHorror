@@ -6,7 +6,6 @@ import Arkham.Asset.Cards
 import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.Action
-import Arkham.Types.Asset.Class
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -19,6 +18,8 @@ import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Window
+
+class IsAsset a
 
 type AssetCard a = CardBuilder AssetId a
 
@@ -257,17 +258,6 @@ defeated AssetAttrs {..} =
 
 instance HasActions env AssetAttrs where
   getActions _ _ _ = pure []
-
-instance IsAsset AssetAttrs where
-  slotsOf = assetSlots
-  useTypeOf = useType . assetUses
-  isHealthDamageable a = case assetHealth a of
-    Nothing -> False
-    Just n -> n > assetHealthDamage a
-  isSanityDamageable a = case assetSanity a of
-    Nothing -> False
-    Just n -> n > assetSanityDamage a
-  isStory = assetIsStory
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs where
   runMessage msg a@AssetAttrs {..} = case msg of

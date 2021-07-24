@@ -14,6 +14,7 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 
 newtype EmergentMonstrosity = EmergentMonstrosity EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 emergentMonstrosity :: EnemyCard EmergentMonstrosity

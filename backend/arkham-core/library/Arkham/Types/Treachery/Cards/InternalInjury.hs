@@ -18,6 +18,7 @@ import Arkham.Types.Treachery.Runner
 import Arkham.Types.Window
 
 newtype InternalInjury = InternalInjury TreacheryAttrs
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 internalInjury :: TreacheryCard InternalInjury

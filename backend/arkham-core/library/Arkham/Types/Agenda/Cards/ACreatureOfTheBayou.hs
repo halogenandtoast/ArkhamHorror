@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.ACreatureOfTheBayou
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
@@ -18,11 +19,12 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype ACreatureOfTheBayou = ACreatureOfTheBayou AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-aCreatureOfTheBayou :: ACreatureOfTheBayou
-aCreatureOfTheBayou = ACreatureOfTheBayou
-  $ baseAttrs "81002" "A Creature of the Bayou" (Agenda 1 A) (Static 5)
+aCreatureOfTheBayou :: AgendaCard ACreatureOfTheBayou
+aCreatureOfTheBayou =
+  agenda (1, A) ACreatureOfTheBayou Cards.aCreatureOfTheBayou (Static 5)
 
 instance HasModifiersFor env ACreatureOfTheBayou
 

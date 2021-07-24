@@ -24,6 +24,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype FacultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 facultyOfficesTheNightIsStillYoung

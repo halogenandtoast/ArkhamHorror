@@ -16,6 +16,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype MuseumEntrance = MuseumEntrance LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 museumEntrance :: LocationCard MuseumEntrance

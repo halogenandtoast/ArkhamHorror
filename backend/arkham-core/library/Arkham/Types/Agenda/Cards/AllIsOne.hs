@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.AllIsOne
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.CampaignLogKey
@@ -17,10 +18,11 @@ import Arkham.Types.Message
 import Arkham.Types.Source
 
 newtype AllIsOne = AllIsOne AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-allIsOne :: AllIsOne
-allIsOne = AllIsOne $ baseAttrs "02312" "All is One" (Agenda 1 A) (Static 4)
+allIsOne :: AgendaCard AllIsOne
+allIsOne = agenda (1, A) AllIsOne Cards.allIsOne (Static 4)
 
 instance HasModifiersFor env AllIsOne
 

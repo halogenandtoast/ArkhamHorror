@@ -37,6 +37,8 @@ import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window
 
+class IsLocation a
+
 pattern AfterFailedInvestigate :: InvestigatorId -> Target -> Message
 pattern AfterFailedInvestigate iid target <-
   After (FailedSkillTest iid (Just Action.Investigate) _ target _ _)

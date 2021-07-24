@@ -15,6 +15,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype DonLagorio = DonLagorio EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 donLagorio :: EnemyCard DonLagorio

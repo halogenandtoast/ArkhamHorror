@@ -2,6 +2,7 @@ module Arkham.Types.Agenda.Cards.TheArkhamWoods where
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
@@ -14,11 +15,11 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype TheArkhamWoods = TheArkhamWoods AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-theArkhamWoods :: TheArkhamWoods
-theArkhamWoods =
-  TheArkhamWoods $ baseAttrs "01143" "The Arkham Woods" (Agenda 1 A) (Static 4)
+theArkhamWoods :: AgendaCard TheArkhamWoods
+theArkhamWoods = agenda (1, A) TheArkhamWoods Cards.theArkhamWoods (Static 4)
 
 instance HasModifiersFor env TheArkhamWoods
 

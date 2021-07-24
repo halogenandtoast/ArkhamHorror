@@ -23,6 +23,7 @@ import Arkham.Types.Slot
 import Arkham.Types.Target
 
 newtype Shotgun4 = Shotgun4 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shotgun4 :: AssetCard Shotgun4

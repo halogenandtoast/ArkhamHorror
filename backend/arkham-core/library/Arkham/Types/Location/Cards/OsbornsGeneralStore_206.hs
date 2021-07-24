@@ -16,6 +16,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype OsbornsGeneralStore_206 = OsbornsGeneralStore_206 LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 osbornsGeneralStore_206 :: LocationCard OsbornsGeneralStore_206

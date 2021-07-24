@@ -24,6 +24,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype WhateleyRuins_250 = WhateleyRuins_250 LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 whateleyRuins_250 :: LocationCard WhateleyRuins_250

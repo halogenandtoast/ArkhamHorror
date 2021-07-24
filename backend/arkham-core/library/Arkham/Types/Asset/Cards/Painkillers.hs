@@ -16,6 +16,7 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype Painkillers = Painkillers AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 painkillers :: AssetCard Painkillers

@@ -22,6 +22,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype RivertownAbandonedWarehouse = RivertownAbandonedWarehouse LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rivertownAbandonedWarehouse :: LocationCard RivertownAbandonedWarehouse

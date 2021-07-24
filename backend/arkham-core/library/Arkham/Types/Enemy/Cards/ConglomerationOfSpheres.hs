@@ -16,6 +16,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Trait
 
 newtype ConglomerationOfSpheres = ConglomerationOfSpheres EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 conglomerationOfSpheres :: EnemyCard ConglomerationOfSpheres

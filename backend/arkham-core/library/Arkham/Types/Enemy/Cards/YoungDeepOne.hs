@@ -15,6 +15,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 
 newtype YoungDeepOne = YoungDeepOne EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 youngDeepOne :: EnemyCard YoungDeepOne

@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.TheRougarouFeeds
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
@@ -18,11 +19,12 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype TheRougarouFeeds = TheRougarouFeeds AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-theRougarouFeeds :: TheRougarouFeeds
-theRougarouFeeds = TheRougarouFeeds
-  $ baseAttrs "81003" "The Rougarou Feeds" (Agenda 2 A) (Static 6)
+theRougarouFeeds :: AgendaCard TheRougarouFeeds
+theRougarouFeeds =
+  agenda (2, A) TheRougarouFeeds Cards.theRougarouFeeds (Static 6)
 
 instance HasModifiersFor env TheRougarouFeeds
 

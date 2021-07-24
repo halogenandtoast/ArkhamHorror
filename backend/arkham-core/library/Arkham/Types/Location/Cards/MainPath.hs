@@ -15,6 +15,7 @@ import Arkham.Types.Message
 import Arkham.Types.Trait
 
 newtype MainPath = MainPath LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mainPath :: LocationCard MainPath

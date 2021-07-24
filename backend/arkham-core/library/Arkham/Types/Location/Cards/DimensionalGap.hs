@@ -17,6 +17,7 @@ import Arkham.Types.Message
 import Arkham.Types.Window
 
 newtype DimensionalGap = DimensionalGap LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dimensionalGap :: LocationCard DimensionalGap

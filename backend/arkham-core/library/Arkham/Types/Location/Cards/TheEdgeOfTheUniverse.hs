@@ -19,6 +19,7 @@ import Arkham.Types.Query
 import Arkham.Types.Target
 
 newtype TheEdgeOfTheUniverse = TheEdgeOfTheUniverse LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theEdgeOfTheUniverse :: LocationCard TheEdgeOfTheUniverse

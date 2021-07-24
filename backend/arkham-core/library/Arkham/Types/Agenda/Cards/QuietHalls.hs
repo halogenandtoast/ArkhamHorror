@@ -2,6 +2,7 @@ module Arkham.Types.Agenda.Cards.QuietHalls where
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
@@ -13,11 +14,11 @@ import Arkham.Types.ScenarioId
 import Control.Monad.Extra (mapMaybeM)
 
 newtype QuietHalls = QuietHalls AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-quietHalls :: QuietHalls
-quietHalls =
-  QuietHalls $ baseAttrs "02042" "Quiet Halls" (Agenda 1 A) (Static 7)
+quietHalls :: AgendaCard QuietHalls
+quietHalls = agenda (1, A) QuietHalls Cards.quietHalls (Static 7)
 
 instance HasModifiersFor env QuietHalls
 

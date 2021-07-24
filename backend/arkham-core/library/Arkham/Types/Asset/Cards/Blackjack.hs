@@ -18,6 +18,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype Blackjack = Blackjack AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blackjack :: AssetCard Blackjack

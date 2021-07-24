@@ -17,6 +17,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype ServantOfManyMouths = ServantOfManyMouths EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 servantOfManyMouths :: EnemyCard ServantOfManyMouths

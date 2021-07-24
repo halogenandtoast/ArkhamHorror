@@ -20,6 +20,7 @@ import Arkham.Types.Token
 import Arkham.Types.Trait
 
 newtype HaroldWalsted = HaroldWalsted AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 haroldWalsted :: AssetCard HaroldWalsted

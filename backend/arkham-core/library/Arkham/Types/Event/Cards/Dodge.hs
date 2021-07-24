@@ -10,6 +10,7 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype Dodge = Dodge EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dodge :: EventCard Dodge

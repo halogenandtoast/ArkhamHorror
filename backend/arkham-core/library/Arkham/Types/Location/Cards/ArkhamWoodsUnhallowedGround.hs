@@ -13,6 +13,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype ArkhamWoodsUnhallowedGround = ArkhamWoodsUnhallowedGround LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsUnhallowedGround :: LocationCard ArkhamWoodsUnhallowedGround

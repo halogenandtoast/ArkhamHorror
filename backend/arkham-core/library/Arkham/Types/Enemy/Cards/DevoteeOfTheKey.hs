@@ -14,6 +14,7 @@ import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 
 newtype DevoteeOfTheKey = DevoteeOfTheKey EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 devoteeOfTheKey :: EnemyCard DevoteeOfTheKey

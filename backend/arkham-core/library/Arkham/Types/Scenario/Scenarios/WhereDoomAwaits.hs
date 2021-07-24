@@ -214,7 +214,7 @@ instance
 
       divergingPaths <-
         traverse (fmap EncounterCard . genEncounterCard) . take 3 =<< shuffleM
-          [ Locations.slaugteredWoods
+          [ Locations.slaughteredWoods
           , Locations.eerieGlade
           , Locations.destroyedPath
           , Locations.frozenSpring

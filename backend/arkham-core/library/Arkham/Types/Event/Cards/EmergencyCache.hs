@@ -12,6 +12,7 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype EmergencyCache = EmergencyCache EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 emergencyCache :: EventCard EmergencyCache

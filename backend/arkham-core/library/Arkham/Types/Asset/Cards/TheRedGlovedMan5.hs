@@ -23,6 +23,7 @@ newtype Metadata = Metadata { chosenSkills :: [SkillType] }
   deriving anyclass (ToJSON, FromJSON)
 
 newtype TheRedGlovedMan5 = TheRedGlovedMan5 (AssetAttrs `With` Metadata)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theRedGlovedMan5 :: AssetCard TheRedGlovedMan5

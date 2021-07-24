@@ -21,6 +21,7 @@ import Arkham.Types.Treachery.Runner
 import Arkham.Types.Window
 
 newtype SearchingForIzzie = SearchingForIzzie TreacheryAttrs
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 searchingForIzzie :: TreacheryCard SearchingForIzzie

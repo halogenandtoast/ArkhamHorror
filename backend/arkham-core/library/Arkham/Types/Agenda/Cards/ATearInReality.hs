@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.ATearInReality
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
@@ -16,11 +17,11 @@ import Arkham.Types.Message
 import Arkham.Types.Query
 
 newtype ATearInReality = ATearInReality AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-aTearInReality :: ATearInReality
-aTearInReality =
-  ATearInReality $ baseAttrs "02160" "A Tear in Reality" (Agenda 1 A) (Static 4)
+aTearInReality :: AgendaCard ATearInReality
+aTearInReality = agenda (1, A) ATearInReality Cards.aTearInReality (Static 4)
 
 instance HasModifiersFor env ATearInReality
 

@@ -18,6 +18,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype LiquidCourage = LiquidCourage AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 liquidCourage :: AssetCard LiquidCourage

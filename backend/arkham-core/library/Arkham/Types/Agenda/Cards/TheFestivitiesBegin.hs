@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.TheFestivitiesBegin
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
@@ -15,11 +16,12 @@ import Arkham.Types.GameValue
 import Arkham.Types.Message
 
 newtype TheFestivitiesBegin = TheFestivitiesBegin AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-theFestivitiesBegin :: TheFestivitiesBegin
-theFestivitiesBegin = TheFestivitiesBegin
-  $ baseAttrs "82002" "The Festivities Begin" (Agenda 1 A) (Static 8)
+theFestivitiesBegin :: AgendaCard TheFestivitiesBegin
+theFestivitiesBegin =
+  agenda (1, A) TheFestivitiesBegin Cards.theFestivitiesBegin (Static 8)
 
 instance HasModifiersFor env TheFestivitiesBegin
 

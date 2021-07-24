@@ -20,6 +20,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype StrangeSolutionFreezingVariant4 = StrangeSolutionFreezingVariant4 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strangeSolutionFreezingVariant4 :: AssetCard StrangeSolutionFreezingVariant4

@@ -1,5 +1,3 @@
-
-
 module Arkham.Types.Event.Attrs where
 
 import Arkham.Prelude
@@ -7,12 +5,13 @@ import Arkham.Prelude
 import Arkham.Json
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Source
 import Arkham.Types.Target
+
+class IsEvent a
 
 type EventCard a = CardBuilder (InvestigatorId, EventId) a
 

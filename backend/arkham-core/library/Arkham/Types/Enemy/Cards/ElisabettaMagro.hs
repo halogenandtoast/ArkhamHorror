@@ -11,6 +11,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Message
 
 newtype ElisabettaMagro = ElisabettaMagro EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 elisabettaMagro :: EnemyCard ElisabettaMagro

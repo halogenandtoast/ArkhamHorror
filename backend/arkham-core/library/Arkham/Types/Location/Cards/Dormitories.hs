@@ -18,6 +18,7 @@ import Arkham.Types.Resolution
 import Arkham.Types.Window
 
 newtype Dormitories = Dormitories LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dormitories :: LocationCard Dormitories

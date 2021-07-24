@@ -16,6 +16,7 @@ import Arkham.Types.Token
 import Arkham.Types.Window
 
 newtype LuckyDice2 = LuckyDice2 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 luckyDice2 :: AssetCard LuckyDice2

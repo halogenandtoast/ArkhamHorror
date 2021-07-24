@@ -15,6 +15,7 @@ import Arkham.Types.Message
 import Arkham.Types.Window
 
 newtype AbbessAllegriaDiBiase = AbbessAllegriaDiBiase AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 abbessAllegriaDiBiase :: AssetCard AbbessAllegriaDiBiase

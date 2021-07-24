@@ -12,6 +12,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.LocationMatcher
 
 newtype IcyGhoul = IcyGhoul EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 icyGhoul :: EnemyCard IcyGhoul

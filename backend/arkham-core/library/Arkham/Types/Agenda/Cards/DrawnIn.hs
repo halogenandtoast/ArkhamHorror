@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.DrawnIn
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
@@ -16,10 +17,11 @@ import Arkham.Types.Message
 import Arkham.Types.Query
 
 newtype DrawnIn = DrawnIn AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-drawnIn :: DrawnIn
-drawnIn = DrawnIn $ baseAttrs "02163" "Drawn In" (Agenda 4 A) (Static 3)
+drawnIn :: AgendaCard DrawnIn
+drawnIn = agenda (4, A) DrawnIn Cards.drawnIn (Static 3)
 
 instance HasModifiersFor env DrawnIn
 

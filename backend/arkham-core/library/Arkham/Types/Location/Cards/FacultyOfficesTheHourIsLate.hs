@@ -12,6 +12,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 
 newtype FacultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 facultyOfficesTheHourIsLate :: LocationCard FacultyOfficesTheHourIsLate

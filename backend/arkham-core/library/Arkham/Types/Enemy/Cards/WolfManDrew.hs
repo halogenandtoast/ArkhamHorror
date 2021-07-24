@@ -13,6 +13,7 @@ import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 
 newtype WolfManDrew = WolfManDrew EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wolfManDrew :: EnemyCard WolfManDrew

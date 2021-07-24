@@ -20,6 +20,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype PowderOfIbnGhazi = PowderOfIbnGhazi AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 powderOfIbnGhazi :: AssetCard PowderOfIbnGhazi

@@ -15,6 +15,7 @@ import Arkham.Types.Token
 import Arkham.Types.Window
 
 newtype JewelOfAureolus3 = JewelOfAureolus3 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jewelOfAureolus3 :: AssetCard JewelOfAureolus3

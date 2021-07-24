@@ -12,6 +12,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Message
 
 newtype IveHadWorse4 = IveHadWorse4 EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 iveHadWorse4 :: EventCard IveHadWorse4

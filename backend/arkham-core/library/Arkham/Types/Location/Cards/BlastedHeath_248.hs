@@ -22,6 +22,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype BlastedHeath_248 = BlastedHeath_248 LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blastedHeath_248 :: LocationCard BlastedHeath_248

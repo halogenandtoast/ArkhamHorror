@@ -18,6 +18,7 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype AscendingTheHillV1 = AscendingTheHillV1 ActAttrs
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ascendingTheHillV1 :: ActCard AscendingTheHillV1

@@ -16,6 +16,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype Schoolhouse_212 = Schoolhouse_212 LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 schoolhouse_212 :: LocationCard Schoolhouse_212

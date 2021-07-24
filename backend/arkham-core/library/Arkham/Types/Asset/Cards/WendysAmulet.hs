@@ -12,6 +12,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype WendysAmulet = WendysAmulet AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wendysAmulet :: AssetCard WendysAmulet

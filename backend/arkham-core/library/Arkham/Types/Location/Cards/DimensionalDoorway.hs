@@ -19,6 +19,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype DimensionalDoorway = DimensionalDoorway LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dimensionalDoorway :: LocationCard DimensionalDoorway

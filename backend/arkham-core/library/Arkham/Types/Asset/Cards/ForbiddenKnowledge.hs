@@ -14,6 +14,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype ForbiddenKnowledge = ForbiddenKnowledge AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 forbiddenKnowledge :: AssetCard ForbiddenKnowledge

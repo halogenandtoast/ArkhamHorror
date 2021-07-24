@@ -25,6 +25,7 @@ import Arkham.Types.Source
 import Arkham.Types.Window
 
 newtype AscendingPath = AscendingPath LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ascendingPath :: LocationCard AscendingPath

@@ -19,6 +19,7 @@ import Arkham.Types.Message
 import Arkham.Types.Window
 
 newtype MiskatonicUniversityMiskatonicMuseum = MiskatonicUniversityMiskatonicMuseum LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miskatonicUniversityMiskatonicMuseum

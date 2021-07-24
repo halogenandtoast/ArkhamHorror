@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.OutOfTime
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
@@ -14,10 +15,11 @@ import Arkham.Types.Message
 import Arkham.Types.Resolution
 
 newtype OutOfTime = OutOfTime AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-outOfTime :: OutOfTime
-outOfTime = OutOfTime $ baseAttrs "02164" "Out of Time" (Agenda 5 A) (Static 3)
+outOfTime :: AgendaCard OutOfTime
+outOfTime = agenda (5, A) OutOfTime Cards.outOfTime (Static 3)
 
 instance HasModifiersFor env OutOfTime
 

@@ -15,6 +15,7 @@ import Arkham.Types.Query
 import Arkham.Types.Source
 
 newtype YithianObserver = YithianObserver EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yithianObserver :: EnemyCard YithianObserver

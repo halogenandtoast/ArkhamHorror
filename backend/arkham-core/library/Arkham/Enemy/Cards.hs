@@ -57,8 +57,7 @@ allPlayerEnemyCards = mapFromList $ map
 allEncounterEnemyCards :: HashMap CardCode CardDef
 allEncounterEnemyCards = mapFromList $ map
   (toCardCode &&& id)
-  [ placeholderEnemy
-  , acolyte
+  [ acolyte
   , acolyteOfUmordhoth
   , almaHill
   , avianThrall
@@ -128,9 +127,6 @@ allEncounterEnemyCards = mapFromList $ map
   , yogSothoth
   , youngDeepOne
   ]
-
-placeholderEnemy :: CardDef
-placeholderEnemy = enemy "enemy" "Placeholder Enemy Card" Test 2
 
 mobEnforcer :: CardDef
 mobEnforcer = (weakness "01101" "Mob Enforcer")

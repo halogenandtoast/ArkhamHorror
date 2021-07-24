@@ -13,6 +13,7 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype StandTogether3 = StandTogether3 EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, TargetEntity)
 
 standTogether3 :: EventCard StandTogether3

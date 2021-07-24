@@ -17,6 +17,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype HouseInTheReeds_210 = HouseInTheReeds_210 LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 houseInTheReeds_210 :: LocationCard HouseInTheReeds_210

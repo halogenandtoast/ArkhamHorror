@@ -16,6 +16,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype PassageIntoTheVeil = PassageIntoTheVeil TreacheryAttrs
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 passageIntoTheVeil :: TreacheryCard PassageIntoTheVeil

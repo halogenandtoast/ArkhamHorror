@@ -14,6 +14,7 @@ import Arkham.Types.Message
 import Arkham.Types.Trait
 
 newtype BillyCooper = BillyCooper EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 billyCooper :: EnemyCard BillyCooper

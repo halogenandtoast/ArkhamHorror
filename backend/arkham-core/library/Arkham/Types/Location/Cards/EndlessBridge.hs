@@ -21,6 +21,7 @@ import Arkham.Types.Window
 import Control.Monad.Extra (findM)
 
 newtype EndlessBridge = EndlessBridge LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 endlessBridge :: LocationCard EndlessBridge

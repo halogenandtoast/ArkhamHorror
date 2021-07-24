@@ -19,6 +19,7 @@ import Arkham.Types.Token
 import Arkham.Types.Window
 
 newtype JimsTrumpet = JimsTrumpet AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 jimsTrumpet :: AssetCard JimsTrumpet

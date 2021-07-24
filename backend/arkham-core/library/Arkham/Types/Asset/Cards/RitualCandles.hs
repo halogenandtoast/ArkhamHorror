@@ -18,6 +18,7 @@ import Arkham.Types.Token
 import Arkham.Types.Window
 
 newtype RitualCandles = RitualCandles AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ritualCandles :: AssetCard RitualCandles

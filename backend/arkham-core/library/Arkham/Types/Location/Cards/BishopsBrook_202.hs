@@ -16,6 +16,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype BishopsBrook_202 = BishopsBrook_202 LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bishopsBrook_202 :: LocationCard BishopsBrook_202

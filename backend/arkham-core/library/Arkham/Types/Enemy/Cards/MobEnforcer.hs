@@ -20,6 +20,7 @@ import Arkham.Types.Source
 import Arkham.Types.Window
 
 newtype MobEnforcer = MobEnforcer EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mobEnforcer :: EnemyCard MobEnforcer

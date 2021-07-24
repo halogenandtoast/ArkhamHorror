@@ -15,6 +15,7 @@ import Arkham.Types.Message
 import Arkham.Types.Source
 
 newtype ArkhamWoodsLakeside = ArkhamWoodsLakeside LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsLakeside :: LocationCard ArkhamWoodsLakeside

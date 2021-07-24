@@ -20,6 +20,7 @@ import Arkham.Types.Treachery.Runner
 import Arkham.Types.Window
 
 newtype HospitalDebts = HospitalDebts TreacheryAttrs
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 hospitalDebts :: TreacheryCard HospitalDebts

@@ -12,6 +12,7 @@ import Arkham.Types.Message
 import Arkham.Types.Window
 
 newtype RabbitsFoot = RabbitsFoot AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rabbitsFoot :: AssetCard RabbitsFoot

@@ -16,6 +16,7 @@ import Arkham.Types.Query
 import Arkham.Types.Target
 
 newtype DecipheredReality5 = DecipheredReality5 EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 decipheredReality5 :: EventCard DecipheredReality5

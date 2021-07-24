@@ -16,6 +16,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype StrangeSolutionRestorativeConcoction4 = StrangeSolutionRestorativeConcoction4 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strangeSolutionRestorativeConcoction4

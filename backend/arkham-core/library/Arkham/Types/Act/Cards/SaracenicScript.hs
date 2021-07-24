@@ -20,6 +20,7 @@ import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 
 newtype SaracenicScript = SaracenicScript ActAttrs
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 saracenicScript :: ActCard SaracenicScript

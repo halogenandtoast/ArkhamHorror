@@ -14,6 +14,7 @@ import Arkham.Types.Prey
 import Arkham.Types.SkillType
 
 newtype RelentlessDarkYoung = RelentlessDarkYoung EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 relentlessDarkYoung :: EnemyCard RelentlessDarkYoung

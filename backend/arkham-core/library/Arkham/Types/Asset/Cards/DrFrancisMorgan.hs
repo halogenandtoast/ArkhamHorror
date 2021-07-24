@@ -18,6 +18,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype DrFrancisMorgan = DrFrancisMorgan AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drFrancisMorgan :: AssetCard DrFrancisMorgan

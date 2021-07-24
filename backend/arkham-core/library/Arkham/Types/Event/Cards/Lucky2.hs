@@ -11,6 +11,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype Lucky2 = Lucky2 EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lucky2 :: EventCard Lucky2

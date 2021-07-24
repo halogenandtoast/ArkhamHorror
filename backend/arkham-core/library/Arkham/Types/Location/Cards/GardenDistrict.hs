@@ -22,6 +22,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype GardenDistrict = GardenDistrict LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 gardenDistrict :: LocationCard GardenDistrict

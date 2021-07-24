@@ -21,6 +21,7 @@ import Arkham.Types.Slot
 import Arkham.Types.Target
 
 newtype ChicagoTypewriter4 = ChicagoTypewriter4 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chicagoTypewriter4 :: AssetCard ChicagoTypewriter4

@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.TimeIsRunningShort
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Agenda.Attrs
@@ -18,11 +19,12 @@ import Arkham.Types.Source
 import Arkham.Types.Window
 
 newtype TimeIsRunningShort = TimeIsRunningShort AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-timeIsRunningShort :: TimeIsRunningShort
-timeIsRunningShort = TimeIsRunningShort
-  $ baseAttrs "01122" "Time Is Running Short" (Agenda 2 A) (Static 8)
+timeIsRunningShort :: AgendaCard TimeIsRunningShort
+timeIsRunningShort =
+  agenda (2, A) TimeIsRunningShort Cards.timeIsRunningShort (Static 8)
 
 instance HasModifiersFor env TimeIsRunningShort
 

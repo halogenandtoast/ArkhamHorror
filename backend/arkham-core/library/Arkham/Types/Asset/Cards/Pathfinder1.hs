@@ -15,6 +15,7 @@ import Arkham.Types.Message
 import Arkham.Types.Window
 
 newtype Pathfinder1 = Pathfinder1 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pathfinder1 :: AssetCard Pathfinder1

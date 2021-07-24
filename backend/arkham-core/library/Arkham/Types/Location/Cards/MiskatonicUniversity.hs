@@ -20,6 +20,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype MiskatonicUniversity = MiskatonicUniversity LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miskatonicUniversity :: LocationCard MiskatonicUniversity

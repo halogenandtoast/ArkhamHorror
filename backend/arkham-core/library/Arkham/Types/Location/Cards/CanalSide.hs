@@ -18,6 +18,7 @@ import Arkham.Types.Message
 import Arkham.Types.Window
 
 newtype CanalSide = CanalSide LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 canalSide :: LocationCard CanalSide

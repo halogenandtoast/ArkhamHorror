@@ -12,6 +12,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype DynamiteBlast2 = DynamiteBlast2 EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dynamiteBlast2 :: EventCard DynamiteBlast2

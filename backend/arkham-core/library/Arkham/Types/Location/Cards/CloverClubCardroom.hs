@@ -21,6 +21,7 @@ import Arkham.Types.Token
 import Arkham.Types.Window
 
 newtype CloverClubCardroom = CloverClubCardroom LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cloverClubCardroom :: LocationCard CloverClubCardroom

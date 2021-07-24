@@ -18,6 +18,7 @@ import Arkham.Types.Message
 import Arkham.Types.Trait
 
 newtype HouseInTheReeds_211 = HouseInTheReeds_211 LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 houseInTheReeds_211 :: LocationCard HouseInTheReeds_211

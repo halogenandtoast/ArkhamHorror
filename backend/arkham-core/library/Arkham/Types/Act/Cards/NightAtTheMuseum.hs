@@ -18,6 +18,7 @@ import Arkham.Types.Name
 import Arkham.Types.Target
 
 newtype NightAtTheMuseum = NightAtTheMuseum ActAttrs
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 nightAtTheMuseum :: ActCard NightAtTheMuseum

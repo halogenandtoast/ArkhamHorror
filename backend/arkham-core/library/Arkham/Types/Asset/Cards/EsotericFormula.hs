@@ -23,6 +23,7 @@ import Arkham.Types.Trait
 import Control.Monad.Extra
 
 newtype EsotericFormula = EsotericFormula AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 esotericFormula :: AssetCard EsotericFormula

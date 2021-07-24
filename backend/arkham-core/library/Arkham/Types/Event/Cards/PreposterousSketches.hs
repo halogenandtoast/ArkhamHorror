@@ -11,6 +11,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Message
 
 newtype PreposterousSketches = PreposterousSketches EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 preposterousSketches :: EventCard PreposterousSketches

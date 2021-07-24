@@ -14,6 +14,7 @@ import Arkham.Types.Query
 import Arkham.Types.Target
 
 newtype MoonlightRitual = MoonlightRitual EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 moonlightRitual :: EventCard MoonlightRitual

@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.TheEndOfAllThings
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
@@ -16,11 +17,12 @@ import Arkham.Types.Message
 import Arkham.Types.Resolution
 
 newtype TheEndOfAllThings = TheEndOfAllThings AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-theEndOfAllThings :: TheEndOfAllThings
-theEndOfAllThings = TheEndOfAllThings
-  $ baseAttrs "02315" "The End of All Things" (Agenda 4 A) (Static 2)
+theEndOfAllThings :: AgendaCard TheEndOfAllThings
+theEndOfAllThings =
+  agenda (4, A) TheEndOfAllThings Cards.theEndOfAllThings (Static 2)
 
 instance HasModifiersFor env TheEndOfAllThings
 

@@ -34,6 +34,7 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window (Who, Window)
 import qualified Arkham.Types.Window as Window
+import qualified Data.Char as C
 import qualified Data.HashSet as HashSet
 import GHC.Generics
 import Language.Haskell.TH.Syntax hiding (Name)
@@ -333,3 +334,16 @@ buildEntity nm = do
     (TH.mkName $ nameBase name ++ "'")
     [(Bang TH.NoSourceUnpackedness TH.NoSourceStrictness, con)]
   extractCon _ = Nothing
+
+buildEntityLookupList :: String -> Q Exp
+buildEntityLookupList nm = do
+  ClassI _ instances <- reify (TH.mkName $ "Is" ++ nm)
+  let conz = mapMaybe extractCon instances
+  pure $ ListE conz
+ where
+  extractCon (InstanceD _ _ (AppT _ (ConT name)) _) = Just $ AppE
+    (AppE (VarE $ TH.mkName "fmap") (ConE $ TH.mkName $ nameBase name ++ "'"))
+    (VarE $ toFunName $ nameBase name)
+  extractCon _ = Nothing
+  toFunName [] = error "hmm"
+  toFunName (x : xs) = TH.mkName $ C.toLower x : xs

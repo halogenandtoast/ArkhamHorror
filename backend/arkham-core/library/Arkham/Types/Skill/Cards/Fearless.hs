@@ -10,6 +10,7 @@ import Arkham.Types.Skill.Runner
 import Arkham.Types.Target
 
 newtype Fearless = Fearless SkillAttrs
+  deriving anyclass IsSkill
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fearless :: SkillCard Fearless

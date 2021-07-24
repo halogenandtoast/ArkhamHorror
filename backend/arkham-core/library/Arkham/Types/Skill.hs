@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Types.Skill
   ( module Arkham.Types.Skill
   ) where
@@ -14,36 +15,10 @@ import Arkham.Types.Skill.Cards
 import Arkham.Types.Skill.Runner
 import Arkham.Types.SkillTest
 
+$(buildEntity "Skill")
+
 createSkill :: IsCard a => a -> InvestigatorId -> Skill
 createSkill a iid = lookupSkill (toCardCode a) iid (SkillId $ toCardId a)
-
-data Skill
-  = Deduction' Deduction
-  | Deduction2' Deduction2
-  | Defiance' Defiance
-  | DoubleOrNothing' DoubleOrNothing
-  | Fearless' Fearless
-  | Fearless2' Fearless2
-  | Guts' Guts
-  | InquiringMind' InquiringMind
-  | Leadership' Leadership
-  | ManualDexterity' ManualDexterity
-  | Opportunist' Opportunist
-  | Opportunist2' Opportunist2
-  | Overpower' Overpower
-  | Perception' Perception
-  | QuickThinking' QuickThinking
-  | RiseToTheOccasion' RiseToTheOccasion
-  | StrokeOfLuck2' StrokeOfLuck2
-  | SurvivalInstinct' SurvivalInstinct
-  | SurvivalInstinct2' SurvivalInstinct2
-  | TheHomeFront' TheHomeFront
-  | TrueUnderstanding' TrueUnderstanding
-  | UnexpectedCourage' UnexpectedCourage
-  | ViciousBlow' ViciousBlow
-  | ViciousBlow2' ViciousBlow2
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
 
 instance HasCardDef Skill where
   toCardDef = toCardDef . toAttrs
@@ -86,31 +61,7 @@ lookupSkill cardCode =
 allSkills :: HashMap CardCode (InvestigatorId -> SkillId -> Skill)
 allSkills = mapFromList $ map
   (cbCardCode &&& (curry . cbCardBuilder))
-  [ Deduction' <$> deduction
-  , Deduction2' <$> deduction2
-  , Defiance' <$> defiance
-  , DoubleOrNothing' <$> doubleOrNothing
-  , Fearless' <$> fearless
-  , Fearless2' <$> fearless2
-  , Guts' <$> guts
-  , InquiringMind' <$> inquiringMind
-  , Leadership' <$> leadership
-  , ManualDexterity' <$> manualDexterity
-  , Opportunist' <$> opportunist
-  , Opportunist2' <$> opportunist2
-  , Overpower' <$> overpower
-  , Perception' <$> perception
-  , QuickThinking' <$> quickThinking
-  , RiseToTheOccasion' <$> riseToTheOccasion
-  , StrokeOfLuck2' <$> strokeOfLuck2
-  , SurvivalInstinct' <$> survivalInstinct
-  , SurvivalInstinct2' <$> survivalInstinct2
-  , TheHomeFront' <$> theHomeFront
-  , TrueUnderstanding' <$> trueUnderstanding
-  , UnexpectedCourage' <$> unexpectedCourage
-  , ViciousBlow' <$> viciousBlow
-  , ViciousBlow2' <$> viciousBlow2
-  ]
+  $(buildEntityLookupList "Skill")
 
 ownerOfSkill :: Skill -> InvestigatorId
 ownerOfSkill = skillOwner . toAttrs

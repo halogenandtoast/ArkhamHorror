@@ -17,6 +17,7 @@ import Arkham.Types.SkillTest
 import Arkham.Types.Target
 
 newtype TheHomeFront = TheHomeFront SkillAttrs
+  deriving anyclass IsSkill
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theHomeFront :: SkillCard TheHomeFront

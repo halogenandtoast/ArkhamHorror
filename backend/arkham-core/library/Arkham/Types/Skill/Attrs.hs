@@ -14,6 +14,8 @@ import Arkham.Types.Target
 
 type SkillCard a = CardBuilder (InvestigatorId, SkillId) a
 
+class IsSkill a
+
 data SkillAttrs = SkillAttrs
   { skillCardCode :: CardCode
   , skillId :: SkillId

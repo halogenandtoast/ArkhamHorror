@@ -11,6 +11,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 
 newtype Cellar = Cellar LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cellar :: LocationCard Cellar

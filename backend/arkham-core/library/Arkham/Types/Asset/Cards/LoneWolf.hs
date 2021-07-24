@@ -14,6 +14,7 @@ import Arkham.Types.Message
 import Arkham.Types.Window
 
 newtype LoneWolf = LoneWolf AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 loneWolf :: AssetCard LoneWolf

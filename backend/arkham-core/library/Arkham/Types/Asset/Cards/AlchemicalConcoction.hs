@@ -22,6 +22,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype AlchemicalConcoction = AlchemicalConcoction AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alchemicalConcoction :: AssetCard AlchemicalConcoction

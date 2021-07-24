@@ -23,6 +23,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype DaisysToteBagAdvanced = DaisysToteBagAdvanced AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 daisysToteBagAdvanced :: AssetCard DaisysToteBagAdvanced

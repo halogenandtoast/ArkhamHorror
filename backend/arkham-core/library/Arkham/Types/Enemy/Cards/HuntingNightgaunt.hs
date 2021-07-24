@@ -13,6 +13,7 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype HuntingNightgaunt = HuntingNightgaunt EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 huntingNightgaunt :: EnemyCard HuntingNightgaunt

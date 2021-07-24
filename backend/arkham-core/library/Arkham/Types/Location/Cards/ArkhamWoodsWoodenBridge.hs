@@ -15,6 +15,7 @@ import Arkham.Types.Message
 import Arkham.Types.Source
 
 newtype ArkhamWoodsWoodenBridge = ArkhamWoodsWoodenBridge LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsWoodenBridge :: LocationCard ArkhamWoodsWoodenBridge

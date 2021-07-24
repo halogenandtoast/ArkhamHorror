@@ -13,6 +13,7 @@ import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 
 newtype RuthTurner = RuthTurner EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ruthTurner :: EnemyCard RuthTurner

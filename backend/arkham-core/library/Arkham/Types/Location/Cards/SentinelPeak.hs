@@ -16,6 +16,7 @@ import Arkham.Types.Message
 import Arkham.Types.Trait
 
 newtype SentinelPeak = SentinelPeak LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sentinelPeak :: LocationCard SentinelPeak

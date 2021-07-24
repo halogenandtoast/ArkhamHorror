@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.TheShadowOfTheEclipse
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
@@ -17,11 +18,12 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype TheShadowOfTheEclipse = TheShadowOfTheEclipse AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-theShadowOfTheEclipse :: TheShadowOfTheEclipse
-theShadowOfTheEclipse = TheShadowOfTheEclipse
-  $ baseAttrs "82003" "The Shadow of the Eclipse" (Agenda 2 A) (Static 3)
+theShadowOfTheEclipse :: AgendaCard TheShadowOfTheEclipse
+theShadowOfTheEclipse =
+  agenda (2, A) TheShadowOfTheEclipse Cards.theShadowOfTheEclipse (Static 3)
 
 instance HasModifiersFor env TheShadowOfTheEclipse
 

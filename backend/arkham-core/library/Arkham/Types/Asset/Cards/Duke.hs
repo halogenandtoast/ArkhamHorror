@@ -22,6 +22,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype Duke = Duke AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 duke :: AssetCard Duke

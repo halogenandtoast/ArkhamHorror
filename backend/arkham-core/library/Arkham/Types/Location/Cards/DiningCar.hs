@@ -20,6 +20,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Query
 
 newtype DiningCar = DiningCar LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 diningCar :: LocationCard DiningCar

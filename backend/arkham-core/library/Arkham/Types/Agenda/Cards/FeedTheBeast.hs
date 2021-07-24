@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.FeedTheBeast
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
@@ -13,11 +14,11 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 
 newtype FeedTheBeast = FeedTheBeast AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-feedTheBeast :: FeedTheBeast
-feedTheBeast =
-  FeedTheBeast $ baseAttrs "02198" "Feed the Beast" (Agenda 3 A) (Static 7)
+feedTheBeast :: AgendaCard FeedTheBeast
+feedTheBeast = agenda (3, A) FeedTheBeast Cards.feedTheBeast (Static 7)
 
 instance HasModifiersFor env FeedTheBeast
 

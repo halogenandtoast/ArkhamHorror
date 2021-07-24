@@ -19,7 +19,8 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype Cnidathqua = Cnidathqua EnemyAttrs
-    deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+    deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cnidathqua :: EnemyCard Cnidathqua
 cnidathqua = enemyWith

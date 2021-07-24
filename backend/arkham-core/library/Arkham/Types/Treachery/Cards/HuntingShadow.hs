@@ -10,6 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype HuntingShadow = HuntingShadow TreacheryAttrs
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 huntingShadow :: TreacheryCard HuntingShadow

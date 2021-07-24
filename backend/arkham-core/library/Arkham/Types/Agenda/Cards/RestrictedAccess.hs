@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.RestrictedAccess
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
@@ -19,11 +20,12 @@ import Arkham.Types.Target
 import Arkham.Types.TreacheryId
 
 newtype RestrictedAccess = RestrictedAccess AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-restrictedAccess :: RestrictedAccess
-restrictedAccess = RestrictedAccess
-  $ baseAttrs "02119" "Restricted Access" (Agenda 1 A) (Static 5)
+restrictedAccess :: AgendaCard RestrictedAccess
+restrictedAccess =
+  agenda (1, A) RestrictedAccess Cards.restrictedAccess (Static 5)
 
 instance HasActions env RestrictedAccess where
   getActions i window (RestrictedAccess x) = getActions i window x

@@ -13,6 +13,7 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype Trapped = Trapped ActAttrs
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 trapped :: ActCard Trapped

@@ -16,6 +16,7 @@ import Arkham.Types.Prey
 import Arkham.Types.Target
 
 newtype StubbornDetective = StubbornDetective EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stubbornDetective :: EnemyCard StubbornDetective

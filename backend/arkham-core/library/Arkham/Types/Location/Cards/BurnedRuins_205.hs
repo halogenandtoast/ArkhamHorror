@@ -13,6 +13,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 
 newtype BurnedRuins_205 = BurnedRuins_205 LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 burnedRuins_205 :: LocationCard BurnedRuins_205

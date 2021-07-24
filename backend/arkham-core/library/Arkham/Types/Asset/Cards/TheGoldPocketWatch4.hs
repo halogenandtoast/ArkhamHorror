@@ -16,6 +16,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype TheGoldPocketWatch4 = TheGoldPocketWatch4 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theGoldPocketWatch4 :: AssetCard TheGoldPocketWatch4

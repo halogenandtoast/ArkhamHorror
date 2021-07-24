@@ -17,6 +17,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype DiscOfItzamna2 = DiscOfItzamna2 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 discOfItzamna2 :: AssetCard DiscOfItzamna2

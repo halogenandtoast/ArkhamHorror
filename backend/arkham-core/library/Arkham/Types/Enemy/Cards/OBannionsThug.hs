@@ -14,6 +14,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype OBannionsThug = OBannionsThug EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 oBannionsThug :: EnemyCard OBannionsThug

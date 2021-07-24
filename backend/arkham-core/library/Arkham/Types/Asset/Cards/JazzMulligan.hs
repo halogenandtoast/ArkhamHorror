@@ -22,6 +22,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype JazzMulligan = JazzMulligan AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jazzMulligan :: AssetCard JazzMulligan

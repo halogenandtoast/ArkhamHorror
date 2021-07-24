@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.RollingBackwards
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
@@ -16,11 +17,12 @@ import Arkham.Types.Message
 import Arkham.Types.Query
 
 newtype RollingBackwards = RollingBackwards AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-rollingBackwards :: RollingBackwards
-rollingBackwards = RollingBackwards
-  $ baseAttrs "02162" "Rolling Backwards" (Agenda 3 A) (Static 4)
+rollingBackwards :: AgendaCard RollingBackwards
+rollingBackwards =
+  agenda (3, A) RollingBackwards Cards.rollingBackwards (Static 4)
 
 instance HasModifiersFor env RollingBackwards
 

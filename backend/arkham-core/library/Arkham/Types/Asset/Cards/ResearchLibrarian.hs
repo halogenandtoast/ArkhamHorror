@@ -14,6 +14,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype ResearchLibrarian = ResearchLibrarian AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 researchLibrarian :: AssetCard ResearchLibrarian

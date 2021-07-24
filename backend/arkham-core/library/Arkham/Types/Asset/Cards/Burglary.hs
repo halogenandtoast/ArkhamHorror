@@ -16,6 +16,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype Burglary = Burglary AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 burglary :: AssetCard Burglary

@@ -25,6 +25,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype RicesWhereabouts = RicesWhereabouts ActAttrs
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 ricesWhereabouts :: ActCard RicesWhereabouts

@@ -14,6 +14,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 
 newtype DarkenedHall = DarkenedHall LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 darkenedHall :: LocationCard DarkenedHall

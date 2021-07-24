@@ -24,6 +24,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype SanMarcoBasilica = SanMarcoBasilica LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sanMarcoBasilica :: LocationCard SanMarcoBasilica

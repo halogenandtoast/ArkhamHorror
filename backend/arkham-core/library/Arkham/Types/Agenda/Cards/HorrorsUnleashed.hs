@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.HorrorsUnleashed
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
@@ -20,11 +21,12 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype HorrorsUnleashed = HorrorsUnleashed AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-horrorsUnleashed :: HorrorsUnleashed
-horrorsUnleashed = HorrorsUnleashed
-  $ baseAttrs "02239" "Horrors Unleashed" (Agenda 3 A) (Static 7)
+horrorsUnleashed :: AgendaCard HorrorsUnleashed
+horrorsUnleashed =
+  agenda (3, A) HorrorsUnleashed Cards.horrorsUnleashed (Static 7)
 
 instance HasSet Trait env EnemyId => HasModifiersFor env HorrorsUnleashed where
   getModifiersFor _ (EnemyTarget eid) (HorrorsUnleashed attrs) = do

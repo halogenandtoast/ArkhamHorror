@@ -15,6 +15,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype BlindingLight2 = BlindingLight2 EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blindingLight2 :: EventCard BlindingLight2

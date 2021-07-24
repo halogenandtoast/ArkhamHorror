@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.BreakingThrough
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
@@ -16,11 +17,12 @@ import Arkham.Types.GameValue
 import Arkham.Types.Message
 
 newtype BreakingThrough = BreakingThrough AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-breakingThrough :: BreakingThrough
+breakingThrough :: AgendaCard BreakingThrough
 breakingThrough =
-  BreakingThrough $ baseAttrs "02314" "Breaking Through" (Agenda 3 A) (Static 6)
+  agenda (3, A) BreakingThrough Cards.breakingThrough (Static 6)
 
 instance HasModifiersFor env BreakingThrough
 

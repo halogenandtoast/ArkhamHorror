@@ -21,6 +21,7 @@ import Arkham.Types.Window
 import Control.Monad.Extra (findM)
 
 newtype PrismaticCascade = PrismaticCascade LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 prismaticCascade :: LocationCard PrismaticCascade

@@ -18,6 +18,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype BindMonster2 = BindMonster2 EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bindMonster2 :: EventCard BindMonster2

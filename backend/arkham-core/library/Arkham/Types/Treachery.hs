@@ -1,6 +1,5 @@
-module Arkham.Types.Treachery
-  ( module Arkham.Types.Treachery
-  ) where
+{-# LANGUAGE TemplateHaskell #-}
+module Arkham.Types.Treachery where
 
 import Arkham.Prelude
 
@@ -18,106 +17,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Cards
 import Arkham.Types.Treachery.Runner
 
+$(buildEntity "Treachery")
+
 createTreachery :: IsCard a => a -> InvestigatorId -> Treachery
 createTreachery a iid =
   lookupTreachery (toCardCode a) iid (TreacheryId $ toCardId a)
-
-data Treachery
-  = BaseTreachery' BaseTreachery
-  | AbandonedAndAlone' AbandonedAndAlone
-  | Abduction' Abduction
-  | AcridMiasma' AcridMiasma
-  | AcrossSpaceAndTime' AcrossSpaceAndTime
-  | AlteredBeast' AlteredBeast
-  | Amnesia' Amnesia
-  | AncientEvils' AncientEvils
-  | ArcaneBarrier' ArcaneBarrier
-  | ArousingSuspicions' ArousingSuspicions
-  | AttractingAttention' AttractingAttention
-  | Atychiphobia' Atychiphobia
-  | BeastOfTheBayou' BeastOfTheBayou
-  | BeyondTheVeil' BeyondTheVeil
-  | BrokenRails' BrokenRails
-  | ChaosInTheWater' ChaosInTheWater
-  | ChillFromBelow' ChillFromBelow
-  | Chronophobia' Chronophobia
-  | ClawsOfSteam' ClawsOfSteam
-  | CollapsingReality' CollapsingReality
-  | CoverUp' CoverUp
-  | CryptChill' CryptChill
-  | CurseOfTheRougarou' CurseOfTheRougarou
-  | CursedLuck' CursedLuck
-  | CursedSwamp' CursedSwamp
-  | DissonantVoices' DissonantVoices
-  | DraggedUnder' DraggedUnder
-  | DreamsOfRlyeh' DreamsOfRlyeh
-  | EagerForDeath' EagerForDeath
-  | EphemeralExhibits' EphemeralExhibits
-  | FalseLead' FalseLead
-  | FinalRhapsody' FinalRhapsody
-  | FrozenInFear' FrozenInFear
-  | GraspingHands' GraspingHands
-  | Haunted' Haunted
-  | HospitalDebts' HospitalDebts
-  | HuntedDown' HuntedDown
-  | HuntingShadow' HuntingShadow
-  | Hypochondria' Hypochondria
-  | Indebted' Indebted
-  | InsatiableBloodlust' InsatiableBloodlust
-  | InternalInjury' InternalInjury
-  | Kidnapped' Kidnapped
-  | LightOfAforgomon' LightOfAforgomon
-  | LockedDoor' LockedDoor
-  | LostInVenice' LostInVenice
-  | MaskOfUmordhoth' MaskOfUmordhoth
-  | MaskedHorrors' MaskedHorrors
-  | MassHysteria' MassHysteria
-  | Mesmerize' Mesmerize
-  | MysteriousChanting' MysteriousChanting
-  | ObscuringFog' ObscuringFog
-  | OfferOfPower' OfferOfPower
-  | OnTheProwl' OnTheProwl
-  | OnWingsOfDarkness' OnWingsOfDarkness
-  | Paranoia' Paranoia
-  | PassageIntoTheVeil' PassageIntoTheVeil
-  | PsychopompsSong' PsychopompsSong
-  | Psychosis' Psychosis
-  | PushedIntoTheBeyond' PushedIntoTheBeyond
-  | RexsCurse' RexsCurse
-  | RipplesOnTheSurface' RipplesOnTheSurface
-  | RitesHowled' RitesHowled
-  | RottingRemains' RottingRemains
-  | RottingRemainsBloodOnTheAltar' RottingRemainsBloodOnTheAltar
-  | RuinAndDestruction' RuinAndDestruction
-  | SearchingForIzzie' SearchingForIzzie
-  | ShadowSpawned' ShadowSpawned
-  | ShellShock' ShellShock
-  | SlitheringBehindYou' SlitheringBehindYou
-  | SmiteTheWicked' SmiteTheWicked
-  | SomethingInTheDrinks' SomethingInTheDrinks
-  | SordidAndSilent' SordidAndSilent
-  | SpacesBetween' SpacesBetween
-  | SpectralMist' SpectralMist
-  | StalkedInTheDark' StalkedInTheDark
-  | StrangeSigns' StrangeSigns
-  | TerrorFromBeyond' TerrorFromBeyond
-  | TheCreaturesTracks' TheCreaturesTracks
-  | TheYellowSign' TheYellowSign
-  | TheZealotsSeal' TheZealotsSeal
-  | ToweringBeasts' ToweringBeasts
-  | TwistOfFate' TwistOfFate
-  | UmordhothsHunger' UmordhothsHunger
-  | UmordhothsWrath' UmordhothsWrath
-  | UnhallowedCountry' UnhallowedCountry
-  | VastExpanse' VastExpanse
-  | VaultOfEarthlyDemise' VaultOfEarthlyDemise
-  | VisionsOfFuturesPast' VisionsOfFuturesPast
-  | VortexOfTime' VortexOfTime
-  | WatchersGaze' WatchersGaze
-  | Wormhole' Wormhole
-  | WrackedByNightmares' WrackedByNightmares
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
 
 instance HasCardDef Treachery where
   toCardDef = toCardDef . toAttrs
@@ -188,119 +92,7 @@ lookupTreachery cardCode =
 allTreacheries :: HashMap CardCode (InvestigatorId -> TreacheryId -> Treachery)
 allTreacheries = mapFromList $ map
   (cbCardCode &&& (curry . cbCardBuilder))
-  [ CardBuilder
-    { cbCardCode = "treachery"
-    , cbCardBuilder = uncurry (baseTreachery "treachery")
-    }
-  , AbandonedAndAlone' <$> abandonedAndAlone
-  , Abduction' <$> abduction
-  , AcridMiasma' <$> acridMiasma
-  , AcrossSpaceAndTime' <$> acrossSpaceAndTime
-  , AlteredBeast' <$> alteredBeast
-  , Amnesia' <$> amnesia
-  , AncientEvils' <$> ancientEvils
-  , ArcaneBarrier' <$> arcaneBarrier
-  , ArousingSuspicions' <$> arousingSuspicions
-  , AttractingAttention' <$> attractingAttention
-  , Atychiphobia' <$> atychiphobia
-  , BeastOfTheBayou' <$> beastOfTheBayou
-  , BeyondTheVeil' <$> beyondTheVeil
-  , BrokenRails' <$> brokenRails
-  , ChaosInTheWater' <$> chaosInTheWater
-  , ChillFromBelow' <$> chillFromBelow
-  , Chronophobia' <$> chronophobia
-  , ClawsOfSteam' <$> clawsOfSteam
-  , CollapsingReality' <$> collapsingReality
-  , CoverUp' <$> coverUp
-  , CryptChill' <$> cryptChill
-  , CurseOfTheRougarou' <$> curseOfTheRougarou
-  , CursedLuck' <$> cursedLuck
-  , CursedSwamp' <$> cursedSwamp
-  , DissonantVoices' <$> dissonantVoices
-  , DraggedUnder' <$> draggedUnder
-  , DreamsOfRlyeh' <$> dreamsOfRlyeh
-  , EagerForDeath' <$> eagerForDeath
-  , EphemeralExhibits' <$> ephemeralExhibits
-  , FalseLead' <$> falseLead
-  , FinalRhapsody' <$> finalRhapsody
-  , FrozenInFear' <$> frozenInFear
-  , GraspingHands' <$> graspingHands
-  , Haunted' <$> haunted
-  , HospitalDebts' <$> hospitalDebts
-  , HuntedDown' <$> huntedDown
-  , HuntingShadow' <$> huntingShadow
-  , Hypochondria' <$> hypochondria
-  , Indebted' <$> indebted
-  , InsatiableBloodlust' <$> insatiableBloodlust
-  , InternalInjury' <$> internalInjury
-  , Kidnapped' <$> kidnapped
-  , LightOfAforgomon' <$> lightOfAforgomon
-  , LockedDoor' <$> lockedDoor
-  , LostInVenice' <$> lostInVenice
-  , MaskOfUmordhoth' <$> maskOfUmordhoth
-  , MaskedHorrors' <$> maskedHorrors
-  , MassHysteria' <$> massHysteria
-  , Mesmerize' <$> mesmerize
-  , MysteriousChanting' <$> mysteriousChanting
-  , ObscuringFog' <$> obscuringFog
-  , OfferOfPower' <$> offerOfPower
-  , OnTheProwl' <$> onTheProwl
-  , OnWingsOfDarkness' <$> onWingsOfDarkness
-  , Paranoia' <$> paranoia
-  , PassageIntoTheVeil' <$> passageIntoTheVeil
-  , PsychopompsSong' <$> psychopompsSong
-  , Psychosis' <$> psychosis
-  , PushedIntoTheBeyond' <$> pushedIntoTheBeyond
-  , RexsCurse' <$> rexsCurse
-  , RipplesOnTheSurface' <$> ripplesOnTheSurface
-  , RitesHowled' <$> ritesHowled
-  , RottingRemains' <$> rottingRemains
-  , RottingRemainsBloodOnTheAltar' <$> rottingRemainsBloodOnTheAltar
-  , RuinAndDestruction' <$> ruinAndDestruction
-  , SearchingForIzzie' <$> searchingForIzzie
-  , ShadowSpawned' <$> shadowSpawned
-  , ShellShock' <$> shellShock
-  , SlitheringBehindYou' <$> slitheringBehindYou
-  , SmiteTheWicked' <$> smiteTheWicked
-  , SomethingInTheDrinks' <$> somethingInTheDrinks
-  , SordidAndSilent' <$> sordidAndSilent
-  , SpacesBetween' <$> spacesBetween
-  , SpectralMist' <$> spectralMist
-  , StalkedInTheDark' <$> stalkedInTheDark
-  , StrangeSigns' <$> strangeSigns
-  , TerrorFromBeyond' <$> terrorFromBeyond
-  , TheCreaturesTracks' <$> theCreaturesTracks
-  , TheYellowSign' <$> theYellowSign
-  , TheZealotsSeal' <$> theZealotsSeal
-  , ToweringBeasts' <$> toweringBeasts
-  , TwistOfFate' <$> twistOfFate
-  , UmordhothsHunger' <$> umordhothsHunger
-  , UmordhothsWrath' <$> umordhothsWrath
-  , UnhallowedCountry' <$> unhallowedCountry
-  , VastExpanse' <$> vastExpanse
-  , VaultOfEarthlyDemise' <$> vaultOfEarthlyDemise
-  , VisionsOfFuturesPast' <$> visionsOfFuturesPast
-  , VortexOfTime' <$> vortexOfTime
-  , WatchersGaze' <$> watchersGaze
-  , Wormhole' <$> wormhole
-  , WrackedByNightmares' <$> wrackedByNightmares
-  ]
-
-newtype BaseTreachery = BaseTreachery TreacheryAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-
-baseTreachery :: CardCode -> InvestigatorId -> TreacheryId -> Treachery
-baseTreachery cardCode iid tid = BaseTreachery' $ cbCardBuilder
-  (treachery BaseTreachery (testCardDef TreacheryType cardCode))
-  (iid, tid)
-
-instance HasActions env BaseTreachery where
-  getActions x window (BaseTreachery attrs) = getActions x window attrs
-
-instance HasModifiersFor env BaseTreachery
-
-instance (TreacheryRunner env) => RunMessage env BaseTreachery where
-  runMessage msg (BaseTreachery attrs) = BaseTreachery <$> runMessage msg attrs
+  $(buildEntityLookupList "Treachery")
 
 isWeakness :: Treachery -> Bool
 isWeakness = cdWeakness . toCardDef

@@ -15,6 +15,7 @@ import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 
 newtype CorpseTaker = CorpseTaker EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 corpseTaker :: EnemyCard CorpseTaker

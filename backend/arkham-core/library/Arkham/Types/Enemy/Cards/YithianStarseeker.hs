@@ -14,6 +14,7 @@ import Arkham.Types.Message
 import Arkham.Types.Query
 
 newtype YithianStarseeker = YithianStarseeker EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yithianStarseeker :: EnemyCard YithianStarseeker

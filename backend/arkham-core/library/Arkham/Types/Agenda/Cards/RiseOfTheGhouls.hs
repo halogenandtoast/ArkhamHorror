@@ -2,6 +2,7 @@ module Arkham.Types.Agenda.Cards.RiseOfTheGhouls where
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
@@ -13,11 +14,12 @@ import Arkham.Types.Source
 import Arkham.Types.Trait
 
 newtype RiseOfTheGhouls = RiseOfTheGhouls AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-riseOfTheGhouls :: RiseOfTheGhouls
-riseOfTheGhouls = RiseOfTheGhouls
-  $ baseAttrs "01106" "Rise of the Ghouls" (Agenda 2 A) (Static 7)
+riseOfTheGhouls :: AgendaCard RiseOfTheGhouls
+riseOfTheGhouls =
+  agenda (2, A) RiseOfTheGhouls Cards.riseOfTheGhouls (Static 7)
 
 instance HasModifiersFor env RiseOfTheGhouls
 

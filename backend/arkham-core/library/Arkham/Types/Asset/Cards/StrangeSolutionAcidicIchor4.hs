@@ -20,6 +20,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype StrangeSolutionAcidicIchor4 = StrangeSolutionAcidicIchor4 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strangeSolutionAcidicIchor4 :: AssetCard StrangeSolutionAcidicIchor4

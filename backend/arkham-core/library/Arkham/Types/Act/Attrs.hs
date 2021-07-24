@@ -27,6 +27,8 @@ import Arkham.Types.Target
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window
 
+class IsAct a
+
 type ActCard a = CardBuilder ActId a
 
 data ActAttrs = ActAttrs

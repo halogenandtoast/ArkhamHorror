@@ -18,6 +18,7 @@ import Arkham.Types.Source
 import Arkham.Types.Window
 
 newtype Aquinnah1 = Aquinnah1 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aquinnah1 :: AssetCard Aquinnah1

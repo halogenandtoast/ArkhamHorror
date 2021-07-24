@@ -18,6 +18,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype ExhibitHallAthabaskanExhibit = ExhibitHallAthabaskanExhibit LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallAthabaskanExhibit :: LocationCard ExhibitHallAthabaskanExhibit

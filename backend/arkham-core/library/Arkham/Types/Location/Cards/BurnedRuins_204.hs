@@ -16,6 +16,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype BurnedRuins_204 = BurnedRuins_204 LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 burnedRuins_204 :: LocationCard BurnedRuins_204

@@ -2,6 +2,7 @@ module Arkham.Types.Agenda.Cards.VengeanceAwaits where
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.Agenda.Attrs
@@ -16,11 +17,12 @@ import Arkham.Types.Resolution
 import Arkham.Types.Target
 
 newtype VengeanceAwaits = VengeanceAwaits AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-vengeanceAwaits :: VengeanceAwaits
+vengeanceAwaits :: AgendaCard VengeanceAwaits
 vengeanceAwaits =
-  VengeanceAwaits $ baseAttrs "01145" "Vengeance Awaits" (Agenda 3 A) (Static 5)
+  agenda (3, A) VengeanceAwaits Cards.vengeanceAwaits (Static 5)
 
 instance HasModifiersFor env VengeanceAwaits
 

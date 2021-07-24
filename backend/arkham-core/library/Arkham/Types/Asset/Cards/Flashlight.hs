@@ -20,6 +20,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype Flashlight = Flashlight AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 flashlight :: AssetCard Flashlight

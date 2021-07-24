@@ -19,6 +19,8 @@ import Arkham.Types.Target
 import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
 
+class IsTreachery a
+
 type TreacheryCard a = CardBuilder (InvestigatorId, TreacheryId) a
 
 data TreacheryAttrs = TreacheryAttrs

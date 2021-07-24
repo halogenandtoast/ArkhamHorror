@@ -18,6 +18,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype OnTheProwl = OnTheProwl TreacheryAttrs
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 onTheProwl :: TreacheryCard OnTheProwl

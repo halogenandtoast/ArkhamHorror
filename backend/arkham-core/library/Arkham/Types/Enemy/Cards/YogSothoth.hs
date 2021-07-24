@@ -15,6 +15,7 @@ import Arkham.Types.Query
 import Arkham.Types.Source
 
 newtype YogSothoth = YogSothoth EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yogSothoth :: EnemyCard YogSothoth

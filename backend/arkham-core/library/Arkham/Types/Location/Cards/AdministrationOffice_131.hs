@@ -18,6 +18,7 @@ import Arkham.Types.Query
 import Arkham.Types.Source
 
 newtype AdministrationOffice_131 = AdministrationOffice_131 LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 administrationOffice_131 :: LocationCard AdministrationOffice_131

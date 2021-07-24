@@ -17,6 +17,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype ToweringBeasts = ToweringBeasts TreacheryAttrs
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 toweringBeasts :: TreacheryCard ToweringBeasts

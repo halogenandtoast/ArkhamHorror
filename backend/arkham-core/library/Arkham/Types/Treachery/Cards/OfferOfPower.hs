@@ -9,6 +9,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype OfferOfPower = OfferOfPower TreacheryAttrs
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 offerOfPower :: TreacheryCard OfferOfPower

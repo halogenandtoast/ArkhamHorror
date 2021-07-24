@@ -2,6 +2,7 @@ module Arkham.Types.Agenda.Cards.DeadOfNight where
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
@@ -17,11 +18,11 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype DeadOfNight = DeadOfNight AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-deadOfNight :: DeadOfNight
-deadOfNight =
-  DeadOfNight $ baseAttrs "02043" "Dead of Night" (Agenda 2 A) (Static 3)
+deadOfNight :: AgendaCard DeadOfNight
+deadOfNight = agenda (2, A) DeadOfNight Cards.deadOfNight (Static 3)
 
 instance HasActions env DeadOfNight where
   getActions i window (DeadOfNight x) = getActions i window x

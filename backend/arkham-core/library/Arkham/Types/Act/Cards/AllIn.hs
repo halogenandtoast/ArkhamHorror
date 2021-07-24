@@ -27,6 +27,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype AllIn = AllIn ActAttrs
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 allIn :: ActCard AllIn

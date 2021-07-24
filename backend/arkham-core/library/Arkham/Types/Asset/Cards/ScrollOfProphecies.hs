@@ -19,6 +19,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype ScrollOfProphecies = ScrollOfProphecies AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 scrollOfProphecies :: AssetCard ScrollOfProphecies

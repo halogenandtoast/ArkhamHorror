@@ -14,6 +14,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype ArcaneInitiate = ArcaneInitiate AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arcaneInitiate :: AssetCard ArcaneInitiate

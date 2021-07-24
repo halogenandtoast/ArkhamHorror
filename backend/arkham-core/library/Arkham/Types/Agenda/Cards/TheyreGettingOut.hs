@@ -2,6 +2,7 @@ module Arkham.Types.Agenda.Cards.TheyreGettingOut where
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.ActId
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
@@ -15,11 +16,12 @@ import Arkham.Types.Resolution
 import Arkham.Types.Trait
 
 newtype TheyreGettingOut = TheyreGettingOut AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-theyreGettingOut :: TheyreGettingOut
-theyreGettingOut = TheyreGettingOut
-  $ baseAttrs "01107" "They're Getting Out!" (Agenda 3 A) (Static 10)
+theyreGettingOut :: AgendaCard TheyreGettingOut
+theyreGettingOut =
+  agenda (3, A) TheyreGettingOut Cards.theyreGettingOut (Static 10)
 
 instance HasActions env TheyreGettingOut where
   getActions i window (TheyreGettingOut x) = getActions i window x

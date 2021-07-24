@@ -20,6 +20,7 @@ import Arkham.Types.Treachery.Runner
 import Arkham.Types.Window
 
 newtype DreamsOfRlyeh = DreamsOfRlyeh TreacheryAttrs
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dreamsOfRlyeh :: TreacheryCard DreamsOfRlyeh

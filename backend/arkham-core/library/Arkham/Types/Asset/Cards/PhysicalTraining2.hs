@@ -19,6 +19,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype PhysicalTraining2 = PhysicalTraining2 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 physicalTraining2 :: AssetCard PhysicalTraining2

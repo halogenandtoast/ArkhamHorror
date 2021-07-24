@@ -19,6 +19,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype Streetwise3 = Streetwise3 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 streetwise3 :: AssetCard Streetwise3

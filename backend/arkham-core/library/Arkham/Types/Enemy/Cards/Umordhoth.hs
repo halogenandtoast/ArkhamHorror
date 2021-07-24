@@ -21,6 +21,7 @@ import Arkham.Types.Source
 import Arkham.Types.Window
 
 newtype Umordhoth = Umordhoth EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 umordhoth :: EnemyCard Umordhoth

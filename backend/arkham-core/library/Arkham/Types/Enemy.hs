@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Types.Enemy
   ( module Arkham.Types.Enemy
   ) where
@@ -24,116 +25,13 @@ import Arkham.Types.Target
 import Arkham.Types.Trait (Trait, toTraits)
 import Arkham.Types.TreacheryId
 
+$(buildEntity "Enemy")
+
 createEnemy :: IsCard a => a -> Enemy
 createEnemy a = lookupEnemy (toCardCode a) (EnemyId $ toCardId a)
 
-data Enemy
-    = BaseEnemy' BaseEnemy
-    | Acolyte' Acolyte
-    | AcolyteOfUmordhoth' AcolyteOfUmordhoth
-    | AlmaHill' AlmaHill
-    | AvianThrall' AvianThrall
-    | BalefulReveler' BalefulReveler
-    | BillyCooper' BillyCooper
-    | BogGator' BogGator
-    | BroodOfYogSothoth' BroodOfYogSothoth
-    | CarnevaleSentinel' CarnevaleSentinel
-    | CloverClubPitBoss' CloverClubPitBoss
-    | Cnidathqua' Cnidathqua
-    | ConglomerationOfSpheres' ConglomerationOfSpheres
-    | CorpseHungryGhoul' CorpseHungryGhoul
-    | CorpseTaker' CorpseTaker
-    | CrazedShoggoth' CrazedShoggoth
-    | DarkYoungHost' DarkYoungHost
-    | DevoteeOfTheKey' DevoteeOfTheKey
-    | DiscipleOfTheDevourer' DiscipleOfTheDevourer
-    | DonLagorio' DonLagorio
-    | ElisabettaMagro' ElisabettaMagro
-    | EmergentMonstrosity' EmergentMonstrosity
-    | FleshEater' FleshEater
-    | GhoulFromTheDepths' GhoulFromTheDepths
-    | GhoulMinion' GhoulMinion
-    | GhoulPriest' GhoulPriest
-    | GoatSpawn' GoatSpawn
-    | GrapplingHorror' GrapplingHorror
-    | GraveEater' GraveEater
-    | HermanCollins' HermanCollins
-    | HuntingHorror' HuntingHorror
-    | HuntingNightgaunt' HuntingNightgaunt
-    | IcyGhoul' IcyGhoul
-    | InterstellarTraveler' InterstellarTraveler
-    | JeremiahPierce' JeremiahPierce
-    | LupineThrall' LupineThrall
-    | MarshGug' MarshGug
-    | MobEnforcer' MobEnforcer
-    | Mobster' Mobster
-    | Narogath' Narogath
-    | OBannionsThug' OBannionsThug
-    | PeterWarren' PeterWarren
-    | Poleman' Poleman
-    | RavenousGhoul' RavenousGhoul
-    | RelentlessDarkYoung' RelentlessDarkYoung
-    | RuthTurner' RuthTurner
-    | SalvatoreNeri' SalvatoreNeri
-    | SavioCorvi' SavioCorvi
-    | ScreechingByakhee' ScreechingByakhee
-    | ServantOfManyMouths' ServantOfManyMouths
-    | ServantOfTheLurker' ServantOfTheLurker
-    | SethBishop' SethBishop
-    | SilasBishop' SilasBishop
-    | SilverTwilightAcolyte' SilverTwilightAcolyte
-    | SlimeCoveredDhole' SlimeCoveredDhole
-    | StubbornDetective' StubbornDetective
-    | SwampLeech' SwampLeech
-    | SwarmOfRats' SwarmOfRats
-    | TheExperiment' TheExperiment
-    | TheMaskedHunter' TheMaskedHunter
-    | TheRougarou' TheRougarou
-    | Thrall' Thrall
-    | Umordhoth' Umordhoth
-    | VictoriaDevereux' VictoriaDevereux
-    | Whippoorwill' Whippoorwill
-    | WizardOfTheOrder' WizardOfTheOrder
-    | WizardOfYogSothoth' WizardOfYogSothoth
-    | WolfManDrew' WolfManDrew
-    | WrithingAppendage' WrithingAppendage
-    | YithianObserver' YithianObserver
-    | YithianStarseeker' YithianStarseeker
-    | YogSothoth' YogSothoth
-    | YoungDeepOne' YoungDeepOne
-    deriving stock (Show, Eq, Generic)
-    deriving anyclass (ToJSON, FromJSON)
-
-newtype BaseEnemy = BaseEnemy EnemyAttrs
-    deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-
 instance HasCardDef Enemy where
   toCardDef = toCardDef . toAttrs
-
-baseEnemy
-  :: EnemyId
-  -> CardCode
-  -> (EnemyAttrs -> EnemyAttrs)
-  -> (CardDef -> CardDef)
-  -> Enemy
-baseEnemy eid cardCode attrsF defF = BaseEnemy' $ cbCardBuilder
-  (enemyWith
-    BaseEnemy
-    (defF $ testCardDef EnemyType cardCode)
-    (1, Static 1, 1)
-    (0, 0)
-    attrsF
-  )
-  eid
-
-instance ActionRunner env => HasActions env BaseEnemy where
-  getActions investigator window (BaseEnemy attrs) =
-    getActions investigator window attrs
-
-instance HasModifiersFor env BaseEnemy
-
-instance (EnemyRunner env) => RunMessage env BaseEnemy where
-  runMessage msg (BaseEnemy attrs) = BaseEnemy <$> runMessage msg attrs
 
 actionFromMessage :: Message -> Maybe Action
 actionFromMessage (UseAbility _ ability) = case abilityType ability of
@@ -259,83 +157,7 @@ lookupEnemy cardCode =
 allEnemies :: HashMap CardCode (EnemyId -> Enemy)
 allEnemies = mapFromList $ map
   (cbCardCode &&& cbCardBuilder)
-  [ CardBuilder
-    { cbCardCode = "enemy"
-    , cbCardBuilder = \eid -> baseEnemy eid "enemy" id id
-    }
-  , Acolyte' <$> acolyte
-  , AcolyteOfUmordhoth' <$> acolyteOfUmordhoth
-  , AlmaHill' <$> almaHill
-  , AvianThrall' <$> avianThrall
-  , BalefulReveler' <$> balefulReveler
-  , BillyCooper' <$> billyCooper
-  , BogGator' <$> bogGator
-  , BroodOfYogSothoth' <$> broodOfYogSothoth
-  , CarnevaleSentinel' <$> carnevaleSentinel
-  , CloverClubPitBoss' <$> cloverClubPitBoss
-  , Cnidathqua' <$> cnidathqua
-  , ConglomerationOfSpheres' <$> conglomerationOfSpheres
-  , CorpseHungryGhoul' <$> corpseHungryGhoul
-  , CorpseTaker' <$> corpseTaker
-  , CrazedShoggoth' <$> crazedShoggoth
-  , DarkYoungHost' <$> darkYoungHost
-  , DevoteeOfTheKey' <$> devoteeOfTheKey
-  , DiscipleOfTheDevourer' <$> discipleOfTheDevourer
-  , DonLagorio' <$> donLagorio
-  , ElisabettaMagro' <$> elisabettaMagro
-  , EmergentMonstrosity' <$> emergentMonstrosity
-  , FleshEater' <$> fleshEater
-  , GhoulFromTheDepths' <$> ghoulFromTheDepths
-  , GhoulMinion' <$> ghoulMinion
-  , GhoulPriest' <$> ghoulPriest
-  , GoatSpawn' <$> goatSpawn
-  , GrapplingHorror' <$> grapplingHorror
-  , GraveEater' <$> graveEater
-  , HermanCollins' <$> hermanCollins
-  , HuntingHorror' <$> huntingHorror
-  , HuntingNightgaunt' <$> huntingNightgaunt
-  , IcyGhoul' <$> icyGhoul
-  , InterstellarTraveler' <$> interstellarTraveler
-  , JeremiahPierce' <$> jeremiahPierce
-  , LupineThrall' <$> lupineThrall
-  , MarshGug' <$> marshGug
-  , MobEnforcer' <$> mobEnforcer
-  , Mobster' <$> mobster
-  , Narogath' <$> narogath
-  , OBannionsThug' <$> oBannionsThug
-  , PeterWarren' <$> peterWarren
-  , Poleman' <$> poleman
-  , RavenousGhoul' <$> ravenousGhoul
-  , RelentlessDarkYoung' <$> relentlessDarkYoung
-  , RuthTurner' <$> ruthTurner
-  , SalvatoreNeri' <$> salvatoreNeri
-  , SavioCorvi' <$> savioCorvi
-  , ScreechingByakhee' <$> screechingByakhee
-  , ServantOfManyMouths' <$> servantOfManyMouths
-  , ServantOfTheLurker' <$> servantOfTheLurker
-  , SethBishop' <$> sethBishop
-  , SilasBishop' <$> silasBishop
-  , SilverTwilightAcolyte' <$> silverTwilightAcolyte
-  , SlimeCoveredDhole' <$> slimeCoveredDhole
-  , StubbornDetective' <$> stubbornDetective
-  , SwampLeech' <$> swampLeech
-  , SwarmOfRats' <$> swarmOfRats
-  , TheExperiment' <$> theExperiment
-  , TheMaskedHunter' <$> theMaskedHunter
-  , TheRougarou' <$> theRougarou
-  , Thrall' <$> thrall
-  , Umordhoth' <$> umordhoth
-  , VictoriaDevereux' <$> victoriaDevereux
-  , Whippoorwill' <$> whippoorwill
-  , WizardOfTheOrder' <$> wizardOfTheOrder
-  , WizardOfYogSothoth' <$> wizardOfYogSothoth
-  , WolfManDrew' <$> wolfManDrew
-  , WrithingAppendage' <$> writhingAppendage
-  , YithianObserver' <$> yithianObserver
-  , YithianStarseeker' <$> yithianStarseeker
-  , YogSothoth' <$> yogSothoth
-  , YoungDeepOne' <$> youngDeepOne
-  ]
+  $(buildEntityLookupList "Enemy")
 
 isEngaged :: Enemy -> Bool
 isEngaged = notNull . enemyEngagedInvestigators . toAttrs

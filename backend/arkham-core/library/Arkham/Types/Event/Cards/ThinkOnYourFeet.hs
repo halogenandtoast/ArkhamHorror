@@ -13,6 +13,7 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype ThinkOnYourFeet = ThinkOnYourFeet EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thinkOnYourFeet :: EventCard ThinkOnYourFeet

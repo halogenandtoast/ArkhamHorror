@@ -13,6 +13,7 @@ import Arkham.Types.LocationMatcher
 import Arkham.Types.Prey
 
 newtype Poleman = Poleman EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 poleman :: EnemyCard Poleman

@@ -75,8 +75,7 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
 allPlayerAssetCards :: HashMap CardCode CardDef
 allPlayerAssetCards = mapFromList $ map
   (toCardCode &&& id)
-  [ placeholderAsset
-  , abbessAllegriaDiBiase
+  [ abbessAllegriaDiBiase
   , adaptable1
   , alyssaGraham
   , analyticalMind
@@ -174,7 +173,7 @@ allPlayerAssetCards = mapFromList $ map
   , peterSylvestre2
   , physicalTraining
   , physicalTraining2
-  , pickpoketing
+  , pickpocketing
   , policeBadge2
   , powderOfIbnGhazi
   , professorWarrenRice
@@ -235,9 +234,6 @@ allEncounterAssetCards = mapFromList $ map
   , keyToTheChamber
   , peterClover
   ]
-
-placeholderAsset :: CardDef
-placeholderAsset = asset "asset" "Placeholder Asset" 0 Neutral
 
 rolands38Special :: CardDef
 rolands38Special = (asset "01006" "Roland's .38 Special" 3 Neutral)
@@ -421,8 +417,8 @@ burglary = (asset "01045" "Burglary" 1 Rogue)
   , cdCardTraits = setFromList [Talent, Illicit]
   }
 
-pickpoketing :: CardDef
-pickpoketing = (asset "01046" "Pickpocketing" 2 Rogue)
+pickpocketing :: CardDef
+pickpocketing = (asset "01046" "Pickpocketing" 2 Rogue)
   { cdSkills = [SkillAgility]
   , cdCardTraits = setFromList [Talent, Illicit]
   }

@@ -20,6 +20,7 @@ import Arkham.Types.Window
 import Control.Monad.Extra (findM)
 
 newtype BalefulReveler = BalefulReveler EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 balefulReveler :: EnemyCard BalefulReveler

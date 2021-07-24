@@ -2,6 +2,7 @@ module Arkham.Types.Agenda.Cards.TheRitualBegins where
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
@@ -16,11 +17,12 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype TheRitualBegins = TheRitualBegins AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-theRitualBegins :: TheRitualBegins
-theRitualBegins = TheRitualBegins
-  $ baseAttrs "01144" "The Ritual Begins" (Agenda 2 A) (Static 5)
+theRitualBegins :: AgendaCard TheRitualBegins
+theRitualBegins =
+  agenda (2, A) TheRitualBegins Cards.theRitualBegins (Static 5)
 
 instance HasModifiersFor env TheRitualBegins where
   getModifiersFor _ (EnemyTarget _) (TheRitualBegins attrs)

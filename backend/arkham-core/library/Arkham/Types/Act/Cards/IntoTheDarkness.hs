@@ -12,6 +12,7 @@ import Arkham.Types.Message
 import Arkham.Types.Source
 
 newtype IntoTheDarkness = IntoTheDarkness ActAttrs
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 intoTheDarkness :: ActCard IntoTheDarkness

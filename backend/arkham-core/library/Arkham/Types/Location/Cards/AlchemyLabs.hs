@@ -23,6 +23,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Window
 
 newtype AlchemyLabs = AlchemyLabs LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alchemyLabs :: LocationCard AlchemyLabs

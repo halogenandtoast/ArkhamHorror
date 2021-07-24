@@ -15,6 +15,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype ArcaneBarrier = ArcaneBarrier TreacheryAttrs
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arcaneBarrier :: TreacheryCard ArcaneBarrier

@@ -8,6 +8,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 
 newtype BulletproofVest3 = BulletproofVest3 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 bulletproofVest3 :: AssetCard BulletproofVest3

@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.BeckoningForPower
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
@@ -13,11 +14,12 @@ import Arkham.Types.Message
 import Arkham.Types.Resolution
 
 newtype BeckoningForPower = BeckoningForPower AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-beckoningForPower :: BeckoningForPower
-beckoningForPower = BeckoningForPower
-  $ baseAttrs "02276" "Beckoning for Power" (Agenda 2 A) (Static 10)
+beckoningForPower :: AgendaCard BeckoningForPower
+beckoningForPower =
+  agenda (2, A) BeckoningForPower Cards.beckoningForPower (Static 10)
 
 instance HasModifiersFor env BeckoningForPower
 

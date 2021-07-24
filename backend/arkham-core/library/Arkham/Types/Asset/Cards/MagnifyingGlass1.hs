@@ -18,6 +18,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype MagnifyingGlass1 = MagnifyingGlass1 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 magnifyingGlass1 :: AssetCard MagnifyingGlass1

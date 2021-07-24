@@ -23,6 +23,7 @@ import Arkham.Types.Treachery.Runner
 import Arkham.Types.Window
 
 newtype LockedDoor = LockedDoor TreacheryAttrs
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lockedDoor :: TreacheryCard LockedDoor

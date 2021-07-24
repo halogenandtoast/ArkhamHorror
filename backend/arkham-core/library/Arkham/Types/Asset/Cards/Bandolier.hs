@@ -14,6 +14,7 @@ import Arkham.Types.Slot
 import Arkham.Types.Trait
 
 newtype Bandolier = Bandolier AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bandolier :: AssetCard Bandolier

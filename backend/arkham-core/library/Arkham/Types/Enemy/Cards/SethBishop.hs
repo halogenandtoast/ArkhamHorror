@@ -10,6 +10,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 
 newtype SethBishop = SethBishop EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sethBishop :: EnemyCard SethBishop

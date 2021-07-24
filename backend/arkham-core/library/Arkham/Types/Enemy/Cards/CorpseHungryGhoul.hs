@@ -13,6 +13,7 @@ import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 
 newtype CorpseHungryGhoul = CorpseHungryGhoul EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 corpseHungryGhoul :: EnemyCard CorpseHungryGhoul

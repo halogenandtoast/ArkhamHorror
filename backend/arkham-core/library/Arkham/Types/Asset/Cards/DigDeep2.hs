@@ -19,6 +19,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype DigDeep2 = DigDeep2 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 digDeep2 :: AssetCard DigDeep2

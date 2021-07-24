@@ -21,6 +21,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype ColdSpringGlen_245 = ColdSpringGlen_245 LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 coldSpringGlen_245 :: LocationCard ColdSpringGlen_245

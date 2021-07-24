@@ -19,6 +19,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype OvergrownCairns = OvergrownCairns LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 overgrownCairns :: LocationCard OvergrownCairns

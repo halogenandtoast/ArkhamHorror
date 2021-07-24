@@ -16,6 +16,7 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype ArtGallery = ArtGallery LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 artGallery :: LocationCard ArtGallery

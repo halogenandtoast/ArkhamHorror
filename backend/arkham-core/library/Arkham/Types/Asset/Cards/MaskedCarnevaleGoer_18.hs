@@ -21,6 +21,7 @@ import Arkham.Types.Source
 import Arkham.Types.Window
 
 newtype MaskedCarnevaleGoer_18 = MaskedCarnevaleGoer_18 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, TargetEntity)
 
 maskedCarnevaleGoer_18 :: AssetCard MaskedCarnevaleGoer_18

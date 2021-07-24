@@ -20,6 +20,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype RiteOfSeeking4 = RiteOfSeeking4 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riteOfSeeking4 :: AssetCard RiteOfSeeking4

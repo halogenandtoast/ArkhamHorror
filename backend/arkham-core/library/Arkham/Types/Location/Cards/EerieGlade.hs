@@ -17,6 +17,7 @@ import Arkham.Types.Query
 import Arkham.Types.Window
 
 newtype EerieGlade = EerieGlade LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 eerieGlade :: LocationCard EerieGlade

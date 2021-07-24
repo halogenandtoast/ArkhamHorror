@@ -13,5 +13,6 @@ data CardType
   | LocationType
   | EncounterAssetType
   | ActType
+  | AgendaType
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

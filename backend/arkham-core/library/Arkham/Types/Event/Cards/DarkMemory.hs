@@ -11,6 +11,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype DarkMemory = DarkMemory EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 darkMemory :: EventCard DarkMemory

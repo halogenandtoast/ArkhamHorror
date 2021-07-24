@@ -12,6 +12,7 @@ import Arkham.Types.Message
 import Arkham.Types.SkillType
 
 newtype ArkhamWoodsOldHouse = ArkhamWoodsOldHouse LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsOldHouse :: LocationCard ArkhamWoodsOldHouse

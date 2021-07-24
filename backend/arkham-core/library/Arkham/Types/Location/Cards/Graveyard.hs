@@ -15,6 +15,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype Graveyard = Graveyard LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 graveyard :: LocationCard Graveyard

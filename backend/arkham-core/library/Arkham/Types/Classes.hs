@@ -273,9 +273,6 @@ class HasModifiersFor env a where
   getModifiersFor :: (HasCallStack, MonadReader env m) => Source -> Target -> a -> m [Modifier]
   getModifiersFor _ _ _ = pure []
 
-class IsEnemy enemy where
-  isAloof :: enemy -> Bool
-
 class Discardable a where
   canBeDiscarded :: a -> Bool
 
@@ -345,5 +342,5 @@ buildEntityLookupList nm = do
     (AppE (VarE $ TH.mkName "fmap") (ConE $ TH.mkName $ nameBase name ++ "'"))
     (VarE $ toFunName $ nameBase name)
   extractCon _ = Nothing
-  toFunName [] = error "hmm"
+  toFunName [] = TH.mkName ""
   toFunName (x : xs) = TH.mkName $ C.toLower x : xs

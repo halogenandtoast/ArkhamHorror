@@ -96,6 +96,7 @@ loadDecklist arkhamDeck = (investigatorId, ) <$> loadDecklistCards decklist
 displayCardType :: CardType -> Text
 displayCardType = \case
   ActType -> "act"
+  AgendaType -> "act"
   AssetType -> "asset"
   EventType -> "event"
   SkillType -> "skill"

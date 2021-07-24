@@ -21,6 +21,7 @@ import Arkham.Types.Slot
 import Arkham.Types.Target
 
 newtype LightningGun5 = LightningGun5 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lightningGun5 :: AssetCard LightningGun5

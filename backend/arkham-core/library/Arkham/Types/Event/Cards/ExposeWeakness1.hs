@@ -17,6 +17,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype ExposeWeakness1 = ExposeWeakness1 EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exposeWeakness1 :: EventCard ExposeWeakness1

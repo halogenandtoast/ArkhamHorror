@@ -14,6 +14,7 @@ import Arkham.Types.Prey
 import Arkham.Types.SkillType
 
 newtype ServantOfTheLurker = ServantOfTheLurker EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 servantOfTheLurker :: EnemyCard ServantOfTheLurker

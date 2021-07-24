@@ -14,6 +14,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 
 newtype Schoolhouse_213 = Schoolhouse_213 LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 schoolhouse_213 :: LocationCard Schoolhouse_213

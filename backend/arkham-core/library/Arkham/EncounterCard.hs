@@ -1,9 +1,4 @@
-module Arkham.EncounterCard
-  ( lookupEncounterCardDef
-  , allEncounterCards
-  , placeholderEnemy
-  , placeholderTreachery
-  ) where
+module Arkham.EncounterCard where
 
 import Arkham.Prelude
 

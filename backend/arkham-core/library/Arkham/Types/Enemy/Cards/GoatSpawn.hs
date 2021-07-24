@@ -13,6 +13,7 @@ import Arkham.Types.Message
 import Arkham.Types.Source
 
 newtype GoatSpawn = GoatSpawn EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 goatSpawn :: EnemyCard GoatSpawn

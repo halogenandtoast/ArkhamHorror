@@ -13,6 +13,7 @@ import Arkham.Types.Prey
 import Arkham.Types.SkillType
 
 newtype GhoulPriest = GhoulPriest EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ghoulPriest :: EnemyCard GhoulPriest

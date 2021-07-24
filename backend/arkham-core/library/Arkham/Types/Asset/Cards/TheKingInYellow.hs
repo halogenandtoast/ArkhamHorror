@@ -23,6 +23,7 @@ import Arkham.Types.Window
 import Data.Function (on)
 
 newtype TheKingInYellow = TheKingInYellow AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theKingInYellow :: AssetCard TheKingInYellow

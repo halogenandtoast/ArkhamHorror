@@ -13,6 +13,7 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 
 newtype WrithingAppendage = WrithingAppendage EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 writhingAppendage :: EnemyCard WrithingAppendage

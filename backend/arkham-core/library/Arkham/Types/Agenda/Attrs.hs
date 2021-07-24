@@ -5,8 +5,10 @@ module Arkham.Types.Agenda.Attrs
 
 import Arkham.Prelude
 
+import Arkham.Agenda.Cards
 import Arkham.Json
 import Arkham.Types.Agenda.Sequence as X
+import qualified Arkham.Types.Agenda.Sequence as AS
 import Arkham.Types.AgendaId
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -20,11 +22,14 @@ import Arkham.Types.Target
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window
 
+class IsAgenda a
+
+type AgendaCard a = CardBuilder AgendaId a
+
 data AgendaAttrs = AgendaAttrs
   { agendaDoom :: Int
   , agendaDoomThreshold :: GameValue Int
   , agendaId :: AgendaId
-  , agendaName :: Text
   , agendaSequence :: AgendaSequence
   , agendaFlipped :: Bool
   , agendaTreacheries :: HashSet TreacheryId
@@ -66,7 +71,7 @@ instance Entity AgendaAttrs where
   toAttrs = id
 
 instance Named AgendaAttrs where
-  toName = mkName . agendaName
+  toName = toName . toCardDef
 
 instance TargetEntity AgendaAttrs where
   toTarget = AgendaTarget . toId
@@ -81,17 +86,40 @@ instance SourceEntity AgendaAttrs where
 onSide :: AgendaSide -> AgendaAttrs -> Bool
 onSide side AgendaAttrs {..} = agendaSide agendaSequence == side
 
-baseAttrs :: AgendaId -> Text -> AgendaSequence -> GameValue Int -> AgendaAttrs
-baseAttrs aid name seq' threshold = AgendaAttrs
-  { agendaDoom = 0
-  , agendaDoomThreshold = threshold
-  , agendaId = aid
-  , agendaName = name
-  , agendaSequence = seq'
-  , agendaFlipped = False
-  , agendaTreacheries = mempty
-  , agendaCardsUnderneath = mempty
+agenda
+  :: (Int, AgendaSide)
+  -> (AgendaAttrs -> a)
+  -> CardDef
+  -> GameValue Int
+  -> CardBuilder AgendaId a
+agenda agendaSeq f cardDef threshold =
+  agendaWith agendaSeq f cardDef threshold id
+
+agendaWith
+  :: (Int, AgendaSide)
+  -> (AgendaAttrs -> a)
+  -> CardDef
+  -> GameValue Int
+  -> (AgendaAttrs -> AgendaAttrs)
+  -> CardBuilder AgendaId a
+agendaWith (n, side) f cardDef threshold g = CardBuilder
+  { cbCardCode = cdCardCode cardDef
+  , cbCardBuilder = \aid -> f . g $ AgendaAttrs
+    { agendaDoom = 0
+    , agendaDoomThreshold = threshold
+    , agendaId = aid
+    , agendaSequence = AS.Agenda n side
+    , agendaFlipped = False
+    , agendaTreacheries = mempty
+    , agendaCardsUnderneath = mempty
+    }
   }
+
+instance HasCardDef AgendaAttrs where
+  toCardDef e = case lookup (unAgendaId $ agendaId e) allAgendaCards of
+    Just def -> def
+    Nothing ->
+      error $ "missing card def for agenda " <> show (unAgendaId $ agendaId e)
 
 instance HasActions env AgendaAttrs where
   getActions _ _ _ = pure []

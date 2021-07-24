@@ -22,6 +22,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype DunwichVillage_243 = DunwichVillage_243 LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dunwichVillage_243 :: LocationCard DunwichVillage_243

@@ -19,6 +19,7 @@ import Arkham.Types.Message
 import Arkham.Types.Window
 
 newtype YourHouse = YourHouse LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yourHouse :: LocationCard YourHouse

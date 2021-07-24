@@ -14,6 +14,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype CelaenoFragments = CelaenoFragments AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 celaenoFragments :: AssetCard CelaenoFragments

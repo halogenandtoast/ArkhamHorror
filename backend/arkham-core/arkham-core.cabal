@@ -11,6 +11,7 @@ build-type:     Simple
 library
   exposed-modules:
       Arkham.Act.Cards
+      Arkham.Agenda.Cards
       Arkham.Asset.Cards
       Arkham.Card
       Arkham.EncounterCard
@@ -279,7 +280,6 @@ library
       Arkham.Types.Asset.Cards.WhittonGreene
       Arkham.Types.Asset.Cards.ZebulonWhateley
       Arkham.Types.Asset.Cards.ZoeysCross
-      Arkham.Types.Asset.Class
       Arkham.Types.Asset.Helpers
       Arkham.Types.Asset.Runner
       Arkham.Types.Asset.Uses

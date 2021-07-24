@@ -10,6 +10,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 
 newtype Hallway = Hallway LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hallway :: LocationCard Hallway

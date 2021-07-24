@@ -17,6 +17,7 @@ import Arkham.Types.Treachery.Runner
 import Arkham.Types.Window
 
 newtype CoverUp = CoverUp TreacheryAttrs
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 coverUp :: TreacheryCard CoverUp

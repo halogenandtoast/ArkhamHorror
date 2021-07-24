@@ -18,6 +18,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype EarlSawyer = EarlSawyer AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 earlSawyer :: AssetCard EarlSawyer

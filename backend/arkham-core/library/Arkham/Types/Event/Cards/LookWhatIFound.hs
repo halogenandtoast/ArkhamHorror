@@ -10,6 +10,7 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype LookWhatIFound = LookWhatIFound EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lookWhatIFound :: EventCard LookWhatIFound

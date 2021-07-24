@@ -19,6 +19,7 @@ import Arkham.Types.Message
 import Arkham.Types.Window
 
 newtype HermanCollins = HermanCollins EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hermanCollins :: EnemyCard HermanCollins

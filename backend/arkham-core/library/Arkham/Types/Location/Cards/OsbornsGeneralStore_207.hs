@@ -20,6 +20,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype OsbornsGeneralStore_207 = OsbornsGeneralStore_207 LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 osbornsGeneralStore_207 :: LocationCard OsbornsGeneralStore_207

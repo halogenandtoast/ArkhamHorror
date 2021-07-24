@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.StrangeDisappearances
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
@@ -13,11 +14,12 @@ import Arkham.Types.Message
 import Arkham.Types.Query
 
 newtype StrangeDisappearances = StrangeDisappearances AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-strangeDisappearances :: StrangeDisappearances
-strangeDisappearances = StrangeDisappearances
-  $ baseAttrs "02196" "Strange Disappearances" (Agenda 1 A) (Static 6)
+strangeDisappearances :: AgendaCard StrangeDisappearances
+strangeDisappearances =
+  agenda (1, A) StrangeDisappearances Cards.strangeDisappearances (Static 6)
 
 instance HasModifiersFor env StrangeDisappearances
 

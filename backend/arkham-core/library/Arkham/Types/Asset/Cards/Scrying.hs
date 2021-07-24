@@ -17,6 +17,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype Scrying = Scrying AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 scrying :: AssetCard Scrying

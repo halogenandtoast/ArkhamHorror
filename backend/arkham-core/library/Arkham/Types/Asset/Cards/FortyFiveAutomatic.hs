@@ -20,6 +20,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype FortyFiveAutomatic = FortyFiveAutomatic AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fortyFiveAutomatic :: AssetCard FortyFiveAutomatic

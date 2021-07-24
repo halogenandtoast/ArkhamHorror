@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.BidingItsTime
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
@@ -21,11 +22,11 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype BidingItsTime = BidingItsTime AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-bidingItsTime :: BidingItsTime
-bidingItsTime =
-  BidingItsTime $ baseAttrs "02238" "Biding Its Time" (Agenda 2 A) (Static 6)
+bidingItsTime :: AgendaCard BidingItsTime
+bidingItsTime = agenda (2, A) BidingItsTime Cards.bidingItsTime (Static 6)
 
 instance HasModifiersFor env BidingItsTime
 

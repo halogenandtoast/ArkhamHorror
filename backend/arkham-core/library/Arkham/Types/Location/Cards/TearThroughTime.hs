@@ -16,6 +16,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Window
 
 newtype TearThroughTime = TearThroughTime LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tearThroughTime :: LocationCard TearThroughTime

@@ -18,6 +18,7 @@ import Arkham.Types.Message
 import Arkham.Types.Trait
 
 newtype CongregationalChurch_208 = CongregationalChurch_208 LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 congregationalChurch_208 :: LocationCard CongregationalChurch_208

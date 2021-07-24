@@ -20,6 +20,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype PoliceBadge2 = PoliceBadge2 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 policeBadge2 :: AssetCard PoliceBadge2

@@ -18,6 +18,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype StrayCat = StrayCat AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strayCat :: AssetCard StrayCat

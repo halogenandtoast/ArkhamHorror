@@ -15,6 +15,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 
 newtype ExhibitHallNatureExhibit = ExhibitHallNatureExhibit LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallNatureExhibit :: LocationCard ExhibitHallNatureExhibit

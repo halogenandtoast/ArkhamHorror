@@ -21,6 +21,7 @@ import Arkham.Types.Query
 import Arkham.Types.SkillType
 
 newtype PassengerCar_171 = PassengerCar_171 LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 passengerCar_171 :: LocationCard PassengerCar_171

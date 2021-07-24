@@ -18,6 +18,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype LitaChantler = LitaChantler AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 litaChantler :: AssetCard LitaChantler

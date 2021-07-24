@@ -20,6 +20,7 @@ import Arkham.Types.Source
 import Arkham.Types.Window
 
 newtype StudyAberrantGateway = StudyAberrantGateway LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 studyAberrantGateway :: LocationCard StudyAberrantGateway

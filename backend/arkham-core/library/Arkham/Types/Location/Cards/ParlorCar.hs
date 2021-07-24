@@ -22,6 +22,7 @@ import Arkham.Types.Query
 import Arkham.Types.Window
 
 newtype ParlorCar = ParlorCar LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 parlorCar :: LocationCard ParlorCar

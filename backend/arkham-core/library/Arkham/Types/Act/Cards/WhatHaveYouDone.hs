@@ -11,6 +11,7 @@ import Arkham.Types.Message
 import Arkham.Types.Resolution
 
 newtype WhatHaveYouDone = WhatHaveYouDone ActAttrs
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 whatHaveYouDone :: ActCard WhatHaveYouDone

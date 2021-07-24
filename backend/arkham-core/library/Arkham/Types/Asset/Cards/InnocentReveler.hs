@@ -21,6 +21,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype InnocentReveler = InnocentReveler AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 innocentReveler :: AssetCard InnocentReveler

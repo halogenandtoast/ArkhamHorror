@@ -14,6 +14,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype GuestHall = GuestHall LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 guestHall :: LocationCard GuestHall

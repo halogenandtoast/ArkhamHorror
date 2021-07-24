@@ -15,6 +15,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Query
 
 newtype TheExperiment = TheExperiment EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theExperiment :: EnemyCard TheExperiment

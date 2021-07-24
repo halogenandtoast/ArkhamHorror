@@ -19,6 +19,7 @@ import Arkham.Types.Query
 import Arkham.Types.Target
 
 newtype SophieInLovingMemory = SophieInLovingMemory AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sophieInLovingMemory :: AssetCard SophieInLovingMemory

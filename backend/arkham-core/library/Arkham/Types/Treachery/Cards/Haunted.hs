@@ -20,6 +20,7 @@ import Arkham.Types.Treachery.Runner
 import Arkham.Types.Window
 
 newtype Haunted = Haunted TreacheryAttrs
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 haunted :: TreacheryCard Haunted

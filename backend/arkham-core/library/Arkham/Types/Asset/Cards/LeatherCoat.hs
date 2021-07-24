@@ -8,6 +8,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 
 newtype LeatherCoat = LeatherCoat AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 leatherCoat :: AssetCard LeatherCoat

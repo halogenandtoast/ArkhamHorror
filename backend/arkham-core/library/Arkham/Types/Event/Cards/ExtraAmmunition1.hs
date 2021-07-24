@@ -14,6 +14,7 @@ import Arkham.Types.Trait
 import Control.Monad.Extra hiding (filterM)
 
 newtype ExtraAmmunition1 = ExtraAmmunition1 EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 extraAmmunition1 :: EventCard ExtraAmmunition1

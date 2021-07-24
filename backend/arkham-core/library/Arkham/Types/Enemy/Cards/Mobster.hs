@@ -12,6 +12,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Message
 
 newtype Mobster = Mobster EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mobster :: EnemyCard Mobster

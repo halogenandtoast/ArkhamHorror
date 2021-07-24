@@ -12,6 +12,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype MaskedHorrors = MaskedHorrors TreacheryAttrs
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 maskedHorrors :: TreacheryCard MaskedHorrors

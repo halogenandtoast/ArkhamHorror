@@ -14,6 +14,7 @@ import Arkham.Types.Prey
 import Arkham.Types.SkillType
 
 newtype CloverClubPitBoss = CloverClubPitBoss EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cloverClubPitBoss :: EnemyCard CloverClubPitBoss

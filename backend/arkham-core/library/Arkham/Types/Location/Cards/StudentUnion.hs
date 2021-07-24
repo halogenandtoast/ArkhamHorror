@@ -20,6 +20,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype StudentUnion = StudentUnion LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 studentUnion :: LocationCard StudentUnion

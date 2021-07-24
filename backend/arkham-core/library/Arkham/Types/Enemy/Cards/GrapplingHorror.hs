@@ -14,6 +14,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype GrapplingHorror = GrapplingHorror EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 grapplingHorror :: EnemyCard GrapplingHorror

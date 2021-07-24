@@ -14,6 +14,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype RexsCurse = RexsCurse TreacheryAttrs
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 rexsCurse :: TreacheryCard RexsCurse

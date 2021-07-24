@@ -12,6 +12,7 @@ import Arkham.Types.Message
 import Arkham.Types.Slot
 
 newtype RelicHunter3 = RelicHunter3 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 relicHunter3 :: AssetCard RelicHunter3

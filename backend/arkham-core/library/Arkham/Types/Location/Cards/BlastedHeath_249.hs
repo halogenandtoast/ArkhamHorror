@@ -14,6 +14,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 
 newtype BlastedHeath_249 = BlastedHeath_249 LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blastedHeath_249 :: LocationCard BlastedHeath_249

@@ -18,6 +18,7 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype BogGator = BogGator EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bogGator :: EnemyCard BogGator

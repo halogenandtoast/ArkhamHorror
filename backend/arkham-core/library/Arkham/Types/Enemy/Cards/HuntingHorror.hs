@@ -17,6 +17,7 @@ import Arkham.Types.Token
 import Data.UUID (nil)
 
 newtype HuntingHorror = HuntingHorror EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 huntingHorror :: EnemyCard HuntingHorror

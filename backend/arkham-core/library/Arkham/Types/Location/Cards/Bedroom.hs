@@ -12,6 +12,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 
 newtype Bedroom = Bedroom LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bedroom :: LocationCard Bedroom

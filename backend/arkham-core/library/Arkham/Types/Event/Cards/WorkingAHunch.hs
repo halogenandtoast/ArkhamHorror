@@ -12,6 +12,7 @@ import Arkham.Types.Query
 import Arkham.Types.Target
 
 newtype WorkingAHunch = WorkingAHunch EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 workingAHunch :: EventCard WorkingAHunch

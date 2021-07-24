@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.PredatorOrPrey
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
@@ -20,11 +21,11 @@ import Arkham.Types.Source
 import Arkham.Types.Window
 
 newtype PredatorOrPrey = PredatorOrPrey AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-predatorOrPrey :: PredatorOrPrey
-predatorOrPrey =
-  PredatorOrPrey $ baseAttrs "01121" "Predator or Prey?" (Agenda 1 A) (Static 6)
+predatorOrPrey :: AgendaCard PredatorOrPrey
+predatorOrPrey = agenda (1, A) PredatorOrPrey Cards.predatorOrPrey (Static 6)
 
 instance HasModifiersFor env PredatorOrPrey
 

@@ -14,6 +14,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype DeepBelowYourHouse = DeepBelowYourHouse LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deepBelowYourHouse :: LocationCard DeepBelowYourHouse

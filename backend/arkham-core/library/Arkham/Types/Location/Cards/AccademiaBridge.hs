@@ -15,6 +15,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 
 newtype AccademiaBridge = AccademiaBridge LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 accademiaBridge :: LocationCard AccademiaBridge

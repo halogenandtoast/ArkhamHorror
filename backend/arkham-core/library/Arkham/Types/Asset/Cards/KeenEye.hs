@@ -21,6 +21,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype KeenEye = KeenEye AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 keenEye :: AssetCard KeenEye

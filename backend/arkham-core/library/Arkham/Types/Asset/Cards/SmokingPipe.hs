@@ -16,6 +16,7 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype SmokingPipe = SmokingPipe AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 smokingPipe :: AssetCard SmokingPipe

@@ -16,6 +16,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype CursedLuck = CursedLuck TreacheryAttrs
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cursedLuck :: TreacheryCard CursedLuck

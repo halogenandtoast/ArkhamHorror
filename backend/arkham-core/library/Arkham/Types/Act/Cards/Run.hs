@@ -15,6 +15,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype Run = Run ActAttrs
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 run :: ActCard Run

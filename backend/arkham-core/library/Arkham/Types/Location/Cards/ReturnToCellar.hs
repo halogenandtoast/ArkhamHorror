@@ -14,6 +14,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 
 newtype ReturnToCellar = ReturnToCellar LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 returnToCellar :: LocationCard ReturnToCellar

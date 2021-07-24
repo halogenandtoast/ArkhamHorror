@@ -21,6 +21,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype CloseTheRift = CloseTheRift ActAttrs
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 closeTheRift :: ActCard CloseTheRift

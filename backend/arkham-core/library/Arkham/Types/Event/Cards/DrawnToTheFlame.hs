@@ -10,6 +10,7 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype DrawnToTheFlame = DrawnToTheFlame EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drawnToTheFlame :: EventCard DrawnToTheFlame

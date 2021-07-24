@@ -12,6 +12,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Message
 
 newtype GraveEater = GraveEater EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 graveEater :: EnemyCard GraveEater

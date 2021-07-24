@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.ChaosInTheCarnevale
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Agenda.Attrs
@@ -17,11 +18,12 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 
 newtype ChaosInTheCarnevale = ChaosInTheCarnevale AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-chaosInTheCarnevale :: ChaosInTheCarnevale
-chaosInTheCarnevale = ChaosInTheCarnevale
-  $ baseAttrs "82004" "Chaos in the Carnevale" (Agenda 3 A) (Static 3)
+chaosInTheCarnevale :: AgendaCard ChaosInTheCarnevale
+chaosInTheCarnevale =
+  agenda (3, A) ChaosInTheCarnevale Cards.chaosInTheCarnevale (Static 3)
 
 instance HasModifiersFor env ChaosInTheCarnevale
 

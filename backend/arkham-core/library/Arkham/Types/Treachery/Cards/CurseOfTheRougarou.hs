@@ -18,6 +18,7 @@ newtype Metadata = Metadata { dealtDamageThisTurn :: Bool }
   deriving anyclass (ToJSON, FromJSON)
 
 newtype CurseOfTheRougarou = CurseOfTheRougarou (TreacheryAttrs `With` Metadata)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 curseOfTheRougarou :: TreacheryCard CurseOfTheRougarou

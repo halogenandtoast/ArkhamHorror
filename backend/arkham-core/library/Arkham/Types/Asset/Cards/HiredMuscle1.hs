@@ -15,6 +15,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype HiredMuscle1 = HiredMuscle1 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hiredMuscle1 :: AssetCard HiredMuscle1

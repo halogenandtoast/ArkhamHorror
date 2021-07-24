@@ -16,6 +16,7 @@ import Arkham.Types.Query
 import Arkham.Types.Target
 
 newtype TheMaskedHunter = TheMaskedHunter EnemyAttrs
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theMaskedHunter :: EnemyCard TheMaskedHunter

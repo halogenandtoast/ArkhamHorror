@@ -23,6 +23,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype FloodedSquare = FloodedSquare LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 floodedSquare :: LocationCard FloodedSquare

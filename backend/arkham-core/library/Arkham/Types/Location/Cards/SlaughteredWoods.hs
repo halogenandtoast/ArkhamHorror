@@ -1,11 +1,11 @@
 module Arkham.Types.Location.Cards.SlaughteredWoods
-  ( slaugteredWoods
+  ( slaughteredWoods
   , SlaughteredWoods(..)
   ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (slaugteredWoods)
+import qualified Arkham.Location.Cards as Cards (slaughteredWoods)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
@@ -17,12 +17,13 @@ import Arkham.Types.Query
 import Arkham.Types.Window
 
 newtype SlaughteredWoods = SlaughteredWoods LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-slaugteredWoods :: LocationCard SlaughteredWoods
-slaugteredWoods = locationWith
+slaughteredWoods :: LocationCard SlaughteredWoods
+slaughteredWoods = locationWith
   SlaughteredWoods
-  Cards.slaugteredWoods
+  Cards.slaughteredWoods
   2
   (PerPlayer 1)
   NoSymbol

@@ -20,6 +20,7 @@ import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Window
 
 newtype CloverClubBar = CloverClubBar LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cloverClubBar :: LocationCard CloverClubBar

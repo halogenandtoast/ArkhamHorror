@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Types.Campaign where
 
 import Arkham.Prelude
@@ -12,12 +13,7 @@ import Arkham.Types.Id
 import Arkham.Types.Name
 import Arkham.Types.Token
 
-data Campaign
-  = NightOfTheZealot' NightOfTheZealot
-  | ReturnToNightOfTheZealot' ReturnToNightOfTheZealot
-  | TheDunwichLegacy' TheDunwichLegacy
-  deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON)
+$(buildEntity "Campaign")
 
 instance CampaignRunner env => RunMessage env Campaign where
   runMessage = genericRunMessage

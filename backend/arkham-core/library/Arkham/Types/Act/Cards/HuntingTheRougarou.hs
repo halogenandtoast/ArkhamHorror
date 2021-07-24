@@ -22,6 +22,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype HuntingTheRougarou = HuntingTheRougarou ActAttrs
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 huntingTheRougarou :: ActCard HuntingTheRougarou

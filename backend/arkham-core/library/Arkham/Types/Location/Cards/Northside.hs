@@ -18,6 +18,7 @@ import Arkham.Types.Message
 import Arkham.Types.Window
 
 newtype Northside = Northside LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 northside :: LocationCard Northside

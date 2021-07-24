@@ -17,6 +17,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype Lure1 = Lure1 EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lure1 :: EventCard Lure1

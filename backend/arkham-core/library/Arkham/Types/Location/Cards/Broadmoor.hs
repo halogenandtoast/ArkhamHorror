@@ -13,6 +13,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 
 newtype Broadmoor = Broadmoor LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 broadmoor :: LocationCard Broadmoor

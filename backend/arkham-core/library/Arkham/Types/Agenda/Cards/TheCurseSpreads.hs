@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.TheCurseSpreads
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
@@ -16,11 +17,12 @@ import Arkham.Types.Message
 import Arkham.Types.Resolution
 
 newtype TheCurseSpreads = TheCurseSpreads AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-theCurseSpreads :: TheCurseSpreads
-theCurseSpreads = TheCurseSpreads
-  $ baseAttrs "81004" "The Curse Spreads" (Agenda 3 A) (Static 8)
+theCurseSpreads :: AgendaCard TheCurseSpreads
+theCurseSpreads =
+  agenda (3, A) TheCurseSpreads Cards.theCurseSpreads (Static 8)
 
 instance HasModifiersFor env TheCurseSpreads
 

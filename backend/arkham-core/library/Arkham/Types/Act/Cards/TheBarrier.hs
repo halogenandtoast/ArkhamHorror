@@ -18,6 +18,7 @@ import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 
 newtype TheBarrier = TheBarrier ActAttrs
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
 
 theBarrier :: ActCard TheBarrier

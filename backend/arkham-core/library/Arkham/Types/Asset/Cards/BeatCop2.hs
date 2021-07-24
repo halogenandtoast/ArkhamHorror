@@ -19,6 +19,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype BeatCop2 = BeatCop2 AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 beatCop2 :: AssetCard BeatCop2

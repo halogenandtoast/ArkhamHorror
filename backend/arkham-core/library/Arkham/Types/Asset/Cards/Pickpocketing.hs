@@ -1,4 +1,7 @@
-module Arkham.Types.Asset.Cards.Pickpocketing where
+module Arkham.Types.Asset.Cards.Pickpocketing
+  ( Pickpocketing(..)
+  , pickpocketing
+  ) where
 
 import Arkham.Prelude
 
@@ -13,10 +16,11 @@ import Arkham.Types.Message
 import Arkham.Types.Window
 
 newtype Pickpocketing = Pickpocketing AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-pickpoketing :: AssetCard Pickpocketing
-pickpoketing = asset Pickpocketing Cards.pickpoketing
+pickpocketing :: AssetCard Pickpocketing
+pickpocketing = asset Pickpocketing Cards.pickpocketing
 
 instance HasModifiersFor env Pickpocketing
 

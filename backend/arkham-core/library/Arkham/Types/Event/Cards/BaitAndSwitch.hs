@@ -14,6 +14,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype BaitAndSwitch = BaitAndSwitch EventAttrs
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 baitAndSwitch :: EventCard BaitAndSwitch

@@ -5,6 +5,7 @@ module Arkham.Types.Agenda.Cards.ShadowsDeepen
 
 import Arkham.Prelude
 
+import qualified Arkham.Agenda.Cards as Cards
 import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
@@ -19,11 +20,11 @@ import Arkham.Types.Target
 import Arkham.Types.TreacheryId
 
 newtype ShadowsDeepen = ShadowsDeepen AgendaAttrs
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-shadowsDeepen :: ShadowsDeepen
-shadowsDeepen =
-  ShadowsDeepen $ baseAttrs "02120" "Shadows Deepen" (Agenda 2 A) (Static 7)
+shadowsDeepen :: AgendaCard ShadowsDeepen
+shadowsDeepen = agenda (2, A) ShadowsDeepen Cards.shadowsDeepen (Static 7)
 
 instance HasActions env ShadowsDeepen where
   getActions i window (ShadowsDeepen x) = getActions i window x

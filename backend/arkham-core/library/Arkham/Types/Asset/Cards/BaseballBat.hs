@@ -21,6 +21,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype BaseballBat = BaseballBat AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 baseballBat :: AssetCard BaseballBat

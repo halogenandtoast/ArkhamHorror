@@ -23,6 +23,7 @@ import Arkham.Types.Source
 import Arkham.Types.Window
 
 newtype BaseOfTheHill = BaseOfTheHill LocationAttrs
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 baseOfTheHill :: LocationCard BaseOfTheHill

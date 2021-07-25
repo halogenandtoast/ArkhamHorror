@@ -111,7 +111,10 @@ instance
               then pushAll
                 (PayAbilityCost abilitySource iid mAction cost
                 : [ TakenAction iid action | action <- maybeToList mAction ]
-                <> [CheckAttackOfOpportunity iid False]
+                <> [ CheckAttackOfOpportunity iid False
+                   | traceShowId
+                     (not abilityDoesNotProvokeAttacksOfOpportunity)
+                   ]
                 )
               else pushAll
                 (PayAbilityCost abilitySource iid mAction cost

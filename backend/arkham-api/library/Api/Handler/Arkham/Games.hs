@@ -195,7 +195,16 @@ putApiV1ArkhamGameR gameId = do
           (Just m', msgs'') -> if n - 1 == 0
             then [m']
             else [m', Ask investigatorId $ ChooseN (n - 1) msgs'']
-          (Nothing, msgs'') -> [Ask investigatorId $ ChooseOneAtATime msgs'']
+          (Nothing, msgs'') -> [Ask investigatorId $ ChooseN n msgs'']
+      Just (ChooseUpToN n qs) -> do
+        let (mm, msgs') = extract (qrChoice response) qs
+        case (mm, msgs') of
+          (Just m', []) -> [m']
+          (Just m'@(Done _), _) -> [m']
+          (Just m', msgs'') -> if n - 1 == 0
+            then [m']
+            else [m', Ask investigatorId $ ChooseUpToN (n - 1) msgs'']
+          (Nothing, msgs'') -> [Ask investigatorId $ ChooseUpToN n msgs'']
       Just (ChooseOneAtATime msgs) -> do
         let (mm, msgs') = extract (qrChoice response) msgs
         case (mm, msgs') of

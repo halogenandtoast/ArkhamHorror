@@ -5,12 +5,7 @@
     </header>
     <div class="card-row-cards">
       <div v-for="card in cards" :key="card.id" class="card-row-card">
-        <img
-          :class="{ 'skill--can-interact': cardAction(card.id) !== -1 }"
-          class="card"
-          :src="image(card)"
-          @click="$emit('choose', cardAction(card.id))"
-          />
+        <FocusedCard :game="game" :card="card" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
       </div>
     </div>
   </div>
@@ -22,8 +17,12 @@ import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { CardContents } from '@/arkham/types/Card';
 import { MessageType } from '@/arkham/types/Message';
+import FocusedCard from '@/arkham/components/FocusedCard.vue';
 
 export default defineComponent({
+  components: {
+    FocusedCard,
+  },
   props: {
     game: { type: Object as () => Game, required: true },
     cards: { type: Array as () => CardContents[], required: true },

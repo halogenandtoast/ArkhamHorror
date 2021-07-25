@@ -20,6 +20,7 @@
       :cards="showCards"
       :isDiscards="viewingDiscard"
       :title="cardRowTitle"
+      :investigatorId="investigatorId"
       @choose="$emit('choose', $event)"
       @close="showCards = []"
     />
@@ -340,10 +341,10 @@ export default defineComponent({
         return []
       }
 
-      return scenario.contents.cardsUnderActDeck.map(c => c.contents)
+      return scenario.contents.cardsUnderActDeck
     })
 
-    const skills = computed(() => Object.values(props.game.skills).map(skill => skill.contents))
+    const skills = computed(() => Object.values(props.game.skills))
 
     return {
       skills,

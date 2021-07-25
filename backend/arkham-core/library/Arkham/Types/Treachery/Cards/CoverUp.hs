@@ -53,7 +53,7 @@ instance ActionRunner env => HasActions env CoverUp where
 instance (TreacheryRunner env) => RunMessage env CoverUp where
   runMessage msg t@(CoverUp attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
-      [ RemoveCardFromHand iid "01007"
+      [ RemoveCardFromHand iid (toCardId attrs)
       , AttachTreachery treacheryId (InvestigatorTarget iid)
       ]
     InvestigatorEliminated iid | treacheryOnInvestigator iid attrs ->

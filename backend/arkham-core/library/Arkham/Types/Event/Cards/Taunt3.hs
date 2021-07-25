@@ -33,6 +33,7 @@ instance (EventRunner env) => RunMessage env Taunt3 where
       e <$ push
         (chooseSome
           iid
+          "Done engaging enemies"
           [ TargetLabel
               (EnemyTarget enemyId)
               [ EngageEnemy iid enemyId False

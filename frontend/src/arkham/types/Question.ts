@@ -2,7 +2,7 @@ import { JsonDecoder } from 'ts.data.json';
 import { Message, messageDecoder } from '@/arkham/types/Message';
 import { Source, sourceDecoder } from '@/arkham/types/Source';
 
-export type Question = ChooseOne | ChooseN | ChooseOneAtATime | ChooseOneFromSource | ChooseUpgradeDeck;
+export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseN | ChooseOneAtATime | ChooseOneFromSource | ChooseUpgradeDeck;
 
 export interface ChooseOne {
   tag: 'ChooseOne';
@@ -11,6 +11,16 @@ export interface ChooseOne {
 
 export interface ChooseN {
   tag: 'ChooseN';
+  contents: Message[];
+}
+
+export interface ChooseSome {
+  tag: 'ChooseSome';
+  contents: Message[];
+}
+
+export interface ChooseUpToN {
+  tag: 'ChooseUpToN';
   contents: Message[];
 }
 
@@ -48,12 +58,28 @@ export const chooseOneDecoder = JsonDecoder.object<ChooseOne>(
   'ChooseOne',
 );
 
+export const chooseSomeDecoder = JsonDecoder.object<ChooseSome>(
+  {
+    tag: JsonDecoder.isExactly('ChooseSome'),
+    contents: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
+  },
+  'ChooseSome',
+);
+
 export const chooseNDecoder = JsonDecoder.object<ChooseN>(
   {
     tag: JsonDecoder.isExactly('ChooseN'),
     contents: JsonDecoder.succeed.map((arr) => arr[1]),
   },
   'ChooseN',
+);
+
+export const chooseUpToNDecoder = JsonDecoder.object<ChooseUpToN>(
+  {
+    tag: JsonDecoder.isExactly('ChooseUpToN'),
+    contents: JsonDecoder.succeed.map((arr) => arr[1]),
+  },
+  'ChooseUpToN',
 );
 
 export const chooseOneAtATimeDecoder = JsonDecoder.object<ChooseOneAtATime>(
@@ -84,6 +110,8 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
   [
     chooseOneDecoder,
     chooseNDecoder,
+    chooseSomeDecoder,
+    chooseUpToNDecoder,
     chooseOneAtATimeDecoder,
     chooseOneFromSourceDecoder,
     chooseUpgradeDeckDecoder,

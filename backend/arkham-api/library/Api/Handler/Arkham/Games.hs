@@ -206,10 +206,10 @@ putApiV1ArkhamGameR gameId = do
       Just (ChooseSome msgs) -> do
         let (mm, msgs') = extract (qrChoice response) msgs
         case (mm, msgs') of
-          (Just Done, _) -> []
+          (Just (Done _), _) -> []
           (Just m', msgs'') -> case msgs'' of
             [] -> [m']
-            [Done] -> [m']
+            [Done _] -> [m']
             rest -> [m', Ask investigatorId $ ChooseSome rest]
           (Nothing, msgs'') -> [Ask investigatorId $ ChooseSome msgs'']
       _ -> []

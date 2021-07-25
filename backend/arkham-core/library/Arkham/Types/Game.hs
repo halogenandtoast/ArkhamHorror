@@ -2517,7 +2517,7 @@ runGameMessage msg g = case msg of
         _ -> error "this should definitely be a player card"
     pushAll
       (bearerMessage
-      : [ RemoveCardFromHand iid (toCardCode card)
+      : [ RemoveCardFromHand iid (toCardId card)
         , InvestigatorDrawEnemy iid lid eid
         ]
       )
@@ -3251,7 +3251,7 @@ runGameMessage msg g = case msg of
       treacheryId = toId treachery
     -- player treacheries will not trigger draw treachery windows
     pushAll
-      $ [ RemoveCardFromHand iid (toCardCode card)
+      $ [ RemoveCardFromHand iid (toCardId card)
         | cdRevelation (toCardDef card)
         ]
       <> [ Revelation iid (TreacherySource treacheryId)

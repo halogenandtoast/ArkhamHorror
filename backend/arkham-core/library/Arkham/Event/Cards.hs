@@ -116,6 +116,7 @@ allPlayerEventCards = mapFromList $ map
   , taunt2
   , taunt3
   , teamwork
+  , thePaintedWorld
   , thinkOnYourFeet
   , wardOfProtection
   , wardOfProtection5
@@ -556,6 +557,12 @@ wardOfProtection5 = (event "02307" "Ward of Protection" 1 Mystic)
   , cdFastWindow = Just
     (Matcher.WhenDrawEncounterCard Matcher.You Matcher.NonWeakness)
   , cdLevel = 5
+  }
+
+thePaintedWorld :: CardDef
+thePaintedWorld = (event "03012" "The Painted World" 0 Neutral)
+  { cdSkills = [SkillWillpower, SkillAgility, SkillWild]
+  , cdCardTraits = singleton Spell
   }
 
 letMeHandleThis :: CardDef

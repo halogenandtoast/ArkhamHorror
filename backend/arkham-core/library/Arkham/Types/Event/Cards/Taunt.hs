@@ -29,10 +29,10 @@ instance (EventRunner env) => RunMessage env Taunt where
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       lid <- getId @LocationId iid
       enemyIds <- getSetList lid
-      e
-        <$ push
-             (chooseSome
-               iid
-               [ EngageEnemy iid enemyId False | enemyId <- enemyIds ]
-             )
+      e <$ push
+        (chooseSome
+          iid
+          "Done engaging enemies"
+          [ EngageEnemy iid enemyId False | enemyId <- enemyIds ]
+        )
     _ -> Taunt <$> runMessage msg attrs

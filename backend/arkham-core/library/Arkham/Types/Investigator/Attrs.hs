@@ -66,6 +66,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorPhysicalTrauma :: Int
   , investigatorMentalTrauma :: Int
   , investigatorStartsWith :: [CardDef]
+  , investigatorCardsUnderneath :: [PlayerCard]
   -- investigator-specific fields
   , investigatorTomeActions :: Maybe Int
   }
@@ -435,6 +436,7 @@ baseAttrs iid name classSymbol Stats {..} traits = InvestigatorAttrs
   , investigatorPhysicalTrauma = 0
   , investigatorMentalTrauma = 0
   , investigatorStartsWith = []
+  , investigatorCardsUnderneath = []
   , investigatorTomeActions = Nothing
   }
 
@@ -745,16 +747,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         )
         ([], investigatorDeck)
         investigatorStartsWith
-    let
       (permanentCards, deck'') =
         partition (cdPermanent . toCardDef) (unDeck deck')
-      (discard, hand, deck) = drawOpeningHand (a & deckL .~ Deck deck'') 5
     pushAll
       $ startsWithMsgs
       <> [ PutCardIntoPlay investigatorId (PlayerCard card) Nothing
          | card <- permanentCards
          ]
-      <> [TakeStartingResources investigatorId]
+      <> [DrawStartingHand investigatorId, TakeStartingResources investigatorId]
+    pure $ a & (deckL .~ Deck deck'')
+  DrawStartingHand iid | iid == investigatorId -> do
+    let (discard, hand, deck) = drawOpeningHand a 5
     pure $ a & (discardL .~ discard) & (handL .~ hand) & (deckL .~ Deck deck)
   TakeStartingResources iid | iid == investigatorId -> do
     modifiers' <-
@@ -873,8 +876,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       PlayerCard pc ->
         pure $ a & handL %~ filter ((/= cardId) . toCardId) & discardL %~ (pc :)
       EncounterCard _ -> pure $ a & handL %~ filter ((/= cardId) . toCardId) -- TODO: This should discard to the encounter discard
-  RemoveCardFromHand iid cardCode | iid == investigatorId ->
-    pure $ a & handL %~ filter ((/= cardCode) . toCardCode)
+  RemoveCardFromHand iid cardId | iid == investigatorId ->
+    pure $ a & handL %~ filter ((/= cardId) . toCardId)
   ShuffleIntoDeck iid (TreacheryTarget tid) | iid == investigatorId ->
     pure $ a & treacheriesL %~ deleteSet tid
   ShuffleIntoDeck iid (AssetTarget aid) | iid == investigatorId -> do

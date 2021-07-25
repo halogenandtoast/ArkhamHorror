@@ -517,6 +517,7 @@ library
       Arkham.Types.Event.Cards.Taunt2
       Arkham.Types.Event.Cards.Taunt3
       Arkham.Types.Event.Cards.Teamwork
+      Arkham.Types.Event.Cards.ThePaintedWorld
       Arkham.Types.Event.Cards.ThinkOnYourFeet
       Arkham.Types.Event.Cards.WardOfProtection
       Arkham.Types.Event.Cards.WardOfProtection5
@@ -892,6 +893,7 @@ library
       Arkham.Types.Treachery.Cards.SpacesBetween
       Arkham.Types.Treachery.Cards.SpectralMist
       Arkham.Types.Treachery.Cards.StalkedInTheDark
+      Arkham.Types.Treachery.Cards.StarsOfHyades
       Arkham.Types.Treachery.Cards.StrangeSigns
       Arkham.Types.Treachery.Cards.TerrorFromBeyond
       Arkham.Types.Treachery.Cards.TheCreaturesTracks

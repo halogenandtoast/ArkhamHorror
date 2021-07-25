@@ -64,7 +64,7 @@ putApiV1ArkhamGameDecksR gameId = do
     investigatorId = fromJustNote "Missing"
       $ lookup (fromIntegral $ fromSqlKey userId) gamePlayers
   msg <- case udpDeckUrl postData of
-    Nothing -> pure Done
+    Nothing -> pure $ Done "done"
     Just deckUrl -> do
       edecklist <- getDeckList deckUrl
       case edecklist of

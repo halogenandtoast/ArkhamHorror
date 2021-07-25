@@ -232,7 +232,7 @@ data Message
     | DiscoverClues InvestigatorId LocationId Int (Maybe Action)
     | DiscoverCluesAtLocation InvestigatorId LocationId Int (Maybe Action)
     | DisengageEnemy InvestigatorId EnemyId
-    | Done
+    | Done Text
     | DrawAnotherToken InvestigatorId
     | DrawCards InvestigatorId Int Bool
     | DrawEncounterCards Target Int -- Meant to allow events to handle (e.g. first watch)
@@ -416,7 +416,7 @@ data Message
     | RemoveAllClues Target
     | RemoveAllDoom
     | RemoveCampaignCardFromDeck InvestigatorId CardCode
-    | RemoveCardFromHand InvestigatorId CardCode
+    | RemoveCardFromHand InvestigatorId CardId
     | RemoveClues Target Int
     | RemoveDiscardFromGame InvestigatorId
     | RemoveDoom Target Int
@@ -507,6 +507,7 @@ data Message
     | ReplacedInvestigatorAsset InvestigatorId AssetId
     | TakeControlOfSetAsideAsset InvestigatorId Card
     | TakeResources InvestigatorId Int Bool
+    | DrawStartingHand InvestigatorId
     | TakeStartingResources InvestigatorId
     | TakenAction InvestigatorId Action
     | TargetLabel Target [Message]
@@ -536,9 +537,14 @@ chooseOneAtATime :: InvestigatorId -> [Message] -> Message
 chooseOneAtATime _ [] = throw $ InvalidState "No messages for chooseOneAtATime"
 chooseOneAtATime iid msgs = Ask iid (ChooseOneAtATime msgs)
 
-chooseSome :: InvestigatorId -> [Message] -> Message
-chooseSome _ [] = throw $ InvalidState "No messages for chooseSome"
-chooseSome iid msgs = Ask iid (ChooseSome $ Done : msgs)
+chooseSome :: InvestigatorId -> Text -> [Message] -> Message
+chooseSome _ _ [] = throw $ InvalidState "No messages for chooseSome"
+chooseSome iid doneText msgs = Ask iid (ChooseSome $ Done doneText : msgs)
+
+chooseUpToN :: InvestigatorId -> Int -> Text -> [Message] -> Message
+chooseUpToN _ _ _ [] = throw $ InvalidState "No messages for chooseSome"
+chooseUpToN iid n doneText msgs =
+  Ask iid (ChooseUpToN n $ Done doneText : msgs)
 
 chooseN :: InvestigatorId -> Int -> [Message] -> Message
 chooseN _ _ [] = throw $ InvalidState "No messages for chooseN"
@@ -551,6 +557,7 @@ data Question
     = ChooseOne [Message]
     | ChooseN Int [Message]
     | ChooseSome [Message]
+    | ChooseUpToN Int [Message]
     | ChooseOneAtATime [Message]
     | ChooseUpgradeDeck
     deriving stock (Show, Eq, Generic)

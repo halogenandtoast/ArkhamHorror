@@ -250,10 +250,10 @@ replayChoices = do
           Just (ChooseSome msgs) -> do
             let (mm, msgs') = extract idx msgs
             case (mm, msgs') of
-              (Just Done, _) -> []
+              (Just (Done _), _) -> []
               (Just m', msgs'') -> case msgs'' of
                 [] -> [m']
-                [Done] -> [m']
+                [Done _] -> [m']
                 rest -> [m', Ask iid $ ChooseSome rest]
               (Nothing, msgs'') -> [Ask iid $ ChooseSome msgs'']
           _ -> []

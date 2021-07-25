@@ -36,6 +36,7 @@ data Investigator
   | MinhThiPhan' MinhThiPhan
   | RexMurphy' RexMurphy
   | RolandBanks' RolandBanks
+  | SefinaRousseau' SefinaRousseau
   | SkidsOToole' SkidsOToole
   | WendyAdams' WendyAdams
   | ZoeySamaras' ZoeySamaras
@@ -231,6 +232,7 @@ allInvestigators = mapFromList $ map
   , MinhThiPhan' minhThiPhan
   , RexMurphy' rexMurphy
   , RolandBanks' rolandBanks
+  , SefinaRousseau' sefinaRousseau
   , SkidsOToole' skidsOToole
   , WendyAdams' wendyAdams
   , ZoeySamaras' zoeySamaras

@@ -239,6 +239,7 @@
       "import Arkham.Types.Message",
       "",
       "newtype {dot} = {dot} EventAttrs",
+      "  deriving anyclass IsEvent",
       "  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)",
       "",
       "{dot|snakecase|camelcase} :: EventCard {dot}",

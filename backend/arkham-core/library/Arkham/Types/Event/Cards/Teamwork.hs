@@ -54,7 +54,7 @@ instance
       e <$ push
         (chooseOne
           iid
-          (Done
+          (Done "Done Trading"
           : [ TargetLabel
                 (AssetTarget aid)
                 [ BeginTrade

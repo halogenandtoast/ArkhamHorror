@@ -912,6 +912,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   Exiled (AssetTarget aid) _ | aid `elem` investigatorAssets ->
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   RemoveFromGame (AssetTarget aid) -> pure $ a & assetsL %~ deleteSet aid
+  RemoveFromGame (CardIdTarget cid) ->
+    pure $ a & cardsUnderneathL %~ filter ((/= cid) . toCardId)
   ChooseFightEnemy iid source skillType traits isAction
     | iid == investigatorId -> do
       enemyIds <- map unFightableEnemyId <$> getSetList (iid, source)

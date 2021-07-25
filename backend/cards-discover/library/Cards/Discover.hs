@@ -6,11 +6,10 @@ import Cards.Discover.Exe (getFilesRecursive, stripSuffix)
 import Data.FileEmbed
 import Language.Haskell.TH
 import Language.Haskell.TH.Syntax
-import System.FilePath
 
 findCardFiles :: FilePath -> Q (TExp [FilePath])
 findCardFiles root = do
-  projectRoot <- makeRelativeToProject $ root </> "Cards"
+  projectRoot <- makeRelativeToProject root
   files <- runIO $ filter isHaskellFile <$> getFilesRecursive projectRoot
   liftTyped files
  where

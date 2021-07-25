@@ -48,3 +48,4 @@ executables:
     - -with-rtsopts=-N
     dependencies:
       - cards-discover
+      - optparse-applicative

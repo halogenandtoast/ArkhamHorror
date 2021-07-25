@@ -42,15 +42,15 @@ indent i doc = Render do
   let new = (replicate i ' ' <>) <$> execState (unRender doc) mempty
   modify (<> new)
 
-discoverCards :: Source -> Destination -> IO ()
-discoverCards (Source src) (Destination dest) = do
+discoverCards :: Source -> Destination -> FilePath -> IO ()
+discoverCards (Source src) (Destination dest) cardsDir = do
   let (dir, _) = splitFileName src
-  files <- getFilesRecursive $ dir </> "Cards"
+  files <- getFilesRecursive $ dir </> cardsDir
   let
     input = AllModelsFile
       { amfModuleBase = fromJust $ pathToModule src
       , amfModuleImports = mapMaybe
-        (pathToModule . ((dir </> "Cards") </>))
+        (pathToModule . ((dir </> cardsDir) </>))
         files
       }
     output = renderFile input

@@ -6,6 +6,8 @@ import TestImport.Lifted
 
 import Arkham.Types.Trait
 
+import qualified Arkham.Asset.Cards as Cards
+
 spec :: Spec
 spec = describe "Daisy Walker" $ do
   context "ability" $ do
@@ -28,8 +30,8 @@ spec = describe "Daisy Walker" $ do
     it "allows you to draw one card for each Tome you control" $ do
       let daisyWalker = lookupInvestigator "01002"
       deckCards <- testPlayerCards 2
-      tome1 <- testAssetWithDef (cardTraitsL .~ singleton Tome) id
-      tome2 <- testAssetWithDef (cardTraitsL .~ singleton Tome) id
+      tome1 <- createAsset <$> genPlayerCard Cards.oldBookOfLore
+      tome2 <- createAsset <$> genPlayerCard Cards.medicalTexts
       gameTest
           daisyWalker
           [ SetTokens [ElderSign]

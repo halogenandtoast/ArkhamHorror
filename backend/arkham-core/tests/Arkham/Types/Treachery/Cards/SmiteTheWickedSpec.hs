@@ -12,8 +12,8 @@ spec = describe "Smite the Wicked" $ do
   it "draws an enemy, attaches to it, and spawns farthest away from you" $ do
     investigator <- testInvestigator "00000" id
     smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
-    enemy <- genEncounterCard Cards.placeholderEnemy
-    treachery <- genEncounterCard Cards.placeholderTreachery
+    enemy <- genEncounterCard Cards.swarmOfRats
+    treachery <- genEncounterCard Cards.ancientEvils
     (location1, location2) <- testConnectedLocations id id
     gameTest
         investigator
@@ -40,7 +40,7 @@ spec = describe "Smite the Wicked" $ do
   it "causes 1 mental trauma if enemy not defeated" $ do
     investigator <- testInvestigator "00000" id
     smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
-    enemy <- genEncounterCard Cards.placeholderEnemy
+    enemy <- genEncounterCard Cards.swarmOfRats
     location <- testLocation id
     gameTest
         investigator
@@ -59,7 +59,7 @@ spec = describe "Smite the Wicked" $ do
   it "won't cause trauma if enemy is defeated" $ do
     investigator <- testInvestigator "00000" id
     smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
-    enemy <- genEncounterCard Cards.placeholderEnemy
+    enemy <- genEncounterCard Cards.swarmOfRats
     location <- testLocation id
     gameTest
         investigator
@@ -93,7 +93,7 @@ spec = describe "Smite the Wicked" $ do
   it "will cause trauma if player is eliminated" $ do
     investigator <- testInvestigator "00000" id
     smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
-    enemy <- genEncounterCard Cards.placeholderEnemy
+    enemy <- genEncounterCard Cards.swarmOfRats
     location <- testLocation id
     gameTest
         investigator

@@ -4,6 +4,8 @@ module Arkham.Types.Asset.Cards.JimsTrumpetSpec
 
 import TestImport
 
+import qualified Arkham.Asset.Cards as Cards
+import qualified Arkham.Location.Cards as Cards
 import qualified Arkham.Types.Investigator.Attrs as Investigator
 
 spec :: Spec
@@ -40,7 +42,7 @@ spec = describe "Jim's Trumpet" $ do
       investigator2 <- testInvestigator
         "00001"
         (Investigator.sanityDamageL .~ 1)
-      jimsTrumpet <- buildAsset "02012"
+      jimsTrumpet <- createAsset <$> genPlayerCard Cards.jimsTrumpet
       location <- testLocation id
       gameTest
           investigator
@@ -101,20 +103,22 @@ spec = describe "Jim's Trumpet" $ do
         "00001"
         (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
-      (location1, location2) <- testConnectedLocations id id
+      rivertown <- createLocation <$> genEncounterCard Cards.rivertown
+      southside <- createLocation
+        <$> genEncounterCard Cards.southsideHistoricalSociety
       gameTest
           investigator
           [ SetTokens [Skull]
-          , placedLocation location1
-          , placedLocation location2
+          , placedLocation rivertown
+          , placedLocation southside
           , playAsset investigator jimsTrumpet
-          , moveTo investigator location1
-          , moveTo investigator2 location2
+          , moveTo investigator rivertown
+          , moveTo investigator2 southside
           , beginSkillTest investigator SkillIntellect 0
           ]
           ((assetsL %~ insertEntity jimsTrumpet)
-          . (locationsL %~ insertEntity location1)
-          . (locationsL %~ insertEntity location2)
+          . (locationsL %~ insertEntity rivertown)
+          . (locationsL %~ insertEntity southside)
           . (investigatorsL %~ insertEntity investigator2)
           )
         $ do
@@ -135,20 +139,21 @@ spec = describe "Jim's Trumpet" $ do
         "00001"
         (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
-      (location1, location2) <- testUnconnectedLocations id id
+      rivertown <- createLocation <$> genEncounterCard Cards.rivertown
+      downtown <- createLocation <$> genEncounterCard Cards.downtownArkhamAsylum
       gameTest
           investigator
           [ SetTokens [Skull]
-          , placedLocation location1
-          , placedLocation location2
+          , placedLocation rivertown
+          , placedLocation downtown
           , playAsset investigator jimsTrumpet
-          , moveTo investigator location1
-          , moveTo investigator2 location2
+          , moveTo investigator rivertown
+          , moveTo investigator2 downtown
           , beginSkillTest investigator SkillIntellect 0
           ]
           ((assetsL %~ insertEntity jimsTrumpet)
-          . (locationsL %~ insertEntity location1)
-          . (locationsL %~ insertEntity location2)
+          . (locationsL %~ insertEntity rivertown)
+          . (locationsL %~ insertEntity downtown)
           . (investigatorsL %~ insertEntity investigator2)
           )
         $ do

@@ -10,7 +10,7 @@ import Arkham.Json
 import Arkham.Types.ChaosBagStepState
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.RequestedTokenStrategy
@@ -262,7 +262,13 @@ instance HasList Token env ChaosBag where
 createToken :: MonadRandom m => TokenFace -> m Token
 createToken face = Token <$> getRandom <*> pure face
 
-instance (HasQueue env, HasId LeadInvestigatorId env ()) => RunMessage env ChaosBag where
+instance
+  ( HasQueue env
+  , HasSet InvestigatorId env ()
+  , HasId LeadInvestigatorId env ()
+  , HasId LocationId env InvestigatorId
+  , HasSet ConnectedLocationId env LocationId
+  ) => RunMessage env ChaosBag where
   runMessage msg c@ChaosBag {..} = case msg of
     ForceTokenDraw face -> do
       leadInvestigatorIdL <- getLeadInvestigatorId -- TODO: active
@@ -324,15 +330,18 @@ instance (HasQueue env, HasId LeadInvestigatorId env ()) => RunMessage env Chaos
     RunDrawFromBag source miid strategy -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' -> case choice' of
-        Resolved tokenFaces' -> c <$ pushAll
-          (FocusTokens tokenFaces'
-          : [ CheckWindow
-                iid
-                [ WhenRevealToken You token | token <- tokenFaces' ]
-            | iid <- maybeToList miid
-            ]
-          <> [RequestedTokens source miid tokenFaces', UnfocusTokens]
-          )
+        Resolved tokenFaces' -> do
+          checkWindowMsgs <- case miid of
+            Nothing -> pure []
+            Just iid -> checkWindows
+              iid
+              (\who -> pure [ WhenRevealToken who token | token <- tokenFaces' ]
+              )
+          c <$ pushAll
+            (FocusTokens tokenFaces'
+            : checkWindowMsgs
+            <> [RequestedTokens source miid tokenFaces', UnfocusTokens]
+            )
         _ -> do
           ((choice'', msgs), c') <- runStateT
             (resolveFirstUnresolved source miid strategy choice')

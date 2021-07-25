@@ -4,8 +4,7 @@ module Arkham.Types.Asset.Cards.ArcaneInitiateSpec
 
 import TestImport.Lifted
 
-import qualified Arkham.Types.Card.CardDef as CardDef
-import Arkham.Types.Trait
+import qualified Arkham.Asset.Cards as Cards
 
 spec :: Spec
 spec = describe "Arcane Initiate" $ do
@@ -25,7 +24,7 @@ spec = describe "Arcane Initiate" $ do
     $ do
         arcaneInitiate <- buildAsset "01063"
         investigator <- testInvestigator "00000" id
-        card <- testPlayerCard $ set CardDef.cardTraitsL (setFromList [Spell])
+        card <- genPlayerCard Cards.shrivelling
         otherCards <- testPlayerCards 2
         gameTest
             investigator

@@ -4,9 +4,8 @@ module Arkham.Types.Event.Cards.CloseCall2Spec
 
 import TestImport.Lifted
 
+import qualified Arkham.Enemy.Cards as Cards
 import qualified Arkham.Event.Cards as Cards
-import qualified Arkham.Types.Card.CardDef as CardDef
-import Arkham.Types.Trait
 
 spec :: Spec
 spec = describe "Close Call (2)" $ do
@@ -35,7 +34,7 @@ spec = describe "Close Call (2)" $ do
   it "does not work on Elite enemies" $ do
     investigator <- testInvestigator "00000" id
     closeCall2 <- genPlayerCard Cards.closeCall2
-    enemy <- testEnemyWithDef (CardDef.cardTraitsL .~ setFromList [Elite]) id
+    enemy <- createEnemy <$> genEncounterCard Cards.ghoulPriest
     gameTest
         investigator
         [ addToHand investigator (PlayerCard closeCall2)
@@ -50,7 +49,7 @@ spec = describe "Close Call (2)" $ do
   it "does not work on weakness enemies" $ do
     investigator <- testInvestigator "00000" id
     closeCall2 <- genPlayerCard Cards.closeCall2
-    enemy <- testWeaknessEnemy id
+    enemy <- createEnemy <$> genPlayerCard Cards.mobEnforcer
     gameTest
         investigator
         [ addToHand investigator (PlayerCard closeCall2)

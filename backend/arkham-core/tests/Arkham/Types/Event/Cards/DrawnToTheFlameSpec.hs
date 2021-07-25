@@ -4,10 +4,9 @@ module Arkham.Types.Event.Cards.DrawnToTheFlameSpec
 
 import TestImport.Lifted
 
+import qualified Arkham.Location.Cards as Cards
 import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
-import Arkham.Types.Location.Attrs (cluesL)
-import Arkham.Types.Trait
 
 spec :: Spec
 spec = describe "Drawn to the flame" $ do
@@ -18,23 +17,24 @@ spec = describe "Drawn to the flame" $ do
     -- effect per the FAQ
         investigator <- testInvestigator "00000"
           $ \attrs -> attrs { investigatorAgility = 3 }
-        (startLocation, centralLocation) <- testConnectedLocationsWithDef
-          (id, id)
-          (cardTraitsL .~ singleton Central, cluesL .~ 2)
+        rivertown <- createLocation <$> genEncounterCard Cards.rivertown
+        southside <- createLocation
+          <$> genEncounterCard Cards.southsideHistoricalSociety
         drawnToTheFlame <- buildEvent "01064" investigator
         onWingsOfDarkness <- genEncounterCard Cards.onWingsOfDarkness
         gameTest
             investigator
             [ SetEncounterDeck (Deck [onWingsOfDarkness])
             , SetTokens [Zero]
-            , placedLocation startLocation
-            , placedLocation centralLocation
-            , moveTo investigator startLocation
+            , placedLocation rivertown
+            , placedLocation southside
+            , PlaceClues (toTarget rivertown) 1
+            , moveTo investigator southside
             , playEvent investigator drawnToTheFlame
             ]
             ((eventsL %~ insertEntity drawnToTheFlame)
-            . (locationsL %~ insertEntity startLocation)
-            . (locationsL %~ insertEntity centralLocation)
+            . (locationsL %~ insertEntity rivertown)
+            . (locationsL %~ insertEntity southside)
             )
           $ do
               runMessages

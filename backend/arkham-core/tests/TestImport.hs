@@ -9,15 +9,20 @@ module TestImport
 
 import Arkham.Prelude as X
 
+import qualified Arkham.Agenda.Cards as Cards
 import qualified Arkham.Asset.Cards as Cards
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Game as X hiding (newGame, runMessages)
 import qualified Arkham.Game as Game
+import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Action
 import Arkham.Types.Agenda as X
 import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Cards.WhatsGoingOn
 import Arkham.Types.AgendaId
 import Arkham.Types.Asset as X
 import Arkham.Types.Asset.Attrs hiding (body)
+import Arkham.Types.Asset.Cards.Adaptable1
 import Arkham.Types.AssetId
 import Arkham.Types.Card as X
 import qualified Arkham.Types.Card.CardDef as CardDef
@@ -33,6 +38,7 @@ import Arkham.Types.Cost as X
 import Arkham.Types.Difficulty
 import Arkham.Types.Enemy as X
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Cards.SwarmOfRats
 import Arkham.Types.Event as X
 import Arkham.Types.Game as X hiding (getAsset)
 import qualified Arkham.Types.Game as Game
@@ -45,6 +51,7 @@ import Arkham.Types.Investigator.Attrs
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location as X
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Cards.Study
 import Arkham.Types.LocationId as X
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message as X
@@ -216,7 +223,7 @@ testPlayerCards :: MonadRandom m => Int -> m [PlayerCard]
 testPlayerCards count' = replicateM count' (testPlayerCard id)
 
 testPlayerCard :: MonadRandom m => (CardDef -> CardDef) -> m PlayerCard
-testPlayerCard f = genPlayerCard (f Cards.placeholderAsset)
+testPlayerCard f = genPlayerCard (f Cards.adaptable1) -- use adaptable because it has no in game effects
 
 testEnemy :: MonadRandom m => (EnemyAttrs -> EnemyAttrs) -> m Enemy
 testEnemy = testEnemyWithDef id
@@ -229,9 +236,17 @@ testEnemyWithDef
   => (CardDef -> CardDef)
   -> (EnemyAttrs -> EnemyAttrs)
   -> m Enemy
-testEnemyWithDef defF attrsF = do
-  enemyId <- getRandom
-  pure $ baseEnemy enemyId "enemy" attrsF defF
+testEnemyWithDef defF attrsF =
+  cbCardBuilder
+      (SwarmOfRats'
+      <$> enemyWith
+            SwarmOfRats
+            (defF Cards.swarmOfRats)
+            (1, Static 1, 1)
+            (0, 0)
+            attrsF
+      )
+    <$> getRandom
 
 testAsset :: MonadRandom m => (AssetAttrs -> AssetAttrs) -> m Asset
 testAsset = testAssetWithDef id
@@ -241,13 +256,17 @@ testAssetWithDef
   => (CardDef -> CardDef)
   -> (AssetAttrs -> AssetAttrs)
   -> m Asset
-testAssetWithDef defF attrsF = do
-  assetId <- getRandom
-  pure $ baseAsset assetId "asset" attrsF defF
+testAssetWithDef defF attrsF =
+  cbCardBuilder
+      (Adaptable1' <$> assetWith Adaptable1 (defF Cards.adaptable1) attrsF)
+    <$> getRandom
 
 testAgenda :: MonadIO m => CardCode -> (AgendaAttrs -> AgendaAttrs) -> m Agenda
-testAgenda cardCode f =
-  pure $ baseAgenda (AgendaId cardCode) "Agenda" (Agenda 1 A) (Static 1) f
+testAgenda cardCode f = pure $ cbCardBuilder
+  (WhatsGoingOn'
+  <$> agendaWith (1, A) WhatsGoingOn Cards.whatsGoingOn (Static 100) f
+  )
+  (AgendaId cardCode)
 
 testLocation :: MonadRandom m => (LocationAttrs -> LocationAttrs) -> m Location
 testLocation = testLocationWithDef id
@@ -258,8 +277,11 @@ testLocationWithDef
   -> (LocationAttrs -> LocationAttrs)
   -> m Location
 testLocationWithDef defF attrsF = do
-  locationId <- getRandom
-  pure $ baseLocation locationId "location" 0 (Static 0) Square [] attrsF defF
+  cbCardBuilder
+      (Study'
+      <$> locationWith Study (defF Cards.study) 0 (Static 0) Square [] attrsF
+      )
+    <$> getRandom
 
 testInvestigator
   :: MonadIO m

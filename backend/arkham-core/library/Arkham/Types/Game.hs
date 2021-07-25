@@ -1144,6 +1144,9 @@ instance HasGame env => HasList CampaignStoryCard env () where
   getList _ =
     maybe (pure mempty) getList . modeCampaign . view modeL =<< getGame
 
+instance HasGame env => HasList UnderneathCard env InvestigatorId where
+  getList = getList <=< getInvestigator
+
 instance HasGame env => HasList HandCard env InvestigatorId where
   getList = getList <=< getInvestigator
 

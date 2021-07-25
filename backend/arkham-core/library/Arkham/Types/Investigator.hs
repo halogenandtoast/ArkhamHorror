@@ -118,6 +118,9 @@ instance HasList DiscardedPlayerCard env Investigator where
 instance HasList HandCard env Investigator where
   getList = pure . map HandCard . investigatorHand . toAttrs
 
+instance HasList UnderneathCard env Investigator where
+  getList = pure . map UnderneathCard . investigatorCardsUnderneath . toAttrs
+
 instance HasList DeckCard env Investigator where
   getList = pure . map DeckCard . unDeck . investigatorDeck . toAttrs
 

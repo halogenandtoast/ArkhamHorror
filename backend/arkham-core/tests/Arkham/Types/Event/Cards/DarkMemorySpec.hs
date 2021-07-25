@@ -5,13 +5,14 @@ module Arkham.Types.Event.Cards.DarkMemorySpec
 import TestImport.Lifted
 
 import qualified Arkham.Event.Cards as Cards
+import qualified Arkham.Types.Agenda.Attrs as Agenda
 
 spec :: Spec
 spec = do
   describe "Dark Memory" $ do
     it "places 1 doom and can advance current agenda" $ do
       investigator <- testInvestigator "00000" id
-      agenda <- testAgenda "00000" id
+      agenda <- testAgenda "00000" (Agenda.doomThresholdL .~ Static 1)
       darkMemory <- buildEvent "01013" investigator
 
       (didAdvanceAgenda, logger) <- createMessageMatcher (AdvanceAgenda "00000")
@@ -26,7 +27,14 @@ spec = do
         $ do
             void runMessages
             chooseOnlyOption "Advance agenda"
-            getDoom agenda `shouldReturn` 1
+            chooseOptionMatching
+              "have to choose horror option to avoid discard"
+              (\case
+                Label "The lead investigator takes 2 horror" _ -> True
+                _ -> False
+              )
+            chooseFirstOption "assign first horror"
+            chooseFirstOption "assign second horror"
             isInDiscardOf investigator darkMemory `shouldReturn` True
             didAdvanceAgenda `refShouldBe` True
 

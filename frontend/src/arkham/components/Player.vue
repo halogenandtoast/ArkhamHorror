@@ -41,6 +41,7 @@
         :game="game"
         :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
+        @showCards="doShowCards"
       />
 
       <div class="discard">
@@ -71,6 +72,17 @@
       </section>
     </div>
 
+    <CardRow
+      v-if="showCards.length > 0"
+      :game="game"
+      :investigatorId="investigatorId"
+      :cards="showCards"
+      :isDiscards="false"
+      title="Cards Underneath"
+      @choose="$emit('choose', $event)"
+      @close="showCards = []"
+    />
+
     <Discard
       v-if="viewingDiscard"
       :game="game"
@@ -87,11 +99,13 @@ import { defineComponent, computed, ref } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
+import { CardContents } from '@/arkham/types/Card';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import HandCard from '@/arkham/components/HandCard.vue';
 import Discard from '@/arkham/components/Discard.vue';
+import CardRow from '@/arkham/components/CardRow.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import * as Arkham from '@/arkham/types/Investigator';
@@ -105,6 +119,7 @@ export default defineComponent({
     Investigator,
     ChoiceModal,
     Discard,
+    CardRow,
   },
   props: {
     game: { type: Object as () => Game, required: true },
@@ -139,7 +154,14 @@ export default defineComponent({
         .findIndex((c) => c.tag === MessageType.DRAW_CARDS && c.contents[0] === id.value);
     })
 
-    return { baseUrl, discards, topOfDiscard, drawCardsAction, toggleDiscard, viewingDiscard, viewDiscardLabel }
+    const showCards = ref<CardContents[]>([])
+
+    const doShowCards = (cards: CardContents[]) => {
+      console.log(cards)
+      showCards.value = cards
+    }
+
+    return { doShowCards, showCards, baseUrl, discards, topOfDiscard, drawCardsAction, toggleDiscard, viewingDiscard, viewDiscardLabel }
   }
 })
 </script>

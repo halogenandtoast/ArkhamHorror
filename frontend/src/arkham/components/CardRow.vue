@@ -5,10 +5,7 @@
     </header>
     <div class="card-row-cards">
       <div v-for="card in cards" :key="card.id" class="card-row-card" :class="{ discard: isDiscards }">
-        <img
-          class="card"
-          :src="image(card)"
-        />
+        <FocusedCard :game="game" :card="card" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
       </div>
     </div>
     <button class="close" @click="$emit('close')">Close</button>
@@ -19,11 +16,16 @@
 import { defineComponent } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import { CardContents } from '@/arkham/types/Card';
+import FocusedCard from '@/arkham/components/FocusedCard.vue';
 
 export default defineComponent({
+  components: {
+    FocusedCard,
+  },
   props: {
     game: { type: Object as () => Game, required: true },
     cards: { type: Array as () => CardContents[], required: true },
+    investigatorId: { type: String, required: true },
     isDiscards: { type: Boolean, default: false },
     title: { type: String, required: true }
   },

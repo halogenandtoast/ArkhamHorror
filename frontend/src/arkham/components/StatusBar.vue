@@ -37,6 +37,10 @@
           <button @click="$emit('choose', index)">{{choice.contents}}</button>
         </div>
 
+        <div v-if="choice.tag === MessageType.DONE">
+          <button @click="$emit('choose', index)">{{choice.contents}}</button>
+        </div>
+
         <div
           v-if="choice.tag === MessageType.RUN
             && (choice.contents[0] && choice.contents[0].tag === MessageType.CONTINUE)"

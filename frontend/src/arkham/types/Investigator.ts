@@ -49,6 +49,7 @@ export interface InvestigatorContents {
   defeated: boolean;
   resigned: boolean;
   tomeActions?: number;
+  cardsUnderneath: Card[];
   xp: number;
 }
 
@@ -80,6 +81,7 @@ export const investigatorContentsDecoder = JsonDecoder.object<InvestigatorConten
   defeated: JsonDecoder.boolean,
   resigned: JsonDecoder.boolean,
   tomeActions: JsonDecoder.optional(JsonDecoder.number),
+  cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),
   xp: JsonDecoder.number,
 }, 'Attrs');
 

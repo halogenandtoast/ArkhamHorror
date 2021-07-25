@@ -1,11 +1,15 @@
 <template>
   <div>
-    <img
-      :class="{ 'investigator--can-interact': investigatorAction !== -1 }"
-      class="card portrait"
-      :src="image"
-      @click="$emit('choose', investigatorAction)"
-    />
+    <div class="player-card">
+      <img
+        :class="{ 'investigator--can-interact': investigatorAction !== -1 }"
+        class="card portrait"
+        :src="image"
+        @click="$emit('choose', investigatorAction)"
+      />
+
+      <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="$emit('show-cards', cardsUnderneath)">{{cardsUnderneathLabel}}</button>
+    </div>
 
     <div class="resources">
       <PoolItem
@@ -210,8 +214,13 @@ export default defineComponent({
       return `${baseUrl}/img/arkham/cards/${id.value}.jpg`;
     })
 
+    const cardsUnderneath = computed(() => props.player.contents.cardsUnderneath)
+    const cardsUnderneathLabel = computed(() => `Underneath (${cardsUnderneath.value.length})`)
+
     return {
       id,
+      cardsUnderneath,
+      cardsUnderneathLabel,
       debug,
       debugChoose,
       image,
@@ -268,5 +277,11 @@ i.action {
 
 .tomeAction {
   color: orange;
+}
+
+.player-card {
+  display: flex;
+  flex-direction: column;
+  width: 140px;
 }
 </style>

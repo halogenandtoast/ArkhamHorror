@@ -20,6 +20,7 @@ data PlayerCard = MkPlayerCard
   { pcId :: CardId
   , pcBearer :: Maybe InvestigatorId
   , pcCardCode :: CardCode
+  , pcOriginalCardCode :: CardCode
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
@@ -46,13 +47,16 @@ instance HasCardDef PlayerCard where
     Nothing ->
       error $ "missing card def for player card " <> show (pcCardCode c)
 
+instance HasOriginalCardCode PlayerCard where
+  toOriginalCardCode = pcOriginalCardCode
+
 lookupPlayerCard :: CardDef -> CardId -> PlayerCard
 lookupPlayerCard cardDef cardId = MkPlayerCard
   { pcId = cardId
   , pcCardCode = toCardCode cardDef
+  , pcOriginalCardCode = toCardCode cardDef
   , pcBearer = Nothing
   }
 
 genPlayerCard :: MonadRandom m => CardDef -> m PlayerCard
 genPlayerCard cardDef = lookupPlayerCard cardDef <$> getRandom
-

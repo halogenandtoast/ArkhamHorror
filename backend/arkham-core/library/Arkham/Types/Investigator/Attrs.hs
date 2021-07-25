@@ -8,6 +8,7 @@ import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes hiding (discard)
 import Arkham.Types.CommitRestriction
@@ -1313,6 +1314,29 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       [ TakeAction iid (Just Action.Play) (ActionCost actionCost)
       , PayDynamicCardCost iid cardId 0 aooMessage
       ]
+  InitiatePlayCardAsChoose iid cardId choices msgs asAction
+    | iid == investigatorId -> do
+      a <$ push
+        (chooseOne
+          iid
+          [ TargetLabel
+              (CardIdTarget $ toCardId choice)
+              [InitiatePlayCardAs iid cardId choice msgs asAction]
+          | choice <- choices
+          ]
+        )
+  InitiatePlayCardAs iid cardId choice msgs asAction | iid == investigatorId ->
+    do
+      let
+        card = fromJustNote "not in hand"
+          $ find ((== cardId) . toCardId) investigatorHand
+        choiceDef = toCardDef choice
+        choiceAsCard = (lookupPlayerCard choiceDef cardId)
+          { pcOriginalCardCode = toCardCode card
+          }
+      pushAll $ msgs <> [InitiatePlayCard iid cardId Nothing asAction]
+      pure $ a & handL %~ (PlayerCard choiceAsCard :) . filter
+        ((/= cardId) . toCardId)
   InitiatePlayCard iid cardId mtarget asAction | iid == investigatorId -> do
     let
       card = fromJustNote "not in hand"

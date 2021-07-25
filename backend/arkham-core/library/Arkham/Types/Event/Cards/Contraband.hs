@@ -50,8 +50,8 @@ instance
       supplyAssetsWithUseCount <- map (\(c, aid) -> (Supply, c, aid))
         <$> for supplyAssets (\aid -> (, aid) . unUsesCount <$> getCount aid)
 
-      e <$ push
-        (chooseOne
+      e <$ pushAll
+        [ chooseOne
           iid
           [ TargetLabel
               (AssetTarget assetId)
@@ -59,5 +59,6 @@ instance
           | (useType', assetUseCount, assetId) <-
             ammoAssetsWithUseCount <> supplyAssetsWithUseCount
           ]
-        )
+        , Discard (toTarget attrs)
+        ]
     _ -> Contraband <$> runMessage msg attrs

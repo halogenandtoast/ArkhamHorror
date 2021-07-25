@@ -311,6 +311,8 @@ data Message
     | UpgradeDeck InvestigatorId (Deck PlayerCard) -- used to upgrade deck during campaign
     | FinishedUpgradingDecks
     | Flip Source Target
+    | InitiatePlayCardAsChoose InvestigatorId CardId [Card] [Message] Bool
+    | InitiatePlayCardAs InvestigatorId CardId Card [Message] Bool
     | InitiatePlayCard InvestigatorId CardId (Maybe Target) Bool
     | InitiatePlayFastEvent InvestigatorId CardId (Maybe Target) Bool
     | InitiatePlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
@@ -526,6 +528,8 @@ data Message
     | WhenEnterLocation InvestigatorId LocationId
     | WhenEvadeEnemy InvestigatorId EnemyId
     | Will Message
+    -- must be called on instance directly
+    | SetOriginalCardCode CardCode
     deriving stock (Show, Eq, Generic)
     deriving anyclass (ToJSON, FromJSON)
 

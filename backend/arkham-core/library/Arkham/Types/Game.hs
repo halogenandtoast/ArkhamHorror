@@ -2436,9 +2436,10 @@ runGameMessage msg g = case msg of
             ]
           pure $ g & assetsL %~ insertMap aid asset
         EventType -> do
-          let
-            event = createEvent pc iid
-            eid = toId event
+          event <- runMessage
+            (SetOriginalCardCode $ pcOriginalCardCode pc)
+            (createEvent pc iid)
+          let eid = toId event
           pushAll
             [ PlayedCard iid cardId (toName event) (toCardCode pc)
             , InvestigatorPlayDynamicEvent iid eid n
@@ -2456,9 +2457,10 @@ runGameMessage msg g = case msg of
     case find ((== cardId) . toCardId) (handOf investigator) of
       Nothing -> pure g -- card was discarded before playing
       Just card -> do
-        let
-          event = createEvent card iid
-          eid = toId event
+        event <- runMessage
+          (SetOriginalCardCode $ toOriginalCardCode card)
+          (createEvent card iid)
+        let eid = toId event
         pushAll
           [ PlayedCard iid cardId (toName event) (cdCardCode (toCardDef card))
           , InvestigatorPlayFastEvent iid eid mtarget windows
@@ -2494,9 +2496,10 @@ runGameMessage msg g = case msg of
             ]
           pure $ g & assetsL %~ insertMap aid asset
         EventType -> do
-          let
-            event = createEvent pc iid
-            eid = toId event
+          event <- runMessage
+            (SetOriginalCardCode $ pcOriginalCardCode pc)
+            (createEvent pc iid)
+          let eid = toId event
           pushAll
             [ PlayedCard iid cardId (toName event) (toCardCode pc)
             , InvestigatorPlayEvent iid eid mtarget
@@ -2698,12 +2701,10 @@ runGameMessage msg g = case msg of
   AddToVictory (EventTarget eid) -> do
     event <- getEvent eid
     push $ After msg
-    let
-      cardId = unEventId eid
-      playerCard = case lookup (toCardCode event) allPlayerCards of
-        Just _ -> PlayerCard $ MkPlayerCard cardId Nothing (toCardCode event)
-        Nothing -> error "missing player card"
-    pure $ g & (eventsL %~ deleteMap eid) & (victoryDisplayL %~ (playerCard :))
+    pure
+      $ g
+      & (eventsL %~ deleteMap eid)
+      & (victoryDisplayL %~ (toCard event :))
   BeginInvestigation -> do
     pushAll
       $ [ CheckWindow
@@ -3273,10 +3274,16 @@ runGameMessage msg g = case msg of
   Discarded (AssetTarget aid) _ -> pure $ g & assetsL %~ deleteMap aid
   Exiled (AssetTarget aid) _ -> pure $ g & assetsL %~ deleteMap aid
   Discard (EventTarget eid) -> do
+    -- an event might need to be converted back to its original card
     event <- getEvent eid
-    case toCard event of
-      PlayerCard pc -> push $ AddToDiscard (ownerOfEvent event) pc
-      EncounterCard _ -> error "Unhandled"
+    modifiers' <-
+      map modifierType <$> getModifiersFor GameSource (EventTarget eid) ()
+    when
+      (RemoveFromGameInsteadOfDiscard `notElem` modifiers')
+      (case toCard event of
+        PlayerCard pc -> push $ AddToDiscard (ownerOfEvent event) pc
+        EncounterCard _ -> error "Unhandled"
+      )
     pure $ g & eventsL %~ deleteMap eid
   Discard (TreacheryTarget tid) -> do
     withQueue_ $ filter (/= msg)

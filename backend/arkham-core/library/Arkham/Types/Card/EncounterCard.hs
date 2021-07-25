@@ -13,6 +13,7 @@ newtype DiscardedEncounterCard = DiscardedEncounterCard { unDiscardedEncounterCa
 data EncounterCard = MkEncounterCard
   { ecId :: CardId
   , ecCardCode :: CardCode
+  , ecOriginalCardCode :: CardCode
   , ecIsFlipped :: Maybe Bool
   }
   deriving stock (Show, Eq, Generic)
@@ -23,6 +24,9 @@ instance HasCardDef EncounterCard where
     Just def -> def
     Nothing ->
       error $ "missing card def for encounter card " <> show (ecCardCode c)
+
+instance HasOriginalCardCode EncounterCard where
+  toOriginalCardCode = ecOriginalCardCode
 
 instance ToJSON EncounterCard where
   toJSON = genericToJSON $ aesonOptions $ Just "ec"
@@ -38,6 +42,6 @@ lookupEncounterCard :: CardDef -> CardId -> EncounterCard
 lookupEncounterCard cardDef cardId = MkEncounterCard
   { ecId = cardId
   , ecCardCode = toCardCode cardDef
+  , ecOriginalCardCode = toCardCode cardDef
   , ecIsFlipped = Just $ isJust (cdRevealedName cardDef)
   }
-

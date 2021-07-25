@@ -76,12 +76,14 @@ type InvestigatorRunner env
       )
     , ( HasList CommittedCard env InvestigatorId
       , HasList CommittedSkillIcon env InvestigatorId
+      , HasList DeckCard env InvestigatorId
       , HasList DiscardedEncounterCard env ()
       , HasList DiscardableHandCard env InvestigatorId
       , HasList DiscardedPlayerCard env InvestigatorId
       , HasList HandCard env InvestigatorId
       , HasList InPlayCard env InvestigatorId
       , HasList LocationName env ()
+      , HasList UnderneathCard env InvestigatorId
       , HasList UsedAbility env ()
       , HasList SetAsideCard env ()
       )

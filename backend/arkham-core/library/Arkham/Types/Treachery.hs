@@ -37,6 +37,8 @@ instance
   , HasSet AssetId env (LocationId, AssetMatcher)
   , HasSet ClosestLocationId env (InvestigatorId, LocationMatcher)
   , HasSet EnemyId env EnemyMatcher
+  , HasList UnderneathCard env InvestigatorId
+  , HasList DeckCard env InvestigatorId
   , TreacheryRunner env
   )
   => RunMessage env Treachery where

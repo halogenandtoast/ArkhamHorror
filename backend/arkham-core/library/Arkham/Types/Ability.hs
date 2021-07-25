@@ -24,6 +24,7 @@ data Ability = Ability
   , abilityLimit :: AbilityLimit
   , abilityMetadata :: Maybe AbilityMetadata
   , abilityRestrictions :: Maybe AbilityRestriction
+  , abilityDoesNotProvokeAttacksOfOpportunity :: Bool
   }
   deriving stock (Show, Generic)
 
@@ -71,6 +72,7 @@ mkAbility entity idx type' = Ability
     ActionAbility _ _ -> NoLimit
   , abilityMetadata = Nothing
   , abilityRestrictions = Nothing
+  , abilityDoesNotProvokeAttacksOfOpportunity = False
   }
 
 applyAbilityModifiers :: Ability -> [Modifier] -> Ability

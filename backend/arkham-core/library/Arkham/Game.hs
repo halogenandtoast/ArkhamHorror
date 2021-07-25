@@ -240,7 +240,16 @@ replayChoices = do
               (Just m', msgs'') -> if n - 1 == 0
                 then [m']
                 else [m', Ask iid $ ChooseN (n - 1) msgs'']
-              (Nothing, msgs'') -> [Ask iid $ ChooseOneAtATime msgs'']
+              (Nothing, msgs'') -> [Ask iid $ ChooseN n msgs'']
+          Just (ChooseUpToN n qs) -> do
+            let (mm, msgs') = extract idx qs
+            case (mm, msgs') of
+              (Just m', []) -> [m']
+              (Just m'@(Done _), _) -> [m']
+              (Just m', msgs'') -> if n - 1 == 0
+                then [m']
+                else [m', Ask iid $ ChooseUpToN (n - 1) msgs'']
+              (Nothing, msgs'') -> [Ask iid $ ChooseUpToN n msgs'']
           Just (ChooseOneAtATime msgs) -> do
             let (mm, msgs') = extract idx msgs
             case (mm, msgs') of

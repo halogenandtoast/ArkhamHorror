@@ -68,6 +68,7 @@ data ModifierType
   | CannotInvestigate
   | CannotMakeAttacksOfOpportunity
   | CannotMove
+  | CannotMulligan
   | CannotPerformSkillTest
   | CannotPlaceClues
   | CannotPlay [(CardType, HashSet Trait)]

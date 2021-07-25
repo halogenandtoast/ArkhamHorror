@@ -66,7 +66,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorPhysicalTrauma :: Int
   , investigatorMentalTrauma :: Int
   , investigatorStartsWith :: [CardDef]
-  , investigatorCardsUnderneath :: [PlayerCard]
+  , investigatorCardsUnderneath :: [Card]
   -- investigator-specific fields
   , investigatorTomeActions :: Maybe Int
   }
@@ -146,6 +146,10 @@ engagedEnemiesL =
 
 deckL :: Lens' InvestigatorAttrs (Deck PlayerCard)
 deckL = lens investigatorDeck $ \m x -> m { investigatorDeck = x }
+
+cardsUnderneathL :: Lens' InvestigatorAttrs [Card]
+cardsUnderneathL = lens investigatorCardsUnderneath
+  $ \m x -> m { investigatorCardsUnderneath = x }
 
 discardL :: Lens' InvestigatorAttrs [PlayerCard]
 discardL = lens investigatorDiscard $ \m x -> m { investigatorDiscard = x }
@@ -1580,6 +1584,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & deckL .~ Deck shuffled
   InvestigatorCommittedCard iid cardId | iid == investigatorId ->
     pure $ a & handL %~ filter ((/= cardId) . toCardId)
+  PlaceUnderneath target cards | isTarget a target ->
+    pure $ a & cardsUnderneathL <>~ cards
   BeforeSkillTest iid skillType skillDifficulty | iid == investigatorId -> do
     committedCardIds <- map unCommittedCardId <$> getSetList iid
     committedCardCodes <- mapSet unCommittedCardCode <$> getSet ()
@@ -1763,7 +1769,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               then push (DrewTreachery iid card)
               else push (Revelation iid (PlayerCardSource $ toCardId card'))
       _ -> pure ()
-    pure $ a & handL %~ (card :)
+    pure $ a & handL %~ (card :) & cardsUnderneathL %~ filter (/= card)
   ShuffleCardsIntoDeck iid cards | iid == investigatorId -> do
     deck <- shuffleM (cards <> unDeck investigatorDeck)
     pure $ a & deckL .~ Deck deck

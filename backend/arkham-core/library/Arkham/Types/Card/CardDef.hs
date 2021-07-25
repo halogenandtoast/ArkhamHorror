@@ -96,6 +96,9 @@ class HasCardDef a where
 class HasCardCode a where
   toCardCode :: a -> CardCode
 
+class HasOriginalCardCode a where
+  toOriginalCardCode :: a -> CardCode
+
 class HasCardType a where
   toCardType :: a -> CardType
 

@@ -563,6 +563,8 @@ thePaintedWorld :: CardDef
 thePaintedWorld = (event "03012" "The Painted World" 0 Neutral)
   { cdSkills = [SkillWillpower, SkillAgility, SkillWild]
   , cdCardTraits = singleton Spell
+  , cdFast = True -- not fast
+  , cdWindows = mempty -- handle via behavior since it's complicated
   }
 
 letMeHandleThis :: CardDef

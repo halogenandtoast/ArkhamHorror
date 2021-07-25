@@ -103,6 +103,7 @@ data ModifierType
   | ReduceCostOf [Trait] Int
   | ReduceCostOfCardType CardType Int
   | RemoveKeyword Keyword
+  | RemoveFromGameInsteadOfDiscard
   | ReturnToHandAfterTest
   | SanityModifier Int
   | ShroudModifier Int

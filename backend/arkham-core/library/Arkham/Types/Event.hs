@@ -3,6 +3,7 @@ module Arkham.Types.Event where
 
 import Arkham.Prelude
 
+import Arkham.Card
 import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -34,6 +35,7 @@ deriving anyclass instance
   , HasId LocationId env InvestigatorId
   , HasSet EnemyId env LocationId
   , HasSet EnemyId env InvestigatorId
+  , HasList UnderneathCard env InvestigatorId
   , HasSkillTest env
   )
   => HasActions env Event
@@ -72,6 +74,7 @@ instance SourceEntity Event where
 
 instance IsCard Event where
   toCardId = toCardId . toAttrs
+  toCard e = lookupCard (eventOriginalCardCode . toAttrs $ e) (toCardId e)
 
 getEventId :: Event -> EventId
 getEventId = eventId . toAttrs

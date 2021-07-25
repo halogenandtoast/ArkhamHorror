@@ -2,6 +2,7 @@ module Arkham.Types.Event.Attrs where
 
 import Arkham.Prelude
 
+import Arkham.Event.Cards
 import Arkham.Json
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -16,7 +17,8 @@ class IsEvent a
 type EventCard a = CardBuilder (InvestigatorId, EventId) a
 
 data EventAttrs = EventAttrs
-  { eventCardDef :: CardDef
+  { eventCardCode :: CardCode
+  , eventOriginalCardCode :: CardCode
   , eventId :: EventId
   , eventAttachedTarget :: Maybe Target
   , eventOwner :: InvestigatorId
@@ -28,8 +30,17 @@ attachedTargetL :: Lens' EventAttrs (Maybe Target)
 attachedTargetL =
   lens eventAttachedTarget $ \m x -> m { eventAttachedTarget = x }
 
+originalCardCodeL :: Lens' EventAttrs CardCode
+originalCardCodeL =
+  lens eventOriginalCardCode $ \m x -> m { eventOriginalCardCode = x }
+
+allEventCards :: HashMap CardCode CardDef
+allEventCards = allPlayerEventCards
+
 instance HasCardDef EventAttrs where
-  toCardDef = eventCardDef
+  toCardDef a = case lookup (eventCardCode a) allEventCards of
+    Just def -> def
+    Nothing -> error $ "missing card def for asset " <> show (eventCardCode a)
 
 instance ToJSON EventAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "event"
@@ -56,7 +67,8 @@ event
 event f cardDef = CardBuilder
   { cbCardCode = cdCardCode cardDef
   , cbCardBuilder = \(iid, eid) -> f $ EventAttrs
-    { eventCardDef = cardDef
+    { eventCardCode = toCardCode cardDef
+    , eventOriginalCardCode = toCardCode cardDef
     , eventId = eid
     , eventAttachedTarget = Nothing
     , eventOwner = iid
@@ -89,6 +101,7 @@ instance HasActions env EventAttrs where
 
 instance HasQueue env => RunMessage env EventAttrs where
   runMessage msg a@EventAttrs {..} = case msg of
+    SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
     InvestigatorEliminated iid
       | eventAttachedTarget == Just (InvestigatorTarget iid) -> a
       <$ push (Discard (EventTarget eventId))

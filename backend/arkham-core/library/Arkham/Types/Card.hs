@@ -53,6 +53,11 @@ instance HasCardDef Card where
     PlayerCard pc -> toCardDef pc
     EncounterCard ec -> toCardDef ec
 
+instance HasOriginalCardCode Card where
+  toOriginalCardCode = \case
+    PlayerCard pc -> toOriginalCardCode pc
+    EncounterCard ec -> toOriginalCardCode ec
+
 data CampaignStoryCard = CampaignStoryCard
   { campaignStoryCardInvestigatorId :: InvestigatorId
   , campaignStoryCardPlayerCard :: PlayerCard

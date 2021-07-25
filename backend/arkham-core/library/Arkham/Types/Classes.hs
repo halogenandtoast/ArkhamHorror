@@ -186,6 +186,7 @@ type ActionRunner env
     , HasList DiscardedPlayerCard env InvestigatorId
     , HasList HandCard env InvestigatorId
     , HasList InPlayCard env InvestigatorId
+    , HasList UnderneathCard env InvestigatorId
     , HasList UsedAbility env ()
     , HasModifiersFor env ()
     , HasSet AccessibleLocationId env LocationId

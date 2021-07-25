@@ -70,7 +70,20 @@ instance (InvestigatorRunner env) => RunMessage env SefinaRousseau where
         | card <- investigatorCardsUnderneath attrs
         ]
       )
-    ResolveToken _ ElderSign iid | iid == toId attrs -> pure i
+    ResolveToken _ ElderSign iid | iid == toId attrs -> i <$ when
+      (notNull $ investigatorCardsUnderneath attrs)
+      (push
+        (chooseOne
+          (toId i)
+          (Done "Do not use elder sign ability"
+          : [ TargetLabel
+                (CardIdTarget $ toCardId card)
+                [AddToHand (toId i) card]
+            | card <- investigatorCardsUnderneath attrs
+            ]
+          )
+        )
+      )
     DrawStartingHand iid | iid == toId attrs -> do
       let
         (discard', hand, deck) = drawOpeningHand attrs 13

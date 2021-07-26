@@ -83,14 +83,16 @@
       @close="showCards = []"
     />
 
-    <Discard
+    <CardRow
       v-if="viewingDiscard"
       :game="game"
       :investigatorId="investigatorId"
       :cards="discards"
+      :isDiscards="true"
+      title="Discards"
       @choose="$emit('choose', $event)"
+      @close="viewingDiscard = false"
     />
-
   </div>
 </template>
 
@@ -104,7 +106,6 @@ import Enemy from '@/arkham/components/Enemy.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import HandCard from '@/arkham/components/HandCard.vue';
-import Discard from '@/arkham/components/Discard.vue';
 import CardRow from '@/arkham/components/CardRow.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
@@ -118,7 +119,6 @@ export default defineComponent({
     HandCard,
     Investigator,
     ChoiceModal,
-    Discard,
     CardRow,
   },
   props: {
@@ -128,12 +128,12 @@ export default defineComponent({
   },
   setup(props) {
 
-    const discards = computed(() => props.player.contents.discard)
+    const discards = computed(() => props.player.contents.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
     const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
 
     const topOfDiscard = computed(() => {
       if (discards.value.length > 0) {
-        const { cardCode } = discards.value[0];
+        const { cardCode } = discards.value[0].contents;
         return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
       }
 

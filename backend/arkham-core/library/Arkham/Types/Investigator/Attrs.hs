@@ -518,6 +518,7 @@ getFastIsPlayable
      , HasSet Trait env EnemyId
      , HasCount ClueCount env LocationId
      , HasId LocationId env InvestigatorId
+     , HasId LocationId env EnemyId
      , HasSet EnemyId env InvestigatorId
      , HasCount ResourceCount env InvestigatorId
      , HasCount DoomCount env AssetId
@@ -569,6 +570,7 @@ getPlayableCards
      , HasCount ClueCount env LocationId
      , HasActions env ActionType
      , HasId LocationId env InvestigatorId
+     , HasId LocationId env EnemyId
      , HasSet EnemyId env InvestigatorId
      , HasCount ResourceCount env InvestigatorId
      , HasCount DoomCount env AssetId
@@ -594,6 +596,7 @@ getPlayableDiscards
      , HasSet Trait env EnemyId
      , HasCount ClueCount env LocationId
      , HasId LocationId env InvestigatorId
+     , HasId LocationId env EnemyId
      , HasSet EnemyId env InvestigatorId
      , HasCount ResourceCount env InvestigatorId
      , HasCount DoomCount env AssetId
@@ -1579,9 +1582,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ if cannotGainResources then a else a & resourcesL +~ n
   EmptyDeck iid | iid == investigatorId -> a <$ pushAll
     [ShuffleDiscardBackIn iid, InvestigatorDamage iid EmptyDeckSource 0 1]
-  When (EnemySpawn _ lid eid) | lid == investigatorLocation -> do
-    traits <- getSetList eid
-    a <$ push (CheckWindow investigatorId [WhenEnemySpawns YourLocation traits])
   UseAbility iid ability@Ability {..} | iid == investigatorId -> a <$ push
     (CreatePayAbilityCostEffect (Just ability) abilitySource (toTarget a))
   AllDrawCardAndResource | not (a ^. defeatedL || a ^. resignedL) -> do

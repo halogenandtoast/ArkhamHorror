@@ -35,6 +35,7 @@ deriving anyclass instance
   , HasCount DoomCount env InvestigatorId
   , HasCount ResourceCount env InvestigatorId
   , HasId LocationId env InvestigatorId
+  , HasId LocationId env EnemyId
   , HasList DiscardedPlayerCard env InvestigatorId
   , HasList UnderneathCard env InvestigatorId
   , HasModifiersFor env ()

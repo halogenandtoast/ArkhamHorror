@@ -9,6 +9,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -25,9 +26,10 @@ discOfItzamna2 = accessory DiscOfItzamna2 Cards.discOfItzamna2
 
 instance HasModifiersFor env DiscOfItzamna2
 
-instance HasActions env DiscOfItzamna2 where
-  getActions iid (WhenEnemySpawns YourLocation traits) (DiscOfItzamna2 a)
-    | ownedBy a iid = pure
+instance HasSet Trait env EnemyId => HasActions env DiscOfItzamna2 where
+  getActions iid (WhenEnemySpawns eid _) (DiscOfItzamna2 a) | ownedBy a iid = do
+    traits <- getSet eid
+    pure
       [ UseAbility iid (mkAbility (toSource a) 1 (ReactionAbility Free))
       | Elite `notElem` traits
       ]

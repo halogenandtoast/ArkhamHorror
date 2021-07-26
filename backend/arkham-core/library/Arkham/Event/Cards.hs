@@ -373,8 +373,8 @@ thinkOnYourFeet :: CardDef
 thinkOnYourFeet = (event "02025" "Think on Your Feet" 1 Rogue)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = singleton Trick
-  , cdFast = True
-  , cdWindows = setFromList [WhenEnemySpawns YourLocation []]
+  , cdFastWindow = Just
+    (Matcher.WhenEnemySpawns Matcher.YourLocation Matcher.AnyEnemy)
   }
 
 bindMonster2 :: CardDef

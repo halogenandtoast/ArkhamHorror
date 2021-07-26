@@ -2954,6 +2954,11 @@ runGameMessage msg g = case msg of
       assetId = toId asset
     push (ReplacedInvestigatorAsset iid assetId)
     pure $ g & assetsL . at assetId ?~ asset
+  When (EnemySpawn _ lid eid) -> do
+    windowMsgs <- checkWindows
+      (gameActiveInvestigatorId g)
+      (\_ -> pure [WhenEnemySpawns eid lid])
+    g <$ pushAll windowMsgs
   SpawnEnemyAt card lid -> do
     let
       enemy = createEnemy card

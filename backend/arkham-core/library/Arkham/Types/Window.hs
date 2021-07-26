@@ -66,7 +66,7 @@ data Window
   | WhenEnemyAttacks Who
   | WhenEnemyDefeated Who
   | WhenEnemyEvaded Who
-  | WhenEnemySpawns Where [Trait]
+  | WhenEnemySpawns EnemyId LocationId
   | WhenEnterPlay Target
   | WhenLocationLeavesPlay LocationId
   | WhenPlayCard Who CardId

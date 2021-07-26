@@ -9,11 +9,8 @@ RUN apt-get upgrade -y --assume-yes
 
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get install -y nodejs
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-RUN apt update && apt-get install -y --assume-yes yarn
 
-RUN yarn global add @vue/cli
+RUN npm install -g @vue/cli
 
 RUN mkdir -p /opt/arkham/src/frontend
 
@@ -23,12 +20,12 @@ WORKDIR /opt/arkham/src/frontend
 COPY ./frontend/package.json /opt/arkham/src/frontend/package.json
 COPY ./frontend/babel.config.js /opt/arkham/src/frontend/babel.config.js
 COPY ./frontend/tsconfig.json /opt/arkham/src/frontend/tsconfig.json
-COPY ./frontend/yarn.lock /opt/arkham/src/frontend/yarn.lock
-RUN yarn install --frozen-lockfile
+COPY ./frontend/package-lock.json /opt/arkham/src/frontend/package-lock.json
+RUN npm ci
 WORKDIR /opt/arkham/src/frontend
 COPY ./frontend /opt/arkham/src/frontend
 ENV VUE_APP_ASSET_HOST ${ASSET_HOST:-""}
-RUN yarn build
+RUN npm run build
 
 FROM heroku/heroku:18 as dependencies
 

@@ -1140,6 +1140,7 @@ sophieInLovingMemory =
   (asset "03009" ("Sophie" <:> "In Loving Memory") 0 Neutral)
     { cdCardTraits = setFromList [Item, Spirit]
     , cdUnique = True
+    , cdCost = Nothing
     }
 
 sophieItWasAllMyFault :: CardDef
@@ -1147,6 +1148,7 @@ sophieItWasAllMyFault =
   (asset "03009b" ("Sophie" <:> "It Was All My Fault") 0 Neutral)
     { cdCardTraits = setFromList [Item, Madness]
     , cdUnique = True
+    , cdCost = Nothing
     }
 
 analyticalMind :: CardDef

@@ -451,8 +451,8 @@ export default defineComponent({
 .location-asset-column {
   min-width: 60px;
   height: 100%;
-  /deep/ .card {
-  width: 60px !important;
+  ::v-deep .card {
+    width: 60px !important;
   }
 }
 

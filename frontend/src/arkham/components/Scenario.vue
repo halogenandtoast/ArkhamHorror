@@ -90,6 +90,10 @@
         :src="activeCard"
         class="card"
       />
+
+      <button v-if="removedFromPlay.length > 0" class="view-removed-from-play-button" @click="doShowCards($event, removedFromPlay, 'Removed from Play', true)"><font-awesome-icon icon="eye" /> Removed from Play</button>
+
+      <button v-if="outOfPlay.length > 0" class="view-out-of-play-button" @click="doShowCards($event, outOfPlay, 'Out of Play', true)"><font-awesome-icon icon="eye" /> Out of Play</button>
     </div>
 
     <svg id="svg">
@@ -295,6 +299,8 @@ export default defineComponent({
 
     const players = computed(() => props.game.investigators)
     const discards = computed(() => props.game.discard)
+    const outOfPlay = computed(() => (props.game.scenario?.contents?.setAsideCards || []))
+    const removedFromPlay = computed(() => props.game.removedFromPlay)
 
     const showCards = ref<CardContents[]>([])
     const viewingDiscard = ref(false)
@@ -347,7 +353,9 @@ export default defineComponent({
     const skills = computed(() => Object.values(props.game.skills))
 
     return {
+      removedFromPlay,
       skills,
+      outOfPlay,
       locationMap,
       update,
       activePlayerId,
@@ -392,6 +400,7 @@ export default defineComponent({
   align-items: flex-start;
   justify-content: center;
   padding-bottom: 10px;
+  position: relative;
 }
 
 .clue--can-investigate {
@@ -477,7 +486,7 @@ export default defineComponent({
   }
 }
 
-svg {
+#svg {
   pointer-events: none;
   position: absolute;
   top: 0;
@@ -491,5 +500,39 @@ svg {
   stroke-width:6px;
   /* stroke:#a6b5bb; */
   stroke:rgba(0,0,0, 0.2);
+}
+
+.view-out-of-play-button {
+  text-decoration: none;
+  position: absolute;
+  transform: translate(100%, -50%) rotate(90deg) translate(0%, 50%) translate(0%, 10px);
+  svg {
+    transform: rotate(-90deg)
+  }
+  transform-origin: center left;
+  top: 0px;
+  right: 0px;
+  border: 0;
+  color: white;
+  background: #a5b5bc;
+  font-size: 1.2em;
+  padding: 5px 15px;
+}
+
+.view-removed-from-play-button {
+  text-decoration: none;
+  position: absolute;
+  transform: translate(100%, -50%) rotate(90deg) translate(0%, 50%) translate(0%, 50px);
+  svg {
+    transform: rotate(-90deg)
+  }
+  transform-origin: center left;
+  top: 0px;
+  right: 0px;
+  border: 0;
+  color: white;
+  background: #a5b5bc;
+  font-size: 1.2em;
+  padding: 5px 15px;
 }
 </style>

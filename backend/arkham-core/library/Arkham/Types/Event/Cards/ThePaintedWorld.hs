@@ -44,7 +44,6 @@ instance
   , HasCount ClueCount env LocationId
   , HasActions env ActionType
   , HasId LocationId env InvestigatorId
-  , HasId LocationId env EnemyId
   , HasSet EnemyId env InvestigatorId
   , HasCount ResourceCount env InvestigatorId
   , HasCount DoomCount env AssetId

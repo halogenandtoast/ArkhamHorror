@@ -9,11 +9,11 @@ import Arkham.Types.Card.CardType
 import Arkham.Types.Card.Cost
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Name
-import Arkham.Types.PlayRestriction
+import qualified Arkham.Types.PlayRestriction as Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
-import Arkham.Types.Window
-import qualified Arkham.Types.WindowMatcher as Matcher
+import qualified Arkham.Types.Window as Window
+import Arkham.Types.WindowMatcher
 
 event :: CardCode -> Name -> Int -> ClassSymbol -> CardDef
 event cardCode name cost classSymbol = CardDef
@@ -60,6 +60,7 @@ allPlayerEventCards = mapFromList $ map
   , blindingLight
   , blindingLight2
   , bloodRite
+  , buryThemDeep
   , closeCall2
   , contraband
   , contraband2
@@ -129,7 +130,8 @@ onTheLam = (event "01010" "On the Lam" 1 Neutral)
   { cdCardTraits = setFromList [Tactic]
   , cdSkills = [SkillIntellect, SkillAgility, SkillWild, SkillWild]
   , cdFast = True
-  , cdWindows = setFromList [AfterTurnBegins You, DuringTurn You]
+  , cdWindows = setFromList
+    [Window.AfterTurnBegins Window.You, Window.DuringTurn Window.You]
   }
 
 darkMemory :: CardDef
@@ -143,7 +145,7 @@ evidence = (event "01022" "Evidence!" 1 Guardian)
   { cdSkills = [SkillIntellect, SkillIntellect]
   , cdCardTraits = setFromList [Insight]
   , cdFast = True
-  , cdWindows = setFromList [WhenEnemyDefeated You]
+  , cdWindows = setFromList [Window.WhenEnemyDefeated Window.You]
   }
 
 dodge :: CardDef
@@ -151,7 +153,8 @@ dodge = (event "01023" "Dodge" 1 Guardian)
   { cdSkills = [SkillWillpower, SkillAgility]
   , cdCardTraits = setFromList [Tactic]
   , cdFast = True
-  , cdWindows = setFromList [WhenEnemyAttacks InvestigatorAtYourLocation]
+  , cdWindows = setFromList
+    [Window.WhenEnemyAttacks Window.InvestigatorAtYourLocation]
   }
 
 dynamiteBlast :: CardDef
@@ -172,7 +175,7 @@ mindOverMatter = (event "01036" "Mind over Matter" 1 Seeker)
   { cdSkills = [SkillCombat, SkillAgility]
   , cdCardTraits = setFromList [Insight]
   , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
+  , cdWindows = setFromList [Window.DuringTurn Window.You]
   }
 
 workingAHunch :: CardDef
@@ -180,7 +183,7 @@ workingAHunch = (event "01037" "Working a Hunch" 2 Seeker)
   { cdSkills = [SkillIntellect, SkillIntellect]
   , cdCardTraits = setFromList [Insight]
   , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
+  , cdWindows = setFromList [Window.DuringTurn Window.You]
   }
 
 barricade :: CardDef
@@ -194,7 +197,7 @@ crypticResearch4 = (event "01043" "Cryptic Research" 0 Seeker)
   { cdCardTraits = setFromList [Insight]
   , cdLevel = 4
   , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
+  , cdWindows = setFromList [Window.DuringTurn Window.You]
   }
 
 elusive :: CardDef
@@ -202,7 +205,7 @@ elusive = (event "01050" "Elusive" 2 Rogue)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = setFromList [Tactic]
   , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
+  , cdWindows = setFromList [Window.DuringTurn Window.You]
   }
 
 backstab :: CardDef
@@ -216,7 +219,7 @@ sneakAttack :: CardDef
 sneakAttack = (event "01052" "Sneak Attack" 2 Rogue)
   { cdSkills = [SkillIntellect, SkillCombat]
   , cdCardTraits = setFromList [Tactic]
-  , cdPlayRestrictions = [EnemyAtYourLocation]
+  , cdPlayRestrictions = [Restriction.EnemyAtYourLocation]
   }
 
 sureGamble3 :: CardDef
@@ -245,7 +248,7 @@ wardOfProtection = (event "01065" "Ward of Protection" 1 Mystic)
   { cdSkills = [SkillWild]
   , cdCardTraits = setFromList [Spell, Spirit]
   , cdFast = True
-  , cdWindows = setFromList [WhenDrawTreachery You]
+  , cdWindows = setFromList [Window.WhenDrawTreachery Window.You]
   }
 
 blindingLight :: CardDef
@@ -261,7 +264,7 @@ mindWipe1 = (event "01068" "Mind Wipe" 1 Mystic)
   , cdCardTraits = setFromList [Spell]
   , cdLevel = 1
   , cdFast = True
-  , cdWindows = setFromList [AnyPhaseBegins]
+  , cdWindows = setFromList [Window.AnyPhaseBegins]
   }
 
 blindingLight2 :: CardDef
@@ -285,14 +288,14 @@ lookWhatIFound = (event "01079" "\"Look what I found!\"" 2 Survivor)
   , cdCardTraits = setFromList [Fortune]
   , cdFast = True
   , cdWindows = setFromList
-    [ AfterFailInvestigationSkillTest You n | n <- [0 .. 2] ]
+    [ Window.AfterFailInvestigationSkillTest Window.You n | n <- [0 .. 2] ]
   }
 
 lucky :: CardDef
 lucky = (event "01080" "Lucky!" 1 Survivor)
   { cdCardTraits = setFromList [Fortune]
   , cdFast = True
-  , cdWindows = setFromList [WhenWouldFailSkillTest You]
+  , cdWindows = setFromList [Window.WhenWouldFailSkillTest Window.You]
   }
 
 closeCall2 :: CardDef
@@ -308,7 +311,7 @@ lucky2 :: CardDef
 lucky2 = (event "01084" "Lucky!" 1 Survivor)
   { cdCardTraits = setFromList [Fortune]
   , cdFast = True
-  , cdWindows = setFromList [WhenWouldFailSkillTest You]
+  , cdWindows = setFromList [Window.WhenWouldFailSkillTest Window.You]
   , cdLevel = 2
   }
 
@@ -317,7 +320,7 @@ willToSurvive3 = (event "01085" "Will to Survive" 4 Survivor)
   { cdSkills = [SkillCombat, SkillWild]
   , cdCardTraits = setFromList [Spirit]
   , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
+  , cdWindows = setFromList [Window.DuringTurn Window.You]
   , cdLevel = 3
   }
 
@@ -336,7 +339,7 @@ taunt :: CardDef
 taunt = (event "02017" "Taunt" 1 Guardian)
   { cdCardTraits = setFromList [Tactic]
   , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
+  , cdWindows = setFromList [Window.DuringTurn Window.You]
   , cdSkills = [SkillWillpower, SkillCombat]
   }
 
@@ -350,7 +353,7 @@ taunt2 :: CardDef
 taunt2 = (event "02019" "Taunt" 1 Guardian)
   { cdCardTraits = setFromList [Tactic]
   , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
+  , cdWindows = setFromList [Window.DuringTurn Window.You]
   , cdSkills = [SkillWillpower, SkillCombat, SkillAgility]
   , cdLevel = 2
   }
@@ -360,7 +363,7 @@ shortcut = (event "02022" "Shortcut" 0 Seeker)
   { cdSkills = [SkillWillpower, SkillAgility]
   , cdCardTraits = setFromList [Insight, Tactic]
   , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
+  , cdWindows = setFromList [Window.DuringTurn Window.You]
   }
 
 seekingAnswers :: CardDef
@@ -373,8 +376,7 @@ thinkOnYourFeet :: CardDef
 thinkOnYourFeet = (event "02025" "Think on Your Feet" 1 Rogue)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = singleton Trick
-  , cdFastWindow = Just
-    (Matcher.WhenEnemySpawns Matcher.YourLocation Matcher.AnyEnemy)
+  , cdFastWindow = Just (WhenEnemySpawns YourLocation AnyEnemy)
   }
 
 bindMonster2 :: CardDef
@@ -436,7 +438,7 @@ standTogether3 :: CardDef
 standTogether3 = (event "02148" "Stand Together" 0 Guardian)
   { cdSkills = [SkillWillpower, SkillWillpower]
   , cdCardTraits = singleton Spirit
-  , cdPlayRestrictions = [AnotherInvestigatorInSameLocation]
+  , cdPlayRestrictions = [Restriction.AnotherInvestigatorInSameLocation]
   , cdLevel = 3
   }
 
@@ -444,7 +446,7 @@ imOuttaHere :: CardDef
 imOuttaHere = (event "02151" "\"I'm outta here!\"" 0 Rogue)
   { cdSkills = [SkillAgility, SkillAgility]
   , cdCardTraits = setFromList [Trick, Spirit]
-  , cdPlayRestrictions = [ScenarioCardHasResignAbility]
+  , cdPlayRestrictions = [Restriction.ScenarioCardHasResignAbility]
   }
 
 hypnoticGaze :: CardDef
@@ -452,7 +454,8 @@ hypnoticGaze = (event "02153" "Hypnotic Gaze" 3 Mystic)
   { cdSkills = [SkillCombat, SkillAgility]
   , cdCardTraits = singleton Spell
   , cdFast = True
-  , cdWindows = setFromList [WhenEnemyAttacks InvestigatorAtYourLocation]
+  , cdWindows = setFromList
+    [Window.WhenEnemyAttacks Window.InvestigatorAtYourLocation]
   }
 
 lure1 :: CardDef
@@ -472,7 +475,7 @@ preposterousSketches :: CardDef
 preposterousSketches = (event "02186" "Preposterous Sketches" 2 Seeker)
   { cdSkills = [SkillWillpower, SkillIntellect]
   , cdCardTraits = singleton Insight
-  , cdPlayRestrictions = [ClueOnLocation]
+  , cdPlayRestrictions = [Restriction.ClueOnLocation]
   }
 
 emergencyCache2 :: CardDef
@@ -484,16 +487,15 @@ emergencyCache2 = (event "02194" "Emergency Cache" 0 Neutral)
 ifItBleeds :: CardDef
 ifItBleeds = (event "02225" "\"If it bleeds...\"" 1 Guardian)
   { cdSkills = [SkillWillpower, SkillCombat]
-  , cdFastWindow = Just
-    (Matcher.AfterEnemyDefeated Matcher.You $ Matcher.EnemyWithTrait Monster)
+  , cdFastWindow = Just (AfterEnemyDefeated You $ EnemyWithTrait Monster)
   }
 
 exposeWeakness1 :: CardDef
 exposeWeakness1 = (event "02228" "Expose Weakness" 0 Seeker)
   { cdSkills = [SkillIntellect, SkillCombat, SkillCombat]
   , cdCardTraits = singleton Insight
-  , cdFastWindow = Just (Matcher.FastPlayerWindow Matcher.Anyone)
-  , cdPlayRestrictions = [EnemyAtYourLocation]
+  , cdFastWindow = Just (FastPlayerWindow Anyone)
+  , cdPlayRestrictions = [Restriction.EnemyAtYourLocation]
   , cdLevel = 1
   }
 
@@ -501,14 +503,14 @@ iveHadWorse4 :: CardDef
 iveHadWorse4 = (event "02261" "\"I've had worse…\"" 0 Guardian)
   { cdSkills = [SkillWillpower, SkillWillpower, SkillAgility]
   , cdCardTraits = singleton Spirit
-  , cdFastWindow = Just (Matcher.DealtDamageOrHorror Matcher.You)
+  , cdFastWindow = Just (DealtDamageOrHorror You)
   , cdLevel = 4
   }
 
 aceInTheHole3 :: CardDef
 aceInTheHole3 = (event "02266" "Ace in the Hole" 0 Rogue)
   { cdCardTraits = singleton Trick
-  , cdFastWindow = Just (Matcher.FastPlayerWindow Matcher.You)
+  , cdFastWindow = Just (FastPlayerWindow You)
   , cdLevel = 3
   , cdExceptional = True
   }
@@ -517,21 +519,22 @@ moonlightRitual :: CardDef
 moonlightRitual = (event "02267" "Moonlight Ritual" 0 Mystic)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = setFromList [Spell, Insight]
-  , cdPlayRestrictions = [OwnCardWithDoom]
+  , cdPlayRestrictions = [Restriction.OwnCardWithDoom]
   }
 
 aChanceEncounter :: CardDef
 aChanceEncounter = (event "02270" "A Chance Encounter" 1 Survivor)
   { cdSkills = [SkillWillpower, SkillIntellect]
   , cdCardTraits = singleton Fortune
-  , cdPlayRestrictions = [CardInDiscard AnyPlayerDiscard [Ally]]
+  , cdPlayRestrictions =
+    [Restriction.CardInDiscard Restriction.AnyPlayerDiscard [Ally]]
   }
 
 momentOfRespite3 :: CardDef
 momentOfRespite3 = (event "02273" "Moment of Respite" 3 Neutral)
   { cdSkills = [SkillWillpower, SkillWillpower]
   , cdCardTraits = singleton Spirit
-  , cdPlayRestrictions = [NoEnemiesAtYourLocation]
+  , cdPlayRestrictions = [Restriction.NoEnemiesAtYourLocation]
   , cdLevel = 3
   }
 
@@ -555,8 +558,7 @@ wardOfProtection5 :: CardDef
 wardOfProtection5 = (event "02307" "Ward of Protection" 1 Mystic)
   { cdSkills = [SkillWillpower, SkillWild]
   , cdCardTraits = setFromList [Spell, Spirit]
-  , cdFastWindow = Just
-    (Matcher.WhenDrawEncounterCard Matcher.You Matcher.NonWeakness)
+  , cdFastWindow = Just (WhenDrawEncounterCard You NonWeakness)
   , cdLevel = 5
   }
 
@@ -568,6 +570,14 @@ thePaintedWorld = (event "03012" "The Painted World" 0 Neutral)
   , cdFastWindow = Nothing -- handle via behavior since it's complicated
   , cdWindows = mempty
   , cdCost = Nothing
+  }
+
+buryThemDeep :: CardDef
+buryThemDeep = (event "03016" "Bury Them Deep" 0 Neutral)
+  { cdSkills = [SkillWillpower, SkillCombat, SkillWild]
+  , cdCardTraits = singleton Task
+  , cdFastWindow = Just
+    (AfterEnemyDefeated Anyone $ NonEliteEnemy <> EnemyAtYourLocation)
   }
 
 letMeHandleThis :: CardDef
@@ -597,7 +607,7 @@ firstWatch = (event "06110" "First Watch" 1 Guardian)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = setFromList [Tactic]
   , cdFast = True
-  , cdWindows = setFromList [WhenAllDrawEncounterCard]
+  , cdWindows = setFromList [Window.WhenAllDrawEncounterCard]
   }
 
 astoundingRevelation :: CardDef
@@ -637,14 +647,14 @@ mindWipe3 = (event "50008" "Mind Wipe" 1 Mystic)
   , cdCardTraits = setFromList [Spell]
   , cdLevel = 3
   , cdFast = True
-  , cdWindows = setFromList [AnyPhaseBegins]
+  , cdWindows = setFromList [Window.AnyPhaseBegins]
   }
 
 preposterousSketches2 :: CardDef
 preposterousSketches2 = (event "51003" "Preposterous Sketches" 0 Seeker)
   { cdSkills = [SkillWillpower, SkillIntellect]
   , cdCardTraits = singleton Insight
-  , cdPlayRestrictions = [ClueOnLocation]
+  , cdPlayRestrictions = [Restriction.ClueOnLocation]
   , cdLevel = 2
   }
 
@@ -659,7 +669,7 @@ taunt3 :: CardDef
 taunt3 = (event "60130" "Taunt" 1 Guardian)
   { cdCardTraits = setFromList [Tactic]
   , cdFast = True
-  , cdWindows = setFromList [FastPlayerWindow]
+  , cdWindows = setFromList [Window.FastPlayerWindow]
   , cdSkills = [SkillWillpower, SkillWillpower, SkillCombat, SkillAgility]
   , cdLevel = 3
   }

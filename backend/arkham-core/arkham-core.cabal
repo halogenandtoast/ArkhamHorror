@@ -362,6 +362,7 @@ library
       Arkham.Types.Effect.Effects.ThePaintedWorld
       Arkham.Types.Effect.Effects.TokenEffect
       Arkham.Types.Effect.Effects.UndimensionedAndUnseenTabletToken
+      Arkham.Types.Effect.Effects.WilliamYorick
       Arkham.Types.Effect.Effects.WillToSurvive3
       Arkham.Types.Effect.Effects.WindowModifierEffect
       Arkham.Types.Effect.Helpers
@@ -400,6 +401,7 @@ library
       Arkham.Types.Enemy.Cards.GoatSpawn
       Arkham.Types.Enemy.Cards.GrapplingHorror
       Arkham.Types.Enemy.Cards.GraveEater
+      Arkham.Types.Enemy.Cards.GraveyardGhouls
       Arkham.Types.Enemy.Cards.HermanCollins
       Arkham.Types.Enemy.Cards.HuntingHorror
       Arkham.Types.Enemy.Cards.HuntingNightgaunt
@@ -463,6 +465,7 @@ library
       Arkham.Types.Event.Cards.BlindingLight
       Arkham.Types.Event.Cards.BlindingLight2
       Arkham.Types.Event.Cards.BloodRite
+      Arkham.Types.Event.Cards.BuryThemDeep
       Arkham.Types.Event.Cards.CloseCall2
       Arkham.Types.Event.Cards.Contraband
       Arkham.Types.Event.Cards.Contraband2

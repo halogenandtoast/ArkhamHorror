@@ -14,7 +14,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
-import Arkham.Types.Query
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
@@ -36,21 +35,8 @@ instance HasActions env JoeyTheRatVigil where
 instance HasModifiersFor env JoeyTheRatVigil
 
 instance
-  ( HasActions env ActionType
+  ( CanCheckPlayable env
   , HasList HandCard env InvestigatorId
-  , HasId LocationId env InvestigatorId
-  , HasSet InvestigatorId env LocationId
-  , HasSet Trait env EnemyId
-  , HasSet EnemyId env LocationId
-  , HasSet EnemyId env InvestigatorId
-  , HasCount ClueCount env LocationId
-  , HasCount ResourceCount env InvestigatorId
-  , HasCount DoomCount env AssetId
-  , HasCount DoomCount env InvestigatorId
-  , HasList DiscardedPlayerCard env InvestigatorId
-  , HasSet InvestigatorId env ()
-  , HasSet AssetId env InvestigatorId
-  , HasQueue env, HasModifiersFor env ()
   )
   => RunMessage env JoeyTheRatVigil where
   runMessage msg a@(JoeyTheRatVigil attrs) = case msg of

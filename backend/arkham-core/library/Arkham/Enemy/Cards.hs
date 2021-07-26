@@ -52,7 +52,7 @@ enemy cardCode name encounterSet encounterSetQuantity =
 allPlayerEnemyCards :: HashMap CardCode CardDef
 allPlayerEnemyCards = mapFromList $ map
   (toCardCode &&& id)
-  [mobEnforcer, silverTwilightAcolyte, stubbornDetective]
+  [mobEnforcer, silverTwilightAcolyte, stubbornDetective, graveyardGhouls]
 
 allEncounterEnemyCards :: HashMap CardCode CardDef
 allEncounterEnemyCards = mapFromList $ map
@@ -460,6 +460,12 @@ yithianStarseeker :: CardDef
 yithianStarseeker = (enemy "02330" "Yithian Starseeker" LostInTimeAndSpace 2)
   { cdCardTraits = setFromList [Monster, Yithian]
   , cdKeywords = setFromList [Keyword.Retaliate]
+  }
+
+graveyardGhouls :: CardDef
+graveyardGhouls = (weakness "03017" "Graveyard Ghouls")
+  { cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
+  , cdKeywords = setFromList [Keyword.Hunter]
   }
 
 corpseHungryGhoul :: CardDef

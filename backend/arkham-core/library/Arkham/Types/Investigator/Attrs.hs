@@ -511,23 +511,7 @@ getCanAfford a@InvestigatorAttrs {..} actionType = do
   pure $ actionCost <= investigatorRemainingActions
 
 getFastIsPlayable
-  :: ( MonadReader env m
-     , HasModifiersFor env ()
-     , HasSet InvestigatorId env LocationId
-     , HasSet EnemyId env LocationId
-     , HasSet Trait env EnemyId
-     , HasCount ClueCount env LocationId
-     , HasId LocationId env InvestigatorId
-     , HasSet EnemyId env InvestigatorId
-     , HasCount ResourceCount env InvestigatorId
-     , HasCount DoomCount env AssetId
-     , HasCount DoomCount env InvestigatorId
-     , HasList DiscardedPlayerCard env InvestigatorId
-     , HasSet InvestigatorId env ()
-     , HasSet AssetId env InvestigatorId
-     , HasActions env ActionType
-     , MonadIO m
-     )
+  :: (MonadReader env m, CanCheckPlayable env, MonadIO m)
   => InvestigatorAttrs
   -> [Window]
   -> Card
@@ -561,23 +545,7 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
     else go (m - 1) (d, PlayerCard c : h, cs)
 
 getPlayableCards
-  :: ( MonadReader env m
-     , HasModifiersFor env ()
-     , HasSet InvestigatorId env LocationId
-     , HasSet EnemyId env LocationId
-     , HasSet Trait env EnemyId
-     , HasCount ClueCount env LocationId
-     , HasActions env ActionType
-     , HasId LocationId env InvestigatorId
-     , HasSet EnemyId env InvestigatorId
-     , HasCount ResourceCount env InvestigatorId
-     , HasCount DoomCount env AssetId
-     , HasCount DoomCount env InvestigatorId
-     , HasList DiscardedPlayerCard env InvestigatorId
-     , HasSet InvestigatorId env ()
-     , HasSet AssetId env InvestigatorId
-     , MonadIO m
-     )
+  :: (MonadReader env m, CanCheckPlayable env, MonadIO m)
   => InvestigatorAttrs
   -> [Window]
   -> m [Card]
@@ -587,23 +555,7 @@ getPlayableCards a@InvestigatorAttrs {..} windows = do
   pure $ playableHandCards <> playableDiscards
 
 getPlayableDiscards
-  :: ( MonadReader env m
-     , HasModifiersFor env ()
-     , HasSet InvestigatorId env LocationId
-     , HasSet EnemyId env LocationId
-     , HasSet Trait env EnemyId
-     , HasCount ClueCount env LocationId
-     , HasId LocationId env InvestigatorId
-     , HasSet EnemyId env InvestigatorId
-     , HasCount ResourceCount env InvestigatorId
-     , HasCount DoomCount env AssetId
-     , HasCount DoomCount env InvestigatorId
-     , HasList DiscardedPlayerCard env InvestigatorId
-     , HasSet InvestigatorId env ()
-     , HasSet AssetId env InvestigatorId
-     , HasActions env ActionType
-     , MonadIO m
-     )
+  :: (MonadReader env m, CanCheckPlayable env, MonadIO m)
   => InvestigatorAttrs
   -> [Window]
   -> m [Card]
@@ -709,6 +661,11 @@ hasModifier InvestigatorAttrs { investigatorId } m =
 isForced :: Message -> Bool
 isForced (UseAbility _ Ability { abilityType }) = abilityType == ForcedAbility
 isForced _ = False
+
+findCard :: CardId -> InvestigatorAttrs -> Card
+findCard cardId a = fromJustNote "not in hand or discard"
+  $ findMatch (a ^. handL)
+  where findMatch = find ((== cardId) . toCardId)
 
 runInvestigatorMessage
   :: (InvestigatorRunner env, MonadReader env m, MonadRandom m, MonadIO m)
@@ -1253,8 +1210,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & cluesL .~ 0
   PayCardCost iid cardId | iid == investigatorId -> do
     let
-      card =
-        fromJustNote "not in hand" $ find ((== cardId) . toCardId) (a ^. handL)
+      card = findCard cardId a
       cost = getCost card
     pure $ a & resourcesL -~ cost
   PayDynamicCardCost iid cardId n beforePlayMessages | iid == investigatorId ->
@@ -1283,8 +1239,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       ]
   PlayDynamicCard iid cardId _n _mtarget True | iid == investigatorId -> do
     let
-      card = fromJustNote "not in hand"
-        $ find ((== cardId) . toCardId) investigatorHand
+      card = findCard cardId a
       isFast = case card of
         PlayerCard pc ->
           cdFast (toCardDef pc) || isJust (cdFastWindow $ toCardDef pc)
@@ -1328,8 +1283,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   InitiatePlayCardAs iid cardId choice msgs asAction | iid == investigatorId ->
     do
       let
-        card = fromJustNote "not in hand"
-          $ find ((== cardId) . toCardId) investigatorHand
+        card = findCard cardId a
         choiceDef = toCardDef choice
         choiceAsCard = (lookupPlayerCard choiceDef cardId)
           { pcOriginalCardCode = toCardCode card
@@ -1339,8 +1293,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         ((/= cardId) . toCardId)
   InitiatePlayCard iid cardId mtarget asAction | iid == investigatorId -> do
     let
-      card = fromJustNote "not in hand"
-        $ find ((== cardId) . toCardId) investigatorHand
+      card = findCard cardId a
       isFastEvent = case card of
         PlayerCard pc -> isJust (cdFastWindow $ toCardDef pc)
         _ -> False
@@ -1352,8 +1305,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       ]
   PlayCard iid cardId mtarget True | iid == investigatorId -> do
     let
-      card = fromJustNote "not in hand"
-        $ find ((== cardId) . toCardId) investigatorHand
+      card = findCard cardId a
       isFast = case card of
         PlayerCard pc ->
           cdFast (toCardDef pc) || isJust (cdFastWindow $ toCardDef pc)
@@ -1796,7 +1748,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               then push (DrewTreachery iid card)
               else push (Revelation iid (PlayerCardSource $ toCardId card'))
       _ -> pure ()
-    pure $ a & handL %~ (card :) & cardsUnderneathL %~ filter (/= card)
+    pure
+      $ a
+      & (handL %~ (card :))
+      & (cardsUnderneathL %~ filter (/= card))
+      & (discardL %~ filter ((/= card) . PlayerCard))
   ShuffleCardsIntoDeck iid cards | iid == investigatorId -> do
     deck <- shuffleM (cards <> unDeck investigatorDeck)
     pure $ a & deckL .~ Deck deck

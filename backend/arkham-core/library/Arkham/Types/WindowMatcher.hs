@@ -1,3 +1,4 @@
+{-# LANGUAGE PatternSynonyms #-}
 module Arkham.Types.WindowMatcher where
 
 import Arkham.Prelude
@@ -18,9 +19,28 @@ data EncounterCardMatcher = NonWeakness
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data WindowEnemyMatcher = EnemyWithTrait Trait | AnyEnemy
+pattern EliteEnemy :: WindowEnemyMatcher
+pattern EliteEnemy <- EnemyWithTrait Elite where
+  EliteEnemy = EnemyWithTrait Elite
+
+pattern NonEliteEnemy :: WindowEnemyMatcher
+pattern NonEliteEnemy <- EnemyWithoutTrait Elite where
+  NonEliteEnemy = EnemyWithoutTrait Elite
+
+data WindowEnemyMatcher
+  = EnemyWithoutTrait Trait
+  | EnemyWithTrait Trait
+  | AnyEnemy
+  | EnemyAtYourLocation
+  | EnemyMatchers [WindowEnemyMatcher]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+instance Semigroup WindowEnemyMatcher where
+  EnemyMatchers xs <> EnemyMatchers ys = EnemyMatchers (xs <> ys)
+  EnemyMatchers xs <> x = EnemyMatchers (x : xs)
+  x <> EnemyMatchers xs = EnemyMatchers (x : xs)
+  x <> y = EnemyMatchers [x, y]
 
 type Who = WindowInvestigatorMatcher
 

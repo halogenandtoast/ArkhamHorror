@@ -99,6 +99,7 @@ data Effect
   | TenAcreMeadow_246' TenAcreMeadow_246
   | AChanceEncounter' AChanceEncounter
   | MinhThiPhan' MinhThiPhan
+  | WilliamYorick' WilliamYorick
   | ThePaintedWorld' ThePaintedWorld
   | LetMeHandleThis' LetMeHandleThis
   | MindWipe3' MindWipe3
@@ -127,6 +128,7 @@ instance
   , HasCount ClueCount env EnemyId
   , HasSet StoryEnemyId env CardCode
   , HasSet EnemyId env InvestigatorId
+  , HasList DiscardedPlayerCard env InvestigatorId
   , HasCount ActionRemainingCount env InvestigatorId
   )
   => RunMessage env Effect where
@@ -195,6 +197,7 @@ allEffects = mapFromList
   , ("02246", TenAcreMeadow_246' . tenAcreMeadow_246)
   , ("02270", AChanceEncounter' . aChanceEncounter)
   , ("03002", MinhThiPhan' . minhThiPhan)
+  , ("03005", WilliamYorick' . williamYorick)
   , ("03012", ThePaintedWorld' . thePaintedWorld)
   , ("03022", LetMeHandleThis' . letMeHandleThis)
   , ("50008", MindWipe3' . mindWipe3)

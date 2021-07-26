@@ -11,6 +11,7 @@ import Arkham.Types.AssetMatcher
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
@@ -57,15 +58,12 @@ instance
   getModifiersFor = genericGetModifiersFor
 
 instance
-  ( HasActions env ActionType
-  , HasList HandCard env InvestigatorId
-  , HasCount DoomCount env AssetId
-  , HasCount DoomCount env InvestigatorId
-  , HasList DiscardedPlayerCard env InvestigatorId
+  ( HasList HandCard env InvestigatorId
   , HasList CommittedCard env InvestigatorId
   , HasId LeadInvestigatorId env ()
   , HasSet AssetId env AssetMatcher
   , HasCount UsesCount env AssetId
+  , CanCheckPlayable env
   , AssetRunner env
   )
   => RunMessage env Asset where

@@ -12,10 +12,8 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Message
-import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Trait
 import Arkham.Types.Window
 import System.IO.Unsafe
 
@@ -37,20 +35,7 @@ thePaintedWorldRecursionLock = unsafePerformIO $ newIORef False
 
 instance
   ( HasList UnderneathCard env InvestigatorId
-  , HasModifiersFor env ()
-  , HasSet InvestigatorId env LocationId
-  , HasSet EnemyId env LocationId
-  , HasSet Trait env EnemyId
-  , HasCount ClueCount env LocationId
-  , HasActions env ActionType
-  , HasId LocationId env InvestigatorId
-  , HasSet EnemyId env InvestigatorId
-  , HasCount ResourceCount env InvestigatorId
-  , HasCount DoomCount env AssetId
-  , HasCount DoomCount env InvestigatorId
-  , HasSet AssetId env InvestigatorId
-  , HasList DiscardedPlayerCard env InvestigatorId
-  , HasSet InvestigatorId env ()
+  , CanCheckPlayable env
   )
   => HasActions env ThePaintedWorld where
   getActions iid (InHandWindow ownerId window) (ThePaintedWorld attrs)

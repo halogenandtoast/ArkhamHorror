@@ -755,24 +755,26 @@ hasInvestigateActions i NonFast = do
   pure $ or [ True | Investigate{} <- locationActions ]
 hasInvestigateActions _ _ = pure False
 
+type CanCheckPlayable env
+  = ( HasModifiersFor env ()
+    , HasSet InvestigatorId env LocationId
+    , HasSet EnemyId env LocationId
+    , HasSet Trait env EnemyId
+    , HasCount ClueCount env LocationId
+    , HasActions env ActionType
+    , HasId LocationId env InvestigatorId
+    , HasId LocationId env EnemyId
+    , HasSet EnemyId env InvestigatorId
+    , HasCount ResourceCount env InvestigatorId
+    , HasCount DoomCount env AssetId
+    , HasCount DoomCount env InvestigatorId
+    , HasSet AssetId env InvestigatorId
+    , HasList DiscardedPlayerCard env InvestigatorId
+    , HasSet InvestigatorId env ()
+    )
+
 getIsPlayable
-  :: ( MonadReader env m
-     , HasModifiersFor env ()
-     , HasSet InvestigatorId env LocationId
-     , HasSet EnemyId env LocationId
-     , HasSet Trait env EnemyId
-     , HasCount ClueCount env LocationId
-     , HasActions env ActionType
-     , HasId LocationId env InvestigatorId
-     , HasSet EnemyId env InvestigatorId
-     , HasCount ResourceCount env InvestigatorId
-     , HasCount DoomCount env AssetId
-     , HasCount DoomCount env InvestigatorId
-     , HasSet AssetId env InvestigatorId
-     , HasList DiscardedPlayerCard env InvestigatorId
-     , HasSet InvestigatorId env ()
-     , MonadIO m
-     )
+  :: (MonadReader env m, MonadIO m, CanCheckPlayable env)
   => InvestigatorId
   -> [Window]
   -> Card
@@ -913,6 +915,7 @@ cardInFastWindows
   :: ( MonadReader env m
      , HasSet Trait env EnemyId
      , HasId LocationId env InvestigatorId
+     , HasId LocationId env EnemyId
      )
   => InvestigatorId
   -> Card
@@ -952,6 +955,10 @@ cardInFastWindows iid _ windows matcher = anyM (matches matcher) windows
   enemyMatches enemyId = \case
     Matcher.AnyEnemy -> pure True
     Matcher.EnemyWithTrait t -> member t <$> getSet enemyId
+    Matcher.EnemyWithoutTrait t -> notMember t <$> getSet enemyId
+    Matcher.EnemyAtYourLocation ->
+      liftA2 (==) (getId @LocationId iid) (getId @LocationId enemyId)
+    Matcher.EnemyMatchers es -> allM (enemyMatches enemyId) es
   locationMatches locationId = \case
     Matcher.Anywhere -> pure True
     Matcher.YourLocation -> do

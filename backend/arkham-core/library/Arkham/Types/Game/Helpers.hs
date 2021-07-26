@@ -1,5 +1,4 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
-
 module Arkham.Types.Game.Helpers where
 
 import Arkham.Prelude
@@ -908,7 +907,10 @@ cardInWindows windows c _ = case c of
   _ -> False
 
 cardInFastWindows
-  :: (MonadReader env m, HasSet Trait env EnemyId)
+  :: ( MonadReader env m
+     , HasSet Trait env EnemyId
+     , HasId LocationId env InvestigatorId
+     )
   => InvestigatorId
   -> Card
   -> [Window]
@@ -919,6 +921,12 @@ cardInFastWindows iid _ windows matcher = anyM (matches matcher) windows
   matches matcher' window' = case (matcher', window') of
     (Matcher.OrWindowMatcher matchers, window'') ->
       anyM (`matches` window'') matchers
+    (Matcher.WhenEnemySpawns whereMatcher enemyMatcher, WhenEnemySpawns enemyId locationId)
+      -> liftA2
+        (&&)
+        (enemyMatches enemyId enemyMatcher)
+        (locationMatches locationId whereMatcher)
+    (Matcher.WhenEnemySpawns _ _, _) -> pure False
     (Matcher.AfterEnemyDefeated whoMatcher enemyMatcher, AfterEnemyDefeated who enemyId)
       -> liftA2
         (&&)
@@ -939,7 +947,13 @@ cardInFastWindows iid _ windows matcher = anyM (matches matcher) windows
     Matcher.Anyone -> pure True
     Matcher.You -> pure $ who == You
   enemyMatches enemyId = \case
+    Matcher.AnyEnemy -> pure True
     Matcher.EnemyWithTrait t -> member t <$> getSet enemyId
+  locationMatches locationId = \case
+    Matcher.Anywhere -> pure True
+    Matcher.YourLocation -> do
+      yourLocationId <- getId @LocationId iid
+      pure $ locationId == yourLocationId
 
 getModifiedTokenFaces
   :: (SourceEntity source, MonadReader env m, HasModifiersFor env ())

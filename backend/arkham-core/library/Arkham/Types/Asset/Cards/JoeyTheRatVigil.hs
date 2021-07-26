@@ -39,6 +39,7 @@ instance
   ( HasActions env ActionType
   , HasList HandCard env InvestigatorId
   , HasId LocationId env InvestigatorId
+  , HasId LocationId env EnemyId
   , HasSet InvestigatorId env LocationId
   , HasSet Trait env EnemyId
   , HasSet EnemyId env LocationId

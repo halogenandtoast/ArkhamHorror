@@ -44,6 +44,7 @@ instance
   , HasCount ClueCount env LocationId
   , HasActions env ActionType
   , HasId LocationId env InvestigatorId
+  , HasId LocationId env EnemyId
   , HasSet EnemyId env InvestigatorId
   , HasCount ResourceCount env InvestigatorId
   , HasCount DoomCount env AssetId
@@ -67,8 +68,7 @@ instance
                 [(== EventType) . toCardType, not . cdExceptional . toCardDef]
               )
               underneathCards
-          playableCards <-
-            traceShowId <$> filterM (getIsPlayable ownerId [window]) validCards
+          playableCards <- filterM (getIsPlayable ownerId [window]) validCards
           writeIORef thePaintedWorldRecursionLock False
           pure
             [ InitiatePlayCardAsChoose

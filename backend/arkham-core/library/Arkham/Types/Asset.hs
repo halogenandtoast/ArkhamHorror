@@ -63,6 +63,7 @@ instance
   , HasList DiscardedPlayerCard env InvestigatorId
   , HasList CommittedCard env InvestigatorId
   , HasId LeadInvestigatorId env ()
+  , HasId LocationId env EnemyId
   , AssetRunner env
   )
   => RunMessage env Asset where

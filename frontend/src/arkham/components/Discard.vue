@@ -1,10 +1,7 @@
 <template>
   <div class="discards">
     <div v-for="card in cards" :key="card.id" class="discard">
-      <img
-        class="card"
-        :src="image(card)"
-      />
+      <FocusedCard :game="game" :card="card" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
     </div>
   </div>
 </template>
@@ -12,23 +9,18 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { Game } from '@/arkham/types/Game';
-import { PlayerCardContents } from '@/arkham/types/Card';
+import { PlayerCard } from '@/arkham/types/Card';
+import FocusedCard from '@/arkham/components/FocusedCard.vue';
 
 export default defineComponent({
+  components: {
+    FocusedCard,
+  },
   props: {
     game: { type: Object as () => Game, required: true },
     investigatorId: { type: String, required: true },
-    cards: { type: Array as () => PlayerCardContents[], required: true }
+    cards: { type: Array as () => PlayerCard[], required: true }
   },
-  setup() {
-    const image = (card: PlayerCardContents) => {
-      const { cardCode } = card;
-      const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
-      return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
-    }
-
-    return { image }
-  }
 })
 </script>
 

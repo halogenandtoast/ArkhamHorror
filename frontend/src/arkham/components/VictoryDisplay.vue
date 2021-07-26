@@ -19,10 +19,10 @@ export default defineComponent({
   },
   setup(props) {
     const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
-    const victoryDisplay = computed(() => props.game.victoryDisplay.map(c => c.contents))
+    const victoryDisplay = computed(() => props.game.victoryDisplay)
     const topOfVictoryDisplay = computed(() => {
       if (victoryDisplay.value[0]) {
-        const { cardCode } = victoryDisplay.value[0];
+        const { cardCode } = victoryDisplay.value[0].contents;
         return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
       }
 

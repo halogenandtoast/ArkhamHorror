@@ -298,7 +298,7 @@ export default defineComponent({
     })
 
     const players = computed(() => props.game.investigators)
-    const discards = computed(() => props.game.discard)
+    const discards = computed(() => props.game.discard.map(c => { return { tag: 'EncounterCard', contents: c }}))
     const outOfPlay = computed(() => (props.game.scenario?.contents?.setAsideCards || []))
     const removedFromPlay = computed(() => props.game.removedFromPlay)
 

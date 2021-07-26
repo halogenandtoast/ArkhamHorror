@@ -525,6 +525,7 @@ newGame investigator = do
     , gamePlayerOrder = [investigatorId]
     , gamePlayerTurnOrder = [investigatorId]
     , gameVictoryDisplay = mempty
+    , gameRemovedFromPlay = mempty
     , gameQuestion = mempty
     }
   where investigatorId = toId investigator

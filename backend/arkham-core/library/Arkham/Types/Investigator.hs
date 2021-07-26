@@ -5,6 +5,7 @@ module Arkham.Types.Investigator
 import Arkham.Prelude
 
 import Arkham.Types.Action (Action, TakenAction)
+import Arkham.Types.Asset.Uses
 import Arkham.Types.AssetMatcher
 import Arkham.Types.Card
 import Arkham.Types.ClassSymbol
@@ -27,6 +28,7 @@ import Arkham.Types.Trait
 
 data Investigator
   = AgnesBaker' AgnesBaker
+  | AkachiOnyele' AkachiOnyele
   | AshcanPete' AshcanPete
   | DaisyWalker' DaisyWalker
   | DaisyWalkerParallel' DaisyWalkerParallel
@@ -44,7 +46,11 @@ data Investigator
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor env Investigator where
+instance
+  ( HasCount StartingUsesCount env (AssetId, UseType)
+  , HasCount AssetCount env (InvestigatorId, [Trait])
+  )
+  => HasModifiersFor env Investigator where
   getModifiersFor = genericGetModifiersFor
 
 deriving anyclass instance HasCount ClueCount env LocationId => HasTokenValue env Investigator
@@ -100,7 +106,11 @@ instance InvestigatorRunner env => HasActions env Investigator where
       then getActions iid window (toAttrs investigator)
       else defaultGetActions iid window investigator
 
-instance InvestigatorRunner env => RunMessage env Investigator where
+instance
+  ( HasCount UsesCount env (AssetId, UseType)
+  , InvestigatorRunner env
+  )
+  => RunMessage env Investigator where
   runMessage msg i = do
     modifiers' <- getModifiersFor (toSource i) (toTarget i) ()
     let msg' = if any isBlank modifiers' then Blanked msg else msg
@@ -226,6 +236,7 @@ allInvestigators :: HashMap InvestigatorId Investigator
 allInvestigators = mapFromList $ map
   (toFst $ investigatorId . toAttrs)
   [ AgnesBaker' agnesBaker
+  , AkachiOnyele' akachiOnyele
   , AshcanPete' ashcanPete
   , DaisyWalker' daisyWalker
   , DaisyWalkerParallel' daisyWalkerParallel

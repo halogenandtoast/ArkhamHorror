@@ -39,6 +39,7 @@ data ModifierType
   | ActionSkillModifier Action SkillType Int
   | ActionsAreFree
   | AdditionalActions Int
+  | AdditionalStartingUses Int
   | AddKeyword Keyword
   | AlternateSuccessfullInvestigation
   | AlternativeReady Source

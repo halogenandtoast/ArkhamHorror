@@ -1394,14 +1394,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   PlayedCard iid cardId _ _ | iid == investigatorId ->
     pure $ a & handL %~ filter ((/= cardId) . toCardId)
   InvestigatorPlayAsset iid aid slotTypes traits | iid == investigatorId -> do
-    let assetsUpdate = assetsL %~ insertSet aid
-    if fitsAvailableSlots slotTypes traits a
-      then pure $ foldl'
-        (\a' slotType ->
-          a' & slotsL . ix slotType %~ placeInAvailableSlot aid traits
-        )
-        (a & assetsUpdate)
-        slotTypes
+    a <$ if fitsAvailableSlots slotTypes traits a
+      then push (InvestigatorPlayedAsset iid aid slotTypes traits)
       else do
         let
           missingSlotTypes = slotTypes \\ concatMap
@@ -1409,16 +1403,24 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             (nub slotTypes)
           assetsThatCanProvideSlots =
             nub $ concatMap (`discardableAssets` a) missingSlotTypes
-        a <$ push
+        push
           (chooseOne
             iid
             [ Run
                 [ Discard (AssetTarget aid')
-                , InvestigatorPlayAsset iid aid slotTypes traits
+                , InvestigatorPlayedAsset iid aid slotTypes traits
                 ]
             | aid' <- assetsThatCanProvideSlots
             ]
           )
+  InvestigatorPlayedAsset iid aid slotTypes traits | iid == investigatorId -> do
+    let assetsUpdate = assetsL %~ insertSet aid
+    pure $ foldl'
+      (\a' slotType ->
+        a' & slotsL . ix slotType %~ placeInAvailableSlot aid traits
+      )
+      (a & assetsUpdate)
+      slotTypes
   RemoveAllCopiesOfCardFromGame iid cardCode | iid == investigatorId -> do
     for_ investigatorAssets $ \assetId -> do
       cardCode' <- getId @CardCode assetId
@@ -1607,6 +1609,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & deckL .~ Deck shuffled
   InvestigatorCommittedCard iid cardId | iid == investigatorId ->
     pure $ a & handL %~ filter ((/= cardId) . toCardId)
+  ReturnToHand iid (AssetTarget aid) | iid == investigatorId ->
+    pure $ a & assetsL %~ deleteSet aid
   PlaceUnderneath target cards | isTarget a target ->
     pure $ a & cardsUnderneathL <>~ cards
   BeforeSkillTest iid skillType skillDifficulty | iid == investigatorId -> do

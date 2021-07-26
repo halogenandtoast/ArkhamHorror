@@ -322,12 +322,25 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs whe
     Exile target | a `isTarget` target ->
       a <$ pushAll [RemovedFromPlay $ toSource a, Exiled target (toCard a)]
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
+      -- we specifically use the investigator source here because the
+      -- asset has no knowledge of being owned yet, and this will allow
+      -- us to bring the investigator's id into scope
+      modifiers <-
+        map modifierType
+          <$> getModifiersFor (InvestigatorSource iid) (toTarget a) ()
+      let
+        applyModifier (Uses uType m) (AdditionalStartingUses n) =
+          Uses uType (n + m)
+        applyModifier m _ = m
       push $ CheckWindow iid [WhenEnterPlay $ toTarget a]
       pure
         $ a
         & (investigatorL ?~ iid)
         & (usesL .~ if assetUses == NoUses
-            then fromMaybe NoUses assetStartingUses
+            then maybe
+              NoUses
+              (\uses -> foldl' applyModifier uses modifiers)
+              assetStartingUses
             else assetUses
           )
     InvestigatorPlayDynamicAsset iid aid slots traits _ | aid == assetId ->

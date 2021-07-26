@@ -60,6 +60,7 @@ allPlayerTreacheryCards = mapFromList $ map
   [ abandonedAndAlone
   , acrossSpaceAndTime
   , amnesia
+  , angeredSpirits
   , atychiphobia
   , chronophobia
   , coverUp
@@ -507,6 +508,10 @@ shellShock =
 starsOfHyades :: CardDef
 starsOfHyades =
   (weakness "03013" "Stars of Hyades") { cdCardTraits = setFromList [Curse] }
+
+angeredSpirits :: CardDef
+angeredSpirits =
+  (weakness "03015" "Angered Spirits") { cdCardTraits = singleton Task }
 
 theZealotsSeal :: CardDef
 theZealotsSeal = (treachery "50024" "The Zealot's Seal" ReturnToTheGathering 2)

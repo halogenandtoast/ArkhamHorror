@@ -7,6 +7,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Cards
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
+import Arkham.Types.AssetMatcher
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
@@ -63,6 +64,8 @@ instance
   , HasList DiscardedPlayerCard env InvestigatorId
   , HasList CommittedCard env InvestigatorId
   , HasId LeadInvestigatorId env ()
+  , HasSet AssetId env AssetMatcher
+  , HasCount UsesCount env AssetId
   , AssetRunner env
   )
   => RunMessage env Asset where
@@ -124,6 +127,19 @@ instance HasCount UsesCount env Asset where
   getCount x = pure $ case uses' of
     NoUses -> UsesCount 0
     Uses _ n -> UsesCount n
+    where uses' = assetUses (toAttrs x)
+
+instance HasCount StartingUsesCount env (Asset, UseType) where
+  getCount (x, uType) = pure $ case uses' of
+    Just (Uses uType' n) | uType == uType' -> StartingUsesCount n
+    _ -> StartingUsesCount 0
+    where uses' = assetStartingUses (toAttrs x)
+
+instance HasCount UsesCount env (Asset, UseType) where
+  getCount (x, uType) = pure $ case uses' of
+    NoUses -> UsesCount 0
+    Uses uType' n | uType == uType' -> UsesCount n
+    Uses _ _ -> UsesCount 0
     where uses' = assetUses (toAttrs x)
 
 lookupAsset :: CardCode -> (AssetId -> Asset)

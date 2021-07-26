@@ -8,6 +8,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
+import Arkham.Types.AssetMatcher
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
@@ -215,6 +216,8 @@ getCanAffordCost iid source mAction = \case
       exhaustedAssetIds <- fmap unExhaustedAssetId <$> getSetList ()
       pure $ aid `notElem` exhaustedAssetIds
     _ -> error "Not handled"
+  ExhaustAssetCost matcher ->
+    notNull <$> getSet @AssetId (matcher <> AssetReady)
   UseCost aid _uType n -> do
     uses <- unUsesCount <$> getCount aid
     pure $ uses >= n
@@ -799,7 +802,7 @@ getIsPlayable iid windows c@(PlayerCard _) = do
        || inFastWindow
        )
     && (cdAction pcDef /= Just Action.Evade || notNull engagedEnemies)
-    && (elem NonFast windows || inFastWindow)
+    && (elem NonFast windows || elem (DuringTurn You) windows || inFastWindow)
     && passesRestrictions
  where
   pcDef = toCardDef c

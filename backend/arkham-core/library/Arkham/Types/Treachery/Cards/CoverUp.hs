@@ -21,7 +21,7 @@ newtype CoverUp = CoverUp TreacheryAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 coverUp :: TreacheryCard CoverUp
-coverUp = treachery (CoverUp . (cluesL ?~ 3)) Cards.coverUp
+coverUp = treacheryWith CoverUp Cards.coverUp (cluesL ?~ 3)
 
 coverUpClues :: TreacheryAttrs -> Int
 coverUpClues TreacheryAttrs { treacheryClues } =

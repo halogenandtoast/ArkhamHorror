@@ -518,7 +518,6 @@ getFastIsPlayable
      , HasSet Trait env EnemyId
      , HasCount ClueCount env LocationId
      , HasId LocationId env InvestigatorId
-     , HasId LocationId env EnemyId
      , HasSet EnemyId env InvestigatorId
      , HasCount ResourceCount env InvestigatorId
      , HasCount DoomCount env AssetId
@@ -570,7 +569,6 @@ getPlayableCards
      , HasCount ClueCount env LocationId
      , HasActions env ActionType
      , HasId LocationId env InvestigatorId
-     , HasId LocationId env EnemyId
      , HasSet EnemyId env InvestigatorId
      , HasCount ResourceCount env InvestigatorId
      , HasCount DoomCount env AssetId
@@ -596,7 +594,6 @@ getPlayableDiscards
      , HasSet Trait env EnemyId
      , HasCount ClueCount env LocationId
      , HasId LocationId env InvestigatorId
-     , HasId LocationId env EnemyId
      , HasSet EnemyId env InvestigatorId
      , HasCount ResourceCount env InvestigatorId
      , HasCount DoomCount env AssetId

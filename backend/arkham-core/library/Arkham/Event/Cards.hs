@@ -567,6 +567,7 @@ thePaintedWorld = (event "03012" "The Painted World" 0 Neutral)
   , cdFast = True -- not fast
   , cdFastWindow = Nothing -- handle via behavior since it's complicated
   , cdWindows = mempty
+  , cdCost = Nothing
   }
 
 letMeHandleThis :: CardDef

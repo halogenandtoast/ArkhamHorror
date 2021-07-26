@@ -20,7 +20,7 @@ import Arkham.Types.Trait
 
 $(buildEntity "Act")
 
-deriving anyclass instance (HasSet AssetId env AssetMatcher, ActionRunner env) => HasActions env Act
+deriving anyclass instance ActionRunner env => HasActions env Act
 
 instance
   ( HasSet AssetId env AssetMatcher

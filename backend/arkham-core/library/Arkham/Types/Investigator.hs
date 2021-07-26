@@ -41,6 +41,7 @@ data Investigator
   | SefinaRousseau' SefinaRousseau
   | SkidsOToole' SkidsOToole
   | WendyAdams' WendyAdams
+  | WilliamYorick' WilliamYorick
   | ZoeySamaras' ZoeySamaras
   | BaseInvestigator' BaseInvestigator
   deriving stock (Show, Generic)
@@ -249,6 +250,7 @@ allInvestigators = mapFromList $ map
   , SefinaRousseau' sefinaRousseau
   , SkidsOToole' skidsOToole
   , WendyAdams' wendyAdams
+  , WilliamYorick' williamYorick
   , ZoeySamaras' zoeySamaras
   ]
 

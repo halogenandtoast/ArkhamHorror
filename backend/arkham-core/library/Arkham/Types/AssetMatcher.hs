@@ -20,6 +20,7 @@ data AssetMatcher
   deriving anyclass (ToJSON, FromJSON)
 
 instance Semigroup AssetMatcher where
+  AssetMatches xs <> AssetMatches ys = AssetMatches (xs <> ys)
   AssetMatches xs <> x = AssetMatches (x : xs)
   x <> AssetMatches xs = AssetMatches (x : xs)
   x <> y = AssetMatches [x, y]

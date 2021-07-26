@@ -7,6 +7,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
+import Arkham.Types.Token
 import Arkham.Types.Trait
 
 newtype WilliamYorick = WilliamYorick InvestigatorAttrs
@@ -30,6 +31,12 @@ williamYorick = WilliamYorick $ baseAttrs
     , agility = 3
     }
   [Warden]
+
+instance HasTokenValue env WilliamYorick where
+  getTokenValue (WilliamYorick attrs) iid ElderSign
+    | iid == investigatorId attrs = pure
+    $ TokenValue ElderSign (PositiveModifier 2)
+  getTokenValue (WilliamYorick attrs) iid token = getTokenValue attrs iid token
 
 instance InvestigatorRunner env => HasActions env WilliamYorick where
   getActions i window (WilliamYorick attrs) = getActions i window attrs

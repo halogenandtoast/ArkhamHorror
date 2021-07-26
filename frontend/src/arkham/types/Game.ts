@@ -51,6 +51,7 @@ export interface Game {
   skillTestTokens: ChaosToken[];
   activeCard: Card | null;
   victoryDisplay: Card[];
+  removedFromPlay: Card[];
 }
 
 export function choices(game: Game, investigatorId: string): Message[] {
@@ -146,6 +147,7 @@ export const gameDecoder = JsonDecoder.object<Game>(
     skillTestTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'Token[]'),
     activeCard: JsonDecoder.nullable(cardDecoder),
     victoryDisplay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
+    removedFromPlay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
   },
   'Game',
   {

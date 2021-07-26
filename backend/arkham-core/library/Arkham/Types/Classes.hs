@@ -155,23 +155,29 @@ instance HasVictoryPoints PlayerCard where
 
 type ActionRunner env
   = ( HasQueue env
-    , HasSet LocationId env ()
+    , GetCardDef env EnemyId
     , HasActions env ActionType
-    , HasCount AssetCount env (InvestigatorId, [Trait])
-    , HasCount ActionRemainingCount env InvestigatorId
-    , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
-    , HasCount ActionTakenCount env InvestigatorId
-    , HasCount CardCount env InvestigatorId
-    , HasCount ClueCount env LocationId
-    , HasCount ClueCount env InvestigatorId
-    , HasCount DamageCount env InvestigatorId
-    , HasCount HorrorCount env InvestigatorId
-    , HasCount PlayerCount env ()
-    , HasCount ResourceCount env InvestigatorId
-    , HasCount SetAsideCount env CardCode
-    , HasCount SpendableClueCount env InvestigatorId
-    , HasCount SpendableClueCount env ()
-    , HasCount UsesCount env AssetId
+    , ( HasCount
+          ActionRemainingCount
+          env
+          (Maybe Action, [Trait], InvestigatorId)
+      , HasCount ActionRemainingCount env InvestigatorId
+      , HasCount ActionTakenCount env InvestigatorId
+      , HasCount AssetCount env (InvestigatorId, [Trait])
+      , HasCount CardCount env InvestigatorId
+      , HasCount ClueCount env InvestigatorId
+      , HasCount ClueCount env LocationId
+      , HasCount DamageCount env InvestigatorId
+      , HasCount DoomCount env AssetId
+      , HasCount DoomCount env InvestigatorId
+      , HasCount HorrorCount env InvestigatorId
+      , HasCount PlayerCount env ()
+      , HasCount ResourceCount env InvestigatorId
+      , HasCount SetAsideCount env CardCode
+      , HasCount SpendableClueCount env ()
+      , HasCount SpendableClueCount env InvestigatorId
+      , HasCount UsesCount env AssetId
+      )
     , HasId (Maybe LocationId) env AssetId
     , HasId (Maybe LocationId) env LocationMatcher
     , HasId (Maybe OwnerId) env AssetId
@@ -179,8 +185,8 @@ type ActionRunner env
     , HasId (Maybe StoryEnemyId) env CardCode
     , HasId CardCode env EnemyId
     , HasId LeadInvestigatorId env ()
-    , HasId LocationId env InvestigatorId
     , HasId LocationId env EnemyId
+    , HasId LocationId env InvestigatorId
     , HasList CommittedCard env InvestigatorId
     , HasList CommittedSkillIcon env InvestigatorId
     , HasList DiscardedPlayerCard env InvestigatorId
@@ -192,30 +198,31 @@ type ActionRunner env
     , HasSet AccessibleLocationId env LocationId
     , HasSet AssetId env ()
     , HasSet AssetId env (InvestigatorId, UseType)
+    , HasSet AssetId env InvestigatorId
     , HasSet CommittedCardId env InvestigatorId
     , HasSet ConnectedLocationId env LocationId
+    , HasSet EnemyId env ([Trait], LocationId)
     , HasSet EnemyId env CardCode
+    , HasSet EnemyId env EnemyMatcher
     , HasSet EnemyId env InvestigatorId
     , HasSet EnemyId env LocationId
-    , HasSet EnemyId env EnemyMatcher
-    , HasSet EnemyId env ([Trait], LocationId)
-    , HasSet ExhaustedAssetId env InvestigatorId
     , HasSet ExhaustedAssetId env ()
+    , HasSet ExhaustedAssetId env InvestigatorId
     , HasSet ExhaustedEnemyId env LocationId
     , HasSet FightableEnemyId env (InvestigatorId, Source)
     , HasSet InvestigatorId env ()
+    , HasSet InvestigatorId env (HashSet LocationId)
     , HasSet InvestigatorId env EnemyId
     , HasSet InvestigatorId env LocationId
-    , HasSet InvestigatorId env (HashSet LocationId)
-    , HasSet LocationId env [Trait]
     , HasSet Keyword env EnemyId
+    , HasSet LocationId env ()
+    , HasSet LocationId env [Trait]
     , HasSet StoryEnemyId env CardCode
+    , HasSet Trait env (InvestigatorId, CardId)
     , HasSet Trait env EnemyId
     , HasSet Trait env LocationId
     , HasSet Trait env Source
-    , HasSet Trait env (InvestigatorId, CardId)
     , HasStep env ActStep
-    , GetCardDef env EnemyId
     )
 
 class HasActions1 env f where

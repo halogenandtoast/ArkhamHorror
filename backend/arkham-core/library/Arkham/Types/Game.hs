@@ -201,6 +201,7 @@ data Game = Game
   , gameFocusedTokens :: [Token]
   , gameActiveCard :: Maybe Card
   , gameVictoryDisplay :: [Card]
+  , gameRemovedFromPlay :: [Card]
   , gameGameState :: GameState
   , gameSkillTestResults :: Maybe SkillTestResultsData
 
@@ -240,6 +241,10 @@ gameStateL = lens gameGameState $ \m x -> m { gameGameState = x }
 victoryDisplayL :: Lens' Game [Card]
 victoryDisplayL =
   lens gameVictoryDisplay $ \m x -> m { gameVictoryDisplay = x }
+
+removedFromPlayL :: Lens' Game [Card]
+removedFromPlayL =
+  lens gameRemovedFromPlay $ \m x -> m { gameRemovedFromPlay = x }
 
 phaseL :: Lens' Game Phase
 phaseL = lens gamePhase $ \m x -> m { gamePhase = x }
@@ -395,6 +400,7 @@ instance ToJSON Game where
       .= toJSON (runReader (traverse withModifiers gameFocusedTokens) g)
     , "activeCard" .= toJSON gameActiveCard
     , "victoryDisplay" .= toJSON gameVictoryDisplay
+    , "removedFromPlay" .= toJSON gameRemovedFromPlay
     , "gameState" .= toJSON gameGameState
     , "skillTestResults" .= toJSON gameSkillTestResults
     , "question" .= toJSON gameQuestion
@@ -445,6 +451,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       .= toJSON (runReader (traverse withModifiers gameFocusedTokens) g)
     , "activeCard" .= toJSON gameActiveCard
     , "victoryDisplay" .= toJSON gameVictoryDisplay
+    , "removedFromPlay" .= toJSON gameRemovedFromPlay
     , "gameState" .= toJSON gameGameState
     , "skillTestResults" .= toJSON gameSkillTestResults
     , "question" .= toJSON gameQuestion
@@ -1253,6 +1260,7 @@ instance HasGame env => HasSet Trait env Source where
     ScenarioSource _ -> pure mempty
     InvestigatorSource iid -> toTraits <$> getInvestigator iid
     CardCodeSource _ -> pure mempty
+    CardIdSource _ -> pure mempty -- has traits, but not used
     TokenSource _ -> pure mempty
     TokenEffectSource _ -> pure mempty
     AgendaSource _ -> pure mempty
@@ -2635,7 +2643,12 @@ runGameMessage msg g = case msg of
     [ CheckWindow iid [Fast.WhenDefeated (AssetSource aid)]
     | iid <- keys (view investigatorsL g)
     ]
-  RemoveFromGame (AssetTarget aid) -> pure $ g & assetsL %~ deleteMap aid
+  RemoveFromGame (AssetTarget aid) -> do
+    asset <- getAsset aid
+    pure $ g & assetsL %~ deleteMap aid & removedFromPlayL %~ (toCard asset :)
+  RemoveFromGame (EventTarget eid) -> do
+    event <- getEvent eid
+    pure $ g & eventsL %~ deleteMap eid & removedFromPlayL %~ (toCard event :)
   PlaceEnemyInVoid eid -> do
     withQueue_ $ filter (/= Discard (EnemyTarget eid))
     enemy <- getEnemy eid
@@ -3278,13 +3291,13 @@ runGameMessage msg g = case msg of
     event <- getEvent eid
     modifiers' <-
       map modifierType <$> getModifiersFor GameSource (EventTarget eid) ()
-    when
-      (RemoveFromGameInsteadOfDiscard `notElem` modifiers')
-      (case toCard event of
-        PlayerCard pc -> push $ AddToDiscard (ownerOfEvent event) pc
-        EncounterCard _ -> error "Unhandled"
-      )
-    pure $ g & eventsL %~ deleteMap eid
+    if RemoveFromGameInsteadOfDiscard `elem` modifiers'
+      then g <$ push (RemoveFromGame (EventTarget eid))
+      else do
+        case toCard event of
+          PlayerCard pc -> push $ AddToDiscard (ownerOfEvent event) pc
+          EncounterCard _ -> error "Unhandled"
+        pure $ g & eventsL %~ deleteMap eid
   Discard (TreacheryTarget tid) -> do
     withQueue_ $ filter (/= msg)
     treachery <- getTreachery tid

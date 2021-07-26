@@ -1,4 +1,31 @@
 {
+  "arkham-core/library/Arkham/Types/Effect/Effects/*.hs": {
+    "type": "effect",
+    "alternate": "arkham-core/tests/Arkham/Types/Effect/Cards/{}Spec.hs",
+    "template": [
+      "module Arkham.Types.Effect.Effects.{dot}",
+      "  ( {dot}(..)",
+      "  , {dot|snakecase|camelcase}",
+      "  ) where",
+      "",
+      "import Arkham.Prelude",
+      "",
+      "import Arkham.Types.Classes",
+      "import Arkham.Types.Effect.Attrs",
+      "",
+      "newtype {dot} = {dot} EffectAttrs",
+      "  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)",
+      "",
+      "{dot|snakecase|camelcase} :: EffectArgs -> {dot}",
+      "{dot|snakecase|camelcase} = {dot} . uncurry4 (baseAttrs \"TODO: ID\")",
+      "",
+      "instance HasModifiersFor env {dot}",
+      "",
+      "instance HasQueue env => RunMessage env {dot} where",
+      "  runMessage msg ({dot} attrs) =",
+      "    {dot} <$> runMessage msg attrs"
+    ]
+  },
   "arkham-core/library/Arkham/Types/Act/Cards/*.hs": {
     "type": "act",
     "alternate": "arkham-core/tests/Arkham/Types/Act/Cards/{}Spec.hs",
@@ -115,10 +142,6 @@
       "        a <$ unshiftMessages [NextAgenda aid \"TODO\"]",
       "      _ -> {dot} <$> runMessage msg attrs"
     ]
-  },
-  "arkham-core/library/Arkham/Types/Effect/Effects/*.hs": {
-    "type": "effect",
-    "alternate": "arkham-core/tests/Arkham/Types/Effect/Effects/{}Spec.hs"
   },
   "arkham-core/library/Arkham/Types/Treachery/Cards/*.hs": {
     "type": "treachery",

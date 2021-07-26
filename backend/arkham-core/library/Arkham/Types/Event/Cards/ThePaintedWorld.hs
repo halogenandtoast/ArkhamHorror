@@ -9,9 +9,15 @@ import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Message
+import Arkham.Types.Query
+import Arkham.Types.Source
+import Arkham.Types.Target
+import Arkham.Types.Trait
 import Arkham.Types.Window
+import System.IO.Unsafe
 
 newtype ThePaintedWorld = ThePaintedWorld EventAttrs
   deriving anyclass IsEvent
@@ -20,34 +26,68 @@ newtype ThePaintedWorld = ThePaintedWorld EventAttrs
 thePaintedWorld :: EventCard ThePaintedWorld
 thePaintedWorld = event ThePaintedWorld Cards.thePaintedWorld
 
-instance HasList UnderneathCard env InvestigatorId => HasActions env ThePaintedWorld where
-  getActions iid (InHandWindow ownerId (DuringTurn You)) (ThePaintedWorld attrs)
+-- because we are checking if cards are playable will we inevitably
+-- trigger a case where we need to check for actions. For example
+-- "I'm outta here" needs to check for a resign ability. Doing this
+-- will cause infinite recursion, so we take out a global lock to
+-- ensure we only run this code once in an iteration
+thePaintedWorldRecursionLock :: IORef Bool
+thePaintedWorldRecursionLock = unsafePerformIO $ newIORef False
+{-# NOINLINE thePaintedWorldRecursionLock #-}
+
+instance
+  ( HasList UnderneathCard env InvestigatorId
+  , HasModifiersFor env ()
+  , HasSet InvestigatorId env LocationId
+  , HasSet EnemyId env LocationId
+  , HasSet Trait env EnemyId
+  , HasCount ClueCount env LocationId
+  , HasActions env ActionType
+  , HasId LocationId env InvestigatorId
+  , HasSet EnemyId env InvestigatorId
+  , HasCount ResourceCount env InvestigatorId
+  , HasCount DoomCount env AssetId
+  , HasCount DoomCount env InvestigatorId
+  , HasSet AssetId env InvestigatorId
+  , HasList DiscardedPlayerCard env InvestigatorId
+  , HasSet InvestigatorId env ()
+  )
+  => HasActions env ThePaintedWorld where
+  getActions iid (InHandWindow ownerId window) (ThePaintedWorld attrs)
     | iid == ownerId = do
-      underneathCards <- map unUnderneathCard <$> getList iid
-      let
-        validCards = filter
-          (and . sequence
-            [(== EventType) . toCardType, not . cdExceptional . toCardDef]
-          )
-          underneathCards
-      pure
-        [ InitiatePlayCardAsChoose
-            iid
-            (toCardId attrs)
-            validCards
-            [ CreateEffect
-                "03012"
-                Nothing
-                (CardIdSource $ toCardId attrs)
-                (CardIdTarget $ toCardId attrs)
+      locked <- readIORef thePaintedWorldRecursionLock
+      if locked
+        then pure []
+        else do
+          writeIORef thePaintedWorldRecursionLock True
+          underneathCards <- map unUnderneathCard <$> getList iid
+          let
+            validCards = filter
+              (and . sequence
+                [(== EventType) . toCardType, not . cdExceptional . toCardDef]
+              )
+              underneathCards
+          playableCards <-
+            traceShowId <$> filterM (getIsPlayable ownerId [window]) validCards
+          writeIORef thePaintedWorldRecursionLock False
+          pure
+            [ InitiatePlayCardAsChoose
+                iid
+                (toCardId attrs)
+                playableCards
+                [ CreateEffect
+                    "03012"
+                    Nothing
+                    (CardIdSource $ toCardId attrs)
+                    (CardIdTarget $ toCardId attrs)
+                ]
+                True
+            | notNull playableCards
             ]
-            True
-        | notNull validCards
-        ]
   getActions iid window (ThePaintedWorld attrs) = getActions iid window attrs
 
 instance HasModifiersFor env ThePaintedWorld
 
 instance RunMessage env ThePaintedWorld where
-  runMessage msg e@(ThePaintedWorld attrs) =
+  runMessage msg (ThePaintedWorld attrs) =
     ThePaintedWorld <$> runMessage msg attrs

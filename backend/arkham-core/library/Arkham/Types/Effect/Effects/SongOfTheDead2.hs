@@ -1,5 +1,5 @@
 module Arkham.Types.Effect.Effects.SongOfTheDead2
-  ( shrivelling
+  ( songOfTheDead2
   , SongOfTheDead2(..)
   ) where
 
@@ -16,8 +16,8 @@ import Arkham.Types.Token
 newtype SongOfTheDead2 = SongOfTheDead2 EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-shrivelling :: EffectArgs -> SongOfTheDead2
-shrivelling = SongOfTheDead2 . uncurry4 (baseAttrs "02112")
+songOfTheDead2 :: EffectArgs -> SongOfTheDead2
+songOfTheDead2 = SongOfTheDead2 . uncurry4 (baseAttrs "02112")
 
 instance HasModifiersFor env SongOfTheDead2
 

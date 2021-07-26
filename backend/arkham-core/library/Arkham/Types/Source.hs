@@ -41,6 +41,7 @@ data Source
   | EmptyDeckSource
   | DeckSource
   | GameSource
+  | CardIdSource CardId
   | ActSource ActId
   | PlayerCardSource CardId
   | EncounterCardSource CardId

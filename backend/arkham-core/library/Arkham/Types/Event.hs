@@ -30,12 +30,21 @@ deriving anyclass instance
   ( HasCount ActionTakenCount env InvestigatorId
   , GetCardDef env EnemyId
   , HasActions env ActionType
-  , HasSet Trait env EnemyId
-  , HasSet AssetId env (InvestigatorId, UseType)
+  , HasCount ClueCount env LocationId
+  , HasCount DoomCount env AssetId
+  , HasCount DoomCount env InvestigatorId
+  , HasCount ResourceCount env InvestigatorId
   , HasId LocationId env InvestigatorId
-  , HasSet EnemyId env LocationId
-  , HasSet EnemyId env InvestigatorId
+  , HasList DiscardedPlayerCard env InvestigatorId
   , HasList UnderneathCard env InvestigatorId
+  , HasModifiersFor env ()
+  , HasSet AssetId env (InvestigatorId, UseType)
+  , HasSet AssetId env InvestigatorId
+  , HasSet EnemyId env InvestigatorId
+  , HasSet EnemyId env LocationId
+  , HasSet InvestigatorId env ()
+  , HasSet InvestigatorId env LocationId
+  , HasSet Trait env EnemyId
   , HasSkillTest env
   )
   => HasActions env Event

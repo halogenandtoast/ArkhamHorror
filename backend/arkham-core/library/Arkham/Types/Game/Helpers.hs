@@ -626,6 +626,7 @@ sourceToTarget :: Source -> Target
 sourceToTarget = \case
   AssetSource aid -> AssetTarget aid
   EnemySource eid -> EnemyTarget eid
+  CardIdSource cid -> CardIdTarget cid
   ScenarioSource sid -> ScenarioTarget sid
   InvestigatorSource iid -> InvestigatorTarget iid
   CardCodeSource cid -> CardCodeTarget cid
@@ -799,6 +800,7 @@ getIsPlayable iid windows c@(PlayerCard _) = do
        || inFastWindow
        )
     && (cdAction pcDef /= Just Action.Evade || notNull engagedEnemies)
+    && (elem NonFast windows || inFastWindow)
     && passesRestrictions
  where
   pcDef = toCardDef c

@@ -90,6 +90,7 @@ data Effect
   | BindMonster2' BindMonster2
   | PushedIntoTheBeyond' PushedIntoTheBeyond
   | ArcaneBarrier' ArcaneBarrier
+  | SongOfTheDead2' SongOfTheDead2
   | FireExtinguisher1' FireExtinguisher1
   | Deduction2' Deduction2
   | ExposeWeakness1' ExposeWeakness1
@@ -98,6 +99,7 @@ data Effect
   | TenAcreMeadow_246' TenAcreMeadow_246
   | AChanceEncounter' AChanceEncounter
   | MinhThiPhan' MinhThiPhan
+  | ThePaintedWorld' ThePaintedWorld
   | LetMeHandleThis' LetMeHandleThis
   | MindWipe3' MindWipe3
   | JeremiahPierce' JeremiahPierce
@@ -182,6 +184,7 @@ allEffects = mapFromList
   , ("02031", BindMonster2' . bindMonster2)
   , ("02100", PushedIntoTheBeyond' . pushedIntoTheBeyond)
   , ("02102", ArcaneBarrier' . arcaneBarrier)
+  , ("02112", SongOfTheDead2' . songOfTheDead2)
   , ("02114", FireExtinguisher1' . fireExtinguisher1)
   , ("02150", Deduction2' . deduction2)
   , ("02228", ExposeWeakness1' . exposeWeakness1)
@@ -192,6 +195,7 @@ allEffects = mapFromList
   , ("02246", TenAcreMeadow_246' . tenAcreMeadow_246)
   , ("02270", AChanceEncounter' . aChanceEncounter)
   , ("03002", MinhThiPhan' . minhThiPhan)
+  , ("03012", ThePaintedWorld' . thePaintedWorld)
   , ("03022", LetMeHandleThis' . letMeHandleThis)
   , ("50008", MindWipe3' . mindWipe3)
   , ("50044", JeremiahPierce' . jeremiahPierce)

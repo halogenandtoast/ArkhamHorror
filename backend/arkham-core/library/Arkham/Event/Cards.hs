@@ -216,6 +216,7 @@ sneakAttack :: CardDef
 sneakAttack = (event "01052" "Sneak Attack" 2 Rogue)
   { cdSkills = [SkillIntellect, SkillCombat]
   , cdCardTraits = setFromList [Tactic]
+  , cdPlayRestrictions = [EnemyAtYourLocation]
   }
 
 sureGamble3 :: CardDef
@@ -564,7 +565,8 @@ thePaintedWorld = (event "03012" "The Painted World" 0 Neutral)
   { cdSkills = [SkillWillpower, SkillAgility, SkillWild]
   , cdCardTraits = singleton Spell
   , cdFast = True -- not fast
-  , cdWindows = mempty -- handle via behavior since it's complicated
+  , cdFastWindow = Nothing -- handle via behavior since it's complicated
+  , cdWindows = mempty
   }
 
 letMeHandleThis :: CardDef

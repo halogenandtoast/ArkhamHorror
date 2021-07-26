@@ -139,9 +139,16 @@ treachery
   :: (TreacheryAttrs -> a)
   -> CardDef
   -> CardBuilder (InvestigatorId, TreacheryId) a
-treachery f cardDef = CardBuilder
+treachery f cardDef = treacheryWith f cardDef id
+
+treacheryWith
+  :: (TreacheryAttrs -> a)
+  -> CardDef
+  -> (TreacheryAttrs -> TreacheryAttrs)
+  -> CardBuilder (InvestigatorId, TreacheryId) a
+treacheryWith f cardDef g = CardBuilder
   { cbCardCode = cdCardCode cardDef
-  , cbCardBuilder = \(iid, tid) -> f $ TreacheryAttrs
+  , cbCardBuilder = \(iid, tid) -> f . g $ TreacheryAttrs
     { treacheryId = tid
     , treacheryCardCode = toCardCode cardDef
     , treacheryAttachedTarget = Nothing

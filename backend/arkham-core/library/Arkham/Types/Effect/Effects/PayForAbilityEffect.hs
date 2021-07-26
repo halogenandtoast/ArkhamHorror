@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Types.Ability
 import Arkham.Types.Action hiding (Ability, TakenAction)
 import qualified Arkham.Types.Action as Action
+import Arkham.Types.AssetMatcher
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -144,6 +145,17 @@ instance
         ExhaustCost target -> do
           push (Exhaust target)
           withPayment $ ExhaustPayment [target]
+        ExhaustAssetCost matcher -> do
+          targets <- map AssetTarget <$> getSetList (matcher <> AssetReady)
+          e <$ push
+            (chooseOne
+              iid
+              [ TargetLabel
+                  target
+                  [PayAbilityCost source iid mAction (ExhaustCost target)]
+              | target <- targets
+              ]
+            )
         DiscardCost target -> do
           push (Discard target)
           withPayment $ DiscardPayment [target]

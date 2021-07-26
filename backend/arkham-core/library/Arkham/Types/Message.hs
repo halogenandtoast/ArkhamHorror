@@ -343,6 +343,7 @@ data Message
       InvestigatorPlaceAllCluesOnLocation InvestigatorId
     | InvestigatorPlaceCluesOnLocation InvestigatorId Int
     | InvestigatorPlayAsset InvestigatorId AssetId [SlotType] [Trait]
+    | InvestigatorPlayedAsset InvestigatorId AssetId [SlotType] [Trait]
     | InvestigatorPlayDynamicAsset InvestigatorId AssetId [SlotType] [Trait] Int
     | InvestigatorPlayDynamicEvent InvestigatorId EventId Int
     | InvestigatorPlayEvent InvestigatorId EventId (Maybe Target)

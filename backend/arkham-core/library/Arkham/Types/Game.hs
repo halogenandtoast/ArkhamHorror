@@ -63,7 +63,7 @@ import Arkham.Types.Treachery.Attrs (treacheryOwner)
 import Arkham.Types.Window
 import qualified Arkham.Types.Window as Fast
 import Control.Monad.Extra (allM, anyM, mapMaybeM)
-import Control.Monad.Random.Lazy hiding (filterM)
+import Control.Monad.Random.Lazy hiding (filterM, foldM)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (filterM, foldM)
 import qualified Data.HashMap.Strict as HashMap
@@ -529,16 +529,22 @@ getLocationsMatching = \case
 
 getAssetsMatching
   :: (MonadReader env m, HasGame env) => AssetMatcher -> m [Asset]
-getAssetsMatching = \case
-  AssetWithTitle title ->
-    filter ((== title) . nameTitle . toName) . toList . view assetsL <$> getGame
-  AssetWithFullTitle title subtitle ->
-    filter ((== Name title (Just subtitle)) . toName)
-      . toList
-      . view assetsL
-      <$> getGame
-  AssetWithId assetId ->
-    filter ((== assetId) . toId) . toList . view assetsL <$> getGame
+getAssetsMatching matcher = do
+  assets <- toList . view assetsL <$> getGame
+  filterMatcher assets matcher
+ where
+  filterMatcher as = \case
+    AssetWithTitle title -> pure $ filter ((== title) . nameTitle . toName) as
+    AssetWithFullTitle title subtitle ->
+      pure $ filter ((== Name title (Just subtitle)) . toName) as
+    AssetWithId assetId -> pure $ filter ((== assetId) . toId) as
+    AssetWithTrait t -> filterM (fmap (member t) . getSet . toId) as
+    AssetOwnedBy iid -> filterM (fmap (== Just (OwnerId iid)) . getId) as
+    AssetReady -> pure $ filter (not . isExhausted) as
+    AssetMatches ms -> foldM filterMatcher as ms
+    AssetWithUseType uType -> filterM
+      (fmap ((> 0) . unStartingUsesCount) . getCount . (, uType) . toId)
+      as
 
 getSkill
   :: (HasCallStack, MonadReader env m, HasGame env) => SkillId -> m Skill
@@ -696,6 +702,12 @@ instance HasGame env => HasCount SetAsideCount env CardCode where
 instance HasGame env => HasCount UsesCount env AssetId where
   getCount = getCount <=< getAsset
 
+instance HasGame env => HasCount UsesCount env (AssetId, UseType) where
+  getCount (aid, uType) = getCount . (, uType) =<< getAsset aid
+
+instance HasGame env => HasCount StartingUsesCount env (AssetId, UseType) where
+  getCount (aid, uType) = getCount . (, uType) =<< getAsset aid
+
 instance HasGame env => HasId (Maybe OwnerId) env AssetId where
   getId = getId <=< getAsset
 
@@ -720,13 +732,13 @@ instance HasGame env => HasId (Maybe LocationId) env LocationMatcher where
 instance HasGame env => HasSet AssetId env AssetMatcher where
   getSet = fmap (setFromList . map toId) . getAssetsMatching
 
-instance HasGame env => HasSet AssetId env (InvestigatorId, AssetMatcher) where
+instance (HasSet Trait env AssetId, HasGame env) => HasSet AssetId env (InvestigatorId, AssetMatcher) where
   getSet (iid, matcher) = do
     matchingAssetIds <- setFromList . map toId <$> getAssetsMatching matcher
     investigatorAssetIds <- getSet @AssetId iid
     pure $ matchingAssetIds `intersection` investigatorAssetIds
 
-instance HasGame env => HasSet AssetId env (LocationId, AssetMatcher) where
+instance (HasSet Trait env AssetId, HasGame env) => HasSet AssetId env (LocationId, AssetMatcher) where
   getSet (lid, matcher) = do
     matchingAssetIds <- setFromList . map toId <$> getAssetsMatching matcher
     locationAssetIds <- getSet @AssetId lid
@@ -2410,6 +2422,10 @@ runGameMessage msg g = case msg of
     skill <- getSkill skillId
     push $ AddToHand iid (toCard skill)
     pure $ g & skillsL %~ deleteMap skillId
+  ReturnToHand iid (AssetTarget assetId) -> do
+    asset <- getAsset assetId
+    push $ AddToHand iid (toCard asset)
+    pure $ g & assetsL %~ deleteMap assetId
   After (ShuffleIntoDeck _ (AssetTarget aid)) ->
     pure $ g & assetsL %~ deleteMap aid
   ShuffleIntoDeck iid (TreacheryTarget treacheryId) -> do

@@ -6,6 +6,7 @@ import Arkham.Prelude
 
 import Arkham.Types.Asset.Uses
 import Arkham.Types.AssetId
+import Arkham.Types.AssetMatcher
 import Arkham.Types.Card
 import Arkham.Types.GameValue
 import Arkham.Types.LocationMatcher
@@ -65,6 +66,7 @@ data Cost
   | GroupClueCost (GameValue Int) (Maybe LocationMatcher)
   | PlaceClueOnLocationCost Int
   | ExhaustCost Target
+  | ExhaustAssetCost AssetMatcher
   | RemoveCost Target
   | Costs [Cost]
   | DamageCost Source Target Int

@@ -199,6 +199,7 @@ allPlayerAssetCards = mapFromList $ map
   , streetwise3
   , painkillers
   , songOfTheDead2
+  , spiritSpeaker
   , springfieldM19034
   , strangeSolution
   , strangeSolutionAcidicIchor4
@@ -1159,6 +1160,13 @@ theKingInYellow :: CardDef
 theKingInYellow = (weakness "03011" ("The King in Yellow" <:> "Act I"))
   { cdCardTraits = singleton Tome
   }
+
+spiritSpeaker :: CardDef
+spiritSpeaker =
+  (asset "03014" ("Spirit-Speaker" <:> "Envoy of the Alusi") 2 Neutral)
+    { cdSkills = [SkillWillpower, SkillIntellect, SkillWild]
+    , cdCardTraits = singleton Ritual
+    }
 
 toothOfEztli :: CardDef
 toothOfEztli = (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker

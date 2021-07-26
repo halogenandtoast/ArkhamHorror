@@ -11,6 +11,7 @@ import Arkham.Card
 import Arkham.Types.Ability
 import Arkham.Types.Action hiding (Ability)
 import Arkham.Types.Asset.Uses (UseType)
+import Arkham.Types.AssetMatcher
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes.Entity as X
@@ -116,16 +117,17 @@ class HasPlayerCard env a where
   getPlayerCard :: MonadReader env m => a -> m (Maybe PlayerCard)
 
 type HasCostPayment env
-  = ( HasCount SpendableClueCount env InvestigatorId
-    , HasCount SpendableClueCount env ()
-    , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
+  = ( HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
     , HasCount PlayerCount env ()
-    , HasList HandCard env InvestigatorId
     , HasCount ResourceCount env InvestigatorId
+    , HasCount SpendableClueCount env ()
+    , HasCount SpendableClueCount env InvestigatorId
     , HasCount UsesCount env AssetId
+    , HasId (Maybe LocationId) env LocationMatcher
+    , HasList HandCard env InvestigatorId
+    , HasSet AssetId env AssetMatcher
     , HasSet ExhaustedAssetId env ()
     , HasSet InvestigatorId env LocationId
-    , HasId (Maybe LocationId) env LocationMatcher
     )
 
 class HasStats env a where
@@ -157,6 +159,7 @@ type ActionRunner env
   = ( HasQueue env
     , GetCardDef env EnemyId
     , HasActions env ActionType
+    , HasCostPayment env
     , ( HasCount
           ActionRemainingCount
           env
@@ -171,15 +174,9 @@ type ActionRunner env
       , HasCount DoomCount env AssetId
       , HasCount DoomCount env InvestigatorId
       , HasCount HorrorCount env InvestigatorId
-      , HasCount PlayerCount env ()
-      , HasCount ResourceCount env InvestigatorId
       , HasCount SetAsideCount env CardCode
-      , HasCount SpendableClueCount env ()
-      , HasCount SpendableClueCount env InvestigatorId
-      , HasCount UsesCount env AssetId
       )
     , HasId (Maybe LocationId) env AssetId
-    , HasId (Maybe LocationId) env LocationMatcher
     , HasId (Maybe OwnerId) env AssetId
     , HasId (Maybe StoryAssetId) env CardCode
     , HasId (Maybe StoryEnemyId) env CardCode
@@ -190,7 +187,6 @@ type ActionRunner env
     , HasList CommittedCard env InvestigatorId
     , HasList CommittedSkillIcon env InvestigatorId
     , HasList DiscardedPlayerCard env InvestigatorId
-    , HasList HandCard env InvestigatorId
     , HasList InPlayCard env InvestigatorId
     , HasList UnderneathCard env InvestigatorId
     , HasList UsedAbility env ()
@@ -206,14 +202,12 @@ type ActionRunner env
     , HasSet EnemyId env EnemyMatcher
     , HasSet EnemyId env InvestigatorId
     , HasSet EnemyId env LocationId
-    , HasSet ExhaustedAssetId env ()
     , HasSet ExhaustedAssetId env InvestigatorId
     , HasSet ExhaustedEnemyId env LocationId
     , HasSet FightableEnemyId env (InvestigatorId, Source)
     , HasSet InvestigatorId env ()
     , HasSet InvestigatorId env (HashSet LocationId)
     , HasSet InvestigatorId env EnemyId
-    , HasSet InvestigatorId env LocationId
     , HasSet Keyword env EnemyId
     , HasSet LocationId env ()
     , HasSet LocationId env [Trait]

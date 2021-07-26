@@ -86,10 +86,12 @@ export default defineComponent({
         socketError.value = true;
         if (socket.value) {
           socket.value.close();
+          socket.value = null;
         }
       });
       socket.value.addEventListener('close', () => {
         socketError.value = true;
+        socket.value = null;
         setTimeout(() => connect(), 1000);
       });
     }

@@ -21,6 +21,8 @@ newtype DoomCount = DoomCount { unDoomCount :: Int }
   deriving newtype (Eq, Show)
 newtype UsesCount = UsesCount { unUsesCount :: Int }
   deriving newtype (Eq)
+newtype StartingUsesCount = StartingUsesCount { unStartingUsesCount :: Int }
+  deriving newtype (Eq)
 newtype ResourceCount = ResourceCount { unResourceCount :: Int }
 newtype CardCount = CardCount { unCardCount :: Int }
   deriving newtype (Eq, Hashable)

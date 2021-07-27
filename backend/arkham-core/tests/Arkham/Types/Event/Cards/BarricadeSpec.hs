@@ -21,9 +21,10 @@ spec = do
           )
         $ do
             runMessages
-            (map modifierType
-              <$> getModifiersFor (TestSource mempty) (toTarget location) ()
-              )
+                getModifiersFor
+                (TestSource mempty)
+                (toTarget location)
+                ()
               `shouldReturn` [CannotBeEnteredByNonElite]
             isAttachedTo location barricade `shouldReturn` True
 

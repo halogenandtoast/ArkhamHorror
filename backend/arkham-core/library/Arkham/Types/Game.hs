@@ -755,8 +755,7 @@ instance HasGame env => HasSet EnemyId env LocationMatcher where
 instance HasGame env => HasSet FightableEnemyId env (InvestigatorId, Source) where
   getSet (iid, source) = do
     fightAnywhereEnemyIds <- getSetList () >>= filterM \eid -> do
-      modifiers' <-
-        map modifierType <$> getModifiersFor source (EnemyTarget eid) ()
+      modifiers' <- getModifiers source (EnemyTarget eid)
       pure $ CanBeFoughtAsIfAtYourLocation `elem` modifiers'
     locationId <- getId @LocationId iid
     enemyIds <- union (setFromList fightAnywhereEnemyIds)
@@ -767,8 +766,7 @@ instance HasGame env => HasSet FightableEnemyId env (InvestigatorId, Source) whe
       potentials = setToList
         (investigatorEnemyIds `union` (enemyIds `difference` aloofEnemyIds))
     fightableEnemyIds <- flip filterM potentials $ \eid -> do
-      modifiers' <-
-        map modifierType <$> getModifiersFor source (EnemyTarget eid) ()
+      modifiers' <- getModifiers source (EnemyTarget eid)
       not
         <$> anyM
               (\case
@@ -1118,7 +1116,7 @@ instance HasGame env => HasModifiersFor env () where
         (g ^. investigatorsL . to toList)
       , maybe (pure []) (getModifiersFor source target) (g ^. skillTestL)
       ]
-    pure $ if any isBlank allModifiers
+    pure $ if any ((== Blank) . modifierType) allModifiers
       then filter ((/= targetToSource target) . modifierSource) allModifiers
       else allModifiers
 
@@ -1220,8 +1218,7 @@ instance HasGame env => HasSet HandCardId env (InvestigatorId, CardType) where
 
 instance HasGame env => HasSet Keyword env EnemyId where
   getSet eid = do
-    modifiers' <-
-      map modifierType <$> getModifiersFor GameSource (EnemyTarget eid) ()
+    modifiers' <- getModifiers GameSource (EnemyTarget eid)
     let
       addedKeywords = setFromList $ mapMaybe
         (\case
@@ -1532,9 +1529,7 @@ instance HasGame env => HasSet BlockedLocationId env () where
       <$> filterM (isBlocked source) locations
    where
     isBlocked source (_, location) =
-      elem Blocked
-        . map modifierType
-        <$> getModifiersFor source (toTarget location) ()
+      elem Blocked <$> getModifiers source (toTarget location)
 
 -- the results will have the initial location at 0, we need to drop
 -- this otherwise this will only ever return the current location
@@ -1897,9 +1892,7 @@ instance HasGame env => HasSet EnemyAccessibleLocationId env (EnemyId, LocationI
     let
       enemyIsElite = Elite `member` toTraits enemy
       unblocked lid' = do
-        modifiers' <-
-          map modifierType
-            <$> getModifiersFor (EnemySource eid) (LocationTarget lid') ()
+        modifiers' <- getModifiers (EnemySource eid) (LocationTarget lid')
         pure $ enemyIsElite || CannotBeAttackedByNonElite `notElem` modifiers'
     setFromList . coerce <$> filterM unblocked connectedLocationIds
 
@@ -1962,9 +1955,7 @@ instance HasGame env => HasSet HealthDamageableAssetId env InvestigatorId where
       . filter (elem CanBeAssignedDamage . snd)
       <$> traverse
             (\a ->
-              (a, )
-                . map modifierType
-                <$> getModifiersFor (InvestigatorSource iid) (AssetTarget a) ()
+              (a, ) <$> getModifiers (InvestigatorSource iid) (AssetTarget a)
             )
             otherAssetIds
     pure $ mapSet HealthDamageableAssetId . keysSet $ assets'
@@ -1986,9 +1977,7 @@ instance HasGame env => HasSet SanityDamageableAssetId env InvestigatorId where
       . filter (elem CanBeAssignedDamage . snd)
       <$> traverse
             (\a ->
-              (a, )
-                . map modifierType
-                <$> getModifiersFor (InvestigatorSource iid) (AssetTarget a) ()
+              (a, ) <$> getModifiers (InvestigatorSource iid) (AssetTarget a)
             )
             otherAssetIds
     pure $ mapSet SanityDamageableAssetId . keysSet $ assets'
@@ -2387,8 +2376,7 @@ runGameMessage msg g = case msg of
       ?~ SkillTestResultsData skillValue skillDifficulty
   SkillTestEnds _ -> do
     skillPairs <- for (mapToList $ g ^. skillsL) $ \(skillId, skill) -> do
-      modifiers' <-
-        map modifierType <$> getModifiersFor GameSource (SkillTarget skillId) ()
+      modifiers' <- getModifiers GameSource (SkillTarget skillId)
       pure $ if ReturnToHandAfterTest `elem` modifiers'
         then (ReturnToHand (ownerOfSkill skill) (SkillTarget skillId), Nothing)
         else
@@ -2592,9 +2580,7 @@ runGameMessage msg g = case msg of
       _ -> push (AskMap askMap)
     pure g
   EnemyWillAttack iid eid damageStrategy -> do
-    modifiers' <-
-      map modifierType
-        <$> getModifiersFor (EnemySource eid) (InvestigatorTarget iid) ()
+    modifiers' <- getModifiers (EnemySource eid) (InvestigatorTarget iid)
     enemy <- getEnemy eid
     let
       cannotBeAttackedByNonElites = flip any modifiers' $ \case
@@ -2615,12 +2601,9 @@ runGameMessage msg g = case msg of
             push aoo
           Just (EnemyWillAttack iid2 eid2 damageStrategy2) -> do
             _ <- popMessage
-            modifiers2' <-
-              map modifierType
-                <$> getModifiersFor
-                      (EnemySource eid2)
-                      (InvestigatorTarget iid2)
-                      ()
+            modifiers2' <- getModifiers
+              (EnemySource eid2)
+              (InvestigatorTarget iid2)
             enemy2 <- getEnemy eid2
             let
               cannotBeAttackedByNonElites2 = flip any modifiers2' $ \case
@@ -3310,8 +3293,7 @@ runGameMessage msg g = case msg of
   Discard (EventTarget eid) -> do
     -- an event might need to be converted back to its original card
     event <- getEvent eid
-    modifiers' <-
-      map modifierType <$> getModifiersFor GameSource (EventTarget eid) ()
+    modifiers' <- getModifiers GameSource (EventTarget eid)
     if RemoveFromGameInsteadOfDiscard `elem` modifiers'
       then g <$ push (RemoveFromGame (EventTarget eid))
       else do

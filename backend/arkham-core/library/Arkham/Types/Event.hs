@@ -63,6 +63,7 @@ instance
   , HasCount Shroud env LocationId
   , HasList DiscardedPlayerCard env InvestigatorId
   , HasCount FightCount env EnemyId
+  , HasModifiersFor env ()
   )
   => RunMessage env Event where
   runMessage = genericRunMessage

@@ -293,8 +293,7 @@ locationInvestigatorsWithClues LocationAttrs { locationInvestigators } =
 getModifiedShroudValueFor
   :: (MonadReader env m, HasModifiersFor env ()) => LocationAttrs -> m Int
 getModifiedShroudValueFor attrs = do
-  modifiers' <-
-    map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
+  modifiers' <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier (locationShroud attrs) modifiers'
  where
   applyModifier (ShroudModifier m) n = max 0 (n + m)
@@ -306,11 +305,8 @@ getInvestigateAllowed
   -> LocationAttrs
   -> m Bool
 getInvestigateAllowed iid attrs = do
-  modifiers1' <-
-    map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
-  modifiers2' <-
-    map modifierType
-      <$> getModifiersFor (InvestigatorSource iid) (toTarget attrs) ()
+  modifiers1' <- getModifiers (toSource attrs) (toTarget attrs)
+  modifiers2' <- getModifiers (InvestigatorSource iid) (toTarget attrs)
   pure $ not (any isCannotInvestigate $ modifiers1' <> modifiers2')
  where
   isCannotInvestigate CannotInvestigate{} = True
@@ -320,9 +316,7 @@ canEnterLocation
   :: (LocationRunner env, MonadReader env m) => EnemyId -> LocationId -> m Bool
 canEnterLocation eid lid = do
   traits' <- getSet eid
-  modifiers' <-
-    map modifierType
-      <$> getModifiersFor (EnemySource eid) (LocationTarget lid) ()
+  modifiers' <- getModifiers (EnemySource eid) (LocationTarget lid)
   pure $ not $ flip any modifiers' $ \case
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits'
     _ -> False
@@ -404,8 +398,7 @@ instance ActionRunner env => HasActions env LocationAttrs where
 getShouldSpawnNonEliteAtConnectingInstead
   :: (MonadReader env m, HasModifiersFor env ()) => LocationAttrs -> m Bool
 getShouldSpawnNonEliteAtConnectingInstead attrs = do
-  modifiers' <-
-    map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
+  modifiers' <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ flip any modifiers' $ \case
     SpawnNonEliteAtConnectingInstead{} -> True
     _ -> False
@@ -435,9 +428,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       | isTarget a target
       -> a <$ push (SuccessfulInvestigation iid locationId source)
     SuccessfulInvestigation iid lid _ | lid == locationId -> do
-      modifiers' <-
-        map modifierType
-          <$> getModifiersFor (InvestigatorSource iid) (LocationTarget lid) ()
+      modifiers' <- getModifiers (InvestigatorSource iid) (LocationTarget lid)
       a <$ unless
         (AlternateSuccessfullInvestigation `elem` modifiers')
         (pushAll
@@ -591,12 +582,9 @@ instance LocationRunner env => RunMessage env LocationAttrs where
           connectedLocationIds <- map unConnectedLocationId <$> getSetList lid
           availableLocationIds <-
             flip filterM connectedLocationIds $ \locationId' -> do
-              modifiers' <-
-                map modifierType
-                  <$> getModifiersFor
-                        (EnemySource eid)
-                        (LocationTarget locationId')
-                        ()
+              modifiers' <- getModifiers
+                (EnemySource eid)
+                (LocationTarget locationId')
               pure . not $ flip any modifiers' $ \case
                 SpawnNonEliteAtConnectingInstead{} -> True
                 _ -> False
@@ -623,8 +611,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       when (locationClues > 0) (push $ PlaceClues target locationClues)
       pure $ a & cluesL .~ 0
     PlaceClues target n | isTarget a target -> do
-      modifiers' <-
-        map modifierType <$> getModifiersFor (toSource a) (toTarget a) ()
+      modifiers' <- getModifiers (toSource a) (toTarget a)
       if CannotPlaceClues `elem` modifiers'
         then pure a
         else pure $ a & cluesL +~ n
@@ -634,8 +621,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       pure $ a & cluesL %~ max 0 . subtract n
     RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0
     RevealLocation miid lid | lid == locationId -> do
-      modifiers' <-
-        map modifierType <$> getModifiersFor (toSource a) (toTarget a) ()
+      modifiers' <- getModifiers (toSource a) (toTarget a)
       locationClueCount <- if CannotPlaceClues `elem` modifiers'
         then pure 0
         else fromGameValue locationRevealClues . unPlayerCount <$> getCount ()

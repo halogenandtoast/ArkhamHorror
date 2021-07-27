@@ -39,8 +39,8 @@ actionFromMessage (UseAbility _ ability) = case abilityType ability of
   _ -> Nothing
 actionFromMessage _ = Nothing
 
-preventedByModifier :: EnemyAttrs -> Message -> Modifier -> Bool
-preventedByModifier e msg (Modifier _ (CannotTakeAction matcher)) =
+preventedByModifier :: EnemyAttrs -> Message -> ModifierType -> Bool
+preventedByModifier e msg (CannotTakeAction matcher) =
   case actionFromMessage msg of
     Just action -> case matcher of
       IsAction a -> a == action
@@ -52,10 +52,7 @@ preventedByModifier _ _ _ = False
 
 instance ActionRunner env => HasActions env Enemy where
   getActions investigator window x = do
-    modifiers' <- getModifiersFor
-      (toSource x)
-      (InvestigatorTarget investigator)
-      ()
+    modifiers' <- getModifiers (toSource x) (InvestigatorTarget investigator)
     actions <- defaultGetActions investigator window x
     pure $ filter
       (\action -> not $ any (preventedByModifier (toAttrs x) action) modifiers')
@@ -111,9 +108,9 @@ instance
     -- discard.
     allEnemyIds <- getSet @EnemyId ()
     modifiers' <- if toId e `member` allEnemyIds
-      then getModifiersFor (toSource e) (toTarget e) ()
+      then getModifiers (toSource e) (toTarget e)
       else pure []
-    let msg' = if any isBlank modifiers' then Blanked msg else msg
+    let msg' = if Blank `elem` modifiers' then Blanked msg else msg
     genericRunMessage msg' e
 
 instance HasVictoryPoints Enemy where

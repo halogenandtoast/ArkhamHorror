@@ -8,7 +8,10 @@ import Arkham.Prelude
 import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Game.Helpers
+import Arkham.Types.Modifier
 import Arkham.Types.Prey
+import Arkham.Types.Target
 
 newtype GraveyardGhouls = GraveyardGhouls EnemyAttrs
   deriving anyclass IsEnemy
@@ -22,7 +25,11 @@ graveyardGhouls = enemyWith
   (1, 1)
   (preyL .~ SetToBearer)
 
-instance HasModifiersFor env GraveyardGhouls
+instance HasModifiersFor env GraveyardGhouls where
+  getModifiersFor _ (InvestigatorTarget iid) (GraveyardGhouls attrs)
+    | iid `elem` enemyEngagedInvestigators attrs = pure
+    $ toModifiers attrs [CardsCannotLeaveYourDiscardPile]
+  getModifiersFor _ _ _ = pure []
 
 instance EnemyAttrsHasActions env => HasActions env GraveyardGhouls where
   getActions i window (GraveyardGhouls attrs) = getActions i window attrs

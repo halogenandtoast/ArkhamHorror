@@ -224,8 +224,7 @@ modifiedEnemyFight
 modifiedEnemyFight EnemyAttrs {..} = do
   msource <- getSkillTestSource
   let source = fromMaybe (EnemySource enemyId) msource
-  modifiers' <-
-    map modifierType <$> getModifiersFor source (EnemyTarget enemyId) ()
+  modifiers' <- getModifiers source (EnemyTarget enemyId)
   pure $ foldr applyModifier enemyFight modifiers'
  where
   applyModifier (EnemyFight m) n = max 0 (n + m)
@@ -238,8 +237,7 @@ modifiedEnemyEvade
 modifiedEnemyEvade EnemyAttrs {..} = do
   msource <- getSkillTestSource
   let source = fromMaybe (EnemySource enemyId) msource
-  modifiers' <-
-    map modifierType <$> getModifiersFor source (EnemyTarget enemyId) ()
+  modifiers' <- getModifiers source (EnemyTarget enemyId)
   pure $ foldr applyModifier enemyEvade modifiers'
  where
   applyModifier (EnemyEvade m) n = max 0 (n + m)
@@ -253,8 +251,7 @@ getModifiedDamageAmount
 getModifiedDamageAmount EnemyAttrs {..} baseAmount = do
   msource <- getSkillTestSource
   let source = fromMaybe (EnemySource enemyId) msource
-  modifiers' <-
-    map modifierType <$> getModifiersFor source (EnemyTarget enemyId) ()
+  modifiers' <- getModifiers source (EnemyTarget enemyId)
   let updatedAmount = foldr applyModifier baseAmount modifiers'
   pure $ foldr applyModifierCaps updatedAmount modifiers'
  where
@@ -270,8 +267,7 @@ getModifiedKeywords
 getModifiedKeywords e@EnemyAttrs {..} = do
   msource <- getSkillTestSource
   let source = fromMaybe (EnemySource enemyId) msource
-  modifiers' <-
-    map modifierType <$> getModifiersFor source (EnemyTarget enemyId) ()
+  modifiers' <- getModifiers source (EnemyTarget enemyId)
   pure $ foldr applyModifier (toKeywords $ toCardDef e) modifiers'
  where
   applyModifier (AddKeyword k) n = insertSet k n
@@ -284,9 +280,7 @@ canEnterLocation
   -> m Bool
 canEnterLocation eid lid = do
   traits <- getSet eid
-  modifiers' <-
-    map modifierType
-      <$> getModifiersFor (EnemySource eid) (LocationTarget lid) ()
+  modifiers' <- getModifiers (EnemySource eid) (LocationTarget lid)
   pure $ not $ flip any modifiers' $ \case
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits
     _ -> False
@@ -350,9 +344,7 @@ getModifiedHealth
   -> m Int
 getModifiedHealth EnemyAttrs {..} = do
   playerCount <- getPlayerCount
-  modifiers' <-
-    map modifierType
-      <$> getModifiersFor (EnemySource enemyId) (EnemyTarget enemyId) ()
+  modifiers' <- getModifiers (EnemySource enemyId) (EnemyTarget enemyId)
   pure $ foldr applyModifier (fromGameValue enemyHealth playerCount) modifiers'
  where
   applyModifier (HealthModifier m) n = max 0 (n + m)
@@ -476,8 +468,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
                 )
       pure $ a & exhaustedL .~ False
     ReadyExhausted -> do
-      modifiers' <-
-        map modifierType <$> getModifiersFor (toSource a) (toTarget a) ()
+      modifiers' <- getModifiers (toSource a) (toTarget a)
       let
         alternativeSources = mapMaybe
           (\case
@@ -574,9 +565,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
       keywords <- getModifiedKeywords a
       a <$ when (Keyword.Hunter `elem` keywords) (push $ HunterMove (toId a))
     HunterMove eid | eid == toId a && not enemyExhausted -> do
-      modifiers' <-
-        map modifierType
-          <$> getModifiersFor (toSource a) (EnemyTarget enemyId) ()
+      modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)
       let
         matchForcedTargetLocation = \case
           DuringEnemyPhaseMustMoveToward (LocationTarget lid) -> Just lid
@@ -776,9 +765,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
       pure a
     CheckAttackOfOpportunity iid isFast
       | not isFast && iid `elem` enemyEngagedInvestigators && not enemyExhausted -> do
-        modifiers' <-
-          map modifierType
-            <$> getModifiersFor (toSource a) (EnemyTarget enemyId) ()
+        modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)
         a <$ unless
           (CannotMakeAttacksOfOpportunity `elem` modifiers')
           (push (EnemyWillAttack iid enemyId DamageAny))

@@ -49,12 +49,9 @@ instance InvestigatorRunner env => HasActions env ZoeySamaras where
       let
         ability =
           mkAbility (InvestigatorSource investigatorId) 1 (ReactionAbility Free)
-      modifiers' <-
-        map modifierType
-          <$> getModifiersFor
-                (InvestigatorSource investigatorId)
-                (InvestigatorTarget investigatorId)
-                ()
+      modifiers' <- getModifiers
+        (InvestigatorSource investigatorId)
+        (InvestigatorTarget investigatorId)
       pure
         [ UseAbility investigatorId ability
         | CannotGainResources `notElem` modifiers'

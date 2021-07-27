@@ -23,9 +23,7 @@ spec = do
               )
             $ do
                 runMessages
-                (map modifierType
-                  <$> getModifiersFor (TestSource mempty) (toTarget location) ()
-                  )
+                    (getModifiers (TestSource mempty) (toTarget location))
                   `shouldReturn` [ CannotBeEnteredByNonElite
                                  , SpawnNonEliteAtConnectingInstead
                                  ]
@@ -47,8 +45,7 @@ spec = do
           . (investigatorsL %~ insertEntity investigator2)
           )
         $ do
-            runMessages
-            getModifiersFor (TestSource mempty) (toTarget location) ()
+            runMessages (getModifiers (TestSource mempty) (toTarget location))
               `shouldReturn` []
             isAttachedTo location barricade3 `shouldReturn` False
             isInDiscardOf investigator barricade3 `shouldReturn` True

@@ -527,7 +527,7 @@ aChanceEncounter = (event "02270" "A Chance Encounter" 1 Survivor)
   { cdSkills = [SkillWillpower, SkillIntellect]
   , cdCardTraits = singleton Fortune
   , cdPlayRestrictions =
-    [Restriction.CardInDiscard Restriction.AnyPlayerDiscard [Ally]]
+    [Restriction.ReturnableCardInDiscard Restriction.AnyPlayerDiscard [Ally]]
   }
 
 momentOfRespite3 :: CardDef

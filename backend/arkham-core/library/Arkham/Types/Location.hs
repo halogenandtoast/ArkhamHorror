@@ -56,8 +56,8 @@ instance
   )
   => RunMessage env Location where
   runMessage msg l = do
-    modifiers' <- getModifiersFor (toSource l) (toTarget l) ()
-    let msg' = if any isBlank modifiers' then Blanked msg else msg
+    modifiers' <- getModifiers (toSource l) (toTarget l)
+    let msg' = if Blank `elem` modifiers' then Blanked msg else msg
     genericRunMessage msg' l
 
 instance Entity Location where

@@ -14,6 +14,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -36,7 +37,13 @@ instance ActionRunner env => HasActions env Scavenging where
     | ownedBy a iid && n >= 2
     = do
       hasItemInDiscard <- any (member Item . toTraits) <$> getDiscardOf iid
-      pure [ UseAbility iid (ability a) | hasItemInDiscard ]
+      cardsCanLeaveDiscard <-
+        notElem CardsCannotLeaveYourDiscardPile
+          <$> getModifiers (toSource a) (InvestigatorTarget iid)
+      pure
+        [ UseAbility iid (ability a)
+        | hasItemInDiscard && cardsCanLeaveDiscard
+        ]
   getActions i window (Scavenging x) = getActions i window x
 
 instance AssetRunner env => RunMessage env Scavenging where

@@ -16,5 +16,6 @@ data PlayRestriction
   | NoEnemiesAtYourLocation
   | OwnCardWithDoom
   | CardInDiscard DiscardSignifier [Trait]
+  | ReturnableCardInDiscard DiscardSignifier [Trait]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

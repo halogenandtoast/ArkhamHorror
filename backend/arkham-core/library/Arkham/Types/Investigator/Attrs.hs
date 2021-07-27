@@ -219,9 +219,9 @@ getFacingDefeat a@InvestigatorAttrs {..} = do
     >= modifiedSanity
 
 skillValueFor
-  :: SkillType -> Maybe Action -> [Modifier] -> InvestigatorAttrs -> Int
+  :: SkillType -> Maybe Action -> [ModifierType] -> InvestigatorAttrs -> Int
 skillValueFor skill maction tempModifiers attrs = foldr
-  (applyModifier . modifierType)
+  applyModifier
   (baseSkillValueFor skill maction tempModifiers attrs)
   tempModifiers
  where
@@ -233,9 +233,9 @@ skillValueFor skill maction tempModifiers attrs = foldr
   applyModifier _ n = n
 
 baseSkillValueFor
-  :: SkillType -> Maybe Action -> [Modifier] -> InvestigatorAttrs -> Int
+  :: SkillType -> Maybe Action -> [ModifierType] -> InvestigatorAttrs -> Int
 baseSkillValueFor skill _maction tempModifiers attrs = foldr
-  (applyModifier . modifierType)
+  applyModifier
   baseSkillValue
   tempModifiers
  where
@@ -255,9 +255,7 @@ damageValueFor
   -> m Int
 damageValueFor baseValue attrs = do
   source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
-  modifiers <-
-    map modifierType
-      <$> getModifiersFor source (InvestigatorTarget $ investigatorId attrs) ()
+  modifiers <- getModifiers source (InvestigatorTarget $ investigatorId attrs)
   pure $ foldr applyModifier baseValue modifiers
  where
   applyModifier (DamageDealt m) n = max 0 (n + m)
@@ -284,9 +282,7 @@ getHandSize
   -> m Int
 getHandSize attrs = do
   source <- fromMaybe (toSource attrs) <$> getSkillTestSource
-  modifiers <-
-    map modifierType
-      <$> getModifiersFor source (InvestigatorTarget $ investigatorId attrs) ()
+  modifiers <- getModifiers source (InvestigatorTarget $ investigatorId attrs)
   pure $ foldr applyModifier 8 modifiers
  where
   applyModifier (HandSize m) n = max 0 (n + m)
@@ -295,8 +291,7 @@ getHandSize attrs = do
 getActionsForTurn
   :: (MonadReader env m, HasModifiersFor env ()) => InvestigatorAttrs -> m Int
 getActionsForTurn attrs = do
-  modifiers <-
-    map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
+  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier 3 modifiers
  where
   applyModifier (AdditionalActions m) n = max 0 (n + m)
@@ -305,8 +300,7 @@ getActionsForTurn attrs = do
 getCanDiscoverClues
   :: (MonadReader env m, HasModifiersFor env ()) => InvestigatorAttrs -> m Bool
 getCanDiscoverClues attrs = do
-  modifiers <-
-    map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
+  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ not (any match modifiers)
  where
   match CannotDiscoverClues{} = True
@@ -315,8 +309,7 @@ getCanDiscoverClues attrs = do
 getCanSpendClues
   :: (MonadReader env m, HasModifiersFor env ()) => InvestigatorAttrs -> m Bool
 getCanSpendClues attrs = do
-  modifiers <-
-    map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
+  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ not (any match modifiers)
  where
   match CannotSpendClues{} = True
@@ -325,8 +318,7 @@ getCanSpendClues attrs = do
 getModifiedHealth
   :: (MonadReader env m, HasModifiersFor env ()) => InvestigatorAttrs -> m Int
 getModifiedHealth attrs@InvestigatorAttrs {..} = do
-  modifiers <-
-    map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
+  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier investigatorHealth modifiers
  where
   applyModifier (HealthModifier m) n = max 0 (n + m)
@@ -335,8 +327,7 @@ getModifiedHealth attrs@InvestigatorAttrs {..} = do
 getModifiedSanity
   :: (MonadReader env m, HasModifiersFor env ()) => InvestigatorAttrs -> m Int
 getModifiedSanity attrs@InvestigatorAttrs {..} = do
-  modifiers <-
-    map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
+  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier investigatorSanity modifiers
  where
   applyModifier (SanityModifier m) n = max 0 (n + m)
@@ -457,8 +448,7 @@ getActionCost
   -> Action
   -> m Int
 getActionCost attrs a = do
-  modifiers <-
-    map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
+  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier 1 modifiers
  where
   applyModifier (ActionCostOf match m) n =
@@ -472,8 +462,7 @@ getActionCostModifier
   -> m Int
 getActionCostModifier _ Nothing = pure 0
 getActionCostModifier attrs (Just a) = do
-  modifiers <-
-    map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
+  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier 0 modifiers
  where
   applyModifier (ActionCostOf match m) n =
@@ -493,9 +482,7 @@ cluesToDiscover
   -> m Int
 cluesToDiscover attrs startValue = do
   source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
-  modifiers <-
-    map modifierType
-      <$> getModifiersFor source (InvestigatorTarget $ investigatorId attrs) ()
+  modifiers <- getModifiers source (InvestigatorTarget $ investigatorId attrs)
   pure $ foldr applyModifier startValue modifiers
  where
   applyModifier (DiscoveredClues m) n = n + m
@@ -518,8 +505,7 @@ getFastIsPlayable
   -> m Bool
 getFastIsPlayable _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
 getFastIsPlayable attrs windows c@(PlayerCard _) = do
-  modifiers <-
-    map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
+  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   isPlayable <- getIsPlayable (toId attrs) windows c
   pure
     $ (cdFast pcDef || canBecomeFast modifiers || isJust (cdFastWindow pcDef))
@@ -560,8 +546,7 @@ getPlayableDiscards
   -> [Window]
   -> m [Card]
 getPlayableDiscards attrs@InvestigatorAttrs {..} windows = do
-  modifiers <-
-    map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
+  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   filterM (getFastIsPlayable attrs windows) (possibleCards modifiers)
  where
   possibleCards modifiers = map (PlayerCard . snd) $ filter
@@ -584,8 +569,7 @@ getPossibleSkillTypeChoices
   -> InvestigatorAttrs
   -> m [SkillType]
 getPossibleSkillTypeChoices skillType attrs = do
-  modifiers <-
-    map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
+  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier [skillType] modifiers
  where
   applyModifier (UseSkillInPlaceOf toReplace toUse) skills
@@ -600,8 +584,7 @@ canCommitToAnotherLocation
   => InvestigatorAttrs
   -> m Bool
 canCommitToAnotherLocation attrs = do
-  modifiers <-
-    map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
+  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   committedCardIds <- map unCommittedCardId <$> getSetList (toId attrs)
   pure $ any (permit committedCardIds) modifiers
  where
@@ -650,13 +633,9 @@ hasModifier
   => InvestigatorAttrs
   -> ModifierType
   -> m Bool
-hasModifier InvestigatorAttrs { investigatorId } m =
-  elem m
-    . map modifierType
-    <$> getModifiersFor
-          (InvestigatorSource investigatorId)
-          (InvestigatorTarget investigatorId)
-          ()
+hasModifier InvestigatorAttrs { investigatorId } m = elem m <$> getModifiers
+  (InvestigatorSource investigatorId)
+  (InvestigatorTarget investigatorId)
 
 isForced :: Message -> Bool
 isForced (UseAbility _ Ability { abilityType }) = abilityType == ForcedAbility
@@ -722,8 +701,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let (discard, hand, deck) = drawOpeningHand a 5
     pure $ a & (discardL .~ discard) & (handL .~ hand) & (deckL .~ Deck deck)
   TakeStartingResources iid | iid == investigatorId -> do
-    modifiers' <-
-      map modifierType <$> getModifiersFor (toSource a) (toTarget a) ()
+    modifiers' <- getModifiers (toSource a) (toTarget a)
     let
       startingResources = foldl'
         (\total -> \case
@@ -776,12 +754,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (discardL .~ discard)
       & (handL .~ hand)
       & (deckL .~ Deck deck)
-  ShuffleDiscardBackIn iid | iid == investigatorId ->
-    if notNull investigatorDiscard
-      then do
+  ShuffleDiscardBackIn iid | iid == investigatorId -> do
+    modifiers' <- getModifiers (toSource a) (toTarget a)
+    if null investigatorDiscard
+        || CardsCannotLeaveYourDiscardPile
+        `elem` modifiers'
+      then pure a
+      else do
         deck <- shuffleM (investigatorDiscard <> coerce investigatorDeck)
         pure $ a & discardL .~ [] & deckL .~ Deck deck
-      else pure a
   Resign iid | iid == investigatorId -> do
     pushAll $ resolve $ InvestigatorResigned iid
     pure $ a & resignedL .~ True
@@ -1049,8 +1030,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     | iid == investigatorId && not
       (investigatorDefeated || investigatorResigned)
     -> do
-      modifiers <-
-        map modifierType <$> getModifiersFor (toSource a) (toTarget a) ()
+      modifiers <- getModifiers (toSource a) (toTarget a)
       if TreatAllDamageAsDirect `elem` modifiers
         then a <$ push (InvestigatorDirectDamage iid source damage horror)
         else a <$ pushAll
@@ -1171,8 +1151,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         else pure []
       a <$ push (chooseOne iid $ healthDamageMessages <> sanityDamageMessages)
   Investigate iid lid source skillType True | iid == investigatorId -> do
-    modifiers <-
-      map modifierType <$> getModifiersFor (toSource a) (LocationTarget lid) ()
+    modifiers <- getModifiers (toSource a) (LocationTarget lid)
     let
       investigateCost = foldr applyModifier 1 modifiers
       applyModifier (ActionCostOf (IsAction Action.Investigate) m) n =
@@ -1489,11 +1468,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let (cards, deck) = splitAt n (unDeck investigatorDeck)
     pure $ a & deckL .~ Deck (deck <> cards)
   DrawCards iid 0 False | iid == investigatorId -> pure a
-  DrawCards iid n False | iid == investigatorId ->
+  DrawCards iid n False | iid == investigatorId -> do
+    modifiers' <- getModifiers (toSource a) (toTarget a)
     if null (unDeck investigatorDeck)
-      then if null investigatorDiscard
-        then pure a
-        else a <$ pushAll [EmptyDeck iid, DrawCards iid n False]
+      then
+        if null investigatorDiscard
+          || CardsCannotLeaveYourDiscardPile
+          `elem` modifiers'
+        then
+          pure a
+        else
+          a <$ pushAll [EmptyDeck iid, DrawCards iid n False]
       else do
         let
           (mcard, deck) = drawCard (coerce investigatorDeck)
@@ -1531,8 +1516,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   TakeResources iid n False | iid == investigatorId -> do
     cannotGainResources <- hasModifier a CannotGainResources
     pure $ if cannotGainResources then a else a & resourcesL +~ n
-  EmptyDeck iid | iid == investigatorId -> a <$ pushAll
-    [ShuffleDiscardBackIn iid, InvestigatorDamage iid EmptyDeckSource 0 1]
+  EmptyDeck iid | iid == investigatorId -> do
+    modifiers' <- getModifiers (toSource a) (toTarget a)
+    a <$ when
+      (CardsCannotLeaveYourDiscardPile `notElem` modifiers')
+      (pushAll
+        [ShuffleDiscardBackIn iid, InvestigatorDamage iid EmptyDeckSource 0 1]
+      )
   UseAbility iid ability@Ability {..} | iid == investigatorId -> a <$ push
     (CreatePayAbilityCostEffect (Just ability) abilitySource (toTarget a))
   AllDrawCardAndResource | not (a ^. defeatedL || a ^. resignedL) -> do
@@ -1540,8 +1530,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       $ push (DrawCards investigatorId 1 False)
     mayChooseNotToTakeResources <-
       elem MayChooseNotToTakeUpkeepResources
-      . map modifierType
-      <$> getModifiersFor (toSource a) (InvestigatorTarget investigatorId) ()
+        <$> getModifiers (toSource a) (InvestigatorTarget investigatorId)
     if mayChooseNotToTakeResources
       then a <$ push
         (chooseOne
@@ -1573,12 +1562,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     clueCount <- unClueCount <$> getCount investigatorLocation
     source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
 
-    skillTestModifiers' <-
-      map modifierType <$> getModifiersFor (toSource a) SkillTestTarget ()
-    cannotCommitCards <-
-      elem CannotCommitCards
-      . map modifierType
-      <$> getModifiersFor source (InvestigatorTarget investigatorId) ()
+    skillTestModifiers' <- getModifiers (toSource a) SkillTestTarget
+    cannotCommitCards <- elem CannotCommitCards
+      <$> getModifiers source (InvestigatorTarget investigatorId)
     let
       triggerMessage =
         [ StartSkillTest investigatorId
@@ -1918,12 +1904,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       else do
         fastActions <- getActions iid (DuringTurn You) ()
         playerWindowActions <- getActions iid FastPlayerWindow ()
-        modifiers <-
-          map modifierType
-            <$> getModifiersFor
-                  (InvestigatorSource iid)
-                  (InvestigatorTarget iid)
-                  ()
+        modifiers <- getModifiers
+          (InvestigatorSource iid)
+          (InvestigatorTarget iid)
         canAffordTakeResources <- getCanAfford a Action.Resource
         canAffordDrawCards <- getCanAfford a Action.Draw
         canAffordPlayCard <- getCanAfford a Action.Play

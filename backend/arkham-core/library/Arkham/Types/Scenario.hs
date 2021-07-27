@@ -53,32 +53,23 @@ instance
   => RunMessage env Scenario where
   runMessage msg s = case msg of
     ResolveToken _ tokenFace _ -> do
-      modifiers' <-
-        map modifierType
-          <$> getModifiersFor
-                (toSource $ toAttrs s)
-                (TokenFaceTarget tokenFace)
-                ()
+      modifiers' <- getModifiers
+        (toSource $ toAttrs s)
+        (TokenFaceTarget tokenFace)
       if IgnoreTokenEffects `elem` modifiers'
         then pure s
         else genericRunMessage msg s
     FailedSkillTest _ _ _ (TokenTarget token) _ _ -> do
-      modifiers' <-
-        map modifierType
-          <$> getModifiersFor
-                (toSource $ toAttrs s)
-                (TokenFaceTarget $ tokenFace token)
-                ()
+      modifiers' <- getModifiers
+        (toSource $ toAttrs s)
+        (TokenFaceTarget $ tokenFace token)
       if IgnoreTokenEffects `elem` modifiers'
         then pure s
         else genericRunMessage msg s
     PassedSkillTest _ _ _ (TokenTarget token) _ _ -> do
-      modifiers' <-
-        map modifierType
-          <$> getModifiersFor
-                (toSource $ toAttrs s)
-                (TokenFaceTarget $ tokenFace token)
-                ()
+      modifiers' <- getModifiers
+        (toSource $ toAttrs s)
+        (TokenFaceTarget $ tokenFace token)
       if IgnoreTokenEffects `elem` modifiers'
         then pure s
         else genericRunMessage msg s
@@ -106,12 +97,9 @@ instance
   )
   => HasTokenValue env Scenario where
   getTokenValue s iid tokenFace = do
-    modifiers' <-
-      map modifierType
-        <$> getModifiersFor
-              (toSource $ toAttrs s)
-              (TokenFaceTarget tokenFace)
-              ()
+    modifiers' <- getModifiers
+      (toSource $ toAttrs s)
+      (TokenFaceTarget tokenFace)
     if IgnoreTokenEffects `elem` modifiers'
       then pure $ TokenValue tokenFace NoModifier
       else defaultGetTokenValue s iid tokenFace

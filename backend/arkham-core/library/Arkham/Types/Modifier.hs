@@ -2,7 +2,6 @@ module Arkham.Types.Modifier
   ( Modifier(..)
   , ModifierType(..)
   , ActionTarget(..)
-  , isBlank
   ) where
 
 import Arkham.Prelude
@@ -75,6 +74,7 @@ data ModifierType
   | CannotPlay [(CardType, HashSet Trait)]
   | CannotSpendClues
   | CanOnlyBeAttackedByAbilityOn (HashSet CardCode)
+  | CardsCannotLeaveYourDiscardPile
   | ControlledAssetsCannotReady
   | DamageDealt Int
   | DamageTaken Int
@@ -126,7 +126,3 @@ data ActionTarget
   | EnemyAction Action [Trait]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON, Hashable)
-
-isBlank :: Modifier -> Bool
-isBlank (Modifier _ Blank{}) = True
-isBlank _ = False

@@ -65,7 +65,7 @@ instance ActionRunner env => HasActions env BrackishWaters where
           count
               (maybe
                   False
-                  (cardMatch (CardMatchByType (AssetType, mempty)) . toCardDef)
+                  (flip cardMatch (CardMatchByType AssetType) . toCardDef)
               . toPlayerCard
               )
               hand

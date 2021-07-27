@@ -43,7 +43,7 @@ instance TreacheryRunner env => RunMessage env MaskOfUmordhoth where
         [] -> pushAll
           [ FindAndDrawEncounterCard
             iid
-            (CardMatchByType (EnemyType, singleton Cultist))
+            (CardMatchByType EnemyType <> CardMatchByTrait Cultist)
           , Revelation iid source
           ]
         [eid] -> push (AttachTreachery treacheryId (EnemyTarget eid))

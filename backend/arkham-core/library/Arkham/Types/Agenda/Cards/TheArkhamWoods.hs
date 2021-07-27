@@ -34,7 +34,7 @@ instance AgendaRunner env => RunMessage env TheArkhamWoods where
           [ ShuffleEncounterDiscardBackIn
           , DiscardEncounterUntilFirst
             (AgendaSource aid)
-            (CardMatchByType (EnemyType, singleton Monster))
+            (CardMatchByType EnemyType <> CardMatchByTrait Monster)
           ]
         )
     RequestedEncounterCard (AgendaSource aid) mcard | aid == agendaId ->

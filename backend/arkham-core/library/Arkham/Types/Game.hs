@@ -737,6 +737,9 @@ instance HasGame env => HasSet ClassSymbol env AssetId where
   getSet assetId =
     maybe mempty singleton . cdClassSymbol . toCardDef <$> getAsset assetId
 
+instance HasGame env => HasSet ClassSymbol env InvestigatorId where
+  getSet = getSet <=< getInvestigator
+
 instance HasGame env => HasSet ClassSymbol env EventId where
   getSet eventId =
     maybe mempty singleton . cdClassSymbol . toCardDef <$> getEvent eventId
@@ -1241,9 +1244,7 @@ instance HasGame env => HasSet HandCardId env (InvestigatorId, CardType) where
     setFromList
       . map (coerce . toCardId)
       . filter
-          (maybe False (cardMatch (CardMatchByType (cardType, mempty)))
-          . toPlayerCard
-          )
+          (maybe False (`cardMatch` CardMatchByType cardType) . toPlayerCard)
       . handOf
       <$> getInvestigator iid
 
@@ -2469,7 +2470,7 @@ runGameMessage msg g = case msg of
               (lookup (toCardCode pc) allAssets)
               aid
           pushAll
-            [ PlayedCard iid cardId (toName asset) (toCardCode pc)
+            [ PlayedCard iid card
             , InvestigatorPlayDynamicAsset
               iid
               aid
@@ -2483,10 +2484,7 @@ runGameMessage msg g = case msg of
             (SetOriginalCardCode $ pcOriginalCardCode pc)
             (createEvent pc iid)
           let eid = toId event
-          pushAll
-            [ PlayedCard iid cardId (toName event) (toCardCode pc)
-            , InvestigatorPlayDynamicEvent iid eid n
-            ]
+          pushAll [PlayedCard iid card, InvestigatorPlayDynamicEvent iid eid n]
           pure $ g & eventsL %~ insertMap eid event
         _ -> pure g
       EncounterCard _ -> pure g
@@ -2505,7 +2503,7 @@ runGameMessage msg g = case msg of
           (createEvent card iid)
         let eid = toId event
         pushAll
-          [ PlayedCard iid cardId (toName event) (cdCardCode (toCardDef card))
+          [ PlayedCard iid card
           , InvestigatorPlayFastEvent iid eid mtarget windows
           ]
         pure $ g & eventsL %~ insertMap eid event
@@ -2530,7 +2528,7 @@ runGameMessage msg g = case msg of
               (lookup (toCardCode pc) allAssets)
               aid
           pushAll
-            [ PlayedCard iid cardId (toName asset) (toCardCode pc)
+            [ PlayedCard iid card
             , InvestigatorPlayAsset
               iid
               aid
@@ -2543,10 +2541,7 @@ runGameMessage msg g = case msg of
             (SetOriginalCardCode $ pcOriginalCardCode pc)
             (createEvent pc iid)
           let eid = toId event
-          pushAll
-            [ PlayedCard iid cardId (toName event) (toCardCode pc)
-            , InvestigatorPlayEvent iid eid mtarget
-            ]
+          pushAll [PlayedCard iid card, InvestigatorPlayEvent iid eid mtarget]
           pure $ g & eventsL %~ insertMap eid event
         _ -> pure g
       EncounterCard _ -> pure g
@@ -3064,9 +3059,9 @@ runGameMessage msg g = case msg of
     pure $ g & encounterDeckL .~ Deck encounterDeck
   FindAndDrawEncounterCard iid matcher -> do
     let
-      matchingDiscards = filter (cardMatch matcher) (g ^. discardL)
+      matchingDiscards = filter (`cardMatch` matcher) (g ^. discardL)
       matchingDeckCards =
-        filter (cardMatch matcher) (unDeck $ g ^. encounterDeckL)
+        filter (`cardMatch` matcher) (unDeck $ g ^. encounterDeckL)
 
     push
       (chooseOne iid
@@ -3084,9 +3079,9 @@ runGameMessage msg g = case msg of
          )
   FindEncounterCard iid target matcher -> do
     let
-      matchingDiscards = filter (cardMatch matcher) (g ^. discardL)
+      matchingDiscards = filter (`cardMatch` matcher) (g ^. discardL)
       matchingDeckCards =
-        filter (cardMatch matcher) (unDeck $ g ^. encounterDeckL)
+        filter (`cardMatch` matcher) (unDeck $ g ^. encounterDeckL)
       matchingVoidEnemies = case matcher of
         CardMatchByCardCode cardCode ->
           filter ((== cardCode) . toCardCode) . toList $ g ^. enemiesInVoidL
@@ -3151,14 +3146,14 @@ runGameMessage msg g = case msg of
       & (discardL .~ discard)
       & (focusedCardsL .~ mempty)
   SearchCollectionForRandom iid source matcher -> do
-    mcard <- case filter (cardMatch matcher) (toList allPlayerCards) of
+    mcard <- case filter (`cardMatch` matcher) (toList allPlayerCards) of
       [] -> pure Nothing
       (x : xs) -> Just <$> (genPlayerCard =<< sample (x :| xs))
     g <$ push (RequestedPlayerCard iid source mcard)
   DiscardEncounterUntilFirst source matcher -> do
     let
       (discards, remainingDeck) =
-        break (cardMatch matcher) (unDeck $ g ^. encounterDeckL)
+        break (`cardMatch` matcher) (unDeck $ g ^. encounterDeckL)
     case remainingDeck of
       [] -> do
         push (RequestedEncounterCard source Nothing)

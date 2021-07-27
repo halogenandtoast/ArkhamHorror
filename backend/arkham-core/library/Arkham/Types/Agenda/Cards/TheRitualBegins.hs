@@ -54,7 +54,7 @@ instance (AgendaRunner env) => RunMessage env TheRitualBegins where
         (SearchCollectionForRandom
           iid
           (AgendaSource agendaId)
-          (CardMatchByType (PlayerTreacheryType, singleton Madness))
+          (CardMatchByType PlayerTreacheryType <> CardMatchByTrait Madness)
         )
     RequestedPlayerCard iid (AgendaSource aid) mcard | aid == agendaId ->
       case mcard of

@@ -45,11 +45,7 @@ instance ActionRunner env => HasActions env DimensionalGap where
 instance LocationRunner env => RunMessage env DimensionalGap where
   runMessage msg l@(DimensionalGap attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      l
-        <$ push
-             (DiscardEncounterUntilFirst source
-             $ CardMatchByType (EnemyType, mempty)
-             )
+      l <$ push (DiscardEncounterUntilFirst source $ CardMatchByType EnemyType)
     RequestedEncounterCard source (Just ec) | isSource attrs source ->
       l <$ push (SpawnEnemyAt (EncounterCard ec) (toId attrs))
     _ -> DimensionalGap <$> runMessage msg attrs

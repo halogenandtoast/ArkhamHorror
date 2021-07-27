@@ -27,12 +27,7 @@ instance HasActions env SmiteTheWicked where
 instance TreacheryRunner env => RunMessage env SmiteTheWicked where
   runMessage msg t@(SmiteTheWicked attrs@TreacheryAttrs {..}) = case msg of
     Revelation _iid source | isSource attrs source ->
-      t
-        <$ push
-             (DiscardEncounterUntilFirst
-               source
-               (CardMatchByType (EnemyType, mempty))
-             )
+      t <$ push (DiscardEncounterUntilFirst source (CardMatchByType EnemyType))
     RequestedEncounterCard (TreacherySource tid) mcard | tid == treacheryId ->
       case mcard of
         Nothing -> t <$ push (Discard $ toTarget attrs)

@@ -63,7 +63,7 @@ instance ActRunner env => RunMessage env SkinGame where
           , FindEncounterCard
             leadInvestigatorId
             (toTarget attrs)
-            (CardMatchByType (EnemyType, singleton Abomination))
+            (CardMatchByType EnemyType <> CardMatchByTrait Abomination)
           , NextAct actId "02069"
           ]
         else

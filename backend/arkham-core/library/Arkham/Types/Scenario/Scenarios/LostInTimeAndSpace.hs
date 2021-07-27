@@ -219,7 +219,7 @@ instance
         (True, Cultist) -> push
           (DiscardEncounterUntilFirst
             (toSource attrs)
-            (CardMatchByType (LocationType, mempty))
+            (CardMatchByType LocationType)
           )
         (_, Tablet) -> do
           mYogSothothId <- getId (EnemyWithTitle "Yog-Sothoth")
@@ -232,7 +232,7 @@ instance
         Cultist -> push
           (DiscardEncounterUntilFirst
             (ProxySource (toSource attrs) (InvestigatorSource iid))
-            (CardMatchByType (LocationType, mempty))
+            (CardMatchByType LocationType)
           )
         Tablet -> do
           mYogSothothId <- getId (EnemyWithTitle "Yog-Sothoth")

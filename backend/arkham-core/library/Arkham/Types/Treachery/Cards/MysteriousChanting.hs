@@ -33,7 +33,7 @@ instance TreacheryRunner env => RunMessage env MysteriousChanting where
         [] -> t <$ pushAll
           [ FindAndDrawEncounterCard
             iid
-            (CardMatchByType (EnemyType, singleton Cultist))
+            (CardMatchByType EnemyType <> CardMatchByTrait Cultist)
           , Discard $ toTarget attrs
           ]
         xs -> t <$ pushAll

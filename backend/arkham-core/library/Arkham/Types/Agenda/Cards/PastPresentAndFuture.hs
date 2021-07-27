@@ -40,7 +40,7 @@ instance (HasRecord env, AgendaRunner env) => RunMessage env PastPresentAndFutur
         ([ ShuffleEncounterDiscardBackIn
          , DiscardEncounterUntilFirst
            (toSource attrs)
-           (CardMatchByType (LocationType, mempty))
+           (CardMatchByType LocationType)
          ]
         <> [ BeginSkillTest
                iid

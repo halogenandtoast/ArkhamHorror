@@ -158,6 +158,9 @@ instance HasTrauma Investigator where
   getTrauma i = (investigatorPhysicalTrauma, investigatorMentalTrauma)
     where InvestigatorAttrs {..} = toAttrs i
 
+instance HasSet ClassSymbol env Investigator where
+  getSet = pure . singleton . investigatorClass . toAttrs
+
 instance HasSet EnemyId env Investigator where
   getSet = pure . investigatorEngagedEnemies . toAttrs
 

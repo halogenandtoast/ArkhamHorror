@@ -117,13 +117,16 @@ instance HasCardDef a => HasCardCode a where
 instance HasCardDef CardDef where
   toCardDef = id
 
-cardMatch :: HasCardDef a => CardMatcher -> a -> Bool
-cardMatch (CardMatchByType (cardType', traits)) a =
-  (toCardType a == cardType')
-    && (null traits || notNull (intersection (toTraits a) traits))
-cardMatch (CardMatchByCardCode cardCode) card = toCardCode card == cardCode
-cardMatch (CardMatchByTitle title) card =
-  (nameTitle . cdName $ toCardDef card) == title
+cardMatch :: HasCardDef a => a -> CardMatcher -> Bool
+cardMatch a = \case
+  AnyCard -> True
+  CardMatchByType cardType' -> toCardType a == cardType'
+  CardMatchByCardCode cardCode -> toCardCode a == cardCode
+  CardMatchByTitle title -> (nameTitle . cdName $ toCardDef a) == title
+  CardMatchByTrait trait -> trait `member` toTraits a
+  CardMatchByClass role -> cdClassSymbol (toCardDef a) == Just role
+  CardMatchers ms -> all (cardMatch a) ms
+  CardMatchByOneOf ms -> any (cardMatch a) ms
 
 testCardDef :: CardType -> CardCode -> CardDef
 testCardDef cardType cardCode = CardDef

@@ -297,8 +297,8 @@ instance
         <> [ SearchCollectionForRandom
                iid
                (toSource attrs)
-               (CardMatchByType
-                 (PlayerTreacheryType, setFromList [Madness, Injury, Pact])
+               (CardMatchByType PlayerTreacheryType <> CardMatchByOneOf
+                 (map CardMatchByTrait [Madness, Injury, Pact])
                )
            | not standalone
            , iid <- investigatorIds

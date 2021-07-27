@@ -9,6 +9,7 @@ data WindowMatcher
   = AfterEnemyDefeated Who WindowEnemyMatcher
   | WhenEnemySpawns Where WindowEnemyMatcher
   | FastPlayerWindow Who
+  | DuringTurn Who
   | OrWindowMatcher [WindowMatcher]
   | DealtDamageOrHorror Who
   | WhenDrawEncounterCard Who EncounterCardMatcher

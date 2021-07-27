@@ -19,6 +19,10 @@ import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Map.Strict as Map
 import Json
 
+toPublicGame :: Entity ArkhamGame -> PublicGame ArkhamGameId
+toPublicGame (Entity gId ArkhamGame {..}) =
+  PublicGame gId arkhamGameName arkhamGameLog arkhamGameCurrentData
+
 data ApiResponse = GameUpdate (PublicGame ArkhamGameId) | GameMessage Text
   deriving stock Generic
   deriving anyclass ToJSON

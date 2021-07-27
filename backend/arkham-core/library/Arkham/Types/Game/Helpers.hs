@@ -13,6 +13,7 @@ import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
@@ -798,6 +799,8 @@ getIsPlayable iid windows c@(PlayerCard _) = do
     && passesRestrictions
  where
   pcDef = toCardDef c
+  prevents (CanOnlyUseCardsInRole role) =
+    cdClassSymbol pcDef `notElem` [Just Neutral, Just role, Nothing]
   prevents (CannotPlay typePairs) = any
     (\(cType, traits) ->
       cdCardType pcDef
@@ -930,6 +933,8 @@ cardInFastWindows
 cardInFastWindows iid _ windows matcher = anyM (matches matcher) windows
  where
   matches matcher' window' = case (matcher', window') of
+    (Matcher.DuringTurn whoMatcher, DuringTurn who) -> matchWho who whoMatcher
+    (Matcher.DuringTurn _, _) -> pure False
     (Matcher.OrWindowMatcher matchers, window'') ->
       anyM (`matches` window'') matchers
     (Matcher.WhenEnemySpawns whereMatcher enemyMatcher, WhenEnemySpawns enemyId locationId)

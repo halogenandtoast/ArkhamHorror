@@ -168,8 +168,8 @@ getModifiers
   :: (MonadReader env m, HasGameRef env, MonadIO m, HasQueue env, HasStdGen env)
   => Source
   -> Target
-  -> m [Modifier]
-getModifiersFor s t = toGameEnv >>= runReaderT (Arkham.getModifiers s t)
+  -> m [ModifierType]
+getModifiers s t = toGameEnv >>= runReaderT (Arkham.getModifiers s t)
 
 data TestApp = TestApp
   { game :: IORef Game

@@ -21,6 +21,7 @@ import Arkham.Types.TreacheryId
 data Window
   = AfterDiscoveringClues Who Where -- name conflict resolution
   | AfterDrawCard Who CardId
+  | AfterDrawingStartingHand InvestigatorId
   | AfterCommitedCard Who CardId
   | AfterEndTurn Who
   | AfterEnemyDefeated Who EnemyId

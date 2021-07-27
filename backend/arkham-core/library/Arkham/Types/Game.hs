@@ -22,6 +22,7 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ChaosBag
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes hiding (discard)
 import Arkham.Types.Decks
 import Arkham.Types.Difficulty
@@ -728,6 +729,30 @@ instance HasGame env => HasId (Maybe LocationId) env (Direction, LocationId) whe
 
 instance HasGame env => HasId (Maybe LocationId) env LocationMatcher where
   getId = (fmap toId <$>) . getLocationMatching
+
+instance HasGame env => HasSet ClassSymbol env AssetId where
+  getSet assetId =
+    maybe mempty singleton . cdClassSymbol . toCardDef <$> getAsset assetId
+
+instance HasGame env => HasSet ClassSymbol env EventId where
+  getSet eventId =
+    maybe mempty singleton . cdClassSymbol . toCardDef <$> getEvent eventId
+
+instance HasGame env => HasSet ClassSymbol env SkillId where
+  getSet skillId =
+    maybe mempty singleton . cdClassSymbol . toCardDef <$> getSkill skillId
+
+instance HasSet ClassSymbol env EnemyId where
+  getSet _ = pure $ singleton Neutral
+
+instance HasSet ClassSymbol env TreacheryId where
+  getSet _ = pure $ singleton Neutral
+
+instance  HasSet ClassSymbol env ActId where
+  getSet _ = pure $ singleton Neutral
+
+instance  HasSet ClassSymbol env AgendaId where
+  getSet _ = pure $ singleton Neutral
 
 instance HasGame env => HasSet AssetId env AssetMatcher where
   getSet = fmap (setFromList . map toId) . getAssetsMatching

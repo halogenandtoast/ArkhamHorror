@@ -87,6 +87,7 @@ allPlayerEventCards = mapFromList $ map
   , hypnoticGaze
   , ifItBleeds
   , imOuttaHere
+  , improvisation
   , iveGotAPlan
   , iveGotAPlan2
   , iveHadWorse4
@@ -578,6 +579,13 @@ buryThemDeep = (event "03016" "Bury Them Deep" 0 Neutral)
   , cdCardTraits = singleton Task
   , cdFastWindow = Just
     (AfterEnemyDefeated Anyone $ NonEliteEnemy <> EnemyAtYourLocation)
+  }
+
+improvisation :: CardDef
+improvisation = (event "03018" "Improvisation" 0 Neutral)
+  { cdSkills = [SkillWild, SkillWild]
+  , cdCardTraits = singleton Insight
+  , cdFastWindow = Just (DuringTurn You)
   }
 
 letMeHandleThis :: CardDef

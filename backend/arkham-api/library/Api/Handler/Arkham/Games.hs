@@ -85,10 +85,6 @@ getApiV1ArkhamGameR gameId = do
       (arkhamGameCurrentData ge)
     )
 
-toPublicGame :: Entity ArkhamGame -> PublicGame ArkhamGameId
-toPublicGame (Entity gId ArkhamGame {..}) =
-  PublicGame gId arkhamGameName arkhamGameLog arkhamGameCurrentData
-
 getApiV1ArkhamGamesR :: Handler [PublicGame ArkhamGameId]
 getApiV1ArkhamGamesR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId

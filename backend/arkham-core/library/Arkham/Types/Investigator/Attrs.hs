@@ -699,6 +699,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & (deckL .~ Deck deck'')
   DrawStartingHand iid | iid == investigatorId -> do
     let (discard, hand, deck) = drawOpeningHand a 5
+    push (CheckWindow iid [AfterDrawingStartingHand iid])
     pure $ a & (discardL .~ discard) & (handL .~ hand) & (deckL .~ Deck deck)
   TakeStartingResources iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toSource a) (toTarget a)
@@ -738,6 +739,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       | iid' <- iids
       ]
     )
+  SetRole iid role | iid == investigatorId -> do
+    pure $ a { investigatorClass = role }
   AllRandomDiscard | not (a ^. defeatedL || a ^. resignedL) ->
     a <$ push (RandomDiscard investigatorId)
   RandomDiscard iid | iid == investigatorId -> do
@@ -1555,6 +1558,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   PlaceUnderneath target cards | isTarget a target ->
     pure $ a & cardsUnderneathL <>~ cards
   BeforeSkillTest iid skillType skillDifficulty | iid == investigatorId -> do
+    modifiers' <- getModifiers (toSource a) (toTarget a)
     committedCardIds <- map unCommittedCardId <$> getSetList iid
     committedCardCodes <- mapSet unCommittedCardCode <$> getSet ()
     actions <- getActions iid (WhenSkillTest skillType) ()
@@ -1587,6 +1591,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   MinSkillTestValueDifference n ->
                     (skillDifficulty - baseSkillValueFor skillType Nothing [] a)
                       >= n
+              prevented = flip
+                any
+                modifiers'
+                \case
+                  CanOnlyUseCardsInRole role ->
+                    cdClassSymbol (toCardDef card)
+                      `notElem` [Just Neutral, Just role, Nothing]
+                  _ -> False
             in
               toCardId card
               `notElem` committedCardIds
@@ -1596,6 +1608,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                  `elem` cdSkills (toCardDef card)
                  )
               && passesRestrictions
+              && not prevented
           _ -> False
     if notNull committableCards || notNull committedCardIds || notNull actions
       then push
@@ -1627,6 +1640,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     when (locationId == investigatorLocation || canCommit) $ do
       committedCardIds <- map unCommittedCardId <$> getSetList investigatorId
       committedCardCodes <- mapSet unCommittedCardCode <$> getSet ()
+      modifiers' <- getModifiers (toSource a) (toTarget a)
       let
         beginMessage = BeforeSkillTest iid skillType skillDifficulty
         committableCards = if notNull committedCardIds
@@ -1651,6 +1665,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                           - baseSkillValueFor skillType Nothing [] a
                           )
                           >= n
+                  prevented = flip
+                    any
+                    modifiers'
+                    \case
+                      CanOnlyUseCardsInRole role ->
+                        cdClassSymbol (toCardDef card)
+                          `notElem` [Just Neutral, Just role, Nothing]
+                      _ -> False
                 in
                   toCardId card
                   `notElem` committedCardIds
@@ -1660,6 +1682,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                      `elem` cdSkills (toCardDef card)
                      )
                   && passesRestrictions
+                  && not prevented
               _ -> False
       when (notNull committableCards || notNull committedCardIds) $ push
         (SkillTestAsk $ chooseOne

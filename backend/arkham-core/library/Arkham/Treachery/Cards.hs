@@ -64,6 +64,7 @@ allPlayerTreacheryCards = mapFromList $ map
   , atychiphobia
   , chronophobia
   , coverUp
+  , crisisOfIdentity
   , curseOfTheRougarou
   , finalRhapsody
   , haunted
@@ -512,6 +513,10 @@ starsOfHyades =
 angeredSpirits :: CardDef
 angeredSpirits =
   (weakness "03015" "Angered Spirits") { cdCardTraits = singleton Task }
+
+crisisOfIdentity :: CardDef
+crisisOfIdentity =
+  (weakness "03019" "Crisis of Identity") { cdCardTraits = singleton Madness }
 
 theZealotsSeal :: CardDef
 theZealotsSeal = (treachery "50024" "The Zealot's Seal" ReturnToTheGathering 2)

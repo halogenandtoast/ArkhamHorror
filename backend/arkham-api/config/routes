@@ -14,6 +14,7 @@
           / ApiV1ArkhamGameR GET PUT DELETE
           /raw ApiV1ArkhamGameRawR PUT
           /join ApiV1ArkhamPendingGameR PUT
+          /replay/#Int ApiV1ArkhamGameReplayR GET
           /decks ApiV1ArkhamGameDecksR PUT
           /undo ApiV1ArkhamGameUndoR PUT
 

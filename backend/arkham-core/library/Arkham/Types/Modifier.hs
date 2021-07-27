@@ -9,6 +9,7 @@ import Arkham.Prelude
 import Arkham.Json
 import Arkham.Types.Action
 import Arkham.Types.Card
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Id
 import Arkham.Types.Keyword
 import Arkham.Types.SkillType
@@ -52,6 +53,7 @@ data ModifierType
   | CanBeFoughtAsIfAtYourLocation
   | CanBecomeFast (Maybe CardType, [Trait])
   | CanCommitToSkillTestPerformedByAnInvestigatorAtAnotherLocation Int
+  | CanOnlyUseCardsInRole ClassSymbol
   | CanPlayTopOfDiscard (Maybe CardType, [Trait])
   | CannotBeAttackedByNonElite
   | CannotBeDiscarded

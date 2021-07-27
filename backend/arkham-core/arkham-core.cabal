@@ -492,6 +492,7 @@ library
       Arkham.Types.Event.Cards.HypnoticGaze
       Arkham.Types.Event.Cards.IfItBleeds
       Arkham.Types.Event.Cards.ImOuttaHere
+      Arkham.Types.Event.Cards.Improvisation
       Arkham.Types.Event.Cards.IveGotAPlan
       Arkham.Types.Event.Cards.IveGotAPlan2
       Arkham.Types.Event.Cards.IveHadWorse4
@@ -844,6 +845,7 @@ library
       Arkham.Types.Treachery.Cards.ClawsOfSteam
       Arkham.Types.Treachery.Cards.CollapsingReality
       Arkham.Types.Treachery.Cards.CoverUp
+      Arkham.Types.Treachery.Cards.CrisisOfIdentity
       Arkham.Types.Treachery.Cards.CryptChill
       Arkham.Types.Treachery.Cards.CursedLuck
       Arkham.Types.Treachery.Cards.CursedSwamp

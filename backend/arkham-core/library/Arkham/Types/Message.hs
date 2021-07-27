@@ -15,6 +15,7 @@ import Arkham.Types.CampaignStep
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.ChaosBagStepState
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Cost
 import Arkham.Types.Direction
 import Arkham.Types.Effect.Window
@@ -471,6 +472,7 @@ data Message
     | SetActions InvestigatorId Source Int
     | SetEncounterDeck (Deck EncounterCard)
     | SetLocationLabel LocationId Text
+    | SetRole InvestigatorId ClassSymbol
     | ForceTokenDraw TokenFace
     | SetTokens [TokenFace]
     | SetTokensForScenario

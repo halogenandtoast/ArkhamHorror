@@ -21,10 +21,7 @@ spec = do
           )
         $ do
             runMessages
-                getModifiersFor
-                (TestSource mempty)
-                (toTarget location)
-                ()
+            getModifiers (TestSource mempty) (toTarget location)
               `shouldReturn` [CannotBeEnteredByNonElite]
             isAttachedTo location barricade `shouldReturn` True
 
@@ -45,7 +42,7 @@ spec = do
           )
         $ do
             runMessages
-            getModifiersFor (TestSource mempty) (toTarget location) ()
+            getModifiers (TestSource mempty) (toTarget location)
               `shouldReturn` []
             isAttachedTo location barricade `shouldReturn` False
             isInDiscardOf investigator barricade `shouldReturn` True

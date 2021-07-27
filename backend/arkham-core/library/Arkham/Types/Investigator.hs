@@ -34,6 +34,7 @@ data Investigator
   | DaisyWalkerParallel' DaisyWalkerParallel
   | JennyBarnes' JennyBarnes
   | JimCulver' JimCulver
+  | LolaHayes' LolaHayes
   | MarkHarrigan' MarkHarrigan
   | MinhThiPhan' MinhThiPhan
   | RexMurphy' RexMurphy
@@ -239,6 +240,7 @@ allInvestigators = mapFromList $ map
   , DaisyWalkerParallel' daisyWalkerParallel
   , JennyBarnes' jennyBarnes
   , JimCulver' jimCulver
+  , LolaHayes' lolaHayes
   , MarkHarrigan' markHarrigan
   , MinhThiPhan' minhThiPhan
   , RexMurphy' rexMurphy

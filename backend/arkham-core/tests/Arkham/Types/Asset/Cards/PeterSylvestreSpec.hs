@@ -16,7 +16,8 @@ spec = describe "Peter Sylvestre" $ do
         [playAsset investigator peterSylvestre]
         (assetsL %~ insertEntity peterSylvestre)
       $ do
-          runMessages (getModifiers (TestSource mempty) (toTarget investigator))
+          runMessages
+          getModifiers (TestSource mempty) (toTarget investigator)
             `shouldReturn` [SkillModifier SkillAgility 1]
 
   it "removes one horror at the end of your turn" $ do

@@ -9,6 +9,11 @@ interface FetchData {
   game: Game
 }
 
+interface FetchReplay {
+  totalSteps: number
+  game: Game
+}
+
 export const fetchGame = (gameId: string): Promise<FetchData> => api
   .get(`arkham/games/${gameId}`)
   .then((resp) => {
@@ -16,6 +21,15 @@ export const fetchGame = (gameId: string): Promise<FetchData> => api
     return gameDecoder
       .decodePromise(game)
       .then((gameData) => Promise.resolve({ investigatorId, game: gameData }));
+  });
+
+export const fetchGameReplay = (gameId: string, step: number): Promise<FetchReplay> => api
+  .get(`arkham/games/${gameId}/replay/${step}`)
+  .then((resp) => {
+    const { totalSteps, game } = resp.data;
+    return gameDecoder
+      .decodePromise(game)
+      .then((gameData) => Promise.resolve({ game: gameData, totalSteps }));
   });
 
 export const fetchGames = (): Promise<Game[]> => api

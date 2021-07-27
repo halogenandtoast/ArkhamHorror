@@ -55,6 +55,7 @@ data ModifierType
   | CanCommitToSkillTestPerformedByAnInvestigatorAtAnotherLocation Int
   | CanOnlyUseCardsInRole ClassSymbol
   | CanPlayTopOfDiscard (Maybe CardType, [Trait])
+  | PlaceOnBottomOfDeckInsteadOfDiscard
   | CannotBeAttackedByNonElite
   | CannotBeDiscarded
   | CannotBeEnteredByNonElite

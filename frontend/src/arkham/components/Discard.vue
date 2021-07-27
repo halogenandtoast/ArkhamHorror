@@ -1,7 +1,7 @@
 <template>
   <div class="discards">
     <div v-for="card in cards" :key="card.id" class="discard">
-      <FocusedCard :game="game" :card="card" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
+      <Card :game="game" :card="card" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
     </div>
   </div>
 </template>
@@ -10,11 +10,11 @@
 import { defineComponent } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import { PlayerCard } from '@/arkham/types/Card';
-import FocusedCard from '@/arkham/components/FocusedCard.vue';
+import Card from '@/arkham/components/Card.vue';
 
 export default defineComponent({
   components: {
-    FocusedCard,
+    Card,
   },
   props: {
     game: { type: Object as () => Game, required: true },

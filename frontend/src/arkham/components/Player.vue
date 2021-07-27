@@ -45,11 +45,7 @@
       />
 
       <div class="discard">
-        <img
-          v-if="topOfDiscard"
-          :src="topOfDiscard"
-          class="card"
-        />
+        <Card v-if="topOfDiscard" :game="game" :card="topOfDiscard" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
         <button v-if="discards.length > 0" class="view-discard-button" @click="toggleDiscard">{{viewDiscardLabel}}</button>
       </div>
 
@@ -106,6 +102,7 @@ import Enemy from '@/arkham/components/Enemy.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import HandCard from '@/arkham/components/HandCard.vue';
+import Card from '@/arkham/components/Card.vue';
 import CardRow from '@/arkham/components/CardRow.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
@@ -120,6 +117,7 @@ export default defineComponent({
     Investigator,
     ChoiceModal,
     CardRow,
+    Card,
   },
   props: {
     game: { type: Object as () => Game, required: true },
@@ -131,14 +129,7 @@ export default defineComponent({
     const discards = computed(() => props.player.contents.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
     const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
 
-    const topOfDiscard = computed(() => {
-      if (discards.value.length > 0) {
-        const { cardCode } = discards.value[0].contents;
-        return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
-      }
-
-      return null;
-    })
+    const topOfDiscard = computed(() => discards.value[0])
 
 
     const viewingDiscard = ref(false)

@@ -51,6 +51,7 @@ data MessageType
     | DrawTokenMessage
     | RevealTokenMessage
     | ResolveTokenMessage
+    | RunWindowMessage
     | EnemySpawnMessage
     | DamageMessage
     | DrawEncounterCardMessage
@@ -67,6 +68,7 @@ messageType RevealToken{} = Just RevealTokenMessage
 messageType InvestigatorDamage{} = Just DamageMessage
 messageType InvestigatorDoAssignDamage{} = Just DamageMessage
 messageType InvestigatorDrewEncounterCard{} = Just DrawEncounterCardMessage
+messageType RunWindow{} = Just RunWindowMessage
 messageType _ = Nothing
 
 isBlanked :: Message -> Bool
@@ -317,6 +319,7 @@ data Message
     | InitiatePlayCard InvestigatorId CardId (Maybe Target) Bool
     | InitiatePlayFastEvent InvestigatorId CardId (Maybe Target) Bool
     | InitiatePlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
+    | CheckAdditionalActionCosts InvestigatorId Target Source Action [Message]
     | Investigate InvestigatorId LocationId Source SkillType Bool
     | -- | uses the internal method and then checks defeat
       InvestigatorAssignDamage InvestigatorId Source DamageStrategy Int Int
@@ -484,6 +487,7 @@ data Message
     | ShuffleAllInEncounterDiscardBackIn CardCode
     | ShuffleBackIntoEncounterDeck Target
     | ShuffleCardsIntoDeck InvestigatorId [PlayerCard]
+    | PlaceOnBottomOfDeck InvestigatorId PlayerCard
     | ShuffleDiscardBackIn InvestigatorId
     | ShuffleEncounterDiscardBackIn
     | ShuffleIntoDeck InvestigatorId Target

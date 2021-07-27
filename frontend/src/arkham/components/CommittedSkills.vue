@@ -5,7 +5,7 @@
     </header>
     <div class="card-row-cards">
       <div v-for="card in cards" :key="card.id" class="card-row-card">
-        <FocusedCard :game="game" :card="card" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
+        <Card :game="game" :card="card" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
       </div>
     </div>
   </div>
@@ -17,11 +17,11 @@ import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { CardContents } from '@/arkham/types/Card';
 import { MessageType } from '@/arkham/types/Message';
-import FocusedCard from '@/arkham/components/FocusedCard.vue';
+import Card from '@/arkham/components/Card.vue';
 
 export default defineComponent({
   components: {
-    FocusedCard,
+    Card,
   },
   props: {
     game: { type: Object as () => Game, required: true },

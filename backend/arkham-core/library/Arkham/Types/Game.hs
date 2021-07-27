@@ -712,6 +712,9 @@ instance HasGame env => HasCount StartingUsesCount env (AssetId, UseType) where
 instance HasGame env => HasId (Maybe OwnerId) env AssetId where
   getId = getId <=< getAsset
 
+instance HasGame env => HasId InvestigatorId env EventId where
+  getId = getId <=< getEvent
+
 instance HasGame env => HasName env LocationId where
   getName = getName <=< getLocation
 
@@ -1190,6 +1193,9 @@ instance HasGame env => HasList UnderneathCard env InvestigatorId where
   getList = getList <=< getInvestigator
 
 instance HasGame env => HasList HandCard env InvestigatorId where
+  getList = getList <=< getInvestigator
+
+instance HasGame env => HasList PlayableHandCard env InvestigatorId where
   getList = getList <=< getInvestigator
 
 instance HasGame env => HasList DeckCard env InvestigatorId where
@@ -2485,8 +2491,8 @@ runGameMessage msg g = case msg of
         _ -> pure g
       EncounterCard _ -> pure g
   PlayCard iid cardId mtarget False -> do
-    investigator <- getInvestigator iid
-    case find ((== cardId) . toCardId) (handOf investigator) of
+    handCards <- map unPlayableHandCard <$> getList iid
+    case find ((== cardId) . toCardId) handCards of
       Nothing -> pure g -- card was discarded before playing
       Just card -> runGameMessage (PutCardIntoPlay iid card mtarget) g
   PlayFastEvent iid cardId mtarget windows -> do
@@ -3323,7 +3329,10 @@ runGameMessage msg g = case msg of
       then g <$ push (RemoveFromGame (EventTarget eid))
       else do
         case toCard event of
-          PlayerCard pc -> push $ AddToDiscard (ownerOfEvent event) pc
+          PlayerCard pc ->
+            if PlaceOnBottomOfDeckInsteadOfDiscard `elem` modifiers'
+              then push $ PlaceOnBottomOfDeck (ownerOfEvent event) pc
+              else push $ AddToDiscard (ownerOfEvent event) pc
           EncounterCard _ -> error "Unhandled"
         pure $ g & eventsL %~ deleteMap eid
   Discard (TreacheryTarget tid) -> do

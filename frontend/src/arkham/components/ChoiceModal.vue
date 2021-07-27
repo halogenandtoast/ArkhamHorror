@@ -1,7 +1,7 @@
 <template>
   <div v-if="focusedCards.length > 0 && choices.length > 0" class="modal">
     <div class="modal-contents focused-cards">
-      <FocusedCard
+      <Card
         v-for="(card, index) in focusedCards"
         :card="card"
         :game="game"
@@ -29,11 +29,11 @@ import { defineComponent, computed } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
-import FocusedCard from '@/arkham/components/FocusedCard.vue';
+import Card from '@/arkham/components/Card.vue';
 
 export default defineComponent({
   components: {
-    FocusedCard,
+    Card,
   },
   props: {
     game: { type: Object as () => Game, required: true },

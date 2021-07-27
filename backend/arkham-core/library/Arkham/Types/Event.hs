@@ -10,13 +10,12 @@ import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Cards
 import Arkham.Types.Event.Runner
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
-import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.SkillTest
 import Arkham.Types.Source
-import Arkham.Types.Trait
 
 $(buildEntity "Event")
 
@@ -28,24 +27,10 @@ instance HasCardDef Event where
 
 deriving anyclass instance
   ( HasCount ActionTakenCount env InvestigatorId
+  , CanCheckPlayable env
   , GetCardDef env EnemyId
-  , HasActions env ActionType
-  , HasCount ClueCount env LocationId
-  , HasCount DoomCount env AssetId
-  , HasCount DoomCount env InvestigatorId
-  , HasCount ResourceCount env InvestigatorId
-  , HasId LocationId env InvestigatorId
-  , HasId LocationId env EnemyId
-  , HasList DiscardedPlayerCard env InvestigatorId
   , HasList UnderneathCard env InvestigatorId
-  , HasModifiersFor env ()
   , HasSet AssetId env (InvestigatorId, UseType)
-  , HasSet AssetId env InvestigatorId
-  , HasSet EnemyId env InvestigatorId
-  , HasSet EnemyId env LocationId
-  , HasSet InvestigatorId env ()
-  , HasSet InvestigatorId env LocationId
-  , HasSet Trait env EnemyId
   , HasSkillTest env
   )
   => HasActions env Event
@@ -86,6 +71,9 @@ instance SourceEntity Event where
 instance IsCard Event where
   toCardId = toCardId . toAttrs
   toCard e = lookupCard (eventOriginalCardCode . toAttrs $ e) (toCardId e)
+
+instance HasId InvestigatorId env Event where
+  getId = pure . eventOwner . toAttrs
 
 getEventId :: Event -> EventId
 getEventId = eventId . toAttrs

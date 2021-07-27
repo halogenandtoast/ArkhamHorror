@@ -8,6 +8,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Id
 import Arkham.Types.Modifier
 import Arkham.Types.Target
 
@@ -18,11 +19,16 @@ newtype WendysAmulet = WendysAmulet AssetAttrs
 wendysAmulet :: AssetCard WendysAmulet
 wendysAmulet = accessory WendysAmulet Cards.wendysAmulet
 
-instance HasModifiersFor env WendysAmulet where
+instance HasId InvestigatorId env EventId => HasModifiersFor env WendysAmulet where
   getModifiersFor _ (InvestigatorTarget iid) (WendysAmulet a) =
     pure $ toModifiers
       a
       [ CanPlayTopOfDiscard (Just EventType, []) | ownedBy a iid ]
+  getModifiersFor _ (EventTarget eid) (WendysAmulet a) = do
+    owner <- getId @InvestigatorId eid
+    pure $ toModifiers
+      a
+      [ PlaceOnBottomOfDeckInsteadOfDiscard | ownedBy a owner ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env WendysAmulet where

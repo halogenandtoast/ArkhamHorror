@@ -73,7 +73,8 @@ instance (InvestigatorRunner env) => RunMessage env WendyAdams where
       -> do
         cancelToken token
         i <$ pushAll
-          [ CancelNext DrawTokenMessage
+          [ CancelNext RunWindowMessage
+          , CancelNext DrawTokenMessage
           , CancelNext RevealTokenMessage
           , ReturnTokens [token]
           , UnfocusTokens

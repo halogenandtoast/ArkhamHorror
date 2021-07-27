@@ -642,9 +642,30 @@ isForced (UseAbility _ Ability { abilityType }) = abilityType == ForcedAbility
 isForced _ = False
 
 findCard :: CardId -> InvestigatorAttrs -> Card
-findCard cardId a = fromJustNote "not in hand or discard"
-  $ findMatch (a ^. handL)
+findCard cardId a =
+  fromJustNote "not in hand or discard" $ findMatch $ (a ^. handL) <> map
+    PlayerCard
+    (a ^. discardL)
   where findMatch = find ((== cardId) . toCardId)
+
+getAsIfInHandCards
+  :: (MonadReader env m, HasModifiersFor env ())
+  => InvestigatorAttrs
+  -> m [Card]
+getAsIfInHandCards attrs = do
+  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
+  let
+    modifiersPermitPlay c = any (modifierPermitsPlay c) modifiers
+    modifierPermitsPlay (c, depth) = \case
+      CanPlayTopOfDiscard (mType, traits) | depth == 0 ->
+        maybe True (== toCardType c) mType
+          && (null traits || notNull
+               (setFromList traits `intersection` toTraits c)
+             )
+      _ -> False
+  pure $ map (PlayerCard . fst) $ filter
+    modifiersPermitPlay
+    (zip (investigatorDiscard attrs) [0 :: Int ..])
 
 runInvestigatorMessage
   :: (InvestigatorRunner env, MonadReader env m, MonadRandom m, MonadIO m)
@@ -701,6 +722,32 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let (discard, hand, deck) = drawOpeningHand a 5
     push (CheckWindow iid [AfterDrawingStartingHand iid])
     pure $ a & (discardL .~ discard) & (handL .~ hand) & (deckL .~ Deck deck)
+  CheckAdditionalActionCosts iid _ source action msgs -> do
+    modifiers' <- getModifiers source (toTarget a)
+    let
+      additionalCosts = mapMaybe
+        (\case
+          ActionCostOf (IsAction action') n | action == action' ->
+            Just (ActionCost n)
+          _ -> Nothing
+        )
+        modifiers'
+    unless (null additionalCosts) $ do
+      canPay <- getCanAffordCost
+        iid
+        (toSource a)
+        Nothing
+        (mconcat additionalCosts)
+      when
+        canPay
+        (pushAll
+        $ [ CreatePayAbilityCostEffect Nothing (toSource a) (toTarget a)
+          , PayAbilityCost (toSource a) iid Nothing (mconcat additionalCosts)
+          , PayAbilityCostFinished (toSource a) iid
+          ]
+        <> msgs
+        )
+    pure a
   TakeStartingResources iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toSource a) (toTarget a)
     let
@@ -1326,7 +1373,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         )
       else pure a
   PlayedCard iid cardId _ _ | iid == investigatorId ->
-    pure $ a & handL %~ filter ((/= cardId) . toCardId)
+    pure $ a & handL %~ filter ((/= cardId) . toCardId) & discardL %~ filter
+      ((/= cardId) . toCardId)
   InvestigatorPlayAsset iid aid slotTypes traits | iid == investigatorId -> do
     a <$ if fitsAvailableSlots slotTypes traits a
       then push (InvestigatorPlayedAsset iid aid slotTypes traits)
@@ -1765,6 +1813,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   ShuffleCardsIntoDeck iid cards | iid == investigatorId -> do
     deck <- shuffleM (cards <> unDeck investigatorDeck)
     pure $ a & deckL .~ Deck deck
+  PlaceOnBottomOfDeck iid card | iid == investigatorId ->
+    pure $ a & deckL %~ Deck . (<> [card]) . unDeck
   AddToHandFromDeck iid cardId | iid == investigatorId -> do
     let
       card = fromJustNote "card did not exist"
@@ -1933,19 +1983,21 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         canAffordTakeResources <- getCanAfford a Action.Resource
         canAffordDrawCards <- getCanAfford a Action.Draw
         canAffordPlayCard <- getCanAfford a Action.Play
+        asIfInHandCards <- getAsIfInHandCards a
         let
+          handCards = investigatorHand <> asIfInHandCards
           windows = if isCurrentPlayer
             then [DuringTurn You, FastPlayerWindow]
             else [FastPlayerWindow]
         isPlayableMap :: HashMap Card Bool <- mapFromList <$> for
-          investigatorHand
+          handCards
           (\c -> do
             isPlayable <- getIsPlayable (toId a) windows c
             pure (c, isPlayable)
           )
         let isPlayable c = findWithDefault False c isPlayableMap
         fastIsPlayableMap :: HashMap Card Bool <- mapFromList <$> for
-          investigatorHand
+          handCards
           (\c -> do
             fastIsPlayable <- getFastIsPlayable a windows c
             pure (c, fastIsPlayable)
@@ -1970,12 +2022,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                  `notElem` modifiers
                ]
             <> [ InitiatePlayCard iid (toCardId c) Nothing usesAction
-               | c <- investigatorHand
+               | c <- handCards
                , canAffordPlayCard || fastIsPlayable c
                , isPlayable c && not (isDynamic c)
                ]
             <> [ InitiatePlayDynamicCard iid (toCardId c) 0 Nothing usesAction
-               | c <- investigatorHand
+               | c <- handCards
                , canAffordPlayCard || fastIsPlayable c
                , isPlayable c && isDynamic c
                ]

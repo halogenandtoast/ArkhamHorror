@@ -8,6 +8,7 @@ import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.CardType
 import Arkham.Types.Card.Cost
 import Arkham.Types.ClassSymbol
+import Arkham.Types.GameValue
 import Arkham.Types.Name
 import qualified Arkham.Types.PlayRestriction as Restriction
 import Arkham.Types.SkillType
@@ -130,9 +131,7 @@ onTheLam :: CardDef
 onTheLam = (event "01010" "On the Lam" 1 Neutral)
   { cdCardTraits = setFromList [Tactic]
   , cdSkills = [SkillIntellect, SkillAgility, SkillWild, SkillWild]
-  , cdFast = True
-  , cdWindows = setFromList
-    [Window.AfterTurnBegins Window.You, Window.DuringTurn Window.You]
+  , cdFastWindow = Just (AfterTurnBegins You)
   }
 
 darkMemory :: CardDef
@@ -286,10 +285,11 @@ cunningDistraction = (event "01078" "Cunning Distraction" 5 Survivor)
 lookWhatIFound :: CardDef
 lookWhatIFound = (event "01079" "\"Look what I found!\"" 2 Survivor)
   { cdSkills = [SkillIntellect, SkillIntellect]
-  , cdCardTraits = setFromList [Fortune]
-  , cdFast = True
-  , cdWindows = setFromList
-    [ Window.AfterFailInvestigationSkillTest Window.You n | n <- [0 .. 2] ]
+  , cdCardTraits = singleton Fortune
+  , cdFastWindow = Just
+    (AfterSkillTestResult You WhileInvestigating
+    $ FailureResult (LessThan $ Static 3)
+    )
   }
 
 lucky :: CardDef

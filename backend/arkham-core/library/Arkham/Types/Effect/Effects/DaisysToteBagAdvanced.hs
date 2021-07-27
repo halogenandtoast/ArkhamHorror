@@ -25,6 +25,6 @@ instance HasModifiersFor env DaisysToteBagAdvanced where
 
 instance HasQueue env => RunMessage env DaisysToteBagAdvanced where
   runMessage msg e@(DaisysToteBagAdvanced attrs) = case msg of
-    PlayedCard _ cardId _ _ | CardIdTarget cardId == effectTarget attrs ->
+    PlayedCard _ card | CardIdTarget (toCardId card) == effectTarget attrs ->
       e <$ push (DisableEffect $ toId attrs)
     _ -> DaisysToteBagAdvanced <$> runMessage msg attrs

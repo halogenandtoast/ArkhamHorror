@@ -6,7 +6,7 @@ import Import hiding (appLogger)
 import Arkham.PlayerCard
 import Arkham.Types.Card
 import Arkham.Types.Card.PlayerCard
-import Arkham.Types.Classes.HasQueue
+import Arkham.Types.Classes hiding (Entity(..))
 import Arkham.Types.Game
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
@@ -118,8 +118,10 @@ toHumanReadable = \case
   BeginMythos -> Just "Begin mythos phase"
   BeginUpkeep -> Just "Begin upkeep phase"
   StartScenario name _ -> Just $ "Begin scenario " <> display name
-  PlayedCard iid cardId name cardCode ->
-    Just $ investigator iid <> " played " <> card name cardCode cardId
+  PlayedCard iid card' -> Just $ investigator iid <> " played " <> card
+    (toName card')
+    (toCardCode card')
+    (toCardId card')
   InvestigatorMulligan iid ->
     Just $ investigator iid <> " deciding on mulligan"
   FinishedWithMulligan iid -> Just $ investigator iid <> " done with mulligan"

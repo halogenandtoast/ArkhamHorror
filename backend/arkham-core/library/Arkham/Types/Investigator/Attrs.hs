@@ -1238,9 +1238,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     when (investigatorClues > 0) (push $ PlaceClues target investigatorClues)
     pure $ a & cluesL .~ 0
   PayCardCost iid cardId | iid == investigatorId -> do
-    let
-      card = findCard cardId a
-      cost = getCost card
+    let card = findCard cardId a
+    cost <- getModifiedCardCost iid card
     pure $ a & resourcesL -~ cost
   PayDynamicCardCost iid cardId n beforePlayMessages | iid == investigatorId ->
     do
@@ -1372,9 +1371,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         <> [PlayCard iid cardId mtarget False]
         )
       else pure a
-  PlayedCard iid cardId _ _ | iid == investigatorId ->
-    pure $ a & handL %~ filter ((/= cardId) . toCardId) & discardL %~ filter
-      ((/= cardId) . toCardId)
+  PlayedCard iid card | iid == investigatorId ->
+    pure $ a & handL %~ filter (/= card) & discardL %~ filter
+      ((/= card) . PlayerCard)
   InvestigatorPlayAsset iid aid slotTypes traits | iid == investigatorId -> do
     a <$ if fitsAvailableSlots slotTypes traits a
       then push (InvestigatorPlayedAsset iid aid slotTypes traits)

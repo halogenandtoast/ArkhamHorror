@@ -34,7 +34,7 @@ instance AgendaRunner env => RunMessage env RiseOfTheGhouls where
           [ ShuffleEncounterDiscardBackIn
           , DiscardEncounterUntilFirst
             (AgendaSource aid)
-            (CardMatchByType (EnemyType, singleton Ghoul))
+            (CardMatchByType EnemyType <> CardMatchByTrait Ghoul)
           ]
         )
     RequestedEncounterCard (AgendaSource aid) mcard | aid == agendaId ->

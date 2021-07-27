@@ -42,7 +42,7 @@ instance LocationRunner env => RunMessage env HouseInTheReeds_211 where
       push $ FindEncounterCard
         iid
         (toTarget attrs)
-        (CardMatchByType (EnemyType, singleton Nightgaunt))
+        (CardMatchByType EnemyType <> CardMatchByTrait Nightgaunt)
       HouseInTheReeds_211 <$> runMessage msg attrs
     FoundEncounterCard _iid target card | isTarget attrs target -> do
       villageCommonsId <- fromJustNote "missing village commons"

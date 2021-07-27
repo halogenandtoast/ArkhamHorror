@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.Easttown where
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (easttown)
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -25,7 +26,9 @@ instance HasModifiersFor env Easttown where
   getModifiersFor _ (InvestigatorTarget iid) (Easttown attrs) =
     pure $ toModifiers
       attrs
-      [ ReduceCostOf [Ally] 2 | iid `member` locationInvestigators attrs ]
+      [ ReduceCostOf (CardMatchByTrait Ally) 2
+      | iid `member` locationInvestigators attrs
+      ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env Easttown where

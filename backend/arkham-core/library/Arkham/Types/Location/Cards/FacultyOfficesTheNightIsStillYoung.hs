@@ -70,7 +70,7 @@ instance LocationRunner env => RunMessage env FacultyOfficesTheNightIsStillYoung
       push $ FindEncounterCard
         iid
         (toTarget attrs)
-        (CardMatchByType (EnemyType, singleton Humanoid))
+        (CardMatchByType EnemyType <> CardMatchByTrait Humanoid)
       FacultyOfficesTheNightIsStillYoung <$> runMessage msg attrs
     FoundEncounterCard _iid target card | isTarget attrs target ->
       l <$ push (SpawnEnemyAt (EncounterCard card) (toId attrs))

@@ -7,6 +7,7 @@ import Arkham.Prelude
 import Arkham.Types.Ability
 import Arkham.Types.Action
 import Arkham.Types.Card
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Effect.Attrs
@@ -101,6 +102,7 @@ data Effect
   | MinhThiPhan' MinhThiPhan
   | WilliamYorick' WilliamYorick
   | ThePaintedWorld' ThePaintedWorld
+  | Improvisation' Improvisation
   | LetMeHandleThis' LetMeHandleThis
   | MindWipe3' MindWipe3
   | JeremiahPierce' JeremiahPierce
@@ -112,7 +114,11 @@ data Effect
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-instance HasId Difficulty env () => HasModifiersFor env Effect where
+instance
+  ( HasSet ClassSymbol env InvestigatorId
+  , HasId Difficulty env ()
+  )
+  => HasModifiersFor env Effect where
   getModifiersFor = genericGetModifiersFor
 
 instance
@@ -130,6 +136,7 @@ instance
   , HasSet EnemyId env InvestigatorId
   , HasList DiscardedPlayerCard env InvestigatorId
   , HasCount ActionRemainingCount env InvestigatorId
+  , HasSet ClassSymbol env InvestigatorId
   )
   => RunMessage env Effect where
   runMessage = genericRunMessage
@@ -199,6 +206,7 @@ allEffects = mapFromList
   , ("03002", MinhThiPhan' . minhThiPhan)
   , ("03005", WilliamYorick' . williamYorick)
   , ("03012", ThePaintedWorld' . thePaintedWorld)
+  , ("03018", Improvisation' . improvisation)
   , ("03022", LetMeHandleThis' . letMeHandleThis)
   , ("50008", MindWipe3' . mindWipe3)
   , ("50044", JeremiahPierce' . jeremiahPierce)

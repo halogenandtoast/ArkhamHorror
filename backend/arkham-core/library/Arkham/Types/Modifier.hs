@@ -104,8 +104,7 @@ data ModifierType
   | ModifierIfSucceededBy Int Modifier
   | NegativeToPositive
   | ChangeTokenModifier TokenModifier
-  | ReduceCostOf [Trait] Int
-  | ReduceCostOfCardType CardType Int
+  | ReduceCostOf CardMatcher Int
   | RemoveKeyword Keyword
   | RemoveFromGameInsteadOfDiscard
   | ReturnToHandAfterTest

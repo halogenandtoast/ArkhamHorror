@@ -341,6 +341,7 @@ library
       Arkham.Types.Effect.Effects.ExposeWeakness1
       Arkham.Types.Effect.Effects.FireExtinguisher1
       Arkham.Types.Effect.Effects.HuntingNightgaunt
+      Arkham.Types.Effect.Effects.Improvisation
       Arkham.Types.Effect.Effects.JeremiahPierce
       Arkham.Types.Effect.Effects.LetMeHandleThis
       Arkham.Types.Effect.Effects.Lucky

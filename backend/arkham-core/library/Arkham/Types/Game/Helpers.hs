@@ -896,10 +896,8 @@ getModifiedCardCost iid c@(PlayerCard _) = do
     Just (StaticCost n) -> n
     Just DynamicCost -> 0
     Nothing -> 0
-  applyModifier (ReduceCostOf traits m) n
-    | notNull (setFromList traits `intersection` toTraits pcDef) = max 0 (n - m)
-  applyModifier (ReduceCostOfCardType cardType m) n
-    | cardType == cdCardType pcDef = max 0 (n - m)
+  applyModifier (ReduceCostOf cardMatcher m) n | cardMatch c cardMatcher =
+    max 0 (n - m)
   applyModifier _ n = n
 getModifiedCardCost iid c@(EncounterCard _) = do
   modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
@@ -908,10 +906,8 @@ getModifiedCardCost iid c@(EncounterCard _) = do
     (error "we need so specify ecCost for this to work")
     modifiers
  where
-  applyModifier (ReduceCostOf traits m) n
-    | notNull (setFromList traits `intersection` toTraits (toCardDef c)) = max
-      0
-      (n - m)
+  applyModifier (ReduceCostOf cardMatcher m) n | cardMatch c cardMatcher =
+    max 0 (n - m)
   applyModifier _ n = n
 
 cardInWindows :: [Window] -> Card -> InvestigatorId -> Bool
@@ -937,7 +933,7 @@ cardInFastWindows iid _ windows matcher = anyM (matches matcher) windows
   matches matcher' window' = case (matcher', window') of
     (Matcher.AfterTurnBegins whoMatcher, AfterTurnBegins who) ->
       matchWho who whoMatcher
-    (Matcher.AfterTurnBegins whoMatcher, _) -> pure False
+    (Matcher.AfterTurnBegins _, _) -> pure False
     (Matcher.AfterSkillTestResult whoMatcher Matcher.WhileInvestigating (Matcher.FailureResult gameValueMatcher), AfterFailInvestigationSkillTest who n)
       -> liftA2
         (&&)

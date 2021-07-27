@@ -263,9 +263,7 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs whe
   runMessage msg a@AssetAttrs {..} = case msg of
     ReadyExhausted -> case assetInvestigator of
       Just iid -> do
-        modifiers <-
-          map modifierType
-            <$> getModifiersFor (toSource a) (InvestigatorTarget iid) ()
+        modifiers <- getModifiers (toSource a) (InvestigatorTarget iid)
         if ControlledAssetsCannotReady `elem` modifiers
           then pure a
           else pure $ a & exhaustedL .~ False
@@ -325,9 +323,7 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs whe
       -- we specifically use the investigator source here because the
       -- asset has no knowledge of being owned yet, and this will allow
       -- us to bring the investigator's id into scope
-      modifiers <-
-        map modifierType
-          <$> getModifiersFor (InvestigatorSource iid) (toTarget a) ()
+      modifiers <- getModifiers (InvestigatorSource iid) (toTarget a)
       let
         applyModifier (Uses uType m) (AdditionalStartingUses n) =
           Uses uType (n + m)
@@ -355,9 +351,7 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs whe
     Exhaust target | a `isTarget` target -> pure $ a & exhaustedL .~ True
     Ready target | a `isTarget` target -> case assetInvestigator of
       Just iid -> do
-        modifiers <-
-          map modifierType
-            <$> getModifiersFor (toSource a) (InvestigatorTarget iid) ()
+        modifiers <- getModifiers (toSource a) (InvestigatorTarget iid)
         if ControlledAssetsCannotReady `elem` modifiers
           then pure a
           else pure $ a & exhaustedL .~ False

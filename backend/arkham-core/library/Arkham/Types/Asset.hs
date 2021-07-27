@@ -35,9 +35,9 @@ instance
   getActions iid window x = do
     inPlay <- member (toId x) <$> getSet ()
     modifiers' <- if inPlay
-      then getModifiersFor (toSource x) (toTarget x) ()
+      then getModifiers (toSource x) (toTarget x)
       else pure []
-    if any isBlank modifiers'
+    if Blank `elem` modifiers'
       then getActions iid window (toAttrs x)
       else defaultGetActions iid window x
 
@@ -70,9 +70,9 @@ instance
   runMessage msg x = do
     inPlay <- member (toId x) <$> getSet ()
     modifiers' <- if inPlay
-      then getModifiersFor (toSource x) (toTarget x) ()
+      then getModifiers (toSource x) (toTarget x)
       else pure []
-    let msg' = if any isBlank modifiers' then Blanked msg else msg
+    let msg' = if Blank `elem` modifiers' then Blanked msg else msg
     genericRunMessage msg' x
 
 instance Entity Asset where

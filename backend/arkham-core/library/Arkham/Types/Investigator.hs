@@ -99,11 +99,8 @@ instance InvestigatorRunner env => RunMessage env BaseInvestigator where
 
 instance InvestigatorRunner env => HasActions env Investigator where
   getActions iid window investigator = do
-    modifiers' <- getModifiersFor
-      (toSource investigator)
-      (toTarget investigator)
-      ()
-    if any isBlank modifiers'
+    modifiers' <- getModifiers (toSource investigator) (toTarget investigator)
+    if Blank `elem` modifiers'
       then getActions iid window (toAttrs investigator)
       else defaultGetActions iid window investigator
 
@@ -113,8 +110,8 @@ instance
   )
   => RunMessage env Investigator where
   runMessage msg i = do
-    modifiers' <- getModifiersFor (toSource i) (toTarget i) ()
-    let msg' = if any isBlank modifiers' then Blanked msg else msg
+    modifiers' <- getModifiers (toSource i) (toTarget i)
+    let msg' = if Blank `elem` modifiers' then Blanked msg else msg
     genericRunMessage msg' i
 
 instance HasId InvestigatorId () Investigator where
@@ -225,8 +222,7 @@ instance HasSet AssetId env Investigator where
 
 instance HasSkillValue env Investigator where
   getSkillValue skillType i = do
-    modifiers' <-
-      map modifierType <$> getModifiersFor (toSource i) (toTarget i) ()
+    modifiers' <- getModifiers (toSource i) (toTarget i)
     let base = skillValueFor skillType Nothing [] (toAttrs i)
     pure $ foldl' applyModifier base modifiers'
    where
@@ -357,8 +353,7 @@ getSkillValueOf
   -> Investigator
   -> m Int
 getSkillValueOf skillType i = do
-  modifiers' <-
-    map modifierType <$> getModifiersFor (toSource i) (toTarget i) ()
+  modifiers' <- getModifiers (toSource i) (toTarget i)
   let
     mBaseValue = foldr
       (\modifier current -> case modifier of
@@ -424,7 +419,7 @@ modifiedStatsOf
   -> Investigator
   -> m Stats
 modifiedStatsOf source maction i = do
-  modifiers' <- getModifiersFor source (toTarget i) ()
+  modifiers' <- getModifiers source (toTarget i)
   remainingHealth <- getRemainingHealth i
   remainingSanity <- getRemainingSanity i
   let

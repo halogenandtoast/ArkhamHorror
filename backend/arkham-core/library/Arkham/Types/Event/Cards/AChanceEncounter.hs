@@ -12,6 +12,8 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
 
@@ -27,10 +29,21 @@ instance HasActions env AChanceEncounter where
 
 instance HasModifiersFor env AChanceEncounter
 
-instance (HasSet InvestigatorId env (), HasList DiscardedPlayerCard env InvestigatorId) => RunMessage env AChanceEncounter where
+instance
+  ( HasModifiersFor env ()
+  , HasSet InvestigatorId env ()
+  , HasList DiscardedPlayerCard env InvestigatorId
+  )
+  => RunMessage env AChanceEncounter where
   runMessage msg e@(AChanceEncounter attrs) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == toId attrs -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <-
+        filterM
+            (fmap (notElem CardsCannotLeaveYourDiscardPile)
+            . getModifiers GameSource
+            . InvestigatorTarget
+            )
+          =<< getInvestigatorIds
       discards <-
         map PlayerCard
         . concat

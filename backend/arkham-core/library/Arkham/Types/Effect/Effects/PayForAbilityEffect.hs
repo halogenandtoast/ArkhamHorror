@@ -66,9 +66,7 @@ getActionCostModifier
 getActionCostModifier _ Nothing = pure 0
 getActionCostModifier iid (Just a) = do
   takenActions <- map unTakenAction <$> getList iid
-  modifiers <-
-    map modifierType
-      <$> getModifiersFor (InvestigatorSource iid) (InvestigatorTarget iid) ()
+  modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
   pure $ foldr (applyModifier takenActions) 0 modifiers
  where
   applyModifier takenActions (ActionCostOf match m) n =

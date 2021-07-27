@@ -32,7 +32,7 @@ import Arkham.Types.ChaosBag as X
 import qualified Arkham.Types.ChaosBag as ChaosBag
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes as X hiding
-  (getCount, getId, getModifiersFor, getTokenValue)
+  (getCount, getId, getModifiers, getTokenValue)
 import qualified Arkham.Types.Classes as Arkham
 import Arkham.Types.Cost as X
 import Arkham.Types.Difficulty
@@ -164,19 +164,12 @@ getCanAffordCost
 getCanAffordCost iid source maction cost =
   toGameEnv >>= runReaderT (Helpers.getCanAffordCost iid source maction cost)
 
-getModifiersFor
-  :: ( MonadReader env m
-     , HasGameRef env
-     , MonadIO m
-     , HasQueue env
-     , HasStdGen env
-     , HasModifiersFor GameEnv a
-     )
+getModifiers
+  :: (MonadReader env m, HasGameRef env, MonadIO m, HasQueue env, HasStdGen env)
   => Source
   -> Target
-  -> a
   -> m [Modifier]
-getModifiersFor s t a = toGameEnv >>= runReaderT (Arkham.getModifiersFor s t a)
+getModifiersFor s t = toGameEnv >>= runReaderT (Arkham.getModifiers s t)
 
 data TestApp = TestApp
   { game :: IORef Game

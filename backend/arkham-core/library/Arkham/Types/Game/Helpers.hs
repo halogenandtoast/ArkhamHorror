@@ -222,8 +222,7 @@ getCanAffordCost iid source mAction = \case
     uses <- unUsesCount <$> getCount aid
     pure $ uses >= n
   ActionCost n -> do
-    modifiers <-
-      map modifierType <$> getModifiersFor source (InvestigatorTarget iid) ()
+    modifiers <- getModifiers source (InvestigatorTarget iid)
     if ActionsAreFree `elem` modifiers
       then pure True
       else do
@@ -318,10 +317,9 @@ instance
       ([minBound .. maxBound] :: [ActionType])
     actions'' <- for actions' $ \case
       UseAbility iid' ability -> do
-        modifiers' <- getModifiersFor
+        modifiers' <- getModifiers
           (InvestigatorSource iid)
           (sourceToTarget $ abilitySource ability)
-          ()
         pure $ UseAbility iid' (applyAbilityModifiers ability modifiers')
       other -> pure other -- TODO: dynamic abilities
     let forcedActions = nub $ filter isForcedAction actions''
@@ -390,9 +388,9 @@ getInvestigatorModifiers
   :: (MonadReader env m, HasModifiersFor env ())
   => InvestigatorId
   -> Source
-  -> m [Modifier]
+  -> m [ModifierType]
 getInvestigatorModifiers iid source =
-  getModifiersFor source (InvestigatorTarget iid) ()
+  getModifiers source (InvestigatorTarget iid)
 
 getXp :: (HasCount XPCount env (), MonadReader env m) => m Int
 getXp = unXPCount <$> getCount ()
@@ -439,9 +437,7 @@ getCanFight
   -> m Bool
 getCanFight eid iid = do
   locationId <- getId @LocationId iid
-  enemyModifiers <-
-    map modifierType
-      <$> getModifiersFor (InvestigatorSource iid) (EnemyTarget eid) ()
+  enemyModifiers <- getModifiers (InvestigatorSource iid) (EnemyTarget eid)
   sameLocation <- (== locationId) <$> getId @LocationId eid
   keywords <- getSet eid
   canAffordActions <- getCanAffordCost
@@ -490,9 +486,7 @@ getCanEvade
   -> m Bool
 getCanEvade eid iid = do
   engaged <- elem iid <$> getSet eid
-  enemyModifiers <-
-    map modifierType
-      <$> getModifiersFor (InvestigatorSource iid) (EnemyTarget eid) ()
+  enemyModifiers <- getModifiers (InvestigatorSource iid) (EnemyTarget eid)
   canAffordActions <- getCanAffordCost
     iid
     (EnemySource eid)
@@ -514,12 +508,10 @@ getCanMoveTo
   -> m Bool
 getCanMoveTo lid iid = do
   locationId <- getId @LocationId iid
-  modifiers' <-
-    map modifierType
-      <$> getModifiersFor (LocationSource lid) (InvestigatorTarget iid) ()
-  locationModifiers' <-
-    map modifierType
-      <$> getModifiersFor (InvestigatorSource iid) (LocationTarget lid) ()
+  modifiers' <- getModifiers (LocationSource lid) (InvestigatorTarget iid)
+  locationModifiers' <- getModifiers
+    (InvestigatorSource iid)
+    (LocationTarget lid)
   accessibleLocations <- map unAccessibleLocationId <$> getSetList locationId
   canAffordActions <- getCanAffordCost
     iid
@@ -781,9 +773,7 @@ getIsPlayable
   -> m Bool
 getIsPlayable _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
 getIsPlayable iid windows c@(PlayerCard _) = do
-  modifiers <-
-    map modifierType
-      <$> getModifiersFor (InvestigatorSource iid) (InvestigatorTarget iid) ()
+  modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
   availableResources <- unResourceCount <$> getCount iid
   engagedEnemies <- getSet @EnemyId iid
   location <- getId @LocationId iid
@@ -817,6 +807,25 @@ getIsPlayable iid windows c@(PlayerCard _) = do
     typePairs
   prevents _ = False
   passesRestriction location = \case
+    ReturnableCardInDiscard AnyPlayerDiscard traits -> do
+      investigatorIds <-
+        filterM
+            (fmap (notElem CardsCannotLeaveYourDiscardPile)
+            . getModifiers GameSource
+            . InvestigatorTarget
+            )
+          =<< getInvestigatorIds
+      discards <-
+        concat
+          <$> traverse
+                (fmap (map unDiscardedPlayerCard) . getList)
+                investigatorIds
+      let
+        filteredDiscards = case traits of
+          [] -> discards
+          traitsToMatch ->
+            filter (any (`elem` traitsToMatch) . toTraits) discards
+      pure $ notNull filteredDiscards
     CardInDiscard AnyPlayerDiscard traits -> do
       investigatorIds <- getInvestigatorIds
       discards <-
@@ -875,9 +884,7 @@ getModifiedCardCost
   -> Card
   -> m Int
 getModifiedCardCost iid c@(PlayerCard _) = do
-  modifiers <-
-    map modifierType
-      <$> getModifiersFor (InvestigatorSource iid) (InvestigatorTarget iid) ()
+  modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
   pure $ foldr applyModifier startingCost modifiers
  where
   pcDef = toCardDef c
@@ -891,9 +898,7 @@ getModifiedCardCost iid c@(PlayerCard _) = do
     | cardType == cdCardType pcDef = max 0 (n - m)
   applyModifier _ n = n
 getModifiedCardCost iid c@(EncounterCard _) = do
-  modifiers <-
-    map modifierType
-      <$> getModifiersFor (InvestigatorSource iid) (InvestigatorTarget iid) ()
+  modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
   pure $ foldr
     applyModifier
     (error "we need so specify ecCost for this to work")
@@ -974,9 +979,7 @@ getModifiedTokenFaces source tokens = flip
   concatMapM
   tokens
   \token -> do
-    modifiers' <-
-      map modifierType
-        <$> getModifiersFor (toSource source) (TokenTarget token) ()
+    modifiers' <- getModifiers (toSource source) (TokenTarget token)
     pure $ foldl' applyModifier [tokenFace token] modifiers'
  where
   applyModifier _ (TokenFaceModifier fs') = fs'

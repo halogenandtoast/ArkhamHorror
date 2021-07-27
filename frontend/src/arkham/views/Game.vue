@@ -117,8 +117,8 @@ export default defineComponent({
       game.value = state;
     }
 
-    onBeforeRouteLeave(() => { if (socket.value) { socket.value.close() } })
-    onUnmounted(() => { if (socket.value) { socket.value.close() }})
+    onBeforeRouteLeave(() => { if (socket.value) { socket.value.close(); socket.value = null; } })
+    onUnmounted(() => { if (socket.value) { socket.value.close(); socket.value = null; }})
 
     const toggleDebug = () => debug.value = !debug.value
 

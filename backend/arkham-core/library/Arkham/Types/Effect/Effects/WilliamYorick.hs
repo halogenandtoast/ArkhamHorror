@@ -10,6 +10,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Id
 import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype WilliamYorick = WilliamYorick EffectAttrs
@@ -22,6 +23,7 @@ instance HasModifiersFor env WilliamYorick
 
 instance
   ( HasList DiscardedPlayerCard env InvestigatorId
+  , HasModifiersFor env ()
   , HasQueue env
   )
   => RunMessage env WilliamYorick where
@@ -29,18 +31,22 @@ instance
     PassedSkillTest _ _ _ SkillTestInitiatorTarget{} _ _ ->
       case effectTarget attrs of
         InvestigatorTarget iid -> do
-          discards <- map unDiscardedPlayerCard <$> getList iid
-          e <$ push
-            (chooseOne
-              iid
-              (Done "Do not return card to hand"
-              : [ TargetLabel
-                    (CardIdTarget $ toCardId card)
-                    [AddToHand iid $ PlayerCard card]
-                | card <- discards
-                ]
-              )
-            )
+          modifiers' <- getModifiers (toSource attrs) (InvestigatorTarget iid)
+          if CardsCannotLeaveYourDiscardPile `elem` modifiers'
+            then pure e
+            else do
+              discards <- map unDiscardedPlayerCard <$> getList iid
+              e <$ push
+                (chooseOne
+                  iid
+                  (Done "Do not return card to hand"
+                  : [ TargetLabel
+                        (CardIdTarget $ toCardId card)
+                        [AddToHand iid $ PlayerCard card]
+                    | card <- discards
+                    ]
+                  )
+                )
         _ -> pure e
     SkillTestEnds _ -> e <$ push (DisableEffect $ effectId attrs)
     _ -> WilliamYorick <$> runMessage msg attrs

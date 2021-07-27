@@ -44,8 +44,7 @@ instance ActionRunner env => HasActions env DowntownFirstBankOfArkham where
     | locationRevealed = withBaseActions iid NonFast attrs $ do
       canGainResources <-
         notElem CannotGainResources
-        . map modifierType
-        <$> getInvestigatorModifiers iid (toSource attrs)
+          <$> getInvestigatorModifiers iid (toSource attrs)
       pure [ locationAbility iid (ability attrs) | canGainResources ]
   getActions iid window (DowntownFirstBankOfArkham attrs) =
     getActions iid window attrs

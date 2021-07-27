@@ -18,9 +18,7 @@ spec = describe "The Masked Hunter" $ do
           (enemiesL %~ insertEntity theMaskedHunter)
         $ do
             runMessages
-            (map modifierType
-              <$> getModifiersFor (TestSource mempty) (toTarget investigator) ()
-              )
+                (getModifiers (TestSource mempty) (toTarget investigator))
               `shouldReturn` [CannotDiscoverClues, CannotSpendClues]
 
     it
@@ -36,5 +34,9 @@ spec = describe "The Masked Hunter" $ do
               (enemiesL %~ insertEntity theMaskedHunter)
             $ do
                 runMessages
-                getModifiersFor (TestSource mempty) (toTarget investigator) ()
+                    (getModifiersFor
+                      (TestSource mempty)
+                      (toTarget investigator)
+                      ()
+                    )
                   `shouldReturn` []

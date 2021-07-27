@@ -141,9 +141,7 @@ instance HasModifiersFor env () => HasList CommittedSkillIcon env (InvestigatorI
     concatMapM (fmap (map CommittedSkillIcon) . iconsForCard . snd) cards
    where
     iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
-      modifiers' <-
-        map modifierType
-          <$> getModifiersFor (toSource st) (CardIdTarget pcId) ()
+      modifiers' <- getModifiers (toSource st) (CardIdTarget pcId)
       pure $ foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers'
     iconsForCard _ = pure []
     applySkillModifiers (AddSkillIcons xs) ys = xs <> ys
@@ -190,8 +188,7 @@ skillIconCount st@SkillTest {..} = length . filter matches <$> concatMapM
   (toList skillTestCommittedCards)
  where
   iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
-    modifiers' <-
-      map modifierType <$> getModifiersFor (toSource st) (CardIdTarget pcId) ()
+    modifiers' <- getModifiers (toSource st) (CardIdTarget pcId)
     pure $ foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers'
   iconsForCard _ = pure []
   matches SkillWild = True
@@ -202,8 +199,7 @@ skillIconCount st@SkillTest {..} = length . filter matches <$> concatMapM
 getModifiedSkillTestDifficulty
   :: (MonadReader env m, HasModifiersFor env ()) => SkillTest -> m Int
 getModifiedSkillTestDifficulty s = do
-  modifiers' <-
-    map modifierType <$> getModifiersFor (toSource s) SkillTestTarget ()
+  modifiers' <- getModifiers (toSource s) SkillTestTarget
   let
     preModifiedDifficulty =
       foldr applyPreModifier (skillTestDifficulty s) modifiers'
@@ -239,8 +235,7 @@ getModifiedTokenValue
   -> Token
   -> m Int
 getModifiedTokenValue s t = do
-  tokenModifiers' <-
-    map modifierType <$> getModifiersFor (toSource s) (TokenTarget t) ()
+  tokenModifiers' <- getModifiers (toSource s) (TokenTarget t)
   modifiedTokenFaces' <- getModifiedTokenFaces s [t]
   getSum . mconcat <$> for
     modifiedTokenFaces'
@@ -269,9 +264,7 @@ getModifiedTokenValue s t = do
 instance SkillTestRunner env => RunMessage env SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
     TriggerSkillTest iid -> do
-      modifiers' <-
-        map modifierType
-          <$> getModifiersFor (toSource s) (InvestigatorTarget iid) ()
+      modifiers' <- getModifiers (toSource s) (InvestigatorTarget iid)
       if DoNotDrawChaosTokensForSkillChecks `elem` modifiers'
         then
           s
@@ -495,8 +488,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
       pure s
     SkillTestApplyResults -> do -- ST.7 Apply Results
       push SkillTestApplyResultsAfter
-      modifiers' <-
-        map modifierType <$> getModifiersFor (toSource s) (toTarget s) ()
+      modifiers' <- getModifiers (toSource s) (toTarget s)
       let successTimes = if DoubleSuccess `elem` modifiers' then 2 else 1
       s <$ case skillTestResult of
         SucceededBy _ n -> pushAll $ cycleN
@@ -580,8 +572,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
           (getModifiedTokenValue s)
         pure $ s & valueModifierL %~ subtract tokenValues
     RunSkillTest _ -> do
-      modifiers' <-
-        map modifierType <$> getModifiersFor (toSource s) SkillTestTarget ()
+      modifiers' <- getModifiers (toSource s) SkillTestTarget
       tokenValues <- sum <$> for
         (skillTestRevealedTokens <> skillTestResolvedTokens)
         (getModifiedTokenValue s)

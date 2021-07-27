@@ -41,18 +41,13 @@ ability a = mkAbility
   $ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) Nothing]
   )
 
-instance
-  ( ActionRunner env
-  , HasSet AssetId env AssetMatcher
-  )
-  => HasActions env TheCarnevaleConspiracy where
+instance ActionRunner env => HasActions env TheCarnevaleConspiracy where
   getActions iid NonFast (TheCarnevaleConspiracy x) = do
     maskedCarnevaleGoers <- getSetList @AssetId
       (AssetWithTitle "Masked Carnevale-Goer")
     filteredMaskedCarnevaleGoers <- flip filterM maskedCarnevaleGoers $ \aid ->
       do
-        modifiers' <-
-          map modifierType <$> getModifiersFor (toSource x) (AssetTarget aid) ()
+        modifiers' <- getModifiers (toSource x) (AssetTarget aid)
         pure $ CannotBeRevealed `notElem` modifiers'
     pure [ UseAbility iid (ability x) | notNull filteredMaskedCarnevaleGoers ]
   getActions iid window (TheCarnevaleConspiracy x) = getActions iid window x
@@ -95,8 +90,7 @@ instance
         (AssetWithTitle "Masked Carnevale-Goer")
       filteredMaskedCarnevaleGoers <-
         flip filterM maskedCarnevaleGoers $ \aid -> do
-          modifiers' <-
-            map modifierType <$> getModifiersFor source (AssetTarget aid) ()
+          modifiers' <- getModifiers source (AssetTarget aid)
           pure $ CannotBeRevealed `notElem` modifiers'
       case filteredMaskedCarnevaleGoers of
         [] -> pure a

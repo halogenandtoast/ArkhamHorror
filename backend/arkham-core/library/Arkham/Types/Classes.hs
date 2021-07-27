@@ -271,6 +271,14 @@ genericGetModifiersFor
   -> m [Modifier]
 genericGetModifiersFor source target = getModifiersFor1 source target . from
 
+getModifiers
+  :: (HasModifiersFor env (), MonadReader env m)
+  => Source
+  -> Target
+  -> m [ModifierType]
+getModifiers source target =
+  map modifierType <$> getModifiersFor source target ()
+
 class HasModifiersFor env a where
   getModifiersFor :: (HasCallStack, MonadReader env m) => Source -> Target -> a -> m [Modifier]
   getModifiersFor _ _ _ = pure []

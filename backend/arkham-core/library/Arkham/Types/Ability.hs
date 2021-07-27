@@ -75,6 +75,6 @@ mkAbility entity idx type' = Ability
   , abilityDoesNotProvokeAttacksOfOpportunity = False
   }
 
-applyAbilityModifiers :: Ability -> [Modifier] -> Ability
+applyAbilityModifiers :: Ability -> [ModifierType] -> Ability
 applyAbilityModifiers a@Ability { abilityType } modifiers =
   a { abilityType = applyAbilityTypeModifiers abilityType modifiers }

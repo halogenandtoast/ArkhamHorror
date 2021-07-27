@@ -79,6 +79,10 @@ newtype DiscardableHandCard = DiscardableHandCard { unDiscardableHandCard ::Card
   deriving stock (Show, Generic)
   deriving newtype (ToJSON, FromJSON)
 
+newtype PlayableHandCard = PlayableHandCard { unPlayableHandCard ::Card }
+  deriving stock (Show, Generic)
+  deriving newtype (ToJSON, FromJSON)
+
 newtype InPlayCard = InPlayCard { unInPlayCard ::Card }
   deriving stock (Show, Generic)
   deriving newtype (ToJSON, FromJSON)

@@ -3,12 +3,15 @@ module Arkham.Types.WindowMatcher where
 
 import Arkham.Prelude
 
+import Arkham.Types.GameValue
 import Arkham.Types.Trait
 
 data WindowMatcher
   = AfterEnemyDefeated Who WindowEnemyMatcher
+  | AfterSkillTestResult Who SkillTestMatcher SkillTestResultMatcher
   | WhenEnemySpawns Where WindowEnemyMatcher
   | FastPlayerWindow Who
+  | AfterTurnBegins Who
   | DuringTurn Who
   | OrWindowMatcher [WindowMatcher]
   | DealtDamageOrHorror Who
@@ -52,5 +55,17 @@ data WindowInvestigatorMatcher = You | Anyone
 type Where = WindowLocationMatcher
 
 data WindowLocationMatcher = YourLocation | Anywhere
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data SkillTestMatcher = WhileInvestigating | AnySkillTest
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data SkillTestResultMatcher = FailureResult ValueMatcher | SuccessResult ValueMatcher | AnyResult
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data ValueMatcher = LessThan (GameValue Int) | AnyValue
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

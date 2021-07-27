@@ -85,10 +85,15 @@ data Cost
   deriving anyclass (ToJSON, FromJSON)
 
 instance Semigroup Cost where
+  Free <> a = a
+  a <> Free = a
   Costs xs <> Costs ys = Costs (xs <> ys)
   Costs xs <> a = Costs (a : xs)
   a <> Costs xs = Costs (a : xs)
   a <> b = Costs [a, b]
+
+instance Monoid Cost where
+  mempty = Free
 
 instance Semigroup Payment where
   NoPayment <> a = a

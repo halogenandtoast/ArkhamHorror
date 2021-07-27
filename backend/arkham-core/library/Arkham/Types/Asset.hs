@@ -43,6 +43,7 @@ instance
 
 instance
   ( HasId LocationId env InvestigatorId
+  , HasId InvestigatorId env EventId
   , HasId CardCode env EnemyId
   , HasId (Maybe LocationId) env LocationMatcher
   , HasCount ResourceCount env InvestigatorId

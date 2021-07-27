@@ -127,6 +127,15 @@ instance HasList DiscardedPlayerCard env Investigator where
 instance HasList HandCard env Investigator where
   getList = pure . map HandCard . investigatorHand . toAttrs
 
+instance HasModifiersFor env () => HasList PlayableHandCard env Investigator where
+  getList i = do
+    asIfInHandCards <- getAsIfInHandCards (toAttrs i)
+    pure
+      . map PlayableHandCard
+      . (<> asIfInHandCards)
+      . investigatorHand
+      $ toAttrs i
+
 instance HasList UnderneathCard env Investigator where
   getList = pure . map UnderneathCard . investigatorCardsUnderneath . toAttrs
 

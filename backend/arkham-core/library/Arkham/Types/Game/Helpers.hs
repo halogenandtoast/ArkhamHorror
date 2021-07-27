@@ -763,6 +763,7 @@ type CanCheckPlayable env
     , HasCount DoomCount env InvestigatorId
     , HasSet AssetId env InvestigatorId
     , HasList DiscardedPlayerCard env InvestigatorId
+    , HasCount PlayerCount env ()
     , HasSet InvestigatorId env ()
     )
 
@@ -924,6 +925,7 @@ cardInFastWindows
      , HasSet Trait env EnemyId
      , HasId LocationId env InvestigatorId
      , HasId LocationId env EnemyId
+     , HasCount PlayerCount env ()
      )
   => InvestigatorId
   -> Card
@@ -933,6 +935,25 @@ cardInFastWindows
 cardInFastWindows iid _ windows matcher = anyM (matches matcher) windows
  where
   matches matcher' window' = case (matcher', window') of
+    (Matcher.AfterTurnBegins whoMatcher, AfterTurnBegins who) ->
+      matchWho who whoMatcher
+    (Matcher.AfterTurnBegins whoMatcher, _) -> pure False
+    (Matcher.AfterSkillTestResult whoMatcher Matcher.WhileInvestigating (Matcher.FailureResult gameValueMatcher), AfterFailInvestigationSkillTest who n)
+      -> liftA2
+        (&&)
+        (matchWho who whoMatcher)
+        (gameValueMatches n gameValueMatcher)
+    (Matcher.AfterSkillTestResult whoMatcher Matcher.AnySkillTest (Matcher.FailureResult gameValueMatcher), AfterFailSkillTest who n)
+      -> liftA2
+        (&&)
+        (matchWho who whoMatcher)
+        (gameValueMatches n gameValueMatcher)
+    (Matcher.AfterSkillTestResult whoMatcher Matcher.AnySkillTest (Matcher.SuccessResult gameValueMatcher), AfterPassSkillTest _ _ who n)
+      -> liftA2
+        (&&)
+        (matchWho who whoMatcher)
+        (gameValueMatches n gameValueMatcher)
+    (Matcher.AfterSkillTestResult{}, _) -> pure False
     (Matcher.DuringTurn whoMatcher, DuringTurn who) -> matchWho who whoMatcher
     (Matcher.DuringTurn _, _) -> pure False
     (Matcher.OrWindowMatcher matchers, window'') ->
@@ -962,6 +983,9 @@ cardInFastWindows iid _ windows matcher = anyM (matches matcher) windows
   matchWho who = \case
     Matcher.Anyone -> pure True
     Matcher.You -> pure $ who == You
+  gameValueMatches n = \case
+    Matcher.AnyValue -> pure True
+    Matcher.LessThan gv -> (n <) <$> getPlayerCountValue gv
   enemyMatches enemyId = \case
     Matcher.AnyEnemy -> pure True
     Matcher.EnemyWithTrait t -> member t <$> getSet enemyId

@@ -54,6 +54,9 @@ instance SourceEntity Skill where
 instance IsCard Skill where
   toCardId = toCardId . toAttrs
 
+instance HasId OwnerId env Skill where
+  getId = pure . OwnerId . ownerOfSkill
+
 lookupSkill :: CardCode -> (InvestigatorId -> SkillId -> Skill)
 lookupSkill cardCode =
   fromJustNote ("Unknown skill: " <> show cardCode) $ lookup cardCode allSkills

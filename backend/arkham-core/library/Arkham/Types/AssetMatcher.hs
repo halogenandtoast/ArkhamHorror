@@ -5,12 +5,14 @@ import Arkham.Prelude
 import Arkham.Types.Id
 
 import Arkham.Types.Asset.Uses
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Trait
 
 data AssetMatcher
   = AssetWithTitle Text
   | AssetWithFullTitle Text Text
   | AssetWithId AssetId
+  | AssetWithClass ClassSymbol
   | AssetWithTrait Trait
   | AssetOwnedBy InvestigatorId
   | AssetMatches [AssetMatcher]

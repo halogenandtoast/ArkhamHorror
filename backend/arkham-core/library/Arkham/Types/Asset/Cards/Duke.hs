@@ -61,12 +61,8 @@ instance HasActions env Duke where
   getActions i window (Duke x) = getActions i window x
 
 dukeInvestigate :: AssetAttrs -> InvestigatorId -> LocationId -> Message
-dukeInvestigate attrs iid lid = CheckAdditionalActionCosts
-  iid
-  (LocationTarget lid)
-  (toSource attrs)
-  Action.Investigate
-  [Investigate iid lid (toSource attrs) SkillIntellect False]
+dukeInvestigate attrs iid lid =
+  Investigate iid lid (toSource attrs) SkillIntellect False
 
 instance AssetRunner env => RunMessage env Duke where
   runMessage msg a@(Duke attrs) = case msg of
@@ -82,7 +78,12 @@ instance AssetRunner env => RunMessage env Duke where
           $ dukeInvestigate attrs iid lid
           : [ Run
                 [ MoveAction iid lid' Free False
-                , dukeInvestigate attrs iid lid'
+                , CheckAdditionalActionCosts
+                  iid
+                  (LocationTarget lid')
+                  (toSource attrs)
+                  Action.Investigate
+                  [dukeInvestigate attrs iid lid']
                 ]
             | lid' <- accessibleLocationIds
             ]

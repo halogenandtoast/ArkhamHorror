@@ -1,14 +1,8 @@
-FROM heroku/heroku:18 as frontend
+FROM node:latest as frontend
 
 # Frontend
 
 ENV LC_ALL=en_US.UTF-8
-
-RUN apt-get update
-RUN apt-get upgrade -y --assume-yes
-
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
-RUN apt-get install -y nodejs
 
 RUN npm install -g @vue/cli
 
@@ -27,23 +21,9 @@ COPY ./frontend /opt/arkham/src/frontend
 ENV VUE_APP_ASSET_HOST ${ASSET_HOST:-""}
 RUN npm run build
 
-FROM heroku/heroku:18 as dependencies
-
-# Yesod
+FROM fpco/stack-build:latest as dependencies
 
 ENV LC_ALL=en_US.UTF-8
-
-RUN apt-get update
-RUN apt-get upgrade -y --assume-yes
-RUN apt-get install -y --assume-yes g++ gcc libc6-dev libffi-dev libgmp-dev make xz-utils zlib1g-dev git gnupg
-RUN apt-get install -y --assume-yes libpq-dev
-
-RUN rm -rf /var/lib/apt/lists/*
-
-RUN mkdir -p /opt/stack/bin
-RUN curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C /opt/stack/bin '*/stack'
-
-ENV PATH "$PATH:/opt/stack/bin:/opt/arkham/bin"
 
 RUN mkdir -p /opt/arkham/src
 RUN mkdir -p /opt/arkham/bin
@@ -57,24 +37,13 @@ COPY ./backend/stack.yaml /opt/arkham/src/backend/stack.yaml
 COPY ./backend/arkham-api/package.yaml /opt/arkham/src/backend/arkham-api/package.yaml
 COPY ./backend/arkham-core/package.yaml /opt/arkham/src/backend/arkham-core/package.yaml
 COPY ./backend/cards-discover/package.yaml /opt/arkham/src/backend/cards-discover/package.yaml
-RUN stack --no-terminal setup
-RUN stack install yesod-bin --install-ghc --ghc-options '-j4 +RTS -A64m -n2m -RTS'
+RUN stack build --system-ghc --dependencies-only --no-terminal --ghc-options '-j4 +RTS -A128m -n2m -RTS'
 
-FROM heroku/heroku:18 as api
-
-# API
+FROM fpco/stack-build:latest as api
 
 ENV LC_ALL=en_US.UTF-8
 
-RUN apt-get update
-RUN apt-get upgrade -y --assume-yes
-RUN apt-get install -y --assume-yes g++ gcc libc6-dev libffi-dev libgmp-dev make xz-utils zlib1g-dev git gnupg
-RUN apt-get install -y --assume-yes libpq-dev
-
-RUN rm -rf /var/lib/apt/lists/*
-
-RUN mkdir -p /opt/stack/bin
-RUN curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C /opt/stack/bin '*/stack'
+# API
 
 ENV PATH "$PATH:/opt/stack/bin:/opt/arkham/bin"
 
@@ -87,13 +56,13 @@ COPY --from=frontend /opt/arkham/src/frontend/dist /opt/arkham/src/frontend/dist
 COPY --from=dependencies /root/.stack /root/.stack
 
 WORKDIR /opt/arkham/src/backend/cards-discover
-RUN stack --no-terminal build --ghc-options '-j4 +RTS -A64m -n2m -RTS' cards-discover
+RUN stack build --system-ghc --no-terminal --ghc-options '-j4 +RTS -A128m -n2m -RTS' cards-discover
 
 WORKDIR /opt/arkham/src/backend/arkham-api
-RUN stack --no-terminal build --ghc-options '-j4 +RTS -A64m -n2m -RTS'
+RUN stack build --no-terminal --system-ghc --ghc-options '-j4 +RTS -A128m -n2m -RTS'
 RUN stack --no-terminal --local-bin-path /opt/arkham/bin install
 
-FROM heroku/heroku:18
+FROM ubuntu:16.04 as app
 
 # App
 

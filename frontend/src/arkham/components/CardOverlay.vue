@@ -10,7 +10,7 @@ import { defineComponent, ref } from 'vue';
 export default defineComponent({
   setup() {
     const card = ref<string | null>(null);
-    const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
+    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
 
     document.addEventListener('mousemove', (event) => {
       if (event.target instanceof HTMLImageElement) {

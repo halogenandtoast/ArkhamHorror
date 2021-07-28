@@ -220,7 +220,7 @@ export default defineComponent({
     investigatorId: { type: String, required: true },
   },
   setup(props, { emit }) {
-    const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
+    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
     const locationMap = ref<Element | null>(null)
 
     const drawHandler = throttle(() => handleConnections(props.game), 10)

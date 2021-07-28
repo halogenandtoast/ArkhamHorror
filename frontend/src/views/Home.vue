@@ -107,7 +107,7 @@ export default defineComponent({
       }
     }
 
-    const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
+    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
 
     return { baseUrl, currentUser, deleteId, games, deleteGameEvent, activeGames, finishedGames }
   }

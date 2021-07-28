@@ -46,7 +46,7 @@ export default defineComponent({
     const waiting = ref(false)
     const deck = ref<string | null>(null)
     const deckUrl = ref<string | null>(null)
-    const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
+    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
     const investigator = computed(() => props.game.investigators[props.investigatorId])
     const xp = computed(() => investigator.value.contents.xp)
     const skipping = ref(false)

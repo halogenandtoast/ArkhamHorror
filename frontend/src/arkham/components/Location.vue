@@ -113,7 +113,7 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const clues = computed(() => props.location.contents.clues)
-    const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
+    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
 
     const image = computed(() => {
       const { cardCode, revealed } = props.location.contents

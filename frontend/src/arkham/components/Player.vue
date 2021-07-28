@@ -127,7 +127,7 @@ export default defineComponent({
   setup(props) {
 
     const discards = computed(() => props.player.contents.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
-    const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
+    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
 
     const topOfDiscard = computed(() => discards.value[0])
 

@@ -18,7 +18,7 @@ export default defineComponent({
     game: { type: Object as () => Game, required: true },
   },
   setup(props) {
-    const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
+    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
     const victoryDisplay = computed(() => props.game.victoryDisplay)
     const topOfVictoryDisplay = computed(() => {
       if (victoryDisplay.value[0]) {

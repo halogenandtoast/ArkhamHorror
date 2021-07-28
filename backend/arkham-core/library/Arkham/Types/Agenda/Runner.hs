@@ -6,21 +6,15 @@ import Arkham.Types.ActId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Direction
-import Arkham.Types.EnemyId
-import Arkham.Types.EnemyMatcher
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Name
 import Arkham.Types.Query
-import Arkham.Types.ScenarioId
-import Arkham.Types.TreacheryId
-
-
 import Arkham.Types.Trait
 
 type AgendaRunner env
   = ( HasQueue env
+    , Query AssetMatcher env
     , HasCount ClueCount env InvestigatorId
     , HasCount ClueCount env LocationId
     , HasCount DiscardCount env InvestigatorId

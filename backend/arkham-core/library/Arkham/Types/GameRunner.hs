@@ -45,7 +45,6 @@ type GameRunner env
       )
     , ( HasId (Maybe AssetId) env CardCode
       , HasId (Maybe OwnerId) env AssetId
-      , HasId (Maybe StoryAssetId) env CardCode
       , HasId (Maybe StoryEnemyId) env CardCode
       , HasId ActiveInvestigatorId env ()
       , HasId LeadInvestigatorId env ()
@@ -80,7 +79,6 @@ type GameRunner env
       , HasSet EnemyId env Trait
       , HasSet EventId env ()
       , HasSet EventId env LocationId
-      , HasSet ExhaustedAssetId env InvestigatorId
       , HasSet FarthestEnemyId env (InvestigatorId, EnemyTrait)
       , HasSet FarthestLocationId env [InvestigatorId]
       , HasSet FarthestLocationId env InvestigatorId

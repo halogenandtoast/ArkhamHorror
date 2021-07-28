@@ -5,11 +5,10 @@ module Arkham.Types.Location.Cards.AlchemyLabs
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (alchemyLabs)
+import qualified Arkham.Asset.Cards as Cards
+import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
-import Arkham.Types.AssetId
-import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.GameValue
@@ -17,6 +16,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -51,7 +51,7 @@ instance LocationRunner env => RunMessage env AlchemyLabs where
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (Investigate iid (locationId attrs) source SkillIntellect False)
     SuccessfulInvestigation iid _ source | isSource attrs source -> do
-      maid <- fmap unStoryAssetId <$> getId (CardCode "02059")
+      maid <- selectOne (AssetIs Cards.alchemicalConcoction)
       l <$ case maid of
         Just aid -> push (TakeControlOfAsset iid aid)
         Nothing -> pure ()

@@ -9,10 +9,9 @@ import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
-import Arkham.Types.AssetMatcher
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
-import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -30,10 +29,10 @@ instance HasModifiersFor env TheShadowOfTheEclipse
 instance HasActions env TheShadowOfTheEclipse where
   getActions i window (TheShadowOfTheEclipse x) = getActions i window x
 
-instance (HasSet AssetId env AssetMatcher, AgendaRunner env) => RunMessage env TheShadowOfTheEclipse where
+instance AgendaRunner env => RunMessage env TheShadowOfTheEclipse where
   runMessage msg a@(TheShadowOfTheEclipse attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
-      maskedCarnevaleGoers <- getSetList @AssetId
+      maskedCarnevaleGoers <- selectList
         (AssetWithTitle "Masked Carnevale-Goer")
       leadInvestigatorId <- getLeadInvestigatorId
       case maskedCarnevaleGoers of

@@ -55,7 +55,6 @@ type TreacheryRunner env
     , HasSet LocationId env TreacheryCardCode
     , HasSet LocationId env [Trait]
     , HasSet ScenarioLogKey env ()
-    , HasSet StoryAssetId env InvestigatorId
     , HasSet UnengagedEnemyId env ()
     , HasSet Trait env LocationId
     , HasSet FarthestEnemyId env (InvestigatorId, EnemyTrait)

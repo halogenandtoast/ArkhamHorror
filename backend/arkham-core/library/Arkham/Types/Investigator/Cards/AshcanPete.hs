@@ -7,12 +7,12 @@ import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Assets
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Stats
@@ -56,7 +56,8 @@ ability attrs = base { abilityLimit = PlayerLimit PerRound 1 }
 instance InvestigatorRunner env => HasActions env AshcanPete where
   getActions iid FastPlayerWindow (AshcanPete attrs@InvestigatorAttrs {..})
     | iid == investigatorId = do
-      exhaustedAssetIds <- map unExhaustedAssetId <$> getSetList investigatorId
+      exhaustedAssetIds <- select
+        (AssetOwnedBy investigatorId <> AssetExhausted)
       pure
         [ UseAbility investigatorId (ability attrs)
         | notNull exhaustedAssetIds
@@ -74,8 +75,8 @@ instance (InvestigatorRunner env) => RunMessage env AshcanPete where
       i <$ push (Ready $ CardCodeTarget "02014")
     UseCardAbility _ (InvestigatorSource iid) _ 1 _ | iid == investigatorId ->
       do
-        exhaustedAssetIds <- map unExhaustedAssetId
-          <$> getSetList investigatorId
+        exhaustedAssetIds <- selectList
+          (AssetOwnedBy investigatorId <> AssetExhausted)
         i <$ push
           (chooseOne
             investigatorId

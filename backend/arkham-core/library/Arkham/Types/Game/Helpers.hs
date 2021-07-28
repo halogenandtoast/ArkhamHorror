@@ -210,11 +210,10 @@ getCanAffordCost iid source mAction = \case
   Costs xs -> and <$> traverse (getCanAffordCost iid source mAction) xs
   ExhaustCost target -> case target of
     AssetTarget aid -> do
-      exhaustedAssetIds <- fmap unExhaustedAssetId <$> getSetList ()
-      pure $ aid `notElem` exhaustedAssetIds
+      readyAssetIds <- selectList AssetReady
+      pure $ aid `elem` readyAssetIds
     _ -> error "Not handled"
-  ExhaustAssetCost matcher ->
-    notNull <$> getSet @AssetId (matcher <> AssetReady)
+  ExhaustAssetCost matcher -> notNull <$> select (matcher <> AssetReady)
   UseCost aid _uType n -> do
     uses <- unUsesCount <$> getCount aid
     pure $ uses >= n

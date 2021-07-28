@@ -95,10 +95,22 @@ class (Hashable set, Eq set) => HasSet set env a where
 type family QueryElement a where
   QueryElement AssetMatcher = AssetId
 
+selectList
+  :: (HasCallStack, MonadReader env m, Query a env) => a -> m [QueryElement a]
+selectList = fmap setToList . select
+
+selectOne
+  :: (HasCallStack, MonadReader env m, Query a env)
+  => a
+  -> m (Maybe (QueryElement a))
+selectOne matcher = do
+  result <- selectList matcher
+  pure $ case result of
+    [] -> Nothing
+    x : _ -> Just x
+
 class (Hashable (QueryElement a), Eq (QueryElement a)) => Query a env where
   select :: (HasCallStack, MonadReader env m) => a -> m (HashSet (QueryElement a))
-  selectList :: (HasCallStack, MonadReader env m) => a -> m [QueryElement a]
-  selectList a = setToList <$> select a
 
 class HasList list env a where
   getList :: MonadReader env m => a -> m [list]
@@ -130,8 +142,7 @@ type HasCostPayment env
     , HasCount UsesCount env AssetId
     , HasId (Maybe LocationId) env LocationMatcher
     , HasList HandCard env InvestigatorId
-    , HasSet AssetId env AssetMatcher
-    , HasSet ExhaustedAssetId env ()
+    , Query AssetMatcher env
     , HasSet InvestigatorId env LocationId
     )
 
@@ -184,7 +195,6 @@ type ActionRunner env
       )
     , HasId (Maybe LocationId) env AssetId
     , HasId (Maybe OwnerId) env AssetId
-    , HasId (Maybe StoryAssetId) env CardCode
     , HasId (Maybe StoryEnemyId) env CardCode
     , HasId CardCode env EnemyId
     , HasId LeadInvestigatorId env ()
@@ -205,7 +215,6 @@ type ActionRunner env
     , HasSet EnemyId env EnemyMatcher
     , HasSet EnemyId env InvestigatorId
     , HasSet EnemyId env LocationId
-    , HasSet ExhaustedAssetId env InvestigatorId
     , HasSet ExhaustedEnemyId env LocationId
     , HasSet FightableEnemyId env (InvestigatorId, Source)
     , HasSet InvestigatorId env ()

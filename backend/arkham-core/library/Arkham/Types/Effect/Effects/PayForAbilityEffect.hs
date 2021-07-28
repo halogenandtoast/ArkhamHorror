@@ -144,7 +144,7 @@ instance
           push (Exhaust target)
           withPayment $ ExhaustPayment [target]
         ExhaustAssetCost matcher -> do
-          targets <- map AssetTarget <$> getSetList (matcher <> AssetReady)
+          targets <- map AssetTarget <$> selectList (matcher <> AssetReady)
           e <$ push
             (chooseOne
               iid

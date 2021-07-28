@@ -8,7 +8,6 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.PlayerCard (genPlayerCard)
 import Arkham.Types.Classes
@@ -18,6 +17,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -42,8 +42,7 @@ instance HasModifiersFor env TrappersCabin where
 instance ActionRunner env => HasActions env TrappersCabin where
   getActions iid NonFast (TrappersCabin attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ do
-      assetNotTaken <- isNothing
-        <$> getId @(Maybe StoryAssetId) (CardCode "81020")
+      assetNotTaken <- isNothing <$> selectOne (AssetIs Assets.bearTrap)
       pure
         [ locationAbility
             iid

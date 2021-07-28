@@ -27,11 +27,7 @@ instance HasModifiersFor env MassHysteria
 instance HasActions env MassHysteria where
   getActions i window (MassHysteria attrs) = getActions i window attrs
 
-instance
-  ( HasSet AssetId env AssetMatcher
-  , TreacheryRunner env
-  )
-  => RunMessage env MassHysteria where
+instance TreacheryRunner env => RunMessage env MassHysteria where
   runMessage msg t@(MassHysteria attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       [ chooseOne
@@ -45,7 +41,7 @@ instance
       ]
     RevelationChoice iid source 2 | isSource attrs source -> do
       locationId <- getId @LocationId iid
-      maskedCarnevaleGoers <- getSetList @AssetId
+      maskedCarnevaleGoers <- selectList
         (AssetWithTitle "Masked Carnevale-Goer")
       clockwiseLocations <- getClockwiseLocations locationId
       case maskedCarnevaleGoers of

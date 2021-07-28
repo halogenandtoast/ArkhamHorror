@@ -5,8 +5,8 @@ module Arkham.Types.Location.Cards.TheHiddenChamber
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (theHiddenChamber)
-import Arkham.Types.AssetId
+import qualified Arkham.Asset.Cards as Assets
+import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
@@ -14,6 +14,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
@@ -26,9 +27,9 @@ theHiddenChamber :: LocationCard TheHiddenChamber
 theHiddenChamber =
   location TheHiddenChamber Cards.theHiddenChamber 3 (Static 0) NoSymbol []
 
-instance HasId (Maybe StoryAssetId) env CardCode => HasModifiersFor env TheHiddenChamber where
+instance Query AssetMatcher env => HasModifiersFor env TheHiddenChamber where
   getModifiersFor _ target (TheHiddenChamber attrs) | isTarget attrs target = do
-    mKeyToTheChamber <- fmap unStoryAssetId <$> getId (CardCode "02215")
+    mKeyToTheChamber <- selectOne (AssetIs Assets.keyToTheChamber)
     pure $ toModifiers
       attrs
       (case mKeyToTheChamber of

@@ -9,7 +9,6 @@ import Arkham.Prelude hiding (fold)
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Cards
 import Arkham.Types.Act.Runner
-import Arkham.Types.AssetMatcher
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Decks
@@ -23,8 +22,7 @@ $(buildEntity "Act")
 deriving anyclass instance ActionRunner env => HasActions env Act
 
 instance
-  ( HasSet AssetId env AssetMatcher
-  , HasName env LocationId
+  ( HasName env LocationId
   , ActRunner env
   , HasList UnderneathCard env ActDeck
   , HasList UnderneathCard env AgendaDeck

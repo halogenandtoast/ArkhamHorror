@@ -14,7 +14,6 @@ import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.GameValue
-import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
@@ -53,8 +52,7 @@ instance HasModifiersFor env BrackishWaters where
 instance ActionRunner env => HasActions env BrackishWaters where
   getActions iid NonFast (BrackishWaters attrs@LocationAttrs {..}) =
     withBaseActions iid NonFast attrs $ do
-      assetNotTaken <- isNothing
-        <$> getId @(Maybe StoryAssetId) (CardCode "81021")
+      assetNotTaken <- isNothing <$> selectOne (AssetIs Assets.fishingNet)
       hand <- getHandOf iid
       inPlayAssetsCount <- getInPlayOf iid <&> count
         (\case

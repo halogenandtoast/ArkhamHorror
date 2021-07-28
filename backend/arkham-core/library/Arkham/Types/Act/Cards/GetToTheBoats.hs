@@ -38,8 +38,7 @@ instance ActionRunner env => HasActions env GetToTheBoats where
   getActions iid window (GetToTheBoats x) = getActions iid window x
 
 instance
-  ( HasSet AssetId env AssetMatcher
-  , HasId LocationId env InvestigatorId
+  ( HasId LocationId env InvestigatorId
   , HasName env LocationId
   , ActRunner env
   )
@@ -53,7 +52,7 @@ instance
         , NextAct actId "82007"
         ]
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      maskedCarnevaleGoers <- getSetList @AssetId
+      maskedCarnevaleGoers <- selectList
         (AssetWithTitle "Masked Carnevale-Goer")
       case maskedCarnevaleGoers of
         [] -> pure a

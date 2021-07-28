@@ -29,7 +29,7 @@ export default defineComponent({
     investigatorId: { type: String, required: true }
   },
   setup(props) {
-    const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
+    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
     const drawEncounterCardAction = computed(() => {
       return choices.value.findIndex((c) => c.tag === MessageType.INVESTIGATOR_DRAW_ENCOUNTER_CARD)

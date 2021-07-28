@@ -76,7 +76,7 @@ export default defineComponent({
     const exhausted = computed(() => props.asset.contents.exhausted)
     const cardCode = computed(() => props.asset.contents.cardCode)
     const image = computed(() => {
-      const baseUrl = process.env.NODE_ENV == 'production' ? "https://arkham-horror-assets.s3.amazonaws.com" : '';
+      const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
       return `${baseUrl}/img/arkham/cards/${cardCode.value}.jpg`
     })
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))

@@ -4,7 +4,6 @@ import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Action
-import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
@@ -27,6 +26,7 @@ import Arkham.Types.Trait
 
 type InvestigatorRunner env
   = ( CanBeWeakness env TreacheryId
+    , Query AssetMatcher env
     , (HasActions env (), HasActions env AssetId, HasActions env ActionType)
     , ( HasCount ActionTakenCount env InvestigatorId
       , HasCount ActionRemainingCount env InvestigatorId
@@ -99,17 +99,11 @@ type InvestigatorRunner env
         , HasSet AgendaId env ()
         , HasSet AgendaId env TreacheryCardCode
         , HasSet AloofEnemyId env LocationId
-        , HasSet AssetId env ()
         , HasSet ClassSymbol env InvestigatorId
-        , HasSet AssetId env (InvestigatorId, UseType)
-        , HasSet AssetId env (InvestigatorId, [Trait])
-        , HasSet AssetId env (InvestigatorId, CardDef)
         , HasSet AssetId env AssetMatcher
         , HasSet EventId env EventMatcher
         , HasSet SkillId env SkillMatcher
-        , HasSet AssetId env (LocationId, AssetMatcher)
-        , HasSet AssetId env InvestigatorId
-        , HasSet AssetId env LocationId
+        , Query AssetMatcher env
         , HasSet BlockedLocationId env ()
         , HasSet ClosestEnemyId env (LocationId, [Trait])
         , HasSet ClosestLocationId env (LocationId, [Trait])
@@ -128,7 +122,6 @@ type InvestigatorRunner env
         , HasSet CommittedCardId env InvestigatorId
         , HasSet CommittedSkillId env InvestigatorId
         , HasSet ConnectedLocationId env LocationId
-        , HasSet DiscardableAssetId env InvestigatorId
         , HasSet EmptyLocationId env ()
         , HasSet EnemyAccessibleLocationId env (EnemyId, LocationId)
         , HasSet EnemyId env CardCode
@@ -149,7 +142,6 @@ type InvestigatorRunner env
         , HasSet FightableEnemyId env (InvestigatorId, Source)
         , HasSet HandCardId env (InvestigatorId, CardType)
         , HasSet HandCardId env InvestigatorId
-        , HasSet HealthDamageableAssetId env InvestigatorId
         , HasSet InScenarioInvestigatorId env ()
         )
       , ( HasSet InvestigatorId env ()
@@ -166,7 +158,6 @@ type InvestigatorRunner env
         , HasSet PreyId env Prey
         , HasSet PreyId env (Prey, LocationId)
         , HasSet RevealedLocationId env ()
-        , HasSet SanityDamageableAssetId env InvestigatorId
         , HasSet ScenarioLogKey env ()
         , HasSet StoryAssetId env InvestigatorId
         , HasSet StoryEnemyId env CardCode

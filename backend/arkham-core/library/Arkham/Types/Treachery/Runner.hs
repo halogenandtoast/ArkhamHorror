@@ -3,23 +3,19 @@ module Arkham.Types.Treachery.Runner where
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.ActId
-import Arkham.Types.AgendaId
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Query
-
-
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
 
 type TreacheryRunner env
   = ( HasQueue env
+    , Query AssetMatcher env
     , HasCount ActsRemainingCount env ()
     , HasCount CardCount env InvestigatorId
     , HasCount ClueCount env InvestigatorId
@@ -43,12 +39,9 @@ type TreacheryRunner env
     , HasSet ActId env TreacheryCardCode
     , HasSet AgendaId env ()
     , HasSet AgendaId env TreacheryCardCode
-    , HasSet AssetId env InvestigatorId
-    , HasSet AssetId env (InvestigatorId, [Trait])
     , HasSet ClosestEnemyId env (LocationId, [Trait])
     , HasSet ClosestPathLocationId env (LocationId, LocationId)
     , HasSet ConnectedLocationId env LocationId
-    , HasSet DiscardableAssetId env InvestigatorId
     , HasSet EnemyId env LocationId
     , HasSet EnemyId env Trait
     , HasSet EnemyId env CardCode

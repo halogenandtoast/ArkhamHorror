@@ -9,6 +9,7 @@ import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
@@ -28,13 +29,13 @@ instance HasModifiersFor env MoonlightRitual
 instance
   ( HasCount DoomCount env AssetId
   , HasCount DoomCount env InvestigatorId
-  , HasSet AssetId env InvestigatorId
+  , Query AssetMatcher env
   )
   => RunMessage env MoonlightRitual where
   runMessage msg e@(MoonlightRitual attrs) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == toId attrs -> do
       -- we assume that the only cards that are relevant here are assets and investigators
-      assetIds <- getSetList @AssetId iid
+      assetIds <- selectList (AssetOwnedBy iid)
       investigatorDoomCount <- unDoomCount <$> getCount iid
       assetsWithDoomCount <-
         filter ((> 0) . snd)

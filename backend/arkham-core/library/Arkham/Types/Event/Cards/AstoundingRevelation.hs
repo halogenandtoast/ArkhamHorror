@@ -12,6 +12,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -42,10 +43,10 @@ instance HasActions env AstoundingRevelation where
 
 instance HasModifiersFor env AstoundingRevelation
 
-instance (HasQueue env, HasSet AssetId env (InvestigatorId, UseType)) => RunMessage env AstoundingRevelation where
+instance (Query AssetMatcher env, HasQueue env) => RunMessage env AstoundingRevelation where
   runMessage msg e@(AstoundingRevelation attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      secretAssetIds <- getSetList (iid, Secret)
+      secretAssetIds <- selectList (AssetOwnedBy iid <> AssetWithUseType Secret)
       e <$ push
         (chooseOne
           iid

@@ -295,7 +295,7 @@ getIsPrey
      , HasSet RemainingHealth env ()
      , HasSet Int env SkillType -- hmmm
      , HasSet InvestigatorId env ()
-     , HasSet AssetId env (InvestigatorId, AssetMatcher)
+     , Query AssetMatcher env
      , HasModifiersFor env ()
      )
   => Prey
@@ -346,9 +346,10 @@ getIsPrey (NearestToEnemyWithTrait trait) i = do
       mappingsMap
   pure $ investigatorDistance == minDistance
 getIsPrey (HasMostMatchingAsset assetMatcher) i = do
-  selfCount <- length <$> getSetList @AssetId (toId i, assetMatcher)
+  selfCount <- length <$> selectList (assetMatcher <> AssetOwnedBy (toId i))
   allCounts <-
-    traverse (\iid' -> length <$> getSetList @AssetId (iid', assetMatcher))
+    traverse
+        (\iid' -> length <$> selectList (assetMatcher <> AssetOwnedBy iid'))
       =<< getInvestigatorIds
   pure $ selfCount == maximum (ncons selfCount allCounts)
 

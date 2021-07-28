@@ -3,29 +3,24 @@ module Arkham.Types.GameRunner where
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.AgendaId
-import Arkham.Types.Asset.Uses (UseType)
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Enemy
-import Arkham.Types.EnemyId
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Keyword (Keyword)
 import Arkham.Types.Location
-import Arkham.Types.LocationId
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.SkillTest
 import Arkham.Types.Trait
-import Arkham.Types.TreacheryId
 
 type GameRunner env
   = ( HasQueue env
+    , Query AssetMatcher env
     , ( HasCount ActsRemainingCount env ()
       , HasCount ActionTakenCount env InvestigatorId
       , HasCount AssetCount env (InvestigatorId, [Trait])
@@ -69,9 +64,6 @@ type GameRunner env
     , ( HasSet AccessibleLocationId env LocationId
       , HasSet AgendaId env ()
       , HasSet AloofEnemyId env LocationId
-      , HasSet AssetId env (InvestigatorId, UseType)
-      , HasSet AssetId env InvestigatorId
-      , HasSet AssetId env LocationId
       , HasSet BlockedLocationId env ()
       , HasSet ClosestEnemyId env (LocationId, [Trait])
       , HasSet ClosestEnemyId env InvestigatorId
@@ -81,7 +73,6 @@ type GameRunner env
       , HasSet CommittedCardCode env ()
       , HasSet CommittedCardId env InvestigatorId
       , HasSet ConnectedLocationId env LocationId
-      , HasSet DiscardableAssetId env InvestigatorId
       , HasSet EmptyLocationId env ()
       , HasSet EnemyId env ()
       , HasSet EnemyId env InvestigatorId
@@ -105,8 +96,6 @@ type GameRunner env
       , HasSet LocationId env TreacheryCardCode
       , HasSet PreyId env (Prey, LocationId)
       , HasSet PreyId env Prey
-      , HasSet HealthDamageableAssetId env InvestigatorId
-      , HasSet SanityDamageableAssetId env InvestigatorId
       , HasSet Trait env AssetId
       , HasSet Trait env EnemyId
       , HasSet Trait env LocationId

@@ -9,6 +9,7 @@ import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -29,7 +30,7 @@ instance
   ( HasQueue env
   , HasId LocationId env InvestigatorId
   , HasSet InvestigatorId env LocationId
-  , HasSet AssetId env (InvestigatorId, [Trait])
+  , Query AssetMatcher env
   )
   => RunMessage env EmergencyAid where
   runMessage msg e@(EmergencyAid attrs@EventAttrs {..}) = case msg of
@@ -37,9 +38,8 @@ instance
       locationId <- getId @LocationId iid
       investigatorIds <- getSetList locationId
       let investigatorTargets = map InvestigatorTarget investigatorIds
-      allyTargets <- map AssetTarget . concat <$> for
-        investigatorIds
-        (getSetList . (, [Ally]))
+      allyTargets <- map AssetTarget <$> selectList
+        (AssetWithTrait Ally <> AssetOneOf (map AssetOwnedBy investigatorIds))
       e <$ push
         (chooseOne
           iid

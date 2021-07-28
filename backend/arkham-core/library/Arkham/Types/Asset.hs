@@ -3,17 +3,17 @@ module Arkham.Types.Asset where
 
 import Arkham.Prelude
 
-import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Attrs hiding (assetEnemy, assetLocation)
+import qualified Arkham.Types.Asset.Attrs as Attrs
 import Arkham.Types.Asset.Cards
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
-import Arkham.Types.AssetMatcher
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
@@ -33,7 +33,7 @@ instance
   )
   => HasActions env Asset where
   getActions iid window x = do
-    inPlay <- member (toId x) <$> getSet ()
+    inPlay <- member (toId x) <$> select AnyAsset
     modifiers' <- if inPlay
       then getModifiers (toSource x) (toTarget x)
       else pure []
@@ -69,7 +69,7 @@ instance
   )
   => RunMessage env Asset where
   runMessage msg x = do
-    inPlay <- member (toId x) <$> getSet ()
+    inPlay <- member (toId x) <$> select AnyAsset
     modifiers' <- if inPlay
       then getModifiers (toSource x) (toTarget x)
       else pure []
@@ -101,8 +101,7 @@ instance IsCard Asset where
   toCardId = toCardId . toAttrs
 
 instance HasDamage Asset where
-  getDamage a =
-    let AssetAttrs {..} = toAttrs a in (assetHealthDamage, assetSanityDamage)
+  getDamage = (assetHealthDamage &&& assetSanityDamage) . toAttrs
 
 instance Exhaustable Asset where
   isExhausted = assetExhausted . toAttrs
@@ -114,7 +113,7 @@ instance HasId (Maybe OwnerId) env Asset where
   getId = pure . coerce . assetInvestigator . toAttrs
 
 instance HasId (Maybe LocationId) env Asset where
-  getId = pure . assetLocation . toAttrs
+  getId = pure . Attrs.assetLocation . toAttrs
 
 instance HasCount DoomCount env Asset where
   getCount = pure . DoomCount . assetDoom . toAttrs
@@ -168,3 +167,9 @@ isSanityDamageable a = case assetSanity (toAttrs a) of
 
 isStory :: Asset -> Bool
 isStory = assetIsStory . toAttrs
+
+assetEnemy :: Asset -> Maybe EnemyId
+assetEnemy = Attrs.assetEnemy . toAttrs
+
+assetLocation :: Asset -> Maybe LocationId
+assetLocation = Attrs.assetLocation . toAttrs

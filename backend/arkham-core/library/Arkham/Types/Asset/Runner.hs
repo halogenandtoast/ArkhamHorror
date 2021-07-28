@@ -2,19 +2,17 @@ module Arkham.Types.Asset.Runner where
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Direction
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Query
 import Arkham.Types.Trait
 
 type AssetRunner env
   = ( HasQueue env
+    , Query AssetMatcher env
     , HasModifiersFor env ()
     , HasCount ActionRemainingCount env InvestigatorId
     , HasCount AssetCount env (InvestigatorId, [Trait])
@@ -33,8 +31,6 @@ type AssetRunner env
     , HasId LocationId env InvestigatorId
     , HasRecord env
     , HasSet AccessibleLocationId env LocationId
-    , HasSet AssetId env ()
-    , HasSet AssetId env InvestigatorId
     , HasSet BlockedLocationId env ()
     , HasSet ConnectedLocationId env LocationId
     , HasSet EnemyId env ([Trait], LocationId)

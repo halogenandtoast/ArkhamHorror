@@ -7,12 +7,12 @@ import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
+import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
@@ -63,7 +63,7 @@ instance ActRunner env => RunMessage env HuntingTheRougarou where
       protectedOurselves <-
         (>= requiredDamage) . unDamageCount <$> getCount rougarou
 
-      assetIds <- getSetList @AssetId rougarou
+      assetIds <- selectList (EnemyAsset rougarou)
       keptItContained <- or <$> for assetIds ((member Trap <$>) . getSet)
 
       scenarioLogs <- getSet ()

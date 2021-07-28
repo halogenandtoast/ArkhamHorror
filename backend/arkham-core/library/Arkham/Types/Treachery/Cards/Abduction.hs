@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
@@ -35,7 +35,8 @@ instance TreacheryRunner env => RunMessage env Abduction where
       ]
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        allies <- map AssetTarget <$> getSetList @AssetId (iid, [Ally])
+        allies <- map AssetTarget <$> selectList
+          (AssetOwnedBy iid <> AssetWithTrait Ally <> DiscardableAsset)
         case allies of
           [] -> t <$ push (LoseAllResources iid)
           targets -> t <$ push

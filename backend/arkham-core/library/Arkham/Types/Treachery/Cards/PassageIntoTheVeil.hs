@@ -6,9 +6,9 @@ module Arkham.Types.Treachery.Cards.PassageIntoTheVeil
 import Arkham.Prelude
 
 import qualified Arkham.Treachery.Cards as Cards
-import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
@@ -42,7 +42,7 @@ instance TreacheryRunner env => RunMessage env PassageIntoTheVeil where
         )
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        assetIds <- getSetList @AssetId iid
+        assetIds <- selectList (AssetOwnedBy iid)
         t <$ push
           (chooseOne
             iid

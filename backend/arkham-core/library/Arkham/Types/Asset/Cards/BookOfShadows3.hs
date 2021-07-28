@@ -11,6 +11,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Slot
 import Arkham.Types.Source
@@ -43,8 +44,7 @@ instance AssetRunner env => RunMessage env BookOfShadows3 where
       push (AddSlot iid ArcaneSlot (slot attrs))
       BookOfShadows3 <$> runMessage msg attrs
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      assetIds <- getSetList iid
-      spellAssetIds <- filterM ((member Spell <$>) . getSet) assetIds
+      spellAssetIds <- selectList (AssetOwnedBy iid <> AssetWithTrait Spell)
       a <$ unless
         (null spellAssetIds)
         (push $ chooseOne

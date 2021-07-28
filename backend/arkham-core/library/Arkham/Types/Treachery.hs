@@ -30,9 +30,7 @@ deriving anyclass instance ActionRunner env => HasActions env Treachery
 instance
   ( GetCardDef env LocationId
   , HasId (Maybe OwnerId) env AssetId
-  , HasSet AssetId env (InvestigatorId, CardDef)
   , HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)
-  , HasSet AssetId env (LocationId, AssetMatcher)
   , HasSet ClosestLocationId env (InvestigatorId, LocationMatcher)
   , HasSet EnemyId env EnemyMatcher
   , HasList UnderneathCard env InvestigatorId

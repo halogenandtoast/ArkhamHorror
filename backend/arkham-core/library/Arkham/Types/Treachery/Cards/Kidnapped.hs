@@ -9,6 +9,7 @@ import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
@@ -61,7 +62,7 @@ instance TreacheryRunner env => RunMessage env Kidnapped where
       )
     FailedSkillTest iid _ _ (SkillTestInitiatorTarget target) _ _
       | isTarget attrs target -> do
-        allies <- getSetList @AssetId (iid, [Ally])
+        allies <- selectList (AssetOwnedBy iid <> AssetWithTrait Ally)
         if null allies
           then t <$ pushAll
             [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0

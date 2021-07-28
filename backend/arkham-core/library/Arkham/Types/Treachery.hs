@@ -3,12 +3,11 @@ module Arkham.Types.Treachery where
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetMatcher
 import Arkham.Types.Card
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
-import Arkham.Types.EnemyMatcher
 import Arkham.Types.Id
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Matcher
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Target
@@ -29,8 +28,7 @@ instance HasCardDef Treachery where
 deriving anyclass instance ActionRunner env => HasActions env Treachery
 
 instance
-  ( HasSet AssetId env AssetMatcher
-  , GetCardDef env LocationId
+  ( GetCardDef env LocationId
   , HasId (Maybe OwnerId) env AssetId
   , HasSet AssetId env (InvestigatorId, CardDef)
   , HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)
@@ -40,6 +38,10 @@ instance
   , HasList UnderneathCard env InvestigatorId
   , HasList DeckCard env InvestigatorId
   , TreacheryRunner env
+  , HasSet SkillId env SkillMatcher
+  , HasSet AssetId env AssetMatcher
+  , HasSet EventId env EventMatcher
+  , HasSet ClassSymbol env InvestigatorId
   )
   => RunMessage env Treachery where
   runMessage = genericRunMessage

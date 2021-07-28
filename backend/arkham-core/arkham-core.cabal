@@ -533,6 +533,7 @@ library
       Arkham.Types.Event.Helpers
       Arkham.Types.Event.Runner
       Arkham.Types.EventId
+      Arkham.Types.EventMatcher
       Arkham.Types.Exception
       Arkham.Types.Game
       Arkham.Types.Game.Helpers
@@ -746,6 +747,7 @@ library
       Arkham.Types.LocationId
       Arkham.Types.LocationMatcher
       Arkham.Types.LocationSymbol
+      Arkham.Types.Matcher
       Arkham.Types.Message
       Arkham.Types.Modifier
       Arkham.Types.ModifierData
@@ -810,6 +812,7 @@ library
       Arkham.Types.Skill.Cards.ViciousBlow2
       Arkham.Types.Skill.Runner
       Arkham.Types.SkillId
+      Arkham.Types.SkillMatcher
       Arkham.Types.SkillTest
       Arkham.Types.SkillTestResult
       Arkham.Types.SkillType
@@ -923,6 +926,7 @@ library
       Arkham.Types.Treachery.Helpers
       Arkham.Types.Treachery.Runner
       Arkham.Types.TreacheryId
+      Arkham.Types.TreacheryMatcher
       Arkham.Types.Window
       Arkham.Types.WindowMatcher
   other-modules:

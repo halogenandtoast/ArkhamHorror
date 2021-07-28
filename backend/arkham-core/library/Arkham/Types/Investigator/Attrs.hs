@@ -720,7 +720,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & (deckL .~ Deck deck'')
   DrawStartingHand iid | iid == investigatorId -> do
     let (discard, hand, deck) = drawOpeningHand a 5
-    push (CheckWindow iid [AfterDrawingStartingHand iid])
     pure $ a & (discardL .~ discard) & (handL .~ hand) & (deckL .~ Deck deck)
   CheckAdditionalActionCosts iid _ source action msgs -> do
     modifiers' <- getModifiers source (toTarget a)
@@ -797,7 +796,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       Just c -> a <$ push (DiscardCard investigatorId (toCardId c))
   FinishedWithMulligan iid | iid == investigatorId -> do
     let (discard, hand, deck) = drawOpeningHand a (5 - length investigatorHand)
-    push (ShuffleDiscardBackIn iid)
+    pushAll
+      [ShuffleDiscardBackIn iid, CheckWindow iid [AfterDrawingStartingHand iid]]
     pure
       $ a
       & (resourcesL .~ 5)

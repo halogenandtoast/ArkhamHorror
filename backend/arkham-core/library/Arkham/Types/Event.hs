@@ -75,6 +75,9 @@ instance IsCard Event where
 instance HasId InvestigatorId env Event where
   getId = pure . eventOwner . toAttrs
 
+instance HasId OwnerId env Event where
+  getId = fmap OwnerId . getId
+
 getEventId :: Event -> EventId
 getEventId = eventId . toAttrs
 

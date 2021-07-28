@@ -15,7 +15,6 @@ import Arkham.Types.Action (Action, TakenAction)
 import Arkham.Types.Agenda
 import Arkham.Types.Asset
 import Arkham.Types.Asset.Uses (UseType)
-import Arkham.Types.AssetMatcher
 import Arkham.Types.Campaign
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
@@ -30,7 +29,6 @@ import Arkham.Types.Direction
 import Arkham.Types.Effect
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Enemy
-import Arkham.Types.EnemyMatcher
 import Arkham.Types.EntityInstance
 import Arkham.Types.Event
 import Arkham.Types.Game.Helpers
@@ -41,8 +39,8 @@ import Arkham.Types.Investigator
 import Arkham.Types.Keyword (HasKeywords(..), Keyword)
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Location
-import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.ModifierData
@@ -539,6 +537,7 @@ getAssetsMatching matcher = do
     AssetWithFullTitle title subtitle ->
       pure $ filter ((== Name title (Just subtitle)) . toName) as
     AssetWithId assetId -> pure $ filter ((== assetId) . toId) as
+    AssetWithClass role -> filterM (fmap (member role) . getSet . toId) as
     AssetWithTrait t -> filterM (fmap (member t) . getSet . toId) as
     AssetOwnedBy iid -> filterM (fmap (== Just (OwnerId iid)) . getId) as
     AssetReady -> pure $ filter (not . isExhausted) as
@@ -546,6 +545,38 @@ getAssetsMatching matcher = do
     AssetWithUseType uType -> filterM
       (fmap ((> 0) . unStartingUsesCount) . getCount . (, uType) . toId)
       as
+
+getEventsMatching
+  :: (MonadReader env m, HasGame env) => EventMatcher -> m [Event]
+getEventsMatching matcher = do
+  events <- toList . view eventsL <$> getGame
+  filterMatcher events matcher
+ where
+  filterMatcher as = \case
+    EventWithTitle title -> pure $ filter ((== title) . nameTitle . toName) as
+    EventWithFullTitle title subtitle ->
+      pure $ filter ((== Name title (Just subtitle)) . toName) as
+    EventWithId eventId -> pure $ filter ((== eventId) . toId) as
+    EventWithClass role -> filterM (fmap (member role) . getSet . toId) as
+    EventWithTrait t -> filterM (fmap (member t) . getSet . toId) as
+    EventOwnedBy iid -> filterM (fmap (== OwnerId iid) . getId) as
+    EventMatches ms -> foldM filterMatcher as ms
+
+getSkillsMatching
+  :: (MonadReader env m, HasGame env) => SkillMatcher -> m [Skill]
+getSkillsMatching matcher = do
+  skills <- toList . view skillsL <$> getGame
+  filterMatcher skills matcher
+ where
+  filterMatcher as = \case
+    SkillWithTitle title -> pure $ filter ((== title) . nameTitle . toName) as
+    SkillWithFullTitle title subtitle ->
+      pure $ filter ((== Name title (Just subtitle)) . toName) as
+    SkillWithId skillId -> pure $ filter ((== skillId) . toId) as
+    SkillWithClass role -> filterM (fmap (member role) . getSet . toId) as
+    SkillWithTrait t -> filterM (fmap (member t) . getSet . toId) as
+    SkillOwnedBy iid -> filterM (fmap (== OwnerId iid) . getId) as
+    SkillMatches ms -> foldM filterMatcher as ms
 
 getSkill
   :: (HasCallStack, MonadReader env m, HasGame env) => SkillId -> m Skill
@@ -762,6 +793,12 @@ instance  HasSet ClassSymbol env AgendaId where
 
 instance HasGame env => HasSet AssetId env AssetMatcher where
   getSet = fmap (setFromList . map toId) . getAssetsMatching
+
+instance HasGame env => HasSet EventId env EventMatcher where
+  getSet = fmap (setFromList . map toId) . getEventsMatching
+
+instance HasGame env => HasSet SkillId env SkillMatcher where
+  getSet = fmap (setFromList . map toId) . getSkillsMatching
 
 instance (HasSet Trait env AssetId, HasGame env) => HasSet AssetId env (InvestigatorId, AssetMatcher) where
   getSet (iid, matcher) = do
@@ -1329,6 +1366,12 @@ instance HasGame env => HasSet Trait env (InvestigatorId, CardId) where
 
 instance HasGame env => HasSet Trait env AssetId where
   getSet aid = toTraits <$> getAsset aid
+
+instance HasGame env => HasSet Trait env SkillId where
+  getSet sid = toTraits <$> getSkill sid
+
+instance HasGame env => HasSet Trait env EventId where
+  getSet eid = toTraits <$> getEvent eid
 
 instance HasGame env => HasSet Trait env EnemyId where
   getSet eid = toTraits <$> getEnemy eid

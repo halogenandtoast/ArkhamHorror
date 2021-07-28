@@ -5,17 +5,16 @@ import Arkham.Prelude
 import Arkham.Types.Ability
 import Arkham.Types.Action
 import Arkham.Types.Asset.Uses (UseType)
-import Arkham.Types.AssetMatcher
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Direction
-import Arkham.Types.EnemyMatcher
 import Arkham.Types.Id
 import Arkham.Types.Keyword
-import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Prey
@@ -101,10 +100,13 @@ type InvestigatorRunner env
         , HasSet AgendaId env TreacheryCardCode
         , HasSet AloofEnemyId env LocationId
         , HasSet AssetId env ()
+        , HasSet ClassSymbol env InvestigatorId
         , HasSet AssetId env (InvestigatorId, UseType)
         , HasSet AssetId env (InvestigatorId, [Trait])
         , HasSet AssetId env (InvestigatorId, CardDef)
         , HasSet AssetId env AssetMatcher
+        , HasSet EventId env EventMatcher
+        , HasSet SkillId env SkillMatcher
         , HasSet AssetId env (LocationId, AssetMatcher)
         , HasSet AssetId env InvestigatorId
         , HasSet AssetId env LocationId

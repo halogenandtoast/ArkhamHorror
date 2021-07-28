@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c0ce8d1609506bd9bdcab858aaac35f0d8cb607a9a4a83ee17180c73325d46df
+-- hash: 4efa4a17f77d32bacc319f7faaea088bef39944838acc7d354386773e1f67736
 
 name:           arkham-api
 version:        0.0.0
@@ -41,6 +41,7 @@ library
       Entity.Arkham.Player
       Entity.User
       Foundation
+      Handler.Health
       Import
       Import.NoFoundation
       Json

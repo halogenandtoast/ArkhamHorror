@@ -93,6 +93,7 @@ instance Yesod App where
     -> Bool       -- ^ Whether or not this is a "write" request.
     -> Handler AuthResult
   -- Routes not requiring authentication.
+  isAuthorized HealthR _ = pure Authorized
   isAuthorized (StaticR _) _ = pure Authorized
   isAuthorized (ApiP _) _ = pure Authorized
 

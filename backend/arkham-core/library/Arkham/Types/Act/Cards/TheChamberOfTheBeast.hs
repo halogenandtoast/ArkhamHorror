@@ -6,15 +6,14 @@ module Arkham.Types.Act.Cards.TheChamberOfTheBeast
 import Arkham.Prelude
 
 import qualified Arkham.Act.Cards as Cards
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
-import Arkham.Types.AssetId
-import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.LocationId
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
@@ -47,7 +46,7 @@ instance ActRunner env => RunMessage env TheChamberOfTheBeast where
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       resolution <- maybe 3 (const 2)
-        <$> getId @(Maybe StoryAssetId) (CardCode "02140")
+        <$> selectOne (AssetIs Cards.theNecronomiconOlausWormiusTranslation)
       a <$ push
         (chooseOne
           leadInvestigatorId

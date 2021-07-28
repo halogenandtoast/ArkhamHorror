@@ -8,11 +8,10 @@ import Arkham.Prelude
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Cards
 import Arkham.Types.Agenda.Runner
-import Arkham.Types.AssetMatcher
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.EnemyMatcher
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Trait (Trait)
@@ -40,7 +39,7 @@ instance HasStep Agenda AgendaStep where
 
 deriving anyclass instance ActionRunner env => HasActions env Agenda
 
-instance (HasSet AssetId env AssetMatcher, HasId (Maybe EnemyId) env EnemyMatcher, HasRecord env, AgendaRunner env) => RunMessage env Agenda where
+instance (HasId (Maybe EnemyId) env EnemyMatcher, HasRecord env, AgendaRunner env) => RunMessage env Agenda where
   runMessage = genericRunMessage
 
 instance (HasSet EnemyId env (), HasSet Trait env EnemyId) => HasModifiersFor env Agenda where

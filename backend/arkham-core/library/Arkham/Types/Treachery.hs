@@ -37,7 +37,6 @@ instance
   , HasList DeckCard env InvestigatorId
   , TreacheryRunner env
   , HasSet SkillId env SkillMatcher
-  , HasSet AssetId env AssetMatcher
   , HasSet EventId env EventMatcher
   , HasSet ClassSymbol env InvestigatorId
   )

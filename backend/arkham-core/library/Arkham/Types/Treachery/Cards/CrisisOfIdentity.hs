@@ -30,7 +30,6 @@ instance HasActions env CrisisOfIdentity where
 
 instance
   ( HasSet SkillId env SkillMatcher
-  , HasSet AssetId env AssetMatcher
   , HasSet EventId env EventMatcher
   , HasSet ClassSymbol env InvestigatorId
   , TreacheryRunner env
@@ -42,7 +41,7 @@ instance
       t <$ case roles of
         [] -> error "role has to be set"
         role : _ -> do
-          assets <- getSetList
+          assets <- selectList
             (AssetOwnedBy iid <> AssetWithClass role <> DiscardableAsset)
           events <- getSetList (EventOwnedBy iid <> EventWithClass role)
           skills <- getSetList (SkillOwnedBy iid <> SkillWithClass role)

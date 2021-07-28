@@ -6,18 +6,18 @@ module Arkham.Types.Act.Cards.AllIn
 import Arkham.Prelude
 
 import qualified Arkham.Act.Cards as Cards
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Action
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
@@ -36,7 +36,7 @@ allIn = act (3, A) AllIn Cards.allIn Nothing
 instance ActionRunner env => HasActions env AllIn where
   getActions iid NonFast (AllIn attrs) = withBaseActions iid NonFast attrs $ do
     investigatorLocationId <- getId @LocationId iid
-    maid <- fmap unStoryAssetId <$> getId (CardCode "02080")
+    maid <- selectOne (AssetIs Cards.drFrancisMorgan)
     case maid of
       Nothing -> pure []
       Just aid -> do
@@ -75,7 +75,7 @@ instance ActRunner env => RunMessage env AllIn where
         )
     UseCardAbility iid (ProxySource _ source) _ 1 _
       | isSource attrs source && onSide A attrs -> do
-        maid <- fmap unStoryAssetId <$> getId (CardCode "02080")
+        maid <- selectOne (AssetIs Cards.drFrancisMorgan)
         case maid of
           Nothing -> error "this ability should not be able to be used"
           Just aid -> a <$ push
@@ -89,7 +89,7 @@ instance ActRunner env => RunMessage env AllIn where
             )
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source && onSide A attrs -> do
-        maid <- fmap unStoryAssetId <$> getId (CardCode "02080")
+        maid <- selectOne (AssetIs Cards.drFrancisMorgan)
         case maid of
           Nothing -> error "this ability should not be able to be used"
           Just aid -> do

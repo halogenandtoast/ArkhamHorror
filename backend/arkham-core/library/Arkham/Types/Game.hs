@@ -549,6 +549,7 @@ getAssetsMatching matcher = do
     EnemyAsset eid -> pure $ filter ((== Just eid) . assetEnemy) as
     LocationAsset lid -> pure $ filter ((== Just lid) . assetLocation) as
     AssetReady -> pure $ filter (not . isExhausted) as
+    AssetExhausted -> pure $ filter isExhausted as
     AssetMatches ms -> foldM filterMatcher as ms
     AssetWithUseType uType -> filterM
       (fmap ((> 0) . unStartingUsesCount) . getCount . (, uType) . toId)
@@ -823,18 +824,14 @@ instance  HasSet ClassSymbol env ActId where
 instance  HasSet ClassSymbol env AgendaId where
   getSet _ = pure $ singleton Neutral
 
-instance HasGame env => HasSet AssetId env AssetMatcher where
-  getSet = fmap (setFromList . map toId) . getAssetsMatching
-
 instance HasGame env => HasSet EventId env EventMatcher where
   getSet = fmap (setFromList . map toId) . getEventsMatching
 
 instance HasGame env => HasSet SkillId env SkillMatcher where
   getSet = fmap (setFromList . map toId) . getSkillsMatching
 
-instance HasSet AssetId env AssetMatcher => Query AssetMatcher env where
-  select = getSet
-  selectList = getSetList
+instance HasGame env => Query AssetMatcher env where
+  select = fmap (setFromList . map toId) . getAssetsMatching
 
 instance HasGame env => HasSet EnemyId env LocationMatcher where
   getSet locationMatcher = do
@@ -881,19 +878,6 @@ instance HasGame env => HasList SetAsideCard env () where
 instance HasGame env => HasSet ClosestPathLocationId env (LocationId, LocationMatcher) where
   getSet (lid, locationMatcher) = maybe (pure mempty) (getSet . (lid, ) . toId)
     =<< getLocationMatching locationMatcher
-
-instance HasGame env => HasSet StoryAssetId env InvestigatorId where
-  getSet iid = do
-    assetIds <- getSet =<< getInvestigator iid
-    setFromList
-      . map (coerce . toId)
-      . filter (\a -> toId a `member` assetIds && isStory a)
-      . toList
-      . view assetsL
-      <$> getGame
-
-instance HasGame env => HasId (Maybe StoryAssetId) env CardCode where
-  getId cardCode = fmap StoryAssetId <$> getId cardCode
 
 instance HasGame env => HasId (Maybe StoryTreacheryId) env CardCode where
   getId cardCode = fmap StoryTreacheryId <$> getId cardCode
@@ -1406,13 +1390,6 @@ instance HasGame env => HasSet InvestigatorId env EnemyId where
 instance HasGame env => HasSet EnemyId env InvestigatorId where
   getSet iid = getEngagedEnemies <$> getInvestigator iid
 
-instance HasGame env => HasSet ExhaustedAssetId env InvestigatorId where
-  getSet iid = do
-    investigator <- getInvestigator iid
-    assetIds <- getSetList investigator
-    setFromList . coerce <$> filterM isAssetExhausted assetIds
-    where isAssetExhausted = (isExhausted <$>) . getAsset
-
 instance HasGame env => HasSet ExhaustedEnemyId env LocationId where
   getSet lid = do
     location <- getLocation lid
@@ -1422,12 +1399,6 @@ instance HasGame env => HasSet ExhaustedEnemyId env LocationId where
       . filterMap (\e -> toId e `member` locationEnemyIds && isExhausted e)
       . view enemiesL
       <$> getGame
-
-instance HasGame env => HasSet ExhaustedAssetId env () where
-  getSet () = do
-    assetIds <- keys . view assetsL <$> getGame
-    setFromList . coerce <$> filterM isAssetExhausted assetIds
-    where isAssetExhausted = (isExhausted <$>) . getAsset
 
 instance HasGame env => HasSet AgendaId env () where
   getSet _ = keysSet . view agendasL <$> getGame

@@ -19,7 +19,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Decks
 import Arkham.Types.GameValue
-import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
@@ -43,8 +42,7 @@ ability a = mkAbility
 
 instance ActionRunner env => HasActions env TheCarnevaleConspiracy where
   getActions iid NonFast (TheCarnevaleConspiracy x) = do
-    maskedCarnevaleGoers <- getSetList @AssetId
-      (AssetWithTitle "Masked Carnevale-Goer")
+    maskedCarnevaleGoers <- selectList (AssetWithTitle "Masked Carnevale-Goer")
     filteredMaskedCarnevaleGoers <- flip filterM maskedCarnevaleGoers $ \aid ->
       do
         modifiers' <- getModifiers (toSource x) (AssetTarget aid)
@@ -53,8 +51,7 @@ instance ActionRunner env => HasActions env TheCarnevaleConspiracy where
   getActions iid window (TheCarnevaleConspiracy x) = getActions iid window x
 
 instance
-  ( HasSet AssetId env AssetMatcher
-  , HasList UnderneathCard env ActDeck
+  ( HasList UnderneathCard env ActDeck
   , HasList UnderneathCard env AgendaDeck
   , HasModifiersFor env ()
   , ActRunner env
@@ -64,7 +61,7 @@ instance
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       cnidathqua <- EncounterCard <$> genEncounterCard Enemies.cnidathqua
-      maskedCarnevaleGoers <- getSetList @AssetId
+      maskedCarnevaleGoers <- selectList
         (AssetWithTitle "Masked Carnevale-Goer")
       let
         flipMsg = case maskedCarnevaleGoers of
@@ -86,7 +83,7 @@ instance
         (innocentRevelerCount == 3)
         (push $ AdvanceAct actId (toSource attrs))
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      maskedCarnevaleGoers <- getSetList @AssetId
+      maskedCarnevaleGoers <- selectList
         (AssetWithTitle "Masked Carnevale-Goer")
       filteredMaskedCarnevaleGoers <-
         flip filterM maskedCarnevaleGoers $ \aid -> do

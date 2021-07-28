@@ -9,12 +9,12 @@ import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Direction
-import Arkham.Types.EnemyMatcher
 import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Cards
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
@@ -43,7 +43,7 @@ instance
   , HasCount ClueCount env LocationId
   , HasCount ResourceCount env InvestigatorId
   , HasId (Maybe StoryEnemyId) env CardCode
-  , HasId (Maybe StoryAssetId) env CardCode
+  , Query AssetMatcher env
   )
   => HasModifiersFor env Location where
   getModifiersFor = genericGetModifiersFor

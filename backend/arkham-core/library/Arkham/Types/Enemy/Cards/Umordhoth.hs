@@ -5,15 +5,16 @@ module Arkham.Types.Enemy.Cards.Umordhoth
 
 import Arkham.Prelude
 
+import qualified Arkham.Asset.Cards as Cards
 import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
@@ -32,7 +33,7 @@ instance HasModifiersFor env Umordhoth
 instance ActionRunner env => HasActions env Umordhoth where
   getActions iid NonFast (Umordhoth attrs@EnemyAttrs {..}) =
     withBaseActions iid NonFast attrs $ do
-      maid <- fmap unStoryAssetId <$> getId (CardCode "01117")
+      maid <- selectOne (AssetIs Cards.litaChantler)
       locationId <- getId @LocationId iid
       case maid of
         Nothing -> pure []

@@ -25,7 +25,6 @@ type LocationRunner env
     , HasCount PlayerCount env ()
     , HasId (Maybe LocationId) env LocationMatcher
     , HasId (Maybe OwnerId) env AssetId
-    , HasId (Maybe StoryAssetId) env CardCode
     , HasId ActiveInvestigatorId env ()
     , HasId CardCode env EnemyId
     , HasId LeadInvestigatorId env ()

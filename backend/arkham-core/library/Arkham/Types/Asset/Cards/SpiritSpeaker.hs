@@ -25,9 +25,9 @@ newtype SpiritSpeaker = SpiritSpeaker AssetAttrs
 spiritSpeaker :: AssetCard SpiritSpeaker
 spiritSpeaker = asset SpiritSpeaker Cards.spiritSpeaker
 
-instance HasSet AssetId env AssetMatcher => HasActions env SpiritSpeaker where
+instance Query AssetMatcher env => HasActions env SpiritSpeaker where
   getActions iid FastPlayerWindow (SpiritSpeaker attrs) = do
-    targets <- getSet @AssetId (AssetOwnedBy iid <> AssetWithUseType Charge)
+    targets <- select (AssetOwnedBy iid <> AssetWithUseType Charge)
     pure
       [ UseAbility
           iid
@@ -40,15 +40,15 @@ instance HasModifiersFor env SpiritSpeaker
 
 instance
   ( HasCount UsesCount env AssetId
-  , HasSet AssetId env AssetMatcher
+  , Query AssetMatcher env
   , HasQueue env
   , HasModifiersFor env ()
   )
   => RunMessage env SpiritSpeaker where
   runMessage msg a@(SpiritSpeaker attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      assetIds <- getSetList (AssetOwnedBy iid <> AssetWithUseType Charge)
-      discardableAssetIds <- getSetList
+      assetIds <- selectList (AssetOwnedBy iid <> AssetWithUseType Charge)
+      discardableAssetIds <- selectList
         (AssetOwnedBy iid <> AssetWithUseType Charge <> DiscardableAsset)
       assetIdsWithChargeCounts <- traverse
         (traverseToSnd (fmap unUsesCount . getCount))

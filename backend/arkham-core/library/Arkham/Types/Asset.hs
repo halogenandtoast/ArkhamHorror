@@ -62,7 +62,6 @@ instance
   ( HasList HandCard env InvestigatorId
   , HasList CommittedCard env InvestigatorId
   , HasId LeadInvestigatorId env ()
-  , HasSet AssetId env AssetMatcher
   , HasCount UsesCount env AssetId
   , CanCheckPlayable env
   , AssetRunner env

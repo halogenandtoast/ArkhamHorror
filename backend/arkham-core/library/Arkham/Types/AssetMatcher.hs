@@ -21,6 +21,7 @@ data AssetMatcher
   | AssetAtLocation LocationId
   | AssetNonStory
   | AssetReady
+  | AssetExhausted
   | AssetWithUseType UseType
   | AssetIs CardDef
   | AnyAsset

@@ -1159,8 +1159,9 @@ analyticalMind =
     }
 
 theKingInYellow :: CardDef
-theKingInYellow = (weakness "03011" ("The King in Yellow" <:> "Act I"))
+theKingInYellow = (weakness "03011" ("The King in Yellow" <:> "Act 1"))
   { cdCardTraits = singleton Tome
+  , cdUnique = True
   }
 
 spiritSpeaker :: CardDef

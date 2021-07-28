@@ -7,8 +7,6 @@ import Arkham.EncounterCard (allEncounterCards)
 import Arkham.Types.Ability
 import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
-import Arkham.Types.AssetId
-import Arkham.Types.AssetMatcher
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
@@ -18,13 +16,11 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
-import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Keyword
 import qualified Arkham.Types.Keyword as Keyword
-import Arkham.Types.LocationId
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
@@ -750,6 +746,7 @@ hasInvestigateActions _ _ = pure False
 
 type CanCheckPlayable env
   = ( HasModifiersFor env ()
+    , Query AssetMatcher env
     , HasSet InvestigatorId env LocationId
     , HasSet EnemyId env LocationId
     , HasSet Trait env EnemyId
@@ -761,7 +758,6 @@ type CanCheckPlayable env
     , HasCount ResourceCount env InvestigatorId
     , HasCount DoomCount env AssetId
     , HasCount DoomCount env InvestigatorId
-    , HasSet AssetId env InvestigatorId
     , HasList DiscardedPlayerCard env InvestigatorId
     , HasCount PlayerCount env ()
     , HasSet InvestigatorId env ()
@@ -860,7 +856,7 @@ getIsPlayable iid windows c@(PlayerCard _) = do
       (pure $ location /= LocationId (CardId nil))
       (notNull <$> getSet @InvestigatorId location)
     OwnCardWithDoom -> do
-      assetIds <- getSetList @AssetId iid
+      assetIds <- selectList (AssetOwnedBy iid)
       investigatorDoomCount <- unDoomCount <$> getCount iid
       assetsWithDoomCount <- filterM
         (fmap ((> 0) . unDoomCount) . getCount)

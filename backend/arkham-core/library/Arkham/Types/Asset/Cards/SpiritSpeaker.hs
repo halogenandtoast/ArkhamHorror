@@ -48,6 +48,8 @@ instance
   runMessage msg a@(SpiritSpeaker attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       assetIds <- getSetList (AssetOwnedBy iid <> AssetWithUseType Charge)
+      discardableAssetIds <- getSetList
+        (AssetOwnedBy iid <> AssetWithUseType Charge <> DiscardableAsset)
       assetIdsWithChargeCounts <- traverse
         (traverseToSnd (fmap unUsesCount . getCount))
         assetIds
@@ -58,14 +60,16 @@ instance
               target
               [ chooseOne
                   iid
-                  [ Label "Return to hand" [ReturnToHand iid target]
-                  , Label
-                    "Move all charges to your resource pool"
-                    [ SpendUses target Charge n
-                    , TakeResources iid n False
-                    , Discard target
+                  (Label "Return to hand" [ReturnToHand iid target]
+                  : [ Label
+                        "Move all charges to your resource pool"
+                        [ SpendUses target Charge n
+                        , TakeResources iid n False
+                        , Discard target
+                        ]
+                    | aid `elem` discardableAssetIds
                     ]
-                  ]
+                  )
               ]
           | (aid, n) <- assetIdsWithChargeCounts
           , let target = AssetTarget aid

@@ -19,6 +19,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Window
@@ -51,10 +52,11 @@ instance ActionRunner env => HasActions env SanMarcoBasilica where
       pure [UseAbility iid (ability attrs)]
   getActions iid window (SanMarcoBasilica attrs) = getActions iid window attrs
 
-instance (HasSet AssetId env (InvestigatorId, CardDef), LocationRunner env) => RunMessage env SanMarcoBasilica where
+instance LocationRunner env => RunMessage env SanMarcoBasilica where
   runMessage msg l@(SanMarcoBasilica attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      innocentRevelerIds <- getSetList (iid, Assets.innocentReveler)
+      innocentRevelerIds <- selectList
+        (AssetOwnedBy iid <> AssetIs Assets.innocentReveler)
       l <$ push
         (chooseOne
           iid

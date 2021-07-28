@@ -18,6 +18,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Investigator.Runner
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
@@ -833,8 +834,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & assetsL %~ insertSet aid
   TakeControlOfAsset iid aid | iid /= investigatorId ->
     pure $ a & assetsL %~ deleteSet aid
-  ChooseAndDiscardAsset iid | iid == investigatorId -> do
-    discardableAssetIds <- map unDiscardableAssetId <$> getSetList iid
+  ChooseAndDiscardAsset iid assetMatcher | iid == investigatorId -> do
+    discardableAssetIds <- selectList
+      (assetMatcher <> DiscardableAsset <> AssetOwnedBy iid)
     a <$ push (chooseOne iid $ map (Discard . AssetTarget) discardableAssetIds)
   AttachAsset aid _ | aid `member` investigatorAssets ->
     pure $ a & assetsL %~ deleteSet aid
@@ -1123,8 +1125,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     -> do
       healthDamageMessages <- if health > 0
         then do
-          healthDamageableAssets <- map unHealthDamageableAssetId
-            <$> getSetList iid
+          healthDamageableAssets <- selectList (AssetCanBeAssignedDamageBy iid)
           let
             assignRestOfHealthDamage = InvestigatorDoAssignDamage
               investigatorId
@@ -1155,15 +1156,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               validAssets <-
                 setToList
                 . intersection (setFromList healthDamageableAssets)
-                <$> getSet (investigatorId, def)
+                <$> select (AssetOwnedBy investigatorId <> AssetIs def)
               pure
                 $ [ damageInvestigator | null validAssets ]
                 <> map damageAsset validAssets
         else pure []
       sanityDamageMessages <- if sanity > 0
         then do
-          sanityDamageableAssets <- map unSanityDamageableAssetId
-            <$> getSetList iid
+          sanityDamageableAssets <- selectList (AssetCanBeAssignedHorrorBy iid)
           let
             assignRestOfSanityDamage = InvestigatorDoAssignDamage
               investigatorId
@@ -1194,7 +1194,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               validAssets <-
                 setToList
                 . intersection (setFromList sanityDamageableAssets)
-                <$> getSet (investigatorId, def)
+                <$> select (AssetOwnedBy investigatorId <> AssetIs def)
               pure
                 $ [ damageInvestigator | null validAssets ]
                 <> map damageAsset validAssets

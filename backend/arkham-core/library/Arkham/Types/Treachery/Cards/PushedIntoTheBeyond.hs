@@ -9,7 +9,7 @@ import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.EffectMetadata
-import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
@@ -30,8 +30,7 @@ instance HasActions env PushedIntoTheBeyond where
 instance TreacheryRunner env => RunMessage env PushedIntoTheBeyond where
   runMessage msg t@(PushedIntoTheBeyond attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      storyAssets <- map unStoryAssetId <$> getSetList iid
-      validAssets <- filter (`notElem` storyAssets) <$> getSetList iid
+      validAssets <- selectList (AssetOwnedBy iid <> AssetNonStory)
       targets <- traverse (traverseToSnd getId) validAssets
       t <$ if notNull targets
         then push

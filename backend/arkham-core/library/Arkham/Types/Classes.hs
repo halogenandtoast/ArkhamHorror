@@ -10,8 +10,6 @@ import Arkham.Prelude hiding (to)
 import Arkham.Card
 import Arkham.Types.Ability
 import Arkham.Types.Action hiding (Ability)
-import Arkham.Types.Asset.Uses (UseType)
-import Arkham.Types.AssetMatcher
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes.Entity as X
@@ -19,10 +17,9 @@ import Arkham.Types.Classes.HasQueue as X
 import Arkham.Types.Classes.HasRecord as X
 import Arkham.Types.Classes.HasTokenValue as X
 import Arkham.Types.Classes.RunMessage as X
-import Arkham.Types.EnemyMatcher
 import Arkham.Types.Id
 import Arkham.Types.Keyword
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
@@ -95,6 +92,14 @@ class (Hashable set, Eq set) => HasSet set env a where
   getSetList :: (HasCallStack, MonadReader env m) => a -> m [set]
   getSetList a = setToList <$> getSet a
 
+type family QueryElement a where
+  QueryElement AssetMatcher = AssetId
+
+class (Hashable (QueryElement a), Eq (QueryElement a)) => Query a env where
+  select :: (HasCallStack, MonadReader env m) => a -> m (HashSet (QueryElement a))
+  selectList :: (HasCallStack, MonadReader env m) => a -> m [QueryElement a]
+  selectList a = setToList <$> select a
+
 class HasList list env a where
   getList :: MonadReader env m => a -> m [list]
 
@@ -157,6 +162,7 @@ instance HasVictoryPoints PlayerCard where
 
 type ActionRunner env
   = ( HasQueue env
+    , Query AssetMatcher env
     , GetCardDef env EnemyId
     , HasActions env ActionType
     , HasCostPayment env
@@ -192,9 +198,6 @@ type ActionRunner env
     , HasList UsedAbility env ()
     , HasModifiersFor env ()
     , HasSet AccessibleLocationId env LocationId
-    , HasSet AssetId env ()
-    , HasSet AssetId env (InvestigatorId, UseType)
-    , HasSet AssetId env InvestigatorId
     , HasSet CommittedCardId env InvestigatorId
     , HasSet ConnectedLocationId env LocationId
     , HasSet EnemyId env ([Trait], LocationId)

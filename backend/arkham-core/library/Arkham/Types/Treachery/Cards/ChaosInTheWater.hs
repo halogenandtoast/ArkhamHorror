@@ -7,9 +7,9 @@ import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Treachery.Cards as Cards
-import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
@@ -30,13 +30,13 @@ instance HasActions env ChaosInTheWater where
 
 instance
   ( HasId (Maybe OwnerId) env AssetId
-  , HasSet AssetId env (InvestigatorId, CardDef)
   , TreacheryRunner env
   )
   => RunMessage env ChaosInTheWater where
   runMessage msg t@(ChaosInTheWater attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      innocentRevelerIds <- getSetList @AssetId (iid, Assets.innocentReveler)
+      innocentRevelerIds <- selectList
+        (AssetOwnedBy iid <> AssetIs Assets.innocentReveler)
       investigatorsWithRevelers <-
         catMaybes
           <$> traverse (fmap (fmap unOwnerId) . getId) innocentRevelerIds

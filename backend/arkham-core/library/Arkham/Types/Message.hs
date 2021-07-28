@@ -29,6 +29,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher
 import Arkham.Types.Name
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Resolution
@@ -190,7 +191,7 @@ data Message
     | CheckWindow InvestigatorId [Window]
     | ChooseOneRewardByEachPlayer [CardDef] [InvestigatorId]
     | RunWindow InvestigatorId [Window]
-    | ChooseAndDiscardAsset InvestigatorId
+    | ChooseAndDiscardAsset InvestigatorId AssetMatcher
     | ChooseAndDiscardCard InvestigatorId
     | ChooseEndTurn InvestigatorId
     | ChooseInvestigate InvestigatorId Source Bool

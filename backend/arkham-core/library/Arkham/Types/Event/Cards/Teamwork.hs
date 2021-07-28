@@ -9,6 +9,7 @@ import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -35,7 +36,7 @@ instance HasModifiersFor env Teamwork
 
 instance
   ( HasQueue env
-  , HasSet AssetId env (InvestigatorId, [Trait])
+  , Query AssetMatcher env
   , HasSet InvestigatorId env LocationId
   , HasId LocationId env InvestigatorId
   )
@@ -48,8 +49,10 @@ instance
       investigatorIds <- getSetList locationId
       assetsWithInvestigatorIds <- concat <$> for
         investigatorIds
-        (\investigatorId ->
-          map (investigatorId, ) <$> getSetList (investigatorId, [Ally, Item])
+        (\investigatorId -> map (investigatorId, ) <$> selectList
+          (AssetOwnedBy investigatorId
+          <> AssetOneOf (map AssetWithTrait [Ally, Item])
+          )
         )
       e <$ push
         (chooseOne

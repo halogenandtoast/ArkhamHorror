@@ -8,17 +8,18 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.GameValue
+import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -84,7 +85,7 @@ instance ActionRunner env => HasActions env BrackishWaters where
 instance LocationRunner env => RunMessage env BrackishWaters where
   runMessage msg l@(BrackishWaters attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      assetIds <- getSetList @AssetId iid
+      assetIds <- selectList (AssetOwnedBy iid <> DiscardableAsset)
       handAssetIds <- map unHandCardId <$> getSetList (iid, AssetType)
       l <$ pushAll
         [ chooseN iid 2

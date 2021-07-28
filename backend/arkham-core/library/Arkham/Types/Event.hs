@@ -4,7 +4,6 @@ module Arkham.Types.Event where
 import Arkham.Prelude
 
 import Arkham.Card
-import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
@@ -30,7 +29,6 @@ deriving anyclass instance
   , CanCheckPlayable env
   , GetCardDef env EnemyId
   , HasList UnderneathCard env InvestigatorId
-  , HasSet AssetId env (InvestigatorId, UseType)
   , HasSkillTest env
   )
   => HasActions env Event

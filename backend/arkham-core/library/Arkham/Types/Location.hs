@@ -50,7 +50,6 @@ instance
 
 instance
   ( HasSet UnengagedEnemyId env LocationId
-  , HasSet AssetId env (InvestigatorId, CardDef)
   , HasSet EnemyId env EnemyMatcher
   , LocationRunner env
   )

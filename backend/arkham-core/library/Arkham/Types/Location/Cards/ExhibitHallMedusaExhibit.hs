@@ -12,6 +12,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 
 newtype ExhibitHallMedusaExhibit = ExhibitHallMedusaExhibit LocationAttrs
@@ -38,5 +39,5 @@ instance ActionRunner env => HasActions env ExhibitHallMedusaExhibit where
 instance LocationRunner env => RunMessage env ExhibitHallMedusaExhibit where
   runMessage msg l@(ExhibitHallMedusaExhibit attrs) = case msg of
     After (FailedSkillTest iid (Just Action.Investigate) _ target _ _)
-      | isTarget attrs target -> l <$ push (ChooseAndDiscardAsset iid)
+      | isTarget attrs target -> l <$ push (ChooseAndDiscardAsset iid AnyAsset)
     _ -> ExhibitHallMedusaExhibit <$> runMessage msg attrs

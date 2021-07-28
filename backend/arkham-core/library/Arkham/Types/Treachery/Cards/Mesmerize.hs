@@ -29,15 +29,14 @@ instance HasActions env Mesmerize where
 
 instance
   ( HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)
-  , HasSet AssetId env (LocationId, AssetMatcher)
   , TreacheryRunner env
   )
   => RunMessage env Mesmerize where
   runMessage msg t@(Mesmerize attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid
-      maskedCarnevaleGoers <- getSetList @AssetId
-        (lid, AssetWithTitle "Masked Carnevale-Goer")
+      maskedCarnevaleGoers <- selectList
+        (AssetAtLocation lid <> AssetWithTitle "Masked Carnevale-Goer")
       case maskedCarnevaleGoers of
         [] ->
           t

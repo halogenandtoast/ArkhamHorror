@@ -8,10 +8,10 @@ import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import Control.Monad.Extra hiding (filterM)
 
 newtype ExtraAmmunition1 = ExtraAmmunition1 EventAttrs
   deriving anyclass IsEvent
@@ -29,8 +29,9 @@ instance (EventRunner env) => RunMessage env ExtraAmmunition1 where
   runMessage msg e@(ExtraAmmunition1 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       investigatorIds <- getSetList @InvestigatorId =<< getId @LocationId iid
-      assetIds <- concatForM investigatorIds getSetList
-      firearms <- filterM ((elem Firearm <$>) . getSetList) assetIds
+      firearms <- selectList
+        (AssetWithTrait Firearm <> AssetOneOf (map AssetOwnedBy investigatorIds)
+        )
       e <$ if null firearms
         then push . Discard $ toTarget attrs
         else pushAll

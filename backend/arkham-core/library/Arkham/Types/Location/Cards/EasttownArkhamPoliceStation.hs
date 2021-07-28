@@ -15,6 +15,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Window
@@ -51,8 +52,10 @@ instance ActionRunner env => HasActions env EasttownArkhamPoliceStation where
 instance LocationRunner env => RunMessage env EasttownArkhamPoliceStation where
   runMessage msg l@(EasttownArkhamPoliceStation attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      ammoAssets <- map (Ammo, ) <$> getSetList (iid, Ammo)
-      supplyAssets <- map (Supply, ) <$> getSetList (iid, Supply)
+      ammoAssets <- map (Ammo, )
+        <$> selectList (AssetOwnedBy iid <> AssetWithUseType Ammo)
+      supplyAssets <- map (Supply, )
+        <$> selectList (AssetOwnedBy iid <> AssetWithUseType Supply)
       l <$ push
         (chooseOne
           iid

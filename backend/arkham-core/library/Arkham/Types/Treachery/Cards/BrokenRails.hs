@@ -8,6 +8,7 @@ import Arkham.Prelude
 import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Treachery.Attrs
@@ -35,7 +36,7 @@ instance TreacheryRunner env => RunMessage env BrokenRails where
         pure $ damageCount >= 4
       t <$ pushAll
         ([ LoseActions iid' source 1 | iid' <- investigatorIds ]
-        <> [ ChooseAndDiscardAsset iid'
+        <> [ ChooseAndDiscardAsset iid' AnyAsset
            | iid' <- investigatorsWhoMustDiscard
            ]
         <> [Discard (toTarget attrs)]

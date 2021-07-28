@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
-import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
@@ -31,8 +31,8 @@ instance TreacheryRunner env => RunMessage env CryptChill where
       ]
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        assetCount <- length <$> getSet @DiscardableAssetId iid
+        assetCount <- length <$> select (DiscardableAsset <> AssetOwnedBy iid)
         if assetCount > 0
-          then t <$ push (ChooseAndDiscardAsset iid)
+          then t <$ push (ChooseAndDiscardAsset iid AnyAsset)
           else t <$ push (InvestigatorAssignDamage iid source DamageAny 2 0)
     _ -> CryptChill <$> runMessage msg attrs

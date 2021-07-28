@@ -533,6 +533,7 @@ getAssetsMatching matcher = do
   filterMatcher assets matcher
  where
   filterMatcher as = \case
+    AnyAsset -> pure as
     AssetWithTitle title -> pure $ filter ((== title) . nameTitle . toName) as
     AssetWithFullTitle title subtitle ->
       pure $ filter ((== Name title (Just subtitle)) . toName) as
@@ -540,11 +541,42 @@ getAssetsMatching matcher = do
     AssetWithClass role -> filterM (fmap (member role) . getSet . toId) as
     AssetWithTrait t -> filterM (fmap (member t) . getSet . toId) as
     AssetOwnedBy iid -> filterM (fmap (== Just (OwnerId iid)) . getId) as
+    AssetAtLocation lid -> filterM (fmap (== Just lid) . getId) as
+    AssetOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
+    AssetNonStory -> pure $ filter (not . isStory) as
+    AssetIs def -> pure $ filter ((== def) . toCardDef) as
+    DiscardableAsset -> pure $ filter canBeDiscarded as
+    EnemyAsset eid -> pure $ filter ((== Just eid) . assetEnemy) as
+    LocationAsset lid -> pure $ filter ((== Just lid) . assetLocation) as
     AssetReady -> pure $ filter (not . isExhausted) as
     AssetMatches ms -> foldM filterMatcher as ms
     AssetWithUseType uType -> filterM
       (fmap ((> 0) . unStartingUsesCount) . getCount . (, uType) . toId)
       as
+    AssetCanBeAssignedDamageBy iid -> do
+      investigatorAssets <- filterMatcher as (AssetOwnedBy iid)
+      let otherAssets = filter (`notElem` investigatorAssets) as
+      otherDamageableAssets <-
+        map fst
+        . filter (elem CanBeAssignedDamage . snd)
+        <$> traverse
+              (traverseToSnd $ getModifiers (InvestigatorSource iid) . toTarget)
+              otherAssets
+      pure $ filter
+        isHealthDamageable
+        (investigatorAssets <> otherDamageableAssets)
+    AssetCanBeAssignedHorrorBy iid -> do
+      investigatorAssets <- filterMatcher as (AssetOwnedBy iid)
+      let otherAssets = filter (`notElem` investigatorAssets) as
+      otherDamageableAssets <-
+        map fst
+        . filter (elem CanBeAssignedDamage . snd)
+        <$> traverse
+              (traverseToSnd $ getModifiers (InvestigatorSource iid) . toTarget)
+              otherAssets
+      pure $ filter
+        isSanityDamageable
+        (investigatorAssets <> otherDamageableAssets)
 
 getEventsMatching
   :: (MonadReader env m, HasGame env) => EventMatcher -> m [Event]
@@ -800,17 +832,9 @@ instance HasGame env => HasSet EventId env EventMatcher where
 instance HasGame env => HasSet SkillId env SkillMatcher where
   getSet = fmap (setFromList . map toId) . getSkillsMatching
 
-instance (HasSet Trait env AssetId, HasGame env) => HasSet AssetId env (InvestigatorId, AssetMatcher) where
-  getSet (iid, matcher) = do
-    matchingAssetIds <- setFromList . map toId <$> getAssetsMatching matcher
-    investigatorAssetIds <- getSet @AssetId iid
-    pure $ matchingAssetIds `intersection` investigatorAssetIds
-
-instance (HasSet Trait env AssetId, HasGame env) => HasSet AssetId env (LocationId, AssetMatcher) where
-  getSet (lid, matcher) = do
-    matchingAssetIds <- setFromList . map toId <$> getAssetsMatching matcher
-    locationAssetIds <- getSet @AssetId lid
-    pure $ matchingAssetIds `intersection` locationAssetIds
+instance HasSet AssetId env AssetMatcher => Query AssetMatcher env where
+  select = getSet
+  selectList = getSetList
 
 instance HasGame env => HasSet EnemyId env LocationMatcher where
   getSet locationMatcher = do
@@ -1713,7 +1737,7 @@ instance HasGame env => HasSet ClosestPathLocationId env (LocationId, Prey, Hash
 instance HasGame env => HasSet ClosestAssetId env (InvestigatorId, CardDef) where
   getSet (iid, cardDef) = do
     start <- locationFor iid
-    currentAssets <- traverse getAsset =<< getSetList @AssetId start
+    currentAssets <- traverse getAsset =<< selectList (LocationAsset start)
     if notNull $ matches currentAssets
       then pure $ setFromList $ map
         (ClosestAssetId . toId)
@@ -1729,15 +1753,15 @@ instance HasGame env => HasSet ClosestAssetId env (InvestigatorId, CardDef) wher
                       setFromList
                         . map (ClosestAssetId . toId)
                         . matches
-                        <$> (traverse getAsset =<< getSetList @AssetId
-                              (unClosestLocationId lid)
+                        <$> (traverse getAsset =<< selectList
+                              (LocationAsset $ unClosestLocationId lid)
                             )
                     )
                     lids
    where
     matches = filter ((== cardDef) . toCardDef)
     matcher lid = do
-      assets <- traverse getAsset =<< getSetList @AssetId lid
+      assets <- traverse getAsset =<< selectList (LocationAsset lid)
       pure $ notNull (matches assets)
 
 instance HasGame env => HasSet ClosestEnemyId env LocationId where
@@ -1971,45 +1995,6 @@ instance HasGame env => HasSet EnemyAccessibleLocationId env (EnemyId, LocationI
         pure $ enemyIsElite || CannotBeAttackedByNonElite `notElem` modifiers'
     setFromList . coerce <$> filterM unblocked connectedLocationIds
 
-instance HasGame env => HasSet AssetId env InvestigatorId where
-  getSet = getSet <=< getInvestigator
-
-instance HasGame env => HasSet AssetId env (InvestigatorId, UseType) where
-  getSet (iid, useType) = do
-    investigator <- getInvestigator iid
-    assetIds <- getSetList @AssetId investigator
-    setFromList <$> filterM ((isCorrectUseType <$>) . getAsset) assetIds
-    where isCorrectUseType asset = useTypeOf asset == Just useType
-
-instance HasGame env => HasSet AssetId env (InvestigatorId, CardDef) where
-  getSet (iid, cardDef) = do
-    investigator <- getInvestigator iid
-    assetIds <- getSetList @AssetId investigator
-    setFromList
-      <$> filterM (fmap ((== cardDef) . toCardDef) . getAsset) assetIds
-
-instance (HasGame env, HasSet Trait env AssetId) => HasSet AssetId env (InvestigatorId, [Trait]) where
-  getSet (iid, traits) = do
-    investigator <- getInvestigator iid
-    assetIds <- getSetList @AssetId investigator
-    setFromList <$> filterM matches assetIds
-    where matches = (any (`elem` traits) <$>) . getSetList
-
-instance HasGame env => HasSet DiscardableAssetId env InvestigatorId where
-  getSet iid = do
-    investigator <- getInvestigator iid
-    assetIds <- getSetList @AssetId investigator
-    setFromList . coerce <$> filterM ((canBeDiscarded <$>) . getAsset) assetIds
-
-instance HasGame env => HasSet AssetId env EnemyId where
-  getSet = getSet <=< getEnemy
-
-instance HasGame env => HasSet AssetId env () where
-  getSet _ = keysSet . view assetsL <$> getGame
-
-instance HasGame env => HasSet AssetId env LocationId where
-  getSet = getSet <=< getLocation
-
 instance HasGame env => HasSet TreacheryId env LocationId where
   getSet = getSet <=< getLocation
 
@@ -2018,50 +2003,6 @@ instance HasGame env => HasSet EventId env LocationId where
 
 instance HasGame env => HasSet EventId env () where
   getSet _ = keysSet . view eventsL <$> getGame
-
-instance HasGame env => HasSet HealthDamageableAssetId env InvestigatorId where
-  getSet iid = do
-    allAssets' <- view assetsL <$> getGame
-    investigatorAssets <- getSet iid
-    let otherAssetIds = filter (`member` investigatorAssets) $ keys allAssets'
-    otherDamageableAssetIds <-
-      setFromList
-      . map fst
-      . filter (elem CanBeAssignedDamage . snd)
-      <$> traverse
-            (\a ->
-              (a, ) <$> getModifiers (InvestigatorSource iid) (AssetTarget a)
-            )
-            otherAssetIds
-    pure $ mapSet HealthDamageableAssetId . keysSet $ assets'
-      allAssets'
-      (investigatorAssets <> otherDamageableAssetIds)
-   where
-    assets' allAssets' assetIds = HashMap.filterWithKey
-      (\k v -> k `elem` assetIds && isHealthDamageable v)
-      allAssets'
-
-instance HasGame env => HasSet SanityDamageableAssetId env InvestigatorId where
-  getSet iid = do
-    allAssets' <- view assetsL <$> getGame
-    investigatorAssets <- getSet iid
-    let otherAssetIds = filter (`member` investigatorAssets) $ keys allAssets'
-    otherDamageableAssetIds <-
-      setFromList
-      . map fst
-      . filter (elem CanBeAssignedDamage . snd)
-      <$> traverse
-            (\a ->
-              (a, ) <$> getModifiers (InvestigatorSource iid) (AssetTarget a)
-            )
-            otherAssetIds
-    pure $ mapSet SanityDamageableAssetId . keysSet $ assets'
-      allAssets'
-      (investigatorAssets <> otherDamageableAssetIds)
-   where
-    assets' allAssets' assetIds = HashMap.filterWithKey
-      (\k v -> k `elem` assetIds && isSanityDamageable v)
-      allAssets'
 
 instance HasGame env => HasSet EnemyId env () where
   getSet _ = keysSet . view enemiesL <$> getGame
@@ -2393,7 +2334,7 @@ runGameMessage msg g = case msg of
     pushAll $ concatMap (resolve . Discard . EnemyTarget) enemyIds
     eventIds <- getSetList lid
     pushAll $ concatMap (resolve . Discard . EventTarget) eventIds
-    assetIds <- getSetList lid
+    assetIds <- selectList (LocationAsset lid)
     pushAll $ concatMap (resolve . Discard . AssetTarget) assetIds
     investigatorIds <- getSetList lid
     pushAll $ concatMap (resolve . InvestigatorDefeated) investigatorIds

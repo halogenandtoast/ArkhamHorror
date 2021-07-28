@@ -10,6 +10,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Source
@@ -52,7 +53,7 @@ instance TreacheryRunner env => RunMessage env WrackedByNightmares where
       Revelation iid source | isSource attrs source ->
         t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)
       AttachTreachery tid (InvestigatorTarget iid) | tid == treacheryId -> do
-        assetIds <- getSetList iid
+        assetIds <- selectList (AssetOwnedBy iid)
         pushAll [ Exhaust (AssetTarget aid) | aid <- assetIds ]
         WrackedByNightmares <$> runMessage msg attrs
       UseCardAbility _ (TreacherySource tid) _ 1 _ | tid == treacheryId ->

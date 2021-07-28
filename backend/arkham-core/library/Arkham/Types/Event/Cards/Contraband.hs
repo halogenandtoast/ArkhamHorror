@@ -10,6 +10,7 @@ import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
@@ -28,9 +29,9 @@ instance HasModifiersFor env Contraband
 
 instance
   ( HasQueue env
+  , Query AssetMatcher env
   , HasId LocationId env InvestigatorId
   , HasSet InvestigatorId env LocationId
-  , HasSet AssetId env (InvestigatorId, UseType)
   , HasCount UsesCount env AssetId
   )
   => RunMessage env Contraband where
@@ -38,14 +39,17 @@ instance
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       locationId <- getId @LocationId iid
       investigatorIds <- getSetList @InvestigatorId locationId
-      ammoAssets <- concat
-        <$> for investigatorIds (getSetList @AssetId . (, Ammo))
+
+      ammoAssets <- selectList
+        (AssetWithUseType Ammo <> AssetOneOf (map AssetOwnedBy investigatorIds))
 
       ammoAssetsWithUseCount <- map (\(c, aid) -> (Ammo, c, aid))
         <$> for ammoAssets (\aid -> (, aid) . unUsesCount <$> getCount aid)
 
-      supplyAssets <- concat
-        <$> for investigatorIds (getSetList @AssetId . (, Supply))
+      supplyAssets <- selectList
+        (AssetWithUseType Supply
+        <> AssetOneOf (map AssetOwnedBy investigatorIds)
+        )
 
       supplyAssetsWithUseCount <- map (\(c, aid) -> (Supply, c, aid))
         <$> for supplyAssets (\aid -> (, aid) . unUsesCount <$> getCount aid)

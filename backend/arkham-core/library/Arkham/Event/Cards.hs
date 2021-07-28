@@ -579,6 +579,7 @@ buryThemDeep = (event "03016" "Bury Them Deep" 0 Neutral)
   , cdCardTraits = singleton Task
   , cdFastWindow = Just
     (AfterEnemyDefeated Anyone $ NonEliteEnemy <> EnemyAtYourLocation)
+  , cdVictoryPoints = Just 1
   }
 
 improvisation :: CardDef

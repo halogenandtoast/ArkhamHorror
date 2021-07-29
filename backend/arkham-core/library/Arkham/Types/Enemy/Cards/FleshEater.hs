@@ -9,7 +9,7 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Matcher
 
 newtype FleshEater = FleshEater EnemyAttrs
   deriving anyclass IsEnemy

@@ -9,7 +9,7 @@ import Arkham.Types.Direction
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Matcher
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.SkillTest

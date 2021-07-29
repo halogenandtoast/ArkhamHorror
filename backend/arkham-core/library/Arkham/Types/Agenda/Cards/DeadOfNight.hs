@@ -12,7 +12,7 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target

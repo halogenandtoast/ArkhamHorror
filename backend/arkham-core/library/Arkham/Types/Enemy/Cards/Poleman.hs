@@ -6,10 +6,9 @@ module Arkham.Types.Enemy.Cards.Poleman
 import Arkham.Prelude
 
 import qualified Arkham.Enemy.Cards as Cards
-import Arkham.Types.AssetMatcher
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Matcher
 import Arkham.Types.Prey
 
 newtype Poleman = Poleman EnemyAttrs

@@ -12,7 +12,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Exception
 import Arkham.Types.Id
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Window

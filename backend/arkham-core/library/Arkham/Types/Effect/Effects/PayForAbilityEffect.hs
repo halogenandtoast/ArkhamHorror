@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Types.Ability
 import Arkham.Types.Action hiding (Ability, TakenAction)
 import qualified Arkham.Types.Action as Action
-import Arkham.Types.AssetMatcher
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -16,8 +15,8 @@ import Arkham.Types.Effect.Attrs
 import Arkham.Types.EffectId
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Game.Helpers
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query

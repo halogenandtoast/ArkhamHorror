@@ -285,7 +285,6 @@ library
       Arkham.Types.Asset.Runner
       Arkham.Types.Asset.Uses
       Arkham.Types.AssetId
-      Arkham.Types.AssetMatcher
       Arkham.Types.Campaign
       Arkham.Types.Campaign.Attrs
       Arkham.Types.Campaign.Campaigns
@@ -450,7 +449,6 @@ library
       Arkham.Types.Enemy.Helpers
       Arkham.Types.Enemy.Runner
       Arkham.Types.EnemyId
-      Arkham.Types.EnemyMatcher
       Arkham.Types.EntityInstance
       Arkham.Types.Event
       Arkham.Types.Event.Attrs
@@ -533,7 +531,6 @@ library
       Arkham.Types.Event.Helpers
       Arkham.Types.Event.Runner
       Arkham.Types.EventId
-      Arkham.Types.EventMatcher
       Arkham.Types.Exception
       Arkham.Types.Game
       Arkham.Types.Game.Helpers
@@ -745,7 +742,6 @@ library
       Arkham.Types.Location.Helpers
       Arkham.Types.Location.Runner
       Arkham.Types.LocationId
-      Arkham.Types.LocationMatcher
       Arkham.Types.LocationSymbol
       Arkham.Types.Matcher
       Arkham.Types.Message
@@ -812,7 +808,6 @@ library
       Arkham.Types.Skill.Cards.ViciousBlow2
       Arkham.Types.Skill.Runner
       Arkham.Types.SkillId
-      Arkham.Types.SkillMatcher
       Arkham.Types.SkillTest
       Arkham.Types.SkillTestResult
       Arkham.Types.SkillType
@@ -926,7 +921,6 @@ library
       Arkham.Types.Treachery.Helpers
       Arkham.Types.Treachery.Runner
       Arkham.Types.TreacheryId
-      Arkham.Types.TreacheryMatcher
       Arkham.Types.Window
       Arkham.Types.WindowMatcher
   other-modules:

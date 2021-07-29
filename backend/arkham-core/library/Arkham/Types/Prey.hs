@@ -4,8 +4,8 @@ module Arkham.Types.Prey
 
 import Arkham.Prelude
 
-import Arkham.Types.AssetMatcher
 import Arkham.Types.Card.PlayerCard
+import Arkham.Types.Matcher
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
 

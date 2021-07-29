@@ -18,7 +18,7 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Exception
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.ScenarioId
 import Arkham.Types.Target

@@ -14,7 +14,7 @@ import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 
 newtype TheBarrier = TheBarrier ActAttrs

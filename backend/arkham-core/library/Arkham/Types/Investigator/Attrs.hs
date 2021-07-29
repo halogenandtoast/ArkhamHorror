@@ -732,22 +732,27 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           _ -> Nothing
         )
         modifiers'
-    unless (null additionalCosts) $ do
-      canPay <- getCanAffordCost
-        iid
-        (toSource a)
-        Nothing
-        (mconcat additionalCosts)
-      when
-        canPay
-        (pushAll
-        $ [ CreatePayAbilityCostEffect Nothing (toSource a) (toTarget a)
-          , PayAbilityCost (toSource a) iid Nothing (mconcat additionalCosts)
-          , PayAbilityCostFinished (toSource a) iid
-          ]
-        <> msgs
-        )
-    pure a
+    a <$ if null additionalCosts
+      then pushAll msgs
+      else do
+        canPay <- getCanAffordCost
+          iid
+          (toSource a)
+          Nothing
+          (mconcat additionalCosts)
+        when
+          canPay
+          (pushAll
+          $ [ CreatePayAbilityCostEffect Nothing (toSource a) (toTarget a)
+            , PayAbilityCost
+              (toSource a)
+              iid
+              Nothing
+              (mconcat additionalCosts)
+            , PayAbilityCostFinished (toSource a) iid
+            ]
+          <> msgs
+          )
   TakeStartingResources iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toSource a) (toTarget a)
     let

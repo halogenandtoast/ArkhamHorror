@@ -7,9 +7,9 @@ import Arkham.Prelude
 
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import qualified Arkham.Treachery.Cards as Cards
-import Arkham.Types.AssetMatcher
 import Arkham.Types.Classes
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs

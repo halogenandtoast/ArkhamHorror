@@ -10,7 +10,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 
 newtype DevoteeOfTheKey = DevoteeOfTheKey EnemyAttrs

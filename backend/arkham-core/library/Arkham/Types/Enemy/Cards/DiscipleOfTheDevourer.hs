@@ -10,7 +10,7 @@ import Arkham.Types.AgendaId
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 
 newtype DiscipleOfTheDevourer = DiscipleOfTheDevourer EnemyAttrs

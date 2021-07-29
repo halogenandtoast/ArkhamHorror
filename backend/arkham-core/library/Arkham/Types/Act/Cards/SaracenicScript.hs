@@ -16,7 +16,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 
 newtype SaracenicScript = SaracenicScript ActAttrs

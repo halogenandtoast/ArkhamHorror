@@ -13,9 +13,8 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.LocationId
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Target

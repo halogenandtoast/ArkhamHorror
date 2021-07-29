@@ -8,9 +8,9 @@ import Arkham.Prelude
 import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Uses
-import Arkham.Types.AssetMatcher
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait

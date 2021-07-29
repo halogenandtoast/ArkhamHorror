@@ -9,10 +9,9 @@ import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
-import Arkham.Types.EnemyMatcher
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 

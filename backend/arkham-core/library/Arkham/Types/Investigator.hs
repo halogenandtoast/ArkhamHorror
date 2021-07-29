@@ -6,7 +6,6 @@ import Arkham.Prelude
 
 import Arkham.Types.Action (Action, TakenAction)
 import Arkham.Types.Asset.Uses
-import Arkham.Types.AssetMatcher
 import Arkham.Types.Card
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
@@ -16,6 +15,7 @@ import Arkham.Types.Id
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Cards
 import Arkham.Types.Investigator.Runner
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name

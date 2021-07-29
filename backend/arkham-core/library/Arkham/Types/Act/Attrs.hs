@@ -9,22 +9,19 @@ import Arkham.Act.Cards
 import Arkham.Json
 import Arkham.Types.Act.Sequence as X
 import qualified Arkham.Types.Act.Sequence as AS
-import Arkham.Types.ActId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Exception
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.RequiredClues as X
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.TreacheryId
 import Arkham.Types.Window
 
 class IsAct a

@@ -6,10 +6,9 @@ import Arkham.Prelude
 
 import Arkham.Types.Asset.Uses
 import Arkham.Types.AssetId
-import Arkham.Types.AssetMatcher
 import Arkham.Types.Card
 import Arkham.Types.GameValue
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Matcher
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target

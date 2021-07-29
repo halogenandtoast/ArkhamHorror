@@ -25,7 +25,7 @@ data AssetMatcher
   | AssetIs CardDef
   | AnyAsset
   | EnemyAsset EnemyId
-  | LocationAsset LocationId
+  | AssetAt LocationMatcher
   | DiscardableAsset
   | AssetCanBeAssignedDamageBy InvestigatorId
   | AssetCanBeAssignedHorrorBy InvestigatorId

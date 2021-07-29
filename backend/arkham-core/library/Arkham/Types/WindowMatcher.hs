@@ -9,6 +9,7 @@ import Arkham.Types.Trait
 data WindowMatcher
   = AfterEnemyDefeated Who WindowEnemyMatcher
   | AfterSkillTestResult Who SkillTestMatcher SkillTestResultMatcher
+  | WhenWouldHaveSkillTestResult Who SkillTestMatcher SkillTestResultMatcher
   | WhenEnemySpawns Where WindowEnemyMatcher
   | FastPlayerWindow Who
   | AfterTurnBegins Who

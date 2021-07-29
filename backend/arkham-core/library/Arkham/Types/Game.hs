@@ -547,7 +547,9 @@ getAssetsMatching matcher = do
     AssetIs def -> pure $ filter ((== def) . toCardDef) as
     DiscardableAsset -> pure $ filter canBeDiscarded as
     EnemyAsset eid -> pure $ filter ((== Just eid) . assetEnemy) as
-    LocationAsset lid -> pure $ filter ((== Just lid) . assetLocation) as
+    AssetAt locationMatcher -> do
+      locations <- map toId <$> getLocationsMatching locationMatcher
+      pure $ filter (maybe False (`elem` locations) . assetLocation) as
     AssetReady -> pure $ filter (not . isExhausted) as
     AssetExhausted -> pure $ filter isExhausted as
     AssetMatches ms -> foldM filterMatcher as ms
@@ -1708,7 +1710,8 @@ instance HasGame env => HasSet ClosestPathLocationId env (LocationId, Prey, Hash
 instance HasGame env => HasSet ClosestAssetId env (InvestigatorId, AssetMatcher) where
   getSet (iid, assetMatcher) = do
     start <- locationFor iid
-    currentMatches <- selectList (LocationAsset start <> assetMatcher)
+    currentMatches <- selectList
+      (AssetAt (LocationWithId start) <> assetMatcher)
     if notNull currentMatches
       then pure $ setFromList $ map ClosestAssetId currentMatches
       else do
@@ -1722,14 +1725,14 @@ instance HasGame env => HasSet ClosestAssetId env (InvestigatorId, AssetMatcher)
                       setFromList
                         . map ClosestAssetId
                         <$> selectList
-                              (assetMatcher
-                              <> LocationAsset (unClosestLocationId lid)
+                              (assetMatcher <> AssetAt
+                                (LocationWithId $ unClosestLocationId lid)
                               )
                     )
                     lids
    where
     matcher lid = do
-      assets <- selectList (LocationAsset lid <> assetMatcher)
+      assets <- selectList (AssetAt (LocationWithId lid) <> assetMatcher)
       pure $ notNull assets
 
 instance HasGame env => HasSet ClosestEnemyId env LocationId where
@@ -2302,7 +2305,7 @@ runGameMessage msg g = case msg of
     pushAll $ concatMap (resolve . Discard . EnemyTarget) enemyIds
     eventIds <- getSetList lid
     pushAll $ concatMap (resolve . Discard . EventTarget) eventIds
-    assetIds <- selectList (LocationAsset lid)
+    assetIds <- selectList (AssetAt $ LocationWithId lid)
     pushAll $ concatMap (resolve . Discard . AssetTarget) assetIds
     investigatorIds <- getSetList lid
     pushAll $ concatMap (resolve . InvestigatorDefeated) investigatorIds

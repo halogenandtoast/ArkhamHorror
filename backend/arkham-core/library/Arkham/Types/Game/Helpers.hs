@@ -929,6 +929,9 @@ cardInFastWindows iid _ windows matcher = anyM (matches matcher) windows
     (Matcher.AfterTurnBegins whoMatcher, AfterTurnBegins who) ->
       matchWho who whoMatcher
     (Matcher.AfterTurnBegins _, _) -> pure False
+    (Matcher.WhenWouldHaveSkillTestResult whoMatcher _ (Matcher.FailureResult _), WhenWouldFailSkillTest who)
+      -> matchWho who whoMatcher
+    (Matcher.WhenWouldHaveSkillTestResult{}, _) -> pure False
     (Matcher.AfterSkillTestResult whoMatcher Matcher.WhileInvestigating (Matcher.FailureResult gameValueMatcher), AfterFailInvestigationSkillTest who n)
       -> liftA2
         (&&)

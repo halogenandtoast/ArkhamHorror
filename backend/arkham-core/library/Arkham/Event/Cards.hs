@@ -295,8 +295,8 @@ lookWhatIFound = (event "01079" "\"Look what I found!\"" 2 Survivor)
 lucky :: CardDef
 lucky = (event "01080" "Lucky!" 1 Survivor)
   { cdCardTraits = setFromList [Fortune]
-  , cdFast = True
-  , cdWindows = setFromList [Window.WhenWouldFailSkillTest Window.You]
+  , cdFastWindow = Just
+    (WhenWouldHaveSkillTestResult You AnySkillTest $ FailureResult AnyValue)
   }
 
 closeCall2 :: CardDef
@@ -311,8 +311,8 @@ closeCall2 = (event "01083" "Close Call" 2 Survivor)
 lucky2 :: CardDef
 lucky2 = (event "01084" "Lucky!" 1 Survivor)
   { cdCardTraits = setFromList [Fortune]
-  , cdFast = True
-  , cdWindows = setFromList [Window.WhenWouldFailSkillTest Window.You]
+  , cdFastWindow = Just
+    (WhenWouldHaveSkillTestResult You AnySkillTest $ FailureResult AnyValue)
   , cdLevel = 2
   }
 

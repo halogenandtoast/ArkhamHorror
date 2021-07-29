@@ -34,8 +34,8 @@ instance HasModifiersFor env ProfessorWarrenRice where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env ProfessorWarrenRice where
-  getActions iid (AfterDiscoveringClues You YourLocation) (ProfessorWarrenRice a)
-    = do
+  getActions iid (AfterDiscoveringClues who loc) (ProfessorWarrenRice a)
+    | iid == who = do
       lid <- getId @LocationId iid
       lastClue <- (== 0) . unClueCount <$> getCount lid
       pure
@@ -46,7 +46,7 @@ instance ActionRunner env => HasActions env ProfessorWarrenRice where
               1
               (ReactionAbility $ ExhaustCost (toTarget a))
             )
-        | lastClue && ownedBy a iid
+        | lastClue && ownedBy a iid && loc == lid
         ]
   getActions _ _ _ = pure []
 

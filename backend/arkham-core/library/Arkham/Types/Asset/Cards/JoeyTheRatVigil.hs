@@ -44,7 +44,7 @@ instance
       handCards <- map unHandCard <$> getList iid
       let items = filter (member Item . toTraits) handCards
       playableItems <- filterM
-        (getIsPlayable iid [DuringTurn You, FastPlayerWindow])
+        (getIsPlayable iid [DuringTurn iid, FastPlayerWindow])
         items
       a <$ push
         (chooseOne

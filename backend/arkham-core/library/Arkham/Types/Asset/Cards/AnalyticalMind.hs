@@ -30,8 +30,8 @@ ability attrs =
   mkAbility attrs 1 (ReactionAbility $ ExhaustCost (toTarget attrs))
 
 instance HasSet CommittedCardId env InvestigatorId => HasActions env AnalyticalMind where
-  getActions i (AfterCommitedCard You _) (AnalyticalMind attrs)
-    | ownedBy attrs i = do
+  getActions i (AfterCommitedCard who _) (AnalyticalMind attrs)
+    | ownedBy attrs i && i == who = do
       cardCount <- length <$> getSetList @CommittedCardId i
       pure [ UseAbility i (ability attrs) | cardCount == 1 ]
   getActions i window (AnalyticalMind attrs) = getActions i window attrs

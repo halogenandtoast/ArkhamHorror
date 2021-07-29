@@ -66,7 +66,7 @@ instance
         [ DrHenryArmitageSurvivedTheDunwichLegacy
         , ProfessorWarrenRiceSurvivedTheDunwichLegacy
         , DrFrancisMorganSurvivedTheDunwichLegacy
-        , ZebulonWhatelySurvivedTheDunwichLegacy
+        , ZebulonWhateleySurvivedTheDunwichLegacy
         , EarlSawyerSurvivedTheDunwichLegacy
         ]
       PowderOfIbnGhazi <$> runMessage msg (attrs & cluesL .~ survivedCount)

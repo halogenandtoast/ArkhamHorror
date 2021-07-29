@@ -264,7 +264,6 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       s <$ push (EnemySpawnFromVoid Nothing lid eid)
     ScenarioResolution NoResolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
       xp <- getXp
       s <$ pushAll
         ([ chooseOne
@@ -283,12 +282,11 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            ]
          , Record TheInvestigatorsFailedToRecoverTheNecronomicon
          ]
-        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame]
         )
     ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
       xp <- getXp
       s <$ pushAll
         ([ chooseOne
@@ -312,7 +310,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            ]
          , Record TheInvestigatorsDestroyedTheNecronomicon
          ]
-        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame]
         )
     ScenarioResolution (Resolution 2) -> do
@@ -358,7 +356,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            ]
          , AddToken ElderThing
          ]
-        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame]
         )
     _ -> TheMiskatonicMuseum <$> runMessage msg attrs

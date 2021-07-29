@@ -12,7 +12,6 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype LetMeHandleThis = LetMeHandleThis EventAttrs
   deriving anyclass IsEvent
@@ -24,15 +23,11 @@ letMeHandleThis = event LetMeHandleThis Cards.letMeHandleThis
 instance HasModifiersFor env LetMeHandleThis
 
 instance HasActions env LetMeHandleThis where
-  getActions iid (InHandWindow ownerId (WhenDrawNonPerilTreachery who tid)) (LetMeHandleThis attrs)
-    | who /= You && iid == ownerId
-    = pure
-      [InitiatePlayCard iid (toCardId attrs) (Just $ TreacheryTarget tid) False]
   getActions iid window (LetMeHandleThis attrs) = getActions iid window attrs
 
 instance HasQueue env => RunMessage env LetMeHandleThis where
   runMessage msg e@(LetMeHandleThis attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid (Just (TreacheryTarget tid))
+    InvestigatorPlayEvent iid eid (Just (TreacheryTarget tid)) _
       | eid == eventId -> do
         withQueue_ $ map $ \case
           Revelation _ (TreacherySource tid') | tid == tid' ->

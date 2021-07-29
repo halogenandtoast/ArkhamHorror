@@ -17,7 +17,6 @@ import Arkham.Types.Name
 import Arkham.Types.PlayRestriction
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
-import Arkham.Types.Window
 import Arkham.Types.WindowMatcher (WindowMatcher)
 
 data AttackOfOpportunityModifier = DoesNotProvokeAttacksOfOpportunity
@@ -46,7 +45,6 @@ data CardDef = CardDef
   , cdKeywords :: HashSet Keyword
   , cdFast :: Bool
   , cdFastWindow :: Maybe WindowMatcher -- WARNING: This is new
-  , cdWindows :: HashSet Window -- WARNING: This is legact
   , cdAction :: Maybe Action
   , cdRevelation :: Bool
   , cdVictoryPoints :: Maybe Int
@@ -142,7 +140,6 @@ testCardDef cardType cardCode = CardDef
   , cdCardTraits = mempty
   , cdKeywords = mempty
   , cdFast = False
-  , cdWindows = mempty
   , cdFastWindow = Nothing
   , cdAction = Nothing
   , cdRevelation = False

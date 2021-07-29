@@ -13,8 +13,8 @@ import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.Matcher
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Window
@@ -39,8 +39,8 @@ forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
 
 instance ActionRunner env => HasActions env PrismaticCascade where
-  getActions _ (AfterDiscoveringClues You YourLocation) (PrismaticCascade attrs)
-    = do
+  getActions iid (AfterDiscoveringClues who lid) (PrismaticCascade attrs)
+    | iid == who && lid == toId attrs = do
       leadInvestigator <- getLeadInvestigatorId
       pure
         [ locationAbility leadInvestigator (forcedAbility attrs)

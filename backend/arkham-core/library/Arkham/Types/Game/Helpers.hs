@@ -37,6 +37,14 @@ import qualified Arkham.Types.WindowMatcher as Matcher
 import Control.Monad.Extra (allM, anyM)
 import Data.UUID (nil)
 
+checkWindows
+  :: (MonadReader env m, HasSet InvestigatorId env ())
+  => [Window]
+  -> m [Message]
+checkWindows windows = do
+  iids <- getInvestigatorIds
+  pure $ [ CheckWindow iid windows | iid <- iids ]
+
 cancelToken :: (HasQueue env, MonadIO m, MonadReader env m) => Token -> m ()
 cancelToken token = withQueue $ \queue ->
   ( filter
@@ -388,8 +396,26 @@ getInvestigatorModifiers
 getInvestigatorModifiers iid source =
   getModifiers source (InvestigatorTarget iid)
 
-getXp :: (HasCount XPCount env (), MonadReader env m) => m Int
-getXp = unXPCount <$> getCount ()
+getXp
+  :: ( HasCount XPCount env ()
+     , HasModifiersFor env ()
+     , HasSet InvestigatorId env ()
+     , MonadReader env m
+     )
+  => m [(InvestigatorId, Int)]
+getXp = do
+  investigatorIds <- getInvestigatorIds
+  for
+    investigatorIds
+    \iid -> do
+      modifiers' <- getModifiers
+        (InvestigatorSource iid)
+        (InvestigatorTarget iid)
+      amount <- unXPCount <$> getCount ()
+      pure (iid, foldl' applyModifier amount modifiers')
+ where
+  applyModifier n (XPModifier m) = max 0 (n + m)
+  applyModifier n _ = n
 
 getLeadInvestigatorId
   :: (HasId LeadInvestigatorId env (), MonadReader env m) => m InvestigatorId
@@ -746,19 +772,18 @@ hasInvestigateActions _ _ = pure False
 type CanCheckPlayable env
   = ( HasModifiersFor env ()
     , Query AssetMatcher env
+    , CanCheckFast env
+    , HasCount ActionTakenCount env InvestigatorId
     , HasSet InvestigatorId env LocationId
     , HasSet EnemyId env LocationId
     , HasSet Trait env EnemyId
     , HasCount ClueCount env LocationId
     , HasActions env ActionType
-    , HasId LocationId env InvestigatorId
-    , HasId LocationId env EnemyId
     , HasSet EnemyId env InvestigatorId
     , HasCount ResourceCount env InvestigatorId
     , HasCount DoomCount env AssetId
     , HasCount DoomCount env InvestigatorId
     , HasList DiscardedPlayerCard env InvestigatorId
-    , HasCount PlayerCount env ()
     , HasSet InvestigatorId env ()
     )
 
@@ -786,12 +811,8 @@ getIsPlayable iid windows c@(PlayerCard _) = do
     $ (cdCardType pcDef /= SkillType)
     && (modifiedCardCost <= availableResources)
     && none prevents modifiers
-    && (not (cdFast pcDef || isJust (cdFastWindow pcDef))
-       || (cdFast pcDef && cardInWindows windows c iid)
-       || inFastWindow
-       )
+    && (isNothing (cdFastWindow pcDef) || inFastWindow)
     && (cdAction pcDef /= Just Action.Evade || notNull engagedEnemies)
-    && (elem NonFast windows || elem (DuringTurn You) windows || inFastWindow)
     && passesRestrictions
  where
   pcDef = toCardDef c
@@ -806,6 +827,9 @@ getIsPlayable iid windows c@(PlayerCard _) = do
     typePairs
   prevents _ = False
   passesRestriction location = \case
+    FirstAction -> do
+      n <- unActionTakenCount <$> getCount iid
+      pure $ n == 0
     ReturnableCardInDiscard AnyPlayerDiscard traits -> do
       investigatorIds <-
         filterM
@@ -905,82 +929,147 @@ getModifiedCardCost iid c@(EncounterCard _) = do
     max 0 (n - m)
   applyModifier _ n = n
 
-cardInWindows :: [Window] -> Card -> InvestigatorId -> Bool
-cardInWindows windows c _ = case c of
-  PlayerCard pc ->
-    notNull $ cdWindows (toCardDef pc) `intersect` setFromList windows
-  _ -> False
+type CanCheckFast env
+  = ( HasSet Trait env EnemyId
+    , HasId LocationId env InvestigatorId
+    , HasId LocationId env EnemyId
+    , HasId CardCode env EnemyId
+    , HasCount PlayerCount env ()
+    , HasTokenValue env ()
+    )
 
 cardInFastWindows
-  :: ( MonadReader env m
-     , HasSet Trait env EnemyId
-     , HasId LocationId env InvestigatorId
-     , HasId LocationId env EnemyId
-     , HasCount PlayerCount env ()
-     )
+  :: (MonadReader env m, CanCheckFast env, MonadIO m)
   => InvestigatorId
   -> Card
   -> [Window]
   -> WindowMatcher
   -> m Bool
-cardInFastWindows iid _ windows matcher = anyM (matches matcher) windows
+cardInFastWindows iid _ windows matcher = anyM
+  (`windowMatches` matcher)
+  windows
  where
-  matches matcher' window' = case (matcher', window') of
-    (Matcher.AfterTurnBegins whoMatcher, AfterTurnBegins who) ->
-      matchWho who whoMatcher
-    (Matcher.AfterTurnBegins _, _) -> pure False
-    (Matcher.WhenWouldHaveSkillTestResult whoMatcher _ (Matcher.FailureResult _), WhenWouldFailSkillTest who)
-      -> matchWho who whoMatcher
-    (Matcher.WhenWouldHaveSkillTestResult{}, _) -> pure False
-    (Matcher.AfterSkillTestResult whoMatcher Matcher.WhileInvestigating (Matcher.FailureResult gameValueMatcher), AfterFailInvestigationSkillTest who n)
-      -> liftA2
-        (&&)
-        (matchWho who whoMatcher)
-        (gameValueMatches n gameValueMatcher)
-    (Matcher.AfterSkillTestResult whoMatcher Matcher.AnySkillTest (Matcher.FailureResult gameValueMatcher), AfterFailSkillTest who n)
-      -> liftA2
-        (&&)
-        (matchWho who whoMatcher)
-        (gameValueMatches n gameValueMatcher)
-    (Matcher.AfterSkillTestResult whoMatcher Matcher.AnySkillTest (Matcher.SuccessResult gameValueMatcher), AfterPassSkillTest _ _ who n)
-      -> liftA2
-        (&&)
-        (matchWho who whoMatcher)
-        (gameValueMatches n gameValueMatcher)
-    (Matcher.AfterSkillTestResult{}, _) -> pure False
-    (Matcher.DuringTurn whoMatcher, DuringTurn who) -> matchWho who whoMatcher
-    (Matcher.DuringTurn _, _) -> pure False
-    (Matcher.OrWindowMatcher matchers, window'') ->
-      anyM (`matches` window'') matchers
-    (Matcher.WhenEnemySpawns whereMatcher enemyMatcher, WhenEnemySpawns enemyId locationId)
-      -> liftA2
+  windowMatches window' = \case
+    Matcher.PhaseBegins _whenMatcher phaseMatcher -> case window' of
+      AnyPhaseBegins -> pure $ phaseMatcher == Matcher.AnyPhase
+      PhaseBegins _ -> case phaseMatcher of
+        Matcher.AnyPhase -> pure True
+      _ -> pure False
+    Matcher.AfterTurnBegins whoMatcher -> case window' of
+      AfterTurnBegins who -> matchWho who whoMatcher
+      _ -> pure False
+    Matcher.WhenWouldHaveSkillTestResult whoMatcher _ skillTestResultMatcher ->
+      case skillTestResultMatcher of
+        Matcher.FailureResult _ -> case window' of
+          WhenWouldFailSkillTest who -> matchWho who whoMatcher
+          _ -> pure False
+        Matcher.SuccessResult _ -> pure False -- no pass window exists yet, add below too if added
+        Matcher.AnyResult -> case window' of
+          WhenWouldFailSkillTest who -> matchWho who whoMatcher
+          -- TODO: Add success window if it exists
+          _ -> pure False
+    Matcher.SkillTestResult whenMatcher whoMatcher skillMatcher skillTestResultMatcher
+      -> case skillTestResultMatcher of
+        Matcher.FailureResult gameValueMatcher -> case window' of
+          AfterFailInvestigationSkillTest who n
+            | whenMatcher
+              == Matcher.After
+              && skillMatcher
+              == Matcher.WhileInvestigating
+            -> liftA2
+              (&&)
+              (matchWho who whoMatcher)
+              (gameValueMatches n gameValueMatcher)
+          AfterFailSkillTest who n | whenMatcher == Matcher.After -> liftA2
+            (&&)
+            (matchWho who whoMatcher)
+            (gameValueMatches n gameValueMatcher)
+          _ -> pure False
+        Matcher.SuccessResult gameValueMatcher -> case window' of
+          AfterPassSkillTest _ _ who n | whenMatcher == Matcher.After -> liftA2
+            (&&)
+            (matchWho who whoMatcher)
+            (gameValueMatches n gameValueMatcher)
+          _ -> pure False
+        Matcher.AnyResult -> case window' of
+          AfterFailSkillTest who _ | whenMatcher == Matcher.After ->
+            matchWho who whoMatcher
+          AfterPassSkillTest _ _ who _ | whenMatcher == Matcher.After ->
+            matchWho who whoMatcher
+          _ -> pure False
+    Matcher.DuringTurn whoMatcher -> case window' of
+      DuringTurn who -> matchWho who whoMatcher
+      _ -> pure False
+    Matcher.OrWindowMatcher matchers -> anyM (windowMatches window') matchers
+    Matcher.WhenEnemySpawns whereMatcher enemyMatcher -> case window' of
+      WhenEnemySpawns enemyId locationId -> liftA2
         (&&)
         (enemyMatches enemyId enemyMatcher)
         (locationMatches locationId whereMatcher)
-    (Matcher.WhenEnemySpawns _ _, _) -> pure False
-    (Matcher.AfterEnemyDefeated whoMatcher enemyMatcher, AfterEnemyDefeated who enemyId)
-      -> liftA2
-        (&&)
-        (enemyMatches enemyId enemyMatcher)
-        (matchWho who whoMatcher)
-    (Matcher.AfterEnemyDefeated _ _, _) -> pure False
-    (Matcher.FastPlayerWindow _, window) -> pure $ window == FastPlayerWindow
-    (Matcher.DealtDamageOrHorror Matcher.You, WhenWouldTakeDamageOrHorror _ (InvestigatorTarget iid') _ _)
-      -> pure $ iid == iid'
-    (Matcher.DealtDamageOrHorror _, _) -> pure False
-    (Matcher.WhenDrawEncounterCard Matcher.You treacheryMatcher, WhenDrawEncounterCard You cardCode)
-      -> do
-        case treacheryMatcher of
-          Matcher.NonWeakness ->
-            pure $ isJust (lookup cardCode allEncounterCards)
-    (Matcher.WhenDrawEncounterCard _ _, _) -> pure False
+      _ -> pure False
+    Matcher.EnemyAttacks timingMatcher whoMatcher enemyMatcher ->
+      case window' of
+        WhenEnemyAttacks who enemyId | timingMatcher == Matcher.When -> liftA2
+          (&&)
+          (matchWho who whoMatcher)
+          (enemyMatches enemyId enemyMatcher)
+        _ -> pure False
+    Matcher.EnemyEvaded timingMatcher whoMatcher enemyMatcher ->
+      case window' of
+        AfterEnemyEvaded who enemyId | timingMatcher == Matcher.After -> liftA2
+          (&&)
+          (enemyMatches enemyId enemyMatcher)
+          (matchWho who whoMatcher)
+        _ -> pure False
+    Matcher.MythosStep mythosStepMatcher -> case window' of
+      WhenAllDrawEncounterCard ->
+        pure $ mythosStepMatcher == Matcher.WhenAllDrawEncounterCard
+      _ -> pure False
+    Matcher.RevealChaosToken whenMatcher whoMatcher tokenMatcher ->
+      case window' of
+        WhenRevealToken who token | whenMatcher == Matcher.When -> liftA2
+          (&&)
+          (matchWho who whoMatcher)
+          (matchToken who token tokenMatcher)
+        AfterRevealToken who token | whenMatcher == Matcher.After -> liftA2
+          (&&)
+          (matchWho who whoMatcher)
+          (matchToken who token tokenMatcher)
+        _ -> pure False
+    Matcher.EnemyDefeated timingMatcher whoMatcher enemyMatcher ->
+      case window' of
+        AfterEnemyDefeated who enemyId | timingMatcher == Matcher.After ->
+          liftA2
+            (&&)
+            (enemyMatches enemyId enemyMatcher)
+            (matchWho who whoMatcher)
+        _ -> pure False
+    Matcher.FastPlayerWindow -> pure $ window' == FastPlayerWindow
+    Matcher.DealtDamageOrHorror whoMatcher -> case whoMatcher of
+      Matcher.You -> case window' of
+        WhenWouldTakeDamageOrHorror _ (InvestigatorTarget iid') _ _ ->
+          pure $ iid == iid'
+        _ -> pure False
+      _ -> pure False
+    Matcher.DrawCard whenMatcher whoMatcher cardMatcher -> case window' of
+      WhenDrawCard who card | whenMatcher == Matcher.When ->
+        liftA2 (&&) (matchWho who whoMatcher) (matchCard card cardMatcher)
+      AfterDrawCard who card | whenMatcher == Matcher.After ->
+        liftA2 (&&) (matchWho who whoMatcher) (matchCard card cardMatcher)
+      _ -> pure False
   matchWho who = \case
     Matcher.Anyone -> pure True
-    Matcher.You -> pure $ who == You
+    Matcher.You -> pure $ who == iid
+    Matcher.NotYou -> pure $ who /= iid
+    Matcher.InvestigatorAtYourLocation ->
+      liftA2 (==) (getId @LocationId iid) (getId @LocationId who)
   gameValueMatches n = \case
     Matcher.AnyValue -> pure True
     Matcher.LessThan gv -> (n <) <$> getPlayerCountValue gv
   enemyMatches enemyId = \case
+    Matcher.NonWeaknessEnemy -> do
+      cardCode <- getId @CardCode enemyId
+      pure . isJust $ lookup cardCode allEncounterCards
     Matcher.AnyEnemy -> pure True
     Matcher.EnemyWithTrait t -> member t <$> getSet enemyId
     Matcher.EnemyWithoutTrait t -> notMember t <$> getSet enemyId
@@ -992,6 +1081,21 @@ cardInFastWindows iid _ windows matcher = anyM (matches matcher) windows
     Matcher.YourLocation -> do
       yourLocationId <- getId @LocationId iid
       pure $ locationId == yourLocationId
+  matchCard c = \case
+    Matcher.AnyCard -> pure True
+    Matcher.NonWeakness -> pure . not . cdWeakness $ toCardDef c
+    Matcher.WithCardType cType -> pure $ toCardType c == cType
+    Matcher.CardMatchesAny ms -> anyM (matchCard c) ms
+    Matcher.CardMatches ms -> allM (matchCard c) ms
+    Matcher.CardWithoutKeyword kw ->
+      pure $ kw `notElem` cdKeywords (toCardDef c)
+  matchToken iid' t = \case
+    Matcher.WithNegativeModifier -> do
+      tv <- getTokenValue () iid' (tokenFace t)
+      case tv of
+        TokenValue _ (NegativeModifier _) -> pure True
+        TokenValue _ (DoubleNegativeModifier _) -> pure True
+        _ -> pure False
 
 getModifiedTokenFaces
   :: (SourceEntity source, MonadReader env m, HasModifiersFor env ())

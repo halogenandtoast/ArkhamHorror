@@ -991,7 +991,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     damage <- damageValueFor 1 a
     a <$ push (EnemyDamage eid iid (InvestigatorSource iid) damage)
   EnemyEvaded iid eid | iid == investigatorId -> do
-    push (CheckWindow iid [AfterEnemyEvaded You eid])
+    push (CheckWindow iid [AfterEnemyEvaded iid eid])
     pure $ a & engagedEnemiesL %~ deleteSet eid
   AddToVictory (EnemyTarget eid) -> pure $ a & engagedEnemiesL %~ deleteSet eid
   ChooseInvestigate iid source action | iid == investigatorId -> do
@@ -1038,7 +1038,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     ]
   Will (FailedSkillTest iid _ _ (InvestigatorTarget iid') _ _)
     | iid == iid' && iid == investigatorId -> a
-    <$ push (CheckWindow investigatorId [WhenWouldFailSkillTest You])
+    <$ push (CheckWindow investigatorId [WhenWouldFailSkillTest iid])
   CancelDamage iid n | iid == investigatorId -> do
     a <$ withQueue_ \queue -> flip
       map
@@ -1267,7 +1267,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & resourcesL -~ n
   InitiatePlayDynamicCard iid cardId n mtarget asAction
     | iid == investigatorId -> a <$ pushAll
-      [ CheckWindow iid [WhenPlayCard You cardId]
+      [ CheckWindow iid [WhenPlayCard iid cardId]
       , PlayDynamicCard iid cardId n mtarget asAction
       ]
   PlayDynamicCard iid cardId _n _mtarget True | iid == investigatorId -> do
@@ -1331,7 +1331,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         PlayerCard pc -> isJust (cdFastWindow $ toCardDef pc)
         _ -> False
     a <$ pushAll
-      [ CheckWindow iid [WhenPlayCard You cardId]
+      [ CheckWindow iid [WhenPlayCard iid cardId]
       , if isFastEvent
         then PlayFastEvent iid cardId mtarget [FastPlayerWindow]
         else PlayCard iid cardId mtarget asAction
@@ -1499,7 +1499,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           )
         pure a
   ChooseEndTurn iid | iid == investigatorId -> do
-    push (CheckWindow iid [AfterEndTurn You])
+    push (CheckWindow iid [AfterEndTurn iid])
     pure $ a & endedTurnL .~ True
   BeginRound -> do
     actionsForTurn <- getActionsForTurn a
@@ -1915,7 +1915,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             )
       actions <- fmap concat <$> for cards $ \card' -> getActions
         iid
-        (WhenAmongSearchedCards You)
+        (WhenAmongSearchedCards iid)
         (toCardInstance iid $ PlayerCard card')
       -- TODO: This is for astounding revelation and only one research action is possible
       -- so we are able to short circuit here, but we may have additional cards in the
@@ -1962,16 +1962,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         windows = maybe
           []
           (\case
-            Action.Investigate -> [AfterFailInvestigationSkillTest You n]
+            Action.Investigate -> [AfterFailInvestigationSkillTest iid n]
             _ -> []
           )
           mAction
-      a <$ push (CheckWindow iid (AfterFailSkillTest You n : windows))
+      a <$ push (CheckWindow iid (AfterFailSkillTest iid n : windows))
   After (PassedSkillTest iid mAction source (InvestigatorTarget iid') _ n)
     | iid == iid' && iid == investigatorId -> do
-      msgs <- checkWindows
-        iid
-        (\who -> pure [AfterPassSkillTest mAction source who n])
+      msgs <- checkWindows [AfterPassSkillTest mAction source iid n]
       a <$ pushAll msgs
   PlayerWindow iid additionalActions isAdditional | iid == investigatorId -> do
     isCurrentPlayer <- (== iid) . unActiveInvestigatorId <$> getId ()
@@ -1979,7 +1977,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     if any isForcedAction actions
       then a <$ push (chooseOne iid actions)
       else do
-        fastActions <- getActions iid (DuringTurn You) ()
+        fastActions <- getActions iid (DuringTurn iid) ()
         playerWindowActions <- getActions iid FastPlayerWindow ()
         modifiers <- getModifiers
           (InvestigatorSource iid)
@@ -1991,7 +1989,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         let
           handCards = investigatorHand <> asIfInHandCards
           windows = if isCurrentPlayer
-            then [DuringTurn You, FastPlayerWindow]
+            then [DuringTurn iid, FastPlayerWindow]
             else [FastPlayerWindow]
         isPlayableMap :: HashMap Card Bool <- mapFromList <$> for
           handCards

@@ -41,7 +41,7 @@ ability a = (mkAbility (toSource a) 1 (FastAbility Free))
   }
 
 instance ActionRunner env => HasActions env HospitalDebts where
-  getActions iid (DuringTurn You) (HospitalDebts a) =
+  getActions iid (DuringTurn who) (HospitalDebts a) | iid == who =
     withTreacheryInvestigator a $ \tormented -> do
       resourceCount <- getResourceCount iid
       treacheryLocationId <- getId tormented

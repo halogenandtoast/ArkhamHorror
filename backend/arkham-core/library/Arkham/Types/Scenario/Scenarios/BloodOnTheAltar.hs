@@ -325,7 +325,6 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
           _ -> pure ()
       ScenarioResolution NoResolution -> do
         leadInvestigatorId <- getLeadInvestigatorId
-        investigatorIds <- getInvestigatorIds
         agendaId <-
           fromJustNote "no agenda" . headMay <$> getSetList @AgendaId ()
         xp <- getXp
@@ -358,12 +357,11 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
                  <> removeNecronomicon
                ]
            ]
-          <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
+          <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
           <> [EndOfGame]
           )
       ScenarioResolution (Resolution 1) -> do
         leadInvestigatorId <- getLeadInvestigatorId
-        investigatorIds <- getInvestigatorIds
         xp <- getXp
         let sacrificedToYogSothoth = map toCardCode sacrificed
         removeSacrificedMessages <- getRemoveSacrificedMessages
@@ -389,12 +387,11 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
                  <> removeNecronomicon
                ]
            ]
-          <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
+          <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
           <> [EndOfGame]
           )
       ScenarioResolution (Resolution 2) -> do
         leadInvestigatorId <- getLeadInvestigatorId
-        investigatorIds <- getInvestigatorIds
         xp <- getXp
         let sacrificedToYogSothoth = map toCardCode sacrificed
         removeSacrificedMessages <- getRemoveSacrificedMessages
@@ -425,12 +422,11 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
                  <> removeSacrificedMessages
                ]
            ]
-          <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
+          <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
           <> [EndOfGame]
           )
       ScenarioResolution (Resolution 3) -> do
         leadInvestigatorId <- getLeadInvestigatorId
-        investigatorIds <- getInvestigatorIds
         xp <- getXp
         let sacrificedToYogSothoth = map toCardCode sacrificed
         removeSacrificedMessages <- getRemoveSacrificedMessages
@@ -463,7 +459,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
                  <> removeNecronomicon
                ]
            ]
-          <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
+          <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
           <> [EndOfGame]
           )
       AddCardToScenarioDeck card -> case scenarioDeck of

@@ -46,9 +46,9 @@ data Scenario
 
 instance
   ( HasSet ClosestAssetId env (InvestigatorId, AssetMatcher)
-  , HasModifiersFor env ()
   , HasId (Maybe LocationId) env LocationMatcher
-  , HasStep env ActStep, ScenarioRunner env
+  , HasStep env ActStep
+  , ScenarioRunner env
   )
   => RunMessage env Scenario where
   runMessage msg s = case msg of

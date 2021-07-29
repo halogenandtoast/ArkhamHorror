@@ -8,6 +8,8 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Card.CardDef
+import Arkham.Types.Card.CardType
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
@@ -29,8 +31,11 @@ ability attrs = mkAbility
   )
 
 instance HasActions env DrWilliamTMaleson where
-  getActions iid (WhenDrawEncounterCard You _) (DrWilliamTMaleson attrs)
-    | ownedBy attrs iid = pure [UseAbility iid (ability attrs)]
+  getActions iid (WhenDrawCard who card) (DrWilliamTMaleson attrs)
+    | ownedBy attrs iid && iid == who = pure
+      [ UseAbility iid (ability attrs)
+      | toCardType card `elem` encounterCardTypes
+      ]
   getActions _ _ _ = pure []
 
 instance HasModifiersFor env DrWilliamTMaleson

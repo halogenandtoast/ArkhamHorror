@@ -36,8 +36,8 @@ ability iid a = base
     (ReactionAbility (DiscardCost (SearchedCardTarget iid $ toCardId a)))
 
 instance HasActions env AstoundingRevelation where
-  getActions iid (WhenAmongSearchedCards You) (AstoundingRevelation attrs) =
-    pure [UseAbility iid (ability iid attrs)]
+  getActions iid (WhenAmongSearchedCards who) (AstoundingRevelation attrs)
+    | iid == who = pure [UseAbility iid (ability iid attrs)]
   getActions iid window (AstoundingRevelation attrs) =
     getActions iid window attrs
 

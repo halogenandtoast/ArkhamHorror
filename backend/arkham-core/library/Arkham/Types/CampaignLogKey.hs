@@ -39,7 +39,7 @@ data CampaignLogKey
   | DrHenryArmitageSurvivedTheDunwichLegacy
   | ProfessorWarrenRiceSurvivedTheDunwichLegacy
   | DrFrancisMorganSurvivedTheDunwichLegacy
-  | ZebulonWhatelySurvivedTheDunwichLegacy
+  | ZebulonWhateleySurvivedTheDunwichLegacy
   | EarlSawyerSurvivedTheDunwichLegacy
   | YouCalmedTheTownsfolk
   | YouWarnedTheTownsfolk

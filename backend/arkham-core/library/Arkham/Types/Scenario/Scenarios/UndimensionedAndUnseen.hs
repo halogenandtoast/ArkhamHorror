@@ -165,6 +165,7 @@ instance
   , HasList DeckCard env InvestigatorId
   , HasRecord env
   , ScenarioAttrsRunner env
+  , HasModifiersFor env ()
   )
   => RunMessage env UndimensionedAndUnseen where
   runMessage msg s@(UndimensionedAndUnseen attrs) = case msg of
@@ -363,7 +364,7 @@ instance
          , RecordCount BroodEscapedIntoTheWild broodEscapedIntoTheWild
          ]
         <> [ RemoveCampaignCardFromDeck iid "02219" | iid <- investigatorIds ]
-        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame]
         )
     ScenarioResolution (Resolution 2) -> do
@@ -386,7 +387,7 @@ instance
          , Record NoBroodEscapedIntoTheWild
          ]
         <> [ RemoveCampaignCardFromDeck iid "02219" | iid <- investigatorIds ]
-        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame]
         )
     UseScenarioSpecificAbility _ Nothing 1 ->

@@ -30,8 +30,8 @@ instance
   , HasSkillTest env
   )
   => HasActions env Oops where
-  getActions iid (InHandWindow ownerId (AfterFailSkillTest You n)) (Oops attrs)
-    | n <= 2 && iid == ownerId = do
+  getActions iid (InHandWindow ownerId (AfterFailSkillTest who n)) (Oops attrs)
+    | n <= 2 && iid == ownerId && iid == who = do
       msource <- getSkillTestSource
       case msource of
         Just (SkillTestSource _ _ _ (EnemyTarget eid) (Just Fight)) -> do
@@ -58,7 +58,7 @@ instance HasModifiersFor env Oops
 
 instance RunMessage env Oops where
   runMessage msg e@(Oops attrs) = case msg of
-    InvestigatorPlayEvent iid eid (Just (EnemyTarget targetId))
+    InvestigatorPlayEvent iid eid (Just (EnemyTarget targetId)) _
       | eid == toId attrs -> e <$ pushAll
         [ CancelFailedByModifierEffects
         , InvestigatorDamageEnemy iid targetId

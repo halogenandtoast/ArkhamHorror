@@ -14,6 +14,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Source
 import Arkham.Types.Target
 import qualified Arkham.Types.Token as Token
 import Arkham.Types.Window
@@ -29,10 +30,12 @@ theNecronomicon =
     . (canLeavePlayByNormalMeansL .~ False)
 
 instance HasModifiersFor env TheNecronomicon where
-  getModifiersFor _ (InvestigatorTarget iid) (TheNecronomicon a) = pure
-    [ toModifier a (ForcedTokenChange Token.ElderSign [Token.AutoFail])
-    | ownedBy a iid
-    ]
+  getModifiersFor (SkillTestSource iid _ _ _ _) (TokenTarget t) (TheNecronomicon a)
+    | Token.tokenFace t == Token.ElderSign
+    = pure
+      [ toModifier a (ForcedTokenChange Token.ElderSign [Token.AutoFail])
+      | ownedBy a iid
+      ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env TheNecronomicon where

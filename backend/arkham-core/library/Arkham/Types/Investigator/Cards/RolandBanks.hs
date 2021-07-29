@@ -44,9 +44,10 @@ ability attrs = base { abilityLimit = PlayerLimit PerRound 1 }
   where base = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
 instance InvestigatorRunner env => HasActions env RolandBanks where
-  getActions iid (WhenEnemyDefeated You) (RolandBanks a) | iid == toId a = do
-    clueCount <- unClueCount <$> getCount (investigatorLocation a)
-    pure [ UseAbility iid (ability a) | clueCount > 0 ]
+  getActions iid (WhenEnemyDefeated who _) (RolandBanks a)
+    | iid == toId a && iid == who = do
+      clueCount <- unClueCount <$> getCount (investigatorLocation a)
+      pure [ UseAbility iid (ability a) | clueCount > 0 ]
   getActions _ _ _ = pure []
 
 instance HasCount ClueCount env LocationId => HasTokenValue env RolandBanks where

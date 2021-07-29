@@ -12,6 +12,7 @@ data PlayRestriction
   = AnotherInvestigatorInSameLocation
   | ScenarioCardHasResignAbility
   | ClueOnLocation
+  | FirstAction
   | EnemyAtYourLocation
   | NoEnemiesAtYourLocation
   | OwnCardWithDoom

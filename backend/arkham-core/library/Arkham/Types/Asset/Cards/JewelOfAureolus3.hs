@@ -10,6 +10,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Token
 import Arkham.Types.Window
@@ -25,18 +26,22 @@ ability :: AssetAttrs -> Ability
 ability attrs =
   mkAbility attrs 1 (ReactionAbility $ ExhaustCost (toTarget attrs))
 
-instance HasActions env JewelOfAureolus3 where
-  getActions iid (WhenRevealToken InvestigatorAtYourLocation token) (JewelOfAureolus3 x)
-    | ownedBy x iid
-    = pure
-      [ UseAbility iid (ability x)
-      | tokenFace token `elem` [Skull, Cultist, Tablet, ElderSign, AutoFail]
-      ]
-  getActions iid (WhenRevealToken You token) (JewelOfAureolus3 x)
-    | ownedBy x iid = pure
-      [ UseAbility iid (ability x)
-      | tokenFace token `elem` [Skull, Cultist, Tablet, ElderSign, AutoFail]
-      ]
+instance
+  ( HasSet InvestigatorId env LocationId
+  , HasId LocationId env InvestigatorId
+  )
+  => HasActions env JewelOfAureolus3 where
+  getActions iid (WhenRevealToken who token) (JewelOfAureolus3 x)
+    | ownedBy x iid = do
+      location <- getId @LocationId iid
+      investigatorsAtYourLocation <- getSet @InvestigatorId location
+      pure
+        [ UseAbility iid (ability x)
+        | who
+          `member` investigatorsAtYourLocation
+          && tokenFace token
+          `elem` [Skull, Cultist, Tablet, ElderSign, AutoFail]
+        ]
   getActions iid window (JewelOfAureolus3 x) = getActions iid window x
 
 instance HasModifiersFor env JewelOfAureolus3

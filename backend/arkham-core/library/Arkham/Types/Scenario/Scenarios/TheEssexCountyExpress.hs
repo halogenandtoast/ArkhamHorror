@@ -289,7 +289,6 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       ScenarioResolution (Resolution 1) -> do
         msgs <- investigatorDefeat
         leadInvestigatorId <- getLeadInvestigatorId
-        investigatorIds <- getInvestigatorIds
         defeatedInvestigatorIds <- map unDefeatedInvestigatorId
           <$> getSetList ()
         xp <- getXp
@@ -315,15 +314,14 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
              ]
           <> [ GainXP
                  iid
-                 (xp + (if iid `elem` defeatedInvestigatorIds then 1 else 0))
-             | iid <- investigatorIds
+                 (n + (if iid `elem` defeatedInvestigatorIds then 1 else 0))
+             | (iid, n) <- xp
              ]
           <> [EndOfGame]
           )
       ScenarioResolution (Resolution 2) -> do
         msgs <- investigatorDefeat
         leadInvestigatorId <- getLeadInvestigatorId
-        investigatorIds <- getInvestigatorIds
         defeatedInvestigatorIds <- map unDefeatedInvestigatorId
           <$> getSetList ()
         xp <- getXp
@@ -345,8 +343,8 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
              ]
           <> [ GainXP
                  iid
-                 (xp + (if iid `elem` defeatedInvestigatorIds then 1 else 0))
-             | iid <- investigatorIds
+                 (n + (if iid `elem` defeatedInvestigatorIds then 1 else 0))
+             | (iid, n) <- xp
              ]
           <> [EndOfGame]
           )

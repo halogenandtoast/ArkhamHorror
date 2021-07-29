@@ -226,7 +226,6 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
     ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       victoryDisplay <- mapSet unVictoryDisplayCardCode <$> getSet ()
-      investigatorIds <- getInvestigatorIds
       xp <- getXp
       let
         cultists =
@@ -251,14 +250,13 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
               , RecordSet CultistsWhoGotAway (setToList cultistsWhoGotAway)
               ]
             <> [ CrossOutRecord GhoulPriestIsStillAlive | ghoulPriestDefeated ]
-            <> [ GainXP iid xp | iid <- investigatorIds ]
+            <> [ GainXP iid n | (iid, n) <- xp ]
             <> [EndOfGame]
           ]
         )
     ScenarioResolution (Resolution 2) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       victoryDisplay <- mapSet unVictoryDisplayCardCode <$> getSet ()
-      investigatorIds <- getInvestigatorIds
       xp <- getXp
       let
         cultists =
@@ -285,7 +283,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
               , Record ItIsPastMidnight
               ]
             <> [ CrossOutRecord GhoulPriestIsStillAlive | ghoulPriestDefeated ]
-            <> [ GainXP iid xp | iid <- investigatorIds ]
+            <> [ GainXP iid n | (iid, n) <- xp ]
             <> [EndOfGame]
           ]
         )

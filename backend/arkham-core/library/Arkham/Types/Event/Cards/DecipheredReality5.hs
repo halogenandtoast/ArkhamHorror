@@ -37,7 +37,7 @@ instance
   )
   => RunMessage env DecipheredReality5 where
   runMessage msg e@(DecipheredReality5 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
       locationIds <- map unRevealedLocationId <$> getSetList ()
       maxShroud <-
         maximum . ncons 0 <$> traverse (fmap unShroud . getCount) locationIds

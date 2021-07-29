@@ -28,7 +28,7 @@ row :: ActCard Row
 row = act (3, A) Row Cards.row Nothing
 
 instance ActionRunner env => HasActions env Row where
-  getActions iid (WhenWouldDrawEncounterCard You) (Row x) =
+  getActions iid (WhenWouldDrawEncounterCard who) (Row x) | iid == who =
     pure [UseAbility iid (mkAbility x 1 ForcedAbility)]
   getActions iid window (Row x) = getActions iid window x
 

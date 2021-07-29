@@ -39,7 +39,8 @@ ability a =
   mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a))
 
 instance HasActions env ToothOfEztli where
-  getActions iid (AfterPassSkillTest _ (TreacherySource _) You _) (ToothOfEztli a)
+  getActions iid (AfterPassSkillTest _ (TreacherySource _) who _) (ToothOfEztli a)
+    | iid == who
     = pure [ UseAbility iid (ability a) | ownedBy a iid ]
   getActions i window (ToothOfEztli a) = getActions i window a
 

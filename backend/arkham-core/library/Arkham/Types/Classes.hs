@@ -30,50 +30,13 @@ import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.Window (Who, Window)
-import qualified Arkham.Types.Window as Window
+import Arkham.Types.Window (Window)
 import qualified Data.Char as C
-import qualified Data.HashSet as HashSet
 import GHC.Generics
 import Language.Haskell.TH.Syntax hiding (Name)
 import qualified Language.Haskell.TH.Syntax as TH
 
 newtype Distance = Distance { unDistance :: Int }
-
-pairInvestigatorIdsForWindow
-  :: ( MonadReader env m
-     , HasSet InvestigatorId env ()
-     , HasSet ConnectedLocationId env LocationId
-     , HasId LocationId env InvestigatorId
-     )
-  => InvestigatorId
-  -> m [(InvestigatorId, Window.Who)]
-pairInvestigatorIdsForWindow iid = do
-  investigatorIds <- getSetList @InvestigatorId ()
-  lid <- getId iid
-  connectedLocationIds <- HashSet.map unConnectedLocationId <$> getSet lid
-  for investigatorIds $ \iid2 -> do
-    lid2 <- getId iid2
-    pure $ if iid2 == iid
-      then (iid2, Window.You)
-      else if lid2 == lid
-        then (iid2, Window.InvestigatorAtYourLocation)
-        else if lid2 `member` connectedLocationIds
-          then (iid2, Window.InvestigatorAtAConnectedLocation)
-          else (iid2, Window.InvestigatorInGame)
-
-checkWindows
-  :: ( MonadReader env m
-     , HasSet InvestigatorId env ()
-     , HasSet ConnectedLocationId env LocationId
-     , HasId LocationId env InvestigatorId
-     )
-  => InvestigatorId
-  -> (Who -> m [Window])
-  -> m [Message]
-checkWindows iid f = do
-  windowPairings <- pairInvestigatorIdsForWindow iid
-  sequence [ CheckWindow iid' <$> f who | (iid', who) <- windowPairings ]
 
 class HasPhase env where
   getPhase :: MonadReader env m => m Phase
@@ -173,6 +136,7 @@ instance HasVictoryPoints PlayerCard where
 
 type ActionRunner env
   = ( HasQueue env
+    , HasTokenValue env ()
     , Query AssetMatcher env
     , GetCardDef env EnemyId
     , HasActions env ActionType

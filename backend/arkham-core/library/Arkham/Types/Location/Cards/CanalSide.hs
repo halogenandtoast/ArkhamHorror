@@ -37,8 +37,8 @@ ability :: LocationAttrs -> Ability
 ability attrs = mkAbility attrs 1 (ReactionAbility Free)
 
 instance ActionRunner env => HasActions env CanalSide where
-  getActions iid (AfterEntering You lid) (CanalSide attrs) | lid == toId attrs =
-    pure [UseAbility iid (ability attrs)]
+  getActions iid (AfterEntering who lid) (CanalSide attrs)
+    | lid == toId attrs && iid == who = pure [UseAbility iid (ability attrs)]
   getActions iid window (CanalSide attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env CanalSide where

@@ -33,8 +33,8 @@ ability a =
   mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a))
 
 instance ActionRunner env => HasActions env Scavenging where
-  getActions iid (AfterPassSkillTest (Just Action.Investigate) _ You n) (Scavenging a)
-    | ownedBy a iid && n >= 2
+  getActions iid (AfterPassSkillTest (Just Action.Investigate) _ who n) (Scavenging a)
+    | ownedBy a iid && n >= 2 && iid == who
     = do
       hasItemInDiscard <- any (member Item . toTraits) <$> getDiscardOf iid
       cardsCanLeaveDiscard <-

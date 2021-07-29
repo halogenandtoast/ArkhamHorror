@@ -290,7 +290,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
             )
         pure $ s & (setAsideTokensL %~ (tokenFaces <>))
     RevealToken SkillTestSource{} iid token -> do
-      push (CheckWindow iid [AfterRevealToken You token])
+      push (CheckWindow iid [AfterRevealToken iid token])
       pure $ s & revealedTokensL %~ (token :)
     RevealSkillTestTokens iid -> do
       revealedTokenFaces <- flip

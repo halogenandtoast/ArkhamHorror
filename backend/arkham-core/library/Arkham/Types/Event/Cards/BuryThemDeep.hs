@@ -26,7 +26,7 @@ instance HasModifiersFor env BuryThemDeep
 
 instance RunMessage env BuryThemDeep where
   runMessage msg e@(BuryThemDeep attrs) = case msg of
-    InvestigatorPlayFastEvent _ eid _ [AfterEnemyDefeated _ enemyId]
+    InvestigatorPlayEvent _ eid _ [AfterEnemyDefeated _ enemyId]
       | eid == toId attrs -> do
         push $ AddToVictory (toTarget attrs)
         e <$ replaceMessage

@@ -13,8 +13,8 @@ import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.Matcher
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Window
@@ -39,8 +39,8 @@ forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
 
 instance ActionRunner env => HasActions env EndlessBridge where
-  getActions _ (AfterLeaving You lid) (EndlessBridge attrs)
-    | lid == toId attrs = do
+  getActions iid (AfterLeaving who lid) (EndlessBridge attrs)
+    | lid == toId attrs && who == iid = do
       leadInvestigator <- getLeadInvestigatorId
       pure [UseAbility leadInvestigator (forcedAbility attrs)]
   getActions iid window (EndlessBridge attrs) = getActions iid window attrs

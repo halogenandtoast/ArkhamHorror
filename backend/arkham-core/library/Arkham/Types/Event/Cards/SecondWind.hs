@@ -8,11 +8,8 @@ import Arkham.Prelude
 import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
-import Arkham.Types.Id
 import Arkham.Types.Message
-import Arkham.Types.Query
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype SecondWind = SecondWind EventAttrs
   deriving anyclass IsEvent
@@ -21,21 +18,14 @@ newtype SecondWind = SecondWind EventAttrs
 secondWind :: EventCard SecondWind
 secondWind = event SecondWind Cards.secondWind
 
-instance HasCount ActionTakenCount env InvestigatorId => HasActions env SecondWind where
-  getActions iid (InHandWindow ownerId (DuringTurn You)) (SecondWind attrs)
-    | iid == ownerId = do
-      actionsTaken <- unActionTakenCount <$> getCount iid
-      pure
-        [ InitiatePlayCard iid (toCardId attrs) Nothing True
-        | actionsTaken == 0
-        ]
+instance HasActions env SecondWind where
   getActions iid window (SecondWind attrs) = getActions iid window attrs
 
 instance HasModifiersFor env SecondWind
 
 instance (HasQueue env, HasRoundHistory env) => RunMessage env SecondWind where
   runMessage msg e@(SecondWind attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       roundHistory <- getRoundHistory
       let
         didDrawTreachery = \case

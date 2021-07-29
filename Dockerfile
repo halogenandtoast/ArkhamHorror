@@ -62,7 +62,7 @@ WORKDIR /opt/arkham/src/backend/arkham-api
 RUN stack build --no-terminal --system-ghc --ghc-options '-j4 +RTS -A128m -n2m -RTS'
 RUN stack --no-terminal --local-bin-path /opt/arkham/bin install
 
-FROM ubuntu:16.04 as app
+FROM ubuntu:18.04 as app
 
 # App
 
@@ -75,6 +75,10 @@ RUN mkdir -p /opt/arkham/src/frontend
 COPY --from=frontend /opt/arkham/src/frontend/dist /opt/arkham/src/frontend/dist
 COPY --from=api /opt/arkham/bin/arkham-api /opt/arkham/bin/arkham-api
 COPY ./backend/arkham-api/config /opt/arkham/src/backend/arkham-api/config
+
+RUN apt-get update
+RUN apt-get upgrade -y --assume-yes
+RUN apt-get install -y --assume-yes libpq-dev
 
 RUN useradd -ms /bin/bash yesod
 RUN chown -R yesod:yesod /opt/arkham

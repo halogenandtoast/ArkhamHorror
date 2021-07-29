@@ -1705,14 +1705,12 @@ instance HasGame env => HasSet ClosestPathLocationId env (LocationId, Prey, Hash
     let matcher lid = notNull <$> getSet @PreyId (prey, lid)
     setFromList . coerce <$> getShortestPath start matcher extraConnectionsMap
 
-instance HasGame env => HasSet ClosestAssetId env (InvestigatorId, CardDef) where
-  getSet (iid, cardDef) = do
+instance HasGame env => HasSet ClosestAssetId env (InvestigatorId, AssetMatcher) where
+  getSet (iid, assetMatcher) = do
     start <- locationFor iid
-    currentAssets <- traverse getAsset =<< selectList (LocationAsset start)
-    if notNull $ matches currentAssets
-      then pure $ setFromList $ map
-        (ClosestAssetId . toId)
-        (matches currentAssets)
+    currentMatches <- selectList (LocationAsset start <> assetMatcher)
+    if notNull currentMatches
+      then pure $ setFromList $ map ClosestAssetId currentMatches
       else do
         locations <- coerce <$> getShortestPath start matcher mempty
         case locations of
@@ -1722,18 +1720,17 @@ instance HasGame env => HasSet ClosestAssetId env (InvestigatorId, CardDef) wher
               <$> traverse
                     (\lid ->
                       setFromList
-                        . map (ClosestAssetId . toId)
-                        . matches
-                        <$> (traverse getAsset =<< selectList
-                              (LocationAsset $ unClosestLocationId lid)
-                            )
+                        . map ClosestAssetId
+                        <$> selectList
+                              (assetMatcher
+                              <> LocationAsset (unClosestLocationId lid)
+                              )
                     )
                     lids
    where
-    matches = filter ((== cardDef) . toCardDef)
     matcher lid = do
-      assets <- traverse getAsset =<< selectList (LocationAsset lid)
-      pure $ notNull (matches assets)
+      assets <- selectList (LocationAsset lid <> assetMatcher)
+      pure $ notNull assets
 
 instance HasGame env => HasSet ClosestEnemyId env LocationId where
   getSet start = do

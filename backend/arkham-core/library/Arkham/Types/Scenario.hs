@@ -9,7 +9,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Decks
 import Arkham.Types.Difficulty
 import Arkham.Types.Id
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
@@ -45,7 +45,7 @@ data Scenario
   deriving anyclass (ToJSON, FromJSON, HasRecord)
 
 instance
-  ( HasSet ClosestAssetId env (InvestigatorId, CardDef)
+  ( HasSet ClosestAssetId env (InvestigatorId, AssetMatcher)
   , HasModifiersFor env ()
   , HasId (Maybe LocationId) env LocationMatcher
   , HasStep env ActStep, ScenarioRunner env

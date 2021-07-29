@@ -16,7 +16,7 @@ import Arkham.Types.Difficulty
 import Arkham.Types.Direction
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Id
-import Arkham.Types.LocationMatcher
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
@@ -154,7 +154,7 @@ additionalRewards s = do
     <> proceedToAbbessSatisfied
 
 instance
-  ( HasSet ClosestAssetId env (InvestigatorId, CardDef)
+  ( HasSet ClosestAssetId env (InvestigatorId, AssetMatcher)
   , HasId (Maybe LocationId) env LocationMatcher
   , ScenarioRunner env
   )
@@ -325,7 +325,7 @@ instance
     ResolveToken _ Cultist iid -> s <$ push (DrawAnotherToken iid)
     ResolveToken token Tablet iid | isHardExpert attrs -> do
       closestInnocentRevelers <- map unClosestAssetId
-        <$> getSetList (iid, Assets.innocentReveler)
+        <$> getSetList (iid, AssetIs Assets.innocentReveler)
       case closestInnocentRevelers of
         [] -> pure ()
         [x] -> push
@@ -355,7 +355,7 @@ instance
         Cultist -> push $ InvestigatorDrawEncounterCard iid
         Tablet -> do
           closestInnocentRevelers <- map unClosestAssetId
-            <$> getSetList (iid, Assets.innocentReveler)
+            <$> getSetList (iid, AssetIs Assets.innocentReveler)
           case closestInnocentRevelers of
             [] -> pure ()
             [x] -> push

@@ -30,8 +30,8 @@ ability :: EnemyAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
 instance ActionRunner env => HasActions env ServantOfManyMouths where
-  getActions iid (AfterEnemyDefeated You eid) (ServantOfManyMouths attrs)
-    | eid == toId attrs = pure [UseAbility iid (ability attrs)]
+  getActions iid (AfterEnemyDefeated who eid) (ServantOfManyMouths attrs)
+    | eid == toId attrs && iid == who = pure [UseAbility iid (ability attrs)]
   getActions i window (ServantOfManyMouths attrs) = getActions i window attrs
 
 instance EnemyRunner env => RunMessage env ServantOfManyMouths where

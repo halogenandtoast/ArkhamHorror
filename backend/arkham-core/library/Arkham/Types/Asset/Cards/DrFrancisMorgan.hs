@@ -29,8 +29,8 @@ ability attrs =
   mkAbility (toSource attrs) 1 (ReactionAbility $ ExhaustCost (toTarget attrs))
 
 instance HasActions env DrFrancisMorgan where
-  getActions iid (AfterEnemyDefeated You _) (DrFrancisMorgan attrs) =
-    pure [ UseAbility iid (ability attrs) | ownedBy attrs iid ]
+  getActions iid (AfterEnemyDefeated who _) (DrFrancisMorgan attrs)
+    | iid == who = pure [ UseAbility iid (ability attrs) | ownedBy attrs iid ]
   getActions iid window (DrFrancisMorgan attrs) = getActions iid window attrs
 
 instance HasModifiersFor env DrFrancisMorgan where

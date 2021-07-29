@@ -12,7 +12,7 @@ import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
-import Arkham.Types.Window
+import Arkham.Types.WindowMatcher
 
 storyAsset :: CardCode -> Name -> Int -> EncounterSet -> CardDef
 storyAsset cardCode name cost encounterSet =
@@ -27,6 +27,9 @@ asset = baseAsset Nothing
 
 permanent :: CardDef -> CardDef
 permanent cd = cd { cdPermanent = True, cdCost = Nothing }
+
+fast :: CardDef -> CardDef
+fast cd = cd { cdFastWindow = Just (DuringTurn You) }
 
 weakness :: CardCode -> Name -> CardDef
 weakness cardCode name = (baseAsset Nothing cardCode name 0 Neutral)
@@ -55,7 +58,6 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   , cdCardTraits = mempty
   , cdKeywords = mempty
   , cdFast = False
-  , cdWindows = mempty
   , cdFastWindow = Nothing
   , cdAction = Nothing
   , cdRevelation = False
@@ -335,11 +337,9 @@ shotgun4 = (asset "01029" "Shotgun" 5 Guardian)
   }
 
 magnifyingGlass :: CardDef
-magnifyingGlass = (asset "01030" "Magnifying Glass" 1 Seeker)
+magnifyingGlass = fast $ (asset "01030" "Magnifying Glass" 1 Seeker)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Item, Tool]
-  , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
   }
 
 oldBookOfLore :: CardDef
@@ -380,11 +380,9 @@ medicalTexts = (asset "01035" "Medical Texts" 2 Seeker)
   }
 
 magnifyingGlass1 :: CardDef
-magnifyingGlass1 = (asset "01040" "Magnifying Glass" 0 Seeker)
+magnifyingGlass1 = fast $ (asset "01040" "Magnifying Glass" 0 Seeker)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Item, Tool]
-  , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
   , cdLevel = 1
   }
 
@@ -405,11 +403,9 @@ encyclopedia2 = (asset "01042" "Encyclopedia" 2 Seeker)
   }
 
 switchblade :: CardDef
-switchblade = (asset "01044" "Switchblade" 1 Rogue)
+switchblade = fast $ (asset "01044" "Switchblade" 1 Rogue)
   { cdSkills = [SkillAgility]
   , cdCardTraits = setFromList [Item, Weapon, Melee, Illicit]
-  , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
   }
 
 burglary :: CardDef
@@ -836,11 +832,9 @@ artStudent = (asset "02149" "Art Student" 2 Seeker)
   }
 
 switchblade2 :: CardDef
-switchblade2 = (asset "02152" "Switchblade" 1 Rogue)
+switchblade2 = fast $ (asset "02152" "Switchblade" 1 Rogue)
   { cdSkills = [SkillCombat, SkillAgility]
   , cdCardTraits = setFromList [Item, Weapon, Melee, Illicit]
-  , cdFast = True
-  , cdWindows = setFromList [DuringTurn You]
   , cdLevel = 2
   }
 
@@ -1126,14 +1120,13 @@ tryAndTryAgain3 = (asset "02309" "Try and Try Again" 2 Survivor)
 
 theRedGlovedMan5 :: CardDef
 theRedGlovedMan5 =
-  (asset "02310" ("The Red-Gloved Man" <:> "He Was Never There") 2 Neutral)
-    { cdSkills = [SkillWild]
-    , cdCardTraits = setFromList [Ally, Conspirator]
-    , cdLevel = 5
-    , cdFast = True
-    , cdWindows = setFromList [DuringTurn You]
-    , cdUnique = True
-    }
+  fast
+    $ (asset "02310" ("The Red-Gloved Man" <:> "He Was Never There") 2 Neutral)
+        { cdSkills = [SkillWild]
+        , cdCardTraits = setFromList [Ally, Conspirator]
+        , cdLevel = 5
+        , cdUnique = True
+        }
 
 sophieInLovingMemory :: CardDef
 sophieInLovingMemory =
@@ -1294,10 +1287,8 @@ fishingNet = (storyAsset "81021" "Fishing Net" 0 TheBayou)
 
 monstrousTransformation :: CardDef
 monstrousTransformation =
-  (storyAsset "81030" "Monstrous Transformation" 0 CurseOfTheRougarou)
+  fast $ (storyAsset "81030" "Monstrous Transformation" 0 CurseOfTheRougarou)
     { cdCardTraits = setFromList [Talent]
-    , cdFast = True
-    , cdWindows = setFromList [DuringTurn You]
     }
 
 maskedCarnevaleGoer_17 :: CardDef

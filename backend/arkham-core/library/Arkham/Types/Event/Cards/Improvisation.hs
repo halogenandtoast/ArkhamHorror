@@ -35,7 +35,7 @@ reductionEffect iid attrs =
 
 instance RunMessage env Improvisation where
   runMessage msg e@(Improvisation attrs) = case msg of
-    InvestigatorPlayFastEvent iid eid _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
       e <$ pushAll
         [ switchRole iid
         , reductionEffect iid attrs

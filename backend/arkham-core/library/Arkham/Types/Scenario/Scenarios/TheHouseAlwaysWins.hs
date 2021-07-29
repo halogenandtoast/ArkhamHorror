@@ -155,7 +155,6 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       s <$ push (ScenarioResolution $ Resolution 1)
     ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
       cheated <-
         any
             (\case
@@ -184,8 +183,8 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
          , Record OBannionGangHasABoneToPickWithTheInvestigators
          , Record DrFrancisMorganWasKidnapped
          ]
-        <> [ AddToken Tablet | cheated ]
-        <> [ GainXP iid (xp + 1) | iid <- investigatorIds ]
+        <> [ AddToken ElderThing | cheated ]
+        <> [ GainXP iid (n + 1) | (iid, n) <- xp ]
         <> [EndOfGame]
         )
     ScenarioResolution (Resolution 2) -> do
@@ -236,12 +235,11 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            ]
          ]
         <> [ AddToken Tablet | cheated ]
-        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame]
         )
     ScenarioResolution (Resolution 3) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
       cheated <-
         any
             (\case
@@ -288,12 +286,11 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
          , Record DrFrancisMorganWasKidnapped
          ]
         <> [ AddToken Tablet | cheated ]
-        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame]
         )
     ScenarioResolution (Resolution 4) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
       cheated <-
         any
             (\case
@@ -327,7 +324,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
              ]
          ]
         <> [ AddToken Tablet | cheated ]
-        <> [ GainXP iid (xp + 1) | iid <- investigatorIds ]
+        <> [ GainXP iid (n + 1) | (iid, n) <- xp ]
         <> [EndOfGame]
         )
     _ -> TheHouseAlwaysWins <$> runMessage msg attrs

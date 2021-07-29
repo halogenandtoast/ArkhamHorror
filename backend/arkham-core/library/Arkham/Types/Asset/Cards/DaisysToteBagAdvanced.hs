@@ -30,8 +30,8 @@ daisysToteBagAdvanced :: AssetCard DaisysToteBagAdvanced
 daisysToteBagAdvanced = asset DaisysToteBagAdvanced Cards.daisysToteBagAdvanced
 
 instance HasSet Trait env (InvestigatorId, CardId) => HasActions env DaisysToteBagAdvanced where
-  getActions iid (WhenPlayCard You cardId) (DaisysToteBagAdvanced a)
-    | ownedBy a iid = do
+  getActions iid (WhenPlayCard who cardId) (DaisysToteBagAdvanced a)
+    | ownedBy a iid && iid == who = do
       isTome <- elem Tome <$> getSet @Trait (iid, cardId)
       let
         ability =

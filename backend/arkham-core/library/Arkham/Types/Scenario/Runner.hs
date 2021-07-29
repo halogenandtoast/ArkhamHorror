@@ -13,6 +13,7 @@ import Arkham.Types.Trait
 
 type ScenarioRunner env
   = ( HasCount DoomCount env ()
+    , HasModifiersFor env ()
     , HasCount DoomCount env EnemyId
     , HasCount EnemyCount env [Trait]
     , HasCount PlayerCount env ()

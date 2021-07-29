@@ -642,12 +642,8 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
     After (PassedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ _)
       | isTarget a target
       -> do
-        whenWindows <- checkWindows
-          iid
-          (\who -> pure [WhenSuccessfulAttackEnemy who enemyId])
-        afterWindows <- checkWindows
-          iid
-          (\who -> pure [AfterSuccessfulAttackEnemy who enemyId])
+        whenWindows <- checkWindows [WhenSuccessfulAttackEnemy iid enemyId]
+        afterWindows <- checkWindows [AfterSuccessfulAttackEnemy iid enemyId]
         a
           <$ pushAll
                (whenWindows
@@ -662,7 +658,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
           then push (EnemyAttack iid enemyId DamageAny)
           else pushAll
             [ FailedAttackEnemy iid enemyId
-            , CheckWindow iid [AfterFailAttackEnemy You enemyId]
+            , CheckWindow iid [AfterFailAttackEnemy iid enemyId]
             ]
     EnemyAttackIfEngaged eid miid | eid == enemyId -> a <$ case miid of
       Just iid | iid `elem` enemyEngagedInvestigators ->

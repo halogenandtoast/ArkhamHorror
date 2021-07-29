@@ -163,6 +163,7 @@ instance
   , HasId (Maybe EnemyId) env EnemyMatcher
   , HasId (Maybe LocationId) env LocationMatcher
   , HasCount XPCount env ()
+  , HasModifiersFor env ()
   )
   => RunMessage env LostInTimeAndSpace where
   runMessage msg s@(LostInTimeAndSpace attrs) = case msg of
@@ -283,7 +284,7 @@ instance
            , Record TheInvestigatorsClosedTheTearInReality
            ]
         <> [ SufferTrauma iid 2 2 | iid <- investigatorIds ]
-        <> [ GainXP iid (xp + 5) | iid <- investigatorIds ]
+        <> [ GainXP iid (n + 5) | (iid, n) <- xp ]
         <> [EndOfGame]
         )
       pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True

@@ -6,7 +6,7 @@ module Arkham.Types.Investigator.Cards.MinhThiPhan
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.Card.Id
+import Arkham.Types.Card
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -21,7 +21,6 @@ import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.Window
-import Control.Monad.Extra (findM)
 
 newtype MinhThiPhan = MinhThiPhan InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
@@ -45,23 +44,16 @@ minhThiPhan = MinhThiPhan $ baseAttrs
     }
   [Assistant]
 
-ability :: InvestigatorAttrs -> InvestigatorId -> CardId -> Ability
-ability attrs iid cid =
+ability :: InvestigatorAttrs -> InvestigatorId -> Card -> Ability
+ability attrs iid card =
   mkAbility attrs 1 (ReactionAbility Free)
     & (abilityLimitL .~ PerInvestigatorLimit iid PerRound 1)
-    & (abilityMetadataL ?~ TargetMetadata (CardIdTarget cid))
+    & (abilityMetadataL ?~ TargetMetadata (CardIdTarget $ toCardId card))
 
 instance InvestigatorRunner env => HasActions env MinhThiPhan where
-  getActions i (AfterCommitedCard InvestigatorAtYourLocation cardId) (MinhThiPhan attrs)
-    = do
-      investigatorIds <- getInvestigatorIds
-      mCommiter <- findM
-        (fmap (member $ CommittedCardId cardId) . getSet)
-        investigatorIds
-      pure
-        [ UseAbility i (ability attrs commiter cardId)
-        | commiter <- maybeToList mCommiter
-        ]
+  getActions i (AfterCommitedCard who card) (MinhThiPhan attrs) = do
+    atSameLocation <- liftA2 (==) (getId @LocationId i) (getId @LocationId who)
+    pure [ UseAbility i (ability attrs who card) | atSameLocation ]
   getActions i window (MinhThiPhan attrs) = getActions i window attrs
 
 instance HasTokenValue env MinhThiPhan where

@@ -180,7 +180,7 @@ decideFirstUndecided source miid strategy f = \case
   Undecided step -> case step of
     Draw ->
       ( f $ Undecided Draw
-      , [ CheckWindow iid [WhenWouldRevealChaosToken source You]
+      , [ CheckWindow iid [WhenWouldRevealChaosToken source iid]
         | iid <- maybeToList miid
         ]
       <> [NextChaosBagStep source miid strategy]
@@ -266,8 +266,6 @@ instance
   ( HasQueue env
   , HasSet InvestigatorId env ()
   , HasId LeadInvestigatorId env ()
-  , HasId LocationId env InvestigatorId
-  , HasSet ConnectedLocationId env LocationId
   ) => RunMessage env ChaosBag where
   runMessage msg c@ChaosBag {..} = case msg of
     ForceTokenDraw face -> do
@@ -333,10 +331,8 @@ instance
         Resolved tokenFaces' -> do
           checkWindowMsgs <- case miid of
             Nothing -> pure []
-            Just iid -> checkWindows
-              iid
-              (\who -> pure [ WhenRevealToken who token | token <- tokenFaces' ]
-              )
+            Just iid ->
+              checkWindows [ WhenRevealToken iid token | token <- tokenFaces' ]
           c <$ pushAll
             (FocusTokens tokenFaces'
             : checkWindowMsgs

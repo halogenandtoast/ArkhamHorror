@@ -1,18 +1,19 @@
 <template>
   <div class="encounter-deck">
     <img
-      v-if="investigatorPortrait"
-      class="portrait"
-      :src="investigatorPortrait"
-    />
-    <img
       class="deck"
       :src="`${baseUrl}/img/arkham/back.png`"
       :class="{ 'can-interact': deckAction !== -1 }"
       @click="$emit('choose', deckAction)"
     />
+    <img
+      v-if="investigatorPortrait"
+      class="portrait"
+      :src="investigatorPortrait"
+    />
     <template v-if="debug">
       <button @click="debugChoose({tag: 'InvestigatorDrawEncounterCard', contents: investigatorId})">Draw</button>
+      <button @click="debugChoose({tag: 'FindAndDrawEncounterCard', contents: [investigatorId, {'tag': 'AnyCard', contents: []}]})">Select Draw</button>
     </template>
   </div>
 </template>

@@ -18,7 +18,7 @@ newtype JoinGameJson = JoinGameJson { deckId :: ArkhamDeckId }
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
 
-putApiV1ArkhamPendingGameR :: ArkhamGameId -> Handler (Entity ArkhamGame)
+putApiV1ArkhamPendingGameR :: ArkhamGameId -> Handler (PublicGame ArkhamGameId)
 putApiV1ArkhamPendingGameR gameId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   let userId' = fromIntegral (fromSqlKey userId)
@@ -47,20 +47,21 @@ putApiV1ArkhamPendingGameR gameId = do
   let updatedMessages = []
 
   writeChannel <- getChannel gameId
-  liftIO $ atomically $ writeTChan
-    writeChannel
-    (encode $ GameUpdate $ PublicGame
-      gameId
-      arkhamGameName
-      updatedMessages
-      updatedGame
-    )
+  liftIO
+    $ atomically
+    $ writeTChan writeChannel
+    $ encode
+    $ GameUpdate
+    $ PublicGame gameId arkhamGameName updatedMessages updatedGame
 
-  Entity
-      gameId
-      (ArkhamGame arkhamGameName updatedGame updatedQueue updatedMessages)
-    <$ runDB
-         (replace
-           gameId
-           (ArkhamGame arkhamGameName updatedGame updatedQueue updatedMessages)
-         )
+  runDB $ replace gameId $ ArkhamGame
+    arkhamGameName
+    updatedGame
+    updatedQueue
+    updatedMessages
+
+  pure $ toPublicGame $ Entity gameId $ ArkhamGame
+    arkhamGameName
+    updatedGame
+    updatedQueue
+    updatedMessages

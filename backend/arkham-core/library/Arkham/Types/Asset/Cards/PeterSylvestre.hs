@@ -34,8 +34,9 @@ ability :: AssetAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
 instance HasActions env PeterSylvestre where
-  getActions iid (AfterEndTurn You) (PeterSylvestre a) | ownedBy a iid =
-    pure [ UseAbility iid (ability a) | assetSanityDamage a > 0 ]
+  getActions iid (AfterEndTurn who) (PeterSylvestre a)
+    | ownedBy a iid && iid == who = pure
+      [ UseAbility iid (ability a) | assetSanityDamage a > 0 ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env PeterSylvestre where

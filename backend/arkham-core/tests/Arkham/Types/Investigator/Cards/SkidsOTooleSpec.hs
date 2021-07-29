@@ -20,7 +20,7 @@ spec = describe "\"Skids\" O'Toole" $ do
             skidsOToole' <- updated skidsOToole
             [buyAction] <- getActionsOf
               skidsOToole'
-              (DuringTurn You)
+              (DuringTurn $ toId skidsOToole)
               skidsOToole'
             push buyAction
             runMessages

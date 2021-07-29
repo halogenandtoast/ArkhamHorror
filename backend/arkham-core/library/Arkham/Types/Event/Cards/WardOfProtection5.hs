@@ -27,7 +27,7 @@ instance HasActions env WardOfProtection5 where
 
 instance EventRunner env => RunMessage env WardOfProtection5 where
   runMessage msg e@(WardOfProtection5 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayFastEvent iid eid _ _ | eid == eventId -> e <$ pushAll
+    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> e <$ pushAll
       [ CancelNext DrawEncounterCardMessage
       , InvestigatorAssignDamage iid (EventSource eid) DamageAny 0 1
       , Discard (EventTarget eid)

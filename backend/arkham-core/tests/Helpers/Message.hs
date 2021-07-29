@@ -19,7 +19,7 @@ import Arkham.Types.Target
 import Arkham.Types.Trait (toTraits)
 
 playEvent :: Investigator -> Event -> Message
-playEvent i e = InvestigatorPlayEvent (toId i) (toId e) Nothing
+playEvent i e = InvestigatorPlayEvent (toId i) (toId e) Nothing []
 
 moveTo :: Investigator -> Location -> Message
 moveTo i l = MoveTo (toId i) (toId l)

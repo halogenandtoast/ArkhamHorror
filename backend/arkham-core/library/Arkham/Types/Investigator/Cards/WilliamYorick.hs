@@ -58,7 +58,7 @@ williamYorickRecursionLock = unsafePerformIO $ newIORef False
 {-# NOINLINE williamYorickRecursionLock #-}
 
 instance InvestigatorRunner env => HasActions env WilliamYorick where
-  getActions i (AfterEnemyDefeated You _) (WilliamYorick attrs) = do
+  getActions i (AfterEnemyDefeated who _) (WilliamYorick attrs) | i == who = do
     locked <- readIORef williamYorickRecursionLock
     if locked
       then pure []
@@ -68,7 +68,7 @@ instance InvestigatorRunner env => HasActions env WilliamYorick where
           targets =
             filter ((== AssetType) . toCardType) (investigatorDiscard attrs)
         playableTargets <- filterM
-          (getIsPlayable i [NonFast, DuringTurn You] . PlayerCard)
+          (getIsPlayable i [NonFast, DuringTurn i] . PlayerCard)
           targets
         writeIORef williamYorickRecursionLock False
         pure
@@ -91,7 +91,7 @@ instance (InvestigatorRunner env) => RunMessage env WilliamYorick where
             else InitiatePlayCard iid (toCardId c) Nothing False
           ]
       playableTargets <- filterM
-        (getIsPlayable iid [NonFast, DuringTurn You] . PlayerCard)
+        (getIsPlayable iid [NonFast, DuringTurn iid] . PlayerCard)
         targets
       i <$ push
         (chooseOne iid

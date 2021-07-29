@@ -43,7 +43,7 @@ ability token attrs = (mkAbility (toSource attrs) 1 (ReactionAbility Free))
   }
 
 instance ActionRunner env => HasActions env BeginnersLuck where
-  getActions iid (WhenRevealToken You token) (BeginnersLuck x) =
+  getActions iid (WhenRevealToken who token) (BeginnersLuck x) | iid == who =
     pure [UseAbility iid (ability token x)]
   getActions iid window (BeginnersLuck x) = getActions iid window x
 

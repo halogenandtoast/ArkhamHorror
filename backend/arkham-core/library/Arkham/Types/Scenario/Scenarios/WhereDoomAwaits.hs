@@ -163,6 +163,7 @@ instance
   , HasSet LocationId env [Trait]
   , HasRecord env
   , ScenarioAttrsRunner env
+  , HasModifiersFor env ()
   )
   => RunMessage env WhereDoomAwaits where
   runMessage msg s@(WhereDoomAwaits attrs) = case msg of
@@ -296,7 +297,6 @@ instance
       s <$ push (ScenarioResolution $ Resolution 2)
     ScenarioResolution (Resolution 1) -> do
       xp <- getXp
-      investigatorIds <- getInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       s <$ pushAll
         ([ chooseOne
@@ -318,7 +318,7 @@ instance
            ]
          , Record TheInvestigatorsEnteredTheGate
          ]
-        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame]
         )
     ScenarioResolution (Resolution 2) -> do

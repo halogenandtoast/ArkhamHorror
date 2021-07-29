@@ -29,14 +29,14 @@ whittonGreene :: AssetCard WhittonGreene
 whittonGreene = ally WhittonGreene Cards.whittonGreene (2, 2)
 
 instance HasActions env WhittonGreene where
-  getActions iid (AfterRevealLocation You) (WhittonGreene a) | ownedBy a iid =
-    do
+  getActions iid (AfterRevealLocation who) (WhittonGreene a)
+    | ownedBy a iid && iid == who = do
       let
         ability =
           mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a))
       pure [UseAbility iid ability]
-  getActions iid (AfterPutLocationIntoPlay You) (WhittonGreene a)
-    | ownedBy a iid = do
+  getActions iid (AfterPutLocationIntoPlay who) (WhittonGreene a)
+    | ownedBy a iid && iid == who = do
       let
         ability =
           mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a))

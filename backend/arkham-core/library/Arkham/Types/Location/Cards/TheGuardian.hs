@@ -37,8 +37,8 @@ ability :: LocationAttrs -> Ability
 ability attrs = mkAbility attrs 1 (ReactionAbility Free)
 
 instance ActionRunner env => HasActions env TheGuardian where
-  getActions iid (AfterEntering You lid) (TheGuardian attrs)
-    | lid == toId attrs = pure [UseAbility iid (ability attrs)]
+  getActions iid (AfterEntering who lid) (TheGuardian attrs)
+    | lid == toId attrs && iid == who = pure [UseAbility iid (ability attrs)]
   getActions iid window (TheGuardian attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env TheGuardian where

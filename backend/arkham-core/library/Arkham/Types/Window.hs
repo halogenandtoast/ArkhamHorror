@@ -2,50 +2,46 @@ module Arkham.Types.Window where
 
 import Arkham.Prelude
 
-import Arkham.Types.ActId
 import Arkham.Types.Action
-import Arkham.Types.AgendaId
-import Arkham.Types.Card.CardCode
+import Arkham.Types.Card
 import Arkham.Types.Card.Id
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Phase
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.TreacheryId
 
 data Window
-  = AfterDiscoveringClues Who Where -- name conflict resolution
-  | AfterDrawCard Who CardId
+  = AfterDiscoveringClues InvestigatorId LocationId -- name conflict resolution
+  | AfterDrawCard InvestigatorId Card
+  | WhenDrawCard InvestigatorId Card
   | AfterDrawingStartingHand InvestigatorId
-  | AfterCommitedCard Who CardId
-  | AfterEndTurn Who
-  | AfterEnemyDefeated Who EnemyId
-  | AfterEnemyEngageInvestigator Who EnemyId
-  | AfterEnemyEvaded Who EnemyId
-  | AfterFailAttackEnemy Who EnemyId
-  | AfterFailInvestigationSkillTest Who Int
-  | AfterFailSkillTest Who Int
-  | AfterFailSkillTestAtOrLess Who Int
-  | AfterLeaving Who LocationId
+  | AfterCommitedCard InvestigatorId Card
+  | AfterEndTurn InvestigatorId
+  | AfterEnemyDefeated InvestigatorId EnemyId
+  | AfterEnemyEngageInvestigator InvestigatorId EnemyId
+  | AfterEnemyEvaded InvestigatorId EnemyId
+  | AfterFailAttackEnemy InvestigatorId EnemyId
+  | AfterFailInvestigationSkillTest InvestigatorId Int
+  | AfterFailSkillTest InvestigatorId Int
+  | AfterFailSkillTestAtOrLess InvestigatorId Int
+  | AfterLeaving InvestigatorId LocationId
   | AfterMoveFromHunter EnemyId
-  | AfterEntering Who LocationId
-  | AfterPassSkillTest (Maybe Action) Source Who Int
-  | AfterPlayCard Who [Trait]
-  | AfterPutLocationIntoPlay Who
-  | AfterRevealLocation Who
-  | AfterSuccessfulAttackEnemy Who EnemyId
-  | AfterSuccessfulInvestigation Who Where
-  | AfterTurnBegins Who
+  | AfterEntering InvestigatorId LocationId
+  | AfterPassSkillTest (Maybe Action) Source InvestigatorId Int
+  | AfterPlayCard InvestigatorId [Trait]
+  | AfterPutLocationIntoPlay InvestigatorId
+  | AfterRevealLocation InvestigatorId
+  | AfterSuccessfulAttackEnemy InvestigatorId EnemyId
+  | AfterSuccessfulInvestigation InvestigatorId LocationId
+  | AfterTurnBegins InvestigatorId
   | AnyPhaseBegins
   | PhaseBegins Phase
   | PhaseEnds Phase
   | AtEndOfRound
-  | DuringTurn Who
+  | DuringTurn InvestigatorId
   | FastPlayerWindow
   | InDiscardWindow InvestigatorId Window
   | InHandWindow InvestigatorId Window
@@ -53,45 +49,34 @@ data Window
   | WhenActAdvance ActId
   | WhenAgendaAdvance AgendaId
   | WhenAllDrawEncounterCard
-  | WhenAmongSearchedCards Who
+  | WhenAmongSearchedCards InvestigatorId
   | WhenChosenRandomLocation LocationId
   | WhenDealtDamage Source Target
   | WhenDealtHorror Source Target
   | WhenDefeated Source
-  | WhenDiscoverClues Who Where
-  | WhenDrawEncounterCard Who CardCode
-  | WhenWouldDrawEncounterCard Who
-  | WhenDrawNonPerilTreachery Who TreacheryId
-  | WhenDrawToken Who Token
-  | WhenDrawTreachery Who
-  | WhenEnemyAttacks Who
-  | WhenEnemyDefeated Who
-  | WhenEnemyEvaded Who
+  | WhenDiscoverClues InvestigatorId LocationId
+  | WhenWouldDrawEncounterCard InvestigatorId
+  | WhenDrawToken InvestigatorId Token
+  | WhenEnemyAttacks InvestigatorId EnemyId
+  | WhenEnemyDefeated InvestigatorId EnemyId
+  | WhenEnemyEvaded InvestigatorId EnemyId
   | WhenEnemySpawns EnemyId LocationId
   | WhenEnterPlay Target
   | WhenLocationLeavesPlay LocationId
-  | WhenPlayCard Who CardId
-  | WhenRevealToken Who Token
-  | AfterRevealToken Who Token
-  | WhenRevealTokenWithNegativeModifier Who Token
+  | WhenPlayCard InvestigatorId CardId
+  | WhenRevealToken InvestigatorId Token
+  | AfterRevealToken InvestigatorId Token
+  | WhenRevealTokenWithNegativeModifier InvestigatorId Token
   | WhenSkillTest SkillType
-  | WhenSuccessfulAttackEnemy Who EnemyId
-  | WhenSuccessfulInvestigation Who Where
-  | WhenTurnBegins Who
-  | WhenWouldFailSkillTest Who
-  | WhenWouldLeave Who LocationId
+  | WhenSuccessfulAttackEnemy InvestigatorId EnemyId
+  | WhenSuccessfulInvestigation InvestigatorId LocationId
+  | WhenTurnBegins InvestigatorId
+  | WhenWouldFailSkillTest InvestigatorId
+  | WhenWouldLeave InvestigatorId LocationId
   | WhenWouldReady Target
-  | WhenWouldRevealChaosToken Source Who
+  | WhenWouldRevealChaosToken Source InvestigatorId
   | WhenWouldTakeDamage Source Target
   | WhenWouldTakeHorror Source Target
   | WhenWouldTakeDamageOrHorror Source Target Int Int
-  deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
-
-data Where = YourLocation | ConnectedLocation | LocationInGame
-  deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
-
-data Who = You | InvestigatorAtYourLocation | InvestigatorAtAConnectedLocation | InvestigatorInGame
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)

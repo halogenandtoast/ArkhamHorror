@@ -61,8 +61,8 @@ ability attrs token = base
     (ReactionAbility $ HandDiscardCost 1 Nothing mempty mempty)
 
 instance InvestigatorRunner env => HasActions env WendyAdams where
-  getActions iid (WhenRevealToken You token) (WendyAdams attrs@InvestigatorAttrs {..})
-    | iid == investigatorId
+  getActions iid (WhenRevealToken who token) (WendyAdams attrs@InvestigatorAttrs {..})
+    | iid == investigatorId && iid == who
     = pure [UseAbility investigatorId $ ability attrs token]
   getActions i window (WendyAdams attrs) = getActions i window attrs
 
@@ -82,7 +82,7 @@ instance (InvestigatorRunner env) => RunMessage env WendyAdams where
           ]
     When (DrawToken iid token) | iid == investigatorId -> i <$ pushAll
       [ FocusTokens [token]
-      , CheckWindow investigatorId [WhenDrawToken You token]
+      , CheckWindow investigatorId [WhenDrawToken investigatorId token]
       , UnfocusTokens
       ]
     ResolveToken _drawnToken ElderSign iid | iid == investigatorId -> do

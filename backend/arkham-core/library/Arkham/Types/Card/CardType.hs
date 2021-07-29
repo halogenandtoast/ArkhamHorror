@@ -16,3 +16,11 @@ data CardType
   | AgendaType
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+encounterCardTypes :: [CardType]
+encounterCardTypes =
+  [TreacheryType, EnemyType, LocationType, EncounterAssetType]
+
+playerCardTypes :: [CardType]
+playerCardTypes =
+  [AssetType, EventType, SkillType, PlayerTreacheryType, PlayerEnemyType]

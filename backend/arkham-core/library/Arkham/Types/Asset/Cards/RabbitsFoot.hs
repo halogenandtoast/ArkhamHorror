@@ -21,7 +21,7 @@ rabbitsFoot = accessory RabbitsFoot Cards.rabbitsFoot
 instance HasModifiersFor env RabbitsFoot
 
 instance HasActions env RabbitsFoot where
-  getActions iid (AfterFailSkillTest You _) (RabbitsFoot a) = pure
+  getActions iid (AfterFailSkillTest who _) (RabbitsFoot a) | iid == who = pure
     [ UseAbility
         iid
         (mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a)))

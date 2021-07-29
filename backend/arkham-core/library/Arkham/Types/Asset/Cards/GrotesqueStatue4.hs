@@ -41,8 +41,8 @@ ability attrs source = base
     (ReactionAbility $ UseCost (toId attrs) Charge 1)
 
 instance HasActions env GrotesqueStatue4 where
-  getActions iid (WhenWouldRevealChaosToken source You) (GrotesqueStatue4 a)
-    | ownedBy a iid = pure [UseAbility iid (ability a source)]
+  getActions iid (WhenWouldRevealChaosToken source who) (GrotesqueStatue4 a)
+    | ownedBy a iid && who == iid = pure [UseAbility iid (ability a source)]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env GrotesqueStatue4 where

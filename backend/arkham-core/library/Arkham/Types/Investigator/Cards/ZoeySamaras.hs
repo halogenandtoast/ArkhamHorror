@@ -43,8 +43,8 @@ zoeySamaras = ZoeySamaras $ baseAttrs
   [Believer, Hunter]
 
 instance InvestigatorRunner env => HasActions env ZoeySamaras where
-  getActions iid (AfterEnemyEngageInvestigator You _) (ZoeySamaras InvestigatorAttrs {..})
-    | iid == investigatorId
+  getActions iid (AfterEnemyEngageInvestigator who _) (ZoeySamaras InvestigatorAttrs {..})
+    | iid == investigatorId && iid == who
     = do
       let
         ability =

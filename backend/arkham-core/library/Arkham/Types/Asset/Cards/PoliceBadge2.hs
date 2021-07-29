@@ -12,6 +12,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
@@ -31,12 +32,17 @@ instance HasModifiersFor env PoliceBadge2 where
     pure [ toModifier a (SkillModifier SkillWillpower 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env PoliceBadge2 where
-  getActions iid (DuringTurn InvestigatorAtYourLocation) (PoliceBadge2 a)
-    | ownedBy a iid = pure
+instance HasId LocationId env InvestigatorId => HasActions env PoliceBadge2 where
+  getActions iid (DuringTurn who) (PoliceBadge2 a) | ownedBy a iid = do
+    atYourLocation <- liftA2
+      (==)
+      (getId @LocationId iid)
+      (getId @LocationId who)
+    pure
       [ UseAbility
           iid
           (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
+      | atYourLocation
       ]
   getActions _ _ _ = pure []
 

@@ -49,13 +49,18 @@
         <button v-if="discards.length > 0" class="view-discard-button" @click="toggleDiscard">{{viewDiscardLabel}}</button>
       </div>
 
-      <img
-        :class="{ 'deck--can-draw': drawCardsAction !== -1 }"
-        class="deck"
-        :src="`${baseUrl}/img/arkham/player_back.jpg`"
-        width="150px"
-        @click="$emit('choose', drawCardsAction)"
-      />
+      <div class="deck-container">
+        <img
+          :class="{ 'deck--can-draw': drawCardsAction !== -1 }"
+          class="deck"
+          :src="`${baseUrl}/img/arkham/player_back.jpg`"
+          width="150px"
+          @click="$emit('choose', drawCardsAction)"
+        />
+        <template v-if="debug">
+          <button @click="debugChoose({tag: 'SearchDeckForTraits', contents: [investigatorId, { tag: 'InvestigatorTarget', contents: investigatorId }, []]})">Select Draw</button>
+        </template>
+      </div>
       <section class="hand">
         <HandCard
           v-for="(card, index) in player.contents.hand"
@@ -93,7 +98,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref } from 'vue';
+import { defineComponent, computed, ref, inject } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
@@ -152,7 +157,10 @@ export default defineComponent({
       showCards.value = cards
     }
 
-    return { doShowCards, showCards, baseUrl, discards, topOfDiscard, drawCardsAction, toggleDiscard, viewingDiscard, viewDiscardLabel }
+    const debug = inject('debug')
+    const debugChoose = inject('debugChoose')
+
+    return { debug, debugChoose, doShowCards, showCards, baseUrl, discards, topOfDiscard, drawCardsAction, toggleDiscard, viewingDiscard, viewDiscardLabel }
   }
 })
 </script>
@@ -228,5 +236,10 @@ export default defineComponent({
 
 .view-discard-button {
   width: 100%;
+}
+
+.deck-container {
+  display: flex;
+  flex-direction: column;
 }
 </style>

@@ -27,7 +27,7 @@ instance HasActions env ExtraAmmunition1 where
 
 instance (EventRunner env) => RunMessage env ExtraAmmunition1 where
   runMessage msg e@(ExtraAmmunition1 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       investigatorIds <- getSetList @InvestigatorId =<< getId @LocationId iid
       firearms <- selectList
         (AssetWithTrait Firearm <> AssetOneOf (map AssetOwnedBy investigatorIds)

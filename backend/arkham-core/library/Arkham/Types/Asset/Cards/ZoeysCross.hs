@@ -36,8 +36,8 @@ ability attrs eid = base
     (ReactionAbility $ Costs [ExhaustCost (toTarget attrs), ResourceCost 1])
 
 instance HasActions env ZoeysCross where
-  getActions iid (AfterEnemyEngageInvestigator You eid) (ZoeysCross a)
-    | ownedBy a iid = pure [UseAbility iid (ability a eid)]
+  getActions iid (AfterEnemyEngageInvestigator who eid) (ZoeysCross a)
+    | ownedBy a iid && iid == who = pure [UseAbility iid (ability a eid)]
   getActions i window (ZoeysCross x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env ZoeysCross where

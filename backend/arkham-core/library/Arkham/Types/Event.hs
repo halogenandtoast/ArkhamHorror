@@ -25,8 +25,7 @@ instance HasCardDef Event where
   toCardDef = toCardDef . toAttrs
 
 deriving anyclass instance
-  ( HasCount ActionTakenCount env InvestigatorId
-  , CanCheckPlayable env
+  ( CanCheckPlayable env
   , GetCardDef env EnemyId
   , HasList UnderneathCard env InvestigatorId
   , HasSkillTest env

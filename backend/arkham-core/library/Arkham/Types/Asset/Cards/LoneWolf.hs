@@ -26,7 +26,7 @@ ability x = (mkAbility (toSource x) 1 (ReactionAbility Free))
   }
 
 instance HasActions env LoneWolf where
-  getActions i (WhenTurnBegins You) (LoneWolf x) | ownedBy x i =
+  getActions i (WhenTurnBegins who) (LoneWolf x) | ownedBy x i && i == who =
     pure [UseAbility i (ability x)]
   getActions iid window (LoneWolf attrs) = getActions iid window attrs
 

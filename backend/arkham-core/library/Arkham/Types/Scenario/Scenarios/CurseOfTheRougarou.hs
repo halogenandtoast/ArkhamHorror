@@ -280,7 +280,6 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       runMessage (ScenarioResolution $ Resolution 1) s
     ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
       xp <- getXp
       s <$ push
         (chooseOne
@@ -298,13 +297,12 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
                 ]
               , Record TheRougarouContinuesToHauntTheBayou
               ]
-            <> [ GainXP iid xp | iid <- investigatorIds ]
+            <> [ GainXP iid n | (iid, n) <- xp ]
             <> [EndOfGame]
           ]
         )
     ScenarioResolution (Resolution 2) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
       xp <- getXp
       s <$ push
         (chooseOne
@@ -331,13 +329,12 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
                 , Label "Do not add Lady Esprit to your deck" []
                 ]
               ]
-            <> [ GainXP iid xp | iid <- investigatorIds ]
+            <> [ GainXP iid n | (iid, n) <- xp ]
             <> [EndOfGame]
           ]
         )
     ScenarioResolution (Resolution 3) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
       xp <- getXp
       s <$ push
         (chooseOne
@@ -362,7 +359,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
                 leadInvestigatorId
                 Assets.monstrousTransformation
               ]
-            <> [ GainXP iid xp | iid <- investigatorIds ]
+            <> [ GainXP iid n | (iid, n) <- xp ]
             <> [EndOfGame]
           ]
         )

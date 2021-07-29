@@ -28,8 +28,8 @@ instance HasModifiersFor env DrMilanChristopher where
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env DrMilanChristopher where
-  getActions i (AfterSuccessfulInvestigation You _) (DrMilanChristopher x)
-    | ownedBy x i = pure
+  getActions i (AfterSuccessfulInvestigation who _) (DrMilanChristopher x)
+    | ownedBy x i && i == who = pure
       [UseAbility i (mkAbility (toSource x) 1 (ReactionAbility Free))]
   getActions i window (DrMilanChristopher x) = getActions i window x
 

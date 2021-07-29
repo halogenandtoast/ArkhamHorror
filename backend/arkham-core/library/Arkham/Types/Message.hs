@@ -341,8 +341,7 @@ data Message
     | InvestigatorPlayedAsset InvestigatorId AssetId [SlotType] [Trait]
     | InvestigatorPlayDynamicAsset InvestigatorId AssetId [SlotType] [Trait] Int
     | InvestigatorPlayDynamicEvent InvestigatorId EventId Int
-    | InvestigatorPlayEvent InvestigatorId EventId (Maybe Target)
-    | InvestigatorPlayFastEvent InvestigatorId EventId (Maybe Target) [Window]
+    | InvestigatorPlayEvent InvestigatorId EventId (Maybe Target) [Window]
     | InvestigatorResigned InvestigatorId
     | InvestigatorSpendClues InvestigatorId Int
     | InvestigatorTakeDamage InvestigatorId Source Int Int

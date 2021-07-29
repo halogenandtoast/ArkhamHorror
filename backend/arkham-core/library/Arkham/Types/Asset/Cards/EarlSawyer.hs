@@ -29,7 +29,7 @@ ability attrs =
   mkAbility (toSource attrs) 1 (ReactionAbility $ ExhaustCost (toTarget attrs))
 
 instance HasActions env EarlSawyer where
-  getActions iid (AfterEnemyEvaded You _) (EarlSawyer attrs) =
+  getActions iid (AfterEnemyEvaded who _) (EarlSawyer attrs) | iid == who =
     pure [ UseAbility iid (ability attrs) | ownedBy attrs iid ]
   getActions iid window (EarlSawyer attrs) = getActions iid window attrs
 

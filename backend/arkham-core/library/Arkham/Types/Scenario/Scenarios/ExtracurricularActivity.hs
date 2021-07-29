@@ -155,7 +155,6 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         _ -> pure ()
     ScenarioResolution NoResolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
       xp <- getXp
       s <$ pushAll
         ([ chooseOne
@@ -177,12 +176,11 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
          , Record TheInvestigatorsFailedToSaveTheStudents
          , AddToken Tablet
          ]
-        <> [ GainXP iid (xp + 1) | iid <- investigatorIds ]
+        <> [ GainXP iid (n + 1) | (iid, n) <- xp ]
         <> [EndOfGame]
         )
     ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
       xp <- getXp
       s <$ pushAll
         ([ chooseOne
@@ -223,12 +221,11 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            , Label "Do not add Professor Warren Rice to your deck" []
            ]
          ]
-        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame]
         )
     ScenarioResolution (Resolution 2) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
       xp <- getXp
       s <$ pushAll
         ([ chooseOne
@@ -254,12 +251,11 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
          , Record ProfessorWarrenRiceWasKidnapped
          , Record TheStudentsWereRescued
          ]
-        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame]
         )
     ScenarioResolution (Resolution 3) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
       xp <- getXp
       s <$ pushAll
         ([ chooseOne
@@ -278,12 +274,11 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
          , Record ProfessorWarrenRiceWasKidnapped
          , Record TheExperimentWasDefeated
          ]
-        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame]
         )
     ScenarioResolution (Resolution 4) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
       xp <- getXp
       s <$ pushAll
         ([ chooseOne
@@ -306,7 +301,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
          , Record TheInvestigatorsFailedToSaveTheStudents
          , AddToken Tablet
          ]
-        <> [ GainXP iid (xp + 1) | iid <- investigatorIds ]
+        <> [ GainXP iid (n + 1) | (iid, n) <- xp ]
         <> [EndOfGame]
         )
     _ -> ExtracurricularActivity <$> runMessage msg attrs

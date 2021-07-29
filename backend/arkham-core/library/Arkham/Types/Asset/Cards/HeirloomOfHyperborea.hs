@@ -26,8 +26,8 @@ reactionAbility :: AssetAttrs -> Ability
 reactionAbility attrs = mkAbility (toSource attrs) 1 (FastAbility Free)
 
 instance HasActions env HeirloomOfHyperborea where
-  getActions iid (AfterPlayCard You traits) (HeirloomOfHyperborea a)
-    | ownedBy a iid = pure
+  getActions iid (AfterPlayCard who traits) (HeirloomOfHyperborea a)
+    | ownedBy a iid && iid == who = pure
       [ UseAbility iid (reactionAbility a) | Spell `elem` traits ]
   getActions i window (HeirloomOfHyperborea x) = getActions i window x
 

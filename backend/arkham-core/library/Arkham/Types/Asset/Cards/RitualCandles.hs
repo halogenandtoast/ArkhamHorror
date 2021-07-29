@@ -28,10 +28,11 @@ ability :: AssetAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
 instance HasActions env RitualCandles where
-  getActions iid (WhenRevealToken You token) (RitualCandles x) = pure
-    [ UseAbility iid (ability x)
-    | tokenFace token `elem` [Skull, Cultist, Tablet, ElderSign]
-    ]
+  getActions iid (WhenRevealToken who token) (RitualCandles x) | iid == who =
+    pure
+      [ UseAbility iid (ability x)
+      | tokenFace token `elem` [Skull, Cultist, Tablet, ElderSign]
+      ]
   getActions iid window (RitualCandles x) = getActions iid window x
 
 instance HasModifiersFor env RitualCandles

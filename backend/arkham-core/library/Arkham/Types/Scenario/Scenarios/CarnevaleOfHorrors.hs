@@ -392,7 +392,6 @@ instance
       pure s
     ScenarioResolution NoResolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
       xp <- getXp
       additionalRewardsMsg <- additionalRewards
         (attrs
@@ -419,12 +418,11 @@ instance
              ]
          ]
         <> additionalRewardsMsg
-        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame]
         )
     ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
       xp <- getXp
       additionalRewardsMsg <- additionalRewards attrs
       s <$ pushAll
@@ -446,12 +444,11 @@ instance
              ]
          ]
         <> additionalRewardsMsg
-        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame]
         )
     ScenarioResolution (Resolution 2) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
       xp <- getXp
       additionalRewardsMsg <- additionalRewards attrs
       s <$ pushAll
@@ -473,7 +470,7 @@ instance
              ]
          ]
         <> additionalRewardsMsg
-        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame]
         )
     ChooseOneRewardByEachPlayer rewards@(_ : _) (currentInvestigatorId : rest)

@@ -432,9 +432,9 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       a <$ unless
         (AlternateSuccessfullInvestigation `elem` modifiers')
         (pushAll
-          [ CheckWindow iid [WhenSuccessfulInvestigation You YourLocation]
+          [ CheckWindow iid [WhenSuccessfulInvestigation iid lid]
           , InvestigatorDiscoverClues iid lid 1 (Just Action.Investigate)
-          , CheckWindow iid [AfterSuccessfulInvestigation You YourLocation]
+          , CheckWindow iid [AfterSuccessfulInvestigation iid lid]
           ]
         )
     PlaceUnderneath target cards | isTarget a target ->
@@ -530,30 +530,11 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       pure $ a & connectedLocationsL %~ insertSet toLid
     DiscoverCluesAtLocation iid lid n maction | lid == locationId -> do
       let discoveredClues = min n locationClues
-      checkWindowMsgs <- checkWindows
-        iid
-        (\who -> pure $ case who of
-          You -> [WhenDiscoverClues You YourLocation]
-          InvestigatorAtYourLocation -> [WhenDiscoverClues who YourLocation]
-          InvestigatorAtAConnectedLocation ->
-            [WhenDiscoverClues who ConnectedLocation]
-          InvestigatorInGame -> [WhenDiscoverClues who LocationInGame]
-        )
-
+      checkWindowMsgs <- checkWindows [WhenDiscoverClues iid lid]
       a <$ pushAll
         (checkWindowMsgs <> [DiscoverClues iid lid discoveredClues maction])
     AfterDiscoverClues iid lid n | lid == locationId -> do
-      checkWindowMsgs <- checkWindows
-        iid
-        (\who -> pure $ case who of
-          You -> [AfterDiscoveringClues You YourLocation]
-          InvestigatorAtYourLocation ->
-            [AfterDiscoveringClues who YourLocation]
-          InvestigatorAtAConnectedLocation ->
-            [AfterDiscoveringClues who ConnectedLocation]
-          InvestigatorInGame -> [AfterDiscoveringClues who LocationInGame]
-        )
-      pushAll checkWindowMsgs
+      pushAll =<< checkWindows [AfterDiscoveringClues iid lid]
       pure $ a & cluesL -~ n
     InvestigatorEliminated iid -> pure $ a & investigatorsL %~ deleteSet iid
     WhenEnterLocation iid lid
@@ -627,7 +608,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
         else fromGameValue locationRevealClues . unPlayerCount <$> getCount ()
       pushAll
         $ AddConnection lid locationRevealedSymbol
-        : [ CheckWindow iid [AfterRevealLocation You]
+        : [ CheckWindow iid [AfterRevealLocation iid]
           | iid <- maybeToList miid
           ]
       pure $ a & cluesL +~ locationClueCount & revealedL .~ True

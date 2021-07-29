@@ -41,11 +41,22 @@ ability eid a = (mkAbility (toSource a) 1 (ReactionAbility Free))
   { abilityMetadata = Just $ TargetMetadata (EnemyTarget eid)
   }
 
-instance HasSet Trait env EnemyId => HasActions env LitaChantler where
+instance
+  ( HasId LocationId env InvestigatorId
+  , HasSet Trait env EnemyId
+  )
+  => HasActions env LitaChantler where
   getActions i (WhenSuccessfulAttackEnemy who eid) (LitaChantler a)
-    | ownedBy a i && who `elem` [You, InvestigatorAtYourLocation] = do
+    | ownedBy a i = do
+      atYourLocation <- liftA2
+        (==)
+        (getId @LocationId i)
+        (getId @LocationId who)
       traits <- getSetList eid
-      pure [ UseAbility i (ability eid a) | Monster `elem` traits ]
+      pure
+        [ UseAbility i (ability eid a)
+        | Monster `elem` traits && atYourLocation
+        ]
   getActions i window (LitaChantler a) = getActions i window a
 
 instance (AssetRunner env) => RunMessage env LitaChantler where

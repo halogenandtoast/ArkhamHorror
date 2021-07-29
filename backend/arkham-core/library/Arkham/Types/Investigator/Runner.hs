@@ -26,6 +26,7 @@ import Arkham.Types.Trait
 
 type InvestigatorRunner env
   = ( CanBeWeakness env TreacheryId
+    , HasTokenValue env ()
     , Query AssetMatcher env
     , (HasActions env (), HasActions env AssetId, HasActions env ActionType)
     , ( HasCount ActionTakenCount env InvestigatorId

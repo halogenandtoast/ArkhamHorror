@@ -26,9 +26,9 @@ instance HasActions env IfItBleeds where
 
 instance HasModifiersFor env IfItBleeds
 
-getWindowEnemyIds :: [Window] -> [EnemyId]
-getWindowEnemyIds = mapMaybe \case
-  AfterEnemyDefeated You eid -> Just eid
+getWindowEnemyIds :: InvestigatorId -> [Window] -> [EnemyId]
+getWindowEnemyIds iid = mapMaybe \case
+  AfterEnemyDefeated who eid | iid == who -> Just eid
   _ -> Nothing
 
 instance
@@ -38,8 +38,8 @@ instance
   )
   => RunMessage env IfItBleeds where
   runMessage msg e@(IfItBleeds attrs) = case msg of
-    InvestigatorPlayFastEvent iid eid _ windows | eid == toId attrs -> do
-      let enemyIds = getWindowEnemyIds windows
+    InvestigatorPlayEvent iid eid _ windows | eid == toId attrs -> do
+      let enemyIds = getWindowEnemyIds iid windows
       enemyIdsWithHorrorValue <- traverse
         (traverseToSnd (fmap unSanityDamageCount . getCount))
         enemyIds

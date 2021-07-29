@@ -164,7 +164,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            , Label "Do not add Lita Chantler to your deck" []
            ]
          ]
-        <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
+        <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
         <> [EndOfGame]
         )
     ScenarioResolution (Resolution 1) -> do
@@ -198,7 +198,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
            ]
          , SufferTrauma leadInvestigatorId 0 1
          ]
-        <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
+        <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
         <> [EndOfGame]
         )
     ScenarioResolution (Resolution 2) -> do
@@ -226,7 +226,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
          , Record YourHouseIsStillStanding
          , GainXP leadInvestigatorId 1
          ]
-        <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
+        <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
         <> [EndOfGame]
         )
     ScenarioResolution (Resolution 3) -> do

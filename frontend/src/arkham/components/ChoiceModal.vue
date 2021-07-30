@@ -66,5 +66,6 @@ export default defineComponent({
 .focused-cards {
   flex-direction: row;
   overflow-x: auto;
+  flex-wrap: wrap;
 }
 </style>

@@ -16,6 +16,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype MagnifyingGlass1 = MagnifyingGlass1 AssetAttrs
   deriving anyclass IsAsset
@@ -32,7 +33,7 @@ instance HasModifiersFor env MagnifyingGlass1 where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env MagnifyingGlass1 where
-  getActions iid _ (MagnifyingGlass1 a) | ownedBy a iid = do
+  getActions iid FastPlayerWindow (MagnifyingGlass1 a) | ownedBy a iid = do
     locationId <- getId @LocationId iid
     clueCount' <- unClueCount <$> getCount locationId
     pure

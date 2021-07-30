@@ -838,13 +838,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   TakeControlOfAsset iid aid | iid == investigatorId ->
     pure $ a & assetsL %~ insertSet aid
   TakeControlOfAsset iid aid | iid /= investigatorId ->
-    pure $ a & assetsL %~ deleteSet aid
+    pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   ChooseAndDiscardAsset iid assetMatcher | iid == investigatorId -> do
     discardableAssetIds <- selectList
       (assetMatcher <> DiscardableAsset <> AssetOwnedBy iid)
     a <$ push (chooseOne iid $ map (Discard . AssetTarget) discardableAssetIds)
   AttachAsset aid _ | aid `member` investigatorAssets ->
-    pure $ a & assetsL %~ deleteSet aid
+    pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   AttachTreachery tid (InvestigatorTarget iid) | iid == investigatorId ->
     pure $ a & treacheriesL %~ insertSet tid
   AllCheckHandSize | not (a ^. defeatedL || a ^. resignedL) -> do
@@ -886,12 +886,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     push $ After msg
     pure
       $ a
-      & assetsL
-      %~ deleteSet aid
-      & deckL
-      .~ Deck deck'
-      & slotsL
-      %~ removeFromSlots aid
+      & (assetsL %~ deleteSet aid)
+      & (deckL .~ Deck deck')
+      & (slotsL %~ removeFromSlots aid)
   Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
   Discard (EnemyTarget eid) -> pure $ a & engagedEnemiesL %~ deleteSet eid
   PlaceEnemyInVoid eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
@@ -907,7 +904,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     -> pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   Exiled (AssetTarget aid) _ | aid `elem` investigatorAssets ->
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
-  RemoveFromGame (AssetTarget aid) -> pure $ a & assetsL %~ deleteSet aid
+  RemoveFromGame (AssetTarget aid) ->
+    pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   RemoveFromGame (CardIdTarget cid) ->
     pure $ a & cardsUnderneathL %~ filter ((/= cid) . toCardId)
   ChooseFightEnemy iid source skillType traits isAction
@@ -1328,7 +1326,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let
       card = findCard cardId a
       isFastEvent = case card of
-        PlayerCard pc -> isJust (cdFastWindow $ toCardDef pc)
+        PlayerCard pc ->
+          isJust (cdFastWindow $ toCardDef pc) && toCardType card == EventType
         _ -> False
     a <$ pushAll
       [ CheckWindow iid [WhenPlayCard iid cardId]
@@ -1607,7 +1606,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   InvestigatorCommittedCard iid cardId | iid == investigatorId ->
     pure $ a & handL %~ filter ((/= cardId) . toCardId)
   ReturnToHand iid (AssetTarget aid) | iid == investigatorId ->
-    pure $ a & assetsL %~ deleteSet aid
+    pure $ a & assetsL %~ deleteSet aid & slotsL %~ removeFromSlots aid
   PlaceUnderneath target cards | isTarget a target ->
     pure $ a & cardsUnderneathL <>~ cards
   BeforeSkillTest iid skillType skillDifficulty | iid == investigatorId -> do

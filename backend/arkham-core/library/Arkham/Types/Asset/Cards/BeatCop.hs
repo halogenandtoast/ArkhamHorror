@@ -32,7 +32,8 @@ instance HasModifiersFor env BeatCop where
   getModifiersFor _ _ _ = pure []
 
 ability :: AssetAttrs -> Ability
-ability a = mkAbility (toSource a) 1 $ FastAbility (DiscardCost $ toTarget a)
+ability a = restrictedAbility (toSource a) 1 EnemyAtYourLocation
+  $ FastAbility (DiscardCost $ toTarget a)
 
 instance
   ( HasSet EnemyId env LocationId

@@ -56,9 +56,14 @@ data AbilityMetadata
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-data AbilityRestriction = OnLocation LocationId | OrAbilityRestrictions [AbilityRestriction] | InvestigatorIsAlone
+data AbilityRestriction = OnLocation LocationId | OrAbilityRestrictions [AbilityRestriction] | InvestigatorIsAlone | EnemyAtYourLocation
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
+
+restrictedAbility
+  :: SourceEntity a => a -> Int -> AbilityRestriction -> AbilityType -> Ability
+restrictedAbility entity idx restriction type' =
+  (mkAbility entity idx type') { abilityRestrictions = Just restriction }
 
 mkAbility :: SourceEntity a => a -> Int -> AbilityType -> Ability
 mkAbility entity idx type' = Ability

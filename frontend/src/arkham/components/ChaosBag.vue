@@ -9,13 +9,13 @@
       <img
         v-if="revealedTokenAction(revealedToken) !== -1"
         class="token active-token"
-        :src="imageFor(revealedToken)"
+        :src="imageFor(revealedToken.tokenFace)"
         @click="$emit('choose', revealedTokenAction(revealedToken))"
       />
       <div v-else class="token-container" :class="{ ignored: isIgnored(revealedToken) }">
         <img
           class="token"
-          :src="imageFor(revealedToken)"
+          :src="imageFor(revealedToken.tokenFace)"
         />
       </div>
     </template>
@@ -26,13 +26,12 @@
       @click="$emit('choose', tokenAction)"
     />
     <template v-if="debug && tokenAction !== -1">
-      <button @click="debugChoose({tag: 'ForceTokenDraw', contents: 'Skull'})">Draw Skull</button>
-      <button @click="debugChoose({tag: 'ForceTokenDraw', contents: 'Cultist'})">Draw Cultist</button>
-      <button @click="debugChoose({tag: 'ForceTokenDraw', contents: 'Tablet'})">Draw Tablet</button>
-      <button @click="debugChoose({tag: 'ForceTokenDraw', contents: 'ElderThing'})">Draw Elder Thing</button>
-      <button @click="debugChoose({tag: 'ForceTokenDraw', contents: 'ElderSign'})">Draw Elder Sign</button>
-      <button @click="debugChoose({tag: 'ForceTokenDraw', contents: 'AutoFail'})">Draw Auto Fail</button>
-      <button @click="debugChoose({tag: 'ForceTokenDraw', contents: 'Zero'})">Draw Zero</button>
+      <div class="token-debug" v-for="tokenFace in tokenFaces" :key="tokenFace" @click="debugChoose({tag: 'ForceTokenDraw', contents: tokenFace})">
+        <img
+          class="token"
+          :src="imageFor(tokenFace)"
+        />
+        </div>
     </template>
   </div>
 </template>
@@ -55,8 +54,8 @@ export default defineComponent({
   setup(props) {
     const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
 
-    function imageFor(token: ChaosToken) {
-      switch (token.tokenFace) {
+    function imageFor(tokenFace: string) {
+      switch (tokenFace) {
         case 'PlusOne':
           return `${baseUrl}/img/arkham/ct_plus1.png`;
         case 'Zero':
@@ -132,7 +131,9 @@ export default defineComponent({
     const debug = inject('debug')
     const debugChoose = inject('debugChoose')
 
-    return { debug, debugChoose, baseUrl, isIgnored, revealedTokens, tokenAction, revealedTokenAction, investigatorPortrait, imageFor }
+    const tokenFaces = computed(() => [...new Set(props.game.chaosBag.tokens.map(t => t.tokenFace))])
+
+    return { tokenFaces, debug, debugChoose, baseUrl, isIgnored, revealedTokens, tokenAction, revealedTokenAction, investigatorPortrait, imageFor }
   }
 })
 </script>
@@ -177,5 +178,15 @@ export default defineComponent({
 
 .token-container {
   display: inline-block;
+}
+
+.token-debug {
+  display: inline;
+  img {
+    cursor: pointer;
+    border: 3px solid #ff00ff;
+    border-radius: 25px;
+    width: 50px;
+  }
 }
 </style>

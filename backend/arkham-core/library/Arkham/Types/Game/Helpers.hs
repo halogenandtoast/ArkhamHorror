@@ -4,7 +4,8 @@ module Arkham.Types.Game.Helpers where
 import Arkham.Prelude
 
 import Arkham.EncounterCard (allEncounterCards)
-import Arkham.Types.Ability
+import Arkham.Types.Ability hiding (AbilityRestriction(..))
+import qualified Arkham.Types.Ability as Ability
 import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.CampaignLogKey
@@ -89,6 +90,7 @@ getCanPerformAbility
      , MonadIO m
      , HasId LocationId env InvestigatorId
      , HasSet InvestigatorId env LocationId
+     , HasSet EnemyId env LocationId
      , HasActions env ActionType
      )
   => InvestigatorId
@@ -124,19 +126,23 @@ getCanPerformAbilityRestriction
   :: ( MonadReader env m
      , HasId LocationId env InvestigatorId
      , HasSet InvestigatorId env LocationId
+     , HasSet EnemyId env LocationId
      )
   => InvestigatorId
-  -> AbilityRestriction
+  -> Ability.AbilityRestriction
   -> m Bool
 getCanPerformAbilityRestriction iid = \case
-  OnLocation lid -> do
+  Ability.OnLocation lid -> do
     lid' <- getId @LocationId iid
     pure $ lid == lid'
-  OrAbilityRestrictions restrictions ->
+  Ability.OrAbilityRestrictions restrictions ->
     or <$> traverse (getCanPerformAbilityRestriction iid) restrictions
-  InvestigatorIsAlone -> do
+  Ability.InvestigatorIsAlone -> do
     lid <- getId @LocationId iid
     (== 1) . length <$> getSetList @InvestigatorId lid
+  Ability.EnemyAtYourLocation -> do
+    lid <- getId @LocationId iid
+    notNull <$> getSet @EnemyId lid
 
 getCanAffordAbility
   :: ( MonadReader env m
@@ -311,6 +317,7 @@ instance
   , HasModifiersFor env ()
   , HasCostPayment env
   , HasSet Trait env Source
+  , HasSet EnemyId env LocationId
   , HasList UsedAbility env ()
   , HasId LocationId env InvestigatorId
   )

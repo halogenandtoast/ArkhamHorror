@@ -2562,6 +2562,33 @@ runGameMessage msg g = case msg of
           )
       _ -> push (AskMap askMap)
     pure g
+  AskPlayer (Ask iid1 (ChooseOne c1)) -> do
+    mNextMessage <- peekMessage
+    case mNextMessage of
+      Just (AskPlayer (Ask iid2 (ChooseOne c2))) -> do
+        _ <- popMessage
+        push
+          (AskPlayer
+            (AskMap $ mapFromList [(iid1, ChooseOne c1), (iid2, ChooseOne c2)])
+          )
+      _ -> push (chooseOne iid1 c1)
+    pure g
+  AskPlayer (AskMap askMap) -> do
+    mNextMessage <- peekMessage
+    case mNextMessage of
+      Just (AskPlayer (Ask iid2 (ChooseOne c2))) -> do
+        _ <- popMessage
+        push
+          (AskPlayer
+            (AskMap $ insertWith
+              (\(ChooseOne m) (ChooseOne n) -> ChooseOne $ m <> n)
+              iid2
+              (ChooseOne c2)
+              askMap
+            )
+          )
+      _ -> push (AskMap askMap)
+    pure g
   EnemyWillAttack iid eid damageStrategy -> do
     modifiers' <- getModifiers (EnemySource eid) (InvestigatorTarget iid)
     enemy <- getEnemy eid

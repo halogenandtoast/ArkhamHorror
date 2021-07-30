@@ -421,6 +421,7 @@ data Message
     | RemoveFromDiscard InvestigatorId CardId
     | RemoveFromEncounterDiscard EncounterCard
     | RemoveFromGame Target
+    | RemovedFromGame Card
     | RemoveLocation LocationId
     | RemoveTraits Target [Trait]
     | RemovedFromPlay Source

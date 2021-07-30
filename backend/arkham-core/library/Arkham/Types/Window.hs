@@ -11,7 +11,6 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
-import Arkham.Types.Trait
 
 data Window
   = AfterDiscoveringClues InvestigatorId LocationId -- name conflict resolution

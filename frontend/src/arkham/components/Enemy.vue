@@ -279,7 +279,7 @@ export default defineComponent({
   border: 1px solid #ff00ff;
 }
 
-::v-deep .treachery {
+.enemy :deep(.treachery) {
   object-fit: cover;
   object-position: 0 -74px;
   height: 68px;

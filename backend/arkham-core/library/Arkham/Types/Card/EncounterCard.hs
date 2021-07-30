@@ -19,6 +19,9 @@ data EncounterCard = MkEncounterCard
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
 
+instance HasCardCode EncounterCard where
+  toCardCode = ecCardCode
+
 instance HasCardDef EncounterCard where
   toCardDef c = case lookup (ecCardCode c) allEncounterCards of
     Just def -> def

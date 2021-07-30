@@ -32,6 +32,9 @@ instance ToJSON PlayerCard where
 instance FromJSON PlayerCard where
   parseJSON = genericParseJSON $ aesonOptions $ Just "pc"
 
+instance HasCardCode PlayerCard where
+  toCardCode = pcCardCode
+
 instance HasSkillIcons PlayerCard where
   getSkillIcons = cdSkills . toCardDef
 

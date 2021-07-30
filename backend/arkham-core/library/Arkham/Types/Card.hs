@@ -53,6 +53,11 @@ instance HasCardDef Card where
     PlayerCard pc -> toCardDef pc
     EncounterCard ec -> toCardDef ec
 
+instance HasCardCode Card where
+  toCardCode = \case
+    PlayerCard pc -> toCardCode pc
+    EncounterCard ec -> toCardCode ec
+
 instance HasOriginalCardCode Card where
   toOriginalCardCode = \case
     PlayerCard pc -> toOriginalCardCode pc

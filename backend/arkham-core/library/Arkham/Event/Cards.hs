@@ -9,6 +9,7 @@ import Arkham.Types.Card.CardType
 import Arkham.Types.Card.Cost
 import Arkham.Types.ClassSymbol
 import Arkham.Types.GameValue
+import Arkham.Types.Matcher
 import Arkham.Types.Name
 import qualified Arkham.Types.PlayRestriction as Restriction
 import Arkham.Types.SkillType
@@ -33,7 +34,7 @@ event cardCode name cost classSymbol = CardDef
   , cdAction = Nothing
   , cdRevelation = False
   , cdVictoryPoints = Nothing
-  , cdPlayRestrictions = mempty
+  , cdPlayRestrictions = Nothing
   , cdCommitRestrictions = mempty
   , cdAttackOfOpportunityModifiers = mempty
   , cdPermanent = False
@@ -210,7 +211,7 @@ sneakAttack :: CardDef
 sneakAttack = (event "01052" "Sneak Attack" 2 Rogue)
   { cdSkills = [SkillIntellect, SkillCombat]
   , cdCardTraits = setFromList [Tactic]
-  , cdPlayRestrictions = [Restriction.EnemyAtYourLocation]
+  , cdPlayRestrictions = Just $ Restriction.EnemyExists EnemyAtYourLocation
   }
 
 sureGamble3 :: CardDef
@@ -430,7 +431,7 @@ standTogether3 :: CardDef
 standTogether3 = (event "02148" "Stand Together" 0 Guardian)
   { cdSkills = [SkillWillpower, SkillWillpower]
   , cdCardTraits = singleton Spirit
-  , cdPlayRestrictions = [Restriction.AnotherInvestigatorInSameLocation]
+  , cdPlayRestrictions = Just Restriction.AnotherInvestigatorInSameLocation
   , cdLevel = 3
   }
 
@@ -438,7 +439,7 @@ imOuttaHere :: CardDef
 imOuttaHere = (event "02151" "\"I'm outta here!\"" 0 Rogue)
   { cdSkills = [SkillAgility, SkillAgility]
   , cdCardTraits = setFromList [Trick, Spirit]
-  , cdPlayRestrictions = [Restriction.ScenarioCardHasResignAbility]
+  , cdPlayRestrictions = Just Restriction.ScenarioCardHasResignAbility
   }
 
 hypnoticGaze :: CardDef
@@ -465,7 +466,7 @@ preposterousSketches :: CardDef
 preposterousSketches = (event "02186" "Preposterous Sketches" 2 Seeker)
   { cdSkills = [SkillWillpower, SkillIntellect]
   , cdCardTraits = singleton Insight
-  , cdPlayRestrictions = [Restriction.ClueOnLocation]
+  , cdPlayRestrictions = Just Restriction.ClueOnLocation
   }
 
 emergencyCache2 :: CardDef
@@ -485,7 +486,7 @@ exposeWeakness1 = (event "02228" "Expose Weakness" 0 Seeker)
   { cdSkills = [SkillIntellect, SkillCombat, SkillCombat]
   , cdCardTraits = singleton Insight
   , cdFastWindow = Just FastPlayerWindow
-  , cdPlayRestrictions = [Restriction.EnemyAtYourLocation]
+  , cdPlayRestrictions = Just $ Restriction.EnemyExists EnemyAtYourLocation
   , cdLevel = 1
   }
 
@@ -509,22 +510,22 @@ moonlightRitual :: CardDef
 moonlightRitual = (event "02267" "Moonlight Ritual" 0 Mystic)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = setFromList [Spell, Insight]
-  , cdPlayRestrictions = [Restriction.OwnCardWithDoom]
+  , cdPlayRestrictions = Just Restriction.OwnCardWithDoom
   }
 
 aChanceEncounter :: CardDef
 aChanceEncounter = (event "02270" "A Chance Encounter" 1 Survivor)
   { cdSkills = [SkillWillpower, SkillIntellect]
   , cdCardTraits = singleton Fortune
-  , cdPlayRestrictions =
-    [Restriction.ReturnableCardInDiscard Restriction.AnyPlayerDiscard [Ally]]
+  , cdPlayRestrictions = Just
+    $ Restriction.ReturnableCardInDiscard Restriction.AnyPlayerDiscard [Ally]
   }
 
 momentOfRespite3 :: CardDef
 momentOfRespite3 = (event "02273" "Moment of Respite" 3 Neutral)
   { cdSkills = [SkillWillpower, SkillWillpower]
   , cdCardTraits = singleton Spirit
-  , cdPlayRestrictions = [Restriction.NoEnemiesAtYourLocation]
+  , cdPlayRestrictions = Just $ Restriction.NoEnemyExists EnemyAtYourLocation
   , cdLevel = 3
   }
 
@@ -589,7 +590,7 @@ secondWind :: CardDef
 secondWind = (event "04149" "Second Wind" 1 Guardian)
   { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Spirit, Bold]
-  , cdPlayRestrictions = [Restriction.FirstAction]
+  , cdPlayRestrictions = Just Restriction.FirstAction
   }
 
 bloodRite :: CardDef
@@ -646,7 +647,7 @@ preposterousSketches2 :: CardDef
 preposterousSketches2 = (event "51003" "Preposterous Sketches" 0 Seeker)
   { cdSkills = [SkillWillpower, SkillIntellect]
   , cdCardTraits = singleton Insight
-  , cdPlayRestrictions = [Restriction.ClueOnLocation]
+  , cdPlayRestrictions = Just Restriction.ClueOnLocation
   , cdLevel = 2
   }
 

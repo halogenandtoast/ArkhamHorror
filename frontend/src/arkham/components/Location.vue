@@ -50,6 +50,14 @@
         :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
       />
+      <Event
+        v-for="eventId in location.contents.events"
+        :event="game.events[eventId]"
+        :game="game"
+        :investigatorId="investigatorId"
+        :key="eventId"
+        @choose="$emit('choose', $event)"
+      />
       <div class="pool">
         <div v-if="location.contents.clues > 0" class="pool">
           <PoolItem type="clue" :amount="location.contents.clues" />
@@ -93,6 +101,7 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import { Message, MessageType } from '@/arkham/types/Message';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Asset from '@/arkham/components/Asset.vue';
+import Event from '@/arkham/components/Event.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
@@ -103,6 +112,7 @@ export default defineComponent({
     Enemy,
     Treachery,
     Asset,
+    Event,
     PoolItem,
     AbilityButton,
   },
@@ -329,11 +339,18 @@ export default defineComponent({
   border-radius: 3px;
 }
 
-::v-deep .enemy {
+.location-column :deep(.enemy) {
   width: 80px;
 }
 
-::v-deep .treachery {
+.location-column :deep(.treachery) {
+  object-fit: cover;
+  object-position: 0 -74px;
+  height: 68px;
+  margin-top: 2px;
+}
+
+.location-column :deep(.event) {
   object-fit: cover;
   object-position: 0 -74px;
   height: 68px;

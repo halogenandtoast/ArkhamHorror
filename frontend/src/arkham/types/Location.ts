@@ -22,6 +22,7 @@ export interface LocationContents {
   connectedLocations: string[];
   treacheries: string[];
   assets: string[];
+  events: string[];
   cardsUnderneath: Card[];
 }
 
@@ -40,6 +41,7 @@ export const locationContentsDecoder = JsonDecoder.object<LocationContents>(
     connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
     treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
     assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),
+    events: JsonDecoder.array<string>(JsonDecoder.string, 'EventId[]'),
     cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'UnderneathCard[]'),
   },
   'Attrs',

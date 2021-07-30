@@ -352,6 +352,10 @@ input[type=radio]:checked + label {
 
 header {
   display: flex;
+  align-items: center;
+  justify-items: center;
+  align-content: center;
+  justify-content: center;
 }
 
 .back-link {

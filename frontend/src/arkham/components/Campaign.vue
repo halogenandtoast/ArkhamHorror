@@ -1,5 +1,4 @@
 <template>
-
   <div v-if="upgradeDeck" id="game" class="game">
     <UpgradeDeck :game="game" :investigatorId="investigatorId" />
   </div>
@@ -27,14 +26,6 @@
       />
     </template>
   </div>
-  <div v-else-if="game.gameState === 'IsPending'">
-    <div id='invite'>
-      <h3>Waiting for more players</h3>
-      <div v-if="investigatorId == game.leadInvestigatorId">
-        <p>Invite them with this url: {{inviteLink}}</p>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script lang="ts">
@@ -61,15 +52,13 @@ export default defineComponent({
     investigatorId: { type: String, required: true }
   },
   setup(props, { emit }) {
-    const inviteLink = `${window.location.href}/join` // fix-syntax`
-
     async function update(game: Game) {
       emit('update', game);
     }
 
     const upgradeDeck = computed(() => props.game.campaign && props.game.campaign.contents.step?.tag === 'UpgradeDeckStep')
 
-    return { inviteLink, update, upgradeDeck }
+    return { update, upgradeDeck }
   }
 })
 </script>
@@ -127,16 +116,6 @@ export default defineComponent({
   background-image: linear-gradient(darken(#E5EAEC, 10), #E5EAEC);
   width: 100%;
   z-index: 1;
-}
-
-#invite {
-  background: #FFF;
-  padding: 5px 10px;
-  width: 800px;
-  margin: 0 auto;
-  margin-top: 50px;
-  border-radius: 5px;
-  text-align: center;
 }
 
 .location-cards {

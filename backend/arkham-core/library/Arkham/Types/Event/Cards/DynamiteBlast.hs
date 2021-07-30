@@ -33,13 +33,21 @@ instance (EventRunner env) => RunMessage env DynamiteBlast where
         enemyIds <- getSetList lid
         investigatorIds <- getSetList @InvestigatorId lid
         pure
-          $ map (\enid -> EnemyDamage enid iid (EventSource eid) 3) enemyIds
-          <> map
-               (\iid' ->
-                 InvestigatorAssignDamage iid' (EventSource eid) DamageAny 3 0
-               )
-               investigatorIds
-      let availableChoices = filter notNull choices
-      e <$ pushAll
-        [chooseOne iid $ map Run availableChoices, Discard (EventTarget eid)]
+          ( lid
+          , map (\enid -> EnemyDamage enid iid (EventSource eid) 3) enemyIds
+            <> map
+                 (\iid' -> InvestigatorAssignDamage
+                   iid'
+                   (EventSource eid)
+                   DamageAny
+                   3
+                   0
+                 )
+                 investigatorIds
+          )
+      let
+        availableChoices =
+          map (\(l, c) -> TargetLabel (LocationTarget l) c)
+            $ filter (notNull . snd) choices
+      e <$ pushAll [chooseOne iid availableChoices, Discard (EventTarget eid)]
     _ -> DynamiteBlast <$> runMessage msg attrs

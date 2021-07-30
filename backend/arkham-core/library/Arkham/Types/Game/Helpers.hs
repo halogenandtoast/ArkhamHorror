@@ -936,8 +936,10 @@ type CanCheckFast env
   = ( HasSet Trait env EnemyId
     , HasSet InvestigatorId env LocationId
     , HasSet EnemyId env LocationId
+    , HasSet TreacheryId env LocationId
     , HasId LocationId env InvestigatorId
     , HasId LocationId env EnemyId
+    , HasId CardCode env TreacheryId
     , HasId CardCode env EnemyId
     , HasSet Trait env LocationId
     , HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)

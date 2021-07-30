@@ -132,7 +132,6 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       pure s
     ScenarioResolution NoResolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
       xp <- getXp
       s <$ pushAll
         ([ chooseOne
@@ -169,7 +168,6 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         )
     ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
       xp <- getXp
       s <$ pushAll
         ([ chooseOne
@@ -203,7 +201,6 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         )
     ScenarioResolution (Resolution 2) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
       xp <- getXp
       s <$ pushAll
         ([ chooseOne

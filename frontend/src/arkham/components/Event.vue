@@ -2,7 +2,7 @@
   <div class="event">
     <img
       :src="image"
-      :class="{ 'event--can-interact': cardAction !== -1, exhausted}"
+      :class="{ 'event--can-interact': cardAction !== -1 }"
       class="card event"
       @click="$emit('choose', cardAction)"
     />
@@ -13,30 +13,6 @@
       @click="$emit('choose', ability)"
       />
     <div v-if="hasPool" class="pool">
-      <PoolItem
-        v-if="event.contents.uses && event.contents.uses.amount > 0"
-        type="resource"
-        :amount="event.contents.uses.amount"
-      />
-      <PoolItem
-        v-if="event.contents.horror"
-        type="sanity"
-        :amount="event.contents.horror"
-      />
-      <PoolItem
-        v-if="event.contents.health"
-        type="health"
-        :amount="event.contents.healthDamage"
-        :class="{ 'health--can-interact': healthAction !== -1 }"
-        @choose="$emit('choose', healthAction)"
-      />
-      <PoolItem
-        v-if="event.contents.sanity"
-        type="sanity"
-        :amount="event.contents.sanityDamage"
-        :class="{ 'sanity--can-interact': sanityAction !== -1 }"
-        @choose="$emit('choose', sanityAction)"
-      />
       <PoolItem v-if="event.contents.doom > 0" type="doom" :amount="event.contents.doom" />
     </div>
   </div>
@@ -61,16 +37,10 @@ export default defineComponent({
   setup(props) {
     const id = computed(() => props.event.contents.id)
     const hasPool = computed(() => {
-      const {
-        sanity,
-        health,
-        horror,
-        uses,
-      } = props.event.contents;
-      return sanity || health || horror || uses;
+      const { doom } = props.event.contents
+      return doom > 0
     })
 
-    const exhausted = computed(() => props.event.contents.exhausted)
     const cardCode = computed(() => props.event.contents.cardCode)
     const image = computed(() => {
       const baseUrl = process.env.NODE_ENV == 'production' ? "https://events.arkhamhorror.app" : '';
@@ -84,19 +54,10 @@ export default defineComponent({
           return c.contents.contents === id.value
         case MessageType.READY:
           return c.contents.contents === id.value
-        case MessageType.FLIP:
-          return c.contents[1].contents === id.value
         case MessageType.REMOVE_DOOM:
-          return c.contents[0].contents === id.value
-        case MessageType.LOOK_AT_REVEALED:
-          return c.contents[1].contents === id.value
-        case MessageType.ADD_USES:
           return c.contents[0].contents === id.value
         case MessageType.USE_CARD_ABILITY:
           return c.contents[1].contents === id.value
-        // case MessageType.ACTIVATE_ABILITY:
-        //   return c.contents[1].source.contents === id.value
-        //     && (c.contents[1].type.tag === 'ReactionAbility')
         case MessageType.RUN:
           return c.contents.some((c1: Message) => canInteract(c1))
         case MessageType.TARGET_LABEL:
@@ -106,31 +67,7 @@ export default defineComponent({
       }
     }
 
-    function canAdjustHealth(c: Message): boolean {
-      switch (c.tag) {
-        case MessageType.ASSET_DAMAGE:
-          return c.contents[0] === id.value && c.contents[2] > 0;
-        case MessageType.RUN:
-          return c.contents.some((c1: Message) => canAdjustHealth(c1));
-        default:
-          return false;
-      }
-    }
-
-    function canAdjustSanity(c: Message): boolean {
-      switch (c.tag) {
-        case MessageType.ASSET_DAMAGE:
-          return c.contents[0] === id.value && c.contents[3] > 0;
-        case MessageType.RUN:
-          return c.contents.some((c1: Message) => canAdjustSanity(c1));
-        default:
-          return false;
-      }
-    }
-
     const cardAction = computed(() => choices.value.findIndex(canInteract))
-    const healthAction = computed(() => choices.value.findIndex(canAdjustHealth))
-    const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
 
     function isActivate(v: Message) {
       if (v.tag !== 'UseAbility') {
@@ -167,7 +104,7 @@ export default defineComponent({
     const debug = inject('debug')
     const debugChoose = inject('debugChoose')
 
-    return { debug, debugChoose, id, hasPool, exhausted, image, abilities, sanityAction, healthAction, cardAction, choices }
+    return { debug, debugChoose, id, hasPool, image, abilities, cardAction, choices }
   }
 })
 </script>
@@ -182,11 +119,6 @@ export default defineComponent({
 .event {
   display: flex;
   flex-direction: column;
-}
-
-.exhausted {
-  transform: rotate(90deg);
-  padding: 0 30px;
 }
 
 .event--can-interact {

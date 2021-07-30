@@ -2011,7 +2011,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           fastIsPlayable c = findWithDefault False c fastIsPlayableMap
           usesAction = not isAdditional
         a <$ push
-          (chooseOne
+          (AskPlayer $ chooseOne
             iid
             (additionalActions
             <> [ TakeResources iid 1 usesAction
@@ -2042,4 +2042,48 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             <> playerWindowActions
             )
           )
+  PlayerWindow iid additionalActions isAdditional | iid /= investigatorId -> do
+    actions <- getActions iid NonFast ()
+    if any isForcedAction actions
+      then pure a -- handled by active player
+      else do
+        fastActions <- getActions investigatorId (DuringTurn iid) ()
+        playerWindowActions <- getActions investigatorId FastPlayerWindow ()
+        asIfInHandCards <- getAsIfInHandCards a
+        let
+          handCards = investigatorHand <> asIfInHandCards
+          windows = [DuringTurn iid, FastPlayerWindow]
+        fastIsPlayableMap :: HashMap Card Bool <- mapFromList <$> for
+          handCards
+          (\c -> do
+            fastIsPlayable <- getFastIsPlayable a windows c
+            pure (c, fastIsPlayable)
+          )
+        let
+          fastIsPlayable c = findWithDefault False c fastIsPlayableMap
+          usesAction = not isAdditional
+          choices =
+            additionalActions
+              <> [ InitiatePlayCard
+                     investigatorId
+                     (toCardId c)
+                     Nothing
+                     usesAction
+                 | c <- handCards
+                 , fastIsPlayable c && not (isDynamic c)
+                 ]
+              <> [ InitiatePlayDynamicCard
+                     investigatorId
+                     (toCardId c)
+                     0
+                     Nothing
+                     usesAction
+                 | c <- handCards
+                 , fastIsPlayable c && isDynamic c
+                 ]
+              <> fastActions
+              <> playerWindowActions
+        a <$ unless
+          (null choices)
+          (push $ AskPlayer $ chooseOne investigatorId choices)
   _ -> pure a

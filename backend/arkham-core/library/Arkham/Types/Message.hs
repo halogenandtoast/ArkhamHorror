@@ -148,6 +148,7 @@ data Message
     | AllDrawEncounterCard
     | AllInvestigatorsResigned
     | AllRandomDiscard
+    | AskPlayer Message
     | Ask InvestigatorId Question
     | AskMap (HashMap InvestigatorId Question)
     | AssetDamage AssetId Source Int Int

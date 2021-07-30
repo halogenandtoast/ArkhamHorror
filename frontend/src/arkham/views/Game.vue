@@ -3,7 +3,20 @@
     <div v-if="socketError" class="socketWarning">
        <p>Your game is out of sync, trying to reconnect...</p>
     </div>
-    <div class="game">
+    <div v-if="game.gameState === 'IsPending'" class="invite-container">
+      <header>
+        <h2>Waiting for more players</h2>
+      </header>
+      <div id='invite'>
+        <div v-if="investigatorId == game.leadInvestigatorId">
+          <p>Invite them with this url:</p>
+          <div class="invite-link">
+            <input type="text" :value="inviteLink"><button @click.prevent="copyInviteLink"><font-awesome-icon icon="copy" /></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-else class="game">
       <Campaign
         v-if="game.campaign"
         :game="game"
@@ -20,7 +33,7 @@
         @choose="choose"
         @update="update"
       />
-      <div class="sidebar">
+      <div class="sidebar" v-if="game.gameState !== 'IsPending'">
         <CardOverlay />
         <GameLog :game="game" :gameLog="gameLog" />
         <button @click="toggleDebug">Toggle Debug</button>
@@ -122,7 +135,14 @@ export default defineComponent({
 
     const toggleDebug = () => debug.value = !debug.value
 
-    return { debug, toggleDebug, socketError, ready, game, investigatorId, choose, update, gameLog }
+    const inviteLink = `${window.location.href}/join` // fix-syntax`
+
+    const copyInviteLink = () => {
+      navigator.clipboard.writeText(inviteLink);
+    }
+
+
+    return { copyInviteLink, inviteLink, debug, toggleDebug, socketError, ready, game, investigatorId, choose, update, gameLog }
   }
 })
 </script>
@@ -167,5 +187,96 @@ export default defineComponent({
   flex-direction: column;
   background: #d0d9dc;
   box-sizing: border-box;
+}
+
+#invite {
+  background-color: #15192C;
+  color: white;
+  padding: 20px;
+  width: 800px;
+  margin: 0 auto;
+  margin-top: 20px;
+  border-radius: 5px;
+  text-align: center;
+  p { margin: 0; padding: 0; margin-bottom: 20px; font-size: 1.3em; }
+}
+
+.invite-container {
+  margin-top: 50px;
+  h2 {
+    color: #656A84;
+    margin-left: 10px;
+    text-transform: uppercase;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+header {
+  display: flex;
+  flex-direction: column;
+}
+
+.invite-link {
+  input {
+    color: #26283B;
+    font-size: 1.3em;
+    width: 60%;
+    border-right: 0;
+    border-radius: 3px 0 0 3px;
+    padding: 5px;
+  }
+  button {
+    font-size: 1.3em;
+    border-radius: 0 3px 3px 0;
+    padding: 5px 10px;
+    position: relative;
+
+    &:before {
+        content: '';
+        display: none;
+        position: absolute;
+        z-index: 9998;
+        top: 35px;
+        left: 15px;
+        width: 0;
+        height: 0;
+
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-bottom: 5px solid rgba(0,0,0,.72);
+    }
+
+    &:after {
+      content: 'Copied!';
+      display: none;
+      position: absolute;
+      z-index: 9999;
+      top: 40px;
+      left: -37px;
+      width: 114px;
+      height: 36px;
+
+      color: #fff;
+      font-size: 10px;
+      line-height: 36px;
+      text-align: center;
+
+      background: rgba(0,0,0,.72);
+      border-radius: 3px;
+    }
+
+    &:active, &:focus {
+      outline: none;
+
+      &:hover {
+        background-color: #eee;
+
+        &:before, &:after {
+          display: block;
+        }
+      }
+    }
+  }
 }
 </style>

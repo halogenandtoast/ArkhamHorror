@@ -5,8 +5,8 @@ import store from './store'
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faExpeditedssl } from "@fortawesome/free-brands-svg-icons";
-import { faTrash, faEye } from '@fortawesome/free-solid-svg-icons'
+import { faTrash, faEye, faCopy } from '@fortawesome/free-solid-svg-icons'
 
-library.add(faExpeditedssl, faTrash, faEye)
+library.add(faExpeditedssl, faTrash, faEye, faCopy)
 
 createApp(App).use(router).use(store).component("font-awesome-icon", FontAwesomeIcon).mount('#app')

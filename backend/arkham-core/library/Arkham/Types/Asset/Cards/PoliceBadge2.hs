@@ -41,7 +41,7 @@ instance HasId LocationId env InvestigatorId => HasActions env PoliceBadge2 wher
     pure
       [ UseAbility
           iid
-          (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
+          (mkAbility (toSource a) 1 (FastAbility $ DiscardCost (toTarget a)))
       | atYourLocation
       ]
   getActions _ _ _ = pure []
@@ -50,6 +50,5 @@ instance AssetRunner env => RunMessage env PoliceBadge2 where
   runMessage msg a@(PoliceBadge2 attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       activeInvestigatorId <- unActiveInvestigatorId <$> getId ()
-      a <$ pushAll
-        [Discard (toTarget attrs), GainActions activeInvestigatorId source 2]
+      a <$ push (GainActions activeInvestigatorId source 2)
     _ -> PoliceBadge2 <$> runMessage msg attrs

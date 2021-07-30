@@ -167,6 +167,10 @@ export default defineComponent({
       switch (c.tag) {
         case MessageType.INVESTIGATOR_DAMAGE:
           return c.contents[0] === id.value && c.contents[2] > 0;
+        case MessageType.HEAL_DAMAGE:
+          return c.contents[0].contents === id.value;
+        case MessageType.INVESTIGATOR_ASSIGN_DAMAGE:
+          return c.contents[0] === id.value && c.contents[2] > 0;
         case MessageType.RUN:
           return c.contents.some((c1: Message) => canAdjustHealth(c1));
         default:
@@ -180,6 +184,8 @@ export default defineComponent({
           return c.contents[0] === id.value && c.contents[3] > 0;
         case MessageType.INVESTIGATOR_ASSIGN_DAMAGE:
           return c.contents[0] === id.value && c.contents[3] > 0;
+        case MessageType.HEAL_HORROR:
+          return c.contents[0].contents === id.value;
         case MessageType.RUN:
           return c.contents.some((c1: Message) => canAdjustSanity(c1));
         default:

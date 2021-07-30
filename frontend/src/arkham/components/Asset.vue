@@ -14,6 +14,7 @@
       />
     <template v-if="debug">
       <button v-if="!asset.contents.investigator" @click="debugChoose({tag: 'TakeControlOfAsset', contents: [investigatorId, id]})">Take control</button>
+      <button v-if="asset.contents.investigator" @click="debugChoose({tag: 'Discard', contents: { tag: 'AssetTarget', contents: id}})">Discard</button>
     </template>
     <div v-if="hasPool" class="pool">
       <PoolItem

@@ -17,6 +17,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype BeatCop = BeatCop AssetAttrs
   deriving anyclass IsAsset
@@ -33,8 +34,12 @@ instance HasModifiersFor env BeatCop where
 ability :: AssetAttrs -> Ability
 ability a = mkAbility (toSource a) 1 $ FastAbility (DiscardCost $ toTarget a)
 
-instance (HasSet EnemyId env LocationId, HasId LocationId env InvestigatorId) => HasActions env BeatCop where
-  getActions iid _ (BeatCop a) | ownedBy a iid = do
+instance
+  ( HasSet EnemyId env LocationId
+  , HasId LocationId env InvestigatorId
+  )
+  => HasActions env BeatCop where
+  getActions iid FastPlayerWindow (BeatCop a) | ownedBy a iid = do
     locationId <- getId @LocationId iid
     enemyIds <- getSetList @EnemyId locationId
     pure [ UseAbility iid (ability a) | notNull enemyIds ]

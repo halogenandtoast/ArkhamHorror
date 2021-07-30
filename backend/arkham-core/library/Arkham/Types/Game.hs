@@ -36,6 +36,7 @@ import Arkham.Types.GameRunner
 import Arkham.Types.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Investigator
+import Arkham.Types.Investigator.Attrs (getPlayableCards)
 import Arkham.Types.Keyword (HasKeywords(..), Keyword)
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Location
@@ -2439,13 +2440,17 @@ runGameMessage msg g = case msg of
         _ -> pure g
       EncounterCard _ -> pure g
   PlayCard iid cardId mtarget False -> do
-    handCards <- map unPlayableHandCard <$> getList iid
-    case find ((== cardId) . toCardId) handCards of
+    investigator <- getInvestigator iid
+    playableCards <- getPlayableCards
+      (toAttrs investigator)
+      [DuringTurn iid, FastPlayerWindow]
+    case find ((== cardId) . toCardId) (playableCards <> handOf investigator) of
       Nothing -> pure g -- card was discarded before playing
       Just card -> runGameMessage (PutCardIntoPlay iid card mtarget) g
   PlayFastEvent iid cardId mtarget windows -> do
     investigator <- getInvestigator iid
-    case find ((== cardId) . toCardId) (handOf investigator) of
+    playableCards <- getPlayableCards (toAttrs investigator) windows
+    case find ((== cardId) . toCardId) (playableCards <> handOf investigator) of
       Nothing -> pure g -- card was discarded before playing
       Just card -> do
         event <- runMessage
@@ -2626,6 +2631,7 @@ runGameMessage msg g = case msg of
   RemoveFromGame (EventTarget eid) -> do
     event <- getEvent eid
     pure $ g & eventsL %~ deleteMap eid & removedFromPlayL %~ (toCard event :)
+  RemovedFromGame card -> pure $ g & removedFromPlayL %~ (card :)
   PlaceEnemyInVoid eid -> do
     withQueue_ $ filter (/= Discard (EnemyTarget eid))
     enemy <- getEnemy eid

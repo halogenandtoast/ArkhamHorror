@@ -1956,7 +1956,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   InvestigatorPlaceAllCluesOnLocation iid | iid == investigatorId -> do
     push (PlaceClues (LocationTarget investigatorLocation) investigatorClues)
     pure $ a & cluesL .~ 0
-  RemoveDiscardFromGame iid | iid == investigatorId -> pure $ a & discardL .~ []
+  RemoveDiscardFromGame iid | iid == investigatorId -> do
+    pushAll $ map (RemovedFromGame . PlayerCard) investigatorDiscard
+    pure $ a & discardL .~ []
   After (FailedSkillTest iid mAction _ (InvestigatorTarget iid') _ n)
     | iid == iid' && iid == investigatorId -> do
       let

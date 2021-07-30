@@ -6,17 +6,17 @@ import Arkham.Prelude
 import Arkham.Types.Card.CardType
 import Arkham.Types.GameValue
 import Arkham.Types.Keyword
-import Arkham.Types.Trait
+import Arkham.Types.Matcher
 
 data WindowMatcher
-  = EnemyDefeated When Who WindowEnemyMatcher
-  | EnemyEvaded When Who WindowEnemyMatcher
+  = EnemyDefeated When Who EnemyMatcher
+  | EnemyEvaded When Who EnemyMatcher
   | MythosStep WindowMythosStepMatcher
-  | EnemyAttacks When Who WindowEnemyMatcher
+  | EnemyAttacks When Who EnemyMatcher
   | RevealChaosToken When Who WindowTokenMatcher
   | SkillTestResult When Who SkillTestMatcher SkillTestResultMatcher
   | WhenWouldHaveSkillTestResult Who SkillTestMatcher SkillTestResultMatcher
-  | WhenEnemySpawns Where WindowEnemyMatcher
+  | WhenEnemySpawns Where EnemyMatcher
   | FastPlayerWindow
   | AfterTurnBegins Who
   | DuringTurn Who
@@ -53,39 +53,9 @@ instance Semigroup WindowCardMatcher where
   x <> CardMatches xs = CardMatches (x : xs)
   x <> y = CardMatches [x, y]
 
-pattern EliteEnemy :: WindowEnemyMatcher
-pattern EliteEnemy <- EnemyWithTrait Elite where
-  EliteEnemy = EnemyWithTrait Elite
-
-pattern NonEliteEnemy :: WindowEnemyMatcher
-pattern NonEliteEnemy <- EnemyWithoutTrait Elite where
-  NonEliteEnemy = EnemyWithoutTrait Elite
-
-data WindowEnemyMatcher
-  = EnemyWithoutTrait Trait
-  | EnemyWithTrait Trait
-  | AnyEnemy
-  | NonWeaknessEnemy
-  | EnemyAtYourLocation
-  | EnemyMatchers [WindowEnemyMatcher]
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
-
-instance Semigroup WindowEnemyMatcher where
-  EnemyMatchers xs <> EnemyMatchers ys = EnemyMatchers (xs <> ys)
-  EnemyMatchers xs <> x = EnemyMatchers (x : xs)
-  x <> EnemyMatchers xs = EnemyMatchers (x : xs)
-  x <> y = EnemyMatchers [x, y]
-
 type Who = WindowInvestigatorMatcher
 
 data WindowInvestigatorMatcher = You | Anyone | InvestigatorAtYourLocation | NotYou
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
-
-type Where = WindowLocationMatcher
-
-data WindowLocationMatcher = YourLocation | Anywhere
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

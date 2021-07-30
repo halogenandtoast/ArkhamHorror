@@ -1,12 +1,17 @@
+{-# LANGUAGE PatternSynonyms #-}
 module Arkham.Types.Matcher where
 
 import Arkham.Prelude
 
 import Arkham.Types.Asset.Uses
-import Arkham.Types.Card.CardDef
+import Arkham.Types.Card.CardCode
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Id
 import Arkham.Types.Trait
+
+pattern AssetIs :: CardCode -> AssetMatcher
+pattern AssetIs card <- AssetWithCardCode card where
+  AssetIs card = AssetWithCardCode (toCardCode card)
 
 data AssetMatcher
   = AssetWithTitle Text
@@ -22,7 +27,7 @@ data AssetMatcher
   | AssetReady
   | AssetExhausted
   | AssetWithUseType UseType
-  | AssetIs CardDef
+  | AssetWithCardCode CardCode
   | AnyAsset
   | EnemyAsset EnemyId
   | AssetAt LocationMatcher
@@ -43,16 +48,33 @@ instance Semigroup AssetMatcher where
 instance Monoid AssetMatcher where
   mempty = AnyAsset
 
+pattern EliteEnemy :: EnemyMatcher
+pattern EliteEnemy <- EnemyWithTrait Elite where
+  EliteEnemy = EnemyWithTrait Elite
+
+pattern NonEliteEnemy :: EnemyMatcher
+pattern NonEliteEnemy <- EnemyWithoutTrait Elite where
+  NonEliteEnemy = EnemyWithoutTrait Elite
+
 data EnemyMatcher
   = EnemyWithTitle Text
   | EnemyWithFullTitle Text Text
   | EnemyWithId EnemyId
-  | NonEliteEnemy
+  | EnemyWithTrait Trait
+  | EnemyWithoutTrait Trait
   | HunterEnemies
-  | EnemyAtLocation LocationId
+  | AnyEnemy
+  | NonWeaknessEnemy
+  | EnemyAtYourLocation
   | EnemyMatchAll [EnemyMatcher]
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+instance Semigroup EnemyMatcher where
+  EnemyMatchAll xs <> EnemyMatchAll ys = EnemyMatchAll (xs <> ys)
+  EnemyMatchAll xs <> x = EnemyMatchAll (x : xs)
+  x <> EnemyMatchAll xs = EnemyMatchAll (x : xs)
+  x <> y = EnemyMatchAll [x, y]
 
 data EventMatcher
   = EventWithTitle Text
@@ -71,28 +93,29 @@ instance Semigroup EventMatcher where
   x <> EventMatches xs = EventMatches (x : xs)
   x <> y = EventMatches [x, y]
 
+type Where = LocationMatcher
+
+pattern LocationWithoutTreachery :: CardCode -> LocationMatcher
+pattern LocationWithoutTreachery card <-
+  LocationWithoutTreacheryWithCardCode card where
+  LocationWithoutTreachery card =
+    LocationWithoutTreacheryWithCardCode (toCardCode card)
+
 data LocationMatcher
   = LocationWithTitle Text
   | LocationWithFullTitle Text Text
   | LocationWithId LocationId
   | LocationWithLabel Text
-  | AnyLocation
+  | YourLocation
+  | Anywhere
   | EmptyLocation
   | LocationWithoutInvestigators
   | FarthestLocationFromYou LocationMatcher
-  -- | FarthestLocationFromAllInvestigators LocationMatcher
-  -- | NearestLocation LocationMatcher
-  -- | LocationWithMostClues
-  -- | LocationToYourRight
-  -- | LocationToYourLeft
   | LocationWithTrait Trait
-  | LocationWithoutTreachery CardDef
-  -- | Revealed LocationMatcher
-  -- | Unrevealed LocationMatcher
-  | LocationMatchers (NonEmpty LocationMatcher)
-  -- | LocationIfAble LocationMatcher LocationMatcher
+  | LocationWithoutTreacheryWithCardCode CardCode
+  | LocationMatchers [LocationMatcher]
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
 
 data SkillMatcher
   = SkillWithTitle Text

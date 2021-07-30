@@ -2,6 +2,7 @@ module Arkham.Types.PlayRestriction where
 
 import Arkham.Prelude
 
+import Arkham.Types.Matcher
 import Arkham.Types.Trait
 
 data DiscardSignifier = AnyPlayerDiscard
@@ -13,10 +14,18 @@ data PlayRestriction
   | ScenarioCardHasResignAbility
   | ClueOnLocation
   | FirstAction
-  | EnemyAtYourLocation
-  | NoEnemiesAtYourLocation
+  | EnemyExists EnemyMatcher
+  | NoEnemyExists EnemyMatcher
+  | LocationExists LocationMatcher
   | OwnCardWithDoom
   | CardInDiscard DiscardSignifier [Trait]
   | ReturnableCardInDiscard DiscardSignifier [Trait]
+  | PlayRestrictions [PlayRestriction]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+instance Semigroup PlayRestriction where
+  PlayRestrictions xs <> PlayRestrictions ys = PlayRestrictions $ xs <> ys
+  PlayRestrictions xs <> x = PlayRestrictions $ x : xs
+  x <> PlayRestrictions xs = PlayRestrictions $ x : xs
+  x <> y = PlayRestrictions [x, y]

@@ -20,3 +20,9 @@ newtype TreacheryCardCode = TreacheryCardCode { unTreacheryCardCode :: CardCode 
 
 newtype VictoryDisplayCardCode = VictoryDisplayCardCode { unVictoryDisplayCardCode :: CardCode }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
+
+class HasCardCode a where
+  toCardCode :: a -> CardCode
+
+instance HasCardCode CardCode where
+  toCardCode = id

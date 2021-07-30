@@ -37,6 +37,9 @@ originalCardCodeL =
 allEventCards :: HashMap CardCode CardDef
 allEventCards = allPlayerEventCards
 
+instance HasCardCode EventAttrs where
+  toCardCode = eventCardCode
+
 instance HasCardDef EventAttrs where
   toCardDef a = case lookup (eventCardCode a) allEventCards of
     Just def -> def

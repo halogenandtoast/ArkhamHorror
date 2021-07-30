@@ -783,6 +783,7 @@ type CanCheckPlayable env
     , HasCount ActionTakenCount env InvestigatorId
     , HasSet InvestigatorId env LocationId
     , HasSet EnemyId env LocationId
+    , HasSet EnemyId env EnemyMatcher
     , HasSet Trait env EnemyId
     , HasCount ClueCount env LocationId
     , HasActions env ActionType
@@ -807,7 +808,8 @@ getIsPlayable iid windows c@(PlayerCard _) = do
   engagedEnemies <- getSet @EnemyId iid
   location <- getId @LocationId iid
   modifiedCardCost <- getModifiedCardCost iid c
-  passesRestrictions <- allM
+  passesRestrictions <- maybe
+    (pure True)
     (passesRestriction location)
     (cdPlayRestrictions pcDef)
   inFastWindow <- maybe
@@ -873,14 +875,8 @@ getIsPlayable iid windows c@(PlayerCard _) = do
       (&&)
       (pure $ location /= LocationId (CardId nil))
       ((> 0) . unClueCount <$> getCount location)
-    EnemyAtYourLocation -> liftA2
-      (&&)
-      (pure $ location /= LocationId (CardId nil))
-      (notNull <$> getSet @EnemyId location)
-    NoEnemiesAtYourLocation -> liftA2
-      (&&)
-      (pure $ location /= LocationId (CardId nil))
-      (null <$> getSet @EnemyId location)
+    EnemyExists matcher -> notNull <$> getSet @EnemyId matcher
+    NoEnemyExists matcher -> null <$> getSet @EnemyId matcher
     AnotherInvestigatorInSameLocation -> liftA2
       (&&)
       (pure $ location /= LocationId (CardId nil))
@@ -938,9 +934,14 @@ getModifiedCardCost iid c@(EncounterCard _) = do
 
 type CanCheckFast env
   = ( HasSet Trait env EnemyId
+    , HasSet InvestigatorId env LocationId
+    , HasSet EnemyId env LocationId
     , HasId LocationId env InvestigatorId
     , HasId LocationId env EnemyId
     , HasId CardCode env EnemyId
+    , HasSet Trait env LocationId
+    , HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)
+    , HasName env LocationId
     , HasCount PlayerCount env ()
     , HasTokenValue env ()
     )
@@ -1081,20 +1082,38 @@ cardInFastWindows iid _ windows matcher = anyM
     Matcher.AnyValue -> pure True
     Matcher.LessThan gv -> (n <) <$> getPlayerCountValue gv
   enemyMatches enemyId = \case
-    Matcher.NonWeaknessEnemy -> do
+    NonWeaknessEnemy -> do
       cardCode <- getId @CardCode enemyId
       pure . isJust $ lookup cardCode allEncounterCards
-    Matcher.AnyEnemy -> pure True
-    Matcher.EnemyWithTrait t -> member t <$> getSet enemyId
-    Matcher.EnemyWithoutTrait t -> notMember t <$> getSet enemyId
-    Matcher.EnemyAtYourLocation ->
+    AnyEnemy -> pure True
+    EnemyWithTrait t -> member t <$> getSet enemyId
+    EnemyWithoutTrait t -> notMember t <$> getSet enemyId
+    EnemyAtYourLocation ->
       liftA2 (==) (getId @LocationId iid) (getId @LocationId enemyId)
-    Matcher.EnemyMatchers es -> allM (enemyMatches enemyId) es
+    EnemyMatchAll es -> allM (enemyMatches enemyId) es
   locationMatches locationId = \case
-    Matcher.Anywhere -> pure True
-    Matcher.YourLocation -> do
+    LocationWithTitle title -> do
+      (== title) . nameTitle <$> getName locationId
+    LocationWithFullTitle title subtitle -> do
+      (== Name title (Just subtitle)) <$> getName locationId
+    LocationWithId lid -> pure $ lid == locationId
+    Anywhere -> pure True
+    EmptyLocation -> liftA2
+      (&&)
+      (null <$> getSet @EnemyId locationId)
+      (null <$> getSet @InvestigatorId locationId)
+    LocationWithoutInvestigators -> null <$> getSet @InvestigatorId locationId
+    YourLocation -> do
       yourLocationId <- getId @LocationId iid
       pure $ locationId == yourLocationId
+    FarthestLocationFromYou matcher' ->
+      member (FarthestLocationId locationId) <$> getSet (iid, matcher')
+    LocationWithTrait t -> member t <$> getSet locationId
+    LocationMatchers ms -> allM (locationMatches locationId) ms
+    LocationWithoutTreacheryWithCardCode cCode -> do
+      treacheryIds <- getSetList @TreacheryId locationId
+      cardCodes <- traverse (getId @CardCode) treacheryIds
+      pure $ cCode `notElem` cardCodes
   matchCard c = \case
     Matcher.AnyCard -> pure True
     Matcher.NonWeakness -> pure . not . cdWeakness $ toCardDef c

@@ -48,7 +48,7 @@ data CardDef = CardDef
   , cdAction :: Maybe Action
   , cdRevelation :: Bool
   , cdVictoryPoints :: Maybe Int
-  , cdPlayRestrictions :: [PlayRestriction]
+  , cdPlayRestrictions :: Maybe PlayRestriction
   , cdCommitRestrictions :: [CommitRestriction]
   , cdAttackOfOpportunityModifiers :: [AttackOfOpportunityModifier]
   , cdPermanent :: Bool
@@ -91,9 +91,6 @@ class GetCardDef env a where
 class HasCardDef a where
   toCardDef :: a -> CardDef
 
-class HasCardCode a where
-  toCardCode :: a -> CardCode
-
 class HasOriginalCardCode a where
   toOriginalCardCode :: a -> CardCode
 
@@ -109,13 +106,13 @@ instance {-# OVERLAPPABLE #-} HasCardDef a => HasTraits a where
 instance HasCardDef a => HasKeywords a where
   toKeywords = cdKeywords . toCardDef
 
-instance HasCardDef a => HasCardCode a where
-  toCardCode = cdCardCode . toCardDef
-
 instance HasCardDef CardDef where
   toCardDef = id
 
-cardMatch :: HasCardDef a => a -> CardMatcher -> Bool
+instance HasCardCode CardDef where
+  toCardCode = cdCardCode
+
+cardMatch :: (HasCardCode a, HasCardDef a) => a -> CardMatcher -> Bool
 cardMatch a = \case
   AnyCard -> True
   CardMatchByType cardType' -> toCardType a == cardType'
@@ -144,7 +141,7 @@ testCardDef cardType cardCode = CardDef
   , cdAction = Nothing
   , cdRevelation = False
   , cdVictoryPoints = Nothing
-  , cdPlayRestrictions = []
+  , cdPlayRestrictions = Nothing
   , cdCommitRestrictions = []
   , cdAttackOfOpportunityModifiers = []
   , cdPermanent = False

@@ -31,7 +31,7 @@ data Window
   | AfterMoveFromHunter EnemyId
   | AfterEntering InvestigatorId LocationId
   | AfterPassSkillTest (Maybe Action) Source InvestigatorId Int
-  | AfterPlayCard InvestigatorId [Trait]
+  | AfterPlayCard InvestigatorId Card
   | AfterPutLocationIntoPlay InvestigatorId
   | AfterRevealLocation InvestigatorId
   | AfterSuccessfulAttackEnemy InvestigatorId EnemyId

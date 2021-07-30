@@ -1376,7 +1376,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         <> [PlayCard iid cardId mtarget False]
         )
       else pure a
-  PlayedCard iid card | iid == investigatorId ->
+  PlayedCard iid card | iid == investigatorId -> do
+    pushAll =<< checkWindows [AfterPlayCard iid card]
     pure $ a & handL %~ filter (/= card) & discardL %~ filter
       ((/= card) . PlayerCard)
   InvestigatorPlayAsset iid aid slotTypes traits | iid == investigatorId -> do

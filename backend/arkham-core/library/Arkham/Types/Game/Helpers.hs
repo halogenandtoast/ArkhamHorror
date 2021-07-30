@@ -980,23 +980,30 @@ cardInFastWindows iid _ windows matcher = anyM
               (&&)
               (matchWho who whoMatcher)
               (gameValueMatches n gameValueMatcher)
-          AfterFailSkillTest who n | whenMatcher == Matcher.After -> liftA2
-            (&&)
-            (matchWho who whoMatcher)
-            (gameValueMatches n gameValueMatcher)
+          AfterFailSkillTest who n
+            | whenMatcher
+              == Matcher.After
+              && skillMatcher
+              == Matcher.AnySkillTest -> liftA2
+              (&&)
+              (matchWho who whoMatcher)
+              (gameValueMatches n gameValueMatcher)
           _ -> pure False
-        Matcher.SuccessResult gameValueMatcher -> case window' of
-          AfterPassSkillTest _ _ who n | whenMatcher == Matcher.After -> liftA2
-            (&&)
-            (matchWho who whoMatcher)
-            (gameValueMatches n gameValueMatcher)
-          _ -> pure False
+        Matcher.SuccessResult gameValueMatcher
+          | skillMatcher == Matcher.AnySkillTest -> case window' of
+            AfterPassSkillTest _ _ who n | whenMatcher == Matcher.After ->
+              liftA2
+                (&&)
+                (matchWho who whoMatcher)
+                (gameValueMatches n gameValueMatcher)
+            _ -> pure False
         Matcher.AnyResult -> case window' of
           AfterFailSkillTest who _ | whenMatcher == Matcher.After ->
             matchWho who whoMatcher
           AfterPassSkillTest _ _ who _ | whenMatcher == Matcher.After ->
             matchWho who whoMatcher
           _ -> pure False
+        _ -> pure False
     Matcher.DuringTurn whoMatcher -> case window' of
       DuringTurn who -> matchWho who whoMatcher
       _ -> pure False

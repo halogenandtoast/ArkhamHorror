@@ -45,6 +45,8 @@ instance HasActions env ForbiddenKnowledge where
 
 instance (AssetRunner env) => RunMessage env ForbiddenKnowledge where
   runMessage msg a@(ForbiddenKnowledge attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ push (TakeResources iid 1 False)
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
+      (TakeResources iid 1 False
+      : [ Discard (toTarget attrs) | useCount (assetUses attrs) == 0 ]
+      )
     _ -> ForbiddenKnowledge <$> runMessage msg attrs

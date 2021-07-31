@@ -36,7 +36,7 @@ fold = act (3, A) Fold Cards.fold Nothing
 instance ActionRunner env => HasActions env Fold where
   getActions iid NonFast (Fold attrs) = withBaseActions iid NonFast attrs $ do
     investigatorLocationId <- getId @LocationId iid
-    maid <- selectOne (AssetIs Cards.peterClover)
+    maid <- selectOne (assetIs Cards.peterClover)
     case maid of
       Nothing -> pure []
       Just aid -> do
@@ -68,7 +68,7 @@ instance ActRunner env => RunMessage env Fold where
         else push (ScenarioResolution $ Resolution 1)
     UseCardAbility iid (ProxySource _ source) _ 1 _
       | isSource attrs source && actSequence == Act 3 A -> do
-        maid <- selectOne (AssetIs Cards.peterClover)
+        maid <- selectOne (assetIs Cards.peterClover)
         case maid of
           Nothing -> error "this ability should not be able to be used"
           Just aid -> a <$ push
@@ -82,7 +82,7 @@ instance ActRunner env => RunMessage env Fold where
             )
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source && actSequence == Act 3 A -> do
-        maid <- selectOne (AssetIs Cards.peterClover)
+        maid <- selectOne (assetIs Cards.peterClover)
         case maid of
           Nothing -> error "this ability should not be able to be used"
           Just aid -> do

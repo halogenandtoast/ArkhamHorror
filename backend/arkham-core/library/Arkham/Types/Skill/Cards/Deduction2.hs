@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Skill.Cards as Cards
 import qualified Arkham.Types.Action as Action
-import Arkham.Types.Card.CardDef
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Id

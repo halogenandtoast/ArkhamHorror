@@ -21,6 +21,9 @@ $(buildEntity "Event")
 createEvent :: IsCard a => a -> InvestigatorId -> Event
 createEvent a iid = lookupEvent (toCardCode a) iid (EventId $ toCardId a)
 
+instance HasCardCode Event where
+  toCardCode = toCardCode . toAttrs
+
 instance HasCardDef Event where
   toCardDef = toCardDef . toAttrs
 

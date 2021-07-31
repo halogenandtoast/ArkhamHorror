@@ -44,6 +44,9 @@ attachedTargetL =
 resourcesL :: Lens' TreacheryAttrs (Maybe Int)
 resourcesL = lens treacheryResources $ \m x -> m { treacheryResources = x }
 
+instance HasCardCode TreacheryAttrs where
+  toCardCode = treacheryCardCode
+
 instance HasCardDef TreacheryAttrs where
   toCardDef a = case lookup (treacheryCardCode a) allTreacheryCards of
     Just def -> def

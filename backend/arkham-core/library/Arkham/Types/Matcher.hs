@@ -1,4 +1,5 @@
 {-# LANGUAGE PatternSynonyms #-}
+{-# LANGUAGE ViewPatterns #-}
 module Arkham.Types.Matcher where
 
 import Arkham.Prelude
@@ -7,11 +8,9 @@ import Arkham.Types.Asset.Uses
 import Arkham.Types.Card.CardCode
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Id
+import Arkham.Types.Keyword (Keyword)
+import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Trait
-
-pattern AssetIs :: CardCode -> AssetMatcher
-pattern AssetIs card <- AssetWithCardCode card where
-  AssetIs card = AssetWithCardCode (toCardCode card)
 
 data AssetMatcher
   = AssetWithTitle Text
@@ -27,7 +26,7 @@ data AssetMatcher
   | AssetReady
   | AssetExhausted
   | AssetWithUseType UseType
-  | AssetWithCardCode CardCode
+  | AssetIs CardCode
   | AnyAsset
   | EnemyAsset EnemyId
   | AssetAt LocationMatcher
@@ -36,6 +35,9 @@ data AssetMatcher
   | AssetCanBeAssignedHorrorBy InvestigatorId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
+
+assetIs :: HasCardCode a => a -> AssetMatcher
+assetIs = AssetIs . toCardCode
 
 instance Semigroup AssetMatcher where
   AnyAsset <> x = x
@@ -47,6 +49,10 @@ instance Semigroup AssetMatcher where
 
 instance Monoid AssetMatcher where
   mempty = AnyAsset
+
+pattern HunterEnemy :: EnemyMatcher
+pattern HunterEnemy <- EnemyWithKeyword Keyword.Hunter where
+  HunterEnemy = EnemyWithKeyword Keyword.Hunter
 
 pattern EliteEnemy :: EnemyMatcher
 pattern EliteEnemy <- EnemyWithTrait Elite where
@@ -62,10 +68,11 @@ data EnemyMatcher
   | EnemyWithId EnemyId
   | EnemyWithTrait Trait
   | EnemyWithoutTrait Trait
-  | HunterEnemies
+  | EnemyWithKeyword Keyword
   | AnyEnemy
   | NonWeaknessEnemy
   | EnemyAtYourLocation
+  | EnemyAtLocation LocationId
   | EnemyMatchAll [EnemyMatcher]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

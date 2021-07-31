@@ -46,7 +46,7 @@ instance ActRunner env => RunMessage env TheChamberOfTheBeast where
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       resolution <- maybe 3 (const 2)
-        <$> selectOne (AssetIs Cards.theNecronomiconOlausWormiusTranslation)
+        <$> selectOne (assetIs Cards.theNecronomiconOlausWormiusTranslation)
       a <$ push
         (chooseOne
           leadInvestigatorId

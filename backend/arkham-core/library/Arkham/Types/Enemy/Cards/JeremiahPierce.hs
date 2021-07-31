@@ -8,7 +8,7 @@ import Arkham.Prelude
 import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Action hiding (Ability)
-import Arkham.Types.Card.CardDef
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Enemy.Attrs

@@ -52,7 +52,7 @@ instance HasModifiersFor env BrackishWaters where
 instance ActionRunner env => HasActions env BrackishWaters where
   getActions iid NonFast (BrackishWaters attrs@LocationAttrs {..}) =
     withBaseActions iid NonFast attrs $ do
-      assetNotTaken <- isNothing <$> selectOne (AssetIs Assets.fishingNet)
+      assetNotTaken <- isNothing <$> selectOne (assetIs Assets.fishingNet)
       hand <- getHandOf iid
       inPlayAssetsCount <- getInPlayOf iid <&> count
         (\case

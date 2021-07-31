@@ -21,6 +21,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Keyword
 import qualified Arkham.Types.Keyword as Keyword
+import qualified Arkham.Types.Label as Location
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -784,6 +785,7 @@ type CanCheckPlayable env
     , HasSet InvestigatorId env LocationId
     , HasSet EnemyId env LocationId
     , HasSet EnemyId env EnemyMatcher
+    , HasSet LocationId env LocationMatcher
     , HasSet Trait env EnemyId
     , HasCount ClueCount env LocationId
     , HasActions env ActionType
@@ -877,6 +879,8 @@ getIsPlayable iid windows c@(PlayerCard _) = do
       ((> 0) . unClueCount <$> getCount location)
     EnemyExists matcher -> notNull <$> getSet @EnemyId matcher
     NoEnemyExists matcher -> null <$> getSet @EnemyId matcher
+    PlayRestrictions rs -> allM (passesRestriction location) rs
+    LocationExists matcher -> notNull <$> getSet @LocationId matcher
     AnotherInvestigatorInSameLocation -> liftA2
       (&&)
       (pure $ location /= LocationId (CardId nil))
@@ -942,9 +946,12 @@ type CanCheckFast env
     , HasId CardCode env TreacheryId
     , HasId CardCode env EnemyId
     , HasSet Trait env LocationId
+    , HasSet Keyword env EnemyId
     , HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)
     , HasName env LocationId
+    , HasName env EnemyId
     , HasCount PlayerCount env ()
+    , Location.GetLabel env LocationId
     , HasTokenValue env ()
     )
 
@@ -1084,19 +1091,26 @@ cardInFastWindows iid _ windows matcher = anyM
     Matcher.AnyValue -> pure True
     Matcher.LessThan gv -> (n <) <$> getPlayerCountValue gv
   enemyMatches enemyId = \case
+    EnemyWithId eid -> pure $ eid == enemyId
     NonWeaknessEnemy -> do
       cardCode <- getId @CardCode enemyId
       pure . isJust $ lookup cardCode allEncounterCards
     AnyEnemy -> pure True
+    EnemyWithKeyword k -> member k <$> getSet enemyId
     EnemyWithTrait t -> member t <$> getSet enemyId
     EnemyWithoutTrait t -> notMember t <$> getSet enemyId
     EnemyAtYourLocation ->
       liftA2 (==) (getId @LocationId iid) (getId @LocationId enemyId)
+    EnemyAtLocation lid -> (== lid) <$> getId @LocationId enemyId
     EnemyMatchAll es -> allM (enemyMatches enemyId) es
+    EnemyWithTitle title -> (== title) . nameTitle <$> getName enemyId
+    EnemyWithFullTitle title subtitle ->
+      (== Name title (Just subtitle)) <$> getName enemyId
   locationMatches locationId = \case
-    LocationWithTitle title -> do
-      (== title) . nameTitle <$> getName locationId
-    LocationWithFullTitle title subtitle -> do
+    LocationWithLabel label ->
+      (== label) . Location.unLabel <$> Location.getLabel locationId
+    LocationWithTitle title -> (== title) . nameTitle <$> getName locationId
+    LocationWithFullTitle title subtitle ->
       (== Name title (Just subtitle)) <$> getName locationId
     LocationWithId lid -> pure $ lid == locationId
     Anywhere -> pure True

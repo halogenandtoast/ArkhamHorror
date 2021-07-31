@@ -39,9 +39,11 @@ import Arkham.Types.Investigator
 import Arkham.Types.Investigator.Attrs (getPlayableCards)
 import Arkham.Types.Keyword (HasKeywords(..), Keyword)
 import qualified Arkham.Types.Keyword as Keyword
+import qualified Arkham.Types.Label as L
 import Arkham.Types.Location
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Matcher
+import qualified Arkham.Types.Matcher as M
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.ModifierData
@@ -504,7 +506,10 @@ getLocationsMatching
   :: (MonadReader env m, HasGame env) => LocationMatcher -> m [Location]
 getLocationsMatching = \case
   LocationWithLabel label ->
-    filter ((== label) . toLocationLabel) . toList . view locationsL <$> getGame
+    filter ((== label) . L.unLabel . toLocationLabel)
+      . toList
+      . view locationsL
+      <$> getGame
   LocationWithTitle title ->
     filter ((== title) . nameTitle . toName)
       . toList
@@ -517,17 +522,14 @@ getLocationsMatching = \case
       <$> getGame
   LocationWithId locationId ->
     filter ((== locationId) . toId) . toList . view locationsL <$> getGame
-  AnyLocation -> toList . view locationsL <$> getGame
+  Anywhere -> toList . view locationsL <$> getGame
   EmptyLocation ->
     filter isEmptyLocation . toList . view locationsL <$> getGame
   LocationWithoutInvestigators ->
     filter noInvestigatorsAtLocation . toList . view locationsL <$> getGame
-  LocationWithoutTreachery cardDef ->
+  LocationWithoutTreacheryWithCardCode cardCode ->
     filterM
-        (fmap (toCardCode cardDef `notElem`)
-        . traverse getId
-        <=< getSetList @TreacheryId
-        )
+        (fmap (cardCode `notElem`) . traverse getId <=< getSetList @TreacheryId)
       . toList
       . view locationsL
       =<< getGame
@@ -536,10 +538,14 @@ getLocationsMatching = \case
     matchingLocationIds <- map toId <$> getLocationsMatching matcher
     matches <- getLongestPath start (pure . (`elem` matchingLocationIds))
     filter ((`elem` matches) . toId) . toList . view locationsL <$> getGame
+  YourLocation -> do
+    lid <- getLocation =<< locationFor . view activeInvestigatorIdL =<< getGame
+    pure [lid]
   LocationWithTrait trait ->
     filter hasMatchingTrait . toList . view locationsL <$> getGame
     where hasMatchingTrait = (trait `member`) . toTraits
-  LocationMatchers (x :| xs) -> do
+  LocationMatchers [] -> pure []
+  LocationMatchers (x : xs) -> do
     matches :: HashSet LocationId <-
       foldl' intersection
       <$> (setFromList . map toId <$> getLocationsMatching x)
@@ -564,7 +570,7 @@ getAssetsMatching matcher = do
     AssetAtLocation lid -> filterM (fmap (== Just lid) . getId) as
     AssetOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
     AssetNonStory -> pure $ filter (not . isStory) as
-    AssetIs def -> pure $ filter ((== def) . toCardDef) as
+    AssetIs cardCode -> pure $ filter ((== cardCode) . toCardCode) as
     DiscardableAsset -> pure $ filter canBeDiscarded as
     EnemyAsset eid -> pure $ filter ((== Just eid) . assetEnemy) as
     AssetAt locationMatcher -> do
@@ -665,9 +671,17 @@ getEnemiesMatching matcher = do
       pure . (== Name title (Just subtitle)) . toName
     EnemyWithId enemyId -> pure . (== enemyId) . toId
     NonEliteEnemy -> fmap (notElem Elite) . getSet . toId
-    HunterEnemies -> fmap (elem Keyword.Hunter) . getSet . toId
     EnemyAtLocation lid -> fmap (== lid) . getId
     EnemyMatchAll ms -> \enemy -> allM (`matcherFilter` enemy) ms
+    EnemyWithTrait t -> fmap (member t) . getSet . toId
+    EnemyWithoutTrait t -> fmap (notMember t) . getSet . toId
+    EnemyWithKeyword k -> fmap (elem k) . getSet . toId
+    AnyEnemy -> pure . const True
+    NonWeaknessEnemy -> pure . not . cdWeakness . toCardDef
+    M.EnemyAtYourLocation -> \enemy -> do
+      yourLocation <-
+        getLocation =<< locationFor . view activeInvestigatorIdL =<< getGame
+      (toId yourLocation ==) <$> getId (toId enemy)
 
 getAgenda
   :: (HasCallStack, MonadReader env m, HasGame env) => AgendaId -> m Agenda
@@ -803,6 +817,12 @@ instance HasGame env => HasId InvestigatorId env EventId where
 
 instance HasGame env => HasName env LocationId where
   getName = getName <=< getLocation
+
+instance HasGame env => HasName env EnemyId where
+  getName = getName <=< getEnemy
+
+instance HasGame env => L.GetLabel env LocationId where
+  getLabel = fmap toLocationLabel . getLocation
 
 instance HasName env ScenarioId where
   getName = getName . flip lookupScenario Easy

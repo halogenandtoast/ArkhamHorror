@@ -6,6 +6,7 @@ module Arkham.Types.Treachery.Cards.AcridMiasma
 import Arkham.Prelude
 
 import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.Id
 import Arkham.Types.Matcher
@@ -35,8 +36,8 @@ instance
   => RunMessage env AcridMiasma where
   runMessage msg t@(AcridMiasma attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      targetLocations <- map unClosestLocationId
-        <$> getSetList (iid, LocationWithoutTreachery Cards.acridMiasma)
+      targetLocations <- map unClosestLocationId <$> getSetList
+        (iid, LocationWithoutTreachery $ toCardCode Cards.acridMiasma)
       case targetLocations of
         [] -> t <$ push (Discard $ toTarget attrs)
         (x : _) -> t <$ push (AttachTreachery (toId attrs) (LocationTarget x))
@@ -46,7 +47,7 @@ instance
       -- not revelation but puts card into active
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        hunters <- getSetList HunterEnemies
+        hunters <- getSetList HunterEnemy
         let damageChoice = InvestigatorAssignDamage iid source DamageAny 1 1
         case hunters of
           [] -> t <$ push damageChoice

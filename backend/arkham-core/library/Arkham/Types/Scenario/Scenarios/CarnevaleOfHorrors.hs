@@ -325,7 +325,7 @@ instance
     ResolveToken _ Cultist iid -> s <$ push (DrawAnotherToken iid)
     ResolveToken token Tablet iid | isHardExpert attrs -> do
       closestInnocentRevelers <- map unClosestAssetId
-        <$> getSetList (iid, AssetIs Assets.innocentReveler)
+        <$> getSetList (iid, assetIs Assets.innocentReveler)
       case closestInnocentRevelers of
         [] -> pure ()
         [x] -> push
@@ -355,7 +355,7 @@ instance
         Cultist -> push $ InvestigatorDrawEncounterCard iid
         Tablet -> do
           closestInnocentRevelers <- map unClosestAssetId
-            <$> getSetList (iid, AssetIs Assets.innocentReveler)
+            <$> getSetList (iid, assetIs Assets.innocentReveler)
           case closestInnocentRevelers of
             [] -> pure ()
             [x] -> push

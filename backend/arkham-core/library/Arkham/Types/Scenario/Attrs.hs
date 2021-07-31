@@ -193,7 +193,7 @@ findLocationKey locationMatcher locations = fst
       title == title' && Just subtitle' == msubtitle
     LocationWithLabel _ -> error "can not use label"
     LocationWithId _ -> error "can not use id"
-    AnyLocation -> True
+    Anywhere -> True
     -- TODO: Encode these into an either?
     EmptyLocation -> error "needs to find a singular location"
     FarthestLocationFromYou _ -> error "needs to find a singular location"
@@ -201,6 +201,8 @@ findLocationKey locationMatcher locations = fst
     LocationWithTrait _ -> error "not implemented"
     LocationWithoutInvestigators -> error "needs to find a singular location"
     LocationWithoutTreachery _ -> error "needs to find a singular location"
+    YourLocation -> error ":("
+    LocationWithoutTreacheryWithCardCode _ -> error ":("
 
 type ScenarioAttrsRunner env
   = ( HasSet InScenarioInvestigatorId env ()

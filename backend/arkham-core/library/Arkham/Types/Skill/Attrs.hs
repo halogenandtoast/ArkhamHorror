@@ -26,6 +26,9 @@ data SkillAttrs = SkillAttrs
 allSkillCards :: HashMap CardCode CardDef
 allSkillCards = allPlayerSkillCards
 
+instance HasCardCode SkillAttrs where
+  toCardCode = skillCardCode
+
 instance HasCardDef SkillAttrs where
   toCardDef a = case lookup (skillCardCode a) allSkillCards of
     Just def -> def

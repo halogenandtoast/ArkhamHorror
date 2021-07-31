@@ -11,12 +11,10 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs
-import Arkham.Types.Investigator.Runner
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
-import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Stats
@@ -67,7 +65,7 @@ instance HasTokenValue env DaisyWalkerParallel where
   getTokenValue (DaisyWalkerParallel attrs) iid token =
     getTokenValue attrs iid token
 
-instance (HasSkillTest env, ActionRunner env) => HasActions env DaisyWalkerParallel where
+instance InvestigatorRunner env => HasActions env DaisyWalkerParallel where
   getActions iid FastPlayerWindow (DaisyWalkerParallel attrs)
     | iid == investigatorId attrs = withBaseActions iid FastPlayerWindow attrs
     $ do

@@ -3,7 +3,7 @@ module Arkham.Types.Treachery.Cards.ObscuringFog where
 import Arkham.Prelude
 
 import qualified Arkham.Treachery.Cards as Cards
-import Arkham.Types.Card.CardDef
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Modifier

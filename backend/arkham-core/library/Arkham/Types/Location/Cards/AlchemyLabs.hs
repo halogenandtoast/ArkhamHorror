@@ -51,7 +51,7 @@ instance LocationRunner env => RunMessage env AlchemyLabs where
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (Investigate iid (locationId attrs) source SkillIntellect False)
     SuccessfulInvestigation iid _ source | isSource attrs source -> do
-      maid <- selectOne (AssetIs Cards.alchemicalConcoction)
+      maid <- selectOne (assetIs Cards.alchemicalConcoction)
       l <$ case maid of
         Just aid -> push (TakeControlOfAsset iid aid)
         Nothing -> pure ()

@@ -25,8 +25,8 @@ pickpocketing = asset Pickpocketing Cards.pickpocketing
 instance HasModifiersFor env Pickpocketing
 
 instance HasActions env Pickpocketing where
-  getActions iid (WhenEnemyEvaded who enemyId) (Pickpocketing a) | iid == who =
-    withBaseActions iid (WhenEnemyEvaded who enemyId) a $ do
+  getActions iid (AfterEnemyEvaded who enemyId) (Pickpocketing a) | iid == who =
+    withBaseActions iid (AfterEnemyEvaded who enemyId) a $ do
       let
         ability =
           mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a))

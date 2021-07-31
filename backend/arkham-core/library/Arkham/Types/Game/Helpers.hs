@@ -880,6 +880,7 @@ getIsPlayable iid windows c@(PlayerCard _) = do
     EnemyExists matcher -> notNull <$> getSet @EnemyId matcher
     NoEnemyExists matcher -> null <$> getSet @EnemyId matcher
     PlayRestrictions rs -> allM (passesRestriction location) rs
+    AnyPlayRestriction rs -> anyM (passesRestriction location) rs
     LocationExists matcher -> notNull <$> getSet @LocationId matcher
     AnotherInvestigatorInSameLocation -> liftA2
       (&&)
@@ -939,6 +940,8 @@ getModifiedCardCost iid c@(EncounterCard _) = do
 type CanCheckFast env
   = ( HasSet Trait env EnemyId
     , HasSet InvestigatorId env LocationId
+    , HasSet RevealedLocationId env ()
+    , HasSet InvestigatorId env EnemyId
     , HasSet EnemyId env LocationId
     , HasSet TreacheryId env LocationId
     , HasId LocationId env InvestigatorId
@@ -1091,6 +1094,7 @@ cardInFastWindows iid _ windows matcher = anyM
     Matcher.AnyValue -> pure True
     Matcher.LessThan gv -> (n <) <$> getPlayerCountValue gv
   enemyMatches enemyId = \case
+    EnemyEngagedWithYou -> member iid <$> getSet enemyId
     EnemyWithId eid -> pure $ eid == enemyId
     NonWeaknessEnemy -> do
       cardCode <- getId @CardCode enemyId
@@ -1119,9 +1123,14 @@ cardInFastWindows iid _ windows matcher = anyM
       (null <$> getSet @EnemyId locationId)
       (null <$> getSet @InvestigatorId locationId)
     LocationWithoutInvestigators -> null <$> getSet @InvestigatorId locationId
+    LocationWithoutEnemies -> null <$> getSet @EnemyId locationId
+    RevealedLocation -> member (RevealedLocationId locationId) <$> getSet ()
     YourLocation -> do
       yourLocationId <- getId @LocationId iid
       pure $ locationId == yourLocationId
+    NotYourLocation -> do
+      yourLocationId <- getId @LocationId iid
+      pure $ locationId /= yourLocationId
     FarthestLocationFromYou matcher' ->
       member (FarthestLocationId locationId) <$> getSet (iid, matcher')
     LocationWithTrait t -> member t <$> getSet locationId

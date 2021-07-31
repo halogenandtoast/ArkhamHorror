@@ -200,8 +200,11 @@ findLocationKey locationMatcher locations = fst
     LocationMatchers _ -> error "not implemented"
     LocationWithTrait _ -> error "not implemented"
     LocationWithoutInvestigators -> error "needs to find a singular location"
+    LocationWithoutEnemies -> error "needs to find a singular location"
+    RevealedLocation -> error "needs to find a singular location"
     LocationWithoutTreachery _ -> error "needs to find a singular location"
     YourLocation -> error ":("
+    NotYourLocation -> error ":("
     LocationWithoutTreacheryWithCardCode _ -> error ":("
 
 type ScenarioAttrsRunner env

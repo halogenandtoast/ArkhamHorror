@@ -527,6 +527,9 @@ getLocationsMatching = \case
     filter isEmptyLocation . toList . view locationsL <$> getGame
   LocationWithoutInvestigators ->
     filter noInvestigatorsAtLocation . toList . view locationsL <$> getGame
+  LocationWithoutEnemies ->
+    filter noEnemiesAtLocation . toList . view locationsL <$> getGame
+  RevealedLocation -> filter isRevealed . toList . view locationsL <$> getGame
   LocationWithoutTreacheryWithCardCode cardCode ->
     filterM
         (fmap (cardCode `notElem`) . traverse getId <=< getSetList @TreacheryId)
@@ -539,8 +542,13 @@ getLocationsMatching = \case
     matches <- getLongestPath start (pure . (`elem` matchingLocationIds))
     filter ((`elem` matches) . toId) . toList . view locationsL <$> getGame
   YourLocation -> do
-    lid <- getLocation =<< locationFor . view activeInvestigatorIdL =<< getGame
-    pure [lid]
+    yourLocation <-
+      getLocation =<< locationFor . view activeInvestigatorIdL =<< getGame
+    pure [yourLocation]
+  NotYourLocation -> do
+    yourLocation <-
+      getLocation =<< locationFor . view activeInvestigatorIdL =<< getGame
+    filter (/= yourLocation) . toList . view locationsL <$> getGame
   LocationWithTrait trait ->
     filter hasMatchingTrait . toList . view locationsL <$> getGame
     where hasMatchingTrait = (trait `member`) . toTraits
@@ -678,6 +686,9 @@ getEnemiesMatching matcher = do
     EnemyWithKeyword k -> fmap (elem k) . getSet . toId
     AnyEnemy -> pure . const True
     NonWeaknessEnemy -> pure . not . cdWeakness . toCardDef
+    EnemyEngagedWithYou -> \enemy -> do
+      iid <- view activeInvestigatorIdL <$> getGame
+      member iid <$> getSet (toId enemy)
     M.EnemyAtYourLocation -> \enemy -> do
       yourLocation <-
         getLocation =<< locationFor . view activeInvestigatorIdL =<< getGame

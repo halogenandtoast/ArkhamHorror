@@ -1,5 +1,5 @@
 {-# LANGUAGE PatternSynonyms #-}
-{-# LANGUAGE ViewPatterns #-}
+
 module Arkham.Types.Matcher where
 
 import Arkham.Prelude
@@ -74,6 +74,7 @@ data EnemyMatcher
   | EnemyAtYourLocation
   | EnemyAtLocation LocationId
   | EnemyMatchAll [EnemyMatcher]
+  | EnemyEngagedWithYou
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -114,15 +115,24 @@ data LocationMatcher
   | LocationWithId LocationId
   | LocationWithLabel Text
   | YourLocation
+  | NotYourLocation
   | Anywhere
   | EmptyLocation
   | LocationWithoutInvestigators
+  | LocationWithoutEnemies
+  | RevealedLocation
   | FarthestLocationFromYou LocationMatcher
   | LocationWithTrait Trait
   | LocationWithoutTreacheryWithCardCode CardCode
   | LocationMatchers [LocationMatcher]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+instance Semigroup LocationMatcher where
+  LocationMatchers xs <> LocationMatchers ys = LocationMatchers $ xs <> ys
+  LocationMatchers xs <> x = LocationMatchers (x : xs)
+  x <> LocationMatchers xs = LocationMatchers (x : xs)
+  x <> y = LocationMatchers [x, y]
 
 data SkillMatcher
   = SkillWithTitle Text

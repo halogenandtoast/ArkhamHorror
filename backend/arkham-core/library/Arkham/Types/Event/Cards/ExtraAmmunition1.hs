@@ -30,7 +30,8 @@ instance (EventRunner env) => RunMessage env ExtraAmmunition1 where
     InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       investigatorIds <- getSetList @InvestigatorId =<< getId @LocationId iid
       firearms <- selectList
-        (AssetWithTrait Firearm <> AssetOneOf (map AssetOwnedBy investigatorIds)
+        (AssetWithTrait Firearm <> AssetOneOf
+          (map (AssetOwnedBy . InvestigatorWithId) investigatorIds)
         )
       e <$ if null firearms
         then push . Discard $ toTarget attrs

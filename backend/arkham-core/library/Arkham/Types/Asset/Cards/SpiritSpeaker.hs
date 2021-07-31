@@ -27,7 +27,7 @@ spiritSpeaker = asset SpiritSpeaker Cards.spiritSpeaker
 
 instance Query AssetMatcher env => HasActions env SpiritSpeaker where
   getActions iid FastPlayerWindow (SpiritSpeaker attrs) = do
-    targets <- select (AssetOwnedBy iid <> AssetWithUseType Charge)
+    targets <- select (AssetOwnedBy You <> AssetWithUseType Charge)
     pure
       [ UseAbility
           iid
@@ -47,9 +47,9 @@ instance
   => RunMessage env SpiritSpeaker where
   runMessage msg a@(SpiritSpeaker attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      assetIds <- selectList (AssetOwnedBy iid <> AssetWithUseType Charge)
+      assetIds <- selectList (AssetOwnedBy You <> AssetWithUseType Charge)
       discardableAssetIds <- selectList
-        (AssetOwnedBy iid <> AssetWithUseType Charge <> DiscardableAsset)
+        (AssetOwnedBy You <> AssetWithUseType Charge <> DiscardableAsset)
       assetIdsWithChargeCounts <- traverse
         (traverseToSnd (fmap unUsesCount . getCount))
         assetIds

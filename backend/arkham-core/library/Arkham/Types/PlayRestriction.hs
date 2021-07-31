@@ -17,6 +17,8 @@ data PlayRestriction
   | ClueOnLocation
   | FirstAction
   | OnLocation LocationId
+  | AssetExists AssetMatcher
+  | InvestigatorExists InvestigatorMatcher
   | EnemyExists EnemyMatcher
   | NoEnemyExists EnemyMatcher
   | LocationExists LocationMatcher

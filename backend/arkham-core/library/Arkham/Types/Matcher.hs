@@ -12,13 +12,33 @@ import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Trait
 
+type Who = InvestigatorMatcher
+
+data InvestigatorMatcher
+  = InvestigatorAtYourLocation
+  | You
+  | NotYou
+  | Anyone
+  | InvestigatorWithDamage
+  | InvestigatorWithId InvestigatorId
+  | InvestigatorMatches [InvestigatorMatcher]
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+instance Semigroup InvestigatorMatcher where
+  InvestigatorMatches xs <> InvestigatorMatches ys =
+    InvestigatorMatches $ xs <> ys
+  InvestigatorMatches xs <> x = InvestigatorMatches (x : xs)
+  x <> InvestigatorMatches xs = InvestigatorMatches (x : xs)
+  x <> y = InvestigatorMatches [x, y]
+
 data AssetMatcher
   = AssetWithTitle Text
   | AssetWithFullTitle Text Text
   | AssetWithId AssetId
   | AssetWithClass ClassSymbol
   | AssetWithTrait Trait
-  | AssetOwnedBy InvestigatorId
+  | AssetOwnedBy InvestigatorMatcher
   | AssetMatches [AssetMatcher]
   | AssetOneOf [AssetMatcher]
   | AssetAtLocation LocationId
@@ -31,10 +51,11 @@ data AssetMatcher
   | EnemyAsset EnemyId
   | AssetAt LocationMatcher
   | DiscardableAsset
+  | AssetWithDamage
   | AssetCanBeAssignedDamageBy InvestigatorId
   | AssetCanBeAssignedHorrorBy InvestigatorId
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
 
 assetIs :: HasCardCode a => a -> AssetMatcher
 assetIs = AssetIs . toCardCode

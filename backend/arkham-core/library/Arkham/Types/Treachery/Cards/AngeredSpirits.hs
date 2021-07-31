@@ -39,7 +39,7 @@ instance HasActions env AngeredSpirits where
             (FastAbility
             $ ExhaustAssetCost
             $ AssetWithTrait Spell
-            <> AssetOwnedBy i
+            <> AssetOwnedBy You
             )
           )
       ]

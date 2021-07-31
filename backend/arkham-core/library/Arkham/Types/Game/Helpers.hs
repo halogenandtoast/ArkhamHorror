@@ -879,7 +879,7 @@ passesRestriction iid location windows = \case
     (pure $ location /= LocationId (CardId nil))
     (null <$> getSet @InvestigatorId location)
   OwnCardWithDoom -> do
-    assetIds <- selectList (AssetOwnedBy iid)
+    assetIds <- selectList (AssetOwnedBy You)
     investigatorDoomCount <- unDoomCount <$> getCount iid
     assetsWithDoomCount <- filterM
       (fmap ((> 0) . unDoomCount) . getCount)
@@ -1066,7 +1066,7 @@ cardInFastWindows iid _ windows matcher = anyM
         _ -> pure False
     Matcher.FastPlayerWindow -> pure $ window' == FastPlayerWindow
     Matcher.DealtDamageOrHorror whoMatcher -> case whoMatcher of
-      Matcher.You -> case window' of
+      You -> case window' of
         WhenWouldTakeDamageOrHorror _ (InvestigatorTarget iid') _ _ ->
           pure $ iid == iid'
         _ -> pure False
@@ -1078,10 +1078,10 @@ cardInFastWindows iid _ windows matcher = anyM
         liftA2 (&&) (matchWho who whoMatcher) (matchCard card cardMatcher)
       _ -> pure False
   matchWho who = \case
-    Matcher.Anyone -> pure True
-    Matcher.You -> pure $ who == iid
-    Matcher.NotYou -> pure $ who /= iid
-    Matcher.InvestigatorAtYourLocation ->
+    Anyone -> pure True
+    You -> pure $ who == iid
+    NotYou -> pure $ who /= iid
+    InvestigatorAtYourLocation ->
       liftA2 (==) (getId @LocationId iid) (getId @LocationId who)
   gameValueMatches n = \case
     Matcher.AnyValue -> pure True

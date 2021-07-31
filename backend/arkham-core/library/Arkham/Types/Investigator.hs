@@ -345,10 +345,14 @@ getIsPrey (NearestToEnemyWithTrait trait) i = do
       mappingsMap
   pure $ investigatorDistance == minDistance
 getIsPrey (HasMostMatchingAsset assetMatcher) i = do
-  selfCount <- length <$> selectList (assetMatcher <> AssetOwnedBy (toId i))
+  selfCount <- length <$> selectList
+    (assetMatcher <> AssetOwnedBy (InvestigatorWithId $ toId i))
   allCounts <-
     traverse
-        (\iid' -> length <$> selectList (assetMatcher <> AssetOwnedBy iid'))
+        (\iid' ->
+          length <$> selectList
+            (assetMatcher <> AssetOwnedBy (InvestigatorWithId iid'))
+        )
       =<< getInvestigatorIds
   pure $ selfCount == maximum (ncons selfCount allCounts)
 

@@ -55,8 +55,7 @@ ability attrs = base { abilityLimit = PlayerLimit PerRound 1 }
 instance InvestigatorRunner env => HasActions env AshcanPete where
   getActions iid FastPlayerWindow (AshcanPete attrs@InvestigatorAttrs {..})
     | iid == investigatorId = do
-      exhaustedAssetIds <- select
-        (AssetOwnedBy investigatorId <> AssetExhausted)
+      exhaustedAssetIds <- select (AssetOwnedBy You <> AssetExhausted)
       pure
         [ UseAbility investigatorId (ability attrs)
         | notNull exhaustedAssetIds
@@ -74,8 +73,7 @@ instance (InvestigatorRunner env) => RunMessage env AshcanPete where
       i <$ push (Ready $ CardCodeTarget "02014")
     UseCardAbility _ (InvestigatorSource iid) _ 1 _ | iid == investigatorId ->
       do
-        exhaustedAssetIds <- selectList
-          (AssetOwnedBy investigatorId <> AssetExhausted)
+        exhaustedAssetIds <- selectList (AssetOwnedBy You <> AssetExhausted)
         i <$ push
           (chooseOne
             investigatorId

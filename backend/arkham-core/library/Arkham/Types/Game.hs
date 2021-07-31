@@ -498,6 +498,32 @@ getLocation lid =
   fromJustNote missingLocation . preview (locationsL . ix lid) <$> getGame
   where missingLocation = "Unknown location: " <> show lid
 
+getInvestigatorsMatching
+  :: (MonadReader env m, HasGame env) => InvestigatorMatcher -> m [Investigator]
+getInvestigatorsMatching = \case
+  You -> do
+    you <- getInvestigator . view activeInvestigatorIdL =<< getGame
+    pure [you]
+  NotYou -> do
+    you <- getInvestigator . view activeInvestigatorIdL =<< getGame
+    filter (/= you) . toList . view investigatorsL <$> getGame
+  Anyone -> toList . view investigatorsL <$> getGame
+  InvestigatorAtYourLocation -> do
+    you <- getInvestigator . view activeInvestigatorIdL =<< getGame
+    location <- getId @LocationId (toId you)
+    traverse getInvestigator =<< getSetList location
+  InvestigatorWithId iid -> pure <$> getInvestigator iid
+  InvestigatorMatches [] -> pure []
+  InvestigatorMatches (x : xs) -> do
+    matches :: HashSet InvestigatorId <-
+      foldl' intersection
+      <$> (setFromList . map toId <$> getInvestigatorsMatching x)
+      <*> traverse (fmap (setFromList . map toId) . getInvestigatorsMatching) xs
+    filter ((`member` matches) . toId)
+      . toList
+      . view investigatorsL
+      <$> getGame
+
 getLocationMatching
   :: (MonadReader env m, HasGame env) => LocationMatcher -> m (Maybe Location)
 getLocationMatching = (listToMaybe <$>) . getLocationsMatching
@@ -582,7 +608,10 @@ getAssetsMatching matcher = do
     AssetWithId assetId -> pure $ filter ((== assetId) . toId) as
     AssetWithClass role -> filterM (fmap (member role) . getSet . toId) as
     AssetWithTrait t -> filterM (fmap (member t) . getSet . toId) as
-    AssetOwnedBy iid -> filterM (fmap (== Just (OwnerId iid)) . getId) as
+    AssetOwnedBy investigatorMatcher -> do
+      iids <- map (OwnerId . toId)
+        <$> getInvestigatorsMatching investigatorMatcher
+      filterM (fmap (maybe False (`elem` iids)) . getId) as
     AssetAtLocation lid -> filterM (fmap (== Just lid) . getId) as
     AssetOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
     AssetNonStory -> pure $ filter (not . isStory) as
@@ -599,7 +628,9 @@ getAssetsMatching matcher = do
       (fmap ((> 0) . unStartingUsesCount) . getCount . (, uType) . toId)
       as
     AssetCanBeAssignedDamageBy iid -> do
-      investigatorAssets <- filterMatcher as (AssetOwnedBy iid)
+      investigatorAssets <- filterMatcher
+        as
+        (AssetOwnedBy $ InvestigatorWithId iid)
       let otherAssets = filter (`notElem` investigatorAssets) as
       otherDamageableAssets <-
         map fst
@@ -611,7 +642,9 @@ getAssetsMatching matcher = do
         isHealthDamageable
         (investigatorAssets <> otherDamageableAssets)
     AssetCanBeAssignedHorrorBy iid -> do
-      investigatorAssets <- filterMatcher as (AssetOwnedBy iid)
+      investigatorAssets <- filterMatcher
+        as
+        (AssetOwnedBy $ InvestigatorWithId iid)
       let otherAssets = filter (`notElem` investigatorAssets) as
       otherDamageableAssets <-
         map fst

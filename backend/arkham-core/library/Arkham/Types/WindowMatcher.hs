@@ -53,12 +53,6 @@ instance Semigroup WindowCardMatcher where
   x <> CardMatches xs = CardMatches (x : xs)
   x <> y = CardMatches [x, y]
 
-type Who = WindowInvestigatorMatcher
-
-data WindowInvestigatorMatcher = You | Anyone | InvestigatorAtYourLocation | NotYou
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
-
 data SkillTestMatcher = WhileInvestigating | WhileAttackingAnEnemy | AnySkillTest
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

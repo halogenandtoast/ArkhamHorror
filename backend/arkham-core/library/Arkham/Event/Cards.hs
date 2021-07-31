@@ -396,6 +396,12 @@ emergencyAid :: CardDef
 emergencyAid = (event "02105" "Emergency Aid" 2 Guardian)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = setFromList [Insight, Science]
+  , cdPlayRestrictions = Just $ Restriction.AnyPlayRestriction
+    [ Restriction.AssetExists
+      (AssetOwnedBy InvestigatorAtYourLocation <> AssetWithDamage)
+    , Restriction.InvestigatorExists
+      (InvestigatorAtYourLocation <> InvestigatorWithDamage)
+    ]
   }
 
 iveGotAPlan :: CardDef

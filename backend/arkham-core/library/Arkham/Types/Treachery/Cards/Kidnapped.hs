@@ -62,7 +62,7 @@ instance TreacheryRunner env => RunMessage env Kidnapped where
       )
     FailedSkillTest iid _ _ (SkillTestInitiatorTarget target) _ _
       | isTarget attrs target -> do
-        allies <- selectList (AssetOwnedBy iid <> AssetWithTrait Ally)
+        allies <- selectList (AssetOwnedBy You <> AssetWithTrait Ally)
         if null allies
           then t <$ pushAll
             [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0

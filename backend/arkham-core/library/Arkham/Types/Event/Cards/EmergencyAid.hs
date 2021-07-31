@@ -28,25 +28,25 @@ instance HasModifiersFor env EmergencyAid
 
 instance
   ( HasQueue env
-  , HasId LocationId env InvestigatorId
-  , HasSet InvestigatorId env LocationId
+  , HasSet InvestigatorId env InvestigatorMatcher
   , Query AssetMatcher env
   )
   => RunMessage env EmergencyAid where
   runMessage msg e@(EmergencyAid attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
-      locationId <- getId @LocationId iid
-      investigatorIds <- getSetList locationId
+      investigatorIds <- getSetList
+        (InvestigatorAtYourLocation <> InvestigatorWithDamage)
       let investigatorTargets = map InvestigatorTarget investigatorIds
       allyTargets <- map AssetTarget <$> selectList
-        (AssetWithTrait Ally <> AssetOneOf
+        (AssetWithDamage <> AssetWithTrait Ally <> AssetOneOf
           (map (AssetOwnedBy . InvestigatorWithId) investigatorIds)
         )
-      e <$ push
+      e <$ pushAll
         (chooseOne
-          iid
-          [ TargetLabel target [HealDamage target 2]
-          | target <- investigatorTargets <> allyTargets
-          ]
+            iid
+            [ TargetLabel target [HealDamage target 2]
+            | target <- investigatorTargets <> allyTargets
+            ]
+        : [Discard (toTarget attrs)]
         )
     _ -> EmergencyAid <$> runMessage msg attrs

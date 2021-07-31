@@ -513,6 +513,8 @@ getInvestigatorsMatching = \case
     location <- getId @LocationId (toId you)
     traverse getInvestigator =<< getSetList location
   InvestigatorWithId iid -> pure <$> getInvestigator iid
+  InvestigatorWithDamage -> do
+    filter ((> 0) . fst . getDamage) . toList . view investigatorsL <$> getGame
   InvestigatorMatches [] -> pure []
   InvestigatorMatches (x : xs) -> do
     matches :: HashSet InvestigatorId <-
@@ -607,6 +609,7 @@ getAssetsMatching matcher = do
       pure $ filter ((== Name title (Just subtitle)) . toName) as
     AssetWithId assetId -> pure $ filter ((== assetId) . toId) as
     AssetWithClass role -> filterM (fmap (member role) . getSet . toId) as
+    AssetWithDamage -> pure $ filter ((> 0) . fst . getDamage) as
     AssetWithTrait t -> filterM (fmap (member t) . getSet . toId) as
     AssetOwnedBy investigatorMatcher -> do
       iids <- map (OwnerId . toId)
@@ -1551,6 +1554,12 @@ instance HasGame env => HasSet LocationId env (HashSet LocationSymbol) where
 
 instance HasGame env => HasSet LocationId env LocationMatcher where
   getSet = (setFromList . map toId <$>) . getLocationsMatching
+
+instance HasGame env => HasSet AssetId env AssetMatcher where
+  getSet = (setFromList . map toId <$>) . getAssetsMatching
+
+instance HasGame env => HasSet InvestigatorId env InvestigatorMatcher where
+  getSet = (setFromList . map toId <$>) . getInvestigatorsMatching
 
 instance HasGame env => HasSet EnemyId env EnemyMatcher where
   getSet = (setFromList . map toId <$>) . getEnemiesMatching

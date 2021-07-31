@@ -56,7 +56,7 @@ instance LocationRunner env => RunMessage env SanMarcoBasilica where
   runMessage msg l@(SanMarcoBasilica attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       innocentRevelerIds <-
-        selectList $ AssetOwnedBy iid <> assetIs Assets.innocentReveler
+        selectList $ AssetOwnedBy You <> assetIs Assets.innocentReveler
       l <$ push
         (chooseOne
           iid

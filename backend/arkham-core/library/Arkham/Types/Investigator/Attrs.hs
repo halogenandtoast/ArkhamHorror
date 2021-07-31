@@ -853,7 +853,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   ChooseAndDiscardAsset iid assetMatcher | iid == investigatorId -> do
     discardableAssetIds <- selectList
-      (assetMatcher <> DiscardableAsset <> AssetOwnedBy iid)
+      (assetMatcher <> DiscardableAsset <> AssetOwnedBy You)
     a <$ push (chooseOne iid $ map (Discard . AssetTarget) discardableAssetIds)
   AttachAsset aid _ | aid `member` investigatorAssets ->
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
@@ -1171,7 +1171,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               validAssets <-
                 setToList
                 . intersection (setFromList healthDamageableAssets)
-                <$> select (AssetOwnedBy investigatorId <> assetIs def)
+                <$> select (AssetOwnedBy You <> assetIs def)
               pure
                 $ [ damageInvestigator | null validAssets ]
                 <> map damageAsset validAssets
@@ -1209,7 +1209,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               validAssets <-
                 setToList
                 . intersection (setFromList sanityDamageableAssets)
-                <$> select (AssetOwnedBy investigatorId <> assetIs def)
+                <$> select (AssetOwnedBy You <> assetIs def)
               pure
                 $ [ damageInvestigator | null validAssets ]
                 <> map damageAsset validAssets

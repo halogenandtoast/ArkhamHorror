@@ -41,14 +41,16 @@ instance
       investigatorIds <- getSetList @InvestigatorId locationId
 
       ammoAssets <- selectList
-        (AssetWithUseType Ammo <> AssetOneOf (map AssetOwnedBy investigatorIds))
+        (AssetWithUseType Ammo <> AssetOneOf
+          (map (AssetOwnedBy . InvestigatorWithId) investigatorIds)
+        )
 
       ammoAssetsWithUseCount <- map (\(c, aid) -> (Ammo, c, aid))
         <$> for ammoAssets (\aid -> (, aid) . unUsesCount <$> getCount aid)
 
       supplyAssets <- selectList
-        (AssetWithUseType Supply
-        <> AssetOneOf (map AssetOwnedBy investigatorIds)
+        (AssetWithUseType Supply <> AssetOneOf
+          (map (AssetOwnedBy . InvestigatorWithId) investigatorIds)
         )
 
       supplyAssetsWithUseCount <- map (\(c, aid) -> (Supply, c, aid))

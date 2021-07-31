@@ -50,7 +50,7 @@ instance
       assetsWithInvestigatorIds <- concat <$> for
         investigatorIds
         (\investigatorId -> map (investigatorId, ) <$> selectList
-          (AssetOwnedBy investigatorId
+          (AssetOwnedBy (InvestigatorWithId investigatorId)
           <> AssetOneOf (map AssetWithTrait [Ally, Item])
           )
         )

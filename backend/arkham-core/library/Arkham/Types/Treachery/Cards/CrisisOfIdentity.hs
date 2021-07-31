@@ -42,7 +42,7 @@ instance
         [] -> error "role has to be set"
         role : _ -> do
           assets <- selectList
-            (AssetOwnedBy iid <> AssetWithClass role <> DiscardableAsset)
+            (AssetOwnedBy You <> AssetWithClass role <> DiscardableAsset)
           events <- getSetList (EventOwnedBy iid <> EventWithClass role)
           skills <- getSetList (SkillOwnedBy iid <> SkillWithClass role)
           pushAll

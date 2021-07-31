@@ -36,7 +36,7 @@ instance TreacheryRunner env => RunMessage env Abduction where
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         allies <- map AssetTarget <$> selectList
-          (AssetOwnedBy iid <> AssetWithTrait Ally <> DiscardableAsset)
+          (AssetOwnedBy You <> AssetWithTrait Ally <> DiscardableAsset)
         case allies of
           [] -> t <$ push (LoseAllResources iid)
           targets -> t <$ push

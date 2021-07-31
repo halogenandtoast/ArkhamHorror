@@ -44,7 +44,7 @@ instance AssetRunner env => RunMessage env BookOfShadows3 where
       push (AddSlot iid ArcaneSlot (slot attrs))
       BookOfShadows3 <$> runMessage msg attrs
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      spellAssetIds <- selectList (AssetOwnedBy iid <> AssetWithTrait Spell)
+      spellAssetIds <- selectList (AssetOwnedBy You <> AssetWithTrait Spell)
       a <$ unless
         (null spellAssetIds)
         (push $ chooseOne

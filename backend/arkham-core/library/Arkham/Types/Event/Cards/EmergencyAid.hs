@@ -39,7 +39,9 @@ instance
       investigatorIds <- getSetList locationId
       let investigatorTargets = map InvestigatorTarget investigatorIds
       allyTargets <- map AssetTarget <$> selectList
-        (AssetWithTrait Ally <> AssetOneOf (map AssetOwnedBy investigatorIds))
+        (AssetWithTrait Ally <> AssetOneOf
+          (map (AssetOwnedBy . InvestigatorWithId) investigatorIds)
+        )
       e <$ push
         (chooseOne
           iid

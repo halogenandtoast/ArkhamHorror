@@ -9,6 +9,7 @@ import Arkham.Types.Card.Cost
 import Arkham.Types.ClassSymbol
 import Arkham.Types.EncounterSet hiding (Dunwich)
 import qualified Arkham.Types.Keyword as Keyword
+import Arkham.Types.Matcher
 import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Trait

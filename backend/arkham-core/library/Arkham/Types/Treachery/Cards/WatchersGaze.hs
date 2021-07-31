@@ -36,7 +36,7 @@ instance
   runMessage msg t@(WatchersGaze attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       innocentRevelerIds <- selectList
-        (AssetOwnedBy iid <> assetIs Assets.innocentReveler)
+        (AssetOwnedBy You <> assetIs Assets.innocentReveler)
       investigatorsWithRevelers <-
         catMaybes
           <$> traverse (fmap (fmap unOwnerId) . getId) innocentRevelerIds

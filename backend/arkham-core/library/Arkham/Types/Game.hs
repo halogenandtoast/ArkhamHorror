@@ -541,6 +541,14 @@ getLocationsMatching = \case
     matchingLocationIds <- map toId <$> getLocationsMatching matcher
     matches <- getLongestPath start (pure . (`elem` matchingLocationIds))
     filter ((`elem` matches) . toId) . toList . view locationsL <$> getGame
+  AccessibleLocation -> do
+    yourLocation <-
+      getLocation =<< locationFor . view activeInvestigatorIdL =<< getGame
+    accessibleLocations <- getSet (toId yourLocation)
+    filter ((`member` accessibleLocations) . AccessibleLocationId . toId)
+      . toList
+      . view locationsL
+      <$> getGame
   YourLocation -> do
     yourLocation <-
       getLocation =<< locationFor . view activeInvestigatorIdL =<< getGame

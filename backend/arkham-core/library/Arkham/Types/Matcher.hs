@@ -118,6 +118,7 @@ data LocationMatcher
   | NotYourLocation
   | Anywhere
   | EmptyLocation
+  | AccessibleLocation
   | LocationWithoutInvestigators
   | LocationWithoutEnemies
   | RevealedLocation

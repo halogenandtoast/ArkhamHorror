@@ -56,10 +56,6 @@ data AbilityMetadata
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
--- data AbilityRestriction = OnLocation LocationId | OrAbilityRestrictions [AbilityRestriction] | InvestigatorIsAlone | EnemyAtYourLocation
---   deriving stock (Eq, Show, Generic)
---   deriving anyclass (ToJSON, FromJSON)
-
 restrictedAbility
   :: SourceEntity a => a -> Int -> PlayRestriction -> AbilityType -> Ability
 restrictedAbility entity idx restriction type' =

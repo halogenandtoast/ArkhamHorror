@@ -45,15 +45,16 @@ instance
         enemyIds
       locationId <- getId @LocationId iid
       investigatorIds <- getSetList locationId
-      e <$ push
+      e <$ pushAll
         (chooseOne
-          iid
-          [ TargetLabel
-              (EnemyTarget enemyId)
-              [ HealHorror (InvestigatorTarget iid') horrorValue
-              | iid' <- investigatorIds
-              ]
-          | (enemyId, horrorValue) <- enemyIdsWithHorrorValue
-          ]
+            iid
+            [ TargetLabel
+                (EnemyTarget enemyId)
+                [ HealHorror (InvestigatorTarget iid') horrorValue
+                | iid' <- investigatorIds
+                ]
+            | (enemyId, horrorValue) <- enemyIdsWithHorrorValue
+            ]
+        : [Discard $ toTarget attrs]
         )
     _ -> IfItBleeds <$> runMessage msg attrs

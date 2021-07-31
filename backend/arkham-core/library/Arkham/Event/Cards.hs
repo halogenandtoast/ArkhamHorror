@@ -196,8 +196,15 @@ crypticResearch4 = (event "01043" "Cryptic Research" 0 Seeker)
 elusive :: CardDef
 elusive = (event "01050" "Elusive" 2 Rogue)
   { cdSkills = [SkillIntellect, SkillAgility]
-  , cdCardTraits = setFromList [Tactic]
-  , cdFastWindow = Just (DuringTurn You)
+  , cdCardTraits = singleton Tactic
+  , cdFastWindow = Just $ DuringTurn You
+  , cdPlayRestrictions = Just $ Restriction.AnyPlayRestriction
+    [ Restriction.EnemyExists EnemyEngagedWithYou
+    , Restriction.LocationExists
+    $ RevealedLocation
+    <> LocationWithoutEnemies
+    <> NotYourLocation
+    ]
   }
 
 backstab :: CardDef

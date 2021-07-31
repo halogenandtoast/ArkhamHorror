@@ -21,6 +21,7 @@ data PlayRestriction
   | CardInDiscard DiscardSignifier [Trait]
   | ReturnableCardInDiscard DiscardSignifier [Trait]
   | PlayRestrictions [PlayRestriction]
+  | AnyPlayRestriction [PlayRestriction]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

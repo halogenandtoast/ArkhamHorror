@@ -28,9 +28,9 @@ instance HasActions env SureGamble3 where
 
 instance EventRunner env => RunMessage env SureGamble3 where
   runMessage msg e@(SureGamble3 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent _ eid (Just target@(TokenTarget _)) _
-      | eid == eventId -> e <$ pushAll
-        [ CreateEffect "01088" Nothing (toSource attrs) target
+    InvestigatorPlayEvent _ eid _ [WhenRevealToken _ token] | eid == eventId ->
+      e <$ pushAll
+        [ CreateEffect "01088" Nothing (toSource attrs) (TokenTarget token)
         , Discard (toTarget attrs)
         ]
     _ -> SureGamble3 <$> runMessage msg attrs

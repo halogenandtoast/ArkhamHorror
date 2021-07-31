@@ -37,6 +37,7 @@ instance (EventRunner env) => RunMessage env Elusive where
         <> [ chooseOne iid [ MoveTo iid lid | lid <- candidateLocations ]
            | notNull candidateLocations
            ]
+        <> map EnemyCheckEngagement enemyIds
         <> [Discard (EventTarget eventId)]
         )
     _ -> Elusive <$> runMessage msg attrs

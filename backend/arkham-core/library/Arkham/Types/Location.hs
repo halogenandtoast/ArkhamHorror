@@ -151,12 +151,16 @@ allLocations =
         $(buildEntityLookupList "Location")
 
 isEmptyLocation :: Location -> Bool
-isEmptyLocation l = null enemies' && noInvestigatorsAtLocation l
-  where enemies' = locationEnemies $ toAttrs l
+isEmptyLocation =
+  and . sequence [noInvestigatorsAtLocation, noEnemiesAtLocation]
 
 noInvestigatorsAtLocation :: Location -> Bool
 noInvestigatorsAtLocation l = null investigators'
   where investigators' = locationInvestigators $ toAttrs l
+
+noEnemiesAtLocation :: Location -> Bool
+noEnemiesAtLocation l = null enemies'
+  where enemies' = locationEnemies $ toAttrs l
 
 isRevealed :: Location -> Bool
 isRevealed = locationRevealed . toAttrs

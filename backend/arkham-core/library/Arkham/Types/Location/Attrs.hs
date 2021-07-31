@@ -142,6 +142,9 @@ cardsUnderneathL :: Lens' LocationAttrs [Card]
 cardsUnderneathL =
   lens locationCardsUnderneath $ \m x -> m { locationCardsUnderneath = x }
 
+instance HasCardCode LocationAttrs where
+  toCardCode = locationCardCode
+
 instance HasCardDef LocationAttrs where
   toCardDef a = case lookup (locationCardCode a) allLocationCards of
     Just def -> def

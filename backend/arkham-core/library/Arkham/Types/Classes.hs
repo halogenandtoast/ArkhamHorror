@@ -137,6 +137,9 @@ instance HasVictoryPoints PlayerCard where
 type ActionRunner env
   = ( HasQueue env
     , HasTokenValue env ()
+    , HasSet LocationId env LocationMatcher
+    , HasSet TreacheryId env LocationId
+    , HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)
     , Query AssetMatcher env
     , GetCardDef env EnemyId
     , HasActions env ActionType
@@ -273,7 +276,7 @@ class Exhaustable a where
   isReady = not . isExhausted
   {-# MINIMAL isExhausted | isReady #-}
 
-class (HasTraits a, HasCardDef a) => IsCard a where
+class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
   toCard :: a -> Card
   toCard a = lookupCard (cdCardCode $ toCardDef a) (toCardId a)
   toCardId :: a -> CardId

@@ -29,7 +29,7 @@ theHiddenChamber =
 
 instance Query AssetMatcher env => HasModifiersFor env TheHiddenChamber where
   getModifiersFor _ target (TheHiddenChamber attrs) | isTarget attrs target = do
-    mKeyToTheChamber <- selectOne (AssetIs Assets.keyToTheChamber)
+    mKeyToTheChamber <- selectOne (assetIs Assets.keyToTheChamber)
     pure $ toModifiers
       attrs
       (case mKeyToTheChamber of

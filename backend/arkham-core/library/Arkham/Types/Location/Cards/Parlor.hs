@@ -38,7 +38,7 @@ instance ActionRunner env => HasActions env Parlor where
   getActions iid NonFast (Parlor attrs@LocationAttrs {..}) | locationRevealed =
     do
       actions <- withResignAction iid NonFast attrs
-      maid <- selectOne (AssetIs Cards.litaChantler)
+      maid <- selectOne (assetIs Cards.litaChantler)
       case maid of
         Nothing -> pure actions
         Just aid -> do
@@ -64,7 +64,7 @@ instance (LocationRunner env) => RunMessage env Parlor where
   runMessage msg l@(Parlor attrs@LocationAttrs {..}) = case msg of
     UseCardAbility iid (ProxySource _ source) _ 1 _
       | isSource attrs source && locationRevealed -> do
-        maid <- selectOne (AssetIs Cards.litaChantler)
+        maid <- selectOne (assetIs Cards.litaChantler)
         case maid of
           Nothing -> error "this ability should not be able to be used"
           Just aid -> l <$ push
@@ -78,7 +78,7 @@ instance (LocationRunner env) => RunMessage env Parlor where
             )
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        maid <- selectOne (AssetIs Cards.litaChantler)
+        maid <- selectOne (assetIs Cards.litaChantler)
         case maid of
           Nothing -> error "this ability should not be able to be used"
           Just aid -> l <$ push (TakeControlOfAsset iid aid)

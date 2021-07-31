@@ -587,6 +587,7 @@ library
       Arkham.Types.Investigator.Runner
       Arkham.Types.InvestigatorId
       Arkham.Types.Keyword
+      Arkham.Types.Label
       Arkham.Types.Location
       Arkham.Types.Location.Attrs
       Arkham.Types.Location.Cards

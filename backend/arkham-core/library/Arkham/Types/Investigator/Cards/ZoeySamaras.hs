@@ -10,7 +10,6 @@ import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs
-import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Source

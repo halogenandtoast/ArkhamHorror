@@ -75,6 +75,9 @@ instance
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg
     genericRunMessage msg' x
 
+instance HasCardCode Asset where
+  toCardCode = toCardCode . toAttrs
+
 instance Entity Asset where
   type EntityId Asset = AssetId
   type EntityAttrs Asset = AssetAttrs

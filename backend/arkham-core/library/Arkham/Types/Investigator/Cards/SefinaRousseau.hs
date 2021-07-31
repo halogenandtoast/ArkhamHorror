@@ -11,7 +11,6 @@ import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs
-import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
 import Arkham.Types.Stats
 import Arkham.Types.Target

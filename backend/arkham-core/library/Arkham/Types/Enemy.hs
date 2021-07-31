@@ -33,6 +33,9 @@ createEnemy a = lookupEnemy (toCardCode a) (EnemyId $ toCardId a)
 instance HasCardDef Enemy where
   toCardDef = toCardDef . toAttrs
 
+instance HasName env Enemy where
+  getName = getName . toAttrs
+
 actionFromMessage :: Message -> Maybe Action
 actionFromMessage (UseAbility _ ability) = case abilityType ability of
   ActionAbility maction _ -> maction
@@ -76,6 +79,9 @@ instance
     HasModifiersFor env Enemy
     where
   getModifiersFor = genericGetModifiersFor
+
+instance HasCardCode Enemy where
+  toCardCode = toCardCode . toAttrs
 
 instance Entity Enemy where
   type EntityId Enemy = EnemyId

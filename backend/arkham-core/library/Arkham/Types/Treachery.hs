@@ -55,6 +55,9 @@ instance
   => HasModifiersFor env Treachery where
   getModifiersFor = genericGetModifiersFor
 
+instance HasCardCode Treachery where
+  toCardCode = toCardCode . toAttrs
+
 instance Entity Treachery where
   type EntityId Treachery = TreacheryId
   type EntityAttrs Treachery = TreacheryAttrs

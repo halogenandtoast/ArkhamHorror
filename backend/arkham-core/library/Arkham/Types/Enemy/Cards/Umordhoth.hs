@@ -33,7 +33,7 @@ instance HasModifiersFor env Umordhoth
 instance ActionRunner env => HasActions env Umordhoth where
   getActions iid NonFast (Umordhoth attrs@EnemyAttrs {..}) =
     withBaseActions iid NonFast attrs $ do
-      maid <- selectOne (AssetIs Cards.litaChantler)
+      maid <- selectOne (assetIs Cards.litaChantler)
       locationId <- getId @LocationId iid
       case maid of
         Nothing -> pure []

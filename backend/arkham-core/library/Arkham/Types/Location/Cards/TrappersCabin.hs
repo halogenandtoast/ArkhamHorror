@@ -42,7 +42,7 @@ instance HasModifiersFor env TrappersCabin where
 instance ActionRunner env => HasActions env TrappersCabin where
   getActions iid NonFast (TrappersCabin attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ do
-      assetNotTaken <- isNothing <$> selectOne (AssetIs Assets.bearTrap)
+      assetNotTaken <- isNothing <$> selectOne (assetIs Assets.bearTrap)
       pure
         [ locationAbility
             iid

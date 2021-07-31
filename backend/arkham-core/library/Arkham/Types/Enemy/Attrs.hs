@@ -115,6 +115,12 @@ cluesL = lens enemyClues $ \m x -> m { enemyClues = x }
 allEnemyCards :: HashMap CardCode CardDef
 allEnemyCards = allPlayerEnemyCards <> allEncounterEnemyCards
 
+instance HasName env EnemyAttrs where
+  getName = pure . toName
+
+instance HasCardCode EnemyAttrs where
+  toCardCode = enemyCardCode
+
 instance HasCardDef EnemyAttrs where
   toCardDef e = case lookup (enemyCardCode e) allEnemyCards of
     Just def -> def

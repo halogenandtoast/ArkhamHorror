@@ -34,6 +34,9 @@ import Arkham.Types.Window
 import qualified Data.HashSet as HashSet
 import Data.UUID (nil)
 
+type InvestigatorRunner env
+  = (InnerInvestigatorRunner env, EntityInstanceRunner env)
+
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorName :: Name
   , investigatorClass :: ClassSymbol
@@ -595,7 +598,7 @@ canCommitToAnotherLocation attrs = do
 
 instance HasModifiersFor env InvestigatorAttrs
 
-instance (ActionRunner env, HasSkillTest env) => HasActions env InvestigatorAttrs where
+instance (EntityInstanceRunner env, HasSkillTest env) => HasActions env InvestigatorAttrs where
   getActions iid window attrs | iid == investigatorId attrs = concat <$> for
     (attrs ^.. handL . traverse . _PlayerCard)
     (getActions iid (InHandWindow iid window) . toCardInstance iid . PlayerCard)
@@ -604,7 +607,11 @@ instance (ActionRunner env, HasSkillTest env) => HasActions env InvestigatorAttr
 instance HasTokenValue env InvestigatorAttrs where
   getTokenValue _ _ _ = error "should not be asking this here"
 
-instance InvestigatorRunner env => RunMessage env InvestigatorAttrs where
+instance
+  ( EntityInstanceRunner env
+  , InvestigatorRunner env
+  )
+  => RunMessage env InvestigatorAttrs where
   runMessage msg i | doNotMask msg = do
     traverseOf_
       (handL . traverse . _PlayerCard)
@@ -669,7 +676,12 @@ getAsIfInHandCards attrs = do
     (zip (investigatorDiscard attrs) [0 :: Int ..])
 
 runInvestigatorMessage
-  :: (InvestigatorRunner env, MonadReader env m, MonadRandom m, MonadIO m)
+  :: ( EntityInstanceRunner env
+     , InvestigatorRunner env
+     , MonadReader env m
+     , MonadRandom m
+     , MonadIO m
+     )
   => Message
   -> InvestigatorAttrs
   -> m InvestigatorAttrs
@@ -1159,7 +1171,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               validAssets <-
                 setToList
                 . intersection (setFromList healthDamageableAssets)
-                <$> select (AssetOwnedBy investigatorId <> AssetIs def)
+                <$> select (AssetOwnedBy investigatorId <> assetIs def)
               pure
                 $ [ damageInvestigator | null validAssets ]
                 <> map damageAsset validAssets
@@ -1197,7 +1209,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               validAssets <-
                 setToList
                 . intersection (setFromList sanityDamageableAssets)
-                <$> select (AssetOwnedBy investigatorId <> AssetIs def)
+                <$> select (AssetOwnedBy investigatorId <> assetIs def)
               pure
                 $ [ damageInvestigator | null validAssets ]
                 <> map damageAsset validAssets

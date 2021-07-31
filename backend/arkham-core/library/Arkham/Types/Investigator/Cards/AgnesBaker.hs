@@ -11,7 +11,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.EnemyId
 import Arkham.Types.Investigator.Attrs
-import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
 import Arkham.Types.Stats
 import Arkham.Types.Token

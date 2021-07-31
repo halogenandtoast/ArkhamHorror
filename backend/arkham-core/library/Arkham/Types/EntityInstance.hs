@@ -9,8 +9,10 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Enemy
 import Arkham.Types.Event
+import Arkham.Types.Game.Helpers
+import Arkham.Types.Id
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.InvestigatorId
+import qualified Arkham.Types.Label as L
 import Arkham.Types.Location
 import Arkham.Types.Message
 import Arkham.Types.Skill
@@ -25,7 +27,7 @@ data EntityInstance
   | EnemyInstance Enemy
   | TreacheryInstance Treachery
 
-instance InvestigatorRunner env => RunMessage env EntityInstance where
+instance (EntityInstanceRunner env, InnerInvestigatorRunner env) => RunMessage env EntityInstance where
   runMessage msg (AssetInstance x) = AssetInstance <$> runMessage msg x
   runMessage msg (EnemyInstance x) = EnemyInstance <$> runMessage msg x
   runMessage msg (EventInstance x) = EventInstance <$> runMessage msg x
@@ -33,7 +35,7 @@ instance InvestigatorRunner env => RunMessage env EntityInstance where
   runMessage msg (SkillInstance x) = SkillInstance <$> runMessage msg x
   runMessage msg (TreacheryInstance x) = TreacheryInstance <$> runMessage msg x
 
-instance (ActionRunner env, HasSkillTest env) => HasActions env EntityInstance where
+instance (EntityInstanceRunner env, HasSkillTest env) => HasActions env EntityInstance where
   getActions iid window (AssetInstance x) = getActions iid window x
   getActions iid window (EnemyInstance x) = getActions iid window x
   getActions iid window (EventInstance x) = getActions iid window x
@@ -62,3 +64,12 @@ doNotMask UseCardAbility{} = True
 doNotMask Revelation{} = True
 doNotMask _ = False
 
+type EntityInstanceRunner env
+  = ( ActionRunner env
+    , HasId CardCode env TreacheryId
+    , L.GetLabel env LocationId
+    , HasName env EnemyId
+    , HasName env LocationId
+    , HasId CardCode env TreacheryId
+    , CanCheckFast env
+    )

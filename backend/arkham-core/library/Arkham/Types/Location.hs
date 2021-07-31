@@ -10,6 +10,7 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Direction
 import Arkham.Types.Id
+import qualified Arkham.Types.Label as L
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Cards
 import Arkham.Types.Location.Runner
@@ -29,8 +30,11 @@ createLocation a = lookupLocation (toCardCode a) (LocationId $ toCardId a)
 toLocationSymbol :: Location -> LocationSymbol
 toLocationSymbol = locationSymbol . toAttrs
 
-toLocationLabel :: Location -> Text
-toLocationLabel = locationLabel . toAttrs
+toLocationLabel :: Location -> L.Label
+toLocationLabel = L.Label . locationLabel . toAttrs
+
+instance HasCardCode Location where
+  toCardCode = toCardCode . toAttrs
 
 instance IsCard Location where
   toCardId = toCardId . toAttrs

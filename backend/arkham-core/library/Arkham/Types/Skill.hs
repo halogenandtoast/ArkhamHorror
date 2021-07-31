@@ -20,6 +20,9 @@ $(buildEntity "Skill")
 createSkill :: IsCard a => a -> InvestigatorId -> Skill
 createSkill a iid = lookupSkill (toCardCode a) iid (SkillId $ toCardId a)
 
+instance HasCardCode Skill where
+  toCardCode = toCardCode . toAttrs
+
 instance HasCardDef Skill where
   toCardDef = toCardDef . toAttrs
 

@@ -98,6 +98,9 @@ exhaustedL = lens assetExhausted $ \m x -> m { assetExhausted = x }
 allAssetCards :: HashMap CardCode CardDef
 allAssetCards = allPlayerAssetCards <> allEncounterAssetCards
 
+instance HasCardCode AssetAttrs where
+  toCardCode = assetCardCode
+
 instance HasCardDef AssetAttrs where
   toCardDef a = case lookup (assetCardCode a) allAssetCards of
     Just def -> def

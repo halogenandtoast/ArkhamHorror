@@ -33,6 +33,16 @@
         />
         </div>
     </template>
+    <div v-for="tokenGroup in tokenGroups" :key="tokenGroup[0]">
+      <div v-for="(group, idx) in tokenGroup[1]" :key="idx" @click="$emit('choose', parseInt(tokenGroup[0]))">
+        <img
+          v-for="(token, idx) in group"
+          :key="idx"
+          class="token active-token"
+          :src="imageFor(token.tokenFace)"
+        />
+        </div>
+    </div>
   </div>
 </template>
 
@@ -133,7 +143,14 @@ export default defineComponent({
 
     const tokenFaces = computed(() => [...new Set(props.game.chaosBag.tokens.map(t => t.tokenFace))])
 
-    return { tokenFaces, debug, debugChoose, baseUrl, isIgnored, revealedTokens, tokenAction, revealedTokenAction, investigatorPortrait, imageFor }
+    const tokenGroups = computed(() => {
+      return Object.
+        entries(choices.value).
+        filter(([, el]) => el.tag == "ChooseTokenGroups").
+        map(([idx, el]) => [idx, el.contents[2].contents[2]])
+    })
+
+    return { tokenGroups, tokenFaces, debug, debugChoose, baseUrl, isIgnored, revealedTokens, tokenAction, revealedTokenAction, investigatorPortrait, imageFor }
   }
 })
 </script>

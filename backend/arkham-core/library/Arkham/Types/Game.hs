@@ -73,6 +73,7 @@ import Data.List.Extra (cycle, groupOn)
 import qualified Data.Sequence as Seq
 import Data.These
 import Data.These.Lens
+import Data.UUID (nil)
 
 type GameMode = These Campaign Scenario
 type EntityMap a = HashMap (EntityId a) a
@@ -499,7 +500,9 @@ getLocation lid =
   where missingLocation = "Unknown location: " <> show lid
 
 getInvestigatorsMatching
-  :: (MonadReader env m, HasGame env) => InvestigatorMatcher -> m [Investigator]
+  :: (HasCallStack, MonadReader env m, HasGame env)
+  => InvestigatorMatcher
+  -> m [Investigator]
 getInvestigatorsMatching = \case
   You -> do
     you <- getInvestigator . view activeInvestigatorIdL =<< getGame
@@ -511,7 +514,9 @@ getInvestigatorsMatching = \case
   InvestigatorAtYourLocation -> do
     you <- getInvestigator . view activeInvestigatorIdL =<< getGame
     location <- getId @LocationId (toId you)
-    traverse getInvestigator =<< getSetList location
+    if location == LocationId (CardId nil)
+      then pure []
+      else traverse getInvestigator =<< getSetList location
   InvestigatorWithId iid -> pure <$> getInvestigator iid
   InvestigatorWithDamage -> do
     filter ((> 0) . fst . getDamage) . toList . view investigatorsL <$> getGame
@@ -597,7 +602,7 @@ getLocationsMatching = \case
     filter ((`member` matches) . toId) . toList . view locationsL <$> getGame
 
 getAssetsMatching
-  :: (MonadReader env m, HasGame env) => AssetMatcher -> m [Asset]
+  :: (HasCallStack, MonadReader env m, HasGame env) => AssetMatcher -> m [Asset]
 getAssetsMatching matcher = do
   assets <- toList . view assetsL <$> getGame
   filterMatcher assets matcher

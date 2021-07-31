@@ -2152,6 +2152,31 @@ runPreGameMessage msg g = case msg of
     pure $ g & (skillTestL .~ Nothing) & (skillTestResultsL .~ Nothing)
   _ -> pure g
 
+-- | Handle when enemy no longer exists
+-- When an enemy is defeated we need to remove related messages from choices
+-- and if not more choices exist, remove the message entirely
+filterOutEnemyMessages :: EnemyId -> Message -> Maybe Message
+filterOutEnemyMessages eid (Ask iid q) = case q of
+  ChooseOne msgs -> case mapMaybe (filterOutEnemyMessages eid) msgs of
+    [] -> Nothing
+    x -> Just (Ask iid $ ChooseOne x)
+  ChooseN n msgs -> case mapMaybe (filterOutEnemyMessages eid) msgs of
+    [] -> Nothing
+    x -> Just (Ask iid $ ChooseN n x)
+  ChooseSome msgs -> case mapMaybe (filterOutEnemyMessages eid) msgs of
+    [] -> Nothing
+    x -> Just (Ask iid $ ChooseSome x)
+  ChooseUpToN n msgs -> case mapMaybe (filterOutEnemyMessages eid) msgs of
+    [] -> Nothing
+    x -> Just (Ask iid $ ChooseUpToN n x)
+  ChooseOneAtATime msgs -> case mapMaybe (filterOutEnemyMessages eid) msgs of
+    [] -> Nothing
+    x -> Just (Ask iid $ ChooseOneAtATime x)
+  ChooseUpgradeDeck -> Just (Ask iid ChooseUpgradeDeck)
+filterOutEnemyMessages eid msg = case msg of
+  EnemyAttack _ eid' _ | eid == eid' -> Nothing
+  m -> Just m
+
 runGameMessage
   :: (HasQueue env, MonadReader env m, MonadRandom m, MonadIO m, HasGame env)
   => Message
@@ -2721,6 +2746,8 @@ runGameMessage msg g = case msg of
       defeatMsgs = if isJust (getEnemyVictory enemy)
         then [AddToVictory (EnemyTarget eid), RemoveEnemy eid]
         else [Discard (EnemyTarget eid)]
+
+    withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
 
     g <$ pushAll (whenMsgs <> [When msg, After msg] <> afterMsgs <> defeatMsgs)
   Discard (SearchedCardTarget iid cardId) -> do

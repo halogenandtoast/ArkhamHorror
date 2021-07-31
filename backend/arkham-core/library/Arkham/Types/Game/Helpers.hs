@@ -788,7 +788,6 @@ getIsPlayable _ _ (EncounterCard _) = pure False -- TODO: there might be some pl
 getIsPlayable iid windows c@(PlayerCard _) = do
   modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
   availableResources <- unResourceCount <$> getCount iid
-  engagedEnemies <- getSet @EnemyId iid
   location <- getId @LocationId iid
   modifiedCardCost <- getModifiedCardCost iid c
   passesRestrictions <- maybe
@@ -799,12 +798,15 @@ getIsPlayable iid windows c@(PlayerCard _) = do
     (pure False)
     (cardInFastWindows iid c windows)
     (cdFastWindow pcDef)
+  canEvade <- hasEvadeActions iid NonFast
+  canFight <- hasFightActions iid NonFast
   pure
     $ (cdCardType pcDef /= SkillType)
     && (modifiedCardCost <= availableResources)
     && none prevents modifiers
     && (isNothing (cdFastWindow pcDef) || inFastWindow)
-    && (cdAction pcDef /= Just Action.Evade || notNull engagedEnemies)
+    && (cdAction pcDef /= Just Action.Evade || canEvade)
+    && (cdAction pcDef /= Just Action.Fight || canFight)
     && passesRestrictions
  where
   pcDef = toCardDef c

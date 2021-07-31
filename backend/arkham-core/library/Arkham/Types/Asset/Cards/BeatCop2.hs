@@ -13,8 +13,10 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.LocationId
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.PlayRestriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 
@@ -34,7 +36,7 @@ ability :: AssetAttrs -> Ability
 ability a = restrictedAbility
   (toSource a)
   1
-  EnemyAtYourLocation
+  (EnemyExists EnemyAtYourLocation)
   (FastAbility
   $ Costs [ExhaustCost (toTarget a), DamageCost (toSource a) (toTarget a) 1]
   )

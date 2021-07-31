@@ -11,6 +11,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
+import Arkham.Types.PlayRestriction
 import Arkham.Types.Window
 
 newtype LoneWolf = LoneWolf AssetAttrs

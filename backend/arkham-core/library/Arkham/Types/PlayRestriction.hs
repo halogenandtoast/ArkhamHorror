@@ -2,6 +2,7 @@ module Arkham.Types.PlayRestriction where
 
 import Arkham.Prelude
 
+import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Trait
 
@@ -11,9 +12,11 @@ data DiscardSignifier = AnyPlayerDiscard
 
 data PlayRestriction
   = AnotherInvestigatorInSameLocation
+  | InvestigatorIsAlone
   | ScenarioCardHasResignAbility
   | ClueOnLocation
   | FirstAction
+  | OnLocation LocationId
   | EnemyExists EnemyMatcher
   | NoEnemyExists EnemyMatcher
   | LocationExists LocationMatcher

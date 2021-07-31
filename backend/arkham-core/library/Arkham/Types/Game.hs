@@ -518,8 +518,10 @@ getInvestigatorsMatching = \case
       then pure []
       else traverse getInvestigator =<< getSetList location
   InvestigatorWithId iid -> pure <$> getInvestigator iid
-  InvestigatorWithDamage -> do
+  InvestigatorWithDamage ->
     filter ((> 0) . fst . getDamage) . toList . view investigatorsL <$> getGame
+  InvestigatorWithHorror ->
+    filter ((> 0) . snd . getDamage) . toList . view investigatorsL <$> getGame
   InvestigatorMatches [] -> pure []
   InvestigatorMatches (x : xs) -> do
     matches :: HashSet InvestigatorId <-

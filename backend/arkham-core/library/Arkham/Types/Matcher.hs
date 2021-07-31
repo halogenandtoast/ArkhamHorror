@@ -20,6 +20,7 @@ data InvestigatorMatcher
   | NotYou
   | Anyone
   | InvestigatorWithDamage
+  | InvestigatorWithHorror
   | InvestigatorWithId InvestigatorId
   | InvestigatorMatches [InvestigatorMatcher]
   deriving stock (Show, Eq, Generic)

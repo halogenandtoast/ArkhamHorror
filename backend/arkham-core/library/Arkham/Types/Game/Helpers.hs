@@ -943,6 +943,7 @@ getModifiedCardCost iid c@(EncounterCard _) = do
 type CanCheckFast env
   = ( HasSet Trait env EnemyId
     , HasCount DamageCount env InvestigatorId
+    , HasCount HorrorCount env InvestigatorId
     , HasSet AccessibleLocationId env LocationId
     , HasSet InvestigatorId env LocationId
     , HasSet RevealedLocationId env ()
@@ -1096,6 +1097,7 @@ cardInFastWindows iid _ windows matcher = anyM
     InvestigatorAtYourLocation ->
       liftA2 (==) (getId @LocationId iid) (getId @LocationId who)
     InvestigatorWithDamage -> (> 0) . unDamageCount <$> getCount who
+    InvestigatorWithHorror -> (> 0) . unHorrorCount <$> getCount who
     InvestigatorWithId iid' -> pure $ who == iid'
     InvestigatorMatches is -> allM (matchWho who) is
   gameValueMatches n = \case

@@ -10,6 +10,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 import Arkham.Types.LocationId
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -29,12 +30,12 @@ instance HasModifiersFor env SeekingAnswers where
       _ -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance (HasQueue env, HasSet ConnectedLocationId env LocationId) => RunMessage env SeekingAnswers where
+instance (HasQueue env, HasSet LocationId env LocationMatcher) => RunMessage env SeekingAnswers where
   runMessage msg e@(SeekingAnswers attrs@EffectAttrs {..}) = case msg of
     CreatedEffect eid _ _ (InvestigationTarget iid lid) | eid == effectId ->
       e <$ push (Investigate iid lid (toSource attrs) SkillIntellect False)
     SuccessfulInvestigation iid lid source | isSource attrs source -> do
-      lids <- map unConnectedLocationId <$> getSetList @ConnectedLocationId lid
+      lids <- getSetList (ConnectedLocation <> LocationWithClues)
       e <$ pushAll
         [ chooseOne
           iid

@@ -141,6 +141,8 @@ data LocationMatcher
   | Anywhere
   | EmptyLocation
   | AccessibleLocation
+  | ConnectedLocation
+  | LocationWithClues
   | LocationWithoutInvestigators
   | LocationWithoutEnemies
   | RevealedLocation

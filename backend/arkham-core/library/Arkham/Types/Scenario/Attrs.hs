@@ -205,6 +205,8 @@ findLocationKey locationMatcher locations = fst
     LocationWithoutTreachery _ -> error "needs to find a singular location"
     YourLocation -> error ":("
     AccessibleLocation -> error ":("
+    ConnectedLocation -> error ":("
+    LocationWithClues -> error ":("
     NotYourLocation -> error ":("
     LocationWithoutTreacheryWithCardCode _ -> error ":("
 

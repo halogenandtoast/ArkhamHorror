@@ -944,7 +944,9 @@ type CanCheckFast env
   = ( HasSet Trait env EnemyId
     , HasCount DamageCount env InvestigatorId
     , HasCount HorrorCount env InvestigatorId
+    , HasCount ClueCount env LocationId
     , HasSet AccessibleLocationId env LocationId
+    , HasSet ConnectedLocationId env LocationId
     , HasSet InvestigatorId env LocationId
     , HasSet RevealedLocationId env ()
     , HasSet InvestigatorId env EnemyId
@@ -1137,7 +1139,11 @@ cardInFastWindows iid _ windows matcher = anyM
     AccessibleLocation -> do
       yourLocationId <- getId @LocationId iid
       member (AccessibleLocationId locationId) <$> getSet yourLocationId
+    ConnectedLocation -> do
+      yourLocationId <- getId @LocationId iid
+      member (ConnectedLocationId locationId) <$> getSet yourLocationId
     RevealedLocation -> member (RevealedLocationId locationId) <$> getSet ()
+    LocationWithClues -> (> 0) . unClueCount <$> getCount locationId
     YourLocation -> do
       yourLocationId <- getId @LocationId iid
       pure $ locationId == yourLocationId

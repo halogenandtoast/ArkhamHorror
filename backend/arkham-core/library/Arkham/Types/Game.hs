@@ -565,6 +565,11 @@ getLocationsMatching = \case
   LocationWithoutEnemies ->
     filter noEnemiesAtLocation . toList . view locationsL <$> getGame
   RevealedLocation -> filter isRevealed . toList . view locationsL <$> getGame
+  LocationWithClues ->
+    filterM (fmap ((> 0) . unClueCount) . getCount)
+      . toList
+      . view locationsL
+      =<< getGame
   LocationWithoutTreacheryWithCardCode cardCode ->
     filterM
         (fmap (cardCode `notElem`) . traverse getId <=< getSetList @TreacheryId)
@@ -581,6 +586,14 @@ getLocationsMatching = \case
       getLocation =<< locationFor . view activeInvestigatorIdL =<< getGame
     accessibleLocations <- getSet (toId yourLocation)
     filter ((`member` accessibleLocations) . AccessibleLocationId . toId)
+      . toList
+      . view locationsL
+      <$> getGame
+  ConnectedLocation -> do
+    yourLocation <-
+      getLocation =<< locationFor . view activeInvestigatorIdL =<< getGame
+    connectedLocations <- getSet (toId yourLocation)
+    filter ((`member` connectedLocations) . ConnectedLocationId . toId)
       . toList
       . view locationsL
       <$> getGame

@@ -15,6 +15,7 @@ import Arkham.Types.Effect.Effects
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
@@ -124,6 +125,7 @@ instance
 instance
   ( HasQueue env
   , HasSet ConnectedLocationId env LocationId
+  , HasSet LocationId env LocationMatcher
   , HasSet Trait env EnemyId
   , HasCostPayment env
   , HasSet InScenarioInvestigatorId env ()

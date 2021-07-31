@@ -6,12 +6,15 @@ module Arkham.Types.Asset.Cards.StrangeSolutionRestorativeConcoction4
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.PlayRestriction
 import Arkham.Types.Target
 import Arkham.Types.Window
 
@@ -26,11 +29,16 @@ strangeSolutionRestorativeConcoction4 = assetWith
   Cards.strangeSolutionRestorativeConcoction4
   (startingUsesL ?~ Uses Supply 4)
 
+ability :: AssetAttrs -> Ability
+ability a = restrictedAbility
+  a
+  1
+  (InvestigatorExists $ InvestigatorAtYourLocation <> InvestigatorWithDamage)
+  (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (toId a) Supply 1])
+
 instance HasActions env StrangeSolutionRestorativeConcoction4 where
-  getActions iid NonFast (StrangeSolutionRestorativeConcoction4 attrs) = pure
-    [ assetAction iid attrs 1 Nothing
-        $ Costs [ActionCost 1, UseCost (toId attrs) Supply 1]
-    ]
+  getActions iid NonFast (StrangeSolutionRestorativeConcoction4 attrs) =
+    pure [UseAbility iid $ ability attrs]
   getActions iid window (StrangeSolutionRestorativeConcoction4 attrs) =
     getActions iid window attrs
 

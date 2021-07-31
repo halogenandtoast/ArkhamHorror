@@ -72,4 +72,5 @@ type EntityInstanceRunner env
     , HasName env LocationId
     , HasId CardCode env TreacheryId
     , CanCheckFast env
+    , CanCheckPlayable env
     )

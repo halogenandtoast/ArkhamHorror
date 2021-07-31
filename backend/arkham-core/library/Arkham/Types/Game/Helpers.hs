@@ -773,6 +773,8 @@ type CanCheckPlayable env
     , HasCount DoomCount env AssetId
     , HasCount DoomCount env InvestigatorId
     , HasList DiscardedPlayerCard env InvestigatorId
+    , HasSet InvestigatorId env InvestigatorMatcher
+    , HasSet AssetId env AssetMatcher
     , HasSet InvestigatorId env ()
     )
 
@@ -867,6 +869,8 @@ passesRestriction iid location windows = \case
     ((> 0) . unClueCount <$> getCount location)
   EnemyExists matcher -> notNull <$> getSet @EnemyId matcher
   NoEnemyExists matcher -> null <$> getSet @EnemyId matcher
+  AssetExists matcher -> notNull <$> getSet @AssetId matcher
+  InvestigatorExists matcher -> notNull <$> getSet @InvestigatorId matcher
   PlayRestrictions rs -> allM (passesRestriction iid location windows) rs
   AnyPlayRestriction rs -> anyM (passesRestriction iid location windows) rs
   LocationExists matcher -> notNull <$> getSet @LocationId matcher
@@ -931,6 +935,7 @@ getModifiedCardCost iid c@(EncounterCard _) = do
 
 type CanCheckFast env
   = ( HasSet Trait env EnemyId
+    , HasCount DamageCount env InvestigatorId
     , HasSet AccessibleLocationId env LocationId
     , HasSet InvestigatorId env LocationId
     , HasSet RevealedLocationId env ()
@@ -1083,6 +1088,9 @@ cardInFastWindows iid _ windows matcher = anyM
     NotYou -> pure $ who /= iid
     InvestigatorAtYourLocation ->
       liftA2 (==) (getId @LocationId iid) (getId @LocationId who)
+    InvestigatorWithDamage -> (> 0) . unDamageCount <$> getCount who
+    InvestigatorWithId iid' -> pure $ who == iid'
+    InvestigatorMatches is -> allM (matchWho who) is
   gameValueMatches n = \case
     Matcher.AnyValue -> pure True
     Matcher.LessThan gv -> (n <) <$> getPlayerCountValue gv

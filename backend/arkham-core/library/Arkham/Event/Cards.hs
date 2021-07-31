@@ -398,7 +398,10 @@ emergencyAid = (event "02105" "Emergency Aid" 2 Guardian)
   , cdCardTraits = setFromList [Insight, Science]
   , cdPlayRestrictions = Just $ Restriction.AnyPlayRestriction
     [ Restriction.AssetExists
-      (AssetOwnedBy InvestigatorAtYourLocation <> AssetWithDamage)
+      (AssetOwnedBy InvestigatorAtYourLocation
+      <> AssetWithDamage
+      <> AssetWithTrait Ally
+      )
     , Restriction.InvestigatorExists
       (InvestigatorAtYourLocation <> InvestigatorWithDamage)
     ]

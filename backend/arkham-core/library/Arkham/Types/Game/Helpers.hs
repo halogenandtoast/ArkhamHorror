@@ -822,7 +822,12 @@ getIsPlayable iid windows c@(PlayerCard _) = do
   prevents _ = False
 
 passesRestriction
-  :: (MonadReader env m, CanCheckFast env, CanCheckPlayable env, MonadIO m)
+  :: ( HasCallStack
+     , MonadReader env m
+     , CanCheckFast env
+     , CanCheckPlayable env
+     , MonadIO m
+     )
   => InvestigatorId
   -> LocationId
   -> [Window]

@@ -70,7 +70,9 @@ instance
             ]
           <> [ TargetLabel
                  (InvestigatorTarget iid')
-                 [BeginTrade iid' ResourceTarget (investigatorIds \\ [iid'])]
+                 [ BeginTrade iid' ResourceTarget (investigatorIds \\ [iid'])
+                 , ResolveEvent iid eid mtarget
+                 ]
              | iid' <- investigatorIds
              ]
           )

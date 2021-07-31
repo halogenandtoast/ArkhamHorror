@@ -261,6 +261,8 @@ mindWipe1 = (event "01068" "Mind Wipe" 1 Mystic)
   , cdCardTraits = setFromList [Spell]
   , cdLevel = 1
   , cdFastWindow = Just (PhaseBegins After AnyPhase)
+  , cdPlayRestrictions = Just
+    (Restriction.EnemyExists $ EnemyAtYourLocation <> NonEliteEnemy)
   }
 
 blindingLight2 :: CardDef

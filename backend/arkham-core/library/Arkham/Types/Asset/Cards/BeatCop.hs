@@ -13,8 +13,10 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.PlayRestriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Window
@@ -32,7 +34,7 @@ instance HasModifiersFor env BeatCop where
   getModifiersFor _ _ _ = pure []
 
 ability :: AssetAttrs -> Ability
-ability a = restrictedAbility (toSource a) 1 EnemyAtYourLocation
+ability a = restrictedAbility (toSource a) 1 (EnemyExists EnemyAtYourLocation)
   $ FastAbility (DiscardCost $ toTarget a)
 
 instance

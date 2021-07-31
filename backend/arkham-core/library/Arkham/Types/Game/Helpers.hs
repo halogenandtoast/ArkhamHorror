@@ -4,8 +4,7 @@ module Arkham.Types.Game.Helpers where
 import Arkham.Prelude
 
 import Arkham.EncounterCard (allEncounterCards)
-import Arkham.Types.Ability hiding (AbilityRestriction(..))
-import qualified Arkham.Types.Ability as Ability
+import Arkham.Types.Ability
 import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.CampaignLogKey
@@ -87,13 +86,7 @@ withBaseActions
 withBaseActions iid window a f = (<>) <$> getActions iid window a <*> f
 
 getCanPerformAbility
-  :: ( MonadReader env m
-     , MonadIO m
-     , HasId LocationId env InvestigatorId
-     , HasSet InvestigatorId env LocationId
-     , HasSet EnemyId env LocationId
-     , HasActions env ActionType
-     )
+  :: (MonadReader env m, MonadIO m, CanCheckPlayable env)
   => InvestigatorId
   -> Window
   -> Ability
@@ -103,7 +96,8 @@ getCanPerformAbility iid window Ability {..} =
  where
   meetsAbilityRestrictions = case abilityRestrictions of
     Nothing -> pure True
-    Just restriction -> getCanPerformAbilityRestriction iid restriction
+    Just restriction ->
+      getCanPerformAbilityRestriction iid [window] restriction
   meetsActionRestrictions = case abilityType of
     ActionAbility (Just action) _ -> case action of
       Action.Fight -> hasFightActions iid window
@@ -124,26 +118,14 @@ getCanPerformAbility iid window Ability {..} =
     ForcedAbility -> pure True
 
 getCanPerformAbilityRestriction
-  :: ( MonadReader env m
-     , HasId LocationId env InvestigatorId
-     , HasSet InvestigatorId env LocationId
-     , HasSet EnemyId env LocationId
-     )
+  :: (MonadReader env m, CanCheckFast env, CanCheckPlayable env, MonadIO m)
   => InvestigatorId
-  -> Ability.AbilityRestriction
+  -> [Window]
+  -> PlayRestriction
   -> m Bool
-getCanPerformAbilityRestriction iid = \case
-  Ability.OnLocation lid -> do
-    lid' <- getId @LocationId iid
-    pure $ lid == lid'
-  Ability.OrAbilityRestrictions restrictions ->
-    or <$> traverse (getCanPerformAbilityRestriction iid) restrictions
-  Ability.InvestigatorIsAlone -> do
-    lid <- getId @LocationId iid
-    (== 1) . length <$> getSetList @InvestigatorId lid
-  Ability.EnemyAtYourLocation -> do
-    lid <- getId @LocationId iid
-    notNull <$> getSet @EnemyId lid
+getCanPerformAbilityRestriction iid windows restrictions = do
+  lid' <- getId @LocationId iid
+  passesRestriction iid lid' windows restrictions
 
 getCanAffordAbility
   :: ( MonadReader env m
@@ -314,13 +296,10 @@ isForcedAction = \case
   _ -> False
 
 instance
-  ( HasActions env ActionType
-  , HasModifiersFor env ()
-  , HasCostPayment env
+  ( HasCostPayment env
   , HasSet Trait env Source
-  , HasSet EnemyId env LocationId
   , HasList UsedAbility env ()
-  , HasId LocationId env InvestigatorId
+  , CanCheckPlayable env
   )
   => HasActions env () where
   getActions iid window _ = do
@@ -812,7 +791,7 @@ getIsPlayable iid windows c@(PlayerCard _) = do
   modifiedCardCost <- getModifiedCardCost iid c
   passesRestrictions <- maybe
     (pure True)
-    (passesRestriction location)
+    (passesRestriction iid location windows)
     (cdPlayRestrictions pcDef)
   inFastWindow <- maybe
     (pure False)
@@ -837,77 +816,90 @@ getIsPlayable iid windows c@(PlayerCard _) = do
     )
     typePairs
   prevents _ = False
-  passesRestriction location = \case
-    FirstAction -> do
-      n <- unActionTakenCount <$> getCount iid
-      pure $ n == 0
-    ReturnableCardInDiscard AnyPlayerDiscard traits -> do
-      investigatorIds <-
-        filterM
-            (fmap (notElem CardsCannotLeaveYourDiscardPile)
-            . getModifiers GameSource
-            . InvestigatorTarget
-            )
-          =<< getInvestigatorIds
-      discards <-
-        concat
-          <$> traverse
-                (fmap (map unDiscardedPlayerCard) . getList)
-                investigatorIds
-      let
-        filteredDiscards = case traits of
-          [] -> discards
-          traitsToMatch ->
-            filter (any (`elem` traitsToMatch) . toTraits) discards
-      pure $ notNull filteredDiscards
-    CardInDiscard AnyPlayerDiscard traits -> do
-      investigatorIds <- getInvestigatorIds
-      discards <-
-        concat
-          <$> traverse
-                (fmap (map unDiscardedPlayerCard) . getList)
-                investigatorIds
-      let
-        filteredDiscards = case traits of
-          [] -> discards
-          traitsToMatch ->
-            filter (any (`elem` traitsToMatch) . toTraits) discards
-      pure $ notNull filteredDiscards
-    ClueOnLocation -> liftA2
-      (&&)
-      (pure $ location /= LocationId (CardId nil))
-      ((> 0) . unClueCount <$> getCount location)
-    EnemyExists matcher -> notNull <$> getSet @EnemyId matcher
-    NoEnemyExists matcher -> null <$> getSet @EnemyId matcher
-    PlayRestrictions rs -> allM (passesRestriction location) rs
-    AnyPlayRestriction rs -> anyM (passesRestriction location) rs
-    LocationExists matcher -> notNull <$> getSet @LocationId matcher
-    AnotherInvestigatorInSameLocation -> liftA2
-      (&&)
-      (pure $ location /= LocationId (CardId nil))
-      (notNull <$> getSet @InvestigatorId location)
-    OwnCardWithDoom -> do
-      assetIds <- selectList (AssetOwnedBy iid)
-      investigatorDoomCount <- unDoomCount <$> getCount iid
-      assetsWithDoomCount <- filterM
-        (fmap ((> 0) . unDoomCount) . getCount)
-        assetIds
-      pure $ investigatorDoomCount > 0 || notNull assetsWithDoomCount
-    ScenarioCardHasResignAbility -> do
-      actions' <- concat . concat <$> sequence
-        [ traverse
-            (getActions iid window)
-            ([minBound .. maxBound] :: [ActionType])
-        | window <- windows
-        ]
-      pure $ flip
-        any
-        actions'
-        \case
-          UseAbility _ ability -> case abilityType ability of
-            ActionAbility (Just Action.Resign) _ -> True
-            _ -> False
+
+passesRestriction
+  :: (MonadReader env m, CanCheckFast env, CanCheckPlayable env, MonadIO m)
+  => InvestigatorId
+  -> LocationId
+  -> [Window]
+  -> PlayRestriction
+  -> m Bool
+passesRestriction iid location windows = \case
+  FirstAction -> do
+    n <- unActionTakenCount <$> getCount iid
+    pure $ n == 0
+  OnLocation lid -> pure $ location == lid
+  ReturnableCardInDiscard AnyPlayerDiscard traits -> do
+    investigatorIds <-
+      filterM
+          (fmap (notElem CardsCannotLeaveYourDiscardPile)
+          . getModifiers GameSource
+          . InvestigatorTarget
+          )
+        =<< getInvestigatorIds
+    discards <-
+      concat
+        <$> traverse
+              (fmap (map unDiscardedPlayerCard) . getList)
+              investigatorIds
+    let
+      filteredDiscards = case traits of
+        [] -> discards
+        traitsToMatch ->
+          filter (any (`elem` traitsToMatch) . toTraits) discards
+    pure $ notNull filteredDiscards
+  CardInDiscard AnyPlayerDiscard traits -> do
+    investigatorIds <- getInvestigatorIds
+    discards <-
+      concat
+        <$> traverse
+              (fmap (map unDiscardedPlayerCard) . getList)
+              investigatorIds
+    let
+      filteredDiscards = case traits of
+        [] -> discards
+        traitsToMatch ->
+          filter (any (`elem` traitsToMatch) . toTraits) discards
+    pure $ notNull filteredDiscards
+  ClueOnLocation -> liftA2
+    (&&)
+    (pure $ location /= LocationId (CardId nil))
+    ((> 0) . unClueCount <$> getCount location)
+  EnemyExists matcher -> notNull <$> getSet @EnemyId matcher
+  NoEnemyExists matcher -> null <$> getSet @EnemyId matcher
+  PlayRestrictions rs -> allM (passesRestriction iid location windows) rs
+  AnyPlayRestriction rs -> anyM (passesRestriction iid location windows) rs
+  LocationExists matcher -> notNull <$> getSet @LocationId matcher
+  AnotherInvestigatorInSameLocation -> liftA2
+    (&&)
+    (pure $ location /= LocationId (CardId nil))
+    (notNull <$> getSet @InvestigatorId location)
+  InvestigatorIsAlone -> liftA2
+    (&&)
+    (pure $ location /= LocationId (CardId nil))
+    (null <$> getSet @InvestigatorId location)
+  OwnCardWithDoom -> do
+    assetIds <- selectList (AssetOwnedBy iid)
+    investigatorDoomCount <- unDoomCount <$> getCount iid
+    assetsWithDoomCount <- filterM
+      (fmap ((> 0) . unDoomCount) . getCount)
+      assetIds
+    pure $ investigatorDoomCount > 0 || notNull assetsWithDoomCount
+  ScenarioCardHasResignAbility -> do
+    actions' <- concat . concat <$> sequence
+      [ traverse
+          (getActions iid window)
+          ([minBound .. maxBound] :: [ActionType])
+      | window <- windows
+      ]
+    pure $ flip
+      any
+      actions'
+      \case
+        UseAbility _ ability -> case abilityType ability of
+          ActionAbility (Just Action.Resign) _ -> True
           _ -> False
+        _ -> False
 
 getModifiedCardCost
   :: (MonadReader env m, HasModifiersFor env ())

@@ -10,9 +10,9 @@ import Arkham.Types.Ability.Limit as X
 import Arkham.Types.Ability.Type as X
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes.Entity.Source
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Modifier
+import Arkham.Types.PlayRestriction
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -23,7 +23,7 @@ data Ability = Ability
   , abilityType :: AbilityType
   , abilityLimit :: AbilityLimit
   , abilityMetadata :: Maybe AbilityMetadata
-  , abilityRestrictions :: Maybe AbilityRestriction
+  , abilityRestrictions :: Maybe PlayRestriction
   , abilityDoesNotProvokeAttacksOfOpportunity :: Bool
   }
   deriving stock (Show, Generic)
@@ -56,12 +56,12 @@ data AbilityMetadata
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-data AbilityRestriction = OnLocation LocationId | OrAbilityRestrictions [AbilityRestriction] | InvestigatorIsAlone | EnemyAtYourLocation
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+-- data AbilityRestriction = OnLocation LocationId | OrAbilityRestrictions [AbilityRestriction] | InvestigatorIsAlone | EnemyAtYourLocation
+--   deriving stock (Eq, Show, Generic)
+--   deriving anyclass (ToJSON, FromJSON)
 
 restrictedAbility
-  :: SourceEntity a => a -> Int -> AbilityRestriction -> AbilityType -> Ability
+  :: SourceEntity a => a -> Int -> PlayRestriction -> AbilityType -> Ability
 restrictedAbility entity idx restriction type' =
   (mkAbility entity idx type') { abilityRestrictions = Just restriction }
 

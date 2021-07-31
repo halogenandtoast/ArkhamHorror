@@ -53,7 +53,7 @@ instance TreacheryRunner env => RunMessage env WrackedByNightmares where
       Revelation iid source | isSource attrs source ->
         t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)
       AttachTreachery tid (InvestigatorTarget iid) | tid == treacheryId -> do
-        assetIds <- selectList (AssetOwnedBy You)
+        assetIds <- selectList (AssetOwnedBy $ InvestigatorWithId iid)
         pushAll [ Exhaust (AssetTarget aid) | aid <- assetIds ]
         WrackedByNightmares <$> runMessage msg attrs
       UseCardAbility _ (TreacherySource tid) _ 1 _ | tid == treacheryId ->

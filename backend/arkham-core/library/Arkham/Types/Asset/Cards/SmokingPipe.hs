@@ -12,8 +12,11 @@ import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.PlayRestriction
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype SmokingPipe = SmokingPipe AssetAttrs
   deriving anyclass IsAsset
@@ -24,12 +27,13 @@ smokingPipe =
   assetWith SmokingPipe Cards.smokingPipe (startingUsesL ?~ Uses Supply 3)
 
 fastAbility :: InvestigatorId -> AssetAttrs -> Ability
-fastAbility iid attrs = mkAbility
+fastAbility iid attrs = restrictedAbility
   (toSource attrs)
   1
+  (InvestigatorExists $ You <> InvestigatorWithHorror)
   (FastAbility
     (Costs
-      [ UseCost (toId attrs) Ammo 1
+      [ UseCost (toId attrs) Supply 1
       , ExhaustCost (toTarget attrs)
       , DamageCost (toSource attrs) (InvestigatorTarget iid) 1
       ]
@@ -37,7 +41,7 @@ fastAbility iid attrs = mkAbility
   )
 
 instance HasActions env SmokingPipe where
-  getActions iid _ (SmokingPipe a) | ownedBy a iid =
+  getActions iid FastPlayerWindow (SmokingPipe a) | ownedBy a iid =
     pure [UseAbility iid (fastAbility iid a)]
   getActions _ _ _ = pure []
 

@@ -6,14 +6,17 @@ module Arkham.Types.Asset.Cards.CatBurglar1
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.LocationId
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.PlayRestriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Window
@@ -32,8 +35,18 @@ instance HasModifiersFor env CatBurglar1 where
 
 instance HasActions env CatBurglar1 where
   getActions iid NonFast (CatBurglar1 a) | ownedBy a iid = pure
-    [ assetAction iid a 1 Nothing
-        $ Costs [ActionCost 1, ExhaustCost (toTarget a)]
+    [ UseAbility
+        iid
+        (restrictedAbility
+          a
+          1
+          (AnyPlayRestriction
+            [EnemyExists EnemyEngagedWithYou, LocationExists AccessibleLocation]
+          )
+          (ActionAbility Nothing
+          $ Costs [ActionCost 1, ExhaustCost (toTarget a)]
+          )
+        )
     ]
   getActions i window (CatBurglar1 x) = getActions i window x
 

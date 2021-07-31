@@ -931,6 +931,7 @@ getModifiedCardCost iid c@(EncounterCard _) = do
 
 type CanCheckFast env
   = ( HasSet Trait env EnemyId
+    , HasSet AccessibleLocationId env LocationId
     , HasSet InvestigatorId env LocationId
     , HasSet RevealedLocationId env ()
     , HasSet InvestigatorId env EnemyId
@@ -1116,6 +1117,9 @@ cardInFastWindows iid _ windows matcher = anyM
       (null <$> getSet @InvestigatorId locationId)
     LocationWithoutInvestigators -> null <$> getSet @InvestigatorId locationId
     LocationWithoutEnemies -> null <$> getSet @EnemyId locationId
+    AccessibleLocation -> do
+      yourLocationId <- getId @LocationId iid
+      member (AccessibleLocationId locationId) <$> getSet yourLocationId
     RevealedLocation -> member (RevealedLocationId locationId) <$> getSet ()
     YourLocation -> do
       yourLocationId <- getId @LocationId iid

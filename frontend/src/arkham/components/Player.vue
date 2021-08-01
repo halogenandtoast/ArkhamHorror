@@ -228,7 +228,7 @@ export default defineComponent({
 }
 
 .hand {
-  overflow-x: scroll;
+  overflow-x: overlay;
   height: 100%;
   display: flex;
   padding-top: 10px;

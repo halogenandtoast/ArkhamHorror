@@ -3,7 +3,6 @@ module Arkham.Types.Game.Helpers where
 
 import Arkham.Prelude
 
-import Arkham.EncounterCard (allEncounterCards)
 import Arkham.Types.Ability
 import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
@@ -38,7 +37,6 @@ import qualified Arkham.Types.WindowMatcher as Matcher
 import Control.Monad.Extra (allM, anyM)
 import Data.HashSet (size)
 import Data.UUID (nil)
-import System.IO.Unsafe
 
 checkWindows
   :: (MonadReader env m, HasSet InvestigatorId env ())
@@ -997,15 +995,6 @@ type CanCheckFast env
     , HasTokenValue env ()
     )
 
--- because we are checking if cards are playable will we inevitably
--- trigger a case where we need to check for actions. For example
--- "I'm outta here" needs to check for a resign ability. Doing this
--- will cause infinite recursion, so we take out a global lock to
--- ensure we only run this code once in an iteration
-cardInFastWindowRecursionLock :: IORef Bool
-cardInFastWindowRecursionLock = unsafePerformIO $ newIORef False
-{-# NOINLINE cardInFastWindowRecursionLock #-}
-
 cardInFastWindows
   :: (MonadReader env m, CanCheckPlayable env, MonadIO m)
   => InvestigatorId
@@ -1019,8 +1008,8 @@ cardInFastWindows iid c windows matcher = anyM
  where
   windowMatches window' = \case
     Matcher.PlayerHasPlayableCard cardMatcher -> do
-      notNull
-        <$> getList @Card (cardMatcher <> Matcher.CardIsPlayableIn [window'])
+      cards <- filter (/= c) <$> getList cardMatcher
+      anyM (getIsPlayable iid [window']) cards
     Matcher.PhaseBegins _whenMatcher phaseMatcher -> case window' of
       AnyPhaseBegins -> pure $ phaseMatcher == Matcher.AnyPhase
       PhaseBegins _ -> case phaseMatcher of
@@ -1194,9 +1183,6 @@ cardInFastWindows iid c windows matcher = anyM
     Matcher.CardMatches ms -> allM (matchCard c') ms
     Matcher.CardWithoutKeyword kw ->
       pure $ kw `notElem` cdKeywords (toCardDef c')
-    Matcher.CardIsPlayableIn wn -> do
-      cards <- getList (Matcher.CardIsPlayableIn wn)
-      pure $ c `elem` cards
     Matcher.CardIsBeneathInvestigator whoMatcher -> do
       iids <- getSetList @InvestigatorId whoMatcher
       cards <- map unUnderneathCard . concat <$> traverse getList iids

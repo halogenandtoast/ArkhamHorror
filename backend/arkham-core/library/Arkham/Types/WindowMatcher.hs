@@ -50,7 +50,15 @@ pattern AssetCard :: WindowCardMatcher
 pattern AssetCard <- WithCardType AssetType where
   AssetCard = WithCardType AssetType
 
-data WindowCardMatcher = NonWeakness | NonExceptional | WithCardType CardType | CardMatchesAny [WindowCardMatcher] | CardMatches [WindowCardMatcher] | CardWithoutKeyword Keyword | AnyCard | CardIsBeneathInvestigator Who
+data WindowCardMatcher
+  = NonWeakness
+  | NonExceptional
+  | WithCardType CardType
+  | CardMatchesAny [WindowCardMatcher]
+  | CardMatches [WindowCardMatcher]
+  | CardWithoutKeyword Keyword
+  | AnyCard
+  | CardIsBeneathInvestigator Who
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

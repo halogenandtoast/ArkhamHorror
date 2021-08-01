@@ -1301,6 +1301,8 @@ instance HasGame env => HasModifiersFor env () where
         <$> traverse (getModifiersFor source target) (g ^. effectsL . to toList)
       , concat
         <$> traverse (getModifiersFor source target) (g ^. eventsL . to toList)
+      , concat
+        <$> traverse (getModifiersFor source target) (g ^. skillsL . to toList)
       , concat <$> traverse
         (getModifiersFor source target)
         (g ^. treacheriesL . to toList)

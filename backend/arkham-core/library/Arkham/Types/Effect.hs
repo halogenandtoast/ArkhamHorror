@@ -124,7 +124,6 @@ instance
 
 instance
   ( HasQueue env
-  , HasSet ConnectedLocationId env LocationId
   , HasSet LocationId env LocationMatcher
   , HasSet Trait env EnemyId
   , HasCostPayment env

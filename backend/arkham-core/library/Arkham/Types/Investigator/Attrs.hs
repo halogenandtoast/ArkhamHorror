@@ -511,9 +511,7 @@ getFastIsPlayable _ _ (EncounterCard _) = pure False -- TODO: there might be som
 getFastIsPlayable attrs windows c@(PlayerCard _) = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   isPlayable <- getIsPlayable (toId attrs) windows c
-  pure
-    $ (cdFast pcDef || canBecomeFast modifiers || isJust (cdFastWindow pcDef))
-    && isPlayable
+  pure $ (canBecomeFast modifiers || isJust (cdFastWindow pcDef)) && isPlayable
  where
   pcDef = toCardDef c
   canBecomeFast modifiers = foldr applyModifier False modifiers
@@ -1284,8 +1282,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let
       card = findCard cardId a
       isFast = case card of
-        PlayerCard pc ->
-          cdFast (toCardDef pc) || isJust (cdFastWindow $ toCardDef pc)
+        PlayerCard pc -> isJust (cdFastWindow $ toCardDef pc)
         _ -> False
       maction = case card of
         PlayerCard pc -> cdAction (toCardDef pc)
@@ -1353,8 +1350,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let
       card = findCard cardId a
       isFast = case card of
-        PlayerCard pc ->
-          cdFast (toCardDef pc) || isJust (cdFastWindow $ toCardDef pc)
+        PlayerCard pc -> isJust (cdFastWindow $ toCardDef pc)
         _ -> False
       maction = case card of
         PlayerCard pc -> cdAction (toCardDef pc)

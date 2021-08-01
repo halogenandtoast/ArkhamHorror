@@ -21,6 +21,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype Shotgun4 = Shotgun4 AssetAttrs
   deriving anyclass IsAsset
@@ -35,7 +36,7 @@ shotgun4 =
 instance HasModifiersFor env Shotgun4
 
 instance HasActions env Shotgun4 where
-  getActions iid _ (Shotgun4 a) | ownedBy a iid = pure
+  getActions iid NonFast (Shotgun4 a) | ownedBy a iid = pure
     [ UseAbility
         iid
         (mkAbility

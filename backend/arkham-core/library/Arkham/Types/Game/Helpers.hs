@@ -1018,16 +1018,9 @@ cardInFastWindows iid c windows matcher = anyM
   windows
  where
   windowMatches window' = \case
-    Matcher.PlayerHasFastCard cardMatcher -> do
-      locked <- readIORef cardInFastWindowRecursionLock
-      if locked
-        then pure False
-        else do
-          writeIORef cardInFastWindowRecursionLock True
-          cards <- filter (/= c) <$> getList cardMatcher
-          result <- anyM (getIsPlayable iid [window']) cards
-          writeIORef cardInFastWindowRecursionLock False
-          pure result
+    Matcher.PlayerHasPlayableCard cardMatcher -> do
+      notNull
+        <$> getList @Card (cardMatcher <> Matcher.CardIsPlayableIn [window'])
     Matcher.PhaseBegins _whenMatcher phaseMatcher -> case window' of
       AnyPhaseBegins -> pure $ phaseMatcher == Matcher.AnyPhase
       PhaseBegins _ -> case phaseMatcher of
@@ -1194,12 +1187,16 @@ cardInFastWindows iid c windows matcher = anyM
       pure $ cCode `notElem` cardCodes
   matchCard c' = \case
     Matcher.AnyCard -> pure True
+    Matcher.NonExceptional -> pure . not . cdExceptional $ toCardDef c'
     Matcher.NonWeakness -> pure . not . cdWeakness $ toCardDef c'
     Matcher.WithCardType cType -> pure $ toCardType c' == cType
     Matcher.CardMatchesAny ms -> anyM (matchCard c') ms
     Matcher.CardMatches ms -> allM (matchCard c') ms
     Matcher.CardWithoutKeyword kw ->
       pure $ kw `notElem` cdKeywords (toCardDef c')
+    Matcher.CardIsPlayableIn wn -> do
+      cards <- getList (Matcher.CardIsPlayableIn wn)
+      pure $ c `elem` cards
     Matcher.CardIsBeneathInvestigator whoMatcher -> do
       iids <- getSetList @InvestigatorId whoMatcher
       cards <- map unUnderneathCard . concat <$> traverse getList iids

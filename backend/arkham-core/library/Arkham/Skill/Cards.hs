@@ -24,7 +24,6 @@ skill cardCode name skills classSymbol = CardDef
   , cdSkills = skills
   , cdCardTraits = mempty
   , cdKeywords = mempty
-  , cdFast = False
   , cdFastWindow = Nothing
   , cdAction = Nothing
   , cdRevelation = True

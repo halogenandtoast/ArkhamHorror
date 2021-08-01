@@ -58,7 +58,6 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   , cdSkills = mempty
   , cdCardTraits = mempty
   , cdKeywords = mempty
-  , cdFast = False
   , cdFastWindow = Nothing
   , cdAction = Nothing
   , cdRevelation = False
@@ -217,7 +216,9 @@ allPlayerAssetCards = mapFromList $ map
   , theNecronomiconAdvanced
   , theNecronomiconOlausWormiusTranslation
   , theRedGlovedMan5
+  , thirtyTwoColt
   , toothOfEztli
+  , trueGrit
   , tryAndTryAgain3
   , wendysAmulet
   , whittonGreene
@@ -1164,6 +1165,18 @@ spiritSpeaker =
     { cdSkills = [SkillWillpower, SkillIntellect, SkillWild]
     , cdCardTraits = singleton Ritual
     }
+
+thirtyTwoColt :: CardDef
+thirtyTwoColt = (asset "03020" ".32 Colt" 3 Guardian)
+  { cdSkills = [SkillCombat]
+  , cdCardTraits = setFromList [Item, Weapon, Firearm]
+  }
+
+trueGrit :: CardDef
+trueGrit = (asset "03021" "True Grit" 3 Guardian)
+  { cdSkills = [SkillWillpower]
+  , cdCardTraits = singleton Talent
+  }
 
 toothOfEztli :: CardDef
 toothOfEztli = (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker

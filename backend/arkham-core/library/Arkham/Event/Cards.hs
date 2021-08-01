@@ -29,7 +29,6 @@ event cardCode name cost classSymbol = CardDef
   , cdSkills = mempty
   , cdCardTraits = mempty
   , cdKeywords = mempty
-  , cdFast = False
   , cdFastWindow = Nothing
   , cdAction = Nothing
   , cdRevelation = False
@@ -352,7 +351,6 @@ teamwork = (event "02018" "Teamwork" 0 Guardian)
 taunt2 :: CardDef
 taunt2 = (event "02019" "Taunt" 1 Guardian)
   { cdCardTraits = setFromList [Tactic]
-  , cdFast = True
   , cdFastWindow = Just (DuringTurn You)
   , cdSkills = [SkillWillpower, SkillCombat, SkillAgility]
   , cdLevel = 2
@@ -376,6 +374,7 @@ thinkOnYourFeet = (event "02025" "Think on Your Feet" 1 Rogue)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = singleton Trick
   , cdFastWindow = Just (WhenEnemySpawns YourLocation AnyEnemy)
+  , cdPlayRestrictions = Just (Restriction.LocationExists AccessibleLocation)
   }
 
 bindMonster2 :: CardDef
@@ -577,7 +576,11 @@ thePaintedWorld = (event "03012" "The Painted World" 0 Neutral)
   { cdSkills = [SkillWillpower, SkillAgility, SkillWild]
   , cdCardTraits = singleton Spell
   , cdFastWindow = Just
-    (PlayerHasFastCard $ EventCard <> CardIsBeneathInvestigator You)
+    (PlayerHasPlayableCard
+    $ EventCard
+    <> CardIsBeneathInvestigator You
+    <> NonExceptional
+    )
   , cdCost = Nothing
   }
 

@@ -24,6 +24,7 @@ data WindowMatcher
   | DealtDamageOrHorror Who
   | DrawCard When Who WindowCardMatcher
   | PhaseBegins When WindowPhaseMatcher
+  | PlayerHasFastCard WindowCardMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -41,7 +42,11 @@ pattern NonPeril :: WindowCardMatcher
 pattern NonPeril <- CardWithoutKeyword Peril where
   NonPeril = CardWithoutKeyword Peril
 
-data WindowCardMatcher = NonWeakness | WithCardType CardType | CardMatchesAny [WindowCardMatcher] | CardMatches [WindowCardMatcher] | CardWithoutKeyword Keyword | AnyCard
+pattern EventCard :: WindowCardMatcher
+pattern EventCard <- WithCardType EventType where
+  EventCard = WithCardType EventType
+
+data WindowCardMatcher = NonWeakness | WithCardType CardType | CardMatchesAny [WindowCardMatcher] | CardMatches [WindowCardMatcher] | CardWithoutKeyword Keyword | AnyCard | CardIsBeneathInvestigator Who
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

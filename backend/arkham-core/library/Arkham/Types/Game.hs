@@ -64,6 +64,7 @@ import Arkham.Types.Treachery
 import Arkham.Types.Treachery.Attrs (treacheryOwner)
 import Arkham.Types.Window
 import qualified Arkham.Types.Window as Fast
+import qualified Arkham.Types.WindowMatcher as Matcher
 import Control.Monad.Extra (allM, anyM, mapMaybeM)
 import Control.Monad.Random.Lazy hiding (filterM, foldM)
 import Control.Monad.Reader (runReader)
@@ -1582,6 +1583,28 @@ instance HasGame env => HasSet AssetId env AssetMatcher where
 
 instance HasGame env => HasSet InvestigatorId env InvestigatorMatcher where
   getSet = (setFromList . map toId <$>) . getInvestigatorsMatching
+
+instance HasGame env => HasList Card env Matcher.WindowCardMatcher where
+  getList matcher = do
+    investigatorIds <- getInvestigatorIds
+    handCards <- map unHandCard . concat <$> traverse getList investigatorIds
+    underneathCards <-
+      map unUnderneathCard . concat <$> traverse getList investigatorIds
+    let allCards' = handCards <> underneathCards
+    filterM (`matches` matcher) allCards'
+   where
+    matches c = \case
+      Matcher.NonWeakness -> pure $ not (cdWeakness $ toCardDef c)
+      Matcher.WithCardType ct -> pure $ toCardType c == ct
+      Matcher.CardMatchesAny ms -> anyM (matches c) ms
+      Matcher.CardMatches ms -> allM (matches c) ms
+      Matcher.CardWithoutKeyword k ->
+        pure $ k `notMember` cdKeywords (toCardDef c)
+      Matcher.AnyCard -> pure True
+      Matcher.CardIsBeneathInvestigator who -> do
+        iids <- getSetList @InvestigatorId who
+        cards <- map unUnderneathCard . concat <$> traverse getList iids
+        pure $ c `elem` cards
 
 instance HasGame env => HasSet EnemyId env EnemyMatcher where
   getSet = (setFromList . map toId <$>) . getEnemiesMatching

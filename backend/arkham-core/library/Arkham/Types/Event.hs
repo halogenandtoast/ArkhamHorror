@@ -11,7 +11,6 @@ import Arkham.Types.Event.Cards
 import Arkham.Types.Event.Runner
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
-import Arkham.Types.Matcher
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.SkillTest
@@ -31,7 +30,6 @@ instance HasCardDef Event where
 deriving anyclass instance
   ( CanCheckPlayable env
   , GetCardDef env EnemyId
-  , HasList UnderneathCard env InvestigatorId
   , HasSkillTest env
   )
   => HasActions env Event
@@ -44,13 +42,9 @@ instance
   , HasSet FightableEnemyId env (InvestigatorId, Source)
   , HasCount HealthDamageCount env EnemyId
   , HasCount SanityDamageCount env EnemyId
-  , HasCount DoomCount env AssetId
-  , HasCount DoomCount env InvestigatorId
   , HasCount Shroud env LocationId
-  , HasList DiscardedPlayerCard env InvestigatorId
   , HasCount FightCount env EnemyId
-  , HasSet InvestigatorId env InvestigatorMatcher
-  , HasModifiersFor env ()
+  , CanCheckPlayable env
   )
   => RunMessage env Event where
   runMessage = genericRunMessage

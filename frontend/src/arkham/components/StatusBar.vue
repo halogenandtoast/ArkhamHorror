@@ -12,11 +12,11 @@
         <dt>Modified Difficulty:</dt>
         <dd>{{skillTestResults.skillTestResultsDifficulty}}</dd>
         <dt>Result:</dt>
-        <dd v-if="skillTestResults.skillTestResultsSkillValue - skillTestResults.skillTestResultsDifficulty >= 0">
-          Succeed by {{skillTestResults.skillTestResultsSkillValue - skillTestResults.skillTestResultsDifficulty}}
+        <dd v-if="testResult >= 0">
+          Succeed by {{testResult}}
         </dd>
         <dd v-else>
-          Fail by {{skillTestResults.skillTestResultsDifficulty - skillTestResults.skillTestResultsSkillValue}}
+          Fail by {{testResult}}
         </dd>
       </dl>
     </div>
@@ -155,7 +155,7 @@ export default defineComponent({
 
     const tokenOperator = computed(() => (skillTestResults.value?.skillTestResultsTokensValue || 0) < 0 ? '-' : '+')
 
-    const totalSkillValue = computed(() => {
+    const testResult = computed(() => {
       const result = skillTestResults.value
       if (result !== null) {
         const {skillTestResultsSkillValue, skillTestResultsIconValue, skillTestResultsTokensValue, skillTestResultsDifficulty} = result
@@ -165,7 +165,7 @@ export default defineComponent({
       }
     })
 
-    return { totalSkillValue, tokenOperator, cardLabels, cardLabelImage, skillTestResults, arkhamify, choices, skillTestMessageTypes, applyResultsAction, shouldShow, MessageType }
+    return { testResult, tokenOperator, cardLabels, cardLabelImage, skillTestResults, arkhamify, choices, skillTestMessageTypes, applyResultsAction, shouldShow, MessageType }
   }
 })
 </script>

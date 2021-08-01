@@ -97,6 +97,7 @@ data Effect
   | Deduction2' Deduction2
   | ExposeWeakness1' ExposeWeakness1
   | LuckyDice2' LuckyDice2
+  | RiteOfSeeking4' RiteOfSeeking4
   | UndimensionedAndUnseenTabletToken' UndimensionedAndUnseenTabletToken
   | TenAcreMeadow_246' TenAcreMeadow_246
   | AChanceEncounter' AChanceEncounter
@@ -199,6 +200,7 @@ allEffects = mapFromList
   , ("02150", Deduction2' . deduction2)
   , ("02228", ExposeWeakness1' . exposeWeakness1)
   , ("02230", LuckyDice2' . luckyDice2)
+  , ("02233", RiteOfSeeking4' . riteOfSeeking4)
   , ( "02236"
     , UndimensionedAndUnseenTabletToken' . undimensionedAndUnseenTabletToken
     )

@@ -56,7 +56,7 @@ instance
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId @LocationId iid
       a <$ pushAll
-        [ CreateEffect "02028" Nothing source (InvestigationTarget iid lid) -- same effect as base
+        [ CreateEffect "02233" Nothing source (InvestigationTarget iid lid) -- same effect as base
         , skillTestModifier
           source
           (InvestigatorTarget iid)

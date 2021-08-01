@@ -1,6 +1,6 @@
-module Arkham.Types.Effect.Effects.RiteOfSeeking
-  ( riteOfSeeking
-  , RiteOfSeeking(..)
+module Arkham.Types.Effect.Effects.RiteOfSeeking4
+  ( riteOfSeeking4
+  , RiteOfSeeking4(..)
   ) where
 
 import Arkham.Prelude
@@ -12,16 +12,16 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Token
 
-newtype RiteOfSeeking = RiteOfSeeking EffectAttrs
+newtype RiteOfSeeking4 = RiteOfSeeking4 EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-riteOfSeeking :: EffectArgs -> RiteOfSeeking
-riteOfSeeking = RiteOfSeeking . uncurry4 (baseAttrs "02028")
+riteOfSeeking4 :: EffectArgs -> RiteOfSeeking4
+riteOfSeeking4 = RiteOfSeeking4 . uncurry4 (baseAttrs "02233")
 
-instance HasModifiersFor env RiteOfSeeking
+instance HasModifiersFor env RiteOfSeeking4
 
-instance (HasQueue env) => RunMessage env RiteOfSeeking where
-  runMessage msg e@(RiteOfSeeking attrs@EffectAttrs {..}) = case msg of
+instance (HasQueue env) => RunMessage env RiteOfSeeking4 where
+  runMessage msg e@(RiteOfSeeking4 attrs@EffectAttrs {..}) = case msg of
     RevealToken _ iid token -> case effectTarget of
       InvestigationTarget iid' _ | iid == iid' -> e <$ when
         (tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
@@ -39,6 +39,6 @@ instance (HasQueue env) => RunMessage env RiteOfSeeking where
       case effectTarget of
         InvestigationTarget _ lid' ->
           e <$ push
-            (InvestigatorDiscoverClues iid lid' 1 (Just Action.Investigate))
+            (InvestigatorDiscoverClues iid lid' 2 (Just Action.Investigate))
         _ -> pure e
-    _ -> RiteOfSeeking <$> runMessage msg attrs
+    _ -> RiteOfSeeking4 <$> runMessage msg attrs

@@ -354,6 +354,7 @@ library
       Arkham.Types.Effect.Effects.PayForAbilityEffect
       Arkham.Types.Effect.Effects.PushedIntoTheBeyond
       Arkham.Types.Effect.Effects.RiteOfSeeking
+      Arkham.Types.Effect.Effects.RiteOfSeeking4
       Arkham.Types.Effect.Effects.SeekingAnswers
       Arkham.Types.Effect.Effects.Shrivelling
       Arkham.Types.Effect.Effects.SongOfTheDead2

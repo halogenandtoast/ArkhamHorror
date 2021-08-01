@@ -38,6 +38,7 @@ import qualified Arkham.Types.WindowMatcher as Matcher
 import Control.Monad.Extra (allM, anyM)
 import Data.HashSet (size)
 import Data.UUID (nil)
+import System.IO.Unsafe
 
 checkWindows
   :: (MonadReader env m, HasSet InvestigatorId env ())
@@ -968,6 +969,9 @@ getModifiedCardCost iid c@(EncounterCard _) = do
 
 type CanCheckFast env
   = ( HasSet Trait env EnemyId
+    , HasSet InvestigatorId env Who
+    , HasList UnderneathCard env InvestigatorId
+    , HasList Card env Matcher.WindowCardMatcher
     , HasCount DamageCount env InvestigatorId
     , HasCount HorrorCount env InvestigatorId
     , HasCount ClueCount env LocationId
@@ -992,6 +996,15 @@ type CanCheckFast env
     , HasTokenValue env ()
     )
 
+-- because we are checking if cards are playable will we inevitably
+-- trigger a case where we need to check for actions. For example
+-- "I'm outta here" needs to check for a resign ability. Doing this
+-- will cause infinite recursion, so we take out a global lock to
+-- ensure we only run this code once in an iteration
+cardInFastWindowRecursionLock :: IORef Bool
+cardInFastWindowRecursionLock = unsafePerformIO $ newIORef False
+{-# NOINLINE cardInFastWindowRecursionLock #-}
+
 cardInFastWindows
   :: (MonadReader env m, CanCheckFast env, MonadIO m)
   => InvestigatorId
@@ -999,11 +1012,21 @@ cardInFastWindows
   -> [Window]
   -> WindowMatcher
   -> m Bool
-cardInFastWindows iid _ windows matcher = anyM
+cardInFastWindows iid c windows matcher = anyM
   (`windowMatches` matcher)
   windows
  where
   windowMatches window' = \case
+    Matcher.PlayerHasFastCard cardMatcher -> do
+      locked <- readIORef cardInFastWindowRecursionLock
+      if locked
+        then pure False
+        else do
+          writeIORef cardInFastWindowRecursionLock True
+          cards <- filter (/= c) <$> getList cardMatcher
+          result <- anyM (\c' -> cardInFastWindows iid c' windows matcher) cards
+          writeIORef cardInFastWindowRecursionLock True
+          pure result
     Matcher.PhaseBegins _whenMatcher phaseMatcher -> case window' of
       AnyPhaseBegins -> pure $ phaseMatcher == Matcher.AnyPhase
       PhaseBegins _ -> case phaseMatcher of
@@ -1184,14 +1207,18 @@ cardInFastWindows iid _ windows matcher = anyM
       treacheryIds <- getSetList @TreacheryId locationId
       cardCodes <- traverse (getId @CardCode) treacheryIds
       pure $ cCode `notElem` cardCodes
-  matchCard c = \case
+  matchCard c' = \case
     Matcher.AnyCard -> pure True
-    Matcher.NonWeakness -> pure . not . cdWeakness $ toCardDef c
-    Matcher.WithCardType cType -> pure $ toCardType c == cType
-    Matcher.CardMatchesAny ms -> anyM (matchCard c) ms
-    Matcher.CardMatches ms -> allM (matchCard c) ms
+    Matcher.NonWeakness -> pure . not . cdWeakness $ toCardDef c'
+    Matcher.WithCardType cType -> pure $ toCardType c' == cType
+    Matcher.CardMatchesAny ms -> anyM (matchCard c') ms
+    Matcher.CardMatches ms -> allM (matchCard c') ms
     Matcher.CardWithoutKeyword kw ->
-      pure $ kw `notElem` cdKeywords (toCardDef c)
+      pure $ kw `notElem` cdKeywords (toCardDef c')
+    Matcher.CardIsBeneathInvestigator whoMatcher -> do
+      iids <- getSetList @InvestigatorId whoMatcher
+      cards <- map unUnderneathCard . concat <$> traverse getList iids
+      pure $ c `elem` cards
   matchToken iid' t = \case
     Matcher.WithNegativeModifier -> do
       tv <- getTokenValue () iid' (tokenFace t)

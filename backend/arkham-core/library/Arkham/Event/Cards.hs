@@ -575,8 +575,8 @@ thePaintedWorld :: CardDef
 thePaintedWorld = (event "03012" "The Painted World" 0 Neutral)
   { cdSkills = [SkillWillpower, SkillAgility, SkillWild]
   , cdCardTraits = singleton Spell
-  , cdFast = True -- not fast
-  , cdFastWindow = Nothing -- handle via behavior since it's complicated
+  , cdFastWindow = Just
+    (PlayerHasFastCard $ EventCard <> CardIsBeneathInvestigator You)
   , cdCost = Nothing
   }
 

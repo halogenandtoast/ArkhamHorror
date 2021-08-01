@@ -1319,7 +1319,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           iid
           [ TargetLabel
               (CardIdTarget $ toCardId choice)
-              [InitiatePlayCardAs iid cardId choice msgs asAction]
+              [ ReturnToHand iid (EventTarget $ EventId cardId)
+              , InitiatePlayCardAs iid cardId choice msgs asAction
+              ]
           | choice <- choices
           ]
         )

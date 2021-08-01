@@ -92,6 +92,7 @@ data EnemyMatcher
   | EnemyWithoutTrait Trait
   | EnemyWithKeyword Keyword
   | AnyEnemy
+  | ExhaustedEnemy
   | NonWeaknessEnemy
   | EnemyAtYourLocation
   | EnemyAtLocation LocationId

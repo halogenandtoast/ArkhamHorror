@@ -54,6 +54,8 @@ export default defineComponent({
           return c.contents[2].contents.id === id.value;
         case MessageType.PLAY_CARD:
           return c.contents[1] === id.value;
+        case MessageType.PLAY_CARD_AS:
+          return c.contents[1] === id.value;
         case MessageType.PLAY_FAST_EVENT:
           return c.contents[1] === id.value
         case MessageType.ADD_FOCUSED_TO_TOP_OF_DECK:

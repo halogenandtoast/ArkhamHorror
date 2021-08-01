@@ -36,6 +36,7 @@ import Arkham.Types.Window
 import Arkham.Types.WindowMatcher (WindowMatcher)
 import qualified Arkham.Types.WindowMatcher as Matcher
 import Control.Monad.Extra (allM, anyM)
+import qualified Data.HashSet as HashSet
 import Data.UUID (nil)
 
 checkWindows
@@ -810,6 +811,7 @@ getIsPlayableWithResources iid availableResources windows c@(PlayerCard _) = do
     (cdFastWindow pcDef)
   canEvade <- hasEvadeActions iid NonFast
   canFight <- hasFightActions iid NonFast
+  passesLimits <- allM passesLimit (cdLimits pcDef)
   pure
     $ (cdCardType pcDef /= SkillType)
     && (modifiedCardCost <= availableResources)
@@ -818,6 +820,7 @@ getIsPlayableWithResources iid availableResources windows c@(PlayerCard _) = do
     && (cdAction pcDef /= Just Action.Evade || canEvade)
     && (cdAction pcDef /= Just Action.Fight || canFight)
     && passesRestrictions
+    && passesLimits
  where
   pcDef = toCardDef c
   prevents (CanOnlyUseCardsInRole role) =
@@ -830,6 +833,19 @@ getIsPlayableWithResources iid availableResources windows c@(PlayerCard _) = do
     )
     typePairs
   prevents _ = False
+  passesLimit (LimitPerInvestigator m) = case toCardType c of
+    AssetType -> do
+      n <- HashSet.size <$> getSet @AssetId
+        (AssetOwnedBy (InvestigatorWithId iid)
+        <> AssetWithTitle (nameTitle $ toName c)
+        )
+      pure $ m > n
+    _ -> error $ "Not handling card type: " <> show (toCardType c)
+  passesLimit (LimitPerTrait t m) = case toCardType c of
+    AssetType -> do
+      n <- HashSet.size <$> getSet @AssetId (AssetWithTrait t)
+      pure $ m > n
+    _ -> error $ "Not handling card type: " <> show (toCardType c)
 
 passesRestriction
   :: ( HasCallStack

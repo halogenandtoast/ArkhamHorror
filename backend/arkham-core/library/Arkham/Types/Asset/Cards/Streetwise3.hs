@@ -26,13 +26,20 @@ streetwise3 :: AssetCard Streetwise3
 streetwise3 = asset Streetwise3 Cards.streetwise3
 
 instance HasActions env Streetwise3 where
-  getActions iid FastPlayerWindow (Streetwise3 a) | ownedBy a iid = do
-    pure
-      [ UseAbility
-          iid
-          (mkAbility (toSource a) idx (FastAbility $ ResourceCost 2))
-      | idx <- [1 .. 2]
-      ]
+  getActions iid (WhenSkillTest SkillIntellect) (Streetwise3 a)
+    | ownedBy a iid = do
+      pure
+        [ UseAbility
+            iid
+            (mkAbility (toSource a) 1 (FastAbility $ ResourceCost 2))
+        ]
+  getActions iid (WhenSkillTest SkillAgility) (Streetwise3 a) | ownedBy a iid =
+    do
+      pure
+        [ UseAbility
+            iid
+            (mkAbility (toSource a) 2 (FastAbility $ ResourceCost 2))
+        ]
   getActions _ _ _ = pure []
 
 instance HasModifiersFor env Streetwise3

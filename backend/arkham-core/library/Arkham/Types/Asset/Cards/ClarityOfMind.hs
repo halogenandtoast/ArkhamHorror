@@ -13,6 +13,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
+import Arkham.Types.PlayRestriction
 import Arkham.Types.Target
 import Arkham.Types.Window
 
@@ -28,9 +29,13 @@ instance HasActions env ClarityOfMind where
   getActions iid NonFast (ClarityOfMind a) = pure
     [ UseAbility
         iid
-        (mkAbility
+        (restrictedAbility
           (toSource a)
           1
+          (InvestigatorExists
+          $ InvestigatorAtYourLocation
+          <> InvestigatorWithHorror
+          )
           (ActionAbility Nothing
           $ Costs [ActionCost 1, UseCost (toId a) Charge 1]
           )

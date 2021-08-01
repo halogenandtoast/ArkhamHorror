@@ -749,6 +749,7 @@ getEnemiesMatching matcher = do
     EnemyWithTrait t -> fmap (member t) . getSet . toId
     EnemyWithoutTrait t -> fmap (notMember t) . getSet . toId
     EnemyWithKeyword k -> fmap (elem k) . getSet . toId
+    ExhaustedEnemy -> pure . isExhausted
     AnyEnemy -> pure . const True
     NonWeaknessEnemy -> pure . not . cdWeakness . toCardDef
     EnemyEngagedWithYou -> \enemy -> do
@@ -2548,6 +2549,10 @@ runGameMessage msg g = case msg of
     asset <- getAsset assetId
     push $ AddToHand iid (toCard asset)
     pure $ g & assetsL %~ deleteMap assetId
+  ReturnToHand iid (EventTarget eventId) -> do
+    event <- getEvent eventId
+    push $ AddToHand iid (toCard event)
+    pure $ g & eventsL %~ deleteMap eventId
   After (ShuffleIntoDeck _ (AssetTarget aid)) ->
     pure $ g & assetsL %~ deleteMap aid
   ShuffleIntoDeck iid (TreacheryTarget treacheryId) -> do

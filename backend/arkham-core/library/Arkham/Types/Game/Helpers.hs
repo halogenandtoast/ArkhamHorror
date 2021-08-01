@@ -801,6 +801,7 @@ getIsPlayableWithResources _ _ _ (EncounterCard _) = pure False -- TODO: there m
 getIsPlayableWithResources iid availableResources windows c@(PlayerCard _) = do
   modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
   location <- getId @LocationId iid
+  let notFastWindow = any (`elem` windows) [DuringTurn iid]
   modifiedCardCost <- getModifiedCardCost iid c
   passesRestrictions <- maybe
     (pure True)
@@ -817,7 +818,7 @@ getIsPlayableWithResources iid availableResources windows c@(PlayerCard _) = do
     $ (cdCardType pcDef /= SkillType)
     && (modifiedCardCost <= availableResources)
     && none prevents modifiers
-    && (isNothing (cdFastWindow pcDef) || inFastWindow)
+    && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow)
     && (cdAction pcDef /= Just Action.Evade || canEvade)
     && (cdAction pcDef /= Just Action.Fight || canFight)
     && passesRestrictions
@@ -1006,7 +1007,7 @@ cardInFastWindowRecursionLock = unsafePerformIO $ newIORef False
 {-# NOINLINE cardInFastWindowRecursionLock #-}
 
 cardInFastWindows
-  :: (MonadReader env m, CanCheckFast env, MonadIO m)
+  :: (MonadReader env m, CanCheckPlayable env, MonadIO m)
   => InvestigatorId
   -> Card
   -> [Window]
@@ -1024,8 +1025,8 @@ cardInFastWindows iid c windows matcher = anyM
         else do
           writeIORef cardInFastWindowRecursionLock True
           cards <- filter (/= c) <$> getList cardMatcher
-          result <- anyM (\c' -> cardInFastWindows iid c' windows matcher) cards
-          writeIORef cardInFastWindowRecursionLock True
+          result <- anyM (getIsPlayable iid [window']) cards
+          writeIORef cardInFastWindowRecursionLock False
           pure result
     Matcher.PhaseBegins _whenMatcher phaseMatcher -> case window' of
       AnyPhaseBegins -> pure $ phaseMatcher == Matcher.AnyPhase
@@ -1154,23 +1155,7 @@ cardInFastWindows iid c windows matcher = anyM
   gameValueMatches n = \case
     Matcher.AnyValue -> pure True
     Matcher.LessThan gv -> (n <) <$> getPlayerCountValue gv
-  enemyMatches enemyId = \case
-    EnemyEngagedWithYou -> member iid <$> getSet enemyId
-    EnemyWithId eid -> pure $ eid == enemyId
-    NonWeaknessEnemy -> do
-      cardCode <- getId @CardCode enemyId
-      pure . isJust $ lookup cardCode allEncounterCards
-    AnyEnemy -> pure True
-    EnemyWithKeyword k -> member k <$> getSet enemyId
-    EnemyWithTrait t -> member t <$> getSet enemyId
-    EnemyWithoutTrait t -> notMember t <$> getSet enemyId
-    EnemyAtYourLocation ->
-      liftA2 (==) (getId @LocationId iid) (getId @LocationId enemyId)
-    EnemyAtLocation lid -> (== lid) <$> getId @LocationId enemyId
-    EnemyMatchAll es -> allM (enemyMatches enemyId) es
-    EnemyWithTitle title -> (== title) . nameTitle <$> getName enemyId
-    EnemyWithFullTitle title subtitle ->
-      (== Name title (Just subtitle)) <$> getName enemyId
+  enemyMatches enemyId mtchr = member enemyId <$> getSet mtchr
   locationMatches locationId = \case
     LocationWithLabel label ->
       (== label) . Location.unLabel <$> Location.getLabel locationId

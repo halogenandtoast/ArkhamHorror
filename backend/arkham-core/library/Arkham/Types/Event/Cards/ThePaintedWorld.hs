@@ -13,6 +13,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype ThePaintedWorld = ThePaintedWorld EventAttrs
   deriving anyclass IsEvent
@@ -36,7 +37,9 @@ instance CanCheckPlayable env => RunMessage env ThePaintedWorld where
             [(== EventType) . toCardType, not . cdExceptional . toCardDef]
           )
           underneathCards
-      playableCards <- filterM (getIsPlayable iid windows) validCards
+      playableCards <- filterM
+        (getIsPlayable iid (DuringTurn iid : windows))
+        validCards
       e <$ push
         (InitiatePlayCardAsChoose
           iid

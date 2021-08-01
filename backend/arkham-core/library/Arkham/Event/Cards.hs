@@ -218,7 +218,8 @@ sneakAttack :: CardDef
 sneakAttack = (event "01052" "Sneak Attack" 2 Rogue)
   { cdSkills = [SkillIntellect, SkillCombat]
   , cdCardTraits = setFromList [Tactic]
-  , cdPlayRestrictions = Just $ Restriction.EnemyExists EnemyAtYourLocation
+  , cdPlayRestrictions = Just
+    $ Restriction.EnemyExists (EnemyAtYourLocation <> ExhaustedEnemy)
   }
 
 sureGamble3 :: CardDef

@@ -1513,7 +1513,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   ChooseEndTurn iid | iid == investigatorId -> do
     push (CheckWindow iid [AfterEndTurn iid])
     pure $ a & endedTurnL .~ True
-  BeginRound -> do
+  BeginInvestigation -> do
     actionsForTurn <- getActionsForTurn a
     pure
       $ a

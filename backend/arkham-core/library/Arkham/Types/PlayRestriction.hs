@@ -1,4 +1,7 @@
-module Arkham.Types.PlayRestriction where
+module Arkham.Types.PlayRestriction
+  ( module Arkham.Types.PlayRestriction
+  , module Arkham.Types.Matcher
+  ) where
 
 import Arkham.Prelude
 

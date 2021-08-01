@@ -30,6 +30,7 @@ createAsset a = lookupAsset (toCardCode a) (AssetId $ toCardId a)
 instance
   ( ActionRunner env
   , HasSkillTest env
+  , CanCheckPlayable env
   )
   => HasActions env Asset where
   getActions iid window x = do

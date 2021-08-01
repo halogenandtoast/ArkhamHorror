@@ -136,7 +136,7 @@ export default defineComponent({
       return null;
     })
 
-    const isIgnored = (token: ChaosToken) => token.modifiers?.some(modifier => modifier.type.tag == 'IgnoreTokenEffects') || false
+    const isIgnored = (token: ChaosToken) => token.modifiers?.some(modifier => modifier.type.tag == 'IgnoreToken') || false
 
     const debug = inject('debug')
     const debugChoose = inject('debugChoose')
@@ -179,18 +179,7 @@ export default defineComponent({
 
 .ignored {
   position: relative;
-  &::after {
-    pointer-events: none;
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #FFF;
-    opacity: .85;
-    mix-blend-mode: saturation;
-  }
+  filter: sepia(1);
 }
 
 .token-container {

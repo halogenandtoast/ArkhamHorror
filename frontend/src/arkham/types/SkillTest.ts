@@ -24,6 +24,8 @@ export interface SkillTest {
 
 export interface SkillTestResults {
   skillTestResultsSkillValue: number;
+  skillTestResultsIconValue: number;
+  skillTestResultsTokensValue: number;
   skillTestResultsDifficulty: number;
 }
 
@@ -43,6 +45,8 @@ export const skillTestDecoder = JsonDecoder.object<SkillTest>(
 export const skillTestResultsDecoder = JsonDecoder.object<SkillTestResults>(
   {
     skillTestResultsSkillValue: JsonDecoder.number,
+    skillTestResultsIconValue: JsonDecoder.number,
+    skillTestResultsTokensValue: JsonDecoder.number,
     skillTestResultsDifficulty: JsonDecoder.number,
   },
   'SkillTestResults',

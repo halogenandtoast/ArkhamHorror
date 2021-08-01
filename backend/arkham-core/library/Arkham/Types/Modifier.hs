@@ -98,6 +98,7 @@ data ModifierType
   | HorrorDealt Int
   | HunterConnectedTo LocationId
   | IgnoreText
+  | IgnoreToken
   | IgnoreTokenEffects
   | MaxDamageTaken Int
   | MayChooseNotToTakeUpkeepResources

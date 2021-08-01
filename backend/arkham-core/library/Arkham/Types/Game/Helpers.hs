@@ -784,10 +784,20 @@ getIsPlayable
   -> [Window]
   -> Card
   -> m Bool
-getIsPlayable _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
-getIsPlayable iid windows c@(PlayerCard _) = do
-  modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
+getIsPlayable iid windows c = do
   availableResources <- unResourceCount <$> getCount iid
+  getIsPlayableWithResources iid availableResources windows c
+
+getIsPlayableWithResources
+  :: (MonadReader env m, MonadIO m, CanCheckPlayable env)
+  => InvestigatorId
+  -> Int
+  -> [Window]
+  -> Card
+  -> m Bool
+getIsPlayableWithResources _ _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
+getIsPlayableWithResources iid availableResources windows c@(PlayerCard _) = do
+  modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
   location <- getId @LocationId iid
   modifiedCardCost <- getModifiedCardCost iid c
   passesRestrictions <- maybe

@@ -1,134 +1,142 @@
 <template>
   <div v-if="!game.gameOver" id="scenario" class="scenario">
-    <StatusBar :game="game" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
-    <PlayerOrder :game="game" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
-    <PlayerSelector
-      :game="game"
-      :investigatorId="investigatorId"
-      @choose="$emit('choose', $event)"
-    />
-    <CommittedSkills
-      v-if="skills.length > 0"
-      :game="game"
-      :cards="skills"
-      :investigatorId="investigatorId"
-      @choose="$emit('choose', $event)"
-    />
-    <CardRow
-      v-if="showCards.length > 0"
-      :game="game"
-      :cards="showCards"
-      :isDiscards="viewingDiscard"
-      :title="cardRowTitle"
-      :investigatorId="investigatorId"
-      @choose="$emit('choose', $event)"
-      @close="showCards = []"
-    />
-    <div class="scenario-cards">
-      <div v-if="topEnemyInVoid">
-        <Enemy
-          :enemy="topEnemyInVoid"
+    <div class="scenario-body">
+      <StatusBar :game="game" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
+      <PlayerOrder :game="game" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
+      <PlayerSelector
+        :game="game"
+        :investigatorId="investigatorId"
+        @choose="$emit('choose', $event)"
+      />
+      <CommittedSkills
+        v-if="skills.length > 0"
+        :game="game"
+        :cards="skills"
+        :investigatorId="investigatorId"
+        @choose="$emit('choose', $event)"
+      />
+      <CardRow
+        v-if="showCards.length > 0"
+        :game="game"
+        :cards="showCards"
+        :isDiscards="viewingDiscard"
+        :title="cardRowTitle"
+        :investigatorId="investigatorId"
+        @choose="$emit('choose', $event)"
+        @close="showCards = []"
+      />
+      <div class="scenario-cards">
+        <div v-if="topEnemyInVoid">
+          <Enemy
+            :enemy="topEnemyInVoid"
+            :game="game"
+            :investigatorId="investigatorId"
+            @choose="$emit('choose', $event)"
+          />
+        </div>
+        <img
+          v-if="scenarioDeck"
+          :src="scenarioDeck"
+          class="card"
+        />
+        <VictoryDisplay :game="game" @show="doShowCards" />
+        <div v-if="topOfEncounterDiscard" class="discard">
+          <img
+            :src="topOfEncounterDiscard"
+            class="card"
+          />
+
+          <button v-if="discards.length > 0" class="view-discard-button" @click="doShowCards($event, discards, 'Encounter Discard', true)">{{viewDiscardLabel}}</button>
+        </div>
+
+        <EncounterDeck
           :game="game"
           :investigatorId="investigatorId"
           @choose="$emit('choose', $event)"
         />
-      </div>
-      <img
-        v-if="scenarioDeck"
-        :src="scenarioDeck"
-        class="card"
-      />
-      <VictoryDisplay :game="game" @show="doShowCards" />
-      <div v-if="topOfEncounterDiscard" class="discard">
+
+        <Agenda
+          v-for="(agenda, key) in game.agendas"
+          :key="key"
+          :agenda="agenda"
+          :cardsUnder="cardsUnderAgenda"
+          :game="game"
+          :investigatorId="investigatorId"
+          @choose="$emit('choose', $event)"
+        />
+
+
+        <Act
+          v-for="(act, key) in game.acts"
+          :key="key"
+          :act="act"
+          :cardsUnder="cardsUnderAct"
+          :game="game"
+          :investigatorId="investigatorId"
+          @choose="$emit('choose', $event)"
+          @show="doShowCards"
+        />
         <img
-          :src="topOfEncounterDiscard"
+          class="card"
+          :src="scenarioGuide"
+        />
+        <ChaosBag
+          :game="game"
+          :skillTest="game.skillTest"
+          :investigatorId="investigatorId"
+          @choose="$emit('choose', $event)"
+        />
+        <img
+          v-if="activeCard"
+          :src="activeCard"
           class="card"
         />
 
-        <button v-if="discards.length > 0" class="view-discard-button" @click="doShowCards($event, discards, 'Encounter Discard', true)">{{viewDiscardLabel}}</button>
+        <button v-if="removedFromPlay.length > 0" class="view-removed-from-play-button" @click="doShowCards($event, removedFromPlay, 'Removed from Play', true)"><font-awesome-icon icon="eye" /> Removed from Play</button>
+
+        <button v-if="outOfPlay.length > 0" class="view-out-of-play-button" @click="doShowCards($event, outOfPlay, 'Out of Play', true)"><font-awesome-icon icon="eye" /> Out of Play</button>
       </div>
 
-      <EncounterDeck
+      <svg id="svg">
+        <line id="line" class="line original" stroke-dasharray="5, 5"/>
+      </svg>
+
+      <div ref="locationMap" class="location-cards" :style="locationStyles">
+        <Location
+          v-for="(location, key) in game.locations"
+          class="location"
+          :key="key"
+          :game="game"
+          :investigatorId="investigatorId"
+          :location="location"
+          :style="{ 'grid-area': location.contents.label, 'justify-self': 'center' }"
+          @choose="$emit('choose', $event)"
+        />
+        <Enemy
+          v-for="enemy in enemiesAsLocations"
+          :key="enemy.contents.id"
+          :enemy="enemy"
+          :game="game"
+          :investigatorId="investigatorId"
+          :style="{ 'grid-area': enemy.contents.asSelfLocation, 'justify-self': 'center' }"
+          @choose="$emit('choose', $event)"
+        />
+      </div>
+
+      <PlayerTabs
         :game="game"
         :investigatorId="investigatorId"
-        @choose="$emit('choose', $event)"
-      />
-
-      <Agenda
-        v-for="(agenda, key) in game.agendas"
-        :key="key"
-        :agenda="agenda"
-        :cardsUnder="cardsUnderAgenda"
-        :game="game"
-        :investigatorId="investigatorId"
-        @choose="$emit('choose', $event)"
-      />
-
-
-      <Act
-        v-for="(act, key) in game.acts"
-        :key="key"
-        :act="act"
-        :cardsUnder="cardsUnderAct"
-        :game="game"
-        :investigatorId="investigatorId"
-        @choose="$emit('choose', $event)"
-        @show="doShowCards"
-      />
-      <img
-        class="card"
-        :src="scenarioGuide"
-      />
-      <ChaosBag
-        :game="game"
-        :skillTest="game.skillTest"
-        :investigatorId="investigatorId"
-        @choose="$emit('choose', $event)"
-      />
-      <img
-        v-if="activeCard"
-        :src="activeCard"
-        class="card"
-      />
-
-      <button v-if="removedFromPlay.length > 0" class="view-removed-from-play-button" @click="doShowCards($event, removedFromPlay, 'Removed from Play', true)"><font-awesome-icon icon="eye" /> Removed from Play</button>
-
-      <button v-if="outOfPlay.length > 0" class="view-out-of-play-button" @click="doShowCards($event, outOfPlay, 'Out of Play', true)"><font-awesome-icon icon="eye" /> Out of Play</button>
-    </div>
-
-    <svg id="svg">
-      <line id="line" class="line original" stroke-dasharray="5, 5"/>
-    </svg>
-
-    <div ref="locationMap" class="location-cards" :style="locationStyles">
-      <Location
-        v-for="(location, key) in game.locations"
-        class="location"
-        :key="key"
-        :game="game"
-        :investigatorId="investigatorId"
-        :location="location"
-        :style="{ 'grid-area': location.contents.label, 'justify-self': 'center' }"
-        @choose="$emit('choose', $event)"
-      />
-      <Enemy
-        v-for="enemy in enemiesAsLocations"
-        :key="enemy.contents.id"
-        :enemy="enemy"
-        :game="game"
-        :investigatorId="investigatorId"
-        :style="{ 'grid-area': enemy.contents.asSelfLocation, 'justify-self': 'center' }"
+        :players="players"
+        :activePlayerId="activePlayerId"
         @choose="$emit('choose', $event)"
       />
     </div>
-
-    <PlayerTabs
-      :game="game"
-      :investigatorId="investigatorId"
-      :players="players"
-      :activePlayerId="activePlayerId"
-      @choose="$emit('choose', $event)"
-    />
+    <div class="phases">
+      <div :class="{ 'active-phase': phase == 'MythosPhase' }">Mythos</div>
+      <div :class="{ 'active-phase': phase == 'InvestigationPhase' }">Investigation</div>
+      <div :class="{ 'active-phase': phase == 'EnemyPhase' }">Enemy</div>
+      <div :class="{ 'active-phase': phase == 'UpkeepPhase' }">Upkeep</div>
+    </div>
   </div>
 </template>
 
@@ -352,7 +360,10 @@ export default defineComponent({
 
     const skills = computed(() => Object.values(props.game.skills))
 
+    const phase = computed(() => props.game.phase)
+
     return {
+      phase,
       removedFromPlay,
       skills,
       outOfPlay,
@@ -431,13 +442,14 @@ export default defineComponent({
   }
 }
 
-.scenario {
+.scenario-body {
   background-image: linear-gradient(darken(#E5EAEC, 10), #E5EAEC);
   width: 100%;
   height: 100%;
   z-index: 1;
   display: grid;
   grid-template-rows: min-content min-content 1fr min-content;
+  flex: 1;
 }
 
 .location-cards {
@@ -534,5 +546,29 @@ export default defineComponent({
   background: #a5b5bc;
   font-size: 1.2em;
   padding: 5px 15px;
+}
+
+.phases {
+  display: flex;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  justify-content: space-around;
+  background-color: #b8c1c6;
+  text-transform: uppercase;
+  font-family: Arial;
+  div {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+.scenario {
+  display: flex;
+  width: 100%;
+}
+
+.active-phase {
+  font-weight: bold;
+  background-color: #8e9ca4;
 }
 </style>

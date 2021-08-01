@@ -14,6 +14,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
+import Arkham.Types.Query
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
@@ -27,9 +28,26 @@ joeyTheRatVigil = ally JoeyTheRatVigil Cards.joeyTheRatVigil (3, 2)
 ability :: AssetAttrs -> Ability
 ability a = mkAbility a 1 (FastAbility $ ResourceCost 1)
 
-instance HasActions env JoeyTheRatVigil where
+-- This card is a pain and the solution here is a hack
+-- we end up with a separate function for resource modification
+instance
+  ( CanCheckPlayable env
+  , HasList HandCard env InvestigatorId
+  )
+  => HasActions env JoeyTheRatVigil where
   getActions iid FastPlayerWindow (JoeyTheRatVigil attrs) | ownedBy attrs iid =
-    pure [UseAbility iid (ability attrs)]
+    do
+      availableResources <- unResourceCount <$> getCount iid
+      handCards <- map unHandCard <$> getList iid
+      let items = filter (member Item . toTraits) handCards
+      playableItems <- filterM
+        (getIsPlayableWithResources
+          iid
+          (availableResources - 1)
+          [DuringTurn iid, FastPlayerWindow]
+        )
+        items
+      pure [ UseAbility iid (ability attrs) | notNull playableItems ]
   getActions _ _ _ = pure []
 
 instance HasModifiersFor env JoeyTheRatVigil

@@ -6,14 +6,15 @@ module Arkham.Types.Event.Cards.ThePaintedWorld
 import Arkham.Prelude
 
 import qualified Arkham.Event.Cards as Cards
-import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Game.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Window
+import Arkham.Types.WindowMatcher hiding (DuringTurn)
 
 newtype ThePaintedWorld = ThePaintedWorld EventAttrs
   deriving anyclass IsEvent
@@ -30,21 +31,14 @@ instance HasModifiersFor env ThePaintedWorld
 instance CanCheckPlayable env => RunMessage env ThePaintedWorld where
   runMessage msg e@(ThePaintedWorld attrs) = case msg of
     InvestigatorPlayEvent iid eid _ windows | eid == toId attrs -> do
-      underneathCards <- map unUnderneathCard <$> getList iid
-      let
-        validCards = filter
-          (and . sequence
-            [(== EventType) . toCardType, not . cdExceptional . toCardDef]
-          )
-          underneathCards
-      playableCards <- filterM
-        (getIsPlayable iid (DuringTurn iid : windows))
-        validCards
+      playableCards <-
+        filterM (getIsPlayable iid $ DuringTurn iid : windows) =<< getList
+          (NonExceptional <> EventCard <> CardIsBeneathInvestigator You)
       e <$ push
         (InitiatePlayCardAsChoose
           iid
           (toCardId attrs)
-          (traceShowId playableCards)
+          playableCards
           [ CreateEffect
               "03012"
               Nothing

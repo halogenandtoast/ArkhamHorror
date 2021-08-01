@@ -1596,6 +1596,7 @@ instance HasGame env => HasList Card env Matcher.WindowCardMatcher where
    where
     matches c = \case
       Matcher.NonWeakness -> pure $ not (cdWeakness $ toCardDef c)
+      Matcher.NonExceptional -> pure $ not (cdExceptional $ toCardDef c)
       Matcher.WithCardType ct -> pure $ toCardType c == ct
       Matcher.CardMatchesAny ms -> anyM (matches c) ms
       Matcher.CardMatches ms -> allM (matches c) ms

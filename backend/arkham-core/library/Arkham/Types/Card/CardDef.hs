@@ -43,8 +43,7 @@ data CardDef = CardDef
   , cdSkills :: [SkillType]
   , cdCardTraits :: HashSet Trait
   , cdKeywords :: HashSet Keyword
-  , cdFast :: Bool
-  , cdFastWindow :: Maybe WindowMatcher -- WARNING: This is new
+  , cdFastWindow :: Maybe WindowMatcher
   , cdAction :: Maybe Action
   , cdRevelation :: Bool
   , cdVictoryPoints :: Maybe Int
@@ -136,7 +135,6 @@ testCardDef cardType cardCode = CardDef
   , cdSkills = []
   , cdCardTraits = mempty
   , cdKeywords = mempty
-  , cdFast = False
   , cdFastWindow = Nothing
   , cdAction = Nothing
   , cdRevelation = False

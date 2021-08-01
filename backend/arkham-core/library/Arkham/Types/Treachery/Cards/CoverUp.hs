@@ -30,22 +30,12 @@ coverUpClues TreacheryAttrs { treacheryClues } =
 instance HasModifiersFor env CoverUp
 
 instance ActionRunner env => HasActions env CoverUp where
-  getActions iid (WhenDiscoverClues who lid) (CoverUp a) | iid == who =
+  getActions iid (WhenDiscoverClues who lid n) (CoverUp a) | iid == who =
     withTreacheryInvestigator a $ \tormented -> do
       treacheryLocationId <- getId @LocationId tormented
-      cluesToDiscover <- fromQueue $ \queue -> do
-        let
-          mDiscoverClues = flip find queue $ \case
-            DiscoverClues{} -> True
-            _ -> False
-        case mDiscoverClues of
-          Just (DiscoverClues _ _ m _) -> m
-          _ -> 0
       pure
         [ UseAbility iid (mkAbility (toSource a) 1 (ReactionAbility Free))
-        | (treacheryLocationId == lid)
-          && (coverUpClues a > 0)
-          && (cluesToDiscover > 0)
+        | (treacheryLocationId == lid) && (coverUpClues a > 0) && (n > 0)
         ]
   getActions _ _ _ = pure []
 

@@ -1,6 +1,6 @@
-module Arkham.Types.Asset.Cards.FortyFiveAutomatic
-  ( FortyFiveAutomatic(..)
-  , fortyFiveAutomatic
+module Arkham.Types.Asset.Cards.ThirtyTwoColt
+  ( thirtyTwoColt
+  , ThirtyTwoColt(..)
   ) where
 
 import Arkham.Prelude
@@ -9,31 +9,29 @@ import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
+import Arkham.Types.Slot
 import Arkham.Types.Target
 import Arkham.Types.Window
 
-newtype FortyFiveAutomatic = FortyFiveAutomatic AssetAttrs
+newtype ThirtyTwoColt = ThirtyTwoColt AssetAttrs
   deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-fortyFiveAutomatic :: AssetCard FortyFiveAutomatic
-fortyFiveAutomatic = handWith
-  FortyFiveAutomatic
-  Cards.fortyFiveAutomatic
-  (startingUsesL ?~ Uses Ammo 4)
+thirtyTwoColt :: AssetCard ThirtyTwoColt
+thirtyTwoColt =
+  assetWith ThirtyTwoColt Cards.thirtyTwoColt
+    $ (slotsL .~ [HandSlot])
+    . (startingUsesL ?~ Uses Ammo 6)
 
-instance HasModifiersFor env FortyFiveAutomatic
-
-instance HasActions env FortyFiveAutomatic where
-  getActions iid _ (FortyFiveAutomatic a) | ownedBy a iid = pure
+instance HasActions env ThirtyTwoColt where
+  getActions iid NonFast (ThirtyTwoColt a) | ownedBy a iid = pure
     [ UseAbility
         iid
         (mkAbility
@@ -47,13 +45,12 @@ instance HasActions env FortyFiveAutomatic where
     ]
   getActions _ _ _ = pure []
 
-instance AssetRunner env => RunMessage env FortyFiveAutomatic where
-  runMessage msg a@(FortyFiveAutomatic attrs) = case msg of
+instance HasModifiersFor env ThirtyTwoColt
+
+instance (HasQueue env, HasModifiersFor env ()) => RunMessage env ThirtyTwoColt where
+  runMessage msg a@(ThirtyTwoColt attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
-      [ skillTestModifiers
-        attrs
-        (InvestigatorTarget iid)
-        [DamageDealt 1, SkillModifier SkillCombat 1]
+      [ skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)
       , ChooseFightEnemy iid source SkillCombat mempty False
       ]
-    _ -> FortyFiveAutomatic <$> runMessage msg attrs
+    _ -> ThirtyTwoColt <$> runMessage msg attrs

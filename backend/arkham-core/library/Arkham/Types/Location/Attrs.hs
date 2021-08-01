@@ -534,7 +534,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       pure $ a & connectedLocationsL %~ insertSet toLid
     DiscoverCluesAtLocation iid lid n maction | lid == locationId -> do
       let discoveredClues = min n locationClues
-      checkWindowMsgs <- checkWindows [WhenDiscoverClues iid lid]
+      checkWindowMsgs <- checkWindows [WhenDiscoverClues iid lid discoveredClues]
       a <$ pushAll
         (checkWindowMsgs <> [DiscoverClues iid lid discoveredClues maction])
     AfterDiscoverClues iid lid n | lid == locationId -> do

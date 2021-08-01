@@ -53,7 +53,7 @@ data Window
   | WhenDealtDamage Source Target
   | WhenDealtHorror Source Target
   | WhenDefeated Source
-  | WhenDiscoverClues InvestigatorId LocationId
+  | WhenDiscoverClues InvestigatorId LocationId Int
   | WhenWouldDrawEncounterCard InvestigatorId
   | WhenDrawToken InvestigatorId Token
   | WhenEnemyAttacks InvestigatorId EnemyId

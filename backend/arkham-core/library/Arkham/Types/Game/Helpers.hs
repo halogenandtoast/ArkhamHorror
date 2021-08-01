@@ -36,7 +36,7 @@ import Arkham.Types.Window
 import Arkham.Types.WindowMatcher (WindowMatcher)
 import qualified Arkham.Types.WindowMatcher as Matcher
 import Control.Monad.Extra (allM, anyM)
-import qualified Data.HashSet as HashSet
+import Data.HashSet (size)
 import Data.UUID (nil)
 
 checkWindows
@@ -835,7 +835,7 @@ getIsPlayableWithResources iid availableResources windows c@(PlayerCard _) = do
   prevents _ = False
   passesLimit (LimitPerInvestigator m) = case toCardType c of
     AssetType -> do
-      n <- HashSet.size <$> getSet @AssetId
+      n <- size <$> getSet @AssetId
         (AssetOwnedBy (InvestigatorWithId iid)
         <> AssetWithTitle (nameTitle $ toName c)
         )
@@ -843,7 +843,7 @@ getIsPlayableWithResources iid availableResources windows c@(PlayerCard _) = do
     _ -> error $ "Not handling card type: " <> show (toCardType c)
   passesLimit (LimitPerTrait t m) = case toCardType c of
     AssetType -> do
-      n <- HashSet.size <$> getSet @AssetId (AssetWithTrait t)
+      n <- size <$> getSet @AssetId (AssetWithTrait t)
       pure $ m > n
     _ -> error $ "Not handling card type: " <> show (toCardType c)
 

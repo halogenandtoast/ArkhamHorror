@@ -68,6 +68,10 @@ FROM ubuntu:18.04 as app
 
 ENV LC_ALL=en_US.UTF-8
 
+RUN apt-get update
+RUN apt-get upgrade -y --assume-yes
+RUN apt-get install -y --assume-yes libpq-dev
+
 RUN mkdir -p /opt/arkham/bin
 RUN mkdir -p /opt/arkham/src/backend/arkham-api
 RUN mkdir -p /opt/arkham/src/frontend
@@ -75,10 +79,6 @@ RUN mkdir -p /opt/arkham/src/frontend
 COPY --from=frontend /opt/arkham/src/frontend/dist /opt/arkham/src/frontend/dist
 COPY --from=api /opt/arkham/bin/arkham-api /opt/arkham/bin/arkham-api
 COPY ./backend/arkham-api/config /opt/arkham/src/backend/arkham-api/config
-
-RUN apt-get update
-RUN apt-get upgrade -y --assume-yes
-RUN apt-get install -y --assume-yes libpq-dev
 
 RUN useradd -ms /bin/bash yesod
 RUN chown -R yesod:yesod /opt/arkham

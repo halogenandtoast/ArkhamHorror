@@ -23,10 +23,10 @@ theGoldPocketWatch4 :: AssetCard TheGoldPocketWatch4
 theGoldPocketWatch4 = asset TheGoldPocketWatch4 Cards.theGoldPocketWatch4
 
 skipPhaseAbility :: Phase -> AssetAttrs -> Ability
-skipPhaseAbility _ attrs = mkAbility attrs 1 (FastAbility Free)
+skipPhaseAbility _ attrs = mkAbility attrs 1 (ReactionAbility Free)
 
 repeatPhaseAbility :: Phase -> AssetAttrs -> Ability
-repeatPhaseAbility p attrs = (mkAbility attrs 2 (FastAbility Free))
+repeatPhaseAbility p attrs = (mkAbility attrs 2 (ReactionAbility Free))
   { abilityMetadata = Just (TargetMetadata $ PhaseTarget p)
   }
 

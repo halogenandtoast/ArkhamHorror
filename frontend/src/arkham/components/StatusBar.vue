@@ -2,8 +2,13 @@
   <section class="status-bar">
     <div v-if="skillTestResults" class="skill-test-results">
       <dl>
-        <dt>Modified Skill Value (skill value - tokens):</dt>
-        <dd>{{skillTestResults.skillTestResultsSkillValue}}</dd>
+        <dt>Modified Skill Value (skill value + icon value - tokens):</dt>
+        <dd>
+          {{skillTestResults.skillTestResultsSkillValue}}
+          + {{skillTestResults.skillTestResultsIconValue}}
+          {{tokenOperator}}
+          {{Math.abs(skillTestResults.skillTestResultsTokensValue)}}
+        </dd>
         <dt>Modified Difficulty:</dt>
         <dd>{{skillTestResults.skillTestResultsDifficulty}}</dd>
         <dt>Result:</dt>
@@ -148,7 +153,19 @@ export default defineComponent({
         flatMap<[Message, number][]>((choice, index) =>
           choice.tag === MessageType.CARD_LABEL ? [[choice, index]] : []))
 
-    return { cardLabels, cardLabelImage, skillTestResults, arkhamify, choices, skillTestMessageTypes, applyResultsAction, shouldShow, MessageType }
+    const tokenOperator = computed(() => (skillTestResults.value?.skillTestResultsTokensValue || 0) < 0 ? '-' : '+')
+
+    const totalSkillValue = computed(() => {
+      const result = skillTestResults.value
+      if (result !== null) {
+        const {skillTestResultsSkillValue, skillTestResultsIconValue, skillTestResultsTokensValue, skillTestResultsDifficulty} = result
+        return skillTestResultsSkillValue + skillTestResultsIconValue + skillTestResultsTokensValue - skillTestResultsDifficulty
+      } else {
+        return null
+      }
+    })
+
+    return { totalSkillValue, tokenOperator, cardLabels, cardLabelImage, skillTestResults, arkhamify, choices, skillTestMessageTypes, applyResultsAction, shouldShow, MessageType }
   }
 })
 </script>

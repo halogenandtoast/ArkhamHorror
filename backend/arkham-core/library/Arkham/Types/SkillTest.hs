@@ -35,6 +35,8 @@ getSkillTestSource = fmap toSource <$> getSkillTest
 
 data SkillTestResultsData = SkillTestResultsData
   { skillTestResultsSkillValue :: Int
+  , skillTestResultsIconValue :: Int
+  , skillTestResultsTokensValue :: Int
   , skillTestResultsDifficulty :: Int
   }
   deriving stock (Eq, Show, Generic)
@@ -247,6 +249,7 @@ getModifiedTokenValue s t = do
       pure . Sum $ fromMaybe 0 updatedTokenValue
     )
  where
+  applyModifier IgnoreToken (TokenValue token _) = TokenValue token NoModifier
   applyModifier (ChangeTokenModifier modifier') (TokenValue token _) =
     TokenValue token modifier'
   applyModifier NegativeToPositive (TokenValue token (NegativeModifier n)) =
@@ -383,7 +386,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
           (s ^. committedCardsL . to toList)
       s <$ pushAll
         (ResetTokens (toSource s) : map (uncurry AddToDiscard) discards)
-    SkillTestResults _ _ -> do
+    SkillTestResults{} -> do
       push (chooseOne skillTestInvestigator [SkillTestApplyResults])
       case skillTestResult of
         SucceededBy _ n -> pushAll
@@ -578,17 +581,19 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         (getModifiedTokenValue s)
       stats <- getStats (skillTestInvestigator, skillTestAction) (toSource s)
       modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
-      iconCount <- skillIconCount s
+      iconCount <- if CancelSkills `elem` modifiers'
+        then pure 0
+        else skillIconCount s
       let
         currentSkillValue = statsSkillValue stats skillTestSkillType
         totaledTokenValues = tokenValues + skillTestValueModifier
-        modifiedSkillValue' = max
-          0
-          (currentSkillValue
-          + totaledTokenValues
-          + (if CancelSkills `elem` modifiers' then 0 else iconCount)
-          )
-      push $ SkillTestResults modifiedSkillValue' modifiedSkillTestDifficulty
+        modifiedSkillValue' =
+          max 0 (currentSkillValue + totaledTokenValues + iconCount)
+      push $ SkillTestResults
+        currentSkillValue
+        iconCount
+        totaledTokenValues
+        modifiedSkillTestDifficulty
       if modifiedSkillValue' >= modifiedSkillTestDifficulty
         then
           pure

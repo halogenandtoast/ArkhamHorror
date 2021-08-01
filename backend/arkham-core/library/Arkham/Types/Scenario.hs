@@ -56,21 +56,21 @@ instance
       modifiers' <- getModifiers
         (toSource $ toAttrs s)
         (TokenFaceTarget tokenFace)
-      if IgnoreTokenEffects `elem` modifiers'
+      if any (`elem` modifiers') [IgnoreTokenEffects, IgnoreToken]
         then pure s
         else genericRunMessage msg s
     FailedSkillTest _ _ _ (TokenTarget token) _ _ -> do
       modifiers' <- getModifiers
         (toSource $ toAttrs s)
         (TokenFaceTarget $ tokenFace token)
-      if IgnoreTokenEffects `elem` modifiers'
+      if any (`elem` modifiers') [IgnoreTokenEffects, IgnoreToken]
         then pure s
         else genericRunMessage msg s
     PassedSkillTest _ _ _ (TokenTarget token) _ _ -> do
       modifiers' <- getModifiers
         (toSource $ toAttrs s)
         (TokenFaceTarget $ tokenFace token)
-      if IgnoreTokenEffects `elem` modifiers'
+      if any (`elem` modifiers') [IgnoreTokenEffects, IgnoreToken]
         then pure s
         else genericRunMessage msg s
     _ -> genericRunMessage msg s
@@ -100,7 +100,7 @@ instance
     modifiers' <- getModifiers
       (toSource $ toAttrs s)
       (TokenFaceTarget tokenFace)
-    if IgnoreTokenEffects `elem` modifiers'
+    if any (`elem` modifiers') [IgnoreTokenEffects, IgnoreToken]
       then pure $ TokenValue tokenFace NoModifier
       else defaultGetTokenValue s iid tokenFace
 

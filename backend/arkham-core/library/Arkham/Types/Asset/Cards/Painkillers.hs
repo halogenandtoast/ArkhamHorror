@@ -13,6 +13,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
+import Arkham.Types.PlayRestriction
 import Arkham.Types.Target
 
 newtype Painkillers = Painkillers AssetAttrs
@@ -24,9 +25,10 @@ painkillers =
   assetWith Painkillers Cards.painkillers (startingUsesL ?~ Uses Supply 3)
 
 fastAbility :: InvestigatorId -> AssetAttrs -> Ability
-fastAbility iid attrs = mkAbility
+fastAbility iid attrs = restrictedAbility
   (toSource attrs)
   1
+  (InvestigatorExists $ You <> InvestigatorWithDamage)
   (FastAbility
     (Costs
       [ UseCost (toId attrs) Ammo 1

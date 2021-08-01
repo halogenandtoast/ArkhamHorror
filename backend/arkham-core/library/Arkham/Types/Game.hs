@@ -2478,11 +2478,11 @@ runGameMessage msg g = case msg of
           pure $ g & skillsL %~ insertMap skillId skill
         _ -> pure g
       _ -> pure g
-  SkillTestResults skillValue skillDifficulty ->
+  SkillTestResults skillValue iconValue tokenValue' skillDifficulty ->
     pure
       $ g
       & skillTestResultsL
-      ?~ SkillTestResultsData skillValue skillDifficulty
+      ?~ SkillTestResultsData skillValue iconValue tokenValue' skillDifficulty
   SkillTestEnds _ -> do
     skillPairs <- for (mapToList $ g ^. skillsL) $ \(skillId, skill) -> do
       modifiers' <- getModifiers GameSource (SkillTarget skillId)

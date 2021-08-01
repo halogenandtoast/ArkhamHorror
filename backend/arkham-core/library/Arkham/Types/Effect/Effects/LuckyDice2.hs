@@ -27,8 +27,7 @@ luckyDice2 =
 
 instance HasModifiersFor env LuckyDice2 where
   getModifiersFor _ target (LuckyDice2 (attrs `With` _))
-    | target == effectTarget attrs = pure
-    $ toModifiers attrs [IgnoreTokenEffects]
+    | target == effectTarget attrs = pure $ toModifiers attrs [IgnoreToken]
   getModifiersFor _ _ _ = pure []
 
 instance HasQueue env => RunMessage env LuckyDice2 where

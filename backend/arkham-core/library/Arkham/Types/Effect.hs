@@ -106,6 +106,7 @@ data Effect
   | ThePaintedWorld' ThePaintedWorld
   | Improvisation' Improvisation
   | LetMeHandleThis' LetMeHandleThis
+  | Fieldwork' Fieldwork
   | MindWipe3' MindWipe3
   | JeremiahPierce' JeremiahPierce
   | CurseOfTheRougarouTabletToken' CurseOfTheRougarouTabletToken
@@ -211,6 +212,7 @@ allEffects = mapFromList
   , ("03012", ThePaintedWorld' . thePaintedWorld)
   , ("03018", Improvisation' . improvisation)
   , ("03022", LetMeHandleThis' . letMeHandleThis)
+  , ("03024", Fieldwork' . fieldwork)
   , ("50008", MindWipe3' . mindWipe3)
   , ("50044", JeremiahPierce' . jeremiahPierce)
   , ("81001", CurseOfTheRougarouTabletToken' . curseOfTheRougarouTabletToken)

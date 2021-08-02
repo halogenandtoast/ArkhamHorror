@@ -1,6 +1,6 @@
-module Arkham.Types.Event.Cards.EverVigilant
-  ( everVigilant
-  , EverVigilant(..)
+module Arkham.Types.Event.Cards.EverVigilant1
+  ( everVigilant1
+  , EverVigilant1(..)
   ) where
 
 import Arkham.Prelude
@@ -16,24 +16,24 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 import Arkham.Types.Window
 
-newtype EverVigilant = EverVigilant EventAttrs
+newtype EverVigilant1 = EverVigilant1 EventAttrs
   deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-everVigilant :: EventCard EverVigilant
-everVigilant = event EverVigilant Cards.everVigilant
+everVigilant1 :: EventCard EverVigilant1
+everVigilant1 = event EverVigilant1 Cards.everVigilant1
 
-instance HasActions env EverVigilant where
-  getActions iid window (EverVigilant attrs) = getActions iid window attrs
+instance HasActions env EverVigilant1 where
+  getActions iid window (EverVigilant1 attrs) = getActions iid window attrs
 
-instance HasModifiersFor env EverVigilant where
-  getModifiersFor _ (InvestigatorTarget iid) (EverVigilant attrs)
+instance HasModifiersFor env EverVigilant1 where
+  getModifiersFor _ (InvestigatorTarget iid) (EverVigilant1 attrs)
     | iid == eventOwner attrs = pure
     $ toModifiers attrs [ReduceCostOf AnyCard 1]
   getModifiersFor _ _ _ = pure []
 
-instance CanCheckPlayable env => RunMessage env EverVigilant where
-  runMessage msg e@(EverVigilant attrs) = case msg of
+instance CanCheckPlayable env => RunMessage env EverVigilant1 where
+  runMessage msg e@(EverVigilant1 attrs) = case msg of
     InvestigatorPlayEvent iid eid mtarget _ | eid == toId attrs -> do
       e <$ pushAll
         (replicate 3 (ResolveEvent iid eid mtarget)
@@ -62,4 +62,4 @@ instance CanCheckPlayable env => RunMessage env EverVigilant where
             ]
           )
         )
-    _ -> EverVigilant <$> runMessage msg attrs
+    _ -> EverVigilant1 <$> runMessage msg attrs

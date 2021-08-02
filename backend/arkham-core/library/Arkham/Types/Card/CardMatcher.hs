@@ -26,9 +26,24 @@ pattern AssetCard :: CardMatcher
 pattern AssetCard <- CardWithType AssetType where
   AssetCard = CardWithType AssetType
 
+data ExtendedCardMatcher
+  = BasicCardMatch CardMatcher
+  | CardIsBeneathInvestigator Who
+  | InHandOf Who
+  | ExtendedCardWithOneOf [ExtendedCardMatcher]
+  | ExtendedCardMatches [ExtendedCardMatcher]
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+instance Semigroup ExtendedCardMatcher where
+  ExtendedCardMatches xs <> ExtendedCardMatches ys =
+    ExtendedCardMatches $ xs <> ys
+  ExtendedCardMatches xs <> x = ExtendedCardMatches (x : xs)
+  x <> ExtendedCardMatches xs = ExtendedCardMatches (x : xs)
+  x <> y = ExtendedCardMatches [x, y]
+
 data CardMatcher
   = CardWithType CardType
-  | CardIsBeneathInvestigator Who
   | CardWithCardCode CardCode
   | CardWithTitle Text
   | CardWithTrait Trait
@@ -36,8 +51,6 @@ data CardMatcher
   | CardWithClass ClassSymbol
   | CardWithOneOf [CardMatcher]
   | CardMatches [CardMatcher]
-  | InHandOf Who
-  | IsPlayable
   | NonWeakness
   | NonExceptional
   | AnyCard

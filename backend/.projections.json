@@ -281,7 +281,7 @@
       "",
       "instance RunMessage env {dot} where",
       "  runMessage msg e@({dot} attrs) = case msg of",
-      "    InvestigatorPlayEvent _ eid _ | eid == toId attrs -> do",
+      "    InvestigatorPlayEvent _ eid _ _ | eid == toId attrs -> do",
       "      e <$ pushAll [Discard (toTarget attrs)]",
       "    _ -> {dot} <$> runMessage msg attrs"
     ]

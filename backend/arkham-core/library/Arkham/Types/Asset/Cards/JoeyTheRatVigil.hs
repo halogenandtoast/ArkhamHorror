@@ -12,7 +12,6 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Trait
@@ -30,11 +29,7 @@ ability a = mkAbility a 1 (FastAbility $ ResourceCost 1)
 
 -- This card is a pain and the solution here is a hack
 -- we end up with a separate function for resource modification
-instance
-  ( CanCheckPlayable env
-  , HasList HandCard env InvestigatorId
-  )
-  => HasActions env JoeyTheRatVigil where
+instance CanCheckPlayable env => HasActions env JoeyTheRatVigil where
   getActions iid FastPlayerWindow (JoeyTheRatVigil attrs) | ownedBy attrs iid =
     do
       availableResources <- unResourceCount <$> getCount iid
@@ -52,11 +47,7 @@ instance
 
 instance HasModifiersFor env JoeyTheRatVigil
 
-instance
-  ( CanCheckPlayable env
-  , HasList HandCard env InvestigatorId
-  )
-  => RunMessage env JoeyTheRatVigil where
+instance CanCheckPlayable env => RunMessage env JoeyTheRatVigil where
   runMessage msg a@(JoeyTheRatVigil attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       handCards <- map unHandCard <$> getList iid

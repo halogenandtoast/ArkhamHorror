@@ -39,7 +39,7 @@ instance HasCardCode Location where
 instance IsCard Location where
   toCardId = toCardId . toAttrs
 
-deriving anyclass instance ActionRunner env => HasActions env Location
+deriving anyclass instance (HasList Card env ExtendedCardMatcher, ActionRunner env) => HasActions env Location
 
 instance
   ( HasPhase env

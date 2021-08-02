@@ -1593,10 +1593,6 @@ instance HasGame env => HasList Card env CardMatcher where
     filterM (`matches` matcher) allCards'
    where
     matches c = \case
-      InHandOf who -> do
-        iids <- getSetList @InvestigatorId who
-        cards <- map unHandCard . concat <$> traverse getList iids
-        pure $ c `elem` cards
       NonWeakness -> pure $ not (cdWeakness $ toCardDef c)
       NonExceptional -> pure $ not (cdExceptional $ toCardDef c)
       CardWithCardCode cc -> pure $ toCardCode c == cc
@@ -1608,10 +1604,27 @@ instance HasGame env => HasList Card env CardMatcher where
       CardMatches ms -> allM (matches c) ms
       CardWithoutKeyword k -> pure $ k `notMember` cdKeywords (toCardDef c)
       AnyCard -> pure True
+
+instance HasGame env => HasList Card env ExtendedCardMatcher where
+  getList matcher = do
+    investigatorIds <- getInvestigatorIds
+    handCards <- map unHandCard . concat <$> traverse getList investigatorIds
+    underneathCards <-
+      map unUnderneathCard . concat <$> traverse getList investigatorIds
+    filterM (`matches` matcher) (handCards <> underneathCards)
+   where
+    matches c = \case
+      BasicCardMatch cm -> pure $ cardMatch c cm
+      InHandOf who -> do
+        iids <- getSetList @InvestigatorId who
+        cards <- map unHandCard . concat <$> traverse getList iids
+        pure $ c `elem` cards
       CardIsBeneathInvestigator who -> do
         iids <- getSetList @InvestigatorId who
         cards <- map unUnderneathCard . concat <$> traverse getList iids
         pure $ c `elem` cards
+      ExtendedCardWithOneOf ms -> anyM (matches c) ms
+      ExtendedCardMatches ms -> allM (matches c) ms
 
 instance HasGame env => HasSet EnemyId env EnemyMatcher where
   getSet = (setFromList . map toId <$>) . getEnemiesMatching

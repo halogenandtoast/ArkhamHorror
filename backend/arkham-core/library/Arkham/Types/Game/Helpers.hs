@@ -36,6 +36,7 @@ import qualified Arkham.Types.WindowMatcher as Matcher
 import Control.Monad.Extra (allM, anyM)
 import Data.HashSet (size)
 import Data.UUID (nil)
+import System.IO.Unsafe
 
 checkWindows
   :: (MonadReader env m, HasSet InvestigatorId env ())
@@ -759,11 +760,14 @@ type CanCheckPlayable env
   = ( HasModifiersFor env ()
     , Query AssetMatcher env
     , CanCheckFast env
+    , HasList HandCard env InvestigatorId
+    , HasList Card env ExtendedCardMatcher
     , HasCount ActionTakenCount env InvestigatorId
     , HasSet InvestigatorId env LocationId
     , HasSet EnemyId env LocationId
     , HasSet EnemyId env EnemyMatcher
     , HasSet LocationId env LocationMatcher
+    , HasSet Trait env EnemyId
     , HasSet Trait env EnemyId
     , HasCount ClueCount env LocationId
     , HasActions env ActionType
@@ -859,6 +863,11 @@ passesRestriction
   -> PlayRestriction
   -> m Bool
 passesRestriction iid location windows = \case
+  CardExists cardMatcher -> notNull <$> getList @Card cardMatcher
+  ExtendedCardExists cardMatcher -> notNull <$> getList @Card cardMatcher
+  PlayableCardExists cardMatcher -> do
+    results <- getList @Card cardMatcher
+    anyM (getIsPlayable iid windows) results
   FirstAction -> do
     n <- unActionTakenCount <$> getCount iid
     pure $ n == 0
@@ -938,32 +947,34 @@ passesRestriction iid location windows = \case
         _ -> False
 
 getModifiedCardCost
-  :: (MonadReader env m, HasModifiersFor env ())
+  :: (MonadReader env m, HasModifiersFor env (), HasList Card env CardMatcher)
   => InvestigatorId
   -> Card
   -> m Int
 getModifiedCardCost iid c@(PlayerCard _) = do
   modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
-  pure $ foldr applyModifier startingCost modifiers
+  foldM applyModifier startingCost modifiers
  where
   pcDef = toCardDef c
   startingCost = case cdCost pcDef of
     Just (StaticCost n) -> n
     Just DynamicCost -> 0
     Nothing -> 0
-  applyModifier (ReduceCostOf cardMatcher m) n | cardMatch c cardMatcher =
-    max 0 (n - m)
-  applyModifier _ n = n
+  applyModifier n (ReduceCostOf cardMatcher m) = do
+    matches <- getList @Card cardMatcher
+    pure $ if c `elem` matches then max 0 (n - m) else n
+  applyModifier n _ = pure n
 getModifiedCardCost iid c@(EncounterCard _) = do
   modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
-  pure $ foldr
+  foldM
     applyModifier
     (error "we need so specify ecCost for this to work")
     modifiers
  where
-  applyModifier (ReduceCostOf cardMatcher m) n | cardMatch c cardMatcher =
-    max 0 (n - m)
-  applyModifier _ n = n
+  applyModifier n (ReduceCostOf cardMatcher m) = do
+    matches <- getList @Card cardMatcher
+    pure $ if c `elem` matches then max 0 (n - m) else n
+  applyModifier n _ = pure n
 
 type CanCheckFast env
   = ( HasSet Trait env EnemyId
@@ -994,8 +1005,13 @@ type CanCheckFast env
     , HasTokenValue env ()
     )
 
+depthGuard :: IORef Int
+depthGuard = unsafePerformIO $ newIORef 0
+{-# NOINLINE depthGuard #-}
+
 cardInFastWindows
-  :: (MonadReader env m, CanCheckPlayable env, MonadIO m)
+  :: forall env m
+   . (MonadReader env m, CanCheckPlayable env, MonadIO m)
   => InvestigatorId
   -> Card
   -> [Window]
@@ -1173,18 +1189,19 @@ cardInFastWindows iid c windows matcher = anyM
       treacheryIds <- getSetList @TreacheryId locationId
       cardCodes <- traverse (getId @CardCode) treacheryIds
       pure $ cCode `notElem` cardCodes
+  matchCard :: Card -> CardMatcher -> m Bool
   matchCard c' = \case
     AnyCard -> pure True
     NonExceptional -> pure . not . cdExceptional $ toCardDef c'
     NonWeakness -> pure . not . cdWeakness $ toCardDef c'
     CardWithType cType -> pure $ toCardType c' == cType
+    CardWithTitle title -> pure $ nameTitle (toName c') == title
+    CardWithTrait t -> pure $ t `member` toTraits c'
+    CardWithClass role -> pure $ cdClassSymbol (toCardDef c') == Just role
+    CardWithCardCode cCode -> pure $ toCardCode c' == cCode
     CardWithOneOf ms -> anyM (matchCard c') ms
     CardMatches ms -> allM (matchCard c') ms
     CardWithoutKeyword kw -> pure $ kw `notElem` cdKeywords (toCardDef c')
-    CardIsBeneathInvestigator whoMatcher -> do
-      iids <- getSetList @InvestigatorId whoMatcher
-      cards <- map unUnderneathCard . concat <$> traverse getList iids
-      pure $ c `elem` cards
   matchToken iid' t = \case
     Matcher.WithNegativeModifier -> do
       tv <- getTokenValue () iid' (tokenFace t)

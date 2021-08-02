@@ -122,6 +122,9 @@ cardMatch a = \case
   CardWithClass role -> cdClassSymbol (toCardDef a) == Just role
   CardMatches ms -> all (cardMatch a) ms
   CardWithOneOf ms -> any (cardMatch a) ms
+  CardWithoutKeyword k -> k `notMember` cdKeywords (toCardDef a)
+  NonWeakness -> not . cdWeakness $ toCardDef a
+  NonExceptional -> not . cdExceptional $ toCardDef a
 
 testCardDef :: CardType -> CardCode -> CardDef
 testCardDef cardType cardCode = CardDef
@@ -164,6 +167,8 @@ data PlayRestriction
   | FirstAction
   | OnLocation LocationId
   | CardExists CardMatcher
+  | ExtendedCardExists ExtendedCardMatcher
+  | PlayableCardExists ExtendedCardMatcher
   | AssetExists AssetMatcher
   | InvestigatorExists InvestigatorMatcher
   | EnemyExists EnemyMatcher

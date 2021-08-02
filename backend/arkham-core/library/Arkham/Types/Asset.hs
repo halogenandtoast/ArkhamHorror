@@ -60,8 +60,7 @@ instance
   getModifiersFor = genericGetModifiersFor
 
 instance
-  ( HasList HandCard env InvestigatorId
-  , HasList CommittedCard env InvestigatorId
+  ( HasList CommittedCard env InvestigatorId
   , HasId LeadInvestigatorId env ()
   , HasCount UsesCount env AssetId
   , CanCheckPlayable env

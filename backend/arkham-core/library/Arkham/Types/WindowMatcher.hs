@@ -22,7 +22,7 @@ data WindowMatcher
   | DealtDamageOrHorror Who
   | DrawCard When Who CardMatcher
   | PhaseBegins When WindowPhaseMatcher
-  | PlayerHasPlayableCard CardMatcher
+  | PlayerHasPlayableCard ExtendedCardMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

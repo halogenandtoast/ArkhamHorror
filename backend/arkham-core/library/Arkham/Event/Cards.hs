@@ -578,10 +578,8 @@ thePaintedWorld = (event "03012" "The Painted World" 0 Neutral)
   { cdSkills = [SkillWillpower, SkillAgility, SkillWild]
   , cdCardTraits = singleton Spell
   , cdFastWindow = Just
-    (PlayerHasPlayableCard
-    $ EventCard
-    <> CardIsBeneathInvestigator You
-    <> NonExceptional
+    (PlayerHasPlayableCard $ CardIsBeneathInvestigator You <> BasicCardMatch
+      (NonExceptional <> EventCard)
     )
   , cdCost = Nothing
   }
@@ -615,7 +613,7 @@ everVigilant = (event "03023" "Ever Vigilant" 0 Guardian)
   { cdSkills = [SkillIntellect, SkillIntellect]
   , cdCardTraits = singleton Tactic
   , cdPlayRestrictions = Just
-    (CardExists $ AssetCard <> InHandOf You <> IsPlayable)
+    (PlayableCardExists $ BasicCardMatch AssetCard <> InHandOf You)
   }
 
 secondWind :: CardDef

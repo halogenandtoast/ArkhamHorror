@@ -18,7 +18,6 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype FortyFiveAutomatic = FortyFiveAutomatic AssetAttrs
   deriving anyclass IsAsset

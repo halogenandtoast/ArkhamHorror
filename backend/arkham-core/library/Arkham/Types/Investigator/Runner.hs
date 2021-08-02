@@ -28,6 +28,7 @@ type InnerInvestigatorRunner env
   = ( CanBeWeakness env TreacheryId
     , HasTokenValue env ()
     , Query AssetMatcher env
+    , Query InvestigatorMatcher env
     , (HasActions env (), HasActions env AssetId, HasActions env ActionType)
     , ( HasCount ActionTakenCount env InvestigatorId
       , HasCount ActionRemainingCount env InvestigatorId

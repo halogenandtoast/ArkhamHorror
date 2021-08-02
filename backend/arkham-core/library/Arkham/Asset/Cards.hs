@@ -1185,6 +1185,12 @@ fieldwork = (asset "03024" "Fieldwork" 2 Seeker)
   , cdCardTraits = singleton Talent
   }
 
+archaicGlyphs :: CardDef
+archaicGlyphs = (asset "03025" "Archaic Glyphs" 0 Seeker)
+  { cdSkills = [SkillIntellect]
+  , cdCardTraits = setFromList [Item, Occult, Tome]
+  }
+
 toothOfEztli :: CardDef
 toothOfEztli = (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker
                )

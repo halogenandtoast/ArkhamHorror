@@ -57,6 +57,7 @@ class (Hashable set, Eq set) => HasSet set env a where
 
 type family QueryElement a where
   QueryElement AssetMatcher = AssetId
+  QueryElement InvestigatorMatcher = InvestigatorId
 
 selectList
   :: (HasCallStack, MonadReader env m, Query a env) => a -> m [QueryElement a]

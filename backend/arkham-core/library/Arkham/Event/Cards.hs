@@ -104,6 +104,7 @@ allPlayerEventCards = mapFromList $ map
   , momentOfRespite3
   , monsterSlayer5
   , moonlightRitual
+  , noStoneUnturned
   , onTheLam
   , oops
   , preparedForTheWorst
@@ -620,6 +621,12 @@ everVigilant1 = (event "03023" "Ever Vigilant" 0 Guardian)
   , cdLevel = 1
   , cdPlayRestrictions = Just
     (PlayableCardExists $ BasicCardMatch AssetCard <> InHandOf You)
+  }
+
+noStoneUnturned :: CardDef
+noStoneUnturned = (event "03026" "No Stone Unturned" 2 Seeker)
+  { cdSkills = [SkillWild]
+  , cdCardTraits = singleton Insight
   }
 
 secondWind :: CardDef

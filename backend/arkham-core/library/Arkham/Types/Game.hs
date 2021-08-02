@@ -650,6 +650,8 @@ getAssetsMatching matcher = do
     AssetWithUseType uType -> filterM
       (fmap ((> 0) . unStartingUsesCount) . getCount . (, uType) . toId)
       as
+    AssetWithUses uType ->
+      filterM (fmap ((> 0) . unUsesCount) . getCount . (, uType) . toId) as
     AssetCanBeAssignedDamageBy iid -> do
       investigatorAssets <- filterMatcher
         as

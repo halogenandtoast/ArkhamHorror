@@ -78,7 +78,7 @@ allPlayerEventCards = mapFromList $ map
   , emergencyAid
   , emergencyCache
   , emergencyCache2
-  , everVigilant
+  , everVigilant1
   , evidence
   , exposeWeakness1
   , extraAmmunition1
@@ -613,10 +613,11 @@ letMeHandleThis = (event "03022" "\"Let me handle this!\"" 0 Guardian)
     (map CardWithType encounterCardTypes)
   }
 
-everVigilant :: CardDef
-everVigilant = (event "03023" "Ever Vigilant" 0 Guardian)
+everVigilant1 :: CardDef
+everVigilant1 = (event "03023" "Ever Vigilant" 0 Guardian)
   { cdSkills = [SkillIntellect, SkillIntellect]
   , cdCardTraits = singleton Tactic
+  , cdLevel = 1
   , cdPlayRestrictions = Just
     (PlayableCardExists $ BasicCardMatch AssetCard <> InHandOf You)
   }

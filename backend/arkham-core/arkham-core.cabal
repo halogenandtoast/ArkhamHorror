@@ -172,6 +172,7 @@ library
       Arkham.Types.Asset.Cards.Encyclopedia
       Arkham.Types.Asset.Cards.Encyclopedia2
       Arkham.Types.Asset.Cards.EsotericFormula
+      Arkham.Types.Asset.Cards.Fieldwork
       Arkham.Types.Asset.Cards.FineClothes
       Arkham.Types.Asset.Cards.FireAxe
       Arkham.Types.Asset.Cards.FireExtinguisher1
@@ -340,6 +341,7 @@ library
       Arkham.Types.Effect.Effects.Deduction
       Arkham.Types.Effect.Effects.Deduction2
       Arkham.Types.Effect.Effects.ExposeWeakness1
+      Arkham.Types.Effect.Effects.Fieldwork
       Arkham.Types.Effect.Effects.FireExtinguisher1
       Arkham.Types.Effect.Effects.HuntingNightgaunt
       Arkham.Types.Effect.Effects.Improvisation
@@ -484,7 +486,7 @@ library
       Arkham.Types.Event.Cards.EmergencyAid
       Arkham.Types.Event.Cards.EmergencyCache
       Arkham.Types.Event.Cards.EmergencyCache2
-      Arkham.Types.Event.Cards.EverVigilant
+      Arkham.Types.Event.Cards.EverVigilant1
       Arkham.Types.Event.Cards.Evidence
       Arkham.Types.Event.Cards.ExposeWeakness1
       Arkham.Types.Event.Cards.ExtraAmmunition1

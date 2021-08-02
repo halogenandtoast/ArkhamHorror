@@ -119,6 +119,7 @@ allPlayerAssetCards = mapFromList $ map
   , encyclopedia
   , encyclopedia2
   , esotericFormula
+  , fieldwork
   , fineClothes
   , fireAxe
   , fireExtinguisher1
@@ -1175,6 +1176,12 @@ thirtyTwoColt = (asset "03020" ".32 Colt" 3 Guardian)
 trueGrit :: CardDef
 trueGrit = (asset "03021" "True Grit" 3 Guardian)
   { cdSkills = [SkillWillpower]
+  , cdCardTraits = singleton Talent
+  }
+
+fieldwork :: CardDef
+fieldwork = (asset "03024" "Fieldwork" 2 Seeker)
+  { cdSkills = [SkillAgility]
   , cdCardTraits = singleton Talent
   }
 

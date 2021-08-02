@@ -485,9 +485,14 @@ cluesToDiscover
   -> Int
   -> m Int
 cluesToDiscover attrs startValue = do
-  source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
-  modifiers <- getModifiers source (InvestigatorTarget $ investigatorId attrs)
-  pure $ foldr applyModifier startValue modifiers
+  msource <- getSkillTestSource
+  case msource of
+    Just source -> do
+      modifiers <- getModifiers
+        source
+        (InvestigatorTarget $ investigatorId attrs)
+      pure $ foldr applyModifier startValue modifiers
+    Nothing -> pure startValue
  where
   applyModifier (DiscoveredClues m) n = n + m
   applyModifier _ n = n

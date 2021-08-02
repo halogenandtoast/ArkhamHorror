@@ -2638,7 +2638,10 @@ runGameMessage msg g = case msg of
           (createEvent card iid)
         let eid = toId event
         pushAll
-          [PlayedCard iid card, InvestigatorPlayEvent iid eid mtarget windows]
+          [ PayCardCost iid (toCardId card)
+          , PlayedCard iid card
+          , InvestigatorPlayEvent iid eid mtarget windows
+          ]
         pure $ g & eventsL %~ insertMap eid event
   PutCardIntoPlay iid card mtarget -> do
     let cardId = toCardId card
@@ -2711,6 +2714,9 @@ runGameMessage msg g = case msg of
     pure g
   EnemyAttack iid eid _ -> do
     pushAll =<< checkWindows [WhenEnemyAttacks iid eid]
+    pure g
+  EngageEnemy iid eid False -> do
+    pushAll =<< checkWindows [AfterEnemyEngageInvestigator iid eid]
     pure g
   EnemyEngageInvestigator eid iid -> do
     pushAll =<< checkWindows [AfterEnemyEngageInvestigator iid eid]

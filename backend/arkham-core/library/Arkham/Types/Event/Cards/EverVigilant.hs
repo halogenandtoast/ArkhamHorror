@@ -12,6 +12,8 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype EverVigilant = EverVigilant EventAttrs
@@ -24,7 +26,11 @@ everVigilant = event EverVigilant Cards.everVigilant
 instance HasActions env EverVigilant where
   getActions iid window (EverVigilant attrs) = getActions iid window attrs
 
-instance HasModifiersFor env EverVigilant
+instance HasModifiersFor env EverVigilant where
+  getModifiersFor _ (InvestigatorTarget iid) (EverVigilant attrs)
+    | iid == eventOwner attrs = pure
+    $ toModifiers attrs [ReduceCostOf AnyCard 1]
+  getModifiersFor _ _ _ = pure []
 
 instance CanCheckPlayable env => RunMessage env EverVigilant where
   runMessage msg e@(EverVigilant attrs) = case msg of

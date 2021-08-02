@@ -47,6 +47,7 @@ data AssetMatcher
   | AssetReady
   | AssetExhausted
   | AssetWithUseType UseType
+  | AssetWithUses UseType
   | AssetIs CardCode
   | AnyAsset
   | EnemyAsset EnemyId

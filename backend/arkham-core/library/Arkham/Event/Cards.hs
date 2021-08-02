@@ -3,6 +3,7 @@ module Arkham.Event.Cards where
 import Arkham.Prelude
 
 import qualified Arkham.Types.Action as Action
+import qualified Arkham.Types.Asset.Uses as Uses
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
 import qualified Arkham.Types.Card.CardDef as Restriction
@@ -419,6 +420,10 @@ contraband :: CardDef
 contraband = (event "02109" "Contraband" 4 Rogue)
   { cdSkills = [SkillWillpower, SkillIntellect]
   , cdCardTraits = setFromList [Supply, Illicit]
+  , cdPlayRestrictions = Just $ Restriction.AssetExists
+    (AssetOwnedBy InvestigatorAtYourLocation
+    <> AssetOneOf [AssetWithUses Uses.Ammo, AssetWithUses Uses.Supply]
+    )
   }
 
 delveTooDeep :: CardDef
@@ -686,6 +691,10 @@ contraband2 = (event "51005" "Contraband" 3 Rogue)
   { cdSkills = [SkillWillpower, SkillIntellect, SkillIntellect]
   , cdCardTraits = setFromList [Supply, Illicit]
   , cdLevel = 2
+  , cdPlayRestrictions = Just $ Restriction.AssetExists
+    (AssetOwnedBy InvestigatorAtYourLocation
+    <> AssetOneOf [AssetWithUseType Uses.Ammo, AssetWithUseType Uses.Supply]
+    )
   }
 
 taunt3 :: CardDef

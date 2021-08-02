@@ -70,20 +70,22 @@ export const updateGameRaw = (gameId: string, gameMessage: any): Promise<void> =
   .put(`arkham/games/${gameId}/raw`, { gameMessage });
 
 export const newGame = (
-  deckId: string,
+  deckIds: (string | null)[],
   playerCount: number,
   campaignId: string | null,
   scenarioId: string | null,
   difficulty: Difficulty,
   campaignName: string,
+  multiplayerVariant: string,
 ): Promise<Game> => api
   .post('arkham/games', {
-    deckId,
+    deckIds,
     playerCount,
     campaignId,
     scenarioId,
     difficulty,
     campaignName,
+    multiplayerVariant,
   })
   .then((resp) => gameDecoder.decodePromise(resp.data));
 

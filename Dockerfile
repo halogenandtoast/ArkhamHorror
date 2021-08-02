@@ -70,7 +70,7 @@ ENV LC_ALL=en_US.UTF-8
 
 RUN apt-get update
 RUN apt-get upgrade -y --assume-yes
-RUN apt-get install -y --assume-yes libpq-dev
+RUN apt-get install -y --assume-yes libpq-dev ca-certificates
 
 RUN mkdir -p /opt/arkham/bin
 RUN mkdir -p /opt/arkham/src/backend/arkham-api

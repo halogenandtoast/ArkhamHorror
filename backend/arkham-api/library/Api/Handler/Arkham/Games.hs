@@ -103,12 +103,13 @@ getApiV1ArkhamGamesR = do
   pure $ map toPublicGame games
 
 data CreateGamePost = CreateGamePost
-  { deckId :: ArkhamDeckId
+  { deckIds :: [Maybe ArkhamDeckId]
   , playerCount :: Int
   , campaignId :: Maybe CampaignId
   , scenarioId :: Maybe ScenarioId
   , difficulty :: Difficulty
   , campaignName :: Text
+  , multiplayerVariant :: Text
   }
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
@@ -117,12 +118,13 @@ postApiV1ArkhamGamesR :: Handler (PublicGame ArkhamGameId)
 postApiV1ArkhamGamesR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   CreateGamePost {..} <- requireCheckJsonBody
-  deck <- runDB $ get404 deckId
-  when (arkhamDeckUserId deck /= userId) notFound
-  (iid, decklist) <- liftIO $ loadDecklist deck
-  let
-    hashKey = fromIntegral $ fromSqlKey userId
-    investigators = singletonMap hashKey (lookupInvestigator iid, decklist)
+  investigatorMaps <- for (catMaybes deckIds) $ \deckId -> do
+    deck <- runDB $ get404 deckId
+    when (arkhamDeckUserId deck /= userId) notFound
+    (iid, decklist) <- liftIO $ loadDecklist deck
+    let hashKey = fromIntegral $ fromSqlKey userId
+    pure $ singletonMap hashKey (lookupInvestigator iid, decklist)
+  let investigators = unions investigatorMaps
   newGameSeed <- liftIO getRandom
   genRef <- newIORef (mkStdGen newGameSeed)
   case campaignId of

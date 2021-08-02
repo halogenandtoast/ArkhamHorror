@@ -56,5 +56,6 @@ data CampaignLogKey
   | TheSunBanishedCnidathquaIntoTheDepths
   | CnidathquaRetreatedToNurseItsWounds
   | YouHaveIdentifiedTheSolution
+  | YouHaveTranslatedTheGlyphs
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)

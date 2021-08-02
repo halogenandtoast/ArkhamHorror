@@ -139,6 +139,7 @@ library
       Arkham.Types.Asset.Cards.ArcaneInitiate
       Arkham.Types.Asset.Cards.ArcaneStudies
       Arkham.Types.Asset.Cards.ArcaneStudies2
+      Arkham.Types.Asset.Cards.ArchaicGlyphs
       Arkham.Types.Asset.Cards.ArtStudent
       Arkham.Types.Asset.Cards.Bandolier
       Arkham.Types.Asset.Cards.BaseballBat
@@ -512,6 +513,7 @@ library
       Arkham.Types.Event.Cards.MomentOfRespite3
       Arkham.Types.Event.Cards.MonsterSlayer5
       Arkham.Types.Event.Cards.MoonlightRitual
+      Arkham.Types.Event.Cards.NoStoneUnturned
       Arkham.Types.Event.Cards.OnTheLam
       Arkham.Types.Event.Cards.Oops
       Arkham.Types.Event.Cards.PreparedForTheWorst

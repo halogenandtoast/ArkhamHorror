@@ -26,6 +26,7 @@ pattern AssetCard :: CardMatcher
 pattern AssetCard <- CardWithType AssetType where
   AssetCard = CardWithType AssetType
 
+-- | Relies on game state, can not be used purely
 data ExtendedCardMatcher
   = BasicCardMatch CardMatcher
   | CardIsBeneathInvestigator Who
@@ -42,6 +43,7 @@ instance Semigroup ExtendedCardMatcher where
   x <> ExtendedCardMatches xs = ExtendedCardMatches (x : xs)
   x <> y = ExtendedCardMatches [x, y]
 
+-- | Only relies on card state, can be used purely with `cardMatch`
 data CardMatcher
   = CardWithType CardType
   | CardWithCardCode CardCode

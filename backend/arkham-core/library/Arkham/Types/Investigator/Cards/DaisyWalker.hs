@@ -67,14 +67,7 @@ instance InvestigatorRunner env => RunMessage env DaisyWalker where
       case tokenFace token of
         ElderSign -> do
           tomeCount <- unAssetCount <$> getCount (iid, [Tome])
-          i <$ when
-            (tomeCount > 0)
-            (push $ chooseOne
-              iid
-              [ DrawCards iid tomeCount False
-              , Continue "Do not use Daisy's ability"
-              ]
-            )
+          i <$ when (tomeCount > 0) (push $ DrawCards iid tomeCount False)
         _ -> pure i
     BeginRound -> DaisyWalker
       <$> runMessage msg (attrs { investigatorTomeActions = Just 1 })

@@ -1409,7 +1409,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             iid
             [ Run
                 [ Discard (AssetTarget aid')
-                , InvestigatorPlayedAsset iid aid slotTypes traits
+                , InvestigatorPlayAsset iid aid slotTypes traits
                 ]
             | aid' <- assetsThatCanProvideSlots
             ]

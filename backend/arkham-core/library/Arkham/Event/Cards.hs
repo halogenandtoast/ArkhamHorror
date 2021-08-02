@@ -5,13 +5,14 @@ import Arkham.Prelude
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
+import qualified Arkham.Types.Card.CardDef as Restriction
+import Arkham.Types.Card.CardMatcher
 import Arkham.Types.Card.CardType
 import Arkham.Types.Card.Cost
 import Arkham.Types.ClassSymbol
 import Arkham.Types.GameValue
 import Arkham.Types.Matcher
 import Arkham.Types.Name
-import qualified Arkham.Types.PlayRestriction as Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
 import Arkham.Types.WindowMatcher
@@ -76,6 +77,7 @@ allPlayerEventCards = mapFromList $ map
   , emergencyAid
   , emergencyCache
   , emergencyCache2
+  , everVigilant
   , evidence
   , exposeWeakness1
   , extraAmmunition1
@@ -604,8 +606,16 @@ letMeHandleThis :: CardDef
 letMeHandleThis = (event "03022" "\"Let me handle this!\"" 0 Guardian)
   { cdSkills = [SkillWillpower, SkillCombat]
   , cdCardTraits = setFromList [Spirit]
-  , cdFastWindow = Just $ DrawCard After NotYou $ NonPeril <> CardMatchesAny
-    (map WithCardType encounterCardTypes)
+  , cdFastWindow = Just $ DrawCard After NotYou $ NonPeril <> CardWithOneOf
+    (map CardWithType encounterCardTypes)
+  }
+
+everVigilant :: CardDef
+everVigilant = (event "03023" "Ever Vigilant" 0 Guardian)
+  { cdSkills = [SkillIntellect, SkillIntellect]
+  , cdCardTraits = singleton Tactic
+  , cdPlayRestrictions = Just
+    (CardExists $ AssetCard <> InHandOf You <> IsPlayable)
   }
 
 secondWind :: CardDef

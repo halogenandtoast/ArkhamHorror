@@ -8,11 +8,11 @@ import Arkham.Prelude
 import Arkham.Json
 import Arkham.Types.Ability.Limit as X
 import Arkham.Types.Ability.Type as X
+import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes.Entity.Source
 import Arkham.Types.Id
 import Arkham.Types.Modifier
-import Arkham.Types.PlayRestriction
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target

@@ -28,7 +28,7 @@ instance HasSet ClassSymbol env InvestigatorId => HasModifiersFor env Improvisat
       case roles of
         [] -> pure []
         role : _ ->
-          pure $ toModifiers attrs [ReduceCostOf (CardMatchByClass role) 3]
+          pure $ toModifiers attrs [ReduceCostOf (CardWithClass role) 3]
   getModifiersFor _ _ _ = pure []
 
 instance (HasSet ClassSymbol env InvestigatorId, HasQueue env) => RunMessage env Improvisation where

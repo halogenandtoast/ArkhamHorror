@@ -24,7 +24,6 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
-import Arkham.Types.PlayRestriction
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
@@ -970,7 +969,7 @@ type CanCheckFast env
   = ( HasSet Trait env EnemyId
     , HasSet InvestigatorId env Who
     , HasList UnderneathCard env InvestigatorId
-    , HasList Card env Matcher.WindowCardMatcher
+    , HasList Card env CardMatcher
     , HasCount DamageCount env InvestigatorId
     , HasCount HorrorCount env InvestigatorId
     , HasCount ClueCount env LocationId
@@ -1175,15 +1174,14 @@ cardInFastWindows iid c windows matcher = anyM
       cardCodes <- traverse (getId @CardCode) treacheryIds
       pure $ cCode `notElem` cardCodes
   matchCard c' = \case
-    Matcher.AnyCard -> pure True
-    Matcher.NonExceptional -> pure . not . cdExceptional $ toCardDef c'
-    Matcher.NonWeakness -> pure . not . cdWeakness $ toCardDef c'
-    Matcher.WithCardType cType -> pure $ toCardType c' == cType
-    Matcher.CardMatchesAny ms -> anyM (matchCard c') ms
-    Matcher.CardMatches ms -> allM (matchCard c') ms
-    Matcher.CardWithoutKeyword kw ->
-      pure $ kw `notElem` cdKeywords (toCardDef c')
-    Matcher.CardIsBeneathInvestigator whoMatcher -> do
+    AnyCard -> pure True
+    NonExceptional -> pure . not . cdExceptional $ toCardDef c'
+    NonWeakness -> pure . not . cdWeakness $ toCardDef c'
+    CardWithType cType -> pure $ toCardType c' == cType
+    CardWithOneOf ms -> anyM (matchCard c') ms
+    CardMatches ms -> allM (matchCard c') ms
+    CardWithoutKeyword kw -> pure $ kw `notElem` cdKeywords (toCardDef c')
+    CardIsBeneathInvestigator whoMatcher -> do
       iids <- getSetList @InvestigatorId whoMatcher
       cards <- map unUnderneathCard . concat <$> traverse getList iids
       pure $ c `elem` cards

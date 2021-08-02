@@ -62,9 +62,7 @@ instance ActionRunner env => HasActions env BrackishWaters where
       let
         assetsCount =
           count
-              (maybe
-                  False
-                  (flip cardMatch (CardMatchByType AssetType) . toCardDef)
+              (maybe False (flip cardMatch (CardWithType AssetType) . toCardDef)
               . toPlayerCard
               )
               hand

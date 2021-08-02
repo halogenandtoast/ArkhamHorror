@@ -12,9 +12,10 @@ import Arkham.Types.Card.Cost
 import Arkham.Types.ClassSymbol
 import Arkham.Types.CommitRestriction
 import Arkham.Types.EncounterSet
+import Arkham.Types.Id
 import Arkham.Types.Keyword (HasKeywords(..), Keyword)
+import Arkham.Types.Matcher
 import Arkham.Types.Name
-import Arkham.Types.PlayRestriction
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
 import Arkham.Types.WindowMatcher (WindowMatcher)
@@ -114,13 +115,13 @@ instance HasCardCode CardDef where
 cardMatch :: (HasCardCode a, HasCardDef a) => a -> CardMatcher -> Bool
 cardMatch a = \case
   AnyCard -> True
-  CardMatchByType cardType' -> toCardType a == cardType'
-  CardMatchByCardCode cardCode -> toCardCode a == cardCode
-  CardMatchByTitle title -> (nameTitle . cdName $ toCardDef a) == title
-  CardMatchByTrait trait -> trait `member` toTraits a
-  CardMatchByClass role -> cdClassSymbol (toCardDef a) == Just role
-  CardMatchers ms -> all (cardMatch a) ms
-  CardMatchByOneOf ms -> any (cardMatch a) ms
+  CardWithType cardType' -> toCardType a == cardType'
+  CardWithCardCode cardCode -> toCardCode a == cardCode
+  CardWithTitle title -> (nameTitle . cdName $ toCardDef a) == title
+  CardWithTrait trait -> trait `member` toTraits a
+  CardWithClass role -> cdClassSymbol (toCardDef a) == Just role
+  CardMatches ms -> all (cardMatch a) ms
+  CardWithOneOf ms -> any (cardMatch a) ms
 
 testCardDef :: CardType -> CardCode -> CardDef
 testCardDef cardType cardCode = CardDef
@@ -150,3 +151,34 @@ testCardDef cardType cardCode = CardDef
   , cdLimits = []
   , cdExceptional = False
   }
+
+data DiscardSignifier = AnyPlayerDiscard
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data PlayRestriction
+  = AnotherInvestigatorInSameLocation
+  | InvestigatorIsAlone
+  | ScenarioCardHasResignAbility
+  | ClueOnLocation
+  | FirstAction
+  | OnLocation LocationId
+  | CardExists CardMatcher
+  | AssetExists AssetMatcher
+  | InvestigatorExists InvestigatorMatcher
+  | EnemyExists EnemyMatcher
+  | NoEnemyExists EnemyMatcher
+  | LocationExists LocationMatcher
+  | OwnCardWithDoom
+  | CardInDiscard DiscardSignifier [Trait]
+  | ReturnableCardInDiscard DiscardSignifier [Trait]
+  | PlayRestrictions [PlayRestriction]
+  | AnyPlayRestriction [PlayRestriction]
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+instance Semigroup PlayRestriction where
+  PlayRestrictions xs <> PlayRestrictions ys = PlayRestrictions $ xs <> ys
+  PlayRestrictions xs <> x = PlayRestrictions $ x : xs
+  x <> PlayRestrictions xs = PlayRestrictions $ x : xs
+  x <> y = PlayRestrictions [x, y]

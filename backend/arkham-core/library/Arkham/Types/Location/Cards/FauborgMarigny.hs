@@ -33,7 +33,7 @@ instance HasModifiersFor env FauborgMarigny where
   getModifiersFor _ (InvestigatorTarget iid) (FauborgMarigny attrs) =
     pure $ toModifiers
       attrs
-      [ ReduceCostOf (CardMatchByType AssetType) 1
+      [ ReduceCostOf (CardWithType AssetType) 1
       | iid `member` locationInvestigators attrs
       ]
   getModifiersFor _ _ _ = pure []

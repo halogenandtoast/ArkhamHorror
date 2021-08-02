@@ -48,6 +48,6 @@ instance ActionRunner env => HasActions env EngineCar_176 where
 instance LocationRunner env => RunMessage env EngineCar_176 where
   runMessage msg (EngineCar_176 attrs) = case msg of
     RevealLocation (Just iid) lid | lid == locationId attrs -> do
-      push (FindAndDrawEncounterCard iid (CardMatchByCardCode "02182"))
+      push (FindAndDrawEncounterCard iid (CardWithCardCode "02182"))
       EngineCar_176 <$> runMessage msg attrs
     _ -> EngineCar_176 <$> runMessage msg attrs

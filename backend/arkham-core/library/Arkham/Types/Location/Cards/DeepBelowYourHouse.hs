@@ -45,9 +45,11 @@ instance (LocationRunner env) => RunMessage env DeepBelowYourHouse where
         )
       DeepBelowYourHouse <$> runMessage msg attrs
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
-      | isSource attrs source -> l <$ pushAll
-        (replicate
-          n
-          (FindAndDrawEncounterCard iid (CardMatchByCardCode "01159"))
-        )
+      | isSource attrs source
+      -> l
+        <$ pushAll
+             (replicate
+               n
+               (FindAndDrawEncounterCard iid (CardWithCardCode "01159"))
+             )
     _ -> DeepBelowYourHouse <$> runMessage msg attrs

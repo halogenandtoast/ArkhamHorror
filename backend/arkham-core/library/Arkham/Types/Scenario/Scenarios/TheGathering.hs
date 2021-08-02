@@ -121,7 +121,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       case tokenFace token of
         Skull | isHardExpert attrs -> push $ FindAndDrawEncounterCard
           iid
-          (CardMatchByType EnemyType <> CardMatchByTrait Trait.Ghoul)
+          (CardWithType EnemyType <> CardWithTrait Trait.Ghoul)
         Cultist -> push $ InvestigatorAssignDamage
           iid
           (TokenSource token)

@@ -64,7 +64,6 @@ import Arkham.Types.Treachery
 import Arkham.Types.Treachery.Attrs (treacheryOwner)
 import Arkham.Types.Window
 import qualified Arkham.Types.Window as Fast
-import qualified Arkham.Types.WindowMatcher as Matcher
 import Control.Monad.Extra (allM, anyM, mapMaybeM)
 import Control.Monad.Random.Lazy hiding (filterM, foldM)
 import Control.Monad.Reader (runReader)
@@ -1409,8 +1408,7 @@ instance HasGame env => HasSet HandCardId env (InvestigatorId, CardType) where
   getSet (iid, cardType) =
     setFromList
       . map (coerce . toCardId)
-      . filter
-          (maybe False (`cardMatch` CardMatchByType cardType) . toPlayerCard)
+      . filter (maybe False (`cardMatch` CardWithType cardType) . toPlayerCard)
       . handOf
       <$> getInvestigator iid
 
@@ -1585,7 +1583,7 @@ instance HasGame env => HasSet AssetId env AssetMatcher where
 instance HasGame env => HasSet InvestigatorId env InvestigatorMatcher where
   getSet = (setFromList . map toId <$>) . getInvestigatorsMatching
 
-instance HasGame env => HasList Card env Matcher.WindowCardMatcher where
+instance HasGame env => HasList Card env CardMatcher where
   getList matcher = do
     investigatorIds <- getInvestigatorIds
     handCards <- map unHandCard . concat <$> traverse getList investigatorIds
@@ -1595,15 +1593,22 @@ instance HasGame env => HasList Card env Matcher.WindowCardMatcher where
     filterM (`matches` matcher) allCards'
    where
     matches c = \case
-      Matcher.NonWeakness -> pure $ not (cdWeakness $ toCardDef c)
-      Matcher.NonExceptional -> pure $ not (cdExceptional $ toCardDef c)
-      Matcher.WithCardType ct -> pure $ toCardType c == ct
-      Matcher.CardMatchesAny ms -> anyM (matches c) ms
-      Matcher.CardMatches ms -> allM (matches c) ms
-      Matcher.CardWithoutKeyword k ->
-        pure $ k `notMember` cdKeywords (toCardDef c)
-      Matcher.AnyCard -> pure True
-      Matcher.CardIsBeneathInvestigator who -> do
+      InHandOf who -> do
+        iids <- getSetList @InvestigatorId who
+        cards <- map unHandCard . concat <$> traverse getList iids
+        pure $ c `elem` cards
+      NonWeakness -> pure $ not (cdWeakness $ toCardDef c)
+      NonExceptional -> pure $ not (cdExceptional $ toCardDef c)
+      CardWithCardCode cc -> pure $ toCardCode c == cc
+      CardWithTitle title -> pure $ nameTitle (toName c) == title
+      CardWithTrait t -> pure $ t `member` toTraits c
+      CardWithClass cc -> pure $ cdClassSymbol (toCardDef c) == Just cc
+      CardWithType ct -> pure $ toCardType c == ct
+      CardWithOneOf ms -> anyM (matches c) ms
+      CardMatches ms -> allM (matches c) ms
+      CardWithoutKeyword k -> pure $ k `notMember` cdKeywords (toCardDef c)
+      AnyCard -> pure True
+      CardIsBeneathInvestigator who -> do
         iids <- getSetList @InvestigatorId who
         cards <- map unUnderneathCard . concat <$> traverse getList iids
         pure $ c `elem` cards
@@ -3222,7 +3227,7 @@ runGameMessage msg g = case msg of
       matchingDeckCards =
         filter (`cardMatch` matcher) (unDeck $ g ^. encounterDeckL)
       matchingVoidEnemies = case matcher of
-        CardMatchByCardCode cardCode ->
+        CardWithCardCode cardCode ->
           filter ((== cardCode) . toCardCode) . toList $ g ^. enemiesInVoidL
         _ -> []
 

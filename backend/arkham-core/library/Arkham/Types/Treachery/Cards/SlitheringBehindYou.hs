@@ -42,7 +42,7 @@ instance TreacheryRunner env => RunMessage env SlitheringBehindYou where
                  (FindEncounterCard
                    iid
                    (toTarget attrs)
-                   (CardMatchByCardCode "02141")
+                   (CardWithCardCode "02141")
                  )
     FoundEncounterCard iid target ec | isTarget attrs target -> do
       lid <- getId @LocationId iid

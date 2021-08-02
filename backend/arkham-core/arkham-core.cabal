@@ -753,7 +753,6 @@ library
       Arkham.Types.ModifierData
       Arkham.Types.Name
       Arkham.Types.Phase
-      Arkham.Types.PlayRestriction
       Arkham.Types.Prey
       Arkham.Types.Query
       Arkham.Types.RequestedTokenStrategy

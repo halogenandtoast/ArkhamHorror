@@ -1,11 +1,9 @@
-{-# LANGUAGE PatternSynonyms #-}
 module Arkham.Types.WindowMatcher where
 
 import Arkham.Prelude
 
-import Arkham.Types.Card.CardType
+import Arkham.Types.Card.CardMatcher
 import Arkham.Types.GameValue
-import Arkham.Types.Keyword
 import Arkham.Types.Matcher
 
 data WindowMatcher
@@ -22,9 +20,9 @@ data WindowMatcher
   | DuringTurn Who
   | OrWindowMatcher [WindowMatcher]
   | DealtDamageOrHorror Who
-  | DrawCard When Who WindowCardMatcher
+  | DrawCard When Who CardMatcher
   | PhaseBegins When WindowPhaseMatcher
-  | PlayerHasPlayableCard WindowCardMatcher
+  | PlayerHasPlayableCard CardMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -33,42 +31,6 @@ type When = WindowTimingMatcher
 data WindowTimingMatcher = When | After
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
-
-pattern NonWeaknessTreachery :: WindowCardMatcher
-pattern NonWeaknessTreachery =
-  CardMatches [NonWeakness, WithCardType TreacheryType]
-
-pattern NonPeril :: WindowCardMatcher
-pattern NonPeril <- CardWithoutKeyword Peril where
-  NonPeril = CardWithoutKeyword Peril
-
-pattern EventCard :: WindowCardMatcher
-pattern EventCard <- WithCardType EventType where
-  EventCard = WithCardType EventType
-
-pattern AssetCard :: WindowCardMatcher
-pattern AssetCard <- WithCardType AssetType where
-  AssetCard = WithCardType AssetType
-
-data WindowCardMatcher
-  = NonWeakness
-  | NonExceptional
-  | WithCardType CardType
-  | CardMatchesAny [WindowCardMatcher]
-  | CardMatches [WindowCardMatcher]
-  | CardWithoutKeyword Keyword
-  | AnyCard
-  | CardIsBeneathInvestigator Who
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
-
-instance Semigroup WindowCardMatcher where
-  AnyCard <> a = a
-  a <> AnyCard = a
-  CardMatches xs <> CardMatches ys = CardMatches (xs <> ys)
-  CardMatches xs <> x = CardMatches (x : xs)
-  x <> CardMatches xs = CardMatches (x : xs)
-  x <> y = CardMatches [x, y]
 
 data SkillTestMatcher = WhileInvestigating | WhileAttackingAnEnemy | AnySkillTest
   deriving stock (Show, Eq, Generic)

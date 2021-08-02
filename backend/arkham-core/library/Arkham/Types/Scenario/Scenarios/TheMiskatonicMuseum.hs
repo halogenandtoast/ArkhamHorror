@@ -250,10 +250,8 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
         Nothing -> pure s
     FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
       s <$ case tokenFace token of
-        Cultist -> push $ FindEncounterCard
-          iid
-          (toTarget attrs)
-          (CardMatchByCardCode "02141")
+        Cultist -> push
+          $ FindEncounterCard iid (toTarget attrs) (CardWithCardCode "02141")
         ElderThing -> push $ ChooseAndDiscardAsset iid AnyAsset
         _ -> pure ()
     FoundEncounterCard iid target ec | isTarget attrs target -> do

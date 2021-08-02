@@ -60,7 +60,7 @@ instance
         [ PlaceLocation lid Locations.darkenedHall
         , DiscardEncounterUntilFirst
           (toSource attrs)
-          (CardMatchByType EnemyType <> CardMatchByTrait Criminal)
+          (CardWithType EnemyType <> CardWithTrait Criminal)
         , NextAct aid "02067"
         ]
     RequestedEncounterCard source (Just ec) | isSource attrs source -> do

@@ -216,11 +216,12 @@ instance
         )
     After (PassedSkillTest iid _ _ (TokenTarget token) _ _) ->
       s <$ case (isHardExpert attrs, tokenFace token) of
-        (True, Cultist) -> push
-          (DiscardEncounterUntilFirst
-            (toSource attrs)
-            (CardMatchByType LocationType)
-          )
+        (True, Cultist) ->
+          push
+            (DiscardEncounterUntilFirst
+              (toSource attrs)
+              (CardWithType LocationType)
+            )
         (_, Tablet) -> do
           mYogSothothId <- getId (EnemyWithTitle "Yog-Sothoth")
           case mYogSothothId of
@@ -232,7 +233,7 @@ instance
         Cultist -> push
           (DiscardEncounterUntilFirst
             (ProxySource (toSource attrs) (InvestigatorSource iid))
-            (CardMatchByType LocationType)
+            (CardWithType LocationType)
           )
         Tablet -> do
           mYogSothothId <- getId (EnemyWithTitle "Yog-Sothoth")

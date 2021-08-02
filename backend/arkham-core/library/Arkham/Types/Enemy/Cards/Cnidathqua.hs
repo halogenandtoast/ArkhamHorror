@@ -48,7 +48,7 @@ instance EnemyAttrsRunMessage env => RunMessage env Cnidathqua where
         (FindEncounterCard
           iid
           (toTarget attrs)
-          (CardMatchByTitle "Writhing Appendage")
+          (CardWithTitle "Writhing Appendage")
         )
     FoundEncounterCard iid target card | isTarget attrs target -> do
       lid <- getId @LocationId iid

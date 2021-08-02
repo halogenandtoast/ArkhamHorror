@@ -49,7 +49,7 @@ instance (HasRecord env, AgendaRunner env) => RunMessage env AllIsOne where
         ([ ShuffleEncounterDiscardBackIn
          , DiscardEncounterUntilFirst
            (toSource attrs)
-           (CardMatchByType LocationType)
+           (CardWithType LocationType)
          ]
         <> [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
            | failedToSaveStudents

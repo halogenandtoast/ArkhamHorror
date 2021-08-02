@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (museumHalls)
 import Arkham.Types.Ability
+import Arkham.Types.Card.CardDef
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.GameValue
@@ -18,7 +19,6 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
-import Arkham.Types.PlayRestriction
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target

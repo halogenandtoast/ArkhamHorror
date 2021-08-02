@@ -31,7 +31,7 @@ instance TreacheryRunner env => RunMessage env Wormhole where
     Revelation iid source | isSource attrs source -> t <$ pushAll
       [ DiscardEncounterUntilFirst
         (ProxySource source (InvestigatorSource iid))
-        (CardMatchByType LocationType)
+        (CardWithType LocationType)
       , Discard (toTarget attrs)
       ]
     RequestedEncounterCard (ProxySource source (InvestigatorSource iid)) mcard

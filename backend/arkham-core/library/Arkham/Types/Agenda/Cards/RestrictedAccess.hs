@@ -55,7 +55,7 @@ instance AgendaRunner env => RunMessage env RestrictedAccess where
         Nothing -> push $ FindEncounterCard
           leadInvestigatorId
           (toTarget attrs)
-          (CardMatchByCardCode "02141")
+          (CardWithCardCode "02141")
     FoundEnemyInVoid _ target eid | isTarget attrs target -> do
       lid <- fromJustNote "Museum Halls missing"
         <$> getLocationIdWithTitle "Museum Halls"

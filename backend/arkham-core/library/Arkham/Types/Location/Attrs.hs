@@ -29,7 +29,6 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
-import Arkham.Types.PlayRestriction
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source

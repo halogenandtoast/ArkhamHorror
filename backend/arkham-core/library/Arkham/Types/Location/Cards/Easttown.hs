@@ -26,7 +26,7 @@ instance HasModifiersFor env Easttown where
   getModifiersFor _ (InvestigatorTarget iid) (Easttown attrs) =
     pure $ toModifiers
       attrs
-      [ ReduceCostOf (CardMatchByTrait Ally) 2
+      [ ReduceCostOf (CardWithTrait Ally) 2
       | iid `member` locationInvestigators attrs
       ]
   getModifiersFor _ _ _ = pure []

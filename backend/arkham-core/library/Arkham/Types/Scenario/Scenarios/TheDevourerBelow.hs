@@ -175,7 +175,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
       | isHardExpert attrs && tokenFace token == Skull -> s <$ push
         (FindAndDrawEncounterCard
           iid
-          (CardMatchByType EnemyType <> CardMatchByTrait Monster)
+          (CardWithType EnemyType <> CardWithTrait Monster)
         )
     ScenarioResolution NoResolution -> do
       leadInvestigatorId <- getLeadInvestigatorId

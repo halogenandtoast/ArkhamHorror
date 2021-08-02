@@ -99,8 +99,8 @@ sacrificesMade leadInvestigatorId investigatorIds s =
     : [ SearchCollectionForRandom
           iid
           (toSource s)
-          (CardMatchByType PlayerTreacheryType <> CardMatchByOneOf
-            (map CardMatchByTrait [Madness, Injury, Monster])
+          (CardWithType PlayerTreacheryType
+          <> CardWithOneOf (map CardWithTrait [Madness, Injury, Monster])
           )
       | iid <- investigatorIds
       ]

@@ -12,8 +12,8 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.Matcher
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Trait
 
@@ -42,7 +42,7 @@ instance LocationRunner env => RunMessage env HouseInTheReeds_211 where
       push $ FindEncounterCard
         iid
         (toTarget attrs)
-        (CardMatchByType EnemyType <> CardMatchByTrait Nightgaunt)
+        (CardWithType EnemyType <> CardWithTrait Nightgaunt)
       HouseInTheReeds_211 <$> runMessage msg attrs
     FoundEncounterCard _iid target card | isTarget attrs target -> do
       villageCommonsId <- fromJustNote "missing village commons"

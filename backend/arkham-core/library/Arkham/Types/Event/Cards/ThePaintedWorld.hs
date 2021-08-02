@@ -6,6 +6,7 @@ module Arkham.Types.Event.Cards.ThePaintedWorld
 import Arkham.Prelude
 
 import qualified Arkham.Event.Cards as Cards
+import Arkham.Types.Card.CardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Game.Helpers
@@ -14,7 +15,6 @@ import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Window
-import Arkham.Types.WindowMatcher hiding (DuringTurn)
 
 newtype ThePaintedWorld = ThePaintedWorld EventAttrs
   deriving anyclass IsEvent

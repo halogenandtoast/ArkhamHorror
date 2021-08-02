@@ -10,13 +10,13 @@ import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
+import Arkham.Types.Card.CardDef
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.PlayRestriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Window

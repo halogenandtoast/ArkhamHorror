@@ -14,7 +14,6 @@ import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
-import Arkham.Types.PlayRestriction
 import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Window

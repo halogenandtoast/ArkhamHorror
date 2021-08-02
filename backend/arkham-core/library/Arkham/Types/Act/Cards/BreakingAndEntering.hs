@@ -64,7 +64,7 @@ instance (HasName env LocationId, ActRunner env) => RunMessage env BreakingAndEn
           , FindEncounterCard
             leadInvestigatorId
             (toTarget attrs)
-            (CardMatchByCardCode "02141")
+            (CardWithCardCode "02141")
           ]
     FoundEnemyInVoid _ target eid | isTarget attrs target -> do
       lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"

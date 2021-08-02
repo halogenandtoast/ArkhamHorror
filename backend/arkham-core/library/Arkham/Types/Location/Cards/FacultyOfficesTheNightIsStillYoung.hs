@@ -15,8 +15,8 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.Matcher
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Resolution
@@ -70,7 +70,7 @@ instance LocationRunner env => RunMessage env FacultyOfficesTheNightIsStillYoung
       push $ FindEncounterCard
         iid
         (toTarget attrs)
-        (CardMatchByType EnemyType <> CardMatchByTrait Humanoid)
+        (CardWithType EnemyType <> CardWithTrait Humanoid)
       FacultyOfficesTheNightIsStillYoung <$> runMessage msg attrs
     FoundEncounterCard _iid target card | isTarget attrs target ->
       l <$ push (SpawnEnemyAt (EncounterCard card) (toId attrs))

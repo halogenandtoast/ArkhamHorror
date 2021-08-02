@@ -16,6 +16,11 @@
           <input type="radio" v-model="playerCount" :value="3" id="player3" /><label for="player3">3</label>
           <input type="radio" v-model="playerCount" :value="4" id="player4" /><label for="player4">4</label>
         </div>
+        <div v-if="playerCount > 1" class="options">
+          <input type="radio" v-model="multiplayerVariant" value="friends" id="friends" /><label for="friends">With Friends</label>
+          <input type="radio" v-model="multiplayerVariant" value="solo" id="solo" /><label for="solo">Multi-handed Solo</label>
+        </div>
+
 
         <p>Difficulty</p>
         <div class="options">
@@ -31,12 +36,21 @@
           </template>
         </div>
 
-        <div>
+        <div v-if="playerCount == 1 || multiplayerVariant == 'friends'">
           <p>Deck</p>
-          <select v-model="deckId">
+          <select v-model="deckIds[0]">
             <option disabled :value="null">-- Select a Deck--</option>
             <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
           </select>
+        </div>
+        <div v-else>
+          <template v-for="idx in playerCount" :key="idx">
+            <p>Deck {{idx}}</p>
+            <select v-model="deckIds[idx - 1]">
+              <option disabled :value="null">-- Select a Deck--</option>
+              <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
+            </select>
+          </template>
         </div>
 
         <div class="options">
@@ -145,11 +159,12 @@ export default defineComponent({
     const playerCount = ref(1)
 
     const selectedDifficulty = ref<Difficulty>('Easy')
-    const deckId = ref<string | null>(null)
+    const deckIds = ref<(string | null)[]>([null, null, null, null])
     const standalone = ref(false)
     const selectedCampaign = ref('01')
     const selectedScenario = ref('81001')
     const campaignName = ref<string | null>(null)
+    const multiplayerVariant = ref('friends')
     const returnTo = ref(false)
 
     fetchDecks().then((result) => {
@@ -166,7 +181,9 @@ export default defineComponent({
       return null;
     })
 
-    const disabled = computed(() => !deckId.value)
+    const disabled = computed(() => {
+      return [...Array(playerCount.value)].some((_,n) => !deckIds.value[n])
+    })
     const defaultCampaignName = computed(() => {
       const campaign = campaigns.find((c) => c.id === selectedCampaign.value);
       const scenario = scenarios.find((c) => c.id === selectedScenario.value);
@@ -194,27 +211,29 @@ export default defineComponent({
     async function start() {
       if (standalone.value) {
         const mscenario = scenarios.find((scenario) => scenario.id === selectedScenario.value);
-        if (mscenario && deckId.value && currentCampaignName.value) {
+        if (mscenario && currentCampaignName.value) {
           newGame(
-            deckId.value,
+            deckIds.value,
             playerCount.value,
             null,
             mscenario.id,
             selectedDifficulty.value,
             currentCampaignName.value,
+            multiplayerVariant.value,
           ).then((game) => router.push(`/games/${game.id}`));
         }
       } else {
         const mcampaign = campaigns.find((campaign) => campaign.id === selectedCampaign.value);
-        if (mcampaign && deckId.value && currentCampaignName.value) {
+        if (mcampaign && currentCampaignName.value) {
           const campaignId = returnTo.value && mcampaign.returnToId ? mcampaign.returnToId : mcampaign.id
           newGame(
-            deckId.value,
+            deckIds.value,
             playerCount.value,
             campaignId,
             null,
             selectedDifficulty.value,
             currentCampaignName.value,
+            multiplayerVariant.value,
           ).then((game) => router.push(`/games/${game.id}`));
         }
       }
@@ -223,6 +242,7 @@ export default defineComponent({
     return {
       ready,
       start,
+      multiplayerVariant,
       standalone,
       disabled,
       campaignName,
@@ -231,7 +251,7 @@ export default defineComponent({
       scenarios,
       campaigns,
       decks,
-      deckId,
+      deckIds,
       playerCount,
       selectedDifficulty,
       selectedScenario,

@@ -6,9 +6,12 @@ import Import hiding (delete, on, (==.))
 
 import Api.Arkham.Helpers
 import Arkham.Game
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Game
-import Control.Lens ((&), (.~))
+import Arkham.Types.Id
+import Control.Lens (view, (&), (.~))
 import Control.Monad.Random (mkStdGen)
+import Data.Coerce
 import Json
 import Safe (fromJustNote)
 
@@ -18,7 +21,7 @@ putApiV1ArkhamGameUndoR gameId = do
   ArkhamGame {..} <- runDB $ get404 gameId
   let gameJson@Game {..} = arkhamGameCurrentData
 
-  _ <- runDB $ entityVal <$> getBy404 (UniquePlayer userId gameId)
+  Entity pid arkhamPlayer <- runDB $ getBy404 (UniquePlayer userId gameId)
 
   let undidChoices = drop 1 gameChoices
 
@@ -34,8 +37,8 @@ putApiV1ArkhamGameUndoR gameId = do
   liftIO $ atomically $ writeTChan
     writeChannel
     (encode $ GameUpdate $ PublicGame gameId arkhamGameName arkhamGameLog ge)
-  runDB
-    (replace
+  runDB $ do
+    replace
       gameId
       (ArkhamGame
         arkhamGameName
@@ -44,4 +47,7 @@ putApiV1ArkhamGameUndoR gameId = do
         arkhamGameLog
         arkhamGameMultiplayerVariant
       )
-    )
+
+    replace pid $ arkhamPlayer
+      { arkhamPlayerInvestigatorId = coerce (view activeInvestigatorIdL ge)
+      }

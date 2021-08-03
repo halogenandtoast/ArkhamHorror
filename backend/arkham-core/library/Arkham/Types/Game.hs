@@ -2479,17 +2479,26 @@ runGameMessage msg g = case msg of
       (mapToList $ g ^. investigatorsL)
       (\(iid, i) -> do
         hasSpendableClues <- getHasSpendableClues i
-        pure
-          $ if hasSpendableClues && iid `elem` iids then Just iid else Nothing
+        if hasSpendableClues && iid `elem` iids
+          then Just . (iid, ) . unClueCount <$> getCount iid
+          else pure Nothing
       )
     case investigatorsWithClues of
       [] -> error "someone needed to spend some clues"
-      [x] -> g <$ push (InvestigatorSpendClues x n)
-      xs -> g <$ pushAll
-        [ chooseOne (gameLeadInvestigatorId g)
-          $ map (`InvestigatorSpendClues` 1) xs
-        , SpendClues (n - 1) investigatorsWithClues
-        ]
+      [(x, _)] -> g <$ push (InvestigatorSpendClues x n)
+      xs -> do
+        if sum (map snd investigatorsWithClues) == n
+          then
+            g
+              <$ pushAll
+                   [ InvestigatorSpendClues iid x
+                   | (iid, x) <- investigatorsWithClues
+                   ]
+          else g <$ pushAll
+            [ chooseOne (gameLeadInvestigatorId g)
+              $ map ((`InvestigatorSpendClues` 1) . fst) xs
+            , SpendClues (n - 1) (map fst investigatorsWithClues)
+            ]
   AdvanceCurrentAgenda -> do
     let aids = keys $ g ^. agendasL
     g <$ pushAll [ AdvanceAgenda aid | aid <- aids ]
@@ -2911,14 +2920,20 @@ runGameMessage msg g = case msg of
       [iid] -> pushAll
         [ CheckWindow
           iid
-          [Fast.AnyPhaseBegins, Fast.PhaseBegins InvestigationPhase]
+          [ Fast.AnyPhaseBegins
+          , Fast.PhaseBegins InvestigationPhase
+          , FastPlayerWindow
+          ]
         , ChoosePlayer iid SetTurnPlayer
         ]
       xs ->
         pushAll
           $ [ CheckWindow
                 iid
-                [Fast.AnyPhaseBegins, Fast.PhaseBegins InvestigationPhase]
+                [ Fast.AnyPhaseBegins
+                , Fast.PhaseBegins InvestigationPhase
+                , FastPlayerWindow
+                ]
             | iid <- xs
             ]
           <> [ chooseOne
@@ -3032,15 +3047,16 @@ runGameMessage msg g = case msg of
       & (roundMessageHistoryL .~ [])
   BeginRound -> g <$ pushEnd BeginMythos
   BeginMythos -> do
+    iids <- getInvestigatorIds
     pushAllEnd
       $ [ CheckWindow iid [Fast.AnyPhaseBegins, Fast.PhaseBegins MythosPhase]
-        | iid <- g ^. investigatorsL . to keys
+        | iid <- iids
         ]
       <> [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
-      <> [ CheckWindow iid [Fast.WhenAllDrawEncounterCard]
-         | iid <- g ^. investigatorsL . to keys
-         ]
-      <> [AllDrawEncounterCard, EndMythos]
+      <> [ CheckWindow iid [Fast.WhenAllDrawEncounterCard] | iid <- iids ]
+      <> [AllDrawEncounterCard]
+      <> [ CheckWindow iid [FastPlayerWindow] | iid <- iids ]
+      <> [EndMythos]
     pure $ g & phaseL .~ MythosPhase
   AllDrawEncounterCard -> do
     playerIds <- filterM

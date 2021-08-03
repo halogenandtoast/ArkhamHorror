@@ -2905,18 +2905,26 @@ runGameMessage msg g = case msg of
       & (eventsL %~ deleteMap eid)
       & (victoryDisplayL %~ (toCard event :))
   BeginInvestigation -> do
-    pushAll
-      $ [ CheckWindow
-            iid
-            [Fast.AnyPhaseBegins, Fast.PhaseBegins InvestigationPhase]
-        | iid <- g ^. investigatorsL . to keys
+    investigatorIds <- getInvestigatorIds
+    case investigatorIds of
+      [] -> error "no investigators"
+      [iid] -> pushAll
+        [ CheckWindow
+          iid
+          [Fast.AnyPhaseBegins, Fast.PhaseBegins InvestigationPhase]
+        , ChoosePlayer iid SetTurnPlayer
         ]
-      <> [ chooseOne
-             (g ^. leadInvestigatorIdL)
-             [ ChoosePlayer iid SetTurnPlayer
-             | iid <- g ^. investigatorsL . to keys
+      xs ->
+        pushAll
+          $ [ CheckWindow
+                iid
+                [Fast.AnyPhaseBegins, Fast.PhaseBegins InvestigationPhase]
+            | iid <- xs
+            ]
+          <> [ chooseOne
+                 (g ^. leadInvestigatorIdL)
+                 [ ChoosePlayer iid SetTurnPlayer | iid <- xs ]
              ]
-         ]
     pure $ g & phaseL .~ InvestigationPhase
   BeginTurn x -> do
     push (CheckWindow x [WhenTurnBegins x, AfterTurnBegins x])

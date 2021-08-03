@@ -3063,7 +3063,9 @@ runGameMessage msg g = case msg of
       ((not . isEliminated <$>) . getInvestigator)
       (view playerOrderL g)
     g <$ pushAll
-      [ chooseOne iid [InvestigatorDrawEncounterCard iid] | iid <- playerIds ]
+      ([ chooseOne iid [InvestigatorDrawEncounterCard iid] | iid <- playerIds ]
+      <> [SetActiveInvestigator $ g ^. activeInvestigatorIdL]
+      )
   EndMythos -> do
     pushAll
       $ [ CheckWindow iid [Fast.PhaseEnds MythosPhase]

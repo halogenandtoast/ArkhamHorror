@@ -402,7 +402,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
             | (iid, lid) <- iids
             ]
           )
-    EnemySpawn _ lid eid | eid == enemyId -> do
+    EnemySpawn miid lid eid | eid == enemyId -> do
       locations' <- getSet ()
       keywords <- getModifiedKeywords a
       if lid `notElem` locations'
@@ -420,7 +420,10 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
                 then getSetList @InvestigatorId lid
                 else pure []
               leadInvestigatorId <- getLeadInvestigatorId
-              case preyIds <> investigatorIds of
+              let
+                validInvestigatorIds =
+                  maybe (preyIds <> investigatorIds) pure miid
+              case validInvestigatorIds of
                 [] -> push $ EnemyEntered eid lid
                 [iid] -> pushAll
                   [EnemyEntered eid lid, EnemyEngageInvestigator eid iid]
@@ -776,7 +779,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
         <$ (case enemySpawnAt of
              Nothing -> pushAll (resolve (EnemySpawn (Just iid) lid eid))
              Just matcher -> do
-               spawnAt (Just iid) enemyId matcher
+               spawnAt Nothing enemyId matcher
            )
     InvestigatorEliminated iid ->
       pure $ a & engagedInvestigatorsL %~ deleteSet iid

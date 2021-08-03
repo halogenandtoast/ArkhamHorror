@@ -186,6 +186,7 @@ data Game = Game
   -- Player Details
   , gamePlayerCount :: Int -- used for determining if game should start
   , gameActiveInvestigatorId :: InvestigatorId
+  , gameTurnPlayerInvestigatorId :: Maybe InvestigatorId
   , gameLeadInvestigatorId :: InvestigatorId
   , gamePlayerOrder :: [InvestigatorId] -- For "in player order"
 
@@ -258,6 +259,10 @@ roundMessageHistoryL =
 activeInvestigatorIdL :: Lens' Game InvestigatorId
 activeInvestigatorIdL =
   lens gameActiveInvestigatorId $ \m x -> m { gameActiveInvestigatorId = x }
+
+turnPlayerInvestigatorIdL :: Lens' Game (Maybe InvestigatorId)
+turnPlayerInvestigatorIdL = lens gameTurnPlayerInvestigatorId
+  $ \m x -> m { gameTurnPlayerInvestigatorId = x }
 
 leadInvestigatorIdL :: Lens' Game InvestigatorId
 leadInvestigatorIdL =
@@ -380,6 +385,7 @@ instance ToJSON Game where
     , "skills" .= toJSON gameSkills -- no need for modifiers... yet
     , "playerCount" .= toJSON gamePlayerCount
     , "activeInvestigatorId" .= toJSON gameActiveInvestigatorId
+    , "turnPlayerInvestigatorId" .= toJSON gameTurnPlayerInvestigatorId
     , "leadInvestigatorId" .= toJSON gameLeadInvestigatorId
     , "playerOrder" .= toJSON gamePlayerOrder
     , "phase" .= toJSON gamePhase
@@ -436,6 +442,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     , "skills" .= toJSON gameSkills -- no need for modifiers... yet
     , "playerCount" .= toJSON gamePlayerCount
     , "activeInvestigatorId" .= toJSON gameActiveInvestigatorId
+    , "turnPlayerInvestigatorId" .= toJSON gameTurnPlayerInvestigatorId
     , "leadInvestigatorId" .= toJSON gameLeadInvestigatorId
     , "playerOrder" .= toJSON gamePlayerOrder
     , "phase" .= toJSON gamePhase
@@ -783,6 +790,11 @@ getEffect eid =
 getActiveInvestigator :: (HasGame env, MonadReader env m) => m Investigator
 getActiveInvestigator =
   getInvestigator . view activeInvestigatorIdL =<< getGame
+
+getTurnInvestigator
+  :: (HasGame env, MonadReader env m) => m (Maybe Investigator)
+getTurnInvestigator =
+  traverse getInvestigator . view turnPlayerInvestigatorIdL =<< getGame
 
 instance HasGame env => CanBeWeakness env TreacheryId where
   getIsWeakness = getIsWeakness <=< getTreachery
@@ -2943,7 +2955,7 @@ runGameMessage msg g = case msg of
     pure $ g & phaseL .~ InvestigationPhase
   BeginTurn x -> do
     push (CheckWindow x [WhenTurnBegins x, AfterTurnBegins x])
-    pure $ g & activeInvestigatorIdL .~ x
+    pure $ g & activeInvestigatorIdL .~ x & turnPlayerInvestigatorIdL ?~ x
   ChoosePlayerOrder [x] [] -> do
     pure $ g & playerOrderL .~ [x]
   ChoosePlayerOrder [] (x : xs) -> do
@@ -2988,6 +3000,7 @@ runGameMessage msg g = case msg of
              )
         )
       & (phaseMessageHistoryL .~ [])
+      & (turnPlayerInvestigatorIdL .~ Nothing)
   BeginEnemy -> do
     pushAllEnd
       $ [ CheckWindow iid [Fast.AnyPhaseBegins, Fast.PhaseBegins EnemyPhase]

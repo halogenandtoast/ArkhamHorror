@@ -69,7 +69,7 @@ import Control.Monad.Random.Lazy hiding (filterM, foldM)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (filterM, foldM)
 import qualified Data.HashMap.Strict as HashMap
-import Data.List.Extra (cycle, groupOn)
+import Data.List.Extra (groupOn)
 import qualified Data.Sequence as Seq
 import Data.These
 import Data.These.Lens
@@ -188,7 +188,6 @@ data Game = Game
   , gameActiveInvestigatorId :: InvestigatorId
   , gameLeadInvestigatorId :: InvestigatorId
   , gamePlayerOrder :: [InvestigatorId] -- For "in player order"
-  , gamePlayerTurnOrder :: [InvestigatorId] -- Player order during investigation
 
   -- Game Details
   , gamePhase :: Phase
@@ -247,10 +246,6 @@ removedFromPlayL =
 
 phaseL :: Lens' Game Phase
 phaseL = lens gamePhase $ \m x -> m { gamePhase = x }
-
-playerTurnOrderL :: Lens' Game [InvestigatorId]
-playerTurnOrderL =
-  lens gamePlayerTurnOrder $ \m x -> m { gamePlayerTurnOrder = x }
 
 phaseMessageHistoryL :: Lens' Game [Message]
 phaseMessageHistoryL =
@@ -387,7 +382,6 @@ instance ToJSON Game where
     , "activeInvestigatorId" .= toJSON gameActiveInvestigatorId
     , "leadInvestigatorId" .= toJSON gameLeadInvestigatorId
     , "playerOrder" .= toJSON gamePlayerOrder
-    , "playerTurnOrder" .= toJSON gamePlayerTurnOrder
     , "phase" .= toJSON gamePhase
     , "encounterDeck" .= toJSON gameEncounterDeck
     , "discard" .= toJSON gameDiscard
@@ -444,7 +438,6 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     , "activeInvestigatorId" .= toJSON gameActiveInvestigatorId
     , "leadInvestigatorId" .= toJSON gameLeadInvestigatorId
     , "playerOrder" .= toJSON gamePlayerOrder
-    , "playerTurnOrder" .= toJSON gamePlayerTurnOrder
     , "phase" .= toJSON gamePhase
     , "discard" .= toJSON gameDiscard
     , "chaosBag" .= toJSON gameChaosBag
@@ -2324,16 +2317,19 @@ runGameMessage msg g = case msg of
         (const . difficultyOf)
         (g ^. modeL)
     pushAll
-      $ [ ChooseLeadInvestigator
-        , SetupInvestigators
-        , SetTokensForScenario -- (chaosBagOf campaign')
-        ]
-      <> [ InvestigatorMulligan iid | iid <- keys $ g ^. investigatorsL ]
-      <> [Setup, EndSetup]
+      [ ChooseLeadInvestigator
+      , SetupInvestigators
+      , SetTokensForScenario -- (chaosBagOf campaign')
+      , InvestigatorsMulligan
+      , Setup
+      , EndSetup
+      ]
     pure
       $ g
       & (modeL %~ setScenario (lookupScenario sid difficulty))
       & (phaseL .~ InvestigationPhase)
+  InvestigatorsMulligan ->
+    g <$ pushAll [ InvestigatorMulligan iid | iid <- g ^. playerOrderL ]
   InvestigatorMulligan iid -> pure $ g & activeInvestigatorIdL .~ iid
   Will (MoveFrom iid lid) -> do
     msgs <- checkWindows [WhenWouldLeave iid lid]
@@ -2392,11 +2388,11 @@ runGameMessage msg g = case msg of
         ]
       )
   ChoosePlayer iid SetLeadInvestigator -> do
-    let
-      allPlayers = view playerTurnOrderL g
-      playerTurnOrder =
-        take (length allPlayers) $ dropWhile (/= iid) $ cycle allPlayers
-    pure $ g & leadInvestigatorIdL .~ iid & playerTurnOrderL .~ playerTurnOrder
+    let allPlayers = view playerOrderL g
+    push $ ChoosePlayerOrder (filter (/= iid) allPlayers) [iid]
+    pure $ g & leadInvestigatorIdL .~ iid
+  ChoosePlayer iid SetTurnPlayer ->
+    g <$ pushAll [BeginTurn iid, After (BeginTurn iid)]
   LookAtTopOfDeck _ EncounterDeckTarget n -> do
     let cards = map EncounterCard . take n $ unDeck (gameEncounterDeck g)
     g <$ pushAll [FocusCards cards, Label "Continue" [UnfocusCards]]
@@ -2915,19 +2911,22 @@ runGameMessage msg g = case msg of
             [Fast.AnyPhaseBegins, Fast.PhaseBegins InvestigationPhase]
         | iid <- g ^. investigatorsL . to keys
         ]
-      <> [ChoosePlayerOrder (gamePlayerOrder g) []]
+      <> [ chooseOne
+             (g ^. leadInvestigatorIdL)
+             [ ChoosePlayer iid SetTurnPlayer
+             | iid <- g ^. investigatorsL . to keys
+             ]
+         ]
     pure $ g & phaseL .~ InvestigationPhase
-  BeginTurn x ->
-    g <$ push (CheckWindow x [WhenTurnBegins x, AfterTurnBegins x])
+  BeginTurn x -> do
+    push (CheckWindow x [WhenTurnBegins x, AfterTurnBegins x])
+    pure $ g & activeInvestigatorIdL .~ x
   ChoosePlayerOrder [x] [] -> do
-    pushAll [BeginTurn x, After (BeginTurn x)]
-    pure $ g & playerOrderL .~ [x] & activeInvestigatorIdL .~ x
+    pure $ g & playerOrderL .~ [x]
   ChoosePlayerOrder [] (x : xs) -> do
-    pushAll [BeginTurn x, After (BeginTurn x)]
-    pure $ g & playerOrderL .~ (x : xs) & activeInvestigatorIdL .~ x
+    pure $ g & playerOrderL .~ (x : xs)
   ChoosePlayerOrder [y] (x : xs) -> do
-    pushAll [BeginTurn x, After (BeginTurn x)]
-    pure $ g & playerOrderL .~ (x : (xs <> [y])) & activeInvestigatorIdL .~ x
+    pure $ g & playerOrderL .~ (x : (xs <> [y]))
   ChoosePlayerOrder investigatorIds orderedInvestigatorIds -> do
     push $ chooseOne
       (gameLeadInvestigatorId g)
@@ -3038,7 +3037,7 @@ runGameMessage msg g = case msg of
   AllDrawEncounterCard -> do
     playerIds <- filterM
       ((not . isEliminated <$>) . getInvestigator)
-      (view playerTurnOrderL g)
+      (view playerOrderL g)
     g <$ pushAll
       [ chooseOne iid [InvestigatorDrawEncounterCard iid] | iid <- playerIds ]
   EndMythos -> do
@@ -3327,10 +3326,13 @@ runGameMessage msg g = case msg of
         pure $ g & encounterDeckL .~ Deck xs & discardL %~ (reverse discards <>)
   Surge iid _ -> g <$ push (InvestigatorDrawEncounterCard iid)
   InvestigatorEliminated iid -> pure $ g & playerOrderL %~ filter (/= iid)
+  SetActiveInvestigator iid -> pure $ g & activeInvestigatorIdL .~ iid
   InvestigatorDrawEncounterCard iid -> do
     g <$ pushAll
-      [ CheckWindow iid [WhenWouldDrawEncounterCard iid]
+      [ SetActiveInvestigator iid
+      , CheckWindow iid [WhenWouldDrawEncounterCard iid]
       , InvestigatorDoDrawEncounterCard iid
+      , SetActiveInvestigator (g ^. activeInvestigatorIdL)
       ]
   InvestigatorDoDrawEncounterCard iid -> if null (unDeck $ g ^. encounterDeckL)
     then g <$ when

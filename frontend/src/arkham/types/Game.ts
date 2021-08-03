@@ -43,6 +43,7 @@ export interface Game {
   leadInvestigatorId: string;
   locations: Record<string, Location>;
   phase: Phase;
+  playerOrder: string[];
   question: Record<string, Question>;
   scenario: Scenario | null;
   campaign: Campaign | null;
@@ -141,6 +142,7 @@ export const gameDecoder = JsonDecoder.object<Game>(
     leadInvestigatorId: JsonDecoder.string,
     locations: JsonDecoder.dictionary<Location>(locationDecoder, 'Dict<UUID, Location>'),
     phase: phaseDecoder,
+    playerOrder: JsonDecoder.array(JsonDecoder.string, 'PlayerOrder[]'),
     question: JsonDecoder.dictionary<Question>(questionDecoder, 'Dict<InvestigatorId, Question>'),
     scenario: modeDecoder.map(mode => mode.That || null),
     campaign: modeDecoder.map(mode => mode.This || null),

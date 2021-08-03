@@ -1,6 +1,6 @@
 <template>
   <div v-if="playerChoices.length > 0" class="player-selector">
-    <p>Choose lead investigator</p>
+    <p>{{playerChoicesMessage}}</p>
     <div class="modal-contents choose-player-order">
       <div class="choose-player-portraits">
         <div
@@ -39,13 +39,22 @@ export default defineComponent({
         .filter(({ choice }) => choice.tag === MessageType.CHOOSE_PLAYER);
     })
 
+    const playerChoicesMessage = computed(() => {
+      const messageType = playerChoices.value[0]?.choice?.contents[1]
+      switch (messageType) {
+        case 'SetTurnPlayer': return "Choose player to take turn"
+        case 'SetLeadInvestigator': return "Choose lead investigator"
+        default: return null
+      }
+    })
+
     const investigatorPortrait = (choice: Message) => {
       const iid = choice.contents[0];
       const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
       return `${baseUrl}/img/arkham/portraits/${iid}.jpg`;
     }
 
-    return { playerChoices, investigatorPortrait }
+    return { playerChoices, playerChoicesMessage, investigatorPortrait }
   }
 })
 </script>

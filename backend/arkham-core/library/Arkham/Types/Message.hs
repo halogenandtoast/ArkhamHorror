@@ -335,6 +335,7 @@ data Message
     | InvestigatorEliminated InvestigatorId
     | InvestigatorKilled InvestigatorId
     | InvestigatorMulligan InvestigatorId
+    | InvestigatorsMulligan
     | -- | This message exists in case the number of clues will change
       InvestigatorPlaceAllCluesOnLocation InvestigatorId
     | InvestigatorPlaceCluesOnLocation InvestigatorId Int
@@ -469,6 +470,7 @@ data Message
     | SetLocationLabel LocationId Text
     | SetRole InvestigatorId ClassSymbol
     | ForceTokenDraw TokenFace
+    | SetActiveInvestigator InvestigatorId
     | SetTokens [TokenFace]
     | SetTokensForScenario
     | Setup
@@ -566,6 +568,6 @@ data Question
     deriving stock (Show, Eq, Generic)
     deriving anyclass (FromJSON, ToJSON)
 
-data ChoosePlayerChoice = SetLeadInvestigator
+data ChoosePlayerChoice = SetLeadInvestigator | SetTurnPlayer
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)

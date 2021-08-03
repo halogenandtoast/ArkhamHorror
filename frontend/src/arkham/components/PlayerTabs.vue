@@ -1,12 +1,12 @@
 <template lang="html">
   <div class="player-info">
     <ul class='tabs__header'>
-      <li v-for='(player, index) in players'
-        :key='player.contents.name.title'
-        @click='selectTab(index)'
-        :class='tabClass(index)'
+      <li v-for='iid in playerOrder'
+        :key='players[iid].contents.name.title'
+        @click='selectTab(iid)'
+        :class='tabClass(iid)'
       >
-        {{ player.contents.name.title }}
+        {{ players[iid].contents.name.title }}
       </li>
     </ul>
     <Tab
@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, watchEffect } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import Tab from '@/arkham/components/Tab.vue';
 import Player from '@/arkham/components/Player.vue';
@@ -42,6 +42,7 @@ export default defineComponent({
     game: { type: Object as () => Game, required: true },
     investigatorId: { type: String, required: true },
     players: { type: Object as () => Record<string, Investigator>, required: true },
+    playerOrder: { type: Array as () => string[], required: true },
     activePlayerId: { type: String, required: true }
   },
   setup(props) {
@@ -60,6 +61,8 @@ export default defineComponent({
     function selectTab(i: string) {
       selectedTab.value = i
     }
+
+    watchEffect(() => selectedTab.value = props.investigatorId)
 
     return { selectedTab, selectTab, tabClass }
   }

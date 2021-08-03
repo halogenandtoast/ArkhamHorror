@@ -5,10 +5,13 @@
         v-for="cardCode in location.contents.investigators"
         :key="cardCode"
       >
-        <img
-          :src="portrait(cardCode)"
-          class="portrait"
-        />
+        <Investigator
+          :game="game"
+          :investigatorId="investigatorId"
+          :portrait="true"
+          :player="game.investigators[cardCode]"
+          @choose="$emit('choose', $event)"
+          />
       </div>
     </div>
     <div class="location-column">
@@ -100,6 +103,7 @@ import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { Message, MessageType } from '@/arkham/types/Message';
 import Enemy from '@/arkham/components/Enemy.vue';
+import Investigator from '@/arkham/components/Investigator.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import Event from '@/arkham/components/Event.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
@@ -113,6 +117,7 @@ export default defineComponent({
     Treachery,
     Asset,
     Event,
+    Investigator,
     PoolItem,
     AbilityButton,
   },
@@ -305,8 +310,6 @@ export default defineComponent({
       }
     }
 
-    const portrait = (cardCode: string) => `${baseUrl}/img/arkham/portraits/${cardCode}.jpg`
-
     const debug = inject('debug')
     const debugChoose = inject('debugChoose')
 
@@ -314,7 +317,6 @@ export default defineComponent({
       debug,
       debugChoose,
       id,
-      portrait,
       doInvestigate,
       blocked,
       enemies,
@@ -355,12 +357,6 @@ export default defineComponent({
   object-position: 0 -74px;
   height: 68px;
   margin-top: 2px;
-}
-
-.portrait {
-  border-radius: 3px;
-  width: 60px;
-  margin-right: 2px;
 }
 
 .location-container {
@@ -460,7 +456,7 @@ export default defineComponent({
 .location-investigator-column {
   min-width: 60px;
   height: 100%;
-  .portrait {
+  &:deep(.portrait) {
     height: 25%;
   }
 }

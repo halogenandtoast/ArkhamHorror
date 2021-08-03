@@ -110,7 +110,7 @@ instance Exhaustable Asset where
 
 instance Discardable Asset where
   canBeDiscarded = and . sequence
-    [assetCanLeavePlayByNormalMeans . toAttrs, not . cdExceptional . toCardDef]
+    [assetCanLeavePlayByNormalMeans . toAttrs, not . cdPermanent . toCardDef]
 
 instance HasId (Maybe OwnerId) env Asset where
   getId = pure . coerce . assetInvestigator . toAttrs

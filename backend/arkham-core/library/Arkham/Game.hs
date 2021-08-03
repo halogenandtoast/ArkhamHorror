@@ -336,7 +336,9 @@ runMessages isReplay = do
             Ask iid q -> do
               toGameEnv >>= flip
                 runGameEnvT
-                (toExternalGame g (singletonMap iid q)
+                (toExternalGame
+                    (g & activeInvestigatorIdL .~ iid)
+                    (singletonMap iid q)
                 >>= atomicWriteIORef gameRef
                 )
             AskMap askMap -> do

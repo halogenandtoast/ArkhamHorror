@@ -70,6 +70,7 @@ export default defineComponent({
     const debug = ref(false)
     provide('debug', debug)
     const ready = ref(false)
+    const solo = ref(false)
     const socketError = ref(false)
     const socket = ref<WebSocket | null>(null)
     const game = ref<Arkham.Game | null>(null)
@@ -92,7 +93,15 @@ export default defineComponent({
 
         if (data.tag === "GameUpdate") {
           Arkham.gameDecoder.decodePromise(data.contents)
-            .then((updatedGame) => { game.value = updatedGame; });
+            .then((updatedGame) => {
+              game.value = updatedGame;
+              if (solo.value) {
+                if (Object.keys(game.value.question).length == 1) {
+                  investigatorId.value = Object.keys(game.value.question)[0]
+                }
+              }
+
+            });
         }
       });
       socket.value.addEventListener('error', () => {
@@ -109,8 +118,9 @@ export default defineComponent({
       });
     }
 
-    fetchGame(props.gameId).then(({ game: newGame, investigatorId: newInvestigatorId }) => {
+    fetchGame(props.gameId).then(({ game: newGame, investigatorId: newInvestigatorId, multiplayerMode}) => {
       game.value = newGame;
+      solo.value = multiplayerMode == "Solo";
       gameLog.value = Object.freeze(newGame.log);
       investigatorId.value = newInvestigatorId;
       connect();
@@ -125,6 +135,10 @@ export default defineComponent({
     /* eslint-disable @typescript-eslint/no-explicit-any */
     const debugChoose = async (message: any) => updateGameRaw(props.gameId, message)
     provide('debugChoose', debugChoose)
+
+    const switchInvestigator = (newInvestigatorId: string) => investigatorId.value = newInvestigatorId
+    provide('switchInvestigator', switchInvestigator)
+    provide('solo', solo)
 
     async function update(state: Arkham.Game) {
       game.value = state;

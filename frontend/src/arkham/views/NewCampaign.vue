@@ -17,8 +17,8 @@
           <input type="radio" v-model="playerCount" :value="4" id="player4" /><label for="player4">4</label>
         </div>
         <div v-if="playerCount > 1" class="options">
-          <input type="radio" v-model="multiplayerVariant" value="friends" id="friends" /><label for="friends">With Friends</label>
-          <input type="radio" v-model="multiplayerVariant" value="solo" id="solo" /><label for="solo">Multi-handed Solo</label>
+          <input type="radio" v-model="multiplayerVariant" value="WithFriends" id="friends" /><label for="friends">With Friends</label>
+          <input type="radio" v-model="multiplayerVariant" value="Solo" id="solo" /><label for="solo">Multi-handed Solo</label>
         </div>
 
 

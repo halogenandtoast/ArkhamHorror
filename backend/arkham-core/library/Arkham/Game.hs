@@ -319,6 +319,9 @@ runMessages isReplay = do
                   [] -> do
                     pushEnd EndInvestigation
                     runMessages isReplay
+                  [x] -> do
+                    push (ChoosePlayer x SetTurnPlayer)
+                    runMessages isReplay
                   xs -> do
                     push
                       (chooseOne

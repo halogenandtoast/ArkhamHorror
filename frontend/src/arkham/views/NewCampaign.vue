@@ -36,7 +36,7 @@
           </template>
         </div>
 
-        <div v-if="playerCount == 1 || multiplayerVariant == 'friends'">
+        <div v-if="playerCount == 1 || multiplayerVariant == 'WithFriends'">
           <p>Deck</p>
           <select v-model="deckIds[0]">
             <option disabled :value="null">-- Select a Deck--</option>
@@ -164,7 +164,7 @@ export default defineComponent({
     const selectedCampaign = ref('01')
     const selectedScenario = ref('81001')
     const campaignName = ref<string | null>(null)
-    const multiplayerVariant = ref('friends')
+    const multiplayerVariant = ref('WithFriends')
     const returnTo = ref(false)
 
     fetchDecks().then((result) => {
@@ -182,7 +182,11 @@ export default defineComponent({
     })
 
     const disabled = computed(() => {
-      return [...Array(playerCount.value)].some((_,n) => !deckIds.value[n])
+      if (multiplayerVariant.value == 'WithFriends') {
+        return !deckIds.value[0]
+      } else {
+        return [...Array(playerCount.value)].some((_,n) => !deckIds.value[n])
+      }
     })
     const defaultCampaignName = computed(() => {
       const campaign = campaigns.find((c) => c.id === selectedCampaign.value);

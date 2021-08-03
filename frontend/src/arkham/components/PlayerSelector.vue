@@ -48,9 +48,10 @@ export default defineComponent({
       }
     })
 
+    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+
     const investigatorPortrait = (choice: Message) => {
       const iid = choice.contents[0];
-      const baseUrl = process.env.NODE_ENV == 'production' ? process.env.VUE_APP_ASSET_HOST : '';
       return `${baseUrl}/img/arkham/portraits/${iid}.jpg`;
     }
 

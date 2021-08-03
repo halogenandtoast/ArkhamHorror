@@ -103,7 +103,6 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameFocusedTokens = mempty
       , gameActiveCard = Nothing
       , gamePlayerOrder = toList playersMap
-      , gamePlayerTurnOrder = toList playersMap
       , gameVictoryDisplay = mempty
       , gameRemovedFromPlay = mempty
       , gameQuestion = mempty
@@ -138,11 +137,7 @@ addInvestigator i d = do
 
   let
     iid = toId i
-    g' =
-      game
-        & (investigatorsL %~ insertEntity i)
-        & (playerOrderL <>~ [iid])
-        & (playerTurnOrderL %~ (<> [iid]))
+    g' = game & (investigatorsL %~ insertEntity i) & (playerOrderL <>~ [iid])
     gameState = if size (g' ^. investigatorsL) < g' ^. playerCountL
       then IsPending
       else IsActive
@@ -324,9 +319,12 @@ runMessages isReplay = do
                   [] -> do
                     pushEnd EndInvestigation
                     runMessages isReplay
-                  (x : _) -> do
-                    atomicWriteIORef gameRef (g & activeInvestigatorIdL .~ x)
-                    pushAll [BeginTurn x, After (BeginTurn x)]
+                  xs -> do
+                    push
+                      (chooseOne
+                        (g ^. leadInvestigatorIdL)
+                        [ ChoosePlayer iid SetTurnPlayer | iid <- xs ]
+                      )
                     runMessages isReplay
               else
                 pushAllEnd [PlayerWindow (g ^. activeInvestigatorIdL) [] False]

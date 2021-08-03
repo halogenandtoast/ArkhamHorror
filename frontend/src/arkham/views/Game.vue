@@ -98,6 +98,8 @@ export default defineComponent({
               if (solo.value) {
                 if (Object.keys(game.value.question).length == 1) {
                   investigatorId.value = Object.keys(game.value.question)[0]
+                } else if (game.value.activeInvestigatorId !== investigatorId.value) {
+                  investigatorId.value = Object.keys(game.value.question)[0]
                 }
               }
 

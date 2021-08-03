@@ -1,9 +1,15 @@
 <template>
-  <div>
+  <img v-if="portrait"
+    :src="portraitImage"
+    class="portrait"
+    :class="{ 'investigator--can-interact--portrait': investigatorAction !== -1 }"
+    @click="$emit('choose', investigatorAction)"
+  />
+  <div v-else>
     <div class="player-card">
       <img
         :class="{ 'investigator--can-interact': investigatorAction !== -1 }"
-        class="card portrait"
+        class="card"
         :src="image"
         @click="$emit('choose', investigatorAction)"
       />
@@ -81,6 +87,7 @@ export default defineComponent({
     game: { type: Object as () => Game, required: true },
     player: { type: Object as () => Arkham.Investigator, required: true },
     investigatorId: { type: String, required: true },
+    portrait: { type: Boolean, default: false }
   },
   setup(props) {
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
@@ -220,16 +227,20 @@ export default defineComponent({
         .findIndex((c) => c.tag === MessageType.END_TURN && c.contents === id.value);
     })
 
+    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
     const image = computed(() => {
-      const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
       return `${baseUrl}/img/arkham/cards/${id.value}.jpg`;
     })
+
+    const portraitImage = computed(() => `${baseUrl}/img/arkham/portraits/${id.value}.jpg`)
+
 
     const cardsUnderneath = computed(() => props.player.contents.cardsUnderneath)
     const cardsUnderneathLabel = computed(() => `Underneath (${cardsUnderneath.value.length})`)
 
     return {
       id,
+      portraitImage,
       solo,
       switchInvestigator,
       cardsUnderneath,
@@ -281,6 +292,9 @@ i.action {
 .investigator--can-interact {
   border: 2px solid #FF00FF;
   cursor: pointer;
+  &--portrait {
+    border: 3px solid #FF00FF;
+  }
 }
 
 .card {
@@ -296,5 +310,11 @@ i.action {
   display: flex;
   flex-direction: column;
   width: 140px;
+}
+
+.portrait {
+  border-radius: 3px;
+  width: 60px;
+  margin-right: 2px;
 }
 </style>

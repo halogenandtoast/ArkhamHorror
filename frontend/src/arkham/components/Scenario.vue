@@ -127,6 +127,7 @@
         :game="game"
         :investigatorId="investigatorId"
         :players="players"
+        :playerOrder="playerOrder"
         :activePlayerId="activePlayerId"
         @choose="$emit('choose', $event)"
       />
@@ -306,6 +307,7 @@ export default defineComponent({
     })
 
     const players = computed(() => props.game.investigators)
+    const playerOrder = computed(() => props.game.playerOrder)
     const discards = computed(() => props.game.discard.map(c => { return { tag: 'EncounterCard', contents: c }}))
     const outOfPlay = computed(() => (props.game.scenario?.contents?.setAsideCards || []))
     const removedFromPlay = computed(() => props.game.removedFromPlay)
@@ -372,6 +374,7 @@ export default defineComponent({
       activePlayerId,
       topOfEncounterDiscard,
       players,
+      playerOrder,
       activeCard,
       locationStyles,
       scenarioGuide,

@@ -36,6 +36,7 @@ instance HasActions env ForbiddenKnowledge where
           (FastAbility $ Costs
             [ UseCost (toId a) Secret 1
             , HorrorCost (toSource a) (InvestigatorTarget iid) 1
+            , ExhaustCost (toTarget a)
             ]
           )
         )

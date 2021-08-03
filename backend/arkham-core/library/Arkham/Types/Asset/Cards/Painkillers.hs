@@ -40,7 +40,7 @@ fastAbility iid attrs = restrictedAbility
   )
 
 instance HasActions env Painkillers where
-  getActions iid _ (Painkillers a) | ownedBy a iid =
+  getActions iid FastPlayerWindow (Painkillers a) | ownedBy a iid =
     pure [UseAbility iid (fastAbility iid a)]
   getActions _ _ _ = pure []
 

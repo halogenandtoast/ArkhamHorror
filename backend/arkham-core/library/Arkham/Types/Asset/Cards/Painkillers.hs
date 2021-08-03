@@ -16,6 +16,7 @@ import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype Painkillers = Painkillers AssetAttrs
   deriving anyclass IsAsset

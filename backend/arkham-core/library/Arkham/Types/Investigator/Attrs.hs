@@ -1989,7 +1989,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       msgs <- checkWindows [AfterPassSkillTest mAction source iid n]
       a <$ pushAll msgs
   PlayerWindow iid additionalActions isAdditional | iid == investigatorId -> do
-    isCurrentPlayer <- (== iid) . unActiveInvestigatorId <$> getId ()
     actions <- getActions iid NonFast ()
     if any isForcedAction actions
       then a <$ push (chooseOne iid actions)
@@ -2005,9 +2004,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         asIfInHandCards <- getAsIfInHandCards a
         let
           handCards = investigatorHand <> asIfInHandCards
-          windows = if isCurrentPlayer
-            then [DuringTurn iid, FastPlayerWindow]
-            else [FastPlayerWindow]
+          windows = [DuringTurn iid, FastPlayerWindow]
         isPlayableMap :: HashMap Card Bool <- mapFromList <$> for
           handCards
           (\c -> do
@@ -2050,7 +2047,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                , canAffordPlayCard || fastIsPlayable c
                , isPlayable c && isDynamic c
                ]
-            <> [ ChooseEndTurn iid | isCurrentPlayer ]
+            <> [ChooseEndTurn iid]
             <> actions
             <> fastActions
             <> playerWindowActions

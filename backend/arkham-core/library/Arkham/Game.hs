@@ -83,6 +83,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameAssets = mempty
       , gameInvestigators = investigatorsMap
       , gameActiveInvestigatorId = initialInvestigatorId
+      , gameTurnPlayerInvestigatorId = Nothing
       , gameLeadInvestigatorId = initialInvestigatorId
       , gamePhase = CampaignPhase
       , gameEncounterDeck = mempty
@@ -302,8 +303,11 @@ runMessages isReplay = do
           EnemyPhase -> pure ()
           UpkeepPhase -> pure ()
           InvestigationPhase -> do
-            activeInvestigator <- runReaderT getActiveInvestigator g
-            if hasEndedTurn activeInvestigator
+            mTurnInvestigator <- runReaderT getTurnInvestigator g
+            if maybe
+                True
+                (or . sequence [hasEndedTurn, hasResigned, isDefeated])
+                mTurnInvestigator
               then do
                 playingInvestigators <- filterM
                   (fmap
@@ -329,8 +333,10 @@ runMessages isReplay = do
                         [ ChoosePlayer iid SetTurnPlayer | iid <- xs ]
                       )
                     runMessages isReplay
-              else
-                pushAllEnd [PlayerWindow (g ^. activeInvestigatorIdL) [] False]
+              else do
+                let
+                  turnPlayer = fromJustNote "verified above" mTurnInvestigator
+                pushAllEnd [PlayerWindow (toId turnPlayer) [] False]
                   >> runMessages isReplay
         Just msg -> do
           case msg of

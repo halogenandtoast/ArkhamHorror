@@ -2317,6 +2317,7 @@ runGameMessage msg g = case msg of
       & (eventsL .~ mempty)
       & (gameStateL .~ IsActive)
       & (usedAbilitiesL .~ mempty)
+      & (turnPlayerInvestigatorIdL .~ Nothing)
       & (focusedCardsL .~ mempty)
       & (activeCardL .~ Nothing)
       & (victoryDisplayL .~ mempty)

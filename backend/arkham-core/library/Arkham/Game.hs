@@ -18,6 +18,7 @@ import Arkham.Types.Scenario
 import Arkham.Types.ScenarioId
 import Control.Monad.Random (mkStdGen)
 import Data.Align
+import Data.HashMap.Strict (size)
 import Safe (headNote)
 import System.Environment
 import Text.Pretty.Simple
@@ -27,7 +28,7 @@ newCampaign
   => CampaignId
   -> Int
   -> Int
-  -> Map Int (Investigator, [PlayerCard])
+  -> [(Investigator, [PlayerCard])]
   -> Difficulty
   -> m (IORef [Message], Game)
 newCampaign = newGame . Right
@@ -37,7 +38,7 @@ newScenario
   => ScenarioId
   -> Int
   -> Int
-  -> Map Int (Investigator, [PlayerCard])
+  -> [(Investigator, [PlayerCard])]
   -> Difficulty
   -> m (IORef [Message], Game)
 newScenario = newGame . Left
@@ -47,7 +48,7 @@ newGame
   => Either ScenarioId CampaignId
   -> Int
   -> Int
-  -> Map Int (Investigator, [PlayerCard])
+  -> [(Investigator, [PlayerCard])]
   -> Difficulty
   -> m (IORef [Message], Game)
 newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
@@ -56,7 +57,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       if length investigatorsMap /= playerCount then IsPending else IsActive
   ref <- newIORef $ if state == IsActive
     then
-      map (uncurry InitDeck . bimap toId Deck) (toList investigatorsList)
+      map (uncurry InitDeck . bimap toId Deck) investigatorsList
         <> [StartCampaign]
     else []
 
@@ -81,7 +82,6 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameEnemiesInVoid = mempty
       , gameAssets = mempty
       , gameInvestigators = investigatorsMap
-      , gamePlayers = mapFromList (mapToList playersMap)
       , gameActiveInvestigatorId = initialInvestigatorId
       , gameLeadInvestigatorId = initialInvestigatorId
       , gamePhase = CampaignPhase
@@ -128,11 +128,10 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
 
 addInvestigator
   :: (MonadIO m, MonadReader env m, HasQueue env, HasGameRef env)
-  => Int
-  -> Investigator
+  => Investigator
   -> [PlayerCard]
   -> m ()
-addInvestigator uid i d = do
+addInvestigator i d = do
   gameRef <- view gameRefL
   game <- liftIO $ readIORef gameRef
   queueRef <- view messageQueue
@@ -142,21 +141,20 @@ addInvestigator uid i d = do
     g' =
       game
         & (investigatorsL %~ insertEntity i)
-        & (playersL %~ insertMap uid iid)
         & (playerOrderL <>~ [iid])
         & (playerTurnOrderL %~ (<> [iid]))
-    gameState = if length (g' ^. playersL) < g' ^. playerCountL
+    gameState = if size (g' ^. investigatorsL) < g' ^. playerCountL
       then IsPending
       else IsActive
 
   let
     GameParams scenarioOrCampaignId playerCount investigatorsList difficulty =
       gameParams game
-    investigatorsList' = investigatorsList <> mapFromList [(uid, (i, d))]
+    investigatorsList' = investigatorsList <> [(i, d)]
 
   when (gameState == IsActive) $ atomicWriteIORef
     queueRef
-    (map (uncurry InitDeck . bimap toId Deck) (toList investigatorsList')
+    (map (uncurry InitDeck . bimap toId Deck) investigatorsList'
     <> [StartCampaign]
     )
 

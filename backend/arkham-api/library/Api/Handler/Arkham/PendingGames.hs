@@ -6,12 +6,14 @@ import Import hiding (on, (==.))
 
 import Api.Arkham.Helpers
 import Arkham.Game
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Game
+import Arkham.Types.Id
 import Arkham.Types.Investigator
 import Control.Monad.Random (mkStdGen)
 import Data.Aeson
+import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
-import Database.Esqueleto.Experimental
 import Safe (fromJustNote)
 
 newtype JoinGameJson = JoinGameJson { deckId :: ArkhamDeckId }
@@ -21,11 +23,8 @@ newtype JoinGameJson = JoinGameJson { deckId :: ArkhamDeckId }
 putApiV1ArkhamPendingGameR :: ArkhamGameId -> Handler (PublicGame ArkhamGameId)
 putApiV1ArkhamPendingGameR gameId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
-  let userId' = fromIntegral (fromSqlKey userId)
   JoinGameJson {..} <- requireCheckJsonBody
   ArkhamGame {..} <- runDB $ get404 gameId
-  when (userId' `HashMap.member` gamePlayers arkhamGameCurrentData)
-    $ invalidArgs ["Already joined game"]
 
   deck <- runDB $ get404 deckId
   when (arkhamDeckUserId deck /= userId) notFound
@@ -33,14 +32,15 @@ putApiV1ArkhamPendingGameR gameId = do
   when (iid `HashMap.member` gameInvestigators arkhamGameCurrentData)
     $ invalidArgs ["Investigator already taken"]
 
+  runDB $ insert_ $ ArkhamPlayer userId gameId (coerce iid)
+
   gameRef <- newIORef arkhamGameCurrentData
   queueRef <- newIORef arkhamGameQueue
   genRef <- newIORef (mkStdGen (gameSeed arkhamGameCurrentData))
   runGameApp (GameApp gameRef queueRef genRef (pure . const ())) $ do
-    addInvestigator userId' (lookupInvestigator iid) decklist
+    addInvestigator (lookupInvestigator iid) decklist
     runMessages False
 
-  runDB $ insert_ $ ArkhamPlayer userId gameId
 
   updatedGame <- readIORef gameRef
   updatedQueue <- readIORef queueRef
@@ -59,9 +59,11 @@ putApiV1ArkhamPendingGameR gameId = do
     updatedGame
     updatedQueue
     updatedMessages
+    arkhamGameMultiplayerVariant
 
   pure $ toPublicGame $ Entity gameId $ ArkhamGame
     arkhamGameName
     updatedGame
     updatedQueue
     updatedMessages
+    arkhamGameMultiplayerVariant

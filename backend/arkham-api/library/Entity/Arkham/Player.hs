@@ -16,6 +16,8 @@ mkPersist sqlSettings [persistLowerCase|
 ArkhamPlayer sql=arkham_players
   userId UserId OnDeleteCascade
   arkhamGameId ArkhamGameId OnDeleteCascade
+  investigatorId Text
+  UniquePlayer userId arkhamGameId
   deriving Generic Show
 |]
 

@@ -10,6 +10,7 @@ CREATE TABLE arkham_games (
   current_data jsonb NOT NULL,
   queue jsonb NOT NULL,
   log jsonb NOT NULL,
+  multiplayerVariant text NOT NULL,
   PRIMARY KEY (id)
 );
 

@@ -55,6 +55,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, provide, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
 import * as Arkham from '@/arkham/types/Game'
 import { fetchGame, updateGame, updateGameRaw } from '@/arkham/api'
 import GameLog from '@/arkham/components/GameLog.vue'
@@ -65,7 +66,7 @@ import { onBeforeRouteLeave } from 'vue-router'
 
 export default defineComponent({
   components: { Scenario, Campaign, GameLog, CardOverlay },
-  props: { gameId: { type: String, required: true } },
+  props: { gameId: { type: String, required: true }, spectate: { type: Boolean, default: false } },
   setup(props) {
     const debug = ref(false)
     provide('debug', debug)
@@ -77,9 +78,14 @@ export default defineComponent({
     const investigatorId = ref<string | null>(null)
     const gameLog = ref<readonly string[]>(Object.freeze([]))
 
+    const route = useRoute()
+    const spectate = route.fullPath.endsWith('/spectate')
+
     function connect() {
       const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`;
-      socket.value = new WebSocket(`${baseURL}/api/v1/arkham/games/${props.gameId}`.replace(/https/, 'wss').replace(/http/, 'ws'));
+      console.log(route)
+      const spectatePrefix = spectate ? "/spectate" : ""
+      socket.value = new WebSocket(`${baseURL}/api/v1/arkham/games/${props.gameId}${spectatePrefix}`.replace(/https/, 'wss').replace(/http/, 'ws'));
       socket.value.addEventListener('open', () => {
         ready.value = true;
         socketError.value = false;
@@ -120,7 +126,7 @@ export default defineComponent({
       });
     }
 
-    fetchGame(props.gameId).then(({ game: newGame, investigatorId: newInvestigatorId, multiplayerMode}) => {
+    fetchGame(props.gameId, spectate).then(({ game: newGame, investigatorId: newInvestigatorId, multiplayerMode}) => {
       game.value = newGame;
       solo.value = multiplayerMode == "Solo";
       gameLog.value = Object.freeze(newGame.log);
@@ -129,7 +135,7 @@ export default defineComponent({
     });
 
     async function choose(idx: number) {
-      if (idx !== -1 && game.value) {
+      if (idx !== -1 && game.value && !spectate) {
         updateGame(props.gameId, idx);
       }
     }

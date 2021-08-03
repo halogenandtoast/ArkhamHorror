@@ -2,6 +2,7 @@
 
 module Api.Handler.Arkham.Games
   ( getApiV1ArkhamGameR
+  , getApiV1ArkhamGameSpectateR
   , getApiV1ArkhamGamesR
   , postApiV1ArkhamGamesR
   , putApiV1ArkhamGameR
@@ -84,6 +85,23 @@ getApiV1ArkhamGameR gameId = do
     investigatorId = if arkhamGameMultiplayerVariant ge == Solo
       then coerce gameActiveInvestigatorId
       else coerce arkhamPlayerInvestigatorId
+  pure $ GetGameJson
+    (Just investigatorId)
+    (arkhamGameMultiplayerVariant ge)
+    (PublicGame
+      gameId
+      (arkhamGameName ge)
+      (arkhamGameLog ge)
+      (arkhamGameCurrentData ge)
+    )
+
+getApiV1ArkhamGameSpectateR :: ArkhamGameId -> Handler GetGameJson
+getApiV1ArkhamGameSpectateR gameId = do
+  webSockets (gameStream gameId)
+  ge <- runDB $ get404 gameId
+  let
+    Game {..} = arkhamGameCurrentData ge
+    investigatorId = coerce gameActiveInvestigatorId
   pure $ GetGameJson
     (Just investigatorId)
     (arkhamGameMultiplayerVariant ge)

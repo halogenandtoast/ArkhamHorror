@@ -28,6 +28,13 @@ export default [
     props: true,
   },
   {
+    path: '/games/:gameId/spectate',
+    name: 'Spectate',
+    component: Game,
+    meta: { requiresAuth: true },
+    props: true,
+  },
+  {
     path: '/games/:gameId/join',
     name: 'JoinGame',
     component: JoinGame,

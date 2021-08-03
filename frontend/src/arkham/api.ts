@@ -15,8 +15,8 @@ interface FetchReplay {
   game: Game
 }
 
-export const fetchGame = (gameId: string): Promise<FetchData> => api
-  .get(`arkham/games/${gameId}`)
+export const fetchGame = (gameId: string, spectate = false): Promise<FetchData> => api
+  .get(`arkham/games/${gameId}${spectate ? '/spectate' : ''}`)
   .then((resp) => {
     const { investigatorId, game, multiplayerMode } = resp.data;
     return gameDecoder

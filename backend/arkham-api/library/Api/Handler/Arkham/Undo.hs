@@ -9,7 +9,6 @@ import Arkham.Game
 import Arkham.Types.Game
 import Control.Lens ((&), (.~))
 import Control.Monad.Random (mkStdGen)
-import Database.Esqueleto.Experimental hiding (isNothing)
 import Json
 import Safe (fromJustNote)
 
@@ -19,9 +18,7 @@ putApiV1ArkhamGameUndoR gameId = do
   ArkhamGame {..} <- runDB $ get404 gameId
   let gameJson@Game {..} = arkhamGameCurrentData
 
-  when
-    (isNothing $ lookup (fromIntegral $ fromSqlKey userId) gamePlayers)
-    (permissionDenied "user is not part of game")
+  _ <- runDB $ entityVal <$> getBy404 (UniquePlayer userId gameId)
 
   let undidChoices = drop 1 gameChoices
 
@@ -38,4 +35,13 @@ putApiV1ArkhamGameUndoR gameId = do
     writeChannel
     (encode $ GameUpdate $ PublicGame gameId arkhamGameName arkhamGameLog ge)
   runDB
-    (replace gameId (ArkhamGame arkhamGameName ge updatedQueue arkhamGameLog))
+    (replace
+      gameId
+      (ArkhamGame
+        arkhamGameName
+        ge
+        updatedQueue
+        arkhamGameLog
+        arkhamGameMultiplayerVariant
+      )
+    )

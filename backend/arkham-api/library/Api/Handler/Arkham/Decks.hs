@@ -9,11 +9,14 @@ import Import hiding (delete, on, (==.))
 
 import Api.Arkham.Helpers
 import Arkham.Game
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Game
 import Arkham.Types.Helpers
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Control.Lens ((%~), (&))
 import Control.Monad.Random (mkStdGen)
+import Data.Coerce
 import Database.Esqueleto.Experimental
 import Json
 import Network.HTTP.Conduit (simpleHttp)
@@ -58,11 +61,12 @@ putApiV1ArkhamGameDecksR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameDecksR gameId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   ArkhamGame {..} <- runDB $ get404 gameId
+  ArkhamPlayer {..} <- runDB $ entityVal <$> getBy404
+    (UniquePlayer userId gameId)
   postData <- requireCheckJsonBody
   let
     Game {..} = arkhamGameCurrentData
-    investigatorId = fromJustNote "Missing"
-      $ lookup (fromIntegral $ fromSqlKey userId) gamePlayers
+    investigatorId = coerce arkhamPlayerInvestigatorId
   msg <- case udpDeckUrl postData of
     Nothing -> pure $ Done "done"
     Just deckUrl -> do
@@ -88,7 +92,16 @@ putApiV1ArkhamGameDecksR gameId = do
     writeChannel
     (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedMessages ge)
   void $ runDB
-    (replace gameId (ArkhamGame arkhamGameName ge updatedQueue updatedMessages))
+    (replace
+      gameId
+      (ArkhamGame
+        arkhamGameName
+        ge
+        updatedQueue
+        updatedMessages
+        arkhamGameMultiplayerVariant
+      )
+    )
 
 fromPostData
   :: (MonadIO m) => UserId -> CreateDeckPost -> m (Either String ArkhamDeck)

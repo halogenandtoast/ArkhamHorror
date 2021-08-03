@@ -153,7 +153,7 @@ data GameChoice = AskChoice InvestigatorId Int | DebugMessage Message | UpgradeC
 data GameParams = GameParams
   (Either ScenarioId CampaignId)
   Int
-  (Map Int (Investigator, [PlayerCard])) -- Map for order
+  [(Investigator, [PlayerCard])] -- Map for order
   Difficulty
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -169,7 +169,6 @@ data Game = Game
 
   -- Active Scenario/Campaign
   , gameMode :: GameMode
-  , gamePlayers :: HashMap Int InvestigatorId
 
   -- Entities
   , gameLocations :: EntityMap Location
@@ -227,9 +226,6 @@ paramsL = lens gameParams $ \m x -> m { gameParams = x }
 
 playerCountL :: Lens' Game Int
 playerCountL = lens gamePlayerCount $ \m x -> m { gamePlayerCount = x }
-
-playersL :: Lens' Game (HashMap Int InvestigatorId)
-playersL = lens gamePlayers $ \m x -> m { gamePlayers = x }
 
 focusedTargetsL :: Lens' Game [Target]
 focusedTargetsL =
@@ -376,7 +372,6 @@ instance ToJSON Game where
     , "locations" .= toJSON (runReader (traverse withModifiers gameLocations) g)
     , "investigators"
       .= toJSON (runReader (traverse withModifiers gameInvestigators) g)
-    , "players" .= toJSON gamePlayers
     , "enemies" .= toJSON (runReader (traverse withModifiers gameEnemies) g)
     , "enemiesInVoid"
       .= toJSON (runReader (traverse withModifiers gameEnemiesInVoid) g)
@@ -435,7 +430,6 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     , "locations" .= toJSON (runReader (traverse withModifiers gameLocations) g)
     , "investigators"
       .= toJSON (runReader (traverse withModifiers gameInvestigators) g)
-    , "players" .= toJSON gamePlayers
     , "enemies" .= toJSON (runReader (traverse withModifiers gameEnemies) g)
     , "enemiesInVoid"
       .= toJSON (runReader (traverse withModifiers gameEnemiesInVoid) g)
@@ -2321,7 +2315,7 @@ runGameMessage msg g = case msg of
       & (focusedCardsL .~ mempty)
       & (activeCardL .~ Nothing)
       & (victoryDisplayL .~ mempty)
-      & (playerOrderL .~ (g ^. playersL . to toList))
+      & (playerOrderL .~ (g ^. investigatorsL . to keys))
   StartScenario _ sid -> do
     let
       difficulty = these
@@ -2340,6 +2334,7 @@ runGameMessage msg g = case msg of
       $ g
       & (modeL %~ setScenario (lookupScenario sid difficulty))
       & (phaseL .~ InvestigationPhase)
+  InvestigatorMulligan iid -> pure $ g & activeInvestigatorIdL .~ iid
   Will (MoveFrom iid lid) -> do
     msgs <- checkWindows [WhenWouldLeave iid lid]
     g <$ pushAll msgs

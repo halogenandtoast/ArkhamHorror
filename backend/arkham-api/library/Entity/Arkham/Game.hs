@@ -5,6 +5,7 @@ module Entity.Arkham.Game
   ( module Entity.Arkham.Game
   ) where
 
+import Api.Arkham.Types.MultiplayerVariant
 import Arkham.Types.Game
 import Arkham.Types.Message
 import ClassyPrelude
@@ -21,6 +22,7 @@ ArkhamGame sql=arkham_games
   currentData Game
   queue [Message]
   log [Text]
+  multiplayerVariant MultiplayerVariant
   deriving Generic Show
 |]
 

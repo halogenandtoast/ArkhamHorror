@@ -10,9 +10,12 @@ module Api.Handler.Arkham.Games
   ) where
 
 import Api.Arkham.Helpers
+import Api.Arkham.Types.MultiplayerVariant
 import Arkham.Game
 import Arkham.Prelude ((!!?))
 import Arkham.Types.CampaignId
+import Arkham.Types.Card.CardCode
+import Arkham.Types.Classes.Entity
 import Arkham.Types.Difficulty
 import Arkham.Types.Game
 import Arkham.Types.Investigator
@@ -23,6 +26,7 @@ import Control.Lens ((%~), (&))
 import Control.Monad.Random (mkStdGen)
 import Control.Monad.Random.Class (getRandom)
 import qualified Data.ByteString.Lazy as BSL
+import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Map.Strict as Map
 import Database.Esqueleto.Experimental
@@ -69,15 +73,18 @@ data GetGameJson = GetGameJson
 
 getApiV1ArkhamGameR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameR gameId = do
+  webSockets (gameStream gameId)
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   ge <- runDB $ get404 gameId
-  webSockets (gameStream gameId)
+  ArkhamPlayer {..} <- runDB $ entityVal <$> getBy404
+    (UniquePlayer userId gameId)
   let
     Game {..} = arkhamGameCurrentData ge
-    investigatorId =
-      HashMap.lookup (fromIntegral $ fromSqlKey userId) gamePlayers
+    investigatorId = if arkhamGameMultiplayerVariant ge == Solo
+      then coerce gameActiveInvestigatorId
+      else coerce arkhamPlayerInvestigatorId
   pure $ GetGameJson
-    investigatorId
+    (Just investigatorId)
     (PublicGame
       gameId
       (arkhamGameName ge)
@@ -109,7 +116,7 @@ data CreateGamePost = CreateGamePost
   , scenarioId :: Maybe ScenarioId
   , difficulty :: Difficulty
   , campaignName :: Text
-  , multiplayerVariant :: Text
+  , multiplayerVariant :: MultiplayerVariant
   }
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
@@ -118,13 +125,15 @@ postApiV1ArkhamGamesR :: Handler (PublicGame ArkhamGameId)
 postApiV1ArkhamGamesR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   CreateGamePost {..} <- requireCheckJsonBody
-  investigatorMaps <- for (catMaybes deckIds) $ \deckId -> do
+  investigators <- for (catMaybes deckIds) $ \deckId -> do
     deck <- runDB $ get404 deckId
     when (arkhamDeckUserId deck /= userId) notFound
     (iid, decklist) <- liftIO $ loadDecklist deck
-    let hashKey = fromIntegral $ fromSqlKey userId
-    pure $ singletonMap hashKey (lookupInvestigator iid, decklist)
-  let investigators = unions investigatorMaps
+    pure (lookupInvestigator iid, decklist)
+  let
+    investigatorId =
+      coerce . toId . fst . fromJustNote "must have one investigator" $ headMay
+        investigators
   newGameSeed <- liftIO getRandom
   genRef <- newIORef (mkStdGen newGameSeed)
   case campaignId of
@@ -138,12 +147,13 @@ postApiV1ArkhamGamesR = do
       ge <- readIORef gameRef
       updatedQueue <- readIORef queueRef
       key <- runDB $ do
-        gameId <- insert $ ArkhamGame campaignName ge updatedQueue []
-        insert_ $ ArkhamPlayer userId gameId
+        gameId <- insert
+          $ ArkhamGame campaignName ge updatedQueue [] multiplayerVariant
+        insert_ $ ArkhamPlayer userId gameId investigatorId
         pure gameId
       pure $ toPublicGame $ Entity
         key
-        (ArkhamGame campaignName ge updatedQueue [])
+        (ArkhamGame campaignName ge updatedQueue [] multiplayerVariant)
     Nothing -> case scenarioId of
       Just sid -> do
         (queueRef, game) <- liftIO
@@ -155,12 +165,13 @@ postApiV1ArkhamGamesR = do
         ge <- readIORef gameRef
         updatedQueue <- readIORef queueRef
         key <- runDB $ do
-          gameId <- insert $ ArkhamGame campaignName ge updatedQueue []
-          insert_ $ ArkhamPlayer userId gameId
+          gameId <- insert
+            $ ArkhamGame campaignName ge updatedQueue [] multiplayerVariant
+          insert_ $ ArkhamPlayer userId gameId investigatorId
           pure gameId
         pure $ toPublicGame $ Entity
           key
-          (ArkhamGame campaignName ge updatedQueue [])
+          (ArkhamGame campaignName ge updatedQueue [] multiplayerVariant)
       Nothing -> error "missing either campaign id or scenario id"
 
 newtype QuestionReponse = QuestionResponse { qrChoice :: Int }
@@ -177,11 +188,12 @@ putApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameR gameId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   ArkhamGame {..} <- runDB $ get404 gameId
+  ArkhamPlayer {..} <- runDB $ entityVal <$> getBy404
+    (UniquePlayer userId gameId)
   response <- requireCheckJsonBody
   let
     gameJson@Game {..} = arkhamGameCurrentData
-    investigatorId = fromJustNote "not in game"
-      $ HashMap.lookup (fromIntegral $ fromSqlKey userId) gamePlayers
+    investigatorId = coerce arkhamPlayerInvestigatorId
     messages = case HashMap.lookup investigatorId gameQuestion of
       Just (ChooseOne qs) -> case qs !!? qrChoice response of
         Nothing -> [Ask investigatorId $ ChooseOne qs]
@@ -237,7 +249,16 @@ putApiV1ArkhamGameR gameId = do
     writeChannel
     (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedLog ge)
   void $ runDB
-    (replace gameId (ArkhamGame arkhamGameName ge updatedQueue updatedLog))
+    (replace
+      gameId
+      (ArkhamGame
+        arkhamGameName
+        ge
+        updatedQueue
+        updatedLog
+        arkhamGameMultiplayerVariant
+      )
+    )
 
 newtype RawGameJsonPut = RawGameJsonPut
   { gameMessage :: Message
@@ -276,7 +297,16 @@ putApiV1ArkhamGameRawR gameId = do
     writeChannel
     (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedLog ge)
   void $ runDB
-    (replace gameId (ArkhamGame arkhamGameName ge updatedQueue updatedLog))
+    (replace
+      gameId
+      (ArkhamGame
+        arkhamGameName
+        ge
+        updatedQueue
+        updatedLog
+        arkhamGameMultiplayerVariant
+      )
+    )
 
 deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 deleteApiV1ArkhamGameR gameId = void $ runDB $ do

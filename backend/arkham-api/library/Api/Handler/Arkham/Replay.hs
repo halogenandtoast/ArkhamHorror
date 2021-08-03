@@ -38,6 +38,13 @@ getApiV1ArkhamGameReplayR gameId step = do
   updatedQueue <- readIORef queueRef
   pure $ GetReplayJson
     (length gameChoices)
-    (toPublicGame
-    $ Entity gameId (ArkhamGame (arkhamGameName ge) ge' updatedQueue [])
+    (toPublicGame $ Entity
+      gameId
+      (ArkhamGame
+        (arkhamGameName ge)
+        ge'
+        updatedQueue
+        []
+        (arkhamGameMultiplayerVariant ge)
+      )
     )

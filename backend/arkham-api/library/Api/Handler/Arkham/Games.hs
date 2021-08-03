@@ -22,14 +22,14 @@ import Arkham.Types.Investigator
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.ScenarioId
-import Control.Lens ((%~), (&))
+import Control.Lens (view, (%~), (&))
 import Control.Monad.Random (mkStdGen)
 import Control.Monad.Random.Class (getRandom)
 import qualified Data.ByteString.Lazy as BSL
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Map.Strict as Map
-import Database.Esqueleto.Experimental
+import Database.Esqueleto.Experimental hiding (update)
 import Entity.Arkham.Player
 import Import hiding (delete, on, (==.))
 import Json
@@ -66,6 +66,7 @@ catchingConnectionException f =
 
 data GetGameJson = GetGameJson
   { investigatorId :: Maybe InvestigatorId
+  , multiplayerMode :: MultiplayerVariant
   , game :: PublicGame ArkhamGameId
   }
   deriving stock (Show, Generic)
@@ -85,6 +86,7 @@ getApiV1ArkhamGameR gameId = do
       else coerce arkhamPlayerInvestigatorId
   pure $ GetGameJson
     (Just investigatorId)
+    (arkhamGameMultiplayerVariant ge)
     (PublicGame
       gameId
       (arkhamGameName ge)
@@ -188,8 +190,8 @@ putApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameR gameId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   ArkhamGame {..} <- runDB $ get404 gameId
-  ArkhamPlayer {..} <- runDB $ entityVal <$> getBy404
-    (UniquePlayer userId gameId)
+  Entity pid arkhamPlayer@ArkhamPlayer {..} <- runDB
+    $ getBy404 (UniquePlayer userId gameId)
   response <- requireCheckJsonBody
   let
     gameJson@Game {..} = arkhamGameCurrentData
@@ -248,17 +250,16 @@ putApiV1ArkhamGameR gameId = do
   liftIO $ atomically $ writeTChan
     writeChannel
     (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedLog ge)
-  void $ runDB
-    (replace
-      gameId
-      (ArkhamGame
-        arkhamGameName
-        ge
-        updatedQueue
-        updatedLog
-        arkhamGameMultiplayerVariant
-      )
-    )
+  void $ runDB $ do
+    replace gameId $ ArkhamGame
+      arkhamGameName
+      ge
+      updatedQueue
+      updatedLog
+      arkhamGameMultiplayerVariant
+    replace pid $ arkhamPlayer
+      { arkhamPlayerInvestigatorId = coerce (view activeInvestigatorIdL ge)
+      }
 
 newtype RawGameJsonPut = RawGameJsonPut
   { gameMessage :: Message

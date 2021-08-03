@@ -2936,7 +2936,7 @@ runGameMessage msg g = case msg of
           (orderedInvestigatorIds <> [iid])
       | iid <- investigatorIds
       ]
-    pure g
+    pure $ g & activeInvestigatorIdL .~ gameLeadInvestigatorId g
   ChooseEndTurn iid -> g <$ push (EndTurn iid)
   EndTurn iid -> pure $ g & usedAbilitiesL %~ filter
     (\(iid', Ability {..}, _) ->

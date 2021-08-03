@@ -6,6 +6,7 @@ import { JsonDecoder } from 'ts.data.json';
 
 interface FetchData {
   investigatorId: string
+  multiplayerMode: string
   game: Game
 }
 
@@ -17,10 +18,10 @@ interface FetchReplay {
 export const fetchGame = (gameId: string): Promise<FetchData> => api
   .get(`arkham/games/${gameId}`)
   .then((resp) => {
-    const { investigatorId, game } = resp.data;
+    const { investigatorId, game, multiplayerMode } = resp.data;
     return gameDecoder
       .decodePromise(game)
-      .then((gameData) => Promise.resolve({ investigatorId, game: gameData }));
+      .then((gameData) => Promise.resolve({ investigatorId, game: gameData, multiplayerMode }));
   });
 
 export const fetchGameReplay = (gameId: string, step: number): Promise<FetchReplay> => api

@@ -17,6 +17,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype MonstrousTransformation = MonstrousTransformation AssetAttrs
   deriving anyclass IsAsset
@@ -40,7 +41,7 @@ instance HasModifiersFor env MonstrousTransformation where
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env MonstrousTransformation where
-  getActions iid _ (MonstrousTransformation a) | ownedBy a iid = pure
+  getActions iid NonFast (MonstrousTransformation a) | ownedBy a iid = pure
     [ UseAbility
         iid
         (mkAbility

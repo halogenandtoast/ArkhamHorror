@@ -15,6 +15,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype SongOfTheDead2 = SongOfTheDead2 AssetAttrs
   deriving anyclass IsAsset
@@ -27,8 +28,9 @@ songOfTheDead2 = arcaneWith
   (startingUsesL ?~ Uses Charge 5)
 
 instance HasActions env SongOfTheDead2 where
-  getActions iid _ (SongOfTheDead2 a) = whenOwnedBy a iid
+  getActions iid NonFast (SongOfTheDead2 a) = whenOwnedBy a iid
     $ pure [fightAction iid a 1 [ActionCost 1, UseCost (toId a) Charge 1]]
+  getActions _ _ _ = pure []
 
 instance HasModifiersFor env SongOfTheDead2
 

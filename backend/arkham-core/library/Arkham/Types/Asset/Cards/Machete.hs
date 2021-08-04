@@ -18,6 +18,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype Machete = Machete AssetAttrs
   deriving anyclass IsAsset
@@ -29,7 +30,7 @@ machete = hand Machete Cards.machete
 instance HasModifiersFor env Machete
 
 instance HasActions env Machete where
-  getActions iid _ (Machete a) | ownedBy a iid = pure
+  getActions iid NonFast (Machete a) | ownedBy a iid = pure
     [ UseAbility
         iid
         (mkAbility

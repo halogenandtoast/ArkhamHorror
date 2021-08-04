@@ -19,6 +19,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype JennysTwin45s = JennysTwin45s AssetAttrs
   deriving anyclass IsAsset
@@ -31,7 +32,7 @@ jennysTwin45s =
 instance HasModifiersFor env JennysTwin45s
 
 instance HasActions env JennysTwin45s where
-  getActions iid _ (JennysTwin45s a) | ownedBy a iid = pure
+  getActions iid NonFast (JennysTwin45s a) | ownedBy a iid = pure
     [ UseAbility
         iid
         (mkAbility

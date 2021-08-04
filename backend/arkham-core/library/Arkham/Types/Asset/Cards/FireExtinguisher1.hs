@@ -14,6 +14,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype FireExtinguisher1 = FireExtinguisher1 AssetAttrs
   deriving anyclass IsAsset
@@ -25,7 +26,7 @@ fireExtinguisher1 = hand FireExtinguisher1 Cards.fireExtinguisher1
 instance HasModifiersFor env FireExtinguisher1
 
 instance HasActions env FireExtinguisher1 where
-  getActions iid _ (FireExtinguisher1 a) | ownedBy a iid = do
+  getActions iid NonFast (FireExtinguisher1 a) | ownedBy a iid = do
     pure
       [ UseAbility
         iid

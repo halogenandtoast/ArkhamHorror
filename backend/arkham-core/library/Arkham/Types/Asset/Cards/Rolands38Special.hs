@@ -20,6 +20,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype Rolands38Special = Rolands38Special AssetAttrs
   deriving anyclass IsAsset
@@ -43,7 +44,7 @@ fightAbility attrs = mkAbility
   )
 
 instance HasActions env Rolands38Special where
-  getActions iid _ (Rolands38Special a) | ownedBy a iid = do
+  getActions iid NonFast (Rolands38Special a) | ownedBy a iid = do
     pure [UseAbility iid (fightAbility a)]
   getActions _ _ _ = pure []
 

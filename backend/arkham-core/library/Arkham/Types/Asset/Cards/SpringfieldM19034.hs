@@ -19,6 +19,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype SpringfieldM19034 = SpringfieldM19034 AssetAttrs
   deriving anyclass IsAsset
@@ -31,7 +32,7 @@ springfieldM19034 =
     . (startingUsesL ?~ Uses Resource.Ammo 3)
 
 instance HasActions env SpringfieldM19034 where
-  getActions iid _ (SpringfieldM19034 a) | ownedBy a iid = pure
+  getActions iid NonFast (SpringfieldM19034 a) | ownedBy a iid = pure
     [ UseAbility
         iid
         (mkAbility

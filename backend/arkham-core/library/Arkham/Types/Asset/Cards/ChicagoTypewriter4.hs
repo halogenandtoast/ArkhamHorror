@@ -19,6 +19,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype ChicagoTypewriter4 = ChicagoTypewriter4 AssetAttrs
   deriving anyclass IsAsset
@@ -33,7 +34,7 @@ chicagoTypewriter4 =
 instance HasModifiersFor env ChicagoTypewriter4
 
 instance HasActions env ChicagoTypewriter4 where
-  getActions iid _ (ChicagoTypewriter4 a) | ownedBy a iid = pure
+  getActions iid NonFast (ChicagoTypewriter4 a) | ownedBy a iid = pure
     [ UseAbility
         iid
         (mkAbility

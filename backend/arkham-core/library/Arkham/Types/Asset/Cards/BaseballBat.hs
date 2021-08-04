@@ -19,6 +19,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype BaseballBat = BaseballBat AssetAttrs
   deriving anyclass IsAsset
@@ -39,7 +40,7 @@ fightAbility a =
   mkAbility a 1 (ActionAbility (Just Action.Fight) (ActionCost 1))
 
 instance HasActions env BaseballBat where
-  getActions iid _ (BaseballBat a) | ownedBy a iid = do
+  getActions iid NonFast (BaseballBat a) | ownedBy a iid = do
     pure [UseAbility iid (fightAbility a)]
   getActions _ _ _ = pure []
 

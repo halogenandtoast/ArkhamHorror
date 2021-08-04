@@ -18,6 +18,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype FortyOneDerringer = FortyOneDerringer AssetAttrs
   deriving anyclass IsAsset
@@ -32,7 +33,7 @@ fortyOneDerringer = handWith
 instance HasModifiersFor env FortyOneDerringer
 
 instance HasActions env FortyOneDerringer where
-  getActions iid _ (FortyOneDerringer a) | ownedBy a iid = pure
+  getActions iid NonFast (FortyOneDerringer a) | ownedBy a iid = pure
     [ UseAbility
         iid
         (mkAbility

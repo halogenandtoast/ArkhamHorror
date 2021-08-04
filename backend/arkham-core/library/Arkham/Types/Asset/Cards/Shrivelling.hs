@@ -18,6 +18,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype Shrivelling = Shrivelling AssetAttrs
   deriving anyclass IsAsset
@@ -30,7 +31,7 @@ shrivelling =
 instance HasModifiersFor env Shrivelling
 
 instance HasActions env Shrivelling where
-  getActions iid _ (Shrivelling a) | ownedBy a iid = do
+  getActions iid NonFast (Shrivelling a) | ownedBy a iid = do
     pure
       [ UseAbility
           iid

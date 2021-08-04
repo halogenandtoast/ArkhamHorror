@@ -14,8 +14,6 @@
         @click="$emit('choose', investigatorAction)"
       />
 
-      <button v-if="solo && investigatorId !== id" class="view-discard-button" @click="switchInvestigator(id)">Switch to this investigator</button>
-
       <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="$emit('show-cards', cardsUnderneath)">{{cardsUnderneathLabel}}</button>
     </div>
 

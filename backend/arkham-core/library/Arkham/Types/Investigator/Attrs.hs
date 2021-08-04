@@ -854,7 +854,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     slots <- getList aid
     traits <- getSetList aid
     a <$ push (InvestigatorPlayAsset iid aid slots traits)
-    pure $ a & assetsL %~ insertSet aid
   TakeControlOfAsset iid aid | iid /= investigatorId ->
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   ChooseAndDiscardAsset iid assetMatcher | iid == investigatorId -> do

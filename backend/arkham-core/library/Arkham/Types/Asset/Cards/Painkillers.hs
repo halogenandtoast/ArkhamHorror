@@ -33,7 +33,7 @@ fastAbility iid attrs = restrictedAbility
   (InvestigatorExists $ You <> InvestigatorWithDamage)
   (FastAbility
     (Costs
-      [ UseCost (toId attrs) Ammo 1
+      [ UseCost (toId attrs) Supply 1
       , ExhaustCost (toTarget attrs)
       , HorrorCost (toSource attrs) (InvestigatorTarget iid) 1
       ]

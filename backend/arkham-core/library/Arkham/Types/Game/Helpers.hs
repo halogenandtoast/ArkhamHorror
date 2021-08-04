@@ -1145,6 +1145,9 @@ cardInFastWindows iid c windows matcher = anyM
     NotYou -> pure $ who /= iid
     InvestigatorAtYourLocation ->
       liftA2 (==) (getId @LocationId iid) (getId @LocationId who)
+    InvestigatorCanMove -> do
+      notElem CannotMove
+        <$> getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
     InvestigatorWithDamage -> (> 0) . unDamageCount <$> getCount who
     InvestigatorWithHorror -> (> 0) . unHorrorCount <$> getCount who
     InvestigatorWithId iid' -> pure $ who == iid'

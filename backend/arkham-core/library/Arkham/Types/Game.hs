@@ -513,6 +513,11 @@ getInvestigatorsMatching = \case
       then pure []
       else traverse getInvestigator =<< getSetList location
   InvestigatorWithId iid -> pure <$> getInvestigator iid
+  InvestigatorCanMove -> do
+    investigators <- toList . view investigatorsL <$> getGame
+    filterM
+      (\i -> notElem CannotMove <$> getModifiers (toSource i) (toTarget i))
+      investigators
   InvestigatorWithDamage ->
     filter ((> 0) . fst . getDamage) . toList . view investigatorsL <$> getGame
   InvestigatorWithHorror ->

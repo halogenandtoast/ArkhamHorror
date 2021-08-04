@@ -365,6 +365,11 @@ shortcut = (event "02022" "Shortcut" 0 Seeker)
   { cdSkills = [SkillWillpower, SkillAgility]
   , cdCardTraits = setFromList [Insight, Tactic]
   , cdFastWindow = Just (DuringTurn You)
+  , cdPlayRestrictions = Just
+    (Restriction.LocationExists AccessibleLocation
+    <> Restriction.InvestigatorExists
+         (InvestigatorCanMove <> InvestigatorAtYourLocation)
+    )
   }
 
 seekingAnswers :: CardDef
@@ -378,7 +383,10 @@ thinkOnYourFeet = (event "02025" "Think on Your Feet" 1 Rogue)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = singleton Trick
   , cdFastWindow = Just (WhenEnemySpawns YourLocation AnyEnemy)
-  , cdPlayRestrictions = Just (Restriction.LocationExists AccessibleLocation)
+  , cdPlayRestrictions = Just
+    (Restriction.LocationExists AccessibleLocation
+    <> Restriction.InvestigatorExists (You <> InvestigatorCanMove)
+    )
   }
 
 bindMonster2 :: CardDef

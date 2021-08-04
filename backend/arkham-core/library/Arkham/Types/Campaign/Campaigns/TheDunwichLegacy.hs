@@ -15,7 +15,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Resolution
-import qualified Arkham.Types.Token as Token
+import Arkham.Types.Token
 
 newtype TheDunwichLegacy = TheDunwichLegacy CampaignAttrs
   deriving anyclass IsCampaign
@@ -42,75 +42,75 @@ theDunwichLegacy difficulty = TheDunwichLegacy $ baseAttrs
  where
   chaosBagContents = case difficulty of
     Easy ->
-      [ Token.PlusOne
-      , Token.PlusOne
-      , Token.Zero
-      , Token.Zero
-      , Token.Zero
-      , Token.MinusOne
-      , Token.MinusOne
-      , Token.MinusOne
-      , Token.MinusTwo
-      , Token.MinusTwo
-      , Token.Skull
-      , Token.Skull
-      , Token.Cultist
-      , Token.AutoFail
-      , Token.ElderSign
+      [ PlusOne
+      , PlusOne
+      , Zero
+      , Zero
+      , Zero
+      , MinusOne
+      , MinusOne
+      , MinusOne
+      , MinusTwo
+      , MinusTwo
+      , Skull
+      , Skull
+      , Cultist
+      , AutoFail
+      , ElderSign
       ]
     Standard ->
-      [ Token.PlusOne
-      , Token.Zero
-      , Token.Zero
-      , Token.MinusOne
-      , Token.MinusOne
-      , Token.MinusOne
-      , Token.MinusTwo
-      , Token.MinusTwo
-      , Token.MinusThree
-      , Token.MinusFour
-      , Token.Skull
-      , Token.Skull
-      , Token.Cultist
-      , Token.AutoFail
-      , Token.ElderSign
+      [ PlusOne
+      , Zero
+      , Zero
+      , MinusOne
+      , MinusOne
+      , MinusOne
+      , MinusTwo
+      , MinusTwo
+      , MinusThree
+      , MinusFour
+      , Skull
+      , Skull
+      , Cultist
+      , AutoFail
+      , ElderSign
       ]
     Hard ->
-      [ Token.Zero
-      , Token.Zero
-      , Token.Zero
-      , Token.MinusOne
-      , Token.MinusOne
-      , Token.MinusTwo
-      , Token.MinusTwo
-      , Token.MinusThree
-      , Token.MinusThree
-      , Token.MinusFour
-      , Token.MinusFive
-      , Token.Skull
-      , Token.Skull
-      , Token.Cultist
-      , Token.AutoFail
-      , Token.ElderSign
+      [ Zero
+      , Zero
+      , Zero
+      , MinusOne
+      , MinusOne
+      , MinusTwo
+      , MinusTwo
+      , MinusThree
+      , MinusThree
+      , MinusFour
+      , MinusFive
+      , Skull
+      , Skull
+      , Cultist
+      , AutoFail
+      , ElderSign
       ]
     Expert ->
-      [ Token.Zero
-      , Token.MinusOne
-      , Token.MinusOne
-      , Token.MinusTwo
-      , Token.MinusTwo
-      , Token.MinusThree
-      , Token.MinusThree
-      , Token.MinusFour
-      , Token.MinusFour
-      , Token.MinusFive
-      , Token.MinusSix
-      , Token.MinusEight
-      , Token.Skull
-      , Token.Skull
-      , Token.Cultist
-      , Token.AutoFail
-      , Token.ElderSign
+      [ Zero
+      , MinusOne
+      , MinusOne
+      , MinusTwo
+      , MinusTwo
+      , MinusThree
+      , MinusThree
+      , MinusFour
+      , MinusFour
+      , MinusFive
+      , MinusSix
+      , MinusEight
+      , Skull
+      , Skull
+      , Cultist
+      , AutoFail
+      , ElderSign
       ]
 
 instance CampaignRunner env => RunMessage env TheDunwichLegacy where

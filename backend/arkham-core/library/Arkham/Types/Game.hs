@@ -56,6 +56,7 @@ import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Skill
 import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
+import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
@@ -915,6 +916,9 @@ instance HasGame env => HasId (Maybe LocationId) env (Direction, LocationId) whe
 
 instance HasGame env => HasId (Maybe LocationId) env LocationMatcher where
   getId = (fmap toId <$>) . getLocationMatching
+
+instance HasGame env => HasList SlotType env AssetId where
+  getList = fmap slotsOf . getAsset
 
 instance HasGame env => HasSet ClassSymbol env AssetId where
   getSet assetId =

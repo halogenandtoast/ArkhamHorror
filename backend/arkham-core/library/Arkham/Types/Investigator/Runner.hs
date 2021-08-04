@@ -21,6 +21,7 @@ import Arkham.Types.Query
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
+import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Trait
 
@@ -29,6 +30,7 @@ type InnerInvestigatorRunner env
     , HasTokenValue env ()
     , Query AssetMatcher env
     , Query InvestigatorMatcher env
+    , HasList SlotType env AssetId
     , (HasActions env (), HasActions env AssetId, HasActions env ActionType)
     , ( HasCount ActionTakenCount env InvestigatorId
       , HasCount ActionRemainingCount env InvestigatorId

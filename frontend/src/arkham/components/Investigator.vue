@@ -95,9 +95,6 @@ export default defineComponent({
     const debug = inject('debug')
     const debugChoose = inject('debugChoose')
 
-    const solo = inject('solo')
-    const switchInvestigator = inject('switchInvestigator')
-
     const searchTopOfDeckAction = computed(() => {
       return choices
         .value
@@ -241,8 +238,6 @@ export default defineComponent({
     return {
       id,
       portraitImage,
-      solo,
-      switchInvestigator,
       cardsUnderneath,
       cardsUnderneathLabel,
       debug,

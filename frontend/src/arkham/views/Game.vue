@@ -136,7 +136,7 @@ export default defineComponent({
 
     async function choose(idx: number) {
       if (idx !== -1 && game.value && !spectate) {
-        updateGame(props.gameId, idx);
+        updateGame(props.gameId, idx, investigatorId.value);
       }
     }
 

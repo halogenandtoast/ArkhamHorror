@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watchEffect } from 'vue';
+import { defineComponent, ref, watchEffect, inject } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import Tab from '@/arkham/components/Tab.vue';
 import Player from '@/arkham/components/Player.vue';
@@ -48,6 +48,9 @@ export default defineComponent({
   setup(props) {
     const selectedTab = ref(props.investigatorId)
 
+    const solo = inject('solo')
+    const switchInvestigator = inject<((i: string) => void)>('switchInvestigator')
+
     function tabClass(index: string) {
       return [
         {
@@ -60,6 +63,9 @@ export default defineComponent({
 
     function selectTab(i: string) {
       selectedTab.value = i
+      if (solo && props.investigatorId !== i && switchInvestigator) {
+        switchInvestigator(i)
+      }
     }
 
     watchEffect(() => selectedTab.value = props.investigatorId)

@@ -850,7 +850,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   EnemyEngageInvestigator eid iid | iid == investigatorId ->
     pure $ a & engagedEnemiesL %~ insertSet eid
   RemoveEnemy eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
-  TakeControlOfAsset iid aid | iid == investigatorId ->
+  TakeControlOfAsset iid aid | iid == investigatorId -> do
+    slots <- getList aid
+    traits <- getSetList aid
+    a <$ push (InvestigatorPlayAsset iid aid slots traits)
     pure $ a & assetsL %~ insertSet aid
   TakeControlOfAsset iid aid | iid /= investigatorId ->
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)

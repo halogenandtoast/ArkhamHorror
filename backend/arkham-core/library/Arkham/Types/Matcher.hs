@@ -19,6 +19,7 @@ data InvestigatorMatcher
   | You
   | NotYou
   | Anyone
+  | InvestigatorCanMove
   | InvestigatorWithDamage
   | InvestigatorWithHorror
   | InvestigatorWithId InvestigatorId

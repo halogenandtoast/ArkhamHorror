@@ -18,6 +18,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype Flashlight = Flashlight AssetAttrs
   deriving anyclass IsAsset
@@ -39,7 +40,7 @@ investigateAbility attrs = mkAbility
   )
 
 instance HasActions env Flashlight where
-  getActions iid _ (Flashlight a) | ownedBy a iid = do
+  getActions iid NonFast (Flashlight a) | ownedBy a iid = do
     pure [UseAbility iid (investigateAbility a)]
   getActions _ _ _ = pure []
 

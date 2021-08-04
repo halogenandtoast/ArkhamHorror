@@ -18,6 +18,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype Kukri = Kukri AssetAttrs
   deriving anyclass IsAsset
@@ -27,7 +28,7 @@ kukri :: AssetCard Kukri
 kukri = hand Kukri Cards.kukri
 
 instance HasActions env Kukri where
-  getActions iid _ (Kukri a) | ownedBy a iid = pure
+  getActions iid NonFast (Kukri a) | ownedBy a iid = pure
     [ UseAbility
         iid
         (mkAbility

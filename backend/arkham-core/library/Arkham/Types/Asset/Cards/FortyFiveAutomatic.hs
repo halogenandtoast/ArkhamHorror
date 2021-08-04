@@ -18,6 +18,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype FortyFiveAutomatic = FortyFiveAutomatic AssetAttrs
   deriving anyclass IsAsset
@@ -32,7 +33,7 @@ fortyFiveAutomatic = handWith
 instance HasModifiersFor env FortyFiveAutomatic
 
 instance HasActions env FortyFiveAutomatic where
-  getActions iid _ (FortyFiveAutomatic a) | ownedBy a iid = pure
+  getActions iid NonFast (FortyFiveAutomatic a) | ownedBy a iid = pure
     [ UseAbility
         iid
         (mkAbility

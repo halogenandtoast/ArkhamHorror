@@ -18,6 +18,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype RiteOfSeeking4 = RiteOfSeeking4 AssetAttrs
   deriving anyclass IsAsset
@@ -30,7 +31,7 @@ riteOfSeeking4 = arcaneWith
   (startingUsesL ?~ Uses Charge 3)
 
 instance HasActions env RiteOfSeeking4 where
-  getActions iid _ (RiteOfSeeking4 a) | ownedBy a iid = pure
+  getActions iid NonFast (RiteOfSeeking4 a) | ownedBy a iid = pure
     [ UseAbility
         iid
         (mkAbility

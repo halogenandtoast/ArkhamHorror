@@ -19,6 +19,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype LightningGun5 = LightningGun5 AssetAttrs
   deriving anyclass IsAsset
@@ -31,7 +32,7 @@ lightningGun5 =
     . (startingUsesL ?~ Uses Resource.Ammo 3)
 
 instance HasActions env LightningGun5 where
-  getActions iid _ (LightningGun5 a) | ownedBy a iid = pure
+  getActions iid NonFast (LightningGun5 a) | ownedBy a iid = pure
     [ UseAbility
         iid
         (mkAbility

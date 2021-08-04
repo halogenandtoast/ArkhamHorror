@@ -19,6 +19,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype BeatCop2 = BeatCop2 AssetAttrs
   deriving anyclass IsAsset
@@ -42,7 +43,7 @@ ability a = restrictedAbility
   )
 
 instance HasActions env BeatCop2 where
-  getActions iid _ (BeatCop2 a) | ownedBy a iid =
+  getActions iid FastPlayerWindow (BeatCop2 a) | ownedBy a iid =
     pure [UseAbility iid (ability a)]
   getActions _ _ _ = pure []
 

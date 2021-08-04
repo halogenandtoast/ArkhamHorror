@@ -16,6 +16,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype Blackjack = Blackjack AssetAttrs
   deriving anyclass IsAsset
@@ -25,7 +26,7 @@ blackjack :: AssetCard Blackjack
 blackjack = hand Blackjack Cards.blackjack
 
 instance HasActions env Blackjack where
-  getActions iid _ (Blackjack a) | ownedBy a iid = pure
+  getActions iid NonFast (Blackjack a) | ownedBy a iid = pure
     [ UseAbility
         iid
         (mkAbility

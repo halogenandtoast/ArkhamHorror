@@ -20,6 +20,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype Duke = Duke AssetAttrs
   deriving anyclass IsAsset
@@ -56,7 +57,7 @@ investigateAbility attrs = mkAbility
   )
 
 instance HasActions env Duke where
-  getActions iid _ (Duke a) | ownedBy a iid = pure
+  getActions iid NonFast (Duke a) | ownedBy a iid = pure
     [UseAbility iid (fightAbility a), UseAbility iid (investigateAbility a)]
   getActions i window (Duke x) = getActions i window x
 

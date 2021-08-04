@@ -20,6 +20,7 @@ import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype AlchemicalConcoction = AlchemicalConcoction AssetAttrs
   deriving anyclass IsAsset
@@ -29,7 +30,7 @@ alchemicalConcoction :: AssetCard AlchemicalConcoction
 alchemicalConcoction = asset AlchemicalConcoction Cards.alchemicalConcoction
 
 instance HasActions env AlchemicalConcoction where
-  getActions iid _ (AlchemicalConcoction a) | ownedBy a iid = pure
+  getActions iid NonFast (AlchemicalConcoction a) | ownedBy a iid = pure
     [ UseAbility iid
         $ mkAbility a 1 (ActionAbility (Just Action.Fight) $ ActionCost 1)
     ]

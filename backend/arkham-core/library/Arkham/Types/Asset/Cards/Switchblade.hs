@@ -17,6 +17,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import Arkham.Types.Window
 
 newtype Switchblade = Switchblade AssetAttrs
   deriving anyclass IsAsset
@@ -28,7 +29,7 @@ switchblade = hand Switchblade Cards.switchblade
 instance HasModifiersFor env Switchblade
 
 instance HasActions env Switchblade where
-  getActions iid _ (Switchblade a) | ownedBy a iid = do
+  getActions iid NonFast (Switchblade a) | ownedBy a iid = do
     let
       ability = mkAbility
         (toSource a)

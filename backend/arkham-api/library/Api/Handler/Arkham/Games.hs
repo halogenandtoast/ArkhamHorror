@@ -194,7 +194,10 @@ postApiV1ArkhamGamesR = do
           (ArkhamGame campaignName ge updatedQueue [] multiplayerVariant)
       Nothing -> error "missing either campaign id or scenario id"
 
-newtype QuestionReponse = QuestionResponse { qrChoice :: Int }
+data QuestionReponse = QuestionResponse
+  { qrChoice :: Int
+  , qrInvestigatorId :: Maybe InvestigatorId
+  }
   deriving stock Generic
 
 instance FromJSON QuestionReponse where
@@ -208,12 +211,13 @@ putApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameR gameId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   ArkhamGame {..} <- runDB $ get404 gameId
+  response <- requireCheckJsonBody
   Entity pid arkhamPlayer@ArkhamPlayer {..} <- runDB
     $ getBy404 (UniquePlayer userId gameId)
-  response <- requireCheckJsonBody
   let
     gameJson@Game {..} = arkhamGameCurrentData
-    investigatorId = coerce arkhamPlayerInvestigatorId
+    investigatorId =
+      fromMaybe (coerce arkhamPlayerInvestigatorId) (qrInvestigatorId response)
     messages = case HashMap.lookup investigatorId gameQuestion of
       Just (ChooseOne qs) -> case qs !!? qrChoice response of
         Nothing -> [Ask investigatorId $ ChooseOne qs]

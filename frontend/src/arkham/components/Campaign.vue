@@ -68,12 +68,12 @@ export default defineComponent({
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 6px;
   margin: 2px;
-  width: 100px;
+  width: $card-width;
 }
 
 .card--sideways {
   width: auto;
-  height: 200px;
+  height: $card-width * 2;
 }
 
 .scenario-cards {
@@ -132,11 +132,11 @@ export default defineComponent({
 
 .portrait--can-move {
   cursor: pointer;
-  border: 3px solid #FF00FF;
+  border: 3px solid $select;
 }
 
 .location--can-move-to {
-  border: 3px solid #FF00FF;
+  border: 3px solid $select;
   cursor: pointer;
 }
 

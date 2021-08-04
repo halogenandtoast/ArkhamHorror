@@ -334,7 +334,7 @@ button {
 }
 
 .card {
-  width: 100px;
+  width: $card-width;
   margin: 2px;
 }
 </style>

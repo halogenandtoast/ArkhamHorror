@@ -169,7 +169,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.action { border: 5px solid #FF00FF; border-radius: 15px; }
+.action { border: 5px solid $select; border-radius: 15px; }
 
 .game {
   width: 100vw;

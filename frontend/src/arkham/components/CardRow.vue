@@ -90,7 +90,7 @@ export default defineComponent({
 }
 
 .card {
-  width: 100px;
+  width: $card-width;
   border-radius: 6px;
   margin: 2px;
 }

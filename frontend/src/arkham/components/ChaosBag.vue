@@ -168,7 +168,7 @@ export default defineComponent({
 }
 
 .portrait {
-  width: 100px;
+  width: $card-width;
 }
 
 .active-token {

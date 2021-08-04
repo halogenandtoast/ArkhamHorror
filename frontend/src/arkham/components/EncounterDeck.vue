@@ -84,13 +84,13 @@ export default defineComponent({
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 6px;
   margin: 2px;
-  width: 100px;
+  width: $card-width;
 }
 .portrait {
-  width: 100px;
+  width: $card-width;
 }
 .can-interact {
-  border: 3px solid #FF00FF;
+  border: 3px solid $select;
   cursor: pointer;
 }
 

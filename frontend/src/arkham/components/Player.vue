@@ -153,7 +153,6 @@ export default defineComponent({
     const showCards = ref<CardContents[]>([])
 
     const doShowCards = (cards: CardContents[]) => {
-      console.log(cards)
       showCards.value = cards
     }
 

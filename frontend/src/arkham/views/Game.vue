@@ -83,7 +83,6 @@ export default defineComponent({
 
     function connect() {
       const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`;
-      console.log(route)
       const spectatePrefix = spectate ? "/spectate" : ""
       socket.value = new WebSocket(`${baseURL}/api/v1/arkham/games/${props.gameId}${spectatePrefix}`.replace(/https/, 'wss').replace(/http/, 'ws'));
       socket.value.addEventListener('open', () => {

@@ -214,7 +214,7 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .enemy--can-interact {
-  border: 3px solid #FF00FF;
+  border: 3px solid $select;
   border-radius: 15px;
   cursor: pointer;
 }
@@ -260,8 +260,8 @@ export default defineComponent({
 }
 
 .card {
-  width: 100px;
-  max-width: 100px;
+  width: $card-width;
+  max-width: $card-width;
   border-radius: 5px;
 }
 

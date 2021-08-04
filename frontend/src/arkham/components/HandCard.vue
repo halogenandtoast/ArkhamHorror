@@ -139,8 +139,8 @@ export default defineComponent({
 <style scoped lang="scss">
 
 .card {
-  width: 100px;
-  min-width: 100px;
+  width: $card-width;
+  min-width: $card-width;
   border-radius: 7px;
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 6px;
@@ -148,7 +148,7 @@ export default defineComponent({
   display: inline-block;
 
   &--can-interact {
-    border: 2px solid #FF00FF;
+    border: 2px solid $select;
     cursor: pointer;
   }
 

@@ -63,8 +63,8 @@ export default defineComponent({
 <style scoped lang="scss">
 .portrait {
   margin: 0 5px;
-  width: 100px;
-  border: 3px solid #FF00FF;
+  width: $card-width;
+  border: 3px solid $select;
   cursor: pointer;
 }
 

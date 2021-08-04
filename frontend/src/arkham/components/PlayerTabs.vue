@@ -3,7 +3,8 @@
     <ul class='tabs__header'>
       <li v-for='iid in playerOrder'
         :key='players[iid].contents.name.title'
-        @click='selectTab(iid)'
+        @click.exact='selectTab(iid)'
+        @click.shift='selectTabExtended(iid)'
         :class='tabClass(iid)'
       >
         {{ players[iid].contents.name.title }}
@@ -63,6 +64,10 @@ export default defineComponent({
 
     function selectTab(i: string) {
       selectedTab.value = i
+    }
+
+    function selectTabExtended(i: string) {
+      selectedTab.value = i
       if (solo && props.investigatorId !== i && switchInvestigator) {
         switchInvestigator(i)
       }
@@ -70,7 +75,7 @@ export default defineComponent({
 
     watchEffect(() => selectedTab.value = props.investigatorId)
 
-    return { selectedTab, selectTab, tabClass }
+    return { selectedTab, selectTab, selectTabExtended, tabClass }
   }
 })
 </script>
@@ -81,6 +86,8 @@ ul.tabs__header {
   list-style: none;
   padding: 0;
   margin: 0;
+  user-select: none;
+  padding-left: 5px;
 }
 
 ul.tabs__header > li {
@@ -100,27 +107,27 @@ ul.tabs__header > li.tab--selected {
 }
 
 .tab--Guardian {
-  background-color: #3A6BA0;
+  background-color: $guardian;
 }
 
 .tab--Seeker {
-  background-color: #B4793B;
+  background-color: $seeker;
 }
 
 .tab--Rogue {
-  background-color: #265035;
+  background-color: $rogue;
 }
 
 .tab--Mystic {
-  background-color: #443D72;
+  background-color: $mystic;
 }
 
 .tab--Survivor {
-  background-color: #6B2F2E;
+  background-color: $survivor;
 }
 
 .tab--Neutral {
-  background-color: #7B7A72;
+  background-color: $neutral;
 }
 
 .tab--active-player {

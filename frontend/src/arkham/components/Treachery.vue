@@ -103,13 +103,13 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .card {
-  width: 100px;
-  max-width: 100px;
+  width: $card-width;
+  max-width: $card-width;
   border-radius: 5px;
 }
 
 .treachery--can-interact {
-  border: 2px solid #FF00FF;
+  border: 2px solid $select;
   cursor:pointer;
 }
 

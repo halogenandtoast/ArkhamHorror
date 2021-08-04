@@ -332,17 +332,17 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .location--can-interact {
-  border: 3px solid #FF00FF;
+  border: 3px solid $select;
   cursor: pointer;
 }
 
 .card {
-  width: 100px;
+  width: $card-width;
   border-radius: 3px;
 }
 
 .location-column :deep(.enemy) {
-  width: 80px;
+  width: $card-width * 0.8;
 }
 
 .location-column :deep(.treachery) {
@@ -433,16 +433,16 @@ export default defineComponent({
 }
 
 .location-card {
-  height: 107px;
-  width: 125px;
+  height: $card-width * 1.07;
+  width: $card-width * 1.25;
   background-size: 100%;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
 
 .location-connections {
-  height: 27px;
-  width: 125px;
+  height: $card-width * 0.27;
+  width: $card-width * 1.25;
   background-size: 100%;
   background-position: bottom;
   border-top-left-radius: 0;
@@ -454,7 +454,7 @@ export default defineComponent({
 }
 
 .location-investigator-column {
-  min-width: 60px;
+  min-width: $card-width * 0.6;
   height: 100%;
   &:deep(.portrait) {
     height: 25%;
@@ -462,10 +462,10 @@ export default defineComponent({
 }
 
 .location-asset-column {
-  min-width: 60px;
+  min-width: $card-width * 0.6;
   height: 100%;
   &:deep(.card) {
-    width: 60px !important;
+    width: $card-width * 0.6 !important;
   }
 }
 

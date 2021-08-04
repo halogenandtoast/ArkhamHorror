@@ -283,31 +283,31 @@ i.action {
 }
 
 .investigator--can-interact {
-  border: 2px solid #FF00FF;
+  border: 2px solid $select;
   cursor: pointer;
   &--portrait {
-    border: 3px solid #FF00FF;
+    border: 3px solid $select;
   }
 }
 
 .card {
   width: auto;
-  height: 100px;
+  height: $card-width;
 }
 
 .tomeAction {
-  color: orange;
+  color: $seeker;
 }
 
 .player-card {
   display: flex;
   flex-direction: column;
-  width: 140px;
+  width: $card-width * 1.4;
 }
 
 .portrait {
   border-radius: 3px;
-  width: 60px;
+  width: $card-width * 0.6;
   margin-right: 2px;
 }
 </style>

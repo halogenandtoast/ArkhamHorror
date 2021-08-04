@@ -90,13 +90,13 @@ export default defineComponent({
 }
 
 .card {
-  width: 100px;
+  width: $card-width;
   border-radius: 6px;
   margin: 2px;
 }
 
 .skill--can-interact {
-  border: 3px solid #FF00FF;
+  border: 3px solid $select;
   cursor: pointer;
 }
 </style>

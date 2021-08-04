@@ -125,7 +125,7 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .card {
-  width: 100px;
+  width: $card-width;
   -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.23), 0 3px 6px rgba(0, 0, 0, 0.53);
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.23), 0 3px 6px rgba(0, 0, 0, 0.53);
   border-radius: 6px;
@@ -139,7 +139,7 @@ export default defineComponent({
 
 .card--sideways {
   width: auto;
-  height: 100px;
+  height: $card-width;
 }
 
 .act--can-progress {

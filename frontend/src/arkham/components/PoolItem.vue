@@ -81,14 +81,14 @@ export default defineComponent({
 .resource--can-take, .resource--can-spend {
   padding: 0px;
   cursor: pointer;
-  background-color: #FF00FF;
+  background-color: $select;
 }
 
 .health--can-interact, .sanity--can-interact {
   > span {
     padding: 0px;
     cursor: pointer;
-    border: 2px solid #FF00FF;
+    border: 2px solid $select;
   }
 }
 </style>

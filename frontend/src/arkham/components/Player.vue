@@ -174,7 +174,7 @@ export default defineComponent({
 }
 
 .deck--can-draw {
-  border: 3px solid #FF00FF;
+  border: 3px solid $select;
   border-radius: 10px;
   cursor: pointer;
 }
@@ -202,7 +202,7 @@ export default defineComponent({
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 6px;
   margin: 2px;
-  max-width: 100px;
+  max-width: $card-width;
 }
 
 .deck {
@@ -218,7 +218,7 @@ export default defineComponent({
 }
 
 .player-cards :v-deep(.in-play .card) {
-  width: 130px;
+  width: $card-width * 1.3;
   margin: 0 2px;
 }
 

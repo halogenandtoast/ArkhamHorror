@@ -43,7 +43,7 @@ ability attrs = base { abilityLimit = PlayerLimit PerPhase 1 }
 
 instance InvestigatorRunner env => HasActions env AgnesBaker where
   getActions iid (WhenDealtHorror _ target) (AgnesBaker attrs)
-    | isTarget attrs target = do
+    | isTarget attrs target && iid == toId attrs = do
       enemyIds <- getSet @EnemyId $ investigatorLocation attrs
       pure [ UseAbility iid (ability attrs) | notNull enemyIds ]
   getActions i window (AgnesBaker attrs) = getActions i window attrs

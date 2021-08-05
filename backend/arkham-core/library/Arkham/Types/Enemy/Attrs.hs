@@ -749,7 +749,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
       pure $ a & engagedInvestigatorsL %~ insertSet iid
     EngageEnemy iid eid False | eid == enemyId ->
       pure $ a & engagedInvestigatorsL .~ singleton iid
-    MoveTo iid lid | iid `elem` enemyEngagedInvestigators -> do
+    WhenWillEnterLocation iid lid | iid `elem` enemyEngagedInvestigators -> do
       keywords <- getModifiedKeywords a
       willMove <- canEnterLocation enemyId lid
       if Keyword.Massive `notElem` keywords && willMove

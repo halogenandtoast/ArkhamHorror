@@ -10,7 +10,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Message
 import Arkham.Types.Token
-import qualified Arkham.Types.Token as Token
 
 newtype NightOfTheZealot = NightOfTheZealot CampaignAttrs
   deriving anyclass IsCampaign

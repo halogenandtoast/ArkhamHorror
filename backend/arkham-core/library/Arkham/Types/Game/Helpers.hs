@@ -116,6 +116,7 @@ getCanPerformAbility iid window Ability {..} =
     FastAbility _ -> pure True
     ReactionAbility _ -> pure True
     ForcedAbility -> pure True
+    AbilityEffect _ -> pure True
 
 getCanPerformAbilityRestriction
   :: (MonadReader env m, CanCheckFast env, CanCheckPlayable env, MonadIO m)
@@ -154,6 +155,7 @@ getCanAffordAbilityCost iid Ability {..} = case abilityType of
   ReactionAbility cost -> getCanAffordCost iid abilitySource Nothing cost
   FastAbility cost -> getCanAffordCost iid abilitySource Nothing cost
   ForcedAbility -> pure True
+  AbilityEffect _ -> pure True
 
 getCanAffordUse
   :: (MonadReader env m, HasCostPayment env, HasList UsedAbility env ())
@@ -167,6 +169,7 @@ getCanAffordUse iid ability = case abilityLimit ability of
     ForcedAbility -> notElem (iid, ability) . map unUsedAbility <$> getList ()
     ActionAbility _ _ -> pure True
     FastAbility _ -> pure True
+    AbilityEffect _ -> pure True
   PlayerLimit (PerSearch (Just _)) n ->
     (< n)
       . count ((== abilityLimit ability) . abilityLimit . snd . unUsedAbility)

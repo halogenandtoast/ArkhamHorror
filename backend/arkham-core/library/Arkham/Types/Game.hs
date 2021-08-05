@@ -2376,9 +2376,9 @@ runGameMessage msg g = case msg of
         target
       )
     pure $ g & effectsL %~ insertMap effectId effect
-  CreatePayAbilityCostEffect mAbility source target -> do
-    (effectId, effect) <- createPayForAbilityEffect mAbility source target
-    push (CreatedEffect effectId (EffectAbility <$> mAbility) source target)
+  CreatePayAbilityCostEffect ability source target -> do
+    (effectId, effect) <- createPayForAbilityEffect ability source target
+    push (CreatedEffect effectId (Just $ EffectAbility ability) source target)
     pure $ g & effectsL %~ insertMap effectId effect
   CreateWindowModifierEffect effectWindow effectMetadata source target -> do
     (effectId, effect) <- createWindowModifierEffect

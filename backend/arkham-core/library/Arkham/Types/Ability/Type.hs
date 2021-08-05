@@ -11,6 +11,7 @@ data AbilityType
   | ReactionAbility Cost
   | ActionAbility (Maybe Action) Cost
   | ForcedAbility
+  | AbilityEffect Cost
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -21,6 +22,7 @@ applyAbilityTypeModifiers aType modifiers = case aType of
   ActionAbility mAction cost ->
     ActionAbility mAction $ applyCostModifiers cost modifiers
   ForcedAbility -> ForcedAbility
+  AbilityEffect cost -> AbilityEffect cost -- modifiers don't yet apply here
 
 applyCostModifiers :: Cost -> [ModifierType] -> Cost
 applyCostModifiers = foldl' applyCostModifier

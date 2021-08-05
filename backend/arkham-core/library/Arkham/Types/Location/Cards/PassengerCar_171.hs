@@ -6,6 +6,7 @@ module Arkham.Types.Location.Cards.PassengerCar_171
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (passengerCar_171)
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Direction
@@ -61,11 +62,9 @@ instance LocationRunner env => RunMessage env PassengerCar_171 where
             , Label
               "Discard cards with at least 1 {wild} icons"
               [ CreatePayAbilityCostEffect
-                Nothing
-                (toSource attrs)
-                (toTarget attrs)
-              , PayAbilityCost (toSource attrs) iid Nothing cost
-              , PayAbilityCostFinished (toSource attrs) iid
+                  (abilityEffect attrs cost)
+                  (toSource attrs)
+                  (toTarget attrs)
               ]
             ]
           )

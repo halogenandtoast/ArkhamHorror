@@ -66,10 +66,10 @@ createTokenEffect effectMetadata source token = do
   pure (eid, buildTokenEffect eid effectMetadata source token)
 
 createPayForAbilityEffect
-  :: MonadRandom m => Maybe Ability -> Source -> Target -> m (EffectId, Effect)
-createPayForAbilityEffect mAbility source target = do
+  :: MonadRandom m => Ability -> Source -> Target -> m (EffectId, Effect)
+createPayForAbilityEffect ability source target = do
   eid <- getRandom
-  pure (eid, buildPayForAbilityEffect eid mAbility source target)
+  pure (eid, buildPayForAbilityEffect eid ability source target)
 
 data Effect
   = OnTheLam' OnTheLam
@@ -242,7 +242,6 @@ buildTokenEffect
 buildTokenEffect eid metadata source token =
   TokenEffect' $ tokenEffect eid metadata source token
 
-buildPayForAbilityEffect
-  :: EffectId -> Maybe Ability -> Source -> Target -> Effect
-buildPayForAbilityEffect eid mAbility source target =
-  PayForAbilityEffect' $ payForAbilityEffect eid mAbility source target
+buildPayForAbilityEffect :: EffectId -> Ability -> Source -> Target -> Effect
+buildPayForAbilityEffect eid ability source target =
+  PayForAbilityEffect' $ payForAbilityEffect eid ability source target

@@ -203,7 +203,7 @@ data Message
     | CreatedEnemyAt EnemyId LocationId Target
     | CreateEnemyAtLocationMatching Card LocationMatcher
     | CreateEnemyEngagedWithPrey Card
-    | CreatePayAbilityCostEffect (Maybe Ability) Source Target
+    | CreatePayAbilityCostEffect Ability Source Target
     | CreateWindowModifierEffect EffectWindow (EffectMetadata Message) Source Target
     | CreateTokenEffect (EffectMetadata Message) Source Token
     | CreateStoryAssetAt Card LocationId
@@ -263,6 +263,7 @@ data Message
     | EnemyEngageInvestigator EnemyId InvestigatorId
     | EnemyEvaded InvestigatorId EnemyId
     | EnemyMove EnemyId LocationId LocationId
+    | EngagedEnemyMove EnemyId LocationId LocationId
     | EnemyEntered EnemyId LocationId
     | EnemySetBearer EnemyId BearerId
     | EnemySpawn (Maybe InvestigatorId) LocationId EnemyId
@@ -376,7 +377,7 @@ data Message
     | PassSkillTest
     | PassedSkillTest InvestigatorId (Maybe Action) Source Target SkillType Int
     | PayAbilityCost Source InvestigatorId (Maybe Action) Cost
-    | PayAbilityCostFinished Source InvestigatorId
+    | PayAbilityCostFinished EffectId Source InvestigatorId
     | PaidAbilityCost InvestigatorId (Maybe Action) Payment
     | PayCardCost InvestigatorId CardId
     | PayDynamicCardCost InvestigatorId CardId Int [Message]
@@ -526,6 +527,7 @@ data Message
     | UseScenarioSpecificAbility InvestigatorId (Maybe Target) Int
     | When Message
     | WhenAttackEnemy InvestigatorId EnemyId
+    | WhenWillEnterLocation InvestigatorId LocationId
     | WhenEnterLocation InvestigatorId LocationId
     | WhenEvadeEnemy InvestigatorId EnemyId
     | Will Message

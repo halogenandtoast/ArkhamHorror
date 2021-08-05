@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watchEffect, inject } from 'vue';
+import { defineComponent, ref, watchEffect, inject, Ref } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import Tab from '@/arkham/components/Tab.vue';
 import Player from '@/arkham/components/Player.vue';
@@ -49,7 +49,7 @@ export default defineComponent({
   setup(props) {
     const selectedTab = ref(props.investigatorId)
 
-    const solo = inject('solo')
+    const solo = inject<Ref<boolean>>('solo')
     const switchInvestigator = inject<((i: string) => void)>('switchInvestigator')
 
     function tabClass(index: string) {
@@ -68,7 +68,7 @@ export default defineComponent({
 
     function selectTabExtended(i: string) {
       selectedTab.value = i
-      if (solo && props.investigatorId !== i && switchInvestigator) {
+      if (solo?.value && props.investigatorId !== i && switchInvestigator) {
         switchInvestigator(i)
       }
     }

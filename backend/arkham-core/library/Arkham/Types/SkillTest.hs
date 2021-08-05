@@ -385,7 +385,10 @@ instance SkillTestRunner env => RunMessage env SkillTest where
           )
           (s ^. committedCardsL . to toList)
       s <$ pushAll
-        (ResetTokens (toSource s) : map (uncurry AddToDiscard) discards)
+        (ResetTokens (toSource s)
+        : map (uncurry AddToDiscard) discards
+        <> [AfterSkillTestEnds]
+        )
     SkillTestResults{} -> do
       push (chooseOne skillTestInvestigator [SkillTestApplyResults])
       case skillTestResult of

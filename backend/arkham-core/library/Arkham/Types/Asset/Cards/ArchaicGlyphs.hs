@@ -38,9 +38,9 @@ instance HasModifiersFor env ArchaicGlyphs
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env ArchaicGlyphs where
   runMessage msg a@(ArchaicGlyphs attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AddUses (toTarget attrs) Secret 1)
-    AddUses target Secret n | isTarget attrs target -> do
+    AddUses target Secret _ | isTarget attrs target -> do
       let ownerId = fromJustNote "must be owned" $ assetInvestigator attrs
       attrs' <- runMessage msg attrs
       ArchaicGlyphs attrs' <$ when

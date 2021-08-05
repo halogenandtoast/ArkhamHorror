@@ -533,7 +533,8 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       pure $ a & connectedLocationsL %~ insertSet toLid
     DiscoverCluesAtLocation iid lid n maction | lid == locationId -> do
       let discoveredClues = min n locationClues
-      checkWindowMsgs <- checkWindows [WhenDiscoverClues iid lid discoveredClues]
+      checkWindowMsgs <- checkWindows
+        [WhenDiscoverClues iid lid discoveredClues]
       a <$ pushAll
         (checkWindowMsgs <> [DiscoverClues iid lid discoveredClues maction])
     AfterDiscoverClues iid lid n | lid == locationId -> do
@@ -556,6 +557,10 @@ instance LocationRunner env => RunMessage env LocationAttrs where
     EnemyMove eid _ lid | lid == locationId -> do
       willMove <- canEnterLocation eid lid
       pure $ if willMove then a & enemiesL %~ insertSet eid else a
+    EnemyEntered eid lid | lid == locationId -> do
+      pure $ a & enemiesL %~ insertSet eid
+    EnemyEntered eid lid | lid /= locationId -> do
+      pure $ a & enemiesL %~ deleteSet eid
     Will next@(EnemySpawn miid lid eid) | lid == locationId -> do
       shouldSpawnNonEliteAtConnectingInstead <-
         getShouldSpawnNonEliteAtConnectingInstead a

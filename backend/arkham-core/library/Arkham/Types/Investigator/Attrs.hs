@@ -758,13 +758,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         when
           canPay
           (pushAll
-          $ [ CreatePayAbilityCostEffect Nothing (toSource a) (toTarget a)
-            , PayAbilityCost
-              (toSource a)
-              iid
-              Nothing
-              (mconcat additionalCosts)
-            , PayAbilityCostFinished (toSource a) iid
+          $ [ CreatePayAbilityCostEffect
+                (abilityEffect a $ mconcat additionalCosts)
+                (toSource a)
+                (toTarget a)
             ]
           <> msgs
           )
@@ -1473,7 +1470,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     a <$ push (MoveTo investigatorId lid)
   MoveTo iid lid | iid == investigatorId -> do
     connectedLocations <- mapSet unConnectedLocationId <$> getSet lid
-    pushAll [WhenEnterLocation iid lid, AfterEnterLocation iid lid]
+    pushAll [WhenWillEnterLocation iid lid, WhenEnterLocation iid lid, AfterEnterLocation iid lid]
     pure $ a & locationL .~ lid & connectedLocationsL .~ connectedLocations
   AddedConnection lid1 lid2 | lid1 == investigatorLocation ->
     pure $ a & (connectedLocationsL %~ insertSet lid2)
@@ -1595,8 +1592,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       (pushAll
         [ShuffleDiscardBackIn iid, InvestigatorDamage iid EmptyDeckSource 0 1]
       )
-  UseAbility iid ability@Ability {..} | iid == investigatorId -> a <$ push
-    (CreatePayAbilityCostEffect (Just ability) abilitySource (toTarget a))
+  UseAbility iid ability@Ability {..} | iid == investigatorId ->
+    a <$ push (CreatePayAbilityCostEffect ability abilitySource (toTarget a))
   AllDrawCardAndResource | not (a ^. defeatedL || a ^. resignedL) -> do
     unlessM (hasModifier a CannotDrawCards)
       $ push (DrawCards investigatorId 1 False)
@@ -1808,9 +1805,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   GainActions iid _ n | iid == investigatorId ->
     pure $ a & remainingActionsL +~ n
   TakeAction iid mAction cost | iid == investigatorId -> a <$ pushAll
-    ([ CreatePayAbilityCostEffect Nothing (toSource a) (toTarget a)
-     , PayAbilityCost (toSource a) iid mAction cost
-     , PayAbilityCostFinished (toSource a) iid
+    ([ CreatePayAbilityCostEffect
+         (abilityEffect a cost)
+         (toSource a)
+         (toTarget a)
      ]
     <> [ TakenAction iid action | action <- maybeToList mAction ]
     )

@@ -29,14 +29,14 @@ newtype PayForAbilityEffect = PayForAbilityEffect (EffectAttrs `With` Payment)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 payForAbilityEffect
-  :: EffectId -> Maybe Ability -> Source -> Target -> PayForAbilityEffect
-payForAbilityEffect eid mAbility source target =
+  :: EffectId -> Ability -> Source -> Target -> PayForAbilityEffect
+payForAbilityEffect eid ability source target =
   PayForAbilityEffect $ (`with` NoPayment) $ EffectAttrs
     { effectId = eid
     , effectSource = source
     , effectTarget = target
     , effectCardCode = Nothing
-    , effectMetadata = EffectAbility <$> mAbility
+    , effectMetadata = Just (EffectAbility ability)
     , effectTraits = mempty
     , effectWindow = Nothing
     }
@@ -92,9 +92,11 @@ instance
     CreatedEffect eid (Just (EffectAbility Ability {..})) source (InvestigatorTarget iid)
       | eid == toId attrs
       -> do
-        push (PayAbilityCostFinished source iid)
+        push (PayAbilityCostFinished (toId attrs) source iid)
         e <$ case abilityType of
           ForcedAbility -> pure ()
+          AbilityEffect cost ->
+            push (PayAbilityCost abilitySource iid Nothing cost)
           FastAbility cost ->
             push (PayAbilityCost abilitySource iid Nothing cost)
           ReactionAbility cost ->
@@ -315,10 +317,11 @@ instance
         Free -> pure e
     PaidAbilityCost _ _ payment ->
       pure $ PayForAbilityEffect (attrs `with` (payments <> payment))
-    PayAbilityCostFinished source iid -> case effectMetadata attrs of
-      Just (EffectAbility Ability {..}) -> e <$ pushAll
-        [ DisableEffect $ toId attrs
-        , UseCardAbility iid source abilityMetadata abilityIndex payments
-        ]
-      _ -> e <$ push (DisableEffect $ toId attrs)
+    PayAbilityCostFinished eid source iid | eid == toId attrs ->
+      case effectMetadata attrs of
+        Just (EffectAbility Ability {..}) -> e <$ pushAll
+          [ DisableEffect $ toId attrs
+          , UseCardAbility iid source abilityMetadata abilityIndex payments
+          ]
+        _ -> e <$ push (DisableEffect $ toId attrs)
     _ -> PayForAbilityEffect . (`with` payments) <$> runMessage msg attrs

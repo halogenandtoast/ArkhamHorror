@@ -11,6 +11,7 @@ import Arkham.Types.Ability.Type as X
 import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes.Entity.Source
+import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -61,6 +62,9 @@ restrictedAbility
 restrictedAbility entity idx restriction type' =
   (mkAbility entity idx type') { abilityRestrictions = Just restriction }
 
+abilityEffect :: SourceEntity a => a -> Cost -> Ability
+abilityEffect a cost = mkAbility a (-1) (AbilityEffect cost)
+
 mkAbility :: SourceEntity a => a -> Int -> AbilityType -> Ability
 mkAbility entity idx type' = Ability
   { abilitySource = toSource entity
@@ -71,6 +75,7 @@ mkAbility entity idx type' = Ability
     ReactionAbility _ -> PlayerLimit PerWindow 1
     FastAbility _ -> NoLimit
     ActionAbility _ _ -> NoLimit
+    AbilityEffect _ -> NoLimit
   , abilityMetadata = Nothing
   , abilityRestrictions = Nothing
   , abilityDoesNotProvokeAttacksOfOpportunity = False

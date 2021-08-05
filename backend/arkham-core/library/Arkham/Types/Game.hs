@@ -3144,7 +3144,8 @@ runGameMessage msg g = case msg of
           ]
         )
   BeginSkillTestAfterFast iid source target maction skillType difficulty -> do
-    push (BeforeSkillTest iid skillType difficulty)
+    windowMsgs <- checkWindows [FastPlayerWindow]
+    pushAll $ windowMsgs <> [BeforeSkillTest iid skillType difficulty]
     investigator <- getInvestigator iid
     skillValue <- getSkillValueOf skillType investigator
     pure

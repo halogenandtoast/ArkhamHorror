@@ -25,12 +25,12 @@ FROM fpco/stack-build:latest as dependencies
 
 ENV LC_ALL=en_US.UTF-8
 
-RUN mkdir -p /opt/arkham/src
-RUN mkdir -p /opt/arkham/bin
-RUN mkdir -p /opt/arkham/src/backend/arkham-api
-RUN mkdir -p /opt/arkham/src/backend/arkham-core
-RUN mkdir -p /opt/arkham/src/backend/cards-discover
-RUN mkdir -p /opt/arkham/src/frontend
+RUN mkdir -p \
+  /opt/arkham/bin \
+  /opt/arkham/src/backend/arkham-api \
+  /opt/arkham/src/backend/arkham-core \
+  /opt/arkham/src/backend/cards-discover \
+  /opt/arkham/src/frontend
 
 WORKDIR /opt/arkham/src/backend
 COPY ./backend/stack.yaml /opt/arkham/src/backend/stack.yaml
@@ -47,9 +47,10 @@ ENV LC_ALL=en_US.UTF-8
 
 ENV PATH "$PATH:/opt/stack/bin:/opt/arkham/bin"
 
-RUN mkdir -p /opt/arkham/src/backend
-RUN mkdir -p /opt/arkham/src/frontend
-RUN mkdir -p /opt/arkham/bin
+RUN mkdir -p \
+  /opt/arkham/src/backend \
+  /opt/arkham/src/frontend \
+  /opt/arkham/bin
 
 COPY ./backend /opt/arkham/src/backend
 COPY --from=frontend /opt/arkham/src/frontend/dist /opt/arkham/src/frontend/dist
@@ -68,20 +69,22 @@ FROM ubuntu:18.04 as app
 
 ENV LC_ALL=en_US.UTF-8
 
-RUN apt-get update
-RUN apt-get upgrade -y --assume-yes
-RUN apt-get install -y --assume-yes libpq-dev ca-certificates
+RUN apt-get update && \
+  apt-get upgrade -y --assume-yes && \
+  apt-get install -y --assume-yes libpq-dev ca-certificates && \
+  rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /opt/arkham/bin
-RUN mkdir -p /opt/arkham/src/backend/arkham-api
-RUN mkdir -p /opt/arkham/src/frontend
+RUN mkdir -p \
+  /opt/arkham/bin \
+  /opt/arkham/src/backend/arkham-api \
+  /opt/arkham/src/frontend
 
 COPY --from=frontend /opt/arkham/src/frontend/dist /opt/arkham/src/frontend/dist
 COPY --from=api /opt/arkham/bin/arkham-api /opt/arkham/bin/arkham-api
 COPY ./backend/arkham-api/config /opt/arkham/src/backend/arkham-api/config
 
-RUN useradd -ms /bin/bash yesod
-RUN chown -R yesod:yesod /opt/arkham
+RUN useradd -ms /bin/bash yesod && \
+  chown -R yesod:yesod /opt/arkham
 USER yesod
 ENV PATH "$PATH:/opt/stack/bin:/opt/arkham/bin"
 

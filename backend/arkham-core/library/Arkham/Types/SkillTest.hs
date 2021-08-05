@@ -351,12 +351,15 @@ instance SkillTestRunner env => RunMessage env SkillTest where
            , SkillTestEnds skillTestSource
            ]
       pure $ s & resultL .~ FailedBy True difficulty
-    StartSkillTest _ -> s <$ pushAll
-      (HashMap.foldMapWithKey
-          (\k (i, _) -> [CommitCard i k])
-          skillTestCommittedCards
-      <> [TriggerSkillTest skillTestInvestigator]
-      )
+    StartSkillTest _ -> do
+      windowMsgs <- checkWindows [FastPlayerWindow]
+      s <$ pushAll
+        (HashMap.foldMapWithKey
+            (\k (i, _) -> [CommitCard i k])
+            skillTestCommittedCards
+        <> windowMsgs
+        <> [TriggerSkillTest skillTestInvestigator]
+        )
     InvestigatorCommittedSkill _ skillId ->
       pure $ s & subscribersL %~ (SkillTarget skillId :)
     SkillTestCommitCard iid cardId -> do

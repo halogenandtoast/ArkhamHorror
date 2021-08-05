@@ -127,7 +127,7 @@ export default defineComponent({
 
     fetchGame(props.gameId, spectate).then(({ game: newGame, investigatorId: newInvestigatorId, multiplayerMode}) => {
       game.value = newGame;
-      solo.value = multiplayerMode == "Solo";
+      solo.value = multiplayerMode === "Solo";
       gameLog.value = Object.freeze(newGame.log);
       investigatorId.value = newInvestigatorId;
       connect();

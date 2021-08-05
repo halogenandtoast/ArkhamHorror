@@ -922,7 +922,7 @@ passesRestriction iid location windows = \case
   InvestigatorIsAlone -> liftA2
     (&&)
     (pure $ location /= LocationId (CardId nil))
-    (null <$> getSet @InvestigatorId location)
+    ((== 1) . size <$> getSet @InvestigatorId location)
   OwnCardWithDoom -> do
     assetIds <- selectList (AssetOwnedBy You)
     investigatorDoomCount <- unDoomCount <$> getCount iid

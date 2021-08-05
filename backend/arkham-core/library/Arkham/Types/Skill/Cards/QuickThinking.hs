@@ -6,6 +6,7 @@ module Arkham.Types.Skill.Cards.QuickThinking
 import Arkham.Prelude
 
 import qualified Arkham.Skill.Cards as Cards
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Skill.Attrs
@@ -29,7 +30,14 @@ instance SkillRunner env => RunMessage env QuickThinking where
     PassedSkillTest iid _ _ SkillTestInitiatorTarget{} _ n | n >= 2 -> s <$ push
       (chooseOne
         iid
-        [ Label "Take additional action" [PlayerWindow iid [] True]
+        [ Label
+          "Take additional action"
+          [ CreateEffect
+              (toCardCode attrs)
+              Nothing
+              (toSource attrs)
+              (InvestigatorTarget iid)
+          ]
         , Label "Pass on additional action" []
         ]
       )

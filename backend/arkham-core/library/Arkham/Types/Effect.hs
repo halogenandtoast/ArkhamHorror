@@ -96,6 +96,7 @@ data Effect
   | FireExtinguisher1' FireExtinguisher1
   | Deduction2' Deduction2
   | ExposeWeakness1' ExposeWeakness1
+  | QuickThinking' QuickThinking
   | LuckyDice2' LuckyDice2
   | RiteOfSeeking4' RiteOfSeeking4
   | UndimensionedAndUnseenTabletToken' UndimensionedAndUnseenTabletToken
@@ -200,6 +201,7 @@ allEffects = mapFromList
   , ("02114", FireExtinguisher1' . fireExtinguisher1)
   , ("02150", Deduction2' . deduction2)
   , ("02228", ExposeWeakness1' . exposeWeakness1)
+  , ("02229", QuickThinking' . quickThinking)
   , ("02230", LuckyDice2' . luckyDice2)
   , ("02233", RiteOfSeeking4' . riteOfSeeking4)
   , ( "02236"

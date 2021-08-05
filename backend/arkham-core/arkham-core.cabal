@@ -358,6 +358,7 @@ library
       Arkham.Types.Effect.Effects.OnTheLam
       Arkham.Types.Effect.Effects.PayForAbilityEffect
       Arkham.Types.Effect.Effects.PushedIntoTheBeyond
+      Arkham.Types.Effect.Effects.QuickThinking
       Arkham.Types.Effect.Effects.RiteOfSeeking
       Arkham.Types.Effect.Effects.RiteOfSeeking4
       Arkham.Types.Effect.Effects.SeekingAnswers

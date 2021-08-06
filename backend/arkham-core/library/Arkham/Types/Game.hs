@@ -72,6 +72,7 @@ import Control.Monad.State.Strict hiding (filterM, foldM)
 import qualified Data.Aeson.Diff as Diff
 import Data.List.Extra (groupOn)
 import Data.Map.Strict (filterWithKey)
+import Data.Monoid (First(..))
 import qualified Data.Sequence as Seq
 import Data.These
 import Data.These.Lens
@@ -548,6 +549,19 @@ getLocationsMatching
   => LocationMatcher
   -> m [Location]
 getLocationsMatching = \case
+  FirstLocation [] -> pure []
+  FirstLocation xs ->
+    fromMaybe []
+      . getFirst
+      <$> foldM
+            (\b a ->
+              (b <>)
+                . First
+                . (\s -> if null s then Nothing else Just s)
+                <$> getLocationsMatching a
+            )
+            (First Nothing)
+            xs
   LocationWithLabel label ->
     filter ((== label) . L.unLabel . toLocationLabel)
       . toList

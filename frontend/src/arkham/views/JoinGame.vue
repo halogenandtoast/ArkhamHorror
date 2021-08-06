@@ -9,7 +9,7 @@
         <h2>Join Game</h2>
       </header>
 
-      <img v-for="investigator in investigators" :key="investigator" :src="`${baseUrl}/img/arkham/portraits/${investigator}.jpg`" />
+      <img v-for="investigator in investigators" :key="investigator" :src="`${baseUrl}/img/arkham/portraits/${investigator.replace('c', '')}.jpg`" />
       <form id="join-game" @submit.prevent="join">
         <div>
           <p>Deck</p>

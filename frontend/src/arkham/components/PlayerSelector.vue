@@ -52,7 +52,7 @@ export default defineComponent({
 
     const investigatorPortrait = (choice: Message) => {
       const iid = choice.contents[0];
-      return `${baseUrl}/img/arkham/portraits/${iid}.jpg`;
+      return `${baseUrl}/img/arkham/portraits/${iid.replace('c', '')}.jpg`;
     }
 
     return { playerChoices, playerChoicesMessage, investigatorPortrait }

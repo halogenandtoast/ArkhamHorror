@@ -34,7 +34,7 @@ export default defineComponent({
       const { cardCode, isFlipped } = card
       const suffix = isFlipped === true ? 'b' : ''
       const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : ''
-      return `${baseUrl}/img/arkham/cards/${cardCode}${suffix}.jpg`;
+      return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}${suffix}.jpg`;
     }
 
     return { image }

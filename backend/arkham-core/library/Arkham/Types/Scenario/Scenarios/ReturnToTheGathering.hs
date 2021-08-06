@@ -26,7 +26,7 @@ returnToTheGathering difficulty = ReturnToTheGathering . TheGathering $ base
   { scenarioLocationLayout = Just
     [ ".     .         fieldOfGraves .     "
     , ".     bedroom   attic         .     "
-    , "study guestHall hallway       parlor"
+    , "study guestHall holeInTheWall parlor"
     , ".     bathroom  cellar        .     "
     , ".     .         ghoulPits     .     "
     ]

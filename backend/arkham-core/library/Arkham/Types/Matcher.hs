@@ -153,6 +153,7 @@ data LocationMatcher
   | LocationWithTrait Trait
   | LocationWithoutTreacheryWithCardCode CardCode
   | LocationMatchers [LocationMatcher]
+  | FirstLocation [LocationMatcher]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

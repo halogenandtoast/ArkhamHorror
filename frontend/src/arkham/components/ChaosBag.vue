@@ -126,11 +126,11 @@ export default defineComponent({
     const investigatorPortrait = computed(() => {
       const choice = choices.value.find((c) => c.tag === MessageType.START_SKILL_TEST);
       if (choice) {
-        return `${baseUrl}/img/arkham/portraits/${choice.contents}.jpg`;
+        return `${baseUrl}/img/arkham/portraits/${choice.contents.replace('c', '')}.jpg`;
       }
 
       if (props.skillTest) {
-        return `${baseUrl}/img/arkham/portraits/${props.skillTest.investigator}.jpg`;
+        return `${baseUrl}/img/arkham/portraits/${props.skillTest.investigator.replace('c', '')}.jpg`;
       }
 
       return null;

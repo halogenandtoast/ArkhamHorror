@@ -127,11 +127,7 @@ data ClassMismatch = ClassMismatch CardCode Name String (Maybe ClassSymbol)
 data SkillsMismatch = SkillsMismatch CardCode Name [SkillType] [SkillType]
   deriving stock Show
 
-data TraitsMismatch = TraitsMismatch
-  CardCode
-  Name
-  (HashSet Trait)
-  (HashSet Trait)
+data TraitsMismatch = TraitsMismatch CardCode Name (Set Trait) (Set Trait)
   deriving stock Show
 
 data ShroudMismatch = ShroudMismatch CardCode Name Int Int
@@ -194,7 +190,7 @@ normalizeCost _ (Just (-2)) = Just DynamicCost
 normalizeCost _ (Just n) = Just (StaticCost n)
 normalizeCost _ Nothing = Nothing
 
-allCards :: HashMap CardCode CardDef
+allCards :: Map CardCode CardDef
 allCards = allPlayerCards <> allEncounterCards
 
 getSkills :: CardJson -> [SkillType]
@@ -208,7 +204,7 @@ getSkills CardJson {..} =
   getSkill _ Nothing = []
   getSkill skillType (Just n) = replicate n skillType
 
-getTraits :: CardJson -> HashSet Trait
+getTraits :: CardJson -> Set Trait
 getTraits CardJson {..} = case traits of
   Nothing -> mempty
   Just s -> setFromList $ map toTrait (T.splitOn ". " $ cleanText s)
@@ -231,7 +227,7 @@ toGameVal :: Bool -> Int -> GameValue Int
 toGameVal True n = PerPlayer n
 toGameVal False n = Static n
 
-runMissing :: Maybe Text -> HashMap CardCode CardJson -> IO ()
+runMissing :: Maybe Text -> Map CardCode CardJson -> IO ()
 runMissing mPackCode cards = do
   let
     cardCodes =
@@ -252,7 +248,7 @@ runMissing mPackCode cards = do
       putStrLn $ unCardCode (code card) <> ": " <> name card <> suffix
 
 filterOutIrrelevant
-  :: Maybe Text -> HashMap CardCode CardJson -> HashMap CardCode CardJson
+  :: Maybe Text -> Map CardCode CardJson -> Map CardCode CardJson
 filterOutIrrelevant mPackCode = filterMap
   (\card ->
     (code card /= "01000")
@@ -261,7 +257,7 @@ filterOutIrrelevant mPackCode = filterMap
       && maybe True ((== pack_code card) . unpack) mPackCode
   )
 
-runValidations :: HashMap CardCode CardJson -> IO ()
+runValidations :: Map CardCode CardJson -> IO ()
 runValidations cards = do
   -- validate card defs
   for_ (filterTest $ mapToList allCards) $ \(ccode, card) -> do

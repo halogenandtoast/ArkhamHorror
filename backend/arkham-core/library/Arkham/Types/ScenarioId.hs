@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Arkham.Types.Card.CardCode
 
 newtype ScenarioId = ScenarioId { unScenarioId :: CardCode }
-  deriving newtype (Eq, Hashable, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey)
+  deriving newtype (Eq, Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey)
 
 newtype CompletedScenarioId = CompletedScenarioId { unCompletedScenarioId :: ScenarioId }
-  deriving newtype (Eq, Hashable, Show, ToJSON, FromJSON, IsString)
+  deriving newtype (Eq, Ord, Show, ToJSON, FromJSON, IsString)

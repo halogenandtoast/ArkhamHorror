@@ -10,5 +10,5 @@ data ScenarioLogKey
   | FoundAStrangeDoll
   | FoundAnAncientBindingStone
   | StolenAPassengersLuggage
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)
+  deriving stock (Eq, Ord, Show, Generic)
+  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey)

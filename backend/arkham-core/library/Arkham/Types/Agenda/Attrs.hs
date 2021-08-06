@@ -32,7 +32,7 @@ data AgendaAttrs = AgendaAttrs
   , agendaId :: AgendaId
   , agendaSequence :: AgendaSequence
   , agendaFlipped :: Bool
-  , agendaTreacheries :: HashSet TreacheryId
+  , agendaTreacheries :: Set TreacheryId
   , agendaCardsUnderneath :: [Card]
   }
   deriving stock (Show, Eq, Generic)
@@ -41,7 +41,7 @@ cardsUnderneathL :: Lens' AgendaAttrs [Card]
 cardsUnderneathL =
   lens agendaCardsUnderneath $ \m x -> m { agendaCardsUnderneath = x }
 
-treacheriesL :: Lens' AgendaAttrs (HashSet TreacheryId)
+treacheriesL :: Lens' AgendaAttrs (Set TreacheryId)
 treacheriesL = lens agendaTreacheries $ \m x -> m { agendaTreacheries = x }
 
 doomL :: Lens' AgendaAttrs Int

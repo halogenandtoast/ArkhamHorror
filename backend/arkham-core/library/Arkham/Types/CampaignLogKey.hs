@@ -57,5 +57,5 @@ data CampaignLogKey
   | CnidathquaRetreatedToNurseItsWounds
   | YouHaveIdentifiedTheSolution
   | YouHaveTranslatedTheGlyphs
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)
+  deriving stock (Ord, Eq, Show, Generic)
+  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey)

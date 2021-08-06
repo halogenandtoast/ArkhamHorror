@@ -27,7 +27,7 @@ import Arkham.Types.Trait hiding (Cultist)
 import Control.Monad.Extra (findM)
 import Data.Maybe (fromJust)
 
-newtype CurseOfTheRougarouMetadata = CurseOfTheRougarouMetadata { setAsideLocationTraits :: HashSet Trait }
+newtype CurseOfTheRougarouMetadata = CurseOfTheRougarouMetadata { setAsideLocationTraits :: Set Trait }
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -55,7 +55,7 @@ curseOfTheRougarou difficulty =
           ]
         }
 
-locationsByTrait :: HashMap Trait [CardDef]
+locationsByTrait :: Map Trait [CardDef]
 locationsByTrait = mapFromList
   [ ( NewOrleans
     , [Locations.cursedShores, Locations.gardenDistrict, Locations.broadmoor]

@@ -10,4 +10,3 @@ instance Eq Window
 instance Show Window
 instance ToJSON Window
 instance FromJSON Window
-instance Hashable Window

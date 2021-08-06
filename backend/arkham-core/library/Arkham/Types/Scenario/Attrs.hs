@@ -39,14 +39,14 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioActStack :: [(Int, [ActId])]
   , scenarioLocationLayout :: Maybe [GridTemplateRow]
   , scenarioDeck :: Maybe ScenarioDeck
-  , scenarioLog :: HashSet ScenarioLogKey
-  , scenarioLocations :: HashMap LocationName [CardDef]
+  , scenarioLog :: Set ScenarioLogKey
+  , scenarioLocations :: Map LocationName [CardDef]
   , scenarioSetAsideCards :: [Card]
   , scenarioInResolution :: Bool
   }
   deriving stock (Show, Generic, Eq)
 
-locationNameMap :: [CardDef] -> HashMap LocationName [CardDef]
+locationNameMap :: [CardDef] -> Map LocationName [CardDef]
 locationNameMap defs = unionsWith (<>) $ map toMap defs
   where toMap = liftM2 singletonMap (LocationName . toName) pure
 
@@ -58,7 +58,7 @@ cardsUnderneathActDeckL :: Lens' ScenarioAttrs [Card]
 cardsUnderneathActDeckL =
   lens scenarioCardsUnderActDeck $ \m x -> m { scenarioCardsUnderActDeck = x }
 
-locationsL :: Lens' ScenarioAttrs (HashMap LocationName [CardDef])
+locationsL :: Lens' ScenarioAttrs (Map LocationName [CardDef])
 locationsL = lens scenarioLocations $ \m x -> m { scenarioLocations = x }
 
 inResolutionL :: Lens' ScenarioAttrs Bool
@@ -71,7 +71,7 @@ deckL = lens scenarioDeck $ \m x -> m { scenarioDeck = x }
 actStackL :: Lens' ScenarioAttrs [(Int, [ActId])]
 actStackL = lens scenarioActStack $ \m x -> m { scenarioActStack = x }
 
-logL :: Lens' ScenarioAttrs (HashSet ScenarioLogKey)
+logL :: Lens' ScenarioAttrs (Set ScenarioLogKey)
 logL = lens scenarioLog $ \m x -> m { scenarioLog = x }
 
 setAsideCardsL :: Lens' ScenarioAttrs [Card]
@@ -183,7 +183,7 @@ instance HasTokenValue env InvestigatorId => HasTokenValue env ScenarioAttrs whe
     otherFace -> pure $ TokenValue otherFace NoModifier
 
 findLocationKey
-  :: LocationMatcher -> HashMap LocationName [CardDef] -> Maybe LocationName
+  :: LocationMatcher -> Map LocationName [CardDef] -> Maybe LocationName
 findLocationKey locationMatcher locations = fst
   <$> find match (mapToList locations)
  where

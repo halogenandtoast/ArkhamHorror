@@ -18,7 +18,7 @@ import Arkham.Types.Message
 import Arkham.Types.Resolution
 import Arkham.Types.Source
 import Arkham.Types.Window
-import qualified Data.HashSet as HashSet
+import Data.Set (isSubsetOf)
 
 newtype UncoveringTheConspiracy = UncoveringTheConspiracy ActAttrs
   deriving anyclass IsAct
@@ -60,7 +60,7 @@ instance ActRunner env => RunMessage env UncoveringTheConspiracy where
         cultists =
           setFromList ["01121b", "01137", "01138", "01139", "01140", "01141"]
       a <$ when
-        (cultists `HashSet.isSubsetOf` victoryDisplay)
+        (cultists `isSubsetOf` victoryDisplay)
         (push (AdvanceAct actId $ toSource attrs))
     UseCardAbility iid (ActSource aid) _ 1 _ | aid == actId -> do
       investigatorIds <- getInvestigatorIds

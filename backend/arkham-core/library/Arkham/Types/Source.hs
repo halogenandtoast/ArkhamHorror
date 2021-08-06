@@ -45,12 +45,12 @@ data Source
   | ActSource ActId
   | PlayerCardSource CardId
   | EncounterCardSource CardId
-  | TestSource (HashSet Trait)
+  | TestSource (Set Trait)
   | ProxySource Source Source
   | EffectSource EffectId
   | ResourceSource
   | AbilitySource Source Int
   | ActDeckSource
   | AgendaDeckSource
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+  deriving stock (Ord, Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey)

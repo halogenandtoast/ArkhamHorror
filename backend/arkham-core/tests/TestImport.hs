@@ -71,7 +71,6 @@ import Control.Lens as X (set, (^?!))
 import Control.Monad.Fail as X
 import Control.Monad.State as X (get)
 import Control.Monad.State hiding (replicateM)
-import qualified Data.HashMap.Strict as HashMap
 import Data.These
 import Data.UUID.V4 as X
 import Helpers.Matchers as X
@@ -492,8 +491,8 @@ newGame investigator = do
     , gameEnemies = mempty
     , gameEnemiesInVoid = mempty
     , gameAssets = mempty
-    , gameInvestigators = HashMap.singleton investigatorId investigator
-    , gamePlayers = HashMap.singleton 1 investigatorId
+    , gameInvestigators = singleton investigatorId investigator
+    , gamePlayers = singleton 1 investigatorId
     , gameActiveInvestigatorId = investigatorId
     , gameLeadInvestigatorId = investigatorId
     , gamePhase = CampaignPhase -- TODO: maybe this should be a TestPhase or something?

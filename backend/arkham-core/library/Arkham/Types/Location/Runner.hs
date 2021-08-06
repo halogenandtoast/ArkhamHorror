@@ -46,7 +46,7 @@ type LocationRunner env
     , HasSet InvestigatorId env ()
     , HasSet LocationId env ()
     , HasSet LocationId env LocationMatcher
-    , HasSet LocationId env (HashSet LocationSymbol)
+    , HasSet LocationId env (Set LocationSymbol)
     , HasSet LocationId env [Trait]
     , HasList SetAsideCard env ()
     , HasSet Trait env Source

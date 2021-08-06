@@ -50,8 +50,8 @@ class HasRoundHistory env where
 class HasPhaseHistory env where
   getPhaseHistory :: MonadReader env m => m [Message]
 
-class (Hashable set, Eq set) => HasSet set env a where
-  getSet :: (HasCallStack, MonadReader env m) => a -> m (HashSet set)
+class (Ord set, Eq set) => HasSet set env a where
+  getSet :: (HasCallStack, MonadReader env m) => a -> m (Set set)
   getSetList :: (HasCallStack, MonadReader env m) => a -> m [set]
   getSetList a = setToList <$> getSet a
 
@@ -73,8 +73,8 @@ selectOne matcher = do
     [] -> Nothing
     x : _ -> Just x
 
-class (Hashable (QueryElement a), Eq (QueryElement a)) => Query a env where
-  select :: (HasCallStack, MonadReader env m) => a -> m (HashSet (QueryElement a))
+class (Ord (QueryElement a), Eq (QueryElement a)) => Query a env where
+  select :: (HasCallStack, MonadReader env m) => a -> m (Set (QueryElement a))
 
 class HasList list env a where
   getList :: MonadReader env m => a -> m [list]
@@ -186,7 +186,7 @@ type ActionRunner env
     , HasSet ExhaustedEnemyId env LocationId
     , HasSet FightableEnemyId env (InvestigatorId, Source)
     , HasSet InvestigatorId env ()
-    , HasSet InvestigatorId env (HashSet LocationId)
+    , HasSet InvestigatorId env (Set LocationId)
     , HasSet InvestigatorId env EnemyId
     , HasSet Keyword env EnemyId
     , HasSet LocationId env ()

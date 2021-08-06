@@ -14,7 +14,6 @@ import Arkham.Types.Game
 import Arkham.Types.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Message
-import Control.Lens ((%~), (&))
 import Control.Monad.Random (mkStdGen)
 import Data.Coerce
 import Database.Esqueleto.Experimental
@@ -77,14 +76,17 @@ putApiV1ArkhamGameDecksR gameId = do
           cards <- liftIO $ loadDecklistCards decklist
           pure $ UpgradeDeck investigatorId (Deck cards)
 
-  gameRef <- newIORef
-    (arkhamGameCurrentData & choicesL %~ (UpgradeChoice msg :))
-  queueRef <- newIORef (msg : arkhamGameQueue)
+  let currentQueue = maybe [] choiceMessages $ headMay arkhamGameChoices
+
+  gameRef <- newIORef arkhamGameCurrentData
+  queueRef <- newIORef (msg : currentQueue)
   genRef <- newIORef (mkStdGen gameSeed)
   runGameApp
     (GameApp gameRef queueRef genRef $ pure . const ())
     (runMessages False)
   ge <- readIORef gameRef
+
+  let diffedGame = diff arkhamGameCurrentData ge
   updatedQueue <- readIORef queueRef
   let updatedMessages = []
   writeChannel <- getChannel gameId
@@ -97,7 +99,7 @@ putApiV1ArkhamGameDecksR gameId = do
       (ArkhamGame
         arkhamGameName
         ge
-        updatedQueue
+        (Choice diffedGame updatedQueue : arkhamGameChoices)
         updatedMessages
         arkhamGameMultiplayerVariant
       )

@@ -93,7 +93,7 @@ lookupTreachery cardCode =
   fromJustNote ("Unknown treachery: " <> pack (show cardCode))
     $ lookup cardCode allTreacheries
 
-allTreacheries :: HashMap CardCode (InvestigatorId -> TreacheryId -> Treachery)
+allTreacheries :: Map CardCode (InvestigatorId -> TreacheryId -> Treachery)
 allTreacheries = mapFromList $ map
   (cbCardCode &&& (curry . cbCardBuilder))
   $(buildEntityLookupList "Treachery")

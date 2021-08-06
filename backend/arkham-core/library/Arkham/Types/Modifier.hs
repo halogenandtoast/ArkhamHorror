@@ -23,7 +23,6 @@ data Modifier = Modifier
   , modifierType :: ModifierType
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass Hashable
 
 instance ToJSON Modifier where
   toJSON = genericToJSON $ aesonOptions $ Just "modifier"
@@ -74,9 +73,9 @@ data ModifierType
   | CannotMulligan
   | CannotPerformSkillTest
   | CannotPlaceClues
-  | CannotPlay [(CardType, HashSet Trait)]
+  | CannotPlay [(CardType, Set Trait)]
   | CannotSpendClues
-  | CanOnlyBeAttackedByAbilityOn (HashSet CardCode)
+  | CanOnlyBeAttackedByAbilityOn (Set CardCode)
   | CardsCannotLeaveYourDiscardPile
   | ControlledAssetsCannotReady
   | DamageDealt Int
@@ -121,11 +120,11 @@ data ModifierType
   | AddSkillIcons [SkillType]
   | XPModifier Int
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (FromJSON, ToJSON, Hashable)
+  deriving anyclass (FromJSON, ToJSON)
 
 data ActionTarget
   = FirstOneOf [Action]
   | IsAction Action
   | EnemyAction Action [Trait]
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (FromJSON, ToJSON, Hashable)
+  deriving anyclass (FromJSON, ToJSON)

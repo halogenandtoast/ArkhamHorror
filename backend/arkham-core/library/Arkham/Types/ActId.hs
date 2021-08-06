@@ -7,4 +7,4 @@ import Arkham.Types.Card.CardCode
 newtype ActStep = ActStep { unActStep :: Int }
 
 newtype ActId = ActId { unActId :: CardCode }
-  deriving newtype (Eq, Hashable, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey)
+  deriving newtype (Eq, Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey)

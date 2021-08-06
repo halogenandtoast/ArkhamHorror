@@ -147,7 +147,7 @@ lookupAsset :: CardCode -> (AssetId -> Asset)
 lookupAsset cardCode =
   fromJustNote ("Unknown asset: " <> show cardCode) $ lookup cardCode allAssets
 
-allAssets :: HashMap CardCode (AssetId -> Asset)
+allAssets :: Map CardCode (AssetId -> Asset)
 allAssets = mapFromList $ map
   (cbCardCode &&& cbCardBuilder)
   $(buildEntityLookupList "Asset")

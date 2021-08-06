@@ -61,18 +61,18 @@ data LocationAttrs = LocationAttrs
   , locationResources :: Int
   , locationShroud :: Int
   , locationRevealed :: Bool
-  , locationInvestigators :: HashSet InvestigatorId
-  , locationEnemies :: HashSet EnemyId
+  , locationInvestigators :: Set InvestigatorId
+  , locationEnemies :: Set EnemyId
   , locationSymbol :: LocationSymbol
   , locationRevealedSymbol :: LocationSymbol
-  , locationConnectedSymbols :: HashSet LocationSymbol
-  , locationRevealedConnectedSymbols :: HashSet LocationSymbol
-  , locationConnectedLocations :: HashSet LocationId
-  , locationTreacheries :: HashSet TreacheryId
-  , locationEvents :: HashSet EventId
-  , locationAssets :: HashSet AssetId
-  , locationDirections :: HashMap Direction LocationId
-  , locationConnectsTo :: HashSet Direction
+  , locationConnectedSymbols :: Set LocationSymbol
+  , locationRevealedConnectedSymbols :: Set LocationSymbol
+  , locationConnectedLocations :: Set LocationId
+  , locationTreacheries :: Set TreacheryId
+  , locationEvents :: Set EventId
+  , locationAssets :: Set AssetId
+  , locationDirections :: Map Direction LocationId
+  , locationConnectsTo :: Set Direction
   , locationCardsUnderneath :: [Card]
   , locationCostToEnterUnrevealed :: Cost
   }
@@ -81,7 +81,7 @@ data LocationAttrs = LocationAttrs
 symbolL :: Lens' LocationAttrs LocationSymbol
 symbolL = lens locationSymbol $ \m x -> m { locationSymbol = x }
 
-connectedSymbolsL :: Lens' LocationAttrs (HashSet LocationSymbol)
+connectedSymbolsL :: Lens' LocationAttrs (Set LocationSymbol)
 connectedSymbolsL =
   lens locationConnectedSymbols $ \m x -> m { locationConnectedSymbols = x }
 
@@ -89,10 +89,10 @@ costToEnterUnrevealedL :: Lens' LocationAttrs Cost
 costToEnterUnrevealedL = lens locationCostToEnterUnrevealed
   $ \m x -> m { locationCostToEnterUnrevealed = x }
 
-connectsToL :: Lens' LocationAttrs (HashSet Direction)
+connectsToL :: Lens' LocationAttrs (Set Direction)
 connectsToL = lens locationConnectsTo $ \m x -> m { locationConnectsTo = x }
 
-revealedConnectedSymbolsL :: Lens' LocationAttrs (HashSet LocationSymbol)
+revealedConnectedSymbolsL :: Lens' LocationAttrs (Set LocationSymbol)
 revealedConnectedSymbolsL = lens locationRevealedConnectedSymbols
   $ \m x -> m { locationRevealedConnectedSymbols = x }
 
@@ -103,20 +103,20 @@ revealedSymbolL =
 labelL :: Lens' LocationAttrs Text
 labelL = lens locationLabel $ \m x -> m { locationLabel = x }
 
-treacheriesL :: Lens' LocationAttrs (HashSet TreacheryId)
+treacheriesL :: Lens' LocationAttrs (Set TreacheryId)
 treacheriesL = lens locationTreacheries $ \m x -> m { locationTreacheries = x }
 
-eventsL :: Lens' LocationAttrs (HashSet EventId)
+eventsL :: Lens' LocationAttrs (Set EventId)
 eventsL = lens locationEvents $ \m x -> m { locationEvents = x }
 
-investigatorsL :: Lens' LocationAttrs (HashSet InvestigatorId)
+investigatorsL :: Lens' LocationAttrs (Set InvestigatorId)
 investigatorsL =
   lens locationInvestigators $ \m x -> m { locationInvestigators = x }
 
-enemiesL :: Lens' LocationAttrs (HashSet EnemyId)
+enemiesL :: Lens' LocationAttrs (Set EnemyId)
 enemiesL = lens locationEnemies $ \m x -> m { locationEnemies = x }
 
-assetsL :: Lens' LocationAttrs (HashSet AssetId)
+assetsL :: Lens' LocationAttrs (Set AssetId)
 assetsL = lens locationAssets $ \m x -> m { locationAssets = x }
 
 doomL :: Lens' LocationAttrs Int
@@ -131,11 +131,11 @@ resourcesL = lens locationResources $ \m x -> m { locationResources = x }
 revealedL :: Lens' LocationAttrs Bool
 revealedL = lens locationRevealed $ \m x -> m { locationRevealed = x }
 
-connectedLocationsL :: Lens' LocationAttrs (HashSet LocationId)
+connectedLocationsL :: Lens' LocationAttrs (Set LocationId)
 connectedLocationsL =
   lens locationConnectedLocations $ \m x -> m { locationConnectedLocations = x }
 
-directionsL :: Lens' LocationAttrs (HashMap Direction LocationId)
+directionsL :: Lens' LocationAttrs (Map Direction LocationId)
 directionsL = lens locationDirections $ \m x -> m { locationDirections = x }
 
 cardsUnderneathL :: Lens' LocationAttrs [Card]

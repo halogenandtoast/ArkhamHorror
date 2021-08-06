@@ -12,8 +12,8 @@ data Keyword
   | Retaliate
   | Surge
   | Uses Int
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Ord, Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 class HasKeywords a where
-  toKeywords :: a -> HashSet Keyword
+  toKeywords :: a -> Set Keyword

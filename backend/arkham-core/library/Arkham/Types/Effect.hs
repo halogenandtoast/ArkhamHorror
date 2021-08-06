@@ -175,7 +175,7 @@ lookupEffect cardCode eid mmetadata source target = effect
     cardCode
     allEffects
 
-allEffects :: HashMap CardCode (EffectArgs -> Effect)
+allEffects :: Map CardCode (EffectArgs -> Effect)
 allEffects = mapFromList
   [ ("01010", OnTheLam' . onTheLam)
   , ("01036", MindOverMatter' . mindOverMatter)

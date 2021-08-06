@@ -31,7 +31,7 @@ import Arkham.Types.Stats
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window
-import qualified Data.HashSet as HashSet
+import Data.Set (isSubsetOf)
 import Data.UUID (nil)
 
 type InvestigatorRunner env
@@ -56,17 +56,17 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorActionsTaken :: [Action]
   , investigatorRemainingActions :: Int
   , investigatorEndedTurn :: Bool
-  , investigatorEngagedEnemies :: HashSet EnemyId
-  , investigatorAssets :: HashSet AssetId
+  , investigatorEngagedEnemies :: Set EnemyId
+  , investigatorAssets :: Set AssetId
   , investigatorDeck :: Deck PlayerCard
   , investigatorDiscard :: [PlayerCard]
   , investigatorHand :: [Card]
-  , investigatorConnectedLocations :: HashSet LocationId
-  , investigatorTraits :: HashSet Trait
-  , investigatorTreacheries :: HashSet TreacheryId
+  , investigatorConnectedLocations :: Set LocationId
+  , investigatorTraits :: Set Trait
+  , investigatorTreacheries :: Set TreacheryId
   , investigatorDefeated :: Bool
   , investigatorResigned :: Bool
-  , investigatorSlots :: HashMap SlotType [Slot]
+  , investigatorSlots :: Map SlotType [Slot]
   , investigatorXp :: Int
   , investigatorPhysicalTrauma :: Int
   , investigatorMentalTrauma :: Int
@@ -95,11 +95,11 @@ combatL = lens investigatorCombat $ \m x -> m { investigatorCombat = x }
 agilityL :: Lens' InvestigatorAttrs Int
 agilityL = lens investigatorAgility $ \m x -> m { investigatorAgility = x }
 
-treacheriesL :: Lens' InvestigatorAttrs (HashSet TreacheryId)
+treacheriesL :: Lens' InvestigatorAttrs (Set TreacheryId)
 treacheriesL =
   lens investigatorTreacheries $ \m x -> m { investigatorTreacheries = x }
 
-assetsL :: Lens' InvestigatorAttrs (HashSet AssetId)
+assetsL :: Lens' InvestigatorAttrs (Set AssetId)
 assetsL = lens investigatorAssets $ \m x -> m { investigatorAssets = x }
 
 healthDamageL :: Lens' InvestigatorAttrs Int
@@ -113,11 +113,11 @@ sanityDamageL =
 locationL :: Lens' InvestigatorAttrs LocationId
 locationL = lens investigatorLocation $ \m x -> m { investigatorLocation = x }
 
-connectedLocationsL :: Lens' InvestigatorAttrs (HashSet LocationId)
+connectedLocationsL :: Lens' InvestigatorAttrs (Set LocationId)
 connectedLocationsL = lens investigatorConnectedLocations
   $ \m x -> m { investigatorConnectedLocations = x }
 
-slotsL :: Lens' InvestigatorAttrs (HashMap SlotType [Slot])
+slotsL :: Lens' InvestigatorAttrs (Map SlotType [Slot])
 slotsL = lens investigatorSlots $ \m x -> m { investigatorSlots = x }
 
 endedTurnL :: Lens' InvestigatorAttrs Bool
@@ -145,7 +145,7 @@ actionsTakenL =
 handL :: Lens' InvestigatorAttrs [Card]
 handL = lens investigatorHand $ \m x -> m { investigatorHand = x }
 
-engagedEnemiesL :: Lens' InvestigatorAttrs (HashSet EnemyId)
+engagedEnemiesL :: Lens' InvestigatorAttrs (Set EnemyId)
 engagedEnemiesL =
   lens investigatorEngagedEnemies $ \m x -> m { investigatorEngagedEnemies = x }
 
@@ -337,8 +337,7 @@ getModifiedSanity attrs@InvestigatorAttrs {..} = do
   applyModifier (SanityModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-removeFromSlots
-  :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
+removeFromSlots :: AssetId -> Map SlotType [Slot] -> Map SlotType [Slot]
 removeFromSlots aid = fmap (map (removeIfMatches aid))
 
 fitsAvailableSlots :: [SlotType] -> [Trait] -> InvestigatorAttrs -> Bool
@@ -564,8 +563,7 @@ getPlayableDiscards attrs@InvestigatorAttrs {..} windows = do
   allowsPlayFromDiscard 0 card (CanPlayTopOfDiscard (mcardType, traits)) =
     maybe True (== cdCardType (toCardDef card)) mcardType
       && (null traits
-         || (setFromList traits `HashSet.isSubsetOf` toTraits (toCardDef card)
-            )
+         || (setFromList traits `isSubsetOf` toTraits (toCardDef card))
          )
   allowsPlayFromDiscard _ _ _ = False
 
@@ -2009,14 +2007,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         let
           handCards = investigatorHand <> asIfInHandCards
           windows = [DuringTurn iid, FastPlayerWindow]
-        isPlayableMap :: HashMap Card Bool <- mapFromList <$> for
+        isPlayableMap :: Map Card Bool <- mapFromList <$> for
           handCards
           (\c -> do
             isPlayable <- getIsPlayable (toId a) windows c
             pure (c, isPlayable)
           )
         let isPlayable c = findWithDefault False c isPlayableMap
-        fastIsPlayableMap :: HashMap Card Bool <- mapFromList <$> for
+        fastIsPlayableMap :: Map Card Bool <- mapFromList <$> for
           handCards
           (\c -> do
             fastIsPlayable <- getFastIsPlayable a windows c
@@ -2068,7 +2066,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         let
           handCards = investigatorHand <> asIfInHandCards
           windows = [DuringTurn iid, FastPlayerWindow]
-        fastIsPlayableMap :: HashMap Card Bool <- mapFromList <$> for
+        fastIsPlayableMap :: Map Card Bool <- mapFromList <$> for
           handCards
           (\c -> do
             fastIsPlayable <- getFastIsPlayable a windows c

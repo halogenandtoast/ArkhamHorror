@@ -47,7 +47,7 @@ event cardCode name cost classSymbol = CardDef
   , cdExceptional = False
   }
 
-allPlayerEventCards :: HashMap CardCode CardDef
+allPlayerEventCards :: Map CardCode CardDef
 allPlayerEventCards = mapFromList $ map
   (toCardCode &&& id)
   [ aChanceEncounter

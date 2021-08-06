@@ -5,7 +5,6 @@ module Api.Handler.Arkham.Replay
 import Api.Arkham.Helpers
 import Arkham.Game
 import Arkham.Types.Game
-import Control.Lens ((&), (.~))
 import Control.Monad.Random (mkStdGen)
 import Import hiding (delete, on, (==.))
 import Safe (fromJustNote)
@@ -26,24 +25,27 @@ getApiV1ArkhamGameReplayR gameId step = do
   _ <- fromJustNote "Not authenticated" <$> getRequestUserId
   ge <- runDB $ get404 gameId
   let gameJson@Game {..} = arkhamGameCurrentData ge
-  let choices = reverse (take (step - 1) (reverse gameChoices))
+  let choices = reverse (take step (reverse $ arkhamGameChoices ge))
 
-  gameRef <- newIORef (gameJson & choicesL .~ choices)
+  gameRef <- newIORef gameJson
   queueRef <- newIORef []
   genRef <- newIORef (mkStdGen gameSeed)
 
-  runGameApp (GameApp gameRef queueRef genRef $ \_ -> pure ()) replayChoices
+  runGameApp
+    (GameApp gameRef queueRef genRef $ \_ -> pure ())
+    (replayChoices $ map choicePatch choices)
 
   ge' <- readIORef gameRef
+  let diffedGame = diff gameJson ge'
   updatedQueue <- readIORef queueRef
   pure $ GetReplayJson
-    (length gameChoices)
+    (length choices)
     (toPublicGame $ Entity
       gameId
       (ArkhamGame
         (arkhamGameName ge)
         ge'
-        updatedQueue
+        (Choice diffedGame updatedQueue : arkhamGameChoices ge)
         []
         (arkhamGameMultiplayerVariant ge)
       )

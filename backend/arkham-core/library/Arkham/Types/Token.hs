@@ -3,11 +3,11 @@ module Arkham.Types.Token where
 import Arkham.Prelude
 
 newtype TokenId = TokenId { getTokenId :: UUID }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Hashable, Random)
+  deriving newtype (Ord, Show, Eq, ToJSON, FromJSON, Random)
 
 data TokenModifier = PositiveModifier Int | NegativeModifier Int | ZeroModifier | DoubleNegativeModifier Int | AutoFailModifier | NoModifier
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Ord, Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 instance Monoid TokenModifier where
   mempty = ZeroModifier
@@ -29,7 +29,7 @@ instance Semigroup TokenModifier where
         LT -> NegativeModifier calc
 
 data TokenValue = TokenValue TokenFace TokenModifier
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Ord, Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 tokenValue :: TokenValue -> Maybe Int
@@ -48,8 +48,8 @@ data Token = Token
   { tokenId :: TokenId
   , tokenFace :: TokenFace
   }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Ord, Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 data TokenFace
   = PlusOne
@@ -68,5 +68,5 @@ data TokenFace
   | ElderThing
   | AutoFail
   | ElderSign
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (Hashable, ToJSON, FromJSON)
+  deriving stock (Ord, Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)

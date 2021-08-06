@@ -40,7 +40,7 @@ skill cardCode name skills classSymbol = CardDef
   , cdExceptional = False
   }
 
-allPlayerSkillCards :: HashMap CardCode CardDef
+allPlayerSkillCards :: Map CardCode CardDef
 allPlayerSkillCards = mapFromList $ map
   (toCardCode &&& id)
   [ deduction

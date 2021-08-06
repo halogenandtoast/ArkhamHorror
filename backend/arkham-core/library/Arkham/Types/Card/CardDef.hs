@@ -22,15 +22,15 @@ import Arkham.Types.WindowMatcher (WindowMatcher)
 
 data AttackOfOpportunityModifier = DoesNotProvokeAttacksOfOpportunity
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving anyclass (ToJSON, FromJSON)
 
 data EventChoicesRepeatable = EventChoicesRepeatable | EventChoicesNotRepeatable
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving anyclass (ToJSON, FromJSON)
 
 data EventChoice = EventChooseN Int EventChoicesRepeatable
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving anyclass (ToJSON, FromJSON)
 
 data CardDef = CardDef
   { cdCardCode :: CardCode
@@ -42,8 +42,8 @@ data CardDef = CardDef
   , cdWeakness :: Bool
   , cdClassSymbol :: Maybe ClassSymbol
   , cdSkills :: [SkillType]
-  , cdCardTraits :: HashSet Trait
-  , cdKeywords :: HashSet Keyword
+  , cdCardTraits :: Set Trait
+  , cdKeywords :: Set Keyword
   , cdFastWindow :: Maybe WindowMatcher
   , cdAction :: Maybe Action
   , cdRevelation :: Bool
@@ -60,11 +60,10 @@ data CardDef = CardDef
   , cdExceptional :: Bool
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass Hashable
 
 data CardLimit = LimitPerInvestigator Int | LimitPerTrait Trait Int
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (Hashable, FromJSON, ToJSON)
+  deriving anyclass (FromJSON, ToJSON)
 
 instance Named CardDef where
   toName = cdName
@@ -72,10 +71,10 @@ instance Named CardDef where
 weaknessL :: Lens' CardDef Bool
 weaknessL = lens cdWeakness $ \m x -> m { cdWeakness = x }
 
-keywordsL :: Lens' CardDef (HashSet Keyword)
+keywordsL :: Lens' CardDef (Set Keyword)
 keywordsL = lens cdKeywords $ \m x -> m { cdKeywords = x }
 
-cardTraitsL :: Lens' CardDef (HashSet Trait)
+cardTraitsL :: Lens' CardDef (Set Trait)
 cardTraitsL = lens cdCardTraits $ \m x -> m { cdCardTraits = x }
 
 instance ToJSON CardDef where
@@ -157,7 +156,7 @@ testCardDef cardType cardCode = CardDef
 
 data DiscardSignifier = AnyPlayerDiscard
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving anyclass (ToJSON, FromJSON)
 
 data PlayRestriction
   = AnotherInvestigatorInSameLocation
@@ -180,7 +179,7 @@ data PlayRestriction
   | PlayRestrictions [PlayRestriction]
   | AnyPlayRestriction [PlayRestriction]
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving anyclass (ToJSON, FromJSON)
 
 instance Semigroup PlayRestriction where
   PlayRestrictions xs <> PlayRestrictions ys = PlayRestrictions $ xs <> ys

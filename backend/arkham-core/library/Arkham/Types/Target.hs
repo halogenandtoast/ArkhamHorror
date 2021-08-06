@@ -52,5 +52,5 @@ data Target
   | TestTarget
   | ResourceTarget
   | InvestigationTarget InvestigatorId LocationId
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+  deriving stock (Ord, Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey)

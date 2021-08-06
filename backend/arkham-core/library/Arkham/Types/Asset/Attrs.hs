@@ -95,7 +95,7 @@ investigatorL = lens assetInvestigator $ \m x -> m { assetInvestigator = x }
 exhaustedL :: Lens' AssetAttrs Bool
 exhaustedL = lens assetExhausted $ \m x -> m { assetExhausted = x }
 
-allAssetCards :: HashMap CardCode CardDef
+allAssetCards :: Map CardCode CardDef
 allAssetCards = allPlayerAssetCards <> allEncounterAssetCards
 
 instance HasCardCode AssetAttrs where

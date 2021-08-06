@@ -34,7 +34,7 @@ import Arkham.Types.Window
 import Arkham.Types.WindowMatcher (WindowMatcher)
 import qualified Arkham.Types.WindowMatcher as Matcher
 import Control.Monad.Extra (allM, anyM)
-import Data.HashSet (size)
+import Data.Set (size)
 import Data.UUID (nil)
 import System.IO.Unsafe
 
@@ -423,7 +423,7 @@ getPlayerCountValue
 getPlayerCountValue gameValue = fromGameValue gameValue <$> getPlayerCount
 
 getLocationSet
-  :: (HasSet LocationId env (), MonadReader env m) => m (HashSet LocationId)
+  :: (HasSet LocationId env (), MonadReader env m) => m (Set LocationId)
 getLocationSet = getSet ()
 
 getSpendableClueCount

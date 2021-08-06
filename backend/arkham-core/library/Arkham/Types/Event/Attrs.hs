@@ -34,7 +34,7 @@ originalCardCodeL :: Lens' EventAttrs CardCode
 originalCardCodeL =
   lens eventOriginalCardCode $ \m x -> m { eventOriginalCardCode = x }
 
-allEventCards :: HashMap CardCode CardDef
+allEventCards :: Map CardCode CardDef
 allEventCards = allPlayerEventCards
 
 instance HasCardCode EventAttrs where

@@ -32,7 +32,7 @@ type ActRunner env
     , HasSet CompletedScenarioId env ()
     , HasSet EnemyId env LocationId
     , HasSet InvestigatorId env ()
-    , HasSet InvestigatorId env (HashSet LocationId)
+    , HasSet InvestigatorId env (Set LocationId)
     , HasSet InvestigatorId env LocationId
     , HasSet InvestigatorId env LocationMatcher
     , HasSet InScenarioInvestigatorId env ()

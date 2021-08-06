@@ -26,15 +26,15 @@ class IsCampaign a
 data CampaignAttrs = CampaignAttrs
   { campaignId :: CampaignId
   , campaignName :: Text
-  , campaignInvestigators :: HashMap Int Investigator
-  , campaignDecks :: HashMap InvestigatorId (Deck PlayerCard)
-  , campaignStoryCards :: HashMap InvestigatorId [PlayerCard]
+  , campaignInvestigators :: Map Int Investigator
+  , campaignDecks :: Map InvestigatorId (Deck PlayerCard)
+  , campaignStoryCards :: Map InvestigatorId [PlayerCard]
   , campaignDifficulty :: Difficulty
   , campaignChaosBag :: [TokenFace]
   , campaignLog :: CampaignLog
   , campaignStep :: Maybe CampaignStep
   , campaignCompletedSteps :: [CampaignStep]
-  , campaignResolutions :: HashMap ScenarioId Resolution
+  , campaignResolutions :: Map ScenarioId Resolution
   }
   deriving stock (Show, Generic, Eq)
 
@@ -45,10 +45,10 @@ completedStepsL =
 chaosBagL :: Lens' CampaignAttrs [TokenFace]
 chaosBagL = lens campaignChaosBag $ \m x -> m { campaignChaosBag = x }
 
-storyCardsL :: Lens' CampaignAttrs (HashMap InvestigatorId [PlayerCard])
+storyCardsL :: Lens' CampaignAttrs (Map InvestigatorId [PlayerCard])
 storyCardsL = lens campaignStoryCards $ \m x -> m { campaignStoryCards = x }
 
-decksL :: Lens' CampaignAttrs (HashMap InvestigatorId (Deck PlayerCard))
+decksL :: Lens' CampaignAttrs (Map InvestigatorId (Deck PlayerCard))
 decksL = lens campaignDecks $ \m x -> m { campaignDecks = x }
 
 logL :: Lens' CampaignAttrs CampaignLog
@@ -57,7 +57,7 @@ logL = lens campaignLog $ \m x -> m { campaignLog = x }
 stepL :: Lens' CampaignAttrs (Maybe CampaignStep)
 stepL = lens campaignStep $ \m x -> m { campaignStep = x }
 
-resolutionsL :: Lens' CampaignAttrs (HashMap ScenarioId Resolution)
+resolutionsL :: Lens' CampaignAttrs (Map ScenarioId Resolution)
 resolutionsL = lens campaignResolutions $ \m x -> m { campaignResolutions = x }
 
 completeStep :: Maybe CampaignStep -> [CampaignStep] -> [CampaignStep]

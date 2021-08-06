@@ -37,11 +37,11 @@ import Data.Aeson as X
 import Data.Aeson.Text
 import Data.Coerce as X (coerce)
 import qualified Data.HashMap.Strict as HashMap
-import qualified Data.HashSet as HashSet
 import Data.List as X (nub, (\\))
 import qualified Data.List as L
 import Data.List.NonEmpty as X (NonEmpty(..), nonEmpty)
 import qualified Data.List.NonEmpty as NE
+import qualified Data.Set as Set
 import qualified Data.Text.Lazy as TL
 import Data.Text.Lazy.Builder
 import Data.UUID as X (UUID)
@@ -52,8 +52,8 @@ import System.Random.Shuffle as X
 guardM :: (Alternative m, Monad m) => m Bool -> m ()
 guardM p = p >>= guard
 
-mapSet :: (Hashable b, Eq b) => (a -> b) -> HashSet a -> HashSet b
-mapSet = HashSet.map
+mapSet :: Ord b => (a -> b) -> Set a -> Set b
+mapSet = Set.map
 
 toFst :: (a -> b) -> a -> (b, a)
 toFst f a = (f a, a)

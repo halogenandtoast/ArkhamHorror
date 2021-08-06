@@ -47,14 +47,13 @@ instance ActionRunner env => HasActions env FindingLadyEsprit where
 investigatorsInABayouLocation
   :: ( MonadReader env m
      , HasSet LocationId env [Trait]
-     , HasSet InvestigatorId env (HashSet LocationId)
+     , HasSet InvestigatorId env (Set LocationId)
      )
   => m [InvestigatorId]
 investigatorsInABayouLocation = bayouLocations >>= getSetList
 
 bayouLocations
-  :: (MonadReader env m, HasSet LocationId env [Trait])
-  => m (HashSet LocationId)
+  :: (MonadReader env m, HasSet LocationId env [Trait]) => m (Set LocationId)
 bayouLocations = getSet [Bayou]
 
 nonBayouLocations
@@ -62,7 +61,7 @@ nonBayouLocations
      , HasSet LocationId env ()
      , HasSet LocationId env [Trait]
      )
-  => m (HashSet LocationId)
+  => m (Set LocationId)
 nonBayouLocations = difference <$> getLocationSet <*> bayouLocations
 
 instance ActRunner env => RunMessage env FindingLadyEsprit where

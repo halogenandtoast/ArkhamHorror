@@ -150,7 +150,7 @@ data Message
     | AllRandomDiscard
     | AskPlayer Message
     | Ask InvestigatorId Question
-    | AskMap (HashMap InvestigatorId Question)
+    | AskMap (Map InvestigatorId Question)
     | AssetDamage AssetId Source Int Int
     | AssetDefeated AssetId
     | AttachAsset AssetId Target
@@ -187,12 +187,12 @@ data Message
     | ChooseEndTurn InvestigatorId
     | ChooseInvestigate InvestigatorId Source Bool
     | ChooseEvadeEnemy InvestigatorId Source SkillType Bool
-    | ChooseFightEnemy InvestigatorId Source SkillType (HashSet Trait) Bool
+    | ChooseFightEnemy InvestigatorId Source SkillType (Set Trait) Bool
     | ChooseFightEnemyNotEngagedWithInvestigator InvestigatorId Source SkillType Bool
     | ChooseLeadInvestigator
     | ChoosePlayer InvestigatorId ChoosePlayerChoice
     | ChoosePlayerOrder [InvestigatorId] [InvestigatorId]
-    | ChooseRandomLocation Target (HashSet LocationId)
+    | ChooseRandomLocation Target (Set LocationId)
     | ChosenRandomLocation Target LocationId
     | ChooseTokenGroups Source InvestigatorId ChaosBagStep
     | CommitCard InvestigatorId CardId

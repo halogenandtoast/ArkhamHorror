@@ -69,15 +69,16 @@ import Control.Monad.Extra (allM, anyM, mapMaybeM)
 import Control.Monad.Random.Lazy hiding (filterM, foldM)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (filterM, foldM)
-import qualified Data.HashMap.Strict as HashMap
+import qualified Data.Aeson.Diff as Diff
 import Data.List.Extra (groupOn)
+import Data.Map.Strict (filterWithKey)
 import qualified Data.Sequence as Seq
 import Data.These
 import Data.These.Lens
 import Data.UUID (nil)
 
 type GameMode = These Campaign Scenario
-type EntityMap a = HashMap (EntityId a) a
+type EntityMap a = Map (EntityId a) a
 
 data GameState = IsPending | IsActive | IsOver
   deriving stock (Eq, Show, Generic)
@@ -164,7 +165,6 @@ data Game = Game
   , gamePhaseMessageHistory :: [Message]
   , gameInitialSeed :: Int
   , gameSeed :: Int
-  , gameChoices :: [GameChoice]
   , gameParams :: GameParams
   , gameWindowDepth :: Int
 
@@ -209,15 +209,20 @@ data Game = Game
   , gameSkillTestResults :: Maybe SkillTestResultsData
 
   -- Active questions
-  , gameQuestion :: HashMap InvestigatorId Question
+  , gameQuestion :: Map InvestigatorId Question
   }
   deriving stock (Eq, Show, Generic)
 
+diff :: Game -> Game -> Diff.Patch
+diff a b = Diff.diff' (Diff.Config True) (toJSON a) (toJSON b)
+
+patch :: Game -> Diff.Patch -> Result Game
+patch g p = case Diff.patch p (toJSON g) of
+  Error e -> Error e
+  Success a -> fromJSON a
+
 windowDepthL :: Lens' Game Int
 windowDepthL = lens gameWindowDepth $ \m x -> m { gameWindowDepth = x }
-
-choicesL :: Lens' Game [GameChoice]
-choicesL = lens gameChoices $ \m x -> m { gameChoices = x }
 
 initialSeedL :: Lens' Game Int
 initialSeedL = lens gameInitialSeed $ \m x -> m { gameInitialSeed = x }
@@ -362,8 +367,7 @@ withSkillTestModifiers st a = do
 
 instance ToJSON Game where
   toJSON g@Game {..} = object
-    [ "choices" .= toJSON gameChoices
-    , "windowDepth" .= toJSON gameWindowDepth
+    [ "windowDepth" .= toJSON gameWindowDepth
     , "params" .= toJSON gameParams
     , "roundMessageHistory" .= toJSON gameRoundMessageHistory
     , "phaseMessageHistory" .= toJSON gamePhaseMessageHistory
@@ -524,7 +528,7 @@ getInvestigatorsMatching = \case
     filter ((> 0) . snd . getDamage) . toList . view investigatorsL <$> getGame
   InvestigatorMatches [] -> pure []
   InvestigatorMatches (x : xs) -> do
-    matches :: HashSet InvestigatorId <-
+    matches :: Set InvestigatorId <-
       foldl' intersection
       <$> (setFromList . map toId <$> getInvestigatorsMatching x)
       <*> traverse (fmap (setFromList . map toId) . getInvestigatorsMatching) xs
@@ -604,7 +608,7 @@ getLocationsMatching = \case
     where hasMatchingTrait = (trait `member`) . toTraits
   LocationMatchers [] -> pure []
   LocationMatchers (x : xs) -> do
-    matches :: HashSet LocationId <-
+    matches :: Set LocationId <-
       foldl' intersection
       <$> (setFromList . map toId <$> getLocationsMatching x)
       <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
@@ -1579,7 +1583,7 @@ instance HasGame env => HasCount RemainingSanity env InvestigatorId where
 instance HasGame env => HasSet LocationId env () where
   getSet _ = keysSet . view locationsL <$> getGame
 
-instance HasGame env => HasSet LocationId env (HashSet LocationSymbol) where
+instance HasGame env => HasSet LocationId env (Set LocationSymbol) where
   getSet locationSymbols =
     keysSet
       . filterMap ((`member` locationSymbols) . toLocationSymbol)
@@ -1679,10 +1683,10 @@ instance HasGame env => HasSet UnrevealedLocationId env LocationMatcher where
     (mapSet UnrevealedLocationId <$> getSet matcher)
 
 findTreacheries
-  :: (MonadReader env m, HasGame env, Hashable a, Eq a)
+  :: (MonadReader env m, HasGame env, Ord a)
   => (Target -> Maybe a)
   -> TreacheryCardCode
-  -> m (HashSet a)
+  -> m (Set a)
 findTreacheries f (TreacheryCardCode cc) =
   setFromList
     . mapMaybe (f <=< treacheryTarget)
@@ -1787,7 +1791,7 @@ getShortestPath
   :: (HasGame env, MonadReader env m)
   => LocationId
   -> (LocationId -> m Bool)
-  -> HashMap LocationId [LocationId]
+  -> Map LocationId [LocationId]
   -> m [LocationId]
 getShortestPath !initialLocation !target !extraConnectionsMap = do
   let
@@ -1806,8 +1810,8 @@ getShortestPath !initialLocation !target !extraConnectionsMap = do
 
 data LPState = LPState
   { _lpSearchQueue :: Seq LocationId
-  , _lpVisistedLocations :: HashSet LocationId
-  , _lpParents :: HashMap LocationId LocationId
+  , _lpVisistedLocations :: Set LocationId
+  , _lpParents :: Map LocationId LocationId
   }
 
 getLongestPath
@@ -1831,8 +1835,8 @@ markDistances
   :: (HasGame env, MonadReader env m)
   => LocationId
   -> (LocationId -> m Bool)
-  -> HashMap LocationId [LocationId]
-  -> StateT LPState m (HashMap Int [LocationId])
+  -> Map LocationId [LocationId]
+  -> StateT LPState m (Map Int [LocationId])
 markDistances initialLocation target extraConnectionsMap = do
   LPState searchQueue visitedSet parentsMap <- get
   if Seq.null searchQueue
@@ -1877,10 +1881,10 @@ markDistances initialLocation target extraConnectionsMap = do
 instance HasGame env => HasSet ClosestPathLocationId env (LocationId, Prey) where
   getSet (start, prey) = getSet (start, prey, emptyConnectionsMap)
    where
-    emptyConnectionsMap :: HashMap LocationId [LocationId]
+    emptyConnectionsMap :: Map LocationId [LocationId]
     emptyConnectionsMap = mempty
 
-instance HasGame env => HasSet ClosestPathLocationId env (LocationId, Prey, HashMap LocationId [LocationId]) where
+instance HasGame env => HasSet ClosestPathLocationId env (LocationId, Prey, Map LocationId [LocationId]) where
   getSet (start, prey, extraConnectionsMap) = do
     let matcher lid = notNull <$> getSet @PreyId (prey, lid)
     setFromList . coerce <$> getShortestPath start matcher extraConnectionsMap
@@ -1987,10 +1991,10 @@ instance HasGame env => HasSet ClosestEnemyId env (InvestigatorId, [Trait]) wher
 instance HasGame env => HasSet ClosestPathLocationId env (LocationId, LocationId) where
   getSet (start, prey) = getSet (start, prey, emptyConnectionsMap)
    where
-    emptyConnectionsMap :: HashMap LocationId [LocationId]
+    emptyConnectionsMap :: Map LocationId [LocationId]
     emptyConnectionsMap = mempty
 
-instance HasGame env => HasSet ClosestPathLocationId env (LocationId, LocationId, HashMap LocationId [LocationId]) where
+instance HasGame env => HasSet ClosestPathLocationId env (LocationId, LocationId, Map LocationId [LocationId]) where
   getSet (start, destination, extraConnectionsMap) = do
     -- logic is to get each adjacent location and determine which is closest to
     -- the destination
@@ -2064,13 +2068,13 @@ instance HasGame env => HasList (InvestigatorId, Distance) env EnemyTrait where
         (markDistances start hasMatchingEnemy mempty)
         (LPState (pure start) (singleton start) mempty)
 
-distanceSingletons :: HashMap Int [LocationId] -> HashMap LocationId Int
+distanceSingletons :: Map Int [LocationId] -> Map LocationId Int
 distanceSingletons hmap = foldr
   (\(n, lids) hmap' -> unions (hmap' : map (`singletonMap` n) lids))
   mempty
   (mapToList hmap)
 
-distanceAggregates :: HashMap LocationId Int -> HashMap Int [LocationId]
+distanceAggregates :: Map LocationId Int -> Map Int [LocationId]
 distanceAggregates hmap = unionsWith (<>) (map convert $ mapToList hmap)
   where convert = uncurry singletonMap . second pure . swap
 
@@ -2204,7 +2208,7 @@ instance HasGame env => HasSet InvestigatorId env LocationMatcher where
    where
     missingLocation = "No location with matching: " <> show locationMatcher
 
-instance HasGame env => HasSet InvestigatorId env (HashSet LocationId) where
+instance HasGame env => HasSet InvestigatorId env (Set LocationId) where
   getSet lids = unions <$> traverse getSet (setToList lids)
 
 locationFor
@@ -2569,7 +2573,7 @@ runGameMessage msg g = case msg of
     let skillsToRemove = mapMaybe snd skillPairs
     pure
       $ g
-      & (skillsL %~ HashMap.filterWithKey (\k _ -> k `notElem` skillsToRemove))
+      & (skillsL %~ filterWithKey (\k _ -> k `notElem` skillsToRemove))
       & (skillTestL .~ Nothing)
       & (skillTestResultsL .~ Nothing)
       & (usedAbilitiesL %~ filter

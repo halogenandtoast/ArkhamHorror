@@ -10,8 +10,7 @@ data CurrentUser = CurrentUser
   , email :: Text
   }
   deriving stock Generic
-
-instance ToJSON CurrentUser
+  deriving anyclass ToJSON
 
 getApiV1CurrentUserR :: Handler CurrentUser
 getApiV1CurrentUserR = do

@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 newtype TakenAction = TakenAction { unTakenAction :: Action }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving anyclass (ToJSON, FromJSON)
 
 data Action
   = Ability
@@ -19,4 +19,4 @@ data Action
   | Resign
   | Resource
   deriving stock (Show, Eq, Ord, Enum, Bounded, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving anyclass (ToJSON, FromJSON)

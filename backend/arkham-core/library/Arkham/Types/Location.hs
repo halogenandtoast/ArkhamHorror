@@ -143,7 +143,7 @@ lookupLocation :: CardCode -> (LocationId -> Location)
 lookupLocation lid =
   fromJustNote ("Unknown location: " <> show lid) $ lookup lid allLocations
 
-allLocations :: HashMap CardCode (LocationId -> Location)
+allLocations :: Map CardCode (LocationId -> Location)
 allLocations =
   mapFromList
     $ map

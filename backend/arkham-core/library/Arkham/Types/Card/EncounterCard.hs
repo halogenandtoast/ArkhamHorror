@@ -16,8 +16,7 @@ data EncounterCard = MkEncounterCard
   , ecOriginalCardCode :: CardCode
   , ecIsFlipped :: Maybe Bool
   }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass Hashable
+  deriving stock (Ord, Show, Eq, Generic)
 
 instance HasCardCode EncounterCard where
   toCardCode = ecCardCode

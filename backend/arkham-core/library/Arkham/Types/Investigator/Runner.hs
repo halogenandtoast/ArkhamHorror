@@ -115,11 +115,11 @@ type InnerInvestigatorRunner env
         , HasSet
             ClosestPathLocationId
             env
-            (LocationId, LocationId, HashMap LocationId [LocationId])
+            (LocationId, LocationId, Map LocationId [LocationId])
         , HasSet
             ClosestPathLocationId
             env
-            (LocationId, Prey, HashMap LocationId [LocationId])
+            (LocationId, Prey, Map LocationId [LocationId])
         , HasSet CommittedCardCode env ()
         , HasSet CommittedCardId env InvestigatorId
         , HasSet CommittedSkillId env InvestigatorId
@@ -148,11 +148,11 @@ type InnerInvestigatorRunner env
         , HasSet InvestigatorId env EnemyId
         , HasSet InvestigatorId env LocationId
         , HasSet InvestigatorId env TreacheryCardCode
-        , HasSet InvestigatorId env (HashSet LocationId)
+        , HasSet InvestigatorId env (Set LocationId)
         , HasSet Keyword env EnemyId
         , HasSet LocationId env LocationMatcher
         , HasSet LocationId env TreacheryCardCode
-        , HasSet LocationId env (HashSet LocationSymbol)
+        , HasSet LocationId env (Set LocationSymbol)
         , HasSet LocationId env [Trait]
         , HasSet LocationId env ()
         , HasSet PreyId env Prey

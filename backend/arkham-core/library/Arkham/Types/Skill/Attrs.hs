@@ -23,7 +23,7 @@ data SkillAttrs = SkillAttrs
   }
   deriving stock (Show, Eq, Generic)
 
-allSkillCards :: HashMap CardCode CardDef
+allSkillCards :: Map CardCode CardDef
 allSkillCards = allPlayerSkillCards
 
 instance HasCardCode SkillAttrs where

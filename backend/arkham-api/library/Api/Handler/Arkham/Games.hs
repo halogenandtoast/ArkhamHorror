@@ -23,12 +23,11 @@ import Arkham.Types.Investigator
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.ScenarioId
-import Control.Lens (view, (%~), (&))
+import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)
 import Control.Monad.Random.Class (getRandom)
 import qualified Data.ByteString.Lazy as BSL
 import Data.Coerce
-import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Map.Strict as Map
 import Database.Esqueleto.Experimental hiding (update)
 import Entity.Arkham.Player
@@ -165,15 +164,26 @@ postApiV1ArkhamGamesR = do
         (GameApp gameRef queueRef genRef $ pure . const ())
         (runMessages False)
       ge <- readIORef gameRef
+      let diffedGame = diff game ge
       updatedQueue <- readIORef queueRef
       key <- runDB $ do
-        gameId <- insert
-          $ ArkhamGame campaignName ge updatedQueue [] multiplayerVariant
+        gameId <- insert $ ArkhamGame
+          campaignName
+          ge
+          [Choice diffedGame updatedQueue]
+          []
+          multiplayerVariant
         insert_ $ ArkhamPlayer userId gameId investigatorId
         pure gameId
       pure $ toPublicGame $ Entity
         key
-        (ArkhamGame campaignName ge updatedQueue [] multiplayerVariant)
+        (ArkhamGame
+          campaignName
+          ge
+          [Choice diffedGame updatedQueue]
+          []
+          multiplayerVariant
+        )
     Nothing -> case scenarioId of
       Just sid -> do
         (queueRef, game) <- liftIO
@@ -183,15 +193,26 @@ postApiV1ArkhamGamesR = do
           (GameApp gameRef queueRef genRef $ pure . const ())
           (runMessages False)
         ge <- readIORef gameRef
+        let diffedGame = diff game ge
         updatedQueue <- readIORef queueRef
         key <- runDB $ do
-          gameId <- insert
-            $ ArkhamGame campaignName ge updatedQueue [] multiplayerVariant
+          gameId <- insert $ ArkhamGame
+            campaignName
+            ge
+            [Choice diffedGame updatedQueue]
+            []
+            multiplayerVariant
           insert_ $ ArkhamPlayer userId gameId investigatorId
           pure gameId
         pure $ toPublicGame $ Entity
           key
-          (ArkhamGame campaignName ge updatedQueue [] multiplayerVariant)
+          (ArkhamGame
+            campaignName
+            ge
+            [Choice diffedGame updatedQueue]
+            []
+            multiplayerVariant
+          )
       Nothing -> error "missing either campaign id or scenario id"
 
 data QuestionReponse = QuestionResponse
@@ -218,7 +239,7 @@ putApiV1ArkhamGameR gameId = do
     gameJson@Game {..} = arkhamGameCurrentData
     investigatorId =
       fromMaybe (coerce arkhamPlayerInvestigatorId) (qrInvestigatorId response)
-    messages = case HashMap.lookup investigatorId gameQuestion of
+    messages = case lookup investigatorId gameQuestion of
       Just (ChooseOne qs) -> case qs !!? qrChoice response of
         Nothing -> [Ask investigatorId $ ChooseOne qs]
         Just msg -> [msg]
@@ -257,9 +278,10 @@ putApiV1ArkhamGameR gameId = do
           (Nothing, msgs'') -> [Ask investigatorId $ ChooseSome msgs'']
       _ -> []
 
-  gameRef <- newIORef
-    (gameJson & choicesL %~ (AskChoice investigatorId (qrChoice response) :))
-  queueRef <- newIORef (messages <> arkhamGameQueue)
+  let currentQueue = maybe [] choiceMessages $ headMay arkhamGameChoices
+
+  gameRef <- newIORef gameJson
+  queueRef <- newIORef (messages <> currentQueue)
   logRef <- newIORef []
   genRef <- newIORef (mkStdGen gameSeed)
   writeChannel <- getChannel gameId
@@ -267,6 +289,7 @@ putApiV1ArkhamGameR gameId = do
     (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel))
     (runMessages False)
   ge <- readIORef gameRef
+  let diffedGame = diff arkhamGameCurrentData ge
   updatedQueue <- readIORef queueRef
   updatedLog <- (arkhamGameLog <>) <$> readIORef logRef
   liftIO $ atomically $ writeTChan
@@ -276,7 +299,7 @@ putApiV1ArkhamGameR gameId = do
     replace gameId $ ArkhamGame
       arkhamGameName
       ge
-      updatedQueue
+      (Choice diffedGame updatedQueue : arkhamGameChoices)
       updatedLog
       arkhamGameMultiplayerVariant
     replace pid $ arkhamPlayer
@@ -305,8 +328,9 @@ putApiV1ArkhamGameRawR gameId = do
   let
     gameJson@Game {..} = arkhamGameCurrentData
     message = gameMessage response
-  gameRef <- newIORef (gameJson & choicesL %~ (DebugMessage message :))
-  queueRef <- newIORef (message : arkhamGameQueue)
+  let currentQueue = maybe [] choiceMessages $ headMay arkhamGameChoices
+  gameRef <- newIORef gameJson
+  queueRef <- newIORef (message : currentQueue)
   logRef <- newIORef []
   genRef <- newIORef (mkStdGen gameSeed)
   writeChannel <- getChannel gameId
@@ -315,6 +339,7 @@ putApiV1ArkhamGameRawR gameId = do
     (runMessages False)
   ge <- readIORef gameRef
   updatedQueue <- readIORef queueRef
+  let diffedGame = diff arkhamGameCurrentData ge
   updatedLog <- (arkhamGameLog <>) <$> readIORef logRef
   liftIO $ atomically $ writeTChan
     writeChannel
@@ -325,7 +350,7 @@ putApiV1ArkhamGameRawR gameId = do
       (ArkhamGame
         arkhamGameName
         ge
-        updatedQueue
+        (Choice diffedGame updatedQueue : arkhamGameChoices)
         updatedLog
         arkhamGameMultiplayerVariant
       )

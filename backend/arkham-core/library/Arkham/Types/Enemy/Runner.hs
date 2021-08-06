@@ -31,11 +31,11 @@ type EnemyRunner env
     , HasSet
         ClosestPathLocationId
         env
-        (LocationId, LocationId, HashMap LocationId [LocationId])
+        (LocationId, LocationId, Map LocationId [LocationId])
     , HasSet
         ClosestPathLocationId
         env
-        (LocationId, Prey, HashMap LocationId [LocationId])
+        (LocationId, Prey, Map LocationId [LocationId])
     , HasSet ConnectedLocationId env LocationId
     , HasSet EmptyLocationId env ()
     , HasSet FarthestLocationId env InvestigatorId

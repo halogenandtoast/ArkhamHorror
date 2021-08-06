@@ -27,8 +27,8 @@ data SlotType
   | AllySlot
   | AccessorySlot
   | ArcaneSlot
-  deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON, Hashable, ToJSONKey, FromJSONKey)
+  deriving stock (Ord, Show, Generic, Eq)
+  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey)
 
 isEmptySlot :: Slot -> Bool
 isEmptySlot = isNothing . slotItem

@@ -23,7 +23,7 @@ lookupAgenda agendaId =
   fromJustNote ("Unknown agenda: " <> show agendaId)
     $ lookup agendaId allAgendas
 
-allAgendas :: HashMap AgendaId Agenda
+allAgendas :: Map AgendaId Agenda
 allAgendas = mapFromList $ map
   (\cb -> (AgendaId (cbCardCode cb), cbCardBuilder cb (AgendaId (cbCardCode cb))))
   $(buildEntityLookupList "Agenda")

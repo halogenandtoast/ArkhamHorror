@@ -5,4 +5,4 @@ import Arkham.Prelude
 import Arkham.Types.Card.Id
 
 newtype EventId = EventId { unEventId :: CardId }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, Random)
+  deriving newtype (Ord, Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Random)

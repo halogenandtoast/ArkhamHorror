@@ -74,7 +74,7 @@ getClockwiseMap
      , HasSet LocationId env ()
      , HasSet ConnectedLocationId env LocationId
      )
-  => m (HashMap LocationId LocationId)
+  => m (Map LocationId LocationId)
 getClockwiseMap = do
   lids <- getSetList @LocationId ()
   mapFromList
@@ -88,7 +88,7 @@ getCounterClockwiseMap
      , HasSet LocationId env ()
      , HasSet ConnectedLocationId env LocationId
      )
-  => m (HashMap LocationId LocationId)
+  => m (Map LocationId LocationId)
 getCounterClockwiseMap = do
   lids <- getSetList @LocationId ()
   mapFromList

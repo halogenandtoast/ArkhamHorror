@@ -15,7 +15,7 @@ data CardType
   | ActType
   | AgendaType
   deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving anyclass (ToJSON, FromJSON)
 
 encounterCardTypes :: [CardType]
 encounterCardTypes =

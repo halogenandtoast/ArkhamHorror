@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Arkham.Types.Card.Id
 
 newtype SkillId = SkillId { unSkillId :: CardId }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, Random)
+  deriving newtype (Ord, Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Random)
 
 newtype CommittedSkillId = CommittedSkillId { unCommitedSkillId :: SkillId }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, Random)
+  deriving newtype (Ord, Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Random)

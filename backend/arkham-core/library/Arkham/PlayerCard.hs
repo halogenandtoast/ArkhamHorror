@@ -23,7 +23,7 @@ lookupPlayerCardDef cardCode =
   fromJustNote ("Unknown card: " <> show cardCode)
     $ lookup cardCode allPlayerCards
 
-allPlayerCards :: HashMap CardCode CardDef
+allPlayerCards :: Map CardCode CardDef
 allPlayerCards =
   allPlayerEnemyCards
     <> allPlayerTreacheryCards

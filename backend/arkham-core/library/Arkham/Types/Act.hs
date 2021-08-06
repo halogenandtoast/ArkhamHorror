@@ -58,7 +58,7 @@ lookupAct :: ActId -> Act
 lookupAct actId =
   fromJustNote ("Unknown act: " <> show actId) $ lookup actId allActs
 
-allActs :: HashMap ActId Act
+allActs :: Map ActId Act
 allActs = mapFromList $ map
   (\cb -> (ActId (cbCardCode cb), cbCardBuilder cb (ActId (cbCardCode cb))))
   $(buildEntityLookupList "Act")

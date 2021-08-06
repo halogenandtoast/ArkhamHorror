@@ -45,7 +45,7 @@ instance HasList CommittedSkillIcon env InvestigatorId => HasActions env TheKing
         (x : xs) -> do
           let
             mostFrequent = maximumBy (compare `on` snd) (ncons x xs)
-            frequencyMap :: HashMap SkillType Int = mapFromList frequencies
+            frequencyMap :: Map SkillType Int = mapFromList frequencies
             totalMatchingIcons = case mostFrequent of
               (SkillWild, n) -> n
               (_, n) -> n + findWithDefault 0 SkillWild frequencyMap

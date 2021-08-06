@@ -19,7 +19,7 @@ data ArkhamDBDecklist = ArkhamDBDecklist
   , meta :: Maybe Text
   }
   deriving stock (Generic, Show)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (FromJSON, ToJSON)
 
 instance PersistFieldSql ArkhamDBDecklist where
   sqlType _ = SqlString

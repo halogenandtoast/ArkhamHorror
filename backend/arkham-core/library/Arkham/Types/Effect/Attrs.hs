@@ -20,7 +20,7 @@ data EffectAttrs = EffectAttrs
   , effectCardCode :: Maybe CardCode
   , effectTarget :: Target
   , effectSource :: Source
-  , effectTraits :: HashSet Trait
+  , effectTraits :: Set Trait
   , effectMetadata :: Maybe (EffectMetadata Message)
   , effectWindow :: Maybe EffectWindow
   }

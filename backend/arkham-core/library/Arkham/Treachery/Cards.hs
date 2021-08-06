@@ -49,10 +49,10 @@ treachery :: CardCode -> Name -> EncounterSet -> Int -> CardDef
 treachery cardCode name encounterSet encounterSetQuantity =
   baseTreachery cardCode name (Just (encounterSet, encounterSetQuantity)) False
 
-allTreacheryCards :: HashMap CardCode CardDef
+allTreacheryCards :: Map CardCode CardDef
 allTreacheryCards = allPlayerTreacheryCards <> allEncounterTreacheryCards
 
-allPlayerTreacheryCards :: HashMap CardCode CardDef
+allPlayerTreacheryCards :: Map CardCode CardDef
 allPlayerTreacheryCards = mapFromList $ map
   (toCardCode &&& id)
   [ abandonedAndAlone
@@ -80,7 +80,7 @@ allPlayerTreacheryCards = mapFromList $ map
   , wrackedByNightmares
   ]
 
-allEncounterTreacheryCards :: HashMap CardCode CardDef
+allEncounterTreacheryCards :: Map CardCode CardDef
 allEncounterTreacheryCards = mapFromList $ map
   (toCardCode &&& id)
   [ abduction

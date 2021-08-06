@@ -12,7 +12,7 @@ import Arkham.Types.Card.Id
 import Arkham.Types.InvestigatorId
 
 newtype BearerId = BearerId { unBearerId :: InvestigatorId }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
+  deriving newtype (Ord, Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, IsString)
 
 newtype DiscardedPlayerCard = DiscardedPlayerCard { unDiscardedPlayerCard :: PlayerCard }
 
@@ -22,8 +22,7 @@ data PlayerCard = MkPlayerCard
   , pcCardCode :: CardCode
   , pcOriginalCardCode :: CardCode
   }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass Hashable
+  deriving stock (Ord, Show, Eq, Generic)
 
 instance ToJSON PlayerCard where
   toJSON = genericToJSON $ aesonOptions $ Just "pc"

@@ -64,7 +64,7 @@ lookupSkill :: CardCode -> (InvestigatorId -> SkillId -> Skill)
 lookupSkill cardCode =
   fromJustNote ("Unknown skill: " <> show cardCode) $ lookup cardCode allSkills
 
-allSkills :: HashMap CardCode (InvestigatorId -> SkillId -> Skill)
+allSkills :: Map CardCode (InvestigatorId -> SkillId -> Skill)
 allSkills = mapFromList $ map
   (cbCardCode &&& (curry . cbCardBuilder))
   $(buildEntityLookupList "Skill")

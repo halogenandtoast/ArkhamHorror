@@ -25,7 +25,7 @@ data InvestigatorMatcher
   | InvestigatorWithId InvestigatorId
   | InvestigatorMatches [InvestigatorMatcher]
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving anyclass (ToJSON, FromJSON)
 
 instance Semigroup InvestigatorMatcher where
   InvestigatorMatches xs <> InvestigatorMatches ys =
@@ -58,7 +58,7 @@ data AssetMatcher
   | AssetCanBeAssignedDamageBy InvestigatorId
   | AssetCanBeAssignedHorrorBy InvestigatorId
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving anyclass (ToJSON, FromJSON)
 
 assetIs :: HasCardCode a => a -> AssetMatcher
 assetIs = AssetIs . toCardCode
@@ -101,7 +101,7 @@ data EnemyMatcher
   | EnemyMatchAll [EnemyMatcher]
   | EnemyEngagedWithYou
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving anyclass (ToJSON, FromJSON)
 
 instance Semigroup EnemyMatcher where
   EnemyMatchAll xs <> EnemyMatchAll ys = EnemyMatchAll (xs <> ys)
@@ -154,7 +154,7 @@ data LocationMatcher
   | LocationWithoutTreacheryWithCardCode CardCode
   | LocationMatchers [LocationMatcher]
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving anyclass (ToJSON, FromJSON)
 
 instance Semigroup LocationMatcher where
   LocationMatchers xs <> LocationMatchers ys = LocationMatchers $ xs <> ys

@@ -78,4 +78,4 @@ data Window
   | WhenWouldTakeHorror Source Target
   | WhenWouldTakeDamageOrHorror Source Target Int Int
   deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving anyclass (ToJSON, FromJSON)

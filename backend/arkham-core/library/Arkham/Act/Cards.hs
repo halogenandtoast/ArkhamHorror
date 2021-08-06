@@ -37,7 +37,7 @@ act cardCode name encounterSet = CardDef
   , cdExceptional = False
   }
 
-allActCards :: HashMap CardCode CardDef
+allActCards :: Map CardCode CardDef
 allActCards = mapFromList $ map
   (toCardCode &&& id)
   [ trapped

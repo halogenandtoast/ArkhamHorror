@@ -35,6 +35,7 @@ library:
   source-dirs: library
   dependencies:
     - aeson >= 1.5.4.1
+    - aeson-diff
     - lens
     - unordered-containers >= 0.2.12.0
     - hashable

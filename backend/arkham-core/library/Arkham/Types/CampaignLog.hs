@@ -8,20 +8,20 @@ import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes.HasRecord
 
 data CampaignLog = CampaignLog
-  { campaignLogRecorded :: HashSet CampaignLogKey
-  , campaignLogRecordedCounts :: HashMap CampaignLogKey Int
-  , campaignLogRecordedSets :: HashMap CampaignLogKey [CardCode]
+  { campaignLogRecorded :: Set CampaignLogKey
+  , campaignLogRecordedCounts :: Map CampaignLogKey Int
+  , campaignLogRecordedSets :: Map CampaignLogKey [CardCode]
   }
   deriving stock (Show, Generic, Eq)
 
-recorded :: Lens' CampaignLog (HashSet CampaignLogKey)
+recorded :: Lens' CampaignLog (Set CampaignLogKey)
 recorded = lens campaignLogRecorded $ \m x -> m { campaignLogRecorded = x }
 
-recordedSets :: Lens' CampaignLog (HashMap CampaignLogKey [CardCode])
+recordedSets :: Lens' CampaignLog (Map CampaignLogKey [CardCode])
 recordedSets =
   lens campaignLogRecordedSets $ \m x -> m { campaignLogRecordedSets = x }
 
-recordedCounts :: Lens' CampaignLog (HashMap CampaignLogKey Int)
+recordedCounts :: Lens' CampaignLog (Map CampaignLogKey Int)
 recordedCounts =
   lens campaignLogRecordedCounts $ \m x -> m { campaignLogRecordedCounts = x }
 

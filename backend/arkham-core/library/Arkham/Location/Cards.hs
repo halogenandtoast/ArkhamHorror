@@ -43,7 +43,7 @@ location cardCode name encounterSet = CardDef
   , cdExceptional = False
   }
 
-allLocationCards :: HashMap CardCode CardDef
+allLocationCards :: Map CardCode CardDef
 allLocationCards = mapFromList $ map
   (toCardCode &&& id)
   [ aTearInThePath

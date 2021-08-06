@@ -68,11 +68,7 @@ instance TargetEntity a => TargetEntity (a `With` b) where
   toTarget (a `With` _) = toTarget a
   isTarget (a `With` _) = isTarget a
 
-insertEntity
-  :: (Entity v, EntityId v ~ k, Eq k, Hashable k)
-  => v
-  -> HashMap k v
-  -> HashMap k v
+insertEntity :: (Entity v, EntityId v ~ k, Ord k) => v -> Map k v -> Map k v
 insertEntity a = insertMap (toId a) a
 
 instance TargetEntity Token where

@@ -48,4 +48,4 @@ data EncounterSet
   | CarnevaleOfHorrors
   | Test
   deriving stock (Show, Eq, Generic, Bounded, Enum)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving anyclass (ToJSON, FromJSON)

@@ -11,8 +11,8 @@ data Name = Name
   { nameTitle :: Text
   , nameSubtitle :: Maybe Text
   }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSONKey, FromJSONKey, Hashable)
+  deriving stock (Ord, Show, Eq, Generic)
+  deriving anyclass (ToJSONKey, FromJSONKey)
 
 class Named a where
   toName :: a -> Name
@@ -47,13 +47,13 @@ instance FromJSON Name where
   parseJSON = genericParseJSON $ aesonOptions $ Just "name"
 
 newtype LocationName = LocationName { unLocationName :: Name }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
+  deriving newtype (Ord, Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, IsString)
 
 newtype EnemyName = EnemyName { unEnemyName :: Name }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+  deriving newtype (Ord, Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey)
 
 newtype TreacheryName = TreacheryName { unTreacheryName :: Name }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+  deriving newtype (Ord, Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey)
 
 nameToLabel :: Name -> Text
 nameToLabel = pack . toLabel . replaceNonLetters . unpack . nameTitle

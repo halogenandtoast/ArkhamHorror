@@ -30,8 +30,7 @@ instance HasActions env OnTheProwl where
   getActions i window (OnTheProwl attrs) = getActions i window attrs
 
 bayouLocations
-  :: (MonadReader env m, HasSet LocationId env [Trait])
-  => m (HashSet LocationId)
+  :: (MonadReader env m, HasSet LocationId env [Trait]) => m (Set LocationId)
 bayouLocations = getSet [Bayou]
 
 nonBayouLocations
@@ -39,7 +38,7 @@ nonBayouLocations
      , HasSet LocationId env ()
      , HasSet LocationId env [Trait]
      )
-  => m (HashSet LocationId)
+  => m (Set LocationId)
 nonBayouLocations = difference <$> getLocationSet <*> bayouLocations
 
 instance TreacheryRunner env => RunMessage env OnTheProwl where

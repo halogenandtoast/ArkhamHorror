@@ -34,7 +34,7 @@ instance ActionRunner env => HasActions env SlimeCoveredDhole where
 
 bayouLocations
   :: (MonadReader env m, HasSet LocationId env [Trait])
-  => m (HashSet LocationId)
+  => m (Set LocationId)
 bayouLocations = getSet [Bayou]
 
 nonBayouLocations
@@ -42,7 +42,7 @@ nonBayouLocations
      , HasSet LocationId env ()
      , HasSet LocationId env [Trait]
      )
-  => m (HashSet LocationId)
+  => m (Set LocationId)
 nonBayouLocations = difference <$> getLocationSet <*> bayouLocations
 
 instance (EnemyRunner env) => RunMessage env SlimeCoveredDhole where

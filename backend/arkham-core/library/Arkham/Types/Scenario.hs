@@ -169,7 +169,7 @@ scenarioActs s = case scenarioActStack (toAttrs s) of
   [(_, actIds)] -> actIds
   _ -> error "Not able to handle multiple act stacks yet"
 
-allScenarios :: HashMap ScenarioId (Difficulty -> Scenario)
+allScenarios :: Map ScenarioId (Difficulty -> Scenario)
 allScenarios = mapFromList
   [ ("01104", TheGathering' . theGathering)
   , ("01120", TheMidnightMasks' . theMidnightMasks)

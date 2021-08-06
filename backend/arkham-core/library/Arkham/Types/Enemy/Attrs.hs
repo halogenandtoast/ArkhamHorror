@@ -42,7 +42,7 @@ type EnemyCard a = CardBuilder EnemyId a
 data EnemyAttrs = EnemyAttrs
   { enemyId :: EnemyId
   , enemyCardCode :: CardCode
-  , enemyEngagedInvestigators :: HashSet InvestigatorId
+  , enemyEngagedInvestigators :: Set InvestigatorId
   , enemyLocation :: LocationId
   , enemyFight :: Int
   , enemyHealth :: GameValue Int
@@ -50,10 +50,10 @@ data EnemyAttrs = EnemyAttrs
   , enemyDamage :: Int
   , enemyHealthDamage :: Int
   , enemySanityDamage :: Int
-  , enemyTreacheries :: HashSet TreacheryId
-  , enemyAssets :: HashSet AssetId
+  , enemyTreacheries :: Set TreacheryId
+  , enemyAssets :: Set AssetId
   , enemyPrey :: Prey
-  , enemyModifiers :: HashMap Source [Modifier]
+  , enemyModifiers :: Map Source [Modifier]
   , enemyExhausted :: Bool
   , enemyDoom :: Int
   , enemyClues :: Int
@@ -90,16 +90,16 @@ asSelfLocationL =
 preyL :: Lens' EnemyAttrs Prey
 preyL = lens enemyPrey $ \m x -> m { enemyPrey = x }
 
-treacheriesL :: Lens' EnemyAttrs (HashSet TreacheryId)
+treacheriesL :: Lens' EnemyAttrs (Set TreacheryId)
 treacheriesL = lens enemyTreacheries $ \m x -> m { enemyTreacheries = x }
 
-assetsL :: Lens' EnemyAttrs (HashSet AssetId)
+assetsL :: Lens' EnemyAttrs (Set AssetId)
 assetsL = lens enemyAssets $ \m x -> m { enemyAssets = x }
 
 damageL :: Lens' EnemyAttrs Int
 damageL = lens enemyDamage $ \m x -> m { enemyDamage = x }
 
-engagedInvestigatorsL :: Lens' EnemyAttrs (HashSet InvestigatorId)
+engagedInvestigatorsL :: Lens' EnemyAttrs (Set InvestigatorId)
 engagedInvestigatorsL =
   lens enemyEngagedInvestigators $ \m x -> m { enemyEngagedInvestigators = x }
 
@@ -112,7 +112,7 @@ doomL = lens enemyDoom $ \m x -> m { enemyDoom = x }
 cluesL :: Lens' EnemyAttrs Int
 cluesL = lens enemyClues $ \m x -> m { enemyClues = x }
 
-allEnemyCards :: HashMap CardCode CardDef
+allEnemyCards :: Map CardCode CardDef
 allEnemyCards = allPlayerEnemyCards <> allEncounterEnemyCards
 
 instance HasName env EnemyAttrs where
@@ -269,7 +269,7 @@ getModifiedDamageAmount EnemyAttrs {..} baseAmount = do
 getModifiedKeywords
   :: (MonadReader env m, HasModifiersFor env (), HasSkillTest env)
   => EnemyAttrs
-  -> m (HashSet Keyword)
+  -> m (Set Keyword)
 getModifiedKeywords e@EnemyAttrs {..} = do
   msource <- getSkillTestSource
   let source = fromMaybe (EnemySource enemyId) msource
@@ -356,7 +356,7 @@ getModifiedHealth EnemyAttrs {..} = do
   applyModifier (HealthModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-emptyLocationMap :: HashMap LocationId [LocationId]
+emptyLocationMap :: Map LocationId [LocationId]
 emptyLocationMap = mempty
 
 type EnemyAttrsRunMessage env
@@ -369,11 +369,11 @@ type EnemyAttrsRunMessage env
     , HasSet
         ClosestPathLocationId
         env
-        (LocationId, LocationId, HashMap LocationId [LocationId])
+        (LocationId, LocationId, Map LocationId [LocationId])
     , HasSet
         ClosestPathLocationId
         env
-        (LocationId, Prey, HashMap LocationId [LocationId])
+        (LocationId, Prey, Map LocationId [LocationId])
     , HasSet ConnectedLocationId env LocationId
     , HasSet InvestigatorId env ()
     , HasSet InvestigatorId env LocationId
@@ -583,7 +583,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
         applyConnectionMapModifier connectionMap (HunterConnectedTo lid') =
           unionWith (<>) connectionMap $ singletonMap enemyLocation [lid']
         applyConnectionMapModifier connectionMap _ = connectionMap
-        extraConnectionsMap :: HashMap LocationId [LocationId] =
+        extraConnectionsMap :: Map LocationId [LocationId] =
           foldl' applyConnectionMapModifier mempty modifiers'
 
       -- The logic here is an artifact of doing this incorrect

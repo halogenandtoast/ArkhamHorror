@@ -12,39 +12,39 @@ newtype ActionRemainingCount = ActionRemainingCount { unActionRemainingCount :: 
 newtype ActionTakenCount = ActionTakenCount { unActionTakenCount :: Int }
 newtype XPCount = XPCount { unXPCount :: Int }
 newtype ClueCount = ClueCount { unClueCount :: Int }
-  deriving newtype (Eq, Hashable, Show)
+  deriving newtype (Ord, Eq, Show)
 newtype Shroud = Shroud { unShroud :: Int }
-  deriving newtype (Eq)
+  deriving newtype (Ord, Eq)
 newtype SpendableClueCount = SpendableClueCount { unSpendableClueCount :: Int }
-  deriving newtype (Eq, Hashable)
+  deriving newtype (Ord, Eq)
 newtype DoomCount = DoomCount { unDoomCount :: Int }
-  deriving newtype (Eq, Show)
+  deriving newtype (Ord, Eq, Show)
 newtype UsesCount = UsesCount { unUsesCount :: Int }
-  deriving newtype (Eq)
+  deriving newtype (Ord, Eq)
 newtype StartingUsesCount = StartingUsesCount { unStartingUsesCount :: Int }
-  deriving newtype (Eq)
+  deriving newtype (Ord, Eq)
 newtype ResourceCount = ResourceCount { unResourceCount :: Int }
 newtype CardCount = CardCount { unCardCount :: Int }
-  deriving newtype (Eq, Hashable)
+  deriving newtype (Ord, Eq)
 newtype DiscardCount = DiscardCount { unDiscardCount :: Int }
-  deriving newtype (Eq, Hashable)
+  deriving newtype (Ord, Eq)
 newtype RemainingHealth = RemainingHealth { unRemainingHealth :: Int }
-  deriving newtype (Eq, Hashable)
+  deriving newtype (Ord, Eq)
 newtype RemainingSanity = RemainingSanity { unRemainingSanity :: Int }
-  deriving newtype (Eq, Hashable)
+  deriving newtype (Ord, Eq)
 newtype HorrorCount = HorrorCount { unHorrorCount :: Int }
-  deriving newtype (Eq)
+  deriving newtype (Ord, Eq)
 newtype DamageCount = DamageCount { unDamageCount :: Int }
-  deriving newtype (Eq)
+  deriving newtype (Ord, Eq)
 newtype ScenarioDeckCount = ScenarioDeckCount { unScenarioDeckCount :: Int }
-  deriving newtype (Eq)
+  deriving newtype (Ord, Eq)
 newtype SetAsideCount = SetAsideCount { unSetAsideCount :: Int }
-  deriving newtype (Eq)
+  deriving newtype (Ord, Eq)
 
 newtype MentalTraumaCount = MentalTraumaCount { unMentalTraumaCount :: Int }
-  deriving newtype (Show, Eq)
+  deriving newtype (Show, Ord, Eq)
 newtype PhysicalTraumaCount = PhysicalTraumaCount { unPhysicalTraumaCount :: Int }
-  deriving newtype (Show, Eq)
+  deriving newtype (Show, Ord, Eq)
 
 newtype SanityDamageCount = SanityDamageCount { unSanityDamageCount :: Int }
 

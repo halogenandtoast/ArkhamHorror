@@ -159,8 +159,8 @@ data Trait
   | Unhallowed
   | Venice
   | Yithian
-  deriving stock (Show, Eq, Generic, Read)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Ord, Show, Eq, Generic, Read)
+  deriving anyclass (ToJSON, FromJSON)
 
 class HasTraits a where
-  toTraits :: a -> HashSet Trait
+  toTraits :: a -> Set Trait

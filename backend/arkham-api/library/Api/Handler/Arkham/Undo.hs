@@ -9,7 +9,7 @@ import Arkham.Game
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Game
 import Arkham.Types.Id
-import Control.Lens (view, (&), (.~))
+import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)
 import Data.Coerce
 import Json
@@ -23,17 +23,18 @@ putApiV1ArkhamGameUndoR gameId = do
 
   Entity pid arkhamPlayer <- runDB $ getBy404 (UniquePlayer userId gameId)
 
-  let undidChoices = drop 1 gameChoices
+  let undidChoices = drop 1 arkhamGameChoices
 
-  gameRef <- newIORef (gameJson & choicesL .~ undidChoices)
+  gameRef <- newIORef gameJson
   queueRef <- newIORef []
   genRef <- newIORef (mkStdGen gameSeed)
   writeChannel <- getChannel gameId
 
-  runGameApp (GameApp gameRef queueRef genRef $ \_ -> pure ()) replayChoices
+  runGameApp
+    (GameApp gameRef queueRef genRef $ \_ -> pure ())
+    (replayChoices $ map choicePatch undidChoices)
 
   ge <- readIORef gameRef
-  updatedQueue <- readIORef queueRef
   liftIO $ atomically $ writeTChan
     writeChannel
     (encode $ GameUpdate $ PublicGame gameId arkhamGameName arkhamGameLog ge)
@@ -43,7 +44,7 @@ putApiV1ArkhamGameUndoR gameId = do
       (ArkhamGame
         arkhamGameName
         ge
-        updatedQueue
+        undidChoices
         arkhamGameLog
         arkhamGameMultiplayerVariant
       )

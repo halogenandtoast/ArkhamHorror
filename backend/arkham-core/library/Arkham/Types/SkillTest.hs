@@ -21,7 +21,7 @@ import Arkham.Types.Stats
 import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Window
-import qualified Data.HashMap.Strict as HashMap
+import Data.Map.Strict (foldMapWithKey)
 import Data.Semigroup
 
 class HasSkillTest env where
@@ -51,7 +51,7 @@ data SkillTest = SkillTest
   , skillTestResolvedTokens :: [Token]
   , skillTestValueModifier :: Int
   , skillTestResult :: SkillTestResult
-  , skillTestCommittedCards :: HashMap CardId (InvestigatorId, Card)
+  , skillTestCommittedCards :: Map CardId (InvestigatorId, Card)
   , skillTestSource :: Source
   , skillTestTarget :: Target
   , skillTestAction :: Maybe Action
@@ -75,7 +75,7 @@ revealedTokensL :: Lens' SkillTest [Token]
 revealedTokensL =
   lens skillTestRevealedTokens $ \m x -> m { skillTestRevealedTokens = x }
 
-committedCardsL :: Lens' SkillTest (HashMap CardId (InvestigatorId, Card))
+committedCardsL :: Lens' SkillTest (Map CardId (InvestigatorId, Card))
 committedCardsL =
   lens skillTestCommittedCards $ \m x -> m { skillTestCommittedCards = x }
 
@@ -354,9 +354,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
     StartSkillTest _ -> do
       windowMsgs <- checkWindows [FastPlayerWindow]
       s <$ pushAll
-        (HashMap.foldMapWithKey
-            (\k (i, _) -> [CommitCard i k])
-            skillTestCommittedCards
+        (foldMapWithKey (\k (i, _) -> [CommitCard i k]) skillTestCommittedCards
         <> windowMsgs
         <> [TriggerSkillTest skillTestInvestigator]
         )

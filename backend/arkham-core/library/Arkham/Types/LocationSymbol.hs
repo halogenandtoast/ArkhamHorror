@@ -19,5 +19,5 @@ data LocationSymbol
   | Droplet
   | Trefoil
   | NoSymbol
-  deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Ord, Show, Generic, Eq)
+  deriving anyclass (ToJSON, FromJSON)

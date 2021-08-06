@@ -38,8 +38,8 @@ newtype CommittedCard = CommittedCard { unCommittedCard :: Card }
 data Card
   = PlayerCard PlayerCard
   | EncounterCard EncounterCard
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving stock (Ord, Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 _PlayerCard :: Traversal' Card PlayerCard
 _PlayerCard f (PlayerCard pc) = PlayerCard <$> f pc

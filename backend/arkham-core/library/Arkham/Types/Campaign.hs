@@ -38,7 +38,7 @@ instance Entity Campaign where
 instance Named Campaign where
   toName = toName . toAttrs
 
-allCampaigns :: HashMap CampaignId (Difficulty -> Campaign)
+allCampaigns :: Map CampaignId (Difficulty -> Campaign)
 allCampaigns = mapFromList
   [ ("01", NightOfTheZealot' . nightOfTheZealot)
   , ("02", TheDunwichLegacy' . theDunwichLegacy)

@@ -17,8 +17,9 @@ import Arkham.Types.Phase
 import Arkham.Types.Scenario
 import Arkham.Types.ScenarioId
 import Control.Monad.Random (mkStdGen)
+import qualified Data.Aeson.Diff as Diff
 import Data.Align
-import Data.HashMap.Strict (size)
+import Data.Map.Strict (size)
 import Safe (headNote)
 import System.Environment
 import Text.Pretty.Simple
@@ -69,7 +70,6 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
         playerCount
         investigatorsList
         difficulty
-      , gameChoices = []
       , gameWindowDepth = 0
       , gameRoundMessageHistory = []
       , gamePhaseMessageHistory = []
@@ -172,99 +172,35 @@ addInvestigator i d = do
 
 -- TODO: Rename this
 toExternalGame
-  :: MonadRandom m => Game -> HashMap InvestigatorId Question -> m Game
+  :: MonadRandom m => Game -> Map InvestigatorId Question -> m Game
 toExternalGame g mq = do
   newGameSeed <- getRandom
   pure $ g { gameQuestion = mq, gameSeed = newGameSeed }
 
 replayChoices
-  :: ( MonadIO m
-     , HasGameRef env
-     , HasStdGen env
-     , HasQueue env
-     , MonadReader env m
-     , HasMessageLogger env
-     )
-  => m ()
-replayChoices = do
+  :: (MonadIO m, HasGameRef env, HasStdGen env, MonadReader env m)
+  => [Diff.Patch]
+  -> m ()
+replayChoices choices = do
   gameRef <- view gameRefL
   genRef <- view genL
-  currentQueueRef <- view messageQueue
   currentGame <- readIORef gameRef
   writeIORef genRef (mkStdGen (gameInitialSeed currentGame))
 
   let
     GameParams scenarioOrCampaignId playerCount investigatorsList difficulty =
       gameParams currentGame
-    choices = gameChoices currentGame
 
-  (newQueueRef, replayedGame) <- newGame
+  (_, replayedGame) <- newGame
     scenarioOrCampaignId
     (gameInitialSeed currentGame)
     playerCount
     investigatorsList
     difficulty
 
-  newQueue <- readIORef newQueueRef
-  writeIORef currentQueueRef newQueue
-  writeIORef gameRef (replayedGame & choicesL .~ choices)
-
-  runMessages True
-
-  for_ (reverse choices) $ \case
-    UpgradeChoice msg -> do
-      gameState <- readIORef gameRef
-      writeIORef genRef (mkStdGen (gameSeed gameState))
-      push msg >> runMessages True
-    DebugMessage msg -> do
-      gameState <- readIORef gameRef
-      writeIORef genRef (mkStdGen (gameSeed gameState))
-      push msg >> runMessages True
-    AskChoice iid idx -> do
-      gameState <- readIORef gameRef
-      writeIORef genRef (mkStdGen (gameSeed gameState))
-      let
-        messages = case lookup iid (gameQuestion gameState) of
-          Just (ChooseOne qs) -> case qs !!? idx of
-            Nothing -> [Ask iid $ ChooseOne qs]
-            Just msg -> [msg]
-          Just (ChooseN n qs) -> do
-            let (mm, msgs') = extract idx qs
-            case (mm, msgs') of
-              (Just m', []) -> [m']
-              (Just m', msgs'') -> if n - 1 == 0
-                then [m']
-                else [m', Ask iid $ ChooseN (n - 1) msgs'']
-              (Nothing, msgs'') -> [Ask iid $ ChooseN n msgs'']
-          Just (ChooseUpToN n qs) -> do
-            let (mm, msgs') = extract idx qs
-            case (mm, msgs') of
-              (Just m', []) -> [m']
-              (Just m'@(Done _), _) -> [m']
-              (Just m', msgs'') -> if n - 1 == 0
-                then [m']
-                else [m', Ask iid $ ChooseUpToN (n - 1) msgs'']
-              (Nothing, msgs'') -> [Ask iid $ ChooseUpToN n msgs'']
-          Just (ChooseOneAtATime msgs) -> do
-            let (mm, msgs') = extract idx msgs
-            case (mm, msgs') of
-              (Just m', []) -> [m']
-              (Just m', msgs'') -> [m', Ask iid $ ChooseOneAtATime msgs'']
-              (Nothing, msgs'') -> [Ask iid $ ChooseOneAtATime msgs'']
-          Just (ChooseSome msgs) -> do
-            let (mm, msgs') = extract idx msgs
-            case (mm, msgs') of
-              (Just (Done _), _) -> []
-              (Just m', msgs'') -> case msgs'' of
-                [] -> [m']
-                [Done _] -> [m']
-                rest -> [m', Ask iid $ ChooseSome rest]
-              (Nothing, msgs'') -> [Ask iid $ ChooseSome msgs'']
-          _ -> []
-      pushAll messages >> runMessages True
- where
-  extract n xs =
-    let a = xs !!? n in (a, [ x | (i, x) <- zip [0 ..] xs, i /= n ])
+  case foldM patch replayedGame (reverse choices) of
+    Error e -> error e
+    Success g -> writeIORef gameRef g
 
 runMessages
   :: ( MonadIO m

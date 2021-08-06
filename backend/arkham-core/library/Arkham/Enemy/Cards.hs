@@ -47,12 +47,12 @@ enemy :: CardCode -> Name -> EncounterSet -> Int -> CardDef
 enemy cardCode name encounterSet encounterSetQuantity =
   baseEnemy cardCode name (Just (encounterSet, encounterSetQuantity)) False
 
-allPlayerEnemyCards :: HashMap CardCode CardDef
+allPlayerEnemyCards :: Map CardCode CardDef
 allPlayerEnemyCards = mapFromList $ map
   (toCardCode &&& id)
   [mobEnforcer, silverTwilightAcolyte, stubbornDetective, graveyardGhouls]
 
-allEncounterEnemyCards :: HashMap CardCode CardDef
+allEncounterEnemyCards :: Map CardCode CardDef
 allEncounterEnemyCards = mapFromList $ map
   (toCardCode &&& id)
   [ acolyte

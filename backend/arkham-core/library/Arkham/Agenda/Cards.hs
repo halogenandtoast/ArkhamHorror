@@ -37,7 +37,7 @@ agenda cardCode name encounterSet = CardDef
   , cdExceptional = False
   }
 
-allAgendaCards :: HashMap CardCode CardDef
+allAgendaCards :: Map CardCode CardDef
 allAgendaCards = mapFromList $ map
   (toCardCode &&& id)
   [ whatsGoingOn

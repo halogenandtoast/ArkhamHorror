@@ -157,7 +157,7 @@ lookupEnemy cardCode =
   fromJustNote ("Unknown enemy: " <> pack (show cardCode))
     $ lookup cardCode allEnemies
 
-allEnemies :: HashMap CardCode (EnemyId -> Enemy)
+allEnemies :: Map CardCode (EnemyId -> Enemy)
 allEnemies = mapFromList $ map
   (cbCardCode &&& cbCardBuilder)
   $(buildEntityLookupList "Enemy")
@@ -171,7 +171,7 @@ isUnique = cdUnique . toCardDef
 instance Exhaustable Enemy where
   isExhausted = enemyExhausted . toAttrs
 
-getEngagedInvestigators :: Enemy -> HashSet InvestigatorId
+getEngagedInvestigators :: Enemy -> Set InvestigatorId
 getEngagedInvestigators = enemyEngagedInvestigators . toAttrs
 
 getEnemyVictory :: Enemy -> Maybe Int

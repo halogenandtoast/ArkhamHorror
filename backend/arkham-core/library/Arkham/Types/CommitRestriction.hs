@@ -9,4 +9,4 @@ data CommitRestriction
   | ScenarioAbility
   | MinSkillTestValueDifference Int
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving anyclass (ToJSON, FromJSON)

@@ -9,7 +9,7 @@ data GameValue a
   = Static a
   | PerPlayer a
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving anyclass (ToJSON, FromJSON)
 
 instance Functor GameValue where
   fmap f (Static n) = Static (f n)

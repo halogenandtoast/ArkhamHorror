@@ -74,7 +74,7 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   , cdExceptional = False
   }
 
-allPlayerAssetCards :: HashMap CardCode CardDef
+allPlayerAssetCards :: Map CardCode CardDef
 allPlayerAssetCards = mapFromList $ map
   (toCardCode &&& id)
   [ abbessAllegriaDiBiase
@@ -227,7 +227,7 @@ allPlayerAssetCards = mapFromList $ map
   , zoeysCross
   ]
 
-allEncounterAssetCards :: HashMap CardCode CardDef
+allEncounterAssetCards :: Map CardCode CardDef
 allEncounterAssetCards = mapFromList $ map
   (toCardCode &&& id)
   [ adamLynch

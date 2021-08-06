@@ -241,7 +241,7 @@ instance HasSkillValue env Investigator where
     applyModifier _ (BaseSkillOf skillType' n) | skillType == skillType' = n
     applyModifier n _ = n
 
-allInvestigators :: HashMap InvestigatorId Investigator
+allInvestigators :: Map InvestigatorId Investigator
 allInvestigators = mapFromList $ map
   (toFst $ investigatorId . toAttrs)
   [ AgnesBaker' agnesBaker
@@ -281,7 +281,7 @@ lookupPromoInvestigator "98001" = lookupInvestigator "02003" -- Jenny Barnes
 lookupPromoInvestigator "98004" = lookupInvestigator "01001" -- Roland Banks
 lookupPromoInvestigator iid = error $ "Unknown investigator: " <> show iid
 
-getEngagedEnemies :: Investigator -> HashSet EnemyId
+getEngagedEnemies :: Investigator -> Set EnemyId
 getEngagedEnemies = investigatorEngagedEnemies . toAttrs
 
 -- TODO: This does not work for more than 2 players
@@ -336,7 +336,7 @@ getIsPrey FewestCards i = do
 getIsPrey (NearestToEnemyWithTrait trait) i = do
   mappings :: [(InvestigatorId, Distance)] <- getList (EnemyTrait trait)
   let
-    mappingsMap :: HashMap InvestigatorId Distance = mapFromList mappings
+    mappingsMap :: Map InvestigatorId Distance = mapFromList mappings
     minDistance :: Int =
       fromJustNote "error" . minimumMay $ map (unDistance . snd) mappings
     investigatorDistance :: Int = unDistance $ findWithDefault

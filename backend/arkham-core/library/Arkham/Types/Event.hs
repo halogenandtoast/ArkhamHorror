@@ -83,7 +83,7 @@ lookupEvent :: CardCode -> (InvestigatorId -> EventId -> Event)
 lookupEvent cardCode =
   fromJustNote ("Unknown event: " <> show cardCode) $ lookup cardCode allEvents
 
-allEvents :: HashMap CardCode (InvestigatorId -> EventId -> Event)
+allEvents :: Map CardCode (InvestigatorId -> EventId -> Event)
 allEvents = mapFromList $ map
   (cbCardCode &&& (curry . cbCardBuilder))
   $(buildEntityLookupList "Event")

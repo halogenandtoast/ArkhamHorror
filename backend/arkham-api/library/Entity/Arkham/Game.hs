@@ -5,22 +5,44 @@ module Entity.Arkham.Game
   ( module Entity.Arkham.Game
   ) where
 
+import ClassyPrelude
+
 import Api.Arkham.Types.MultiplayerVariant
 import Arkham.Types.Game
 import Arkham.Types.Message
-import ClassyPrelude
+import Data.Aeson.Diff
+import Data.Aeson.Types
 import Data.UUID
 import Database.Persist.Postgresql.JSON ()
+import Database.Persist.Sql
 import Database.Persist.TH
 import Json
 import Orphans ()
+
+data Choice = Choice
+  { choicePatch :: Patch
+  , choiceMessages :: [Message]
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+instance PersistFieldSql [Choice] where
+  sqlType _ = SqlString
+
+instance PersistField [Choice] where
+  toPersistValue = toPersistValue . toJSON
+  fromPersistValue val =
+    fromPersistValue val >>= fmapLeft pack . parseEither parseJSON
+   where
+    fmapLeft f (Left a) = Left (f a)
+    fmapLeft _ (Right a) = Right a -- Rewrap to fix types.
 
 share [mkPersist sqlSettings] [persistLowerCase|
 ArkhamGame sql=arkham_games
   Id UUID default=uuid_generate_v4()
   name Text
   currentData Game
-  queue [Message]
+  choices [Choice]
   log [Text]
   multiplayerVariant MultiplayerVariant
   deriving Generic Show

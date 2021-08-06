@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f5955026867498770a62b536ab97b5f2e16a1dffa968da0342ec1e92d40dabcd
+-- hash: ab80c2839f7d578698ec73e0a590b48e736e53aa68d330808b1b88323b8cffc5
 
 name:           arkham-api
 version:        0.0.0
@@ -24,6 +24,7 @@ library
   exposed-modules:
       Api.Arkham.Helpers
       Api.Arkham.Types.MultiplayerVariant
+      Api.Handler.Arkham.Cards
       Api.Handler.Arkham.Decks
       Api.Handler.Arkham.Games
       Api.Handler.Arkham.PendingGames

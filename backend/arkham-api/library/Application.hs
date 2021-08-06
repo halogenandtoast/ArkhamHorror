@@ -52,6 +52,7 @@ import WaiAppStatic.Types (StaticSettings(..), unsafeToPiece)
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
 
+import Api.Handler.Arkham.Cards
 import Api.Handler.Arkham.Decks
 import Api.Handler.Arkham.Games
 import Api.Handler.Arkham.PendingGames

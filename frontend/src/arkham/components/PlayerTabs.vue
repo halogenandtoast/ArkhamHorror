@@ -35,6 +35,7 @@ import { defineComponent, ref, watchEffect, inject, Ref } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import Tab from '@/arkham/components/Tab.vue';
 import Player from '@/arkham/components/Player.vue';
+import * as ArkhamGame from '@/arkham/types/Game';
 import { Investigator } from '@/arkham/types/Investigator';
 
 export default defineComponent({
@@ -52,11 +53,15 @@ export default defineComponent({
     const solo = inject<Ref<boolean>>('solo')
     const switchInvestigator = inject<((i: string) => void)>('switchInvestigator')
 
+    const hasChoices = (iid: string) => ArkhamGame.choices(props.game, iid).length > 0
+
     function tabClass(index: string) {
+      const pid = props.players[index].contents.id
       return [
         {
           'tab--selected': index === selectedTab.value,
-          'tab--active-player': props.players[index].contents.id == props.activePlayerId,
+          'tab--active-player': pid == props.activePlayerId,
+          'tab--has-actions': pid !== props.investigatorId && hasChoices(props.players[index].contents.id),
         },
         `tab--${props.players[index].contents.class}`,
       ]
@@ -73,9 +78,10 @@ export default defineComponent({
       }
     }
 
+
     watchEffect(() => selectedTab.value = props.investigatorId)
 
-    return { selectedTab, selectTab, selectTabExtended, tabClass }
+    return { hasChoices, selectedTab, selectTab, selectTabExtended, tabClass }
   }
 })
 </script>
@@ -137,6 +143,10 @@ ul.tabs__header > li.tab--selected {
     content: "\0058";
     margin-right: 5px;
   }
+}
+
+.tab--has-actions {
+  box-shadow: 0 0 5px #ff00ff;
 }
 
 .player-info {

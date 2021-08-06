@@ -52,6 +52,7 @@ export default defineComponent({
         return false
       }
       const { contents } = ability.value.contents[1].type.contents[1]
+      console.log(contents)
       if (typeof contents.some == 'function') {
         return contents.some((cost: Cost) => cost.tag == "ActionCost" && cost.contents == 2)
       } else {
@@ -88,6 +89,15 @@ export default defineComponent({
   &:before {
     font-family: "arkham";
     content: "\0049";
+    margin-right: 5px;
+  }
+}
+
+.double-ability-button {
+  background-color: #555;
+  &:before {
+    font-family: "arkham";
+    content: "\0049\0049";
     margin-right: 5px;
   }
 }

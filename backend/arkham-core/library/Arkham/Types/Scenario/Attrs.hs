@@ -209,6 +209,7 @@ findLocationKey locationMatcher locations = fst
     LocationWithClues -> error ":("
     NotYourLocation -> error ":("
     LocationWithoutTreacheryWithCardCode _ -> error ":("
+    FirstLocation _ -> error ":("
 
 type ScenarioAttrsRunner env
   = ( HasSet InScenarioInvestigatorId env ()

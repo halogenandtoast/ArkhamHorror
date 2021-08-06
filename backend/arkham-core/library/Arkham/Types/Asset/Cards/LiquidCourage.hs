@@ -60,7 +60,7 @@ instance
       lid <- getId @LocationId iid
       iids <- getSetList @InvestigatorId lid
       let
-        abilityEffect iid' =
+        doAbilityEffect iid' =
           [ HealHorror (InvestigatorTarget iid') 1
           , BeginSkillTest
             iid'
@@ -72,11 +72,11 @@ instance
           ]
       a <$ case iids of
         [] -> pure ()
-        [iid'] -> pushAll $ abilityEffect iid'
+        [iid'] -> pushAll $ doAbilityEffect iid'
         _ -> push
           (chooseOne
             iid
-            [ TargetLabel (InvestigatorTarget iid') (abilityEffect iid')
+            [ TargetLabel (InvestigatorTarget iid') (doAbilityEffect iid')
             | iid' <- iids
             ]
           )

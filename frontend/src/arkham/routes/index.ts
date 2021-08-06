@@ -1,5 +1,6 @@
 import Game from '@/arkham/views/Game.vue';
 import Decks from '@/arkham/views/Decks.vue';
+import Investigators from '@/arkham/views/Investigators.vue';
 import Cards from '@/arkham/views/Cards.vue';
 import JoinGame from '@/arkham/views/JoinGame.vue';
 import ReplayGame from '@/arkham/views/ReplayGame.vue';
@@ -10,6 +11,13 @@ export default [
     path: '/cards',
     name: 'Cards',
     component: Cards,
+    meta: { requiresAuth: true },
+    props: true,
+  },
+  {
+    path: '/investigators',
+    name: 'Investigators',
+    component: Investigators,
     meta: { requiresAuth: true },
     props: true,
   },

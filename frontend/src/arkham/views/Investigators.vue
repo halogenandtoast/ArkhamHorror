@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="cards">
     <img class="card" v-for="card in cards" :key="card.cardCode" :src="image(card)" />
   </div>
 </template>
@@ -40,5 +40,16 @@ export default defineComponent({
 <style scoped lang="scss">
 .card {
   width: 300px;
+  margin: 10px;
+  border-radius: 10px;
+  flex-grow: 1;
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  align-content: flex-start;
+  padding: 10px;
 }
 </style>

@@ -42,27 +42,6 @@ body {
   width: 100%;
 }
 
-#nav {
-  background-color: #292C45;
-  color: #f2f2f2;
-  height: 40px;
-  box-sizing: border-box;
-  padding: 10px 15px;
-  display: flex;
-
-  a {
-    font-weight: bold;
-    color: #5a6e34;
-    text-decoration: none;
-    &:hover {
-      color: #6E8640;
-    }
-  }
-
-  .home-link {
-    flex-grow: 1;
-  }
-}
 
 body {
   background: #26283D;

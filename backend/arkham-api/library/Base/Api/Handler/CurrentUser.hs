@@ -5,8 +5,11 @@ module Base.Api.Handler.CurrentUser where
 
 import Import
 
-newtype CurrentUser = CurrentUser { username :: Text }
-  deriving stock (Generic)
+data CurrentUser = CurrentUser
+  { username :: Text
+  , email :: Text
+  }
+  deriving stock Generic
 
 instance ToJSON CurrentUser
 
@@ -17,4 +20,4 @@ getApiV1CurrentUserR = do
     Nothing -> notAuthenticated
     Just userId -> runDB $ do
       User {..} <- get404 userId
-      pure $ CurrentUser userUsername
+      pure $ CurrentUser userUsername userEmail

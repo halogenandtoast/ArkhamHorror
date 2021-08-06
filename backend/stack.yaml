@@ -13,8 +13,6 @@ resolver: lts-18.0
 #
 ghc-options:
   "$locals":
-    -ddump-to-file
-    -ddump-hi
     -fhide-source-paths
     -Weverything
     -Wno-missing-exported-signatures

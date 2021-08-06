@@ -785,7 +785,7 @@ type CanCheckPlayable env
     )
 
 getIsPlayable
-  :: (MonadReader env m, MonadIO m, CanCheckPlayable env)
+  :: (HasCallStack, MonadReader env m, MonadIO m, CanCheckPlayable env)
   => InvestigatorId
   -> [Window]
   -> Card
@@ -795,7 +795,7 @@ getIsPlayable iid windows c = do
   getIsPlayableWithResources iid availableResources windows c
 
 getIsPlayableWithResources
-  :: (MonadReader env m, MonadIO m, CanCheckPlayable env)
+  :: (HasCallStack, MonadReader env m, MonadIO m, CanCheckPlayable env)
   => InvestigatorId
   -> Int
   -> [Window]

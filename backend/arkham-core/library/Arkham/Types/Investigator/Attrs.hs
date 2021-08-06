@@ -507,7 +507,7 @@ getCanAfford a@InvestigatorAttrs {..} actionType = do
   pure $ actionCost <= investigatorRemainingActions
 
 getFastIsPlayable
-  :: (MonadReader env m, CanCheckPlayable env, MonadIO m)
+  :: (HasCallStack, MonadReader env m, CanCheckPlayable env, MonadIO m)
   => InvestigatorAttrs
   -> [Window]
   -> Card
@@ -538,7 +538,7 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
     else go (m - 1) (d, PlayerCard c : h, cs)
 
 getPlayableCards
-  :: (MonadReader env m, CanCheckPlayable env, MonadIO m)
+  :: (HasCallStack, MonadReader env m, CanCheckPlayable env, MonadIO m)
   => InvestigatorAttrs
   -> [Window]
   -> m [Card]
@@ -1470,7 +1470,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     a <$ push (MoveTo investigatorId lid)
   MoveTo iid lid | iid == investigatorId -> do
     connectedLocations <- mapSet unConnectedLocationId <$> getSet lid
-    pushAll [WhenWillEnterLocation iid lid, WhenEnterLocation iid lid, AfterEnterLocation iid lid]
+    pushAll
+      [ WhenWillEnterLocation iid lid
+      , WhenEnterLocation iid lid
+      , AfterEnterLocation iid lid
+      ]
     pure $ a & locationL .~ lid & connectedLocationsL .~ connectedLocations
   AddedConnection lid1 lid2 | lid1 == investigatorLocation ->
     pure $ a & (connectedLocationsL %~ insertSet lid2)

@@ -534,11 +534,15 @@ getInvestigatorsMatching = \case
       <$> getGame
 
 getLocationMatching
-  :: (MonadReader env m, HasGame env) => LocationMatcher -> m (Maybe Location)
+  :: (HasCallStack, MonadReader env m, HasGame env)
+  => LocationMatcher
+  -> m (Maybe Location)
 getLocationMatching = (listToMaybe <$>) . getLocationsMatching
 
 getLocationsMatching
-  :: (MonadReader env m, HasGame env) => LocationMatcher -> m [Location]
+  :: (HasCallStack, MonadReader env m, HasGame env)
+  => LocationMatcher
+  -> m [Location]
 getLocationsMatching = \case
   LocationWithLabel label ->
     filter ((== label) . L.unLabel . toLocationLabel)
@@ -576,35 +580,25 @@ getLocationsMatching = \case
       . toList
       . view locationsL
       =<< getGame
-  FarthestLocationFromYou matcher -> do
-    start <- locationFor . view activeInvestigatorIdL =<< getGame
+  FarthestLocationFromYou matcher -> guardYourLocation $ \start -> do
     matchingLocationIds <- map toId <$> getLocationsMatching matcher
     matches <- getLongestPath start (pure . (`elem` matchingLocationIds))
     filter ((`elem` matches) . toId) . toList . view locationsL <$> getGame
-  AccessibleLocation -> do
-    yourLocation <-
-      getLocation =<< locationFor . view activeInvestigatorIdL =<< getGame
-    accessibleLocations <- getSet (toId yourLocation)
+  AccessibleLocation -> guardYourLocation $ \yourLocation -> do
+    accessibleLocations <- getSet yourLocation
     filter ((`member` accessibleLocations) . AccessibleLocationId . toId)
       . toList
       . view locationsL
       <$> getGame
-  ConnectedLocation -> do
-    yourLocation <-
-      getLocation =<< locationFor . view activeInvestigatorIdL =<< getGame
-    connectedLocations <- getSet (toId yourLocation)
+  ConnectedLocation -> guardYourLocation $ \yourLocation -> do
+    connectedLocations <- getSet yourLocation
     filter ((`member` connectedLocations) . ConnectedLocationId . toId)
       . toList
       . view locationsL
       <$> getGame
-  YourLocation -> do
-    yourLocation <-
-      getLocation =<< locationFor . view activeInvestigatorIdL =<< getGame
-    pure [yourLocation]
-  NotYourLocation -> do
-    yourLocation <-
-      getLocation =<< locationFor . view activeInvestigatorIdL =<< getGame
-    filter (/= yourLocation) . toList . view locationsL <$> getGame
+  YourLocation -> guardYourLocation $ fmap pure . getLocation
+  NotYourLocation -> guardYourLocation $ \yourLocation ->
+    filter ((/= yourLocation) . toId) . toList . view locationsL <$> getGame
   LocationWithTrait trait ->
     filter hasMatchingTrait . toList . view locationsL <$> getGame
     where hasMatchingTrait = (trait `member`) . toTraits
@@ -615,6 +609,11 @@ getLocationsMatching = \case
       <$> (setFromList . map toId <$> getLocationsMatching x)
       <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
     filter ((`member` matches) . toId) . toList . view locationsL <$> getGame
+ where
+  guardYourLocation body = do
+    mlid <- locationFor . view activeInvestigatorIdL =<< getGame
+    if mlid /= LocationId (CardId nil) then body mlid else pure []
+
 
 getAssetsMatching
   :: (HasCallStack, MonadReader env m, HasGame env) => AssetMatcher -> m [Asset]

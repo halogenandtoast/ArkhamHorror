@@ -1787,13 +1787,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             (chooseOne iid $ map (Run . (: [RunWindow iid windows])) actions)
         else a <$ push
           (chooseOne iid
-          $ [ Run
-                [ PayCardCost iid (toCardId c)
-                , if isJust (cdFastWindow $ toCardDef c)
-                  then PlayFastEvent iid (toCardId c) Nothing windows
-                  else PlayCard iid (toCardId c) Nothing False
-                , RunWindow iid windows
-                ]
+          $ [ Run $ if isJust (cdFastWindow $ toCardDef c)
+                then [PlayFastEvent iid (toCardId c) Nothing windows]
+                else
+                  [ PayCardCost iid (toCardId c)
+                    , PlayCard iid (toCardId c) Nothing False
+                    ]
+                    <> [RunWindow iid windows]
             | c <- playableCards
             ]
           <> map (Run . (: [RunWindow iid windows])) actions

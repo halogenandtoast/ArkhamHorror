@@ -42,14 +42,11 @@ export default defineComponent({
   width: 300px;
   margin: 10px;
   border-radius: 10px;
-  flex-grow: 1;
 }
 
 .cards {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  align-content: flex-start;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   padding: 10px;
 }
 </style>

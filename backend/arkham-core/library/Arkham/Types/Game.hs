@@ -3142,6 +3142,7 @@ runGameMessage msg g = case msg of
           | skillType' <- xs
           ]
         )
+  BeforeSkillTest iid _ _ -> pure $ g & activeInvestigatorIdL .~ iid
   BeginSkillTestAfterFast iid source target maction skillType difficulty -> do
     windowMsgs <- checkWindows [FastPlayerWindow]
     pushAll $ windowMsgs <> [BeforeSkillTest iid skillType difficulty]

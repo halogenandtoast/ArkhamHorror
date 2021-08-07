@@ -17,6 +17,7 @@ import Arkham.Types.Classes.HasQueue as X
 import Arkham.Types.Classes.HasRecord as X
 import Arkham.Types.Classes.HasTokenValue as X
 import Arkham.Types.Classes.RunMessage as X
+import Arkham.Types.History
 import Arkham.Types.Id
 import Arkham.Types.Keyword
 import Arkham.Types.Matcher
@@ -44,11 +45,8 @@ class HasPhase env where
 class HasStep env a where
   getStep :: MonadReader env m => m a
 
-class HasRoundHistory env where
-  getRoundHistory :: MonadReader env m => m [Message]
-
-class HasPhaseHistory env where
-  getPhaseHistory :: MonadReader env m => m [Message]
+class HasHistory env where
+  getHistory :: MonadReader env m => HistoryType -> InvestigatorId -> m History
 
 class (Hashable set, Eq set) => HasSet set env a where
   getSet :: (HasCallStack, MonadReader env m) => a -> m (HashSet set)
@@ -106,6 +104,7 @@ type HasCostPayment env
     , HasCount UsesCount env AssetId
     , HasId (Maybe LocationId) env LocationMatcher
     , HasList HandCard env InvestigatorId
+    , HasList TakenAction env InvestigatorId
     , Query AssetMatcher env
     , HasSet InvestigatorId env LocationId
     )
@@ -141,6 +140,7 @@ type ActionRunner env
     , HasSet LocationId env LocationMatcher
     , HasSet TreacheryId env LocationId
     , HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)
+    , HasList TakenAction env InvestigatorId
     , Query AssetMatcher env
     , GetCardDef env EnemyId
     , HasActions env ActionType

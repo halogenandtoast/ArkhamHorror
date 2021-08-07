@@ -9,6 +9,7 @@ import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
+import Arkham.Types.History
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
@@ -30,16 +31,10 @@ instance TreacheryRunner env => RunMessage env TerrorFromBeyond where
   runMessage msg t@(TerrorFromBeyond attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       iids <- getSetList ()
-      phaseHistory <- getPhaseHistory
+      phaseHistory <- mconcat <$> traverse (getHistory PhaseHistory) iids
       let
         secondCopy =
-          count
-              (\case
-                DrewTreachery _ card | toCardCode card == "02101" -> True
-                _ -> False
-              )
-              phaseHistory
-            >= 2
+          toCardCode attrs `elem` historyTreacheriesDrawn phaseHistory
       iidsWithAssets <- traverse
         (traverseToSnd $ (map unHandCardId <$>) . getSetList . (, AssetType))
         iids

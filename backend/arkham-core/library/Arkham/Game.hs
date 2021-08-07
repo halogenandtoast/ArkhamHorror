@@ -71,8 +71,8 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
         investigatorsList
         difficulty
       , gameWindowDepth = 0
-      , gameRoundMessageHistory = []
-      , gamePhaseMessageHistory = []
+      , gameRoundHistory = mempty
+      , gamePhaseHistory = mempty
       , gameInitialSeed = seed
       , gameSeed = seed
       , gameMode = mode
@@ -289,15 +289,7 @@ runMessages isReplay = do
                 runGameEnvT
                 (toExternalGame g askMap >>= atomicWriteIORef gameRef)
             _ -> do
-              g' <- toGameEnv >>= flip
-                runGameEnvT
-                (runMessage
-                  msg
-                  (g
-                  & (phaseMessageHistoryL %~ (msg :))
-                  & (roundMessageHistoryL %~ (msg :))
-                  )
-                )
+              g' <- toGameEnv >>= flip runGameEnvT (runMessage msg g)
               atomicWriteIORef gameRef g'
               liftIO $ logger msg
               runMessages isReplay

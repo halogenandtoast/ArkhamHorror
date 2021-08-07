@@ -15,6 +15,7 @@ import Arkham.Types.Trait
 
 type TreacheryRunner env
   = ( HasQueue env
+    , HasHistory env
     , Query AssetMatcher env
     , HasCount ActsRemainingCount env ()
     , HasCount CardCount env InvestigatorId
@@ -34,7 +35,6 @@ type TreacheryRunner env
     , HasId LocationId env InvestigatorId
     , HasList UsedAbility env ()
     , HasList DiscardedPlayerCard env InvestigatorId
-    , HasPhaseHistory env
     , HasSet ActId env ()
     , HasSet ActId env TreacheryCardCode
     , HasSet AgendaId env ()

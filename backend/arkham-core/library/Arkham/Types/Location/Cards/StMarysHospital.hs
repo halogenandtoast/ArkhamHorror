@@ -42,7 +42,7 @@ ability attrs =
 instance ActionRunner env => HasActions env StMarysHospital where
   getActions iid NonFast (StMarysHospital attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs
-    $ pure [locationAbility iid (ability attrs)]
+    $ pure [locationAbility (ability attrs)]
   getActions iid window (StMarysHospital attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env StMarysHospital where

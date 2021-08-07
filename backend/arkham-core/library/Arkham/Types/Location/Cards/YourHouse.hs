@@ -37,7 +37,7 @@ ability attrs =
 instance ActionRunner env => HasActions env YourHouse where
   getActions iid NonFast (YourHouse attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs
-    $ pure [locationAbility iid (ability attrs)]
+    $ pure [locationAbility (ability attrs)]
   getActions iid window (YourHouse attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env YourHouse where

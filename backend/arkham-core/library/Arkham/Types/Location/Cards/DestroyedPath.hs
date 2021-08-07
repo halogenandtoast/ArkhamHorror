@@ -51,14 +51,11 @@ investigateAbility a = mkAbility
 instance ActionRunner env => HasActions env DestroyedPath where
   getActions iid NonFast (DestroyedPath attrs) =
     withBaseActions iid NonFast attrs
-      $ pure [locationAbility iid (investigateAbility attrs)]
+      $ pure [locationAbility (investigateAbility attrs)]
   getActions iid (AfterRevealLocation who) (DestroyedPath attrs) | iid == who =
     do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid
-      pure
-        [ locationAbility iid (forcedAbility attrs)
-        | actionRemainingCount == 0
-        ]
+      pure [ locationAbility (forcedAbility attrs) | actionRemainingCount == 0 ]
   getActions iid window (DestroyedPath attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env DestroyedPath where

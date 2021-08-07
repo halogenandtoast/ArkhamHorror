@@ -48,8 +48,7 @@ ability attrs =
 
 instance ActionRunner env => HasActions env WhateleyRuins_251 where
   getActions iid NonFast (WhateleyRuins_251 attrs) | locationRevealed attrs =
-    withBaseActions iid NonFast attrs
-      $ pure [locationAbility iid (ability attrs)]
+    withBaseActions iid NonFast attrs $ pure [locationAbility (ability attrs)]
   getActions i window (WhateleyRuins_251 attrs) = getActions i window attrs
 
 instance LocationRunner env => RunMessage env WhateleyRuins_251 where

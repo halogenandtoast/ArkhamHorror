@@ -54,7 +54,7 @@ instance ActionRunner env => HasActions env WhateleyRuins_250 where
       investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
       pure
-        [ locationAbility iid (ability attrs)
+        [ locationAbility (ability attrs)
         | investigatorsWithClues && anyAbominations
         ]
   getActions iid window (WhateleyRuins_250 attrs) = getActions iid window attrs

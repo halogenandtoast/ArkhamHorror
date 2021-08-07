@@ -39,7 +39,7 @@ forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
 
 instance ActionRunner env => HasActions env DimensionalGap where
   getActions iid (AfterRevealLocation who) (DimensionalGap attrs) | iid == who =
-    pure [locationAbility iid (forcedAbility attrs)]
+    pure [locationAbility (forcedAbility attrs)]
   getActions iid window (DimensionalGap attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env DimensionalGap where

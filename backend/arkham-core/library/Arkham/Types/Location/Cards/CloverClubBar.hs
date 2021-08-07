@@ -48,7 +48,7 @@ instance ActionRunner env => HasActions env CloverClubBar where
   getActions iid NonFast (CloverClubBar attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ do
       step <- unActStep <$> getStep
-      pure [ locationAbility iid (ability attrs) | step == 1 ]
+      pure [ locationAbility (ability attrs) | step == 1 ]
   getActions iid window (CloverClubBar attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env CloverClubBar where

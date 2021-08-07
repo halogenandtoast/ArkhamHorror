@@ -10,8 +10,8 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.Matcher
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Resolution
@@ -41,7 +41,7 @@ ability attrs = mkAbility
 instance ActionRunner env => HasActions env Dormitories where
   getActions iid FastPlayerWindow (Dormitories attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid FastPlayerWindow attrs
-    $ pure [locationAbility iid (ability attrs)]
+    $ pure [locationAbility (ability attrs)]
   getActions iid window (Dormitories attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env Dormitories where

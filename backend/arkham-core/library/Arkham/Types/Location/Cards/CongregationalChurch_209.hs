@@ -43,7 +43,7 @@ ability attrs = mkAbility
 instance ActionRunner env => HasActions env CongregationalChurch_209 where
   getActions iid NonFast (CongregationalChurch_209 attrs)
     | locationRevealed attrs = withBaseActions iid NonFast attrs
-    $ pure [locationAbility iid (ability attrs)]
+    $ pure [locationAbility (ability attrs)]
   getActions iid FastPlayerWindow (CongregationalChurch_209 attrs)
     | locationRevealed attrs
     = withBaseActions iid FastPlayerWindow attrs

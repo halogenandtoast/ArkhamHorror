@@ -42,8 +42,7 @@ ability attrs = base { abilityLimit = PlayerLimit PerGame 1 }
 instance ActionRunner env => HasActions env MiskatonicUniversityMiskatonicMuseum where
   getActions iid NonFast (MiskatonicUniversityMiskatonicMuseum attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid NonFast attrs
-      $ pure [locationAbility iid (ability attrs)]
+    = withBaseActions iid NonFast attrs $ pure [locationAbility (ability attrs)]
   getActions iid window (MiskatonicUniversityMiskatonicMuseum attrs) =
     getActions iid window attrs
 

@@ -56,8 +56,7 @@ ability attrs = mkAbility
 
 instance ActionRunner env => HasActions env ParlorCar where
   getActions iid NonFast (ParlorCar attrs) | locationRevealed attrs =
-    withBaseActions iid NonFast attrs
-      $ pure [locationAbility iid (ability attrs)]
+    withBaseActions iid NonFast attrs $ pure [locationAbility (ability attrs)]
   getActions iid window (ParlorCar attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env ParlorCar where

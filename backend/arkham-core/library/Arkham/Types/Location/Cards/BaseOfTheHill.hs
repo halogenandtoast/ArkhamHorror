@@ -48,7 +48,7 @@ ability attrs =
 instance ActionRunner env => HasActions env BaseOfTheHill where
   getActions iid NonFast (BaseOfTheHill attrs) | locationRevealed attrs = do
     actions <- withResignAction iid NonFast attrs
-    pure $ locationAbility iid (ability attrs) : actions
+    pure $ locationAbility (ability attrs) : actions
   getActions iid window (BaseOfTheHill attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env BaseOfTheHill where

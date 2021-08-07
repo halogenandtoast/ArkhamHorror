@@ -53,8 +53,7 @@ ability attrs =
 
 instance ActionRunner env => HasActions env SleepingCar where
   getActions iid NonFast (SleepingCar attrs) | locationRevealed attrs =
-    withBaseActions iid NonFast attrs
-      $ pure [locationAbility iid (ability attrs)]
+    withBaseActions iid NonFast attrs $ pure [locationAbility (ability attrs)]
   getActions iid window (SleepingCar attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env SleepingCar where

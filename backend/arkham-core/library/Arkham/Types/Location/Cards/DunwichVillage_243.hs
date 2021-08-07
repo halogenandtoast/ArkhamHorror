@@ -15,8 +15,8 @@ import Arkham.Types.Exception
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.Matcher
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Window
@@ -46,7 +46,7 @@ instance ActionRunner env => HasActions env DunwichVillage_243 where
     broodOfYogSothoth <- getSet @EnemyId (CardCode "02255")
     pure
       $ baseActions
-      <> [ locationAbility iid (ability attrs) | notNull broodOfYogSothoth ]
+      <> [ locationAbility (ability attrs) | notNull broodOfYogSothoth ]
   getActions iid window (DunwichVillage_243 attrs) =
     getActions iid window attrs
 

@@ -41,10 +41,7 @@ instance ActionRunner env => HasActions env SlaughteredWoods where
   getActions iid (AfterRevealLocation who) (SlaughteredWoods attrs)
     | iid == who = do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid
-      pure
-        [ locationAbility iid (forcedAbility attrs)
-        | actionRemainingCount == 0
-        ]
+      pure [ locationAbility (forcedAbility attrs) | actionRemainingCount == 0 ]
   getActions iid window (SlaughteredWoods attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env SlaughteredWoods where

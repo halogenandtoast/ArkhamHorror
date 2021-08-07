@@ -53,7 +53,7 @@ instance ActionRunner env => HasActions env ColdSpringGlen_244 where
       investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
       pure
-        [ locationAbility iid (ability attrs)
+        [ locationAbility (ability attrs)
         | investigatorsWithClues && anyAbominations
         ]
   getActions iid window (ColdSpringGlen_244 attrs) =

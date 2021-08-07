@@ -54,7 +54,7 @@ ability attrs =
 instance ActionRunner env => HasActions env AscendingPath where
   getActions iid NonFast (AscendingPath attrs) =
     withBaseActions iid NonFast attrs
-      $ pure [ locationAbility iid (ability attrs) | locationRevealed attrs ]
+      $ pure [ locationAbility (ability attrs) | locationRevealed attrs ]
   getActions iid window (AscendingPath attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env AscendingPath where

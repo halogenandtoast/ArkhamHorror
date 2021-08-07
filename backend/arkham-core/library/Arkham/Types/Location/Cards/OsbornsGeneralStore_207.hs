@@ -43,7 +43,7 @@ ability attrs = mkAbility
 instance ActionRunner env => HasActions env OsbornsGeneralStore_207 where
   getActions iid NonFast (OsbornsGeneralStore_207 attrs)
     | locationRevealed attrs = withBaseActions iid NonFast attrs
-    $ pure [locationAbility iid (ability attrs)]
+    $ pure [locationAbility (ability attrs)]
   getActions iid FastPlayerWindow (OsbornsGeneralStore_207 attrs)
     | locationRevealed attrs = withBaseActions iid FastPlayerWindow attrs $ pure
       [ drawCardUnderneathAction iid attrs

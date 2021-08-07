@@ -47,7 +47,7 @@ instance ActionRunner env => HasActions env FloodedSquare where
       counterClockwiseLocation <- getCounterClockwiseLocation (toId attrs)
       nonEliteEnemies <- getSet @EnemyId $ EnemyMatchAll
         [NonEliteEnemy, EnemyAtLocation counterClockwiseLocation]
-      pure [ UseAbility iid (ability attrs) | notNull nonEliteEnemies ]
+      pure [ ability attrs | notNull nonEliteEnemies ]
   getActions iid window (FloodedSquare attrs) = getActions iid window attrs
 
 instance

@@ -40,8 +40,7 @@ forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
 instance ActionRunner env => HasActions env EerieGlade where
   getActions iid (AfterRevealLocation who) (EerieGlade attrs) | iid == who = do
     actionRemainingCount <- unActionRemainingCount <$> getCount iid
-    pure
-      [ locationAbility iid (forcedAbility attrs) | actionRemainingCount > 0 ]
+    pure [ locationAbility (forcedAbility attrs) | actionRemainingCount > 0 ]
   getActions iid window (EerieGlade attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env EerieGlade where

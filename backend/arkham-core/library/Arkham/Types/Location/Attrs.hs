@@ -337,17 +337,16 @@ withResignAction
   -> location
   -> m [Ability]
 withResignAction iid NonFast x | locationRevealed (toAttrs x) =
-  withBaseActions iid NonFast attrs $ pure [locationResignAction iid attrs]
+  withBaseActions iid NonFast attrs $ pure [locationResignAction attrs]
   where attrs = toAttrs x
 withResignAction iid window x = getActions iid window (toAttrs x)
 
-locationResignAction :: InvestigatorId -> LocationAttrs -> Ability
-locationResignAction iid attrs =
-  toLocationAbility attrs (resignAction iid attrs)
+locationResignAction :: LocationAttrs -> Ability
+locationResignAction attrs = toLocationAbility attrs (resignAction attrs)
 
-drawCardUnderneathLocationAction :: InvestigatorId -> LocationAttrs -> Ability
-drawCardUnderneathLocationAction iid attrs =
-  toLocationAbility attrs (drawCardUnderneathAction iid attrs)
+drawCardUnderneathLocationAction :: LocationAttrs -> Ability
+drawCardUnderneathLocationAction attrs =
+  toLocationAbility attrs (drawCardUnderneathAction attrs)
 
 toLocationAbility :: LocationAttrs -> Ability -> Ability
 toLocationAbility attrs ability = ability
@@ -355,8 +354,8 @@ toLocationAbility attrs ability = ability
     (fromMaybe mempty (abilityRestrictions ability) <> OnLocation (toId attrs))
   }
 
-locationAbility :: InvestigatorId -> Ability -> Ability
-locationAbility iid ability = case abilitySource ability of
+locationAbility :: Ability -> Ability
+locationAbility ability = case abilitySource ability of
   LocationSource lid -> ability
     { abilityRestrictions = Just
       (fromMaybe mempty (abilityRestrictions ability) <> OnLocation lid)
@@ -407,15 +406,15 @@ instance ActionRunner env => HasActions env LocationAttrs where
       ]
     applyMoveCostModifiers
       :: HashSet Action.Action -> Cost -> ModifierType -> Cost
-    applyMoveCostModifiers takenActions costToEnter (ActionCostOf actionTarget n)
-      = case actionTarget of
+    applyMoveCostModifiers takenActions costs (ActionCostOf actionTarget n) =
+      case actionTarget of
         FirstOneOf as
           | Action.Move `elem` as && null
             (takenActions `intersect` setFromList as)
-          -> increaseActionCost costToEnter n
-        IsAction Action.Move -> increaseActionCost costToEnter n
+          -> increaseActionCost costs n
+        IsAction Action.Move -> increaseActionCost costs n
         _ -> costToEnter
-    applyMoveCostModifiers takenActions costToEnter _ = costToEnter
+    applyMoveCostModifiers _ costs _ = costs
   getActions _ _ _ = pure []
 
 getShouldSpawnNonEliteAtConnectingInstead

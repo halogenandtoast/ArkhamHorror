@@ -39,11 +39,9 @@ instance ActionRunner env => HasActions env AlchemyLabs where
   getActions iid NonFast (AlchemyLabs attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ do
       let
-        ability = mkAbility
-          (toSource attrs)
-          1
-          (ActionAbility (Just Action.Investigate) (ActionCost 1))
-      pure [locationAbility iid ability]
+        ability = mkAbility attrs 1
+          $ ActionAbility (Just Action.Investigate) (ActionCost 1)
+      pure [locationAbility ability]
   getActions iid window (AlchemyLabs attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env AlchemyLabs where

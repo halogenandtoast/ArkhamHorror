@@ -64,10 +64,7 @@ instance (HasList Card env ExtendedCardMatcher, ActionRunner env) => HasActions 
         )
       let assetsCount = handCount + inPlayAssetsCount
       pure
-        [ UseAbility
-            iid
-            (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
-            )
+        [ mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 1
         | (iid `member` locationInvestigators)
           && (assetsCount >= 2)
           && assetNotTaken

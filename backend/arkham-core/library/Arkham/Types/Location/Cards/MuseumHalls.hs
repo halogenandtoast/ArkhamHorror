@@ -49,28 +49,23 @@ instance ActionRunner env => HasActions env MuseumHalls where
       lid <- fromJustNote "missing location"
         <$> getLocationIdWithTitle "Museum Entrance"
       pure
-        [ UseAbility iid $ (mkAbility
-                             (ProxySource (LocationSource lid) (toSource attrs))
-                             1
-                             (ActionAbility Nothing $ ActionCost 1)
-                           )
+        [ (mkAbility
+            (ProxySource (LocationSource lid) (toSource attrs))
+            1
+            (ActionAbility Nothing $ ActionCost 1)
+          )
             { abilityRestrictions = Just (OnLocation lid)
             }
         ]
   getActions iid NonFast (MuseumHalls attrs) | revealed attrs =
     withBaseActions iid NonFast attrs $ pure
       [ locationAbility
-          iid
-          (mkAbility
-            (toSource attrs)
-            1
-            (ActionAbility Nothing $ Costs
-              [ ActionCost 1
-              , GroupClueCost
-                (PerPlayer 1)
-                (Just $ LocationWithTitle "Museum Halls")
-              ]
-            )
+          (mkAbility attrs 1 $ ActionAbility Nothing $ Costs
+            [ ActionCost 1
+            , GroupClueCost
+              (PerPlayer 1)
+              (Just $ LocationWithTitle "Museum Halls")
+            ]
           )
       ]
   getActions iid window (MuseumHalls attrs) = getActions iid window attrs

@@ -648,9 +648,8 @@ hasModifier InvestigatorAttrs { investigatorId } m = elem m <$> getModifiers
   (InvestigatorSource investigatorId)
   (InvestigatorTarget investigatorId)
 
-isForced :: Message -> Bool
-isForced (UseAbility _ Ability { abilityType }) = abilityType == ForcedAbility
-isForced _ = False
+isForced :: Ability -> Bool
+isForced Ability { abilityType } = abilityType == ForcedAbility
 
 findCard :: CardId -> InvestigatorAttrs -> Card
 findCard cardId a =
@@ -1023,16 +1022,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     push (CheckWindow iid [AfterEnemyEvaded iid eid])
     pure $ a & engagedEnemiesL %~ deleteSet eid
   AddToVictory (EnemyTarget eid) -> pure $ a & engagedEnemiesL %~ deleteSet eid
-  ChooseInvestigate iid source action | iid == investigatorId -> do
+  -- TODO: WARNING: HERE BE DRAGONS
+  ChooseInvestigate iid _source _action | iid == investigatorId -> do
     actions <- getActions iid NonFast ()
     let
       investigateActions = mapMaybe
-        \case
-          Investigate iid' lid _ skillType _ ->
-            Just $ Investigate iid' lid source skillType action
+        (\ability -> case abilityType ability of
+          ActionAbility (Just Action.Investigate) _ -> Just ability
           _ -> Nothing
+        )
         actions
-    a <$ push (chooseOne iid investigateActions)
+    a <$ push (chooseOne iid $ map (UseAbility iid) investigateActions)
   ChooseEvadeEnemy iid source skillType isAction | iid == investigatorId ->
     a <$ push
       (chooseOne
@@ -1727,7 +1727,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                  Run [SkillTestUncommitCard iid cardId, beginMessage]
                )
                committedCardIds
-          <> map (\action -> Run [action, beginMessage]) actions
+          <> map
+               (\action -> Run [UseAbility iid action, beginMessage])
+               actions
           <> triggerMessage
           )
         )
@@ -1815,9 +1817,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     playableCards <- getPlayableCards a windows
     if notNull playableCards || notNull actions
       then if any isForced actions
-        then
-          a <$ push
-            (chooseOne iid $ map (Run . (: [RunWindow iid windows])) actions)
+        then a <$ push
+          (chooseOne iid
+          $ map (Run . (: [RunWindow iid windows]) . UseAbility iid) actions
+          )
         else a <$ push
           (chooseOne iid
           $ [ Run $ if isJust (cdFastWindow $ toCardDef c)
@@ -1829,7 +1832,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                     <> [RunWindow iid windows]
             | c <- playableCards
             ]
-          <> map (Run . (: [RunWindow iid windows])) actions
+          <> map (Run . (: [RunWindow iid windows]) . UseAbility iid) actions
           <> [Continue "Skip playing fast cards or using reactions"]
           )
       else pure a
@@ -1974,7 +1977,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       -- future so we may want to make this more versatile
       unless (null actions) $ push
         (chooseOne iid
-        $ actions
+        $ map (UseAbility iid) actions
         <> [Continue "Skip playing fast cards or using reactions"]
         )
       push (FocusCards $ map PlayerCard cards)
@@ -2028,7 +2031,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   PlayerWindow iid additionalActions isAdditional | iid == investigatorId -> do
     actions <- getActions iid NonFast ()
     if any isForcedAction actions
-      then a <$ push (chooseOne iid actions)
+      then a <$ push (chooseOne iid $ map (UseAbility iid) actions)
       else do
         fastActions <- getActions iid (DuringTurn iid) ()
         playerWindowActions <- getActions iid FastPlayerWindow ()
@@ -2085,9 +2088,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                , isPlayable c && isDynamic c
                ]
             <> [ChooseEndTurn iid]
-            <> actions
-            <> fastActions
-            <> playerWindowActions
+            <> map (UseAbility iid) actions
+            <> map (UseAbility iid) fastActions
+            <> map (UseAbility iid) playerWindowActions
             )
           )
   PlayerWindow iid additionalActions isAdditional | iid /= investigatorId -> do
@@ -2129,8 +2132,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                  | c <- handCards
                  , fastIsPlayable c && isDynamic c
                  ]
-              <> fastActions
-              <> playerWindowActions
+              <> map (UseAbility investigatorId) fastActions
+              <> map (UseAbility investigatorId) playerWindowActions
         a <$ unless
           (null choices)
           (push $ AskPlayer $ chooseOne investigatorId choices)

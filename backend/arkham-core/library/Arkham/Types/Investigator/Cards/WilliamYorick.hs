@@ -71,9 +71,7 @@ instance InvestigatorRunner env => HasActions env WilliamYorick where
           targets
         writeIORef williamYorickRecursionLock False
         pure
-          [ UseAbility i (mkAbility attrs 1 $ ReactionAbility Free)
-          | notNull playableTargets
-          ]
+          [ mkAbility attrs 1 $ ReactionAbility Free | notNull playableTargets ]
   getActions i window (WilliamYorick attrs) = getActions i window attrs
 
 

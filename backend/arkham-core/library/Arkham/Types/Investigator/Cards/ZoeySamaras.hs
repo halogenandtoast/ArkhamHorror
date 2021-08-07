@@ -51,10 +51,7 @@ instance InvestigatorRunner env => HasActions env ZoeySamaras where
       modifiers' <- getModifiers
         (InvestigatorSource investigatorId)
         (InvestigatorTarget investigatorId)
-      pure
-        [ UseAbility investigatorId ability
-        | CannotGainResources `notElem` modifiers'
-        ]
+      pure [ ability | CannotGainResources `notElem` modifiers' ]
 
   getActions i window (ZoeySamaras attrs) = getActions i window attrs
 

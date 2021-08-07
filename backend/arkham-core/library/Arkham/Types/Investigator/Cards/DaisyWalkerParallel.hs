@@ -70,7 +70,7 @@ instance InvestigatorRunner env => HasActions env DaisyWalkerParallel where
     | iid == investigatorId attrs = withBaseActions iid FastPlayerWindow attrs
     $ do
         hasTomes <- (> 0) . unAssetCount <$> getCount (iid, [Tome])
-        pure [ UseAbility iid (ability attrs) | hasTomes ]
+        pure [ ability attrs | hasTomes ]
   getActions i window (DaisyWalkerParallel attrs) = getActions i window attrs
 
 instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
@@ -88,8 +88,9 @@ instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
             then pure i
             else i <$ push
               (chooseOneAtATime iid $ map
-                (\(tome, actions) ->
-                  TargetLabel (AssetTarget tome) [Run [chooseOne iid actions]]
+                (\(tome, actions) -> TargetLabel
+                  (AssetTarget tome)
+                  [Run [chooseOne iid $ map (UseAbility iid) actions]]
                 )
                 pairs'
               )

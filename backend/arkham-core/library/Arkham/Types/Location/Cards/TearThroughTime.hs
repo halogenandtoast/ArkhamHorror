@@ -32,7 +32,7 @@ instance HasModifiersFor env TearThroughTime
 
 instance ActionRunner env => HasActions env TearThroughTime where
   getActions iid NonFast (TearThroughTime attrs) =
-    withBaseActions iid NonFast attrs $ pure [resignAction iid attrs]
+    withBaseActions iid NonFast attrs $ pure [resignAction attrs]
   getActions iid window (TearThroughTime attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env TearThroughTime where

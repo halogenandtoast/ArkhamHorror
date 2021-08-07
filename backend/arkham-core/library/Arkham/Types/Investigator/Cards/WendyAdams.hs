@@ -62,7 +62,7 @@ ability attrs token = base
 instance InvestigatorRunner env => HasActions env WendyAdams where
   getActions iid (WhenRevealToken who token) (WendyAdams attrs@InvestigatorAttrs {..})
     | iid == investigatorId && iid == who
-    = pure [UseAbility investigatorId $ ability attrs token]
+    = pure [ability attrs token]
   getActions i window (WendyAdams attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env WendyAdams where

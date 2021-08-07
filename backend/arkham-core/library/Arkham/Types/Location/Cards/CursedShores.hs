@@ -39,8 +39,7 @@ instance ActionRunner env => HasActions env CursedShores where
   getActions iid NonFast (CursedShores attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ pure
       [ locationAbility
-          iid
-          (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
+          (mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 1)
       ]
   getActions i window (CursedShores attrs) = getActions i window attrs
 

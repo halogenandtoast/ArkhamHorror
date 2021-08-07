@@ -45,11 +45,8 @@ instance ActionRunner env => HasActions env TrappersCabin where
       assetNotTaken <- isNothing <$> selectOne (assetIs Assets.bearTrap)
       pure
         [ locationAbility
-            iid
-            (mkAbility
-              (toSource attrs)
-              1
-              (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 5])
+            (mkAbility attrs 1 $ ActionAbility Nothing $ Costs
+              [ActionCost 1, ResourceCost 5]
             )
         | assetNotTaken
         ]

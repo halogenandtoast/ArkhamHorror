@@ -56,10 +56,7 @@ instance InvestigatorRunner env => HasActions env AshcanPete where
   getActions iid FastPlayerWindow (AshcanPete attrs@InvestigatorAttrs {..})
     | iid == investigatorId = do
       exhaustedAssetIds <- select (AssetOwnedBy You <> AssetExhausted)
-      pure
-        [ UseAbility investigatorId (ability attrs)
-        | notNull exhaustedAssetIds
-        ]
+      pure [ ability attrs | notNull exhaustedAssetIds ]
   getActions i window (AshcanPete attrs) = getActions i window attrs
 
 instance HasTokenValue env AshcanPete where

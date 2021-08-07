@@ -47,7 +47,7 @@ instance InvestigatorRunner env => HasActions env RexMurphy where
     = do
       let ability = mkAbility (toSource attrs) 1 (ReactionAbility Free)
       clueCount' <- unClueCount <$> getCount investigatorLocation
-      pure [ UseAbility investigatorId ability | clueCount' > 0 ]
+      pure [ ability | clueCount' > 0 ]
   getActions i window (RexMurphy attrs) = getActions i window attrs
 
 instance HasTokenValue env RexMurphy where

@@ -44,12 +44,8 @@ ability :: LocationAttrs -> Ability
 ability a = mkAbility a 1 (ActionAbility Nothing $ ActionCost 1)
 
 instance ActionRunner env => HasActions env SanMarcoBasilica where
-  getActions iid NonFast (SanMarcoBasilica attrs) = withBaseActions
-    iid
-    NonFast
-    attrs
-    do
-      pure [UseAbility iid (ability attrs)]
+  getActions iid NonFast (SanMarcoBasilica attrs) =
+    withBaseActions iid NonFast attrs $ pure [ability attrs]
   getActions iid window (SanMarcoBasilica attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env SanMarcoBasilica where

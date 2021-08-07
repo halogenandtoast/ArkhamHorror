@@ -46,7 +46,7 @@ ability attrs = base { abilityLimit = PlayerLimit PerTurn 1 }
 
 instance HasActions env SkidsOToole where
   getActions iid (DuringTurn who) (SkidsOToole a@InvestigatorAttrs {..})
-    | iid == investigatorId && iid == who = pure [UseAbility iid (ability a)]
+    | iid == investigatorId && iid == who = pure [ability a]
   getActions _ _ _ = pure []
 
 instance HasTokenValue env SkidsOToole where

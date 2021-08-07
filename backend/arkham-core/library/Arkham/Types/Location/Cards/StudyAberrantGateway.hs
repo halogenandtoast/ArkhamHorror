@@ -40,9 +40,7 @@ instance ActionRunner env => HasActions env StudyAberrantGateway where
       leadInvestigatorId <- getLeadInvestigatorId
       pure
         [ locationAbility
-            iid
-            (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 2)
-            )
+            (mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 2)
         | leadInvestigatorId == iid
         ]
   getActions iid window (StudyAberrantGateway attrs) =

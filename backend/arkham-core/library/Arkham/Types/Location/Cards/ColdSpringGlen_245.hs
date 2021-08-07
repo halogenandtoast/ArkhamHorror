@@ -44,7 +44,7 @@ ability :: LocationAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
 instance ActionRunner env => HasActions env ColdSpringGlen_245 where
-  getActions iid (WhenChosenRandomLocation lid) (ColdSpringGlen_245 attrs)
+  getActions _ (WhenChosenRandomLocation lid) (ColdSpringGlen_245 attrs)
     | lid == toId attrs = pure [locationAbility (ability attrs)]
   getActions iid window (ColdSpringGlen_245 attrs) =
     getActions iid window attrs

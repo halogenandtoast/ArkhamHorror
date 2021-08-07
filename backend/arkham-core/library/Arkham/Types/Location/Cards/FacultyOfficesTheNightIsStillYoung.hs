@@ -48,15 +48,10 @@ instance ActionRunner env => HasActions env FacultyOfficesTheNightIsStillYoung w
     | locationRevealed
     = withBaseActions iid FastPlayerWindow attrs $ pure
       [ locationAbility
-          iid
-          (mkAbility
-            (toSource attrs)
-            1
-            (FastAbility
-              (GroupClueCost
-                (PerPlayer 2)
-                (Just $ LocationWithTitle "Faculty Offices")
-              )
+          (mkAbility attrs 1 $ FastAbility
+            (GroupClueCost
+              (PerPlayer 2)
+              (Just $ LocationWithTitle "Faculty Offices")
             )
           )
       ]

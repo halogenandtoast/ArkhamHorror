@@ -45,12 +45,9 @@ instance ActionRunner env => HasActions env CongregationalChurch_209 where
     | locationRevealed attrs = withBaseActions iid NonFast attrs
     $ pure [locationAbility (ability attrs)]
   getActions iid FastPlayerWindow (CongregationalChurch_209 attrs)
-    | locationRevealed attrs
-    = withBaseActions iid FastPlayerWindow attrs
-      $ pure
-          [ drawCardUnderneathLocationAction iid attrs
-          | locationClues attrs == 0
-          ]
+    | locationRevealed attrs = withBaseActions iid FastPlayerWindow attrs
+    $ pure
+        [ drawCardUnderneathLocationAction attrs | locationClues attrs == 0 ]
   getActions iid window (CongregationalChurch_209 attrs) =
     getActions iid window attrs
 

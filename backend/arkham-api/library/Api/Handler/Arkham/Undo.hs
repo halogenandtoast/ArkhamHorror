@@ -5,11 +5,10 @@ module Api.Handler.Arkham.Undo
 import Import hiding (delete, on, (==.))
 
 import Api.Arkham.Helpers
-import Arkham.Game
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Game
 import Arkham.Types.Id
-import Control.Lens (view, (&), (.~))
+import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)
 import Data.Coerce
 import Json
@@ -23,31 +22,34 @@ putApiV1ArkhamGameUndoR gameId = do
 
   Entity pid arkhamPlayer <- runDB $ getBy404 (UniquePlayer userId gameId)
 
-  let undidChoices = drop 1 gameChoices
+  case arkhamGameChoices of
+    [] -> pure ()
+    choice : remaining -> do
+      writeChannel <- getChannel gameId
 
-  gameRef <- newIORef (gameJson & choicesL .~ undidChoices)
-  queueRef <- newIORef []
-  genRef <- newIORef (mkStdGen gameSeed)
-  writeChannel <- getChannel gameId
+      case patch gameJson (choicePatchDown choice) of
+        Error e -> error e
+        Success ge -> do
+          liftIO $ atomically $ writeTChan
+            writeChannel
+            (encode $ GameUpdate $ PublicGame
+              gameId
+              arkhamGameName
+              arkhamGameLog
+              ge
+            )
+          runDB $ do
+            replace
+              gameId
+              (ArkhamGame
+                arkhamGameName
+                ge
+                remaining
+                arkhamGameLog
+                arkhamGameMultiplayerVariant
+              )
 
-  runGameApp (GameApp gameRef queueRef genRef $ \_ -> pure ()) replayChoices
-
-  ge <- readIORef gameRef
-  updatedQueue <- readIORef queueRef
-  liftIO $ atomically $ writeTChan
-    writeChannel
-    (encode $ GameUpdate $ PublicGame gameId arkhamGameName arkhamGameLog ge)
-  runDB $ do
-    replace
-      gameId
-      (ArkhamGame
-        arkhamGameName
-        ge
-        updatedQueue
-        arkhamGameLog
-        arkhamGameMultiplayerVariant
-      )
-
-    replace pid $ arkhamPlayer
-      { arkhamPlayerInvestigatorId = coerce (view activeInvestigatorIdL ge)
-      }
+            replace pid $ arkhamPlayer
+              { arkhamPlayerInvestigatorId = coerce
+                (view activeInvestigatorIdL ge)
+              }

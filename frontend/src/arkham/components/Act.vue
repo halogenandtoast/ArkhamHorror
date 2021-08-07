@@ -63,7 +63,7 @@ export default defineComponent({
     const image = computed(() => {
       const side = props.act.contents.sequence.side.toLowerCase().replace('a', '')
       const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-      return `${baseUrl}/img/arkham/cards/${id.value}${side}.jpg`
+      return `${baseUrl}/img/arkham/cards/${id.value.replace('c', '')}${side}.jpg`
     })
 
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))

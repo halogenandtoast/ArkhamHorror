@@ -50,6 +50,7 @@ library:
     - MonadRandom
     - extra
     - aeson-casing
+    - aeson-diff
     - mtl
     - these-lens
     - semialign

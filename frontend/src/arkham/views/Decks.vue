@@ -3,7 +3,7 @@
     <div>
       <h2>New Deck</h2>
       <div class="new-deck">
-        <img v-if="investigator" class="portrait" :src="`${baseUrl}/img/arkham/portraits/${investigator}.jpg`" />
+        <img v-if="investigator" class="portrait" :src="`${baseUrl}/img/arkham/portraits/${investigator.replace('c', '')}.jpg`" />
         <div class="fields">
           <input
             type="url"

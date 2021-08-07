@@ -55,10 +55,10 @@ export default defineComponent({
       const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
 
       if (props.agenda.contents.flipped) {
-        return `${baseUrl}/img/arkham/cards/${id.value}b.jpg`;
+        return `${baseUrl}/img/arkham/cards/${id.value.replace('c', '')}b.jpg`;
       }
 
-      return `${baseUrl}/img/arkham/cards/${id.value}.jpg`;
+      return `${baseUrl}/img/arkham/cards/${id.value.replace('c', '')}.jpg`;
     })
 
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))

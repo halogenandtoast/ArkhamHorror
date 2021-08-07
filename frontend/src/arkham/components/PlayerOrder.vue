@@ -52,7 +52,7 @@ export default defineComponent({
     const investigatorPortrait = (choice: Message) => {
       const iid = choice.contents[1].slice(-1);
       const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-      return `${baseUrl}/img/arkham/portraits/${iid}.jpg`;
+      return `${baseUrl}/img/arkham/portraits/${iid.replace('c', '')}.jpg`;
     }
 
     return { investigatorPortrait, ordinal, playerOrderChoices }

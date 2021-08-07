@@ -13,7 +13,6 @@ import Arkham.Types.Investigator
 import Control.Monad.Random (mkStdGen)
 import Data.Aeson
 import Data.Coerce
-import qualified Data.HashMap.Strict as HashMap
 import Safe (fromJustNote)
 
 newtype JoinGameJson = JoinGameJson { deckId :: ArkhamDeckId }
@@ -29,22 +28,27 @@ putApiV1ArkhamPendingGameR gameId = do
   deck <- runDB $ get404 deckId
   when (arkhamDeckUserId deck /= userId) notFound
   (iid, decklist) <- liftIO $ loadDecklist deck
-  when (iid `HashMap.member` gameInvestigators arkhamGameCurrentData)
+  when (iid `member` gameInvestigators arkhamGameCurrentData)
     $ invalidArgs ["Investigator already taken"]
 
   runDB $ insert_ $ ArkhamPlayer userId gameId (coerce iid)
 
+  let currentQueue = maybe [] choiceMessages $ headMay arkhamGameChoices
+
   gameRef <- newIORef arkhamGameCurrentData
-  queueRef <- newIORef arkhamGameQueue
+  queueRef <- newIORef currentQueue
   genRef <- newIORef (mkStdGen (gameSeed arkhamGameCurrentData))
   runGameApp (GameApp gameRef queueRef genRef (pure . const ())) $ do
     addInvestigator (lookupInvestigator iid) decklist
     runMessages False
 
-
   updatedGame <- readIORef gameRef
   updatedQueue <- readIORef queueRef
   let updatedMessages = []
+
+  let
+    diffUp = diff arkhamGameCurrentData updatedGame
+    diffDown = diff updatedGame arkhamGameCurrentData
 
   writeChannel <- getChannel gameId
   liftIO
@@ -57,13 +61,13 @@ putApiV1ArkhamPendingGameR gameId = do
   runDB $ replace gameId $ ArkhamGame
     arkhamGameName
     updatedGame
-    updatedQueue
+    (Choice diffUp diffDown updatedQueue : arkhamGameChoices)
     updatedMessages
     arkhamGameMultiplayerVariant
 
   pure $ toPublicGame $ Entity gameId $ ArkhamGame
     arkhamGameName
     updatedGame
-    updatedQueue
+    (Choice diffUp diffDown updatedQueue : arkhamGameChoices)
     updatedMessages
     arkhamGameMultiplayerVariant

@@ -51,6 +51,7 @@ library:
     - MonadRandom
     - aeson
     - aeson-casing
+    - aeson-diff
     - bcrypt
     - bytestring
     - case-insensitive

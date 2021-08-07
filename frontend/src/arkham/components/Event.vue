@@ -44,7 +44,7 @@ export default defineComponent({
     const cardCode = computed(() => props.event.contents.cardCode)
     const image = computed(() => {
       const baseUrl = process.env.NODE_ENV == 'production' ? "https://events.arkhamhorror.app" : '';
-      return `${baseUrl}/img/arkham/cards/${cardCode.value}.jpg`
+      return `${baseUrl}/img/arkham/cards/${cardCode.value.replace('c', '')}.jpg`
     })
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 

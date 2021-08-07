@@ -262,7 +262,7 @@ export default defineComponent({
         ? 'b'
         : '';
 
-      return `${baseUrl}/img/arkham/cards/${id}${difficultySuffix}.jpg`;
+      return `${baseUrl}/img/arkham/cards/${id.replace('c', '')}${difficultySuffix}.jpg`;
     })
 
     const scenarioDeck = computed(() => {
@@ -300,7 +300,7 @@ export default defineComponent({
     const activeCard = computed(() => {
       if (props.game.activeCard) {
         const { cardCode } = props.game.activeCard.contents;
-        return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
+        return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
       }
 
       return null;
@@ -327,7 +327,7 @@ export default defineComponent({
       if (props.game.discard[0]) {
         const { cardCode } = props.game.discard[0];
 
-        return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
+        return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
       }
 
       return null;

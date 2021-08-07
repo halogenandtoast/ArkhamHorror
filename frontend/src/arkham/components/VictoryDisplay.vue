@@ -23,7 +23,7 @@ export default defineComponent({
     const topOfVictoryDisplay = computed(() => {
       if (victoryDisplay.value[0]) {
         const { cardCode } = victoryDisplay.value[0].contents;
-        return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
+        return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
       }
 
       return null;

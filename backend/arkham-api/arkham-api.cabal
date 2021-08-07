@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1fa9985aeb6d69e634f07cd7d3d13dbcb554767e78feffc68de048b41fe8c57d
+-- hash: 967b71fa9a608e3675adcee1faf4b2bfbff54349803cc2816cdc41aeaa7de522
 
 name:           arkham-api
 version:        0.0.0
@@ -87,6 +87,7 @@ library
       MonadRandom
     , aeson
     , aeson-casing
+    , aeson-diff
     , arkham-core
     , base
     , bcrypt

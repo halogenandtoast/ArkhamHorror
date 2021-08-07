@@ -24,7 +24,12 @@ newtype AlmaHill = AlmaHill EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 almaHill :: EnemyCard AlmaHill
-almaHill = enemy AlmaHill Cards.almaHill (3, Static 3, 3) (0, 2)
+almaHill = enemyWith
+  AlmaHill
+  Cards.almaHill
+  (3, Static 3, 3)
+  (0, 2)
+  (spawnAtL ?~ LocationWithTitle "Southside")
 
 instance HasModifiersFor env AlmaHill
 
@@ -46,8 +51,6 @@ instance ActionRunner env => HasActions env AlmaHill where
 
 instance (EnemyRunner env) => RunMessage env AlmaHill where
   runMessage msg e@(AlmaHill attrs@EnemyAttrs {..}) = case msg of
-    InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
-      e <$ spawnAt (Just iid) eid (LocationWithTitle "Southside")
     UseCardAbility iid (EnemySource eid) _ 1 _ | eid == enemyId -> e <$ pushAll
       (replicate 3 (InvestigatorDrawEncounterCard iid)
       <> [AddToVictory (toTarget attrs)]

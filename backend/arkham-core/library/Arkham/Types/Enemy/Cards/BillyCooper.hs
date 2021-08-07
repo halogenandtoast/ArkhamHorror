@@ -18,7 +18,12 @@ newtype BillyCooper = BillyCooper EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 billyCooper :: EnemyCard BillyCooper
-billyCooper = enemy BillyCooper Cards.billyCooper (5, Static 4, 2) (2, 0)
+billyCooper = enemyWith
+  BillyCooper
+  Cards.billyCooper
+  (5, Static 4, 2)
+  (2, 0)
+  (spawnAtL ?~ LocationWithTitle "Easttown")
 
 instance HasModifiersFor env BillyCooper
 
@@ -27,8 +32,6 @@ instance ActionRunner env => HasActions env BillyCooper where
 
 instance (EnemyRunner env) => RunMessage env BillyCooper where
   runMessage msg e@(BillyCooper attrs@EnemyAttrs {..}) = case msg of
-    InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
-      e <$ spawnAt (Just iid) eid (LocationWithTitle "Easttown")
     After (EnemyDefeated _ _ lid _ _ traits)
       | lid == enemyLocation && Monster `elem` traits -> e
       <$ push (AddToVictory $ toTarget attrs)

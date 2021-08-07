@@ -46,7 +46,7 @@ instance ActionRunner env => HasActions env OsbornsGeneralStore_207 where
     $ pure [locationAbility (ability attrs)]
   getActions iid FastPlayerWindow (OsbornsGeneralStore_207 attrs)
     | locationRevealed attrs = withBaseActions iid FastPlayerWindow attrs $ pure
-      [ drawCardUnderneathAction iid attrs
+      [ drawCardUnderneathAction attrs
       | iid `on` attrs && locationClues attrs == 0
       ]
   getActions iid window (OsbornsGeneralStore_207 attrs) =

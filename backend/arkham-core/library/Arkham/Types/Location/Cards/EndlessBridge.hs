@@ -42,7 +42,7 @@ instance ActionRunner env => HasActions env EndlessBridge where
   getActions iid (AfterLeaving who lid) (EndlessBridge attrs)
     | lid == toId attrs && who == iid = do
       leadInvestigator <- getLeadInvestigatorId
-      pure [UseAbility leadInvestigator (forcedAbility attrs)]
+      pure [ forcedAbility attrs | iid == leadInvestigator ]
   getActions iid window (EndlessBridge attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env EndlessBridge where

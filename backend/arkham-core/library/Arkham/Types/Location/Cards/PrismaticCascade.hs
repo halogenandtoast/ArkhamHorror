@@ -43,8 +43,8 @@ instance ActionRunner env => HasActions env PrismaticCascade where
     | iid == who && lid == toId attrs = do
       leadInvestigator <- getLeadInvestigatorId
       pure
-        [ locationAbility leadInvestigator (forcedAbility attrs)
-        | locationClues attrs == 0
+        [ locationAbility (forcedAbility attrs)
+        | locationClues attrs == 0 && leadInvestigator == iid
         ]
   getActions iid window (PrismaticCascade attrs) = getActions iid window attrs
 

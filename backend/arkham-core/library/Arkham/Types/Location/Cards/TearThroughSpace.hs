@@ -13,8 +13,8 @@ import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.Matcher
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Window
@@ -41,10 +41,7 @@ forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
 instance ActionRunner env => HasActions env TearThroughSpace where
   getActions iid AtEndOfRound (TearThroughSpace attrs) = do
     leadInvestigator <- getLeadInvestigatorId
-    pure
-      [ UseAbility leadInvestigator (forcedAbility attrs)
-      | iid == leadInvestigator
-      ]
+    pure [ forcedAbility attrs | iid == leadInvestigator ]
   getActions iid window (TearThroughSpace attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env TearThroughSpace where

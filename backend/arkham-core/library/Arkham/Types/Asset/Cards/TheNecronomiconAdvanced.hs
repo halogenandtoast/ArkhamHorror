@@ -41,9 +41,7 @@ instance HasModifiersFor env TheNecronomiconAdvanced where
 
 instance HasActions env TheNecronomiconAdvanced where
   getActions iid NonFast (TheNecronomiconAdvanced a) | ownedBy a iid = pure
-    [ UseAbility
-        iid
-        (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
+    [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1
     | fromJustNote "Must be set" (assetHorror a) > 0
     ]
   getActions _ _ _ = pure []

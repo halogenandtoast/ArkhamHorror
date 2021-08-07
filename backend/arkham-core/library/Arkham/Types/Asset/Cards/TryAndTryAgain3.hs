@@ -30,7 +30,7 @@ instance HasList CommittedCard env InvestigatorId => HasActions env TryAndTryAga
   getActions iid (AfterFailSkillTest _ _) (TryAndTryAgain3 attrs) = do
     committedSkills <-
       filter ((== SkillType) . toCardType) . map unCommittedCard <$> getList iid
-    pure [ UseAbility iid (ability attrs) | notNull committedSkills ]
+    pure [ ability attrs | notNull committedSkills ]
   getActions iid window (TryAndTryAgain3 attrs) = getActions iid window attrs
 
 instance HasModifiersFor env TryAndTryAgain3

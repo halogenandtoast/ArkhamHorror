@@ -31,21 +31,11 @@ instance HasList HandCard env InvestigatorId => HasActions env HigherEducation w
   getActions iid (WhenSkillTest SkillWillpower) (HigherEducation a)
     | ownedBy a iid = do
       active <- (>= 5) . length <$> getHandOf iid
-      pure
-        [ UseAbility
-            iid
-            (mkAbility (toSource a) 1 (FastAbility $ ResourceCost 1))
-        | active
-        ]
+      pure [ mkAbility a 1 $ FastAbility $ ResourceCost 1 | active ]
   getActions iid (WhenSkillTest SkillIntellect) (HigherEducation a)
     | ownedBy a iid = do
       active <- (>= 5) . length <$> getHandOf iid
-      pure
-        [ UseAbility
-            iid
-            (mkAbility (toSource a) 2 (FastAbility $ ResourceCost 1))
-        | active
-        ]
+      pure [ mkAbility a 2 $ FastAbility $ ResourceCost 1 | active ]
   getActions _ _ _ = pure []
 
 instance HasModifiersFor env HigherEducation

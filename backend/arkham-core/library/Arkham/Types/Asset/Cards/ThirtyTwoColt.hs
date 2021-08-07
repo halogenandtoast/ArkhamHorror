@@ -32,16 +32,9 @@ thirtyTwoColt =
 
 instance HasActions env ThirtyTwoColt where
   getActions iid NonFast (ThirtyTwoColt a) | ownedBy a iid = pure
-    [ UseAbility
-        iid
-        (mkAbility
-          (toSource a)
-          1
-          (ActionAbility
-            (Just Action.Fight)
-            (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
-          )
-        )
+    [ mkAbility a 1 $ ActionAbility
+        (Just Action.Fight)
+        (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
     ]
   getActions _ _ _ = pure []
 

@@ -38,7 +38,7 @@ instance ActionRunner env => HasActions env Aquinnah3 where
     | ownedBy a iid && iid == who = do
       locationId <- getId @LocationId iid
       enemyIds <- getSet @EnemyId locationId
-      pure [ UseAbility iid (reactionAbility a) | notNull enemyIds ]
+      pure [ reactionAbility a | notNull enemyIds ]
   getActions i window (Aquinnah3 x) = getActions i window x
 
 instance AssetRunner env => RunMessage env Aquinnah3 where

@@ -763,7 +763,6 @@ library
       Arkham.Types.Prey
       Arkham.Types.Query
       Arkham.Types.RequestedTokenStrategy
-      Arkham.Types.RequiredClues
       Arkham.Types.Resolution
       Arkham.Types.Scenario
       Arkham.Types.Scenario.Attrs

@@ -15,7 +15,6 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
-import Arkham.Types.Cost
 import Arkham.Types.Decks
 import Arkham.Types.GameValue
 import Arkham.Types.Matcher
@@ -41,13 +40,13 @@ ability a = mkAbility
   )
 
 instance ActionRunner env => HasActions env TheCarnevaleConspiracy where
-  getActions iid NonFast (TheCarnevaleConspiracy x) = do
+  getActions _ NonFast (TheCarnevaleConspiracy x) = do
     maskedCarnevaleGoers <- selectList (AssetWithTitle "Masked Carnevale-Goer")
     filteredMaskedCarnevaleGoers <- flip filterM maskedCarnevaleGoers $ \aid ->
       do
         modifiers' <- getModifiers (toSource x) (AssetTarget aid)
         pure $ CannotBeRevealed `notElem` modifiers'
-    pure [ UseAbility iid (ability x) | notNull filteredMaskedCarnevaleGoers ]
+    pure [ ability x | notNull filteredMaskedCarnevaleGoers ]
   getActions iid window (TheCarnevaleConspiracy x) = getActions iid window x
 
 instance

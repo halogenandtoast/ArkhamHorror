@@ -28,7 +28,7 @@ ability attrs =
 instance HasSet EnemyId env InvestigatorId => HasActions env Pathfinder1 where
   getActions iid (DuringTurn who) (Pathfinder1 attrs) | iid == who = do
     engagedEnemies <- getSet @EnemyId iid
-    pure [ UseAbility iid (ability attrs) | null engagedEnemies ]
+    pure [ ability attrs | null engagedEnemies ]
   getActions _ _ _ = pure []
 
 instance HasModifiersFor env Pathfinder1

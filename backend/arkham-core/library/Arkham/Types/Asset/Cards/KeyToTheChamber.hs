@@ -35,7 +35,7 @@ instance (HasId LocationId env InvestigatorId, HasSet ConnectedLocationId env Lo
           lid <- getId @LocationId iid
           connectedLocationIds <- map unConnectedLocationId <$> getSetList lid
           pure
-            [ UseAbility iid (mkAbility (toSource attrs) 1 (FastAbility Free))
+            [ mkAbility (toSource attrs) 1 (FastAbility Free)
             | hiddenChamberId `elem` connectedLocationIds
             ]
         Nothing -> pure []

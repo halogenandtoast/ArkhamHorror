@@ -44,7 +44,7 @@ ability a = restrictedAbility
 
 instance HasActions env BeatCop2 where
   getActions iid FastPlayerWindow (BeatCop2 a) | ownedBy a iid =
-    pure [UseAbility iid (ability a)]
+    pure [ability a]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env BeatCop2 where

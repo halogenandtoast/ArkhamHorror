@@ -31,7 +31,7 @@ ability a =
 
 instance HasActions env AlyssaGraham where
   getActions iid FastPlayerWindow (AlyssaGraham a) | ownedBy a iid =
-    pure [UseAbility iid (ability a)]
+    pure [ability a]
   getActions _ _ _ = pure []
 
 instance HasModifiersFor env AlyssaGraham where

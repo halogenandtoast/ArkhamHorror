@@ -42,7 +42,7 @@ ability attrs source = base
 
 instance HasActions env GrotesqueStatue4 where
   getActions iid (WhenWouldRevealChaosToken source who) (GrotesqueStatue4 a)
-    | ownedBy a iid && who == iid = pure [UseAbility iid (ability a source)]
+    | ownedBy a iid && who == iid = pure [ability a source]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env GrotesqueStatue4 where

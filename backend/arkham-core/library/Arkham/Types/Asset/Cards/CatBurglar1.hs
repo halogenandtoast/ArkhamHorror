@@ -50,8 +50,7 @@ ability a = (restrictedAbility
   }
 
 instance HasActions env CatBurglar1 where
-  getActions iid NonFast (CatBurglar1 a) | ownedBy a iid =
-    pure [UseAbility iid (ability a)]
+  getActions iid NonFast (CatBurglar1 a) | ownedBy a iid = pure [ability a]
   getActions i window (CatBurglar1 x) = getActions i window x
 
 instance AssetRunner env => RunMessage env CatBurglar1 where

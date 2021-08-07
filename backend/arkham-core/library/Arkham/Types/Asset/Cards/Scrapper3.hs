@@ -29,12 +29,7 @@ scrapper3 = asset Scrapper3 Cards.scrapper3
 
 instance HasActions env Scrapper3 where
   getActions iid (WhenSkillTest _) (Scrapper3 a) | ownedBy a iid = do
-    pure
-      [ UseAbility
-          iid
-          (mkAbility (toSource a) idx (FastAbility $ ResourceCost 1))
-      | idx <- [1 .. 2]
-      ]
+    pure [ mkAbility a idx $ FastAbility $ ResourceCost 1 | idx <- [1 .. 2] ]
   getActions _ _ _ = pure []
 
 instance HasModifiersFor env Scrapper3

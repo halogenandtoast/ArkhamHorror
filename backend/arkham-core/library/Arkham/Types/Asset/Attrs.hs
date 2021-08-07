@@ -5,11 +5,9 @@ import Arkham.Prelude
 import Arkham.Asset.Cards
 import Arkham.Json
 import Arkham.Types.Ability
-import Arkham.Types.Action
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -243,13 +241,8 @@ ownedBy :: AssetAttrs -> InvestigatorId -> Bool
 ownedBy AssetAttrs {..} = (== assetInvestigator) . Just
 
 whenOwnedBy
-  :: Applicative m => AssetAttrs -> InvestigatorId -> m [Message] -> m [Message]
+  :: Applicative m => AssetAttrs -> InvestigatorId -> m [Ability] -> m [Ability]
 whenOwnedBy a iid f = if ownedBy a iid then f else pure []
-
-assetAction
-  :: InvestigatorId -> AssetAttrs -> Int -> Maybe Action -> Cost -> Message
-assetAction iid attrs idx mAction cost =
-  UseAbility iid $ mkAbility (toSource attrs) idx (ActionAbility mAction cost)
 
 getInvestigator :: HasCallStack => AssetAttrs -> InvestigatorId
 getInvestigator = fromJustNote "asset must be owned" . view investigatorL

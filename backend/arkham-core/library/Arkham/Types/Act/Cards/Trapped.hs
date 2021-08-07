@@ -18,22 +18,13 @@ newtype Trapped = Trapped ActAttrs
 
 trapped :: ActCard Trapped
 trapped =
-  act (1, A) Trapped Cards.trapped (Just $ RequiredClues (PerPlayer 2) Nothing)
+  act (1, A) Trapped Cards.trapped (Just $ GroupClueCost (PerPlayer 2) Nothing)
 
 instance ActionRunner env => HasActions env Trapped where
   getActions i window (Trapped x) = getActions i window x
 
 instance ActRunner env => RunMessage env Trapped where
   runMessage msg a@(Trapped attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
-      requiredClues <- getPlayerCountValue (PerPlayer 2)
-      pushAll
-        [ SpendClues requiredClues investigatorIds
-        , chooseOne leadInvestigatorId [AdvanceAct aid $ toSource attrs]
-        ]
-      pure $ Trapped $ attrs & sequenceL .~ Act 1 B
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       studyId <- getJustLocationIdByName "Study"
       enemyIds <- getSetList studyId

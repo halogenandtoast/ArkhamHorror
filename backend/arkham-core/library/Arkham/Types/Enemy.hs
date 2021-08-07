@@ -36,13 +36,12 @@ instance HasCardDef Enemy where
 instance HasName env Enemy where
   getName = getName . toAttrs
 
-actionFromMessage :: Message -> Maybe Action
-actionFromMessage (UseAbility _ ability) = case abilityType ability of
+actionFromMessage :: Ability -> Maybe Action
+actionFromMessage ability = case abilityType ability of
   ActionAbility maction _ -> maction
   _ -> Nothing
-actionFromMessage _ = Nothing
 
-preventedByModifier :: EnemyAttrs -> Message -> ModifierType -> Bool
+preventedByModifier :: EnemyAttrs -> Ability -> ModifierType -> Bool
 preventedByModifier e msg (CannotTakeAction matcher) =
   case actionFromMessage msg of
     Just action -> case matcher of

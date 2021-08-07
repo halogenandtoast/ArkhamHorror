@@ -11,7 +11,6 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
@@ -29,11 +28,7 @@ findingANewWay = act (4, A) FindingANewWay Cards.findingANewWay Nothing
 instance ActionRunner env => HasActions env FindingANewWay where
   getActions iid NonFast (FindingANewWay x) =
     withBaseActions iid NonFast x $ do
-      pure
-        [ UseAbility
-            iid
-            (mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1))
-        ]
+      pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
   getActions iid window (FindingANewWay x) = getActions iid window x
 
 instance ActRunner env => RunMessage env FindingANewWay where

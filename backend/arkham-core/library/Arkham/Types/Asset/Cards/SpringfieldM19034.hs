@@ -33,16 +33,9 @@ springfieldM19034 =
 
 instance HasActions env SpringfieldM19034 where
   getActions iid NonFast (SpringfieldM19034 a) | ownedBy a iid = pure
-    [ UseAbility
-        iid
-        (mkAbility
-          (toSource a)
-          1
-          (ActionAbility
-            (Just Action.Fight)
-            (Costs [ActionCost 1, UseCost (toId a) Resource.Ammo 1])
-          )
-        )
+    [ mkAbility a 1 $ ActionAbility
+        (Just Action.Fight)
+        (Costs [ActionCost 1, UseCost (toId a) Resource.Ammo 1])
     ]
   getActions _ _ _ = pure []
 

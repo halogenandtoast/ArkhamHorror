@@ -23,7 +23,7 @@ theGateOpens = act
   (3, A)
   TheGateOpens
   Cards.theGateOpens
-  (Just $ RequiredClues (PerPlayer 2) (Just $ LocationWithTitle "Sentinel Peak")
+  (Just $ GroupClueCost (PerPlayer 2) (Just $ LocationWithTitle "Sentinel Peak")
   )
 
 instance ActionRunner env => HasActions env TheGateOpens where

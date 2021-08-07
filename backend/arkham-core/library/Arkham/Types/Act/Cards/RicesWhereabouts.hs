@@ -16,7 +16,6 @@ import Arkham.Types.AgendaId
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
-import Arkham.Types.Cost
 import Arkham.Types.Exception
 import Arkham.Types.Matcher
 import Arkham.Types.Message
@@ -38,8 +37,7 @@ ability attrs = mkAbility
   (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1])
 
 instance ActionRunner env => HasActions env RicesWhereabouts where
-  getActions iid NonFast (RicesWhereabouts x) =
-    pure [UseAbility iid (ability x)]
+  getActions _ NonFast (RicesWhereabouts x) = pure [ability x]
   getActions iid window (RicesWhereabouts x) = getActions iid window x
 
 instance ActRunner env => RunMessage env RicesWhereabouts where

@@ -32,16 +32,9 @@ riteOfSeeking4 = arcaneWith
 
 instance HasActions env RiteOfSeeking4 where
   getActions iid NonFast (RiteOfSeeking4 a) | ownedBy a iid = pure
-    [ UseAbility
-        iid
-        (mkAbility
-          (toSource a)
-          1
-          (ActionAbility
-            (Just Action.Investigate)
-            (Costs [ActionCost 1, UseCost (toId a) Charge 1])
-          )
-        )
+    [ mkAbility a 1 $ ActionAbility
+        (Just Action.Investigate)
+        (Costs [ActionCost 1, UseCost (toId a) Charge 1])
     ]
   getActions _ _ _ = pure []
 

@@ -29,7 +29,7 @@ instance ActionRunner env => HasActions env GetTheEngineRunning where
       Just engineCar -> do
         mustAdvance <- (== 0) . unClueCount <$> getCount engineCar
         if mustAdvance
-          then pure [UseAbility i (mkAbility x 1 ForcedAbility)]
+          then pure [mkAbility x 1 ForcedAbility]
           else getActions i window x
       Nothing -> getActions i window x
 

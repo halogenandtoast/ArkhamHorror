@@ -39,16 +39,8 @@ instance ActionRunner env => HasActions env MobEnforcer where
       resourceCount <- getResourceCount iid
       locationId <- getId @LocationId iid
       pure
-        [ UseAbility
-            iid
-            (mkAbility
-              (toSource attrs)
-              1
-              (ActionAbility
-                (Just Parley)
-                (Costs [ActionCost 1, ResourceCost 4])
-              )
-            )
+        [ mkAbility attrs 1
+            $ ActionAbility (Just Parley) (Costs [ActionCost 1, ResourceCost 4])
         | resourceCount >= 4 && locationId == enemyLocation
         ]
   getActions i window (MobEnforcer attrs) = getActions i window attrs

@@ -179,11 +179,17 @@ data PlayRestriction
   | ReturnableCardInDiscard DiscardSignifier [Trait]
   | PlayRestrictions [PlayRestriction]
   | AnyPlayRestriction [PlayRestriction]
+  | NoRestriction
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 instance Semigroup PlayRestriction where
+  NoRestriction <> x = x
+  x <> NoRestriction = x
   PlayRestrictions xs <> PlayRestrictions ys = PlayRestrictions $ xs <> ys
   PlayRestrictions xs <> x = PlayRestrictions $ x : xs
   x <> PlayRestrictions xs = PlayRestrictions $ x : xs
   x <> y = PlayRestrictions [x, y]
+
+instance Monoid PlayRestriction where
+  mempty = NoRestriction

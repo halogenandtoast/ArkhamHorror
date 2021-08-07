@@ -29,12 +29,8 @@ theNecronomiconOlausWormiusTranslation = hand
 
 instance HasActions env TheNecronomiconOlausWormiusTranslation where
   getActions iid NonFast (TheNecronomiconOlausWormiusTranslation a)
-    | ownedBy a iid = do
-      pure
-        [ UseAbility
-            iid
-            (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
-        ]
+    | ownedBy a iid = pure
+      [mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1]
   getActions _ _ _ = pure []
 
 instance HasModifiersFor env TheNecronomiconOlausWormiusTranslation where

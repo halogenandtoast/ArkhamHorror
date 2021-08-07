@@ -9,7 +9,6 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.Cost
 import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Matcher
@@ -42,7 +41,7 @@ instance ActionRunner env => HasActions env HuntingTheRougarou where
         (pure False)
         ((member iid <$>) . getSet)
         mrougarou
-      pure [ UseAbility iid (ability a) | engagedWithTheRougarou ]
+      pure [ ability a | engagedWithTheRougarou ]
   getActions i window (HuntingTheRougarou x) = getActions i window x
 
 instance ActRunner env => RunMessage env HuntingTheRougarou where

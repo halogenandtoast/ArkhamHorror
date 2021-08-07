@@ -19,7 +19,7 @@ afterHours = act
   (1, A)
   AfterHours
   Cards.afterHours
-  (Just $ RequiredClues (PerPlayer 3) Nothing)
+  (Just $ GroupClueCost (PerPlayer 3) Nothing)
 
 instance ActionRunner env => HasActions env AfterHours where
   getActions i window (AfterHours x) = getActions i window x

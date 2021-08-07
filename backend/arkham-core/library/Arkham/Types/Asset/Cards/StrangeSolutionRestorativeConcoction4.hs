@@ -37,8 +37,8 @@ ability a = restrictedAbility
   (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (toId a) Supply 1])
 
 instance HasActions env StrangeSolutionRestorativeConcoction4 where
-  getActions iid NonFast (StrangeSolutionRestorativeConcoction4 attrs) =
-    pure [UseAbility iid $ ability attrs]
+  getActions iid NonFast (StrangeSolutionRestorativeConcoction4 attrs)
+    | ownedBy attrs iid = pure [ability attrs]
   getActions iid window (StrangeSolutionRestorativeConcoction4 attrs) =
     getActions iid window attrs
 

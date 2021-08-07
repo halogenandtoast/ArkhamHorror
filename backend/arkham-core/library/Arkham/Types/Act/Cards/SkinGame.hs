@@ -30,7 +30,7 @@ skinGame = act
   (2, A)
   SkinGame
   Cards.skinGame
-  (Just $ RequiredClues (PerPlayer 2) (Just $ LocationWithTitle "VIP Area"))
+  (Just $ GroupClueCost (PerPlayer 2) (Just $ LocationWithTitle "VIP Area"))
 
 instance ActionRunner env => HasActions env SkinGame where
   getActions i window (SkinGame x) = getActions i window x

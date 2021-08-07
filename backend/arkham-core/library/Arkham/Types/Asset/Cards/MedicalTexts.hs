@@ -27,11 +27,8 @@ medicalTexts = hand MedicalTexts Cards.medicalTexts
 instance HasModifiersFor env MedicalTexts
 
 instance HasActions env MedicalTexts where
-  getActions iid NonFast (MedicalTexts a) | ownedBy a iid = pure
-    [ UseAbility
-        iid
-        (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
-    ]
+  getActions iid NonFast (MedicalTexts a) | ownedBy a iid =
+    pure [mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1)]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env MedicalTexts where

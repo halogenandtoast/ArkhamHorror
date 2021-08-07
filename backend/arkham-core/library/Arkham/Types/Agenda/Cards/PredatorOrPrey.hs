@@ -30,15 +30,8 @@ predatorOrPrey = agenda (1, A) PredatorOrPrey Cards.predatorOrPrey (Static 6)
 instance HasModifiersFor env PredatorOrPrey
 
 instance HasActions env PredatorOrPrey where
-  getActions iid NonFast (PredatorOrPrey attrs) = pure
-    [ UseAbility
-        iid
-        (mkAbility
-          (toSource attrs)
-          1
-          (ActionAbility (Just Action.Resign) (ActionCost 1))
-        )
-    ]
+  getActions _ NonFast (PredatorOrPrey attrs) =
+    pure [mkAbility attrs 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
   getActions _ _ _ = pure []
 
 instance (AgendaRunner env) => RunMessage env PredatorOrPrey where

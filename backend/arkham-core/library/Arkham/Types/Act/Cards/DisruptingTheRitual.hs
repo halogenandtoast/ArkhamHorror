@@ -8,7 +8,6 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
-import Arkham.Types.Cost
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Resolution
@@ -30,14 +29,11 @@ disruptingTheRitual = actWith
   (cluesL ?~ 0)
 
 instance ActionRunner env => HasActions env DisruptingTheRitual where
-  getActions iid NonFast (DisruptingTheRitual a) = pure
-    [ UseAbility
-        iid
-        (mkAbility
-          (toSource a)
-          1
-          (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1])
-        )
+  getActions _ NonFast (DisruptingTheRitual a) = pure
+    [ mkAbility
+        (toSource a)
+        1
+        (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1])
     ]
   getActions i window (DisruptingTheRitual x) = getActions i window x
 

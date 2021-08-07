@@ -26,14 +26,14 @@ thePathToTheHill = act
   (1, A)
   ThePathToTheHill
   Cards.thePathToTheHill
-  (Just $ RequiredClues (PerPlayer 2) Nothing)
+  (Just $ GroupClueCost (PerPlayer 2) Nothing)
 
 instance ActionRunner env => HasActions env ThePathToTheHill where
   getActions i window (ThePathToTheHill x) = do
     clueCount <- unSpendableClueCount <$> getCount ()
     requiredClueCount <- getPlayerCountValue (PerPlayer 2)
     if clueCount >= requiredClueCount
-      then pure [UseAbility i (mkAbility x 1 ForcedAbility)]
+      then pure [mkAbility x 1 ForcedAbility]
       else getActions i window x
 
 instance ActRunner env => RunMessage env ThePathToTheHill where

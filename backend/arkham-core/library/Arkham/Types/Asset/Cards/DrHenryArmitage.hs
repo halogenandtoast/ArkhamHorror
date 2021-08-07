@@ -32,8 +32,7 @@ instance HasModifiersFor env DrHenryArmitage
 
 instance HasActions env DrHenryArmitage where
   getActions iid (AfterDrawCard who card) (DrHenryArmitage a)
-    | ownedBy a iid && iid == who = do
-      pure [UseAbility iid (fastAbility a card)]
+    | ownedBy a iid && iid == who = pure [fastAbility a card]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env DrHenryArmitage where

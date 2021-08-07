@@ -42,16 +42,9 @@ instance HasModifiersFor env MonstrousTransformation where
 
 instance HasActions env MonstrousTransformation where
   getActions iid NonFast (MonstrousTransformation a) | ownedBy a iid = pure
-    [ UseAbility
-        iid
-        (mkAbility
-          (toSource a)
-          1
-          (ActionAbility
-            (Just Action.Fight)
-            (Costs [ExhaustCost (toTarget a), ActionCost 1])
-          )
-        )
+    [ mkAbility a 1 $ ActionAbility
+        (Just Action.Fight)
+        (Costs [ExhaustCost (toTarget a), ActionCost 1])
     ]
   getActions _ _ _ = pure []
 

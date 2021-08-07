@@ -6,6 +6,7 @@ module Arkham.Types.Asset.Cards.StrangeSolutionFreezingVariant4
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
+import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
@@ -30,10 +31,11 @@ strangeSolutionFreezingVariant4 = assetWith
   (startingUsesL ?~ Uses Supply 4)
 
 instance HasActions env StrangeSolutionFreezingVariant4 where
-  getActions iid NonFast (StrangeSolutionFreezingVariant4 attrs) = pure
-    [ assetAction iid attrs 1 (Just Action.Evade)
-        $ Costs [ActionCost 1, UseCost (toId attrs) Supply 1]
-    ]
+  getActions iid NonFast (StrangeSolutionFreezingVariant4 attrs)
+    | ownedBy attrs iid = pure
+      [ mkAbility attrs 1 $ ActionAbility (Just Action.Evade) $ Costs
+          [ActionCost 1, UseCost (toId attrs) Supply 1]
+      ]
   getActions iid window (StrangeSolutionFreezingVariant4 attrs) =
     getActions iid window attrs
 

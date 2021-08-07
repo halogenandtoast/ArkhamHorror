@@ -31,17 +31,13 @@ flashlight =
 instance HasModifiersFor env Flashlight
 
 investigateAbility :: AssetAttrs -> Ability
-investigateAbility attrs = mkAbility
-  (toSource attrs)
-  1
-  (ActionAbility
-    (Just Action.Investigate)
-    (Costs [ActionCost 1, UseCost (toId attrs) Supply 1])
-  )
+investigateAbility attrs = mkAbility attrs 1 $ ActionAbility
+  (Just Action.Investigate)
+  (Costs [ActionCost 1, UseCost (toId attrs) Supply 1])
 
 instance HasActions env Flashlight where
   getActions iid NonFast (Flashlight a) | ownedBy a iid = do
-    pure [UseAbility iid (investigateAbility a)]
+    pure [investigateAbility a]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Flashlight where

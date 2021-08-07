@@ -34,7 +34,7 @@ ability attrs = mkAbility attrs 2 ForcedAbility & abilityLimitL .~ NoLimit
 instance HasCount DamageCount env InvestigatorId => HasActions env SophieInLovingMemory where
   getActions iid _ (SophieInLovingMemory attrs) = whenOwnedBy attrs iid $ do
     damageCount <- unDamageCount <$> getCount iid
-    pure [ UseAbility iid (ability attrs) | damageCount >= 5 ]
+    pure [ ability attrs | damageCount >= 5 ]
 
 instance HasModifiersFor env SophieInLovingMemory
 

@@ -29,15 +29,8 @@ timeIsRunningShort =
 instance HasModifiersFor env TimeIsRunningShort
 
 instance HasActions env TimeIsRunningShort where
-  getActions iid NonFast (TimeIsRunningShort _) = pure
-    [ UseAbility
-        iid
-        (mkAbility
-          (AgendaSource "01122")
-          1
-          (ActionAbility (Just Action.Resign) (ActionCost 1))
-        )
-    ]
+  getActions _ NonFast (TimeIsRunningShort a) =
+    pure [mkAbility a 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
   getActions _ _ _ = pure []
 
 instance (AgendaRunner env) => RunMessage env TimeIsRunningShort where

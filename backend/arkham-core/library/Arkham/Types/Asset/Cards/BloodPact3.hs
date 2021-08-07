@@ -28,10 +28,9 @@ bloodPact3 = asset BloodPact3 Cards.bloodPact3
 instance HasActions env BloodPact3 where
   getActions iid FastPlayerWindow (BloodPact3 a) | ownedBy a iid = do
     pure
-      [ UseAbility iid
-          $ (mkAbility (toSource a) idx (FastAbility $ ResourceCost 2))
-              { abilityLimit = PlayerLimit PerTestOrAbility 1
-              }
+      [ (mkAbility (toSource a) idx (FastAbility $ ResourceCost 2))
+          { abilityLimit = PlayerLimit PerTestOrAbility 1
+          }
       | idx <- [1 .. 2]
       ]
   getActions _ _ _ = pure []

@@ -28,18 +28,14 @@ clarityOfMind =
 
 instance HasActions env ClarityOfMind where
   getActions iid NonFast (ClarityOfMind a) = pure
-    [ UseAbility
-        iid
-        (restrictedAbility
-          (toSource a)
-          1
-          (InvestigatorExists
-          $ InvestigatorAtYourLocation
-          <> InvestigatorWithHorror
-          )
-          (ActionAbility Nothing
-          $ Costs [ActionCost 1, UseCost (toId a) Charge 1]
-          )
+    [ restrictedAbility
+        (toSource a)
+        1
+        (InvestigatorExists
+        $ InvestigatorAtYourLocation
+        <> InvestigatorWithHorror
+        )
+        (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (toId a) Charge 1]
         )
     | ownedBy a iid
     ]

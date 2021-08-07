@@ -30,17 +30,17 @@ jazzMulligan =
   allyWith JazzMulligan Cards.jazzMulligan (2, 2) (isStoryL .~ True)
 
 ability :: AssetAttrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (ActionAbility (Just Parley) $ ActionCost 1)
+ability attrs = mkAbility attrs 1 $ ActionAbility (Just Parley) $ ActionCost 1
 
 instance HasId LocationId env InvestigatorId => HasActions env JazzMulligan where
   getActions iid NonFast (JazzMulligan attrs) = do
     lid <- getId iid
     case assetLocation attrs of
-      Just location -> pure
-        [ UseAbility iid (ability attrs)
-        | lid == location && isNothing (assetInvestigator attrs)
-        ]
+      Just location ->
+        pure
+          [ ability attrs
+          | lid == location && isNothing (assetInvestigator attrs)
+          ]
       _ -> pure mempty
   getActions iid window (JazzMulligan attrs) = getActions iid window attrs
 

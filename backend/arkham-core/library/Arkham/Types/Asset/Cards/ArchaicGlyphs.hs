@@ -26,11 +26,8 @@ archaicGlyphs =
 
 instance HasActions env ArchaicGlyphs where
   getActions iid NonFast (ArchaicGlyphs attrs) | ownedBy attrs iid = pure
-    [ UseAbility iid
-      $ mkAbility attrs 1
-      $ ActionAbility Nothing
-      $ SkillIconCost 1
-      $ singleton SkillIntellect
+    [ mkAbility attrs 1 $ ActionAbility Nothing $ SkillIconCost 1 $ singleton
+        SkillIntellect
     ]
   getActions iid window (ArchaicGlyphs attrs) = getActions iid window attrs
 

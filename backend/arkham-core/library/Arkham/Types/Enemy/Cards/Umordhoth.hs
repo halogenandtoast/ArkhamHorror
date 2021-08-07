@@ -40,13 +40,7 @@ instance ActionRunner env => HasActions env Umordhoth where
         Just aid -> do
           miid <- fmap unOwnerId <$> getId aid
           pure
-            [ UseAbility
-                iid
-                (mkAbility
-                  (EnemySource enemyId)
-                  1
-                  (ActionAbility Nothing $ ActionCost 1)
-                )
+            [ mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 1
             | locationId == enemyLocation && miid == Just iid
             ]
   getActions i window (Umordhoth attrs) = getActions i window attrs

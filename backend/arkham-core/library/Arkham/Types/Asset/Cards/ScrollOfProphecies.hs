@@ -33,9 +33,7 @@ instance HasModifiersFor env ScrollOfProphecies
 
 instance HasActions env ScrollOfProphecies where
   getActions iid NonFast (ScrollOfProphecies a) | ownedBy a iid = pure
-    [ UseAbility
-        iid
-        (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
+    [ mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1)
     | not (assetExhausted a) && useCount (assetUses a) > 0
     ]
   getActions _ _ _ = pure []

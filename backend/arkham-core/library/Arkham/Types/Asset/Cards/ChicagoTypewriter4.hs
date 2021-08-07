@@ -35,18 +35,9 @@ instance HasModifiersFor env ChicagoTypewriter4
 
 instance HasActions env ChicagoTypewriter4 where
   getActions iid NonFast (ChicagoTypewriter4 a) | ownedBy a iid = pure
-    [ UseAbility
-        iid
-        (mkAbility
-          (toSource a)
-          1
-          (ActionAbility
-            (Just Action.Fight)
-            (Costs
-              [ActionCost 1, AdditionalActionsCost, UseCost (toId a) Ammo 1]
-            )
-          )
-        )
+    [ mkAbility a 1 $ ActionAbility
+        (Just Action.Fight)
+        (Costs [ActionCost 1, AdditionalActionsCost, UseCost (toId a) Ammo 1])
     ]
   getActions _ _ _ = pure []
 

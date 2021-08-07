@@ -37,7 +37,7 @@ ability iid a = base
 
 instance HasActions env AstoundingRevelation where
   getActions iid (WhenAmongSearchedCards who) (AstoundingRevelation attrs)
-    | iid == who = pure [UseAbility iid (ability iid attrs)]
+    | iid == who = pure [ability iid attrs]
   getActions iid window (AstoundingRevelation attrs) =
     getActions iid window attrs
 

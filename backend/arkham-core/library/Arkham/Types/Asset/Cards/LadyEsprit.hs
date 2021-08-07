@@ -40,8 +40,7 @@ ability attrs = (mkAbility
 instance HasModifiersFor env LadyEsprit
 
 instance HasActions env LadyEsprit where
-  getActions iid NonFast (LadyEsprit a) = do
-    pure [UseAbility iid (ability a)]
+  getActions _ NonFast (LadyEsprit a) = pure [ability a]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env LadyEsprit where

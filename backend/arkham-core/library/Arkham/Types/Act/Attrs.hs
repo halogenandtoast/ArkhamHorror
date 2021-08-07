@@ -7,10 +7,12 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards
 import Arkham.Json
+import Arkham.Types.Ability
 import Arkham.Types.Act.Sequence as X
 import qualified Arkham.Types.Act.Sequence as AS
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Cost as X
 import Arkham.Types.Exception
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
@@ -19,7 +21,6 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Query
-import Arkham.Types.RequiredClues as X
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Window
@@ -31,7 +32,7 @@ type ActCard a = CardBuilder ActId a
 data ActAttrs = ActAttrs
   { actId :: ActId
   , actSequence :: ActSequence
-  , actRequiredClues :: Maybe RequiredClues
+  , actAdvanceCost :: Maybe Cost
   , actClues :: Maybe Int
   , actTreacheries :: HashSet TreacheryId
   }
@@ -50,16 +51,16 @@ actWith
   :: (Int, ActSide)
   -> (ActAttrs -> a)
   -> CardDef
-  -> Maybe RequiredClues
+  -> Maybe Cost
   -> (ActAttrs -> ActAttrs)
   -> CardBuilder ActId a
-actWith (n, side) f cardDef mRequiredClues g = CardBuilder
+actWith (n, side) f cardDef mCost g = CardBuilder
   { cbCardCode = cdCardCode cardDef
   , cbCardBuilder = \aid -> f . g $ ActAttrs
     { actId = aid
     , actSequence = AS.Act n side
     , actClues = Nothing
-    , actRequiredClues = mRequiredClues
+    , actAdvanceCost = mCost
     , actTreacheries = mempty
     }
   }
@@ -68,10 +69,9 @@ act
   :: (Int, ActSide)
   -> (ActAttrs -> a)
   -> CardDef
-  -> Maybe RequiredClues
+  -> Maybe Cost
   -> CardBuilder ActId a
-act actSeq f cardDef mRequiredClues =
-  actWith actSeq f cardDef mRequiredClues id
+act actSeq f cardDef mCost = actWith actSeq f cardDef mCost id
 
 instance HasCardDef ActAttrs where
   toCardDef e = case lookup (unActId $ actId e) allActCards of
@@ -113,27 +113,8 @@ onSide :: ActSide -> ActAttrs -> Bool
 onSide side ActAttrs {..} = actSide actSequence == side
 
 instance ActionRunner env => HasActions env ActAttrs where
-  getActions _ FastPlayerWindow attrs@ActAttrs {..} = case actRequiredClues of
-    Just (RequiredClues requiredClues Nothing) -> do
-      totalSpendableClues <- unSpendableClueCount <$> getCount ()
-      totalRequiredClues <- getPlayerCountValue requiredClues
-      pure
-        [ AdvanceAct actId (toSource attrs)
-        | totalSpendableClues >= totalRequiredClues
-        ]
-    Just (RequiredClues requiredClues (Just locationMatcher)) -> do
-      mLocationId <- getId @(Maybe LocationId) locationMatcher
-      case mLocationId of
-        Just lid -> do
-          iids <- getSetList @InvestigatorId lid
-          totalSpendableClues <- sum
-            <$> for iids ((unSpendableClueCount <$>) . getCount)
-          totalRequiredClues <- getPlayerCountValue requiredClues
-          pure
-            [ AdvanceAct actId (toSource attrs)
-            | totalSpendableClues >= totalRequiredClues
-            ]
-        Nothing -> pure []
+  getActions _ FastPlayerWindow attrs@ActAttrs {..} = case actAdvanceCost of
+    Just cost -> pure [mkAbility attrs 100 (FastAbility cost)]
     Nothing -> pure []
   getActions _ _ _ = pure []
 
@@ -153,42 +134,26 @@ advanceActSideA
      , HasCount PlayerCount env ()
      )
   => [InvestigatorId]
-  -> GameValue Int
   -> ActAttrs
   -> m [Message]
-advanceActSideA investigatorIds requiredClues attrs = do
+advanceActSideA investigatorIds attrs = do
   leadInvestigatorId <- getLeadInvestigatorId
-  totalRequiredClues <- getPlayerCountValue requiredClues
   pure
-    ([ SpendClues totalRequiredClues investigatorIds | totalRequiredClues > 0 ]
-    <> [ CheckWindow leadInvestigatorId [WhenActAdvance (toId attrs)]
-       , chooseOne leadInvestigatorId [AdvanceAct (toId attrs) (toSource attrs)]
-       ]
-    )
+    [ CheckWindow leadInvestigatorId [WhenActAdvance (toId attrs)]
+    , chooseOne leadInvestigatorId [AdvanceAct (toId attrs) (toSource attrs)]
+    ]
 
 instance ActAttrsRunner env => RunMessage env ActAttrs where
   runMessage msg a@ActAttrs {..} = case msg of
     AdvanceAct aid _ | aid == actId && onSide A a -> do
-      case actRequiredClues of
-        Just (RequiredClues requiredClues Nothing) -> do
-          investigatorIds <- getInvestigatorIds
-          pushAll =<< advanceActSideA investigatorIds requiredClues a
-        Just (RequiredClues requiredClues (Just locationMatcher)) -> do
-          mLocationId <- getId @(Maybe LocationId) locationMatcher
-          case mLocationId of
-            Just lid -> do
-              investigatorIds <- getSetList @InvestigatorId lid
-              pushAll =<< advanceActSideA investigatorIds requiredClues a
-            Nothing ->
-              throwIO $ InvalidState
-                "Should not have advanced if locaiton does not exists"
-        Nothing -> do
-          investigatorIds <- getInvestigatorIds
-          pushAll =<< advanceActSideA investigatorIds (Static 0) a
+      investigatorIds <- getInvestigatorIds
+      pushAll =<< advanceActSideA investigatorIds a
       pure $ a & (sequenceL .~ Act (unActStep $ actStep actSequence) B)
     AttachTreachery tid (ActTarget aid) | aid == actId ->
       pure $ a & treacheriesL %~ insertSet tid
     InvestigatorResigned _ -> do
       investigatorIds <- getSet @InScenarioInvestigatorId ()
       a <$ when (null investigatorIds) (push AllInvestigatorsResigned)
+    UseCardAbility iid source _ 100 _ | isSource a source ->
+      a <$ push (AdvanceAct (toId a) (InvestigatorSource iid))
     _ -> pure a

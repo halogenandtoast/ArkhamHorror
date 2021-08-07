@@ -35,8 +35,7 @@ ability attrs =
     }
 
 instance HasActions env MaskedCarnevaleGoer_19 where
-  getActions iid NonFast (MaskedCarnevaleGoer_19 attrs) =
-    pure [UseAbility iid (ability attrs)]
+  getActions _ NonFast (MaskedCarnevaleGoer_19 attrs) = pure [ability attrs]
   getActions iid window (MaskedCarnevaleGoer_19 attrs) =
     getActions iid window attrs
 

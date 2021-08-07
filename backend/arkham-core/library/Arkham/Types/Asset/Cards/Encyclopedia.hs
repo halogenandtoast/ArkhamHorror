@@ -6,6 +6,7 @@ module Arkham.Types.Asset.Cards.Encyclopedia
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
@@ -33,9 +34,8 @@ instance HasModifiersFor env Encyclopedia
 
 instance HasActions env Encyclopedia where
   getActions iid NonFast (Encyclopedia a) | ownedBy a iid = pure
-    [ assetAction iid a 1 Nothing
-        $ Costs
-            [ActionCost 1, ExhaustCost (toTarget a), UseCost (toId a) Secret 1]
+    [ mkAbility a 1 $ ActionAbility Nothing $ Costs
+        [ActionCost 1, ExhaustCost (toTarget a), UseCost (toId a) Secret 1]
     ]
   getActions _ _ _ = pure []
 

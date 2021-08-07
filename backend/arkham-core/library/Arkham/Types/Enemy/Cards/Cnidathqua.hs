@@ -37,8 +37,7 @@ instance HasModifiersFor env Cnidathqua where
 
 instance EnemyAttrsHasActions env => HasActions env Cnidathqua where
   getActions i (AfterFailAttackEnemy who eid) (Cnidathqua attrs)
-    | eid == toId attrs && i == who = pure
-      [UseAbility i $ mkAbility attrs 1 ForcedAbility]
+    | eid == toId attrs && i == who = pure [mkAbility attrs 1 ForcedAbility]
   getActions i window (Cnidathqua attrs) = getActions i window attrs
 
 instance EnemyAttrsRunMessage env => RunMessage env Cnidathqua where

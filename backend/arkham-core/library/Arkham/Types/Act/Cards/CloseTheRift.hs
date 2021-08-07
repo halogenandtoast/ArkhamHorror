@@ -12,7 +12,6 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Matcher
@@ -29,18 +28,14 @@ closeTheRift = act
   (3, A)
   CloseTheRift
   Cards.closeTheRift
-  (Just $ RequiredClues
+  (Just $ GroupClueCost
     (PerPlayer 3)
     (Just $ LocationWithTitle "The Edge of the Universe")
   )
 
 instance ActionRunner env => HasActions env CloseTheRift where
   getActions iid NonFast (CloseTheRift x) = withBaseActions iid NonFast x $ do
-    pure
-      [ UseAbility
-          iid
-          (mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1))
-      ]
+    pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
   getActions iid window (CloseTheRift x) = getActions iid window x
 
 instance ActRunner env => RunMessage env CloseTheRift where

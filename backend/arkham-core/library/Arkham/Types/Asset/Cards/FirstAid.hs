@@ -34,8 +34,7 @@ ability attrs = mkAbility
   (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (toId attrs) Supply 1])
 
 instance HasActions env FirstAid where
-  getActions iid NonFast (FirstAid a) =
-    pure [ UseAbility iid (ability a) | ownedBy a iid ]
+  getActions iid NonFast (FirstAid a) = pure [ ability a | ownedBy a iid ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env FirstAid where

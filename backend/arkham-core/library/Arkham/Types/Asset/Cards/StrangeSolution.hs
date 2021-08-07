@@ -24,11 +24,8 @@ strangeSolution :: AssetCard StrangeSolution
 strangeSolution = asset StrangeSolution Cards.strangeSolution
 
 instance HasActions env StrangeSolution where
-  getActions iid NonFast (StrangeSolution attrs) | ownedBy attrs iid = pure
-    [ UseAbility
-        iid
-        (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
-    ]
+  getActions iid NonFast (StrangeSolution attrs) | ownedBy attrs iid =
+    pure [mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)]
   getActions iid window (StrangeSolution attrs) = getActions iid window attrs
 
 instance HasModifiersFor env StrangeSolution

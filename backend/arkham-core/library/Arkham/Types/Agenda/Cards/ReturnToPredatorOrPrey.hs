@@ -31,15 +31,8 @@ returnToPredatorOrPrey =
 instance HasModifiersFor env ReturnToPredatorOrPrey
 
 instance HasActions env ReturnToPredatorOrPrey where
-  getActions iid NonFast (ReturnToPredatorOrPrey attrs) = pure
-    [ UseAbility
-        iid
-        (mkAbility
-          (toSource attrs)
-          1
-          (ActionAbility (Just Action.Resign) (ActionCost 1))
-        )
-    ]
+  getActions _ NonFast (ReturnToPredatorOrPrey attrs) =
+    pure [mkAbility attrs 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
   getActions _ _ _ = pure []
 
 instance AgendaRunner env => RunMessage env ReturnToPredatorOrPrey where

@@ -36,7 +36,7 @@ instance
     connectedLocationIds <- map unConnectedLocationId
       <$> getSetList investigatorLocation
     pure
-      [ UseAbility iid (ability attrs)
+      [ ability attrs
       | (abbessLocationId `elem` connectedLocationIds)
         || (abbessLocationId == investigatorLocation)
       ]

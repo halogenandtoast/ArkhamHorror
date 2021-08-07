@@ -28,7 +28,7 @@ reactionAbility attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 instance HasActions env HeirloomOfHyperborea where
   getActions iid (AfterPlayCard who card) (HeirloomOfHyperborea a)
     | ownedBy a iid && iid == who = pure
-      [ UseAbility iid (reactionAbility a) | Spell `elem` toTraits card ]
+      [ reactionAbility a | Spell `elem` toTraits card ]
   getActions i window (HeirloomOfHyperborea x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env HeirloomOfHyperborea where

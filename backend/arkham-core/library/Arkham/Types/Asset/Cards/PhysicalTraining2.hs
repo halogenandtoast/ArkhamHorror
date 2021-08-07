@@ -32,9 +32,9 @@ ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)
 
 instance HasActions env PhysicalTraining2 where
   getActions iid (WhenSkillTest SkillWillpower) (PhysicalTraining2 a) =
-    pure [ UseAbility iid (ability 1 a) | ownedBy a iid ]
+    pure [ ability 1 a | ownedBy a iid ]
   getActions iid (WhenSkillTest SkillCombat) (PhysicalTraining2 a) =
-    pure [ UseAbility iid (ability 2 a) | ownedBy a iid ]
+    pure [ ability 2 a | ownedBy a iid ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env PhysicalTraining2 where

@@ -29,7 +29,7 @@ songOfTheDead2 = arcaneWith
 
 instance HasActions env SongOfTheDead2 where
   getActions iid NonFast (SongOfTheDead2 a) = whenOwnedBy a iid
-    $ pure [fightAction iid a 1 [ActionCost 1, UseCost (toId a) Charge 1]]
+    $ pure [fightAction a 1 [ActionCost 1, UseCost (toId a) Charge 1]]
   getActions _ _ _ = pure []
 
 instance HasModifiersFor env SongOfTheDead2

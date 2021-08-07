@@ -30,7 +30,7 @@ ability attrs =
 
 instance HasActions env DrFrancisMorgan where
   getActions iid (AfterEnemyDefeated who _) (DrFrancisMorgan attrs)
-    | iid == who = pure [ UseAbility iid (ability attrs) | ownedBy attrs iid ]
+    | iid == who = pure [ ability attrs | ownedBy attrs iid ]
   getActions iid window (DrFrancisMorgan attrs) = getActions iid window attrs
 
 instance HasModifiersFor env DrFrancisMorgan where

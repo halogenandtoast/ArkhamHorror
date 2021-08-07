@@ -91,11 +91,9 @@ type InnerInvestigatorRunner env
       )
     , HasModifiersFor env ()
     , (HasName env AssetId, HasName env LocationId)
-    , HasPhaseHistory env
     , HasPlayerCard env AssetId
     , HasQueue env
     , HasRecord env
-    , HasRoundHistory env
     , ( ( HasSet AccessibleLocationId env LocationId
         , HasSet ActId env TreacheryCardCode
         , HasSet ActId env ()

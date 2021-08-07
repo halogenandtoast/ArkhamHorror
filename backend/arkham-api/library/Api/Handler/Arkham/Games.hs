@@ -299,9 +299,6 @@ putApiV1ArkhamGameR gameId = do
 
   updatedQueue <- readIORef queueRef
   updatedLog <- (arkhamGameLog <>) <$> readIORef logRef
-  liftIO $ atomically $ writeTChan
-    writeChannel
-    (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedLog ge)
   void $ runDB $ do
     replace gameId $ ArkhamGame
       arkhamGameName
@@ -312,6 +309,10 @@ putApiV1ArkhamGameR gameId = do
     replace pid $ arkhamPlayer
       { arkhamPlayerInvestigatorId = coerce (view activeInvestigatorIdL ge)
       }
+
+  liftIO $ atomically $ writeTChan
+    writeChannel
+    (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedLog ge)
 
 newtype RawGameJsonPut = RawGameJsonPut
   { gameMessage :: Message

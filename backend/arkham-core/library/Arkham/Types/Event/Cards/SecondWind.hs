@@ -8,6 +8,7 @@ import Arkham.Prelude
 import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
+import Arkham.Types.History
 import Arkham.Types.Message
 import Arkham.Types.Target
 
@@ -23,15 +24,13 @@ instance HasActions env SecondWind where
 
 instance HasModifiersFor env SecondWind
 
-instance (HasQueue env, HasRoundHistory env) => RunMessage env SecondWind where
+instance (HasQueue env, HasHistory env) => RunMessage env SecondWind where
   runMessage msg e@(SecondWind attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
-      roundHistory <- getRoundHistory
+      roundHistory <- getHistory RoundHistory iid
       let
-        didDrawTreachery = \case
-          DrewTreachery iid' _ -> iid == iid'
-          _ -> False
-        damageToHeal = if any didDrawTreachery roundHistory then 2 else 1
+        damageToHeal =
+          if null (historyTreacheriesDrawn roundHistory) then 1 else 2
       e <$ pushAll
         [ HealDamage (InvestigatorTarget iid) damageToHeal
         , DrawCards iid 1 False

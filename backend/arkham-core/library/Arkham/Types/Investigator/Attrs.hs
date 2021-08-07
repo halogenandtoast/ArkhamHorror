@@ -967,9 +967,25 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & engagedEnemiesL %~ insertSet eid
   EngageEnemy iid eid False | iid /= investigatorId ->
     pure $ a & engagedEnemiesL %~ deleteSet eid
-  FightEnemy iid eid source skillType True | iid == investigatorId ->
+  FightEnemy iid eid source skillType True | iid == investigatorId -> do
+    modifiers' <- getModifiers (EnemySource eid) (toTarget a)
+    let
+      takenActions = setFromList @(HashSet Action) investigatorActionsTaken
+      applyFightCostModifiers :: Cost -> ModifierType -> Cost
+      applyFightCostModifiers costToEnter (ActionCostOf actionTarget n) =
+        case actionTarget of
+          FirstOneOf as
+            | Action.Fight `elem` as && null
+              (takenActions `intersect` setFromList as)
+            -> increaseActionCost costToEnter n
+          IsAction Action.Fight -> increaseActionCost costToEnter n
+          _ -> costToEnter
+      applyFightCostModifiers costToEnter _ = costToEnter
     a <$ pushAll
-      [ TakeAction iid (Just Action.Fight) (ActionCost 1)
+      [ TakeAction
+        iid
+        (Just Action.Fight)
+        (foldl' applyFightCostModifiers (ActionCost 1) modifiers')
       , FightEnemy iid eid source skillType False
       ]
   FightEnemy iid eid source skillType False | iid == investigatorId -> do
@@ -1025,9 +1041,25 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         | eid <- setToList investigatorEngagedEnemies
         ]
       )
-  EvadeEnemy iid eid source skillType True | iid == investigatorId ->
+  EvadeEnemy iid eid source skillType True | iid == investigatorId -> do
+    modifiers' <- getModifiers (EnemySource eid) (toTarget a)
+    let
+      takenActions = setFromList @(HashSet Action) investigatorActionsTaken
+      applyEvadeCostModifiers :: Cost -> ModifierType -> Cost
+      applyEvadeCostModifiers costToEnter (ActionCostOf actionTarget n) =
+        case actionTarget of
+          FirstOneOf as
+            | Action.Evade `elem` as && null
+              (takenActions `intersect` setFromList as)
+            -> increaseActionCost costToEnter n
+          IsAction Action.Evade -> increaseActionCost costToEnter n
+          _ -> costToEnter
+      applyEvadeCostModifiers costToEnter _ = costToEnter
     a <$ pushAll
-      [ TakeAction iid (Just Action.Evade) (ActionCost 1)
+      [ TakeAction
+        iid
+        (Just Action.Evade)
+        (foldl' applyEvadeCostModifiers (ActionCost 1) modifiers')
       , EvadeEnemy iid eid source skillType False
       ]
   EvadeEnemy iid eid source skillType False | iid == investigatorId ->

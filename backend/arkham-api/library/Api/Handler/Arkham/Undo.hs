@@ -9,7 +9,6 @@ import Arkham.Types.Card.CardCode
 import Arkham.Types.Game
 import Arkham.Types.Id
 import Control.Lens (view)
-import Control.Monad.Random (mkStdGen)
 import Data.Coerce
 import Json
 import Safe (fromJustNote)
@@ -18,8 +17,6 @@ putApiV1ArkhamGameUndoR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameUndoR gameId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   ArkhamGame {..} <- runDB $ get404 gameId
-  let gameJson@Game {..} = arkhamGameCurrentData
-
   Entity pid arkhamPlayer <- runDB $ getBy404 (UniquePlayer userId gameId)
 
   case arkhamGameChoices of
@@ -27,7 +24,7 @@ putApiV1ArkhamGameUndoR gameId = do
     choice : remaining -> do
       writeChannel <- getChannel gameId
 
-      case patch gameJson (choicePatchDown choice) of
+      case patch arkhamGameCurrentData (choicePatchDown choice) of
         Error e -> error e
         Success ge -> do
           liftIO $ atomically $ writeTChan

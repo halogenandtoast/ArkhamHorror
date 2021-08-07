@@ -10,6 +10,7 @@ import Arkham.Prelude
 import Arkham.Json
 import Arkham.Location.Cards
 import Arkham.Types.Ability
+import Arkham.Types.Action (TakenAction(..))
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
@@ -384,8 +385,10 @@ instance ActionRunner env => HasActions env LocationAttrs where
     canMoveTo <- getCanMoveTo locationId iid
     canInvestigate <- getCanInvestigate locationId iid
     investigateAllowed <- getInvestigateAllowed iid l
+    modifiers' <- getModifiers (toSource l) (InvestigatorTarget iid)
+    takenActions <- setFromList . map unTakenAction <$> getList iid
     pure
-      $ moveActions canMoveTo
+      $ moveActions modifiers' takenActions canMoveTo
       <> investigateActions canInvestigate investigateAllowed
    where
     costToEnter =
@@ -394,8 +397,25 @@ instance ActionRunner env => HasActions env LocationAttrs where
       [ Investigate iid locationId (InvestigatorSource iid) SkillIntellect True
       | canInvestigate && investigateAllowed
       ]
-    moveActions canMoveTo =
-      [ MoveAction iid locationId costToEnter True | canMoveTo ]
+    moveActions modifiers' takenActions canMoveTo =
+      [ MoveAction
+          iid
+          locationId
+          (foldl' (applyMoveCostModifiers takenActions) costToEnter modifiers')
+          True
+      | canMoveTo
+      ]
+    applyMoveCostModifiers
+      :: HashSet Action.Action -> Cost -> ModifierType -> Cost
+    applyMoveCostModifiers takenActions costToEnter (ActionCostOf actionTarget n)
+      = case actionTarget of
+        FirstOneOf as
+          | Action.Move `elem` as && null
+            (takenActions `intersect` setFromList as)
+          -> increaseActionCost costToEnter n
+        IsAction Action.Move -> increaseActionCost costToEnter n
+        _ -> costToEnter
+    applyMoveCostModifiers takenActions costToEnter _ = costToEnter
   getActions _ _ _ = pure []
 
 getShouldSpawnNonEliteAtConnectingInstead

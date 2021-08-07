@@ -1,4 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE StrictData #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Types.Game where
@@ -34,6 +35,7 @@ import Arkham.Types.Event
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameRunner
 import Arkham.Types.Helpers
+import Arkham.Types.History
 import Arkham.Types.Id
 import Arkham.Types.Investigator
 import Arkham.Types.Investigator.Attrs (getPlayableCards)
@@ -162,8 +164,8 @@ data GameParams = GameParams
   deriving anyclass (ToJSON, FromJSON)
 
 data Game = Game
-  { gameRoundMessageHistory :: [Message]
-  , gamePhaseMessageHistory :: [Message]
+  { gamePhaseHistory :: HashMap InvestigatorId History
+  , gameRoundHistory :: HashMap InvestigatorId History
   , gameInitialSeed :: Int
   , gameSeed :: Int
   , gameParams :: GameParams
@@ -255,13 +257,11 @@ removedFromPlayL =
 phaseL :: Lens' Game Phase
 phaseL = lens gamePhase $ \m x -> m { gamePhase = x }
 
-phaseMessageHistoryL :: Lens' Game [Message]
-phaseMessageHistoryL =
-  lens gamePhaseMessageHistory $ \m x -> m { gamePhaseMessageHistory = x }
+phaseHistoryL :: Lens' Game (HashMap InvestigatorId History)
+phaseHistoryL = lens gamePhaseHistory $ \m x -> m { gamePhaseHistory = x }
 
-roundMessageHistoryL :: Lens' Game [Message]
-roundMessageHistoryL =
-  lens gameRoundMessageHistory $ \m x -> m { gameRoundMessageHistory = x }
+roundHistoryL :: Lens' Game (HashMap InvestigatorId History)
+roundHistoryL = lens gameRoundHistory $ \m x -> m { gameRoundHistory = x }
 
 activeInvestigatorIdL :: Lens' Game InvestigatorId
 activeInvestigatorIdL =
@@ -370,8 +370,8 @@ instance ToJSON Game where
   toJSON g@Game {..} = object
     [ "windowDepth" .= toJSON gameWindowDepth
     , "params" .= toJSON gameParams
-    , "roundMessageHistory" .= toJSON gameRoundMessageHistory
-    , "phaseMessageHistory" .= toJSON gamePhaseMessageHistory
+    , "roundHistory" .= toJSON gameRoundHistory
+    , "phaseHistory" .= toJSON gamePhaseHistory
     , "initialSeed" .= toJSON gameInitialSeed
     , "seed" .= toJSON gameSeed
     , "mode" .= toJSON gameMode
@@ -1405,11 +1405,13 @@ instance HasGame env => HasList DiscardableHandCard env InvestigatorId where
 instance HasGame env => HasList DiscardedPlayerCard env InvestigatorId where
   getList = getList <=< getInvestigator
 
-instance HasGame env => HasRoundHistory env where
-  getRoundHistory = view roundMessageHistoryL <$> getGame
-
-instance HasGame env => HasPhaseHistory env where
-  getPhaseHistory = view phaseMessageHistoryL <$> getGame
+instance HasGame env => HasHistory env where
+  getHistory PhaseHistory iid =
+    findWithDefault mempty iid . view phaseHistoryL <$> getGame
+  getHistory RoundHistory iid = do
+    roundH <- findWithDefault mempty iid . view roundHistoryL <$> getGame
+    phaseH <- getHistory PhaseHistory iid
+    pure $ roundH <> phaseH
 
 instance HasGame env => HasList Location env () where
   getList _ = toList . view locationsL <$> getGame
@@ -3006,12 +3008,18 @@ runGameMessage msg g = case msg of
   EndPhase -> do
     clearQueue
     case g ^. phaseL of
-      MythosPhase -> g <$ pushEnd BeginInvestigation
-      InvestigationPhase -> g <$ pushEnd BeginEnemy
-      EnemyPhase -> g <$ pushEnd BeginUpkeep
-      UpkeepPhase -> g <$ pushAllEnd [EndRoundWindow, EndRound]
+      MythosPhase -> pushEnd BeginInvestigation
+      InvestigationPhase -> pushEnd BeginEnemy
+      EnemyPhase -> pushEnd BeginUpkeep
+      UpkeepPhase -> pushAllEnd [EndRoundWindow, EndRound]
       ResolutionPhase -> error "should not be called in this situation"
       CampaignPhase -> error "should not be called in this situation"
+    pure
+      $ g
+      & roundHistoryL
+      %~ (<> view phaseHistoryL g)
+      & phaseHistoryL
+      %~ mempty
   EndInvestigation -> do
     pushAll
       $ [ CheckWindow iid [Fast.PhaseEnds InvestigationPhase]
@@ -3026,7 +3034,7 @@ runGameMessage msg g = case msg of
                abilityLimitType abilityLimit /= Just PerPhase
              )
         )
-      & (phaseMessageHistoryL .~ [])
+      & (phaseHistoryL .~ mempty)
       & (turnPlayerInvestigatorIdL .~ Nothing)
   BeginEnemy -> do
     pushAllEnd
@@ -3049,7 +3057,7 @@ runGameMessage msg g = case msg of
                abilityLimitType abilityLimit /= Just PerPhase
              )
         )
-      & (phaseMessageHistoryL .~ [])
+      & (phaseHistoryL .~ mempty)
   BeginUpkeep -> do
     pushAllEnd
       $ [ CheckWindow iid [Fast.AnyPhaseBegins, Fast.PhaseBegins UpkeepPhase]
@@ -3071,7 +3079,7 @@ runGameMessage msg g = case msg of
                abilityLimitType abilityLimit /= Just PerPhase
              )
         )
-      & (phaseMessageHistoryL .~ [])
+      & (phaseHistoryL .~ mempty)
   EndRoundWindow ->
     g <$ push (CheckWindow (g ^. leadInvestigatorIdL) [AtEndOfRound])
   EndRound -> do
@@ -3084,7 +3092,7 @@ runGameMessage msg g = case msg of
                abilityLimitType abilityLimit /= Just PerRound
              )
         )
-      & (roundMessageHistoryL .~ [])
+      & (roundHistoryL .~ mempty)
   BeginRound -> g <$ pushEnd BeginMythos
   BeginMythos -> do
     iids <- getInvestigatorIds
@@ -3120,7 +3128,7 @@ runGameMessage msg g = case msg of
                abilityLimitType abilityLimit /= Just PerPhase
              )
         )
-      & (phaseMessageHistoryL .~ [])
+      & (phaseHistoryL .~ mempty)
   BeginSkillTest iid source target maction skillType difficulty -> do
     investigator <- getInvestigator iid
     availableSkills <- getAvailableSkillsFor investigator skillType
@@ -3511,10 +3519,15 @@ runGameMessage msg g = case msg of
       <> [ Surge iid (TreacherySource treacheryId)
          | Keyword.Surge `member` toKeywords treachery
          ]
+
+    let
+      historyItem = mempty { historyTreacheriesDrawn = [toCardCode treachery] }
+
     pure
       $ g
       & (treacheriesL . at treacheryId ?~ treachery)
       & (activeCardL ?~ EncounterCard card)
+      & (phaseHistoryL %~ HashMap.insertWith (<>) iid historyItem)
   DrewTreachery iid (PlayerCard card) -> do
     let
       treachery = createTreachery card iid
@@ -3528,10 +3541,15 @@ runGameMessage msg g = case msg of
          , AfterRevelation iid treacheryId
          , UnsetActiveCard
          ]
+
+    let
+      historyItem = mempty { historyTreacheriesDrawn = [toCardCode treachery] }
+
     pure
       $ g
       & (treacheriesL %~ insertMap treacheryId treachery)
       & (activeCardL ?~ PlayerCard card)
+      & (phaseHistoryL %~ HashMap.insertWith (<>) iid historyItem)
   UnsetActiveCard -> pure $ g & activeCardL .~ Nothing
   AfterRevelation{} -> pure $ g & activeCardL .~ Nothing
   ResignWith (AssetTarget aid) -> do

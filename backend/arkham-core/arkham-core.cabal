@@ -546,6 +546,7 @@ library
       Arkham.Types.GameRunner
       Arkham.Types.GameValue
       Arkham.Types.Helpers
+      Arkham.Types.History
       Arkham.Types.Id
       Arkham.Types.Investigator
       Arkham.Types.Investigator.Attrs

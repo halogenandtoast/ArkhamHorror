@@ -4,7 +4,7 @@ module Arkham.Types.Game.Helpers where
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.Action (Action)
+import Arkham.Types.Action (Action, TakenAction(..))
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
@@ -451,17 +451,31 @@ getCanFight eid iid = do
   locationId <- getId @LocationId iid
   enemyModifiers <- getModifiers (InvestigatorSource iid) (EnemyTarget eid)
   sameLocation <- (== locationId) <$> getId @LocationId eid
+  modifiers' <- getModifiers (EnemySource eid) (InvestigatorTarget iid)
+  takenActions <- setFromList . map unTakenAction <$> getList iid
   keywords <- getSet eid
   canAffordActions <- getCanAffordCost
     iid
     (EnemySource eid)
     (Just Action.Fight)
-    (ActionCost 1)
+    (foldl' (applyFightCostModifiers takenActions) (ActionCost 1) modifiers')
   engagedInvestigators <- getSet eid
   pure
     $ canAffordActions
     && (Keyword.Aloof `notMember` keywords || iid `member` engagedInvestigators)
     && (sameLocation || CanBeFoughtAsIfAtYourLocation `elem` enemyModifiers)
+ where
+  applyFightCostModifiers
+    :: HashSet Action.Action -> Cost -> ModifierType -> Cost
+  applyFightCostModifiers takenActions costToFight (ActionCostOf actionTarget n)
+    = case actionTarget of
+      FirstOneOf as
+        | Action.Fight `elem` as && null
+          (takenActions `intersect` setFromList as)
+        -> increaseActionCost costToFight n
+      IsAction Action.Fight -> increaseActionCost costToFight n
+      _ -> costToFight
+  applyFightCostModifiers _ costToFight _ = costToFight
 
 getCanEngage
   :: ( MonadReader env m
@@ -499,12 +513,26 @@ getCanEvade
 getCanEvade eid iid = do
   engaged <- elem iid <$> getSet eid
   enemyModifiers <- getModifiers (InvestigatorSource iid) (EnemyTarget eid)
+  modifiers' <- getModifiers (EnemySource eid) (InvestigatorTarget iid)
+  takenActions <- setFromList . map unTakenAction <$> getList iid
   canAffordActions <- getCanAffordCost
     iid
     (EnemySource eid)
     (Just Action.Evade)
-    (ActionCost 1)
+    (foldl' (applyEvadeCostModifiers takenActions) (ActionCost 1) modifiers')
   pure $ engaged && canAffordActions && CannotBeEvaded `notElem` enemyModifiers
+ where
+  applyEvadeCostModifiers
+    :: HashSet Action.Action -> Cost -> ModifierType -> Cost
+  applyEvadeCostModifiers takenActions costToFight (ActionCostOf actionTarget n)
+    = case actionTarget of
+      FirstOneOf as
+        | Action.Evade `elem` as && null
+          (takenActions `intersect` setFromList as)
+        -> increaseActionCost costToFight n
+      IsAction Action.Evade -> increaseActionCost costToFight n
+      _ -> costToFight
+  applyEvadeCostModifiers _ costToFight _ = costToFight
 
 getCanMoveTo
   :: ( MonadReader env m

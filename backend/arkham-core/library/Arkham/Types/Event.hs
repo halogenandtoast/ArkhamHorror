@@ -47,6 +47,7 @@ instance
   , HasCount Shroud env LocationId
   , HasCount FightCount env EnemyId
   , CanCheckPlayable env
+  , HasHistory env
   )
   => RunMessage env Event where
   runMessage = genericRunMessage

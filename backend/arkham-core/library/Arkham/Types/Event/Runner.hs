@@ -17,7 +17,6 @@ type EventRunner env
     , HasCount UsesCount env AssetId
     , HasId LocationId env InvestigatorId
     , HasList DiscardableHandCard env InvestigatorId
-    , HasRoundHistory env
     , HasSet AccessibleLocationId env LocationId
     , HasSet ConnectedLocationId env LocationId
     , HasSet EmptyLocationId env ()

@@ -38,6 +38,15 @@ decreaseActionCost (Costs (a : as)) y = case a of
   _ -> a <> decreaseActionCost (Costs as) y
 decreaseActionCost other _ = other
 
+increaseActionCost :: Cost -> Int -> Cost
+increaseActionCost (ActionCost x) y = ActionCost $ max 0 (x + y)
+increaseActionCost (Costs (a : as)) y = case a of
+  ActionCost x | x >= y -> Costs (ActionCost (x + y) : as)
+  ActionCost x ->
+    ActionCost (max 0 (x + y)) <> increaseActionCost (Costs as) (y + x)
+  _ -> a <> increaseActionCost (Costs as) y
+increaseActionCost other _ = other
+
 data Payment
   = ActionPayment Int
   | AdditionalActionPayment

@@ -17,8 +17,12 @@ newtype GhoulFromTheDepths = GhoulFromTheDepths EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ghoulFromTheDepths :: EnemyCard GhoulFromTheDepths
-ghoulFromTheDepths =
-  enemy GhoulFromTheDepths Cards.ghoulFromTheDepths (3, Static 4, 2) (1, 1)
+ghoulFromTheDepths = enemyWith
+  GhoulFromTheDepths
+  Cards.ghoulFromTheDepths
+  (3, Static 4, 2)
+  (1, 1)
+  (spawnAtL ?~ LocationWithTitle "Bathroom")
 
 instance HasModifiersFor env GhoulFromTheDepths
 
@@ -26,7 +30,5 @@ instance ActionRunner env => HasActions env GhoulFromTheDepths where
   getActions i window (GhoulFromTheDepths attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env GhoulFromTheDepths where
-  runMessage msg e@(GhoulFromTheDepths attrs@EnemyAttrs {..}) = case msg of
-    InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
-      e <$ spawnAt (Just iid) enemyId (LocationWithTitle "Bathroom")
-    _ -> GhoulFromTheDepths <$> runMessage msg attrs
+  runMessage msg (GhoulFromTheDepths attrs) =
+    GhoulFromTheDepths <$> runMessage msg attrs

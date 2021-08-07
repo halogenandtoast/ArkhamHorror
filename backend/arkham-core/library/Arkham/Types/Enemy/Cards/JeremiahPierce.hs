@@ -26,8 +26,14 @@ newtype JeremiahPierce = JeremiahPierce EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jeremiahPierce :: EnemyCard JeremiahPierce
-jeremiahPierce =
-  enemy JeremiahPierce Cards.jeremiahPierce (4, Static 3, 4) (1, 1)
+jeremiahPierce = enemyWith
+  JeremiahPierce
+  Cards.jeremiahPierce
+  (4, Static 3, 4)
+  (1, 1)
+  (spawnAtL ?~ FirstLocation
+    [LocationWithTitle "Your House", LocationWithTitle "Rivertown"]
+  )
 
 instance HasModifiersFor env JeremiahPierce
 
@@ -49,12 +55,6 @@ instance ActionRunner env => HasActions env JeremiahPierce where
 
 instance (EnemyRunner env) => RunMessage env JeremiahPierce where
   runMessage msg e@(JeremiahPierce attrs@EnemyAttrs {..}) = case msg of
-    InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
-      mYourHouse <- getLocationIdWithTitle "Your House"
-      let
-        spawnLocation =
-          LocationWithTitle $ maybe "Rivertown" (const "Your House") mYourHouse
-      e <$ spawnAt (Just iid) eid spawnLocation
     UseCardAbility iid (EnemySource eid) _ 1 _ | eid == enemyId -> e <$ pushAll
       [ AddToVictory (EnemyTarget enemyId)
       , CreateEffect

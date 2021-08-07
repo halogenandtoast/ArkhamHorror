@@ -1191,6 +1191,7 @@ cardInFastWindows iid c windows matcher = anyM
       member (FarthestLocationId locationId) <$> getSet (iid, matcher')
     LocationWithTrait t -> member t <$> getSet locationId
     LocationMatchers ms -> allM (locationMatches locationId) ms
+    FirstLocation ms -> anyM (locationMatches locationId) ms -- a bit weird here since first means nothing
     LocationWithoutTreacheryWithCardCode cCode -> do
       treacheryIds <- getSetList @TreacheryId locationId
       cardCodes <- traverse (getId @CardCode) treacheryIds

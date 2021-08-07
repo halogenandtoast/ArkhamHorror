@@ -737,34 +737,35 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   DrawStartingHand iid | iid == investigatorId -> do
     let (discard, hand, deck) = drawOpeningHand a 5
     pure $ a & (discardL .~ discard) & (handL .~ hand) & (deckL .~ Deck deck)
-  CheckAdditionalActionCosts iid _ source action msgs -> do
-    modifiers' <- getModifiers source (toTarget a)
-    let
-      additionalCosts = mapMaybe
-        (\case
-          ActionCostOf (IsAction action') n | action == action' ->
-            Just (ActionCost n)
-          _ -> Nothing
-        )
-        modifiers'
-    a <$ if null additionalCosts
-      then pushAll msgs
-      else do
-        canPay <- getCanAffordCost
-          iid
-          (toSource a)
-          Nothing
-          (mconcat additionalCosts)
-        when
-          canPay
-          (pushAll
-          $ [ CreatePayAbilityCostEffect
-                (abilityEffect a $ mconcat additionalCosts)
-                (toSource a)
-                (toTarget a)
-            ]
-          <> msgs
+  CheckAdditionalActionCosts iid _ source action msgs | iid == investigatorId ->
+    do
+      modifiers' <- getModifiers source (toTarget a)
+      let
+        additionalCosts = mapMaybe
+          (\case
+            ActionCostOf (IsAction action') n | action == action' ->
+              Just (ActionCost n)
+            _ -> Nothing
           )
+          modifiers'
+      a <$ if null additionalCosts
+        then pushAll msgs
+        else do
+          canPay <- getCanAffordCost
+            iid
+            (toSource a)
+            Nothing
+            (mconcat additionalCosts)
+          when
+            canPay
+            (pushAll
+            $ [ CreatePayAbilityCostEffect
+                  (abilityEffect a $ mconcat additionalCosts)
+                  (toSource a)
+                  (toTarget a)
+              ]
+            <> msgs
+            )
   TakeStartingResources iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toSource a) (toTarget a)
     let

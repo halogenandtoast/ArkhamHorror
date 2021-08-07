@@ -967,6 +967,7 @@ library
       MonadRandom
     , aeson >=1.5.4.1
     , aeson-casing
+    , aeson-diff
     , base >=4.7 && <5
     , classy-prelude
     , containers

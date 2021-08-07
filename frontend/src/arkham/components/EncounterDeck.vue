@@ -63,11 +63,11 @@ export default defineComponent({
 
       switch (choice.tag) {
         case MessageType.INVESTIGATOR_DRAW_ENCOUNTER_CARD:
-          return `${baseUrl}/img/arkham/portraits/${choice.contents}.jpg`;
+          return `${baseUrl}/img/arkham/portraits/${choice.contents.replace('c', '')}.jpg`;
         case MessageType.SURGE:
-          return `${baseUrl}/img/arkham/portraits/${choice.contents[0]}.jpg`;
+          return `${baseUrl}/img/arkham/portraits/${choice.contents[0].replace('c', '')}.jpg`;
         default:
-          return `${baseUrl}/img/arkham/portraits/${choice.contents[0]}.jpg`;
+          return `${baseUrl}/img/arkham/portraits/${choice.contents[0].replace('c', '')}.jpg`;
       }
     })
 

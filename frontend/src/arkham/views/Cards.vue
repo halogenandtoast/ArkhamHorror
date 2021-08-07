@@ -30,7 +30,7 @@ export default defineComponent({
       ready.value = true
     })
 
-    const image = (card: Arkham.CardDef) => `${baseUrl}/img/arkham/cards/${card.cardCode}.jpg`
+    const image = (card: Arkham.CardDef) => `${baseUrl}/img/arkham/cards/${card.cardCode.replace('c', '')}.jpg`
 
     return { cards, ready, image }
   }

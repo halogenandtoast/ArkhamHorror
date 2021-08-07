@@ -3,7 +3,7 @@
     <div>
       <h2>Upgrade Deck ({{xp}} xp)</h2>
       <div v-if="!waiting" class="upgrade-deck">
-        <img class="portrait" :src="`${baseUrl}/img/arkham/portraits/${investigatorId}.jpg`" />
+        <img class="portrait" :src="`${baseUrl}/img/arkham/portraits/${investigatorId.replace('c', '')}.jpg`" />
         <div class="fields">
           <input
             type="url"

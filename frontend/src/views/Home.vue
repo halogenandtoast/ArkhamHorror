@@ -12,12 +12,12 @@
         <img class="campaign-icon" :src="`${baseUrl}/img/arkham/sets/${game.campaign.contents.id}.png`" />
       </div>
       <div class="campaign-icon-container" v-else-if="game.scenario">
-        <img class="campaign-icon" :src="`${baseUrl}/img/arkham/sets/${game.scenario.contents.id.slice(0,2)}.png`" />
+        <img class="campaign-icon" :src="`${baseUrl}/img/arkham/sets/${game.scenario.contents.id.replace('c', '').slice(0,2)}.png`" />
       </div>
       <div class="game-details">
         <router-link class="title" :to="`/games/${game.id}`">{{game.name}}</router-link>
         <div v-if="game.scenario" class="scenario-details">
-          <img class="scenario-icon" :src="`${baseUrl}/img/arkham/sets/${game.scenario.contents.id}.png`" />
+          <img class="scenario-icon" :src="`${baseUrl}/img/arkham/sets/${game.scenario.contents.id.replace('c', '')}.png`" />
           <span>{{game.scenario.contents.name.title}}</span>
         </div>
         <div>
@@ -42,12 +42,12 @@
         <img class="campaign-icon" :src="`${baseUrl}/img/arkham/sets/${game.campaign.contents.id}.png`" />
       </div>
       <div class="campaign-icon-container" v-else-if="game.scenario">
-        <img class="campaign-icon" :src="`${baseUrl}/img/arkham/sets/${game.scenario.contents.id.slice(0,2)}.png`" />
+        <img class="campaign-icon" :src="`${baseUrl}/img/arkham/sets/${game.scenario.contents.id.replace('c', '').slice(0,2)}.png`" />
       </div>
       <div class="game-details">
         <router-link class="title" :to="`/games/${game.id}`">{{game.name}}</router-link>
         <div v-if="game.scenario" class="scenario-details">
-          <img class="scenario-icon" :src="`${baseUrl}/img/arkham/sets/${game.scenario.contents.id}.png`" />
+          <img class="scenario-icon" :src="`${baseUrl}/img/arkham/sets/${game.scenario.contents.id.replace('c', '')}.png`" />
           <span>{{game.scenario.contents.name.title}}</span>
         </div>
         <div>

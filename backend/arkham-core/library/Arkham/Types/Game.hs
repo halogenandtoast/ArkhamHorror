@@ -69,6 +69,7 @@ import Control.Monad.Extra (allM, anyM, mapMaybeM)
 import Control.Monad.Random.Lazy hiding (filterM, foldM)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (filterM, foldM)
+import qualified Data.Aeson.Diff as Diff
 import qualified Data.HashMap.Strict as HashMap
 import Data.List.Extra (groupOn)
 import Data.Monoid (First(..))
@@ -165,7 +166,6 @@ data Game = Game
   , gamePhaseMessageHistory :: [Message]
   , gameInitialSeed :: Int
   , gameSeed :: Int
-  , gameChoices :: [GameChoice]
   , gameParams :: GameParams
   , gameWindowDepth :: Int
 
@@ -214,11 +214,16 @@ data Game = Game
   }
   deriving stock (Eq, Show, Generic)
 
+diff :: Game -> Game -> Diff.Patch
+diff a b = Diff.diff (toJSON a) (toJSON b)
+
+patch :: Game -> Diff.Patch -> Result Game
+patch g p = case Diff.patch p (toJSON g) of
+  Error e -> Error e
+  Success a -> fromJSON a
+
 windowDepthL :: Lens' Game Int
 windowDepthL = lens gameWindowDepth $ \m x -> m { gameWindowDepth = x }
-
-choicesL :: Lens' Game [GameChoice]
-choicesL = lens gameChoices $ \m x -> m { gameChoices = x }
 
 initialSeedL :: Lens' Game Int
 initialSeedL = lens gameInitialSeed $ \m x -> m { gameInitialSeed = x }
@@ -363,8 +368,7 @@ withSkillTestModifiers st a = do
 
 instance ToJSON Game where
   toJSON g@Game {..} = object
-    [ "choices" .= toJSON gameChoices
-    , "windowDepth" .= toJSON gameWindowDepth
+    [ "windowDepth" .= toJSON gameWindowDepth
     , "params" .= toJSON gameParams
     , "roundMessageHistory" .= toJSON gameRoundMessageHistory
     , "phaseMessageHistory" .= toJSON gamePhaseMessageHistory

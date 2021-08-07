@@ -224,10 +224,10 @@ export default defineComponent({
 
     const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
     const image = computed(() => {
-      return `${baseUrl}/img/arkham/cards/${id.value}.jpg`;
+      return `${baseUrl}/img/arkham/cards/${id.value.replace('c', '')}.jpg`;
     })
 
-    const portraitImage = computed(() => `${baseUrl}/img/arkham/portraits/${id.value}.jpg`)
+    const portraitImage = computed(() => `${baseUrl}/img/arkham/portraits/${id.value.replace('c', '')}.jpg`)
 
 
     const cardsUnderneath = computed(() => props.player.contents.cardsUnderneath)

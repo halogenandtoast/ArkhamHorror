@@ -74,7 +74,7 @@ export default defineComponent({
     const image = computed(() => {
       const { cardCode } = props.enemy.contents;
       const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-      return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
+      return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
     })
 
     const id = computed(() => props.enemy.contents.id)

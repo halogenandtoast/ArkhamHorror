@@ -145,7 +145,7 @@ export default defineComponent({
 
     const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
     const cardLabelImage = (cardCode: string) => {
-      return `${baseUrl}/img/arkham/cards/${cardCode}.jpg`;
+      return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
     }
 
     const cardLabels = computed(() =>

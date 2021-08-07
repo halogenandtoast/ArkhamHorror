@@ -134,7 +134,7 @@ export default defineComponent({
       const { cardCode, revealed } = props.location.contents
       const suffix = revealed ? '' : 'b'
 
-      return `${baseUrl}/img/arkham/cards/${cardCode}${suffix}.jpg`
+      return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}${suffix}.jpg`
     })
 
     const id = computed(() => props.location.contents.id)

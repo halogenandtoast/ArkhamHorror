@@ -33,16 +33,9 @@ instance HasModifiersFor env JennysTwin45s
 
 instance HasActions env JennysTwin45s where
   getActions iid NonFast (JennysTwin45s a) | ownedBy a iid = pure
-    [ UseAbility
-        iid
-        (mkAbility
-          (toSource a)
-          1
-          (ActionAbility
-            (Just Action.Fight)
-            (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
-          )
-        )
+    [ mkAbility a 1 $ ActionAbility
+        (Just Action.Fight)
+        (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
     ]
   getActions _ _ _ = pure []
 

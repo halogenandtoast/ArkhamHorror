@@ -28,17 +28,14 @@ instance HasModifiersFor env ForbiddenKnowledge
 
 instance HasActions env ForbiddenKnowledge where
   getActions iid FastPlayerWindow (ForbiddenKnowledge a) | ownedBy a iid = pure
-    [ UseAbility
-        iid
-        (mkAbility
-          (toSource a)
-          1
-          (FastAbility $ Costs
-            [ UseCost (toId a) Secret 1
-            , HorrorCost (toSource a) (InvestigatorTarget iid) 1
-            , ExhaustCost (toTarget a)
-            ]
-          )
+    [ mkAbility
+        (toSource a)
+        1
+        (FastAbility $ Costs
+          [ UseCost (toId a) Secret 1
+          , HorrorCost (toSource a) (InvestigatorTarget iid) 1
+          , ExhaustCost (toTarget a)
+          ]
         )
     | useCount (assetUses a) > 0
     ]

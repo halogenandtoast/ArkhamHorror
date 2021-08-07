@@ -53,10 +53,7 @@ instance
         (getId @LocationId i)
         (getId @LocationId who)
       traits <- getSetList eid
-      pure
-        [ UseAbility i (ability eid a)
-        | Monster `elem` traits && atYourLocation
-        ]
+      pure [ ability eid a | Monster `elem` traits && atYourLocation ]
   getActions i window (LitaChantler a) = getActions i window a
 
 instance (AssetRunner env) => RunMessage env LitaChantler where

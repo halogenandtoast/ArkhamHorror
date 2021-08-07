@@ -42,7 +42,7 @@ instance CanCheckPlayable env => HasActions env JoeyTheRatVigil where
           [DuringTurn iid, FastPlayerWindow]
         )
         items
-      pure [ UseAbility iid (ability attrs) | notNull playableItems ]
+      pure [ ability attrs | notNull playableItems ]
   getActions _ _ _ = pure []
 
 instance HasModifiersFor env JoeyTheRatVigil

@@ -6,6 +6,7 @@ module Arkham.Types.Asset.Cards.Burglary
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
+import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
@@ -26,8 +27,8 @@ instance HasModifiersFor env Burglary
 
 instance HasActions env Burglary where
   getActions iid NonFast (Burglary a) | ownedBy a iid = pure
-    [ assetAction iid a 1 (Just Action.Investigate)
-        $ Costs [ActionCost 1, ExhaustCost (toTarget a)]
+    [ mkAbility a 1 $ ActionAbility (Just Action.Investigate) $ Costs
+        [ActionCost 1, ExhaustCost (toTarget a)]
     ]
   getActions _ _ _ = pure []
 

@@ -26,9 +26,7 @@ lure1 = event Lure1 Cards.lure1
 instance HasActions env Lure1 where
   getActions iid AtEndOfRound (Lure1 attrs)
     | isJust (eventAttachedTarget attrs) = pure
-      [ UseAbility iid (mkAbility (toSource attrs) 1 ForcedAbility)
-      | eventOwner attrs == iid
-      ]
+      [ mkAbility attrs 1 ForcedAbility | eventOwner attrs == iid ]
   getActions iid window (Lure1 attrs) = getActions iid window attrs
 
 instance HasModifiersFor env Lure1 where

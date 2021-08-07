@@ -26,11 +26,11 @@ earlSawyer = ally EarlSawyer Cards.earlSawyer (3, 2)
 
 ability :: AssetAttrs -> Ability
 ability attrs =
-  mkAbility (toSource attrs) 1 (ReactionAbility $ ExhaustCost (toTarget attrs))
+  mkAbility attrs 1 $ ReactionAbility $ ExhaustCost (toTarget attrs)
 
 instance HasActions env EarlSawyer where
   getActions iid (AfterEnemyEvaded who _) (EarlSawyer attrs) | iid == who =
-    pure [ UseAbility iid (ability attrs) | ownedBy attrs iid ]
+    pure [ ability attrs | ownedBy attrs iid ]
   getActions iid window (EarlSawyer attrs) = getActions iid window attrs
 
 instance HasModifiersFor env EarlSawyer where

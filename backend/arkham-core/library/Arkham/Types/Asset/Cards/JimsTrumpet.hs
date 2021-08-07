@@ -43,7 +43,7 @@ instance ActionRunner env => HasActions env JimsTrumpet where
       horrorCounts <- for
         (concat investigatorIds)
         ((unHorrorCount <$>) . getCount)
-      pure [ UseAbility iid (ability a) | any (> 0) horrorCounts ]
+      pure [ ability a | any (> 0) horrorCounts ]
   getActions i window (JimsTrumpet x) = getActions i window x
 
 instance AssetRunner env => RunMessage env JimsTrumpet where

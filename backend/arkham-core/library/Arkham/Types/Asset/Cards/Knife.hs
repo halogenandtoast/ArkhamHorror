@@ -30,17 +30,11 @@ instance HasModifiersFor env Knife
 
 instance HasActions env Knife where
   getActions iid NonFast (Knife a) | ownedBy a iid = pure
-    [ UseAbility iid (mkAbility a 1 (ActionAbility (Just Fight) (ActionCost 1)))
-    , UseAbility
-      iid
-      (mkAbility
-        a
-        2
-        (ActionAbility
+    [ mkAbility a 1 $ ActionAbility (Just Fight) (ActionCost 1)
+    , mkAbility a 2
+      $ ActionAbility
           (Just Fight)
           (Costs [ActionCost 1, DiscardCost (toTarget a)])
-        )
-      )
     ]
   getActions _ _ _ = pure []
 

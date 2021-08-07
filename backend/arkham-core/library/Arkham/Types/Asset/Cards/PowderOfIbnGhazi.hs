@@ -41,7 +41,7 @@ instance
         . mapSet unExhaustedEnemyId
         <$> getSet lid
       pure
-        [ UseAbility iid (mkAbility (toSource attrs) 1 (ReactionAbility Free))
+        [ mkAbility attrs 1 $ ReactionAbility Free
         | ownedBy attrs iid
           && notNull exhaustedBroodOfYogSothothAtLocation
           && (assetClues attrs > 0)

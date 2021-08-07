@@ -12,7 +12,6 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Message
@@ -28,16 +27,12 @@ outOfThisWorld = act
   (1, A)
   OutOfThisWorld
   Cards.outOfThisWorld
-  (Just $ RequiredClues (PerPlayer 2) Nothing)
+  (Just $ GroupClueCost (PerPlayer 2) Nothing)
 
 instance ActionRunner env => HasActions env OutOfThisWorld where
   getActions iid NonFast (OutOfThisWorld x) =
     withBaseActions iid NonFast x $ do
-      pure
-        [ UseAbility
-            iid
-            (mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1))
-        ]
+      pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
   getActions iid window (OutOfThisWorld x) = getActions iid window x
 
 instance ActRunner env => RunMessage env OutOfThisWorld where

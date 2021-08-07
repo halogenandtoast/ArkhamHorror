@@ -39,9 +39,7 @@ instance HasId LocationId env InvestigatorId => HasActions env PoliceBadge2 wher
       (getId @LocationId iid)
       (getId @LocationId who)
     pure
-      [ UseAbility
-          iid
-          (mkAbility (toSource a) 1 (FastAbility $ DiscardCost (toTarget a)))
+      [ mkAbility a 1 $ FastAbility $ DiscardCost (toTarget a)
       | atYourLocation
       ]
   getActions _ _ _ = pure []

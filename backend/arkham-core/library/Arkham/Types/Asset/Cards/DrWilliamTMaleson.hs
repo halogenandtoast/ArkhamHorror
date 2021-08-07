@@ -33,9 +33,7 @@ ability attrs = mkAbility
 instance HasActions env DrWilliamTMaleson where
   getActions iid (WhenDrawCard who card) (DrWilliamTMaleson attrs)
     | ownedBy attrs iid && iid == who = pure
-      [ UseAbility iid (ability attrs)
-      | toCardType card `elem` encounterCardTypes
-      ]
+      [ ability attrs | toCardType card `elem` encounterCardTypes ]
   getActions _ _ _ = pure []
 
 instance HasModifiersFor env DrWilliamTMaleson

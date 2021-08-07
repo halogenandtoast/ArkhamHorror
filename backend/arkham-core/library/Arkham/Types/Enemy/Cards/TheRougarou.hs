@@ -6,7 +6,10 @@ module Arkham.Types.Enemy.Cards.TheRougarou
 import Arkham.Prelude
 
 import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
+import Arkham.Types.Cost
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
@@ -31,9 +34,9 @@ theRougarou = enemy
 
 instance HasModifiersFor env TheRougarou
 
-isEngage :: Message -> Bool
-isEngage = \case
-  EngageEnemy{} -> True
+isEngage :: Ability -> Bool
+isEngage ability = case abilityType ability of
+  ActionAbility (Just Action.Engage) _ -> True
   _ -> False
 
 instance ActionRunner env => HasActions env TheRougarou where
@@ -42,16 +45,15 @@ instance ActionRunner env => HasActions env TheRougarou where
     if any isEngage actions'
       then do
         playerCount <- getPlayerCount
-        investigatorIds <- getInvestigatorIds
         let
           requiredClues = if playerCount > 2 then 2 else 1
-          engageAction = Run
-            [ SpendClues requiredClues investigatorIds
-            , EngageEnemy iid (enemyId attrs) True
-            ]
-        canAfford <- (>= requiredClues)
-          <$> getSpendableClueCount investigatorIds
-        pure $ filter (not . isEngage) actions' <> [ engageAction | canAfford ]
+          -- 102 is the magic number for engage...
+          engageAction =
+            mkAbility attrs 102
+              $ ActionAbility (Just Action.Engage)
+              $ GroupClueCost (Static requiredClues) Nothing
+              <> ActionCost 1
+        pure $ filter (not . isEngage) actions' <> [engageAction]
       else pure actions'
 
 instance EnemyRunner env => RunMessage env TheRougarou where

@@ -24,7 +24,7 @@ investigatingTheTrail = act
   (1, A)
   InvestigatingTheTrail
   Cards.investigatingTheTrail
-  (Just $ RequiredClues (PerPlayer 3) Nothing)
+  (Just $ GroupClueCost (PerPlayer 3) Nothing)
 
 instance ActionRunner env => HasActions env InvestigatingTheTrail where
   getActions i window (InvestigatingTheTrail x) = getActions i window x

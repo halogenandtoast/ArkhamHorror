@@ -34,7 +34,7 @@ ability a = mkAbility a 1 ForcedAbility
 instance ActionRunner env => HasActions env GetToTheBoats where
   getActions iid (PhaseBegins MythosPhase) (GetToTheBoats x) = do
     leadInvestigatorId <- getLeadInvestigatorId
-    pure [ UseAbility iid (ability x) | iid == leadInvestigatorId ]
+    pure [ ability x | iid == leadInvestigatorId ]
   getActions iid window (GetToTheBoats x) = getActions iid window x
 
 instance

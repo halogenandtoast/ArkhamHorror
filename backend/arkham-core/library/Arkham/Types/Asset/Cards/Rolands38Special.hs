@@ -35,17 +35,13 @@ rolands38Special = handWith
 instance HasModifiersFor env Rolands38Special
 
 fightAbility :: AssetAttrs -> Ability
-fightAbility attrs = mkAbility
-  (toSource attrs)
-  1
-  (ActionAbility
-    (Just Action.Fight)
-    (Costs [ActionCost 1, UseCost (toId attrs) Ammo 1])
-  )
+fightAbility attrs = mkAbility attrs 1 $ ActionAbility
+  (Just Action.Fight)
+  (Costs [ActionCost 1, UseCost (toId attrs) Ammo 1])
 
 instance HasActions env Rolands38Special where
   getActions iid NonFast (Rolands38Special a) | ownedBy a iid = do
-    pure [UseAbility iid (fightAbility a)]
+    pure [fightAbility a]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Rolands38Special where

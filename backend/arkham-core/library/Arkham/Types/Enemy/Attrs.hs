@@ -7,11 +7,13 @@ import Arkham.Prelude
 
 import Arkham.Enemy.Cards
 import Arkham.Json
+import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
+import Arkham.Types.Cost
 import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue as X
@@ -302,7 +304,7 @@ type EnemyAttrsHasActions env
     )
 
 instance EnemyAttrsHasActions env => HasActions env EnemyAttrs where
-  getActions iid NonFast EnemyAttrs {..} = do
+  getActions iid NonFast e@EnemyAttrs {..} = do
     canFight <- getCanFight enemyId iid
     canEngage <- getCanEngage enemyId iid
     canEvade <- getCanEvade enemyId iid
@@ -312,13 +314,16 @@ instance EnemyAttrsHasActions env => HasActions env EnemyAttrs where
       <> evadeEnemyActions canEvade
    where
     fightEnemyActions canFight =
-      [ FightEnemy iid enemyId (InvestigatorSource iid) SkillCombat True
+      [ mkAbility e 100 $ ActionAbility (Just Action.Fight) (ActionCost 1)
       | canFight
       ]
-    engageEnemyActions canEngage = [ EngageEnemy iid enemyId True | canEngage ]
     evadeEnemyActions canEvade =
-      [ EvadeEnemy iid enemyId (InvestigatorSource iid) SkillAgility True
+      [ mkAbility e 101 $ ActionAbility (Just Action.Evade) (ActionCost 1)
       | canEvade
+      ]
+    engageEnemyActions canEngage =
+      [ mkAbility e 102 $ ActionAbility (Just Action.Engage) (ActionCost 1)
+      | canEngage
       ]
   getActions _ _ _ = pure []
 
@@ -811,4 +816,12 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
         & (doomL .~ 0)
         & (cluesL .~ 0)
     Blanked msg' -> runMessage msg' a
+    UseCardAbility iid source _ 100 _ | isSource a source ->
+      a <$ push
+        (FightEnemy iid (toId a) (InvestigatorSource iid) SkillCombat True)
+    UseCardAbility iid source _ 101 _ | isSource a source ->
+      a <$ push
+        (EvadeEnemy iid (toId a) (InvestigatorSource iid) SkillAgility True)
+    UseCardAbility iid source _ 102 _ | isSource a source ->
+      a <$ push (EngageEnemy iid (toId a) True)
     _ -> pure a

@@ -12,7 +12,6 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.Cost
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Resolution
@@ -29,20 +28,13 @@ uncoveringTheConspiracy =
   act (1, A) UncoveringTheConspiracy Cards.uncoveringTheConspiracy Nothing
 
 instance ActionRunner env => HasActions env UncoveringTheConspiracy where
-  getActions iid NonFast (UncoveringTheConspiracy x@ActAttrs {..}) = do
-    requiredClues <- getPlayerCountValue (PerPlayer 2)
-    totalSpendableClues <- getSpendableClueCount =<< getInvestigatorIds
-    if totalSpendableClues >= requiredClues
-      then pure
-        [ UseAbility
-            iid
-            (mkAbility
-              (ActSource actId)
-              1
-              (ActionAbility Nothing $ ActionCost 1)
-            )
-        ]
-      else getActions iid NonFast x
+  getActions _ NonFast (UncoveringTheConspiracy a) = do
+    pure
+      [ mkAbility a 1
+        $ ActionAbility Nothing
+        $ ActionCost 1
+        <> GroupClueCost (PerPlayer 2) Nothing
+      ]
   getActions iid window (UncoveringTheConspiracy attrs) =
     getActions iid window attrs
 
@@ -63,10 +55,5 @@ instance ActRunner env => RunMessage env UncoveringTheConspiracy where
         (cultists `HashSet.isSubsetOf` victoryDisplay)
         (push (AdvanceAct actId $ toSource attrs))
     UseCardAbility iid (ActSource aid) _ 1 _ | aid == actId -> do
-      investigatorIds <- getInvestigatorIds
-      requiredClues <- getPlayerCountValue (PerPlayer 2)
-      a <$ pushAll
-        [ SpendClues requiredClues investigatorIds
-        , UseScenarioSpecificAbility iid Nothing 1
-        ]
+      a <$ pushAll [UseScenarioSpecificAbility iid Nothing 1]
     _ -> UncoveringTheConspiracy <$> runMessage msg attrs

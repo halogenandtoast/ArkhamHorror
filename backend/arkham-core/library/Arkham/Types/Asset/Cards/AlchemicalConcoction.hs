@@ -30,10 +30,8 @@ alchemicalConcoction :: AssetCard AlchemicalConcoction
 alchemicalConcoction = asset AlchemicalConcoction Cards.alchemicalConcoction
 
 instance HasActions env AlchemicalConcoction where
-  getActions iid NonFast (AlchemicalConcoction a) | ownedBy a iid = pure
-    [ UseAbility iid
-        $ mkAbility a 1 (ActionAbility (Just Action.Fight) $ ActionCost 1)
-    ]
+  getActions iid NonFast (AlchemicalConcoction a) | ownedBy a iid =
+    pure [mkAbility a 1 (ActionAbility (Just Action.Fight) $ ActionCost 1)]
   getActions _ _ _ = pure []
 
 instance (HasId CardCode env EnemyId, HasSkillTest env) => HasModifiersFor env AlchemicalConcoction where

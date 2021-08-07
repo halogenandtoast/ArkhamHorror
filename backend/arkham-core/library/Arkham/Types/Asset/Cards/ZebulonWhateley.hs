@@ -33,7 +33,7 @@ ability attrs =
 instance HasActions env ZebulonWhateley where
   getActions iid (AfterPassSkillTest _ (TreacherySource _) who _) (ZebulonWhateley attrs)
     | iid == who
-    = pure [ UseAbility iid (ability attrs) | ownedBy attrs iid ]
+    = pure [ ability attrs | ownedBy attrs iid ]
   getActions iid window (ZebulonWhateley attrs) = getActions iid window attrs
 
 instance HasModifiersFor env ZebulonWhateley where

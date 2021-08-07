@@ -28,7 +28,7 @@ findingAWayInside = act
   (1, A)
   FindingAWayInside
   Cards.findingAWayInside
-  (Just $ RequiredClues (Static 2) Nothing)
+  (Just $ GroupClueCost (Static 2) Nothing)
 
 instance ActionRunner env => HasActions env FindingAWayInside where
   getActions i window (FindingAWayInside x) = getActions i window x
@@ -41,14 +41,9 @@ instance ActRunner env => RunMessage env FindingAWayInside where
         leadInvestigatorId <- getLeadInvestigatorId
         push (chooseOne leadInvestigatorId [AdvanceAct aid source])
         pure $ FindingAWayInside $ attrs & sequenceL .~ Act 1 B
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
-      pushAll
-        [ SpendClues 2 investigatorIds
-        , chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
-        ]
-      pure $ FindingAWayInside $ attrs & sequenceL .~ Act 1 B
+    AdvanceAct aid _ | aid == actId && onSide A attrs ->
+      -- otherwise we do the default
+      FindingAWayInside <$> runMessage msg attrs
     AdvanceAct aid source
       | aid == actId && onSide B attrs && isSource attrs source -> do
         leadInvestigatorId <- getLeadInvestigatorId

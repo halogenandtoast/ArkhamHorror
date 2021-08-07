@@ -81,8 +81,8 @@ withBaseActions
   => InvestigatorId
   -> Window
   -> a
-  -> m [Message]
-  -> m [Message]
+  -> m [Ability]
+  -> m [Ability]
 withBaseActions iid window a f = (<>) <$> getActions iid window a <*> f
 
 getCanPerformAbility
@@ -292,11 +292,8 @@ getCanAffordCost iid source mAction = \case
           )
       >= n
 
-isForcedAction :: Message -> Bool
-isForcedAction = \case
-  Force _ -> True
-  UseAbility _ ability -> abilityType ability == ForcedAbility
-  _ -> False
+isForcedAction :: Ability -> Bool
+isForcedAction ability = abilityType ability == ForcedAbility
 
 instance
   ( HasCostPayment env
@@ -309,36 +306,23 @@ instance
     actions' <- concat <$> traverse
       (getActions iid window)
       ([minBound .. maxBound] :: [ActionType])
-    actions'' <- for actions' $ \case
-      UseAbility iid' ability -> do
+    actions'' <- for
+      actions'
+      \ability -> do
         modifiers' <- getModifiers
           (InvestigatorSource iid)
           (sourceToTarget $ abilitySource ability)
-        pure $ UseAbility iid' (applyAbilityModifiers ability modifiers')
-      other -> pure other -- TODO: dynamic abilities
+        pure $ applyAbilityModifiers ability modifiers'
     let forcedActions = nub $ filter isForcedAction actions''
-    forcedActions' <- filterM
-      (\case
-        UseAbility iid' ability -> getCanAffordAbility iid' ability
-        _ -> pure True
-      )
-      forcedActions
+    forcedActions' <- filterM (getCanAffordAbility iid) forcedActions
     if null forcedActions'
-      then do
-        let
-          canAffordAction = \case
-            UseAbility _ ability -> getCanAffordAbility iid ability
-            MoveAction _ lid cost _ ->
-              getCanAffordCost iid (LocationSource lid) (Just Action.Move) cost
-            _ -> pure True
-          canPerformAction = \case
-            UseAbility _ ability -> getCanPerformAbility iid window ability
-            _ -> pure True
-        filterM
-          (\action ->
-            liftM2 (&&) (canPerformAction action) (canAffordAction action)
-          )
-          actions''
+      then filterM
+        (\action -> liftA2
+          (&&)
+          (getCanPerformAbility iid window action)
+          (getCanAffordAbility iid action)
+        )
+        actions''
       else pure forcedActions'
 
 enemyAtInvestigatorLocation
@@ -744,15 +728,9 @@ getLocationIdByName name = getId matcher
     (title, Just subtitle) -> LocationWithFullTitle title subtitle
     (title, Nothing) -> LocationWithTitle title
 
-fightAction
-  :: SourceEntity source => InvestigatorId -> source -> Int -> [Cost] -> Message
-fightAction iid source n costs = UseAbility
-  iid
-  (mkAbility
-    (toSource source)
-    n
-    (ActionAbility (Just Action.Fight) (Costs costs))
-  )
+fightAction :: SourceEntity source => source -> Int -> [Cost] -> Ability
+fightAction source n costs =
+  mkAbility source n (ActionAbility (Just Action.Fight) (Costs costs))
 
 hasFightActions
   :: forall env m
@@ -762,7 +740,12 @@ hasFightActions
   -> m Bool
 hasFightActions i NonFast = do
   enemyActions <- getActions i NonFast EnemyActionType
-  pure $ or [ True | FightEnemy{} <- enemyActions ]
+  pure $ flip
+    any
+    enemyActions
+    \ability -> case abilityType ability of
+      ActionAbility (Just Action.Evade) _ -> True
+      _ -> False
 hasFightActions _ _ = pure False
 
 hasEvadeActions
@@ -773,7 +756,12 @@ hasEvadeActions
   -> m Bool
 hasEvadeActions i NonFast = do
   enemyActions <- getActions i NonFast EnemyActionType
-  pure $ or [ True | EvadeEnemy{} <- enemyActions ]
+  pure $ flip
+    any
+    enemyActions
+    \ability -> case abilityType ability of
+      ActionAbility (Just Action.Evade) _ -> True
+      _ -> False
 hasEvadeActions _ _ = pure False
 
 hasInvestigateActions
@@ -784,7 +772,12 @@ hasInvestigateActions
   -> m Bool
 hasInvestigateActions i NonFast = do
   locationActions <- getActions i NonFast LocationActionType
-  pure $ or [ True | Investigate{} <- locationActions ]
+  pure $ flip
+    any
+    locationActions
+    \ability -> case abilityType ability of
+      ActionAbility (Just Action.Investigate) _ -> True
+      _ -> False
 hasInvestigateActions _ _ = pure False
 
 type CanCheckPlayable env
@@ -972,10 +965,8 @@ passesRestriction iid location windows = \case
     pure $ flip
       any
       actions'
-      \case
-        UseAbility _ ability -> case abilityType ability of
-          ActionAbility (Just Action.Resign) _ -> True
-          _ -> False
+      \ability -> case abilityType ability of
+        ActionAbility (Just Action.Resign) _ -> True
         _ -> False
 
 getModifiedCardCost

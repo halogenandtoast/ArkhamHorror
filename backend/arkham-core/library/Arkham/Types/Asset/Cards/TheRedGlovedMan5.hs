@@ -32,10 +32,10 @@ theRedGlovedMan5 =
 
 instance HasActions env TheRedGlovedMan5 where
   getActions i (WhenEnterPlay target) (TheRedGlovedMan5 (x `With` _))
-    | isTarget x target = pure
-      [UseAbility i (mkAbility (toSource x) 1 (ReactionAbility Free))]
+    | isTarget x target && ownedBy x i = pure
+      [mkAbility x 1 $ ReactionAbility Free]
   getActions i (PhaseEnds MythosPhase) (TheRedGlovedMan5 (x `With` _))
-    | ownedBy x i = pure [UseAbility i (mkAbility (toSource x) 2 ForcedAbility)]
+    | ownedBy x i = pure [mkAbility x 2 ForcedAbility]
   getActions i window (TheRedGlovedMan5 (x `With` _)) = getActions i window x
 
 instance HasModifiersFor env TheRedGlovedMan5 where

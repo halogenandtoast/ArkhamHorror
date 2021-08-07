@@ -33,12 +33,8 @@ instance ActionRunner env => HasActions env TheChamberOfTheBeast where
     clueCount <- maybe (pure 0) (fmap unClueCount . getCount) mHiddenChamberId
     leadInvestigatorId <- getLeadInvestigatorId
     if clueCount == 0
-      then
-        pure
-          [ UseAbility
-              leadInvestigatorId
-              (mkAbility (toSource x) 1 ForcedAbility)
-          ]
+      then pure
+        [ mkAbility (toSource x) 1 ForcedAbility | i == leadInvestigatorId ]
       else getActions i window x
 
 instance ActRunner env => RunMessage env TheChamberOfTheBeast where

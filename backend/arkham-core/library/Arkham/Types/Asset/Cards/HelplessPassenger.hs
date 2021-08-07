@@ -33,10 +33,11 @@ instance HasId LocationId env InvestigatorId => HasActions env HelplessPassenger
   getActions iid NonFast (HelplessPassenger attrs) = do
     lid <- getId iid
     case assetLocation attrs of
-      Just location -> pure
-        [ UseAbility iid (ability attrs)
-        | lid == location && isNothing (assetInvestigator attrs)
-        ]
+      Just location ->
+        pure
+          [ ability attrs
+          | lid == location && isNothing (assetInvestigator attrs)
+          ]
       _ -> pure mempty
   getActions iid window (HelplessPassenger attrs) = getActions iid window attrs
 

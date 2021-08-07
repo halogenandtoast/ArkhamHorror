@@ -39,7 +39,7 @@ instance HasSet Trait env (InvestigatorId, CardId) => HasActions env DaisysToteB
             )
             { abilityMetadata = Just (TargetMetadata $ CardIdTarget cardId)
             }
-      pure [ UseAbility iid ability | isTome ]
+      pure [ ability | isTome ]
   getActions iid window (DaisysToteBagAdvanced attrs) =
     getActions iid window attrs
 

@@ -29,18 +29,14 @@ liquidCourage =
 
 instance HasActions env LiquidCourage where
   getActions iid NonFast (LiquidCourage a) = pure
-    [ UseAbility
-        iid
-        (restrictedAbility
-          (toSource a)
-          1
-          (InvestigatorExists
-          $ InvestigatorAtYourLocation
-          <> InvestigatorWithHorror
-          )
-          (ActionAbility Nothing
-          $ Costs [ActionCost 1, UseCost (toId a) Supply 1]
-          )
+    [ restrictedAbility
+        (toSource a)
+        1
+        (InvestigatorExists
+        $ InvestigatorAtYourLocation
+        <> InvestigatorWithHorror
+        )
+        (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (toId a) Supply 1]
         )
     | ownedBy a iid
     ]
@@ -60,7 +56,7 @@ instance
       lid <- getId @LocationId iid
       iids <- getSetList @InvestigatorId lid
       let
-        abilityEffect iid' =
+        doAbilityEffect iid' =
           [ HealHorror (InvestigatorTarget iid') 1
           , BeginSkillTest
             iid'
@@ -72,11 +68,11 @@ instance
           ]
       a <$ case iids of
         [] -> pure ()
-        [iid'] -> pushAll $ abilityEffect iid'
+        [iid'] -> pushAll $ doAbilityEffect iid'
         _ -> push
           (chooseOne
             iid
-            [ TargetLabel (InvestigatorTarget iid') (abilityEffect iid')
+            [ TargetLabel (InvestigatorTarget iid') (doAbilityEffect iid')
             | iid' <- iids
             ]
           )

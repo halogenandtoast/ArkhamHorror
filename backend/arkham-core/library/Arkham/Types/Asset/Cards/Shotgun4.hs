@@ -37,16 +37,9 @@ instance HasModifiersFor env Shotgun4
 
 instance HasActions env Shotgun4 where
   getActions iid NonFast (Shotgun4 a) | ownedBy a iid = pure
-    [ UseAbility
-        iid
-        (mkAbility
-          (toSource a)
-          1
-          (ActionAbility
-            (Just Action.Fight)
-            (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
-          )
-        )
+    [ mkAbility a 1 $ ActionAbility
+        (Just Action.Fight)
+        (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
     ]
   getActions _ _ _ = pure []
 

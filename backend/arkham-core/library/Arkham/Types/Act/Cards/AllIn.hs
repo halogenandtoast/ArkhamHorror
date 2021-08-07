@@ -14,7 +14,6 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.Action
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.Cost
 import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Matcher
@@ -43,13 +42,10 @@ instance ActionRunner env => HasActions env AllIn where
         miid <- fmap unOwnerId <$> getId aid
         assetLocationId <- getId aid
         pure
-          [ UseAbility
-              iid
-              (mkAbility
-                (ProxySource (AssetSource aid) (toSource attrs))
-                1
-                (ActionAbility (Just Parley) $ ActionCost 1)
-              )
+          [ mkAbility
+              (ProxySource (AssetSource aid) (toSource attrs))
+              1
+              (ActionAbility (Just Parley) $ ActionCost 1)
           | isNothing miid && Just investigatorLocationId == assetLocationId
           ]
   getActions i window (AllIn x) = getActions i window x

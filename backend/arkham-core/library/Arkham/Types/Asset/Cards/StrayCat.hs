@@ -31,7 +31,7 @@ ability a = mkAbility (toSource a) 1 (FastAbility (DiscardCost $ toTarget a))
 
 instance HasActions env StrayCat where
   getActions iid FastPlayerWindow (StrayCat a) | ownedBy a iid =
-    withBaseActions iid FastPlayerWindow a $ pure [UseAbility iid (ability a)]
+    withBaseActions iid FastPlayerWindow a $ pure [ability a]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env StrayCat where

@@ -6,6 +6,7 @@ module Arkham.Types.Asset.Cards.BookOfShadows3
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
@@ -33,8 +34,8 @@ slot AssetAttrs { assetId } = Slot (AssetSource assetId) Nothing
 
 instance HasActions env BookOfShadows3 where
   getActions iid NonFast (BookOfShadows3 a) | ownedBy a iid = pure
-    [ assetAction iid a 1 Nothing
-        $ Costs [ActionCost 1, ExhaustCost (toTarget a)]
+    [ mkAbility a 1 $ ActionAbility Nothing $ Costs
+        [ActionCost 1, ExhaustCost (toTarget a)]
     ]
   getActions _ _ _ = pure []
 

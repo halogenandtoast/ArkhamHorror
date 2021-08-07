@@ -45,7 +45,7 @@ instance
   getActions iid FastPlayerWindow (BeatCop a) | ownedBy a iid = do
     locationId <- getId @LocationId iid
     enemyIds <- getSetList @EnemyId locationId
-    pure [ UseAbility iid (ability a) | notNull enemyIds ]
+    pure [ ability a | notNull enemyIds ]
   getActions _ _ _ = pure []
 
 -- | See: PlayerCardWithBehavior

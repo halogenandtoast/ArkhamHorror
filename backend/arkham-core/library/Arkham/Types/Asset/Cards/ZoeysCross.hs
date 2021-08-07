@@ -37,7 +37,7 @@ ability attrs eid = base
 
 instance HasActions env ZoeysCross where
   getActions iid (AfterEnemyEngageInvestigator who eid) (ZoeysCross a)
-    | ownedBy a iid && iid == who = pure [UseAbility iid (ability a eid)]
+    | ownedBy a iid && iid == who = pure [ability a eid]
   getActions i window (ZoeysCross x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env ZoeysCross where

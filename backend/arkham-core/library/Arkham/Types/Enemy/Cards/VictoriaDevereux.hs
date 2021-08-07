@@ -16,7 +16,6 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Source
 import Arkham.Types.Window
 
 newtype VictoriaDevereux = VictoriaDevereux EnemyAttrs
@@ -38,16 +37,8 @@ instance ActionRunner env => HasActions env VictoriaDevereux where
     withBaseActions iid NonFast attrs $ do
       locationId <- getId @LocationId iid
       pure
-        [ UseAbility
-            iid
-            (mkAbility
-              (EnemySource enemyId)
-              1
-              (ActionAbility
-                (Just Parley)
-                (Costs [ActionCost 1, ResourceCost 5])
-              )
-            )
+        [ mkAbility attrs 1
+            $ ActionAbility (Just Parley) (Costs [ActionCost 1, ResourceCost 5])
         | locationId == enemyLocation
         ]
   getActions _ _ _ = pure []

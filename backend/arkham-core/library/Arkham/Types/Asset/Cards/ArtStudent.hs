@@ -21,8 +21,9 @@ artStudent :: AssetCard ArtStudent
 artStudent = ally ArtStudent Cards.artStudent (1, 2)
 
 instance HasActions env ArtStudent where
-  getActions i (WhenEnterPlay target) (ArtStudent x) | isTarget x target =
-    pure [UseAbility i (mkAbility (toSource x) 1 (ReactionAbility Free))]
+  getActions i (WhenEnterPlay target) (ArtStudent x)
+    | isTarget x target && ownedBy x i = pure
+      [mkAbility (toSource x) 1 (ReactionAbility Free)]
   getActions iid window (ArtStudent attrs) = getActions iid window attrs
 
 instance HasModifiersFor env ArtStudent

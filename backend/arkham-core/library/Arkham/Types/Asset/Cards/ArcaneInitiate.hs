@@ -27,7 +27,7 @@ instance HasModifiersFor env ArcaneInitiate
 
 instance HasActions env ArcaneInitiate where
   getActions iid FastPlayerWindow (ArcaneInitiate a) | ownedBy a iid =
-    pure [UseAbility iid $ fastAbility a]
+    pure [fastAbility a]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env ArcaneInitiate where

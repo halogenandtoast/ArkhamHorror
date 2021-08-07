@@ -29,8 +29,7 @@ scavenging = asset Scavenging Cards.scavenging
 instance HasModifiersFor env Scavenging
 
 ability :: AssetAttrs -> Ability
-ability a =
-  mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a))
+ability a = mkAbility a 1 $ ReactionAbility $ ExhaustCost (toTarget a)
 
 instance ActionRunner env => HasActions env Scavenging where
   getActions iid (AfterPassSkillTest (Just Action.Investigate) _ who n) (Scavenging a)
@@ -40,10 +39,7 @@ instance ActionRunner env => HasActions env Scavenging where
       cardsCanLeaveDiscard <-
         notElem CardsCannotLeaveYourDiscardPile
           <$> getModifiers (toSource a) (InvestigatorTarget iid)
-      pure
-        [ UseAbility iid (ability a)
-        | hasItemInDiscard && cardsCanLeaveDiscard
-        ]
+      pure [ ability a | hasItemInDiscard && cardsCanLeaveDiscard ]
   getActions i window (Scavenging x) = getActions i window x
 
 instance AssetRunner env => RunMessage env Scavenging where

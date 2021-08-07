@@ -29,7 +29,7 @@ saracenicScript = act
   SaracenicScript
   Cards.saracenicScript
   (Just
-  $ RequiredClues (PerPlayer 2) (Just $ LocationWithTitle "Whateley Ruins")
+  $ GroupClueCost (PerPlayer 2) (Just $ LocationWithTitle "Whateley Ruins")
   )
 
 instance ActionRunner env => HasActions env SaracenicScript where

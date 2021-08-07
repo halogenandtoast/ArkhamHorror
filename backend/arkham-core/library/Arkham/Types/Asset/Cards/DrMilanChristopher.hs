@@ -29,8 +29,7 @@ instance HasModifiersFor env DrMilanChristopher where
 
 instance HasActions env DrMilanChristopher where
   getActions i (AfterSuccessfulInvestigation who _) (DrMilanChristopher x)
-    | ownedBy x i && i == who = pure
-      [UseAbility i (mkAbility (toSource x) 1 (ReactionAbility Free))]
+    | ownedBy x i && i == who = pure [mkAbility x 1 $ ReactionAbility Free]
   getActions i window (DrMilanChristopher x) = getActions i window x
 
 instance AssetRunner env => RunMessage env DrMilanChristopher where

@@ -30,9 +30,7 @@ keenEye = asset KeenEye Cards.keenEye
 instance HasActions env KeenEye where
   getActions iid FastPlayerWindow (KeenEye a) | ownedBy a iid = do
     pure
-      [ UseAbility
-          iid
-          (mkAbility (toSource a) idx (FastAbility $ ResourceCost 2))
+      [ mkAbility (toSource a) idx (FastAbility $ ResourceCost 2)
       | idx <- [1 .. 2]
       ]
   getActions _ _ _ = pure []

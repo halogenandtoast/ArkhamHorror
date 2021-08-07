@@ -32,7 +32,7 @@ ability a = restrictedAbility
 
 instance HasActions env Fieldwork where
   getActions iid (AfterEntering iid' _) (Fieldwork attrs)
-    | ownedBy attrs iid && iid == iid' = pure [UseAbility iid (ability attrs)]
+    | ownedBy attrs iid && iid == iid' = pure [ability attrs]
   getActions iid window (Fieldwork attrs) = getActions iid window attrs
 
 instance HasModifiersFor env Fieldwork

@@ -31,10 +31,10 @@ repeatPhaseAbility p attrs = (mkAbility attrs 2 (ReactionAbility Free))
   }
 
 instance HasActions env TheGoldPocketWatch4 where
-  getActions iid (PhaseBegins p) (TheGoldPocketWatch4 attrs) =
-    pure [UseAbility iid (skipPhaseAbility p attrs)]
-  getActions iid (PhaseEnds p) (TheGoldPocketWatch4 attrs) =
-    pure [UseAbility iid (repeatPhaseAbility p attrs)]
+  getActions iid (PhaseBegins p) (TheGoldPocketWatch4 attrs)
+    | ownedBy attrs iid = pure [skipPhaseAbility p attrs]
+  getActions iid (PhaseEnds p) (TheGoldPocketWatch4 attrs) | ownedBy attrs iid =
+    pure [repeatPhaseAbility p attrs]
   getActions _ _ _ = pure []
 
 instance HasModifiersFor env TheGoldPocketWatch4

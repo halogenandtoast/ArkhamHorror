@@ -41,7 +41,7 @@ ability a =
 instance HasActions env ToothOfEztli where
   getActions iid (AfterPassSkillTest _ (TreacherySource _) who _) (ToothOfEztli a)
     | iid == who
-    = pure [ UseAbility iid (ability a) | ownedBy a iid ]
+    = pure [ ability a | ownedBy a iid ]
   getActions i window (ToothOfEztli a) = getActions i window a
 
 instance AssetRunner env => RunMessage env ToothOfEztli where

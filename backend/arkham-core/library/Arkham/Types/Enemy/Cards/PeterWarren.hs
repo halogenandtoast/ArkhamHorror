@@ -38,13 +38,8 @@ instance ActionRunner env => HasActions env PeterWarren where
     withBaseActions iid NonFast attrs $ do
       locationId <- getId @LocationId iid
       pure
-        [ UseAbility
-            iid
-            (mkAbility
-              (toSource attrs)
-              1
-              (ActionAbility (Just Parley) (Costs [ActionCost 1, ClueCost 2]))
-            )
+        [ mkAbility attrs 1
+            $ ActionAbility (Just Parley) (Costs [ActionCost 1, ClueCost 2])
         | locationId == enemyLocation
         ]
   getActions _ _ _ = pure []

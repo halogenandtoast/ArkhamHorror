@@ -33,12 +33,8 @@ instance ActionRunner env => HasActions env TheyMustBeDestroyed where
     inPlayBroodOfYogSothothCount <- length
       <$> getSet @EnemyId (CardCode "02255")
     if (setAsideBroodOfYogSothothCount + inPlayBroodOfYogSothothCount) == 0
-      then
-        pure
-          [ UseAbility
-              leadInvestigatorId
-              (mkAbility (toSource x) 1 ForcedAbility)
-          ]
+      then pure
+        [ mkAbility (toSource x) 1 ForcedAbility | i == leadInvestigatorId ]
       else getActions i window x
 
 instance ActRunner env => RunMessage env TheyMustBeDestroyed where

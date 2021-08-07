@@ -11,7 +11,6 @@ import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.Cost
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
@@ -34,7 +33,7 @@ beginnersLuck = act
   (1, A)
   BeginnersLuck
   Cards.beginnersLuck
-  (Just $ RequiredClues (PerPlayer 4) Nothing)
+  (Just $ GroupClueCost (PerPlayer 4) Nothing)
 
 ability :: Token -> ActAttrs -> Ability
 ability token attrs = (mkAbility (toSource attrs) 1 (ReactionAbility Free))
@@ -44,7 +43,7 @@ ability token attrs = (mkAbility (toSource attrs) 1 (ReactionAbility Free))
 
 instance ActionRunner env => HasActions env BeginnersLuck where
   getActions iid (WhenRevealToken who token) (BeginnersLuck x) | iid == who =
-    pure [UseAbility iid (ability token x)]
+    pure [ability token x]
   getActions iid window (BeginnersLuck x) = getActions iid window x
 
 instance

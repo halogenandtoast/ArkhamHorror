@@ -11,7 +11,6 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
 import Arkham.Types.LocationId
 import Arkham.Types.Message
@@ -27,11 +26,7 @@ intoTheBeyond = act (2, A) IntoTheBeyond Cards.intoTheBeyond Nothing
 
 instance ActionRunner env => HasActions env IntoTheBeyond where
   getActions iid NonFast (IntoTheBeyond x) = withBaseActions iid NonFast x $ do
-    pure
-      [ UseAbility
-          iid
-          (mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1))
-      ]
+    pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
   getActions iid window (IntoTheBeyond x) = getActions iid window x
 
 instance (HasName env LocationId, ActRunner env) => RunMessage env IntoTheBeyond where

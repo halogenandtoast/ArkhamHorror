@@ -26,12 +26,10 @@ spiritSpeaker :: AssetCard SpiritSpeaker
 spiritSpeaker = asset SpiritSpeaker Cards.spiritSpeaker
 
 instance Query AssetMatcher env => HasActions env SpiritSpeaker where
-  getActions iid FastPlayerWindow (SpiritSpeaker attrs) = do
+  getActions iid FastPlayerWindow (SpiritSpeaker attrs) | ownedBy attrs iid = do
     targets <- select (AssetOwnedBy You <> AssetWithUseType Charge)
     pure
-      [ UseAbility
-          iid
-          (mkAbility attrs 1 $ FastAbility $ ExhaustCost (toTarget attrs))
+      [ mkAbility attrs 1 $ FastAbility $ ExhaustCost (toTarget attrs)
       | notNull targets
       ]
   getActions iid window (SpiritSpeaker attrs) = getActions iid window attrs

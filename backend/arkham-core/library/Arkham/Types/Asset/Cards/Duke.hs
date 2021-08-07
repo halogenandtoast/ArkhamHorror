@@ -57,8 +57,8 @@ investigateAbility attrs = mkAbility
   )
 
 instance HasActions env Duke where
-  getActions iid NonFast (Duke a) | ownedBy a iid = pure
-    [UseAbility iid (fightAbility a), UseAbility iid (investigateAbility a)]
+  getActions iid NonFast (Duke a) | ownedBy a iid =
+    pure [fightAbility a, investigateAbility a]
   getActions i window (Duke x) = getActions i window x
 
 dukeInvestigate :: AssetAttrs -> InvestigatorId -> LocationId -> Message

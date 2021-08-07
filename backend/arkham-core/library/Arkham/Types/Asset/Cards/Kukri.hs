@@ -28,15 +28,8 @@ kukri :: AssetCard Kukri
 kukri = hand Kukri Cards.kukri
 
 instance HasActions env Kukri where
-  getActions iid NonFast (Kukri a) | ownedBy a iid = pure
-    [ UseAbility
-        iid
-        (mkAbility
-          (toSource a)
-          1
-          (ActionAbility (Just Action.Fight) (ActionCost 1))
-        )
-    ]
+  getActions iid NonFast (Kukri a) | ownedBy a iid =
+    pure [mkAbility a 1 $ ActionAbility (Just Action.Fight) (ActionCost 1)]
   getActions _ _ _ = pure []
 
 instance HasModifiersFor env Kukri

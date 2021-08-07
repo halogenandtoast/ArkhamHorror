@@ -200,7 +200,7 @@ type ActionRunner env
     )
 
 class HasActions1 env f where
-  getActions1 :: (HasCallStack, MonadReader env m, MonadIO m) => InvestigatorId -> Window -> f p -> m [Message]
+  getActions1 :: (HasCallStack, MonadReader env m, MonadIO m) => InvestigatorId -> Window -> f p -> m [Ability]
 
 instance HasActions1 env f => HasActions1 env (M1 i c f) where
   getActions1 iid window (M1 x) = getActions1 iid window x
@@ -222,12 +222,12 @@ defaultGetActions
   => InvestigatorId
   -> Window
   -> a
-  -> m [Message]
+  -> m [Ability]
 defaultGetActions iid window = getActions1 iid window . from
 
 class HasActions env a where
-  getActions :: (HasCallStack, MonadReader env m, MonadIO m) => InvestigatorId -> Window -> a -> m [Message]
-  default getActions :: (HasCallStack, Generic a, HasActions1 env (Rep a), MonadReader env m, MonadIO m) => InvestigatorId -> Window -> a -> m [Message]
+  getActions :: (HasCallStack, MonadReader env m, MonadIO m) => InvestigatorId -> Window -> a -> m [Ability]
+  default getActions :: (HasCallStack, Generic a, HasActions1 env (Rep a), MonadReader env m, MonadIO m) => InvestigatorId -> Window -> a -> m [Ability]
   getActions = defaultGetActions
 
 class HasModifiersFor1 env f where

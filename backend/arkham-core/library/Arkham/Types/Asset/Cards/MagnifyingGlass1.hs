@@ -36,10 +36,7 @@ instance ActionRunner env => HasActions env MagnifyingGlass1 where
   getActions iid FastPlayerWindow (MagnifyingGlass1 a) | ownedBy a iid = do
     locationId <- getId @LocationId iid
     clueCount' <- unClueCount <$> getCount locationId
-    pure
-      [ UseAbility iid (mkAbility (toSource a) 1 (FastAbility Free))
-      | clueCount' == 0
-      ]
+    pure [ mkAbility a 1 $ FastAbility Free | clueCount' == 0 ]
   getActions i window (MagnifyingGlass1 x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env MagnifyingGlass1 where

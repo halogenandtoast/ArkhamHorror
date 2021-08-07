@@ -6,6 +6,8 @@ module Arkham.Types.Enemy.Cards.SwampLeech
 import Arkham.Prelude
 
 import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
@@ -23,9 +25,9 @@ swampLeech = enemy SwampLeech Cards.swampLeech (4, Static 1, 0) (1, 0)
 
 instance HasModifiersFor env SwampLeech
 
-isEvade :: Message -> Bool
-isEvade = \case
-  EvadeEnemy{} -> True
+isEvade :: Ability -> Bool
+isEvade ability = case abilityType ability of
+  ActionAbility (Just Action.Evade) _ -> True
   _ -> False
 
 instance ActionRunner env => HasActions env SwampLeech where

@@ -36,7 +36,7 @@ instance
       location <- getId @LocationId iid
       investigatorsAtYourLocation <- getSet @InvestigatorId location
       pure
-        [ UseAbility iid (ability x)
+        [ ability x
         | who
           `member` investigatorsAtYourLocation
           && tokenFace token

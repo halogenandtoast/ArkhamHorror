@@ -50,7 +50,7 @@ instance HasList CommittedSkillIcon env InvestigatorId => HasActions env TheKing
               (SkillWild, n) -> n
               (_, n) -> n + findWithDefault 0 SkillWild frequencyMap
           pure
-            [ UseAbility iid (mkAbility attrs 1 $ ReactionAbility Free)
+            [ mkAbility attrs 1 $ ReactionAbility Free
             | totalMatchingIcons >= 6
             ]
   getActions _ _ _ = pure []

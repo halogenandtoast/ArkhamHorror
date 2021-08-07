@@ -13,16 +13,10 @@ import Arkham.Types.Game.Helpers as X
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 
-resignAction :: SourceEntity a => InvestigatorId -> a -> Message
-resignAction iid a = UseAbility
-  iid
-  (mkAbility (toSource a) 99 (ActionAbility (Just Action.Resign) (ActionCost 1))
-  )
+resignAction :: SourceEntity a => a -> Ability
+resignAction a =
+  mkAbility a 99 $ ActionAbility (Just Action.Resign) (ActionCost 1)
 
-drawCardUnderneathAction :: SourceEntity a => InvestigatorId -> a -> Message
-drawCardUnderneathAction iid a = UseAbility
-  iid
-  ((mkAbility (toSource a) 100 (FastAbility Free))
-    { abilityLimit = GroupLimit PerGame 1
-    }
-  )
+drawCardUnderneathAction :: SourceEntity a => a -> Ability
+drawCardUnderneathAction a =
+  (mkAbility a 98 $ FastAbility Free) { abilityLimit = GroupLimit PerGame 1 }

@@ -6,6 +6,7 @@ module Arkham.Types.Asset.Cards.OldBookOfLore
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
@@ -26,8 +27,8 @@ instance HasModifiersFor env OldBookOfLore
 
 instance HasActions env OldBookOfLore where
   getActions iid NonFast (OldBookOfLore a) | ownedBy a iid = pure
-    [ assetAction iid a 1 Nothing
-        $ Costs [ActionCost 1, ExhaustCost $ toTarget a]
+    [ mkAbility a 1 $ ActionAbility Nothing $ Costs
+        [ActionCost 1, ExhaustCost $ toTarget a]
     ]
   getActions _ _ _ = pure []
 

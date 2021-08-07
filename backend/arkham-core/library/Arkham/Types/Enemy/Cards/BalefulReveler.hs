@@ -34,8 +34,8 @@ forcedAbility attrs =
   (mkAbility attrs 1 ForcedAbility) { abilityLimit = GroupLimit PerRound 1 }
 
 instance EnemyAttrsHasActions env => HasActions env BalefulReveler where
-  getActions i (AfterMoveFromHunter eid) (BalefulReveler attrs)
-    | eid == toId attrs = pure [UseAbility i (forcedAbility attrs)]
+  getActions _ (AfterMoveFromHunter eid) (BalefulReveler attrs)
+    | eid == toId attrs = pure [forcedAbility attrs]
   getActions i window (BalefulReveler attrs) = getActions i window attrs
 
 instance EnemyAttrsRunMessage env => RunMessage env BalefulReveler where

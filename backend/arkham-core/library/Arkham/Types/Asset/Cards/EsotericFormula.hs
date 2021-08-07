@@ -38,13 +38,7 @@ instance (HasSet Trait env EnemyId, HasSet FightableEnemyId env (InvestigatorId,
         (fmap (member Abomination) . getSet @Trait)
         fightableEnemies
       pure
-        [ UseAbility
-            iid
-            (mkAbility
-              (toSource attrs)
-              1
-              (ActionAbility (Just Action.Fight) (ActionCost 1))
-            )
+        [ mkAbility attrs 1 $ ActionAbility (Just Action.Fight) (ActionCost 1)
         | anyAbominations
         ]
   getActions iid window (EsotericFormula attrs) = getActions iid window attrs

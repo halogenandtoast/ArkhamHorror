@@ -41,7 +41,7 @@ fightAbility a =
 
 instance HasActions env BaseballBat where
   getActions iid NonFast (BaseballBat a) | ownedBy a iid = do
-    pure [UseAbility iid (fightAbility a)]
+    pure [fightAbility a]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env BaseballBat where

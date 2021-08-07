@@ -33,16 +33,9 @@ lightningGun5 =
 
 instance HasActions env LightningGun5 where
   getActions iid NonFast (LightningGun5 a) | ownedBy a iid = pure
-    [ UseAbility
-        iid
-        (mkAbility
-          (toSource a)
-          1
-          (ActionAbility
-            (Just Action.Fight)
-            (Costs [ActionCost 1, UseCost (toId a) Resource.Ammo 1])
-          )
-        )
+    [ mkAbility a 1 $ ActionAbility
+        (Just Action.Fight)
+        (Costs [ActionCost 1, UseCost (toId a) Resource.Ammo 1])
     ]
   getActions _ _ _ = pure []
 

@@ -335,30 +335,32 @@ withResignAction
   => InvestigatorId
   -> Window
   -> location
-  -> m [Message]
+  -> m [Ability]
 withResignAction iid NonFast x | locationRevealed (toAttrs x) =
   withBaseActions iid NonFast attrs $ pure [locationResignAction iid attrs]
   where attrs = toAttrs x
 withResignAction iid window x = getActions iid window (toAttrs x)
 
-locationResignAction :: InvestigatorId -> LocationAttrs -> Message
+locationResignAction :: InvestigatorId -> LocationAttrs -> Ability
 locationResignAction iid attrs =
   toLocationAbility attrs (resignAction iid attrs)
 
-drawCardUnderneathLocationAction :: InvestigatorId -> LocationAttrs -> Message
+drawCardUnderneathLocationAction :: InvestigatorId -> LocationAttrs -> Ability
 drawCardUnderneathLocationAction iid attrs =
   toLocationAbility attrs (drawCardUnderneathAction iid attrs)
 
-toLocationAbility :: LocationAttrs -> Message -> Message
-toLocationAbility attrs = \case
-  UseAbility iid ability -> UseAbility
-    iid
-    (ability { abilityRestrictions = Just (OnLocation $ toId attrs) })
-  other -> other
+toLocationAbility :: LocationAttrs -> Ability -> Ability
+toLocationAbility attrs ability = ability
+  { abilityRestrictions = Just
+    (fromMaybe mempty (abilityRestrictions ability) <> OnLocation (toId attrs))
+  }
 
-locationAbility :: InvestigatorId -> Ability -> Message
-locationAbility iid ability = UseAbility iid $ case abilitySource ability of
-  LocationSource lid -> ability { abilityRestrictions = Just (OnLocation lid) }
+locationAbility :: InvestigatorId -> Ability -> Ability
+locationAbility iid ability = case abilitySource ability of
+  LocationSource lid -> ability
+    { abilityRestrictions = Just
+      (fromMaybe mempty (abilityRestrictions ability) <> OnLocation lid)
+    }
   _ -> ability
 
 withDrawCardUnderneathAction
@@ -371,10 +373,10 @@ withDrawCardUnderneathAction
   => InvestigatorId
   -> Window
   -> location
-  -> m [Message]
+  -> m [Ability]
 withDrawCardUnderneathAction iid NonFast x | locationRevealed (toAttrs x) =
   withBaseActions iid NonFast attrs $ pure
-    [ drawCardUnderneathAction iid attrs
+    [ drawCardUnderneathAction attrs
     | iid `on` attrs && locationClues attrs == 0
     ]
   where attrs = toAttrs x
@@ -394,15 +396,13 @@ instance ActionRunner env => HasActions env LocationAttrs where
     costToEnter =
       if locationRevealed then ActionCost 1 else locationCostToEnterUnrevealed
     investigateActions canInvestigate investigateAllowed =
-      [ Investigate iid locationId (InvestigatorSource iid) SkillIntellect True
+      [ mkAbility l 101 $ ActionAbility (Just Action.Investigate) (ActionCost 1)
       | canInvestigate && investigateAllowed
       ]
     moveActions modifiers' takenActions canMoveTo =
-      [ MoveAction
-          iid
-          locationId
+      [ mkAbility l 102 $ ActionAbility
+          (Just Action.Move)
           (foldl' (applyMoveCostModifiers takenActions) costToEnter modifiers')
-          True
       | canMoveTo
       ]
     applyMoveCostModifiers
@@ -660,4 +660,21 @@ instance LocationRunner env => RunMessage env LocationAttrs where
           pure $ a & cardsUnderneathL .~ rest
         _ -> throwIO $ InvalidState "Not expecting a player card or empty yet"
     Blanked msg' -> runMessage msg' a
+    UseCardAbility iid source _ 101 _ | isSource a source ->
+      a
+        <$ push
+             (Investigate
+               iid
+               (toId a)
+               (InvestigatorSource iid)
+               SkillIntellect
+               True
+             )
+    UseCardAbility iid source _ 102 _ | isSource a source -> a <$ push
+      (MoveAction
+        iid
+        locationId
+        Free -- already paid by using ability
+        True
+      )
     _ -> pure a

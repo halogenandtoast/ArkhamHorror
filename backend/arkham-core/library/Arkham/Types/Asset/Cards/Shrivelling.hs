@@ -33,16 +33,9 @@ instance HasModifiersFor env Shrivelling
 instance HasActions env Shrivelling where
   getActions iid NonFast (Shrivelling a) | ownedBy a iid = do
     pure
-      [ UseAbility
-          iid
-          (mkAbility
-            (toSource a)
-            1
-            (ActionAbility
-              (Just Action.Fight)
-              (Costs [ActionCost 1, UseCost (toId a) Charge 1])
-            )
-          )
+      [ mkAbility a 1 $ ActionAbility
+          (Just Action.Fight)
+          (Costs [ActionCost 1, UseCost (toId a) Charge 1])
       ]
   getActions _ _ _ = pure []
 

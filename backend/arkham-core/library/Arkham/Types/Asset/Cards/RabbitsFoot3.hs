@@ -33,7 +33,7 @@ ability attrs n =
 
 instance HasActions env RabbitsFoot3 where
   getActions iid (AfterFailSkillTest who n) (RabbitsFoot3 a)
-    | ownedBy a iid && iid == who = pure [UseAbility iid (ability a n)]
+    | ownedBy a iid && iid == who = pure [ability a n]
   getActions i window (RabbitsFoot3 x) = getActions i window x
 
 instance AssetRunner env => RunMessage env RabbitsFoot3 where

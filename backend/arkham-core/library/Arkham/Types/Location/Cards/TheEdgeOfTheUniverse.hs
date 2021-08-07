@@ -6,13 +6,14 @@ module Arkham.Types.Location.Cards.TheEdgeOfTheUniverse
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (theEdgeOfTheUniverse)
+import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Phase
 import Arkham.Types.Query
@@ -45,8 +46,8 @@ instance ActionRunner env => HasActions env TheEdgeOfTheUniverse where
     pure $ if clueCount >= 2
       then actions
       else filter
-        (\case
-          MoveAction{} -> False
+        (\ability -> case abilityType ability of
+          ActionAbility (Just Action.Move) _ -> False
           _ -> True
         )
         actions

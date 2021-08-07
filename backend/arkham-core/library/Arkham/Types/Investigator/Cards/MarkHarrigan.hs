@@ -51,9 +51,10 @@ ability attrs =
 
 instance InvestigatorRunner env => HasActions env MarkHarrigan where
   getActions i (WhenDealtDamage _ target) (MarkHarrigan attrs)
-    | isTarget attrs target = pure [UseAbility i (ability attrs)]
+    | isTarget attrs target && i == toId attrs = pure [ability attrs]
   getActions i (WhenDealtDamage _ (AssetTarget aid)) (MarkHarrigan attrs)
-    | aid `elem` investigatorAssets attrs = pure [UseAbility i (ability attrs)]
+    | aid `elem` investigatorAssets attrs && i == toId attrs = pure
+      [ability attrs]
   getActions i window (MarkHarrigan attrs) = getActions i window attrs
 
 instance HasTokenValue env MarkHarrigan where

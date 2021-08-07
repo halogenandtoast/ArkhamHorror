@@ -35,9 +35,7 @@ instance HasModifiersFor env DreamsOfRlyeh where
 
 instance HasActions env DreamsOfRlyeh where
   getActions iid NonFast (DreamsOfRlyeh a) = pure
-    [ UseAbility
-        iid
-        (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
+    [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1
     | treacheryOnInvestigator iid a
     ]
   getActions _ _ _ = pure []

@@ -46,7 +46,7 @@ instance InvestigatorRunner env => HasActions env RolandBanks where
   getActions iid (AfterEnemyDefeated who _) (RolandBanks a)
     | iid == toId a && iid == who = do
       clueCount <- unClueCount <$> getCount (investigatorLocation a)
-      pure [ UseAbility iid (ability a) | clueCount > 0 ]
+      pure [ ability a | clueCount > 0 ]
   getActions _ _ _ = pure []
 
 instance HasCount ClueCount env LocationId => HasTokenValue env RolandBanks where

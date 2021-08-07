@@ -46,11 +46,10 @@ instance HasTokenValue env LolaHayes where
 
 instance InvestigatorRunner env => HasActions env LolaHayes where
   getActions i (AfterDrawingStartingHand iid) (LolaHayes attrs)
-    | iid == toId attrs = pure [UseAbility i (mkAbility attrs 1 ForcedAbility)]
+    | iid == toId attrs && i == iid = pure [mkAbility attrs 1 ForcedAbility]
   getActions i FastPlayerWindow (LolaHayes attrs) | i == toId attrs = pure
-    [ UseAbility i
-      $ mkAbility attrs 2 (FastAbility Free)
-      & (abilityLimitL .~ PlayerLimit PerRound 1)
+    [ mkAbility attrs 2 (FastAbility Free)
+        & (abilityLimitL .~ PlayerLimit PerRound 1)
     ]
   getActions i window (LolaHayes attrs) = getActions i window attrs
 

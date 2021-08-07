@@ -33,9 +33,7 @@ instance ActionRunner env => HasActions env SearchingForIzzie where
   getActions iid NonFast (SearchingForIzzie attrs) = do
     investigatorLocationId <- getId @LocationId iid
     pure
-      [ UseAbility
-          iid
-          (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 2))
+      [ mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 2
       | treacheryOnLocation investigatorLocationId attrs
       ]
   getActions _ _ _ = pure []

@@ -35,7 +35,7 @@ ability a = mkAbility a 1 (ActionAbility Nothing $ ActionCost 1)
 instance ActionRunner env => HasActions env Gondola where
   getActions iid NonFast (Gondola attrs) =
     withBaseActions iid NonFast attrs $ do
-      pure [toLocationAbility attrs $ UseAbility iid (ability attrs)]
+      pure [locationAbility (ability attrs)]
   getActions iid window (Gondola attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env Gondola where

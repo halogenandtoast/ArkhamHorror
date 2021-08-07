@@ -29,8 +29,7 @@ instance HasModifiersFor env Kidnapped
 
 instance HasActions env Kidnapped where
   getActions i (WhenAgendaAdvance aid) (Kidnapped attrs)
-    | treacheryOnAgenda aid attrs = pure
-      [UseAbility i (mkAbility (toSource attrs) 1 ForcedAbility)]
+    | treacheryOnAgenda aid attrs = pure [mkAbility attrs 1 ForcedAbility]
   getActions i window (Kidnapped attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env Kidnapped where

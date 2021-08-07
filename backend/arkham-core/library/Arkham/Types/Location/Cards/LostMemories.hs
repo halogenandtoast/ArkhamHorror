@@ -41,7 +41,7 @@ instance ActionRunner env => HasActions env LostMemories where
   getActions iid (AfterRevealLocation who) (LostMemories attrs)
     | iid `on` attrs && iid == who = do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid
-      pure [ UseAbility iid (forcedAbility attrs) | actionRemainingCount > 0 ]
+      pure [ forcedAbility attrs | actionRemainingCount > 0 ]
   getActions iid window (LostMemories attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env LostMemories where

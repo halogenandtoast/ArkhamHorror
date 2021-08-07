@@ -29,20 +29,15 @@ angeredSpirits =
 instance HasModifiersFor env AngeredSpirits
 
 instance HasActions env AngeredSpirits where
-  getActions i FastPlayerWindow (AngeredSpirits attrs) = do
-    pure
-      [ UseAbility
-          i
-          (mkAbility
-            attrs
-            1
-            (FastAbility
-            $ ExhaustAssetCost
-            $ AssetWithTrait Spell
-            <> AssetOwnedBy You
-            )
-          )
-      ]
+  getActions i FastPlayerWindow (AngeredSpirits attrs)
+    | treacheryOnInvestigator i attrs = do
+      pure
+        [ mkAbility attrs 1
+          $ FastAbility
+          $ ExhaustAssetCost
+          $ AssetWithTrait Spell
+          <> AssetOwnedBy You
+        ]
   getActions i window (AngeredSpirits attrs) = getActions i window attrs
 
 angeredSpiritsCharges :: TreacheryAttrs -> Int

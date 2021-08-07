@@ -47,7 +47,7 @@ instance ActionRunner env => HasActions env HospitalDebts where
       treacheryLocationId <- getId tormented
       investigatorLocationId <- getId @LocationId iid
       pure
-        [ UseAbility iid (ability a)
+        [ ability a
         | resourceCount > 0 && treacheryLocationId == investigatorLocationId
         ]
   getActions _ _ _ = pure []

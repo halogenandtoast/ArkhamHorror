@@ -39,9 +39,7 @@ instance ActionRunner env => HasActions env SpectralMist where
   getActions iid NonFast (SpectralMist a) = do
     investigatorLocationId <- getId @LocationId iid
     pure
-      [ UseAbility
-          iid
-          (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
+      [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1
       | treacheryOnLocation investigatorLocationId a
       ]
   getActions _ _ _ = pure []

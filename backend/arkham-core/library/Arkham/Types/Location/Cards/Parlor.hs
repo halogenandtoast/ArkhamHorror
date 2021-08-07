@@ -47,13 +47,10 @@ instance ActionRunner env => HasActions env Parlor where
           investigatorLocationId <- getId @LocationId iid
           pure
             $ actions
-            <> [ UseAbility
-                   iid
-                   (mkAbility
-                     (ProxySource (AssetSource aid) (toSource attrs))
-                     1
-                     (ActionAbility (Just Action.Parley) $ ActionCost 1)
-                   )
+            <> [ mkAbility
+                   (ProxySource (AssetSource aid) (toSource attrs))
+                   1
+                   (ActionAbility (Just Action.Parley) $ ActionCost 1)
                | isNothing miid
                  && Just investigatorLocationId
                  == assetLocationId

@@ -40,9 +40,7 @@ instance ActionRunner env => HasActions env WrackedByNightmares where
       treacheryLocation <- getId tormented
       investigatorLocationId <- getId @LocationId iid
       pure
-        [ UseAbility
-            iid
-            (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 2))
+        [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 2
         | treacheryLocation == investigatorLocationId
         ]
   getActions _ _ _ = pure []

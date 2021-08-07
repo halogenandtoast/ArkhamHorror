@@ -45,7 +45,7 @@ instance InvestigatorRunner env => HasActions env AgnesBaker where
   getActions iid (WhenDealtHorror _ target) (AgnesBaker attrs)
     | isTarget attrs target && iid == toId attrs = do
       enemyIds <- getSet @EnemyId $ investigatorLocation attrs
-      pure [ UseAbility iid (ability attrs) | notNull enemyIds ]
+      pure [ ability attrs | notNull enemyIds ]
   getActions i window (AgnesBaker attrs) = getActions i window attrs
 
 instance HasTokenValue env AgnesBaker where

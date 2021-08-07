@@ -36,8 +36,7 @@ instance ActionRunner env => HasActions env TwistedUnderbrush where
   getActions iid NonFast (TwistedUnderbrush attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ pure
       [ locationAbility
-          iid
-          (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
+          (mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 1)
       ]
   getActions i window (TwistedUnderbrush attrs) = getActions i window attrs
 

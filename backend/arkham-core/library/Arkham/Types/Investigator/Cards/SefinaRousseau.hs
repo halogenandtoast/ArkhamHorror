@@ -54,10 +54,8 @@ ability attrs = (mkAbility attrs 1 (ActionAbility Nothing $ ActionCost 1))
 
 instance InvestigatorRunner env => HasActions env SefinaRousseau where
   getActions i NonFast (SefinaRousseau attrs) | i == toId attrs =
-    withBaseActions i NonFast attrs $ pure
-      [ UseAbility i (ability attrs)
-      | notNull (investigatorCardsUnderneath attrs)
-      ]
+    withBaseActions i NonFast attrs
+      $ pure [ ability attrs | notNull (investigatorCardsUnderneath attrs) ]
   getActions i window (SefinaRousseau attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env SefinaRousseau where

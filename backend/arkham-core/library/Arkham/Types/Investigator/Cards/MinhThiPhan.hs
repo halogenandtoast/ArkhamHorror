@@ -52,7 +52,7 @@ ability attrs iid card =
 instance InvestigatorRunner env => HasActions env MinhThiPhan where
   getActions i (AfterCommitedCard who card) (MinhThiPhan attrs) = do
     atSameLocation <- liftA2 (==) (getId @LocationId i) (getId @LocationId who)
-    pure [ UseAbility i (ability attrs who card) | atSameLocation ]
+    pure [ ability attrs who card | atSameLocation ]
   getActions i window (MinhThiPhan attrs) = getActions i window attrs
 
 instance HasTokenValue env MinhThiPhan where

@@ -17,7 +17,6 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.SkillType
-import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Window
 
@@ -35,12 +34,7 @@ instance ActionRunner env => HasActions env GardenDistrict where
   getActions iid NonFast (GardenDistrict attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ pure
       [ locationAbility
-          iid
-          (mkAbility
-            (LocationSource locationId)
-            1
-            (ActionAbility Nothing $ ActionCost 1)
-          )
+          (mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 1)
       ]
   getActions i window (GardenDistrict attrs) = getActions i window attrs
 

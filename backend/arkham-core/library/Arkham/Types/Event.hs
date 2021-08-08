@@ -11,7 +11,6 @@ import Arkham.Types.Event.Cards
 import Arkham.Types.Event.Runner
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
-import Arkham.Types.Matcher
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.SkillTest
@@ -40,7 +39,6 @@ instance HasCount ClueCount env InvestigatorId => HasModifiersFor env Event wher
 
 instance
   ( EventRunner env
-  , Query InvestigatorMatcher env
   , HasSet FightableEnemyId env (InvestigatorId, Source)
   , HasCount HealthDamageCount env EnemyId
   , HasCount SanityDamageCount env EnemyId

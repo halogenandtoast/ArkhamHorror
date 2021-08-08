@@ -790,6 +790,7 @@ hasInvestigateActions _ _ = pure False
 type CanCheckPlayable env
   = ( HasModifiersFor env ()
     , Query AssetMatcher env
+    , Query InvestigatorMatcher env
     , CanCheckFast env
     , HasList HandCard env InvestigatorId
     , HasList Card env ExtendedCardMatcher
@@ -1112,6 +1113,9 @@ cardInFastWindows iid c windows matcher = anyM
         _ -> pure False
     Matcher.DuringTurn whoMatcher -> case window' of
       DuringTurn who -> matchWho who whoMatcher
+      FastPlayerWindow -> do
+        miid <- selectOne TurnInvestigator
+        pure $ Just iid == miid
       _ -> pure False
     Matcher.OrWindowMatcher matchers -> anyM (windowMatches window') matchers
     Matcher.WhenEnemySpawns whereMatcher enemyMatcher -> case window' of
@@ -1174,6 +1178,9 @@ cardInFastWindows iid c windows matcher = anyM
     Anyone -> pure True
     You -> pure $ who == iid
     NotYou -> pure $ who /= iid
+    TurnInvestigator -> do
+      mTurn <- selectOne TurnInvestigator
+      pure $ who == iid && Just iid == mTurn
     InvestigatorAtYourLocation ->
       liftA2 (==) (getId @LocationId iid) (getId @LocationId who)
     InvestigatorCanMove -> do

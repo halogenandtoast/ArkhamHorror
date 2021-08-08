@@ -24,6 +24,7 @@ data InvestigatorMatcher
   | InvestigatorWithHorror
   | InvestigatorWithId InvestigatorId
   | InvestigatorMatches [InvestigatorMatcher]
+  | TurnInvestigator
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

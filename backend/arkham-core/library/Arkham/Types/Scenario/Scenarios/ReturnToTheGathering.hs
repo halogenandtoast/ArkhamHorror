@@ -2,6 +2,7 @@ module Arkham.Types.Scenario.Scenarios.ReturnToTheGathering where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty

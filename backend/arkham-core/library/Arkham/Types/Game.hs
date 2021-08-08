@@ -511,6 +511,7 @@ getInvestigatorsMatching = \case
     you <- getInvestigator . view activeInvestigatorIdL =<< getGame
     filter (/= you) . toList . view investigatorsL <$> getGame
   Anyone -> toList . view investigatorsL <$> getGame
+  TurnInvestigator -> maybeToList <$> getTurnInvestigator
   InvestigatorAtYourLocation -> do
     you <- getInvestigator . view activeInvestigatorIdL =<< getGame
     location <- getId @LocationId (toId you)

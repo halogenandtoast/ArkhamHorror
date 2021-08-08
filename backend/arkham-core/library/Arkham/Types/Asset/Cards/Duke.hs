@@ -51,8 +51,9 @@ investigateAbility :: AssetAttrs -> Ability
 investigateAbility attrs = mkAbility
   (toSource attrs)
   2
-  (ActionAbility
+  (ActionAbilityWithBefore
     (Just Action.Investigate)
+    (Just Action.Move)
     (Costs [ActionCost 1, ExhaustCost (toTarget attrs)])
   )
 
@@ -65,28 +66,45 @@ dukeInvestigate :: AssetAttrs -> InvestigatorId -> LocationId -> Message
 dukeInvestigate attrs iid lid =
   Investigate iid lid (toSource attrs) SkillIntellect False
 
+isInvestigate :: Ability -> Bool
+isInvestigate ability = case abilityType ability of
+  ActionAbility (Just Action.Investigate) _ -> True
+  ActionAbilityWithBefore (Just Action.Investigate) _ _ -> True
+  ActionAbilityWithBefore _ (Just Action.Investigate) _ -> True
+  _ -> False
+
 instance AssetRunner env => RunMessage env Duke where
   runMessage msg a@(Duke attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ push (ChooseFightEnemy iid source SkillCombat mempty False)
     UseCardAbility iid source _ 2 _ | isSource attrs source -> do
-      lid <- getId iid
+      lid <- getId @LocationId iid
+      investigateAbilities :: [Ability] <-
+        filterM
+            (\a ->
+              liftA2 (&&) (pure $ isInvestigate a) (getCanAffordAbility iid a)
+            )
+          =<< getActions iid NonFast lid
+      let
+        investigateActions :: [Message] = map
+          (UseAbility iid . (`applyAbilityModifiers` [ActionCostModifier (-1)]))
+          investigateAbilities
       accessibleLocationIds <- map unAccessibleLocationId <$> getSetList lid
       a <$ if null accessibleLocationIds
-        then push $ dukeInvestigate attrs iid lid
+        then pushAll investigateActions
         else push
           (chooseOne iid
-          $ dukeInvestigate attrs iid lid
-          : [ Run
-                [ MoveAction iid lid' Free False
-                , CheckAdditionalActionCosts
-                  iid
-                  (LocationTarget lid')
-                  (toSource attrs)
-                  Action.Investigate
-                  [dukeInvestigate attrs iid lid']
-                ]
-            | lid' <- accessibleLocationIds
-            ]
+          $ investigateActions
+          <> [ Run
+                 [ MoveAction iid lid' Free False
+                 , CheckAdditionalActionCosts
+                   iid
+                   (LocationTarget lid')
+                   (toSource attrs)
+                   Action.Investigate
+                   [dukeInvestigate attrs iid lid']
+                 ]
+             | lid' <- accessibleLocationIds
+             ]
           )
     _ -> Duke <$> runMessage msg attrs

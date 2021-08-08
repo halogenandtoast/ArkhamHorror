@@ -5,7 +5,6 @@ module Arkham.Types.Effect
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.Action
 import Arkham.Types.Card
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
@@ -133,7 +132,6 @@ instance
   , HasSet InScenarioInvestigatorId env ()
   , HasSet Trait env Source
   , HasModifiersFor env ()
-  , HasList TakenAction env InvestigatorId
   , HasId Difficulty env ()
   , HasCount ClueCount env EnemyId
   , HasSet StoryEnemyId env CardCode

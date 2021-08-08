@@ -92,13 +92,17 @@ getCanPerformAbility
   -> Ability
   -> m Bool
 getCanPerformAbility iid window Ability {..} =
-  (&&) <$> meetsAbilityRestrictions <*> meetsActionRestrictions
+  (&&) <$> meetsAbilityRestrictions <*> meetsActionRestrictions abilityType
  where
   meetsAbilityRestrictions = case abilityRestrictions of
     Nothing -> pure True
     Just restriction ->
       getCanPerformAbilityRestriction iid [window] restriction
-  meetsActionRestrictions = case abilityType of
+  meetsActionRestrictions = \case
+    ActionAbilityWithBefore mAction mBeforeAction cost -> liftA2
+      (||)
+      (meetsActionRestrictions $ ActionAbility mAction cost)
+      (meetsActionRestrictions $ ActionAbility mBeforeAction cost)
     ActionAbility (Just action) _ -> case action of
       Action.Fight -> hasFightActions iid window
       Action.Evade -> hasEvadeActions iid window
@@ -152,6 +156,10 @@ getCanAffordAbilityCost
   -> m Bool
 getCanAffordAbilityCost iid Ability {..} = case abilityType of
   ActionAbility mAction cost -> getCanAffordCost iid abilitySource mAction cost
+  ActionAbilityWithBefore mAction mBeforeAction cost -> liftA2
+    (||)
+    (getCanAffordCost iid abilitySource mAction cost)
+    (getCanAffordCost iid abilitySource mBeforeAction cost)
   ReactionAbility cost -> getCanAffordCost iid abilitySource Nothing cost
   FastAbility cost -> getCanAffordCost iid abilitySource Nothing cost
   ForcedAbility -> pure True
@@ -168,6 +176,7 @@ getCanAffordUse iid ability = case abilityLimit ability of
       notElem (iid, ability) . map unUsedAbility <$> getList ()
     ForcedAbility -> notElem (iid, ability) . map unUsedAbility <$> getList ()
     ActionAbility _ _ -> pure True
+    ActionAbilityWithBefore{} -> pure True
     FastAbility _ -> pure True
     AbilityEffect _ -> pure True
   PlayerLimit (PerSearch (Just _)) n ->
@@ -896,6 +905,7 @@ passesRestriction iid location windows = \case
   FirstAction -> do
     n <- unActionTakenCount <$> getCount iid
     pure $ n == 0
+  NoRestriction -> pure True
   OnLocation lid -> pure $ location == lid
   ReturnableCardInDiscard AnyPlayerDiscard traits -> do
     investigatorIds <-

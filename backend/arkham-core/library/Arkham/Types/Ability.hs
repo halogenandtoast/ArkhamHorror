@@ -75,6 +75,7 @@ mkAbility entity idx type' = Ability
     ReactionAbility _ -> PlayerLimit PerWindow 1
     FastAbility _ -> NoLimit
     ActionAbility _ _ -> NoLimit
+    ActionAbilityWithBefore {} -> NoLimit
     AbilityEffect _ -> NoLimit
   , abilityMetadata = Nothing
   , abilityRestrictions = Nothing

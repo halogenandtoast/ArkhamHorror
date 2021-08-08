@@ -10,6 +10,7 @@ data AbilityType
   = FastAbility Cost
   | ReactionAbility Cost
   | ActionAbility (Maybe Action) Cost
+  | ActionAbilityWithBefore (Maybe Action) (Maybe Action) Cost -- Action is first type, before is second
   | ForcedAbility
   | AbilityEffect Cost
   deriving stock (Show, Generic, Eq)
@@ -21,6 +22,9 @@ applyAbilityTypeModifiers aType modifiers = case aType of
   ReactionAbility cost -> ReactionAbility $ applyCostModifiers cost modifiers
   ActionAbility mAction cost ->
     ActionAbility mAction $ applyCostModifiers cost modifiers
+  ActionAbilityWithBefore mAction mBeforeAction cost ->
+    ActionAbilityWithBefore mAction mBeforeAction
+      $ applyCostModifiers cost modifiers
   ForcedAbility -> ForcedAbility
   AbilityEffect cost -> AbilityEffect cost -- modifiers don't yet apply here
 

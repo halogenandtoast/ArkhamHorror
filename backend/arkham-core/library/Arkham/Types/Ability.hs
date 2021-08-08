@@ -76,6 +76,7 @@ mkAbility entity idx type' = Ability
     FastAbility _ -> NoLimit
     ActionAbility _ _ -> NoLimit
     ActionAbilityWithBefore {} -> NoLimit
+    ActionAbilityWithSkill {} -> NoLimit
     AbilityEffect _ -> NoLimit
   , abilityMetadata = Nothing
   , abilityRestrictions = Nothing

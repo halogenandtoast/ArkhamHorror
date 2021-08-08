@@ -110,6 +110,24 @@ instance
                  | not abilityDoesNotProvokeAttacksOfOpportunity
                  ]
               )
+          ActionAbilityWithSkill mAction _ cost ->
+            if mAction
+                `notElem` [ Just Action.Fight
+                          , Just Action.Evade
+                          , Just Action.Resign
+                          , Just Action.Parley
+                          ]
+              then pushAll
+                (PayAbilityCost abilitySource iid mAction cost
+                : [ TakenAction iid action | action <- maybeToList mAction ]
+                <> [ CheckAttackOfOpportunity iid False
+                   | not abilityDoesNotProvokeAttacksOfOpportunity
+                   ]
+                )
+              else pushAll
+                (PayAbilityCost abilitySource iid mAction cost
+                : [ TakenAction iid action | action <- maybeToList mAction ]
+                )
           ActionAbility mAction cost ->
             if mAction
                 `notElem` [ Just Action.Fight

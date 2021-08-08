@@ -232,32 +232,6 @@ export default defineComponent({
   border: 1px solid #ff00ff;
 }
 
-.fight-button {
-  background-color: #8F5B41;
-  &:before {
-    font-family: "Arkham";
-    content: "\0044";
-    margin-right: 5px;
-  }
-}
-
-.evade-button {
-  background-color: #576345;
-  &:before {
-    font-family: "Arkham";
-    content: "\0053";
-    margin-right: 5px;
-  }
-}
-
-.engage-button {
-  background-color: #555;
-  &:before {
-    font-family: "Arkham";
-    content: "\0048";
-    margin-right: 5px;
-  }
-}
 
 .card {
   width: $card-width;

@@ -215,11 +215,13 @@ export default defineComponent({
   background: #999;
   padding: 10px;
   box-sizing: border-box;
-}
 
-.player-cards :v-deep(.in-play .card) {
-  width: $card-width * 1.3;
-  margin: 0 2px;
+  & :deep(.asset) {
+    margin-right: 5px;
+  }
+  & :deep(.enemy) {
+    margin-right: 5px;
+  }
 }
 
 .player-cards {

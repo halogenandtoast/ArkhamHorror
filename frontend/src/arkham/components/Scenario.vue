@@ -576,6 +576,7 @@ export default defineComponent({
 
 .scenario {
   display: flex;
+  user-select: none;
   width: 100%;
 }
 

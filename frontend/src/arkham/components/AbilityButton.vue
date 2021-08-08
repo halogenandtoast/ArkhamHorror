@@ -36,17 +36,22 @@ export default defineComponent({
       return ""
     })
 
-    const isInvestigate = computed(() => {
+    const isAction = (action: string) => {
       const {tag} = ability.value.contents[1].type
-      if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore") {
+      if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore" && tag !== "ActionAbilityWithSkill") {
         return false
       }
       const maction = ability.value.contents[1].type.contents[0]
-      return maction === "Investigate"
-    })
+      return maction === action
+    }
+
+    const isInvestigate = computed(() => isAction("Investigate"))
+    const isFight = computed(() => isAction("Fight"))
+    const isEvade = computed(() => isAction("Evade"))
+    const isEngage = computed(() => isAction("Engage"))
     const isSingleActionAbility = computed(() => {
       const {tag} = ability.value.contents[1].type
-      if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore") {
+      if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore" && tag !== "ActionAbilityWithSkill") {
         return false
       }
       const costIndex = tag === "ActionAbility" ? 1 : 2
@@ -59,7 +64,7 @@ export default defineComponent({
     })
     const isDoubleActionAbility = computed(() => {
       const {tag} = ability.value.contents[1].type
-      if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore") {
+      if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore" && tag !== "ActionAbilityWithSkill") {
         return false
       }
       const costIndex = tag === "ActionAbility" ? 1 : 2
@@ -74,14 +79,19 @@ export default defineComponent({
     const isReactionAbility = computed(() => ability.value.contents[1].type.tag === "ReactionAbility")
     const isForcedAbility = computed(() => ability.value.contents[1].type.tag === "ForcedAbility")
 
+    const isNeutralAbility = computed(() => !(isInvestigate.value || isFight.value || isEvade.value || isEngage.value))
+
     const classObject = computed(() => {
       return {
-        'ability-button': isSingleActionAbility.value && !isInvestigate.value,
+        'ability-button': isSingleActionAbility.value && isNeutralAbility.value,
         'double-ability-button': isDoubleActionAbility.value,
         'fast-ability-button': isFastActionAbility.value,
         'reaction-ability-button': isReactionAbility.value,
         'forced-ability-button': isForcedAbility.value,
-        'investigate-button': isInvestigate.value
+        'investigate-button': isInvestigate.value,
+        'fight-button': isFight.value,
+        'evade-button': isEvade.value,
+        'engage-button': isEngage.value,
       }
     })
 
@@ -113,6 +123,33 @@ export default defineComponent({
   &:before {
     font-family: "arkham";
     content: "\0046";
+    margin-right: 5px;
+  }
+}
+
+.fight-button {
+  background-color: #8F5B41;
+  &:before {
+    font-family: "Arkham";
+    content: "\0044";
+    margin-right: 5px;
+  }
+}
+
+.evade-button {
+  background-color: #576345;
+  &:before {
+    font-family: "Arkham";
+    content: "\0053";
+    margin-right: 5px;
+  }
+}
+
+.engage-button {
+  background-color: #555;
+  &:before {
+    font-family: "Arkham";
+    content: "\0048";
     margin-right: 5px;
   }
 }
@@ -157,5 +194,4 @@ export default defineComponent({
     margin-right: 5px;
   }
 }
-
 </style>

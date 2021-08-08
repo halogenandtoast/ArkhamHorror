@@ -103,6 +103,8 @@ getCanPerformAbility iid window Ability {..} =
       (||)
       (meetsActionRestrictions $ ActionAbility mAction cost)
       (meetsActionRestrictions $ ActionAbility mBeforeAction cost)
+    ActionAbilityWithSkill mAction _ cost ->
+      meetsActionRestrictions $ ActionAbility mAction cost
     ActionAbility (Just action) _ -> case action of
       Action.Fight -> hasFightActions iid window
       Action.Evade -> hasEvadeActions iid window
@@ -156,6 +158,8 @@ getCanAffordAbilityCost
   -> m Bool
 getCanAffordAbilityCost iid Ability {..} = case abilityType of
   ActionAbility mAction cost -> getCanAffordCost iid abilitySource mAction cost
+  ActionAbilityWithSkill mAction _ cost ->
+    getCanAffordCost iid abilitySource mAction cost
   ActionAbilityWithBefore mAction mBeforeAction cost -> liftA2
     (||)
     (getCanAffordCost iid abilitySource mAction cost)
@@ -177,6 +181,7 @@ getCanAffordUse iid ability = case abilityLimit ability of
     ForcedAbility -> notElem (iid, ability) . map unUsedAbility <$> getList ()
     ActionAbility _ _ -> pure True
     ActionAbilityWithBefore{} -> pure True
+    ActionAbilityWithSkill{} -> pure True
     FastAbility _ -> pure True
     AbilityEffect _ -> pure True
   PlayerLimit (PerSearch (Just _)) n ->

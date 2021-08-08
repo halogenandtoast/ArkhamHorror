@@ -41,7 +41,7 @@ export default defineComponent({
         return false
       }
       const { contents } = ability.value.contents[1].type.contents[1]
-      if (typeof contents.some == 'function') {
+      if (typeof contents?.some == 'function') {
         return contents.some((cost: Cost) => cost.tag == "ActionCost" && cost.contents == 1)
       } else {
         return contents === 1
@@ -52,8 +52,7 @@ export default defineComponent({
         return false
       }
       const { contents } = ability.value.contents[1].type.contents[1]
-      console.log(contents)
-      if (typeof contents.some == 'function') {
+      if (typeof contents?.some == 'function') {
         return contents.some((cost: Cost) => cost.tag == "ActionCost" && cost.contents == 2)
       } else {
         return contents === 2

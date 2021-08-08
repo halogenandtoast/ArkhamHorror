@@ -48,7 +48,8 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => R
     case msg of
       Setup -> do
         investigatorIds <- getInvestigatorIds
-        encounterDeck <- buildEncounterDeck
+        encounterDeck <- buildEncounterDeckExcluding
+          [Enemies.ghoulPriest]
           [ EncounterSet.ReturnToTheGathering
           , EncounterSet.TheGathering
           , EncounterSet.Rats

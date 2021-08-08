@@ -2279,6 +2279,9 @@ instance (HasQueue env, HasGame env) => HasActions env (ActionType, Trait) where
 instance (HasQueue env, HasActions env ActionType, HasGame env) => HasActions env AssetId where
   getActions iid window aid = getActions iid window =<< getAsset aid
 
+instance (HasQueue env, HasActions env ActionType, HasGame env) => HasActions env LocationId where
+  getActions iid window lid = getActions iid window =<< getLocation lid
+
 runPreGameMessage
   :: (GameRunner env, MonadReader env m, MonadIO m) => Message -> Game -> m Game
 runPreGameMessage msg g = case msg of

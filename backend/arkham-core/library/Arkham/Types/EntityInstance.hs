@@ -66,6 +66,7 @@ doNotMask _ = False
 
 type EntityInstanceRunner env
   = ( ActionRunner env
+    , HasActions env LocationId
     , HasHistory env
     , HasId CardCode env TreacheryId
     , L.GetLabel env LocationId

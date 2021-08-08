@@ -160,12 +160,14 @@ import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
 import Location from '@/arkham/components/Location.vue';
 
-function handleConnections(game: Game) {
+function handleConnections(investigatorId: string, game: Game) {
   const makeLine = function(div1: HTMLElement, div2: HTMLElement) {
     const { id: div1Id } = div1.dataset
     const { id: div2Id } = div2.dataset
+    const { contents: investigator } = game.investigators[investigatorId]
     if(div1Id && div2Id) {
       const [left, right] = [div1Id, div2Id].sort()
+      const activeLine = (div1Id == investigator.location && investigator.connectedLocations.includes(div2Id)) || (div2Id == investigator.location && investigator.connectedLocations.includes(div1Id))
       const connection = left + ":" + right
       const line = document.querySelector<HTMLElement>(".line")
       const parentNode = line?.parentNode
@@ -173,6 +175,9 @@ function handleConnections(game: Game) {
         const node = line.cloneNode(true) as HTMLElement
         node.dataset.connection = connection
         node.classList.remove("original")
+        if (activeLine) {
+          node.classList.add("active")
+        }
         parentNode.insertBefore(node, line.nextSibling)
         const {left: bodyLeft, top: bodyTop} = document.body.getBoundingClientRect()
         const {left: div1Left, top: div1Top, right: div1Right, bottom: div1Bottom } = div1.getBoundingClientRect();
@@ -232,13 +237,13 @@ export default defineComponent({
     const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
     const locationMap = ref<Element | null>(null)
 
-    const drawHandler = throttle(() => handleConnections(props.game), 10)
+    const drawHandler = throttle(() => handleConnections(props.investigatorId, props.game), 10)
 
     onMounted(async () => {
       window.addEventListener("resize", drawHandler)
       await nextTick()
       locationMap.value?.addEventListener("scroll", drawHandler)
-      handleConnections(props.game)
+      handleConnections(props.investigatorId, props.game)
     })
 
     onUnmounted(() => {
@@ -248,7 +253,7 @@ export default defineComponent({
 
     onUpdated(async () => {
       await nextTick()
-      handleConnections(props.game)
+      handleConnections(props.investigatorId, props.game)
     })
 
     const scenarioGuide = computed(() => {
@@ -515,6 +520,10 @@ export default defineComponent({
   stroke-width:6px;
   /* stroke:#a6b5bb; */
   stroke:rgba(0,0,0, 0.2);
+}
+
+.active {
+  stroke:rgba(0,0,0,0.5) !important;
 }
 
 .view-out-of-play-button {

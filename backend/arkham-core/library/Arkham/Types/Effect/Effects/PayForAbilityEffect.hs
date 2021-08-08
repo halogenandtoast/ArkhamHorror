@@ -84,7 +84,6 @@ instance
   , HasCostPayment env
   , HasSet Trait env Source
   , HasModifiersFor env ()
-  , HasList Action.TakenAction env InvestigatorId
   , HasCount ActionRemainingCount env InvestigatorId
   )
   => RunMessage env PayForAbilityEffect where
@@ -101,6 +100,16 @@ instance
             push (PayAbilityCost abilitySource iid Nothing cost)
           ReactionAbility cost ->
             push (PayAbilityCost abilitySource iid Nothing cost)
+          ActionAbilityWithBefore mAction _ cost -> do
+            -- we do not know which ability will be chosen
+            -- for now we assume this will trigger attacks of opportunity
+            pushAll
+              (PayAbilityCost abilitySource iid mAction cost
+              : [ TakenAction iid action | action <- maybeToList mAction ]
+              <> [ CheckAttackOfOpportunity iid False
+                 | not abilityDoesNotProvokeAttacksOfOpportunity
+                 ]
+              )
           ActionAbility mAction cost ->
             if mAction
                 `notElem` [ Just Action.Fight

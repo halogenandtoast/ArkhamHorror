@@ -31,11 +31,6 @@
           :style="{ backgroundImage: `url(${image})` }"
           ></div>
       </div>
-      <button
-        v-if="investigateAction !== -1"
-        class="button investigate-button"
-        @click="doInvestigate"
-      >Investigate</button>
       <AbilityButton
         v-for="ability in abilities"
         :key="ability"
@@ -191,7 +186,7 @@ export default defineComponent({
 
       return choices
         .value
-        .findIndex((c) => c.tag === MessageType.MOVE && c.contents[1] === id.value);
+        .findIndex((c) => c.tag === MessageType.ACTIVATE_ABILITY && c.contents[1].source.contents === id.value && c.contents[1].type.tag === "ActionAbility" && c.contents[1].type.contents[0] === "Move");
     })
 
     function findForcedAbility(c: Message): boolean {
@@ -371,42 +366,6 @@ export default defineComponent({
   color: #fff;
   border-radius: 4px;
   border: 1px solid #ff00ff;
-}
-
-.investigate-button {
-  background-color: #40263A;
-  &:before {
-    font-family: "arkham";
-    content: "\0046";
-    margin-right: 5px;
-  }
-}
-
-.ability-button {
-  background-color: #555;
-  &:before {
-    font-family: "arkham";
-    content: "\0049";
-    margin-right: 5px;
-  }
-}
-
-.double-ability-button {
-  background-color: #555;
-  &:before {
-    font-family: "arkham";
-    content: "\0049\0049";
-    margin-right: 5px;
-  }
-}
-
-.fast-ability-button {
-  background-color: #555;
-  &:before {
-    font-family: "arkham";
-    content: "\0075";
-    margin-right: 5px;
-  }
 }
 
 .location-column {

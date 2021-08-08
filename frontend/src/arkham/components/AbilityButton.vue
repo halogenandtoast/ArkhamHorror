@@ -1,7 +1,7 @@
 <template>
     <button
       class="button"
-      :class="{ 'ability-button': isSingleActionAbility, 'double-ability-button': isDoubleActionAbility, 'fast-ability-button': isFastActionAbility, 'reaction-ability-button': isReactionAbility, 'forced-ability-button': isForcedAbility }"
+      :class="classObject"
       @click="$emit('choose', ability)"
       >{{abilityLabel}}</button>
 </template>
@@ -36,11 +36,21 @@ export default defineComponent({
       return ""
     })
 
-    const isSingleActionAbility = computed(() => {
-      if (ability.value.contents[1].type.tag !== "ActionAbility") {
+    const isInvestigate = computed(() => {
+      const {tag} = ability.value.contents[1].type
+      if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore") {
         return false
       }
-      const { contents } = ability.value.contents[1].type.contents[1]
+      const maction = ability.value.contents[1].type.contents[0]
+      return maction === "Investigate"
+    })
+    const isSingleActionAbility = computed(() => {
+      const {tag} = ability.value.contents[1].type
+      if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore") {
+        return false
+      }
+      const costIndex = tag === "ActionAbility" ? 1 : 2
+      const { contents } = ability.value.contents[1].type.contents[costIndex]
       if (typeof contents?.some == 'function') {
         return contents.some((cost: Cost) => cost.tag == "ActionCost" && cost.contents == 1)
       } else {
@@ -48,10 +58,12 @@ export default defineComponent({
       }
     })
     const isDoubleActionAbility = computed(() => {
-      if (ability.value.contents[1].type.tag !== "ActionAbility") {
+      const {tag} = ability.value.contents[1].type
+      if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore") {
         return false
       }
-      const { contents } = ability.value.contents[1].type.contents[1]
+      const costIndex = tag === "ActionAbility" ? 1 : 2
+      const { contents } = ability.value.contents[1].type.contents[costIndex]
       if (typeof contents?.some == 'function') {
         return contents.some((cost: Cost) => cost.tag == "ActionCost" && cost.contents == 2)
       } else {
@@ -62,7 +74,19 @@ export default defineComponent({
     const isReactionAbility = computed(() => ability.value.contents[1].type.tag === "ReactionAbility")
     const isForcedAbility = computed(() => ability.value.contents[1].type.tag === "ForcedAbility")
 
+    const classObject = computed(() => {
+      return {
+        'ability-button': isSingleActionAbility.value && !isInvestigate.value,
+        'double-ability-button': isDoubleActionAbility.value,
+        'fast-ability-button': isFastActionAbility.value,
+        'reaction-ability-button': isReactionAbility.value,
+        'forced-ability-button': isForcedAbility.value,
+        'investigate-button': isInvestigate.value
+      }
+    })
+
     return {
+      classObject,
       abilityLabel,
       isSingleActionAbility,
       isDoubleActionAbility,
@@ -81,6 +105,16 @@ export default defineComponent({
   color: #fff;
   border-radius: 4px;
   border: 1px solid #ff00ff;
+  background-color: #555;
+}
+
+.investigate-button {
+  background-color: #40263A;
+  &:before {
+    font-family: "arkham";
+    content: "\0046";
+    margin-right: 5px;
+  }
 }
 
 .ability-button {
@@ -123,4 +157,5 @@ export default defineComponent({
     margin-right: 5px;
   }
 }
+
 </style>

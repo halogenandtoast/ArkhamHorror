@@ -28,7 +28,7 @@ kidnapped = treachery Kidnapped Cards.kidnapped
 instance HasModifiersFor env Kidnapped
 
 instance HasActions env Kidnapped where
-  getActions i (WhenAgendaAdvance aid) (Kidnapped attrs)
+  getActions _ (WhenAgendaAdvance aid) (Kidnapped attrs)
     | treacheryOnAgenda aid attrs = pure [mkAbility attrs 1 ForcedAbility]
   getActions i window (Kidnapped attrs) = getActions i window attrs
 

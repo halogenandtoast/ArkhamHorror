@@ -667,7 +667,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
                (toId a)
                (InvestigatorSource iid)
                SkillIntellect
-               True
+               False
              )
     UseCardAbility iid source _ 102 _ | isSource a source -> a <$ push
       (MoveAction

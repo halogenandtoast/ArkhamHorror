@@ -1028,7 +1028,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let
       investigateActions = mapMaybe
         (\ability -> case abilityType ability of
-          ActionAbility (Just Action.Investigate) _ -> Just ability
+          ActionAbility (Just Action.Investigate) cost -> Just $ ability
+            { abilityType = ActionAbility
+              (Just Action.Investigate)
+              (decreaseActionCost cost 1)
+            }
           _ -> Nothing
         )
         actions

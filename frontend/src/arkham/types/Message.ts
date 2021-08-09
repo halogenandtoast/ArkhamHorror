@@ -2,6 +2,7 @@ import { JsonDecoder } from 'ts.data.json';
 
 export enum MessageType {
   TARGET_LABEL = 'TargetLabel',
+  EVADE_LABEL = 'EvadeLabel',
   CHECK_ADDITIONAL_ACTION_COSTS = 'CheckAdditionalActionCosts',
   CHOOSE_TOKEN_GROUPS = 'ChooseTokenGroups',
   ASK = 'Ask',
@@ -91,6 +92,7 @@ export interface Message {
 export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
   [
     JsonDecoder.isExactly('TargetLabel').then(() => JsonDecoder.constant(MessageType.TARGET_LABEL)),
+    JsonDecoder.isExactly('EvadeLabel').then(() => JsonDecoder.constant(MessageType.EVADE_LABEL)),
     JsonDecoder.isExactly('Ask').then(() => JsonDecoder.constant(MessageType.ASK)),
     JsonDecoder.isExactly('CheckAdditionalActionCosts').then(() => JsonDecoder.constant(MessageType.CHECK_ADDITIONAL_ACTION_COSTS)),
     JsonDecoder.isExactly('ChooseTokenGroups').then(() => JsonDecoder.constant(MessageType.CHOOSE_TOKEN_GROUPS)),

@@ -61,6 +61,8 @@ instance HasQueue env => RunMessage env EffectAttrs where
       a <$ push (DisableEffect effectId)
     EndPhase | EffectPhaseWindow `elem` effectWindow ->
       a <$ push (DisableEffect effectId)
+    EndTurn _ | EffectTurnWindow `elem` effectWindow ->
+      a <$ push (DisableEffect effectId)
     EndRound | EffectRoundWindow `elem` effectWindow ->
       a <$ push (DisableEffect effectId)
     SkillTestEnds _ | EffectSkillTestWindow `elem` effectWindow ->

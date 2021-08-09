@@ -27,11 +27,6 @@
       @click="$emit('choose', fightAction)"
     >Fight</button>
     <button
-      v-if="evadeAction !== -1"
-      class="button evade-button"
-      @click="$emit('choose', evadeAction)"
-    >Evade</button>
-    <button
       v-if="engageAction !== -1"
       class="button engage-button"
       @click="$emit('choose', engageAction)"
@@ -147,12 +142,6 @@ export default defineComponent({
         .findIndex((c) => c.tag === MessageType.FIGHT_ENEMY && c.contents[1] === id.value);
     })
 
-    const evadeAction = computed(() => {
-      return choices
-        .value
-        .findIndex((c) => (c.tag === MessageType.EVADE_ENEMY || c.tag === MessageType.ENEMY_EVADED) && c.contents[1] === id.value);
-    })
-
     const engageAction = computed(() => {
       // This is for the rougarou, we look at the 2nd [1] item in the array because
       // the first is spending clues, there may be a different approach to take here
@@ -171,6 +160,10 @@ export default defineComponent({
     })
 
     function isActivate(v: Message) {
+      if (v.tag === 'EvadeLabel' && v.contents[0] === id.value) {
+        return true
+      }
+
       if (v.tag !== 'UseAbility') {
         return false
       }
@@ -207,7 +200,7 @@ export default defineComponent({
     const debug = inject('debug')
     const debugChoose = inject('debugChoose')
 
-    return { id, debug, debugChoose, abilities, choices, engageAction, fightAction, evadeAction, cardAction, image, isExhausted }
+    return { id, debug, debugChoose, abilities, choices, engageAction, fightAction, cardAction, image, isExhausted }
   }
 })
 </script>

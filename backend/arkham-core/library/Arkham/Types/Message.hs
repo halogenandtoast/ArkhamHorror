@@ -492,7 +492,7 @@ data Message
     | SkillTestAsk Message
     | SkillTestCommitCard InvestigatorId CardId
     | SkillTestEnds Source
-    | AfterSkillTestEnds
+    | AfterSkillTestEnds Source Target Int
     | SkillTestResults Int Int Int Int
     | SkillTestUncommitCard InvestigatorId CardId
     | SpawnEnemyAt Card LocationId
@@ -516,6 +516,8 @@ data Message
     | TakeStartingResources InvestigatorId
     | TakenAction InvestigatorId Action
     | TargetLabel Target [Message]
+    | EvadeLabel EnemyId [Message]
+    | ChosenEvadeEnemy Source EnemyId
     | TriggerSkillTest InvestigatorId
     | TryEvadeEnemy InvestigatorId EnemyId Source SkillType
     | UnengageNonMatching InvestigatorId [Trait]

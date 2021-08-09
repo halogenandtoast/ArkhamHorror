@@ -1019,8 +1019,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     damage <- damageValueFor 1 a
     a <$ push (EnemyDamage eid iid (InvestigatorSource iid) damage)
   EnemyEvaded iid eid | iid == investigatorId -> do
+    modifiers' <- getModifiers (InvestigatorSource iid) (EnemyTarget eid)
     push (CheckWindow iid [AfterEnemyEvaded iid eid])
-    pure $ a & engagedEnemiesL %~ deleteSet eid
+    pure $ if AlternateSuccessfullEvasion `elem` modifiers'
+      then a
+      else a & engagedEnemiesL %~ deleteSet eid
   AddToVictory (EnemyTarget eid) -> pure $ a & engagedEnemiesL %~ deleteSet eid
   -- TODO: WARNING: HERE BE DRAGONS
   ChooseInvestigate iid _source _action | iid == investigatorId -> do
@@ -1041,7 +1044,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     a <$ push
       (chooseOne
         iid
-        [ EvadeEnemy iid eid source skillType isAction
+        [ EvadeLabel
+            eid
+            [ ChosenEvadeEnemy source eid
+            , EvadeEnemy iid eid source skillType isAction
+            ]
         | eid <- setToList investigatorEngagedEnemies
         ]
       )

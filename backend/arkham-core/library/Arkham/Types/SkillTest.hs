@@ -387,10 +387,18 @@ instance SkillTestRunner env => RunMessage env SkillTest where
             (_, EncounterCard _) -> Nothing
           )
           (s ^. committedCardsL . to toList)
+        skillResultValue = case skillTestResult of
+          Unrun -> error "wat, skill test has to run"
+          SucceededBy _ n -> n
+          FailedBy _ n -> (-n)
       s <$ pushAll
         (ResetTokens (toSource s)
         : map (uncurry AddToDiscard) discards
-        <> [AfterSkillTestEnds]
+        <> [ AfterSkillTestEnds
+               skillTestSource
+               skillTestTarget
+               skillResultValue
+           ]
         )
     SkillTestResults{} -> do
       push (chooseOne skillTestInvestigator [SkillTestApplyResults])

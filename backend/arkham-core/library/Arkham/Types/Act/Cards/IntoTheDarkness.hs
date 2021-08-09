@@ -18,7 +18,7 @@ newtype IntoTheDarkness = IntoTheDarkness ActAttrs
 intoTheDarkness :: ActCard IntoTheDarkness
 intoTheDarkness = act (2, A) IntoTheDarkness Cards.intoTheDarkness Nothing
 
-instance ActionRunner env => HasActions env IntoTheDarkness where
+instance HasActions env IntoTheDarkness where
   getActions i window (IntoTheDarkness x) = getActions i window x
 
 instance ActRunner env => RunMessage env IntoTheDarkness where

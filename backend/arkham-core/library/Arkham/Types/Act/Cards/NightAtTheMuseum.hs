@@ -24,7 +24,7 @@ newtype NightAtTheMuseum = NightAtTheMuseum ActAttrs
 nightAtTheMuseum :: ActCard NightAtTheMuseum
 nightAtTheMuseum = act (2, A) NightAtTheMuseum Cards.nightAtTheMuseum Nothing
 
-instance ActionRunner env => HasActions env NightAtTheMuseum where
+instance HasActions env NightAtTheMuseum where
   getActions i window (NightAtTheMuseum x) = getActions i window x
 
 instance ActRunner env => RunMessage env NightAtTheMuseum where

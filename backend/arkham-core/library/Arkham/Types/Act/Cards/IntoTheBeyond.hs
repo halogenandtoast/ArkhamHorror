@@ -24,7 +24,7 @@ newtype IntoTheBeyond = IntoTheBeyond ActAttrs
 intoTheBeyond :: ActCard IntoTheBeyond
 intoTheBeyond = act (2, A) IntoTheBeyond Cards.intoTheBeyond Nothing
 
-instance ActionRunner env => HasActions env IntoTheBeyond where
+instance HasActions env IntoTheBeyond where
   getActions iid NonFast (IntoTheBeyond x) = withBaseActions iid NonFast x $ do
     pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
   getActions iid window (IntoTheBeyond x) = getActions iid window x

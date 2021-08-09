@@ -37,7 +37,7 @@ findingLadyEsprit = act
   Cards.findingLadyEsprit
   (Just $ GroupClueCost (PerPlayer 1) (Just $ LocationWithTrait Bayou))
 
-instance ActionRunner env => HasActions env FindingLadyEsprit where
+instance HasActions env FindingLadyEsprit where
   getActions i window (FindingLadyEsprit x) = getActions i window x
 
 bayouLocations

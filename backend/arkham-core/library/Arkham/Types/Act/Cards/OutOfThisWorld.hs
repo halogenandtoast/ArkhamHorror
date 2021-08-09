@@ -29,7 +29,7 @@ outOfThisWorld = act
   Cards.outOfThisWorld
   (Just $ GroupClueCost (PerPlayer 2) Nothing)
 
-instance ActionRunner env => HasActions env OutOfThisWorld where
+instance HasActions env OutOfThisWorld where
   getActions iid NonFast (OutOfThisWorld x) =
     withBaseActions iid NonFast x $ do
       pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]

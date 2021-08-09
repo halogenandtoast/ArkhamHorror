@@ -27,7 +27,7 @@ mysteriousGateway = act
   Cards.mysteriousGateway
   (Just $ GroupClueCost (PerPlayer 3) (Just $ LocationWithTitle "Guest Hall"))
 
-instance ActionRunner env => HasActions env MysteriousGateway where
+instance HasActions env MysteriousGateway where
   getActions i window (MysteriousGateway x) = getActions i window x
 
 instance ActRunner env => RunMessage env MysteriousGateway where

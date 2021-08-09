@@ -32,7 +32,7 @@ skinGame = act
   Cards.skinGame
   (Just $ GroupClueCost (PerPlayer 2) (Just $ LocationWithTitle "VIP Area"))
 
-instance ActionRunner env => HasActions env SkinGame where
+instance HasActions env SkinGame where
   getActions i window (SkinGame x) = getActions i window x
 
 instance ActRunner env => RunMessage env SkinGame where

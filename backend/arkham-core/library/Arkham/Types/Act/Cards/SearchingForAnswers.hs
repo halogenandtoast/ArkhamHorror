@@ -27,7 +27,7 @@ searchingForAnswers :: ActCard SearchingForAnswers
 searchingForAnswers =
   act (1, A) SearchingForAnswers Cards.searchingForAnswers Nothing
 
-instance ActionRunner env => HasActions env SearchingForAnswers where
+instance HasActions env SearchingForAnswers where
   getActions iid window (SearchingForAnswers attrs) =
     getActions iid window attrs
 

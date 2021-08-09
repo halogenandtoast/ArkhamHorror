@@ -16,7 +16,7 @@ newtype CampusSafety = CampusSafety ActAttrs
 campusSafety :: ActCard CampusSafety
 campusSafety = act (3, A) CampusSafety Cards.campusSafety Nothing
 
-instance ActionRunner env => HasActions env CampusSafety where
+instance HasActions env CampusSafety where
   getActions i window (CampusSafety x) = getActions i window x
 
 instance ActRunner env => RunMessage env CampusSafety where

@@ -33,7 +33,7 @@ closeTheRift = act
     (Just $ LocationWithTitle "The Edge of the Universe")
   )
 
-instance ActionRunner env => HasActions env CloseTheRift where
+instance HasActions env CloseTheRift where
   getActions iid NonFast (CloseTheRift x) = withBaseActions iid NonFast x $ do
     pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
   getActions iid window (CloseTheRift x) = getActions iid window x

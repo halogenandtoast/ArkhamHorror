@@ -203,6 +203,7 @@ allPlayerAssetCards = mapFromList $ map
   , smokingPipe
   , sophieInLovingMemory
   , sophieItWasAllMyFault
+  , stealth
   , streetwise3
   , painkillers
   , songOfTheDead2
@@ -1226,6 +1227,12 @@ inTheKnow1 = (asset "03027" "In the Know" 3 Seeker)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = singleton Talent
   , cdUses = Uses Secret 3
+  }
+
+stealth :: CardDef
+stealth = (asset "03028" "Stealth" 2 Rogue)
+  { cdSkills = [SkillAgility]
+  , cdCardTraits = singleton Talent
   }
 
 toothOfEztli :: CardDef

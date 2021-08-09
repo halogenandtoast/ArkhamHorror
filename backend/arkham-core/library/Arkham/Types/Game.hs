@@ -2333,6 +2333,7 @@ runGameMessage msg g = case msg of
   Run msgs -> g <$ pushAll msgs
   Label _ msgs -> g <$ pushAll msgs
   TargetLabel _ msgs -> g <$ pushAll msgs
+  EvadeLabel _ msgs -> g <$ pushAll msgs
   Continue _ -> pure g
   EndOfGame -> g <$ pushEnd EndOfScenario
   ResetGame ->
@@ -3008,7 +3009,7 @@ runGameMessage msg g = case msg of
       | iid <- investigatorIds
       ]
     pure $ g & activeInvestigatorIdL .~ gameLeadInvestigatorId g
-  ChooseEndTurn iid -> g <$ push (EndTurn iid)
+  ChooseEndTurn iid -> g <$ pushAll (resolve $ EndTurn iid)
   EndTurn iid -> pure $ g & usedAbilitiesL %~ filter
     (\(iid', Ability {..}, _) ->
       iid' /= iid || abilityLimitType abilityLimit /= Just PerTurn
@@ -3610,9 +3611,9 @@ instance (HasQueue env, HasGame env) => RunMessage env Game where
       >>= traverseOf (agendasL . traverse) (runMessage msg)
       >>= traverseOf (treacheriesL . traverse) (runMessage msg)
       >>= traverseOf (eventsL . traverse) (runMessage msg)
-      >>= traverseOf (effectsL . traverse) (runMessage msg)
       >>= traverseOf (locationsL . traverse) (runMessage msg)
       >>= traverseOf (enemiesL . traverse) (runMessage msg)
+      >>= traverseOf (effectsL . traverse) (runMessage msg)
       >>= traverseOf (assetsL . traverse) (runMessage msg)
       >>= traverseOf (skillTestL . traverse) (runMessage msg)
       >>= traverseOf (skillsL . traverse) (runMessage msg)

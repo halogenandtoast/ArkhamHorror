@@ -42,6 +42,7 @@ data ModifierType
   | AdditionalStartingUses Int
   | AddKeyword Keyword
   | AlternateSuccessfullInvestigation
+  | AlternateSuccessfullEvasion
   | AlternativeReady Source
   | AnySkillValue Int
   | BaseSkillOf SkillType Int
@@ -90,6 +91,7 @@ data ModifierType
   | DoubleDifficulty
   | DoubleSuccess
   | DuringEnemyPhaseMustMoveToward Target
+  | EnemyCannotEngage InvestigatorId
   | EnemyEvade Int
   | EnemyFight Int
   | ForcedTokenChange TokenFace [TokenFace]
@@ -120,6 +122,7 @@ data ModifierType
   | UseSkillInPlaceOf SkillType SkillType
   | AddSkillIcons [SkillType]
   | XPModifier Int
+  | CannotEngage InvestigatorId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON, Hashable)
 

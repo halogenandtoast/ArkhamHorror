@@ -9,6 +9,13 @@ import Arkham.Types.Card.CardCode
 import Arkham.Types.Modifier
 import Arkham.Types.Target
 
-data EffectMetadata a = EffectInt Int | EffectMessages [a] | EffectModifiers [Modifier] | EffectCardCode CardCode | EffectMetaTarget Target | EffectAbility Ability | FailedByEffectModifiers [Modifier]
+data EffectMetadata a
+  = EffectInt Int
+  | EffectMessages [a]
+  | EffectModifiers [Modifier]
+  | EffectCardCode CardCode
+  | EffectMetaTarget Target
+  | EffectAbility Ability
+  | FailedByEffectModifiers [Modifier]
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)

@@ -550,9 +550,15 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
           pushAll [EnemyEntered eid lid, EnemyCheckEngagement eid]
           pure $ a & engagedInvestigatorsL .~ mempty
         else a <$ push (EnemyCheckEngagement eid)
+    After (EndTurn _) -> a <$ push (EnemyCheckEngagement $ toId a)
     EnemyCheckEngagement eid | eid == enemyId -> do
       keywords <- getModifiedKeywords a
-      investigatorIds <- getSetList enemyLocation
+      modifiers' <- getModifiers (EnemySource eid) (EnemyTarget eid)
+      let
+        modifiedFilter = if Keyword.Massive `elem` keywords
+          then const True
+          else (`notElem` modifiers') . EnemyCannotEngage
+      investigatorIds <- filter modifiedFilter <$> getSetList enemyLocation
       leadInvestigatorId <- getLeadInvestigatorId
       let unengaged = null enemyEngagedInvestigators
       a <$ when
@@ -682,8 +688,11 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
         [ EnemyAttack iid enemyId DamageAny
         | iid <- setToList enemyEngagedInvestigators
         ]
-    EnemyEvaded iid eid | eid == enemyId ->
-      pure $ a & engagedInvestigatorsL %~ deleteSet iid & exhaustedL .~ True
+    EnemyEvaded iid eid | eid == enemyId -> do
+      modifiers' <- getModifiers (InvestigatorSource iid) (EnemyTarget eid)
+      pure $ if AlternateSuccessfullEvasion `elem` modifiers'
+        then a
+        else a & engagedInvestigatorsL %~ deleteSet iid & exhaustedL .~ True
     TryEvadeEnemy iid eid source skillType | eid == enemyId -> do
       enemyEvade' <- modifiedEnemyEvade a
       a <$ push
@@ -760,19 +769,8 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
       if Keyword.Massive `notElem` keywords && willMove
         then a <$ push (EnemyEntered enemyId lid)
         else a <$ push (DisengageEnemy iid enemyId)
-    AfterEnterLocation iid lid | lid == enemyLocation -> do
-      keywords <- getModifiedKeywords a
-      when
-          (Keyword.Aloof
-          `notElem` keywords
-          && (null enemyEngagedInvestigators
-             || Keyword.Massive
-             `elem` keywords
-             )
-          && not enemyExhausted
-          )
-        $ push (EnemyEngageInvestigator enemyId iid)
-      pure a
+    AfterEnterLocation _ lid | lid == enemyLocation -> do
+      a <$ push (EnemyCheckEngagement $ toId a)
     CheckAttackOfOpportunity iid isFast
       | not isFast && iid `elem` enemyEngagedInvestigators && not enemyExhausted -> do
         modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)

@@ -4,6 +4,11 @@ module Arkham.Types.Effect.Window
 
 import Arkham.Prelude
 
-data EffectWindow = EffectPhaseWindow | EffectSkillTestWindow | EffectRoundWindow | EffectSetupWindow
+data EffectWindow
+  = EffectPhaseWindow
+  | EffectSkillTestWindow
+  | EffectRoundWindow
+  | EffectSetupWindow
+  | EffectTurnWindow
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)

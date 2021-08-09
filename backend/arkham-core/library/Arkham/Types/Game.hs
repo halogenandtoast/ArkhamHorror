@@ -986,6 +986,9 @@ instance HasGame env => Query LocationMatcher env where
 instance HasGame env => Query InvestigatorMatcher env where
   select = fmap (setFromList . map toId) . getInvestigatorsMatching
 
+instance HasGame env => Query ExtendedCardMatcher env where
+  select = fmap setFromList . getList
+
 instance HasGame env => HasSet EnemyId env LocationMatcher where
   getSet locationMatcher = do
     location <- fromJustNote missingLocation

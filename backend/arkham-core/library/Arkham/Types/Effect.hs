@@ -107,6 +107,7 @@ data Effect
   | Improvisation' Improvisation
   | LetMeHandleThis' LetMeHandleThis
   | Fieldwork' Fieldwork
+  | SleightOfHand' SleightOfHand
   | MindWipe3' MindWipe3
   | JeremiahPierce' JeremiahPierce
   | CurseOfTheRougarouTabletToken' CurseOfTheRougarouTabletToken
@@ -126,6 +127,7 @@ instance
 
 instance
   ( HasQueue env
+  , HasId (Maybe OwnerId) env AssetId
   , HasSet LocationId env LocationMatcher
   , HasSet Trait env EnemyId
   , HasCostPayment env
@@ -213,6 +215,7 @@ allEffects = mapFromList
   , ("03018", Improvisation' . improvisation)
   , ("03022", LetMeHandleThis' . letMeHandleThis)
   , ("03024", Fieldwork' . fieldwork)
+  , ("03029", SleightOfHand' . sleightOfHand)
   , ("50008", MindWipe3' . mindWipe3)
   , ("50044", JeremiahPierce' . jeremiahPierce)
   , ("81001", CurseOfTheRougarouTabletToken' . curseOfTheRougarouTabletToken)

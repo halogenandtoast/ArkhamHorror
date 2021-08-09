@@ -115,6 +115,7 @@ allPlayerEventCards = mapFromList $ map
   , secondWind
   , seekingAnswers
   , shortcut
+  , sleightOfHand
   , sneakAttack
   , standTogether3
   , sureGamble3
@@ -636,6 +637,15 @@ noStoneUnturned :: CardDef
 noStoneUnturned = (event "03026" "No Stone Unturned" 2 Seeker)
   { cdSkills = [SkillWild]
   , cdCardTraits = singleton Insight
+  }
+
+sleightOfHand :: CardDef
+sleightOfHand = (event "03029" "Sleight of Hand" 1 Rogue)
+  { cdSkills = [SkillIntellect, SkillAgility]
+  , cdCardTraits = singleton Trick
+  , cdFastWindow = Just $ DuringTurn You
+  , cdPlayRestrictions = Just
+    (PlayableCardExists $ BasicCardMatch (CardWithTrait Item))
   }
 
 secondWind :: CardDef

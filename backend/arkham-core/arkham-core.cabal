@@ -365,6 +365,7 @@ library
       Arkham.Types.Effect.Effects.RiteOfSeeking4
       Arkham.Types.Effect.Effects.SeekingAnswers
       Arkham.Types.Effect.Effects.Shrivelling
+      Arkham.Types.Effect.Effects.SleightOfHand
       Arkham.Types.Effect.Effects.SongOfTheDead2
       Arkham.Types.Effect.Effects.SureGamble3
       Arkham.Types.Effect.Effects.TenAcreMeadow_246
@@ -526,6 +527,7 @@ library
       Arkham.Types.Event.Cards.SecondWind
       Arkham.Types.Event.Cards.SeekingAnswers
       Arkham.Types.Event.Cards.Shortcut
+      Arkham.Types.Event.Cards.SleightOfHand
       Arkham.Types.Event.Cards.SneakAttack
       Arkham.Types.Event.Cards.StandTogether3
       Arkham.Types.Event.Cards.SureGamble3

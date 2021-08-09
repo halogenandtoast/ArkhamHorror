@@ -40,6 +40,7 @@ instance HasCount ClueCount env InvestigatorId => HasModifiersFor env Event wher
 instance
   ( EventRunner env
   , HasSet FightableEnemyId env (InvestigatorId, Source)
+  , Query ExtendedCardMatcher env
   , HasCount HealthDamageCount env EnemyId
   , HasCount SanityDamageCount env EnemyId
   , HasCount Shroud env LocationId

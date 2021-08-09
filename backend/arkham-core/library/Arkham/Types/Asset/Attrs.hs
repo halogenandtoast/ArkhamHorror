@@ -33,7 +33,6 @@ data AssetAttrs = AssetAttrs
   , assetSanity :: Maybe Int
   , assetHealthDamage :: Int
   , assetSanityDamage :: Int
-  , assetStartingUses :: Maybe Uses
   , assetUses :: Uses
   , assetExhausted :: Bool
   , assetDoom :: Int
@@ -77,9 +76,6 @@ sanityDamageL = lens assetSanityDamage $ \m x -> m { assetSanityDamage = x }
 
 usesL :: Lens' AssetAttrs Uses
 usesL = lens assetUses $ \m x -> m { assetUses = x }
-
-startingUsesL :: Lens' AssetAttrs (Maybe Uses)
-startingUsesL = lens assetStartingUses $ \m x -> m { assetStartingUses = x }
 
 locationL :: Lens' AssetAttrs (Maybe LocationId)
 locationL = lens assetLocation $ \m x -> m { assetLocation = x }
@@ -203,7 +199,6 @@ assetWith f cardDef g = CardBuilder
     , assetHealthDamage = 0
     , assetSanityDamage = 0
     , assetUses = NoUses
-    , assetStartingUses = Nothing
     , assetExhausted = False
     , assetDoom = 0
     , assetClues = 0
@@ -321,6 +316,7 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs whe
       -- us to bring the investigator's id into scope
       modifiers <- getModifiers (InvestigatorSource iid) (toTarget a)
       let
+        startingUses = cdUses $ toCardDef a
         applyModifier (Uses uType m) (AdditionalStartingUses n) =
           Uses uType (n + m)
         applyModifier m _ = m
@@ -329,10 +325,7 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs whe
         $ a
         & (investigatorL ?~ iid)
         & (usesL .~ if assetUses == NoUses
-            then maybe
-              NoUses
-              (\uses -> foldl' applyModifier uses modifiers)
-              assetStartingUses
+            then foldl' applyModifier startingUses modifiers
             else assetUses
           )
     InvestigatorPlayDynamicAsset iid aid slots traits _ | aid == assetId ->

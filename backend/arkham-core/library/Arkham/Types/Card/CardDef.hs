@@ -5,6 +5,7 @@ import Arkham.Prelude
 
 import Arkham.Json
 import Arkham.Types.Action (Action)
+import Arkham.Types.Asset.Uses
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardMatcher
 import Arkham.Types.Card.CardType
@@ -58,6 +59,7 @@ data CardDef = CardDef
   , cdDoubleSided :: Bool
   , cdLimits :: [CardLimit]
   , cdExceptional :: Bool
+  , cdUses :: Uses
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
@@ -153,6 +155,7 @@ testCardDef cardType cardCode = CardDef
   , cdDoubleSided = False
   , cdLimits = []
   , cdExceptional = False
+  , cdUses = NoUses
   }
 
 data DiscardSignifier = AnyPlayerDiscard

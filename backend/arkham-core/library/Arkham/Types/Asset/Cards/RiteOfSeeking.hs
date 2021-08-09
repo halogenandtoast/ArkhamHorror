@@ -23,8 +23,7 @@ newtype RiteOfSeeking = RiteOfSeeking AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riteOfSeeking :: AssetCard RiteOfSeeking
-riteOfSeeking =
-  arcaneWith RiteOfSeeking Cards.riteOfSeeking (startingUsesL ?~ Uses Charge 3)
+riteOfSeeking = arcane RiteOfSeeking Cards.riteOfSeeking
 
 instance HasActions env RiteOfSeeking where
   getActions iid NonFast (RiteOfSeeking a) | ownedBy a iid = pure

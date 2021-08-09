@@ -27,8 +27,7 @@ newtype Encyclopedia = Encyclopedia AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 encyclopedia :: AssetCard Encyclopedia
-encyclopedia =
-  handWith Encyclopedia Cards.encyclopedia (startingUsesL ?~ Uses Secret 5)
+encyclopedia = hand Encyclopedia Cards.encyclopedia
 
 instance HasModifiersFor env Encyclopedia
 

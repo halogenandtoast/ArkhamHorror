@@ -10,7 +10,6 @@ import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Uses (Uses(..))
 import qualified Arkham.Types.Asset.Uses as Resource
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -26,10 +25,10 @@ newtype SpringfieldM19034 = SpringfieldM19034 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 springfieldM19034 :: AssetCard SpringfieldM19034
-springfieldM19034 =
-  assetWith SpringfieldM19034 Cards.springfieldM19034
-    $ (slotsL .~ [HandSlot, HandSlot])
-    . (startingUsesL ?~ Uses Resource.Ammo 3)
+springfieldM19034 = assetWith
+  SpringfieldM19034
+  Cards.springfieldM19034
+  (slotsL .~ [HandSlot, HandSlot])
 
 instance HasActions env SpringfieldM19034 where
   getActions iid NonFast (SpringfieldM19034 a) | ownedBy a iid = pure

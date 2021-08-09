@@ -1513,6 +1513,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       , AfterEnterLocation iid lid
       ]
     pure $ a & locationL .~ lid & connectedLocationsL .~ connectedLocations
+  SetLocationAsIf iid lid | iid == investigatorId ->
+    -- In the as if situation we want to avoid callbacks
+    -- so this sets the value directly
+    pure $ a & locationL .~ lid
   AddedConnection lid1 lid2 | lid1 == investigatorLocation ->
     pure $ a & (connectedLocationsL %~ insertSet lid2)
   AddedConnection lid1 lid2 | lid2 == investigatorLocation ->

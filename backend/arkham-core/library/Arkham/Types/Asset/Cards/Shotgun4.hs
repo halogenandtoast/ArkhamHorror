@@ -28,10 +28,7 @@ newtype Shotgun4 = Shotgun4 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shotgun4 :: AssetCard Shotgun4
-shotgun4 =
-  assetWith Shotgun4 Cards.shotgun4
-    $ (slotsL .~ [HandSlot, HandSlot])
-    . (startingUsesL ?~ Uses Ammo 2)
+shotgun4 = assetWith Shotgun4 Cards.shotgun4 (slotsL .~ [HandSlot, HandSlot])
 
 instance HasModifiersFor env Shotgun4
 

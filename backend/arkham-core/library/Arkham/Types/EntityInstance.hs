@@ -14,6 +14,7 @@ import Arkham.Types.Id
 import Arkham.Types.Investigator.Runner
 import qualified Arkham.Types.Label as L
 import Arkham.Types.Location
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Skill
 import Arkham.Types.SkillTest
@@ -66,6 +67,7 @@ doNotMask _ = False
 
 type EntityInstanceRunner env
   = ( ActionRunner env
+    , Query LocationMatcher env
     , HasActions env LocationId
     , HasHistory env
     , HasId CardCode env TreacheryId

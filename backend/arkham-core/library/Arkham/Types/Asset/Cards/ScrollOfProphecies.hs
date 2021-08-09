@@ -9,7 +9,7 @@ import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Asset.Uses (Uses(..), useCount)
+import Arkham.Types.Asset.Uses (useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -23,11 +23,7 @@ newtype ScrollOfProphecies = ScrollOfProphecies AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 scrollOfProphecies :: AssetCard ScrollOfProphecies
-scrollOfProphecies = handWith
-  ScrollOfProphecies
-  Cards.scrollOfProphecies
-  (startingUsesL ?~ Uses Resource.Secret 4)
-
+scrollOfProphecies = hand ScrollOfProphecies Cards.scrollOfProphecies
 
 instance HasModifiersFor env ScrollOfProphecies
 

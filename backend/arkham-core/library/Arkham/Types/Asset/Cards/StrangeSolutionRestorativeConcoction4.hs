@@ -24,10 +24,9 @@ newtype StrangeSolutionRestorativeConcoction4 = StrangeSolutionRestorativeConcoc
 
 strangeSolutionRestorativeConcoction4
   :: AssetCard StrangeSolutionRestorativeConcoction4
-strangeSolutionRestorativeConcoction4 = assetWith
+strangeSolutionRestorativeConcoction4 = asset
   StrangeSolutionRestorativeConcoction4
   Cards.strangeSolutionRestorativeConcoction4
-  (startingUsesL ?~ Uses Supply 4)
 
 ability :: AssetAttrs -> Ability
 ability a = restrictedAbility

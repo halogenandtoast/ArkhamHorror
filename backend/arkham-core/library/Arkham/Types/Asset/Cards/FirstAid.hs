@@ -23,7 +23,7 @@ newtype FirstAid = FirstAid AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 firstAid :: AssetCard FirstAid
-firstAid = assetWith FirstAid Cards.firstAid (startingUsesL ?~ Uses Supply 3)
+firstAid = asset FirstAid Cards.firstAid
 
 instance HasModifiersFor env FirstAid
 

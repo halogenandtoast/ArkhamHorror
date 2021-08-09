@@ -25,10 +25,8 @@ newtype StrangeSolutionFreezingVariant4 = StrangeSolutionFreezingVariant4 AssetA
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strangeSolutionFreezingVariant4 :: AssetCard StrangeSolutionFreezingVariant4
-strangeSolutionFreezingVariant4 = assetWith
-  StrangeSolutionFreezingVariant4
-  Cards.strangeSolutionFreezingVariant4
-  (startingUsesL ?~ Uses Supply 4)
+strangeSolutionFreezingVariant4 =
+  asset StrangeSolutionFreezingVariant4 Cards.strangeSolutionFreezingVariant4
 
 instance HasActions env StrangeSolutionFreezingVariant4 where
   getActions iid NonFast (StrangeSolutionFreezingVariant4 attrs)

@@ -34,7 +34,7 @@ streetsOfVenice = locationWith
 instance HasModifiersFor env StreetsOfVenice
 
 instance ActionRunner env => HasActions env StreetsOfVenice where
-  getActions iid FastPlayerWindow (StreetsOfVenice attrs) =
+  getActions _ FastPlayerWindow (StreetsOfVenice attrs) =
     pure [locationAbility $ mkAbility attrs 1 (FastAbility Free)]
   getActions iid window (StreetsOfVenice attrs) = getActions iid window attrs
 

@@ -2,6 +2,7 @@ module Arkham.Act.Cards where
 
 import Arkham.Prelude hiding (fold)
 
+import Arkham.Types.Asset.Uses
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.CardType
@@ -35,6 +36,7 @@ act cardCode name encounterSet = CardDef
   , cdDoubleSided = True
   , cdLimits = []
   , cdExceptional = False
+  , cdUses = NoUses
   }
 
 allActCards :: HashMap CardCode CardDef

@@ -81,8 +81,10 @@ instance AssetRunner env => RunMessage env Duke where
       lid <- getId @LocationId iid
       investigateAbilities :: [Ability] <-
         filterM
-            (\a ->
-              liftA2 (&&) (pure $ isInvestigate a) (getCanAffordAbility iid a)
+            (\a' -> liftA2
+              (&&)
+              (pure $ isInvestigate a')
+              (getCanAffordAbility iid a')
             )
           =<< getActions iid NonFast lid
       let

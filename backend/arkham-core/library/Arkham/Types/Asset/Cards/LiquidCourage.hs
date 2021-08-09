@@ -24,8 +24,7 @@ newtype LiquidCourage = LiquidCourage AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 liquidCourage :: AssetCard LiquidCourage
-liquidCourage =
-  assetWith LiquidCourage Cards.liquidCourage (startingUsesL ?~ Uses Supply 4)
+liquidCourage = asset LiquidCourage Cards.liquidCourage
 
 instance HasActions env LiquidCourage where
   getActions iid NonFast (LiquidCourage a) = pure

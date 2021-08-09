@@ -530,6 +530,7 @@ data Message
     | WhenAttackEnemy InvestigatorId EnemyId
     | WhenWillEnterLocation InvestigatorId LocationId
     | WhenEnterLocation InvestigatorId LocationId
+    | SetLocationAsIf InvestigatorId LocationId
     | WhenEvadeEnemy InvestigatorId EnemyId
     | Will Message
     -- must be called on instance directly

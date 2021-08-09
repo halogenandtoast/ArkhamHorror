@@ -150,6 +150,7 @@ data LocationMatcher
   | LocationWithoutInvestigators
   | LocationWithoutEnemies
   | RevealedLocation
+  | InvestigatableLocation
   | FarthestLocationFromYou LocationMatcher
   | LocationWithTrait Trait
   | LocationWithoutTreacheryWithCardCode CardCode

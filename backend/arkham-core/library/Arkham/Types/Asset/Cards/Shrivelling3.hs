@@ -25,8 +25,7 @@ newtype Shrivelling3 = Shrivelling3 AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 shrivelling3 :: AssetCard Shrivelling3
-shrivelling3 =
-  arcaneWith Shrivelling3 Cards.shrivelling3 (startingUsesL ?~ Uses Charge 4)
+shrivelling3 = arcane Shrivelling3 Cards.shrivelling3
 
 instance HasModifiersFor env Shrivelling3
 

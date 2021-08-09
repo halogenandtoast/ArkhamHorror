@@ -18,10 +18,7 @@ newtype ForbiddenKnowledge = ForbiddenKnowledge AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 forbiddenKnowledge :: AssetCard ForbiddenKnowledge
-forbiddenKnowledge = assetWith
-  ForbiddenKnowledge
-  Cards.forbiddenKnowledge
-  (startingUsesL ?~ Uses Secret 4)
+forbiddenKnowledge = asset ForbiddenKnowledge Cards.forbiddenKnowledge
 
 
 instance HasModifiersFor env ForbiddenKnowledge

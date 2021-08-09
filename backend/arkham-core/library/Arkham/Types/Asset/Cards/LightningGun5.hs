@@ -10,7 +10,6 @@ import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Uses (Uses(..))
 import qualified Arkham.Types.Asset.Uses as Resource
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -27,9 +26,7 @@ newtype LightningGun5 = LightningGun5 AssetAttrs
 
 lightningGun5 :: AssetCard LightningGun5
 lightningGun5 =
-  assetWith LightningGun5 Cards.lightningGun5
-    $ (slotsL .~ [HandSlot, HandSlot])
-    . (startingUsesL ?~ Uses Resource.Ammo 3)
+  assetWith LightningGun5 Cards.lightningGun5 (slotsL .~ [HandSlot, HandSlot])
 
 instance HasActions env LightningGun5 where
   getActions iid NonFast (LightningGun5 a) | ownedBy a iid = pure

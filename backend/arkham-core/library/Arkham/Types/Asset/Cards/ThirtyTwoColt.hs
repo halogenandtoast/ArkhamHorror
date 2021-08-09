@@ -26,9 +26,7 @@ newtype ThirtyTwoColt = ThirtyTwoColt AssetAttrs
 
 thirtyTwoColt :: AssetCard ThirtyTwoColt
 thirtyTwoColt =
-  assetWith ThirtyTwoColt Cards.thirtyTwoColt
-    $ (slotsL .~ [HandSlot])
-    . (startingUsesL ?~ Uses Ammo 6)
+  assetWith ThirtyTwoColt Cards.thirtyTwoColt (slotsL .~ [HandSlot])
 
 instance HasActions env ThirtyTwoColt where
   getActions iid NonFast (ThirtyTwoColt a) | ownedBy a iid = pure

@@ -26,10 +26,10 @@ newtype ChicagoTypewriter4 = ChicagoTypewriter4 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chicagoTypewriter4 :: AssetCard ChicagoTypewriter4
-chicagoTypewriter4 =
-  assetWith ChicagoTypewriter4 Cards.chicagoTypewriter4
-    $ (slotsL .~ [HandSlot, HandSlot])
-    . (startingUsesL ?~ Uses Ammo 4)
+chicagoTypewriter4 = assetWith
+  ChicagoTypewriter4
+  Cards.chicagoTypewriter4
+  (slotsL .~ [HandSlot, HandSlot])
 
 instance HasModifiersFor env ChicagoTypewriter4
 

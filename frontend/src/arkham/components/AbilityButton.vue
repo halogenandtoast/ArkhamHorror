@@ -1,5 +1,6 @@
 <template>
     <button
+      v-if="display"
       class="button"
       :class="classObject"
       @click="$emit('choose', ability)"
@@ -49,6 +50,7 @@ export default defineComponent({
     const isFight = computed(() => isAction("Fight"))
     const isEvade = computed(() => isAction("Evade"))
     const isEngage = computed(() => isAction("Engage"))
+    const display = computed(() => !isAction("Move"))
     const isSingleActionAbility = computed(() => {
       const {tag} = ability.value.contents[1].type
       if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore" && tag !== "ActionAbilityWithSkill") {
@@ -96,6 +98,7 @@ export default defineComponent({
     })
 
     return {
+      display,
       classObject,
       abilityLabel,
       isSingleActionAbility,

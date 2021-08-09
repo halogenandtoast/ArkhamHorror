@@ -22,10 +22,7 @@ newtype GrotesqueStatue4 = GrotesqueStatue4 AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 grotesqueStatue4 :: AssetCard GrotesqueStatue4
-grotesqueStatue4 = handWith
-  GrotesqueStatue4
-  Cards.grotesqueStatue4
-  (startingUsesL ?~ Uses Charge 4)
+grotesqueStatue4 = hand GrotesqueStatue4 Cards.grotesqueStatue4
 
 instance HasModifiersFor env GrotesqueStatue4
 

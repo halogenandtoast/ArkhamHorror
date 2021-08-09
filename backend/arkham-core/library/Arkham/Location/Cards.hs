@@ -2,6 +2,7 @@ module Arkham.Location.Cards where
 
 import Arkham.Prelude
 
+import Arkham.Types.Asset.Uses
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.CardType
@@ -41,6 +42,7 @@ location cardCode name encounterSet = CardDef
   , cdDoubleSided = True
   , cdLimits = []
   , cdExceptional = False
+  , cdUses = NoUses
   }
 
 allLocationCards :: HashMap CardCode CardDef

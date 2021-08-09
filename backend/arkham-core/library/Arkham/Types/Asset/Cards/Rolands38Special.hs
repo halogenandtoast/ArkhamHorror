@@ -27,10 +27,7 @@ newtype Rolands38Special = Rolands38Special AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rolands38Special :: AssetCard Rolands38Special
-rolands38Special = handWith
-  Rolands38Special
-  Cards.rolands38Special
-  (startingUsesL ?~ Uses Ammo 4)
+rolands38Special = hand Rolands38Special Cards.rolands38Special
 
 instance HasModifiersFor env Rolands38Special
 

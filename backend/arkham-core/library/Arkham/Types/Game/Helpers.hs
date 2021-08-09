@@ -320,13 +320,25 @@ instance
     actions' <- concat <$> traverse
       (getActions iid window)
       ([minBound .. maxBound] :: [ActionType])
-    actions'' <- for
+    actions'' <- catMaybes <$> for
       actions'
       \ability -> do
         modifiers' <- getModifiers
           (InvestigatorSource iid)
           (sourceToTarget $ abilitySource ability)
-        pure $ applyAbilityModifiers ability modifiers'
+        investigatorModifiers <- getModifiers
+          (InvestigatorSource iid)
+          (InvestigatorTarget iid)
+        cardClasses <- case abilitySource ability of
+          AssetSource aid -> insertSet Neutral <$> getSet aid
+          _ -> pure $ singleton Neutral
+        let
+          prevents (CanOnlyUseCardsInRole role) =
+            null (singleton role `intersect` cardClasses)
+          prevents _ = False
+        if any prevents investigatorModifiers
+          then pure Nothing
+          else pure $ Just $ applyAbilityModifiers ability modifiers'
     let forcedActions = nub $ filter isForcedAction actions''
     forcedActions' <- filterM (getCanAffordAbility iid) forcedActions
     if null forcedActions'
@@ -567,26 +579,6 @@ getCanMoveTo lid iid = do
     && Blocked
     `notElem` locationModifiers'
 
-getCanInvestigate
-  :: ( MonadReader env m
-     , HasCostPayment env
-     , HasId LocationId env InvestigatorId
-     , HasSet Trait env Source
-     , HasModifiersFor env ()
-     )
-  => LocationId
-  -> InvestigatorId
-  -> m Bool
-getCanInvestigate lid iid = do
-  locationId <- getId @LocationId iid
-  canAffordActions <- getCanAffordCost
-    iid
-    (LocationSource lid)
-    (Just Action.Investigate)
-    (ActionCost 1)
-
-  pure $ lid == locationId && canAffordActions
-
 getResourceCount
   :: (MonadReader env m, HasCount ResourceCount env InvestigatorId)
   => InvestigatorId
@@ -799,6 +791,7 @@ type CanCheckPlayable env
     , Query AssetMatcher env
     , Query InvestigatorMatcher env
     , CanCheckFast env
+    , HasSet ClassSymbol env AssetId
     , HasList HandCard env InvestigatorId
     , HasList Card env ExtendedCardMatcher
     , HasCount ActionTakenCount env InvestigatorId

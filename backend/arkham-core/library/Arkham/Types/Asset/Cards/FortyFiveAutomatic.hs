@@ -25,10 +25,7 @@ newtype FortyFiveAutomatic = FortyFiveAutomatic AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fortyFiveAutomatic :: AssetCard FortyFiveAutomatic
-fortyFiveAutomatic = handWith
-  FortyFiveAutomatic
-  Cards.fortyFiveAutomatic
-  (startingUsesL ?~ Uses Ammo 4)
+fortyFiveAutomatic = hand FortyFiveAutomatic Cards.fortyFiveAutomatic
 
 instance HasModifiersFor env FortyFiveAutomatic
 

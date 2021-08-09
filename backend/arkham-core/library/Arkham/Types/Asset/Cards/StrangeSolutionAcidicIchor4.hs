@@ -25,10 +25,8 @@ newtype StrangeSolutionAcidicIchor4 = StrangeSolutionAcidicIchor4 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strangeSolutionAcidicIchor4 :: AssetCard StrangeSolutionAcidicIchor4
-strangeSolutionAcidicIchor4 = assetWith
-  StrangeSolutionAcidicIchor4
-  Cards.strangeSolutionAcidicIchor4
-  (startingUsesL ?~ Uses Supply 4)
+strangeSolutionAcidicIchor4 =
+  asset StrangeSolutionAcidicIchor4 Cards.strangeSolutionAcidicIchor4
 
 instance HasActions env StrangeSolutionAcidicIchor4 where
   getActions iid NonFast (StrangeSolutionAcidicIchor4 attrs)

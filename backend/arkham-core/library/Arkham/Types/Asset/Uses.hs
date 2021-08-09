@@ -1,7 +1,6 @@
 module Arkham.Types.Asset.Uses where
 
-import ClassyPrelude
-import Data.Aeson
+import Arkham.Prelude
 
 data UseType = Ammo | Supply | Secret | Charge | Try | Bounty | Whistle | Resource | Key
   deriving stock (Show, Eq, Generic)
@@ -9,6 +8,7 @@ data UseType = Ammo | Supply | Secret | Charge | Try | Bounty | Whistle | Resour
 
 data Uses = NoUses | Uses UseType Int
   deriving stock (Show, Eq, Generic)
+  deriving anyclass (Hashable)
 
 use :: Uses -> Uses
 use NoUses = NoUses

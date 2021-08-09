@@ -23,8 +23,7 @@ newtype SmokingPipe = SmokingPipe AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 smokingPipe :: AssetCard SmokingPipe
-smokingPipe =
-  assetWith SmokingPipe Cards.smokingPipe (startingUsesL ?~ Uses Supply 3)
+smokingPipe = asset SmokingPipe Cards.smokingPipe
 
 fastAbility :: InvestigatorId -> AssetAttrs -> Ability
 fastAbility iid attrs = restrictedAbility

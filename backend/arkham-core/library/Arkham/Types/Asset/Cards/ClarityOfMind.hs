@@ -23,8 +23,7 @@ newtype ClarityOfMind = ClarityOfMind AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 clarityOfMind :: AssetCard ClarityOfMind
-clarityOfMind =
-  arcaneWith ClarityOfMind Cards.clarityOfMind (startingUsesL ?~ Uses Charge 3)
+clarityOfMind = arcane ClarityOfMind Cards.clarityOfMind
 
 instance HasActions env ClarityOfMind where
   getActions iid NonFast (ClarityOfMind a) = pure

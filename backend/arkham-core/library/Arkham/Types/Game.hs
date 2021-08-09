@@ -628,6 +628,7 @@ getLocationsMatching = \case
       <$> (setFromList . map toId <$> getLocationsMatching x)
       <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
     filter ((`member` matches) . toId) . toList . view locationsL <$> getGame
+  InvestigatableLocation -> toList . view locationsL <$> getGame
  where
   guardYourLocation body = do
     mlid <- locationFor . view activeInvestigatorIdL =<< getGame
@@ -978,6 +979,9 @@ instance HasGame env => HasSet SkillId env SkillMatcher where
 
 instance HasGame env => Query AssetMatcher env where
   select = fmap (setFromList . map toId) . getAssetsMatching
+
+instance HasGame env => Query LocationMatcher env where
+  select = fmap (setFromList . map toId) . getLocationsMatching
 
 instance HasGame env => Query InvestigatorMatcher env where
   select = fmap (setFromList . map toId) . getInvestigatorsMatching

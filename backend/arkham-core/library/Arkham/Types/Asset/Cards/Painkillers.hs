@@ -23,8 +23,7 @@ newtype Painkillers = Painkillers AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 painkillers :: AssetCard Painkillers
-painkillers =
-  assetWith Painkillers Cards.painkillers (startingUsesL ?~ Uses Supply 3)
+painkillers = asset Painkillers Cards.painkillers
 
 fastAbility :: InvestigatorId -> AssetAttrs -> Ability
 fastAbility iid attrs = restrictedAbility

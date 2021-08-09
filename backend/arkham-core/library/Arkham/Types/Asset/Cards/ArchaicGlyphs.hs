@@ -21,8 +21,7 @@ newtype ArchaicGlyphs = ArchaicGlyphs AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 archaicGlyphs :: AssetCard ArchaicGlyphs
-archaicGlyphs =
-  assetWith ArchaicGlyphs Cards.archaicGlyphs (startingUsesL ?~ Uses Secret 0)
+archaicGlyphs = asset ArchaicGlyphs Cards.archaicGlyphs
 
 instance HasActions env ArchaicGlyphs where
   getActions iid NonFast (ArchaicGlyphs attrs) | ownedBy attrs iid = pure

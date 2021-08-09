@@ -25,8 +25,7 @@ newtype Flashlight = Flashlight AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 flashlight :: AssetCard Flashlight
-flashlight =
-  handWith Flashlight Cards.flashlight (startingUsesL ?~ Uses Supply 3)
+flashlight = hand Flashlight Cards.flashlight
 
 instance HasModifiersFor env Flashlight
 

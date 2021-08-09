@@ -10,8 +10,6 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes.Entity
 import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers as X
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
 
 resignAction :: SourceEntity a => a -> Ability
 resignAction a =

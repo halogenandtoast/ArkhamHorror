@@ -63,6 +63,7 @@ instance
   ( HasList CommittedCard env InvestigatorId
   , HasId LeadInvestigatorId env ()
   , CanCheckPlayable env
+  , Query LocationMatcher env
   , AssetRunner env
   )
   => RunMessage env Asset where
@@ -131,9 +132,9 @@ instance HasCount UsesCount env Asset where
 
 instance HasCount StartingUsesCount env (Asset, UseType) where
   getCount (x, uType) = pure $ case uses' of
-    Just (Uses uType' n) | uType == uType' -> StartingUsesCount n
+    Uses uType' n | uType == uType' -> StartingUsesCount n
     _ -> StartingUsesCount 0
-    where uses' = assetStartingUses (toAttrs x)
+    where uses' = cdUses $ toCardDef x
 
 instance HasCount UsesCount env (Asset, UseType) where
   getCount (x, uType) = pure $ case uses' of

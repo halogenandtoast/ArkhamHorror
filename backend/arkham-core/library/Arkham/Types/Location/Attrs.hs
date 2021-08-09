@@ -384,19 +384,19 @@ withDrawCardUnderneathAction iid window x = getActions iid window (toAttrs x)
 instance ActionRunner env => HasActions env LocationAttrs where
   getActions iid NonFast l@LocationAttrs {..} = do
     canMoveTo <- getCanMoveTo locationId iid
-    canInvestigate <- getCanInvestigate locationId iid
     investigateAllowed <- getInvestigateAllowed iid l
     modifiers' <- getModifiers (toSource l) (InvestigatorTarget iid)
     takenActions <- setFromList . map unTakenAction <$> getList iid
     pure
       $ moveActions modifiers' takenActions canMoveTo
-      <> investigateActions canInvestigate investigateAllowed
+      <> investigateActions investigateAllowed
    where
     costToEnter =
       if locationRevealed then ActionCost 1 else locationCostToEnterUnrevealed
-    investigateActions canInvestigate investigateAllowed =
-      [ mkAbility l 101 $ ActionAbility (Just Action.Investigate) (ActionCost 1)
-      | canInvestigate && investigateAllowed
+    investigateActions investigateAllowed =
+      [ restrictedAbility l 101 (OnLocation $ toId l)
+          $ ActionAbility (Just Action.Investigate) (ActionCost 1)
+      | investigateAllowed
       ]
     moveActions modifiers' takenActions canMoveTo =
       [ mkAbility l 102 $ ActionAbility
@@ -566,6 +566,10 @@ instance LocationRunner env => RunMessage env LocationAttrs where
     WhenEnterLocation iid lid | lid == locationId -> do
       unless locationRevealed $ push (RevealLocation (Just iid) lid)
       pure $ a & investigatorsL %~ insertSet iid
+    SetLocationAsIf iid lid | lid == locationId -> do
+      pure $ a & investigatorsL %~ insertSet iid
+    SetLocationAsIf iid lid | lid /= locationId -> do
+      pure $ a & investigatorsL %~ deleteSet iid
     AddToVictory (EnemyTarget eid) -> pure $ a & enemiesL %~ deleteSet eid
     EnemyEngageInvestigator eid iid -> do
       lid <- getId @LocationId iid

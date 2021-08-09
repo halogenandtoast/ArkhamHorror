@@ -2,6 +2,7 @@ module Arkham.Enemy.Cards where
 
 import Arkham.Prelude
 
+import Arkham.Types.Asset.Uses
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.CardType
@@ -38,6 +39,7 @@ baseEnemy cardCode name mEncounterSet isWeakness = CardDef
   , cdDoubleSided = False
   , cdLimits = []
   , cdExceptional = False
+  , cdUses = NoUses
   }
 
 weakness :: CardCode -> Name -> CardDef

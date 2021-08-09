@@ -32,7 +32,7 @@ spec = describe "Roland's .39 Special" $ do
       $ do
           runMessages
           [doFight] <- getActionsOf investigator NonFast rolands38Special
-          push doFight
+          push $ UseAbility (toId investigator) doFight
           runMessages
           chooseOnlyOption "choose enemy"
           chooseOnlyOption "start skill test"
@@ -64,7 +64,7 @@ spec = describe "Roland's .39 Special" $ do
           $ do
               runMessages
               [doFight] <- getActionsOf investigator NonFast rolands38Special
-              push doFight
+              push $ UseAbility (toId investigator) doFight
               runMessages
               chooseOnlyOption "choose enemy"
               chooseOnlyOption "start skill test"

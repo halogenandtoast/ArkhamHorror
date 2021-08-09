@@ -22,7 +22,7 @@ spec = describe "\"Skids\" O'Toole" $ do
               skidsOToole'
               (DuringTurn $ toId skidsOToole)
               skidsOToole'
-            push buyAction
+            push $ UseAbility (toId skidsOToole) buyAction
             runMessages
             getCanAffordCost
                 (toId skidsOToole')

@@ -49,7 +49,10 @@ spec = describe "Wracked by Nightmares" $ do
             investigator
             NonFast
             wrackedByNightmaresTreachery
-          pushAll [discardWrackedByNightmares, ReadyExhausted]
+          pushAll
+            [ UseAbility (toId investigator) discardWrackedByNightmares
+            , ReadyExhausted
+            ]
           runMessages
           investigator' <- updated investigator
           hasTreacheryWithMatchingCardCode

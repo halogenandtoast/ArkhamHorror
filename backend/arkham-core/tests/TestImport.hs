@@ -15,6 +15,7 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Game as X hiding (newGame, runMessages)
 import qualified Arkham.Game as Game
 import qualified Arkham.Location.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Action
 import Arkham.Types.Agenda as X
 import Arkham.Types.Agenda.Attrs
@@ -343,7 +344,7 @@ getActionsOf
   => Investigator
   -> Window
   -> a
-  -> m [Message]
+  -> m [Ability]
 getActionsOf investigator window e = do
   e' <- updated e
   toGameEnv >>= runReaderT (getActions (toId investigator) window e')
@@ -481,9 +482,9 @@ newGame investigator = do
   pure $ Game
     { gameParams = GameParams (Left "00000") 1 mempty Easy -- Not used in tests
     , gameWindowDepth = 0
-    , gameChoices = []
-    , gameRoundMessageHistory = []
-    , gamePhaseMessageHistory = []
+    , gamePhaseHistory = mempty
+    , gameRoundHistory = mempty
+    , gameTurnPlayerInvestigatorId = Just investigatorId
     , gameSeed = seed
     , gameInitialSeed = seed
     , gameMode = That scenario'
@@ -493,7 +494,6 @@ newGame investigator = do
     , gameEnemiesInVoid = mempty
     , gameAssets = mempty
     , gameInvestigators = HashMap.singleton investigatorId investigator
-    , gamePlayers = HashMap.singleton 1 investigatorId
     , gameActiveInvestigatorId = investigatorId
     , gameLeadInvestigatorId = investigatorId
     , gamePhase = CampaignPhase -- TODO: maybe this should be a TestPhase or something?
@@ -516,7 +516,6 @@ newGame investigator = do
     , gameFocusedTokens = mempty
     , gameActiveCard = Nothing
     , gamePlayerOrder = [investigatorId]
-    , gamePlayerTurnOrder = [investigatorId]
     , gameVictoryDisplay = mempty
     , gameRemovedFromPlay = mempty
     , gameQuestion = mempty

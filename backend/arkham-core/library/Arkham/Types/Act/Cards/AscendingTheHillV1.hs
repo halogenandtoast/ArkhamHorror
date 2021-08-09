@@ -31,7 +31,7 @@ instance HasSet Trait env LocationId => HasModifiersFor env AscendingTheHillV1 w
     pure $ toModifiers attrs [ CannotPlaceClues | Altered `notMember` traits ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env AscendingTheHillV1 where
+instance HasActions env AscendingTheHillV1 where
   getActions i window (AscendingTheHillV1 x) = getActions i window x
 
 instance (HasName env LocationId, ActRunner env) => RunMessage env AscendingTheHillV1 where

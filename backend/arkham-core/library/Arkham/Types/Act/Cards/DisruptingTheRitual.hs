@@ -28,7 +28,7 @@ disruptingTheRitual = actWith
   Nothing
   (cluesL ?~ 0)
 
-instance ActionRunner env => HasActions env DisruptingTheRitual where
+instance HasActions env DisruptingTheRitual where
   getActions _ NonFast (DisruptingTheRitual a) = pure
     [ mkAbility
         (toSource a)

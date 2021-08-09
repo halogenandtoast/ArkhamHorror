@@ -26,7 +26,7 @@ investigatingTheTrail = act
   Cards.investigatingTheTrail
   (Just $ GroupClueCost (PerPlayer 3) Nothing)
 
-instance ActionRunner env => HasActions env InvestigatingTheTrail where
+instance HasActions env InvestigatingTheTrail where
   getActions i window (InvestigatingTheTrail x) = getActions i window x
 
 instance ActRunner env => RunMessage env InvestigatingTheTrail where

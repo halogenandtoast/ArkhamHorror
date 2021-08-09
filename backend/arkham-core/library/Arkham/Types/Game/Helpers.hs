@@ -1230,6 +1230,11 @@ cardInFastWindows iid c windows matcher = anyM
       treacheryIds <- getSetList @TreacheryId locationId
       cardCodes <- traverse (getId @CardCode) treacheryIds
       pure $ cCode `notElem` cardCodes
+    InvestigatableLocation -> do
+      modifiers <- getModifiers
+        (InvestigatorSource iid)
+        (LocationTarget locationId)
+      pure $ CannotInvestigate `notElem` modifiers
   matchCard :: Card -> CardMatcher -> m Bool
   matchCard c' = \case
     AnyCard -> pure True

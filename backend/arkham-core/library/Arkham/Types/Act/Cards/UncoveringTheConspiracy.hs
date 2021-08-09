@@ -27,7 +27,7 @@ uncoveringTheConspiracy :: ActCard UncoveringTheConspiracy
 uncoveringTheConspiracy =
   act (1, A) UncoveringTheConspiracy Cards.uncoveringTheConspiracy Nothing
 
-instance ActionRunner env => HasActions env UncoveringTheConspiracy where
+instance HasActions env UncoveringTheConspiracy where
   getActions _ NonFast (UncoveringTheConspiracy a) = do
     pure
       [ mkAbility a 1

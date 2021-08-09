@@ -30,7 +30,7 @@ findingAWayInside = act
   Cards.findingAWayInside
   (Just $ GroupClueCost (Static 2) Nothing)
 
-instance ActionRunner env => HasActions env FindingAWayInside where
+instance HasActions env FindingAWayInside where
   getActions i window (FindingAWayInside x) = getActions i window x
 
 instance ActRunner env => RunMessage env FindingAWayInside where

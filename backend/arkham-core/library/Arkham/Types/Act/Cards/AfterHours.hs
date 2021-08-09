@@ -21,7 +21,7 @@ afterHours = act
   Cards.afterHours
   (Just $ GroupClueCost (PerPlayer 3) Nothing)
 
-instance ActionRunner env => HasActions env AfterHours where
+instance HasActions env AfterHours where
   getActions i window (AfterHours x) = getActions i window x
 
 instance ActRunner env => RunMessage env AfterHours where

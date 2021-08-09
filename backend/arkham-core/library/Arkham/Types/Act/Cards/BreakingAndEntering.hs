@@ -27,7 +27,7 @@ breakingAndEntering :: ActCard BreakingAndEntering
 breakingAndEntering =
   act (2, A) BreakingAndEntering Cards.breakingAndEntering Nothing
 
-instance ActionRunner env => HasActions env BreakingAndEntering where
+instance HasActions env BreakingAndEntering where
   getActions i window (BreakingAndEntering x) = getActions i window x
 
 instance (HasName env LocationId, ActRunner env) => RunMessage env BreakingAndEntering where

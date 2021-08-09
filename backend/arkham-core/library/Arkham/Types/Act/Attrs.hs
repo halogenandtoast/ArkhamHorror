@@ -13,9 +13,7 @@ import qualified Arkham.Types.Act.Sequence as AS
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost as X
-import Arkham.Types.Exception
 import Arkham.Types.Game.Helpers
-import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
@@ -112,7 +110,7 @@ instance SourceEntity ActAttrs where
 onSide :: ActSide -> ActAttrs -> Bool
 onSide side ActAttrs {..} = actSide actSequence == side
 
-instance ActionRunner env => HasActions env ActAttrs where
+instance HasActions env ActAttrs where
   getActions _ FastPlayerWindow attrs@ActAttrs {..} = case actAdvanceCost of
     Just cost -> pure [mkAbility attrs 100 (FastAbility cost)]
     Nothing -> pure []
@@ -129,14 +127,10 @@ type ActAttrsRunner env
     )
 
 advanceActSideA
-  :: ( MonadReader env m
-     , HasId LeadInvestigatorId env ()
-     , HasCount PlayerCount env ()
-     )
-  => [InvestigatorId]
-  -> ActAttrs
+  :: (MonadReader env m, HasId LeadInvestigatorId env ())
+  => ActAttrs
   -> m [Message]
-advanceActSideA investigatorIds attrs = do
+advanceActSideA attrs = do
   leadInvestigatorId <- getLeadInvestigatorId
   pure
     [ CheckWindow leadInvestigatorId [WhenActAdvance (toId attrs)]
@@ -146,8 +140,7 @@ advanceActSideA investigatorIds attrs = do
 instance ActAttrsRunner env => RunMessage env ActAttrs where
   runMessage msg a@ActAttrs {..} = case msg of
     AdvanceAct aid _ | aid == actId && onSide A a -> do
-      investigatorIds <- getInvestigatorIds
-      pushAll =<< advanceActSideA investigatorIds a
+      pushAll =<< advanceActSideA a
       pure $ a & (sequenceL .~ Act (unActStep $ actStep actSequence) B)
     AttachTreachery tid (ActTarget aid) | aid == actId ->
       pure $ a & treacheriesL %~ insertSet tid

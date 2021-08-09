@@ -36,7 +36,7 @@ ability attrs = mkAbility
   1
   (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1])
 
-instance ActionRunner env => HasActions env RicesWhereabouts where
+instance HasActions env RicesWhereabouts where
   getActions _ NonFast (RicesWhereabouts x) = pure [ability x]
   getActions iid window (RicesWhereabouts x) = getActions iid window x
 

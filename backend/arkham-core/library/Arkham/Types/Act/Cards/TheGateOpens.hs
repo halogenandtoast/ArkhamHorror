@@ -26,7 +26,7 @@ theGateOpens = act
   (Just $ GroupClueCost (PerPlayer 2) (Just $ LocationWithTitle "Sentinel Peak")
   )
 
-instance ActionRunner env => HasActions env TheGateOpens where
+instance HasActions env TheGateOpens where
   getActions i window (TheGateOpens x) = getActions i window x
 
 instance ActRunner env => RunMessage env TheGateOpens where

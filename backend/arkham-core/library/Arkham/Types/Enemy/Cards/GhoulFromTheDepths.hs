@@ -10,7 +10,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
-import Arkham.Types.Message
 
 newtype GhoulFromTheDepths = GhoulFromTheDepths EnemyAttrs
   deriving anyclass IsEnemy

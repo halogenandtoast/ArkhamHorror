@@ -21,7 +21,7 @@ newtype Run = Run ActAttrs
 run :: ActCard Run
 run = act (1, A) Run Cards.run Nothing
 
-instance ActionRunner env => HasActions env Run where
+instance HasActions env Run where
   getActions iid window (Run attrs) = getActions iid window attrs
 
 instance ActRunner env => RunMessage env Run where

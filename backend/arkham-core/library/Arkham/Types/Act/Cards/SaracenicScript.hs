@@ -32,7 +32,7 @@ saracenicScript = act
   $ GroupClueCost (PerPlayer 2) (Just $ LocationWithTitle "Whateley Ruins")
   )
 
-instance ActionRunner env => HasActions env SaracenicScript where
+instance HasActions env SaracenicScript where
   getActions i window (SaracenicScript x) = getActions i window x
 
 instance ActRunner env => RunMessage env SaracenicScript where

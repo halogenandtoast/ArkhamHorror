@@ -6,17 +6,15 @@ import qualified Arkham.Types.Action as Action
 import qualified Arkham.Types.Asset.Uses as Uses
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
-import qualified Arkham.Types.Card.CardDef as Restriction
-import Arkham.Types.Card.CardMatcher
 import Arkham.Types.Card.CardType
 import Arkham.Types.Card.Cost
 import Arkham.Types.ClassSymbol
 import Arkham.Types.GameValue
 import Arkham.Types.Matcher
 import Arkham.Types.Name
+import qualified Arkham.Types.Restriction as Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
-import Arkham.Types.WindowMatcher
 
 event :: CardCode -> Name -> Int -> ClassSymbol -> CardDef
 event cardCode name cost classSymbol = CardDef
@@ -203,7 +201,7 @@ elusive = (event "01050" "Elusive" 2 Rogue)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = singleton Tactic
   , cdFastWindow = Just $ DuringTurn You
-  , cdPlayRestrictions = Just $ Restriction.AnyPlayRestriction
+  , cdPlayRestrictions = Just $ Restriction.AnyRestriction
     [ Restriction.EnemyExists EnemyEngagedWithYou
     , Restriction.LocationExists
     $ RevealedLocation
@@ -410,7 +408,7 @@ emergencyAid :: CardDef
 emergencyAid = (event "02105" "Emergency Aid" 2 Guardian)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = setFromList [Insight, Science]
-  , cdPlayRestrictions = Just $ Restriction.AnyPlayRestriction
+  , cdPlayRestrictions = Just $ Restriction.AnyRestriction
     [ Restriction.AssetExists
       (AssetOwnedBy InvestigatorAtYourLocation
       <> AssetWithDamage
@@ -630,7 +628,7 @@ everVigilant1 = (event "03023" "Ever Vigilant" 0 Guardian)
   , cdCardTraits = singleton Tactic
   , cdLevel = 1
   , cdPlayRestrictions = Just
-    (PlayableCardExists $ BasicCardMatch AssetCard <> InHandOf You)
+    (Restriction.PlayableCardExists $ BasicCardMatch AssetCard <> InHandOf You)
   }
 
 noStoneUnturned :: CardDef
@@ -645,7 +643,7 @@ sleightOfHand = (event "03029" "Sleight of Hand" 1 Rogue)
   , cdCardTraits = singleton Trick
   , cdFastWindow = Just $ DuringTurn You
   , cdPlayRestrictions = Just
-    (PlayableCardExists $ BasicCardMatch (CardWithTrait Item))
+    (Restriction.PlayableCardExists $ BasicCardMatch (CardWithTrait Item))
   }
 
 secondWind :: CardDef

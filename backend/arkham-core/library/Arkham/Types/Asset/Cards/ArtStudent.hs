@@ -10,8 +10,9 @@ import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Window
+import Arkham.Types.Restriction
 
 newtype ArtStudent = ArtStudent AssetAttrs
   deriving anyclass IsAsset
@@ -20,11 +21,14 @@ newtype ArtStudent = ArtStudent AssetAttrs
 artStudent :: AssetCard ArtStudent
 artStudent = ally ArtStudent Cards.artStudent (1, 2)
 
-instance HasActions env ArtStudent where
-  getActions i (WhenEnterPlay target) (ArtStudent x)
-    | isTarget x target && ownedBy x i = pure
-      [mkAbility (toSource x) 1 (ReactionAbility Free)]
-  getActions iid window (ArtStudent attrs) = getActions iid window attrs
+instance HasActions ArtStudent where
+  getActions (ArtStudent x) =
+    [ restrictedAbility
+        (toSource x)
+        1
+        OwnsThis
+        (ReactionAbility (WhenAssetEntersPlay $ AssetWithId (toId x)) Free)
+    ]
 
 instance HasModifiersFor env ArtStudent
 

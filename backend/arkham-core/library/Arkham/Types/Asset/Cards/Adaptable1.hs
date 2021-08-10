@@ -16,9 +16,7 @@ newtype Adaptable1 = Adaptable1 AssetAttrs
 adaptable1 :: AssetCard Adaptable1
 adaptable1 = asset Adaptable1 Cards.adaptable1
 
-instance HasActions env Adaptable1 where
-  getActions iid window (Adaptable1 attrs) = getActions iid window attrs
-
+instance HasActions Adaptable1
 instance HasModifiersFor env Adaptable1
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Adaptable1 where

@@ -8,12 +8,11 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Card.CardDef
-import Arkham.Types.Card.CardType
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Message
-import Arkham.Types.Window
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (When)
+import Arkham.Types.Restriction
 
 newtype DrWilliamTMaleson = DrWilliamTMaleson AssetAttrs
   deriving anyclass IsAsset
@@ -22,19 +21,16 @@ newtype DrWilliamTMaleson = DrWilliamTMaleson AssetAttrs
 drWilliamTMaleson :: AssetCard DrWilliamTMaleson
 drWilliamTMaleson = ally DrWilliamTMaleson Cards.drWilliamTMaleson (2, 2)
 
-ability :: AssetAttrs -> Ability
-ability attrs = mkAbility
-  attrs
-  1
-  (ReactionAbility
-  $ Costs [ExhaustCost (toTarget attrs), PlaceClueOnLocationCost 1]
-  )
-
-instance HasActions env DrWilliamTMaleson where
-  getActions iid (WhenDrawCard who card) (DrWilliamTMaleson attrs)
-    | ownedBy attrs iid && iid == who = pure
-      [ ability attrs | toCardType card `elem` encounterCardTypes ]
-  getActions _ _ _ = pure []
+instance HasActions DrWilliamTMaleson where
+  getActions (DrWilliamTMaleson attrs) =
+    [ restrictedAbility
+        attrs
+        1
+        OwnsThis
+        (ReactionAbility (DrawCard When You IsEncounterCard)
+        $ Costs [ExhaustCost (toTarget attrs), PlaceClueOnLocationCost 1]
+        )
+    ]
 
 instance HasModifiersFor env DrWilliamTMaleson
 

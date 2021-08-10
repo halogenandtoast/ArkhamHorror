@@ -25,14 +25,13 @@ newtype InTheKnow1 = InTheKnow1 AssetAttrs
 inTheKnow1 :: AssetCard InTheKnow1
 inTheKnow1 = asset InTheKnow1 Cards.inTheKnow1
 
-instance HasActions env InTheKnow1 where
-  getActions iid NonFast (InTheKnow1 attrs) | ownedBy attrs iid = pure
-    [ mkAbility attrs 1
-      $ ActionAbility (Just Action.Investigate)
-      $ ActionCost 1
-      <> UseCost (toId attrs) Secret 1
+instance HasActions InTheKnow1 where
+  getActions (InTheKnow1 attrs) =
+    [ restrictedAbility attrs 1 OwnsThis
+        $ ActionAbility (Just Action.Investigate)
+        $ ActionCost 1
+        <> UseCost (toId attrs) Secret 1
     ]
-  getActions iid window (InTheKnow1 attrs) = getActions iid window attrs
 
 instance HasModifiersFor env InTheKnow1
 

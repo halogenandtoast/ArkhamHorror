@@ -6,7 +6,9 @@ import Arkham.Prelude
 
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Card.CardCode
+import Arkham.Types.Card.CardType
 import Arkham.Types.ClassSymbol
+import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
@@ -145,6 +147,7 @@ data LocationMatcher
   | Anywhere
   | EmptyLocation
   | AccessibleLocation
+  | AccessibleFrom LocationId
   | ConnectedLocation
   | LocationWithClues
   | LocationWithoutInvestigators
@@ -197,3 +200,114 @@ instance Semigroup TreacheryMatcher where
   TreacheryMatches xs <> x = TreacheryMatches (x : xs)
   x <> TreacheryMatches xs = TreacheryMatches (x : xs)
   x <> y = TreacheryMatches [x, y]
+
+pattern NonWeaknessTreachery :: CardMatcher
+pattern NonWeaknessTreachery =
+  CardMatches [NonWeakness, CardWithType TreacheryType]
+
+pattern NonPeril :: CardMatcher
+pattern NonPeril <- CardWithoutKeyword Keyword.Peril where
+  NonPeril = CardWithoutKeyword Keyword.Peril
+
+pattern EventCard :: CardMatcher
+pattern EventCard <- CardWithType EventType where
+  EventCard = CardWithType EventType
+
+pattern AssetCard :: CardMatcher
+pattern AssetCard <- CardWithType AssetType where
+  AssetCard = CardWithType AssetType
+
+-- | Relies on game state, can not be used purely
+data ExtendedCardMatcher
+  = BasicCardMatch CardMatcher
+  | CardIsBeneathInvestigator Who
+  | InHandOf Who
+  | ExtendedCardWithOneOf [ExtendedCardMatcher]
+  | ExtendedCardMatches [ExtendedCardMatcher]
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+instance Semigroup ExtendedCardMatcher where
+  ExtendedCardMatches xs <> ExtendedCardMatches ys =
+    ExtendedCardMatches $ xs <> ys
+  ExtendedCardMatches xs <> x = ExtendedCardMatches (x : xs)
+  x <> ExtendedCardMatches xs = ExtendedCardMatches (x : xs)
+  x <> y = ExtendedCardMatches [x, y]
+
+-- | Only relies on card state, can be used purely with `cardMatch`
+data CardMatcher
+  = CardWithType CardType
+  | CardWithCardCode CardCode
+  | CardWithTitle Text
+  | CardWithTrait Trait
+  | CardWithoutKeyword Keyword
+  | CardWithClass ClassSymbol
+  | CardWithOneOf [CardMatcher]
+  | CardMatches [CardMatcher]
+  | IsEncounterCard
+  | NonWeakness
+  | NonExceptional
+  | AnyCard
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+instance Semigroup CardMatcher where
+  AnyCard <> a = a
+  a <> AnyCard = a
+  CardMatches xs <> CardMatches ys = CardMatches $ xs <> ys
+  CardMatches xs <> x = CardMatches (x : xs)
+  x <> CardMatches xs = CardMatches (x : xs)
+  x <> y = CardMatches [x, y]
+
+data WindowMatcher
+  = EnemyDefeated When Who EnemyMatcher
+  | EnemyEvaded When Who EnemyMatcher
+  | MythosStep WindowMythosStepMatcher
+  | EnemyAttacks When Who EnemyMatcher
+  | RevealChaosToken When Who WindowTokenMatcher
+  | SkillTestResult When Who SkillTestMatcher SkillTestResultMatcher
+  | WhenWouldHaveSkillTestResult Who SkillTestMatcher SkillTestResultMatcher
+  | WhenEnemySpawns Where EnemyMatcher
+  | FastPlayerWindow
+  | AfterTurnBegins Who
+  | DuringTurn Who
+  | OrWindowMatcher [WindowMatcher]
+  | DealtDamageOrHorror Who
+  | DrawCard When Who CardMatcher
+  | PhaseBegins When WindowPhaseMatcher
+  | PlayerHasPlayableCard ExtendedCardMatcher
+  | WhenAssetEntersPlay AssetMatcher
+  | Enters When Who Where
+  | AnyWindow
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+type When = WindowTimingMatcher
+
+data WindowTimingMatcher = When | After
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data SkillTestMatcher = WhileInvestigating | WhileAttackingAnEnemy | AnySkillTest
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data SkillTestResultMatcher = FailureResult ValueMatcher | SuccessResult ValueMatcher | AnyResult
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data ValueMatcher = LessThan (GameValue Int) | AnyValue
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data WindowTokenMatcher = WithNegativeModifier
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data WindowPhaseMatcher = AnyPhase
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data WindowMythosStepMatcher = WhenAllDrawEncounterCard
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)

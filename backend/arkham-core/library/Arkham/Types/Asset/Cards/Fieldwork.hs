@@ -9,12 +9,12 @@ import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.CardDef
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Message
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (After)
+import Arkham.Types.Restriction
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Fieldwork = Fieldwork AssetAttrs
   deriving anyclass IsAsset
@@ -23,17 +23,17 @@ newtype Fieldwork = Fieldwork AssetAttrs
 fieldwork :: AssetCard Fieldwork
 fieldwork = asset Fieldwork Cards.fieldwork
 
-ability :: AssetAttrs -> Ability
-ability a = restrictedAbility
-  a
-  1
-  ClueOnLocation
-  (ReactionAbility $ ExhaustCost $ toTarget a)
-
-instance HasActions env Fieldwork where
-  getActions iid (AfterEntering iid' _) (Fieldwork attrs)
-    | ownedBy attrs iid && iid == iid' = pure [ability attrs]
-  getActions iid window (Fieldwork attrs) = getActions iid window attrs
+instance HasActions Fieldwork where
+  getActions (Fieldwork attrs) =
+    [ restrictedAbility
+        attrs
+        1
+        OwnsThis
+        (ReactionAbility (Enters After You LocationWithClues)
+        $ ExhaustCost
+        $ toTarget attrs
+        )
+    ]
 
 instance HasModifiersFor env Fieldwork
 

@@ -13,8 +13,8 @@ import Arkham.Types.CampaignLogKey
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
-import Arkham.Types.Window
 
 newtype ArchaicGlyphs = ArchaicGlyphs AssetAttrs
   deriving anyclass IsAsset
@@ -23,12 +23,13 @@ newtype ArchaicGlyphs = ArchaicGlyphs AssetAttrs
 archaicGlyphs :: AssetCard ArchaicGlyphs
 archaicGlyphs = asset ArchaicGlyphs Cards.archaicGlyphs
 
-instance HasActions env ArchaicGlyphs where
-  getActions iid NonFast (ArchaicGlyphs attrs) | ownedBy attrs iid = pure
-    [ mkAbility attrs 1 $ ActionAbility Nothing $ SkillIconCost 1 $ singleton
-        SkillIntellect
+instance HasActions ArchaicGlyphs where
+  getActions (ArchaicGlyphs attrs) =
+    [ restrictedAbility attrs 1 OwnsThis
+        $ ActionAbility Nothing
+        $ SkillIconCost 1
+        $ singleton SkillIntellect
     ]
-  getActions iid window (ArchaicGlyphs attrs) = getActions iid window attrs
 
 instance HasModifiersFor env ArchaicGlyphs
 

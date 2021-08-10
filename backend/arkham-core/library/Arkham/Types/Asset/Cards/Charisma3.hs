@@ -18,9 +18,7 @@ newtype Charisma3 = Charisma3 AssetAttrs
 charisma3 :: AssetCard Charisma3
 charisma3 = asset Charisma3 Cards.charisma3
 
-instance HasActions env Charisma3 where
-  getActions iid window (Charisma3 attrs) = getActions iid window attrs
-
+instance HasActions Charisma3
 instance HasModifiersFor env Charisma3
 
 slot :: AssetAttrs -> Slot

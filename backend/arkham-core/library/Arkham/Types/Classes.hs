@@ -21,7 +21,6 @@ import Arkham.Types.History
 import Arkham.Types.Id
 import Arkham.Types.Keyword
 import Arkham.Types.Matcher
-import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Phase
@@ -31,7 +30,6 @@ import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.Window (Window)
 import qualified Data.Char as C
 import GHC.Generics
 import Language.Haskell.TH.Syntax hiding (Name)
@@ -145,7 +143,7 @@ type ActionRunner env
     , HasList TakenAction env InvestigatorId
     , Query AssetMatcher env
     , GetCardDef env EnemyId
-    , HasActions env ActionType
+    , HasActions env
     , HasCostPayment env
     , ( HasCount
           ActionRemainingCount
@@ -201,36 +199,25 @@ type ActionRunner env
     , HasStep env ActStep
     )
 
-class HasActions1 env f where
-  getActions1 :: (HasCallStack, MonadReader env m, MonadIO m) => InvestigatorId -> Window -> f p -> m [Ability]
+class HasActions1 f where
+  getActions1 :: f p -> [Ability]
 
-instance HasActions1 env f => HasActions1 env (M1 i c f) where
-  getActions1 iid window (M1 x) = getActions1 iid window x
+instance HasActions1 f => HasActions1 (M1 i c f) where
+  getActions1 (M1 x) = getActions1 x
 
-instance (HasActions1 env l, HasActions1 env r) => HasActions1 env (l :+: r) where
-  getActions1 iid window (L1 x) = getActions1 iid window x
-  getActions1 iid window (R1 x) = getActions1 iid window x
+instance (HasActions1 l, HasActions1 r) => HasActions1 (l :+: r) where
+  getActions1 (L1 x) = getActions1 x
+  getActions1 (R1 x) = getActions1 x
 
-instance (HasActions env p) => HasActions1 env (K1 R p) where
-  getActions1 iid window (K1 x) = getActions iid window x
+instance HasActions p => HasActions1 (K1 R p) where
+  getActions1 (K1 x) = getActions x
 
-defaultGetActions
-  :: ( HasCallStack
-     , Generic a
-     , HasActions1 env (Rep a)
-     , MonadReader env m
-     , MonadIO m
-     )
-  => InvestigatorId
-  -> Window
-  -> a
-  -> m [Ability]
-defaultGetActions iid window = getActions1 iid window . from
+genericGetActions :: (Generic a, HasActions1 (Rep a)) => a -> [Ability]
+genericGetActions = getActions1 . from
 
-class HasActions env a where
-  getActions :: (HasCallStack, MonadReader env m, MonadIO m) => InvestigatorId -> Window -> a -> m [Ability]
-  default getActions :: (HasCallStack, Generic a, HasActions1 env (Rep a), MonadReader env m, MonadIO m) => InvestigatorId -> Window -> a -> m [Ability]
-  getActions = defaultGetActions
+class HasActions a where
+  getActions :: a -> [Ability]
+  getActions _ = []
 
 class HasModifiersFor1 env f where
   getModifiersFor1 :: (HasCallStack, MonadReader env m) => Source -> Target -> f p -> m [Modifier]

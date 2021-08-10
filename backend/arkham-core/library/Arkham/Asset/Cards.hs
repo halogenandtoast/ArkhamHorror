@@ -14,7 +14,6 @@ import Arkham.Types.Matcher
 import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Trait hiding (Supply)
-import Arkham.Types.WindowMatcher
 
 storyAsset :: CardCode -> Name -> Int -> EncounterSet -> CardDef
 storyAsset cardCode name cost encounterSet =

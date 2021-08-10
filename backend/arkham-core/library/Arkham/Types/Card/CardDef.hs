@@ -7,19 +7,17 @@ import Arkham.Json
 import Arkham.Types.Action (Action)
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.CardMatcher
 import Arkham.Types.Card.CardType
 import Arkham.Types.Card.Cost
 import Arkham.Types.ClassSymbol
 import Arkham.Types.CommitRestriction
 import Arkham.Types.EncounterSet
-import Arkham.Types.Id
 import Arkham.Types.Keyword (HasKeywords(..), Keyword)
 import Arkham.Types.Matcher
 import Arkham.Types.Name
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
-import Arkham.Types.WindowMatcher (WindowMatcher)
 
 data AttackOfOpportunityModifier = DoesNotProvokeAttacksOfOpportunity
   deriving stock (Show, Eq, Generic)
@@ -49,7 +47,7 @@ data CardDef = CardDef
   , cdAction :: Maybe Action
   , cdRevelation :: Bool
   , cdVictoryPoints :: Maybe Int
-  , cdPlayRestrictions :: Maybe PlayRestriction
+  , cdPlayRestrictions :: Maybe Restriction
   , cdCommitRestrictions :: [CommitRestriction]
   , cdAttackOfOpportunityModifiers :: [AttackOfOpportunityModifier]
   , cdPermanent :: Bool
@@ -117,6 +115,7 @@ instance HasCardCode CardDef where
 cardMatch :: (HasCardCode a, HasCardDef a) => a -> CardMatcher -> Bool
 cardMatch a = \case
   AnyCard -> True
+  IsEncounterCard -> toCardType a `elem` encounterCardTypes
   CardWithType cardType' -> toCardType a == cardType'
   CardWithCardCode cardCode -> toCardCode a == cardCode
   CardWithTitle title -> (nameTitle . cdName $ toCardDef a) == title
@@ -157,42 +156,3 @@ testCardDef cardType cardCode = CardDef
   , cdExceptional = False
   , cdUses = NoUses
   }
-
-data DiscardSignifier = AnyPlayerDiscard
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
-
-data PlayRestriction
-  = AnotherInvestigatorInSameLocation
-  | InvestigatorIsAlone
-  | ScenarioCardHasResignAbility
-  | ClueOnLocation
-  | FirstAction
-  | OnLocation LocationId
-  | CardExists CardMatcher
-  | ExtendedCardExists ExtendedCardMatcher
-  | PlayableCardExists ExtendedCardMatcher
-  | AssetExists AssetMatcher
-  | InvestigatorExists InvestigatorMatcher
-  | EnemyExists EnemyMatcher
-  | NoEnemyExists EnemyMatcher
-  | LocationExists LocationMatcher
-  | OwnCardWithDoom
-  | CardInDiscard DiscardSignifier [Trait]
-  | ReturnableCardInDiscard DiscardSignifier [Trait]
-  | PlayRestrictions [PlayRestriction]
-  | AnyPlayRestriction [PlayRestriction]
-  | NoRestriction
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
-
-instance Semigroup PlayRestriction where
-  NoRestriction <> x = x
-  x <> NoRestriction = x
-  PlayRestrictions xs <> PlayRestrictions ys = PlayRestrictions $ xs <> ys
-  PlayRestrictions xs <> x = PlayRestrictions $ x : xs
-  x <> PlayRestrictions xs = PlayRestrictions $ x : xs
-  x <> y = PlayRestrictions [x, y]
-
-instance Monoid PlayRestriction where
-  mempty = NoRestriction

@@ -305,7 +305,6 @@ library
       Arkham.Types.Card
       Arkham.Types.Card.CardCode
       Arkham.Types.Card.CardDef
-      Arkham.Types.Card.CardMatcher
       Arkham.Types.Card.CardType
       Arkham.Types.Card.Class
       Arkham.Types.Card.Cost
@@ -768,6 +767,7 @@ library
       Arkham.Types.Query
       Arkham.Types.RequestedTokenStrategy
       Arkham.Types.Resolution
+      Arkham.Types.Restriction
       Arkham.Types.Scenario
       Arkham.Types.Scenario.Attrs
       Arkham.Types.Scenario.Deck
@@ -935,7 +935,6 @@ library
       Arkham.Types.Treachery.Runner
       Arkham.Types.TreacheryId
       Arkham.Types.Window
-      Arkham.Types.WindowMatcher
   other-modules:
       Paths_arkham_core
   hs-source-dirs:

@@ -14,8 +14,8 @@ import Arkham.Types.Cost
 import Arkham.Types.Direction
 import Arkham.Types.Id
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype HelplessPassenger = HelplessPassenger AssetAttrs
   deriving anyclass IsAsset
@@ -25,21 +25,14 @@ helplessPassenger :: AssetCard HelplessPassenger
 helplessPassenger =
   allyWith HelplessPassenger Cards.helplessPassenger (1, 1) (isStoryL .~ True)
 
-ability :: AssetAttrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (ActionAbility (Just Parley) $ ActionCost 1)
-
-instance HasId LocationId env InvestigatorId => HasActions env HelplessPassenger where
-  getActions iid NonFast (HelplessPassenger attrs) = do
-    lid <- getId iid
-    case assetLocation attrs of
-      Just location ->
-        pure
-          [ ability attrs
-          | lid == location && isNothing (assetInvestigator attrs)
-          ]
-      _ -> pure mempty
-  getActions iid window (HelplessPassenger attrs) = getActions iid window attrs
+instance HasActions HelplessPassenger where
+  getActions (HelplessPassenger attrs) =
+    [ restrictedAbility
+        attrs
+        1
+        (Unowned <> OnSameLocation)
+        (ActionAbility (Just Parley) $ ActionCost 1)
+    ]
 
 instance HasModifiersFor env HelplessPassenger
 

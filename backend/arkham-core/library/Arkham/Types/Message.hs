@@ -22,7 +22,7 @@ import Arkham.Types.Exception
 import Arkham.Types.Helpers
 import Arkham.Types.Id
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (After, When)
 import Arkham.Types.Name
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Resolution

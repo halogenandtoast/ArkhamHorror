@@ -8,12 +8,13 @@ import Arkham.Prelude
 import Arkham.Json
 import Arkham.Types.Ability.Limit as X
 import Arkham.Types.Ability.Type as X
-import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes.Entity.Source
 import Arkham.Types.Cost
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -24,7 +25,8 @@ data Ability = Ability
   , abilityType :: AbilityType
   , abilityLimit :: AbilityLimit
   , abilityMetadata :: Maybe AbilityMetadata
-  , abilityRestrictions :: Maybe PlayRestriction
+  , abilityRestrictions :: Maybe Restriction
+  , abilityWindow :: WindowMatcher
   , abilityDoesNotProvokeAttacksOfOpportunity :: Bool
   }
   deriving stock (Show, Generic)
@@ -58,7 +60,7 @@ data AbilityMetadata
   deriving anyclass (ToJSON, FromJSON)
 
 restrictedAbility
-  :: SourceEntity a => a -> Int -> PlayRestriction -> AbilityType -> Ability
+  :: SourceEntity a => a -> Int -> Restriction -> AbilityType -> Ability
 restrictedAbility entity idx restriction type' =
   (mkAbility entity idx type') { abilityRestrictions = Just restriction }
 
@@ -72,12 +74,20 @@ mkAbility entity idx type' = Ability
   , abilityType = type'
   , abilityLimit = case type' of
     ForcedAbility -> PlayerLimit PerWindow 1
-    ReactionAbility _ -> PlayerLimit PerWindow 1
+    ReactionAbility _ _ -> PlayerLimit PerWindow 1
     FastAbility _ -> NoLimit
     ActionAbility _ _ -> NoLimit
-    ActionAbilityWithBefore {} -> NoLimit
-    ActionAbilityWithSkill {} -> NoLimit
+    ActionAbilityWithBefore{} -> NoLimit
+    ActionAbilityWithSkill{} -> NoLimit
     AbilityEffect _ -> NoLimit
+  , abilityWindow = case type' of
+    FastAbility _ -> FastPlayerWindow
+    ActionAbility{} -> DuringTurn You
+    ActionAbilityWithBefore{} -> DuringTurn You
+    ActionAbilityWithSkill{} -> DuringTurn You
+    ForcedAbility -> AnyWindow
+    ReactionAbility _ _ -> error "reactions should specify their window"
+    AbilityEffect _ -> AnyWindow
   , abilityMetadata = Nothing
   , abilityRestrictions = Nothing
   , abilityDoesNotProvokeAttacksOfOpportunity = False

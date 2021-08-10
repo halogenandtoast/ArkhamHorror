@@ -247,9 +247,6 @@ defeated AssetAttrs {..} =
   maybe False (assetHealthDamage >=) assetHealth
     || maybe False (assetSanityDamage >=) assetSanity
 
-instance HasActions env AssetAttrs where
-  getActions _ _ _ = pure []
-
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs where
   runMessage msg a@AssetAttrs {..} = case msg of
     ReadyExhausted -> case assetInvestigator of

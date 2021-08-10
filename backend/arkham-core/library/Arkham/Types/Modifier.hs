@@ -12,6 +12,7 @@ import Arkham.Types.Card
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Id
 import Arkham.Types.Keyword
+import Arkham.Types.Matcher
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target

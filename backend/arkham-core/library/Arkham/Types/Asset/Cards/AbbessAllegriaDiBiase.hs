@@ -11,8 +11,9 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Window
+import Arkham.Types.Restriction
 
 newtype AbbessAllegriaDiBiase = AbbessAllegriaDiBiase AssetAttrs
   deriving anyclass IsAsset
@@ -22,26 +23,22 @@ abbessAllegriaDiBiase :: AssetCard AbbessAllegriaDiBiase
 abbessAllegriaDiBiase =
   ally AbbessAllegriaDiBiase Cards.abbessAllegriaDiBiase (2, 2)
 
-ability :: AssetAttrs -> Ability
-ability attrs = mkAbility attrs 1 (FastAbility $ ExhaustCost (toTarget attrs))
-
-instance
-  ( HasSet ConnectedLocationId env LocationId
-  , HasId LocationId env InvestigatorId
-  )
-  => HasActions env AbbessAllegriaDiBiase where
-  getActions iid FastPlayerWindow (AbbessAllegriaDiBiase attrs) = do
-    abbessLocationId <- getAssetLocation attrs
-    investigatorLocation <- getId @LocationId iid
-    connectedLocationIds <- map unConnectedLocationId
-      <$> getSetList investigatorLocation
-    pure
-      [ ability attrs
-      | (abbessLocationId `elem` connectedLocationIds)
-        || (abbessLocationId == investigatorLocation)
+instance HasActions AbbessAllegriaDiBiase where
+  getActions (AbbessAllegriaDiBiase attrs) = case assetLocation attrs of
+    Just abbessLocation ->
+      [ restrictedAbility
+          attrs
+          1
+          (AnyRestriction
+            [ LocationExists
+              (LocationWithId abbessLocation <> AccessibleLocation)
+            , LocationExists
+              (AccessibleFrom abbessLocation <> AccessibleLocation)
+            ]
+          )
+          (FastAbility $ ExhaustCost (toTarget attrs))
       ]
-  getActions iid window (AbbessAllegriaDiBiase attrs) =
-    getActions iid window attrs
+    Nothing -> []
 
 instance HasModifiersFor env AbbessAllegriaDiBiase
 

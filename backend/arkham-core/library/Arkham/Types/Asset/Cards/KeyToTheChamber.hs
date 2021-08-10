@@ -28,10 +28,10 @@ keyToTheChamber =
 instance HasActions KeyToTheChamber where
   getActions (KeyToTheChamber attrs) =
     [ restrictedAbility
-        (toSource attrs)
+        attrs
         1
         (OwnsThis <> LocationExists
-          (ConnectedLocation <> LocationWithTitle "The HiddenChamber")
+          (ConnectedLocation <> LocationWithTitle "The Hidden Chamber")
         )
         (FastAbility Free)
     ]

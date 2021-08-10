@@ -9,14 +9,11 @@ import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Uses
-import Arkham.Types.Card.CardDef
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
-import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype SmokingPipe = SmokingPipe AssetAttrs
   deriving anyclass IsAsset
@@ -25,24 +22,21 @@ newtype SmokingPipe = SmokingPipe AssetAttrs
 smokingPipe :: AssetCard SmokingPipe
 smokingPipe = asset SmokingPipe Cards.smokingPipe
 
-fastAbility :: InvestigatorId -> AssetAttrs -> Ability
-fastAbility iid attrs = restrictedAbility
-  (toSource attrs)
-  1
-  (InvestigatorExists $ You <> InvestigatorWithHorror)
-  (FastAbility
-    (Costs
-      [ UseCost (toId attrs) Supply 1
-      , ExhaustCost (toTarget attrs)
-      , DamageCost (toSource attrs) (InvestigatorTarget iid) 1
-      ]
-    )
-  )
-
-instance HasActions env SmokingPipe where
-  getActions iid FastPlayerWindow (SmokingPipe a) | ownedBy a iid =
-    pure [fastAbility iid a]
-  getActions _ _ _ = pure []
+instance HasActions SmokingPipe where
+  getActions (SmokingPipe a) =
+    [ restrictedAbility
+        a
+        1
+        (OwnsThis <> InvestigatorExists (You <> InvestigatorWithHorror))
+        (FastAbility
+          (Costs
+            [ UseCost (toId a) Supply 1
+            , ExhaustCost (toTarget a)
+            , DamageCost (toSource a) YouTarget 1
+            ]
+          )
+        )
+    ]
 
 instance HasModifiersFor env SmokingPipe
 

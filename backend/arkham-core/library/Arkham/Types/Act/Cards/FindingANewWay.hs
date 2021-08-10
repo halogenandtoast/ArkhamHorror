@@ -11,12 +11,10 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.Game.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Resolution
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype FindingANewWay = FindingANewWay ActAttrs
   deriving anyclass IsAct
@@ -25,11 +23,9 @@ newtype FindingANewWay = FindingANewWay ActAttrs
 findingANewWay :: ActCard FindingANewWay
 findingANewWay = act (4, A) FindingANewWay Cards.findingANewWay Nothing
 
-instance HasActions env FindingANewWay where
-  getActions iid NonFast (FindingANewWay x) =
-    withBaseActions iid NonFast x $ do
-      pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
-  getActions iid window (FindingANewWay x) = getActions iid window x
+instance HasActions FindingANewWay where
+  getActions (FindingANewWay x) =
+    mkAbility x 1 (ActionAbility Nothing $ ActionCost 1) : getActions x
 
 instance ActRunner env => RunMessage env FindingANewWay where
   runMessage msg a@(FindingANewWay attrs@ActAttrs {..}) = case msg of

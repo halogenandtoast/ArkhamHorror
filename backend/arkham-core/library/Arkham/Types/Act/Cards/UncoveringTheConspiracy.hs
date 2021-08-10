@@ -16,7 +16,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Resolution
 import Arkham.Types.Source
-import Arkham.Types.Window
 import qualified Data.HashSet as HashSet
 
 newtype UncoveringTheConspiracy = UncoveringTheConspiracy ActAttrs
@@ -27,16 +26,16 @@ uncoveringTheConspiracy :: ActCard UncoveringTheConspiracy
 uncoveringTheConspiracy =
   act (1, A) UncoveringTheConspiracy Cards.uncoveringTheConspiracy Nothing
 
-instance HasActions env UncoveringTheConspiracy where
-  getActions _ NonFast (UncoveringTheConspiracy a) = do
-    pure
-      [ mkAbility a 1
-        $ ActionAbility Nothing
-        $ ActionCost 1
-        <> GroupClueCost (PerPlayer 2) Nothing
-      ]
-  getActions iid window (UncoveringTheConspiracy attrs) =
-    getActions iid window attrs
+instance HasActions UncoveringTheConspiracy where
+  getActions (UncoveringTheConspiracy a) =
+    mkAbility
+        a
+        1
+        (ActionAbility
+          Nothing
+          (ActionCost 1 <> GroupClueCost (PerPlayer 2) Nothing)
+        )
+      : getActions a
 
 instance ActRunner env => RunMessage env UncoveringTheConspiracy where
   runMessage msg a@(UncoveringTheConspiracy attrs@ActAttrs {..}) = case msg of

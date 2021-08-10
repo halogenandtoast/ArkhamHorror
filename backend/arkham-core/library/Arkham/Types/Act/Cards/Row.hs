@@ -7,18 +7,23 @@ import Arkham.Prelude
 
 import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Enemy.Cards as Enemies
+import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
+import Arkham.Types.Restriction
+import qualified Arkham.Types.Restriction as R
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Window hiding (when)
 
 newtype Row = Row ActAttrs
   deriving anyclass IsAct
@@ -27,10 +32,17 @@ newtype Row = Row ActAttrs
 row :: ActCard Row
 row = act (3, A) Row Cards.row Nothing
 
-instance ActionRunner env => HasActions env Row where
-  getActions iid (WhenWouldDrawEncounterCard who) (Row x) | iid == who =
-    pure [mkAbility x 1 ForcedAbility]
-  getActions iid window (Row x) = getActions iid window x
+instance HasActions Row where
+  getActions (Row x) =
+    [ mkAbility x 1 (ForcedAbility $ R.DrawCard Timing.When You IsEncounterCard)
+    , restrictedAbility
+      x
+      2
+      (LocationExists $ locationIs Cards.gondola <> LocationWithResources
+        (GreaterThanOrEqualTo (PerPlayer 4))
+      )
+      (Objective $ ForcedAbility AnyWindow)
+    ]
 
 instance
   ( HasName env LocationId
@@ -40,11 +52,13 @@ instance
   )
   => RunMessage env Row where
   runMessage msg a@(Row attrs) = case msg of
-    AdvanceAct aid _ | aid == toId attrs && onSide B attrs ->
-      a <$ push (ScenarioResolution $ Resolution 1)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       _ <- popMessage
       a <$ push (DiscardTopOfEncounterDeck iid 5 (Just $ toTarget attrs))
+    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+      a <$ push (AdvanceAct (toId attrs) source)
+    AdvanceAct aid _ | aid == toId attrs && onSide B attrs ->
+      a <$ push (ScenarioResolution $ Resolution 1)
     DiscardedTopOfEncounterDeck iid cards target | isTarget attrs target -> do
       lid <- getId @LocationId iid
       let

@@ -22,7 +22,7 @@ import Arkham.Types.Exception
 import Arkham.Types.Helpers
 import Arkham.Types.Id
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Matcher hiding (After, When)
+import Arkham.Types.Matcher
 import Arkham.Types.Name
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Resolution
@@ -33,7 +33,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window
+import Arkham.Types.Window (Window)
 import Control.Exception
 
 data MessageType
@@ -525,7 +525,7 @@ data Message
     | UnfocusTargets
     | UnfocusTokens
     | UnsetActiveCard
-    | UseCardAbility InvestigatorId Source (Maybe AbilityMetadata) Int Payment
+    | UseCardAbility InvestigatorId Source [Window] Int Payment
     | UseLimitedAbility InvestigatorId Ability
     | UseScenarioSpecificAbility InvestigatorId (Maybe Target) Int
     | When Message

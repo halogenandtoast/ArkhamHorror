@@ -21,15 +21,11 @@ import Arkham.Types.Target
 
 newtype SearchingForAnswers = SearchingForAnswers ActAttrs
   deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasActions, HasModifiersFor env)
 
 searchingForAnswers :: ActCard SearchingForAnswers
 searchingForAnswers =
   act (1, A) SearchingForAnswers Cards.searchingForAnswers Nothing
-
-instance HasActions env SearchingForAnswers where
-  getActions iid window (SearchingForAnswers attrs) =
-    getActions iid window attrs
 
 instance ActRunner env => RunMessage env SearchingForAnswers where
   runMessage msg a@(SearchingForAnswers attrs@ActAttrs {..}) = case msg of

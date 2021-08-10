@@ -21,7 +21,8 @@ import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
+import Arkham.Types.Window hiding (when)
+import qualified Arkham.Types.Window as Window
 
 class IsAct a
 
@@ -110,11 +111,10 @@ instance SourceEntity ActAttrs where
 onSide :: ActSide -> ActAttrs -> Bool
 onSide side ActAttrs {..} = actSide actSequence == side
 
-instance HasActions env ActAttrs where
-  getActions _ FastPlayerWindow attrs@ActAttrs {..} = case actAdvanceCost of
-    Just cost -> pure [mkAbility attrs 100 (FastAbility cost)]
-    Nothing -> pure []
-  getActions _ _ _ = pure []
+instance HasActions ActAttrs where
+  getActions attrs@ActAttrs {..} = case actAdvanceCost of
+    Just cost -> [mkAbility attrs 100 (FastAbility cost)]
+    Nothing -> []
 
 type ActAttrsRunner env
   = ( HasQueue env
@@ -133,7 +133,7 @@ advanceActSideA
 advanceActSideA attrs = do
   leadInvestigatorId <- getLeadInvestigatorId
   pure
-    [ CheckWindow leadInvestigatorId [WhenActAdvance (toId attrs)]
+    [ CheckWindow leadInvestigatorId [Window.when (ActAdvance $ toId attrs)]
     , chooseOne leadInvestigatorId [AdvanceAct (toId attrs) (toSource attrs)]
     ]
 

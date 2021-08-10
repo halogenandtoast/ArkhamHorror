@@ -19,13 +19,10 @@ import Arkham.Types.Target
 
 newtype NightAtTheMuseum = NightAtTheMuseum ActAttrs
   deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasActions, HasModifiersFor env)
 
 nightAtTheMuseum :: ActCard NightAtTheMuseum
 nightAtTheMuseum = act (2, A) NightAtTheMuseum Cards.nightAtTheMuseum Nothing
-
-instance HasActions env NightAtTheMuseum where
-  getActions i window (NightAtTheMuseum x) = getActions i window x
 
 instance ActRunner env => RunMessage env NightAtTheMuseum where
   runMessage msg a@(NightAtTheMuseum attrs@ActAttrs {..}) = case msg of

@@ -12,11 +12,10 @@ import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
-import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
+import Arkham.Types.Restriction
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype SpiritSpeaker = SpiritSpeaker AssetAttrs
   deriving anyclass IsAsset
@@ -25,14 +24,14 @@ newtype SpiritSpeaker = SpiritSpeaker AssetAttrs
 spiritSpeaker :: AssetCard SpiritSpeaker
 spiritSpeaker = asset SpiritSpeaker Cards.spiritSpeaker
 
-instance Query AssetMatcher env => HasActions env SpiritSpeaker where
-  getActions iid FastPlayerWindow (SpiritSpeaker attrs) | ownedBy attrs iid = do
-    targets <- select (AssetOwnedBy You <> AssetWithUseType Charge)
-    pure
-      [ mkAbility attrs 1 $ FastAbility $ ExhaustCost (toTarget attrs)
-      | notNull targets
-      ]
-  getActions iid window (SpiritSpeaker attrs) = getActions iid window attrs
+instance HasActions SpiritSpeaker where
+  getActions (SpiritSpeaker attrs) =
+    [ restrictedAbility
+        attrs
+        1
+        (OwnsThis <> AssetExists (AssetOwnedBy You <> AssetWithUseType Charge))
+        (FastAbility ExhaustThis)
+    ]
 
 instance HasModifiersFor env SpiritSpeaker
 

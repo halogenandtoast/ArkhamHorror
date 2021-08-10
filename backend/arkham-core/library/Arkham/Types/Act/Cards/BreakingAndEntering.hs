@@ -21,14 +21,11 @@ import Arkham.Types.Target
 
 newtype BreakingAndEntering = BreakingAndEntering ActAttrs
   deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasActions, HasModifiersFor env)
 
 breakingAndEntering :: ActCard BreakingAndEntering
 breakingAndEntering =
   act (2, A) BreakingAndEntering Cards.breakingAndEntering Nothing
-
-instance HasActions env BreakingAndEntering where
-  getActions i window (BreakingAndEntering x) = getActions i window x
 
 instance (HasName env LocationId, ActRunner env) => RunMessage env BreakingAndEntering where
   runMessage msg a@(BreakingAndEntering attrs@ActAttrs {..}) = case msg of

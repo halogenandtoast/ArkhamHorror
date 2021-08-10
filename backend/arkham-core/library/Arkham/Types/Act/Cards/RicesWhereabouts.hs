@@ -21,7 +21,6 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.ScenarioId
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype RicesWhereabouts = RicesWhereabouts ActAttrs
   deriving anyclass IsAct
@@ -30,15 +29,10 @@ newtype RicesWhereabouts = RicesWhereabouts ActAttrs
 ricesWhereabouts :: ActCard RicesWhereabouts
 ricesWhereabouts = act (2, A) RicesWhereabouts Cards.ricesWhereabouts Nothing
 
-ability :: ActAttrs -> Ability
-ability attrs = mkAbility
-  (toSource attrs)
-  1
-  (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1])
-
-instance HasActions env RicesWhereabouts where
-  getActions _ NonFast (RicesWhereabouts x) = pure [ability x]
-  getActions iid window (RicesWhereabouts x) = getActions iid window x
+instance HasActions RicesWhereabouts where
+  getActions (RicesWhereabouts x) =
+    mkAbility x 1 (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1])
+      : getActions x
 
 instance ActRunner env => RunMessage env RicesWhereabouts where
   runMessage msg a@(RicesWhereabouts attrs@ActAttrs {..}) = case msg of

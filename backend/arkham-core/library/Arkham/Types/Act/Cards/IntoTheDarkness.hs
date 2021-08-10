@@ -8,18 +8,16 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Source
 
 newtype IntoTheDarkness = IntoTheDarkness ActAttrs
   deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasActions, HasModifiersFor env)
 
 intoTheDarkness :: ActCard IntoTheDarkness
 intoTheDarkness = act (2, A) IntoTheDarkness Cards.intoTheDarkness Nothing
-
-instance HasActions env IntoTheDarkness where
-  getActions i window (IntoTheDarkness x) = getActions i window x
 
 instance ActRunner env => RunMessage env IntoTheDarkness where
   runMessage msg a@(IntoTheDarkness attrs@ActAttrs {..}) = case msg of

@@ -22,7 +22,7 @@ import Arkham.Types.Trait
 
 newtype AscendingTheHillV2 = AscendingTheHillV2 ActAttrs
   deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasActions)
 
 ascendingTheHillV2 :: ActCard AscendingTheHillV2
 ascendingTheHillV2 =
@@ -33,9 +33,6 @@ instance HasSet Trait env LocationId => HasModifiersFor env AscendingTheHillV2 w
     traits <- getSet lid
     pure $ toModifiers attrs [ CannotPlaceClues | Altered `notMember` traits ]
   getModifiersFor _ _ _ = pure []
-
-instance HasActions env AscendingTheHillV2 where
-  getActions i window (AscendingTheHillV2 x) = getActions i window x
 
 instance (HasName env LocationId, ActRunner env) => RunMessage env AscendingTheHillV2 where
   runMessage msg a@(AscendingTheHillV2 attrs@ActAttrs {..}) = case msg of

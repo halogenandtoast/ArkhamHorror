@@ -12,9 +12,9 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
-import Arkham.Types.Message
+import Arkham.Types.Message hiding (After)
+import Arkham.Types.Restriction
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype TryAndTryAgain3 = TryAndTryAgain3 AssetAttrs
   deriving anyclass IsAsset
@@ -23,15 +23,17 @@ newtype TryAndTryAgain3 = TryAndTryAgain3 AssetAttrs
 tryAndTryAgain3 :: AssetCard TryAndTryAgain3
 tryAndTryAgain3 = asset TryAndTryAgain3 Cards.tryAndTryAgain3
 
-ability :: AssetAttrs -> Ability
-ability a = mkAbility a 1 (ReactionAbility $ ExhaustCost (toTarget a))
-
-instance HasList CommittedCard env InvestigatorId => HasActions env TryAndTryAgain3 where
-  getActions iid (AfterFailSkillTest _ _) (TryAndTryAgain3 attrs) = do
-    committedSkills <-
-      filter ((== SkillType) . toCardType) . map unCommittedCard <$> getList iid
-    pure [ ability attrs | notNull committedSkills ]
-  getActions iid window (TryAndTryAgain3 attrs) = getActions iid window attrs
+instance HasActions TryAndTryAgain3 where
+  getActions (TryAndTryAgain3 x) =
+    [ restrictedAbility x 1 OwnsThis $ ReactionAbility
+        (SkillTestResult
+          After
+          Anyone
+          (SkillTestWithSkill YourSkill)
+          (FailureResult AnyValue)
+        )
+        ExhaustThis
+    ]
 
 instance HasModifiersFor env TryAndTryAgain3
 

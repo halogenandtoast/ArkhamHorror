@@ -16,14 +16,13 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Id
-import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Fold = Fold ActAttrs
   deriving anyclass IsAct
@@ -32,23 +31,17 @@ newtype Fold = Fold ActAttrs
 fold :: ActCard Fold
 fold = act (3, A) Fold Cards.fold Nothing
 
-instance ActionRunner env => HasActions env Fold where
-  getActions iid NonFast (Fold attrs) = withBaseActions iid NonFast attrs $ do
-    investigatorLocationId <- getId @LocationId iid
-    maid <- selectOne (assetIs Cards.peterClover)
-    case maid of
-      Nothing -> pure []
-      Just aid -> do
-        miid <- fmap unOwnerId <$> getId aid
-        assetLocationId <- getId aid
-        pure
-          [ mkAbility
-              (ProxySource (AssetSource aid) (toSource attrs))
-              1
-              (ActionAbility (Just Parley) $ ActionCost 1)
-          | isNothing miid && Just investigatorLocationId == assetLocationId
-          ]
-  getActions i window (Fold x) = getActions i window x
+instance HasActions Fold where
+  getActions (Fold attrs) =
+    restrictedAbility
+        (AssetProxySource
+          (assetIs Cards.peterClover <> AssetIsUnowned)
+          (toSource attrs)
+        )
+        1
+        OnSameLocation
+        (ActionAbility (Just Parley) $ ActionCost 1)
+      : getActions attrs
 
 instance ActRunner env => RunMessage env Fold where
   runMessage msg a@(Fold attrs@ActAttrs {..}) = case msg of

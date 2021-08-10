@@ -9,14 +9,12 @@ import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Uses
-import Arkham.Types.Card.CardDef
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Painkillers = Painkillers AssetAttrs
   deriving anyclass IsAsset
@@ -25,24 +23,22 @@ newtype Painkillers = Painkillers AssetAttrs
 painkillers :: AssetCard Painkillers
 painkillers = asset Painkillers Cards.painkillers
 
-fastAbility :: InvestigatorId -> AssetAttrs -> Ability
-fastAbility iid attrs = restrictedAbility
-  (toSource attrs)
-  1
-  (InvestigatorExists $ You <> InvestigatorWithDamage)
-  (FastAbility
-    (Costs
-      [ UseCost (toId attrs) Supply 1
-      , ExhaustCost (toTarget attrs)
-      , HorrorCost (toSource attrs) (InvestigatorTarget iid) 1
-      ]
-    )
-  )
+instance HasActions Painkillers where
+  getActions (Painkillers a) =
+    [ restrictedAbility
+        a
+        1
+        (OwnsThis <> InvestigatorExists (You <> InvestigatorWithDamage))
+        (FastAbility
+          (Costs
+            [ UseCost (toId a) Supply 1
+            , ExhaustThis
+            , HorrorCost (toSource a) YouTarget 1
+            ]
+          )
+        )
+    ]
 
-instance HasActions env Painkillers where
-  getActions iid FastPlayerWindow (Painkillers a) | ownedBy a iid =
-    pure [fastAbility iid a]
-  getActions _ _ _ = pure []
 
 instance HasModifiersFor env Painkillers
 

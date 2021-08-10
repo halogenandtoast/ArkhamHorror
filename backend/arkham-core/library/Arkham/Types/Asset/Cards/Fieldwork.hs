@@ -11,6 +11,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.GameValue
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (After)
 import Arkham.Types.Restriction
@@ -29,7 +30,8 @@ instance HasActions Fieldwork where
         attrs
         1
         OwnsThis
-        (ReactionAbility (Enters After You LocationWithClues)
+        (ReactionAbility
+            (Enters After You $ LocationWithClues (GreaterThan $ Static 0))
         $ ExhaustCost
         $ toTarget attrs
         )

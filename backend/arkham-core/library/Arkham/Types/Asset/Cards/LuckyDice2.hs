@@ -10,10 +10,13 @@ import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Message
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (After)
+import Arkham.Types.Restriction
 import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Window
+import qualified Arkham.Types.Window as Window
 
 newtype LuckyDice2 = LuckyDice2 AssetAttrs
   deriving anyclass IsAsset
@@ -22,23 +25,20 @@ newtype LuckyDice2 = LuckyDice2 AssetAttrs
 luckyDice2 :: AssetCard LuckyDice2
 luckyDice2 = accessory LuckyDice2 Cards.luckyDice2
 
-ability :: AssetAttrs -> Token -> Ability
-ability attrs token =
-  (mkAbility (toSource attrs) 1 (ReactionAbility $ ResourceCost 2))
-    { abilityMetadata = Just (TargetMetadata (TokenTarget token))
-    }
-
-instance HasActions env LuckyDice2 where
-  getActions iid (AfterRevealToken who token) (LuckyDice2 a)
-    | ownedBy a iid && who == iid && tokenFace token /= AutoFail = pure
-      [ability a token]
-  getActions _ _ _ = pure []
+instance HasActions LuckyDice2 where
+  getActions (LuckyDice2 a) =
+    [ restrictedAbility a 1 OwnsThis $ ReactionAbility
+        (RevealChaosToken After You (TokenFaceIsNot AutoFail))
+        (ResourceCost 2)
+    ]
 
 instance HasModifiersFor env LuckyDice2
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env LuckyDice2 where
   runMessage msg a@(LuckyDice2 attrs) = case msg of
-    UseCardAbility iid source (Just (TargetMetadata target@(TokenTarget _))) 1 _
+    UseCardAbility iid source [Window After (Window.RevealToken _ token)] 1 _
       | isSource attrs source -> a <$ pushAll
-        [CreateEffect "02230" Nothing source target, DrawAnotherToken iid]
+        [ CreateEffect "02230" Nothing source (TokenTarget token)
+        , DrawAnotherToken iid
+        ]
     _ -> LuckyDice2 <$> runMessage msg attrs

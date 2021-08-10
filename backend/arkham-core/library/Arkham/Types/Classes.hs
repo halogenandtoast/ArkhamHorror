@@ -54,6 +54,7 @@ class (Hashable set, Eq set) => HasSet set env a where
 type family QueryElement a where
   QueryElement ActionMatcher = Ability
   QueryElement AssetMatcher = AssetId
+  QueryElement EnemyMatcher = EnemyId
   QueryElement InvestigatorMatcher = InvestigatorId
   QueryElement LocationMatcher = LocationId
   QueryElement ExtendedCardMatcher = Card

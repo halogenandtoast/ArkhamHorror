@@ -12,8 +12,8 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
+import Arkham.Types.Restriction hiding (EnemyEvaded)
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype PeterClover = PeterClover AssetAttrs
   deriving anyclass IsAsset
@@ -25,20 +25,16 @@ peterClover =
     $ (slotsL .~ [])
     . (isStoryL .~ True)
 
-ability :: AssetAttrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (FastAbility $ ExhaustCost (toTarget attrs))
-
-instance
-  ( HasSet EnemyId env ([Trait], LocationId)
-  , HasId LocationId env InvestigatorId
-  )
-  => HasActions env PeterClover where
-  getActions iid FastPlayerWindow (PeterClover attrs) | ownedBy attrs iid = do
-    lid <- getId @LocationId iid
-    criminals <- getSet @EnemyId ([Criminal], lid)
-    pure [ ability attrs | notNull criminals ]
-  getActions iid window (PeterClover attrs) = getActions iid window attrs
+instance HasActions PeterClover where
+  getActions (PeterClover attrs) =
+    [ restrictedAbility
+        attrs
+        1
+        (OwnsThis
+        <> EnemyExists (EnemyAtYourLocation <> EnemyWithTrait Criminal)
+        )
+        (FastAbility ExhaustThis)
+    ]
 
 instance HasModifiersFor env PeterClover
 

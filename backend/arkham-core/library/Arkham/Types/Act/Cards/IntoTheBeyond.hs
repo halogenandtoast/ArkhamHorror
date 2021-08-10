@@ -11,11 +11,9 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.Game.Helpers
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype IntoTheBeyond = IntoTheBeyond ActAttrs
   deriving anyclass IsAct
@@ -24,10 +22,9 @@ newtype IntoTheBeyond = IntoTheBeyond ActAttrs
 intoTheBeyond :: ActCard IntoTheBeyond
 intoTheBeyond = act (2, A) IntoTheBeyond Cards.intoTheBeyond Nothing
 
-instance HasActions env IntoTheBeyond where
-  getActions iid NonFast (IntoTheBeyond x) = withBaseActions iid NonFast x $ do
-    pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
-  getActions iid window (IntoTheBeyond x) = getActions iid window x
+instance HasActions IntoTheBeyond where
+  getActions (IntoTheBeyond x) =
+    mkAbility x 1 (ActionAbility Nothing $ ActionCost 1) : getActions x
 
 instance (HasName env LocationId, ActRunner env) => RunMessage env IntoTheBeyond where
   runMessage msg a@(IntoTheBeyond attrs@ActAttrs {..}) = case msg of

@@ -12,7 +12,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
-import Arkham.Types.Window
+import Arkham.Types.Restriction
 
 newtype Pathfinder1 = Pathfinder1 AssetAttrs
   deriving anyclass IsAsset
@@ -21,15 +21,14 @@ newtype Pathfinder1 = Pathfinder1 AssetAttrs
 pathfinder1 :: AssetCard Pathfinder1
 pathfinder1 = asset Pathfinder1 Cards.pathfinder1
 
-ability :: AssetAttrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (FastAbility $ ExhaustCost (toTarget attrs))
-
-instance HasSet EnemyId env InvestigatorId => HasActions env Pathfinder1 where
-  getActions iid (DuringTurn who) (Pathfinder1 attrs) | iid == who = do
-    engagedEnemies <- getSet @EnemyId iid
-    pure [ ability attrs | null engagedEnemies ]
-  getActions _ _ _ = pure []
+instance HasActions Pathfinder1 where
+  getActions (Pathfinder1 attrs) =
+    [ restrictedAbility
+        attrs
+        1
+        (OwnsThis <> InvestigatorExists (You <> UnengagedInvestigator))
+        (FastAbility $ ExhaustCost (toTarget attrs))
+    ]
 
 instance HasModifiersFor env Pathfinder1
 

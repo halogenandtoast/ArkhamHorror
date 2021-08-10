@@ -14,6 +14,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Name
 import qualified Arkham.Types.Restriction as Restriction
 import Arkham.Types.SkillType
+import Arkham.Types.Timing
 import Arkham.Types.Trait
 
 event :: CardCode -> Name -> Int -> ClassSymbol -> CardDef
@@ -133,7 +134,7 @@ onTheLam :: CardDef
 onTheLam = (event "01010" "On the Lam" 1 Neutral)
   { cdCardTraits = setFromList [Tactic]
   , cdSkills = [SkillIntellect, SkillAgility, SkillWild, SkillWild]
-  , cdFastWindow = Just (AfterTurnBegins You)
+  , cdFastWindow = Just (TurnBegins After You)
   }
 
 darkMemory :: CardDef
@@ -300,7 +301,7 @@ lucky :: CardDef
 lucky = (event "01080" "Lucky!" 1 Survivor)
   { cdCardTraits = setFromList [Fortune]
   , cdFastWindow = Just
-    (WhenWouldHaveSkillTestResult You AnySkillTest $ FailureResult AnyValue)
+    (WouldHaveSkillTestResult When You AnySkillTest $ FailureResult AnyValue)
   }
 
 closeCall2 :: CardDef
@@ -316,7 +317,7 @@ lucky2 :: CardDef
 lucky2 = (event "01084" "Lucky!" 1 Survivor)
   { cdCardTraits = setFromList [Fortune]
   , cdFastWindow = Just
-    (WhenWouldHaveSkillTestResult You AnySkillTest $ FailureResult AnyValue)
+    (WouldHaveSkillTestResult When You AnySkillTest $ FailureResult AnyValue)
   , cdLevel = 2
   }
 
@@ -382,7 +383,7 @@ thinkOnYourFeet :: CardDef
 thinkOnYourFeet = (event "02025" "Think on Your Feet" 1 Rogue)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = singleton Trick
-  , cdFastWindow = Just (WhenEnemySpawns YourLocation AnyEnemy)
+  , cdFastWindow = Just (EnemySpawns When YourLocation AnyEnemy)
   , cdPlayRestrictions = Just
     (Restriction.LocationExists AccessibleLocation
     <> Restriction.InvestigatorExists (You <> InvestigatorCanMove)

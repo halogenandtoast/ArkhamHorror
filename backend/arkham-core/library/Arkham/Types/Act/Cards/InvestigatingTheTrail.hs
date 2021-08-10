@@ -17,7 +17,7 @@ import Arkham.Types.Message
 
 newtype InvestigatingTheTrail = InvestigatingTheTrail ActAttrs
   deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasActions, HasModifiersFor env)
 
 investigatingTheTrail :: ActCard InvestigatingTheTrail
 investigatingTheTrail = act
@@ -25,9 +25,6 @@ investigatingTheTrail = act
   InvestigatingTheTrail
   Cards.investigatingTheTrail
   (Just $ GroupClueCost (PerPlayer 3) Nothing)
-
-instance HasActions env InvestigatingTheTrail where
-  getActions i window (InvestigatingTheTrail x) = getActions i window x
 
 instance ActRunner env => RunMessage env InvestigatingTheTrail where
   runMessage msg a@(InvestigatingTheTrail attrs@ActAttrs {..}) = case msg of

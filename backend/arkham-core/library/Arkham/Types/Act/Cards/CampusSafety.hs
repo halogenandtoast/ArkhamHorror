@@ -11,13 +11,10 @@ import Arkham.Types.Resolution
 
 newtype CampusSafety = CampusSafety ActAttrs
   deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasActions, HasModifiersFor env)
 
 campusSafety :: ActCard CampusSafety
 campusSafety = act (3, A) CampusSafety Cards.campusSafety Nothing
-
-instance HasActions env CampusSafety where
-  getActions i window (CampusSafety x) = getActions i window x
 
 instance ActRunner env => RunMessage env CampusSafety where
   runMessage msg a@(CampusSafety attrs@ActAttrs {..}) = case msg of

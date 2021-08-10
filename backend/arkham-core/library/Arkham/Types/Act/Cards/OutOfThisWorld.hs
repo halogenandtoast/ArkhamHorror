@@ -12,11 +12,9 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype OutOfThisWorld = OutOfThisWorld ActAttrs
   deriving anyclass IsAct
@@ -29,11 +27,9 @@ outOfThisWorld = act
   Cards.outOfThisWorld
   (Just $ GroupClueCost (PerPlayer 2) Nothing)
 
-instance HasActions env OutOfThisWorld where
-  getActions iid NonFast (OutOfThisWorld x) =
-    withBaseActions iid NonFast x $ do
-      pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
-  getActions iid window (OutOfThisWorld x) = getActions iid window x
+instance HasActions OutOfThisWorld where
+  getActions (OutOfThisWorld x) =
+    mkAbility x 1 (ActionAbility Nothing $ ActionCost 1) : getActions x
 
 instance ActRunner env => RunMessage env OutOfThisWorld where
   runMessage msg a@(OutOfThisWorld attrs@ActAttrs {..}) = case msg of

@@ -28,7 +28,7 @@ import Data.Maybe (fromJust)
 
 newtype FindingLadyEsprit = FindingLadyEsprit ActAttrs
   deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasActions, HasModifiersFor env)
 
 findingLadyEsprit :: ActCard FindingLadyEsprit
 findingLadyEsprit = act
@@ -36,9 +36,6 @@ findingLadyEsprit = act
   FindingLadyEsprit
   Cards.findingLadyEsprit
   (Just $ GroupClueCost (PerPlayer 1) (Just $ LocationWithTrait Bayou))
-
-instance HasActions env FindingLadyEsprit where
-  getActions i window (FindingLadyEsprit x) = getActions i window x
 
 bayouLocations
   :: (MonadReader env m, HasSet LocationId env [Trait])

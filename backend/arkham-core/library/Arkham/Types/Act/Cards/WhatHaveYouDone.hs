@@ -12,13 +12,10 @@ import Arkham.Types.Resolution
 
 newtype WhatHaveYouDone = WhatHaveYouDone ActAttrs
   deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasActions, HasModifiersFor env)
 
 whatHaveYouDone :: ActCard WhatHaveYouDone
 whatHaveYouDone = act (3, A) WhatHaveYouDone Cards.whatHaveYouDone Nothing
-
-instance HasActions env WhatHaveYouDone where
-  getActions i window (WhatHaveYouDone x) = getActions i window x
 
 instance ActRunner env => RunMessage env WhatHaveYouDone where
   runMessage msg a@(WhatHaveYouDone attrs@ActAttrs {..}) = case msg of

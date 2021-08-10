@@ -14,9 +14,9 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype RiteOfSeeking = RiteOfSeeking AssetAttrs
   deriving anyclass IsAsset
@@ -25,17 +25,17 @@ newtype RiteOfSeeking = RiteOfSeeking AssetAttrs
 riteOfSeeking :: AssetCard RiteOfSeeking
 riteOfSeeking = arcane RiteOfSeeking Cards.riteOfSeeking
 
-instance HasActions env RiteOfSeeking where
-  getActions iid NonFast (RiteOfSeeking a) | ownedBy a iid = pure
-    [ mkAbility
-        (toSource a)
+instance HasActions RiteOfSeeking where
+  getActions (RiteOfSeeking a) =
+    [ restrictedAbility
+        a
         1
+        OwnsThis
         (ActionAbility
           (Just Action.Investigate)
           (Costs [ActionCost 1, UseCost (toId a) Charge 1])
         )
     ]
-  getActions _ _ _ = pure []
 
 instance HasModifiersFor env RiteOfSeeking
 

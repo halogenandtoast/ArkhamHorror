@@ -17,7 +17,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype CloseTheRift = CloseTheRift ActAttrs
   deriving anyclass IsAct
@@ -33,10 +32,9 @@ closeTheRift = act
     (Just $ LocationWithTitle "The Edge of the Universe")
   )
 
-instance HasActions env CloseTheRift where
-  getActions iid NonFast (CloseTheRift x) = withBaseActions iid NonFast x $ do
-    pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
-  getActions iid window (CloseTheRift x) = getActions iid window x
+instance HasActions CloseTheRift where
+  getActions (CloseTheRift x) =
+    mkAbility x 1 (ActionAbility Nothing $ ActionCost 1) : getActions x
 
 instance ActRunner env => RunMessage env CloseTheRift where
   runMessage msg a@(CloseTheRift attrs@ActAttrs {..}) = case msg of

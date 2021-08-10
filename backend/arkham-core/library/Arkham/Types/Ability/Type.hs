@@ -14,10 +14,33 @@ data AbilityType
   | ActionAbility (Maybe Action) Cost
   | ActionAbilityWithSkill (Maybe Action) SkillType Cost
   | ActionAbilityWithBefore (Maybe Action) (Maybe Action) Cost -- Action is first type, before is second
-  | ForcedAbility
+  | ForcedAbility WindowMatcher
   | AbilityEffect Cost
+  | Objective AbilityType
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
+
+abilityTypeAction :: AbilityType -> Maybe Action
+abilityTypeAction = \case
+  FastAbility _ -> Nothing
+  ReactionAbility{} -> Nothing
+  ActionAbility mAction _ -> mAction
+  ActionAbilityWithSkill mAction _ _ -> mAction
+  ActionAbilityWithBefore mAction _ _ -> mAction
+  ForcedAbility _ -> Nothing
+  AbilityEffect _ -> Nothing
+  Objective aType -> abilityTypeAction aType
+
+abilityTypeCost :: AbilityType -> Cost
+abilityTypeCost = \case
+  FastAbility cost -> cost
+  ReactionAbility _ cost -> cost
+  ActionAbility _ cost -> cost
+  ActionAbilityWithSkill _ _ cost -> cost
+  ActionAbilityWithBefore _ _ cost -> cost
+  ForcedAbility _ -> Free
+  AbilityEffect cost -> cost
+  Objective aType -> abilityTypeCost aType
 
 applyAbilityTypeModifiers :: AbilityType -> [ModifierType] -> AbilityType
 applyAbilityTypeModifiers aType modifiers = case aType of
@@ -31,8 +54,9 @@ applyAbilityTypeModifiers aType modifiers = case aType of
   ActionAbilityWithBefore mAction mBeforeAction cost ->
     ActionAbilityWithBefore mAction mBeforeAction
       $ applyCostModifiers cost modifiers
-  ForcedAbility -> ForcedAbility
+  ForcedAbility window -> ForcedAbility window
   AbilityEffect cost -> AbilityEffect cost -- modifiers don't yet apply here
+  Objective aType' -> Objective $ applyAbilityTypeModifiers aType' modifiers
 
 applyCostModifiers :: Cost -> [ModifierType] -> Cost
 applyCostModifiers = foldl' applyCostModifier

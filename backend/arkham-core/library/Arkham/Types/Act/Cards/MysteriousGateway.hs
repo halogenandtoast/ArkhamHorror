@@ -18,7 +18,7 @@ import Arkham.Types.Target
 
 newtype MysteriousGateway = MysteriousGateway ActAttrs
   deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasActions, HasModifiersFor env)
 
 mysteriousGateway :: ActCard MysteriousGateway
 mysteriousGateway = act
@@ -26,9 +26,6 @@ mysteriousGateway = act
   MysteriousGateway
   Cards.mysteriousGateway
   (Just $ GroupClueCost (PerPlayer 3) (Just $ LocationWithTitle "Guest Hall"))
-
-instance HasActions env MysteriousGateway where
-  getActions i window (MysteriousGateway x) = getActions i window x
 
 instance ActRunner env => RunMessage env MysteriousGateway where
   runMessage msg a@(MysteriousGateway attrs@ActAttrs {..}) = case msg of

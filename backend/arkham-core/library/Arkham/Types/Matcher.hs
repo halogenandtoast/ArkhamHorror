@@ -13,6 +13,8 @@ import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
+import Arkham.Types.Phase
+import Arkham.Types.Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
 
@@ -21,9 +23,11 @@ type Who = InvestigatorMatcher
 data InvestigatorMatcher
   = InvestigatorAtYourLocation
   | You
+  | UnengagedInvestigator
   | NotYou
   | Anyone
   | InvestigatorCanMove
+  | InvestigatorEngagedWith EnemyMatcher
   | InvestigatorWithDamage
   | InvestigatorWithHorror
   | InvestigatorWithId InvestigatorId
@@ -46,6 +50,7 @@ data AssetMatcher
   | AssetWithClass ClassSymbol
   | AssetWithTrait Trait
   | AssetOwnedBy InvestigatorMatcher
+  | AssetIsUnowned
   | AssetMatches [AssetMatcher]
   | AssetOneOf [AssetMatcher]
   | AssetAtLocation LocationId
@@ -91,6 +96,9 @@ pattern NonEliteEnemy :: EnemyMatcher
 pattern NonEliteEnemy <- EnemyWithoutTrait Elite where
   NonEliteEnemy = EnemyWithoutTrait Elite
 
+enemyIs :: HasCardCode a => a -> EnemyMatcher
+enemyIs = EnemyIs . toCardCode
+
 data EnemyMatcher
   = EnemyWithTitle Text
   | EnemyWithFullTitle Text Text
@@ -98,6 +106,7 @@ data EnemyMatcher
   | EnemyWithTrait Trait
   | EnemyWithoutTrait Trait
   | EnemyWithKeyword Keyword
+  | EnemyIs CardCode
   | AnyEnemy
   | ExhaustedEnemy
   | NonWeaknessEnemy
@@ -139,6 +148,13 @@ pattern LocationWithoutTreachery card <-
   LocationWithoutTreachery card =
     LocationWithoutTreacheryWithCardCode (toCardCode card)
 
+pattern LocationWithoutClues :: LocationMatcher
+pattern LocationWithoutClues <- LocationWithClues (EqualTo (Static 0)) where
+  LocationWithoutClues = LocationWithClues (EqualTo (Static 0))
+
+locationIs :: HasCardCode a => a -> LocationMatcher
+locationIs = LocationIs . toCardCode
+
 data LocationMatcher
   = LocationWithTitle Text
   | LocationWithFullTitle Text Text
@@ -146,12 +162,14 @@ data LocationMatcher
   | LocationWithLabel Text
   | YourLocation
   | NotYourLocation
+  | LocationIs CardCode
   | Anywhere
   | EmptyLocation
   | AccessibleLocation
   | AccessibleFrom LocationId
   | ConnectedLocation
-  | LocationWithClues
+  | LocationWithResources ValueMatcher
+  | LocationWithClues ValueMatcher
   | LocationWithoutInvestigators
   | LocationWithoutEnemies
   | RevealedLocation
@@ -178,14 +196,21 @@ data SkillMatcher
   | SkillWithClass ClassSymbol
   | SkillOwnedBy InvestigatorId
   | SkillMatches [SkillMatcher]
+  | YourSkill
+  | AnySkill
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
 
 instance Semigroup SkillMatcher where
+  AnySkill <> x = x
+  x <> AnySkill = x
   SkillMatches xs <> SkillMatches ys = SkillMatches (xs <> ys)
   SkillMatches xs <> x = SkillMatches (x : xs)
   x <> SkillMatches xs = SkillMatches (x : xs)
   x <> y = SkillMatches [x, y]
+
+instance Monoid SkillMatcher where
+  mempty = AnySkill
 
 data TreacheryMatcher
   = TreacheryWithTitle Text
@@ -262,38 +287,34 @@ instance Semigroup CardMatcher where
   x <> y = CardMatches [x, y]
 
 data WindowMatcher
-  = EnemyDefeated When Who EnemyMatcher
-  | EnemyEvaded When Who EnemyMatcher
+  = EnemyDefeated Timing Who EnemyMatcher
+  | EnemyEvaded Timing Who EnemyMatcher
   | MythosStep WindowMythosStepMatcher
-  | EnemyAttacks When Who EnemyMatcher
-  | RevealChaosToken When Who TokenMatcher
-  | SkillTestResult When Who SkillTestMatcher SkillTestResultMatcher
-  | WhenWouldHaveSkillTestResult Who SkillTestMatcher SkillTestResultMatcher
-  | WhenEnemySpawns Where EnemyMatcher
+  | EnemyAttacks Timing Who EnemyMatcher
+  | RevealChaosToken Timing Who TokenMatcher
+  | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
+  | WouldHaveSkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
+  | EnemySpawns Timing Where EnemyMatcher
+  | EnemyLeaves Timing Where EnemyMatcher
   | FastPlayerWindow
-  | AfterTurnBegins Who
+  | TurnBegins Timing Who
   | DuringTurn Who
   | OrWindowMatcher [WindowMatcher]
   | DealtDamageOrHorror Who
-  | DrawCard When Who CardMatcher
-  | PhaseBegins When WindowPhaseMatcher
+  | DrawCard Timing Who CardMatcher
+  | PhaseBegins Timing PhaseMatcher
+  | PhaseEnds Timing PhaseMatcher
   | PlayerHasPlayableCard ExtendedCardMatcher
   | WhenAssetEntersPlay AssetMatcher
-  | WhenRevealToken SkillTestMatcher TokenMatcher
-  | Enters When Who Where
+  | Enters Timing Who Where
   | AnyWindow
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
-
-type When = WindowTimingMatcher
-
-data WindowTimingMatcher = When | After
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 data SkillTestMatcher
   = WhileInvestigating
   | WhileAttackingAnEnemy
+  | SkillTestWithSkill SkillMatcher
   | AnySkillTest
   | SkillTestAtYourLocation
   deriving stock (Show, Eq, Generic)
@@ -303,13 +324,20 @@ data SkillTestResultMatcher = FailureResult ValueMatcher | SuccessResult ValueMa
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data ValueMatcher = LessThan (GameValue Int) | AnyValue
+data ValueMatcher
+  = LessThan (GameValue Int)
+  | GreaterThan (GameValue Int)
+  | LessThanOrEqualTo (GameValue Int)
+  | GreaterThanOrEqualTo (GameValue Int)
+  | EqualTo (GameValue Int)
+  | AnyValue
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 data TokenMatcher
   = WithNegativeModifier
   | TokenFaceIs TokenFace
+  | TokenFaceIsNot TokenFace
   | TokenMatchesAny [TokenMatcher]
   | AnyToken
   | TokenMatches [TokenMatcher]
@@ -324,7 +352,7 @@ instance Semigroup TokenMatcher where
   x <> TokenMatches xs = TokenMatches $ x : xs
   x <> y = TokenMatches [x, y]
 
-data WindowPhaseMatcher = AnyPhase
+data PhaseMatcher = AnyPhase | PhaseIs Phase
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

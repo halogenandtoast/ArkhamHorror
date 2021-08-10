@@ -14,12 +14,12 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Id
-import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Phase
+import Arkham.Types.Restriction
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as T
 
 newtype GetToTheBoats = GetToTheBoats ActAttrs
   deriving anyclass IsAct
@@ -28,14 +28,14 @@ newtype GetToTheBoats = GetToTheBoats ActAttrs
 getToTheBoats :: ActCard GetToTheBoats
 getToTheBoats = act (2, A) GetToTheBoats Cards.getToTheBoats Nothing
 
-ability :: ActAttrs -> Ability
-ability a = mkAbility a 1 ForcedAbility
-
-instance ActionRunner env => HasActions env GetToTheBoats where
-  getActions iid (PhaseBegins MythosPhase) (GetToTheBoats x) = do
-    leadInvestigatorId <- getLeadInvestigatorId
-    pure [ ability x | iid == leadInvestigatorId ]
-  getActions iid window (GetToTheBoats x) = getActions iid window x
+instance HasActions GetToTheBoats where
+  getActions (GetToTheBoats x) =
+    [ restrictedAbility
+        x
+        1
+        (AssetExists $ AssetWithTitle "Masked Carnevale-Goer")
+        (ForcedAbility $ PhaseBegins T.After (PhaseIs MythosPhase))
+    ]
 
 instance
   ( HasId LocationId env InvestigatorId

@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Json
 import Arkham.Types.Ability.Limit as X
 import Arkham.Types.Ability.Type as X
+import Arkham.Types.Action (Action)
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes.Entity.Source
 import Arkham.Types.Cost
@@ -30,6 +31,12 @@ data Ability = Ability
   , abilityDoesNotProvokeAttacksOfOpportunity :: Bool
   }
   deriving stock (Show, Generic)
+
+abilityCost :: Ability -> Cost
+abilityCost = abilityTypeCost . abilityType
+
+abilityAction :: Ability -> Maybe Action
+abilityAction = abilityTypeAction . abilityType
 
 abilityLimitL :: Lens' Ability AbilityLimit
 abilityLimitL = lens abilityLimit $ \m x -> m { abilityLimit = x }
@@ -67,27 +74,35 @@ restrictedAbility entity idx restriction type' =
 abilityEffect :: SourceEntity a => a -> Cost -> Ability
 abilityEffect a cost = mkAbility a (-1) (AbilityEffect cost)
 
+defaultAbilityLimit :: AbilityType -> AbilityLimit
+defaultAbilityLimit = \case
+  ForcedAbility _ -> PlayerLimit PerWindow 1
+  ReactionAbility _ _ -> PlayerLimit PerWindow 1
+  FastAbility _ -> NoLimit
+  ActionAbility _ _ -> NoLimit
+  ActionAbilityWithBefore{} -> NoLimit
+  ActionAbilityWithSkill{} -> NoLimit
+  AbilityEffect _ -> NoLimit
+  Objective aType -> defaultAbilityLimit aType
+
+defaultAbilityWindow :: AbilityType -> WindowMatcher
+defaultAbilityWindow = \case
+  FastAbility _ -> FastPlayerWindow
+  ActionAbility{} -> DuringTurn You
+  ActionAbilityWithBefore{} -> DuringTurn You
+  ActionAbilityWithSkill{} -> DuringTurn You
+  ForcedAbility window -> window
+  ReactionAbility window _ -> window
+  AbilityEffect _ -> AnyWindow
+  Objective aType -> defaultAbilityWindow aType
+
 mkAbility :: SourceEntity a => a -> Int -> AbilityType -> Ability
 mkAbility entity idx type' = Ability
   { abilitySource = toSource entity
   , abilityIndex = idx
   , abilityType = type'
-  , abilityLimit = case type' of
-    ForcedAbility -> PlayerLimit PerWindow 1
-    ReactionAbility _ _ -> PlayerLimit PerWindow 1
-    FastAbility _ -> NoLimit
-    ActionAbility _ _ -> NoLimit
-    ActionAbilityWithBefore{} -> NoLimit
-    ActionAbilityWithSkill{} -> NoLimit
-    AbilityEffect _ -> NoLimit
-  , abilityWindow = case type' of
-    FastAbility _ -> FastPlayerWindow
-    ActionAbility{} -> DuringTurn You
-    ActionAbilityWithBefore{} -> DuringTurn You
-    ActionAbilityWithSkill{} -> DuringTurn You
-    ForcedAbility -> AnyWindow
-    ReactionAbility _ _ -> error "reactions should specify their window"
-    AbilityEffect _ -> AnyWindow
+  , abilityLimit = defaultAbilityLimit type'
+  , abilityWindow = defaultAbilityWindow type'
   , abilityMetadata = Nothing
   , abilityRestrictions = Nothing
   , abilityDoesNotProvokeAttacksOfOpportunity = False

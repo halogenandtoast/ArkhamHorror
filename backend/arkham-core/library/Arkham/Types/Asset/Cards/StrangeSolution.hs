@@ -12,9 +12,9 @@ import Arkham.Types.CampaignLogKey
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype StrangeSolution = StrangeSolution AssetAttrs
   deriving anyclass IsAsset
@@ -23,10 +23,9 @@ newtype StrangeSolution = StrangeSolution AssetAttrs
 strangeSolution :: AssetCard StrangeSolution
 strangeSolution = asset StrangeSolution Cards.strangeSolution
 
-instance HasActions env StrangeSolution where
-  getActions iid NonFast (StrangeSolution attrs) | ownedBy attrs iid =
-    pure [mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)]
-  getActions iid window (StrangeSolution attrs) = getActions iid window attrs
+instance HasActions StrangeSolution where
+  getActions (StrangeSolution attrs) =
+    [restrictedAbility attrs 1 OwnsThis (ActionAbility Nothing $ ActionCost 1)]
 
 instance HasModifiersFor env StrangeSolution
 

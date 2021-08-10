@@ -9,15 +9,14 @@ import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Uses
-import Arkham.Types.Card.CardDef
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype LiquidCourage = LiquidCourage AssetAttrs
   deriving anyclass IsAsset
@@ -26,20 +25,17 @@ newtype LiquidCourage = LiquidCourage AssetAttrs
 liquidCourage :: AssetCard LiquidCourage
 liquidCourage = asset LiquidCourage Cards.liquidCourage
 
-instance HasActions env LiquidCourage where
-  getActions iid NonFast (LiquidCourage a) = pure
+instance HasActions LiquidCourage where
+  getActions (LiquidCourage a) =
     [ restrictedAbility
         (toSource a)
         1
-        (InvestigatorExists
-        $ InvestigatorAtYourLocation
-        <> InvestigatorWithHorror
+        (OwnsThis <> InvestigatorExists
+          (InvestigatorAtYourLocation <> InvestigatorWithHorror)
         )
         (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (toId a) Supply 1]
         )
-    | ownedBy a iid
     ]
-  getActions iid window (LiquidCourage attrs) = getActions iid window attrs
 
 instance HasModifiersFor env LiquidCourage
 

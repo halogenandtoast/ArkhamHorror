@@ -16,7 +16,7 @@ import Arkham.Types.Resolution
 
 newtype TheGateOpens = TheGateOpens ActAttrs
   deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasActions, HasModifiersFor env)
 
 theGateOpens :: ActCard TheGateOpens
 theGateOpens = act
@@ -25,9 +25,6 @@ theGateOpens = act
   Cards.theGateOpens
   (Just $ GroupClueCost (PerPlayer 2) (Just $ LocationWithTitle "Sentinel Peak")
   )
-
-instance HasActions env TheGateOpens where
-  getActions i window (TheGateOpens x) = getActions i window x
 
 instance ActRunner env => RunMessage env TheGateOpens where
   runMessage msg a@(TheGateOpens attrs@ActAttrs {..}) = case msg of

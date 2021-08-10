@@ -16,14 +16,13 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Id
-import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype AllIn = AllIn ActAttrs
   deriving anyclass IsAct
@@ -32,23 +31,17 @@ newtype AllIn = AllIn ActAttrs
 allIn :: ActCard AllIn
 allIn = act (3, A) AllIn Cards.allIn Nothing
 
-instance ActionRunner env => HasActions env AllIn where
-  getActions iid NonFast (AllIn attrs) = withBaseActions iid NonFast attrs $ do
-    investigatorLocationId <- getId @LocationId iid
-    maid <- selectOne (assetIs Cards.drFrancisMorgan)
-    case maid of
-      Nothing -> pure []
-      Just aid -> do
-        miid <- fmap unOwnerId <$> getId aid
-        assetLocationId <- getId aid
-        pure
-          [ mkAbility
-              (ProxySource (AssetSource aid) (toSource attrs))
-              1
-              (ActionAbility (Just Parley) $ ActionCost 1)
-          | isNothing miid && Just investigatorLocationId == assetLocationId
-          ]
-  getActions i window (AllIn x) = getActions i window x
+instance HasActions AllIn where
+  getActions (AllIn attrs) =
+    restrictedAbility
+        (AssetProxySource
+          (assetIs Cards.drFrancisMorgan <> AssetIsUnowned)
+          (toSource attrs)
+        )
+        1
+        OnSameLocation
+        (ActionAbility (Just Parley) $ ActionCost 1)
+      : getActions attrs
 
 instance ActRunner env => RunMessage env AllIn where
   runMessage msg a@(AllIn attrs@ActAttrs {..}) = case msg of

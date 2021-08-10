@@ -21,7 +21,7 @@ import Arkham.Types.Target
 
 newtype FindingAWayInside = FindingAWayInside ActAttrs
   deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasActions, HasModifiersFor env)
 
 findingAWayInside :: ActCard FindingAWayInside
 findingAWayInside = act
@@ -29,9 +29,6 @@ findingAWayInside = act
   FindingAWayInside
   Cards.findingAWayInside
   (Just $ GroupClueCost (Static 2) Nothing)
-
-instance HasActions env FindingAWayInside where
-  getActions i window (FindingAWayInside x) = getActions i window x
 
 instance ActRunner env => RunMessage env FindingAWayInside where
   runMessage msg a@(FindingAWayInside attrs@ActAttrs {..}) = case msg of

@@ -14,7 +14,6 @@ import Arkham.Types.Resolution
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype DisruptingTheRitual = DisruptingTheRitual ActAttrs
   deriving anyclass IsAct
@@ -28,14 +27,10 @@ disruptingTheRitual = actWith
   Nothing
   (cluesL ?~ 0)
 
-instance HasActions env DisruptingTheRitual where
-  getActions _ NonFast (DisruptingTheRitual a) = pure
-    [ mkAbility
-        (toSource a)
-        1
-        (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1])
-    ]
-  getActions i window (DisruptingTheRitual x) = getActions i window x
+instance HasActions DisruptingTheRitual where
+  getActions (DisruptingTheRitual a) =
+    mkAbility a 1 (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1])
+      : getActions a
 
 instance ActRunner env => RunMessage env DisruptingTheRitual where
   runMessage msg a@(DisruptingTheRitual attrs@ActAttrs {..}) = case msg of

@@ -9,14 +9,12 @@ import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Uses
-import Arkham.Types.Card.CardDef
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
-import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype StrangeSolutionRestorativeConcoction4 = StrangeSolutionRestorativeConcoction4 AssetAttrs
   deriving anyclass IsAsset
@@ -28,18 +26,17 @@ strangeSolutionRestorativeConcoction4 = asset
   StrangeSolutionRestorativeConcoction4
   Cards.strangeSolutionRestorativeConcoction4
 
-ability :: AssetAttrs -> Ability
-ability a = restrictedAbility
-  a
-  1
-  (InvestigatorExists $ InvestigatorAtYourLocation <> InvestigatorWithDamage)
-  (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (toId a) Supply 1])
-
-instance HasActions env StrangeSolutionRestorativeConcoction4 where
-  getActions iid NonFast (StrangeSolutionRestorativeConcoction4 attrs)
-    | ownedBy attrs iid = pure [ability attrs]
-  getActions iid window (StrangeSolutionRestorativeConcoction4 attrs) =
-    getActions iid window attrs
+instance HasActions StrangeSolutionRestorativeConcoction4 where
+  getActions (StrangeSolutionRestorativeConcoction4 x) =
+    [ restrictedAbility
+        x
+        1
+        (OwnsThis <> InvestigatorExists
+          (InvestigatorAtYourLocation <> InvestigatorWithDamage)
+        )
+        (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (toId x) Supply 1]
+        )
+    ]
 
 instance HasModifiersFor env StrangeSolutionRestorativeConcoction4
 

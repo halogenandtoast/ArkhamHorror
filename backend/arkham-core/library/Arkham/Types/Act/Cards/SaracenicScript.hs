@@ -21,7 +21,7 @@ import Arkham.Types.Message
 
 newtype SaracenicScript = SaracenicScript ActAttrs
   deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasActions, HasModifiersFor env)
 
 saracenicScript :: ActCard SaracenicScript
 saracenicScript = act
@@ -31,9 +31,6 @@ saracenicScript = act
   (Just
   $ GroupClueCost (PerPlayer 2) (Just $ LocationWithTitle "Whateley Ruins")
   )
-
-instance HasActions env SaracenicScript where
-  getActions i window (SaracenicScript x) = getActions i window x
 
 instance ActRunner env => RunMessage env SaracenicScript where
   runMessage msg a@(SaracenicScript attrs@ActAttrs {..}) = case msg of

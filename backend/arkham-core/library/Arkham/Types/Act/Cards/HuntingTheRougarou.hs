@@ -3,6 +3,7 @@ module Arkham.Types.Act.Cards.HuntingTheRougarou where
 import Arkham.Prelude
 
 import qualified Arkham.Act.Cards as Cards
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -11,14 +12,15 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Id
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher (enemyIs)
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
+import qualified Arkham.Types.Restriction as R
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.Window
+import qualified Arkham.Types.Window as W
 
 newtype HuntingTheRougarou = HuntingTheRougarou ActAttrs
   deriving anyclass IsAct
@@ -28,25 +30,33 @@ huntingTheRougarou :: ActCard HuntingTheRougarou
 huntingTheRougarou =
   act (2, A) HuntingTheRougarou Cards.huntingTheRougarou Nothing
 
-ability :: ActAttrs -> Ability
-ability attrs = (mkAbility (toSource attrs) 1 (FastAbility Free))
-  { abilityLimit = PlayerLimit PerPhase 1
-  }
-
-instance ActionRunner env => HasActions env HuntingTheRougarou where
-  getActions iid FastPlayerWindow (HuntingTheRougarou a) =
-    withBaseActions iid FastPlayerWindow a $ do
-      mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
-      engagedWithTheRougarou <- maybe
-        (pure False)
-        ((member iid <$>) . getSet)
-        mrougarou
-      pure [ ability a | engagedWithTheRougarou ]
-  getActions i window (HuntingTheRougarou x) = getActions i window x
+instance HasActions HuntingTheRougarou where
+  getActions (HuntingTheRougarou x) =
+    [ mkAbility x 1 $ ForcedAbility $ R.EnemyLeaves R.After R.Anywhere $ enemyIs
+      Cards.theRougarou
+    , mkAbility x 2
+      $ Objective
+      $ ForcedAbility
+      $ R.EnemyDefeated R.When R.Anyone
+      $ enemyIs Cards.theRougarou
+    , restrictedAbility
+        x
+        3
+        (R.InvestigatorExists $ R.You <> R.InvestigatorEngagedWith
+          (enemyIs Cards.theRougarou)
+        )
+        (Objective $ FastAbility Free)
+      & abilityLimitL
+      .~ PlayerLimit PerPhase 1
+    ]
 
 instance ActRunner env => RunMessage env HuntingTheRougarou where
   runMessage msg a@(HuntingTheRougarou attrs@ActAttrs {..}) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    UseCardAbility _ source [W.Window _ (W.EnemyLeaves _ lid)] 1 _
+      | isSource attrs source -> a <$ push (PlaceClues (LocationTarget lid) 1)
+    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+      a <$ push (ScenarioResolution $ Resolution 2)
+    UseCardAbility _ source _ 3 _ | isSource attrs source ->
       runMessage (AdvanceAct actId (toSource attrs)) a
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -62,7 +72,7 @@ instance ActRunner env => RunMessage env HuntingTheRougarou where
       protectedOurselves <-
         (>= requiredDamage) . unDamageCount <$> getCount rougarou
 
-      assetIds <- selectList (EnemyAsset rougarou)
+      assetIds <- selectList (R.EnemyAsset rougarou)
       keptItContained <- or <$> for assetIds ((member Trap <$>) . getSet)
 
       scenarioLogs <- getSet ()
@@ -90,9 +100,4 @@ instance ActRunner env => RunMessage env HuntingTheRougarou where
       pure $ HuntingTheRougarou $ attrs & (sequenceL .~ Act 2 B)
     RevertAct aid | aid == actId && onSide B attrs ->
       pure $ HuntingTheRougarou $ attrs & (sequenceL .~ Act 2 A)
-    EnemyMove eid lid _ -> do
-      isRougarou <- (== CardCode "81028") <$> getId eid
-      a <$ when isRougarou (push (PlaceClues (LocationTarget lid) 1))
-    EnemyDefeated _ _ _ "81028" _ _ ->
-      a <$ push (ScenarioResolution $ Resolution 2)
     _ -> HuntingTheRougarou <$> runMessage msg attrs

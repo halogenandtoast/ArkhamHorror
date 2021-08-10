@@ -22,7 +22,7 @@ import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window
+import qualified Arkham.Types.Window as W
 
 newtype BeginnersLuck = BeginnersLuck ActAttrs
   deriving anyclass IsAct
@@ -35,16 +35,14 @@ beginnersLuck = act
   Cards.beginnersLuck
   (Just $ GroupClueCost (PerPlayer 4) Nothing)
 
-ability :: Token -> ActAttrs -> Ability
-ability token attrs = (mkAbility (toSource attrs) 1 (ReactionAbility Free))
-  { abilityLimit = GroupLimit PerRound 1
-  , abilityMetadata = Just (TargetMetadata $ TokenTarget token)
-  }
-
-instance ActionRunner env => HasActions env BeginnersLuck where
-  getActions iid (WhenRevealToken who token) (BeginnersLuck x) | iid == who =
-    pure [ability token x]
-  getActions iid window (BeginnersLuck x) = getActions iid window x
+instance HasActions BeginnersLuck where
+  getActions (BeginnersLuck x) =
+    [ (mkAbility x 1
+      $ ReactionAbility (RevealChaosToken W.When You AnyToken) Free
+      )
+        { abilityLimit = GroupLimit PerRound 1
+        }
+    ]
 
 instance
   ( ActAttrsRunner env
@@ -66,7 +64,7 @@ instance
       darkenedHallId <- fromJustNote "missing darkened hall"
         <$> getId (LocationWithTitle "Darkened Hall")
       a <$ push (SpawnEnemyAt (EncounterCard ec) darkenedHallId)
-    UseCardAbility iid source (Just (TargetMetadata (TokenTarget token))) 1 _
+    UseCardAbility iid source [W.Window W.When (W.RevealToken _ token)] 1 _
       | isSource attrs source -> do
         tokensInBag <- getList @Token ()
         a <$ pushAll

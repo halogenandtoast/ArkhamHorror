@@ -1,9 +1,13 @@
-module Arkham.Types.Restriction where
+module Arkham.Types.Restriction
+  ( module Arkham.Types.Restriction
+  , module X
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Id
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher as X
+import Arkham.Types.Timing as X
 import Arkham.Types.Trait
 
 data DiscardSignifier = AnyPlayerDiscard

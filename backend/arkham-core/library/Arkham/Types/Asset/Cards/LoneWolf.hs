@@ -8,11 +8,11 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Card.CardDef
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Message
-import Arkham.Types.Window
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (When)
+import Arkham.Types.Restriction
 
 newtype LoneWolf = LoneWolf AssetAttrs
   deriving anyclass IsAsset
@@ -21,15 +21,14 @@ newtype LoneWolf = LoneWolf AssetAttrs
 loneWolf :: AssetCard LoneWolf
 loneWolf = asset LoneWolf Cards.loneWolf
 
-ability :: AssetAttrs -> Ability
-ability x = (mkAbility (toSource x) 1 (ReactionAbility Free))
-  { abilityRestrictions = Just InvestigatorIsAlone
-  }
-
-instance HasActions env LoneWolf where
-  getActions i (WhenTurnBegins who) (LoneWolf x) | ownedBy x i && i == who =
-    pure [ability x]
-  getActions iid window (LoneWolf attrs) = getActions iid window attrs
+instance HasActions LoneWolf where
+  getActions (LoneWolf x) =
+    [ restrictedAbility
+        x
+        1
+        (OwnsThis <> InvestigatorIsAlone)
+        (ReactionAbility (TurnBegins When You) Free)
+    ]
 
 instance HasModifiersFor env LoneWolf
 

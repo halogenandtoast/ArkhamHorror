@@ -15,7 +15,7 @@ import Arkham.Types.Name
 import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Window as W
 
 class IsAsset a
 
@@ -317,7 +317,7 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs whe
         applyModifier (Uses uType m) (AdditionalStartingUses n) =
           Uses uType (n + m)
         applyModifier m _ = m
-      push $ CheckWindow iid [WhenEnterPlay $ toTarget a]
+      push $ CheckWindow iid [W.when $ W.EnterPlay $ toTarget a]
       pure
         $ a
         & (investigatorL ?~ iid)

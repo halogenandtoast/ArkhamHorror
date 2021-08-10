@@ -16,13 +16,10 @@ import Arkham.Types.Target
 
 newtype Run = Run ActAttrs
   deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasActions, HasModifiersFor env)
 
 run :: ActCard Run
 run = act (1, A) Run Cards.run Nothing
-
-instance HasActions env Run where
-  getActions iid window (Run attrs) = getActions iid window attrs
 
 instance ActRunner env => RunMessage env Run where
   runMessage msg a@(Run attrs@ActAttrs {..}) = case msg of

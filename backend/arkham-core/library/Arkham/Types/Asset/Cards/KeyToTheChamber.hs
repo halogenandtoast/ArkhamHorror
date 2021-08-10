@@ -14,8 +14,8 @@ import Arkham.Types.Exception
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype KeyToTheChamber = KeyToTheChamber AssetAttrs
   deriving anyclass IsAsset

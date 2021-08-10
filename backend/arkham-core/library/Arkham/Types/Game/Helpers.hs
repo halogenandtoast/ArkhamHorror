@@ -114,7 +114,7 @@ getCanPerformAbility iid window Ability {..} =
       Action.Resource -> pure True
     ActionAbility Nothing _ -> pure True
     FastAbility _ -> pure True
-    ReactionAbility _ -> pure True
+    ReactionAbility _ _ -> pure True
     ForcedAbility -> pure True
     AbilityEffect _ -> pure True
 
@@ -158,7 +158,7 @@ getCanAffordAbilityCost iid Ability {..} = case abilityType of
     (||)
     (getCanAffordCost iid abilitySource mAction cost)
     (getCanAffordCost iid abilitySource mBeforeAction cost)
-  ReactionAbility cost -> getCanAffordCost iid abilitySource Nothing cost
+  ReactionAbility _ cost -> getCanAffordCost iid abilitySource Nothing cost
   FastAbility cost -> getCanAffordCost iid abilitySource Nothing cost
   ForcedAbility -> pure True
   AbilityEffect _ -> pure True
@@ -170,7 +170,7 @@ getCanAffordUse
   -> m Bool
 getCanAffordUse iid ability = case abilityLimit ability of
   NoLimit -> case abilityType ability of
-    ReactionAbility _ ->
+    ReactionAbility _ _ ->
       notElem (iid, ability) . map unUsedAbility <$> getList ()
     ForcedAbility -> notElem (iid, ability) . map unUsedAbility <$> getList ()
     ActionAbility _ _ -> pure True
@@ -773,8 +773,8 @@ getIsPlayableWithResources iid availableResources windows c@(PlayerCard _) = do
     (pure False)
     (cardInFastWindows iid c windows)
     (cdFastWindow pcDef)
-  canEvade <- hasEvadeActions iid NonFast
-  canFight <- hasFightActions iid NonFast
+  canEvade <- hasEvadeActions iid (Matcher.DuringTurn You)
+  canFight <- hasFightActions iid (Matcher.DuringTurn You)
   passesLimits <- allM passesLimit (cdLimits pcDef)
   pure
     $ (cdCardType pcDef /= SkillType)

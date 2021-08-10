@@ -4,6 +4,7 @@ module Arkham.Types.Matcher where
 
 import Arkham.Prelude
 
+import Arkham.Types.Action
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardType
@@ -12,6 +13,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
+import Arkham.Types.Token
 import Arkham.Types.Trait
 
 type Who = InvestigatorMatcher
@@ -264,7 +266,7 @@ data WindowMatcher
   | EnemyEvaded When Who EnemyMatcher
   | MythosStep WindowMythosStepMatcher
   | EnemyAttacks When Who EnemyMatcher
-  | RevealChaosToken When Who WindowTokenMatcher
+  | RevealChaosToken When Who TokenMatcher
   | SkillTestResult When Who SkillTestMatcher SkillTestResultMatcher
   | WhenWouldHaveSkillTestResult Who SkillTestMatcher SkillTestResultMatcher
   | WhenEnemySpawns Where EnemyMatcher
@@ -277,6 +279,7 @@ data WindowMatcher
   | PhaseBegins When WindowPhaseMatcher
   | PlayerHasPlayableCard ExtendedCardMatcher
   | WhenAssetEntersPlay AssetMatcher
+  | WhenRevealToken SkillTestMatcher TokenMatcher
   | Enters When Who Where
   | AnyWindow
   deriving stock (Show, Eq, Generic)
@@ -288,7 +291,11 @@ data WindowTimingMatcher = When | After
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data SkillTestMatcher = WhileInvestigating | WhileAttackingAnEnemy | AnySkillTest
+data SkillTestMatcher
+  = WhileInvestigating
+  | WhileAttackingAnEnemy
+  | AnySkillTest
+  | SkillTestAtYourLocation
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -300,9 +307,22 @@ data ValueMatcher = LessThan (GameValue Int) | AnyValue
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data WindowTokenMatcher = WithNegativeModifier
+data TokenMatcher
+  = WithNegativeModifier
+  | TokenFaceIs TokenFace
+  | TokenMatchesAny [TokenMatcher]
+  | AnyToken
+  | TokenMatches [TokenMatcher]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+instance Semigroup TokenMatcher where
+  AnyToken <> x = x
+  x <> AnyToken = x
+  TokenMatches xs <> TokenMatches ys = TokenMatches $ xs <> ys
+  TokenMatches xs <> x = TokenMatches $ xs <> [x]
+  x <> TokenMatches xs = TokenMatches $ x : xs
+  x <> y = TokenMatches [x, y]
 
 data WindowPhaseMatcher = AnyPhase
   deriving stock (Show, Eq, Generic)
@@ -311,3 +331,22 @@ data WindowPhaseMatcher = AnyPhase
 data WindowMythosStepMatcher = WhenAllDrawEncounterCard
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data ActionMatcher
+  = ActionOnLocation LocationId
+  | ActionIs Action
+  | ActionWindow WindowMatcher
+  | ActionMatches [ActionMatcher]
+  | AnyAction
+  | ActionOnScenarioCard
+
+instance Semigroup ActionMatcher where
+  AnyAction <> x = x
+  x <> AnyAction = x
+  ActionMatches xs <> ActionMatches ys = ActionMatches $ xs <> ys
+  ActionMatches xs <> x = ActionMatches $ xs <> [x]
+  x <> ActionMatches xs = ActionMatches $ x : xs
+  x <> y = ActionMatches [x, y]
+
+instance Monoid ActionMatcher where
+  mempty = AnyAction

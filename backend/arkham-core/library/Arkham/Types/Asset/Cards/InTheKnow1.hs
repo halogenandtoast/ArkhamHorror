@@ -15,8 +15,8 @@ import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype InTheKnow1 = InTheKnow1 AssetAttrs
   deriving anyclass IsAsset
@@ -35,13 +35,9 @@ instance HasActions InTheKnow1 where
 
 instance HasModifiersFor env InTheKnow1
 
--- investigate is 101
-investigateAction :: [Ability] -> Maybe Ability
-investigateAction = find ((== 101) . abilityIndex)
-
 instance
   ( Query LocationMatcher env
-  , HasActions env LocationId
+  , Query ActionMatcher env
   , HasId LocationId env InvestigatorId
   , HasQueue env
   , HasModifiersFor env ()
@@ -51,13 +47,12 @@ instance
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       investigatorLocation <- getId @LocationId iid
       locations <- selectList $ RevealedLocation <> InvestigatableLocation
-      locationsWithActions <- traverse
-        (traverseToSnd $ getActions iid NonFast)
+      locationsWithInvestigate <- concat <$> for
         locations
-      let
-        locationsWithInvestigateActions = mapMaybe
-          (\(lid, actions) -> (lid, ) <$> investigateAction actions)
-          locationsWithActions
+        \lid -> do
+          investigateActions <-
+            selectList $ ActionOnLocation lid <> ActionIs Action.Investigate
+          pure $ map (lid, ) investigateActions
       a <$ push
         (chooseOne
           iid
@@ -67,7 +62,7 @@ instance
               , UseAbility iid investigate
               , SetLocationAsIf iid investigatorLocation
               ]
-          | (location, investigate) <- locationsWithInvestigateActions
+          | (location, investigate) <- locationsWithInvestigate
           ]
         )
     _ -> InTheKnow1 <$> runMessage msg attrs

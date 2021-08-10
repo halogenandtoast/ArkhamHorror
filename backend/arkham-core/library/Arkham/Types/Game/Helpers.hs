@@ -21,18 +21,20 @@ import Arkham.Types.Keyword
 import qualified Arkham.Types.Keyword as Keyword
 import qualified Arkham.Types.Label as Location
 import Arkham.Types.Matcher
+import qualified Arkham.Types.Matcher as Matcher
 import Arkham.Types.Message
+import qualified Arkham.Types.Message as Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Query
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait (Trait, toTraits)
 import Arkham.Types.Window
-import Arkham.Types.WindowMatcher (WindowMatcher)
-import qualified Arkham.Types.WindowMatcher as Matcher
+import qualified Arkham.Types.Window as Window
 import Control.Monad.Extra (allM, anyM)
 import Data.HashSet (size)
 import Data.UUID (nil)
@@ -50,9 +52,9 @@ cancelToken :: (HasQueue env, MonadIO m, MonadReader env m) => Token -> m ()
 cancelToken token = withQueue $ \queue ->
   ( filter
     (\case
-      When (RevealToken _ _ token') | token == token' -> False
+      Message.When (RevealToken _ _ token') | token == token' -> False
       RevealToken _ _ token' | token == token' -> False
-      After (RevealToken _ _ token') | token == token' -> False
+      Message.After (RevealToken _ _ token') | token == token' -> False
       RequestedTokens _ _ [token'] | token == token' -> False
       RequestedTokens{} -> error "not setup for multiple tokens"
       _ -> True
@@ -65,9 +67,10 @@ replaceToken :: (HasQueue env, MonadIO m, MonadReader env m) => Token -> m ()
 replaceToken token = withQueue $ \queue ->
   ( map
     (\case
-      When (RevealToken s i _) -> When (RevealToken s i token)
+      Message.When (RevealToken s i _) -> Message.When (RevealToken s i token)
       RevealToken s i _ -> RevealToken s i token
-      After (RevealToken s i _) -> After (RevealToken s i token)
+      Message.After (RevealToken s i _) ->
+        Message.After (RevealToken s i token)
       RequestedTokens source' miid [_] -> RequestedTokens source' miid [token]
       RequestedTokens{} -> error "not setup for multiple tokens"
       m -> m
@@ -75,15 +78,6 @@ replaceToken token = withQueue $ \queue ->
     queue
   , ()
   )
-
-withBaseActions
-  :: (MonadIO m, HasActions env a, MonadReader env m)
-  => InvestigatorId
-  -> Window
-  -> a
-  -> m [Ability]
-  -> m [Ability]
-withBaseActions iid window a f = (<>) <$> getActions iid window a <*> f
 
 getCanPerformAbility
   :: (MonadReader env m, MonadIO m, CanCheckPlayable env)
@@ -128,7 +122,7 @@ getCanPerformAbilityRestriction
   :: (MonadReader env m, CanCheckFast env, CanCheckPlayable env, MonadIO m)
   => InvestigatorId
   -> [Window]
-  -> PlayRestriction
+  -> Restriction
   -> m Bool
 getCanPerformAbilityRestriction iid windows restrictions = do
   lid' <- getId @LocationId iid
@@ -308,48 +302,6 @@ getCanAffordCost iid source mAction = \case
 
 isForcedAction :: Ability -> Bool
 isForcedAction ability = abilityType ability == ForcedAbility
-
-instance
-  ( HasCostPayment env
-  , HasSet Trait env Source
-  , HasList UsedAbility env ()
-  , CanCheckPlayable env
-  )
-  => HasActions env () where
-  getActions iid window _ = do
-    actions' <- concat <$> traverse
-      (getActions iid window)
-      ([minBound .. maxBound] :: [ActionType])
-    actions'' <- catMaybes <$> for
-      actions'
-      \ability -> do
-        modifiers' <- getModifiers
-          (InvestigatorSource iid)
-          (sourceToTarget $ abilitySource ability)
-        investigatorModifiers <- getModifiers
-          (InvestigatorSource iid)
-          (InvestigatorTarget iid)
-        cardClasses <- case abilitySource ability of
-          AssetSource aid -> insertSet Neutral <$> getSet aid
-          _ -> pure $ singleton Neutral
-        let
-          prevents (CanOnlyUseCardsInRole role) =
-            null (singleton role `intersect` cardClasses)
-          prevents _ = False
-        if any prevents investigatorModifiers
-          then pure Nothing
-          else pure $ Just $ applyAbilityModifiers ability modifiers'
-    let forcedActions = nub $ filter isForcedAction actions''
-    forcedActions' <- filterM (getCanAffordAbility iid) forcedActions
-    if null forcedActions'
-      then filterM
-        (\action -> liftA2
-          (&&)
-          (getCanPerformAbility iid window action)
-          (getCanAffordAbility iid action)
-        )
-        actions''
-      else pure forcedActions'
 
 enemyAtInvestigatorLocation
   :: ( MonadReader env m
@@ -739,52 +691,29 @@ fightAction source n costs =
   mkAbility source n (ActionAbility (Just Action.Fight) (Costs costs))
 
 hasFightActions
-  :: forall env m
-   . (MonadIO m, MonadReader env m, HasActions env ActionType)
+  :: (MonadIO m, MonadReader env m, Query ActionMatcher env)
   => InvestigatorId
-  -> Window
+  -> WindowMatcher
   -> m Bool
-hasFightActions i NonFast = do
-  enemyActions <- getActions i NonFast EnemyActionType
-  pure $ flip
-    any
-    enemyActions
-    \ability -> case abilityType ability of
-      ActionAbility (Just Action.Evade) _ -> True
-      _ -> False
-hasFightActions _ _ = pure False
+hasFightActions _ window =
+  notNull <$> select (ActionIs Action.Fight <> ActionWindow window)
 
 hasEvadeActions
-  :: forall env m
-   . (MonadIO m, MonadReader env m, HasActions env ActionType)
+  :: (MonadIO m, MonadReader env m, Query ActionMatcher env)
   => InvestigatorId
-  -> Window
+  -> WindowMatcher
   -> m Bool
-hasEvadeActions i NonFast = do
-  enemyActions <- getActions i NonFast EnemyActionType
-  pure $ flip
-    any
-    enemyActions
-    \ability -> case abilityType ability of
-      ActionAbility (Just Action.Evade) _ -> True
-      _ -> False
-hasEvadeActions _ _ = pure False
+hasEvadeActions _ window =
+  notNull <$> select (ActionIs Action.Evade <> ActionWindow window)
 
 hasInvestigateActions
   :: forall env m
-   . (MonadIO m, MonadReader env m, HasActions env ActionType)
+   . (MonadIO m, MonadReader env m, Query ActionMatcher env)
   => InvestigatorId
-  -> Window
+  -> WindowMatcher
   -> m Bool
-hasInvestigateActions i NonFast = do
-  locationActions <- getActions i NonFast LocationActionType
-  pure $ flip
-    any
-    locationActions
-    \ability -> case abilityType ability of
-      ActionAbility (Just Action.Investigate) _ -> True
-      _ -> False
-hasInvestigateActions _ _ = pure False
+hasInvestigateActions _ window = do
+  notNull <$> select (ActionIs Action.Evade <> ActionWindow window)
 
 type CanCheckPlayable env
   = ( HasModifiersFor env ()
@@ -802,7 +731,7 @@ type CanCheckPlayable env
     , HasSet Trait env EnemyId
     , HasSet Trait env EnemyId
     , HasCount ClueCount env LocationId
-    , HasActions env ActionType
+    , Query ActionMatcher env
     , HasSet EnemyId env InvestigatorId
     , HasCount ResourceCount env InvestigatorId
     , HasCount DoomCount env AssetId
@@ -834,7 +763,7 @@ getIsPlayableWithResources _ _ _ (EncounterCard _) = pure False -- TODO: there m
 getIsPlayableWithResources iid availableResources windows c@(PlayerCard _) = do
   modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
   location <- getId @LocationId iid
-  let notFastWindow = any (`elem` windows) [DuringTurn iid]
+  let notFastWindow = any (`elem` windows) [Window.DuringTurn iid]
   modifiedCardCost <- getModifiedCardCost iid c
   passesRestrictions <- maybe
     (pure True)
@@ -892,7 +821,7 @@ passesRestriction
   => InvestigatorId
   -> LocationId
   -> [Window]
-  -> PlayRestriction
+  -> Restriction
   -> m Bool
 passesRestriction iid location windows = \case
   CardExists cardMatcher -> notNull <$> getList @Card cardMatcher
@@ -945,8 +874,8 @@ passesRestriction iid location windows = \case
   NoEnemyExists matcher -> null <$> getSet @EnemyId matcher
   AssetExists matcher -> notNull <$> getSet @AssetId matcher
   InvestigatorExists matcher -> notNull <$> getSet @InvestigatorId matcher
-  PlayRestrictions rs -> allM (passesRestriction iid location windows) rs
-  AnyPlayRestriction rs -> anyM (passesRestriction iid location windows) rs
+  Restrictions rs -> allM (passesRestriction iid location windows) rs
+  AnyRestriction rs -> anyM (passesRestriction iid location windows) rs
   LocationExists matcher -> notNull <$> getSet @LocationId matcher
   AnotherInvestigatorInSameLocation -> liftA2
     (&&)
@@ -964,18 +893,7 @@ passesRestriction iid location windows = \case
       assetIds
     pure $ investigatorDoomCount > 0 || notNull assetsWithDoomCount
   ScenarioCardHasResignAbility -> do
-    actions' <- concat . concat <$> sequence
-      [ traverse
-          (getActions iid window)
-          ([minBound .. maxBound] :: [ActionType])
-      | window <- windows
-      ]
-    pure $ flip
-      any
-      actions'
-      \ability -> case abilityType ability of
-        ActionAbility (Just Action.Resign) _ -> True
-        _ -> False
+    notNull <$> select (ActionIs Action.Resign <> ActionOnScenarioCard)
 
 getModifiedCardCost
   :: (MonadReader env m, HasModifiersFor env (), HasList Card env CardMatcher)
@@ -1058,11 +976,11 @@ cardInFastWindows iid c windows matcher = anyM
       anyM (getIsPlayable iid [window']) cards
     Matcher.PhaseBegins _whenMatcher phaseMatcher -> case window' of
       AnyPhaseBegins -> pure $ phaseMatcher == Matcher.AnyPhase
-      PhaseBegins _ -> case phaseMatcher of
+      Window.PhaseBegins _ -> case phaseMatcher of
         Matcher.AnyPhase -> pure True
       _ -> pure False
     Matcher.AfterTurnBegins whoMatcher -> case window' of
-      AfterTurnBegins who -> matchWho who whoMatcher
+      Window.AfterTurnBegins who -> matchWho who whoMatcher
       _ -> pure False
     Matcher.WhenWouldHaveSkillTestResult whoMatcher _ skillTestResultMatcher ->
       case skillTestResultMatcher of
@@ -1111,14 +1029,14 @@ cardInFastWindows iid c windows matcher = anyM
           _ -> pure False
         _ -> pure False
     Matcher.DuringTurn whoMatcher -> case window' of
-      DuringTurn who -> matchWho who whoMatcher
-      FastPlayerWindow -> do
+      Window.DuringTurn who -> matchWho who whoMatcher
+      Window.FastPlayerWindow -> do
         miid <- selectOne TurnInvestigator
         pure $ Just iid == miid
       _ -> pure False
     Matcher.OrWindowMatcher matchers -> anyM (windowMatches window') matchers
     Matcher.WhenEnemySpawns whereMatcher enemyMatcher -> case window' of
-      WhenEnemySpawns enemyId locationId -> liftA2
+      Window.WhenEnemySpawns enemyId locationId -> liftA2
         (&&)
         (enemyMatches enemyId enemyMatcher)
         (locationMatches locationId whereMatcher)
@@ -1138,19 +1056,20 @@ cardInFastWindows iid c windows matcher = anyM
           (matchWho who whoMatcher)
         _ -> pure False
     Matcher.MythosStep mythosStepMatcher -> case window' of
-      WhenAllDrawEncounterCard ->
+      Window.WhenAllDrawEncounterCard ->
         pure $ mythosStepMatcher == Matcher.WhenAllDrawEncounterCard
       _ -> pure False
     Matcher.RevealChaosToken whenMatcher whoMatcher tokenMatcher ->
       case window' of
-        WhenRevealToken who token | whenMatcher == Matcher.When -> liftA2
+        Window.WhenRevealToken who token | whenMatcher == Matcher.When -> liftA2
           (&&)
           (matchWho who whoMatcher)
           (matchToken who token tokenMatcher)
-        AfterRevealToken who token | whenMatcher == Matcher.After -> liftA2
-          (&&)
-          (matchWho who whoMatcher)
-          (matchToken who token tokenMatcher)
+        Window.AfterRevealToken who token | whenMatcher == Matcher.After ->
+          liftA2
+            (&&)
+            (matchWho who whoMatcher)
+            (matchToken who token tokenMatcher)
         _ -> pure False
     Matcher.EnemyDefeated timingMatcher whoMatcher enemyMatcher ->
       case window' of
@@ -1160,7 +1079,7 @@ cardInFastWindows iid c windows matcher = anyM
             (enemyMatches enemyId enemyMatcher)
             (matchWho who whoMatcher)
         _ -> pure False
-    Matcher.FastPlayerWindow -> pure $ window' == FastPlayerWindow
+    Matcher.FastPlayerWindow -> pure $ window' == Window.FastPlayerWindow
     Matcher.DealtDamageOrHorror whoMatcher -> case whoMatcher of
       You -> case window' of
         WhenWouldTakeDamageOrHorror _ (InvestigatorTarget iid') _ _ ->

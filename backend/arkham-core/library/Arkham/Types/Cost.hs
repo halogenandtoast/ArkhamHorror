@@ -72,6 +72,7 @@ data Cost
   | GroupClueCost (GameValue Int) (Maybe LocationMatcher)
   | PlaceClueOnLocationCost Int
   | ExhaustCost Target
+  | ExhaustThis
   | ExhaustAssetCost AssetMatcher
   | RemoveCost Target
   | Costs [Cost]

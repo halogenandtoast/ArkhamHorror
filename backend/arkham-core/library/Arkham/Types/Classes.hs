@@ -52,6 +52,7 @@ class (Hashable set, Eq set) => HasSet set env a where
   getSetList a = setToList <$> getSet a
 
 type family QueryElement a where
+  QueryElement ActionMatcher = Ability
   QueryElement AssetMatcher = AssetId
   QueryElement InvestigatorMatcher = InvestigatorId
   QueryElement LocationMatcher = LocationId

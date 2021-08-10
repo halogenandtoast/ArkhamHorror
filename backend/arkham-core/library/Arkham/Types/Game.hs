@@ -997,6 +997,50 @@ instance HasGame env => HasSet EnemyId env LocationMatcher where
    where
     missingLocation = "No location with matching: " <> show locationMatcher
 
+instance HasGame env => Query ActionMatcher env where
+  select = do
+    actions' <- concat <$> sequence
+      [ map getActions locations
+      , map getActions investigators
+      , map getActions skills
+      , map getActions assets
+      , map getActions event
+      , map getActions enemies
+      , map getActions treacheries
+      , map getActions act
+      , map getActions agenda]
+    actions'' <- catMaybes <$> for
+      actions'
+      \ability -> do
+        modifiers' <- getModifiers
+          (InvestigatorSource iid)
+          (sourceToTarget $ abilitySource ability)
+        investigatorModifiers <- getModifiers
+          (InvestigatorSource iid)
+          (InvestigatorTarget iid)
+        cardClasses <- case abilitySource ability of
+          AssetSource aid -> insertSet Neutral <$> getSet aid
+          _ -> pure $ singleton Neutral
+        let
+          prevents (CanOnlyUseCardsInRole role) =
+            null (singleton role `intersect` cardClasses)
+          prevents _ = False
+        if any prevents investigatorModifiers
+          then pure Nothing
+          else pure $ Just $ applyAbilityModifiers ability modifiers'
+    let forcedActions = nub $ filter isForcedAction actions''
+    forcedActions' <- filterM (getCanAffordAbility iid) forcedActions
+    if null forcedActions'
+      then filterM
+        (\action -> liftA2
+          (&&)
+          (getCanPerformAbility iid window action)
+          (getCanAffordAbility iid action)
+        )
+        actions''
+      else pure forcedActions'
+
+
 instance HasGame env => HasSet FightableEnemyId env (InvestigatorId, Source) where
   getSet (iid, source) = do
     fightAnywhereEnemyIds <- getSetList () >>= filterM \eid -> do

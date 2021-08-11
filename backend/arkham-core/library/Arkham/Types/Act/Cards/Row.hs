@@ -23,7 +23,6 @@ import Arkham.Types.Restriction
 import qualified Arkham.Types.Restriction as R
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window hiding (when)
 
 newtype Row = Row ActAttrs
   deriving anyclass IsAct
@@ -55,7 +54,7 @@ instance
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       _ <- popMessage
       a <$ push (DiscardTopOfEncounterDeck iid 5 (Just $ toTarget attrs))
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId attrs) source)
     AdvanceAct aid _ | aid == toId attrs && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 1)

@@ -15,7 +15,6 @@ import Arkham.Types.Action
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
-import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
@@ -33,7 +32,7 @@ allIn = act (3, A) AllIn Cards.allIn Nothing
 
 instance HasActions AllIn where
   getActions (AllIn attrs) =
-    restrictedAbility
+    [ restrictedAbility
         (AssetProxySource
           (assetIs Cards.drFrancisMorgan <> AssetIsUnowned)
           (toSource attrs)
@@ -41,27 +40,16 @@ instance HasActions AllIn where
         1
         OnSameLocation
         (ActionAbility (Just Parley) $ ActionCost 1)
-      : getActions attrs
+      , restrictedAbility
+        attrs
+        2
+        (Negate $ InvestigatorExists UneliminatedInvestigator)
+        (ForcedAbility AnyWindow)
+      ]
+      <> getActions attrs
 
 instance ActRunner env => RunMessage env AllIn where
   runMessage msg a@(AllIn attrs@ActAttrs {..}) = case msg of
-    InvestigatorResigned _ -> do
-      investigatorIds <- getSet @InScenarioInvestigatorId ()
-      a <$ when
-        (null investigatorIds)
-        (push $ AdvanceAct actId (toSource attrs))
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      push $ chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
-      pure $ AllIn $ attrs & sequenceL .~ Act 3 B
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
-      resignedWithDrFrancisMorgan <- elem (ResignedCardCode $ CardCode "02080")
-        <$> getList ()
-      a <$ push
-        (ScenarioResolution $ Resolution $ if resignedWithDrFrancisMorgan
-          then 2
-          else 1
-        )
     UseCardAbility iid (ProxySource _ source) _ 1 _
       | isSource attrs source && onSide A attrs -> do
         maid <- selectOne (assetIs Cards.drFrancisMorgan)
@@ -76,6 +64,16 @@ instance ActRunner env => RunMessage env AllIn where
               SkillWillpower
               3
             )
+    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+      a <$ push (AdvanceAct (toId attrs) (toSource attrs))
+    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+      resignedWithDrFrancisMorgan <- elem (ResignedCardCode $ CardCode "02080")
+        <$> getList ()
+      a <$ push
+        (ScenarioResolution $ Resolution $ if resignedWithDrFrancisMorgan
+          then 2
+          else 1
+        )
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source && onSide A attrs -> do
         maid <- selectOne (assetIs Cards.drFrancisMorgan)

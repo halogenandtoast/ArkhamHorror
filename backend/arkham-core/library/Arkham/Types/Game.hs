@@ -1008,7 +1008,8 @@ instance HasGame env => Query ActionMatcher env where
       , map getActions enemies
       , map getActions treacheries
       , map getActions act
-      , map getActions agenda]
+      , map getActions agenda
+      ]
     actions'' <- catMaybes <$> for
       actions'
       \ability -> do
@@ -1674,20 +1675,16 @@ instance HasGame env => HasList Card env CardMatcher where
     underneathCards <-
       map unUnderneathCard . concat <$> traverse getList investigatorIds
     let allCards' = handCards <> underneathCards
-    filterM (`matches` matcher) allCards'
-   where
-    matches c = \case
-      NonWeakness -> pure $ not (cdWeakness $ toCardDef c)
-      NonExceptional -> pure $ not (cdExceptional $ toCardDef c)
-      CardWithCardCode cc -> pure $ toCardCode c == cc
-      CardWithTitle title -> pure $ nameTitle (toName c) == title
-      CardWithTrait t -> pure $ t `member` toTraits c
-      CardWithClass cc -> pure $ cdClassSymbol (toCardDef c) == Just cc
-      CardWithType ct -> pure $ toCardType c == ct
-      CardWithOneOf ms -> anyM (matches c) ms
-      CardMatches ms -> allM (matches c) ms
-      CardWithoutKeyword k -> pure $ k `notMember` cdKeywords (toCardDef c)
-      AnyCard -> pure True
+    pure $ filter (`matchCard` matcher) allCards'
+
+instance HasGame env => HasSet SetAsideCardId env CardMatcher where
+  getList matcher = do
+    cards <- map unSetAsideCard <$> (getList
+      . fromJustNote "scenario has to be set"
+      . modeScenario
+      . view modeL
+      =<< getGame)
+    pure $ map (SetAsideCardId . toCardId) $ filter (`matchCard` matcher) cards
 
 instance HasGame env => HasList Card env ExtendedCardMatcher where
   getList matcher = do

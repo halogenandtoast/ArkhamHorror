@@ -17,7 +17,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Query
+import Arkham.Types.Restriction
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Target
 import Arkham.Types.Token
@@ -42,28 +42,20 @@ instance HasActions BeginnersLuck where
       )
         { abilityLimit = GroupLimit PerRound 1
         }
-    ]
+      , restrictedAbility
+        x
+        2
+        (InvestigatorsHaveSpendableClues $ AtLeast (PerPlayer 4))
+        (Objective $ ForcedAbility AnyWindow)
+      ]
+      <> getActions x
 
 instance
   ( ActAttrsRunner env
   , HasList Token env ()
-  , HasCount SpendableClueCount env ()
   )
   => RunMessage env BeginnersLuck where
   runMessage msg a@(BeginnersLuck attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
-      lid <- getRandom
-      a <$ pushAll
-        [ PlaceLocation lid Locations.darkenedHall
-        , DiscardEncounterUntilFirst
-          (toSource attrs)
-          (CardWithType EnemyType <> CardWithTrait Criminal)
-        , NextAct aid "02067"
-        ]
-    RequestedEncounterCard source (Just ec) | isSource attrs source -> do
-      darkenedHallId <- fromJustNote "missing darkened hall"
-        <$> getId (LocationWithTitle "Darkened Hall")
-      a <$ push (SpawnEnemyAt (EncounterCard ec) darkenedHallId)
     UseCardAbility iid source [W.Window W.When (W.RevealToken _ token)] 1 _
       | isSource attrs source -> do
         tokensInBag <- getList @Token ()
@@ -86,10 +78,19 @@ instance
             ]
           , Remember $ Cheated iid
           ]
-    After (GainClues _ _) -> do
-      totalClues <- unSpendableClueCount <$> getCount ()
-      requiredClues <- getPlayerCountValue (PerPlayer 4)
-      a <$ when
-        (totalClues >= requiredClues)
-        (push $ AdvanceAct actId (toSource attrs))
+    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
+      a <$ push (AdvanceAct (toId attrs) (toSource attrs))
+    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+      lid <- getRandom
+      a <$ pushAll
+        [ PlaceLocation lid Locations.darkenedHall
+        , DiscardEncounterUntilFirst
+          (toSource attrs)
+          (CardWithType EnemyType <> CardWithTrait Criminal)
+        , NextAct aid "02067"
+        ]
+    RequestedEncounterCard source (Just ec) | isSource attrs source -> do
+      darkenedHallId <- fromJustNote "missing darkened hall"
+        <$> getId (LocationWithTitle "Darkened Hall")
+      a <$ push (SpawnEnemyAt (EncounterCard ec) darkenedHallId)
     _ -> BeginnersLuck <$> runMessage msg attrs

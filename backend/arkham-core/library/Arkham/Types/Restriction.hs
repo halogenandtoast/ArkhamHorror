@@ -27,8 +27,10 @@ data Restriction
   | AssetExists AssetMatcher
   | InvestigatorExists InvestigatorMatcher
   | EnemyExists EnemyMatcher
+  | SetAsideCardExists CardMatcher
   | NoEnemyExists EnemyMatcher
   | LocationExists LocationMatcher
+  | InvestigatorsHaveSpendableClues ValueMatcher
   | OwnCardWithDoom
   | OwnsThis
   | OnSameLocation
@@ -38,6 +40,7 @@ data Restriction
   | Restrictions [Restriction]
   | AnyRestriction [Restriction]
   | NoRestriction
+  | Negate Restriction
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

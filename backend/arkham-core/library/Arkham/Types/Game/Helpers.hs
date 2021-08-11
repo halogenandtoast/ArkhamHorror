@@ -747,6 +747,7 @@ type CanCheckPlayable env
   = ( HasModifiersFor env ()
     , HasCostPayment env
     , HasSet Trait env Source
+    , HasSet SetAsideCardId env CardMatcher
     , Query AssetMatcher env
     , Query InvestigatorMatcher env
     , Query EnemyMatcher env
@@ -861,6 +862,8 @@ passesRestriction
   -> Restriction
   -> m Bool
 passesRestriction iid source windows = \case
+  Negate restriction ->
+    not <$> passesRestriction iid source windows restriction
   OwnsThis -> case source of
     AssetSource aid -> do
       mOwner <- getId aid
@@ -924,12 +927,15 @@ passesRestriction iid source windows = \case
       (pure $ location /= LocationId (CardId nil))
       ((> 0) . unClueCount <$> getCount location)
   EnemyExists matcher -> notNull <$> getSet @EnemyId matcher
+  SetAsideCardExists matcher -> notNull <$> getSet @SetAsideCardId matcher
   NoEnemyExists matcher -> null <$> getSet @EnemyId matcher
   AssetExists matcher -> notNull <$> getSet @AssetId matcher
   InvestigatorExists matcher -> notNull <$> getSet @InvestigatorId matcher
   Restrictions rs -> allM (passesRestriction iid source windows) rs
   AnyRestriction rs -> anyM (passesRestriction iid source windows) rs
   LocationExists matcher -> notNull <$> getSet @LocationId matcher
+  InvestigatorsHaveSpendableClues valueMatcher ->
+    (`gameValueMatches` valueMatcher) . unSpendableClueCount =<< getCount ()
   AnotherInvestigatorInSameLocation -> do
     location <- getId iid
     liftA2
@@ -1163,8 +1169,10 @@ windowMatches iid window' = \case
       _ -> pure False
     _ -> pure False
   Matcher.DrawCard whenMatcher whoMatcher cardMatcher -> case window' of
-    Window t (Window.DrawCard who card) | whenMatcher == t ->
-      liftA2 (&&) (matchWho iid who whoMatcher) (matchCard card cardMatcher)
+    Window t (Window.DrawCard who card) | whenMatcher == t -> liftA2
+      (&&)
+      (matchWho iid who whoMatcher)
+      (pure $ matchCard card cardMatcher)
     _ -> pure False
   Matcher.WhenAssetEntersPlay assetMatcher -> case window' of
     Window When (Window.EnterPlay (AssetTarget aid)) ->
@@ -1185,6 +1193,7 @@ matchWho you who = \case
   TurnInvestigator -> do
     mTurn <- selectOne TurnInvestigator
     pure $ Just who == mTurn
+  UneliminatedInvestigator -> member who <$> getSet UneliminatedInvestigator
   InvestigatorAtYourLocation ->
     liftA2 (==) (getId @LocationId you) (getId @LocationId who)
   InvestigatorEngagedWith enemyMatcher -> do
@@ -1274,20 +1283,20 @@ locationMatches investigatorId locationId = \case
       (LocationTarget locationId)
     pure $ CannotInvestigate `notElem` modifiers
 
-matchCard :: Monad m => Card -> CardMatcher -> m Bool
+matchCard :: Card -> CardMatcher -> Bool
 matchCard c' = \case
-  AnyCard -> pure True
-  NonExceptional -> pure . not . cdExceptional $ toCardDef c'
-  NonWeakness -> pure . not . cdWeakness $ toCardDef c'
-  CardWithType cType -> pure $ toCardType c' == cType
-  CardWithTitle title -> pure $ nameTitle (toName c') == title
-  CardWithTrait t -> pure $ t `member` toTraits c'
-  CardWithClass role -> pure $ cdClassSymbol (toCardDef c') == Just role
-  CardWithCardCode cCode -> pure $ toCardCode c' == cCode
-  CardWithOneOf ms -> anyM (matchCard c') ms
-  CardMatches ms -> allM (matchCard c') ms
-  CardWithoutKeyword kw -> pure $ kw `notElem` cdKeywords (toCardDef c')
-  IsEncounterCard -> pure $ toCardType c' `elem` encounterCardTypes
+  AnyCard -> True
+  CardMatches ms -> all (matchCard c') ms
+  CardWithCardCode cCode -> toCardCode c' == cCode
+  CardWithClass role -> cdClassSymbol (toCardDef c') == Just role
+  CardWithOneOf ms -> any (matchCard c') ms
+  CardWithTitle title -> nameTitle (toName c') == title
+  CardWithTrait t -> t `member` toTraits c'
+  CardWithType cType -> toCardType c' == cType
+  CardWithoutKeyword kw -> kw `notElem` cdKeywords (toCardDef c')
+  IsEncounterCard -> toCardType c' `elem` encounterCardTypes
+  NonExceptional -> not . cdExceptional $ toCardDef c'
+  NonWeakness -> not . cdWeakness $ toCardDef c'
 
 matchToken
   :: (HasTokenValue env (), MonadReader env m, MonadIO m)

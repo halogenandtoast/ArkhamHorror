@@ -11,11 +11,9 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
-import Arkham.Types.LocationId
-import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Query
 import Arkham.Types.Resolution
+import Arkham.Types.Restriction
 
 newtype SearchingForTheTome = SearchingForTheTome ActAttrs
   deriving anyclass IsAct
@@ -25,17 +23,18 @@ searchingForTheTome :: ActCard SearchingForTheTome
 searchingForTheTome =
   act (3, A) SearchingForTheTome Cards.searchingForTheTome Nothing
 
-instance ActionRunner env => HasActions env SearchingForTheTome where
-  getActions i window (SearchingForTheTome x) = do
-    mRestrictedHall <- getId @(Maybe LocationId)
-      (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
-    case mRestrictedHall of
-      Just restrictedHall -> do
-        mustAdvance <- (== 0) . unClueCount <$> getCount restrictedHall
-        if mustAdvance
-          then pure [mkAbility x 1 ForcedAbility]
-          else getActions i window x
-      Nothing -> getActions i window x
+instance HasActions SearchingForTheTome where
+  getActions (SearchingForTheTome x) =
+    restrictedAbility
+        x
+        1
+        (LocationExists
+          (LocationWithFullTitle "Exhibit Hall" "Restricted Hall"
+          <> LocationWithoutClues
+          )
+        )
+        (Objective $ ForcedAbility AnyWindow)
+      : getActions x
 
 instance ActRunner env => RunMessage env SearchingForTheTome where
   runMessage msg a@(SearchingForTheTome attrs@ActAttrs {..}) = case msg of

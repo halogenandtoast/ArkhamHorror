@@ -26,6 +26,7 @@ data InvestigatorMatcher
   | UnengagedInvestigator
   | NotYou
   | Anyone
+  | UneliminatedInvestigator
   | InvestigatorCanMove
   | InvestigatorEngagedWith EnemyMatcher
   | InvestigatorWithDamage
@@ -65,6 +66,7 @@ data AssetMatcher
   | AssetAt LocationMatcher
   | DiscardableAsset
   | AssetWithDamage
+  | AssetCanBeRevealed -- Carnevale
   | AssetCanBeAssignedDamageBy InvestigatorId
   | AssetCanBeAssignedHorrorBy InvestigatorId
   deriving stock (Show, Eq, Generic)
@@ -323,6 +325,11 @@ data SkillTestMatcher
 data SkillTestResultMatcher = FailureResult ValueMatcher | SuccessResult ValueMatcher | AnyResult
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+
+pattern AtLeast :: GameValue Int -> ValueMatcher
+pattern AtLeast n <- GreaterThanOrEqualTo n where
+  AtLeast n = GreaterThanOrEqualTo n
 
 data ValueMatcher
   = LessThan (GameValue Int)

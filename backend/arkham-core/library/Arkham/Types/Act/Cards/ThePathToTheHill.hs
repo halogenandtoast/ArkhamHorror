@@ -14,7 +14,7 @@ import Arkham.Types.CampaignLogKey
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Message
-import Arkham.Types.Query
+import Arkham.Types.Restriction
 import Arkham.Types.Target
 
 newtype ThePathToTheHill = ThePathToTheHill ActAttrs
@@ -28,13 +28,14 @@ thePathToTheHill = act
   Cards.thePathToTheHill
   (Just $ GroupClueCost (PerPlayer 2) Nothing)
 
-instance ActionRunner env => HasActions env ThePathToTheHill where
-  getActions i window (ThePathToTheHill x) = do
-    clueCount <- unSpendableClueCount <$> getCount ()
-    requiredClueCount <- getPlayerCountValue (PerPlayer 2)
-    if clueCount >= requiredClueCount
-      then pure [mkAbility x 1 ForcedAbility]
-      else getActions i window x
+instance HasActions ThePathToTheHill where
+  getActions (ThePathToTheHill x) =
+    restrictedAbility
+        x
+        1
+        (InvestigatorsHaveSpendableClues $ AtLeast (PerPlayer 2))
+        (Objective $ ForcedAbility AnyWindow)
+      : getActions x
 
 instance ActRunner env => RunMessage env ThePathToTheHill where
   runMessage msg a@(ThePathToTheHill attrs@ActAttrs {..}) = case msg of

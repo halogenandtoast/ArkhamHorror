@@ -5,6 +5,9 @@ import Arkham.Prelude
 newtype CardId = CardId { unCardId :: UUID }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, Random)
 
+newtype SetAsideCardId = SetAsideCardId { unSetAsideCardId :: CardId }
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, Random)
+
 newtype CommittedCardId = CommittedCardId { unCommittedCardId :: CardId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 

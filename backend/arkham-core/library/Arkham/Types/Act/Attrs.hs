@@ -113,7 +113,7 @@ onSide side ActAttrs {..} = actSide actSequence == side
 
 instance HasActions ActAttrs where
   getActions attrs@ActAttrs {..} = case actAdvanceCost of
-    Just cost -> [mkAbility attrs 100 (FastAbility cost)]
+    Just cost -> [mkAbility attrs 100 (Objective $ FastAbility cost)]
     Nothing -> []
 
 type ActAttrsRunner env

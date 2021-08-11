@@ -17,11 +17,10 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Decks
 import Arkham.Types.GameValue
-import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction hiding (After)
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype TheCarnevaleConspiracy = TheCarnevaleConspiracy ActAttrs
   deriving anyclass IsAct
@@ -31,23 +30,27 @@ theCarnevaleConspiracy :: ActCard TheCarnevaleConspiracy
 theCarnevaleConspiracy =
   act (1, A) TheCarnevaleConspiracy Cards.theCarnevaleConspiracy Nothing
 
-ability :: ActAttrs -> Ability
-ability a = mkAbility
-  a
-  1
-  (ActionAbility Nothing
-  $ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) Nothing]
-  )
+instance HasActions TheCarnevaleConspiracy where
+  getActions (TheCarnevaleConspiracy x) =
+    restrictedAbility
+        x
+        1
+        (AssetExists
+          (AssetWithTitle "Masked Carnevale-Goer" <> AssetCanBeRevealed)
+        )
+        (ActionAbility Nothing
+        $ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) Nothing]
+        )
+      : getActions x
 
-instance ActionRunner env => HasActions env TheCarnevaleConspiracy where
-  getActions _ NonFast (TheCarnevaleConspiracy x) = do
-    maskedCarnevaleGoers <- selectList (AssetWithTitle "Masked Carnevale-Goer")
-    filteredMaskedCarnevaleGoers <- flip filterM maskedCarnevaleGoers $ \aid ->
-      do
-        modifiers' <- getModifiers (toSource x) (AssetTarget aid)
-        pure $ CannotBeRevealed `notElem` modifiers'
-    pure [ ability x | notNull filteredMaskedCarnevaleGoers ]
-  getActions iid window (TheCarnevaleConspiracy x) = getActions iid window x
+  -- getActions _ NonFast (TheCarnevaleConspiracy x) = do
+  --   maskedCarnevaleGoers <- selectList (AssetWithTitle "Masked Carnevale-Goer")
+  --   filteredMaskedCarnevaleGoers <- flip filterM maskedCarnevaleGoers $ \aid ->
+  --     do
+  --       modifiers' <- getModifiers (toSource x) (AssetTarget aid)
+  --       pure $ CannotBeRevealed `notElem` modifiers'
+  --   pure [ ability x | notNull filteredMaskedCarnevaleGoers ]
+  -- getActions iid window (TheCarnevaleConspiracy x) = getActions iid window x
 
 instance
   ( HasList UnderneathCard env ActDeck

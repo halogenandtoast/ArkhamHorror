@@ -16,6 +16,8 @@ newtype CampusSafety = CampusSafety ActAttrs
 campusSafety :: ActCard CampusSafety
 campusSafety = act (3, A) CampusSafety Cards.campusSafety Nothing
 
+-- While this has an objective on it, it is sort of weird, so not handling it here
+
 instance ActRunner env => RunMessage env CampusSafety where
   runMessage msg a@(CampusSafety attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do

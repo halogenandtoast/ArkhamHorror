@@ -9,11 +9,11 @@ import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.CampaignLogKey
-import Arkham.Types.Card.CardMatcher
 import Arkham.Types.Card.CardType
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Source
 
@@ -26,8 +26,8 @@ allIsOne = agenda (1, A) AllIsOne Cards.allIsOne (Static 4)
 
 instance HasModifiersFor env AllIsOne
 
-instance HasActions env AllIsOne where
-  getActions i window (AllIsOne x) = getActions i window x
+-- TODO: forced ability
+instance HasActions AllIsOne
 
 isEncounterCardSource :: Source -> Bool
 isEncounterCardSource = \case

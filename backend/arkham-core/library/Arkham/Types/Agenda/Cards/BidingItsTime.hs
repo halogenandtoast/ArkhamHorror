@@ -29,8 +29,8 @@ bidingItsTime = agenda (2, A) BidingItsTime Cards.bidingItsTime (Static 6)
 
 instance HasModifiersFor env BidingItsTime
 
-instance HasActions env BidingItsTime where
-  getActions i window (BidingItsTime x) = getActions i window x
+-- TODO: Forced ability
+instance HasActions BidingItsTime
 
 instance AgendaRunner env => RunMessage env BidingItsTime where
   runMessage msg a@(BidingItsTime attrs) = case msg of

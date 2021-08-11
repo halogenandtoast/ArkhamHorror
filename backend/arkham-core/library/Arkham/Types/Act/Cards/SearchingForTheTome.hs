@@ -38,9 +38,8 @@ instance HasActions SearchingForTheTome where
 
 instance ActRunner env => RunMessage env SearchingForTheTome where
   runMessage msg a@(SearchingForTheTome attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      push (AdvanceAct aid $ toSource attrs)
-      pure . SearchingForTheTome $ attrs & sequenceL .~ Act 3 B
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      a <$ push (AdvanceAct (toId attrs) (toSource attrs))
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       a <$ push
@@ -54,6 +53,4 @@ instance ActRunner env => RunMessage env SearchingForTheTome where
             [ScenarioResolution $ Resolution 2]
           ]
         )
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) (toSource attrs))
     _ -> SearchingForTheTome <$> runMessage msg attrs

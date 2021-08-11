@@ -22,9 +22,7 @@ beckoningForPower =
   agenda (2, A) BeckoningForPower Cards.beckoningForPower (Static 10)
 
 instance HasModifiersFor env BeckoningForPower
-
-instance HasActions env BeckoningForPower where
-  getActions i window (BeckoningForPower x) = getActions i window x
+instance HasActions BeckoningForPower
 
 instance AgendaRunner env => RunMessage env BeckoningForPower where
   runMessage msg a@(BeckoningForPower attrs@AgendaAttrs {..}) = case msg of

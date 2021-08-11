@@ -26,8 +26,8 @@ breakingThrough =
 
 instance HasModifiersFor env BreakingThrough
 
-instance HasActions env BreakingThrough where
-  getActions i window (BreakingThrough x) = getActions i window x
+-- TODO: Forced ability
+instance HasActions BreakingThrough
 
 instance AgendaRunner env => RunMessage env BreakingThrough where
   runMessage msg a@(BreakingThrough attrs@AgendaAttrs {..}) = case msg of

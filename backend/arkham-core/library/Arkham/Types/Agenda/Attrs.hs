@@ -19,6 +19,7 @@ import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window hiding (when)
 
@@ -147,7 +148,9 @@ instance
     AdvanceAgenda aid | aid == agendaId && agendaSide agendaSequence == A -> do
       leadInvestigatorId <- getLeadInvestigatorId
       pushAll
-        [ CheckWindow leadInvestigatorId [WhenAgendaAdvance agendaId]
+        [ CheckWindow
+          leadInvestigatorId
+          [Window Timing.When $ AgendaAdvance agendaId]
         , chooseOne leadInvestigatorId [AdvanceAgenda agendaId]
         ]
       pure

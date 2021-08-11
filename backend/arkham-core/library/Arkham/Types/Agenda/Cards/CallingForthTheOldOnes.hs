@@ -21,9 +21,7 @@ callingForthTheOldOnes =
   agenda (1, A) CallingForthTheOldOnes Cards.callingForthTheOldOnes (Static 12)
 
 instance HasModifiersFor env CallingForthTheOldOnes
-
-instance HasActions env CallingForthTheOldOnes where
-  getActions i window (CallingForthTheOldOnes x) = getActions i window x
+instance HasActions CallingForthTheOldOnes
 
 instance AgendaRunner env => RunMessage env CallingForthTheOldOnes where
   runMessage msg a@(CallingForthTheOldOnes attrs@AgendaAttrs {..}) =

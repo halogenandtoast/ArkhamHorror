@@ -28,8 +28,7 @@ aCreatureOfTheBayou =
 
 instance HasModifiersFor env ACreatureOfTheBayou
 
-instance HasActions env ACreatureOfTheBayou where
-  getActions i window (ACreatureOfTheBayou x) = getActions i window x
+instance HasActions ACreatureOfTheBayou
 
 getRougarou
   :: (MonadReader env m, HasId (Maybe StoryEnemyId) env CardCode)

@@ -9,9 +9,10 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype ResearchLibrarian = ResearchLibrarian AssetAttrs
   deriving anyclass IsAsset
@@ -22,11 +23,17 @@ researchLibrarian = ally ResearchLibrarian Cards.researchLibrarian (1, 1)
 
 instance HasModifiersFor env ResearchLibrarian
 
-instance HasActions env ResearchLibrarian where
-  getActions i (WhenEnterPlay target) (ResearchLibrarian x)
-    | isTarget x target && ownedBy x i = pure
-      [mkAbility (toSource x) 1 (ReactionAbility Free)]
-  getActions i window (ResearchLibrarian x) = getActions i window x
+instance HasActions ResearchLibrarian where
+  getActions (ResearchLibrarian x) =
+    [ restrictedAbility
+        x
+        1
+        OwnsThis
+        (ReactionAbility
+          (AssetEntersPlay Timing.When $ AssetWithId (toId x))
+          Free
+        )
+    ]
 
 instance (AssetRunner env) => RunMessage env ResearchLibrarian where
   runMessage msg a@(ResearchLibrarian attrs) = case msg of

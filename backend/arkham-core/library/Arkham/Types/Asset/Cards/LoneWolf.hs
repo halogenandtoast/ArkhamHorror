@@ -13,6 +13,7 @@ import Arkham.Types.Cost
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (When)
 import Arkham.Types.Restriction
+import Arkham.Types.Timing
 
 newtype LoneWolf = LoneWolf AssetAttrs
   deriving anyclass IsAsset

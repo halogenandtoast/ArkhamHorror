@@ -16,6 +16,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (After)
 import Arkham.Types.Restriction
 import Arkham.Types.Target
+import Arkham.Types.Timing
 
 newtype Fieldwork = Fieldwork AssetAttrs
   deriving anyclass IsAsset

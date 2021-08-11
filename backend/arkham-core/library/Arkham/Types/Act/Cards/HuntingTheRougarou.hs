@@ -19,6 +19,7 @@ import Arkham.Types.Resolution
 import qualified Arkham.Types.Restriction as R
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import qualified Arkham.Types.Window as W
 
@@ -32,12 +33,14 @@ huntingTheRougarou =
 
 instance HasActions HuntingTheRougarou where
   getActions (HuntingTheRougarou x) =
-    [ mkAbility x 1 $ ForcedAbility $ R.EnemyLeaves R.After R.Anywhere $ enemyIs
-      Cards.theRougarou
+    [ mkAbility x 1
+      $ ForcedAbility
+      $ R.EnemyLeaves Timing.After R.Anywhere
+      $ enemyIs Cards.theRougarou
     , mkAbility x 2
       $ Objective
       $ ForcedAbility
-      $ R.EnemyDefeated R.When R.Anyone
+      $ R.EnemyDefeated Timing.When R.Anyone
       $ enemyIs Cards.theRougarou
     , restrictedAbility
         x

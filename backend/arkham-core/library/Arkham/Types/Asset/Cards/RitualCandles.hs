@@ -13,9 +13,10 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
-import Arkham.Types.Window
 
 newtype RitualCandles = RitualCandles AssetAttrs
   deriving anyclass IsAsset
@@ -24,17 +25,23 @@ newtype RitualCandles = RitualCandles AssetAttrs
 ritualCandles :: AssetCard RitualCandles
 ritualCandles = hand RitualCandles Cards.ritualCandles
 
-ability :: AssetAttrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
-
-instance HasActions env RitualCandles where
-  getActions iid (WhenRevealToken who token) (RitualCandles x)
-    | iid == who && ownedBy x iid
-    = pure
-      [ ability x
-      | tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing]
-      ]
-  getActions iid window (RitualCandles x) = getActions iid window x
+instance HasActions RitualCandles where
+  getActions (RitualCandles x) =
+    [ restrictedAbility
+        x
+        1
+        OwnsThis
+        (ReactionAbility
+          (RevealChaosToken
+            Timing.When
+            You
+            (TokenMatchesAny
+            $ map TokenFaceIs [Skull, Cultist, Tablet, ElderThing]
+            )
+          )
+          Free
+        )
+    ]
 
 instance HasModifiersFor env RitualCandles
 

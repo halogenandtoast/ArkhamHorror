@@ -21,9 +21,7 @@ quietHalls :: AgendaCard QuietHalls
 quietHalls = agenda (1, A) QuietHalls Cards.quietHalls (Static 7)
 
 instance HasModifiersFor env QuietHalls
-
-instance HasActions env QuietHalls where
-  getActions i window (QuietHalls x) = getActions i window x
+instance HasActions QuietHalls
 
 instance AgendaRunner env => RunMessage env QuietHalls where
   runMessage msg a@(QuietHalls attrs@AgendaAttrs {..}) = case msg of

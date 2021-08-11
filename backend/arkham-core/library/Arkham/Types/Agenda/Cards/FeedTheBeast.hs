@@ -20,10 +20,8 @@ newtype FeedTheBeast = FeedTheBeast AgendaAttrs
 feedTheBeast :: AgendaCard FeedTheBeast
 feedTheBeast = agenda (3, A) FeedTheBeast Cards.feedTheBeast (Static 7)
 
+instance HasActions FeedTheBeast
 instance HasModifiersFor env FeedTheBeast
-
-instance HasActions env FeedTheBeast where
-  getActions i window (FeedTheBeast x) = getActions i window x
 
 instance AgendaRunner env => RunMessage env FeedTheBeast where
   runMessage msg a@(FeedTheBeast attrs@AgendaAttrs {..}) = case msg of

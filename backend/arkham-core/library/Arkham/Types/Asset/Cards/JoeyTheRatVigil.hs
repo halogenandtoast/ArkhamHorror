@@ -13,7 +13,8 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
-import Arkham.Types.Query
+import Arkham.Types.Restriction hiding (DuringTurn, FastPlayerWindow)
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
@@ -24,26 +25,18 @@ newtype JoeyTheRatVigil = JoeyTheRatVigil AssetAttrs
 joeyTheRatVigil :: AssetCard JoeyTheRatVigil
 joeyTheRatVigil = ally JoeyTheRatVigil Cards.joeyTheRatVigil (3, 2)
 
-ability :: AssetAttrs -> Ability
-ability a = mkAbility a 1 (FastAbility $ ResourceCost 1)
-
 -- This card is a pain and the solution here is a hack
 -- we end up with a separate function for resource modification
-instance CanCheckPlayable env => HasActions env JoeyTheRatVigil where
-  getActions iid FastPlayerWindow (JoeyTheRatVigil attrs) | ownedBy attrs iid =
-    do
-      availableResources <- unResourceCount <$> getCount iid
-      handCards <- map unHandCard <$> getList iid
-      let items = filter (member Item . toTraits) handCards
-      playableItems <- filterM
-        (getIsPlayableWithResources
-          iid
-          (availableResources - 1)
-          [DuringTurn iid, FastPlayerWindow]
+instance HasActions JoeyTheRatVigil where
+  getActions (JoeyTheRatVigil x) =
+    [ restrictedAbility
+        x
+        1
+        (OwnsThis <> PlayableCardExists
+          (InHandOf You <> BasicCardMatch (CardWithTrait Item))
         )
-        items
-      pure [ ability attrs | notNull playableItems ]
-  getActions _ _ _ = pure []
+        (FastAbility $ ResourceCost 1)
+    ]
 
 instance HasModifiersFor env JoeyTheRatVigil
 
@@ -53,7 +46,12 @@ instance CanCheckPlayable env => RunMessage env JoeyTheRatVigil where
       handCards <- map unHandCard <$> getList iid
       let items = filter (member Item . toTraits) handCards
       playableItems <- filterM
-        (getIsPlayable iid [DuringTurn iid, FastPlayerWindow])
+        (getIsPlayable
+          iid
+          [ Window Timing.When (DuringTurn iid)
+          , Window Timing.When FastPlayerWindow
+          ]
+        )
         items
       a <$ push
         (chooseOne

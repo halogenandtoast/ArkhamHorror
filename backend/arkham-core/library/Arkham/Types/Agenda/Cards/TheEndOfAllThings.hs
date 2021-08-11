@@ -12,7 +12,7 @@ import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (EnemyDefeated)
 import Arkham.Types.Message
 import Arkham.Types.Resolution
 
@@ -25,9 +25,7 @@ theEndOfAllThings =
   agenda (4, A) TheEndOfAllThings Cards.theEndOfAllThings (Static 2)
 
 instance HasModifiersFor env TheEndOfAllThings
-
-instance HasActions env TheEndOfAllThings where
-  getActions i window (TheEndOfAllThings x) = getActions i window x
+instance HasActions TheEndOfAllThings
 
 instance (HasId (Maybe EnemyId) env EnemyMatcher, AgendaRunner env) => RunMessage env TheEndOfAllThings where
   runMessage msg a@(TheEndOfAllThings attrs@AgendaAttrs {..}) = case msg of

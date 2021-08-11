@@ -18,7 +18,6 @@ import Arkham.Types.Cost
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Source
-import Arkham.Types.Window
 
 newtype ReturnToPredatorOrPrey = ReturnToPredatorOrPrey AgendaAttrs
   deriving anyclass IsAgenda
@@ -30,10 +29,9 @@ returnToPredatorOrPrey =
 
 instance HasModifiersFor env ReturnToPredatorOrPrey
 
-instance HasActions env ReturnToPredatorOrPrey where
-  getActions _ NonFast (ReturnToPredatorOrPrey attrs) =
-    pure [mkAbility attrs 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
-  getActions _ _ _ = pure []
+instance HasActions ReturnToPredatorOrPrey where
+  getActions (ReturnToPredatorOrPrey attrs) =
+    [mkAbility attrs 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
 
 instance AgendaRunner env => RunMessage env ReturnToPredatorOrPrey where
   runMessage msg a@(ReturnToPredatorOrPrey attrs@AgendaAttrs {..}) =

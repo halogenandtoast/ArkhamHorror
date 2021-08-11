@@ -14,8 +14,8 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Scrying = Scrying AssetAttrs
   deriving anyclass IsAsset
@@ -26,12 +26,11 @@ scrying = arcane Scrying Cards.scrying
 
 instance HasModifiersFor env Scrying
 
-instance HasActions env Scrying where
-  getActions iid NonFast (Scrying a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility Nothing $ Costs
-        [ActionCost 1, UseCost (toId a) Charge 1, ExhaustCost (toTarget a)]
+instance HasActions Scrying where
+  getActions (Scrying a) =
+    [ restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ Costs
+        [ActionCost 1, UseCost (toId a) Charge 1, ExhaustThis]
     ]
-  getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Scrying where
   runMessage msg a@(Scrying attrs) = case msg of

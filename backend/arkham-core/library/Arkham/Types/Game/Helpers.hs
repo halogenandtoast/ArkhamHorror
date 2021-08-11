@@ -29,6 +29,7 @@ import Arkham.Types.Name
 import Arkham.Types.Phase
 import Arkham.Types.Query
 import Arkham.Types.Restriction
+import {-# SOURCE #-} Arkham.Types.SkillTest
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -96,7 +97,7 @@ getCanPerformAbility iid window ability = do
     mAction = abilityAction ability
     cost = abilityCost ability
   andM
-    [ getCanAffordCost iid (abilitySource ability) mAction cost
+    [ getCanAffordCost iid (abilitySource ability) mAction [window] cost
     , windowMatches iid window (abilityWindow ability)
     , maybe
       (pure True)
@@ -227,13 +228,18 @@ getCanAffordCost
   => InvestigatorId
   -> Source
   -> Maybe Action
+  -> [Window]
   -> Cost
   -> m Bool
-getCanAffordCost iid source mAction = \case
+getCanAffordCost iid source mAction windows = \case
   Free -> pure True
   UpTo{} -> pure True
   AdditionalActionsCost{} -> pure True
-  Costs xs -> and <$> traverse (getCanAffordCost iid source mAction) xs
+  Costs xs -> and <$> traverse (getCanAffordCost iid source mAction windows) xs
+  DiscardDrawnCardCost -> case windows of
+    [Window _ (Window.DrawCard iid' c)] | iid == iid' ->
+      elem (DiscardableHandCard c) <$> getList iid
+    _ -> pure False
   ExhaustCost target -> case target of
     AssetTarget aid -> do
       readyAssetIds <- selectList AssetReady
@@ -289,6 +295,7 @@ getCanAffordCost iid source mAction = \case
   RemoveCost _ -> pure True -- TODO: Make better
   HorrorCost{} -> pure True -- TODO: Make better
   DamageCost{} -> pure True -- TODO: Make better
+  DirectDamageCost{} -> pure True -- TODO: Make better
   DoomCost{} -> pure True -- TODO: Make better
   SkillIconCost n skillTypes -> do
     handCards <- mapMaybe (preview _PlayerCard) <$> getHandOf iid
@@ -445,6 +452,7 @@ getCanFight eid iid = do
     iid
     (EnemySource eid)
     (Just Action.Fight)
+    []
     (foldl' (applyFightCostModifiers takenActions) (ActionCost 1) modifiers')
   engagedInvestigators <- getSet eid
   pure
@@ -484,6 +492,7 @@ getCanEngage eid iid = do
     iid
     (EnemySource eid)
     (Just Action.Engage)
+    []
     (ActionCost 1)
   pure $ notEngaged && canAffordActions && sameLocation
 
@@ -506,6 +515,7 @@ getCanEvade eid iid = do
     iid
     (EnemySource eid)
     (Just Action.Evade)
+    []
     (foldl' (applyEvadeCostModifiers takenActions) (ActionCost 1) modifiers')
   pure $ engaged && canAffordActions && CannotBeEvaded `notElem` enemyModifiers
  where
@@ -544,6 +554,7 @@ getCanMoveTo lid iid = do
     iid
     (LocationSource lid)
     (Just Action.Move)
+    []
     (ActionCost 1)
   pure
     $ lid
@@ -747,13 +758,17 @@ type CanCheckPlayable env
   = ( HasModifiersFor env ()
     , HasCostPayment env
     , HasSet Trait env Source
+    , HasSkillTest env
     , HasSet SetAsideCardId env CardMatcher
     , Query AssetMatcher env
+    , Query LocationMatcher env
     , Query InvestigatorMatcher env
     , Query EnemyMatcher env
+    , Query ExtendedCardMatcher env
     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
     , HasCount SpendableClueCount env ()
     , HasCount SpendableClueCount env InvestigatorId
+    , HasCount ClueCount env AssetId
     , CanCheckFast env
     , HasId LocationId env AssetId
     , HasId (Maybe OwnerId) env AssetId
@@ -869,6 +884,11 @@ passesRestriction iid source windows = \case
       mOwner <- getId aid
       pure $ Just (OwnerId iid) == mOwner
     _ -> error "missing OwnsThis check"
+  DuringSkillTest -> isJust <$> getSkillTest
+  CluesOnThis valueMatcher -> case source of
+    AssetSource aid -> do
+      (`gameValueMatches` valueMatcher) . unClueCount =<< getCount aid
+    _ -> error "missing CluesOnThis check"
   Unowned -> case source of
     AssetSource aid -> do
       mOwner <- getId @(Maybe OwnerId) aid
@@ -1141,9 +1161,20 @@ windowMatches iid window' = \case
       (enemyMatches iid enemyId enemyMatcher)
       (matchWho iid who whoMatcher)
     _ -> pure False
+  Matcher.EnemyEngaged timingMatcher whoMatcher enemyMatcher -> case window' of
+    Window t (Window.EnemyEngageInvestigator who enemyId)
+      | timingMatcher == t -> liftA2
+        (&&)
+        (enemyMatches iid enemyId enemyMatcher)
+        (matchWho iid who whoMatcher)
+    _ -> pure False
   Matcher.MythosStep mythosStepMatcher -> case window' of
     Window t Window.AllDrawEncounterCard | t == When ->
       pure $ mythosStepMatcher == Matcher.WhenAllDrawEncounterCard
+    _ -> pure False
+  Matcher.WouldRevealChaosToken whenMatcher whoMatcher -> case window' of
+    Window t (Window.WouldRevealChaosToken _ who) | whenMatcher == t ->
+      matchWho iid who whoMatcher
     _ -> pure False
   Matcher.RevealChaosToken whenMatcher whoMatcher tokenMatcher ->
     case window' of
@@ -1168,14 +1199,30 @@ windowMatches iid window' = \case
         pure $ iid == iid'
       _ -> pure False
     _ -> pure False
+  Matcher.AssetDealtDamage timingMatcher assetMatcher -> case window' of
+    Window t (DealtDamage _ (AssetTarget aid)) | t == timingMatcher ->
+      member aid <$> select assetMatcher
+    _ -> pure False
   Matcher.DrawCard whenMatcher whoMatcher cardMatcher -> case window' of
     Window t (Window.DrawCard who card) | whenMatcher == t -> liftA2
       (&&)
       (matchWho iid who whoMatcher)
-      (pure $ matchCard card cardMatcher)
+      (member card <$> select cardMatcher)
     _ -> pure False
-  Matcher.WhenAssetEntersPlay assetMatcher -> case window' of
-    Window When (Window.EnterPlay (AssetTarget aid)) ->
+  Matcher.PlayCard whenMatcher whoMatcher cardMatcher -> case window' of
+    Window t (Window.PlayCard who card) | whenMatcher == t -> liftA2
+      (&&)
+      (matchWho iid who whoMatcher)
+      (member card <$> select cardMatcher)
+    _ -> pure False
+  Matcher.CommittedCards whenMatcher whoMatcher listMatcher -> case window' of
+    Window t (Window.CommittedCards who cards) | whenMatcher == t -> liftA2
+      (&&)
+      (matchWho iid who whoMatcher)
+      (pure $ matchList cards listMatcher)
+    _ -> pure False
+  Matcher.AssetEntersPlay timingMatcher assetMatcher -> case window' of
+    Window t (Window.EnterPlay (AssetTarget aid)) | t == timingMatcher ->
       member aid <$> select assetMatcher
     _ -> pure False
 
@@ -1194,18 +1241,22 @@ matchWho you who = \case
     mTurn <- selectOne TurnInvestigator
     pure $ Just who == mTurn
   UneliminatedInvestigator -> member who <$> getSet UneliminatedInvestigator
-  InvestigatorAtYourLocation ->
-    liftA2 (==) (getId @LocationId you) (getId @LocationId who)
   InvestigatorEngagedWith enemyMatcher -> do
     engagedInvestigators <- select (InvestigatorEngagedWith enemyMatcher)
     pure $ who `member` engagedInvestigators
+  InvestigatorAt locationMatcher -> do
+    lid <- getId @LocationId who
+    member lid <$> select locationMatcher
   InvestigatorCanMove -> do
     notElem CannotMove
       <$> getModifiers (InvestigatorSource who) (InvestigatorTarget who)
-  InvestigatorWithDamage -> (> 0) . unDamageCount <$> getCount who
-  InvestigatorWithHorror -> (> 0) . unHorrorCount <$> getCount who
+  InvestigatorWithDamage valueMatcher ->
+    (`gameValueMatches` valueMatcher) . unDamageCount =<< getCount who
+  InvestigatorWithHorror valueMatcher ->
+    (`gameValueMatches` valueMatcher) . unHorrorCount =<< getCount who
   InvestigatorWithId iid' -> pure $ who == iid'
   InvestigatorMatches is -> allM (matchWho you who) is
+  AnyInvestigator is -> anyM (matchWho you who) is
 
 gameValueMatches
   :: (MonadReader env m, HasCount PlayerCount env ())
@@ -1337,3 +1388,7 @@ getModifiedTokenFaces source tokens = flip
   applyModifier _ (TokenFaceModifier fs') = fs'
   applyModifier [f'] (ForcedTokenChange f fs) | f == f' = fs
   applyModifier fs _ = fs
+
+matchList :: [QueryElement a] -> ListMatcher a -> Bool
+matchList [_] ExactlyOne = True
+matchList _ _ = False

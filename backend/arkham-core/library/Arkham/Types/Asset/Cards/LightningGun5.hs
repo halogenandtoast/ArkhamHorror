@@ -15,10 +15,10 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype LightningGun5 = LightningGun5 AssetAttrs
   deriving anyclass IsAsset
@@ -28,13 +28,12 @@ lightningGun5 :: AssetCard LightningGun5
 lightningGun5 =
   assetWith LightningGun5 Cards.lightningGun5 (slotsL .~ [HandSlot, HandSlot])
 
-instance HasActions env LightningGun5 where
-  getActions iid NonFast (LightningGun5 a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility
+instance HasActions LightningGun5 where
+  getActions (LightningGun5 a) =
+    [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Resource.Ammo 1])
     ]
-  getActions _ _ _ = pure []
 
 instance HasModifiersFor env LightningGun5
 

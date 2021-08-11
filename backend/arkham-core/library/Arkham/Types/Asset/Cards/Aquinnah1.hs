@@ -12,10 +12,11 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
-import Arkham.Types.Message
+import Arkham.Types.Message hiding (EnemyAttacks)
 import Arkham.Types.Query
+import Arkham.Types.Restriction
 import Arkham.Types.Source
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
 
 newtype Aquinnah1 = Aquinnah1 AssetAttrs
   deriving anyclass IsAsset
@@ -24,22 +25,21 @@ newtype Aquinnah1 = Aquinnah1 AssetAttrs
 aquinnah1 :: AssetCard Aquinnah1
 aquinnah1 = ally Aquinnah1 Cards.aquinnah1 (1, 4)
 
-reactionAbility :: AssetAttrs -> Ability
-reactionAbility attrs = mkAbility attrs 1 $ FastAbility $ Costs
-  [ExhaustCost (toTarget attrs), HorrorCost (toSource attrs) (toTarget attrs) 1]
-
 dropUntilAttack :: [Message] -> [Message]
 dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
 
 instance HasModifiersFor env Aquinnah1
 
-instance ActionRunner env => HasActions env Aquinnah1 where
-  getActions iid (WhenEnemyAttacks who enemyId) (Aquinnah1 a)
-    | ownedBy a iid && iid == who = do
-      locationId <- getId @LocationId iid
-      enemyIds <- filterSet (/= enemyId) <$> getSet locationId
-      pure [ reactionAbility a | notNull enemyIds ]
-  getActions i window (Aquinnah1 x) = getActions i window x
+instance HasActions Aquinnah1 where
+  getActions (Aquinnah1 x) =
+    [ restrictedAbility
+          x
+          1
+          (OwnsThis <> EnemyExists (EnemyAtYourLocation <> EnemyNotAttackingYou)
+          )
+        $ ReactionAbility (EnemyAttacks Timing.When You AnyEnemy)
+        $ Costs [ExhaustThis, HorrorCost (toSource x) (toTarget x) 1]
+    ]
 
 instance AssetRunner env => RunMessage env Aquinnah1 where
   runMessage msg a@(Aquinnah1 attrs) = case msg of

@@ -18,7 +18,6 @@ import Arkham.Types.Cost
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Source
-import Arkham.Types.Window
 
 newtype PredatorOrPrey = PredatorOrPrey AgendaAttrs
   deriving anyclass IsAgenda
@@ -29,10 +28,9 @@ predatorOrPrey = agenda (1, A) PredatorOrPrey Cards.predatorOrPrey (Static 6)
 
 instance HasModifiersFor env PredatorOrPrey
 
-instance HasActions env PredatorOrPrey where
-  getActions _ NonFast (PredatorOrPrey attrs) =
-    pure [mkAbility attrs 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
-  getActions _ _ _ = pure []
+instance HasActions PredatorOrPrey where
+  getActions (PredatorOrPrey attrs) =
+    [mkAbility attrs 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
 
 instance (AgendaRunner env) => RunMessage env PredatorOrPrey where
   runMessage msg a@(PredatorOrPrey attrs@AgendaAttrs {..}) = case msg of

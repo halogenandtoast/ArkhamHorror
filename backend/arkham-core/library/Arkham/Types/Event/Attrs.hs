@@ -99,9 +99,6 @@ instance SourceEntity EventAttrs where
   isSource EventAttrs { eventId } (EventSource eid) = eventId == eid
   isSource _ _ = False
 
-instance HasActions env EventAttrs where
-  getActions _ _ _ = pure []
-
 instance HasQueue env => RunMessage env EventAttrs where
   runMessage msg a@EventAttrs {..} = case msg of
     SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode

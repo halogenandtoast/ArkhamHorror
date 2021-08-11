@@ -10,8 +10,8 @@ import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype ForbiddenKnowledge = ForbiddenKnowledge AssetAttrs
   deriving anyclass IsAsset
@@ -23,20 +23,19 @@ forbiddenKnowledge = asset ForbiddenKnowledge Cards.forbiddenKnowledge
 
 instance HasModifiersFor env ForbiddenKnowledge
 
-instance HasActions env ForbiddenKnowledge where
-  getActions iid FastPlayerWindow (ForbiddenKnowledge a) | ownedBy a iid = pure
-    [ mkAbility
+instance HasActions ForbiddenKnowledge where
+  getActions (ForbiddenKnowledge a) =
+    [ restrictedAbility
         (toSource a)
         1
+        OwnsThis
         (FastAbility $ Costs
           [ UseCost (toId a) Secret 1
-          , HorrorCost (toSource a) (InvestigatorTarget iid) 1
-          , ExhaustCost (toTarget a)
+          , HorrorCost (toSource a) YouTarget 1
+          , ExhaustThis
           ]
         )
-    | useCount (assetUses a) > 0
     ]
-  getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env ForbiddenKnowledge where
   runMessage msg a@(ForbiddenKnowledge attrs) = case msg of

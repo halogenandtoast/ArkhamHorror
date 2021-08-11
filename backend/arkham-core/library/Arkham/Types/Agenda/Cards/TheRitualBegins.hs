@@ -9,6 +9,7 @@ import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -30,8 +31,7 @@ instance HasModifiersFor env TheRitualBegins where
     $ toModifiers attrs [EnemyFight 1, EnemyEvade 1]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env TheRitualBegins where
-  getActions i window (TheRitualBegins x) = getActions i window x
+instance HasActions TheRitualBegins
 
 instance (AgendaRunner env) => RunMessage env TheRitualBegins where
   runMessage msg a@(TheRitualBegins attrs@AgendaAttrs {..}) = case msg of

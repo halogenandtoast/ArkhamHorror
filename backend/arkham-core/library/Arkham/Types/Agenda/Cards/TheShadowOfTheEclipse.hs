@@ -25,9 +25,7 @@ theShadowOfTheEclipse =
   agenda (2, A) TheShadowOfTheEclipse Cards.theShadowOfTheEclipse (Static 3)
 
 instance HasModifiersFor env TheShadowOfTheEclipse
-
-instance HasActions env TheShadowOfTheEclipse where
-  getActions i window (TheShadowOfTheEclipse x) = getActions i window x
+instance HasActions TheShadowOfTheEclipse
 
 instance AgendaRunner env => RunMessage env TheShadowOfTheEclipse where
   runMessage msg a@(TheShadowOfTheEclipse attrs@AgendaAttrs {..}) = case msg of

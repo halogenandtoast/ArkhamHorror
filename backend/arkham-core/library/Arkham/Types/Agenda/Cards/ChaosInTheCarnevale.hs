@@ -26,9 +26,7 @@ chaosInTheCarnevale =
   agenda (3, A) ChaosInTheCarnevale Cards.chaosInTheCarnevale (Static 3)
 
 instance HasModifiersFor env ChaosInTheCarnevale
-
-instance HasActions env ChaosInTheCarnevale where
-  getActions i window (ChaosInTheCarnevale x) = getActions i window x
+instance HasActions ChaosInTheCarnevale
 
 instance AgendaRunner env => RunMessage env ChaosInTheCarnevale where
   runMessage msg a@(ChaosInTheCarnevale attrs@AgendaAttrs {..}) = case msg of

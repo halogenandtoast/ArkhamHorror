@@ -25,9 +25,7 @@ theCurseSpreads =
   agenda (3, A) TheCurseSpreads Cards.theCurseSpreads (Static 8)
 
 instance HasModifiersFor env TheCurseSpreads
-
-instance HasActions env TheCurseSpreads where
-  getActions i window (TheCurseSpreads x) = getActions i window x
+instance HasActions TheCurseSpreads
 
 getRougarou
   :: (MonadReader env m, HasId (Maybe StoryEnemyId) env CardCode)

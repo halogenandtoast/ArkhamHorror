@@ -14,10 +14,11 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Exception
+import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype PowderOfIbnGhazi = PowderOfIbnGhazi AssetAttrs
   deriving anyclass IsAsset
@@ -26,27 +27,18 @@ newtype PowderOfIbnGhazi = PowderOfIbnGhazi AssetAttrs
 powderOfIbnGhazi :: AssetCard PowderOfIbnGhazi
 powderOfIbnGhazi = asset PowderOfIbnGhazi Cards.powderOfIbnGhazi
 
-instance
-  ( HasId LocationId env InvestigatorId
-  , HasSet ExhaustedEnemyId env LocationId
-  , HasSet StoryEnemyId env CardCode
-  )
-  => HasActions env PowderOfIbnGhazi where
-  getActions iid FastPlayerWindow (PowderOfIbnGhazi attrs) =
-    withBaseActions iid FastPlayerWindow attrs $ do
-      broodOfYogSothoth <- mapSet unStoryEnemyId <$> getSet (CardCode "02255")
-      lid <- getId @LocationId iid
-      exhaustedBroodOfYogSothothAtLocation <-
-        intersection broodOfYogSothoth
-        . mapSet unExhaustedEnemyId
-        <$> getSet lid
-      pure
-        [ mkAbility attrs 1 $ ReactionAbility Free
-        | ownedBy attrs iid
-          && notNull exhaustedBroodOfYogSothothAtLocation
-          && (assetClues attrs > 0)
-        ]
-  getActions iid window (PowderOfIbnGhazi attrs) = getActions iid window attrs
+instance HasActions PowderOfIbnGhazi where
+  getActions (PowderOfIbnGhazi x) =
+    [ restrictedAbility
+        x
+        1
+        (OwnsThis <> CluesOnThis (GreaterThan $ Static 0) <> EnemyExists
+          (ExhaustedEnemy <> EnemyAtYourLocation <> EnemyWithTitle
+            "Brood of Yog-Sothoth"
+          )
+        )
+        (FastAbility Free)
+    ]
 
 instance HasModifiersFor env PowderOfIbnGhazi
 

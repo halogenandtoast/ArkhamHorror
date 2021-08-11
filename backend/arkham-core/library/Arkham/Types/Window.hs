@@ -35,7 +35,7 @@ data WindowType
   = DiscoveringClues InvestigatorId LocationId -- name conflict resolution
   | DrawCard InvestigatorId Card
   | DrawingStartingHand InvestigatorId
-  | CommitedCard InvestigatorId Card
+  | CommittedCards InvestigatorId [Card]
   | EndTurn InvestigatorId
   | EnemyDefeated InvestigatorId EnemyId
   | EnemyEngageInvestigator InvestigatorId EnemyId

@@ -9,7 +9,8 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
-import Arkham.Types.Window
+import Arkham.Types.Restriction
+import qualified Arkham.Types.Timing as Timing
 
 newtype RabbitsFoot = RabbitsFoot AssetAttrs
   deriving anyclass IsAsset
@@ -20,12 +21,12 @@ rabbitsFoot = accessory RabbitsFoot Cards.rabbitsFoot
 
 instance HasModifiersFor env RabbitsFoot
 
-instance HasActions env RabbitsFoot where
-  getActions iid (AfterFailSkillTest who _) (RabbitsFoot a) | iid == who = pure
-    [ mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a))
-    | ownedBy a iid
+instance HasActions RabbitsFoot where
+  getActions (RabbitsFoot a) =
+    [ restrictedAbility a 1 OwnsThis $ ReactionAbility
+        (SkillTestResult Timing.After You AnySkillTest (FailureResult AnyValue))
+        ExhaustThis
     ]
-  getActions i window (RabbitsFoot x) = getActions i window x
 
 instance AssetRunner env => RunMessage env RabbitsFoot where
   runMessage msg a@(RabbitsFoot attrs) = case msg of

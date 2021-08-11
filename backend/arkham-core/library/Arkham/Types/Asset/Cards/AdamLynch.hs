@@ -27,8 +27,7 @@ adamLynch =
     $ (isStoryL .~ True)
     . (slotsL .~ mempty)
 
-instance HasActions env AdamLynch where
-  getActions iid window (AdamLynch attrs) = getActions iid window attrs
+instance HasActions AdamLynch
 
 instance HasId (Maybe LocationId) env LocationMatcher => HasModifiersFor env AdamLynch where
   getModifiersFor (InvestigatorSource iid) (LocationTarget lid) (AdamLynch attrs)

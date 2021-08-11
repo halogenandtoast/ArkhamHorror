@@ -15,6 +15,7 @@ import Arkham.Types.Id
 import Arkham.Types.Message hiding (After)
 import Arkham.Types.Restriction
 import Arkham.Types.Target
+import Arkham.Types.Timing
 
 newtype TryAndTryAgain3 = TryAndTryAgain3 AssetAttrs
   deriving anyclass IsAsset

@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Types.Id
 import Arkham.Types.Matcher as X
-import Arkham.Types.Timing as X
 import Arkham.Types.Trait
 
 data DiscardSignifier = AnyPlayerDiscard
@@ -31,10 +30,12 @@ data Restriction
   | NoEnemyExists EnemyMatcher
   | LocationExists LocationMatcher
   | InvestigatorsHaveSpendableClues ValueMatcher
+  | CluesOnThis ValueMatcher
   | OwnCardWithDoom
   | OwnsThis
   | OnSameLocation
   | Unowned
+  | DuringSkillTest
   | CardInDiscard DiscardSignifier [Trait]
   | ReturnableCardInDiscard DiscardSignifier [Trait]
   | Restrictions [Restriction]

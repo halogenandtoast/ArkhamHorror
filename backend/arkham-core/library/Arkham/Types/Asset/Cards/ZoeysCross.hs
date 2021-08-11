@@ -11,10 +11,11 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EnemyId
 import Arkham.Types.Message
-import Arkham.Types.Target
-import Arkham.Types.Window
+import Arkham.Types.Restriction
+import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 newtype ZoeysCross = ZoeysCross AssetAttrs
   deriving anyclass IsAsset
@@ -25,23 +26,16 @@ zoeysCross = accessory ZoeysCross Cards.zoeysCross
 
 instance HasModifiersFor env ZoeysCross
 
-ability :: AssetAttrs -> EnemyId -> Ability
-ability attrs eid = base
-  { abilityMetadata = Just (TargetMetadata (EnemyTarget eid))
-  }
- where
-  base = mkAbility
-    (toSource attrs)
-    1
-    (ReactionAbility $ Costs [ExhaustCost (toTarget attrs), ResourceCost 1])
-
-instance HasActions env ZoeysCross where
-  getActions iid (AfterEnemyEngageInvestigator who eid) (ZoeysCross a)
-    | ownedBy a iid && iid == who = pure [ability a eid]
-  getActions i window (ZoeysCross x) = getActions i window x
+instance HasActions ZoeysCross where
+  getActions (ZoeysCross x) =
+    [ restrictedAbility x 1 OwnsThis
+        $ ReactionAbility (EnemyEngaged Timing.After You AnyEnemy)
+        $ Costs [ExhaustThis, ResourceCost 1]
+    ]
 
 instance (AssetRunner env) => RunMessage env ZoeysCross where
   runMessage msg a@(ZoeysCross attrs) = case msg of
-    UseCardAbility iid source (Just (TargetMetadata (EnemyTarget eid))) 1 _
-      | isSource attrs source -> a <$ push (EnemyDamage eid iid source 1)
+    UseCardAbility iid source [Window _ (Window.EnemyEngageInvestigator _ eid)] 1 _
+      | isSource attrs source
+      -> a <$ push (EnemyDamage eid iid source 1)
     _ -> ZoeysCross <$> runMessage msg attrs

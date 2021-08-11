@@ -16,7 +16,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Resolution
 import Arkham.Types.Source
-import Arkham.Types.Window
 
 newtype TimeIsRunningShort = TimeIsRunningShort AgendaAttrs
   deriving anyclass IsAgenda
@@ -28,10 +27,9 @@ timeIsRunningShort =
 
 instance HasModifiersFor env TimeIsRunningShort
 
-instance HasActions env TimeIsRunningShort where
-  getActions _ NonFast (TimeIsRunningShort a) =
-    pure [mkAbility a 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
-  getActions _ _ _ = pure []
+instance HasActions TimeIsRunningShort where
+  getActions (TimeIsRunningShort a) =
+    [mkAbility a 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
 
 instance (AgendaRunner env) => RunMessage env TimeIsRunningShort where
   runMessage msg a@(TimeIsRunningShort attrs@AgendaAttrs {..}) = case msg of

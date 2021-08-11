@@ -5,6 +5,7 @@ module Arkham.Types.Card
 
 import Arkham.Prelude
 
+import Arkham.Card
 import Arkham.Types.Card.CardCode as X
 import Arkham.Types.Card.CardDef as X
 import Arkham.Types.Card.CardType as X
@@ -17,7 +18,9 @@ import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Card.PlayerCard as X
   (BearerId(..), DiscardedPlayerCard(..), PlayerCard(..))
 import Arkham.Types.InvestigatorId
+import Arkham.Types.Matcher
 import Arkham.Types.Name
+import Arkham.Types.Trait
 
 data CardBuilder ident a = CardBuilder
   { cbCardCode :: CardCode
@@ -33,6 +36,40 @@ newtype SetAsideCard = SetAsideCard { unSetAsideCard :: Card }
 
 newtype CommittedCard = CommittedCard { unCommittedCard :: Card }
   deriving newtype (Show, Eq, ToJSON, FromJSON)
+
+instance IsCard Card where
+  toCardId = \case
+    PlayerCard pc -> toCardId pc
+    EncounterCard ec -> toCardId ec
+
+class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
+  toCard :: a -> Card
+  toCard a = lookupCard (cdCardCode $ toCardDef a) (toCardId a)
+  toCardId :: a -> CardId
+
+cardMatch :: IsCard a => a -> CardMatcher -> Bool
+cardMatch a = \case
+  AnyCard -> True
+  IsEncounterCard -> toCardType a `elem` encounterCardTypes
+  CardWithType cardType' -> toCardType a == cardType'
+  CardWithCardCode cardCode -> toCardCode a == cardCode
+  CardWithId cardId -> toCardId a == cardId
+  CardWithTitle title -> (nameTitle . cdName $ toCardDef a) == title
+  CardWithTrait trait -> trait `member` toTraits a
+  CardWithClass role -> cdClassSymbol (toCardDef a) == Just role
+  CardMatches ms -> all (cardMatch a) ms
+  CardWithOneOf ms -> any (cardMatch a) ms
+  CardWithoutKeyword k -> k `notMember` cdKeywords (toCardDef a)
+  NonWeakness -> not . cdWeakness $ toCardDef a
+  NonExceptional -> not . cdExceptional $ toCardDef a
+
+
+instance IsCard PlayerCard where
+  toCardId = pcId
+
+instance IsCard EncounterCard where
+  toCardId = ecId
+
 
 data Card
   = PlayerCard PlayerCard
@@ -80,7 +117,7 @@ newtype UnderneathCard = UnderneathCard { unUnderneathCard ::Card }
   deriving newtype (ToJSON, FromJSON)
 
 newtype DiscardableHandCard = DiscardableHandCard { unDiscardableHandCard ::Card }
-  deriving stock (Show, Generic)
+  deriving stock (Eq, Show, Generic)
   deriving newtype (ToJSON, FromJSON)
 
 newtype PlayableHandCard = PlayableHandCard { unPlayableHandCard ::Card }

@@ -11,11 +11,12 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Message
+import Arkham.Types.Message hiding (EnemyEvaded)
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
 
 newtype EarlSawyer = EarlSawyer AssetAttrs
   deriving anyclass IsAsset
@@ -24,14 +25,11 @@ newtype EarlSawyer = EarlSawyer AssetAttrs
 earlSawyer :: AssetCard EarlSawyer
 earlSawyer = ally EarlSawyer Cards.earlSawyer (3, 2)
 
-ability :: AssetAttrs -> Ability
-ability attrs =
-  mkAbility attrs 1 $ ReactionAbility $ ExhaustCost (toTarget attrs)
-
-instance HasActions env EarlSawyer where
-  getActions iid (AfterEnemyEvaded who _) (EarlSawyer attrs) | iid == who =
-    pure [ ability attrs | ownedBy attrs iid ]
-  getActions iid window (EarlSawyer attrs) = getActions iid window attrs
+instance HasActions EarlSawyer where
+  getActions (EarlSawyer attrs) =
+    [ restrictedAbility attrs 1 OwnsThis
+        $ ReactionAbility (EnemyEvaded Timing.After You AnyEnemy) ExhaustThis
+    ]
 
 instance HasModifiersFor env EarlSawyer where
   getModifiersFor _ (InvestigatorTarget iid) (EarlSawyer a) =

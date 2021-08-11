@@ -37,7 +37,8 @@ instance HasCount DoomCount env Agenda where
 instance HasStep Agenda AgendaStep where
   getStep = ask >>= runReaderT getStep . toAttrs
 
-deriving anyclass instance ActionRunner env => HasActions env Agenda
+instance HasActions Agenda where
+  getActions = genericGetActions
 
 instance (HasId (Maybe EnemyId) env EnemyMatcher, HasRecord env, AgendaRunner env) => RunMessage env Agenda where
   runMessage = genericRunMessage

@@ -8,9 +8,10 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Message
+import Arkham.Types.Message hiding (PlayCard)
+import Arkham.Types.Restriction
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype HeirloomOfHyperborea = HeirloomOfHyperborea AssetAttrs
   deriving anyclass IsAsset
@@ -22,14 +23,12 @@ heirloomOfHyperborea =
 
 instance HasModifiersFor env HeirloomOfHyperborea
 
-reactionAbility :: AssetAttrs -> Ability
-reactionAbility attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
-
-instance HasActions env HeirloomOfHyperborea where
-  getActions iid (AfterPlayCard who card) (HeirloomOfHyperborea a)
-    | ownedBy a iid && iid == who = pure
-      [ reactionAbility a | Spell `elem` toTraits card ]
-  getActions i window (HeirloomOfHyperborea x) = getActions i window x
+instance HasActions HeirloomOfHyperborea where
+  getActions (HeirloomOfHyperborea x) =
+    [ restrictedAbility x 1 OwnsThis $ ReactionAbility
+        (PlayCard Timing.After You (BasicCardMatch $ CardWithTrait Spell))
+        Free
+    ]
 
 instance (AssetRunner env) => RunMessage env HeirloomOfHyperborea where
   runMessage msg a@(HeirloomOfHyperborea attrs) = case msg of

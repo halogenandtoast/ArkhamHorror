@@ -8,6 +8,7 @@ import Arkham.Types.Action
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardType
+import Arkham.Types.Card.Id
 import Arkham.Types.ClassSymbol
 import Arkham.Types.GameValue
 import Arkham.Types.Id
@@ -20,8 +21,18 @@ import Arkham.Types.Trait
 
 type Who = InvestigatorMatcher
 
+pattern InvestigatorWithAnyDamage :: InvestigatorMatcher
+pattern InvestigatorWithAnyDamage <-
+  InvestigatorWithDamage (GreaterThan (Static 0)) where
+  InvestigatorWithAnyDamage = InvestigatorWithDamage (GreaterThan (Static 0))
+
+pattern InvestigatorWithAnyHorror :: InvestigatorMatcher
+pattern InvestigatorWithAnyHorror <-
+  InvestigatorWithHorror (GreaterThan (Static 0)) where
+  InvestigatorWithAnyHorror = InvestigatorWithHorror (GreaterThan (Static 0))
+
 data InvestigatorMatcher
-  = InvestigatorAtYourLocation
+  = InvestigatorAt LocationMatcher
   | You
   | UnengagedInvestigator
   | NotYou
@@ -29,10 +40,11 @@ data InvestigatorMatcher
   | UneliminatedInvestigator
   | InvestigatorCanMove
   | InvestigatorEngagedWith EnemyMatcher
-  | InvestigatorWithDamage
-  | InvestigatorWithHorror
+  | InvestigatorWithDamage ValueMatcher
+  | InvestigatorWithHorror ValueMatcher
   | InvestigatorWithId InvestigatorId
   | InvestigatorMatches [InvestigatorMatcher]
+  | AnyInvestigator [InvestigatorMatcher]
   | TurnInvestigator
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
@@ -108,11 +120,13 @@ data EnemyMatcher
   | EnemyWithTrait Trait
   | EnemyWithoutTrait Trait
   | EnemyWithKeyword Keyword
+  | CanFightEnemy
   | EnemyIs CardCode
   | AnyEnemy
   | ExhaustedEnemy
   | NonWeaknessEnemy
   | EnemyAtYourLocation
+  | EnemyNotAttackingYou
   | EnemyAtLocation LocationId
   | EnemyMatchAll [EnemyMatcher]
   | EnemyEngagedWithYou
@@ -246,11 +260,16 @@ pattern AssetCard :: CardMatcher
 pattern AssetCard <- CardWithType AssetType where
   AssetCard = CardWithType AssetType
 
+data DeckMatcher = YourDeck
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
 -- | Relies on game state, can not be used purely
 data ExtendedCardMatcher
   = BasicCardMatch CardMatcher
   | CardIsBeneathInvestigator Who
   | InHandOf Who
+  | CardFromDeck DeckMatcher
   | ExtendedCardWithOneOf [ExtendedCardMatcher]
   | ExtendedCardMatches [ExtendedCardMatcher]
   deriving stock (Show, Eq, Generic)
@@ -269,6 +288,7 @@ data CardMatcher
   | CardWithCardCode CardCode
   | CardWithTitle Text
   | CardWithTrait Trait
+  | CardWithId CardId
   | CardWithoutKeyword Keyword
   | CardWithClass ClassSymbol
   | CardWithOneOf [CardMatcher]
@@ -291,9 +311,11 @@ instance Semigroup CardMatcher where
 data WindowMatcher
   = EnemyDefeated Timing Who EnemyMatcher
   | EnemyEvaded Timing Who EnemyMatcher
+  | EnemyEngaged Timing Who EnemyMatcher
   | MythosStep WindowMythosStepMatcher
   | EnemyAttacks Timing Who EnemyMatcher
   | RevealChaosToken Timing Who TokenMatcher
+  | WouldRevealChaosToken Timing Who
   | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | WouldHaveSkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | EnemySpawns Timing Where EnemyMatcher
@@ -303,12 +325,16 @@ data WindowMatcher
   | DuringTurn Who
   | OrWindowMatcher [WindowMatcher]
   | DealtDamageOrHorror Who
-  | DrawCard Timing Who CardMatcher
+  | AssetDealtDamage Timing AssetMatcher
+  | DrawCard Timing Who ExtendedCardMatcher
+  | PlayCard Timing Who ExtendedCardMatcher
+  | CommittedCards Timing Who (ListMatcher CardMatcher)
   | PhaseBegins Timing PhaseMatcher
   | PhaseEnds Timing PhaseMatcher
   | PlayerHasPlayableCard ExtendedCardMatcher
-  | WhenAssetEntersPlay AssetMatcher
+  | AssetEntersPlay Timing AssetMatcher
   | Enters Timing Who Where
+  | AmongSearchedCards Timing Who CardMatcher
   | AnyWindow
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
@@ -385,3 +411,7 @@ instance Semigroup ActionMatcher where
 
 instance Monoid ActionMatcher where
   mempty = AnyAction
+
+data ListMatcher a = ExactlyOne
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)

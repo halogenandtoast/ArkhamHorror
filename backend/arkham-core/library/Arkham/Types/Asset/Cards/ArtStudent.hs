@@ -13,6 +13,7 @@ import Arkham.Types.Cost
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Restriction
+import qualified Arkham.Types.Timing as Timing
 
 newtype ArtStudent = ArtStudent AssetAttrs
   deriving anyclass IsAsset
@@ -24,10 +25,13 @@ artStudent = ally ArtStudent Cards.artStudent (1, 2)
 instance HasActions ArtStudent where
   getActions (ArtStudent x) =
     [ restrictedAbility
-        (toSource x)
+        x
         1
         OwnsThis
-        (ReactionAbility (WhenAssetEntersPlay $ AssetWithId (toId x)) Free)
+        (ReactionAbility
+          (AssetEntersPlay Timing.When $ AssetWithId (toId x))
+          Free
+        )
     ]
 
 instance HasModifiersFor env ArtStudent

@@ -13,8 +13,8 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Burglary = Burglary AssetAttrs
   deriving anyclass IsAsset
@@ -25,12 +25,12 @@ burglary = asset Burglary Cards.burglary
 
 instance HasModifiersFor env Burglary
 
-instance HasActions env Burglary where
-  getActions iid NonFast (Burglary a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility (Just Action.Investigate) $ Costs
-        [ActionCost 1, ExhaustCost (toTarget a)]
+instance HasActions Burglary where
+  getActions (Burglary a) =
+    [ restrictedAbility a 1 OwnsThis
+        $ ActionAbility (Just Action.Investigate)
+        $ Costs [ActionCost 1, ExhaustThis]
     ]
-  getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Burglary where
   runMessage msg a@(Burglary attrs) = case msg of

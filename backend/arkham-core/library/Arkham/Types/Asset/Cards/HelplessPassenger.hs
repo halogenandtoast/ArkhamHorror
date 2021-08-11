@@ -14,7 +14,7 @@ import Arkham.Types.Cost
 import Arkham.Types.Direction
 import Arkham.Types.Id
 import Arkham.Types.Message
-import Arkham.Types.Restriction hiding (When)
+import Arkham.Types.Restriction
 import Arkham.Types.Target
 
 newtype HelplessPassenger = HelplessPassenger AssetAttrs

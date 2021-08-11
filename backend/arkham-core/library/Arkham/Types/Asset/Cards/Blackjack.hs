@@ -14,9 +14,9 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Blackjack = Blackjack AssetAttrs
   deriving anyclass IsAsset
@@ -25,10 +25,11 @@ newtype Blackjack = Blackjack AssetAttrs
 blackjack :: AssetCard Blackjack
 blackjack = hand Blackjack Cards.blackjack
 
-instance HasActions env Blackjack where
-  getActions iid NonFast (Blackjack a) | ownedBy a iid =
-    pure [mkAbility a 1 $ ActionAbility (Just Action.Fight) (ActionCost 1)]
-  getActions _ _ _ = pure []
+instance HasActions Blackjack where
+  getActions (Blackjack a) =
+    [ restrictedAbility a 1 OwnsThis
+        $ ActionAbility (Just Action.Fight) (ActionCost 1)
+    ]
 
 instance HasModifiersFor env Blackjack
 

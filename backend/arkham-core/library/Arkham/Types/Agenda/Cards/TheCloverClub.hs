@@ -27,8 +27,7 @@ newtype TheCloverClub = TheCloverClub AgendaAttrs
 theCloverClub :: AgendaCard TheCloverClub
 theCloverClub = agenda (1, A) TheCloverClub Cards.theCloverClub (Static 4)
 
-instance HasActions env TheCloverClub where
-  getActions i window (TheCloverClub x) = getActions i window x
+instance HasActions TheCloverClub
 
 instance (HasSet EnemyId env (), HasSet Trait env EnemyId) => HasModifiersFor env TheCloverClub where
   getModifiersFor _ (EnemyTarget eid) (TheCloverClub attrs) | onSide A attrs =

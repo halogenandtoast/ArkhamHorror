@@ -14,9 +14,9 @@ import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype AlyssaGraham = AlyssaGraham AssetAttrs
   deriving anyclass IsAsset
@@ -25,14 +25,9 @@ newtype AlyssaGraham = AlyssaGraham AssetAttrs
 alyssaGraham :: AssetCard AlyssaGraham
 alyssaGraham = ally AlyssaGraham Cards.alyssaGraham (1, 3)
 
-ability :: AssetAttrs -> Ability
-ability a =
-  mkAbility (toSource a) 1 (FastAbility $ Costs [ExhaustCost (toTarget a)])
-
-instance HasActions env AlyssaGraham where
-  getActions iid FastPlayerWindow (AlyssaGraham a) | ownedBy a iid =
-    pure [ability a]
-  getActions _ _ _ = pure []
+instance HasActions AlyssaGraham where
+  getActions (AlyssaGraham a) =
+    [restrictedAbility (toSource a) 1 OwnsThis (FastAbility ExhaustThis)]
 
 instance HasModifiersFor env AlyssaGraham where
   getModifiersFor _ (InvestigatorTarget iid) (AlyssaGraham a) =

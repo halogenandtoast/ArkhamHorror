@@ -16,9 +16,7 @@ bulletproofVest3 =
   bodyWith BulletproofVest3 Cards.bulletproofVest3 (healthL ?~ 4)
 
 instance HasModifiersFor env BulletproofVest3
-
-instance HasActions env BulletproofVest3 where
-  getActions i window (BulletproofVest3 x) = getActions i window x
+instance HasActions BulletproofVest3
 
 instance (AssetRunner env) => RunMessage env BulletproofVest3 where
   runMessage msg (BulletproofVest3 attrs) =

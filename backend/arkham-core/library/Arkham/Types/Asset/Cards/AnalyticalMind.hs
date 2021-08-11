@@ -9,14 +9,13 @@ import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
-import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
 
 newtype AnalyticalMind = AnalyticalMind AssetAttrs
   deriving anyclass IsAsset
@@ -25,16 +24,13 @@ newtype AnalyticalMind = AnalyticalMind AssetAttrs
 analyticalMind :: AssetCard AnalyticalMind
 analyticalMind = asset AnalyticalMind Cards.analyticalMind
 
-ability :: AssetAttrs -> Ability
-ability attrs =
-  mkAbility attrs 1 (ReactionAbility $ ExhaustCost (toTarget attrs))
-
-instance HasSet CommittedCardId env InvestigatorId => HasActions env AnalyticalMind where
-  getActions i (AfterCommitedCard who _) (AnalyticalMind attrs)
-    | ownedBy attrs i && i == who = do
-      cardCount <- length <$> getSetList @CommittedCardId i
-      pure [ ability attrs | cardCount == 1 ]
-  getActions i window (AnalyticalMind attrs) = getActions i window attrs
+instance HasActions AnalyticalMind where
+  getActions (AnalyticalMind x) =
+    [ restrictedAbility x 1 OwnsThis
+        $ ReactionAbility
+            (CommittedCards Timing.After You ExactlyOne)
+            ExhaustThis
+    ]
 
 instance HasModifiersFor env AnalyticalMind where
   getModifiersFor _ (InvestigatorTarget iid) (AnalyticalMind attrs)

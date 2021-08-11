@@ -16,11 +16,11 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import Control.Monad.Extra
 
 newtype EsotericFormula = EsotericFormula AssetAttrs
   deriving anyclass IsAsset
@@ -29,19 +29,14 @@ newtype EsotericFormula = EsotericFormula AssetAttrs
 esotericFormula :: AssetCard EsotericFormula
 esotericFormula = asset EsotericFormula Cards.esotericFormula
 
-instance (HasSet Trait env EnemyId, HasSet FightableEnemyId env (InvestigatorId, Source)) => HasActions env EsotericFormula where
-  getActions iid window (EsotericFormula attrs) | ownedBy attrs iid =
-    withBaseActions iid window attrs $ do
-      fightableEnemies <- map unFightableEnemyId
-        <$> getSetList (iid, toSource attrs)
-      anyAbominations <- anyM
-        (fmap (member Abomination) . getSet @Trait)
-        fightableEnemies
-      pure
-        [ mkAbility attrs 1 $ ActionAbility (Just Action.Fight) (ActionCost 1)
-        | anyAbominations
-        ]
-  getActions iid window (EsotericFormula attrs) = getActions iid window attrs
+instance HasActions EsotericFormula where
+  getActions (EsotericFormula x) =
+    [ restrictedAbility
+        x
+        1
+        (OwnsThis <> EnemyExists (CanFightEnemy <> EnemyWithTrait Abomination))
+        (ActionAbility (Just Action.Fight) (ActionCost 1))
+    ]
 
 instance HasCount ClueCount env EnemyId => HasModifiersFor env EsotericFormula where
   getModifiersFor (SkillTestSource iid' _ source (EnemyTarget eid) (Just Action.Fight)) (InvestigatorTarget iid) (EsotericFormula attrs)

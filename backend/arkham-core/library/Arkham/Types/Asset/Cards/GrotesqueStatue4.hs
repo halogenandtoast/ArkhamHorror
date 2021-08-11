@@ -14,8 +14,9 @@ import Arkham.Types.ChaosBagStepState
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
-import Arkham.Types.Source
-import Arkham.Types.Window
+import Arkham.Types.Restriction
+import qualified Arkham.Types.Timing as Timing
+import qualified Arkham.Types.Window as W
 
 newtype GrotesqueStatue4 = GrotesqueStatue4 AssetAttrs
   deriving anyclass IsAsset
@@ -26,26 +27,22 @@ grotesqueStatue4 = hand GrotesqueStatue4 Cards.grotesqueStatue4
 
 instance HasModifiersFor env GrotesqueStatue4
 
-ability :: AssetAttrs -> Source -> Ability
-ability attrs source = base
-  { abilityMetadata = Just (SourceMetadata source)
-  , abilityLimit = PlayerLimit PerTestOrAbility 1 -- TODO: not a real limit
-  }
- where
-  base = mkAbility
-    (toSource attrs)
-    1
-    (ReactionAbility $ UseCost (toId attrs) Charge 1)
-
-instance HasActions env GrotesqueStatue4 where
-  getActions iid (WhenWouldRevealChaosToken source who) (GrotesqueStatue4 a)
-    | ownedBy a iid && who == iid = pure [ability a source]
-  getActions _ _ _ = pure []
+instance HasActions GrotesqueStatue4 where
+  getActions (GrotesqueStatue4 x) =
+    [ restrictedAbility
+        x
+        1
+        OwnsThis
+        (ReactionAbility (WouldRevealChaosToken Timing.When You)
+        $ UseCost (toId x) Charge 1
+        )
+    ]
 
 instance AssetRunner env => RunMessage env GrotesqueStatue4 where
   runMessage msg a@(GrotesqueStatue4 attrs) = case msg of
-    UseCardAbility iid source (Just (SourceMetadata drawSource)) 1 _
-      | isSource attrs source -> do
+    UseCardAbility iid source [W.Window Timing.When (W.WouldRevealChaosToken drawSource _)] 1 _
+      | isSource attrs source
+      -> do
         when (useCount (assetUses attrs) == 1) $ push (Discard (toTarget attrs))
         a <$ push
           (ReplaceCurrentDraw drawSource iid

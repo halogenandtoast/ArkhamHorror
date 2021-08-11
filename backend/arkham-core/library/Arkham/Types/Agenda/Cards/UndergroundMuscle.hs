@@ -28,9 +28,7 @@ undergroundMuscle :: AgendaCard UndergroundMuscle
 undergroundMuscle =
   agenda (2, A) UndergroundMuscle Cards.undergroundMuscle (Static 3)
 
-instance HasActions env UndergroundMuscle where
-  getActions i window (UndergroundMuscle x) = getActions i window x
-
+instance HasActions UndergroundMuscle
 instance HasModifiersFor env UndergroundMuscle
 
 instance AgendaRunner env => RunMessage env UndergroundMuscle where

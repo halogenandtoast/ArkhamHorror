@@ -77,8 +77,10 @@ data Cost
   | RemoveCost Target
   | Costs [Cost]
   | DamageCost Source Target Int
+  | DirectDamageCost Source Target Int
   | DiscardCost Target
   | DiscardCardCost Card
+  | DiscardDrawnCardCost
   | DoomCost Source Target Int
   | ExileCost Target
   | HandDiscardCost Int (Maybe CardType) (HashSet Trait) (HashSet SkillType)

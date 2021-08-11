@@ -9,11 +9,11 @@ import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.CampaignLogKey
-import Arkham.Types.Card.CardMatcher
 import Arkham.Types.Card.CardType
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
@@ -27,9 +27,7 @@ pastPresentAndFuture =
   agenda (2, A) PastPresentAndFuture Cards.pastPresentAndFuture (Static 4)
 
 instance HasModifiersFor env PastPresentAndFuture
-
-instance HasActions env PastPresentAndFuture where
-  getActions i window (PastPresentAndFuture x) = getActions i window x
+instance HasActions PastPresentAndFuture
 
 instance (HasRecord env, AgendaRunner env) => RunMessage env PastPresentAndFuture where
   runMessage msg a@(PastPresentAndFuture attrs@AgendaAttrs {..}) = case msg of

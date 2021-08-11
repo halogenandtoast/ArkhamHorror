@@ -27,9 +27,7 @@ theRougarouFeeds =
   agenda (2, A) TheRougarouFeeds Cards.theRougarouFeeds (Static 6)
 
 instance HasModifiersFor env TheRougarouFeeds
-
-instance HasActions env TheRougarouFeeds where
-  getActions i window (TheRougarouFeeds x) = getActions i window x
+instance HasActions TheRougarouFeeds
 
 getRougarou
   :: (MonadReader env m, HasId (Maybe StoryEnemyId) env CardCode)

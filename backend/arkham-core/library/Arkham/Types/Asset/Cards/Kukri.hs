@@ -16,9 +16,9 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Kukri = Kukri AssetAttrs
   deriving anyclass IsAsset
@@ -27,10 +27,11 @@ newtype Kukri = Kukri AssetAttrs
 kukri :: AssetCard Kukri
 kukri = hand Kukri Cards.kukri
 
-instance HasActions env Kukri where
-  getActions iid NonFast (Kukri a) | ownedBy a iid =
-    pure [mkAbility a 1 $ ActionAbility (Just Action.Fight) (ActionCost 1)]
-  getActions _ _ _ = pure []
+instance HasActions Kukri where
+  getActions (Kukri a) =
+    [ restrictedAbility a 1 OwnsThis
+        $ ActionAbility (Just Action.Fight) (ActionCost 1)
+    ]
 
 instance HasModifiersFor env Kukri
 

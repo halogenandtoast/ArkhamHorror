@@ -7,7 +7,6 @@ module Arkham.Types.Classes
 
 import Arkham.Prelude hiding (to)
 
-import Arkham.Card
 import Arkham.Types.Ability
 import Arkham.Types.Action hiding (Ability)
 import Arkham.Types.Card
@@ -54,10 +53,11 @@ class (Hashable set, Eq set) => HasSet set env a where
 type family QueryElement a where
   QueryElement ActionMatcher = Ability
   QueryElement AssetMatcher = AssetId
+  QueryElement CardMatcher = Card
   QueryElement EnemyMatcher = EnemyId
+  QueryElement ExtendedCardMatcher = Card
   QueryElement InvestigatorMatcher = InvestigatorId
   QueryElement LocationMatcher = LocationId
-  QueryElement ExtendedCardMatcher = Card
 
 selectList
   :: (HasCallStack, MonadReader env m, Query a env) => a -> m [QueryElement a]
@@ -106,6 +106,7 @@ type HasCostPayment env
     , HasCount UsesCount env AssetId
     , HasId (Maybe LocationId) env LocationMatcher
     , HasList HandCard env InvestigatorId
+    , HasList DiscardableHandCard env InvestigatorId
     , HasList TakenAction env InvestigatorId
     , Query AssetMatcher env
     , HasSet InvestigatorId env LocationId
@@ -267,22 +268,6 @@ class Exhaustable a where
   isExhausted = not . isReady
   isReady = not . isExhausted
   {-# MINIMAL isExhausted | isReady #-}
-
-class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
-  toCard :: a -> Card
-  toCard a = lookupCard (cdCardCode $ toCardDef a) (toCardId a)
-  toCardId :: a -> CardId
-
-instance IsCard Card where
-  toCardId = \case
-    PlayerCard pc -> toCardId pc
-    EncounterCard ec -> toCardId ec
-
-instance IsCard PlayerCard where
-  toCardId = pcId
-
-instance IsCard EncounterCard where
-  toCardId = ecId
 
 class IsInvestigator a where
   isResigned :: a -> Bool

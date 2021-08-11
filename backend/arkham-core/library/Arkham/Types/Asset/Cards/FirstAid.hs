@@ -14,9 +14,9 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype FirstAid = FirstAid AssetAttrs
   deriving anyclass IsAsset
@@ -27,15 +27,15 @@ firstAid = asset FirstAid Cards.firstAid
 
 instance HasModifiersFor env FirstAid
 
-ability :: AssetAttrs -> Ability
-ability attrs = mkAbility
-  (toSource attrs)
-  1
-  (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (toId attrs) Supply 1])
-
-instance HasActions env FirstAid where
-  getActions iid NonFast (FirstAid a) = pure [ ability a | ownedBy a iid ]
-  getActions _ _ _ = pure []
+instance HasActions FirstAid where
+  getActions (FirstAid x) =
+    [ restrictedAbility
+        x
+        1
+        OwnsThis
+        (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (toId x) Supply 1]
+        )
+    ]
 
 instance AssetRunner env => RunMessage env FirstAid where
   runMessage msg a@(FirstAid attrs@AssetAttrs {..}) = case msg of

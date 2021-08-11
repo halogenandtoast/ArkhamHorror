@@ -19,7 +19,7 @@ import Arkham.Types.Decks
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Restriction hiding (After)
+import Arkham.Types.Restriction
 import Arkham.Types.Target
 
 newtype TheCarnevaleConspiracy = TheCarnevaleConspiracy ActAttrs

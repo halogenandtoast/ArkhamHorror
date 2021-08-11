@@ -22,9 +22,7 @@ theOldOnesHunger =
   agenda (2, A) TheOldOnesHunger Cards.theOldOnesHunger (Static 6)
 
 instance HasModifiersFor env TheOldOnesHunger
-
-instance HasActions env TheOldOnesHunger where
-  getActions i window (TheOldOnesHunger x) = getActions i window x
+instance HasActions TheOldOnesHunger
 
 instance AgendaRunner env => RunMessage env TheOldOnesHunger where
   runMessage msg a@(TheOldOnesHunger attrs@AgendaAttrs {..}) = case msg of

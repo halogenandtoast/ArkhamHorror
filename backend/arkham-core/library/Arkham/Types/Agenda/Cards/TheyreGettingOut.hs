@@ -23,9 +23,7 @@ theyreGettingOut :: AgendaCard TheyreGettingOut
 theyreGettingOut =
   agenda (3, A) TheyreGettingOut Cards.theyreGettingOut (Static 10)
 
-instance HasActions env TheyreGettingOut where
-  getActions i window (TheyreGettingOut x) = getActions i window x
-
+instance HasActions TheyreGettingOut
 instance HasModifiersFor env TheyreGettingOut
 
 instance AgendaRunner env => RunMessage env TheyreGettingOut where

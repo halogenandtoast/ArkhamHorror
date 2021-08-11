@@ -12,8 +12,10 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
+import qualified Arkham.Types.Window as W
 
 newtype RabbitsFoot3 = RabbitsFoot3 AssetAttrs
   deriving anyclass IsAsset
@@ -24,27 +26,22 @@ rabbitsFoot3 = accessory RabbitsFoot3 Cards.rabbitsFoot3
 
 instance HasModifiersFor env RabbitsFoot3
 
-ability :: AssetAttrs -> Int -> Ability
-ability attrs n =
-  (mkAbility (toSource attrs) 1 (ReactionAbility $ ExhaustCost (toTarget attrs))
-    )
-    { abilityMetadata = Just (IntMetadata n)
-    }
-
-instance HasActions env RabbitsFoot3 where
-  getActions iid (AfterFailSkillTest who n) (RabbitsFoot3 a)
-    | ownedBy a iid && iid == who = pure [ability a n]
-  getActions i window (RabbitsFoot3 x) = getActions i window x
+instance HasActions RabbitsFoot3 where
+  getActions (RabbitsFoot3 a) =
+    [ restrictedAbility a 1 OwnsThis $ ReactionAbility
+        (SkillTestResult Timing.After You AnySkillTest (FailureResult AnyValue))
+        ExhaustThis
+    ]
 
 instance AssetRunner env => RunMessage env RabbitsFoot3 where
   runMessage msg a@(RabbitsFoot3 attrs) = case msg of
-    UseCardAbility iid source (Just (IntMetadata x)) 1 _
+    UseCardAbility iid source [W.Window Timing.After (W.FailSkillTest _ n)] 1 _
       | isSource attrs source -> a <$ push
         (SearchTopOfDeck
           iid
           source
           (InvestigatorTarget iid)
-          x
+          n
           mempty
           (ShuffleBackIn $ DrawFound iid)
         )

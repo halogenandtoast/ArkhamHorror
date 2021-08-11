@@ -24,9 +24,7 @@ theBeastUnleashed :: AgendaCard TheBeastUnleashed
 theBeastUnleashed =
   agenda (3, A) TheBeastUnleashed Cards.theBeastUnleashed (Static 2)
 
-instance HasActions env TheBeastUnleashed where
-  getActions i window (TheBeastUnleashed x) = getActions i window x
-
+instance HasActions TheBeastUnleashed
 instance HasModifiersFor env TheBeastUnleashed
 
 instance AgendaRunner env => RunMessage env TheBeastUnleashed where

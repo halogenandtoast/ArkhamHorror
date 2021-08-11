@@ -27,7 +27,7 @@ instance HasActions SmokingPipe where
     [ restrictedAbility
         a
         1
-        (OwnsThis <> InvestigatorExists (You <> InvestigatorWithHorror))
+        (OwnsThis <> InvestigatorExists (You <> InvestigatorWithAnyHorror))
         (FastAbility
           (Costs
             [ UseCost (toId a) Supply 1

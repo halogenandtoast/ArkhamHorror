@@ -14,6 +14,7 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
@@ -26,9 +27,7 @@ newtype ShadowsDeepen = ShadowsDeepen AgendaAttrs
 shadowsDeepen :: AgendaCard ShadowsDeepen
 shadowsDeepen = agenda (2, A) ShadowsDeepen Cards.shadowsDeepen (Static 7)
 
-instance HasActions env ShadowsDeepen where
-  getActions i window (ShadowsDeepen x) = getActions i window x
-
+instance HasActions ShadowsDeepen
 instance HasModifiersFor env ShadowsDeepen
 
 instance AgendaRunner env => RunMessage env ShadowsDeepen where

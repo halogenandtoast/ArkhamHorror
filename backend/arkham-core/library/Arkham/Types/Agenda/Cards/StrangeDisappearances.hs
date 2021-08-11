@@ -22,9 +22,7 @@ strangeDisappearances =
   agenda (1, A) StrangeDisappearances Cards.strangeDisappearances (Static 6)
 
 instance HasModifiersFor env StrangeDisappearances
-
-instance HasActions env StrangeDisappearances where
-  getActions i window (StrangeDisappearances x) = getActions i window x
+instance HasActions StrangeDisappearances
 
 instance AgendaRunner env => RunMessage env StrangeDisappearances where
   runMessage msg a@(StrangeDisappearances attrs@AgendaAttrs {..}) = case msg of

@@ -13,8 +13,8 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype OldBookOfLore = OldBookOfLore AssetAttrs
   deriving anyclass IsAsset
@@ -25,12 +25,11 @@ oldBookOfLore = hand OldBookOfLore Cards.oldBookOfLore
 
 instance HasModifiersFor env OldBookOfLore
 
-instance HasActions env OldBookOfLore where
-  getActions iid NonFast (OldBookOfLore a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility Nothing $ Costs
+instance HasActions OldBookOfLore where
+  getActions (OldBookOfLore a) =
+    [ restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ Costs
         [ActionCost 1, ExhaustCost $ toTarget a]
     ]
-  getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env OldBookOfLore where
   runMessage msg a@(OldBookOfLore attrs) = case msg of

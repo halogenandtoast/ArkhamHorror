@@ -13,9 +13,9 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype MedicalTexts = MedicalTexts AssetAttrs
   deriving anyclass IsAsset
@@ -26,10 +26,9 @@ medicalTexts = hand MedicalTexts Cards.medicalTexts
 
 instance HasModifiersFor env MedicalTexts
 
-instance HasActions env MedicalTexts where
-  getActions iid NonFast (MedicalTexts a) | ownedBy a iid =
-    pure [mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1)]
-  getActions _ _ _ = pure []
+instance HasActions MedicalTexts where
+  getActions (MedicalTexts a) =
+    [restrictedAbility a 1 OwnsThis (ActionAbility Nothing $ ActionCost 1)]
 
 instance AssetRunner env => RunMessage env MedicalTexts where
   runMessage msg a@(MedicalTexts attrs) = case msg of

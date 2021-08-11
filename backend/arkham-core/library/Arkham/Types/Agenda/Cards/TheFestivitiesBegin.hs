@@ -24,9 +24,7 @@ theFestivitiesBegin =
   agenda (1, A) TheFestivitiesBegin Cards.theFestivitiesBegin (Static 8)
 
 instance HasModifiersFor env TheFestivitiesBegin
-
-instance HasActions env TheFestivitiesBegin where
-  getActions i window (TheFestivitiesBegin x) = getActions i window x
+instance HasActions TheFestivitiesBegin
 
 instance AgendaRunner env => RunMessage env TheFestivitiesBegin where
   runMessage msg a@(TheFestivitiesBegin attrs@AgendaAttrs {..}) = case msg of

@@ -154,7 +154,8 @@ dodge :: CardDef
 dodge = (event "01023" "Dodge" 1 Guardian)
   { cdSkills = [SkillWillpower, SkillAgility]
   , cdCardTraits = setFromList [Tactic]
-  , cdFastWindow = Just (EnemyAttacks When InvestigatorAtYourLocation AnyEnemy)
+  , cdFastWindow = Just
+    (EnemyAttacks When (InvestigatorAt YourLocation) AnyEnemy)
   }
 
 dynamiteBlast :: CardDef
@@ -250,7 +251,8 @@ wardOfProtection :: CardDef
 wardOfProtection = (event "01065" "Ward of Protection" 1 Mystic)
   { cdSkills = [SkillWild]
   , cdCardTraits = setFromList [Spell, Spirit]
-  , cdFastWindow = Just (DrawCard When You NonWeaknessTreachery)
+  , cdFastWindow = Just
+    (DrawCard When You (BasicCardMatch NonWeaknessTreachery))
   }
 
 blindingLight :: CardDef
@@ -369,7 +371,7 @@ shortcut = (event "02022" "Shortcut" 0 Seeker)
   , cdPlayRestrictions = Just
     (Restriction.LocationExists AccessibleLocation
     <> Restriction.InvestigatorExists
-         (InvestigatorCanMove <> InvestigatorAtYourLocation)
+         (InvestigatorCanMove <> InvestigatorAt YourLocation)
     )
   }
 
@@ -411,12 +413,12 @@ emergencyAid = (event "02105" "Emergency Aid" 2 Guardian)
   , cdCardTraits = setFromList [Insight, Science]
   , cdPlayRestrictions = Just $ Restriction.AnyRestriction
     [ Restriction.AssetExists
-      (AssetOwnedBy InvestigatorAtYourLocation
+      (AssetOwnedBy (InvestigatorAt YourLocation)
       <> AssetWithDamage
       <> AssetWithTrait Ally
       )
     , Restriction.InvestigatorExists
-      (InvestigatorAtYourLocation <> InvestigatorWithDamage)
+      (InvestigatorAt YourLocation <> InvestigatorWithAnyDamage)
     ]
   }
 
@@ -431,7 +433,7 @@ contraband = (event "02109" "Contraband" 4 Rogue)
   { cdSkills = [SkillWillpower, SkillIntellect]
   , cdCardTraits = setFromList [Supply, Illicit]
   , cdPlayRestrictions = Just $ Restriction.AssetExists
-    (AssetOwnedBy InvestigatorAtYourLocation
+    (AssetOwnedBy (InvestigatorAt YourLocation)
     <> AssetOneOf [AssetWithUses Uses.Ammo, AssetWithUses Uses.Supply]
     )
   }
@@ -481,7 +483,8 @@ hypnoticGaze :: CardDef
 hypnoticGaze = (event "02153" "Hypnotic Gaze" 3 Mystic)
   { cdSkills = [SkillCombat, SkillAgility]
   , cdCardTraits = singleton Spell
-  , cdFastWindow = Just (EnemyAttacks When InvestigatorAtYourLocation AnyEnemy)
+  , cdFastWindow = Just
+    (EnemyAttacks When (InvestigatorAt YourLocation) AnyEnemy)
   }
 
 lure1 :: CardDef
@@ -584,7 +587,8 @@ wardOfProtection5 :: CardDef
 wardOfProtection5 = (event "02307" "Ward of Protection" 1 Mystic)
   { cdSkills = [SkillWillpower, SkillWild]
   , cdCardTraits = setFromList [Spell, Spirit]
-  , cdFastWindow = Just $ DrawCard When You NonWeaknessTreachery
+  , cdFastWindow = Just
+    $ DrawCard When You (BasicCardMatch NonWeaknessTreachery)
   , cdLevel = 5
   }
 
@@ -619,8 +623,8 @@ letMeHandleThis :: CardDef
 letMeHandleThis = (event "03022" "\"Let me handle this!\"" 0 Guardian)
   { cdSkills = [SkillWillpower, SkillCombat]
   , cdCardTraits = setFromList [Spirit]
-  , cdFastWindow = Just $ DrawCard After NotYou $ NonPeril <> CardWithOneOf
-    (map CardWithType encounterCardTypes)
+  , cdFastWindow = Just $ DrawCard After NotYou $ BasicCardMatch
+    (NonPeril <> CardWithOneOf (map CardWithType encounterCardTypes))
   }
 
 everVigilant1 :: CardDef
@@ -718,7 +722,7 @@ contraband2 = (event "51005" "Contraband" 3 Rogue)
   , cdCardTraits = setFromList [Supply, Illicit]
   , cdLevel = 2
   , cdPlayRestrictions = Just $ Restriction.AssetExists
-    (AssetOwnedBy InvestigatorAtYourLocation
+    (AssetOwnedBy (InvestigatorAt YourLocation)
     <> AssetOneOf [AssetWithUseType Uses.Ammo, AssetWithUseType Uses.Supply]
     )
   }

@@ -14,6 +14,7 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
@@ -27,9 +28,7 @@ restrictedAccess :: AgendaCard RestrictedAccess
 restrictedAccess =
   agenda (1, A) RestrictedAccess Cards.restrictedAccess (Static 5)
 
-instance HasActions env RestrictedAccess where
-  getActions i window (RestrictedAccess x) = getActions i window x
-
+instance HasActions RestrictedAccess
 instance HasModifiersFor env RestrictedAccess
 
 instance AgendaRunner env => RunMessage env RestrictedAccess where

@@ -11,11 +11,14 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Card
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
+import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
+import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
+import Arkham.Types.Restriction
 import Arkham.Types.Target
 
 newtype SophieInLovingMemory = SophieInLovingMemory AssetAttrs
@@ -28,13 +31,19 @@ sophieInLovingMemory = assetWith
   Cards.sophieInLovingMemory
   (canLeavePlayByNormalMeansL .~ False)
 
-ability :: AssetAttrs -> Ability
-ability attrs = mkAbility attrs 2 ForcedAbility & abilityLimitL .~ NoLimit
-
-instance HasCount DamageCount env InvestigatorId => HasActions env SophieInLovingMemory where
-  getActions iid _ (SophieInLovingMemory attrs) = whenOwnedBy attrs iid $ do
-    damageCount <- unDamageCount <$> getCount iid
-    pure [ ability attrs | damageCount >= 5 ]
+instance HasActions SophieInLovingMemory where
+  getActions (SophieInLovingMemory x) =
+    [ restrictedAbility x 1 (OwnsThis <> DuringSkillTest)
+      $ FastAbility
+      $ DirectDamageCost (toSource x) YouTarget 1
+    , restrictedAbility
+        x
+        2
+        (OwnsThis <> InvestigatorExists
+          (You <> InvestigatorWithDamage (AtLeast $ Static 5))
+        )
+      $ ForcedAbility AnyWindow
+    ]
 
 instance HasModifiersFor env SophieInLovingMemory
 

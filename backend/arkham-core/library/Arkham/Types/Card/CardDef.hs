@@ -112,21 +112,6 @@ instance HasCardDef CardDef where
 instance HasCardCode CardDef where
   toCardCode = cdCardCode
 
-cardMatch :: (HasCardCode a, HasCardDef a) => a -> CardMatcher -> Bool
-cardMatch a = \case
-  AnyCard -> True
-  IsEncounterCard -> toCardType a `elem` encounterCardTypes
-  CardWithType cardType' -> toCardType a == cardType'
-  CardWithCardCode cardCode -> toCardCode a == cardCode
-  CardWithTitle title -> (nameTitle . cdName $ toCardDef a) == title
-  CardWithTrait trait -> trait `member` toTraits a
-  CardWithClass role -> cdClassSymbol (toCardDef a) == Just role
-  CardMatches ms -> all (cardMatch a) ms
-  CardWithOneOf ms -> any (cardMatch a) ms
-  CardWithoutKeyword k -> k `notMember` cdKeywords (toCardDef a)
-  NonWeakness -> not . cdWeakness $ toCardDef a
-  NonExceptional -> not . cdExceptional $ toCardDef a
-
 testCardDef :: CardType -> CardCode -> CardDef
 testCardDef cardType cardCode = CardDef
   { cdCardCode = cardCode

@@ -24,9 +24,7 @@ rampagingCreatures =
   agenda (1, A) RampagingCreatures Cards.rampagingCreatures (Static 5)
 
 instance HasModifiersFor env RampagingCreatures
-
-instance HasActions env RampagingCreatures where
-  getActions i window (RampagingCreatures x) = getActions i window x
+instance HasActions RampagingCreatures
 
 instance AgendaRunner env => RunMessage env RampagingCreatures where
   runMessage msg a@(RampagingCreatures attrs) = case msg of

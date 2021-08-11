@@ -25,9 +25,7 @@ rollingBackwards =
   agenda (3, A) RollingBackwards Cards.rollingBackwards (Static 4)
 
 instance HasModifiersFor env RollingBackwards
-
-instance HasActions env RollingBackwards where
-  getActions i window (RollingBackwards x) = getActions i window x
+instance HasActions RollingBackwards
 
 leftmostLocation
   :: ( MonadReader env m

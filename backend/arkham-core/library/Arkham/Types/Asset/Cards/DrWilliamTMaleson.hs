@@ -13,6 +13,7 @@ import Arkham.Types.Cost
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (When)
 import Arkham.Types.Restriction
+import Arkham.Types.Timing
 
 newtype DrWilliamTMaleson = DrWilliamTMaleson AssetAttrs
   deriving anyclass IsAsset
@@ -27,7 +28,7 @@ instance HasActions DrWilliamTMaleson where
         attrs
         1
         OwnsThis
-        (ReactionAbility (DrawCard When You IsEncounterCard)
+        (ReactionAbility (DrawCard When You $ BasicCardMatch IsEncounterCard)
         $ Costs [ExhaustCost (toTarget attrs), PlaceClueOnLocationCost 1]
         )
     ]

@@ -23,10 +23,8 @@ newtype DrawnIn = DrawnIn AgendaAttrs
 drawnIn :: AgendaCard DrawnIn
 drawnIn = agenda (4, A) DrawnIn Cards.drawnIn (Static 3)
 
+instance HasActions DrawnIn
 instance HasModifiersFor env DrawnIn
-
-instance HasActions env DrawnIn where
-  getActions i window (DrawnIn x) = getActions i window x
 
 leftmostLocation
   :: ( MonadReader env m

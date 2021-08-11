@@ -13,6 +13,7 @@ import Arkham.Types.Cost
 import Arkham.Types.Message hiding (When)
 import Arkham.Types.Phase
 import Arkham.Types.Restriction
+import Arkham.Types.Timing
 import qualified Arkham.Types.Window as Window
 
 newtype TheGoldPocketWatch4 = TheGoldPocketWatch4 AssetAttrs

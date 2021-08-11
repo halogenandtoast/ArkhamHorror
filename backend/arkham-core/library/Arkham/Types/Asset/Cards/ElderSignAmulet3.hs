@@ -16,9 +16,7 @@ elderSignAmulet3 =
   accessoryWith ElderSignAmulet3 Cards.elderSignAmulet3 (sanityL ?~ 4)
 
 instance HasModifiersFor env ElderSignAmulet3
-
-instance HasActions env ElderSignAmulet3 where
-  getActions i window (ElderSignAmulet3 x) = getActions i window x
+instance HasActions ElderSignAmulet3
 
 instance (AssetRunner env) => RunMessage env ElderSignAmulet3 where
   runMessage msg (ElderSignAmulet3 attrs) =

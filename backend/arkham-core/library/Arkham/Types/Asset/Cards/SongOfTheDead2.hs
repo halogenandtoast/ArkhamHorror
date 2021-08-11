@@ -6,6 +6,8 @@ module Arkham.Types.Asset.Cards.SongOfTheDead2
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
+import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Uses
@@ -13,9 +15,9 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype SongOfTheDead2 = SongOfTheDead2 AssetAttrs
   deriving anyclass IsAsset
@@ -24,10 +26,11 @@ newtype SongOfTheDead2 = SongOfTheDead2 AssetAttrs
 songOfTheDead2 :: AssetCard SongOfTheDead2
 songOfTheDead2 = arcane SongOfTheDead2 Cards.songOfTheDead2
 
-instance HasActions env SongOfTheDead2 where
-  getActions iid NonFast (SongOfTheDead2 a) = whenOwnedBy a iid
-    $ pure [fightAction a 1 [ActionCost 1, UseCost (toId a) Charge 1]]
-  getActions _ _ _ = pure []
+instance HasActions SongOfTheDead2 where
+  getActions (SongOfTheDead2 x) =
+    [ restrictedAbility x 1 OwnsThis $ ActionAbility (Just Action.Fight) $ Costs
+        [ActionCost 1, UseCost (toId x) Charge 1]
+    ]
 
 instance HasModifiersFor env SongOfTheDead2
 

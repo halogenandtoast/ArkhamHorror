@@ -32,7 +32,7 @@ instance HasActions StrangeSolutionRestorativeConcoction4 where
         x
         1
         (OwnsThis <> InvestigatorExists
-          (InvestigatorAtYourLocation <> InvestigatorWithDamage)
+          (InvestigatorAt YourLocation <> InvestigatorWithAnyDamage)
         )
         (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (toId x) Supply 1]
         )

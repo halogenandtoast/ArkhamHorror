@@ -9,6 +9,7 @@ import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Trait
@@ -22,9 +23,7 @@ riseOfTheGhouls =
   agenda (2, A) RiseOfTheGhouls Cards.riseOfTheGhouls (Static 7)
 
 instance HasModifiersFor env RiseOfTheGhouls
-
-instance HasActions env RiseOfTheGhouls where
-  getActions i window (RiseOfTheGhouls x) = getActions i window x
+instance HasActions RiseOfTheGhouls
 
 instance AgendaRunner env => RunMessage env RiseOfTheGhouls where
   runMessage msg a@(RiseOfTheGhouls attrs@AgendaAttrs {..}) = case msg of

@@ -13,6 +13,7 @@ import Arkham.Types.Cost
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (When)
 import Arkham.Types.Restriction
+import Arkham.Types.Timing
 import Arkham.Types.Token
 
 newtype JewelOfAureolus3 = JewelOfAureolus3 AssetAttrs
@@ -29,7 +30,7 @@ instance HasActions JewelOfAureolus3 where
         1
         OwnsThis
         (ReactionAbility
-          (RevealChaosToken When InvestigatorAtYourLocation $ TokenMatchesAny
+          (RevealChaosToken When (InvestigatorAt YourLocation) $ TokenMatchesAny
             (map TokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail])
           )
           ExhaustThis

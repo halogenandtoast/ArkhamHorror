@@ -19,9 +19,7 @@ whatsGoingOn :: AgendaCard WhatsGoingOn
 whatsGoingOn = agenda (1, A) WhatsGoingOn Cards.whatsGoingOn (Static 3)
 
 instance HasModifiersFor env WhatsGoingOn
-
-instance HasActions env WhatsGoingOn where
-  getActions i window (WhatsGoingOn x) = getActions i window x
+instance HasActions WhatsGoingOn
 
 instance AgendaRunner env => RunMessage env WhatsGoingOn where
   runMessage msg a@(WhatsGoingOn attrs@AgendaAttrs {..}) = case msg of

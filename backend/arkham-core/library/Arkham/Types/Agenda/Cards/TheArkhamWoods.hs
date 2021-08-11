@@ -9,6 +9,7 @@ import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -22,9 +23,7 @@ theArkhamWoods :: AgendaCard TheArkhamWoods
 theArkhamWoods = agenda (1, A) TheArkhamWoods Cards.theArkhamWoods (Static 4)
 
 instance HasModifiersFor env TheArkhamWoods
-
-instance HasActions env TheArkhamWoods where
-  getActions i window (TheArkhamWoods x) = getActions i window x
+instance HasActions TheArkhamWoods
 
 instance AgendaRunner env => RunMessage env TheArkhamWoods where
   runMessage msg a@(TheArkhamWoods attrs@AgendaAttrs {..}) = case msg of

@@ -9,9 +9,9 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype ArcaneInitiate = ArcaneInitiate AssetAttrs
   deriving anyclass IsAsset
@@ -20,15 +20,11 @@ newtype ArcaneInitiate = ArcaneInitiate AssetAttrs
 arcaneInitiate :: AssetCard ArcaneInitiate
 arcaneInitiate = ally ArcaneInitiate Cards.arcaneInitiate (1, 2)
 
-fastAbility :: AssetAttrs -> Ability
-fastAbility a = mkAbility a 1 . FastAbility . ExhaustCost $ toTarget a
-
 instance HasModifiersFor env ArcaneInitiate
 
-instance HasActions env ArcaneInitiate where
-  getActions iid FastPlayerWindow (ArcaneInitiate a) | ownedBy a iid =
-    pure [fastAbility a]
-  getActions _ _ _ = pure []
+instance HasActions ArcaneInitiate where
+  getActions (ArcaneInitiate a) =
+    [restrictedAbility a 1 OwnsThis $ FastAbility ExhaustThis]
 
 instance (AssetRunner env) => RunMessage env ArcaneInitiate where
   runMessage msg a@(ArcaneInitiate attrs) = case msg of

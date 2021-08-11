@@ -17,8 +17,8 @@ import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query
+import Arkham.Types.Restriction
 import Arkham.Types.Source
-import Arkham.Types.Window
 
 newtype MaskedCarnevaleGoer_20 = MaskedCarnevaleGoer_20 AssetAttrs
   deriving anyclass IsAsset
@@ -28,16 +28,14 @@ maskedCarnevaleGoer_20 :: AssetCard MaskedCarnevaleGoer_20
 maskedCarnevaleGoer_20 =
   asset MaskedCarnevaleGoer_20 Cards.maskedCarnevaleGoer_20
 
-ability :: AssetAttrs -> Ability
-ability attrs =
-  (mkAbility attrs 1 (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1]))
-    { abilityRestrictions = OnLocation <$> assetLocation attrs
-    }
-
-instance HasActions env MaskedCarnevaleGoer_20 where
-  getActions _ NonFast (MaskedCarnevaleGoer_20 attrs) = pure [ability attrs]
-  getActions iid window (MaskedCarnevaleGoer_20 attrs) =
-    getActions iid window attrs
+instance HasActions MaskedCarnevaleGoer_20 where
+  getActions (MaskedCarnevaleGoer_20 attrs) =
+    [ restrictedAbility
+        attrs
+        1
+        OnSameLocation
+        (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1])
+    ]
 
 instance HasModifiersFor env MaskedCarnevaleGoer_20
 

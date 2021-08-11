@@ -9,11 +9,11 @@ import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
-import Arkham.Types.Window
+import Arkham.Types.Restriction
+import qualified Arkham.Types.Timing as Timing
 
 newtype DrHenryArmitage = DrHenryArmitage AssetAttrs
   deriving anyclass IsAsset
@@ -22,18 +22,18 @@ newtype DrHenryArmitage = DrHenryArmitage AssetAttrs
 drHenryArmitage :: AssetCard DrHenryArmitage
 drHenryArmitage = ally DrHenryArmitage Cards.drHenryArmitage (2, 2)
 
-fastAbility :: AssetAttrs -> Card -> Ability
-fastAbility a card = mkAbility
-  (toSource a)
-  1
-  (FastAbility $ Costs [DiscardCardCost card, ExhaustCost (toTarget a)])
-
 instance HasModifiersFor env DrHenryArmitage
 
-instance HasActions env DrHenryArmitage where
-  getActions iid (AfterDrawCard who card) (DrHenryArmitage a)
-    | ownedBy a iid && iid == who = pure [fastAbility a card]
-  getActions _ _ _ = pure []
+instance HasActions DrHenryArmitage where
+  getActions (DrHenryArmitage x) =
+    [ restrictedAbility
+        x
+        1
+        OwnsThis
+        (ReactionAbility (DrawCard Timing.After You (CardFromDeck YourDeck))
+        $ Costs [DiscardDrawnCardCost, ExhaustThis]
+        )
+    ]
 
 instance (AssetRunner env) => RunMessage env DrHenryArmitage where
   runMessage msg a@(DrHenryArmitage attrs) = case msg of

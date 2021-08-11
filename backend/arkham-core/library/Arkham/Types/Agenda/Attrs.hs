@@ -20,7 +20,7 @@ import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.TreacheryId
-import Arkham.Types.Window
+import Arkham.Types.Window hiding (when)
 
 class IsAgenda a
 
@@ -120,9 +120,6 @@ instance HasCardDef AgendaAttrs where
     Just def -> def
     Nothing ->
       error $ "missing card def for agenda " <> show (unAgendaId $ agendaId e)
-
-instance HasActions env AgendaAttrs where
-  getActions _ _ _ = pure []
 
 instance HasStep AgendaAttrs AgendaStep where
   getStep = asks $ agendaStep . agendaSequence

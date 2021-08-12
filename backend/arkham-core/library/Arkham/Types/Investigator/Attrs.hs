@@ -1983,10 +1983,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 ]
               else choices
             )
-      actions <- fmap concat <$> for cards $ \card' -> getActions
-        iid
-        (WhenAmongSearchedCards iid)
-        (toCardInstance iid $ PlayerCard card')
+      actions <-
+        filterM
+            (getCanPerformAbility iid (Window Timing.When AmongSearchedCards))
+          $ concatMap (getActions . toCardInstance iid . PlayerCard) cards
       -- TODO: This is for astounding revelation and only one research action is possible
       -- so we are able to short circuit here, but we may have additional cards in the
       -- future so we may want to make this more versatile

@@ -45,5 +45,6 @@ data Source
   | ActDeckSource
   | AgendaDeckSource
   | YouSource
+  | NoSource
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

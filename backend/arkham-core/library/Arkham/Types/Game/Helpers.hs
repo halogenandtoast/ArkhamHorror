@@ -622,7 +622,7 @@ targetToSource = \case
   ActTarget aid -> ActSource aid
   CardIdTarget _ -> error "can not convert"
   CardCodeTarget _ -> error "can not convert"
-  SearchedCardTarget _ _ -> error "can not convert"
+  SearchedCardTarget _ -> error "can not convert"
   EventTarget eid -> EventSource eid
   SkillTarget sid -> SkillSource sid
   SkillTestInitiatorTarget _ -> error "can not convert"
@@ -634,6 +634,7 @@ targetToSource = \case
   AgendaDeckTarget -> AgendaDeckSource
   InvestigationTarget{} -> error "not converted"
   YouTarget -> YouSource
+  NoTarget -> NoSource
 
 sourceToTarget :: Source -> Target
 sourceToTarget = \case
@@ -667,6 +668,7 @@ sourceToTarget = \case
   ActDeckSource -> ActDeckTarget
   AgendaDeckSource -> AgendaDeckTarget
   YouSource -> YouTarget
+  NoSource -> NoTarget
 
 addCampaignCardToDeckChoice
   :: InvestigatorId -> [InvestigatorId] -> CardDef -> Message
@@ -1333,21 +1335,6 @@ locationMatches investigatorId locationId = \case
       (InvestigatorSource investigatorId)
       (LocationTarget locationId)
     pure $ CannotInvestigate `notElem` modifiers
-
-matchCard :: Card -> CardMatcher -> Bool
-matchCard c' = \case
-  AnyCard -> True
-  CardMatches ms -> all (matchCard c') ms
-  CardWithCardCode cCode -> toCardCode c' == cCode
-  CardWithClass role -> cdClassSymbol (toCardDef c') == Just role
-  CardWithOneOf ms -> any (matchCard c') ms
-  CardWithTitle title -> nameTitle (toName c') == title
-  CardWithTrait t -> t `member` toTraits c'
-  CardWithType cType -> toCardType c' == cType
-  CardWithoutKeyword kw -> kw `notElem` cdKeywords (toCardDef c')
-  IsEncounterCard -> toCardType c' `elem` encounterCardTypes
-  NonExceptional -> not . cdExceptional $ toCardDef c'
-  NonWeakness -> not . cdWeakness $ toCardDef c'
 
 matchToken
   :: (HasTokenValue env (), MonadReader env m, MonadIO m)

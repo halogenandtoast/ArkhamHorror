@@ -15,7 +15,7 @@ import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
 
 newtype BindMonster2 = BindMonster2 EventAttrs
   deriving anyclass IsEvent
@@ -24,17 +24,17 @@ newtype BindMonster2 = BindMonster2 EventAttrs
 bindMonster2 :: EventCard BindMonster2
 bindMonster2 = event BindMonster2 Cards.bindMonster2
 
-ability :: Target -> EventAttrs -> Ability
-ability target attrs = (mkAbility (toSource attrs) 1 (ReactionAbility Free))
-  { abilityMetadata = Just (TargetMetadata target)
-  }
-
 instance HasActions BindMonster2 where
-  getActions (BindMonster2 attrs@EventAttrs {..}) = restricte
-  getActions iid (WhenWouldReady target) (BindMonster2 attrs@EventAttrs {..})
-    | iid == eventOwner = pure
-      [ ability target attrs | target `elem` eventAttachedTarget ]
-  getActions iid window (BindMonster2 attrs) = getActions iid window attrs
+  getActions (BindMonster2 x@EventAttrs {..}) =
+    [ restrictedAbility
+        x
+        1
+        OwnsThis
+        (ReactionAbility
+          (TargetReadies Timing.When (fromMaybe NoTarget eventAttachedTarget))
+          Free
+        )
+    ]
 
 instance HasModifiersFor env BindMonster2
 

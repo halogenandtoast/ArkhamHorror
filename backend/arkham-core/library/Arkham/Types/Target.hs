@@ -53,5 +53,6 @@ data Target
   | ResourceTarget
   | InvestigationTarget InvestigatorId LocationId
   | YouTarget
+  | NoTarget
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

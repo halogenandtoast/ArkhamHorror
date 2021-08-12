@@ -9,15 +9,14 @@ import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
 
 newtype Haunted = Haunted TreacheryAttrs
   deriving anyclass IsTreachery
@@ -33,16 +32,12 @@ instance HasModifiersFor env Haunted where
       [ AnySkillValue (-1) | treacheryOnInvestigator iid attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env Haunted where
-  getActions iid NonFast (Haunted a) =
-    withTreacheryInvestigator a $ \tormented -> do
-      investigatorLocationId <- getId @LocationId iid
-      treacheryLocation <- getId tormented
-      pure
-        [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 2
-        | treacheryLocation == investigatorLocationId
-        ]
-  getActions _ _ _ = pure []
+instance HasActions Haunted where
+  getActions (Haunted a) =
+    [ restrictedAbility a 1 (InThreatAreaOf $ InvestigatorAt YourLocation)
+        $ ActionAbility Nothing
+        $ ActionCost 2
+    ]
 
 instance (TreacheryRunner env) => RunMessage env Haunted where
   runMessage msg t@(Haunted attrs@TreacheryAttrs {..}) = case msg of

@@ -14,16 +14,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype TheCreaturesTracks = TheCreaturesTracks TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theCreaturesTracks :: TreacheryCard TheCreaturesTracks
 theCreaturesTracks = treachery TheCreaturesTracks Cards.theCreaturesTracks
-
-instance HasModifiersFor env TheCreaturesTracks
-
-instance HasActions env TheCreaturesTracks where
-  getActions i window (TheCreaturesTracks attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env TheCreaturesTracks where
   runMessage msg t@(TheCreaturesTracks attrs) = case msg of

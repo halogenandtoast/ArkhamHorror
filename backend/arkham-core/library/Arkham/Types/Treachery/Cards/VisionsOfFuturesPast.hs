@@ -15,17 +15,12 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype VisionsOfFuturesPast = VisionsOfFuturesPast TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 visionsOfFuturesPast :: TreacheryCard VisionsOfFuturesPast
 visionsOfFuturesPast =
   treachery VisionsOfFuturesPast Cards.visionsOfFuturesPast
-
-instance HasModifiersFor env VisionsOfFuturesPast
-
-instance HasActions env VisionsOfFuturesPast where
-  getActions i window (VisionsOfFuturesPast attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env VisionsOfFuturesPast where
   runMessage msg t@(VisionsOfFuturesPast attrs@TreacheryAttrs {..}) =

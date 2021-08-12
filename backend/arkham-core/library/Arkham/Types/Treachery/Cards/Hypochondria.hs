@@ -9,33 +9,26 @@ import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
 
 newtype Hypochondria = Hypochondria TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hypochondria :: TreacheryCard Hypochondria
 hypochondria = treachery Hypochondria Cards.hypochondria
 
-instance HasModifiersFor env Hypochondria
-
-instance ActionRunner env => HasActions env Hypochondria where
-  getActions iid NonFast (Hypochondria a) =
-    withTreacheryInvestigator a $ \tormented -> do
-      treacheryLocation <- getId tormented
-      investigatorLocationId <- getId @LocationId iid
-      pure
-        [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 2
-        | treacheryLocation == investigatorLocationId
-        ]
-  getActions _ _ _ = pure []
+instance HasActions Hypochondria where
+  getActions (Hypochondria a) =
+    [ restrictedAbility a 1 (InThreatAreaOf $ InvestigatorAt YourLocation)
+        $ ActionAbility Nothing
+        $ ActionCost 2
+    ]
 
 instance (TreacheryRunner env) => RunMessage env Hypochondria where
   runMessage msg t@(Hypochondria attrs@TreacheryAttrs {..}) = case msg of

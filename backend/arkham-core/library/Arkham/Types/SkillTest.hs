@@ -19,6 +19,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Window
 import qualified Data.HashMap.Strict as HashMap
@@ -575,7 +576,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         withQueue_ $ filter $ \case
           Will FailedSkillTest{} -> False
           Will PassedSkillTest{} -> False
-          CheckWindow _ [WhenWouldFailSkillTest _] -> False
+          CheckWindow _ [Window Timing.When WouldFailSkillTest _] -> False
           Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResults])
             | skillTestInvestigator == skillTestInvestigator' -> False
           _ -> True

@@ -16,7 +16,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype LightOfAforgomon = LightOfAforgomon TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lightOfAforgomon :: TreacheryCard LightOfAforgomon
@@ -26,9 +26,6 @@ instance HasModifiersFor env LightOfAforgomon where
   getModifiersFor _ (InvestigatorTarget _) (LightOfAforgomon attrs) =
     pure $ toModifiers attrs [TreatAllDamageAsDirect]
   getModifiersFor _ _ _ = pure []
-
-instance HasActions env LightOfAforgomon where
-  getActions i window (LightOfAforgomon attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env LightOfAforgomon where
   runMessage msg (LightOfAforgomon attrs@TreacheryAttrs {..}) = case msg of

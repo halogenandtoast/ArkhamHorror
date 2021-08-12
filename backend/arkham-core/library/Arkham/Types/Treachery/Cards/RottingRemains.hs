@@ -11,16 +11,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype RottingRemains = RottingRemains TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rottingRemains :: TreacheryCard RottingRemains
 rottingRemains = treachery RottingRemains Cards.rottingRemains
-
-instance HasModifiersFor env RottingRemains
-
-instance HasActions env RottingRemains where
-  getActions i window (RottingRemains attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env RottingRemains where
   runMessage msg t@(RottingRemains attrs@TreacheryAttrs {..}) = case msg of

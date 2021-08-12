@@ -14,7 +14,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype InsatiableBloodlust = InsatiableBloodlust TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 insatiableBloodlust :: TreacheryCard InsatiableBloodlust
@@ -26,9 +26,6 @@ instance HasModifiersFor env InsatiableBloodlust where
       attrs
       [EnemyFight 1, DamageDealt 1, HorrorDealt 1, CannotBeEvaded]
   getModifiersFor _ _ _ = pure []
-
-instance HasActions env InsatiableBloodlust where
-  getActions i window (InsatiableBloodlust attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env InsatiableBloodlust where
   runMessage msg t@(InsatiableBloodlust attrs@TreacheryAttrs {..}) =

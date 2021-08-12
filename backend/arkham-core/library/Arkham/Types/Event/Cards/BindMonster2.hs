@@ -12,6 +12,7 @@ import Arkham.Types.Cost
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Exception
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target

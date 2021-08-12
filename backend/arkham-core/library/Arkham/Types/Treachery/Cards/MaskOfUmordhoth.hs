@@ -9,6 +9,7 @@ import Arkham.Types.Id
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
@@ -16,7 +17,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype MaskOfUmordhoth = MaskOfUmordhoth TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 maskOfUmordhoth :: TreacheryCard MaskOfUmordhoth
@@ -31,9 +32,6 @@ instance HasSet UniqueEnemyId env () => HasModifiersFor env MaskOfUmordhoth wher
           if eid `elem` uniqueEnemyIds then Keyword.Retaliate else Keyword.Aloof
       pure $ toModifiers attrs [HealthModifier 2, AddKeyword keyword]
   getModifiersFor _ _ _ = pure []
-
-instance HasActions env MaskOfUmordhoth where
-  getActions i window (MaskOfUmordhoth attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env MaskOfUmordhoth where
   runMessage msg t@(MaskOfUmordhoth attrs@TreacheryAttrs {..}) = case msg of

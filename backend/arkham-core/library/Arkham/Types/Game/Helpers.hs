@@ -39,6 +39,7 @@ import Arkham.Types.Window
 import qualified Arkham.Types.Window as Window
 import Control.Monad.Extra (allM, andM, anyM)
 import Data.HashSet (size)
+import qualified Data.HashSet as HashSet
 import Data.UUID (nil)
 import System.IO.Unsafe
 
@@ -771,8 +772,10 @@ type CanCheckPlayable env
     , HasCount SpendableClueCount env ()
     , HasCount SpendableClueCount env InvestigatorId
     , HasCount ClueCount env AssetId
+    , HasCount (Maybe ClueCount) env TreacheryId
     , CanCheckFast env
     , HasId LocationId env AssetId
+    , HasSet TreacheryId env InvestigatorId
     , HasId (Maybe OwnerId) env AssetId
     , HasSet ClassSymbol env AssetId
     , HasList HandCard env InvestigatorId
@@ -881,6 +884,18 @@ passesRestriction
 passesRestriction iid source windows = \case
   Negate restriction ->
     not <$> passesRestriction iid source windows restriction
+  InThreatAreaOf who -> do
+    investigators <- selectList who
+    case source of
+      TreacherySource tid ->
+        member tid . HashSet.unions <$> traverse getSet investigators
+      EnemySource eid ->
+        member eid . HashSet.unions <$> traverse getSet investigators
+      _ ->
+        error
+          $ "Can not check if "
+          <> show source
+          <> " is in players threat area"
   OwnsThis -> case source of
     AssetSource aid -> do
       mOwner <- getId aid
@@ -890,6 +905,9 @@ passesRestriction iid source windows = \case
   CluesOnThis valueMatcher -> case source of
     AssetSource aid -> do
       (`gameValueMatches` valueMatcher) . unClueCount =<< getCount aid
+    TreacherySource tid -> do
+      maybe (pure False) ((`gameValueMatches` valueMatcher) . unClueCount)
+        =<< getCount tid
     _ -> error "missing CluesOnThis check"
   Unowned -> case source of
     AssetSource aid -> do
@@ -909,6 +927,7 @@ passesRestriction iid source windows = \case
     n <- unActionTakenCount <$> getCount iid
     pure $ n == 0
   NoRestriction -> pure True
+  Never -> pure False
   OnLocation lid -> (lid ==) <$> getId iid
   ReturnableCardInDiscard AnyPlayerDiscard traits -> do
     investigatorIds <-
@@ -1065,6 +1084,13 @@ windowMatches
   -> m Bool
 windowMatches iid window' = \case
   Matcher.AnyWindow -> pure True
+  Matcher.TargetReadies whenMatcher target -> case window' of
+    Window t (Window.TargetReadies target') ->
+      pure $ t == whenMatcher && target == target'
+    _ -> pure False
+  Matcher.AmongSearchedCards whoMatcher -> case window' of
+    Window _ (Window.AmongSearchedCards iid') -> matchWho iid iid' whoMatcher
+    _ -> pure False
   Matcher.PlayerHasPlayableCard cardMatcher -> do
     cards <- getList cardMatcher -- TODO: this will likely cause infinite recursion
     anyM (getIsPlayable iid [window']) cards
@@ -1086,6 +1112,10 @@ windowMatches iid window' = \case
     _ -> pure False
   Matcher.TurnBegins whenMatcher whoMatcher -> case window' of
     Window t (Window.TurnBegins who) | whenMatcher == t ->
+      matchWho iid who whoMatcher
+    _ -> pure False
+  Matcher.WouldDiscoverClues whenMatcher whoMatcher -> case window' of
+    Window t (Window.DiscoverClues who _ _) | whenMatcher == t ->
       matchWho iid who whoMatcher
     _ -> pure False
   Matcher.WouldHaveSkillTestResult timing whoMatcher _ skillTestResultMatcher
@@ -1133,6 +1163,9 @@ windowMatches iid window' = \case
     Window When Window.FastPlayerWindow -> do
       miid <- selectOne TurnInvestigator
       pure $ Just iid == miid
+    _ -> pure False
+  Matcher.AgendaAdvances whenMatcher -> case window' of
+    Window t (Window.AgendaAdvance _) -> pure $ t == whenMatcher
     _ -> pure False
   Matcher.OrWindowMatcher matchers -> anyM (windowMatches iid window') matchers
   Matcher.EnemyLeaves timingMatcher whereMatcher enemyMatcher ->
@@ -1201,6 +1234,12 @@ windowMatches iid window' = \case
         pure $ iid == iid'
       _ -> pure False
     _ -> pure False
+  Matcher.WouldTakeDamage whenMatcher whoMatcher -> case whoMatcher of
+    You -> case window' of
+      Window t (WouldTakeDamageOrHorror _ (InvestigatorTarget who) n _)
+        | t == whenMatcher && n > 0 -> matchWho iid who whoMatcher
+      _ -> pure False
+    _ -> pure False
   Matcher.AssetDealtDamage timingMatcher assetMatcher -> case window' of
     Window t (DealtDamage _ (AssetTarget aid)) | t == timingMatcher ->
       member aid <$> select assetMatcher
@@ -1256,6 +1295,8 @@ matchWho you who = \case
     (`gameValueMatches` valueMatcher) . unDamageCount =<< getCount who
   InvestigatorWithHorror valueMatcher ->
     (`gameValueMatches` valueMatcher) . unHorrorCount =<< getCount who
+  InvestigatorWithResources valueMatcher ->
+    (`gameValueMatches` valueMatcher) . unResourceCount =<< getCount who
   InvestigatorWithId iid' -> pure $ who == iid'
   InvestigatorMatches is -> allM (matchWho you who) is
   AnyInvestigator is -> anyM (matchWho you who) is

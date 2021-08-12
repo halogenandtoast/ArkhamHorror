@@ -18,9 +18,7 @@ newtype Oops = Oops EventAttrs
 oops :: EventCard Oops
 oops = event Oops Cards.oops
 
-instance  HasActions env Oops where
-  getActions iid window (Oops attrs) = getActions iid window attrs
-
+instance  HasActions Oops
 instance HasModifiersFor env Oops
 
 instance RunMessage env Oops where

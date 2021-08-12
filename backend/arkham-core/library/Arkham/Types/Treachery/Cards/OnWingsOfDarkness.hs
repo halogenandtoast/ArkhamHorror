@@ -12,16 +12,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype OnWingsOfDarkness = OnWingsOfDarkness TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 onWingsOfDarkness :: TreacheryCard OnWingsOfDarkness
 onWingsOfDarkness = treachery OnWingsOfDarkness Cards.onWingsOfDarkness
-
-instance HasModifiersFor env OnWingsOfDarkness
-
-instance HasActions env OnWingsOfDarkness where
-  getActions i window (OnWingsOfDarkness attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env OnWingsOfDarkness where
   runMessage msg t@(OnWingsOfDarkness attrs) = case msg of

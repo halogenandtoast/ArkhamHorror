@@ -16,16 +16,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype TerrorFromBeyond = TerrorFromBeyond TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 terrorFromBeyond :: TreacheryCard TerrorFromBeyond
 terrorFromBeyond = treachery TerrorFromBeyond Cards.terrorFromBeyond
-
-instance HasModifiersFor env TerrorFromBeyond
-
-instance HasActions env TerrorFromBeyond where
-  getActions i window (TerrorFromBeyond attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env TerrorFromBeyond where
   runMessage msg t@(TerrorFromBeyond attrs) = case msg of

@@ -20,9 +20,7 @@ strokeOfLuck2 :: SkillCard StrokeOfLuck2
 strokeOfLuck2 = skill StrokeOfLuck2 Cards.strokeOfLuck2
 
 instance HasModifiersFor env StrokeOfLuck2
-
-instance HasActions env StrokeOfLuck2 where
-  getActions iid window (StrokeOfLuck2 attrs) = getActions iid window attrs
+instance HasActions StrokeOfLuck2
 
 instance SkillRunner env => RunMessage env StrokeOfLuck2 where
   runMessage msg s@(StrokeOfLuck2 attrs) = case msg of

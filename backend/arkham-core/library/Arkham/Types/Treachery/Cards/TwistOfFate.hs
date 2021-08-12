@@ -14,16 +14,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype TwistOfFate = TwistOfFate TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 twistOfFate :: TreacheryCard TwistOfFate
 twistOfFate = treachery TwistOfFate Cards.twistOfFate
-
-instance HasModifiersFor env TwistOfFate
-
-instance HasActions env TwistOfFate where
-  getActions i window (TwistOfFate attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env TwistOfFate where
   runMessage msg t@(TwistOfFate attrs) = case msg of

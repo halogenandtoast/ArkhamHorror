@@ -18,9 +18,7 @@ newtype IveHadWorse4 = IveHadWorse4 EventAttrs
 iveHadWorse4 :: EventCard IveHadWorse4
 iveHadWorse4 = event IveHadWorse4 Cards.iveHadWorse4
 
-instance HasActions env IveHadWorse4 where
-  getActions iid window (IveHadWorse4 attrs) = getActions iid window attrs
-
+instance HasActions IveHadWorse4
 instance HasModifiersFor env IveHadWorse4
 
 dropUntilDamage :: [Message] -> [Message]
@@ -29,7 +27,7 @@ dropUntilDamage = dropWhile (notElem DamageMessage . messageType)
 instance RunMessage env IveHadWorse4 where
   runMessage msg e@(IveHadWorse4 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
-      e <$ push (UseCardAbility iid (toSource attrs) Nothing 0 NoPayment)
+      e <$ push (UseCardAbility iid (toSource attrs) [] 0 NoPayment)
     UseCardAbility _ source _ 5 _ | isSource attrs source ->
       e <$ push (Discard $ toTarget attrs)
     UseCardAbility iid source meta n pay | isSource attrs source -> do

@@ -12,16 +12,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype ChillFromBelow = ChillFromBelow TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chillFromBelow :: TreacheryCard ChillFromBelow
 chillFromBelow = treachery ChillFromBelow Cards.chillFromBelow
-
-instance HasModifiersFor env ChillFromBelow
-
-instance HasActions env ChillFromBelow where
-  getActions i window (ChillFromBelow attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env ChillFromBelow where
   runMessage msg t@(ChillFromBelow attrs@TreacheryAttrs {..}) = case msg of

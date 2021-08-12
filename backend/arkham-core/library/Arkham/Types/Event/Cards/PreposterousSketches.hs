@@ -17,10 +17,7 @@ newtype PreposterousSketches = PreposterousSketches EventAttrs
 preposterousSketches :: EventCard PreposterousSketches
 preposterousSketches = event PreposterousSketches Cards.preposterousSketches
 
-instance HasActions env PreposterousSketches where
-  getActions iid window (PreposterousSketches attrs) =
-    getActions iid window attrs
-
+instance HasActions PreposterousSketches
 instance HasModifiersFor env PreposterousSketches
 
 instance RunMessage env PreposterousSketches where

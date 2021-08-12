@@ -18,19 +18,13 @@ newtype Metadata = Metadata { dealtDamageThisTurn :: Bool }
   deriving anyclass (ToJSON, FromJSON)
 
 newtype CurseOfTheRougarou = CurseOfTheRougarou (TreacheryAttrs `With` Metadata)
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 curseOfTheRougarou :: TreacheryCard CurseOfTheRougarou
 curseOfTheRougarou = treachery
   (CurseOfTheRougarou . (`with` Metadata False))
   Cards.curseOfTheRougarou
-
-instance HasModifiersFor env CurseOfTheRougarou
-
-instance HasActions env CurseOfTheRougarou where
-  getActions iid window (CurseOfTheRougarou (attrs `With` _)) =
-    getActions iid window attrs
 
 instance (TreacheryRunner env) => RunMessage env CurseOfTheRougarou where
   runMessage msg t@(CurseOfTheRougarou (attrs@TreacheryAttrs {..} `With` metadata))

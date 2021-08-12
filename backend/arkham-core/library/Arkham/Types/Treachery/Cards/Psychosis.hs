@@ -9,33 +9,26 @@ import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
 
 newtype Psychosis = Psychosis TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 psychosis :: TreacheryCard Psychosis
 psychosis = treachery Psychosis Cards.psychosis
 
-instance HasModifiersFor env Psychosis
-
-instance ActionRunner env => HasActions env Psychosis where
-  getActions iid NonFast (Psychosis a) =
-    withTreacheryInvestigator a $ \tormented -> do
-      investigatorLocationId <- getId @LocationId iid
-      treacheryLocation <- getId tormented
-      pure
-        [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 2
-        | treacheryLocation == investigatorLocationId
-        ]
-  getActions _ _ _ = pure []
+instance HasActions Psychosis where
+  getActions (Psychosis a) =
+    [ restrictedAbility a 1 (InThreatAreaOf $ InvestigatorAt YourLocation)
+        $ ActionAbility Nothing
+        $ ActionCost 2
+    ]
 
 instance (TreacheryRunner env) => RunMessage env Psychosis where
   runMessage msg t@(Psychosis attrs@TreacheryAttrs {..}) = case msg of

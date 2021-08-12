@@ -13,30 +13,26 @@ import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
 
 newtype SearchingForIzzie = SearchingForIzzie TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 searchingForIzzie :: TreacheryCard SearchingForIzzie
 searchingForIzzie = treachery SearchingForIzzie Cards.searchingForIzzie
 
-instance HasModifiersFor env SearchingForIzzie
-
-instance ActionRunner env => HasActions env SearchingForIzzie where
-  getActions iid NonFast (SearchingForIzzie attrs) = do
-    investigatorLocationId <- getId @LocationId iid
-    pure
-      [ mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 2
-      | treacheryOnLocation investigatorLocationId attrs
-      ]
-  getActions _ _ _ = pure []
+instance HasActions SearchingForIzzie where
+  getActions (SearchingForIzzie x) =
+    [ restrictedAbility x 1 (InThreatAreaOf $ InvestigatorAt YourLocation)
+        $ ActionAbility Nothing
+        $ ActionCost 2
+    ]
 
 instance TreacheryRunner env => RunMessage env SearchingForIzzie where
   runMessage msg t@(SearchingForIzzie attrs@TreacheryAttrs {..}) = case msg of

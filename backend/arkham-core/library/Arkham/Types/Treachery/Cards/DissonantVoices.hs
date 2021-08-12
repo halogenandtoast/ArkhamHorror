@@ -13,7 +13,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype DissonantVoices= DissonantVoices TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dissonantVoices :: TreacheryCard DissonantVoices
@@ -27,9 +27,6 @@ instance HasModifiersFor env DissonantVoices where
       | treacheryOnInvestigator iid attrs
       ]
   getModifiersFor _ _ _ = pure []
-
-instance HasActions env DissonantVoices where
-  getActions i window (DissonantVoices attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env DissonantVoices where
   runMessage msg t@(DissonantVoices attrs@TreacheryAttrs {..}) = case msg of

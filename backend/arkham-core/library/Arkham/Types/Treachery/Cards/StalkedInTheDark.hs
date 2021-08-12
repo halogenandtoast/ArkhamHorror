@@ -15,16 +15,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype StalkedInTheDark = StalkedInTheDark TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stalkedInTheDark :: TreacheryCard StalkedInTheDark
 stalkedInTheDark = treachery StalkedInTheDark Cards.stalkedInTheDark
-
-instance HasModifiersFor env StalkedInTheDark
-
-instance HasActions env StalkedInTheDark where
-  getActions i window (StalkedInTheDark attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env StalkedInTheDark where
   runMessage msg t@(StalkedInTheDark attrs) = case msg of

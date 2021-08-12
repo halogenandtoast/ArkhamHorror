@@ -12,7 +12,9 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
+import qualified Arkham.Types.Window as W
 
 newtype IfItBleeds = IfItBleeds EventAttrs
   deriving anyclass IsEvent
@@ -21,14 +23,12 @@ newtype IfItBleeds = IfItBleeds EventAttrs
 ifItBleeds :: EventCard IfItBleeds
 ifItBleeds = event IfItBleeds Cards.ifItBleeds
 
-instance HasActions env IfItBleeds where
-  getActions iid window (IfItBleeds attrs) = getActions iid window attrs
-
+instance HasActions IfItBleeds
 instance HasModifiersFor env IfItBleeds
 
 getWindowEnemyIds :: InvestigatorId -> [Window] -> [EnemyId]
 getWindowEnemyIds iid = mapMaybe \case
-  AfterEnemyDefeated who eid | iid == who -> Just eid
+  Window Timing.After (W.EnemyDefeated who eid) | iid == who -> Just eid
   _ -> Nothing
 
 instance

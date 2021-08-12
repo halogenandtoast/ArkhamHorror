@@ -19,9 +19,7 @@ newtype Improvisation = Improvisation EventAttrs
 improvisation :: EventCard Improvisation
 improvisation = event Improvisation Cards.improvisation
 
-instance HasActions env Improvisation where
-  getActions iid window (Improvisation attrs) = getActions iid window attrs
-
+instance HasActions Improvisation
 instance HasModifiersFor env Improvisation
 
 switchRole :: InvestigatorId -> Message

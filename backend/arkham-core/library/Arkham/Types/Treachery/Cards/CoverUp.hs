@@ -7,17 +7,19 @@ import Arkham.Prelude
 
 import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
+import Arkham.Types.GameValue
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
 
 newtype CoverUp = CoverUp TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env)
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 coverUp :: TreacheryCard CoverUp
@@ -27,17 +29,16 @@ coverUpClues :: TreacheryAttrs -> Int
 coverUpClues TreacheryAttrs { treacheryClues } =
   fromJustNote "must be set" treacheryClues
 
-instance HasModifiersFor env CoverUp
-
-instance ActionRunner env => HasActions env CoverUp where
-  getActions iid (WhenDiscoverClues who lid n) (CoverUp a) | iid == who =
-    withTreacheryInvestigator a $ \tormented -> do
-      treacheryLocationId <- getId @LocationId tormented
-      pure
-        [ mkAbility a 1 $ ReactionAbility Free
-        | (treacheryLocationId == lid) && (coverUpClues a > 0) && (n > 0)
-        ]
-  getActions _ _ _ = pure []
+instance HasActions CoverUp where
+  getActions (CoverUp a) =
+    [ restrictedAbility
+          a
+          1
+          (InThreatAreaOf (InvestigatorAt YourLocation)
+          <> CluesOnThis (AtLeast $ Static 1)
+          )
+        $ ReactionAbility (WouldDiscoverClues Timing.When You) Free
+    ]
 
 instance (TreacheryRunner env) => RunMessage env CoverUp where
   runMessage msg t@(CoverUp attrs@TreacheryAttrs {..}) = case msg of

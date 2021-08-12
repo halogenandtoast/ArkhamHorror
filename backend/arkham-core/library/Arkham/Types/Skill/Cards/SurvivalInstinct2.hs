@@ -23,9 +23,7 @@ survivalInstinct2 :: SkillCard SurvivalInstinct2
 survivalInstinct2 = skill SurvivalInstinct2 Cards.survivalInstinct2
 
 instance HasModifiersFor env SurvivalInstinct2
-
-instance HasActions env SurvivalInstinct2 where
-  getActions i window (SurvivalInstinct2 attrs) = getActions i window attrs
+instance HasActions SurvivalInstinct2
 
 instance SkillRunner env => RunMessage env SurvivalInstinct2 where
   runMessage msg s@(SurvivalInstinct2 attrs@SkillAttrs {..}) = case msg of

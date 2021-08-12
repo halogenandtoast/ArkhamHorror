@@ -11,13 +11,13 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
 
 newtype DreamsOfRlyeh = DreamsOfRlyeh TreacheryAttrs
   deriving anyclass IsTreachery
@@ -33,12 +33,12 @@ instance HasModifiersFor env DreamsOfRlyeh where
       else []
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env DreamsOfRlyeh where
-  getActions iid NonFast (DreamsOfRlyeh a) = pure
-    [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1
-    | treacheryOnInvestigator iid a
+instance HasActions DreamsOfRlyeh where
+  getActions (DreamsOfRlyeh a) =
+    [ restrictedAbility a 1 (InThreatAreaOf $ InvestigatorAt YourLocation)
+        $ ActionAbility Nothing
+        $ ActionCost 1
     ]
-  getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env DreamsOfRlyeh where
   runMessage msg t@(DreamsOfRlyeh attrs@TreacheryAttrs {..}) = case msg of

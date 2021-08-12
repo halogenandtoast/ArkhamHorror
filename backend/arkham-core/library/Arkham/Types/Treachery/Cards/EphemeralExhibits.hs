@@ -14,16 +14,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype EphemeralExhibits = EphemeralExhibits TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ephemeralExhibits :: TreacheryCard EphemeralExhibits
 ephemeralExhibits = treachery EphemeralExhibits Cards.ephemeralExhibits
-
-instance HasModifiersFor env EphemeralExhibits
-
-instance HasActions env EphemeralExhibits where
-  getActions i window (EphemeralExhibits attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env EphemeralExhibits where
   runMessage msg t@(EphemeralExhibits attrs) = case msg of

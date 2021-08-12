@@ -20,9 +20,7 @@ opportunist2 :: SkillCard Opportunist2
 opportunist2 = skill Opportunist2 Cards.opportunist2
 
 instance HasModifiersFor env Opportunist2
-
-instance HasActions env Opportunist2 where
-  getActions i window (Opportunist2 attrs) = getActions i window attrs
+instance HasActions Opportunist2
 
 instance (SkillRunner env) => RunMessage env Opportunist2 where
   runMessage msg s@(Opportunist2 attrs@SkillAttrs {..}) = case msg of

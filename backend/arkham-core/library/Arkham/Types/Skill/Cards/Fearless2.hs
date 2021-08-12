@@ -17,9 +17,7 @@ fearless2 :: SkillCard Fearless2
 fearless2 = skill Fearless2 Cards.fearless2
 
 instance HasModifiersFor env Fearless2
-
-instance HasActions env Fearless2 where
-  getActions i window (Fearless2 attrs) = getActions i window attrs
+instance HasActions Fearless2
 
 instance (SkillRunner env) => RunMessage env Fearless2 where
   runMessage msg s@(Fearless2 attrs@SkillAttrs {..}) = case msg of

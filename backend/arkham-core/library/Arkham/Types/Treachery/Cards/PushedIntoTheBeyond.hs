@@ -16,16 +16,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype PushedIntoTheBeyond = PushedIntoTheBeyond TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pushedIntoTheBeyond :: TreacheryCard PushedIntoTheBeyond
 pushedIntoTheBeyond = treachery PushedIntoTheBeyond Cards.pushedIntoTheBeyond
-
-instance HasModifiersFor env PushedIntoTheBeyond
-
-instance HasActions env PushedIntoTheBeyond where
-  getActions i window (PushedIntoTheBeyond attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env PushedIntoTheBeyond where
   runMessage msg t@(PushedIntoTheBeyond attrs) = case msg of

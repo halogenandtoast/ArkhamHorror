@@ -18,9 +18,7 @@ newtype MomentOfRespite3 = MomentOfRespite3 EventAttrs
 momentOfRespite3 :: EventCard MomentOfRespite3
 momentOfRespite3 = event MomentOfRespite3 Cards.momentOfRespite3
 
-instance HasActions env MomentOfRespite3 where
-  getActions iid window (MomentOfRespite3 attrs) = getActions iid window attrs
-
+instance HasActions MomentOfRespite3
 instance HasModifiersFor env MomentOfRespite3
 
 instance RunMessage env MomentOfRespite3 where

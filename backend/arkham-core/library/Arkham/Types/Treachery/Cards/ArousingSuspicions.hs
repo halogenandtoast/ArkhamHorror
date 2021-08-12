@@ -15,16 +15,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype ArousingSuspicions = ArousingSuspicions TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arousingSuspicions :: TreacheryCard ArousingSuspicions
 arousingSuspicions = treachery ArousingSuspicions Cards.arousingSuspicions
-
-instance HasModifiersFor env ArousingSuspicions
-
-instance HasActions env ArousingSuspicions where
-  getActions i window (ArousingSuspicions attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env ArousingSuspicions where
   runMessage msg t@(ArousingSuspicions attrs) = case msg of

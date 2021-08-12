@@ -10,16 +10,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype HuntingShadow = HuntingShadow TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 huntingShadow :: TreacheryCard HuntingShadow
 huntingShadow = treachery HuntingShadow Cards.huntingShadow
-
-instance HasModifiersFor env HuntingShadow
-
-instance HasActions env HuntingShadow where
-  getActions i window (HuntingShadow attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env HuntingShadow where
   runMessage msg t@(HuntingShadow attrs) = case msg of

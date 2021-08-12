@@ -19,7 +19,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype CursedSwamp = CursedSwamp TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cursedSwamp :: TreacheryCard CursedSwamp
@@ -37,9 +37,6 @@ instance
       isBayou <- member Bayou <$> getSet locationId
       pure $ toModifiers attrs [ CannotCommitCards | isBayou ]
   getModifiersFor _ _ _ = pure []
-
-instance HasActions env CursedSwamp where
-  getActions i window (CursedSwamp attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env CursedSwamp where
   runMessage msg t@(CursedSwamp attrs@TreacheryAttrs {..}) = case msg of

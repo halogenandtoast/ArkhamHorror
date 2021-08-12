@@ -17,9 +17,7 @@ overpower :: SkillCard Overpower
 overpower = skill Overpower Cards.overpower
 
 instance HasModifiersFor env Overpower
-
-instance HasActions env Overpower where
-  getActions i window (Overpower attrs) = getActions i window attrs
+instance HasActions Overpower
 
 instance (SkillRunner env) => RunMessage env Overpower where
   runMessage msg s@(Overpower attrs@SkillAttrs {..}) = case msg of

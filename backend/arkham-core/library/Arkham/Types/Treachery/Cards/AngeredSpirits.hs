@@ -8,37 +8,33 @@ import Arkham.Prelude
 import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Uses
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
 
 newtype AngeredSpirits = AngeredSpirits TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 angeredSpirits :: TreacheryCard AngeredSpirits
 angeredSpirits =
   treacheryWith AngeredSpirits Cards.angeredSpirits (resourcesL ?~ 0)
 
-instance HasModifiersFor env AngeredSpirits
-
-instance HasActions env AngeredSpirits where
-  getActions i FastPlayerWindow (AngeredSpirits attrs)
-    | treacheryOnInvestigator i attrs = do
-      pure
-        [ mkAbility attrs 1
-          $ FastAbility
-          $ ExhaustAssetCost
-          $ AssetWithTrait Spell
-          <> AssetOwnedBy You
-        ]
-  getActions i window (AngeredSpirits attrs) = getActions i window attrs
+instance HasActions AngeredSpirits where
+  getActions (AngeredSpirits x) =
+    [ restrictedAbility x 1 (InThreatAreaOf $ InvestigatorAt YourLocation)
+        $ FastAbility
+        $ ExhaustAssetCost
+        $ AssetWithTrait Spell
+        <> AssetOwnedBy You
+        <> AssetWithUses Charge
+    ]
 
 angeredSpiritsCharges :: TreacheryAttrs -> Int
 angeredSpiritsCharges TreacheryAttrs { treacheryResources } =

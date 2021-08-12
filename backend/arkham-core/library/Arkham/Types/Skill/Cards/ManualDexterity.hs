@@ -17,9 +17,7 @@ manualDexterity :: SkillCard ManualDexterity
 manualDexterity = skill ManualDexterity Cards.manualDexterity
 
 instance HasModifiersFor env ManualDexterity
-
-instance HasActions env ManualDexterity where
-  getActions i window (ManualDexterity attrs) = getActions i window attrs
+instance HasActions ManualDexterity
 
 instance (SkillRunner env) => RunMessage env ManualDexterity where
   runMessage msg s@(ManualDexterity attrs@SkillAttrs {..}) = case msg of

@@ -13,18 +13,13 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype TheYellowSign = TheYellowSign TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theYellowSign :: TreacheryCard TheYellowSign
 theYellowSign = treachery TheYellowSign Cards.theYellowSign
 
-instance HasModifiersFor env TheYellowSign
-
-instance HasActions env TheYellowSign where
-  getActions i window (TheYellowSign attrs) = getActions i window attrs
-
-instance (TreacheryRunner env) => RunMessage env TheYellowSign where
+instance TreacheryRunner env => RunMessage env TheYellowSign where
   runMessage msg t@(TheYellowSign attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       [ BeginSkillTest

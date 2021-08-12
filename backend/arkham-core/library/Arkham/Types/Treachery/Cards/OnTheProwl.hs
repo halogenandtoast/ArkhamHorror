@@ -18,16 +18,11 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype OnTheProwl = OnTheProwl TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 onTheProwl :: TreacheryCard OnTheProwl
 onTheProwl = treachery OnTheProwl Cards.onTheProwl
-
-instance HasModifiersFor env OnTheProwl
-
-instance HasActions env OnTheProwl where
-  getActions i window (OnTheProwl attrs) = getActions i window attrs
 
 bayouLocations
   :: (MonadReader env m, HasSet LocationId env [Trait])

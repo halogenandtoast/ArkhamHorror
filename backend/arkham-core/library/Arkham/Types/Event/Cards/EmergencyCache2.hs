@@ -19,9 +19,7 @@ emergencyCache2 :: EventCard EmergencyCache2
 emergencyCache2 = event EmergencyCache2 Cards.emergencyCache2
 
 instance HasModifiersFor env EmergencyCache2
-
-instance HasActions env EmergencyCache2 where
-  getActions i window (EmergencyCache2 attrs) = getActions i window attrs
+instance HasActions EmergencyCache2
 
 instance HasQueue env => RunMessage env EmergencyCache2 where
   runMessage msg e@(EmergencyCache2 attrs@EventAttrs {..}) = case msg of

@@ -17,16 +17,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype AcridMiasma = AcridMiasma TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 acridMiasma :: TreacheryCard AcridMiasma
 acridMiasma = treachery AcridMiasma Cards.acridMiasma
-
-instance HasModifiersFor env AcridMiasma
-
-instance HasActions env AcridMiasma where
-  getActions i window (AcridMiasma attrs) = getActions i window attrs
 
 instance
   ( HasSet ClosestLocationId env (InvestigatorId, LocationMatcher)

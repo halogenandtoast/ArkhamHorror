@@ -19,9 +19,7 @@ newtype SecondWind = SecondWind EventAttrs
 secondWind :: EventCard SecondWind
 secondWind = event SecondWind Cards.secondWind
 
-instance HasActions env SecondWind where
-  getActions iid window (SecondWind attrs) = getActions iid window attrs
-
+instance HasActions SecondWind
 instance HasModifiersFor env SecondWind
 
 instance (HasQueue env, HasHistory env) => RunMessage env SecondWind where

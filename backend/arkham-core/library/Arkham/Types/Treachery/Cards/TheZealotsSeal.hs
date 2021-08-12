@@ -14,16 +14,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype TheZealotsSeal = TheZealotsSeal TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theZealotsSeal :: TreacheryCard TheZealotsSeal
 theZealotsSeal = treachery TheZealotsSeal Cards.theZealotsSeal
-
-instance HasModifiersFor env TheZealotsSeal
-
-instance HasActions env TheZealotsSeal where
-  getActions i window (TheZealotsSeal attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env TheZealotsSeal where
   runMessage msg t@(TheZealotsSeal attrs@TreacheryAttrs {..}) = case msg of

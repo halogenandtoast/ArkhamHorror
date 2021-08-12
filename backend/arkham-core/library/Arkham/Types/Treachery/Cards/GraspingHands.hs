@@ -15,16 +15,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype GraspingHands = GraspingHands TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 graspingHands :: TreacheryCard GraspingHands
 graspingHands = treachery GraspingHands Cards.graspingHands
-
-instance HasModifiersFor env GraspingHands
-
-instance HasActions env GraspingHands where
-  getActions i window (GraspingHands attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env GraspingHands where
   runMessage msg t@(GraspingHands attrs@TreacheryAttrs {..}) = case msg of

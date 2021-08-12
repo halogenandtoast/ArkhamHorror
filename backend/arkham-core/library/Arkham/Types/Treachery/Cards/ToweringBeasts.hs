@@ -17,7 +17,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype ToweringBeasts = ToweringBeasts TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 toweringBeasts :: TreacheryCard ToweringBeasts
@@ -28,9 +28,6 @@ instance HasModifiersFor env ToweringBeasts where
     | treacheryOnEnemy eid attrs = pure
     $ toModifiers attrs [EnemyFight 1, HealthModifier 1]
   getModifiersFor _ _ _ = pure []
-
-instance HasActions env ToweringBeasts where
-  getActions i window (ToweringBeasts attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env ToweringBeasts where
   runMessage msg t@(ToweringBeasts attrs) = case msg of

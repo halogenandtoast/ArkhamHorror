@@ -17,9 +17,7 @@ perception :: SkillCard Perception
 perception = skill Perception Cards.perception
 
 instance HasModifiersFor env Perception
-
-instance HasActions env Perception where
-  getActions i window (Perception attrs) = getActions i window attrs
+instance HasActions Perception
 
 instance (SkillRunner env) => RunMessage env Perception where
   runMessage msg s@(Perception attrs@SkillAttrs {..}) = case msg of

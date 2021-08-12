@@ -21,9 +21,7 @@ letMeHandleThis :: EventCard LetMeHandleThis
 letMeHandleThis = event LetMeHandleThis Cards.letMeHandleThis
 
 instance HasModifiersFor env LetMeHandleThis
-
-instance HasActions env LetMeHandleThis where
-  getActions iid window (LetMeHandleThis attrs) = getActions iid window attrs
+instance HasActions LetMeHandleThis
 
 instance HasQueue env => RunMessage env LetMeHandleThis where
   runMessage msg e@(LetMeHandleThis attrs@EventAttrs {..}) = case msg of

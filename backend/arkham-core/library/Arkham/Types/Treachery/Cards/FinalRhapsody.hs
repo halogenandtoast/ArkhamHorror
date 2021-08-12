@@ -11,16 +11,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype FinalRhapsody = FinalRhapsody TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 finalRhapsody :: TreacheryCard FinalRhapsody
 finalRhapsody = treachery FinalRhapsody Cards.finalRhapsody
-
-instance HasModifiersFor env FinalRhapsody
-
-instance HasActions env FinalRhapsody where
-  getActions i window (FinalRhapsody attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env FinalRhapsody where
   runMessage msg t@(FinalRhapsody attrs) = case msg of

@@ -19,9 +19,7 @@ newtype ThinkOnYourFeet = ThinkOnYourFeet EventAttrs
 thinkOnYourFeet :: EventCard ThinkOnYourFeet
 thinkOnYourFeet = event ThinkOnYourFeet Cards.thinkOnYourFeet
 
-instance HasActions env ThinkOnYourFeet where
-  getActions iid window (ThinkOnYourFeet attrs) = getActions iid window attrs
-
+instance HasActions ThinkOnYourFeet
 instance HasModifiersFor env ThinkOnYourFeet
 
 instance

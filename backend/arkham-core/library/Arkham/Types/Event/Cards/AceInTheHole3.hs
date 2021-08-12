@@ -17,9 +17,7 @@ newtype AceInTheHole3 = AceInTheHole3 EventAttrs
 aceInTheHole3 :: EventCard AceInTheHole3
 aceInTheHole3 = event AceInTheHole3 Cards.aceInTheHole3
 
-instance HasActions env AceInTheHole3 where
-  getActions iid window (AceInTheHole3 attrs) = getActions iid window attrs
-
+instance HasActions AceInTheHole3
 instance HasModifiersFor env AceInTheHole3
 
 instance RunMessage env AceInTheHole3 where

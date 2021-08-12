@@ -9,16 +9,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype AbandonedAndAlone = AbandonedAndAlone TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 abandonedAndAlone :: TreacheryCard AbandonedAndAlone
 abandonedAndAlone = treachery AbandonedAndAlone Cards.abandonedAndAlone
-
-instance HasModifiersFor env AbandonedAndAlone
-
-instance HasActions env AbandonedAndAlone where
-  getActions i window (AbandonedAndAlone attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env AbandonedAndAlone where
   runMessage msg t@(AbandonedAndAlone attrs) = case msg of

@@ -11,26 +11,31 @@ import Arkham.Types.Classes
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
 
 newtype Kidnapped = Kidnapped TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 kidnapped :: TreacheryCard Kidnapped
 kidnapped = treachery Kidnapped Cards.kidnapped
 
-instance HasModifiersFor env Kidnapped
-
-instance HasActions env Kidnapped where
-  getActions _ (WhenAgendaAdvance aid) (Kidnapped attrs)
-    | treacheryOnAgenda aid attrs = pure [mkAbility attrs 1 ForcedAbility]
-  getActions i window (Kidnapped attrs) = getActions i window attrs
+instance HasActions Kidnapped where
+  getActions (Kidnapped attrs) =
+    [ restrictedAbility attrs 1 restriction
+        $ ForcedAbility (AgendaAdvances Timing.When)
+    ]
+   where
+    restriction = if attachedToAgenda then NoRestriction else Never
+    attachedToAgenda = case treacheryAttachedTarget attrs of
+      Just (AgendaTarget _) -> True
+      _ -> False
 
 instance TreacheryRunner env => RunMessage env Kidnapped where
   runMessage msg t@(Kidnapped attrs@TreacheryAttrs {..}) = case msg of

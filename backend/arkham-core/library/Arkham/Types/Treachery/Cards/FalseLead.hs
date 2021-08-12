@@ -13,16 +13,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype FalseLead = FalseLead TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 falseLead :: TreacheryCard FalseLead
 falseLead = treachery FalseLead Cards.falseLead
-
-instance HasModifiersFor env FalseLead
-
-instance HasActions env FalseLead where
-  getActions i window (FalseLead attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env FalseLead where
   runMessage msg t@(FalseLead attrs@TreacheryAttrs {..}) = case msg of

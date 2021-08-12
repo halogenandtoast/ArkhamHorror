@@ -10,16 +10,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype AncientEvils = AncientEvils TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ancientEvils :: TreacheryCard AncientEvils
 ancientEvils = treachery AncientEvils Cards.ancientEvils
-
-instance HasModifiersFor env AncientEvils
-
-instance HasActions env AncientEvils where
-  getActions i window (AncientEvils attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env AncientEvils where
   runMessage msg t@(AncientEvils attrs@TreacheryAttrs {..}) = case msg of

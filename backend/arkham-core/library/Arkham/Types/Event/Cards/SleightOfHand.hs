@@ -6,8 +6,7 @@ module Arkham.Types.Event.Cards.SleightOfHand
 import Arkham.Prelude
 
 import qualified Arkham.Event.Cards as Cards
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.CardMatcher
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Id
@@ -23,9 +22,7 @@ newtype SleightOfHand = SleightOfHand EventAttrs
 sleightOfHand :: EventCard SleightOfHand
 sleightOfHand = event SleightOfHand Cards.sleightOfHand
 
-instance HasActions env SleightOfHand where
-  getActions iid window (SleightOfHand attrs) = getActions iid window attrs
-
+instance HasActions SleightOfHand
 instance HasModifiersFor env SleightOfHand
 
 instance Query ExtendedCardMatcher env => RunMessage env SleightOfHand where

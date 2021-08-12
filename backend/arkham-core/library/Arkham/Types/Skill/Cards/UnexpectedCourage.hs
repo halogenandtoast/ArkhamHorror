@@ -15,9 +15,7 @@ unexpectedCourage :: SkillCard UnexpectedCourage
 unexpectedCourage = skill UnexpectedCourage Cards.unexpectedCourage
 
 instance HasModifiersFor env UnexpectedCourage
-
-instance HasActions env UnexpectedCourage where
-  getActions i window (UnexpectedCourage attrs) = getActions i window attrs
+instance HasActions UnexpectedCourage
 
 instance (SkillRunner env) => RunMessage env UnexpectedCourage where
   runMessage msg (UnexpectedCourage attrs) =

@@ -9,33 +9,26 @@ import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
 
 newtype InternalInjury = InternalInjury TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 internalInjury :: TreacheryCard InternalInjury
 internalInjury = treachery InternalInjury Cards.internalInjury
 
-instance HasModifiersFor env InternalInjury
-
-instance ActionRunner env => HasActions env InternalInjury where
-  getActions iid NonFast (InternalInjury a) =
-    withTreacheryInvestigator a $ \tormented -> do
-      investigatorLocationId <- getId @LocationId iid
-      treacheryLocation <- getId tormented
-      pure
-        [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 2
-        | treacheryLocation == investigatorLocationId
-        ]
-  getActions _ _ _ = pure []
+instance HasActions InternalInjury where
+  getActions (InternalInjury a) =
+    [ restrictedAbility a 1 (InThreatAreaOf $ InvestigatorAt YourLocation)
+        $ ActionAbility Nothing
+        $ ActionCost 2
+    ]
 
 instance (TreacheryRunner env) => RunMessage env InternalInjury where
   runMessage msg t@(InternalInjury attrs@TreacheryAttrs {..}) = case msg of

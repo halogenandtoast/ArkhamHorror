@@ -15,16 +15,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype CollapsingReality = CollapsingReality TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 collapsingReality :: TreacheryCard CollapsingReality
 collapsingReality = treachery CollapsingReality Cards.collapsingReality
-
-instance HasModifiersFor env CollapsingReality
-
-instance HasActions env CollapsingReality where
-  getActions i window (CollapsingReality attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env CollapsingReality where
   runMessage msg t@(CollapsingReality attrs) = case msg of

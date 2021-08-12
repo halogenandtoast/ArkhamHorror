@@ -36,11 +36,13 @@ data Restriction
   | OnSameLocation
   | Unowned
   | DuringSkillTest
+  | InThreatAreaOf InvestigatorMatcher
   | CardInDiscard DiscardSignifier [Trait]
   | ReturnableCardInDiscard DiscardSignifier [Trait]
   | Restrictions [Restriction]
   | AnyRestriction [Restriction]
   | NoRestriction
+  | Never
   | Negate Restriction
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

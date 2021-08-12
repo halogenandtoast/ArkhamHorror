@@ -22,9 +22,7 @@ newtype Contraband = Contraband EventAttrs
 contraband :: EventCard Contraband
 contraband = event Contraband Cards.contraband
 
-instance HasActions env Contraband where
-  getActions iid window (Contraband attrs) = getActions iid window attrs
-
+instance HasActions Contraband
 instance HasModifiersFor env Contraband
 
 instance

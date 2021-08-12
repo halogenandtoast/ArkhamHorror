@@ -13,16 +13,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype BeastOfTheBayou = BeastOfTheBayou TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 beastOfTheBayou :: TreacheryCard BeastOfTheBayou
 beastOfTheBayou = treachery BeastOfTheBayou Cards.beastOfTheBayou
-
-instance HasModifiersFor env BeastOfTheBayou
-
-instance HasActions env BeastOfTheBayou where
-  getActions i window (BeastOfTheBayou attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env BeastOfTheBayou where
   runMessage msg t@(BeastOfTheBayou attrs@TreacheryAttrs {..}) = case msg of
@@ -39,11 +34,10 @@ instance TreacheryRunner env => RunMessage env BeastOfTheBayou where
             (locationId : connectedLocationIds)
           case investigatorIds of
             [] -> pushAll [PlaceDoomOnAgenda, Discard (toTarget attrs)]
-            xs ->
-              pushAll
-                ([ EnemyAttack iid' eid DamageAny | iid' <- xs ]
-                <> [Discard (toTarget attrs)]
-                )
+            xs -> pushAll
+              ([ EnemyAttack iid' eid DamageAny | iid' <- xs ]
+              <> [Discard (toTarget attrs)]
+              )
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
       | tid == treacheryId
       -> t

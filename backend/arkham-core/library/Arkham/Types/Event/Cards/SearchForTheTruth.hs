@@ -17,9 +17,7 @@ searchForTheTruth :: EventCard SearchForTheTruth
 searchForTheTruth = event SearchForTheTruth Cards.searchForTheTruth
 
 instance HasModifiersFor env SearchForTheTruth
-
-instance HasActions env SearchForTheTruth where
-  getActions i window (SearchForTheTruth attrs) = getActions i window attrs
+instance HasActions SearchForTheTruth
 
 instance (HasQueue env, HasCount ClueCount env InvestigatorId) => RunMessage env SearchForTheTruth where
   runMessage msg e@(SearchForTheTruth attrs@EventAttrs {..}) = case msg of

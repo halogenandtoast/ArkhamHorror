@@ -21,9 +21,7 @@ quickThinking :: SkillCard QuickThinking
 quickThinking = skill QuickThinking Cards.quickThinking
 
 instance HasModifiersFor env QuickThinking
-
-instance HasActions env QuickThinking where
-  getActions iid window (QuickThinking attrs) = getActions iid window attrs
+instance HasActions QuickThinking
 
 instance SkillRunner env => RunMessage env QuickThinking where
   runMessage msg s@(QuickThinking attrs) = case msg of

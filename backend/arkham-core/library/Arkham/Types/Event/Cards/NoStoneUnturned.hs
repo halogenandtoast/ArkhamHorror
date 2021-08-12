@@ -19,15 +19,13 @@ newtype NoStoneUnturned = NoStoneUnturned EventAttrs
 noStoneUnturned :: EventCard NoStoneUnturned
 noStoneUnturned = event NoStoneUnturned Cards.noStoneUnturned
 
-instance HasActions env NoStoneUnturned where
-  getActions iid window (NoStoneUnturned attrs) = getActions iid window attrs
-
+instance HasActions NoStoneUnturned
 instance HasModifiersFor env NoStoneUnturned
 
 instance Query InvestigatorMatcher env => RunMessage env NoStoneUnturned where
   runMessage msg e@(NoStoneUnturned attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
-      investigatorIds <- selectList InvestigatorAtYourLocation
+      investigatorIds <- selectList $ InvestigatorAt YourLocation
       e <$ pushAll
         [ chooseOne
           iid

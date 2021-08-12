@@ -84,7 +84,7 @@ data WindowType
   | SkillTest SkillType
   | WouldFailSkillTest InvestigatorId
   | WouldLeave InvestigatorId LocationId
-  | WouldReady Target
+  | TargetReadies Target
   | WouldRevealChaosToken Source InvestigatorId
   | WouldTakeDamage Source Target
   | WouldTakeHorror Source Target

@@ -17,16 +17,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype ChaosInTheWater = ChaosInTheWater TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chaosInTheWater :: TreacheryCard ChaosInTheWater
 chaosInTheWater = treachery ChaosInTheWater Cards.chaosInTheWater
-
-instance HasModifiersFor env ChaosInTheWater
-
-instance HasActions env ChaosInTheWater where
-  getActions i window (ChaosInTheWater attrs) = getActions i window attrs
 
 instance
   ( HasId (Maybe OwnerId) env AssetId

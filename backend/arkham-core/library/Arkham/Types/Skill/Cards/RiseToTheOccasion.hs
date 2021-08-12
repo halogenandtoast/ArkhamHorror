@@ -18,9 +18,7 @@ riseToTheOccasion :: SkillCard RiseToTheOccasion
 riseToTheOccasion = skill RiseToTheOccasion Cards.riseToTheOccasion
 
 instance HasModifiersFor env RiseToTheOccasion
-
-instance HasActions env RiseToTheOccasion where
-  getActions iid window (RiseToTheOccasion attrs) = getActions iid window attrs
+instance HasActions RiseToTheOccasion
 
 instance SkillRunner env => RunMessage env RiseToTheOccasion where
   runMessage msg (RiseToTheOccasion attrs) =

@@ -9,16 +9,15 @@ import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
 
 newtype WrackedByNightmares = WrackedByNightmares TreacheryAttrs
   deriving anyclass IsTreachery
@@ -34,16 +33,11 @@ instance HasModifiersFor env WrackedByNightmares where
       [ ControlledAssetsCannotReady | treacheryOnInvestigator iid attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env WrackedByNightmares where
-  getActions iid NonFast (WrackedByNightmares a) =
-    withTreacheryInvestigator a $ \tormented -> do
-      treacheryLocation <- getId tormented
-      investigatorLocationId <- getId @LocationId iid
-      pure
-        [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 2
-        | treacheryLocation == investigatorLocationId
-        ]
-  getActions _ _ _ = pure []
+instance HasActions WrackedByNightmares where
+  getActions (WrackedByNightmares a) =
+    [ restrictedAbility a 1 OnSameLocation $ ActionAbility Nothing $ ActionCost
+        2
+    ]
 
 instance TreacheryRunner env => RunMessage env WrackedByNightmares where
   runMessage msg t@(WrackedByNightmares attrs@TreacheryAttrs {..}) =

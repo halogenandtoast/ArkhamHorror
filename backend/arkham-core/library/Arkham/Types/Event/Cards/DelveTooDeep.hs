@@ -17,9 +17,7 @@ newtype DelveTooDeep = DelveTooDeep EventAttrs
 delveTooDeep :: EventCard DelveTooDeep
 delveTooDeep = event DelveTooDeep Cards.delveTooDeep
 
-instance HasActions env DelveTooDeep where
-  getActions iid window (DelveTooDeep attrs) = getActions iid window attrs
-
+instance HasActions DelveTooDeep
 instance HasModifiersFor env DelveTooDeep
 
 instance HasQueue env => RunMessage env DelveTooDeep where

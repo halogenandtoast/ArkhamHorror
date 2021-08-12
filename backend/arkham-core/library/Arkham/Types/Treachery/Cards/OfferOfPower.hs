@@ -9,16 +9,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype OfferOfPower = OfferOfPower TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 offerOfPower :: TreacheryCard OfferOfPower
 offerOfPower = treachery OfferOfPower Cards.offerOfPower
-
-instance HasModifiersFor env OfferOfPower
-
-instance HasActions env OfferOfPower where
-  getActions i window (OfferOfPower attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env OfferOfPower where
   runMessage msg t@(OfferOfPower attrs) = case msg of

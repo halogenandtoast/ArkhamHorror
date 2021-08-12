@@ -21,9 +21,7 @@ deduction2 :: SkillCard Deduction2
 deduction2 = skill Deduction2 Cards.deduction2
 
 instance HasModifiersFor env Deduction2
-
-instance HasActions env Deduction2 where
-  getActions i window (Deduction2 attrs) = getActions i window attrs
+instance HasActions Deduction2
 
 instance (SkillRunner env) => RunMessage env Deduction2 where
   runMessage msg s@(Deduction2 attrs@SkillAttrs {..}) = case msg of

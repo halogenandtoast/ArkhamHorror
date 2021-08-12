@@ -14,7 +14,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype VaultOfEarthlyDemise = VaultOfEarthlyDemise TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 vaultOfEarthlyDemise :: TreacheryCard VaultOfEarthlyDemise
@@ -28,9 +28,6 @@ instance HasCount PlayerCount env () => HasModifiersFor env VaultOfEarthlyDemise
       additionalHealth <- getPlayerCountValue (PerPlayer x)
       pure $ toModifiers attrs [HealthModifier additionalHealth, EnemyFight x]
   getModifiersFor _ _ _ = pure []
-
-instance HasActions env VaultOfEarthlyDemise where
-  getActions i window (VaultOfEarthlyDemise attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env VaultOfEarthlyDemise where
   runMessage msg (VaultOfEarthlyDemise attrs@TreacheryAttrs {..}) = case msg of

@@ -21,9 +21,7 @@ newtype EmergencyAid = EmergencyAid EventAttrs
 emergencyAid :: EventCard EmergencyAid
 emergencyAid = event EmergencyAid Cards.emergencyAid
 
-instance HasActions env EmergencyAid where
-  getActions iid window (EmergencyAid attrs) = getActions iid window attrs
-
+instance HasActions EmergencyAid
 instance HasModifiersFor env EmergencyAid
 
 instance
@@ -35,7 +33,7 @@ instance
   runMessage msg e@(EmergencyAid attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       investigatorIds <- getSetList
-        (InvestigatorAtYourLocation <> InvestigatorWithDamage)
+        (InvestigatorAt YourLocation <> InvestigatorWithAnyDamage)
       let investigatorTargets = map InvestigatorTarget investigatorIds
       allyTargets <- map AssetTarget <$> selectList
         (AssetWithDamage <> AssetWithTrait Ally <> AssetOneOf

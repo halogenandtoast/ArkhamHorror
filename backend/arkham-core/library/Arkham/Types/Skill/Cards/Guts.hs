@@ -17,9 +17,7 @@ guts :: SkillCard Guts
 guts = skill Guts Cards.guts
 
 instance HasModifiersFor env Guts
-
-instance HasActions env Guts where
-  getActions i window (Guts attrs) = getActions i window attrs
+instance HasActions Guts
 
 instance (SkillRunner env) => RunMessage env Guts where
   runMessage msg s@(Guts attrs@SkillAttrs {..}) = case msg of

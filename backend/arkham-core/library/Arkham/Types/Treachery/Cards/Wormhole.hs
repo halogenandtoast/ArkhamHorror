@@ -9,22 +9,18 @@ import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype Wormhole = Wormhole TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wormhole :: TreacheryCard Wormhole
 wormhole = treachery Wormhole Cards.wormhole
-
-instance HasModifiersFor env Wormhole
-
-instance HasActions env Wormhole where
-  getActions i window (Wormhole attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env Wormhole where
   runMessage msg t@(Wormhole attrs) = case msg of

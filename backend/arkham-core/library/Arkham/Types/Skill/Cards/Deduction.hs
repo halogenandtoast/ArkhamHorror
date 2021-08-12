@@ -20,9 +20,7 @@ deduction :: SkillCard Deduction
 deduction = skill Deduction Cards.deduction
 
 instance HasModifiersFor env Deduction
-
-instance HasActions env Deduction where
-  getActions i window (Deduction attrs) = getActions i window attrs
+instance HasActions Deduction
 
 instance (SkillRunner env) => RunMessage env Deduction where
   runMessage msg s@(Deduction attrs@SkillAttrs {..}) = case msg of

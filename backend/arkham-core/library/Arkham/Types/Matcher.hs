@@ -15,6 +15,7 @@ import Arkham.Types.Id
 import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Phase
+import Arkham.Types.Target
 import Arkham.Types.Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
@@ -42,6 +43,7 @@ data InvestigatorMatcher
   | InvestigatorEngagedWith EnemyMatcher
   | InvestigatorWithDamage ValueMatcher
   | InvestigatorWithHorror ValueMatcher
+  | InvestigatorWithResources ValueMatcher
   | InvestigatorWithId InvestigatorId
   | InvestigatorMatches [InvestigatorMatcher]
   | AnyInvestigator [InvestigatorMatcher]
@@ -313,6 +315,7 @@ data WindowMatcher
   | EnemyEvaded Timing Who EnemyMatcher
   | EnemyEngaged Timing Who EnemyMatcher
   | MythosStep WindowMythosStepMatcher
+  | AgendaAdvances Timing
   | EnemyAttacks Timing Who EnemyMatcher
   | RevealChaosToken Timing Who TokenMatcher
   | WouldRevealChaosToken Timing Who
@@ -325,6 +328,7 @@ data WindowMatcher
   | DuringTurn Who
   | OrWindowMatcher [WindowMatcher]
   | DealtDamageOrHorror Who
+  | WouldTakeDamage Timing Who
   | AssetDealtDamage Timing AssetMatcher
   | DrawCard Timing Who ExtendedCardMatcher
   | PlayCard Timing Who ExtendedCardMatcher
@@ -334,8 +338,14 @@ data WindowMatcher
   | PlayerHasPlayableCard ExtendedCardMatcher
   | AssetEntersPlay Timing AssetMatcher
   | Enters Timing Who Where
-  | AmongSearchedCards Timing Who CardMatcher
+  | WouldDiscoverClues Timing Who
   | AnyWindow
+  | TargetReadies Timing Target
+  -- ^ do not like Target here since it is not a real matcher
+  -- special matchers
+  | AmongSearchedCards Who
+  -- ^ This window is called directly on a card so we don't have the typical timings or matchers
+  -- for callsite look at InvestigatorAttrs handling of SearchTopOfDeck
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

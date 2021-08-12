@@ -15,16 +15,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype EagerForDeath = EagerForDeath TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 eagerForDeath :: TreacheryCard EagerForDeath
 eagerForDeath = treachery EagerForDeath Cards.eagerForDeath
-
-instance HasModifiersFor env EagerForDeath
-
-instance HasActions env EagerForDeath where
-  getActions i window (EagerForDeath attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env EagerForDeath where
   runMessage msg t@(EagerForDeath attrs) = case msg of

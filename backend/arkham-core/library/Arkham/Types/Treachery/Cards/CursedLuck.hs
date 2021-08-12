@@ -16,7 +16,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype CursedLuck = CursedLuck TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cursedLuck :: TreacheryCard CursedLuck
@@ -28,9 +28,6 @@ instance HasModifiersFor env CursedLuck where
       attrs
       [ AnySkillValue (-1) | treacheryOnInvestigator iid attrs ]
   getModifiersFor _ _ _ = pure []
-
-instance HasActions env CursedLuck where
-  getActions i window (CursedLuck attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env CursedLuck where
   runMessage msg t@(CursedLuck attrs@TreacheryAttrs {..}) = case msg of

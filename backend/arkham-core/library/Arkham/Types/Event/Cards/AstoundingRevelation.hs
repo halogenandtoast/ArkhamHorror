@@ -15,7 +15,6 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Message
 import Arkham.Types.Restriction
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 
 newtype AstoundingRevelation = AstoundingRevelation EventAttrs
@@ -32,7 +31,7 @@ instance HasActions AstoundingRevelation where
           1
           OwnsThis
           (ReactionAbility
-            (AmongSearchedCards Timing.When You (CardWithId $ toCardId x))
+            (AmongSearchedCards You)
             (DiscardCost (SearchedCardTarget $ toCardId x))
           )
         & abilityLimitL

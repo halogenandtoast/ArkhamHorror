@@ -15,7 +15,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype FrozenInFear = FrozenInFear TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 frozenInFear :: TreacheryCard FrozenInFear
@@ -29,9 +29,6 @@ instance HasModifiersFor env FrozenInFear where
       | treacheryOnInvestigator iid attrs
       ]
   getModifiersFor _ _ _ = pure []
-
-instance HasActions env FrozenInFear where
-  getActions i window (FrozenInFear attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env FrozenInFear where
   runMessage msg t@(FrozenInFear attrs@TreacheryAttrs {..}) = case msg of

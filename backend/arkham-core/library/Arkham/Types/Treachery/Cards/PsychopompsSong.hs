@@ -10,28 +10,32 @@ import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Exception
 import Arkham.Types.Message
+import Arkham.Types.Restriction
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
 
 newtype PsychopompsSong = PsychopompsSong TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 psychopompsSong :: TreacheryCard PsychopompsSong
 psychopompsSong = treachery PsychopompsSong Cards.psychopompsSong
 
-instance HasModifiersFor env PsychopompsSong
-
-ability :: TreacheryAttrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 ForcedAbility
-
-instance HasActions env PsychopompsSong where
-  getActions iid (WhenWouldTakeDamage _ (InvestigatorTarget iid')) (PsychopompsSong attrs)
-    | treacheryOnInvestigator iid attrs && iid == iid'
-    = pure [ability attrs]
-  getActions i window (PsychopompsSong attrs) = getActions i window attrs
+instance HasActions PsychopompsSong where
+  getActions (PsychopompsSong x) =
+    [ restrictedAbility
+        x
+        1
+        restriction
+        (ForcedAbility $ WouldTakeDamage Timing.When You)
+    ]
+   where
+    restriction = if attached then NoRestriction else Never
+    attached = case treacheryAttachedTarget x of
+      Just (InvestigatorTarget _) -> True
+      _ -> False
 
 instance TreacheryRunner env => RunMessage env PsychopompsSong where
   runMessage msg t@(PsychopompsSong attrs@TreacheryAttrs {..}) = case msg of

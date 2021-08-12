@@ -18,9 +18,7 @@ inquiringMind :: SkillCard InquiringMind
 inquiringMind = skill InquiringMind Cards.inquiringMind
 
 instance HasModifiersFor env InquiringMind
-
-instance HasActions env InquiringMind where
-  getActions iid window (InquiringMind attrs) = getActions iid window attrs
+instance HasActions InquiringMind
 
 instance SkillRunner env => RunMessage env InquiringMind where
   runMessage msg (InquiringMind attrs) = InquiringMind <$> runMessage msg attrs

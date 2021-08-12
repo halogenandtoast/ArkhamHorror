@@ -20,9 +20,7 @@ trueUnderstanding :: SkillCard TrueUnderstanding
 trueUnderstanding = skill TrueUnderstanding Cards.trueUnderstanding
 
 instance HasModifiersFor env TrueUnderstanding
-
-instance HasActions env TrueUnderstanding where
-  getActions iid window (TrueUnderstanding attrs) = getActions iid window attrs
+instance HasActions TrueUnderstanding
 
 -- Investigation is not an ability on the card so we need to pass
 -- Nothing for the action type

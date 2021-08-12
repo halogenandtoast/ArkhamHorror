@@ -12,7 +12,6 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Event.Attrs
-import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Restriction
 import Arkham.Types.Target

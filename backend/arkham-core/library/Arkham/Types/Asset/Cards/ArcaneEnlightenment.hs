@@ -17,7 +17,7 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype ArcaneEnlightenment = ArcaneEnlightenment AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasActions)
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 arcaneEnlightenment :: AssetCard ArcaneEnlightenment
@@ -27,9 +27,6 @@ instance HasModifiersFor env ArcaneEnlightenment where
   getModifiersFor _ (InvestigatorTarget iid) (ArcaneEnlightenment attrs) =
     pure [ toModifier attrs (HandSize 1) | ownedBy attrs iid ]
   getModifiersFor _ _ _ = pure []
-
-instance HasActions env ArcaneEnlightenment where
-  getActions i window (ArcaneEnlightenment x) = getActions i window x
 
 slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Tome Nothing

@@ -10,16 +10,14 @@ import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Card.CardDef
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.LocationId
-import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype BeatCop2 = BeatCop2 AssetAttrs
   deriving anyclass IsAsset
@@ -33,19 +31,13 @@ instance HasModifiersFor env BeatCop2 where
     pure [ toModifier a (SkillModifier SkillCombat 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-ability :: AssetAttrs -> Ability
-ability a = restrictedAbility
-  (toSource a)
-  1
-  (EnemyExists EnemyAtYourLocation)
-  (FastAbility
-  $ Costs [ExhaustCost (toTarget a), DamageCost (toSource a) (toTarget a) 1]
-  )
-
-instance HasActions env BeatCop2 where
-  getActions iid FastPlayerWindow (BeatCop2 a) | ownedBy a iid =
-    pure [ability a]
-  getActions _ _ _ = pure []
+instance HasActions BeatCop2 where
+  getActions (BeatCop2 x) =
+    [ restrictedAbility x 1 (OwnsThis <> EnemyExists EnemyAtYourLocation)
+        $ FastAbility
+        $ Costs
+            [ExhaustCost (toTarget x), DamageCost (toSource x) (toTarget x) 1]
+    ]
 
 instance (AssetRunner env) => RunMessage env BeatCop2 where
   runMessage msg a@(BeatCop2 attrs) = case msg of

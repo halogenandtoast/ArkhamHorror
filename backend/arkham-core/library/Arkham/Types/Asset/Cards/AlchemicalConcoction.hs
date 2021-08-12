@@ -16,11 +16,11 @@ import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype AlchemicalConcoction = AlchemicalConcoction AssetAttrs
   deriving anyclass IsAsset
@@ -29,10 +29,14 @@ newtype AlchemicalConcoction = AlchemicalConcoction AssetAttrs
 alchemicalConcoction :: AssetCard AlchemicalConcoction
 alchemicalConcoction = asset AlchemicalConcoction Cards.alchemicalConcoction
 
-instance HasActions env AlchemicalConcoction where
-  getActions iid NonFast (AlchemicalConcoction a) | ownedBy a iid =
-    pure [mkAbility a 1 (ActionAbility (Just Action.Fight) $ ActionCost 1)]
-  getActions _ _ _ = pure []
+instance HasActions AlchemicalConcoction where
+  getActions (AlchemicalConcoction a) =
+    [ restrictedAbility
+        a
+        1
+        OwnsThis
+        (ActionAbility (Just Action.Fight) $ ActionCost 1)
+    ]
 
 instance (HasId CardCode env EnemyId, HasSkillTest env) => HasModifiersFor env AlchemicalConcoction where
   getModifiersFor (SkillTestSource _ _ source _ (Just Action.Fight)) _ (AlchemicalConcoction a)

@@ -35,7 +35,7 @@ data Restriction
   | OwnsThis
   | OnSameLocation
   | Unowned
-  | DuringSkillTest
+  | DuringSkillTest SkillTestMatcher
   | InThreatAreaOf InvestigatorMatcher
   | CardInDiscard DiscardSignifier [Trait]
   | ReturnableCardInDiscard DiscardSignifier [Trait]

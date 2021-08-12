@@ -15,10 +15,12 @@ import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
+import qualified Arkham.Types.Restriction as R
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
 
 newtype BrotherXavier1 = BrotherXavier1 AssetAttrs
   deriving anyclass IsAsset
@@ -41,13 +43,17 @@ instance (HasId LocationId env InvestigatorId) => HasModifiersFor env BrotherXav
         ]
   getModifiersFor _ _ _ = pure []
 
-ability :: AssetAttrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
-
-instance HasActions env BrotherXavier1 where
-  getActions iid (WhenDefeated source) (BrotherXavier1 a) | isSource a source =
-    pure [ ability a | ownedBy a iid ]
-  getActions _ _ _ = pure []
+instance HasActions BrotherXavier1 where
+  getActions (BrotherXavier1 x) =
+    [ restrictedAbility
+        x
+        1
+        OwnsThis
+        (ReactionAbility
+          (R.AssetDefeated Timing.When (AssetWithId $ toId x))
+          Free
+        )
+    ]
 
 instance AssetRunner env => RunMessage env BrotherXavier1 where
   runMessage msg a@(BrotherXavier1 attrs) = case msg of

@@ -767,6 +767,7 @@ type CanCheckPlayable env
     , Query LocationMatcher env
     , Query InvestigatorMatcher env
     , Query EnemyMatcher env
+    , Query SkillMatcher env
     , Query ExtendedCardMatcher env
     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
     , HasCount SpendableClueCount env ()
@@ -901,7 +902,11 @@ passesRestriction iid source windows = \case
       mOwner <- getId aid
       pure $ Just (OwnerId iid) == mOwner
     _ -> error "missing OwnsThis check"
-  DuringSkillTest -> isJust <$> getSkillTest
+  DuringSkillTest skillTestMatcher -> do
+    mst <- getSkillTest
+    case mst of
+      Nothing -> pure False
+      Just st -> skillTestMatches iid st skillTestMatcher
   CluesOnThis valueMatcher -> case source of
     AssetSource aid -> do
       (`gameValueMatches` valueMatcher) . unClueCount =<< getCount aid
@@ -1218,6 +1223,10 @@ windowMatches iid window' = \case
         (matchWho iid who whoMatcher)
         (matchToken who token tokenMatcher)
       _ -> pure False
+  Matcher.AssetDefeated timingMatcher assetMatcher -> case window' of
+    Window t (Window.Defeated (AssetSource aid)) | timingMatcher == t ->
+      member aid <$> select assetMatcher
+    _ -> pure False
   Matcher.EnemyDefeated timingMatcher whoMatcher enemyMatcher ->
     case window' of
       Window t (Window.EnemyDefeated who enemyId) | timingMatcher == t -> liftA2
@@ -1313,6 +1322,29 @@ gameValueMatches n = \case
   Matcher.LessThanOrEqualTo gv -> (n <=) <$> getPlayerCountValue gv
   Matcher.GreaterThanOrEqualTo gv -> (n >=) <$> getPlayerCountValue gv
   Matcher.EqualTo gv -> (n ==) <$> getPlayerCountValue gv
+
+skillTestMatches
+  :: ( MonadReader env m
+     , HasId LocationId env InvestigatorId
+     , Query SkillMatcher env
+     )
+  => InvestigatorId
+  -> SkillTest
+  -> SkillTestMatcher
+  -> m Bool
+skillTestMatches iid st = \case
+  Matcher.AnySkillTest -> pure True
+  Matcher.WhileInvestigating -> case skillTestAction st of
+    Just Action.Investigate -> pure True
+    _ -> pure False
+  Matcher.WhileAttackingAnEnemy -> case skillTestAction st of
+    Just Action.Fight -> pure True
+    _ -> pure False
+  Matcher.SkillTestWithSkill sk -> notNull <$> select sk
+  Matcher.SkillTestAtYourLocation -> liftA2
+    (==)
+    (getId @LocationId iid)
+    (getId @LocationId $ skillTestInvestigator st)
 
 enemyMatches
   :: (MonadReader env m, CanCheckPlayable env)

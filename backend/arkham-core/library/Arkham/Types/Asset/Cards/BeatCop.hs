@@ -10,16 +10,14 @@ import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Card.CardDef
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
-import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype BeatCop = BeatCop AssetAttrs
   deriving anyclass IsAsset
@@ -33,20 +31,11 @@ instance HasModifiersFor env BeatCop where
     pure $ toModifiers a [ SkillModifier SkillCombat 1 | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-ability :: AssetAttrs -> Ability
-ability a = restrictedAbility (toSource a) 1 (EnemyExists EnemyAtYourLocation)
-  $ FastAbility (DiscardCost $ toTarget a)
-
-instance
-  ( HasSet EnemyId env LocationId
-  , HasId LocationId env InvestigatorId
-  )
-  => HasActions env BeatCop where
-  getActions iid FastPlayerWindow (BeatCop a) | ownedBy a iid = do
-    locationId <- getId @LocationId iid
-    enemyIds <- getSetList @EnemyId locationId
-    pure [ ability a | notNull enemyIds ]
-  getActions _ _ _ = pure []
+instance HasActions BeatCop where
+  getActions (BeatCop x) =
+    [ restrictedAbility x 1 (OwnsThis <> EnemyExists EnemyAtYourLocation)
+        $ FastAbility (DiscardCost $ toTarget x)
+    ]
 
 -- | See: PlayerCardWithBehavior
 instance AssetRunner env => RunMessage env BeatCop where

@@ -15,11 +15,11 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype BaseballBat = BaseballBat AssetAttrs
   deriving anyclass IsAsset
@@ -35,14 +35,11 @@ instance HasModifiersFor env BaseballBat where
     = pure $ toModifiers a [DamageDealt 1]
   getModifiersFor _ _ _ = pure []
 
-fightAbility :: AssetAttrs -> Ability
-fightAbility a =
-  mkAbility a 1 (ActionAbility (Just Action.Fight) (ActionCost 1))
-
-instance HasActions env BaseballBat where
-  getActions iid NonFast (BaseballBat a) | ownedBy a iid = do
-    pure [fightAbility a]
-  getActions _ _ _ = pure []
+instance HasActions BaseballBat where
+  getActions (BaseballBat a) =
+    [ restrictedAbility a 1 OwnsThis
+        $ ActionAbility (Just Action.Fight) (ActionCost 1)
+    ]
 
 instance (AssetRunner env) => RunMessage env BaseballBat where
   runMessage msg a@(BaseballBat attrs) = case msg of

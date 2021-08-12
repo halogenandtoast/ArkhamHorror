@@ -16,13 +16,13 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype ChicagoTypewriter4 = ChicagoTypewriter4 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chicagoTypewriter4 :: AssetCard ChicagoTypewriter4
@@ -31,15 +31,12 @@ chicagoTypewriter4 = assetWith
   Cards.chicagoTypewriter4
   (slotsL .~ [HandSlot, HandSlot])
 
-instance HasModifiersFor env ChicagoTypewriter4
-
-instance HasActions env ChicagoTypewriter4 where
-  getActions iid NonFast (ChicagoTypewriter4 a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility
+instance HasActions ChicagoTypewriter4 where
+  getActions (ChicagoTypewriter4 a) =
+    [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, AdditionalActionsCost, UseCost (toId a) Ammo 1])
     ]
-  getActions _ _ _ = pure []
 
 getActionsSpent :: Payment -> Int
 getActionsSpent (ActionPayment n) = n

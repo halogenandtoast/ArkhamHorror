@@ -16,8 +16,8 @@ import Arkham.Types.Cost
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype BearTrap = BearTrap AssetAttrs
   deriving anyclass IsAsset
@@ -32,13 +32,10 @@ instance HasModifiersFor env BearTrap where
     $ toModifiers attrs [EnemyFight (-1), EnemyEvade (-1)]
   getModifiersFor _ _ _ = pure []
 
-ability :: AssetAttrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (FastAbility Free)
-
-instance HasActions env BearTrap where
-  getActions iid FastPlayerWindow (BearTrap attrs) | ownedBy attrs iid =
-    pure [ ability attrs | isNothing (assetEnemy attrs) ]
-  getActions iid window (BearTrap x) = getActions iid window x
+instance HasActions BearTrap where
+  getActions (BearTrap x) =
+    [restrictedAbility x 1 restriction $ FastAbility Free]
+    where restriction = maybe OwnsThis (const Never) (assetEnemy x)
 
 instance AssetRunner env => RunMessage env BearTrap where
   runMessage msg a@(BearTrap attrs@AssetAttrs {..}) = case msg of

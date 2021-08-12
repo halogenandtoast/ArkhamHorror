@@ -33,7 +33,12 @@ row = act (3, A) Row Cards.row Nothing
 
 instance HasActions Row where
   getActions (Row x) =
-    [ mkAbility x 1 (ForcedAbility $ R.DrawCard Timing.When You IsEncounterCard)
+    [ mkAbility
+      x
+      1
+      (ForcedAbility
+      $ R.DrawCard Timing.When You (BasicCardMatch IsEncounterCard)
+      )
     , restrictedAbility
       x
       2

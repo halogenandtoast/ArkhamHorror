@@ -10,16 +10,15 @@ import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Card.CardDef
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype CatBurglar1 = CatBurglar1 AssetAttrs
   deriving anyclass IsAsset
@@ -33,25 +32,19 @@ instance HasModifiersFor env CatBurglar1 where
     pure $ toModifiers a [ SkillModifier SkillAgility 1 | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-ability :: AssetAttrs -> Ability
-ability a = (restrictedAbility
-              a
-              1
-              (AnyPlayRestriction
-                [ EnemyExists EnemyEngagedWithYou
-                , LocationExists AccessibleLocation
-                ]
-              )
-              (ActionAbility Nothing
-              $ Costs [ActionCost 1, ExhaustCost (toTarget a)]
-              )
-            )
-  { abilityDoesNotProvokeAttacksOfOpportunity = True
-  }
-
-instance HasActions env CatBurglar1 where
-  getActions iid NonFast (CatBurglar1 a) | ownedBy a iid = pure [ability a]
-  getActions i window (CatBurglar1 x) = getActions i window x
+instance HasActions CatBurglar1 where
+  getActions (CatBurglar1 x) =
+    [ (restrictedAbility
+        x
+        1
+        (OwnsThis <> AnyRestriction
+          [EnemyExists EnemyEngagedWithYou, LocationExists AccessibleLocation]
+        )
+        (ActionAbility Nothing $ Costs [ActionCost 1, ExhaustThis])
+      )
+        { abilityDoesNotProvokeAttacksOfOpportunity = True
+        }
+    ]
 
 instance AssetRunner env => RunMessage env CatBurglar1 where
   runMessage msg (CatBurglar1 attrs) = case msg of

@@ -10,16 +10,13 @@ import Arkham.Types.Skill.Runner
 import Arkham.Types.Target
 
 newtype Guts = Guts SkillAttrs
-  deriving anyclass IsSkill
+  deriving anyclass (IsSkill, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 guts :: SkillCard Guts
 guts = skill Guts Cards.guts
 
-instance HasModifiersFor env Guts
-instance HasActions Guts
-
-instance (SkillRunner env) => RunMessage env Guts where
+instance SkillRunner env => RunMessage env Guts where
   runMessage msg s@(Guts attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest _ _ _ (SkillTarget sid) _ _ | sid == skillId ->
       s <$ push (DrawCards skillOwner 1 False)

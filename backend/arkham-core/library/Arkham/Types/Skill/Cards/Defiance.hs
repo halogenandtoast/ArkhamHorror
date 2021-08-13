@@ -16,16 +16,11 @@ import Arkham.Types.Target
 import Arkham.Types.Token
 
 newtype Defiance = Defiance SkillAttrs
-  deriving anyclass IsSkill
+  deriving anyclass (IsSkill, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 defiance :: SkillCard Defiance
 defiance = skill Defiance Cards.defiance
-
-instance HasModifiersFor env Defiance
-
-instance HasActions env Defiance where
-  getActions iid window (Defiance attrs) = getActions iid window attrs
 
 instance SkillRunner env => RunMessage env Defiance where
   runMessage msg s@(Defiance attrs) = case msg of

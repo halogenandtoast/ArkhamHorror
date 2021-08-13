@@ -13,16 +13,13 @@ import Arkham.Types.Skill.Runner
 import Arkham.Types.Target
 
 newtype Deduction = Deduction SkillAttrs
-  deriving anyclass IsSkill
+  deriving anyclass (IsSkill, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deduction :: SkillCard Deduction
 deduction = skill Deduction Cards.deduction
 
-instance HasModifiersFor env Deduction
-instance HasActions Deduction
-
-instance (SkillRunner env) => RunMessage env Deduction where
+instance SkillRunner env => RunMessage env Deduction where
   runMessage msg s@(Deduction attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest iid (Just Action.Investigate) _ (SkillTarget sid) _ _
       | sid == skillId -> do

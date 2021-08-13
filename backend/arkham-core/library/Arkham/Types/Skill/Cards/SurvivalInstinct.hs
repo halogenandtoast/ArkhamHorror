@@ -16,14 +16,11 @@ import Arkham.Types.Skill.Runner
 import Arkham.Types.Target
 
 newtype SurvivalInstinct = SurvivalInstinct SkillAttrs
-  deriving anyclass IsSkill
+  deriving anyclass (IsSkill, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 survivalInstinct :: SkillCard SurvivalInstinct
 survivalInstinct = skill SurvivalInstinct Cards.survivalInstinct
-
-instance HasModifiersFor env SurvivalInstinct
-instance HasActions SurvivalInstinct
 
 instance SkillRunner env => RunMessage env SurvivalInstinct where
   runMessage msg s@(SurvivalInstinct attrs@SkillAttrs {..}) = case msg of

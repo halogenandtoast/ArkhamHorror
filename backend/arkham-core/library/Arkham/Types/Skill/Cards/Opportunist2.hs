@@ -13,16 +13,13 @@ import Arkham.Types.Skill.Runner
 import Arkham.Types.Target
 
 newtype Opportunist2 = Opportunist2 SkillAttrs
-  deriving anyclass IsSkill
+  deriving anyclass (IsSkill, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 opportunist2 :: SkillCard Opportunist2
 opportunist2 = skill Opportunist2 Cards.opportunist2
 
-instance HasModifiersFor env Opportunist2
-instance HasActions Opportunist2
-
-instance (SkillRunner env) => RunMessage env Opportunist2 where
+instance SkillRunner env => RunMessage env Opportunist2 where
   runMessage msg s@(Opportunist2 attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest iid _ _ (SkillTarget sid) _ n | sid == skillId && n >= 2 ->
       s <$ push (ReturnToHand iid (SkillTarget skillId))

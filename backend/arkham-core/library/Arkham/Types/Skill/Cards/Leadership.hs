@@ -16,7 +16,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype Leadership = Leadership SkillAttrs
-  deriving anyclass IsSkill
+  deriving anyclass (IsSkill, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 leadership :: SkillCard Leadership
@@ -27,9 +27,6 @@ instance HasModifiersFor env Leadership where
     | toCardId attrs == cid && skillOwner attrs /= iid'
     = pure $ toModifiers attrs [AddSkillIcons [SkillWillpower, SkillWild]]
   getModifiersFor _ _ _ = pure []
-
-instance HasActions env Leadership where
-  getActions iid window (Leadership attrs) = getActions iid window attrs
 
 instance SkillRunner env => RunMessage env Leadership where
   runMessage msg (Leadership attrs) = Leadership <$> runMessage msg attrs

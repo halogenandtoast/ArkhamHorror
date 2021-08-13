@@ -16,16 +16,11 @@ import Arkham.Types.Skill.Runner
 import Arkham.Types.Target
 
 newtype ViciousBlow2 = ViciousBlow2 SkillAttrs
-  deriving anyclass IsSkill
+  deriving anyclass (IsSkill, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 viciousBlow2 :: SkillCard ViciousBlow2
 viciousBlow2 = skill ViciousBlow2 Cards.viciousBlow2
-
-instance HasModifiersFor env ViciousBlow2
-
-instance HasActions env ViciousBlow2 where
-  getActions i window (ViciousBlow2 attrs) = getActions i window attrs
 
 instance (SkillRunner env) => RunMessage env ViciousBlow2 where
   runMessage msg s@(ViciousBlow2 attrs@SkillAttrs {..}) = case msg of

@@ -13,14 +13,11 @@ import Arkham.Types.Skill.Runner
 import Arkham.Types.Token
 
 newtype StrokeOfLuck2 = StrokeOfLuck2 SkillAttrs
-  deriving anyclass IsSkill
+  deriving anyclass (IsSkill, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strokeOfLuck2 :: SkillCard StrokeOfLuck2
 strokeOfLuck2 = skill StrokeOfLuck2 Cards.strokeOfLuck2
-
-instance HasModifiersFor env StrokeOfLuck2
-instance HasActions StrokeOfLuck2
 
 instance SkillRunner env => RunMessage env StrokeOfLuck2 where
   runMessage msg s@(StrokeOfLuck2 attrs) = case msg of

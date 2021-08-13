@@ -10,16 +10,13 @@ import Arkham.Types.Skill.Runner
 import Arkham.Types.Target
 
 newtype Overpower = Overpower SkillAttrs
-  deriving anyclass IsSkill
+  deriving anyclass (IsSkill, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 overpower :: SkillCard Overpower
 overpower = skill Overpower Cards.overpower
 
-instance HasModifiersFor env Overpower
-instance HasActions Overpower
-
-instance (SkillRunner env) => RunMessage env Overpower where
+instance SkillRunner env => RunMessage env Overpower where
   runMessage msg s@(Overpower attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest _ _ _ (SkillTarget sid) _ _ | sid == skillId ->
       s <$ push (DrawCards skillOwner 1 False)

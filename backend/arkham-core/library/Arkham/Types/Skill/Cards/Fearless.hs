@@ -10,16 +10,13 @@ import Arkham.Types.Skill.Runner
 import Arkham.Types.Target
 
 newtype Fearless = Fearless SkillAttrs
-  deriving anyclass IsSkill
+  deriving anyclass (IsSkill, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fearless :: SkillCard Fearless
 fearless = skill Fearless Cards.fearless
 
-instance HasModifiersFor env Fearless
-instance HasActions Fearless
-
-instance (SkillRunner env) => RunMessage env Fearless where
+instance SkillRunner env => RunMessage env Fearless where
   runMessage msg s@(Fearless attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest _ _ _ (SkillTarget sid) _ _ | sid == skillId ->
       s <$ push (HealHorror (InvestigatorTarget skillOwner) 1)

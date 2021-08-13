@@ -13,14 +13,11 @@ import Arkham.Types.Skill.Runner
 import Arkham.Types.Target
 
 newtype TrueUnderstanding = TrueUnderstanding SkillAttrs
-  deriving anyclass IsSkill
+  deriving anyclass (IsSkill, HasModifiersFor env, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 trueUnderstanding :: SkillCard TrueUnderstanding
 trueUnderstanding = skill TrueUnderstanding Cards.trueUnderstanding
-
-instance HasModifiersFor env TrueUnderstanding
-instance HasActions TrueUnderstanding
 
 -- Investigation is not an ability on the card so we need to pass
 -- Nothing for the action type

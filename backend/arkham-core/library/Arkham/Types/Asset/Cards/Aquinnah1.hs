@@ -35,7 +35,8 @@ instance HasActions Aquinnah1 where
     [ restrictedAbility
           x
           1
-          (OwnsThis <> EnemyExists (EnemyAtYourLocation <> EnemyNotAttackingYou)
+          (OwnsThis
+          <> EnemyExists (EnemyAt YourLocation <> EnemyNotAttackingYou)
           )
         $ ReactionAbility (EnemyAttacks Timing.When You AnyEnemy)
         $ Costs [ExhaustThis, HorrorCost (toSource x) (toTarget x) 1]

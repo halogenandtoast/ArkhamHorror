@@ -13,7 +13,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype MagnifyingGlass = MagnifyingGlass AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 magnifyingGlass :: AssetCard MagnifyingGlass
@@ -25,9 +25,6 @@ instance HasModifiersFor env MagnifyingGlass where
     | ownedBy a iid
     ]
   getModifiersFor _ _ _ = pure []
-
-instance HasActions env MagnifyingGlass where
-  getActions i window (MagnifyingGlass x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env MagnifyingGlass where
   runMessage msg (MagnifyingGlass attrs) =

@@ -32,7 +32,8 @@ when :: WindowType -> Window
 when = Window When
 
 data WindowType
-  = DiscoveringClues InvestigatorId LocationId -- name conflict resolution
+  = DiscoveringClues InvestigatorId LocationId Int -- name conflict resolution
+  | DiscoveringLastClue InvestigatorId LocationId
   | DrawCard InvestigatorId Card
   | DrawingStartingHand InvestigatorId
   | CommittedCards InvestigatorId [Card]
@@ -51,10 +52,11 @@ data WindowType
   | PassSkillTest (Maybe Action) Source InvestigatorId Int
   | PlayCard InvestigatorId Card
   | PutLocationIntoPlay InvestigatorId
-  | RevealLocation InvestigatorId
+  | RevealLocation InvestigatorId LocationId
   | SuccessfulAttackEnemy InvestigatorId EnemyId
   | SuccessfulInvestigation InvestigatorId LocationId
   | TurnBegins InvestigatorId
+  | TurnEnds InvestigatorId
   | AnyPhaseBegins
   | PhaseBegins Phase
   | PhaseEnds Phase
@@ -73,6 +75,7 @@ data WindowType
   | DealtHorror Source Target
   | Defeated Source
   | DiscoverClues InvestigatorId LocationId Int
+  | GainsClues InvestigatorId Int
   | WouldDrawEncounterCard InvestigatorId
   | DrawToken InvestigatorId Token
   | EnemyAttacks InvestigatorId EnemyId

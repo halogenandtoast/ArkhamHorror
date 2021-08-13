@@ -6,6 +6,7 @@ module Arkham.Types.Skill.Cards.Leadership
 import Arkham.Prelude
 
 import qualified Arkham.Skill.Cards as Cards
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Modifier

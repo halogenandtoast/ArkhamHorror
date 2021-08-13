@@ -14,25 +14,26 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Streetwise3 = Streetwise3 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 streetwise3 :: AssetCard Streetwise3
 streetwise3 = asset Streetwise3 Cards.streetwise3
 
-instance HasActions env Streetwise3 where
-  getActions iid (WhenSkillTest SkillIntellect) (Streetwise3 a)
-    | ownedBy a iid = pure [mkAbility a 1 $ FastAbility $ ResourceCost 2]
-  getActions iid (WhenSkillTest SkillAgility) (Streetwise3 a) | ownedBy a iid =
-    pure [mkAbility a 2 $ FastAbility $ ResourceCost 2]
-  getActions _ _ _ = pure []
-
-instance HasModifiersFor env Streetwise3
+instance HasActions Streetwise3 where
+  getActions (Streetwise3 a) =
+    [ restrictedAbility
+        a
+        idx
+        (OwnsThis <> DuringSkillTest AnySkillTest)
+        (FastAbility $ ResourceCost 2)
+    | idx <- [1, 2]
+    ]
 
 instance AssetRunner env => RunMessage env Streetwise3 where
   runMessage msg a@(Streetwise3 attrs) = case msg of

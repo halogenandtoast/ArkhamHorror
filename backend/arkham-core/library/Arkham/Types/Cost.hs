@@ -78,7 +78,7 @@ data Cost
   | RemoveCost Target
   | Costs [Cost]
   | DamageCost Source Target Int
-  | DirectDamageCost Source InvestigatorId Int
+  | DirectDamageCost Source InvestigatorMatcher Int
   | DiscardCost Target
   | DiscardCardCost Card
   | DiscardDrawnCardCost

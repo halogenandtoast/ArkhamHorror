@@ -12,10 +12,12 @@ import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
+import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype LitaChantler = LitaChantler AssetAttrs
   deriving anyclass IsAsset
@@ -36,30 +38,30 @@ instance HasId LocationId env InvestigatorId => HasModifiersFor env LitaChantler
           pure [ toModifier a (SkillModifier SkillCombat 1) | sameLocation ]
   getModifiersFor _ _ _ = pure []
 
-ability :: EnemyId -> AssetAttrs -> Ability
-ability eid a = (mkAbility (toSource a) 1 (ReactionAbility Free))
-  { abilityMetadata = Just $ TargetMetadata (EnemyTarget eid)
-  }
+instance HasActions LitaChantler where
+  getActions (LitaChantler a) =
+    [ restrictedAbility
+        a
+        1
+        OwnsThis
+        (ReactionAbility
+          (SkillTestResult
+            Timing.When
+            (InvestigatorAt YourLocation)
+            (WhileAttackingAnEnemy $ EnemyWithTrait Monster)
+            (SuccessResult AnyValue)
+          )
+          Free
+        )
+    ]
 
-instance
-  ( HasId LocationId env InvestigatorId
-  , HasSet Trait env EnemyId
-  )
-  => HasActions env LitaChantler where
-  getActions i (WhenSuccessfulAttackEnemy who eid) (LitaChantler a)
-    | ownedBy a i = do
-      atYourLocation <- liftA2
-        (==)
-        (getId @LocationId i)
-        (getId @LocationId who)
-      traits <- getSetList eid
-      pure [ ability eid a | Monster `elem` traits && atYourLocation ]
-  getActions i window (LitaChantler a) = getActions i window a
-
-instance (AssetRunner env) => RunMessage env LitaChantler where
+instance AssetRunner env => RunMessage env LitaChantler where
   runMessage msg a@(LitaChantler attrs) = case msg of
-    UseCardAbility _ source (Just (TargetMetadata target)) 1 _
-      | isSource attrs source -> do
-        a <$ push (skillTestModifier attrs target (DamageTaken 1))
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+      mTarget <- getSkillTestTarget
+      case mTarget of
+        Just target ->
+          a <$ push (skillTestModifier attrs target (DamageTaken 1))
+        Nothing -> error "must be during skill test"
     _ -> LitaChantler <$> runMessage msg attrs
 

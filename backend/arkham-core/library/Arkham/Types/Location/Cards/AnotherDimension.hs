@@ -8,18 +8,19 @@ import Arkham.Prelude
 import qualified Arkham.Location.Cards as Cards (anotherDimension)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
-import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
-import Arkham.Types.Target
-import Arkham.Types.Window
+import Arkham.Types.Restriction
+import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 newtype AnotherDimension = AnotherDimension LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 anotherDimension :: LocationCard AnotherDimension
@@ -31,26 +32,22 @@ anotherDimension = location
   Circle
   [Square, Diamond, Triangle]
 
-instance HasModifiersFor env AnotherDimension
-
-forcedAbility :: LocationAttrs -> LocationId -> Ability
-forcedAbility a lid =
-  mkAbility (toSource a) 1 ForcedAbility & abilityMetadataL ?~ TargetMetadata
-    (LocationTarget lid)
-
-instance ActionRunner env => HasActions env AnotherDimension where
-  getActions iid (WhenLocationLeavesPlay lid) (AnotherDimension attrs) = do
-    leadInvestigator <- getLeadInvestigatorId
-    investigatorIds <- getSet @InvestigatorId lid
-    pure
-      [ forcedAbility attrs lid
-      | iid == leadInvestigator && notNull investigatorIds
-      ]
-  getActions iid window (AnotherDimension attrs) = getActions iid window attrs
+instance HasActions AnotherDimension where
+  getActions (AnotherDimension a) =
+    [ restrictedAbility
+          a
+          1
+          (AnyRestriction
+            [ InvestigatorExists $ InvestigatorAt LocationLeavingPlay
+            , EnemyExists $ EnemyAt LocationLeavingPlay
+            ]
+          )
+        $ ForcedAbility (LocationLeavesPlay Timing.When Anywhere)
+    ]
 
 instance (HasSet UnengagedEnemyId env LocationId, LocationRunner env) => RunMessage env AnotherDimension where
   runMessage msg l@(AnotherDimension attrs) = case msg of
-    UseCardAbility _ source (Just (TargetMetadata (LocationTarget lid))) 1 _
+    UseCardAbility _ source [Window _ (Window.LocationLeavesPlay lid)] 1 _
       | isSource attrs source -> do
         investigatorIds <- getSetList @InvestigatorId lid
         enemyIds <- map unUnengagedEnemyId <$> getSetList lid

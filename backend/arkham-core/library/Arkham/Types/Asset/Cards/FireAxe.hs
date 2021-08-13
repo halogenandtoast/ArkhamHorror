@@ -17,11 +17,10 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
-import Arkham.Types.SkillTest
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype FireAxe = FireAxe AssetAttrs
   deriving anyclass IsAsset
@@ -29,16 +28,6 @@ newtype FireAxe = FireAxe AssetAttrs
 
 fireAxe :: AssetCard FireAxe
 fireAxe = hand FireAxe Cards.fireAxe
-
-fightAbility :: AssetAttrs -> Ability
-fightAbility attrs = mkAbility
-  (toSource attrs)
-  1
-  (ActionAbility (Just Action.Fight) (ActionCost 1))
-
-reactionAbility :: AssetAttrs -> Ability
-reactionAbility attrs = base { abilityLimit = PlayerLimit PerTestOrAbility 3 } -- per attack
-  where base = mkAbility (toSource attrs) 2 (ReactionAbility $ ResourceCost 1)
 
 instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env FireAxe where
   getModifiersFor (SkillTestSource _ _ source _ (Just Action.Fight)) (InvestigatorTarget iid) (FireAxe a)
@@ -48,19 +37,20 @@ instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env FireAx
       pure $ toModifiers a [ DamageDealt 1 | resourceCount == 0 ]
   getModifiersFor _ _ _ = pure []
 
-instance HasSkillTest env => HasActions env FireAxe where
-  getActions iid NonFast (FireAxe a) | ownedBy a iid = pure [fightAbility a]
-  getActions iid (WhenSkillTest _) (FireAxe a) | ownedBy a iid = do
-    msource <- getSkillTestSource
-    let
-      using = case msource of
-        Just (SkillTestSource _ _ source _ (Just Action.Fight))
-          | isSource a source -> True
-        _ -> False
-    pure [ reactionAbility a | using ]
-  getActions _ _ _ = pure []
+instance HasActions FireAxe where
+  getActions (FireAxe a) =
+    [ restrictedAbility a 1 OwnsThis
+      $ ActionAbility (Just Action.Fight) (ActionCost 1)
+    , restrictedAbility
+        a
+        2
+        (OwnsThis
+        <> DuringSkillTest (WhileAttackingAnEnemy AnyEnemy <> UsingThis)
+        )
+      $ FastAbility (ResourceCost 1)
+    ]
 
-instance (AssetRunner env) => RunMessage env FireAxe where
+instance AssetRunner env => RunMessage env FireAxe where
   runMessage msg a@(FireAxe attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier

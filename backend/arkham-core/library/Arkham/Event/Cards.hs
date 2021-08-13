@@ -224,7 +224,7 @@ sneakAttack = (event "01052" "Sneak Attack" 2 Rogue)
   { cdSkills = [SkillIntellect, SkillCombat]
   , cdCardTraits = setFromList [Tactic]
   , cdPlayRestrictions = Just
-    $ Restriction.EnemyExists (EnemyAtYourLocation <> ExhaustedEnemy)
+    $ Restriction.EnemyExists (EnemyAt YourLocation <> ExhaustedEnemy)
   }
 
 sureGamble3 :: CardDef
@@ -269,7 +269,7 @@ mindWipe1 = (event "01068" "Mind Wipe" 1 Mystic)
   , cdLevel = 1
   , cdFastWindow = Just (PhaseBegins After AnyPhase)
   , cdPlayRestrictions = Just
-    (Restriction.EnemyExists $ EnemyAtYourLocation <> NonEliteEnemy)
+    (Restriction.EnemyExists $ EnemyAt YourLocation <> NonEliteEnemy)
   }
 
 blindingLight2 :: CardDef
@@ -311,7 +311,7 @@ closeCall2 = (event "01083" "Close Call" 2 Survivor)
   { cdSkills = [SkillCombat, SkillAgility]
   , cdCardTraits = setFromList [Fortune]
   , cdFastWindow = Just
-    (EnemyEvaded After Anyone (EnemyAtYourLocation <> NonWeaknessEnemy))
+    (EnemyEvaded After Anyone (EnemyAt YourLocation <> NonWeaknessEnemy))
   , cdLevel = 2
   }
 
@@ -450,7 +450,7 @@ oops = (event "02113" "Oops!" 2 Survivor)
   , cdCardTraits = singleton Fortune
   , cdFastWindow =
     Just
-    $ SkillTestResult After You WhileAttackingAnEnemy
+    $ SkillTestResult After You (WhileAttackingAnEnemy AnyEnemy)
     $ FailureResult
     $ LessThan
     $ Static 3
@@ -524,7 +524,7 @@ exposeWeakness1 = (event "02228" "Expose Weakness" 0 Seeker)
   { cdSkills = [SkillIntellect, SkillCombat, SkillCombat]
   , cdCardTraits = singleton Insight
   , cdFastWindow = Just FastPlayerWindow
-  , cdPlayRestrictions = Just $ Restriction.EnemyExists EnemyAtYourLocation
+  , cdPlayRestrictions = Just $ Restriction.EnemyExists $ EnemyAt YourLocation
   , cdLevel = 1
   }
 
@@ -563,7 +563,7 @@ momentOfRespite3 :: CardDef
 momentOfRespite3 = (event "02273" "Moment of Respite" 3 Neutral)
   { cdSkills = [SkillWillpower, SkillWillpower]
   , cdCardTraits = singleton Spirit
-  , cdPlayRestrictions = Just $ Restriction.NoEnemyExists EnemyAtYourLocation
+  , cdPlayRestrictions = Just $ Restriction.NoEnemyExists $ EnemyAt YourLocation
   , cdLevel = 3
   }
 
@@ -608,7 +608,7 @@ buryThemDeep = (event "03016" "Bury Them Deep" 0 Neutral)
   { cdSkills = [SkillWillpower, SkillCombat, SkillWild]
   , cdCardTraits = singleton Task
   , cdFastWindow = Just
-    (EnemyDefeated After Anyone $ NonEliteEnemy <> EnemyAtYourLocation)
+    (EnemyDefeated After Anyone $ NonEliteEnemy <> EnemyAt YourLocation)
   , cdVictoryPoints = Just 1
   }
 

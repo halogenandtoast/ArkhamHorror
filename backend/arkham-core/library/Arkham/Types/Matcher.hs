@@ -14,6 +14,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
+import {-# SOURCE #-} Arkham.Types.Modifier
 import Arkham.Types.Phase
 import Arkham.Types.Target
 import Arkham.Types.Timing
@@ -40,6 +41,10 @@ data InvestigatorMatcher
   | Anyone
   | UneliminatedInvestigator
   | InvestigatorCanMove
+  | ContributedMatchingIcons ValueMatcher
+  | HandWith CardListMatcher
+  | DiscardWith CardListMatcher
+  | InvestigatorWithoutModifier ModifierType
   | InvestigatorEngagedWith EnemyMatcher
   | InvestigatorWithDamage ValueMatcher
   | InvestigatorWithHorror ValueMatcher
@@ -80,6 +85,7 @@ data AssetMatcher
   | AssetAt LocationMatcher
   | DiscardableAsset
   | AssetWithDamage
+  | AssetWithHorror
   | AssetCanBeRevealed -- Carnevale
   | AssetCanBeAssignedDamageBy InvestigatorId
   | AssetCanBeAssignedHorrorBy InvestigatorId
@@ -127,7 +133,7 @@ data EnemyMatcher
   | AnyEnemy
   | ExhaustedEnemy
   | NonWeaknessEnemy
-  | EnemyAtYourLocation
+  | EnemyAt LocationMatcher
   | EnemyNotAttackingYou
   | EnemyAtLocation LocationId
   | EnemyMatchAll [EnemyMatcher]
@@ -178,13 +184,17 @@ data LocationMatcher
   | LocationWithFullTitle Text Text
   | LocationWithId LocationId
   | LocationWithLabel Text
+  | Here
+  | LocationLeavingPlay
   | YourLocation
+  | SameLocation
   | NotYourLocation
   | LocationIs CardCode
   | Anywhere
   | EmptyLocation
   | AccessibleLocation
   | AccessibleFrom LocationId
+  | AccessibleTo LocationId
   | ConnectedLocation
   | LocationWithResources ValueMatcher
   | LocationWithClues ValueMatcher
@@ -325,8 +335,10 @@ data WindowMatcher
   | WouldHaveSkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | EnemySpawns Timing Where EnemyMatcher
   | EnemyLeaves Timing Where EnemyMatcher
+  | LocationLeavesPlay Timing Where
   | FastPlayerWindow
   | TurnBegins Timing Who
+  | TurnEnds Timing Who
   | DuringTurn Who
   | OrWindowMatcher [WindowMatcher]
   | DealtDamageOrHorror Who
@@ -341,6 +353,8 @@ data WindowMatcher
   | AssetEntersPlay Timing AssetMatcher
   | Enters Timing Who Where
   | WouldDiscoverClues Timing Who
+  | GainsClues Timing Who ValueMatcher
+  | DiscoveringLastClue Timing Who Where
   | AnyWindow
   | TargetReadies Timing Target
   -- ^ do not like Target here since it is not a real matcher
@@ -353,12 +367,22 @@ data WindowMatcher
 
 data SkillTestMatcher
   = WhileInvestigating
-  | WhileAttackingAnEnemy
+  | WhileAttackingAnEnemy EnemyMatcher
   | SkillTestWithSkill SkillMatcher
   | AnySkillTest
   | SkillTestAtYourLocation
+  | UsingThis
+  | SkillTestMatches [SkillTestMatcher]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+instance Semigroup SkillTestMatcher where
+  AnySkillTest <> x = x
+  x <> AnySkillTest = x
+  SkillTestMatches xs <> SkillTestMatches ys = SkillTestMatches $ xs <> ys
+  SkillTestMatches xs <> x = SkillTestMatches $ xs <> [x]
+  x <> SkillTestMatches xs = SkillTestMatches $ x : xs
+  x <> y = SkillTestMatches [x, y]
 
 data SkillTestResultMatcher = FailureResult ValueMatcher | SuccessResult ValueMatcher | AnyResult
   deriving stock (Show, Eq, Generic)
@@ -368,6 +392,10 @@ data SkillTestResultMatcher = FailureResult ValueMatcher | SuccessResult ValueMa
 pattern AtLeast :: GameValue Int -> ValueMatcher
 pattern AtLeast n <- GreaterThanOrEqualTo n where
   AtLeast n = GreaterThanOrEqualTo n
+
+pattern AtMost :: GameValue Int -> ValueMatcher
+pattern AtMost n <- LessThanOrEqualTo n where
+  AtMost n = LessThanOrEqualTo n
 
 data ValueMatcher
   = LessThan (GameValue Int)
@@ -425,5 +453,9 @@ instance Monoid ActionMatcher where
   mempty = AnyAction
 
 data ListMatcher a = ExactlyOne
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data CardListMatcher = LengthIs ValueMatcher | HasCard CardMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

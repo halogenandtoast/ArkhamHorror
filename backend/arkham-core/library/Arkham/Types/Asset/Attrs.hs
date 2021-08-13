@@ -27,7 +27,6 @@ data AssetAttrs = AssetAttrs
   , assetInvestigator :: Maybe InvestigatorId
   , assetLocation :: Maybe LocationId
   , assetEnemy :: Maybe EnemyId
-  , assetActions :: [Message]
   , assetSlots :: [SlotType]
   , assetHealth :: Maybe Int
   , assetSanity :: Maybe Int
@@ -192,7 +191,6 @@ assetWith f cardDef g = CardBuilder
     , assetInvestigator = Nothing
     , assetLocation = Nothing
     , assetEnemy = Nothing
-    , assetActions = mempty
     , assetSlots = mempty
     , assetHealth = Nothing
     , assetSanity = Nothing

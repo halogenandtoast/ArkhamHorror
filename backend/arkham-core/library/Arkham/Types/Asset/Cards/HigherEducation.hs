@@ -10,35 +10,31 @@ import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
+import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype HigherEducation = HigherEducation AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 higherEducation :: AssetCard HigherEducation
 higherEducation = asset HigherEducation Cards.higherEducation
 
-instance HasList HandCard env InvestigatorId => HasActions env HigherEducation where
-  getActions iid (WhenSkillTest SkillWillpower) (HigherEducation a)
-    | ownedBy a iid = do
-      active <- (>= 5) . length <$> getHandOf iid
-      pure [ mkAbility a 1 $ FastAbility $ ResourceCost 1 | active ]
-  getActions iid (WhenSkillTest SkillIntellect) (HigherEducation a)
-    | ownedBy a iid = do
-      active <- (>= 5) . length <$> getHandOf iid
-      pure [ mkAbility a 2 $ FastAbility $ ResourceCost 1 | active ]
-  getActions _ _ _ = pure []
-
-instance HasModifiersFor env HigherEducation
+instance HasActions HigherEducation where
+  getActions (HigherEducation x) =
+    [ restrictedAbility x idx restriction $ FastAbility $ ResourceCost 1
+    | idx <- [1, 2]
+    ]
+   where
+    restriction =
+      OwnsThis <> DuringSkillTest AnySkillTest <> InvestigatorExists
+        (You <> HandWith (LengthIs $ AtLeast $ Static 5))
 
 instance AssetRunner env => RunMessage env HigherEducation where
   runMessage msg a@(HigherEducation attrs) = case msg of

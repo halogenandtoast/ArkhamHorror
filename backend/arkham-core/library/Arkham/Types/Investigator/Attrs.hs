@@ -1282,11 +1282,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     if canDiscoverClues
       then do
         modifiedCluesToDiscover <- cluesToDiscover a n
-        a <$ push
-          (DiscoverCluesAtLocation iid lid modifiedCluesToDiscover maction)
+        windowMsgs <- checkWindows
+          [Window Timing.When (W.DiscoveringClues iid lid n)]
+        a <$ pushAll
+          (windowMsgs
+          <> [DiscoverCluesAtLocation iid lid modifiedCluesToDiscover maction]
+          )
       else pure a
   GainClues iid n | iid == investigatorId -> do
-    push (After (GainClues iid n))
+    pushAll =<< checkWindows [Window Timing.After (W.GainsClues iid n)]
     pure $ a & cluesL +~ n
   DiscoverClues iid lid n _ | iid == investigatorId ->
     a <$ push (AfterDiscoverClues iid lid n)

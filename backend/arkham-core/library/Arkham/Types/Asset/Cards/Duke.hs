@@ -83,6 +83,7 @@ instance (CanCheckPlayable env, AssetRunner env) => RunMessage env Duke where
               (pure $ isInvestigate a')
               (getCanPerformAbility
                 iid
+                source
                 (Window Timing.When (W.DuringTurn iid))
                 a'
               )

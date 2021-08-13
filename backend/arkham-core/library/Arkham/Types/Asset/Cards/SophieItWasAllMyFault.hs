@@ -12,10 +12,10 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Card
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
-import Arkham.Types.Id
+import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Query
+import Arkham.Types.Restriction
 import Arkham.Types.Target
 
 newtype SophieItWasAllMyFault = SophieItWasAllMyFault AssetAttrs
@@ -28,13 +28,16 @@ sophieItWasAllMyFault = assetWith
   Cards.sophieItWasAllMyFault
   (canLeavePlayByNormalMeansL .~ False)
 
-ability :: AssetAttrs -> Ability
-ability attrs = mkAbility attrs 1 ForcedAbility & abilityLimitL .~ NoLimit
-
-instance HasCount DamageCount env InvestigatorId => HasActions env SophieItWasAllMyFault where
-  getActions iid _ (SophieItWasAllMyFault attrs) = whenOwnedBy attrs iid $ do
-    damageCount <- unDamageCount <$> getCount iid
-    pure [ ability attrs | damageCount <= 4 ]
+instance HasActions SophieItWasAllMyFault where
+  getActions (SophieItWasAllMyFault x) =
+    [ restrictedAbility
+          x
+          1
+          (OwnsThis <> InvestigatorExists
+            (You <> InvestigatorWithDamage (AtMost $ Static 4))
+          )
+        $ ForcedAbility AnyWindow
+    ]
 
 instance HasModifiersFor env SophieItWasAllMyFault where
   getModifiersFor _ (InvestigatorTarget iid) (SophieItWasAllMyFault attrs)

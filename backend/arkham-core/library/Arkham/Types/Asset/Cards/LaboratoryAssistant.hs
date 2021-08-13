@@ -14,8 +14,9 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
 
 newtype LaboratoryAssistant = LaboratoryAssistant AssetAttrs
   deriving anyclass IsAsset
@@ -29,11 +30,13 @@ instance HasModifiersFor env LaboratoryAssistant where
     pure $ toModifiers attrs [ HandSize 2 | ownedBy attrs iid ]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env LaboratoryAssistant where
-  getActions i (WhenEnterPlay target) (LaboratoryAssistant x)
-    | isTarget x target && ownedBy x i = pure
-      [mkAbility x 1 $ ReactionAbility Free]
-  getActions i window (LaboratoryAssistant x) = getActions i window x
+instance HasActions LaboratoryAssistant where
+  getActions (LaboratoryAssistant x) =
+    [ restrictedAbility x 1 OwnsThis
+        $ ReactionAbility
+            (AssetEntersPlay Timing.When (AssetWithId $ toId x))
+            Free
+    ]
 
 instance (AssetRunner env) => RunMessage env LaboratoryAssistant where
   runMessage msg a@(LaboratoryAssistant attrs) = case msg of

@@ -32,7 +32,7 @@ instance HasModifiersFor env Aquinnah3
 
 instance HasActions Aquinnah3 where
   getActions (Aquinnah3 x) =
-    [ restrictedAbility x 1 (OwnsThis <> EnemyExists EnemyAtYourLocation)
+    [ restrictedAbility x 1 (OwnsThis <> EnemyExists (EnemyAt YourLocation))
         $ ReactionAbility (EnemyAttacks Timing.When You AnyEnemy)
         $ Costs [ExhaustThis, HorrorCost (toSource x) (toTarget x) 1]
     ]

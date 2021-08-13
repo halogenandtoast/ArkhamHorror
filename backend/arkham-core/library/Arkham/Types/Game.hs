@@ -1175,6 +1175,10 @@ instance HasGame env => HasCount HealthDamageCount env EnemyId where
 instance HasGame env => HasCount HorrorCount env InvestigatorId where
   getCount iid = HorrorCount . snd . getDamage <$> getInvestigator iid
 
+-- asset horror is not damage
+instance HasGame env => HasCount HorrorCount env AssetId where
+  getCount = getCount <=< getAsset
+
 instance HasGame env => HasCount DamageCount env EnemyId where
   getCount eid = DamageCount . snd . getDamage <$> getEnemy eid
 
@@ -1679,11 +1683,14 @@ instance HasGame env => HasList Card env CardMatcher where
 
 instance HasGame env => HasSet SetAsideCardId env CardMatcher where
   getList matcher = do
-    cards <- map unSetAsideCard <$> (getList
-      . fromJustNote "scenario has to be set"
-      . modeScenario
-      . view modeL
-      =<< getGame)
+    cards <-
+      map unSetAsideCard
+        <$> (getList
+            . fromJustNote "scenario has to be set"
+            . modeScenario
+            . view modeL
+            =<< getGame
+            )
     pure $ map (SetAsideCardId . toCardId) $ filter (`matchCard` matcher) cards
 
 instance HasGame env => HasList Card env ExtendedCardMatcher where
@@ -3053,11 +3060,16 @@ runGameMessage msg g = case msg of
       | iid <- investigatorIds
       ]
     pure $ g & activeInvestigatorIdL .~ gameLeadInvestigatorId g
-  ChooseEndTurn iid -> g <$ pushAll (resolve $ EndTurn iid)
-  EndTurn iid -> pure $ g & usedAbilitiesL %~ filter
-    (\(iid', Ability {..}, _) ->
-      iid' /= iid || abilityLimitType abilityLimit /= Just PerTurn
-    )
+  ChooseEndTurn iid -> do
+    windows <- checkWindows
+      [Window Timing.Before (TurnEnds iid), Window Timing.When (TurnEnds iid)]
+    g <$ pushAll (windows <> resolve (EndTurn iid))
+  EndTurn iid -> do
+    pushAll =<< checkWindows [Window Timing.After (TurnsEnds iid)]
+    pure $ g & usedAbilitiesL %~ filter
+      (\(iid', Ability {..}, _) ->
+        iid' /= iid || abilityLimitType abilityLimit /= Just PerTurn
+      )
   EndPhase -> do
     clearQueue
     case g ^. phaseL of

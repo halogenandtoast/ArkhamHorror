@@ -27,16 +27,10 @@ arcaneStudies = asset ArcaneStudies Cards.arcaneStudies
 
 instance HasActions ArcaneStudies where
   getActions (ArcaneStudies a) =
-    [ restrictedAbility
-      a
-      1
-      (OwnsThis <> DuringSkillTest AnySkillTest)
-      (FastAbility $ ResourceCost 1)
-    , restrictedAbility
-      a
-      2
-      (OwnsThis <> DuringSkillTest AnySkillTest)
-      (FastAbility $ ResourceCost 1)
+    [ restrictedAbility a idx (OwnsThis <> DuringSkillTest AnySkillTest)
+        $ FastAbility
+        $ ResourceCost 1
+    | idx <- [1, 2]
     ]
 
 instance AssetRunner env => RunMessage env ArcaneStudies where

@@ -1,3 +1,5 @@
+{-# LANGUAGE PatternSynonyms #-}
+
 module Arkham.Types.Restriction
   ( module Arkham.Types.Restriction
   , module X
@@ -5,6 +7,7 @@ module Arkham.Types.Restriction
 
 import Arkham.Prelude
 
+import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Matcher as X
 import Arkham.Types.Trait
@@ -12,6 +15,10 @@ import Arkham.Types.Trait
 data DiscardSignifier = AnyPlayerDiscard
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+pattern AnyHorrorOnThis :: Restriction
+pattern AnyHorrorOnThis <- HorrorOnThis (GreaterThan (Static 0)) where
+  AnyHorrorOnThis = HorrorOnThis (GreaterThan (Static 0))
 
 data Restriction
   = AnotherInvestigatorInSameLocation
@@ -31,6 +38,7 @@ data Restriction
   | LocationExists LocationMatcher
   | InvestigatorsHaveSpendableClues ValueMatcher
   | CluesOnThis ValueMatcher
+  | HorrorOnThis ValueMatcher
   | OwnCardWithDoom
   | OwnsThis
   | OnSameLocation

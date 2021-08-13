@@ -8,28 +8,25 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Message
-import Arkham.Types.Window
+import Arkham.Types.Message hiding (EnemyEvaded)
+import Arkham.Types.Restriction
+import qualified Arkham.Types.Timing as Timing
 
 newtype Pickpocketing = Pickpocketing AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pickpocketing :: AssetCard Pickpocketing
 pickpocketing = asset Pickpocketing Cards.pickpocketing
 
-instance HasModifiersFor env Pickpocketing
-
-instance HasActions env Pickpocketing where
-  getActions iid (AfterEnemyEvaded who enemyId) (Pickpocketing a) | iid == who =
-    withBaseActions iid (AfterEnemyEvaded who enemyId) a $ do
-      let ability = mkAbility a 1 $ ReactionAbility $ ExhaustCost (toTarget a)
-      pure [ ability | ownedBy a iid ]
-  getActions i window (Pickpocketing a) = getActions i window a
+instance HasActions Pickpocketing where
+  getActions (Pickpocketing a) =
+    [ restrictedAbility a 1 OwnsThis
+        $ ReactionAbility (EnemyEvaded Timing.After You AnyEnemy) ExhaustThis
+    ]
 
 instance AssetRunner env => RunMessage env Pickpocketing where
   runMessage msg a@(Pickpocketing attrs) = case msg of

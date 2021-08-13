@@ -12,7 +12,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype HolyRosary = HolyRosary AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 holyRosary :: AssetCard HolyRosary
@@ -22,9 +22,6 @@ instance HasModifiersFor env  HolyRosary where
   getModifiersFor _ (InvestigatorTarget iid) (HolyRosary a) =
     pure [ toModifier a (SkillModifier SkillWillpower 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
-
-instance HasActions env HolyRosary where
-  getActions i window (HolyRosary x) = getActions i window x
 
 instance AssetRunner env => RunMessage env HolyRosary where
   runMessage msg (HolyRosary attrs) = HolyRosary <$> runMessage msg attrs

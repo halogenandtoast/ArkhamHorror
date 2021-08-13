@@ -9,11 +9,13 @@ import Arkham.Types.Direction
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Query
+import Arkham.Types.SkillTest
 import Arkham.Types.Source
 import Arkham.Types.Trait
 
 type AssetRunner env
   = ( HasQueue env
+    , HasSkillTest env
     , Query AssetMatcher env
     , HasCostPayment env
     , HasModifiersFor env ()

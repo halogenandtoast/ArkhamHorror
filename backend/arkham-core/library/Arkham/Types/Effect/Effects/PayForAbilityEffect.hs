@@ -24,7 +24,8 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.Window (Window)
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as W
 
 newtype PayForAbilityEffect = PayForAbilityEffect (EffectAttrs `With` Payment)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -101,7 +102,7 @@ startPayment iid window abilityType abilitySource abilityDoesNotProvokeAttacksOf
     FastAbility cost ->
       push (PayAbilityCost abilitySource iid Nothing window cost)
     ReactionAbility _ cost ->
-      push (PayAbilityCost abilitySource iid Nothing cost)
+      push (PayAbilityCost abilitySource iid Nothing window cost)
     ActionAbilityWithBefore mAction _ cost -> do
       -- we do not know which ability will be chosen
       -- for now we assume this will trigger attacks of opportunity
@@ -193,6 +194,11 @@ instance
               , Label "Done with dynamic cost" []
               ]
             )
+        DiscardDrawnCardCost -> case window of
+          Window _ (W.DrawCard _ card) -> do
+            push (DiscardCard iid (toCardId card))
+            withPayment $ DiscardCardPayment [card]
+          _ -> error "should be during draw card window"
         ExhaustThis -> do
           push (Exhaust $ sourceToTarget source)
           withPayment $ ExhaustPayment [sourceToTarget source]
@@ -247,9 +253,13 @@ instance
             pushAll [AssetDamage aid source x 0, CheckDefeated source]
             withPayment $ DamagePayment x
           _ -> error "can't target for damage cost"
-        DirectDamageCost _ iid' x -> do
-          push (InvestigatorDirectDamage iid' source x 0)
-          withPayment $ DirectDamagePayment x
+        DirectDamageCost _ investigatorMatcher x -> do
+          investigators <- selectList investigatorMatcher
+          case investigators of
+            [iid'] -> do
+              push (InvestigatorDirectDamage iid' source x 0)
+              withPayment $ DirectDamagePayment x
+            _ -> error "exactly one investigator expected for direct damage"
         ResourceCost x -> do
           push (SpendResources iid x)
           withPayment $ ResourcePayment x

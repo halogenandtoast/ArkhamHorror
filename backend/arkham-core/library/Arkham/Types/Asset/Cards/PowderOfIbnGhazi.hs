@@ -33,7 +33,7 @@ instance HasActions PowderOfIbnGhazi where
         x
         1
         (OwnsThis <> CluesOnThis (GreaterThan $ Static 0) <> EnemyExists
-          (ExhaustedEnemy <> EnemyAtYourLocation <> EnemyWithTitle
+          (ExhaustedEnemy <> EnemyAt YourLocation <> EnemyWithTitle
             "Brood of Yog-Sothoth"
           )
         )

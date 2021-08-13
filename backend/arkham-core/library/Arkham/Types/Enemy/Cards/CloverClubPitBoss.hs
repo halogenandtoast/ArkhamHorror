@@ -6,15 +6,18 @@ module Arkham.Types.Enemy.Cards.CloverClubPitBoss
 import Arkham.Prelude
 
 import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Message
 import Arkham.Types.Prey
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
+import qualified Arkham.Types.Timing as Timing
 
 newtype CloverClubPitBoss = CloverClubPitBoss EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cloverClubPitBoss :: EnemyCard CloverClubPitBoss
@@ -25,21 +28,20 @@ cloverClubPitBoss = enemyWith
   (2, 0)
   (preyL .~ HighestSkill SkillIntellect)
 
-instance HasModifiersFor env CloverClubPitBoss
-
-instance ActionRunner env => HasActions env CloverClubPitBoss where
-  getActions i window (CloverClubPitBoss attrs) = getActions i window attrs
+instance HasActions CloverClubPitBoss where
+  getActions (CloverClubPitBoss x) =
+    [ mkAbility x 1 $ ForcedAbility $ GainsClues
+        Timing.After
+        (InvestigatorAt SameLocation)
+        AnyValue
+    ]
 
 instance EnemyRunner env => RunMessage env CloverClubPitBoss where
   runMessage msg e@(CloverClubPitBoss attrs@EnemyAttrs {..}) = case msg of
-    After (GainClues iid n) | n > 0 -> do
-      lid <- getId iid
-      e <$ when
-        (lid == enemyLocation)
-        (pushAll
-        $ [ Ready (toTarget attrs) | enemyExhausted ]
-        <> [ EnemyEngageInvestigator enemyId iid
-           , EnemyAttackIfEngaged enemyId (Just iid)
-           ]
-        )
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> e <$ pushAll
+      ([ Ready (toTarget attrs) | enemyExhausted ]
+      <> [ EnemyEngageInvestigator enemyId iid
+         , EnemyAttackIfEngaged enemyId (Just iid)
+         ]
+      )
     _ -> CloverClubPitBoss <$> runMessage msg attrs

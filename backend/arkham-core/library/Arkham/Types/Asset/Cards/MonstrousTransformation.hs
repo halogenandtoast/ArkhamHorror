@@ -15,9 +15,9 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype MonstrousTransformation = MonstrousTransformation AssetAttrs
   deriving anyclass IsAsset
@@ -40,13 +40,12 @@ instance HasModifiersFor env MonstrousTransformation where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env MonstrousTransformation where
-  getActions iid NonFast (MonstrousTransformation a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility
+instance HasActions MonstrousTransformation where
+  getActions (MonstrousTransformation a) =
+    [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
         (Costs [ExhaustCost (toTarget a), ActionCost 1])
     ]
-  getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env MonstrousTransformation where
   runMessage msg a@(MonstrousTransformation attrs) = case msg of

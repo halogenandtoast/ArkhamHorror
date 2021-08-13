@@ -9,13 +9,12 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Query
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
 
 newtype ProfessorWarrenRice = ProfessorWarrenRice AssetAttrs
   deriving anyclass IsAsset
@@ -33,16 +32,12 @@ instance HasModifiersFor env ProfessorWarrenRice where
     pure [ toModifier a (SkillModifier SkillIntellect 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env ProfessorWarrenRice where
-  getActions iid (AfterDiscoveringClues who loc) (ProfessorWarrenRice a)
-    | iid == who = do
-      lid <- getId @LocationId iid
-      lastClue <- (== 0) . unClueCount <$> getCount lid
-      pure
-        [ mkAbility a 1 $ ReactionAbility $ ExhaustCost (toTarget a)
-        | lastClue && ownedBy a iid && loc == lid
-        ]
-  getActions _ _ _ = pure []
+instance HasActions ProfessorWarrenRice where
+  getActions (ProfessorWarrenRice a) =
+    [ restrictedAbility a 1 OwnsThis $ ReactionAbility
+        (DiscoveringLastClue Timing.After You YourLocation)
+        ExhaustThis
+    ]
 
 instance AssetRunner env => RunMessage env ProfessorWarrenRice where
   runMessage msg a@(ProfessorWarrenRice attrs) = case msg of

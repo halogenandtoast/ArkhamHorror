@@ -10,13 +10,11 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Query
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype MagnifyingGlass1 = MagnifyingGlass1 AssetAttrs
   deriving anyclass IsAsset
@@ -32,12 +30,14 @@ instance HasModifiersFor env MagnifyingGlass1 where
     ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env MagnifyingGlass1 where
-  getActions iid FastPlayerWindow (MagnifyingGlass1 a) | ownedBy a iid = do
-    locationId <- getId @LocationId iid
-    clueCount' <- unClueCount <$> getCount locationId
-    pure [ mkAbility a 1 $ FastAbility Free | clueCount' == 0 ]
-  getActions i window (MagnifyingGlass1 x) = getActions i window x
+instance HasActions MagnifyingGlass1 where
+  getActions (MagnifyingGlass1 a) =
+    [ restrictedAbility
+          a
+          1
+          (OwnsThis <> LocationExists (YourLocation <> LocationWithoutClues))
+        $ FastAbility Free
+    ]
 
 instance (AssetRunner env) => RunMessage env MagnifyingGlass1 where
   runMessage msg a@(MagnifyingGlass1 attrs) = case msg of

@@ -11,9 +11,10 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
 
 newtype DrMilanChristopher = DrMilanChristopher AssetAttrs
   deriving anyclass IsAsset
@@ -27,10 +28,14 @@ instance HasModifiersFor env DrMilanChristopher where
     pure [ toModifier a (SkillModifier SkillIntellect 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env DrMilanChristopher where
-  getActions i (AfterSuccessfulInvestigation who _) (DrMilanChristopher x)
-    | ownedBy x i && i == who = pure [mkAbility x 1 $ ReactionAbility Free]
-  getActions i window (DrMilanChristopher x) = getActions i window x
+instance HasActions DrMilanChristopher where
+  getActions (DrMilanChristopher x) =
+    [ restrictedAbility x 1 OwnsThis $ ReactionAbility
+        (SkillTestResult Timing.After You WhileInvestigating
+        $ SuccessResult AnyValue
+        )
+        Free
+    ]
 
 instance AssetRunner env => RunMessage env DrMilanChristopher where
   runMessage msg a@(DrMilanChristopher attrs) = case msg of

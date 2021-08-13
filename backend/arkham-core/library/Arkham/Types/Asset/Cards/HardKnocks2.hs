@@ -14,28 +14,24 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype HardKnocks2 = HardKnocks2 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hardKnocks2 :: AssetCard HardKnocks2
 hardKnocks2 = asset HardKnocks2 Cards.hardKnocks2
 
-instance HasModifiersFor env HardKnocks2
-
-ability :: Int -> AssetAttrs -> Ability
-ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)
-
-instance HasActions env HardKnocks2 where
-  getActions iid (WhenSkillTest SkillCombat) (HardKnocks2 a) =
-    pure [ ability 1 a | ownedBy a iid ]
-  getActions iid (WhenSkillTest SkillAgility) (HardKnocks2 a) =
-    pure [ ability 2 a | ownedBy a iid ]
-  getActions _ _ _ = pure []
+instance HasActions HardKnocks2 where
+  getActions (HardKnocks2 a) =
+    [ restrictedAbility a idx (OwnsThis <> DuringSkillTest AnySkillTest)
+        $ FastAbility
+        $ ResourceCost 1
+    | idx <- [1, 2]
+    ]
 
 instance AssetRunner env => RunMessage env HardKnocks2 where
   runMessage msg a@(HardKnocks2 attrs) = case msg of

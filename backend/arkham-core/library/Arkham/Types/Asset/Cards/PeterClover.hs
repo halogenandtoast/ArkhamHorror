@@ -31,7 +31,7 @@ instance HasActions PeterClover where
         attrs
         1
         (OwnsThis
-        <> EnemyExists (EnemyAtYourLocation <> EnemyWithTrait Criminal)
+        <> EnemyExists (EnemyAt YourLocation <> EnemyWithTrait Criminal)
         )
         (FastAbility ExhaustThis)
     ]

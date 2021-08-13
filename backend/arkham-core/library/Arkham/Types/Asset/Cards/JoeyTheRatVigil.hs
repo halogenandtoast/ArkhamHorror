@@ -48,6 +48,7 @@ instance CanCheckPlayable env => RunMessage env JoeyTheRatVigil where
       playableItems <- filterM
         (getIsPlayable
           iid
+          source
           [ Window Timing.When (DuringTurn iid)
           , Window Timing.When FastPlayerWindow
           ]

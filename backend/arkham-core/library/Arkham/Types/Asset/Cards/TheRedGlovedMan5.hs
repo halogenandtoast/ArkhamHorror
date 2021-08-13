@@ -14,9 +14,10 @@ import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Phase
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
 
 newtype Metadata = Metadata { chosenSkills :: [SkillType] }
   deriving stock (Show, Generic, Eq)
@@ -30,13 +31,16 @@ theRedGlovedMan5 :: AssetCard TheRedGlovedMan5
 theRedGlovedMan5 =
   ally (TheRedGlovedMan5 . (`with` Metadata [])) Cards.theRedGlovedMan5 (4, 4)
 
-instance HasActions env TheRedGlovedMan5 where
-  getActions i (WhenEnterPlay target) (TheRedGlovedMan5 (x `With` _))
-    | isTarget x target && ownedBy x i = pure
-      [mkAbility x 1 $ ReactionAbility Free]
-  getActions i (PhaseEnds MythosPhase) (TheRedGlovedMan5 (x `With` _))
-    | ownedBy x i = pure [mkAbility x 2 ForcedAbility]
-  getActions i window (TheRedGlovedMan5 (x `With` _)) = getActions i window x
+instance HasActions TheRedGlovedMan5 where
+  getActions (TheRedGlovedMan5 (x `With` _)) =
+    [ restrictedAbility
+      x
+      1
+      OwnsThis
+      (ReactionAbility (EnterPlay (toTarget x)) Free)
+    , restrictedAbility x 2 OwnsThis
+      $ ForcedAbility (PhaseEnds Timing.When $ PhaseIs MythosPhase)
+    ]
 
 instance HasModifiersFor env TheRedGlovedMan5 where
   getModifiersFor _ (InvestigatorTarget iid) (TheRedGlovedMan5 (a `With` Metadata {..}))
@@ -54,15 +58,15 @@ skillTypes =
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env TheRedGlovedMan5 where
   runMessage msg a@(TheRedGlovedMan5 (attrs `With` metadata)) = case msg of
-    UseCardAbility iid source Nothing 1 p | isSource attrs source -> a <$ push
-      (chooseOne
-        iid
-        [ Label
-            label
-            [UseCardAbility iid source (Just (SkillChoiceMetadata [s])) 1 p]
-        | (label, s) <- skillTypes
-        ]
-      )
+    UseCardAbility iid source windows 1 p | isSource attrs source ->
+      case metadata of
+        Metadata xs | length xs < 2 -> a <$ push
+          (chooseOne
+            iid
+            [ Label label [UseCardAbility iid source windows 1 p]
+            | (label, s) <- skillTypes
+            ]
+          )
     UseCardAbility iid source (Just (SkillChoiceMetadata [c])) 1 p
       | isSource attrs source -> a <$ push
         (chooseOne

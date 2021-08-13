@@ -8,7 +8,6 @@ module Arkham.Types.Restriction
 import Arkham.Prelude
 
 import Arkham.Types.GameValue
-import Arkham.Types.Id
 import Arkham.Types.Matcher as X
 import Arkham.Types.Trait
 
@@ -26,7 +25,7 @@ data Restriction
   | ScenarioCardHasResignAbility
   | ClueOnLocation
   | FirstAction
-  | OnLocation LocationId
+  | OnLocation LocationMatcher
   | CardExists CardMatcher
   | ExtendedCardExists ExtendedCardMatcher
   | PlayableCardExists ExtendedCardMatcher

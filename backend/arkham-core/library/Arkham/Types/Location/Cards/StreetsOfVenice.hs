@@ -18,7 +18,7 @@ import Arkham.Types.Message
 import Arkham.Types.Window
 
 newtype StreetsOfVenice = StreetsOfVenice LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 streetsOfVenice :: LocationCard StreetsOfVenice
@@ -31,12 +31,9 @@ streetsOfVenice = locationWith
   []
   (connectsToL .~ singleton RightOf)
 
-instance HasModifiersFor env StreetsOfVenice
-
 instance ActionRunner env => HasActions env StreetsOfVenice where
-  getActions _ FastPlayerWindow (StreetsOfVenice attrs) =
-    pure [locationAbility $ mkAbility attrs 1 (FastAbility Free)]
-  getActions iid window (StreetsOfVenice attrs) = getActions iid window attrs
+  getActions (StreetsOfVenice attrs) =
+    [restrictedAbility attrs 1 (OnLocation Here) (FastAbility Free)]
 
 instance LocationRunner env => RunMessage env StreetsOfVenice where
   runMessage msg l@(StreetsOfVenice attrs) = case msg of

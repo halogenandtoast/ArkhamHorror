@@ -943,7 +943,11 @@ passesRestriction iid source windows = \case
     pure $ n == 0
   NoRestriction -> pure True
   Never -> pure False
-  OnLocation lid -> (lid ==) <$> getId iid
+  OnLocation locationMatcher -> do
+    lid <- getId @LocationId iid
+    anyM
+      (\window -> locationMatches iid source window lid locationMatcher)
+      windows
   ReturnableCardInDiscard AnyPlayerDiscard traits -> do
     investigatorIds <-
       filterM

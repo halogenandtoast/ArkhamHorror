@@ -13,9 +13,9 @@ import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype TheNecronomiconOlausWormiusTranslation = TheNecronomiconOlausWormiusTranslation AssetAttrs
   deriving anyclass IsAsset
@@ -27,11 +27,9 @@ theNecronomiconOlausWormiusTranslation = hand
   TheNecronomiconOlausWormiusTranslation
   Cards.theNecronomiconOlausWormiusTranslation
 
-instance HasActions env TheNecronomiconOlausWormiusTranslation where
-  getActions iid NonFast (TheNecronomiconOlausWormiusTranslation a)
-    | ownedBy a iid = pure
-      [mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1]
-  getActions _ _ _ = pure []
+instance HasActions TheNecronomiconOlausWormiusTranslation where
+  getActions (TheNecronomiconOlausWormiusTranslation a) =
+    [restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ ActionCost 1]
 
 instance HasModifiersFor env TheNecronomiconOlausWormiusTranslation where
   getModifiersFor _ (InvestigatorTarget iid) (TheNecronomiconOlausWormiusTranslation a)

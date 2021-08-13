@@ -10,14 +10,15 @@ import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction hiding (PlayCard)
 import Arkham.Types.Source
 import Arkham.Types.Target
 import qualified Arkham.Types.Token as Token
-import Arkham.Types.Window
 
 newtype TheNecronomicon = TheNecronomicon AssetAttrs
   deriving anyclass IsAsset

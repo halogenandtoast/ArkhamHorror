@@ -15,28 +15,25 @@ import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype ThirtyTwoColt = ThirtyTwoColt AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thirtyTwoColt :: AssetCard ThirtyTwoColt
 thirtyTwoColt =
   assetWith ThirtyTwoColt Cards.thirtyTwoColt (slotsL .~ [HandSlot])
 
-instance HasActions env ThirtyTwoColt where
-  getActions iid NonFast (ThirtyTwoColt a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility
+instance HasActions ThirtyTwoColt where
+  getActions (ThirtyTwoColt a) =
+    [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
     ]
-  getActions _ _ _ = pure []
-
-instance HasModifiersFor env ThirtyTwoColt
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env ThirtyTwoColt where
   runMessage msg a@(ThirtyTwoColt attrs) = case msg of

@@ -15,13 +15,13 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype SpringfieldM19034 = SpringfieldM19034 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 springfieldM19034 :: AssetCard SpringfieldM19034
@@ -30,15 +30,12 @@ springfieldM19034 = assetWith
   Cards.springfieldM19034
   (slotsL .~ [HandSlot, HandSlot])
 
-instance HasActions env SpringfieldM19034 where
-  getActions iid NonFast (SpringfieldM19034 a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility
+instance HasActions SpringfieldM19034 where
+  getActions (SpringfieldM19034 a) =
+    [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Resource.Ammo 1])
     ]
-  getActions _ _ _ = pure []
-
-instance HasModifiersFor env SpringfieldM19034
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env SpringfieldM19034 where
   runMessage msg a@(SpringfieldM19034 attrs) = case msg of

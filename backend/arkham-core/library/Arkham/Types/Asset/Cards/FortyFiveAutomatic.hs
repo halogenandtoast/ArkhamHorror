@@ -16,26 +16,23 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype FortyFiveAutomatic = FortyFiveAutomatic AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fortyFiveAutomatic :: AssetCard FortyFiveAutomatic
 fortyFiveAutomatic = hand FortyFiveAutomatic Cards.fortyFiveAutomatic
 
-instance HasModifiersFor env FortyFiveAutomatic
-
-instance HasActions env FortyFiveAutomatic where
-  getActions iid NonFast (FortyFiveAutomatic a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility
+instance HasActions FortyFiveAutomatic where
+  getActions (FortyFiveAutomatic a) =
+    [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
     ]
-  getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env FortyFiveAutomatic where
   runMessage msg a@(FortyFiveAutomatic attrs) = case msg of

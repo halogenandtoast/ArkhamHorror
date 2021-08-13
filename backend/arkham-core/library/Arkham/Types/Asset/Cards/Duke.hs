@@ -17,10 +17,13 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as W
 
 newtype Duke = Duke AssetAttrs
   deriving anyclass IsAsset
@@ -38,29 +41,23 @@ instance HasModifiersFor env Duke where
     = pure $ toModifiers a [BaseSkillOf SkillIntellect 4]
   getModifiersFor _ _ _ = pure []
 
-fightAbility :: AssetAttrs -> Ability
-fightAbility attrs = mkAbility
-  (toSource attrs)
-  1
-  (ActionAbility
-    (Just Action.Fight)
-    (Costs [ActionCost 1, ExhaustCost (toTarget attrs)])
-  )
-
-investigateAbility :: AssetAttrs -> Ability
-investigateAbility attrs = mkAbility
-  (toSource attrs)
-  2
-  (ActionAbilityWithBefore
-    (Just Action.Investigate)
-    (Just Action.Move)
-    (Costs [ActionCost 1, ExhaustCost (toTarget attrs)])
-  )
-
-instance HasActions env Duke where
-  getActions iid NonFast (Duke a) | ownedBy a iid =
-    pure [fightAbility a, investigateAbility a]
-  getActions i window (Duke x) = getActions i window x
+instance HasActions Duke where
+  getActions (Duke x) =
+    [ restrictedAbility
+      x
+      1
+      OwnsThis
+      (ActionAbility (Just Action.Fight) (Costs [ActionCost 1, ExhaustThis]))
+    , restrictedAbility
+      x
+      2
+      OwnsThis
+      (ActionAbilityWithBefore
+        (Just Action.Investigate)
+        (Just Action.Move)
+        (Costs [ActionCost 1, ExhaustThis])
+      )
+    ]
 
 dukeInvestigate :: AssetAttrs -> InvestigatorId -> LocationId -> Message
 dukeInvestigate attrs iid lid =
@@ -73,7 +70,7 @@ isInvestigate ability = case abilityType ability of
   ActionAbilityWithBefore _ (Just Action.Investigate) _ -> True
   _ -> False
 
-instance AssetRunner env => RunMessage env Duke where
+instance (CanCheckPlayable env, AssetRunner env) => RunMessage env Duke where
   runMessage msg a@(Duke attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ push (ChooseFightEnemy iid source SkillCombat mempty False)
@@ -84,9 +81,13 @@ instance AssetRunner env => RunMessage env Duke where
             (\a' -> liftA2
               (&&)
               (pure $ isInvestigate a')
-              (getCanAffordAbility iid a')
+              (getCanPerformAbility
+                iid
+                (Window Timing.When (W.DuringTurn iid))
+                a'
+              )
             )
-          =<< getActions iid NonFast lid
+          =<< selectList (ActionOnLocation lid)
       let
         investigateActions :: [Message] = map
           (UseAbility iid . (`applyAbilityModifiers` [ActionCostModifier (-1)]))

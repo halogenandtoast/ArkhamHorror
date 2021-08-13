@@ -15,10 +15,10 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype StrangeSolutionAcidicIchor4 = StrangeSolutionAcidicIchor4 AssetAttrs
   deriving anyclass IsAsset
@@ -28,14 +28,12 @@ strangeSolutionAcidicIchor4 :: AssetCard StrangeSolutionAcidicIchor4
 strangeSolutionAcidicIchor4 =
   asset StrangeSolutionAcidicIchor4 Cards.strangeSolutionAcidicIchor4
 
-instance HasActions env StrangeSolutionAcidicIchor4 where
-  getActions iid NonFast (StrangeSolutionAcidicIchor4 attrs)
-    | ownedBy attrs iid = pure
-      [ mkAbility attrs 1 $ ActionAbility (Just Action.Fight) $ Costs
-          [ActionCost 1, UseCost (toId attrs) Supply 1]
-      ]
-  getActions iid window (StrangeSolutionAcidicIchor4 attrs) =
-    getActions iid window attrs
+instance HasActions StrangeSolutionAcidicIchor4 where
+  getActions (StrangeSolutionAcidicIchor4 attrs) =
+    [ restrictedAbility attrs 1 OwnsThis
+        $ ActionAbility (Just Action.Fight)
+        $ Costs [ActionCost 1, UseCost (toId attrs) Supply 1]
+    ]
 
 instance HasModifiersFor env StrangeSolutionAcidicIchor4 where
   getModifiersFor (SkillTestSource _ _ source _ (Just Action.Fight)) (InvestigatorTarget iid) (StrangeSolutionAcidicIchor4 a)

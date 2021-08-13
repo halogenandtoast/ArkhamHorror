@@ -15,10 +15,10 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype StrangeSolutionFreezingVariant4 = StrangeSolutionFreezingVariant4 AssetAttrs
   deriving anyclass IsAsset
@@ -28,14 +28,12 @@ strangeSolutionFreezingVariant4 :: AssetCard StrangeSolutionFreezingVariant4
 strangeSolutionFreezingVariant4 =
   asset StrangeSolutionFreezingVariant4 Cards.strangeSolutionFreezingVariant4
 
-instance HasActions env StrangeSolutionFreezingVariant4 where
-  getActions iid NonFast (StrangeSolutionFreezingVariant4 attrs)
-    | ownedBy attrs iid = pure
-      [ mkAbility attrs 1 $ ActionAbility (Just Action.Evade) $ Costs
-          [ActionCost 1, UseCost (toId attrs) Supply 1]
-      ]
-  getActions iid window (StrangeSolutionFreezingVariant4 attrs) =
-    getActions iid window attrs
+instance HasActions StrangeSolutionFreezingVariant4 where
+  getActions (StrangeSolutionFreezingVariant4 attrs) =
+    [ restrictedAbility attrs 1 OwnsThis
+        $ ActionAbility (Just Action.Evade)
+        $ Costs [ActionCost 1, UseCost (toId attrs) Supply 1]
+    ]
 
 instance HasModifiersFor env StrangeSolutionFreezingVariant4 where
   getModifiersFor (SkillTestSource _ _ source _ (Just Action.Evade)) (InvestigatorTarget iid) (StrangeSolutionFreezingVariant4 a)

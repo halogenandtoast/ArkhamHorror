@@ -16,26 +16,23 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype FortyOneDerringer = FortyOneDerringer AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fortyOneDerringer :: AssetCard FortyOneDerringer
 fortyOneDerringer = hand FortyOneDerringer Cards.fortyOneDerringer
 
-instance HasModifiersFor env FortyOneDerringer
-
-instance HasActions env FortyOneDerringer where
-  getActions iid NonFast (FortyOneDerringer a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility
+instance HasActions FortyOneDerringer where
+  getActions (FortyOneDerringer a) =
+    [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
     ]
-  getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env FortyOneDerringer where
   runMessage msg a@(FortyOneDerringer attrs) = case msg of

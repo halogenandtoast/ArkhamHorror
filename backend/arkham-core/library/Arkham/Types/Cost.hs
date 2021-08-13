@@ -5,9 +5,9 @@ module Arkham.Types.Cost
 import Arkham.Prelude
 
 import Arkham.Types.Asset.Uses
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.GameValue
+import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.SkillType
 import Arkham.Types.Source
@@ -59,6 +59,7 @@ data Payment
   | UsesPayment Int
   | HorrorPayment Int
   | DamagePayment Int
+  | DirectDamagePayment Int
   | SkillIconPayment [SkillType]
   | Payments [Payment]
   | NoPayment
@@ -77,7 +78,7 @@ data Cost
   | RemoveCost Target
   | Costs [Cost]
   | DamageCost Source Target Int
-  | DirectDamageCost Source Target Int
+  | DirectDamageCost Source InvestigatorId Int
   | DiscardCost Target
   | DiscardCardCost Card
   | DiscardDrawnCardCost

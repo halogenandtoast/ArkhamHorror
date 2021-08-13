@@ -16,28 +16,23 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Flashlight = Flashlight AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 flashlight :: AssetCard Flashlight
 flashlight = hand Flashlight Cards.flashlight
 
-instance HasModifiersFor env Flashlight
-
-investigateAbility :: AssetAttrs -> Ability
-investigateAbility attrs = mkAbility attrs 1 $ ActionAbility
-  (Just Action.Investigate)
-  (Costs [ActionCost 1, UseCost (toId attrs) Supply 1])
-
-instance HasActions env Flashlight where
-  getActions iid NonFast (Flashlight a) | ownedBy a iid = do
-    pure [investigateAbility a]
-  getActions _ _ _ = pure []
+instance HasActions Flashlight where
+  getActions (Flashlight x) =
+    [ restrictedAbility x 1 OwnsThis $ ActionAbility
+        (Just Action.Investigate)
+        (Costs [ActionCost 1, UseCost (toId x) Supply 1])
+    ]
 
 instance (AssetRunner env) => RunMessage env Flashlight where
   runMessage msg a@(Flashlight attrs) = case msg of

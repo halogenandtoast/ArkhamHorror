@@ -12,16 +12,11 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Message
 
 newtype Acolyte = Acolyte EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasActions)
 
 acolyte :: EnemyCard Acolyte
 acolyte = enemy Acolyte Cards.acolyte (3, Static 1, 2) (1, 0)
-
-instance HasModifiersFor env Acolyte
-
-instance ActionRunner env => HasActions env Acolyte where
-  getActions i window (Acolyte attrs) = getActions i window attrs
 
 instance EnemyRunner env => RunMessage env Acolyte where
   runMessage msg e@(Acolyte attrs@EnemyAttrs {..}) = case msg of

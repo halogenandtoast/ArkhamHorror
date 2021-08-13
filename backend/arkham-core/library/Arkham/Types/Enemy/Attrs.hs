@@ -9,19 +9,16 @@ import Arkham.Enemy.Cards
 import Arkham.Json
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue as X
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Keyword (HasKeywords(..), Keyword)
 import qualified Arkham.Types.Keyword as Keyword
-import Arkham.Types.LocationId
-import Arkham.Types.Matcher
+import qualified Arkham.Types.Matcher as M
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
@@ -31,9 +28,10 @@ import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as W
 import Data.List.Extra (firstJust)
 import Data.UUID (nil)
 
@@ -59,12 +57,12 @@ data EnemyAttrs = EnemyAttrs
   , enemyExhausted :: Bool
   , enemyDoom :: Int
   , enemyClues :: Int
-  , enemySpawnAt :: Maybe LocationMatcher
+  , enemySpawnAt :: Maybe M.LocationMatcher
   , enemyAsSelfLocation :: Maybe Text
   }
   deriving stock (Show, Eq, Generic)
 
-spawnAtL :: Lens' EnemyAttrs (Maybe LocationMatcher)
+spawnAtL :: Lens' EnemyAttrs (Maybe M.LocationMatcher)
 spawnAtL = lens enemySpawnAt $ \m x -> m { enemySpawnAt = x }
 
 healthDamageL :: Lens' EnemyAttrs Int
@@ -199,7 +197,7 @@ spawnAt
   :: (MonadIO m, MonadReader env m, HasQueue env)
   => Maybe InvestigatorId
   -> EnemyId
-  -> LocationMatcher
+  -> M.LocationMatcher
   -> m ()
 spawnAt miid eid locationMatcher =
   pushAll $ resolve (EnemySpawnAtLocationMatching miid locationMatcher eid)
@@ -303,29 +301,12 @@ type EnemyAttrsHasActions env
     , HasModifiersFor env ()
     )
 
-instance EnemyAttrsHasActions env => HasActions env EnemyAttrs where
-  getActions iid NonFast e@EnemyAttrs {..} = do
-    canFight <- getCanFight enemyId iid
-    canEngage <- getCanEngage enemyId iid
-    canEvade <- getCanEvade enemyId iid
-    pure
-      $ fightEnemyActions canFight
-      <> engageEnemyActions canEngage
-      <> evadeEnemyActions canEvade
-   where
-    fightEnemyActions canFight =
-      [ mkAbility e 100 $ ActionAbility (Just Action.Fight) (ActionCost 1)
-      | canFight
-      ]
-    evadeEnemyActions canEvade =
-      [ mkAbility e 101 $ ActionAbility (Just Action.Evade) (ActionCost 1)
-      | canEvade
-      ]
-    engageEnemyActions canEngage =
-      [ mkAbility e 102 $ ActionAbility (Just Action.Engage) (ActionCost 1)
-      | canEngage
-      ]
-  getActions _ _ _ = pure []
+instance HasActions EnemyAttrs where
+  getActions e =
+    [ mkAbility e 100 $ ActionAbility (Just Action.Fight) (ActionCost 1)
+    , mkAbility e 101 $ ActionAbility (Just Action.Evade) (ActionCost 1)
+    , mkAbility e 102 $ ActionAbility (Just Action.Engage) (ActionCost 1)
+    ]
 
 instance Entity EnemyAttrs where
   type EntityId EnemyAttrs = EnemyId
@@ -367,7 +348,7 @@ emptyLocationMap = mempty
 type EnemyAttrsRunMessage env
   = ( HasQueue env
     , HasCount PlayerCount env ()
-    , HasId (Maybe LocationId) env LocationMatcher
+    , HasId (Maybe LocationId) env M.LocationMatcher
     , HasId LeadInvestigatorId env ()
     , HasId LocationId env InvestigatorId
     , HasModifiersFor env ()
@@ -634,13 +615,18 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
         [] -> pure a
         [lid] -> a <$ pushAll
           [ EnemyMove enemyId enemyLocation lid
-          , CheckWindow leadInvestigatorId [AfterMoveFromHunter enemyId]
+          , CheckWindow
+            leadInvestigatorId
+            [Window Timing.After (W.MoveFromHunter enemyId)]
           ]
         ls -> a <$ pushAll
           (chooseOne
               leadInvestigatorId
               (map (EnemyMove enemyId enemyLocation) ls)
-          : [CheckWindow leadInvestigatorId [AfterMoveFromHunter enemyId]]
+          : [ CheckWindow
+                leadInvestigatorId
+                [Window Timing.After (W.MoveFromHunter enemyId)]
+            ]
           )
     EnemiesAttack | notNull enemyEngagedInvestigators && not enemyExhausted ->
       do
@@ -662,8 +648,10 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
     After (PassedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ _)
       | isTarget a target
       -> do
-        whenWindows <- checkWindows [WhenSuccessfulAttackEnemy iid enemyId]
-        afterWindows <- checkWindows [AfterSuccessfulAttackEnemy iid enemyId]
+        whenWindows <- checkWindows
+          [Window Timing.When (W.SuccessfulAttackEnemy iid enemyId)]
+        afterWindows <- checkWindows
+          [Window Timing.After (W.SuccessfulAttackEnemy iid enemyId)]
         a
           <$ pushAll
                (whenWindows
@@ -678,7 +666,9 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
           then push (EnemyAttack iid enemyId DamageAny)
           else pushAll
             [ FailedAttackEnemy iid enemyId
-            , CheckWindow iid [AfterFailAttackEnemy iid enemyId]
+            , CheckWindow
+              iid
+              [Window Timing.After (W.FailAttackEnemy iid enemyId)]
             ]
     EnemyAttackIfEngaged eid miid | eid == enemyId -> a <$ case miid of
       Just iid | iid `elem` enemyEngagedInvestigators ->

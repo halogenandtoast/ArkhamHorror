@@ -1089,6 +1089,10 @@ windowMatches
   -> m Bool
 windowMatches iid window' = \case
   Matcher.AnyWindow -> pure True
+  Matcher.DuringTurnWindow whoMatcher windowMatcher -> liftA2
+    (&&)
+    (member iid <$> select whoMatcher)
+    (windowMatches iid window' windowMatcher)
   Matcher.TargetReadies whenMatcher target -> case window' of
     Window t (Window.TargetReadies target') ->
       pure $ t == whenMatcher && target == target'

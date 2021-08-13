@@ -24,6 +24,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
+import Arkham.Types.Window (Window)
 
 newtype PayForAbilityEffect = PayForAbilityEffect (EffectAttrs `With` Payment)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -81,27 +82,31 @@ countAdditionalActionPayments _ = 0
 startPayment
   :: (MonadReader env m, MonadIO m, HasQueue env)
   => InvestigatorId
+  -> Window
   -> AbilityType
   -> Source
   -> Bool
   -> m ()
-startPayment iid abilityType abilitySource abilityDoesNotProvokeAttacksOfOpportunity
+startPayment iid window abilityType abilitySource abilityDoesNotProvokeAttacksOfOpportunity
   = case abilityType of
     Objective aType -> startPayment
       iid
+      window
       aType
       abilitySource
       abilityDoesNotProvokeAttacksOfOpportunity
     ForcedAbility _ -> pure ()
-    AbilityEffect cost -> push (PayAbilityCost abilitySource iid Nothing cost)
-    FastAbility cost -> push (PayAbilityCost abilitySource iid Nothing cost)
+    AbilityEffect cost ->
+      push (PayAbilityCost abilitySource iid Nothing window cost)
+    FastAbility cost ->
+      push (PayAbilityCost abilitySource iid Nothing window cost)
     ReactionAbility _ cost ->
       push (PayAbilityCost abilitySource iid Nothing cost)
     ActionAbilityWithBefore mAction _ cost -> do
       -- we do not know which ability will be chosen
       -- for now we assume this will trigger attacks of opportunity
       pushAll
-        (PayAbilityCost abilitySource iid mAction cost
+        (PayAbilityCost abilitySource iid mAction window cost
         : [ TakenAction iid action | action <- maybeToList mAction ]
         <> [ CheckAttackOfOpportunity iid False
            | not abilityDoesNotProvokeAttacksOfOpportunity
@@ -115,14 +120,14 @@ startPayment iid abilityType abilitySource abilityDoesNotProvokeAttacksOfOpportu
                     , Just Action.Parley
                     ]
         then pushAll
-          (PayAbilityCost abilitySource iid mAction cost
+          (PayAbilityCost abilitySource iid mAction window cost
           : [ TakenAction iid action | action <- maybeToList mAction ]
           <> [ CheckAttackOfOpportunity iid False
              | not abilityDoesNotProvokeAttacksOfOpportunity
              ]
           )
         else pushAll
-          (PayAbilityCost abilitySource iid mAction cost
+          (PayAbilityCost abilitySource iid mAction window cost
           : [ TakenAction iid action | action <- maybeToList mAction ]
           )
     ActionAbility mAction cost ->
@@ -133,14 +138,14 @@ startPayment iid abilityType abilitySource abilityDoesNotProvokeAttacksOfOpportu
                     , Just Action.Parley
                     ]
         then pushAll
-          (PayAbilityCost abilitySource iid mAction cost
+          (PayAbilityCost abilitySource iid mAction window cost
           : [ TakenAction iid action | action <- maybeToList mAction ]
           <> [ CheckAttackOfOpportunity iid False
              | not abilityDoesNotProvokeAttacksOfOpportunity
              ]
           )
         else pushAll
-          (PayAbilityCost abilitySource iid mAction cost
+          (PayAbilityCost abilitySource iid mAction window cost
           : [ TakenAction iid action | action <- maybeToList mAction ]
           )
 
@@ -155,23 +160,24 @@ instance
   )
   => RunMessage env PayForAbilityEffect where
   runMessage msg e@(PayForAbilityEffect (attrs `With` payments)) = case msg of
-    CreatedEffect eid (Just (EffectAbility Ability {..})) source (InvestigatorTarget iid)
+    CreatedEffect eid (Just (EffectAbility Ability {..})) source (InvestigatorTarget iid) window
       | eid == toId attrs
       -> do
         push (PayAbilityCostFinished (toId attrs) source iid)
         e
           <$ startPayment
                iid
+               window
                abilityType
                abilitySource
                abilityDoesNotProvokeAttacksOfOpportunity
-    PayAbilityCost source iid mAction cost -> do
+    PayAbilityCost source iid mAction window cost -> do
       let
         withPayment payment =
           pure $ PayForAbilityEffect (attrs `With` (payments <> payment))
       case cost of
         Costs xs ->
-          e <$ pushAll [ PayAbilityCost source iid mAction x | x <- xs ]
+          e <$ pushAll [ PayAbilityCost source iid mAction window x | x <- xs ]
         UpTo 0 _ -> pure e
         UpTo n cost' -> do
           canAfford <- getCanAffordCost iid source mAction [] cost'
@@ -181,8 +187,8 @@ instance
               iid
               [ Label
                 "Pay dynamic cost"
-                [ PayAbilityCost source iid mAction cost'
-                , PayAbilityCost source iid mAction (UpTo (n - 1) cost')
+                [ PayAbilityCost source iid mAction window cost'
+                , PayAbilityCost source iid mAction window (UpTo (n - 1) cost')
                 ]
               , Label "Done with dynamic cost" []
               ]
@@ -200,7 +206,13 @@ instance
               iid
               [ TargetLabel
                   target
-                  [PayAbilityCost source iid mAction (ExhaustCost target)]
+                  [ PayAbilityCost
+                      source
+                      iid
+                      mAction
+                      window
+                      (ExhaustCost target)
+                  ]
               | target <- targets
               ]
             )
@@ -255,6 +267,7 @@ instance
                     (InvestigatorSource iid)
                     iid
                     Nothing
+                    window
                     (ActionCost 1)
                   , PaidAbilityCost iid Nothing AdditionalActionPayment
                   , msg
@@ -325,6 +338,7 @@ instance
                       (InvestigatorSource iid)
                       iid
                       Nothing
+                      window
                       (DiscardCardCost $ PlayerCard card)
                   ]
               | card <- cards
@@ -361,6 +375,7 @@ instance
                     source
                     iid
                     mAction
+                    window
                     (SkillIconCost (x - n) skillTypes)
                   ]
               )

@@ -210,7 +210,7 @@ data Message
     | CreateStoryAssetAtLocationMatching Card LocationMatcher
     | CreateTokenValueEffect Int Source Target
     | CreateWeaknessInThreatArea Card InvestigatorId
-    | CreatedEffect EffectId (Maybe (EffectMetadata Message)) Source Target
+    | CreatedEffect EffectId (Maybe (EffectMetadata Message)) Source Target Window
     | CrossOutRecord CampaignLogKey
     | Damage Target Source Int
     | DeckHasNoCards InvestigatorId (Maybe Target)

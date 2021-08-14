@@ -26,7 +26,8 @@ instance HasCardCode Skill where
 instance HasCardDef Skill where
   toCardDef = toCardDef . toAttrs
 
-deriving anyclass instance ActionRunner env => HasAbilities env Skill
+instance HasAbilities env Skill where
+  getAbilities = genericGetAbilities
 
 instance
   ( HasSkillTest env

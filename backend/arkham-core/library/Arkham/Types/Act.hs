@@ -19,7 +19,8 @@ import Arkham.Types.Trait
 
 $(buildEntity "Act")
 
-deriving anyclass instance ActionRunner env => HasAbilities env Act
+instance ActionRunner env => HasAbilities env Act where
+  getAbilities = genericGetAbilities
 
 instance
   ( HasName env LocationId

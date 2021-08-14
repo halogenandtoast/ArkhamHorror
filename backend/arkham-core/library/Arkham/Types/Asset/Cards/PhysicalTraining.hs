@@ -30,12 +30,12 @@ instance HasModifiersFor env PhysicalTraining
 ability :: Int -> AssetAttrs -> Ability
 ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)
 
-instance HasActions env PhysicalTraining where
-  getActions iid (WhenSkillTest SkillWillpower) (PhysicalTraining a) =
+instance HasAbilities env PhysicalTraining where
+  getAbilities iid (WhenSkillTest SkillWillpower) (PhysicalTraining a) =
     pure [ ability 1 a | ownedBy a iid ]
-  getActions iid (WhenSkillTest SkillCombat) (PhysicalTraining a) =
+  getAbilities iid (WhenSkillTest SkillCombat) (PhysicalTraining a) =
     pure [ ability 2 a | ownedBy a iid ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env PhysicalTraining where
   runMessage msg a@(PhysicalTraining attrs) = case msg of

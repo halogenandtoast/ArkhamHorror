@@ -41,8 +41,8 @@ ability attrs =
   mkAbility (toSource attrs) 1 (FastAbility Free)
     & (abilityLimitL .~ GroupLimit PerGame 1)
 
-instance ActionRunner env => HasActions env BlastedHeath_248 where
-  getActions iid FastPlayerWindow (BlastedHeath_248 attrs) =
+instance ActionRunner env => HasAbilities env BlastedHeath_248 where
+  getAbilities iid FastPlayerWindow (BlastedHeath_248 attrs) =
     withBaseActions iid FastPlayerWindow attrs $ do
       investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
@@ -50,7 +50,7 @@ instance ActionRunner env => HasActions env BlastedHeath_248 where
         [ locationAbility (ability attrs)
         | investigatorsWithClues && anyAbominations
         ]
-  getActions iid window (BlastedHeath_248 attrs) = getActions iid window attrs
+  getAbilities iid window (BlastedHeath_248 attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env BlastedHeath_248 where
   runMessage msg l@(BlastedHeath_248 attrs) = case msg of

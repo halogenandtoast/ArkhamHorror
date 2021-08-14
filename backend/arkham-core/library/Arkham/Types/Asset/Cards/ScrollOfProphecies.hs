@@ -27,12 +27,12 @@ scrollOfProphecies = hand ScrollOfProphecies Cards.scrollOfProphecies
 
 instance HasModifiersFor env ScrollOfProphecies
 
-instance HasActions env ScrollOfProphecies where
-  getActions iid NonFast (ScrollOfProphecies a) | ownedBy a iid = pure
+instance HasAbilities env ScrollOfProphecies where
+  getAbilities iid NonFast (ScrollOfProphecies a) | ownedBy a iid = pure
     [ mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1)
     | not (assetExhausted a) && useCount (assetUses a) > 0
     ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env ScrollOfProphecies where
   runMessage msg (ScrollOfProphecies attrs) = case msg of

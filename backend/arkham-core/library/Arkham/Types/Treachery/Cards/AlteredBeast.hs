@@ -23,8 +23,8 @@ alteredBeast = treachery AlteredBeast Cards.alteredBeast
 
 instance HasModifiersFor env AlteredBeast
 
-instance HasActions env AlteredBeast where
-  getActions i window (AlteredBeast attrs) = getActions i window attrs
+instance HasAbilities env AlteredBeast where
+  getAbilities i window (AlteredBeast attrs) = getAbilities i window attrs
 
 instance (TreacheryRunner env) => RunMessage env AlteredBeast where
   runMessage msg t@(AlteredBeast attrs@TreacheryAttrs {..}) = case msg of

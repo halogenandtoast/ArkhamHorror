@@ -34,7 +34,7 @@ spec = describe "Arcane Initiate" $ do
             (assetsL %~ insertEntity arcaneInitiate)
           $ do
               runMessages
-              [ability] <- getActionsOf
+              [ability] <- getAbilitiesOf
                 investigator
                 FastPlayerWindow
                 arcaneInitiate
@@ -54,7 +54,7 @@ spec = describe "Arcane Initiate" $ do
         (assetsL %~ insertEntity arcaneInitiate)
       $ do
           runMessages
-          [ability] <- getActionsOf investigator FastPlayerWindow arcaneInitiate
+          [ability] <- getAbilitiesOf investigator FastPlayerWindow arcaneInitiate
           push $ UseAbility (toId investigator) ability
           runMessages
           chooseOnlyOption "search top of deck"

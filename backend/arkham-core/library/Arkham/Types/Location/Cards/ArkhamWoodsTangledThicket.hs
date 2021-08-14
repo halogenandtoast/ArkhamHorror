@@ -29,9 +29,9 @@ arkhamWoodsTangledThicket = locationWith
 
 instance HasModifiersFor env ArkhamWoodsTangledThicket
 
-instance ActionRunner env => HasActions env ArkhamWoodsTangledThicket where
-  getActions i window (ArkhamWoodsTangledThicket attrs) =
-    getActions i window attrs
+instance ActionRunner env => HasAbilities env ArkhamWoodsTangledThicket where
+  getAbilities i window (ArkhamWoodsTangledThicket attrs) =
+    getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsTangledThicket where
   runMessage msg (ArkhamWoodsTangledThicket attrs@LocationAttrs {..}) =

@@ -18,8 +18,8 @@ study = location Study Cards.study 2 (PerPlayer 2) Circle []
 
 instance HasModifiersFor env Study
 
-instance ActionRunner env => HasActions env Study where
-  getActions i window (Study attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env Study where
+  getAbilities i window (Study attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env Study where
   runMessage msg (Study attrs) = Study <$> runMessage msg attrs

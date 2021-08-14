@@ -23,8 +23,8 @@ newtype EverVigilant1 = EverVigilant1 EventAttrs
 everVigilant1 :: EventCard EverVigilant1
 everVigilant1 = event EverVigilant1 Cards.everVigilant1
 
-instance HasActions env EverVigilant1 where
-  getActions iid window (EverVigilant1 attrs) = getActions iid window attrs
+instance HasAbilities env EverVigilant1 where
+  getAbilities iid window (EverVigilant1 attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env EverVigilant1 where
   getModifiersFor _ (InvestigatorTarget iid) (EverVigilant1 attrs)

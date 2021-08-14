@@ -33,23 +33,23 @@ chicagoTypewriter4 = assetWith
 
 instance HasModifiersFor env ChicagoTypewriter4
 
-instance HasActions env ChicagoTypewriter4 where
-  getActions iid NonFast (ChicagoTypewriter4 a) | ownedBy a iid = pure
+instance HasAbilities env ChicagoTypewriter4 where
+  getAbilities iid NonFast (ChicagoTypewriter4 a) | ownedBy a iid = pure
     [ mkAbility a 1 $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, AdditionalActionsCost, UseCost (toId a) Ammo 1])
     ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
-getActionsSpent :: Payment -> Int
-getActionsSpent (ActionPayment n) = n
-getActionsSpent (Payments ps) = sum $ map getActionsSpent ps
-getActionsSpent _ = 0
+getAbilitiesSpent :: Payment -> Int
+getAbilitiesSpent (ActionPayment n) = n
+getAbilitiesSpent (Payments ps) = sum $ map getAbilitiesSpent ps
+getAbilitiesSpent _ = 0
 
 instance (AssetRunner env) => RunMessage env ChicagoTypewriter4 where
   runMessage msg a@(ChicagoTypewriter4 attrs) = case msg of
     UseCardAbility iid source _ 1 payment | isSource attrs source -> do
-      let actionsSpent = getActionsSpent payment
+      let actionsSpent = getAbilitiesSpent payment
       a <$ pushAll
         [ skillTestModifiers
           attrs

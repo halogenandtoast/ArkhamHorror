@@ -22,8 +22,8 @@ fineClothes :: AssetCard FineClothes
 fineClothes =
   bodyWith FineClothes Cards.fineClothes $ (healthL ?~ 1) . (sanityL ?~ 1)
 
-instance HasActions env FineClothes where
-  getActions iid window (FineClothes attrs) = getActions iid window attrs
+instance HasAbilities env FineClothes where
+  getAbilities iid window (FineClothes attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env FineClothes where
   getModifiersFor (SkillTestSource iid _ _ _ (Just Action.Parley)) (InvestigatorTarget iid') (FineClothes a)

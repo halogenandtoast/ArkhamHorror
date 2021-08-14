@@ -28,8 +28,8 @@ corpseTaker = enemyWith
 
 instance HasModifiersFor env CorpseTaker
 
-instance ActionRunner env => HasActions env CorpseTaker where
-  getActions i window (CorpseTaker attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env CorpseTaker where
+  getAbilities i window (CorpseTaker attrs) = getAbilities i window attrs
 
 instance EnemyRunner env => RunMessage env CorpseTaker where
   runMessage msg e@(CorpseTaker attrs@EnemyAttrs {..}) = case msg of

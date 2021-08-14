@@ -23,10 +23,10 @@ newtype StrangeSolution = StrangeSolution AssetAttrs
 strangeSolution :: AssetCard StrangeSolution
 strangeSolution = asset StrangeSolution Cards.strangeSolution
 
-instance HasActions env StrangeSolution where
-  getActions iid NonFast (StrangeSolution attrs) | ownedBy attrs iid =
+instance HasAbilities env StrangeSolution where
+  getAbilities iid NonFast (StrangeSolution attrs) | ownedBy attrs iid =
     pure [mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)]
-  getActions iid window (StrangeSolution attrs) = getActions iid window attrs
+  getAbilities iid window (StrangeSolution attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env StrangeSolution
 

@@ -41,14 +41,14 @@ instance HasModifiersFor env FloodedSquare
 ability :: LocationAttrs -> Ability
 ability a = mkAbility a 1 (ActionAbility Nothing $ ActionCost 1)
 
-instance ActionRunner env => HasActions env FloodedSquare where
-  getActions iid NonFast (FloodedSquare attrs) =
+instance ActionRunner env => HasAbilities env FloodedSquare where
+  getAbilities iid NonFast (FloodedSquare attrs) =
     withBaseActions iid NonFast attrs $ do
       counterClockwiseLocation <- getCounterClockwiseLocation (toId attrs)
       nonEliteEnemies <- getSet @EnemyId $ EnemyMatchAll
         [NonEliteEnemy, EnemyAtLocation counterClockwiseLocation]
       pure [ ability attrs | notNull nonEliteEnemies ]
-  getActions iid window (FloodedSquare attrs) = getActions iid window attrs
+  getAbilities iid window (FloodedSquare attrs) = getAbilities iid window attrs
 
 instance
   ( HasSet EnemyId env EnemyMatcher

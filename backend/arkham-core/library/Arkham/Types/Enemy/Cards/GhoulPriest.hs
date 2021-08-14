@@ -26,8 +26,8 @@ ghoulPriest = enemyWith
 
 instance HasModifiersFor env GhoulPriest
 
-instance ActionRunner env => HasActions env GhoulPriest where
-  getActions i window (GhoulPriest attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env GhoulPriest where
+  getAbilities i window (GhoulPriest attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env GhoulPriest where
   runMessage msg (GhoulPriest attrs) = GhoulPriest <$> runMessage msg attrs

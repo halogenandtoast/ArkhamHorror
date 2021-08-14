@@ -30,8 +30,8 @@ instance HasModifiersFor env TheRitualBegins where
     $ toModifiers attrs [EnemyFight 1, EnemyEvade 1]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env TheRitualBegins where
-  getActions i window (TheRitualBegins x) = getActions i window x
+instance HasAbilities env TheRitualBegins where
+  getAbilities i window (TheRitualBegins x) = getAbilities i window x
 
 instance (AgendaRunner env) => RunMessage env TheRitualBegins where
   runMessage msg a@(TheRitualBegins attrs@AgendaAttrs {..}) = case msg of

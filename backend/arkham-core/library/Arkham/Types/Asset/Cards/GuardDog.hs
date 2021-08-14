@@ -31,11 +31,11 @@ ability source attrs = base
   }
   where base = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
-instance HasActions env GuardDog where
-  getActions iid (WhenDealtDamage source@(EnemySource _) target) (GuardDog attrs)
+instance HasAbilities env GuardDog where
+  getAbilities iid (WhenDealtDamage source@(EnemySource _) target) (GuardDog attrs)
     | isTarget attrs target
     = pure [ ability source attrs | ownedBy attrs iid ]
-  getActions i window (GuardDog attrs) = getActions i window attrs
+  getAbilities i window (GuardDog attrs) = getAbilities i window attrs
 
 instance (AssetRunner env) => RunMessage env GuardDog where
   runMessage msg a@(GuardDog attrs) = case msg of

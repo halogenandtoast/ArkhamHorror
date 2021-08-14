@@ -25,8 +25,8 @@ aTearInReality = agenda (1, A) ATearInReality Cards.aTearInReality (Static 4)
 
 instance HasModifiersFor env ATearInReality
 
-instance HasActions env ATearInReality where
-  getActions i window (ATearInReality x) = getActions i window x
+instance HasAbilities env ATearInReality where
+  getAbilities i window (ATearInReality x) = getAbilities i window x
 
 leftmostLocation
   :: ( MonadReader env m

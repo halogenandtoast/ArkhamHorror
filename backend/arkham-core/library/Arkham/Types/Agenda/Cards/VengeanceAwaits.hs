@@ -26,8 +26,8 @@ vengeanceAwaits =
 
 instance HasModifiersFor env VengeanceAwaits
 
-instance HasActions env VengeanceAwaits where
-  getActions i window (VengeanceAwaits x) = getActions i window x
+instance HasAbilities env VengeanceAwaits where
+  getAbilities i window (VengeanceAwaits x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env VengeanceAwaits where
   runMessage msg a@(VengeanceAwaits attrs@AgendaAttrs {..}) = case msg of

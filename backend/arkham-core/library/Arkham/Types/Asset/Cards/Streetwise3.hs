@@ -25,12 +25,12 @@ newtype Streetwise3 = Streetwise3 AssetAttrs
 streetwise3 :: AssetCard Streetwise3
 streetwise3 = asset Streetwise3 Cards.streetwise3
 
-instance HasActions env Streetwise3 where
-  getActions iid (WhenSkillTest SkillIntellect) (Streetwise3 a)
+instance HasAbilities env Streetwise3 where
+  getAbilities iid (WhenSkillTest SkillIntellect) (Streetwise3 a)
     | ownedBy a iid = pure [mkAbility a 1 $ FastAbility $ ResourceCost 2]
-  getActions iid (WhenSkillTest SkillAgility) (Streetwise3 a) | ownedBy a iid =
+  getAbilities iid (WhenSkillTest SkillAgility) (Streetwise3 a) | ownedBy a iid =
     pure [mkAbility a 2 $ FastAbility $ ResourceCost 2]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance HasModifiersFor env Streetwise3
 

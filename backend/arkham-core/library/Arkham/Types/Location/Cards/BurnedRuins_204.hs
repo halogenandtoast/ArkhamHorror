@@ -33,8 +33,8 @@ instance HasModifiersFor env BurnedRuins_204 where
     | eid `elem` locationEnemies = pure $ toModifiers attrs [EnemyEvade 1]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env BurnedRuins_204 where
-  getActions = withDrawCardUnderneathAction
+instance ActionRunner env => HasAbilities env BurnedRuins_204 where
+  getAbilities = withDrawCardUnderneathAction
 
 instance LocationRunner env => RunMessage env BurnedRuins_204 where
   runMessage msg (BurnedRuins_204 attrs) =

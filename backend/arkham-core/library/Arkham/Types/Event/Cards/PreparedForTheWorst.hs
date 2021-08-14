@@ -19,9 +19,9 @@ newtype PreparedForTheWorst = PreparedForTheWorst EventAttrs
 preparedForTheWorst :: EventCard PreparedForTheWorst
 preparedForTheWorst = event PreparedForTheWorst Cards.preparedForTheWorst
 
-instance HasActions env PreparedForTheWorst where
-  getActions iid window (PreparedForTheWorst attrs) =
-    getActions iid window attrs
+instance HasAbilities env PreparedForTheWorst where
+  getAbilities iid window (PreparedForTheWorst attrs) =
+    getAbilities iid window attrs
 
 instance HasModifiersFor env PreparedForTheWorst
 

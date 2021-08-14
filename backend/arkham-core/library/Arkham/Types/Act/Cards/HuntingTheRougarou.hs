@@ -33,8 +33,8 @@ ability attrs = (mkAbility (toSource attrs) 1 (FastAbility Free))
   { abilityLimit = PlayerLimit PerPhase 1
   }
 
-instance ActionRunner env => HasActions env HuntingTheRougarou where
-  getActions iid FastPlayerWindow (HuntingTheRougarou a) =
+instance ActionRunner env => HasAbilities env HuntingTheRougarou where
+  getAbilities iid FastPlayerWindow (HuntingTheRougarou a) =
     withBaseActions iid FastPlayerWindow a $ do
       mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
       engagedWithTheRougarou <- maybe
@@ -42,7 +42,7 @@ instance ActionRunner env => HasActions env HuntingTheRougarou where
         ((member iid <$>) . getSet)
         mrougarou
       pure [ ability a | engagedWithTheRougarou ]
-  getActions i window (HuntingTheRougarou x) = getActions i window x
+  getAbilities i window (HuntingTheRougarou x) = getAbilities i window x
 
 instance ActRunner env => RunMessage env HuntingTheRougarou where
   runMessage msg a@(HuntingTheRougarou attrs@ActAttrs {..}) = case msg of

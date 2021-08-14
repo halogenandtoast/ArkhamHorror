@@ -22,8 +22,8 @@ lostInVenice = treachery LostInVenice Cards.lostInVenice
 
 instance HasModifiersFor env LostInVenice
 
-instance HasActions env LostInVenice where
-  getActions i window (LostInVenice attrs) = getActions i window attrs
+instance HasAbilities env LostInVenice where
+  getAbilities i window (LostInVenice attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env LostInVenice where
   runMessage msg t@(LostInVenice attrs) = case msg of

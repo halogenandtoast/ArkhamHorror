@@ -24,8 +24,8 @@ rivertown = location
 
 instance HasModifiersFor env Rivertown
 
-instance ActionRunner env => HasActions env Rivertown where
-  getActions i window (Rivertown attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env Rivertown where
+  getAbilities i window (Rivertown attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env Rivertown where
   runMessage msg (Rivertown attrs) = Rivertown <$> runMessage msg attrs

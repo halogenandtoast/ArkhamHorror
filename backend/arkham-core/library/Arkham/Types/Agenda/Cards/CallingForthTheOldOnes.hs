@@ -22,8 +22,8 @@ callingForthTheOldOnes =
 
 instance HasModifiersFor env CallingForthTheOldOnes
 
-instance HasActions env CallingForthTheOldOnes where
-  getActions i window (CallingForthTheOldOnes x) = getActions i window x
+instance HasAbilities env CallingForthTheOldOnes where
+  getAbilities i window (CallingForthTheOldOnes x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env CallingForthTheOldOnes where
   runMessage msg a@(CallingForthTheOldOnes attrs@AgendaAttrs {..}) =

@@ -24,8 +24,8 @@ pushedIntoTheBeyond = treachery PushedIntoTheBeyond Cards.pushedIntoTheBeyond
 
 instance HasModifiersFor env PushedIntoTheBeyond
 
-instance HasActions env PushedIntoTheBeyond where
-  getActions i window (PushedIntoTheBeyond attrs) = getActions i window attrs
+instance HasAbilities env PushedIntoTheBeyond where
+  getAbilities i window (PushedIntoTheBeyond attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env PushedIntoTheBeyond where
   runMessage msg t@(PushedIntoTheBeyond attrs) = case msg of

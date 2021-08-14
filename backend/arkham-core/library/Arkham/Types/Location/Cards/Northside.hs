@@ -35,11 +35,11 @@ ability attrs = base { abilityLimit = GroupLimit PerGame 1 }
     1
     (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 5])
 
-instance ActionRunner env => HasActions env Northside where
-  getActions iid NonFast (Northside attrs@LocationAttrs {..})
+instance ActionRunner env => HasAbilities env Northside where
+  getAbilities iid NonFast (Northside attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs
     $ pure [locationAbility (ability attrs)]
-  getActions iid window (Northside attrs) = getActions iid window attrs
+  getAbilities iid window (Northside attrs) = getAbilities iid window attrs
 
 instance (LocationRunner env) => RunMessage env Northside where
   runMessage msg l@(Northside attrs) = case msg of

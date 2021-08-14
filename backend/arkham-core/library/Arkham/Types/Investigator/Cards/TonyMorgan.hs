@@ -30,8 +30,8 @@ tonyMorgan = TonyMorgan $ baseAttrs
     }
   [Criminal, Hunter]
 
-instance InvestigatorRunner env => HasActions env TonyMorgan where
-  getActions i window (TonyMorgan attrs) = getActions i window attrs
+instance InvestigatorRunner env => HasAbilities env TonyMorgan where
+  getAbilities i window (TonyMorgan attrs) = getAbilities i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env TonyMorgan where
   runMessage msg (TonyMorgan attrs) = TonyMorgan <$> runMessage msg attrs

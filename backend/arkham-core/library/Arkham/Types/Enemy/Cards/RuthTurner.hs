@@ -26,8 +26,8 @@ ruthTurner = enemyWith
 
 instance HasModifiersFor env RuthTurner
 
-instance ActionRunner env => HasActions env RuthTurner where
-  getActions i window (RuthTurner attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env RuthTurner where
+  getAbilities i window (RuthTurner attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env RuthTurner where
   runMessage msg e@(RuthTurner attrs) = case msg of

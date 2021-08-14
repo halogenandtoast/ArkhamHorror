@@ -19,8 +19,8 @@ swarmOfRats = enemy SwarmOfRats Cards.swarmOfRats (1, Static 1, 3) (1, 0)
 
 instance HasModifiersFor env SwarmOfRats
 
-instance ActionRunner env => HasActions env SwarmOfRats where
-  getActions i window (SwarmOfRats attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env SwarmOfRats where
+  getAbilities i window (SwarmOfRats attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env SwarmOfRats where
   runMessage msg (SwarmOfRats attrs) = SwarmOfRats <$> runMessage msg attrs

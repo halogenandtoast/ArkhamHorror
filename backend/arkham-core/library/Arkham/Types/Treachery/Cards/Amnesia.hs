@@ -18,8 +18,8 @@ amnesia = treachery Amnesia Cards.amnesia
 
 instance HasModifiersFor env Amnesia
 
-instance HasActions env Amnesia where
-  getActions i window (Amnesia attrs) = getActions i window attrs
+instance HasAbilities env Amnesia where
+  getAbilities i window (Amnesia attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env Amnesia where
   runMessage msg t@(Amnesia attrs) = case msg of

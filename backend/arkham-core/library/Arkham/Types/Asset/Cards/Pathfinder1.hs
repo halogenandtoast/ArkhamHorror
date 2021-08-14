@@ -25,11 +25,11 @@ ability :: AssetAttrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (FastAbility $ ExhaustCost (toTarget attrs))
 
-instance HasSet EnemyId env InvestigatorId => HasActions env Pathfinder1 where
-  getActions iid (DuringTurn who) (Pathfinder1 attrs) | iid == who = do
+instance HasSet EnemyId env InvestigatorId => HasAbilities env Pathfinder1 where
+  getAbilities iid (DuringTurn who) (Pathfinder1 attrs) | iid == who = do
     engagedEnemies <- getSet @EnemyId iid
     pure [ ability attrs | null engagedEnemies ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance HasModifiersFor env Pathfinder1
 

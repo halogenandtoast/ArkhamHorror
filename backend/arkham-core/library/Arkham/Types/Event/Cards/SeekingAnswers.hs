@@ -19,8 +19,8 @@ newtype SeekingAnswers = SeekingAnswers EventAttrs
 seekingAnswers :: EventCard SeekingAnswers
 seekingAnswers = event SeekingAnswers Cards.seekingAnswers
 
-instance HasActions env SeekingAnswers where
-  getActions iid window (SeekingAnswers attrs) = getActions iid window attrs
+instance HasAbilities env SeekingAnswers where
+  getAbilities iid window (SeekingAnswers attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env SeekingAnswers
 

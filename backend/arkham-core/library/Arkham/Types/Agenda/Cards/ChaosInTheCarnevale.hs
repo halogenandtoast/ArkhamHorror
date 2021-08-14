@@ -27,8 +27,8 @@ chaosInTheCarnevale =
 
 instance HasModifiersFor env ChaosInTheCarnevale
 
-instance HasActions env ChaosInTheCarnevale where
-  getActions i window (ChaosInTheCarnevale x) = getActions i window x
+instance HasAbilities env ChaosInTheCarnevale where
+  getAbilities i window (ChaosInTheCarnevale x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env ChaosInTheCarnevale where
   runMessage msg a@(ChaosInTheCarnevale attrs@AgendaAttrs {..}) = case msg of

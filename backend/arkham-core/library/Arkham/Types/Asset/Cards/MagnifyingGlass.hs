@@ -26,8 +26,8 @@ instance HasModifiersFor env MagnifyingGlass where
     ]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env MagnifyingGlass where
-  getActions i window (MagnifyingGlass x) = getActions i window x
+instance HasAbilities env MagnifyingGlass where
+  getAbilities i window (MagnifyingGlass x) = getAbilities i window x
 
 instance (AssetRunner env) => RunMessage env MagnifyingGlass where
   runMessage msg (MagnifyingGlass attrs) =

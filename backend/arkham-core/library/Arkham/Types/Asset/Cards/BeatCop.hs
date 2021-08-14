@@ -41,12 +41,12 @@ instance
   ( HasSet EnemyId env LocationId
   , HasId LocationId env InvestigatorId
   )
-  => HasActions env BeatCop where
-  getActions iid FastPlayerWindow (BeatCop a) | ownedBy a iid = do
+  => HasAbilities env BeatCop where
+  getAbilities iid FastPlayerWindow (BeatCop a) | ownedBy a iid = do
     locationId <- getId @LocationId iid
     enemyIds <- getSetList @EnemyId locationId
     pure [ ability a | notNull enemyIds ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 -- | See: PlayerCardWithBehavior
 instance AssetRunner env => RunMessage env BeatCop where

@@ -25,8 +25,8 @@ searchingForTheTome :: ActCard SearchingForTheTome
 searchingForTheTome =
   act (3, A) SearchingForTheTome Cards.searchingForTheTome Nothing
 
-instance ActionRunner env => HasActions env SearchingForTheTome where
-  getActions i window (SearchingForTheTome x) = do
+instance ActionRunner env => HasAbilities env SearchingForTheTome where
+  getAbilities i window (SearchingForTheTome x) = do
     mRestrictedHall <- getId @(Maybe LocationId)
       (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
     case mRestrictedHall of
@@ -34,8 +34,8 @@ instance ActionRunner env => HasActions env SearchingForTheTome where
         mustAdvance <- (== 0) . unClueCount <$> getCount restrictedHall
         if mustAdvance
           then pure [mkAbility x 1 ForcedAbility]
-          else getActions i window x
-      Nothing -> getActions i window x
+          else getAbilities i window x
+      Nothing -> getAbilities i window x
 
 instance ActRunner env => RunMessage env SearchingForTheTome where
   runMessage msg a@(SearchingForTheTome attrs@ActAttrs {..}) = case msg of

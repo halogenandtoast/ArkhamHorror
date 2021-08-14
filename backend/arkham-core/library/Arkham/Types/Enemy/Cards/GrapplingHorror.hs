@@ -28,8 +28,8 @@ instance HasModifiersFor env GrapplingHorror where
       else pure []
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env GrapplingHorror where
-  getActions i window (GrapplingHorror attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env GrapplingHorror where
+  getAbilities i window (GrapplingHorror attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env GrapplingHorror where
   runMessage msg (GrapplingHorror attrs) =

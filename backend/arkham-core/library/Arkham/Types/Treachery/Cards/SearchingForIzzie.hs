@@ -29,14 +29,14 @@ searchingForIzzie = treachery SearchingForIzzie Cards.searchingForIzzie
 
 instance HasModifiersFor env SearchingForIzzie
 
-instance ActionRunner env => HasActions env SearchingForIzzie where
-  getActions iid NonFast (SearchingForIzzie attrs) = do
+instance ActionRunner env => HasAbilities env SearchingForIzzie where
+  getAbilities iid NonFast (SearchingForIzzie attrs) = do
     investigatorLocationId <- getId @LocationId iid
     pure
       [ mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 2
       | treacheryOnLocation investigatorLocationId attrs
       ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance TreacheryRunner env => RunMessage env SearchingForIzzie where
   runMessage msg t@(SearchingForIzzie attrs@TreacheryAttrs {..}) = case msg of

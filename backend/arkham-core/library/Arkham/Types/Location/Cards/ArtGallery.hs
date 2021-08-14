@@ -31,8 +31,8 @@ artGallery = locationWith
 
 instance HasModifiersFor env ArtGallery
 
-instance ActionRunner env => HasActions env ArtGallery where
-  getActions iid window (ArtGallery attrs) = getActions iid window attrs
+instance ActionRunner env => HasAbilities env ArtGallery where
+  getAbilities iid window (ArtGallery attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env ArtGallery where
   runMessage msg l@(ArtGallery attrs) = case msg of

@@ -21,8 +21,8 @@ smiteTheWicked = treachery SmiteTheWicked Cards.smiteTheWicked
 
 instance HasModifiersFor env SmiteTheWicked
 
-instance HasActions env SmiteTheWicked where
-  getActions i window (SmiteTheWicked attrs) = getActions i window attrs
+instance HasAbilities env SmiteTheWicked where
+  getAbilities i window (SmiteTheWicked attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env SmiteTheWicked where
   runMessage msg t@(SmiteTheWicked attrs@TreacheryAttrs {..}) = case msg of

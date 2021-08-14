@@ -23,8 +23,8 @@ attractingAttention = treachery AttractingAttention Cards.attractingAttention
 
 instance HasModifiersFor env AttractingAttention
 
-instance HasActions env AttractingAttention where
-  getActions i window (AttractingAttention attrs) = getActions i window attrs
+instance HasAbilities env AttractingAttention where
+  getAbilities i window (AttractingAttention attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env AttractingAttention where
   runMessage msg t@(AttractingAttention attrs) = case msg of

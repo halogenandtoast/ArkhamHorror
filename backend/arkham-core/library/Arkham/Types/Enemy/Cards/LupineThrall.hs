@@ -26,8 +26,8 @@ lupineThrall = enemyWith
   (1, 1)
   (preyL .~ LowestSkill SkillAgility)
 
-instance ActionRunner env => HasActions env LupineThrall where
-  getActions i window (LupineThrall attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env LupineThrall where
+  getAbilities i window (LupineThrall attrs) = getAbilities i window attrs
 
 instance HasModifiersFor env LupineThrall
 

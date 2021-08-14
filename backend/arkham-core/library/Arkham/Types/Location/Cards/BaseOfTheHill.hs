@@ -45,11 +45,11 @@ ability attrs =
       (ActionAbility (Just Action.Investigate) (ActionCost 1))
     & (abilityLimitL .~ PlayerLimit PerRound 1)
 
-instance ActionRunner env => HasActions env BaseOfTheHill where
-  getActions iid NonFast (BaseOfTheHill attrs) | locationRevealed attrs = do
+instance ActionRunner env => HasAbilities env BaseOfTheHill where
+  getAbilities iid NonFast (BaseOfTheHill attrs) | locationRevealed attrs = do
     actions <- withResignAction iid NonFast attrs
     pure $ locationAbility (ability attrs) : actions
-  getActions iid window (BaseOfTheHill attrs) = getActions iid window attrs
+  getAbilities iid window (BaseOfTheHill attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env BaseOfTheHill where
   runMessage msg l@(BaseOfTheHill attrs) = case msg of

@@ -20,8 +20,8 @@ trapped :: ActCard Trapped
 trapped =
   act (1, A) Trapped Cards.trapped (Just $ GroupClueCost (PerPlayer 2) Nothing)
 
-instance HasActions env Trapped where
-  getActions i window (Trapped x) = getActions i window x
+instance HasAbilities env Trapped where
+  getAbilities i window (Trapped x) = getAbilities i window x
 
 instance ActRunner env => RunMessage env Trapped where
   runMessage msg a@(Trapped attrs@ActAttrs {..}) = case msg of

@@ -36,9 +36,9 @@ ability attrs = mkAbility
   1
   (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1])
 
-instance HasActions env RicesWhereabouts where
-  getActions _ NonFast (RicesWhereabouts x) = pure [ability x]
-  getActions iid window (RicesWhereabouts x) = getActions iid window x
+instance HasAbilities env RicesWhereabouts where
+  getAbilities _ NonFast (RicesWhereabouts x) = pure [ability x]
+  getAbilities iid window (RicesWhereabouts x) = getAbilities iid window x
 
 instance ActRunner env => RunMessage env RicesWhereabouts where
   runMessage msg a@(RicesWhereabouts attrs@ActAttrs {..}) = case msg of

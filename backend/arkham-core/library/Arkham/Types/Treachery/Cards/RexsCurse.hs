@@ -22,8 +22,8 @@ rexsCurse = treachery RexsCurse Cards.rexsCurse
 
 instance HasModifiersFor env RexsCurse
 
-instance HasActions env RexsCurse where
-  getActions _ _ _ = pure []
+instance HasAbilities env RexsCurse where
+  getAbilities _ _ _ = pure []
 
 instance TreacheryRunner env => RunMessage env RexsCurse where
   runMessage msg t@(RexsCurse attrs@TreacheryAttrs {..}) = case msg of

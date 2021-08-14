@@ -22,8 +22,8 @@ extraAmmunition1 = event ExtraAmmunition1 Cards.extraAmmunition1
 
 instance HasModifiersFor env ExtraAmmunition1
 
-instance HasActions env ExtraAmmunition1 where
-  getActions i window (ExtraAmmunition1 attrs) = getActions i window attrs
+instance HasAbilities env ExtraAmmunition1 where
+  getAbilities i window (ExtraAmmunition1 attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env ExtraAmmunition1 where
   runMessage msg e@(ExtraAmmunition1 attrs@EventAttrs {..}) = case msg of

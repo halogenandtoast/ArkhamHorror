@@ -26,8 +26,8 @@ rollingBackwards =
 
 instance HasModifiersFor env RollingBackwards
 
-instance HasActions env RollingBackwards where
-  getActions i window (RollingBackwards x) = getActions i window x
+instance HasAbilities env RollingBackwards where
+  getAbilities i window (RollingBackwards x) = getAbilities i window x
 
 leftmostLocation
   :: ( MonadReader env m

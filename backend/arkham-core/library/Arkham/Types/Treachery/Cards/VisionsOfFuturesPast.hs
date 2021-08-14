@@ -24,8 +24,8 @@ visionsOfFuturesPast =
 
 instance HasModifiersFor env VisionsOfFuturesPast
 
-instance HasActions env VisionsOfFuturesPast where
-  getActions i window (VisionsOfFuturesPast attrs) = getActions i window attrs
+instance HasAbilities env VisionsOfFuturesPast where
+  getAbilities i window (VisionsOfFuturesPast attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env VisionsOfFuturesPast where
   runMessage msg t@(VisionsOfFuturesPast attrs@TreacheryAttrs {..}) =

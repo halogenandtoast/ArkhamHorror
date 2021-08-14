@@ -43,13 +43,13 @@ ability attrs = base { abilityLimit = GroupLimit PerRound 1 }
     1
     (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
 
-instance ActionRunner env => HasActions env CloverClubCardroom where
-  getActions iid NonFast (CloverClubCardroom attrs@LocationAttrs {..})
+instance ActionRunner env => HasAbilities env CloverClubCardroom where
+  getAbilities iid NonFast (CloverClubCardroom attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ do
       step <- unActStep <$> getStep
       pure [ locationAbility (ability attrs) | step == 1 ]
-  getActions iid window (CloverClubCardroom attrs) =
-    getActions iid window attrs
+  getAbilities iid window (CloverClubCardroom attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env CloverClubCardroom where
   runMessage msg l@(CloverClubCardroom attrs@LocationAttrs {..}) = case msg of

@@ -20,8 +20,8 @@ graveEater = enemy GraveEater Cards.graveEater (2, Static 2, 2) (1, 1)
 
 instance HasModifiersFor env GraveEater
 
-instance ActionRunner env => HasActions env GraveEater where
-  getActions i window (GraveEater attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env GraveEater where
+  getAbilities i window (GraveEater attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env GraveEater where
   runMessage msg e@(GraveEater attrs) = case msg of

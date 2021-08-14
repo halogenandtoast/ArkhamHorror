@@ -24,8 +24,8 @@ newtype TheBarrier = TheBarrier ActAttrs
 theBarrier :: ActCard TheBarrier
 theBarrier = act (2, A) TheBarrier Cards.theBarrier Nothing
 
-instance HasActions env TheBarrier where
-  getActions i window (TheBarrier x) = getActions i window x
+instance HasAbilities env TheBarrier where
+  getAbilities i window (TheBarrier x) = getAbilities i window x
 
 instance ActRunner env => RunMessage env TheBarrier where
   runMessage msg a@(TheBarrier attrs@ActAttrs {..}) = case msg of

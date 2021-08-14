@@ -23,8 +23,8 @@ arcaneBarrier = treachery ArcaneBarrier Cards.arcaneBarrier
 
 instance HasModifiersFor env ArcaneBarrier
 
-instance HasActions env ArcaneBarrier where
-  getActions i window (ArcaneBarrier attrs) = getActions i window attrs
+instance HasAbilities env ArcaneBarrier where
+  getAbilities i window (ArcaneBarrier attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env ArcaneBarrier where
   runMessage msg t@(ArcaneBarrier attrs) = case msg of

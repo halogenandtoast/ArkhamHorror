@@ -24,8 +24,8 @@ mainPath =
 
 instance HasModifiersFor env MainPath
 
-instance ActionRunner env => HasActions env MainPath where
-  getActions = withResignAction
+instance ActionRunner env => HasAbilities env MainPath where
+  getAbilities = withResignAction
 
 instance (LocationRunner env) => RunMessage env MainPath where
   runMessage msg l@(MainPath attrs@LocationAttrs {..}) = case msg of

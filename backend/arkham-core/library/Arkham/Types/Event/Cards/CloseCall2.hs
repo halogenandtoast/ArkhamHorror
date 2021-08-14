@@ -21,8 +21,8 @@ closeCall2 = event CloseCall2 Cards.closeCall2
 
 instance HasModifiersFor env CloseCall2
 
-instance HasActions env CloseCall2 where
-  getActions i window (CloseCall2 attrs) = getActions i window attrs
+instance HasAbilities env CloseCall2 where
+  getAbilities i window (CloseCall2 attrs) = getAbilities i window attrs
 
 instance RunMessage env CloseCall2 where
   runMessage msg e@(CloseCall2 attrs) = case msg of

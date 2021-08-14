@@ -52,11 +52,11 @@ ability attrs = (mkAbility attrs 1 (ActionAbility Nothing $ ActionCost 1))
   { abilityDoesNotProvokeAttacksOfOpportunity = True
   }
 
-instance InvestigatorRunner env => HasActions env SefinaRousseau where
-  getActions i NonFast (SefinaRousseau attrs) | i == toId attrs =
+instance InvestigatorRunner env => HasAbilities env SefinaRousseau where
+  getAbilities i NonFast (SefinaRousseau attrs) | i == toId attrs =
     withBaseActions i NonFast attrs
       $ pure [ ability attrs | notNull (investigatorCardsUnderneath attrs) ]
-  getActions i window (SefinaRousseau attrs) = getActions i window attrs
+  getAbilities i window (SefinaRousseau attrs) = getAbilities i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env SefinaRousseau where
   runMessage msg i@(SefinaRousseau attrs) = case msg of

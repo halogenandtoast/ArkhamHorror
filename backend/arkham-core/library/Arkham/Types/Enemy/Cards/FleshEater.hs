@@ -25,8 +25,8 @@ fleshEater = enemyWith
 
 instance HasModifiersFor env FleshEater
 
-instance ActionRunner env => HasActions env FleshEater where
-  getActions i window (FleshEater attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env FleshEater where
+  getAbilities i window (FleshEater attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env FleshEater where
   runMessage msg (FleshEater attrs) = FleshEater <$> runMessage msg attrs

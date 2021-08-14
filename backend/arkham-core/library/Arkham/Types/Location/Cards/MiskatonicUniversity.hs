@@ -34,14 +34,14 @@ miskatonicUniversity = location
 
 instance HasModifiersFor env MiskatonicUniversity
 
-instance ActionRunner env => HasActions env MiskatonicUniversity where
-  getActions iid NonFast (MiskatonicUniversity attrs@LocationAttrs {..})
+instance ActionRunner env => HasAbilities env MiskatonicUniversity where
+  getAbilities iid NonFast (MiskatonicUniversity attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ pure
       [ locationAbility
           (mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 1)
       ]
-  getActions iid window (MiskatonicUniversity attrs) =
-    getActions iid window attrs
+  getAbilities iid window (MiskatonicUniversity attrs) =
+    getAbilities iid window attrs
 
 instance (LocationRunner env) => RunMessage env MiskatonicUniversity where
   runMessage msg l@(MiskatonicUniversity attrs) = case msg of

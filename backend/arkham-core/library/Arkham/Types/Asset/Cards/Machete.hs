@@ -29,10 +29,10 @@ machete = hand Machete Cards.machete
 
 instance HasModifiersFor env Machete
 
-instance HasActions env Machete where
-  getActions iid NonFast (Machete a) | ownedBy a iid =
+instance HasAbilities env Machete where
+  getAbilities iid NonFast (Machete a) | ownedBy a iid =
     pure [mkAbility a 1 $ ActionAbility (Just Action.Fight) (ActionCost 1)]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Machete where
   runMessage msg a@(Machete attrs) = case msg of

@@ -39,11 +39,11 @@ ability attrs =
     { abilityLimit = PlayerLimit PerGame 1
     }
 
-instance ActionRunner env => HasActions env StMarysHospital where
-  getActions iid NonFast (StMarysHospital attrs@LocationAttrs {..})
+instance ActionRunner env => HasAbilities env StMarysHospital where
+  getAbilities iid NonFast (StMarysHospital attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs
     $ pure [locationAbility (ability attrs)]
-  getActions iid window (StMarysHospital attrs) = getActions iid window attrs
+  getAbilities iid window (StMarysHospital attrs) = getAbilities iid window attrs
 
 instance (LocationRunner env) => RunMessage env StMarysHospital where
   runMessage msg l@(StMarysHospital attrs) = case msg of

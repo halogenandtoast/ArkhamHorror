@@ -26,8 +26,8 @@ theChamberOfTheBeast :: ActCard TheChamberOfTheBeast
 theChamberOfTheBeast =
   act (2, A) TheChamberOfTheBeast Cards.theChamberOfTheBeast Nothing
 
-instance ActionRunner env => HasActions env TheChamberOfTheBeast where
-  getActions i window (TheChamberOfTheBeast x) = do
+instance ActionRunner env => HasAbilities env TheChamberOfTheBeast where
+  getAbilities i window (TheChamberOfTheBeast x) = do
     mHiddenChamberId <- getId @(Maybe LocationId)
       (LocationWithTitle "The Hidden Chamber")
     clueCount <- maybe (pure 0) (fmap unClueCount . getCount) mHiddenChamberId
@@ -35,7 +35,7 @@ instance ActionRunner env => HasActions env TheChamberOfTheBeast where
     if clueCount == 0
       then pure
         [ mkAbility (toSource x) 1 ForcedAbility | i == leadInvestigatorId ]
-      else getActions i window x
+      else getAbilities i window x
 
 instance ActRunner env => RunMessage env TheChamberOfTheBeast where
   runMessage msg a@(TheChamberOfTheBeast attrs@ActAttrs {..}) = case msg of

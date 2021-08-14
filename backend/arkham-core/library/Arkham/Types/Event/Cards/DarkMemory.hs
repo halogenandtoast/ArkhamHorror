@@ -19,8 +19,8 @@ darkMemory = event DarkMemory Cards.darkMemory
 
 instance HasModifiersFor env DarkMemory
 
-instance HasActions env DarkMemory where
-  getActions i window (DarkMemory attrs) = getActions i window attrs
+instance HasAbilities env DarkMemory where
+  getAbilities i window (DarkMemory attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env DarkMemory where
   runMessage msg e@(DarkMemory attrs@EventAttrs {..}) = case msg of

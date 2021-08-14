@@ -36,8 +36,8 @@ instance HasModifiersFor env FishingNet where
 ability :: AssetAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (FastAbility Free)
 
-instance ActionRunner env => HasActions env FishingNet where
-  getActions iid FastPlayerWindow (FishingNet attrs) | ownedBy attrs iid = do
+instance ActionRunner env => HasAbilities env FishingNet where
+  getAbilities iid FastPlayerWindow (FishingNet attrs) | ownedBy attrs iid = do
     mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
     case mrougarou of
       Nothing -> pure []
@@ -49,7 +49,7 @@ instance ActionRunner env => HasActions env FishingNet where
           [ ability attrs
           | eid `elem` exhaustedEnemies && isNothing (assetEnemy attrs)
           ]
-  getActions iid window (FishingNet x) = getActions iid window x
+  getAbilities iid window (FishingNet x) = getAbilities iid window x
 
 instance AssetRunner env => RunMessage env FishingNet where
   runMessage msg a@(FishingNet attrs@AssetAttrs {..}) = case msg of

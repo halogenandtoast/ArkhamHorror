@@ -26,14 +26,14 @@ discOfItzamna2 = accessory DiscOfItzamna2 Cards.discOfItzamna2
 
 instance HasModifiersFor env DiscOfItzamna2
 
-instance HasSet Trait env EnemyId => HasActions env DiscOfItzamna2 where
-  getActions iid (WhenEnemySpawns eid _) (DiscOfItzamna2 a) | ownedBy a iid = do
+instance HasSet Trait env EnemyId => HasAbilities env DiscOfItzamna2 where
+  getAbilities iid (WhenEnemySpawns eid _) (DiscOfItzamna2 a) | ownedBy a iid = do
     traits <- getSet eid
     pure
       [ mkAbility (toSource a) 1 (ReactionAbility Free)
       | Elite `notElem` traits
       ]
-  getActions i window (DiscOfItzamna2 x) = getActions i window x
+  getAbilities i window (DiscOfItzamna2 x) = getAbilities i window x
 
 instance (AssetRunner env) => RunMessage env DiscOfItzamna2 where
   runMessage msg a@(DiscOfItzamna2 attrs) = case msg of

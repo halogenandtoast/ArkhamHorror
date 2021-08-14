@@ -19,8 +19,8 @@ elusive = event Elusive Cards.elusive
 
 instance HasModifiersFor env Elusive
 
-instance HasActions env Elusive where
-  getActions i window (Elusive attrs) = getActions i window attrs
+instance HasAbilities env Elusive where
+  getAbilities i window (Elusive attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env Elusive where
   runMessage msg e@(Elusive attrs@EventAttrs {..}) = case msg of

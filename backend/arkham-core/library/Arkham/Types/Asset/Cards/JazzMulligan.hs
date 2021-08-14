@@ -32,8 +32,8 @@ jazzMulligan =
 ability :: AssetAttrs -> Ability
 ability attrs = mkAbility attrs 1 $ ActionAbility (Just Parley) $ ActionCost 1
 
-instance HasId LocationId env InvestigatorId => HasActions env JazzMulligan where
-  getActions iid NonFast (JazzMulligan attrs) = do
+instance HasId LocationId env InvestigatorId => HasAbilities env JazzMulligan where
+  getAbilities iid NonFast (JazzMulligan attrs) = do
     lid <- getId iid
     case assetLocation attrs of
       Just location ->
@@ -42,7 +42,7 @@ instance HasId LocationId env InvestigatorId => HasActions env JazzMulligan wher
           | lid == location && isNothing (assetInvestigator attrs)
           ]
       _ -> pure mempty
-  getActions iid window (JazzMulligan attrs) = getActions iid window attrs
+  getAbilities iid window (JazzMulligan attrs) = getAbilities iid window attrs
 
 instance HasSet Trait env LocationId => HasModifiersFor env JazzMulligan where
   getModifiersFor (InvestigatorSource iid) (LocationTarget lid) (JazzMulligan attrs)

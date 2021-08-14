@@ -42,8 +42,8 @@ instance HasCount ClueCount env LocationId => HasModifiersFor env DiningCar wher
       Nothing -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env DiningCar where
-  getActions iid window (DiningCar attrs) = getActions iid window attrs
+instance ActionRunner env => HasAbilities env DiningCar where
+  getAbilities iid window (DiningCar attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env DiningCar where
   runMessage msg (DiningCar attrs) = case msg of

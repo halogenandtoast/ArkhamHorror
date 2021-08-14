@@ -29,8 +29,8 @@ instance HasId LocationId env InvestigatorId => HasModifiersFor env Whippoorwill
       [ AnySkillValue (-1) | locationId == enemyLocation attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env Whippoorwill where
-  getActions i window (Whippoorwill attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env Whippoorwill where
+  getAbilities i window (Whippoorwill attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env Whippoorwill where
   runMessage msg (Whippoorwill attrs) = Whippoorwill <$> runMessage msg attrs

@@ -27,10 +27,10 @@ kidnapped = treachery Kidnapped Cards.kidnapped
 
 instance HasModifiersFor env Kidnapped
 
-instance HasActions env Kidnapped where
-  getActions _ (WhenAgendaAdvance aid) (Kidnapped attrs)
+instance HasAbilities env Kidnapped where
+  getAbilities _ (WhenAgendaAdvance aid) (Kidnapped attrs)
     | treacheryOnAgenda aid attrs = pure [mkAbility attrs 1 ForcedAbility]
-  getActions i window (Kidnapped attrs) = getActions i window attrs
+  getAbilities i window (Kidnapped attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env Kidnapped where
   runMessage msg t@(Kidnapped attrs@TreacheryAttrs {..}) = case msg of

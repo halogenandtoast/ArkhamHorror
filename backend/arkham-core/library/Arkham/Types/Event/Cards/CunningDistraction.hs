@@ -19,8 +19,8 @@ cunningDistraction = event CunningDistraction Cards.cunningDistraction
 
 instance HasModifiersFor env CunningDistraction
 
-instance HasActions env CunningDistraction where
-  getActions i window (CunningDistraction attrs) = getActions i window attrs
+instance HasAbilities env CunningDistraction where
+  getAbilities i window (CunningDistraction attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env CunningDistraction where
   runMessage msg e@(CunningDistraction attrs@EventAttrs {..}) = case msg of

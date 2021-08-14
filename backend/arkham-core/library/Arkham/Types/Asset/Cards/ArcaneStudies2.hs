@@ -30,12 +30,12 @@ instance HasModifiersFor env ArcaneStudies2
 ability :: Int -> AssetAttrs -> Ability
 ability idx a = mkAbility a idx $ FastAbility (ResourceCost 1)
 
-instance HasActions env ArcaneStudies2 where
-  getActions iid (WhenSkillTest SkillWillpower) (ArcaneStudies2 a) =
+instance HasAbilities env ArcaneStudies2 where
+  getAbilities iid (WhenSkillTest SkillWillpower) (ArcaneStudies2 a) =
     pure [ ability 1 a | ownedBy a iid ]
-  getActions iid (WhenSkillTest SkillIntellect) (ArcaneStudies2 a) =
+  getAbilities iid (WhenSkillTest SkillIntellect) (ArcaneStudies2 a) =
     pure [ ability 2 a | ownedBy a iid ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env ArcaneStudies2 where
   runMessage msg a@(ArcaneStudies2 attrs) = case msg of

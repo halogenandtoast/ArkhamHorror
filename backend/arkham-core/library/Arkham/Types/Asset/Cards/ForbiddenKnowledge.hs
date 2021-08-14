@@ -23,8 +23,8 @@ forbiddenKnowledge = asset ForbiddenKnowledge Cards.forbiddenKnowledge
 
 instance HasModifiersFor env ForbiddenKnowledge
 
-instance HasActions env ForbiddenKnowledge where
-  getActions iid FastPlayerWindow (ForbiddenKnowledge a) | ownedBy a iid = pure
+instance HasAbilities env ForbiddenKnowledge where
+  getAbilities iid FastPlayerWindow (ForbiddenKnowledge a) | ownedBy a iid = pure
     [ mkAbility
         (toSource a)
         1
@@ -36,7 +36,7 @@ instance HasActions env ForbiddenKnowledge where
         )
     | useCount (assetUses a) > 0
     ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env ForbiddenKnowledge where
   runMessage msg a@(ForbiddenKnowledge attrs) = case msg of

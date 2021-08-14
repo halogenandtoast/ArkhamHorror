@@ -24,8 +24,8 @@ ritesHowled = treachery RitesHowled Cards.ritesHowled
 
 instance HasModifiersFor env RitesHowled
 
-instance HasActions env RitesHowled where
-  getActions i window (RitesHowled attrs) = getActions i window attrs
+instance HasAbilities env RitesHowled where
+  getAbilities i window (RitesHowled attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env RitesHowled where
   runMessage msg t@(RitesHowled attrs) = case msg of

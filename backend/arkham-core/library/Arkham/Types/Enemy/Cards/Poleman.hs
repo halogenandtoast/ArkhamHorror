@@ -27,8 +27,8 @@ poleman = enemyWith
 
 instance HasModifiersFor env Poleman
 
-instance EnemyAttrsHasActions env => HasActions env Poleman where
-  getActions i window (Poleman attrs) = getActions i window attrs
+instance EnemyAttrsHasAbilities env => HasAbilities env Poleman where
+  getAbilities i window (Poleman attrs) = getAbilities i window attrs
 
 instance EnemyAttrsRunMessage env => RunMessage env Poleman where
   runMessage msg (Poleman attrs) = Poleman <$> runMessage msg attrs

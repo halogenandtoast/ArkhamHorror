@@ -43,11 +43,11 @@ instance HasModifiersFor env ColdSpringGlen_245 where
 ability :: LocationAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
-instance ActionRunner env => HasActions env ColdSpringGlen_245 where
-  getActions _ (WhenChosenRandomLocation lid) (ColdSpringGlen_245 attrs)
+instance ActionRunner env => HasAbilities env ColdSpringGlen_245 where
+  getAbilities _ (WhenChosenRandomLocation lid) (ColdSpringGlen_245 attrs)
     | lid == toId attrs = pure [locationAbility (ability attrs)]
-  getActions iid window (ColdSpringGlen_245 attrs) =
-    getActions iid window attrs
+  getAbilities iid window (ColdSpringGlen_245 attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env ColdSpringGlen_245 where
   runMessage msg l@(ColdSpringGlen_245 attrs) = case msg of

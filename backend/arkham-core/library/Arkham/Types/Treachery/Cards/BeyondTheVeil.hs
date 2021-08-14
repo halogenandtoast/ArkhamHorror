@@ -23,8 +23,8 @@ beyondTheVeil = treachery BeyondTheVeil Cards.beyondTheVeil
 
 instance HasModifiersFor env BeyondTheVeil
 
-instance HasActions env BeyondTheVeil where
-  getActions i window (BeyondTheVeil attrs) = getActions i window attrs
+instance HasAbilities env BeyondTheVeil where
+  getAbilities i window (BeyondTheVeil attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env BeyondTheVeil where
   runMessage msg t@(BeyondTheVeil attrs@TreacheryAttrs {..}) = case msg of

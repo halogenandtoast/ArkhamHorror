@@ -32,8 +32,8 @@ newtype AllIn = AllIn ActAttrs
 allIn :: ActCard AllIn
 allIn = act (3, A) AllIn Cards.allIn Nothing
 
-instance ActionRunner env => HasActions env AllIn where
-  getActions iid NonFast (AllIn attrs) = withBaseActions iid NonFast attrs $ do
+instance ActionRunner env => HasAbilities env AllIn where
+  getAbilities iid NonFast (AllIn attrs) = withBaseActions iid NonFast attrs $ do
     investigatorLocationId <- getId @LocationId iid
     maid <- selectOne (assetIs Cards.drFrancisMorgan)
     case maid of
@@ -48,7 +48,7 @@ instance ActionRunner env => HasActions env AllIn where
               (ActionAbility (Just Parley) $ ActionCost 1)
           | isNothing miid && Just investigatorLocationId == assetLocationId
           ]
-  getActions i window (AllIn x) = getActions i window x
+  getAbilities i window (AllIn x) = getAbilities i window x
 
 instance ActRunner env => RunMessage env AllIn where
   runMessage msg a@(AllIn attrs@ActAttrs {..}) = case msg of

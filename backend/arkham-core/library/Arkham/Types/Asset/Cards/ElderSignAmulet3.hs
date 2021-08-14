@@ -17,8 +17,8 @@ elderSignAmulet3 =
 
 instance HasModifiersFor env ElderSignAmulet3
 
-instance HasActions env ElderSignAmulet3 where
-  getActions i window (ElderSignAmulet3 x) = getActions i window x
+instance HasAbilities env ElderSignAmulet3 where
+  getAbilities i window (ElderSignAmulet3 x) = getAbilities i window x
 
 instance (AssetRunner env) => RunMessage env ElderSignAmulet3 where
   runMessage msg (ElderSignAmulet3 attrs) =

@@ -29,8 +29,8 @@ ability :: AssetAttrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (ActionAbility (Just Parley) $ ActionCost 1)
 
-instance HasId LocationId env InvestigatorId => HasActions env HelplessPassenger where
-  getActions iid NonFast (HelplessPassenger attrs) = do
+instance HasId LocationId env InvestigatorId => HasAbilities env HelplessPassenger where
+  getAbilities iid NonFast (HelplessPassenger attrs) = do
     lid <- getId iid
     case assetLocation attrs of
       Just location ->
@@ -39,7 +39,7 @@ instance HasId LocationId env InvestigatorId => HasActions env HelplessPassenger
           | lid == location && isNothing (assetInvestigator attrs)
           ]
       _ -> pure mempty
-  getActions iid window (HelplessPassenger attrs) = getActions iid window attrs
+  getAbilities iid window (HelplessPassenger attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env HelplessPassenger
 

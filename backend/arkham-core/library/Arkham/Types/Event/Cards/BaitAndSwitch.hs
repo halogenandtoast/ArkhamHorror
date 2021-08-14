@@ -22,8 +22,8 @@ baitAndSwitch = event BaitAndSwitch Cards.baitAndSwitch
 
 instance HasModifiersFor env BaitAndSwitch
 
-instance HasActions env BaitAndSwitch where
-  getActions i window (BaitAndSwitch attrs) = getActions i window attrs
+instance HasAbilities env BaitAndSwitch where
+  getAbilities i window (BaitAndSwitch attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env BaitAndSwitch where
   runMessage msg e@(BaitAndSwitch attrs@EventAttrs {..}) = case msg of

@@ -24,8 +24,8 @@ terrorFromBeyond = treachery TerrorFromBeyond Cards.terrorFromBeyond
 
 instance HasModifiersFor env TerrorFromBeyond
 
-instance HasActions env TerrorFromBeyond where
-  getActions i window (TerrorFromBeyond attrs) = getActions i window attrs
+instance HasAbilities env TerrorFromBeyond where
+  getAbilities i window (TerrorFromBeyond attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env TerrorFromBeyond where
   runMessage msg t@(TerrorFromBeyond attrs) = case msg of

@@ -24,8 +24,8 @@ graveyard =
 
 instance HasModifiersFor env Graveyard
 
-instance ActionRunner env => HasActions env Graveyard where
-  getActions i window (Graveyard attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env Graveyard where
+  getAbilities i window (Graveyard attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env Graveyard where
   runMessage msg l@(Graveyard attrs@LocationAttrs {..}) = case msg of

@@ -32,8 +32,8 @@ victoriaDevereux = enemyWith
 
 instance HasModifiersFor env VictoriaDevereux
 
-instance ActionRunner env => HasActions env VictoriaDevereux where
-  getActions iid NonFast (VictoriaDevereux attrs@EnemyAttrs {..}) =
+instance ActionRunner env => HasAbilities env VictoriaDevereux where
+  getAbilities iid NonFast (VictoriaDevereux attrs@EnemyAttrs {..}) =
     withBaseActions iid NonFast attrs $ do
       locationId <- getId @LocationId iid
       pure
@@ -41,7 +41,7 @@ instance ActionRunner env => HasActions env VictoriaDevereux where
             $ ActionAbility (Just Parley) (Costs [ActionCost 1, ResourceCost 5])
         | locationId == enemyLocation
         ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (EnemyRunner env) => RunMessage env VictoriaDevereux where
   runMessage msg e@(VictoriaDevereux attrs) = case msg of

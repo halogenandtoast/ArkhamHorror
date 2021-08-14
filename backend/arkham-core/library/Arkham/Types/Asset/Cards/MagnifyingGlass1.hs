@@ -32,12 +32,12 @@ instance HasModifiersFor env MagnifyingGlass1 where
     ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env MagnifyingGlass1 where
-  getActions iid FastPlayerWindow (MagnifyingGlass1 a) | ownedBy a iid = do
+instance ActionRunner env => HasAbilities env MagnifyingGlass1 where
+  getAbilities iid FastPlayerWindow (MagnifyingGlass1 a) | ownedBy a iid = do
     locationId <- getId @LocationId iid
     clueCount' <- unClueCount <$> getCount locationId
     pure [ mkAbility a 1 $ FastAbility Free | clueCount' == 0 ]
-  getActions i window (MagnifyingGlass1 x) = getActions i window x
+  getAbilities i window (MagnifyingGlass1 x) = getAbilities i window x
 
 instance (AssetRunner env) => RunMessage env MagnifyingGlass1 where
   runMessage msg a@(MagnifyingGlass1 attrs) = case msg of

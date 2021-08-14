@@ -29,10 +29,10 @@ ability :: AssetAttrs -> Ability
 ability a =
   mkAbility (toSource a) 1 (FastAbility $ Costs [ExhaustCost (toTarget a)])
 
-instance HasActions env AlyssaGraham where
-  getActions iid FastPlayerWindow (AlyssaGraham a) | ownedBy a iid =
+instance HasAbilities env AlyssaGraham where
+  getAbilities iid FastPlayerWindow (AlyssaGraham a) | ownedBy a iid =
     pure [ability a]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance HasModifiersFor env AlyssaGraham where
   getModifiersFor _ (InvestigatorTarget iid) (AlyssaGraham a) =

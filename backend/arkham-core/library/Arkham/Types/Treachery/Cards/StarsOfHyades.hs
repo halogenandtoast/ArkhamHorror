@@ -23,8 +23,8 @@ starsOfHyades = treachery StarsOfHyades Cards.starsOfHyades
 
 instance HasModifiersFor env StarsOfHyades
 
-instance HasActions env StarsOfHyades where
-  getActions i window (StarsOfHyades attrs) = getActions i window attrs
+instance HasAbilities env StarsOfHyades where
+  getAbilities i window (StarsOfHyades attrs) = getAbilities i window attrs
 
 instance
   ( HasList UnderneathCard env InvestigatorId

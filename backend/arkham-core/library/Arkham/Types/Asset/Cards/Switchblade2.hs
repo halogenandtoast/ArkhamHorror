@@ -28,10 +28,10 @@ switchblade2 = hand Switchblade2 Cards.switchblade2
 
 instance HasModifiersFor env Switchblade2
 
-instance HasActions env Switchblade2 where
-  getActions iid NonFast (Switchblade2 a) | ownedBy a iid =
+instance HasAbilities env Switchblade2 where
+  getAbilities iid NonFast (Switchblade2 a) | ownedBy a iid =
     pure [mkAbility a 1 $ ActionAbility (Just Action.Fight) (ActionCost 1)]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Switchblade2 where
   runMessage msg a@(Switchblade2 attrs) = case msg of

@@ -28,8 +28,8 @@ instance HasModifiersFor env Indebted where
       [ StartingResources (-2) | treacheryOnInvestigator iid attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env Indebted where
-  getActions iid window (Indebted attrs) = getActions iid window attrs
+instance HasAbilities env Indebted where
+  getAbilities iid window (Indebted attrs) = getAbilities iid window attrs
 
 instance (TreacheryRunner env) => RunMessage env Indebted where
   runMessage msg t@(Indebted attrs@TreacheryAttrs {..}) = case msg of

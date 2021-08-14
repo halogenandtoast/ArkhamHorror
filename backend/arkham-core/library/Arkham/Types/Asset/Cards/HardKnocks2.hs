@@ -30,12 +30,12 @@ instance HasModifiersFor env HardKnocks2
 ability :: Int -> AssetAttrs -> Ability
 ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)
 
-instance HasActions env HardKnocks2 where
-  getActions iid (WhenSkillTest SkillCombat) (HardKnocks2 a) =
+instance HasAbilities env HardKnocks2 where
+  getAbilities iid (WhenSkillTest SkillCombat) (HardKnocks2 a) =
     pure [ ability 1 a | ownedBy a iid ]
-  getActions iid (WhenSkillTest SkillAgility) (HardKnocks2 a) =
+  getAbilities iid (WhenSkillTest SkillAgility) (HardKnocks2 a) =
     pure [ ability 2 a | ownedBy a iid ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env HardKnocks2 where
   runMessage msg a@(HardKnocks2 attrs) = case msg of

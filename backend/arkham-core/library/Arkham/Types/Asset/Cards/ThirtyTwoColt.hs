@@ -28,13 +28,13 @@ thirtyTwoColt :: AssetCard ThirtyTwoColt
 thirtyTwoColt =
   assetWith ThirtyTwoColt Cards.thirtyTwoColt (slotsL .~ [HandSlot])
 
-instance HasActions env ThirtyTwoColt where
-  getActions iid NonFast (ThirtyTwoColt a) | ownedBy a iid = pure
+instance HasAbilities env ThirtyTwoColt where
+  getAbilities iid NonFast (ThirtyTwoColt a) | ownedBy a iid = pure
     [ mkAbility a 1 $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
     ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance HasModifiersFor env ThirtyTwoColt
 

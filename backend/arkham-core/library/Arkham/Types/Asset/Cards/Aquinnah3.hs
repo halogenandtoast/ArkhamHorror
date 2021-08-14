@@ -33,13 +33,13 @@ dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
 
 instance HasModifiersFor env Aquinnah3
 
-instance ActionRunner env => HasActions env Aquinnah3 where
-  getActions iid (WhenEnemyAttacks who _) (Aquinnah3 a)
+instance ActionRunner env => HasAbilities env Aquinnah3 where
+  getAbilities iid (WhenEnemyAttacks who _) (Aquinnah3 a)
     | ownedBy a iid && iid == who = do
       locationId <- getId @LocationId iid
       enemyIds <- getSet @EnemyId locationId
       pure [ reactionAbility a | notNull enemyIds ]
-  getActions i window (Aquinnah3 x) = getActions i window x
+  getAbilities i window (Aquinnah3 x) = getAbilities i window x
 
 instance AssetRunner env => RunMessage env Aquinnah3 where
   runMessage msg a@(Aquinnah3 attrs) = case msg of

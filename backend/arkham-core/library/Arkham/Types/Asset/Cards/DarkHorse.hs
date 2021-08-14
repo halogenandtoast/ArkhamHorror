@@ -22,8 +22,8 @@ newtype DarkHorse = DarkHorse AssetAttrs
 darkHorse :: AssetCard DarkHorse
 darkHorse = asset DarkHorse Cards.darkHorse
 
-instance HasActions env DarkHorse where
-  getActions iid window (DarkHorse attrs) = getActions iid window attrs
+instance HasAbilities env DarkHorse where
+  getAbilities iid window (DarkHorse attrs) = getAbilities iid window attrs
 
 instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env DarkHorse where
   getModifiersFor _ (InvestigatorTarget iid) (DarkHorse a) | ownedBy a iid = do

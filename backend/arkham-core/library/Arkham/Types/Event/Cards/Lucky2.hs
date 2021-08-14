@@ -19,8 +19,8 @@ lucky2 = event Lucky2 Cards.lucky2
 
 instance HasModifiersFor env Lucky2
 
-instance HasActions env Lucky2 where
-  getActions i window (Lucky2 attrs) = getActions i window attrs
+instance HasAbilities env Lucky2 where
+  getAbilities i window (Lucky2 attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env Lucky2 where
   runMessage msg e@(Lucky2 attrs@EventAttrs {..}) = case msg of

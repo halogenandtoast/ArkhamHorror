@@ -30,11 +30,11 @@ ability :: AssetAttrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (ReactionAbility $ ExhaustCost (toTarget attrs))
 
-instance HasActions env ZebulonWhateley where
-  getActions iid (AfterPassSkillTest _ (TreacherySource _) who _) (ZebulonWhateley attrs)
+instance HasAbilities env ZebulonWhateley where
+  getAbilities iid (AfterPassSkillTest _ (TreacherySource _) who _) (ZebulonWhateley attrs)
     | iid == who
     = pure [ ability attrs | ownedBy attrs iid ]
-  getActions iid window (ZebulonWhateley attrs) = getActions iid window attrs
+  getAbilities iid window (ZebulonWhateley attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env ZebulonWhateley where
   getModifiersFor _ (InvestigatorTarget iid) (ZebulonWhateley a) =

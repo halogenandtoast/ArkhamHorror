@@ -22,8 +22,8 @@ twistOfFate = treachery TwistOfFate Cards.twistOfFate
 
 instance HasModifiersFor env TwistOfFate
 
-instance HasActions env TwistOfFate where
-  getActions i window (TwistOfFate attrs) = getActions i window attrs
+instance HasAbilities env TwistOfFate where
+  getAbilities i window (TwistOfFate attrs) = getAbilities i window attrs
 
 instance (TreacheryRunner env) => RunMessage env TwistOfFate where
   runMessage msg t@(TwistOfFate attrs) = case msg of

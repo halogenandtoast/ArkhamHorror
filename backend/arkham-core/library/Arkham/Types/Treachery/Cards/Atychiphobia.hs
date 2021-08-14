@@ -26,8 +26,8 @@ atychiphobia = treachery Atychiphobia Cards.atychiphobia
 
 instance HasModifiersFor env Atychiphobia
 
-instance ActionRunner env => HasActions env Atychiphobia where
-  getActions iid NonFast (Atychiphobia a) =
+instance ActionRunner env => HasAbilities env Atychiphobia where
+  getAbilities iid NonFast (Atychiphobia a) =
     withTreacheryInvestigator a $ \tormented -> do
       investigatorLocationId <- getId @LocationId iid
       treacheryLocation <- getId tormented
@@ -35,7 +35,7 @@ instance ActionRunner env => HasActions env Atychiphobia where
         [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 2
         | treacheryLocation == investigatorLocationId
         ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env Atychiphobia where
   runMessage msg t@(Atychiphobia attrs@TreacheryAttrs {..}) = case msg of

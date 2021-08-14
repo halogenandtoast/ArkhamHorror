@@ -32,9 +32,9 @@ arkhamWoodsGreatWillow = locationWith
 
 instance HasModifiersFor env ArkhamWoodsGreatWillow
 
-instance ActionRunner env => HasActions env ArkhamWoodsGreatWillow where
-  getActions i window (ArkhamWoodsGreatWillow attrs) =
-    getActions i window attrs
+instance ActionRunner env => HasAbilities env ArkhamWoodsGreatWillow where
+  getAbilities i window (ArkhamWoodsGreatWillow attrs) =
+    getAbilities i window attrs
 
 -- | Unused here is on a forced ability
 instance LocationRunner env => RunMessage env ArkhamWoodsGreatWillow where

@@ -27,8 +27,8 @@ instance HasCount PlayerCount env () => HasModifiersFor env TheExperiment where
     pure $ toModifiers attrs [HealthModifier modifier]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env TheExperiment where
-  getActions i window (TheExperiment attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env TheExperiment where
+  getAbilities i window (TheExperiment attrs) = getAbilities i window attrs
 
 instance EnemyRunner env => RunMessage env TheExperiment where
   runMessage msg (TheExperiment attrs) = case msg of

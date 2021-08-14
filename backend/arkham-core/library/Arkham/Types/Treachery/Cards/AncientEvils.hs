@@ -18,8 +18,8 @@ ancientEvils = treachery AncientEvils Cards.ancientEvils
 
 instance HasModifiersFor env AncientEvils
 
-instance HasActions env AncientEvils where
-  getActions i window (AncientEvils attrs) = getActions i window attrs
+instance HasAbilities env AncientEvils where
+  getAbilities i window (AncientEvils attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env AncientEvils where
   runMessage msg t@(AncientEvils attrs@TreacheryAttrs {..}) = case msg of

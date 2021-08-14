@@ -33,8 +33,8 @@ peterWarren = enemyWith
 
 instance HasModifiersFor env PeterWarren
 
-instance ActionRunner env => HasActions env PeterWarren where
-  getActions iid NonFast (PeterWarren attrs@EnemyAttrs {..}) =
+instance ActionRunner env => HasAbilities env PeterWarren where
+  getAbilities iid NonFast (PeterWarren attrs@EnemyAttrs {..}) =
     withBaseActions iid NonFast attrs $ do
       locationId <- getId @LocationId iid
       pure
@@ -42,7 +42,7 @@ instance ActionRunner env => HasActions env PeterWarren where
             $ ActionAbility (Just Parley) (Costs [ActionCost 1, ClueCost 2])
         | locationId == enemyLocation
         ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (EnemyRunner env) => RunMessage env PeterWarren where
   runMessage msg e@(PeterWarren attrs@EnemyAttrs {..}) = case msg of

@@ -27,13 +27,13 @@ newtype RiteOfSeeking4 = RiteOfSeeking4 AssetAttrs
 riteOfSeeking4 :: AssetCard RiteOfSeeking4
 riteOfSeeking4 = arcane RiteOfSeeking4 Cards.riteOfSeeking4
 
-instance HasActions env RiteOfSeeking4 where
-  getActions iid NonFast (RiteOfSeeking4 a) | ownedBy a iid = pure
+instance HasAbilities env RiteOfSeeking4 where
+  getAbilities iid NonFast (RiteOfSeeking4 a) | ownedBy a iid = pure
     [ mkAbility a 1 $ ActionAbility
         (Just Action.Investigate)
         (Costs [ActionCost 1, UseCost (toId a) Charge 1])
     ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance HasModifiersFor env RiteOfSeeking4
 

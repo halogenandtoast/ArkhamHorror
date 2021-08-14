@@ -30,8 +30,8 @@ sisterMary = SisterMary $ baseAttrs
     }
   [Believer, Blessed]
 
-instance InvestigatorRunner env => HasActions env SisterMary where
-  getActions i window (SisterMary attrs) = getActions i window attrs
+instance InvestigatorRunner env => HasAbilities env SisterMary where
+  getAbilities i window (SisterMary attrs) = getAbilities i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env SisterMary where
   runMessage msg (SisterMary attrs) = SisterMary <$> runMessage msg attrs

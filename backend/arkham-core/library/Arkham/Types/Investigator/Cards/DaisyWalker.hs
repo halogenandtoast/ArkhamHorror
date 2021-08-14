@@ -38,8 +38,8 @@ daisyWalker =
     , agility = 2
     }
 
-instance InvestigatorRunner env => HasActions env DaisyWalker where
-  getActions i window (DaisyWalker attrs) = getActions i window attrs
+instance InvestigatorRunner env => HasAbilities env DaisyWalker where
+  getAbilities i window (DaisyWalker attrs) = getAbilities i window attrs
 
 instance HasTokenValue env DaisyWalker where
   getTokenValue (DaisyWalker attrs) iid ElderSign | iid == toId attrs =

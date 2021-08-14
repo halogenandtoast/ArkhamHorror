@@ -27,8 +27,8 @@ relentlessDarkYoung = enemyWith
 
 instance HasModifiersFor env RelentlessDarkYoung
 
-instance ActionRunner env => HasActions env RelentlessDarkYoung where
-  getActions i window (RelentlessDarkYoung attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env RelentlessDarkYoung where
+  getAbilities i window (RelentlessDarkYoung attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env RelentlessDarkYoung where
   runMessage msg (RelentlessDarkYoung attrs) = case msg of

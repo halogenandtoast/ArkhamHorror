@@ -20,8 +20,8 @@ acrossSpaceAndTime = treachery AcrossSpaceAndTime Cards.acrossSpaceAndTime
 
 instance HasModifiersFor env AcrossSpaceAndTime
 
-instance HasActions env AcrossSpaceAndTime where
-  getActions i window (AcrossSpaceAndTime attrs) = getActions i window attrs
+instance HasAbilities env AcrossSpaceAndTime where
+  getAbilities i window (AcrossSpaceAndTime attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env AcrossSpaceAndTime where
   runMessage msg t@(AcrossSpaceAndTime attrs) = case msg of

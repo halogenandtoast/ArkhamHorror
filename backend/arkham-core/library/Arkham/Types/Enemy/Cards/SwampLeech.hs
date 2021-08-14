@@ -30,9 +30,9 @@ isEvade ability = case abilityType ability of
   ActionAbility (Just Action.Evade) _ -> True
   _ -> False
 
-instance ActionRunner env => HasActions env SwampLeech where
-  getActions i window (SwampLeech attrs) = do
-    actions' <- getActions i window attrs
+instance ActionRunner env => HasAbilities env SwampLeech where
+  getAbilities i window (SwampLeech attrs) = do
+    actions' <- getAbilities i window attrs
     pure $ filter (not . isEvade) actions'
 
 instance EnemyRunner env => RunMessage env SwampLeech where

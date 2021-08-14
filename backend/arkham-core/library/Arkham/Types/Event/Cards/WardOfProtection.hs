@@ -19,8 +19,8 @@ wardOfProtection = event WardOfProtection Cards.wardOfProtection
 
 instance HasModifiersFor env WardOfProtection
 
-instance HasActions env WardOfProtection where
-  getActions i window (WardOfProtection attrs) = getActions i window attrs
+instance HasAbilities env WardOfProtection where
+  getAbilities i window (WardOfProtection attrs) = getAbilities i window attrs
 
 instance EventRunner env => RunMessage env WardOfProtection where
   runMessage msg e@(WardOfProtection attrs@EventAttrs {..}) = case msg of

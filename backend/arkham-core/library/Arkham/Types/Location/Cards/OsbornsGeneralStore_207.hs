@@ -40,17 +40,17 @@ ability attrs = mkAbility
   1
   (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 1])
 
-instance ActionRunner env => HasActions env OsbornsGeneralStore_207 where
-  getActions iid NonFast (OsbornsGeneralStore_207 attrs)
+instance ActionRunner env => HasAbilities env OsbornsGeneralStore_207 where
+  getAbilities iid NonFast (OsbornsGeneralStore_207 attrs)
     | locationRevealed attrs = withBaseActions iid NonFast attrs
     $ pure [locationAbility (ability attrs)]
-  getActions iid FastPlayerWindow (OsbornsGeneralStore_207 attrs)
+  getAbilities iid FastPlayerWindow (OsbornsGeneralStore_207 attrs)
     | locationRevealed attrs = withBaseActions iid FastPlayerWindow attrs $ pure
       [ drawCardUnderneathAction attrs
       | iid `on` attrs && locationClues attrs == 0
       ]
-  getActions iid window (OsbornsGeneralStore_207 attrs) =
-    getActions iid window attrs
+  getAbilities iid window (OsbornsGeneralStore_207 attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env OsbornsGeneralStore_207 where
   runMessage msg l@(OsbornsGeneralStore_207 attrs) = case msg of

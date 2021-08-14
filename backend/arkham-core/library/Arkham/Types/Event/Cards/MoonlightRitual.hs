@@ -21,8 +21,8 @@ newtype MoonlightRitual = MoonlightRitual EventAttrs
 moonlightRitual :: EventCard MoonlightRitual
 moonlightRitual = event MoonlightRitual Cards.moonlightRitual
 
-instance HasActions env MoonlightRitual where
-  getActions iid window (MoonlightRitual attrs) = getActions iid window attrs
+instance HasAbilities env MoonlightRitual where
+  getAbilities iid window (MoonlightRitual attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env MoonlightRitual
 

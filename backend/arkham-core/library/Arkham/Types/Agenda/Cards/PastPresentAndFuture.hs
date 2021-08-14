@@ -28,8 +28,8 @@ pastPresentAndFuture =
 
 instance HasModifiersFor env PastPresentAndFuture
 
-instance HasActions env PastPresentAndFuture where
-  getActions i window (PastPresentAndFuture x) = getActions i window x
+instance HasAbilities env PastPresentAndFuture where
+  getAbilities i window (PastPresentAndFuture x) = getAbilities i window x
 
 instance (HasRecord env, AgendaRunner env) => RunMessage env PastPresentAndFuture where
   runMessage msg a@(PastPresentAndFuture attrs@AgendaAttrs {..}) = case msg of

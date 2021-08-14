@@ -20,8 +20,8 @@ emergencyCache = event EmergencyCache Cards.emergencyCache
 
 instance HasModifiersFor env EmergencyCache
 
-instance HasActions env EmergencyCache where
-  getActions i window (EmergencyCache attrs) = getActions i window attrs
+instance HasAbilities env EmergencyCache where
+  getAbilities i window (EmergencyCache attrs) = getAbilities i window attrs
 
 instance HasQueue env => RunMessage env EmergencyCache where
   runMessage msg e@(EmergencyCache attrs@EventAttrs {..}) = case msg of

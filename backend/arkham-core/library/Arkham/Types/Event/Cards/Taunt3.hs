@@ -20,8 +20,8 @@ newtype Taunt3 = Taunt3 EventAttrs
 taunt3 :: EventCard Taunt3
 taunt3 = event Taunt3 Cards.taunt3
 
-instance HasActions env Taunt3 where
-  getActions iid window (Taunt3 attrs) = getActions iid window attrs
+instance HasAbilities env Taunt3 where
+  getAbilities iid window (Taunt3 attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env Taunt3
 

@@ -31,8 +31,8 @@ instance
   , HasSet ExhaustedEnemyId env LocationId
   , HasSet StoryEnemyId env CardCode
   )
-  => HasActions env PowderOfIbnGhazi where
-  getActions iid FastPlayerWindow (PowderOfIbnGhazi attrs) =
+  => HasAbilities env PowderOfIbnGhazi where
+  getAbilities iid FastPlayerWindow (PowderOfIbnGhazi attrs) =
     withBaseActions iid FastPlayerWindow attrs $ do
       broodOfYogSothoth <- mapSet unStoryEnemyId <$> getSet (CardCode "02255")
       lid <- getId @LocationId iid
@@ -46,7 +46,7 @@ instance
           && notNull exhaustedBroodOfYogSothothAtLocation
           && (assetClues attrs > 0)
         ]
-  getActions iid window (PowderOfIbnGhazi attrs) = getActions iid window attrs
+  getAbilities iid window (PowderOfIbnGhazi attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env PowderOfIbnGhazi
 

@@ -32,8 +32,8 @@ congregationalChurch_208 = location
 
 instance HasModifiersFor env CongregationalChurch_208
 
-instance ActionRunner env => HasActions env CongregationalChurch_208 where
-  getActions = withDrawCardUnderneathAction
+instance ActionRunner env => HasAbilities env CongregationalChurch_208 where
+  getAbilities = withDrawCardUnderneathAction
 
 instance LocationRunner env => RunMessage env CongregationalChurch_208 where
   runMessage msg l@(CongregationalChurch_208 attrs) = case msg of

@@ -28,10 +28,10 @@ ability :: AssetAttrs -> Ability
 ability attrs =
   mkAbility attrs 1 $ ReactionAbility $ ExhaustCost (toTarget attrs)
 
-instance HasActions env EarlSawyer where
-  getActions iid (AfterEnemyEvaded who _) (EarlSawyer attrs) | iid == who =
+instance HasAbilities env EarlSawyer where
+  getAbilities iid (AfterEnemyEvaded who _) (EarlSawyer attrs) | iid == who =
     pure [ ability attrs | ownedBy attrs iid ]
-  getActions iid window (EarlSawyer attrs) = getActions iid window attrs
+  getAbilities iid window (EarlSawyer attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env EarlSawyer where
   getModifiersFor _ (InvestigatorTarget iid) (EarlSawyer a) =

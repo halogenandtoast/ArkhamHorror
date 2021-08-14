@@ -25,15 +25,15 @@ fireExtinguisher1 = hand FireExtinguisher1 Cards.fireExtinguisher1
 
 instance HasModifiersFor env FireExtinguisher1
 
-instance HasActions env FireExtinguisher1 where
-  getActions iid NonFast (FireExtinguisher1 a) | ownedBy a iid = do
+instance HasAbilities env FireExtinguisher1 where
+  getAbilities iid NonFast (FireExtinguisher1 a) | ownedBy a iid = do
     pure
       [ mkAbility a 1 $ ActionAbility (Just Action.Fight) (ActionCost 1)
       , mkAbility a 2 $ ActionAbility
         (Just Action.Evade)
         (Costs [ActionCost 1, ExileCost $ toTarget a])
       ]
-  getActions i window (FireExtinguisher1 x) = getActions i window x
+  getAbilities i window (FireExtinguisher1 x) = getAbilities i window x
 
 instance (AssetRunner env) => RunMessage env FireExtinguisher1 where
   runMessage msg a@(FireExtinguisher1 attrs) = case msg of

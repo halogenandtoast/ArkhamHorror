@@ -29,15 +29,15 @@ coverUpClues TreacheryAttrs { treacheryClues } =
 
 instance HasModifiersFor env CoverUp
 
-instance ActionRunner env => HasActions env CoverUp where
-  getActions iid (WhenDiscoverClues who lid n) (CoverUp a) | iid == who =
+instance ActionRunner env => HasAbilities env CoverUp where
+  getAbilities iid (WhenDiscoverClues who lid n) (CoverUp a) | iid == who =
     withTreacheryInvestigator a $ \tormented -> do
       treacheryLocationId <- getId @LocationId tormented
       pure
         [ mkAbility a 1 $ ReactionAbility Free
         | (treacheryLocationId == lid) && (coverUpClues a > 0) && (n > 0)
         ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env CoverUp where
   runMessage msg t@(CoverUp attrs@TreacheryAttrs {..}) = case msg of

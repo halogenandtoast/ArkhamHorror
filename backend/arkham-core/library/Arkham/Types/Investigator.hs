@@ -90,19 +90,19 @@ instance HasModifiersFor env BaseInvestigator where
   getModifiersFor source target (BaseInvestigator attrs) =
     getModifiersFor source target attrs
 
-instance InvestigatorRunner env => HasActions env BaseInvestigator where
-  getActions iid window (BaseInvestigator attrs) = getActions iid window attrs
+instance InvestigatorRunner env => HasAbilities env BaseInvestigator where
+  getAbilities iid window (BaseInvestigator attrs) = getAbilities iid window attrs
 
 instance InvestigatorRunner env => RunMessage env BaseInvestigator where
   runMessage msg (BaseInvestigator attrs) =
     BaseInvestigator <$> runMessage msg attrs
 
-instance InvestigatorRunner env => HasActions env Investigator where
-  getActions iid window investigator = do
+instance InvestigatorRunner env => HasAbilities env Investigator where
+  getAbilities iid window investigator = do
     modifiers' <- getModifiers (toSource investigator) (toTarget investigator)
     if Blank `elem` modifiers'
-      then getActions iid window (toAttrs investigator)
-      else genericGetActions iid window investigator
+      then getAbilities iid window (toAttrs investigator)
+      else genericGetAbilities iid window investigator
 
 instance
   ( HasCount UsesCount env (AssetId, UseType)

@@ -30,10 +30,10 @@ ability a = restrictedAbility
   ClueOnLocation
   (ReactionAbility $ ExhaustCost $ toTarget a)
 
-instance HasActions env Fieldwork where
-  getActions iid (AfterEntering iid' _) (Fieldwork attrs)
+instance HasAbilities env Fieldwork where
+  getAbilities iid (AfterEntering iid' _) (Fieldwork attrs)
     | ownedBy attrs iid && iid == iid' = pure [ability attrs]
-  getActions iid window (Fieldwork attrs) = getActions iid window attrs
+  getAbilities iid window (Fieldwork attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env Fieldwork
 

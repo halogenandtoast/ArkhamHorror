@@ -21,8 +21,8 @@ falseLead = treachery FalseLead Cards.falseLead
 
 instance HasModifiersFor env FalseLead
 
-instance HasActions env FalseLead where
-  getActions i window (FalseLead attrs) = getActions i window attrs
+instance HasAbilities env FalseLead where
+  getAbilities i window (FalseLead attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env FalseLead where
   runMessage msg t@(FalseLead attrs@TreacheryAttrs {..}) = case msg of

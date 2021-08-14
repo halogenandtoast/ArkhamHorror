@@ -22,8 +22,8 @@ broadmoor =
 
 instance HasModifiersFor env Broadmoor
 
-instance ActionRunner env => HasActions env Broadmoor where
-  getActions = withResignAction
+instance ActionRunner env => HasAbilities env Broadmoor where
+  getAbilities = withResignAction
 
 instance LocationRunner env => RunMessage env Broadmoor where
   runMessage msg (Broadmoor attrs) = Broadmoor <$> runMessage msg attrs

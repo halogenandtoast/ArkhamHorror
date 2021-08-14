@@ -22,8 +22,8 @@ writhingAppendage =
 
 instance HasModifiersFor env WrithingAppendage
 
-instance EnemyAttrsHasActions env => HasActions env WrithingAppendage where
-  getActions i window (WrithingAppendage attrs) = getActions i window attrs
+instance EnemyAttrsHasAbilities env => HasAbilities env WrithingAppendage where
+  getAbilities i window (WrithingAppendage attrs) = getAbilities i window attrs
 
 instance
   ( HasId (Maybe StoryEnemyId) env CardCode

@@ -36,10 +36,10 @@ instance HasModifiersFor env TheGuardian
 ability :: LocationAttrs -> Ability
 ability attrs = mkAbility attrs 1 (ReactionAbility Free)
 
-instance ActionRunner env => HasActions env TheGuardian where
-  getActions iid (AfterEntering who lid) (TheGuardian attrs)
+instance ActionRunner env => HasAbilities env TheGuardian where
+  getAbilities iid (AfterEntering who lid) (TheGuardian attrs)
     | lid == toId attrs && iid == who = pure [ability attrs]
-  getActions iid window (TheGuardian attrs) = getActions iid window attrs
+  getAbilities iid window (TheGuardian attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env TheGuardian where
   runMessage msg l@(TheGuardian attrs) = case msg of

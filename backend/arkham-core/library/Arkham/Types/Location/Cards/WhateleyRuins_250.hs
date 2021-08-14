@@ -48,8 +48,8 @@ ability attrs =
   mkAbility (toSource attrs) 1 (FastAbility Free)
     & (abilityLimitL .~ GroupLimit PerGame 1)
 
-instance ActionRunner env => HasActions env WhateleyRuins_250 where
-  getActions iid FastPlayerWindow (WhateleyRuins_250 attrs) =
+instance ActionRunner env => HasAbilities env WhateleyRuins_250 where
+  getAbilities iid FastPlayerWindow (WhateleyRuins_250 attrs) =
     withBaseActions iid FastPlayerWindow attrs $ do
       investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
@@ -57,7 +57,7 @@ instance ActionRunner env => HasActions env WhateleyRuins_250 where
         [ locationAbility (ability attrs)
         | investigatorsWithClues && anyAbominations
         ]
-  getActions iid window (WhateleyRuins_250 attrs) = getActions iid window attrs
+  getAbilities iid window (WhateleyRuins_250 attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env WhateleyRuins_250 where
   runMessage msg l@(WhateleyRuins_250 attrs) = case msg of

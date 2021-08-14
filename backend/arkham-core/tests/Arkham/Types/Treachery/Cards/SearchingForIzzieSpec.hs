@@ -50,7 +50,7 @@ spec = describe "Searching for Izzie" $ do
           let
             updatedSearchingForIzzie = game ^?! treacheriesL . to toList . ix 0
 
-          [searchingForIzzieAction] <- getActionsOf
+          [searchingForIzzieAction] <- getAbilitiesOf
             investigator
             NonFast
             updatedSearchingForIzzie

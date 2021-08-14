@@ -19,8 +19,8 @@ sureGamble3 = event SureGamble3 Cards.sureGamble3
 
 instance HasModifiersFor env SureGamble3
 
-instance HasActions env SureGamble3 where
-  getActions i window (SureGamble3 attrs) = getActions i window attrs
+instance HasAbilities env SureGamble3 where
+  getAbilities i window (SureGamble3 attrs) = getAbilities i window attrs
 
 instance EventRunner env => RunMessage env SureGamble3 where
   runMessage msg e@(SureGamble3 attrs@EventAttrs {..}) = case msg of

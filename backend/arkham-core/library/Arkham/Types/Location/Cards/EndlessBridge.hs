@@ -38,12 +38,12 @@ instance HasModifiersFor env EndlessBridge
 forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
 
-instance ActionRunner env => HasActions env EndlessBridge where
-  getActions iid (AfterLeaving who lid) (EndlessBridge attrs)
+instance ActionRunner env => HasAbilities env EndlessBridge where
+  getAbilities iid (AfterLeaving who lid) (EndlessBridge attrs)
     | lid == toId attrs && who == iid = do
       leadInvestigator <- getLeadInvestigatorId
       pure [ forcedAbility attrs | iid == leadInvestigator ]
-  getActions iid window (EndlessBridge attrs) = getActions iid window attrs
+  getAbilities iid window (EndlessBridge attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env EndlessBridge where
   runMessage msg l@(EndlessBridge attrs) = case msg of

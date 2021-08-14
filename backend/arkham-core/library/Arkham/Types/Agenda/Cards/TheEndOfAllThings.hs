@@ -26,8 +26,8 @@ theEndOfAllThings =
 
 instance HasModifiersFor env TheEndOfAllThings
 
-instance HasActions env TheEndOfAllThings where
-  getActions i window (TheEndOfAllThings x) = getActions i window x
+instance HasAbilities env TheEndOfAllThings where
+  getAbilities i window (TheEndOfAllThings x) = getAbilities i window x
 
 instance (HasId (Maybe EnemyId) env EnemyMatcher, AgendaRunner env) => RunMessage env TheEndOfAllThings where
   runMessage msg a@(TheEndOfAllThings attrs@AgendaAttrs {..}) = case msg of

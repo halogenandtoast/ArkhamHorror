@@ -40,13 +40,13 @@ instance HasModifiersFor env MonstrousTransformation where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env MonstrousTransformation where
-  getActions iid NonFast (MonstrousTransformation a) | ownedBy a iid = pure
+instance HasAbilities env MonstrousTransformation where
+  getAbilities iid NonFast (MonstrousTransformation a) | ownedBy a iid = pure
     [ mkAbility a 1 $ ActionAbility
         (Just Action.Fight)
         (Costs [ExhaustCost (toTarget a), ActionCost 1])
     ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env MonstrousTransformation where
   runMessage msg a@(MonstrousTransformation attrs) = case msg of

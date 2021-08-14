@@ -24,8 +24,8 @@ ruinAndDestruction = treachery RuinAndDestruction Cards.ruinAndDestruction
 
 instance HasModifiersFor env RuinAndDestruction
 
-instance HasActions env RuinAndDestruction where
-  getActions i window (RuinAndDestruction attrs) = getActions i window attrs
+instance HasAbilities env RuinAndDestruction where
+  getAbilities i window (RuinAndDestruction attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env RuinAndDestruction where
   runMessage msg t@(RuinAndDestruction attrs) = case msg of

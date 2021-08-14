@@ -23,8 +23,8 @@ arousingSuspicions = treachery ArousingSuspicions Cards.arousingSuspicions
 
 instance HasModifiersFor env ArousingSuspicions
 
-instance HasActions env ArousingSuspicions where
-  getActions i window (ArousingSuspicions attrs) = getActions i window attrs
+instance HasAbilities env ArousingSuspicions where
+  getAbilities i window (ArousingSuspicions attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env ArousingSuspicions where
   runMessage msg t@(ArousingSuspicions attrs) = case msg of

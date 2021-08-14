@@ -30,8 +30,8 @@ mandyThompson = MandyThompson $ baseAttrs
     }
   [Assistant, Scholar]
 
-instance InvestigatorRunner env => HasActions env MandyThompson where
-  getActions i window (MandyThompson attrs) = getActions i window attrs
+instance InvestigatorRunner env => HasAbilities env MandyThompson where
+  getAbilities i window (MandyThompson attrs) = getAbilities i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env MandyThompson where
   runMessage msg (MandyThompson attrs) = MandyThompson <$> runMessage msg attrs

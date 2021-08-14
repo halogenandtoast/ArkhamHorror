@@ -20,8 +20,8 @@ occultLexicon = hand OccultLexicon Cards.occultLexicon
 
 instance HasModifiersFor env OccultLexicon
 
-instance HasActions env OccultLexicon where
-  getActions i window (OccultLexicon x) = getActions i window x
+instance HasAbilities env OccultLexicon where
+  getAbilities i window (OccultLexicon x) = getAbilities i window x
 
 instance (AssetRunner env) => RunMessage env OccultLexicon where
   runMessage msg (OccultLexicon attrs) = case msg of

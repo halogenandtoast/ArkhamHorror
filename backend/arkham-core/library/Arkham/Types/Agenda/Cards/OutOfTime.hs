@@ -23,8 +23,8 @@ outOfTime = agenda (5, A) OutOfTime Cards.outOfTime (Static 3)
 
 instance HasModifiersFor env OutOfTime
 
-instance HasActions env OutOfTime where
-  getActions i window (OutOfTime x) = getActions i window x
+instance HasAbilities env OutOfTime where
+  getAbilities i window (OutOfTime x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env OutOfTime where
   runMessage msg a@(OutOfTime attrs@AgendaAttrs {..}) = case msg of

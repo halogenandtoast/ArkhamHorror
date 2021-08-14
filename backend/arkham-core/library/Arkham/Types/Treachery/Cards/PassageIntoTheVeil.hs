@@ -24,8 +24,8 @@ passageIntoTheVeil = treachery PassageIntoTheVeil Cards.passageIntoTheVeil
 
 instance HasModifiersFor env PassageIntoTheVeil
 
-instance HasActions env PassageIntoTheVeil where
-  getActions i window (PassageIntoTheVeil attrs) = getActions i window attrs
+instance HasAbilities env PassageIntoTheVeil where
+  getAbilities i window (PassageIntoTheVeil attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env PassageIntoTheVeil where
   runMessage msg t@(PassageIntoTheVeil attrs) = case msg of

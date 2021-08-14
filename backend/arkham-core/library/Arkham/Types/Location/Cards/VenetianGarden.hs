@@ -41,10 +41,10 @@ ability a =
     { abilityLimit = PlayerLimit PerGame 1
     }
 
-instance ActionRunner env => HasActions env VenetianGarden where
-  getActions iid NonFast (VenetianGarden attrs) =
+instance ActionRunner env => HasAbilities env VenetianGarden where
+  getAbilities iid NonFast (VenetianGarden attrs) =
     withBaseActions iid NonFast attrs $ pure [locationAbility (ability attrs)]
-  getActions iid window (VenetianGarden attrs) = getActions iid window attrs
+  getAbilities iid window (VenetianGarden attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env VenetianGarden where
   runMessage msg l@(VenetianGarden attrs) = case msg of

@@ -23,8 +23,8 @@ spacesBetween = treachery SpacesBetween Cards.spacesBetween
 
 instance HasModifiersFor env SpacesBetween
 
-instance HasActions env SpacesBetween where
-  getActions i window (SpacesBetween attrs) = getActions i window attrs
+instance HasAbilities env SpacesBetween where
+  getAbilities i window (SpacesBetween attrs) = getAbilities i window attrs
 
 instance (GetCardDef env LocationId, TreacheryRunner env) => RunMessage env SpacesBetween where
   runMessage msg t@(SpacesBetween attrs) = case msg of

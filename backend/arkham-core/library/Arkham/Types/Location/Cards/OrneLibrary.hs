@@ -27,8 +27,8 @@ instance HasModifiersFor env OrneLibrary where
     $ toModifiers attrs [ActionCostOf (IsAction Action.Investigate) 1]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env OrneLibrary where
-  getActions i window (OrneLibrary attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env OrneLibrary where
+  getAbilities i window (OrneLibrary attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env OrneLibrary where
   runMessage msg (OrneLibrary attrs) = OrneLibrary <$> runMessage msg attrs

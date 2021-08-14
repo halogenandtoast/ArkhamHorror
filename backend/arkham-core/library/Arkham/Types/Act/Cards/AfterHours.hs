@@ -21,8 +21,8 @@ afterHours = act
   Cards.afterHours
   (Just $ GroupClueCost (PerPlayer 3) Nothing)
 
-instance HasActions env AfterHours where
-  getActions i window (AfterHours x) = getActions i window x
+instance HasAbilities env AfterHours where
+  getAbilities i window (AfterHours x) = getAbilities i window x
 
 instance ActRunner env => RunMessage env AfterHours where
   runMessage msg a@(AfterHours attrs@ActAttrs {..}) = case msg of

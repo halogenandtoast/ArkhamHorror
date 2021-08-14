@@ -26,8 +26,8 @@ allIsOne = agenda (1, A) AllIsOne Cards.allIsOne (Static 4)
 
 instance HasModifiersFor env AllIsOne
 
-instance HasActions env AllIsOne where
-  getActions i window (AllIsOne x) = getActions i window x
+instance HasAbilities env AllIsOne where
+  getAbilities i window (AllIsOne x) = getAbilities i window x
 
 isEncounterCardSource :: Source -> Bool
 isEncounterCardSource = \case

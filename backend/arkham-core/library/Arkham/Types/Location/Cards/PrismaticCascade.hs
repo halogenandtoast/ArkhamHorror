@@ -38,15 +38,15 @@ instance HasModifiersFor env PrismaticCascade
 forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
 
-instance ActionRunner env => HasActions env PrismaticCascade where
-  getActions iid (AfterDiscoveringClues who lid) (PrismaticCascade attrs)
+instance ActionRunner env => HasAbilities env PrismaticCascade where
+  getAbilities iid (AfterDiscoveringClues who lid) (PrismaticCascade attrs)
     | iid == who && lid == toId attrs = do
       leadInvestigator <- getLeadInvestigatorId
       pure
         [ locationAbility (forcedAbility attrs)
         | locationClues attrs == 0 && leadInvestigator == iid
         ]
-  getActions iid window (PrismaticCascade attrs) = getActions iid window attrs
+  getAbilities iid window (PrismaticCascade attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env PrismaticCascade where
   runMessage msg l@(PrismaticCascade attrs) = case msg of

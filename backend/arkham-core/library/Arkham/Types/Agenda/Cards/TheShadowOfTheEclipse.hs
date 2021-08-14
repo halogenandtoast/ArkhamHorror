@@ -26,8 +26,8 @@ theShadowOfTheEclipse =
 
 instance HasModifiersFor env TheShadowOfTheEclipse
 
-instance HasActions env TheShadowOfTheEclipse where
-  getActions i window (TheShadowOfTheEclipse x) = getActions i window x
+instance HasAbilities env TheShadowOfTheEclipse where
+  getAbilities i window (TheShadowOfTheEclipse x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env TheShadowOfTheEclipse where
   runMessage msg a@(TheShadowOfTheEclipse attrs@AgendaAttrs {..}) = case msg of

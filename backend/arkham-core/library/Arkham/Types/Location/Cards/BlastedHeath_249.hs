@@ -28,8 +28,8 @@ blastedHeath_249 = location
 
 instance HasModifiersFor env BlastedHeath_249
 
-instance ActionRunner env => HasActions env BlastedHeath_249 where
-  getActions iid window (BlastedHeath_249 attrs) = getActions iid window attrs
+instance ActionRunner env => HasAbilities env BlastedHeath_249 where
+  getAbilities iid window (BlastedHeath_249 attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env BlastedHeath_249 where
   runMessage msg l@(BlastedHeath_249 attrs) = case msg of

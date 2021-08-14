@@ -23,8 +23,8 @@ newtype SleightOfHand = SleightOfHand EventAttrs
 sleightOfHand :: EventCard SleightOfHand
 sleightOfHand = event SleightOfHand Cards.sleightOfHand
 
-instance HasActions env SleightOfHand where
-  getActions iid window (SleightOfHand attrs) = getActions iid window attrs
+instance HasAbilities env SleightOfHand where
+  getAbilities iid window (SleightOfHand attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env SleightOfHand
 

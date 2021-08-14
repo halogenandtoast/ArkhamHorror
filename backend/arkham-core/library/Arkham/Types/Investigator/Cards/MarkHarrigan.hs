@@ -49,13 +49,13 @@ ability attrs =
     PerPhase
     1
 
-instance InvestigatorRunner env => HasActions env MarkHarrigan where
-  getActions i (WhenDealtDamage _ target) (MarkHarrigan attrs)
+instance InvestigatorRunner env => HasAbilities env MarkHarrigan where
+  getAbilities i (WhenDealtDamage _ target) (MarkHarrigan attrs)
     | isTarget attrs target && i == toId attrs = pure [ability attrs]
-  getActions i (WhenDealtDamage _ (AssetTarget aid)) (MarkHarrigan attrs)
+  getAbilities i (WhenDealtDamage _ (AssetTarget aid)) (MarkHarrigan attrs)
     | aid `elem` investigatorAssets attrs && i == toId attrs = pure
       [ability attrs]
-  getActions i window (MarkHarrigan attrs) = getActions i window attrs
+  getAbilities i window (MarkHarrigan attrs) = getAbilities i window attrs
 
 instance HasTokenValue env MarkHarrigan where
   getTokenValue (MarkHarrigan attrs) iid ElderSign | iid == toId attrs = do

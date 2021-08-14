@@ -26,8 +26,8 @@ instance HasModifiersFor env ObscuringFog where
       $ toModifiers attrs [ ShroudModifier 2 | treacheryOnLocation lid attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env ObscuringFog where
-  getActions i window (ObscuringFog attrs) = getActions i window attrs
+instance HasAbilities env ObscuringFog where
+  getAbilities i window (ObscuringFog attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env ObscuringFog where
   runMessage msg t@(ObscuringFog attrs@TreacheryAttrs {..}) = case msg of

@@ -39,10 +39,10 @@ fastAbility iid attrs = restrictedAbility
     )
   )
 
-instance HasActions env SmokingPipe where
-  getActions iid FastPlayerWindow (SmokingPipe a) | ownedBy a iid =
+instance HasAbilities env SmokingPipe where
+  getAbilities iid FastPlayerWindow (SmokingPipe a) | ownedBy a iid =
     pure [fastAbility iid a]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance HasModifiersFor env SmokingPipe
 

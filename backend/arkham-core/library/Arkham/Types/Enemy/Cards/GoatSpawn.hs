@@ -21,8 +21,8 @@ goatSpawn = enemy GoatSpawn Cards.goatSpawn (3, Static 3, 2) (1, 0)
 
 instance HasModifiersFor env GoatSpawn
 
-instance ActionRunner env => HasActions env GoatSpawn where
-  getActions i window (GoatSpawn attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env GoatSpawn where
+  getAbilities i window (GoatSpawn attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env GoatSpawn where
   runMessage msg (GoatSpawn attrs@EnemyAttrs {..}) = case msg of

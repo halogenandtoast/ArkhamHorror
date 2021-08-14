@@ -29,12 +29,12 @@ ability :: AssetAttrs -> Ability
 ability attrs =
   mkAbility attrs 1 (ReactionAbility $ ExhaustCost (toTarget attrs))
 
-instance HasSet CommittedCardId env InvestigatorId => HasActions env AnalyticalMind where
-  getActions i (AfterCommitedCard who _) (AnalyticalMind attrs)
+instance HasSet CommittedCardId env InvestigatorId => HasAbilities env AnalyticalMind where
+  getAbilities i (AfterCommitedCard who _) (AnalyticalMind attrs)
     | ownedBy attrs i && i == who = do
       cardCount <- length <$> getSetList @CommittedCardId i
       pure [ ability attrs | cardCount == 1 ]
-  getActions i window (AnalyticalMind attrs) = getActions i window attrs
+  getAbilities i window (AnalyticalMind attrs) = getAbilities i window attrs
 
 instance HasModifiersFor env AnalyticalMind where
   getModifiersFor _ (InvestigatorTarget iid) (AnalyticalMind attrs)

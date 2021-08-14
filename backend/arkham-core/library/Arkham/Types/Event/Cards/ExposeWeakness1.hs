@@ -23,8 +23,8 @@ newtype ExposeWeakness1 = ExposeWeakness1 EventAttrs
 exposeWeakness1 :: EventCard ExposeWeakness1
 exposeWeakness1 = event ExposeWeakness1 Cards.exposeWeakness1
 
-instance HasActions env ExposeWeakness1 where
-  getActions iid window (ExposeWeakness1 attrs) = getActions iid window attrs
+instance HasAbilities env ExposeWeakness1 where
+  getAbilities iid window (ExposeWeakness1 attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env ExposeWeakness1
 

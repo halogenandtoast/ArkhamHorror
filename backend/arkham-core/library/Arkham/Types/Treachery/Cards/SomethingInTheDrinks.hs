@@ -23,8 +23,8 @@ somethingInTheDrinks =
 
 instance HasModifiersFor env SomethingInTheDrinks
 
-instance HasActions env SomethingInTheDrinks where
-  getActions i window (SomethingInTheDrinks attrs) = getActions i window attrs
+instance HasAbilities env SomethingInTheDrinks where
+  getAbilities i window (SomethingInTheDrinks attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env SomethingInTheDrinks where
   runMessage msg t@(SomethingInTheDrinks attrs) = case msg of

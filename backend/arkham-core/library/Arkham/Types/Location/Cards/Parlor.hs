@@ -34,8 +34,8 @@ instance HasModifiersFor env Parlor where
     pure $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env Parlor where
-  getActions iid NonFast (Parlor attrs@LocationAttrs {..}) | locationRevealed =
+instance ActionRunner env => HasAbilities env Parlor where
+  getAbilities iid NonFast (Parlor attrs@LocationAttrs {..}) | locationRevealed =
     do
       actions <- withResignAction iid NonFast attrs
       maid <- selectOne (assetIs Cards.litaChantler)
@@ -55,7 +55,7 @@ instance ActionRunner env => HasActions env Parlor where
                  && Just investigatorLocationId
                  == assetLocationId
                ]
-  getActions iid window (Parlor attrs) = getActions iid window attrs
+  getAbilities iid window (Parlor attrs) = getAbilities iid window attrs
 
 instance (LocationRunner env) => RunMessage env Parlor where
   runMessage msg l@(Parlor attrs@LocationAttrs {..}) = case msg of

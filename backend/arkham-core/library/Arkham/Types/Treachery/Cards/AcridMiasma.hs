@@ -25,8 +25,8 @@ acridMiasma = treachery AcridMiasma Cards.acridMiasma
 
 instance HasModifiersFor env AcridMiasma
 
-instance HasActions env AcridMiasma where
-  getActions i window (AcridMiasma attrs) = getActions i window attrs
+instance HasAbilities env AcridMiasma where
+  getAbilities i window (AcridMiasma attrs) = getAbilities i window attrs
 
 instance
   ( HasSet ClosestLocationId env (InvestigatorId, LocationMatcher)

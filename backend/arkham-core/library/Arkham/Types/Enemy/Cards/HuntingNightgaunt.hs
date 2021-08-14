@@ -22,8 +22,8 @@ huntingNightgaunt =
 
 instance HasModifiersFor env HuntingNightgaunt
 
-instance ActionRunner env => HasActions env HuntingNightgaunt where
-  getActions i window (HuntingNightgaunt attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env HuntingNightgaunt where
+  getAbilities i window (HuntingNightgaunt attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env HuntingNightgaunt where
   runMessage msg (HuntingNightgaunt attrs@EnemyAttrs {..}) = case msg of

@@ -30,8 +30,8 @@ instance
   ( HasSet InvestigatorId env LocationId
   , HasId LocationId env InvestigatorId
   )
-  => HasActions env JewelOfAureolus3 where
-  getActions iid (WhenRevealToken who token) (JewelOfAureolus3 x)
+  => HasAbilities env JewelOfAureolus3 where
+  getAbilities iid (WhenRevealToken who token) (JewelOfAureolus3 x)
     | ownedBy x iid = do
       location <- getId @LocationId iid
       investigatorsAtYourLocation <- getSet @InvestigatorId location
@@ -42,7 +42,7 @@ instance
           && tokenFace token
           `elem` [Skull, Cultist, Tablet, ElderSign, AutoFail]
         ]
-  getActions iid window (JewelOfAureolus3 x) = getActions iid window x
+  getAbilities iid window (JewelOfAureolus3 x) = getAbilities iid window x
 
 instance HasModifiersFor env JewelOfAureolus3
 

@@ -27,16 +27,16 @@ newtype HigherEducation = HigherEducation AssetAttrs
 higherEducation :: AssetCard HigherEducation
 higherEducation = asset HigherEducation Cards.higherEducation
 
-instance HasList HandCard env InvestigatorId => HasActions env HigherEducation where
-  getActions iid (WhenSkillTest SkillWillpower) (HigherEducation a)
+instance HasList HandCard env InvestigatorId => HasAbilities env HigherEducation where
+  getAbilities iid (WhenSkillTest SkillWillpower) (HigherEducation a)
     | ownedBy a iid = do
       active <- (>= 5) . length <$> getHandOf iid
       pure [ mkAbility a 1 $ FastAbility $ ResourceCost 1 | active ]
-  getActions iid (WhenSkillTest SkillIntellect) (HigherEducation a)
+  getAbilities iid (WhenSkillTest SkillIntellect) (HigherEducation a)
     | ownedBy a iid = do
       active <- (>= 5) . length <$> getHandOf iid
       pure [ mkAbility a 2 $ FastAbility $ ResourceCost 1 | active ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance HasModifiersFor env HigherEducation
 

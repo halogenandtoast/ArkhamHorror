@@ -34,8 +34,8 @@ studyAberrantGateway = location
 
 instance HasModifiersFor env StudyAberrantGateway
 
-instance ActionRunner env => HasActions env StudyAberrantGateway where
-  getActions iid NonFast (StudyAberrantGateway attrs) =
+instance ActionRunner env => HasAbilities env StudyAberrantGateway where
+  getAbilities iid NonFast (StudyAberrantGateway attrs) =
     withBaseActions iid NonFast attrs $ do
       leadInvestigatorId <- getLeadInvestigatorId
       pure
@@ -43,8 +43,8 @@ instance ActionRunner env => HasActions env StudyAberrantGateway where
             (mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 2)
         | leadInvestigatorId == iid
         ]
-  getActions iid window (StudyAberrantGateway attrs) =
-    getActions iid window attrs
+  getAbilities iid window (StudyAberrantGateway attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env StudyAberrantGateway where
   runMessage msg l@(StudyAberrantGateway attrs@LocationAttrs {..}) =

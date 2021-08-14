@@ -24,8 +24,8 @@ abduction = treachery Abduction Cards.abduction
 
 instance HasModifiersFor env Abduction
 
-instance HasActions env Abduction where
-  getActions i window (Abduction attrs) = getActions i window attrs
+instance HasAbilities env Abduction where
+  getAbilities i window (Abduction attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env Abduction where
   runMessage msg t@(Abduction attrs) = case msg of

@@ -31,8 +31,8 @@ ability :: AssetAttrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (ReactionAbility $ ExhaustCost (toTarget attrs))
 
-instance ActionRunner env => HasActions env JimsTrumpet where
-  getActions iid (WhenRevealToken _ token) (JimsTrumpet a)
+instance ActionRunner env => HasAbilities env JimsTrumpet where
+  getAbilities iid (WhenRevealToken _ token) (JimsTrumpet a)
     | ownedBy a iid && tokenFace token == Skull = do
       locationId <- getId @LocationId iid
       connectedLocationIds <- map unConnectedLocationId
@@ -44,7 +44,7 @@ instance ActionRunner env => HasActions env JimsTrumpet where
         (concat investigatorIds)
         ((unHorrorCount <$>) . getCount)
       pure [ ability a | any (> 0) horrorCounts ]
-  getActions i window (JimsTrumpet x) = getActions i window x
+  getAbilities i window (JimsTrumpet x) = getAbilities i window x
 
 instance AssetRunner env => RunMessage env JimsTrumpet where
   runMessage msg a@(JimsTrumpet attrs@AssetAttrs {..}) = case msg of

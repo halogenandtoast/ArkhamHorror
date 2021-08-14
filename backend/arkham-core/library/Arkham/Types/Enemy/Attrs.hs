@@ -293,7 +293,7 @@ canEnterLocation eid lid = do
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits
     _ -> False
 
-type EnemyAttrsHasActions env
+type EnemyAttrsHasAbilities env
   = ( HasCostPayment env
     , HasSet InvestigatorId env EnemyId
     , HasSet Keyword env EnemyId
@@ -303,8 +303,8 @@ type EnemyAttrsHasActions env
     , HasModifiersFor env ()
     )
 
-instance EnemyAttrsHasActions env => HasActions env EnemyAttrs where
-  getActions iid NonFast e@EnemyAttrs {..} = do
+instance EnemyAttrsHasAbilities env => HasAbilities env EnemyAttrs where
+  getAbilities iid NonFast e@EnemyAttrs {..} = do
     canFight <- getCanFight enemyId iid
     canEngage <- getCanEngage enemyId iid
     canEvade <- getCanEvade enemyId iid
@@ -325,7 +325,7 @@ instance EnemyAttrsHasActions env => HasActions env EnemyAttrs where
       [ mkAbility e 102 $ ActionAbility (Just Action.Engage) (ActionCost 1)
       | canEngage
       ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance Entity EnemyAttrs where
   type EntityId EnemyAttrs = EnemyId

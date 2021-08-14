@@ -33,10 +33,10 @@ streetsOfVenice = locationWith
 
 instance HasModifiersFor env StreetsOfVenice
 
-instance ActionRunner env => HasActions env StreetsOfVenice where
-  getActions _ FastPlayerWindow (StreetsOfVenice attrs) =
+instance ActionRunner env => HasAbilities env StreetsOfVenice where
+  getAbilities _ FastPlayerWindow (StreetsOfVenice attrs) =
     pure [locationAbility $ mkAbility attrs 1 (FastAbility Free)]
-  getActions iid window (StreetsOfVenice attrs) = getActions iid window attrs
+  getAbilities iid window (StreetsOfVenice attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env StreetsOfVenice where
   runMessage msg l@(StreetsOfVenice attrs) = case msg of

@@ -19,8 +19,8 @@ ghoulMinion = enemy GhoulMinion Cards.ghoulMinion (2, Static 2, 2) (1, 1)
 
 instance HasModifiersFor env GhoulMinion
 
-instance ActionRunner env => HasActions env GhoulMinion where
-  getActions i window (GhoulMinion attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env GhoulMinion where
+  getAbilities i window (GhoulMinion attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env GhoulMinion where
   runMessage msg (GhoulMinion attrs) = GhoulMinion <$> runMessage msg attrs

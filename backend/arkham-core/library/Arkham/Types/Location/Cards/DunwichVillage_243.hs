@@ -40,15 +40,15 @@ ability :: LocationAttrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (ActionAbility Nothing (ActionCost 1))
 
-instance ActionRunner env => HasActions env DunwichVillage_243 where
-  getActions iid NonFast (DunwichVillage_243 attrs) = do
+instance ActionRunner env => HasAbilities env DunwichVillage_243 where
+  getAbilities iid NonFast (DunwichVillage_243 attrs) = do
     baseActions <- withResignAction iid NonFast attrs
     broodOfYogSothoth <- getSet @EnemyId (CardCode "02255")
     pure
       $ baseActions
       <> [ locationAbility (ability attrs) | notNull broodOfYogSothoth ]
-  getActions iid window (DunwichVillage_243 attrs) =
-    getActions iid window attrs
+  getAbilities iid window (DunwichVillage_243 attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env DunwichVillage_243 where
   runMessage msg l@(DunwichVillage_243 attrs) = case msg of

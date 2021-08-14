@@ -30,13 +30,13 @@ gardenDistrict =
 
 instance HasModifiersFor env GardenDistrict
 
-instance ActionRunner env => HasActions env GardenDistrict where
-  getActions iid NonFast (GardenDistrict attrs@LocationAttrs {..})
+instance ActionRunner env => HasAbilities env GardenDistrict where
+  getAbilities iid NonFast (GardenDistrict attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ pure
       [ locationAbility
           (mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 1)
       ]
-  getActions i window (GardenDistrict attrs) = getActions i window attrs
+  getAbilities i window (GardenDistrict attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env GardenDistrict where
   runMessage msg l@(GardenDistrict attrs) = case msg of

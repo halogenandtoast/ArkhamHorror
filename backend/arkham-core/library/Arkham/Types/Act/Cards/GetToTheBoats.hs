@@ -31,11 +31,11 @@ getToTheBoats = act (2, A) GetToTheBoats Cards.getToTheBoats Nothing
 ability :: ActAttrs -> Ability
 ability a = mkAbility a 1 ForcedAbility
 
-instance ActionRunner env => HasActions env GetToTheBoats where
-  getActions iid (PhaseBegins MythosPhase) (GetToTheBoats x) = do
+instance ActionRunner env => HasAbilities env GetToTheBoats where
+  getAbilities iid (PhaseBegins MythosPhase) (GetToTheBoats x) = do
     leadInvestigatorId <- getLeadInvestigatorId
     pure [ ability x | iid == leadInvestigatorId ]
-  getActions iid window (GetToTheBoats x) = getActions iid window x
+  getAbilities iid window (GetToTheBoats x) = getAbilities iid window x
 
 instance
   ( HasId LocationId env InvestigatorId

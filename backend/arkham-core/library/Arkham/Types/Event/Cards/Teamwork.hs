@@ -21,8 +21,8 @@ newtype Teamwork = Teamwork EventAttrs
 teamwork :: EventCard Teamwork
 teamwork = event Teamwork Cards.teamwork
 
-instance HasActions env Teamwork where
-  getActions iid window (Teamwork attrs) = getActions iid window attrs
+instance HasAbilities env Teamwork where
+  getAbilities iid window (Teamwork attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env Teamwork
 

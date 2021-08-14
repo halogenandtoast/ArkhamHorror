@@ -39,10 +39,10 @@ fightAbility :: AssetAttrs -> Ability
 fightAbility a =
   mkAbility a 1 (ActionAbility (Just Action.Fight) (ActionCost 1))
 
-instance HasActions env BaseballBat where
-  getActions iid NonFast (BaseballBat a) | ownedBy a iid = do
+instance HasAbilities env BaseballBat where
+  getAbilities iid NonFast (BaseballBat a) | ownedBy a iid = do
     pure [fightAbility a]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env BaseballBat where
   runMessage msg a@(BaseballBat attrs) = case msg of

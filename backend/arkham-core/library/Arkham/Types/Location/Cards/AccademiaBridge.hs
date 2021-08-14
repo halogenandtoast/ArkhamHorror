@@ -30,8 +30,8 @@ accademiaBridge = locationWith
 
 instance HasModifiersFor env AccademiaBridge
 
-instance ActionRunner env => HasActions env AccademiaBridge where
-  getActions iid window (AccademiaBridge attrs) = getActions iid window attrs
+instance ActionRunner env => HasAbilities env AccademiaBridge where
+  getAbilities iid window (AccademiaBridge attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env AccademiaBridge where
   runMessage msg l@(AccademiaBridge attrs) = case msg of

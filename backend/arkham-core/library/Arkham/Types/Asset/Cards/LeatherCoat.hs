@@ -16,8 +16,8 @@ leatherCoat = bodyWith LeatherCoat Cards.leatherCoat (healthL ?~ 2)
 
 instance HasModifiersFor env LeatherCoat
 
-instance HasActions env LeatherCoat where
-  getActions i window (LeatherCoat x) = getActions i window x
+instance HasAbilities env LeatherCoat where
+  getAbilities i window (LeatherCoat x) = getAbilities i window x
 
 instance (AssetRunner env) => RunMessage env LeatherCoat where
   runMessage msg (LeatherCoat attrs) = LeatherCoat <$> runMessage msg attrs

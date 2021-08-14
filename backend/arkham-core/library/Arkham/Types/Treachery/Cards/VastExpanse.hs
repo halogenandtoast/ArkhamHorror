@@ -24,8 +24,8 @@ vastExpanse = treachery VastExpanse Cards.vastExpanse
 
 instance HasModifiersFor env VastExpanse
 
-instance HasActions env VastExpanse where
-  getActions i window (VastExpanse attrs) = getActions i window attrs
+instance HasAbilities env VastExpanse where
+  getAbilities i window (VastExpanse attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env VastExpanse where
   runMessage msg t@(VastExpanse attrs) = case msg of

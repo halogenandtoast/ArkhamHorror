@@ -32,9 +32,9 @@ exhibitHallMedusaExhibit = locationWithRevealedSideConnections
 
 instance HasModifiersFor env ExhibitHallMedusaExhibit
 
-instance ActionRunner env => HasActions env ExhibitHallMedusaExhibit where
-  getActions iid window (ExhibitHallMedusaExhibit attrs) =
-    getActions iid window attrs
+instance ActionRunner env => HasAbilities env ExhibitHallMedusaExhibit where
+  getAbilities iid window (ExhibitHallMedusaExhibit attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env ExhibitHallMedusaExhibit where
   runMessage msg l@(ExhibitHallMedusaExhibit attrs) = case msg of

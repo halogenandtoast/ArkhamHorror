@@ -18,8 +18,8 @@ lookWhatIFound = event LookWhatIFound Cards.lookWhatIFound
 
 instance HasModifiersFor env LookWhatIFound
 
-instance HasActions env LookWhatIFound where
-  getActions i window (LookWhatIFound attrs) = getActions i window attrs
+instance HasAbilities env LookWhatIFound where
+  getAbilities i window (LookWhatIFound attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env LookWhatIFound where
   runMessage msg e@(LookWhatIFound attrs@EventAttrs {..}) = case msg of

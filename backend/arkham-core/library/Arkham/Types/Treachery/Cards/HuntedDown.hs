@@ -23,8 +23,8 @@ huntedDown = treachery HuntedDown Cards.huntedDown
 
 instance HasModifiersFor env HuntedDown
 
-instance HasActions env HuntedDown where
-  getActions i window (HuntedDown attrs) = getActions i window attrs
+instance HasAbilities env HuntedDown where
+  getAbilities i window (HuntedDown attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env HuntedDown where
   runMessage msg t@(HuntedDown attrs) = case msg of

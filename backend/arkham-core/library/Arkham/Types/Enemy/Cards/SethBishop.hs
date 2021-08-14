@@ -18,8 +18,8 @@ sethBishop = enemy SethBishop Cards.sethBishop (5, PerPlayer 3, 5) (1, 1)
 
 instance HasModifiersFor env SethBishop
 
-instance EnemyAttrsHasActions env => HasActions env SethBishop where
-  getActions i window (SethBishop attrs) = getActions i window attrs
+instance EnemyAttrsHasAbilities env => HasAbilities env SethBishop where
+  getAbilities i window (SethBishop attrs) = getAbilities i window attrs
 
 instance EnemyAttrsRunMessage env => RunMessage env SethBishop where
   runMessage msg (SethBishop attrs) = SethBishop <$> runMessage msg attrs

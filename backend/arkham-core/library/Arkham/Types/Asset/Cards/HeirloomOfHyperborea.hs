@@ -25,11 +25,11 @@ instance HasModifiersFor env HeirloomOfHyperborea
 reactionAbility :: AssetAttrs -> Ability
 reactionAbility attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
-instance HasActions env HeirloomOfHyperborea where
-  getActions iid (AfterPlayCard who card) (HeirloomOfHyperborea a)
+instance HasAbilities env HeirloomOfHyperborea where
+  getAbilities iid (AfterPlayCard who card) (HeirloomOfHyperborea a)
     | ownedBy a iid && iid == who = pure
       [ reactionAbility a | Spell `elem` toTraits card ]
-  getActions i window (HeirloomOfHyperborea x) = getActions i window x
+  getAbilities i window (HeirloomOfHyperborea x) = getAbilities i window x
 
 instance (AssetRunner env) => RunMessage env HeirloomOfHyperborea where
   runMessage msg a@(HeirloomOfHyperborea attrs) = case msg of

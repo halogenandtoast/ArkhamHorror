@@ -37,12 +37,12 @@ instance HasModifiersFor env SlaughteredWoods
 forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
 
-instance ActionRunner env => HasActions env SlaughteredWoods where
-  getActions iid (AfterRevealLocation who) (SlaughteredWoods attrs)
+instance ActionRunner env => HasAbilities env SlaughteredWoods where
+  getAbilities iid (AfterRevealLocation who) (SlaughteredWoods attrs)
     | iid == who = do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid
       pure [ locationAbility (forcedAbility attrs) | actionRemainingCount == 0 ]
-  getActions iid window (SlaughteredWoods attrs) = getActions iid window attrs
+  getAbilities iid window (SlaughteredWoods attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env SlaughteredWoods where
   runMessage msg l@(SlaughteredWoods attrs) = case msg of

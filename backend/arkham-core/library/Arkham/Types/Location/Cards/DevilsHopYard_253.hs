@@ -40,8 +40,8 @@ ability attrs =
   mkAbility (toSource attrs) 1 (FastAbility Free)
     & (abilityLimitL .~ GroupLimit PerGame 1)
 
-instance ActionRunner env => HasActions env DevilsHopYard_253 where
-  getActions iid FastPlayerWindow (DevilsHopYard_253 attrs) =
+instance ActionRunner env => HasAbilities env DevilsHopYard_253 where
+  getAbilities iid FastPlayerWindow (DevilsHopYard_253 attrs) =
     withBaseActions iid FastPlayerWindow attrs $ do
       investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
@@ -49,7 +49,7 @@ instance ActionRunner env => HasActions env DevilsHopYard_253 where
         [ locationAbility (ability attrs)
         | investigatorsWithClues && anyAbominations
         ]
-  getActions iid window (DevilsHopYard_253 attrs) = getActions iid window attrs
+  getAbilities iid window (DevilsHopYard_253 attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env DevilsHopYard_253 where
   runMessage msg l@(DevilsHopYard_253 attrs) = case msg of

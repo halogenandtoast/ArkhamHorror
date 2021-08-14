@@ -33,10 +33,10 @@ instance HasModifiersFor env PeterSylvestre where
 ability :: AssetAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
-instance HasActions env PeterSylvestre where
-  getActions iid (AfterEndTurn who) (PeterSylvestre a)
+instance HasAbilities env PeterSylvestre where
+  getAbilities iid (AfterEndTurn who) (PeterSylvestre a)
     | ownedBy a iid && iid == who = pure [ ability a | assetSanityDamage a > 0 ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env PeterSylvestre where
   runMessage msg (PeterSylvestre attrs) = case msg of

@@ -21,8 +21,8 @@ umordhothsWrath = treachery UmordhothsWrath Cards.umordhothsWrath
 
 instance HasModifiersFor env UmordhothsWrath
 
-instance HasActions env UmordhothsWrath where
-  getActions i window (UmordhothsWrath attrs) = getActions i window attrs
+instance HasAbilities env UmordhothsWrath where
+  getAbilities i window (UmordhothsWrath attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env UmordhothsWrath where
   runMessage msg t@(UmordhothsWrath attrs@TreacheryAttrs {..}) = case msg of

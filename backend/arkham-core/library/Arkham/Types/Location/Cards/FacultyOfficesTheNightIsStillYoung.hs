@@ -43,8 +43,8 @@ instance HasModifiersFor env FacultyOfficesTheNightIsStillYoung where
     $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env FacultyOfficesTheNightIsStillYoung where
-  getActions iid FastPlayerWindow (FacultyOfficesTheNightIsStillYoung attrs@LocationAttrs {..})
+instance ActionRunner env => HasAbilities env FacultyOfficesTheNightIsStillYoung where
+  getAbilities iid FastPlayerWindow (FacultyOfficesTheNightIsStillYoung attrs@LocationAttrs {..})
     | locationRevealed
     = withBaseActions iid FastPlayerWindow attrs $ pure
       [ locationAbility
@@ -55,8 +55,8 @@ instance ActionRunner env => HasActions env FacultyOfficesTheNightIsStillYoung w
             )
           )
       ]
-  getActions iid window (FacultyOfficesTheNightIsStillYoung attrs) =
-    getActions iid window attrs
+  getAbilities iid window (FacultyOfficesTheNightIsStillYoung attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env FacultyOfficesTheNightIsStillYoung where
   runMessage msg l@(FacultyOfficesTheNightIsStillYoung attrs) = case msg of

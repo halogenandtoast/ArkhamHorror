@@ -27,10 +27,10 @@ newtype Kukri = Kukri AssetAttrs
 kukri :: AssetCard Kukri
 kukri = hand Kukri Cards.kukri
 
-instance HasActions env Kukri where
-  getActions iid NonFast (Kukri a) | ownedBy a iid =
+instance HasAbilities env Kukri where
+  getAbilities iid NonFast (Kukri a) | ownedBy a iid =
     pure [mkAbility a 1 $ ActionAbility (Just Action.Fight) (ActionCost 1)]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance HasModifiersFor env Kukri
 

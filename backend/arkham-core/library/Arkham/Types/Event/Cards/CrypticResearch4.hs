@@ -19,8 +19,8 @@ crypticResearch4 = event CrypticResearch4 Cards.crypticResearch4
 
 instance HasModifiersFor env CrypticResearch4
 
-instance HasActions env CrypticResearch4 where
-  getActions i window (CrypticResearch4 attrs) = getActions i window attrs
+instance HasAbilities env CrypticResearch4 where
+  getAbilities i window (CrypticResearch4 attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env CrypticResearch4 where
   runMessage msg e@(CrypticResearch4 attrs@EventAttrs {..}) = case msg of

@@ -25,8 +25,8 @@ keyToTheChamber :: AssetCard KeyToTheChamber
 keyToTheChamber =
   assetWith KeyToTheChamber Cards.keyToTheChamber (isStoryL .~ True)
 
-instance (HasId LocationId env InvestigatorId, HasSet ConnectedLocationId env LocationId, HasId (Maybe LocationId) env LocationMatcher) => HasActions env KeyToTheChamber where
-  getActions iid FastPlayerWindow (KeyToTheChamber attrs) | ownedBy attrs iid =
+instance (HasId LocationId env InvestigatorId, HasSet ConnectedLocationId env LocationId, HasId (Maybe LocationId) env LocationMatcher) => HasAbilities env KeyToTheChamber where
+  getAbilities iid FastPlayerWindow (KeyToTheChamber attrs) | ownedBy attrs iid =
     do
       mHiddenChamberId <- getId @(Maybe LocationId)
         (LocationWithTitle "The Hidden Chamber")
@@ -39,7 +39,7 @@ instance (HasId LocationId env InvestigatorId, HasSet ConnectedLocationId env Lo
             | hiddenChamberId `elem` connectedLocationIds
             ]
         Nothing -> pure []
-  getActions iid window (KeyToTheChamber attrs) = getActions iid window attrs
+  getAbilities iid window (KeyToTheChamber attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env KeyToTheChamber
 

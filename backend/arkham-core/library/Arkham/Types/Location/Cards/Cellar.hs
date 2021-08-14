@@ -19,8 +19,8 @@ cellar = location Cellar Cards.cellar 4 (PerPlayer 2) Plus [Square]
 
 instance HasModifiersFor env Cellar
 
-instance ActionRunner env => HasActions env Cellar where
-  getActions i window (Cellar attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env Cellar where
+  getAbilities i window (Cellar attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env Cellar where
   runMessage msg a@(Cellar attrs@LocationAttrs {..}) = case msg of

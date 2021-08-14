@@ -27,8 +27,8 @@ burnedRuins_205 = location
 
 instance HasModifiersFor env BurnedRuins_205
 
-instance ActionRunner env => HasActions env BurnedRuins_205 where
-  getActions = withDrawCardUnderneathAction
+instance ActionRunner env => HasAbilities env BurnedRuins_205 where
+  getAbilities = withDrawCardUnderneathAction
 
 instance LocationRunner env => RunMessage env BurnedRuins_205 where
   runMessage msg (BurnedRuins_205 attrs) = case msg of

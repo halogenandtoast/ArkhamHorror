@@ -30,8 +30,8 @@ ursulaDowns = UrsulaDowns $ baseAttrs
     }
   [Wayfarer]
 
-instance InvestigatorRunner env => HasActions env UrsulaDowns where
-  getActions i window (UrsulaDowns attrs) = getActions i window attrs
+instance InvestigatorRunner env => HasAbilities env UrsulaDowns where
+  getAbilities i window (UrsulaDowns attrs) = getAbilities i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env UrsulaDowns where
   runMessage msg (UrsulaDowns attrs) = UrsulaDowns <$> runMessage msg attrs

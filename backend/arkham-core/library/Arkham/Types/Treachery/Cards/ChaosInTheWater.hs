@@ -25,8 +25,8 @@ chaosInTheWater = treachery ChaosInTheWater Cards.chaosInTheWater
 
 instance HasModifiersFor env ChaosInTheWater
 
-instance HasActions env ChaosInTheWater where
-  getActions i window (ChaosInTheWater attrs) = getActions i window attrs
+instance HasAbilities env ChaosInTheWater where
+  getAbilities i window (ChaosInTheWater attrs) = getAbilities i window attrs
 
 instance
   ( HasId (Maybe OwnerId) env AssetId

@@ -27,11 +27,11 @@ instance HasModifiersFor env PsychopompsSong
 ability :: TreacheryAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 ForcedAbility
 
-instance HasActions env PsychopompsSong where
-  getActions iid (WhenWouldTakeDamage _ (InvestigatorTarget iid')) (PsychopompsSong attrs)
+instance HasAbilities env PsychopompsSong where
+  getAbilities iid (WhenWouldTakeDamage _ (InvestigatorTarget iid')) (PsychopompsSong attrs)
     | treacheryOnInvestigator iid attrs && iid == iid'
     = pure [ability attrs]
-  getActions i window (PsychopompsSong attrs) = getActions i window attrs
+  getAbilities i window (PsychopompsSong attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env PsychopompsSong where
   runMessage msg t@(PsychopompsSong attrs@TreacheryAttrs {..}) = case msg of

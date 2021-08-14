@@ -20,8 +20,8 @@ maskedHorrors = treachery MaskedHorrors Cards.maskedHorrors
 
 instance HasModifiersFor env MaskedHorrors
 
-instance HasActions env MaskedHorrors where
-  getActions i window (MaskedHorrors attrs) = getActions i window attrs
+instance HasAbilities env MaskedHorrors where
+  getAbilities i window (MaskedHorrors attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env MaskedHorrors where
   runMessage msg t@(MaskedHorrors attrs@TreacheryAttrs {..}) = case msg of

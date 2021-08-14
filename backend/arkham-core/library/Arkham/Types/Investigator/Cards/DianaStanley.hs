@@ -30,8 +30,8 @@ dianaStanley = DianaStanley $ baseAttrs
     }
   [Cultist, SilverTwilight]
 
-instance InvestigatorRunner env => HasActions env DianaStanley where
-  getActions i window (DianaStanley attrs) = getActions i window attrs
+instance InvestigatorRunner env => HasAbilities env DianaStanley where
+  getAbilities i window (DianaStanley attrs) = getAbilities i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env DianaStanley where
   runMessage msg (DianaStanley attrs) = DianaStanley <$> runMessage msg attrs

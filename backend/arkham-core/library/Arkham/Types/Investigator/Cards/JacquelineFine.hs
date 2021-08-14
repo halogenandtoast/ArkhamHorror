@@ -30,8 +30,8 @@ jacquelineFine = JacquelineFine $ baseAttrs
     }
   [Clairvoyant]
 
-instance InvestigatorRunner env => HasActions env JacquelineFine where
-  getActions i window (JacquelineFine attrs) = getActions i window attrs
+instance InvestigatorRunner env => HasAbilities env JacquelineFine where
+  getAbilities i window (JacquelineFine attrs) = getAbilities i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env JacquelineFine where
   runMessage msg (JacquelineFine attrs) =

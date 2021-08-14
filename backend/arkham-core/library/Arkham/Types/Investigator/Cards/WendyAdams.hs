@@ -59,11 +59,11 @@ ability attrs token = base
     1
     (ReactionAbility $ HandDiscardCost 1 Nothing mempty mempty)
 
-instance InvestigatorRunner env => HasActions env WendyAdams where
-  getActions iid (WhenRevealToken who token) (WendyAdams attrs@InvestigatorAttrs {..})
+instance InvestigatorRunner env => HasAbilities env WendyAdams where
+  getAbilities iid (WhenRevealToken who token) (WendyAdams attrs@InvestigatorAttrs {..})
     | iid == investigatorId && iid == who
     = pure [ability attrs token]
-  getActions i window (WendyAdams attrs) = getActions i window attrs
+  getAbilities i window (WendyAdams attrs) = getAbilities i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env WendyAdams where
   runMessage msg i@(WendyAdams attrs@InvestigatorAttrs {..}) = case msg of

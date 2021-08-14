@@ -17,8 +17,8 @@ willToSurvive3 = event WillToSurvive3 Cards.willToSurvive3
 
 instance HasModifiersFor env WillToSurvive3
 
-instance HasActions env WillToSurvive3 where
-  getActions i window (WillToSurvive3 attrs) = getActions i window attrs
+instance HasAbilities env WillToSurvive3 where
+  getAbilities i window (WillToSurvive3 attrs) = getAbilities i window attrs
 
 instance HasQueue env => RunMessage env WillToSurvive3 where
   runMessage msg e@(WillToSurvive3 attrs@EventAttrs {..}) = case msg of

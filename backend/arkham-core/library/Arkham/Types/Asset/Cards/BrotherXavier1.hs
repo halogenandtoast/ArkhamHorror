@@ -44,10 +44,10 @@ instance (HasId LocationId env InvestigatorId) => HasModifiersFor env BrotherXav
 ability :: AssetAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
-instance HasActions env BrotherXavier1 where
-  getActions iid (WhenDefeated source) (BrotherXavier1 a) | isSource a source =
+instance HasAbilities env BrotherXavier1 where
+  getAbilities iid (WhenDefeated source) (BrotherXavier1 a) | isSource a source =
     pure [ ability a | ownedBy a iid ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env BrotherXavier1 where
   runMessage msg a@(BrotherXavier1 attrs) = case msg of

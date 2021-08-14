@@ -38,8 +38,8 @@ instance HasSet Trait env AssetId => HasModifiersFor env AvianThrall where
         [ EnemyFight (-3) | any (`elem` [Ranged, Firearm, Spell]) traits ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env AvianThrall where
-  getActions i window (AvianThrall attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env AvianThrall where
+  getAbilities i window (AvianThrall attrs) = getAbilities i window attrs
 
 instance EnemyRunner env => RunMessage env AvianThrall where
   runMessage msg (AvianThrall attrs) = AvianThrall <$> runMessage msg attrs

@@ -26,8 +26,8 @@ chaosInTheCloverClub :: AgendaCard ChaosInTheCloverClub
 chaosInTheCloverClub =
   agenda (3, A) ChaosInTheCloverClub Cards.chaosInTheCloverClub (Static 7)
 
-instance HasActions env ChaosInTheCloverClub where
-  getActions i window (ChaosInTheCloverClub x) = getActions i window x
+instance HasAbilities env ChaosInTheCloverClub where
+  getAbilities i window (ChaosInTheCloverClub x) = getAbilities i window x
 
 instance HasModifiersFor env ChaosInTheCloverClub
 

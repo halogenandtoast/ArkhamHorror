@@ -29,11 +29,11 @@ ability target attrs = (mkAbility (toSource attrs) 1 (ReactionAbility Free))
   { abilityMetadata = Just (TargetMetadata target)
   }
 
-instance HasActions env BindMonster2 where
-  getActions iid (WhenWouldReady target) (BindMonster2 attrs@EventAttrs {..})
+instance HasAbilities env BindMonster2 where
+  getAbilities iid (WhenWouldReady target) (BindMonster2 attrs@EventAttrs {..})
     | iid == eventOwner = pure
       [ ability target attrs | target `elem` eventAttachedTarget ]
-  getActions iid window (BindMonster2 attrs) = getActions iid window attrs
+  getAbilities iid window (BindMonster2 attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env BindMonster2
 

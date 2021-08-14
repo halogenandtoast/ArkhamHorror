@@ -21,8 +21,8 @@ beastOfTheBayou = treachery BeastOfTheBayou Cards.beastOfTheBayou
 
 instance HasModifiersFor env BeastOfTheBayou
 
-instance HasActions env BeastOfTheBayou where
-  getActions i window (BeastOfTheBayou attrs) = getActions i window attrs
+instance HasAbilities env BeastOfTheBayou where
+  getAbilities i window (BeastOfTheBayou attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env BeastOfTheBayou where
   runMessage msg t@(BeastOfTheBayou attrs@TreacheryAttrs {..}) = case msg of

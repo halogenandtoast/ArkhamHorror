@@ -28,14 +28,14 @@ disruptingTheRitual = actWith
   Nothing
   (cluesL ?~ 0)
 
-instance HasActions env DisruptingTheRitual where
-  getActions _ NonFast (DisruptingTheRitual a) = pure
+instance HasAbilities env DisruptingTheRitual where
+  getAbilities _ NonFast (DisruptingTheRitual a) = pure
     [ mkAbility
         (toSource a)
         1
         (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1])
     ]
-  getActions i window (DisruptingTheRitual x) = getActions i window x
+  getAbilities i window (DisruptingTheRitual x) = getAbilities i window x
 
 instance ActRunner env => RunMessage env DisruptingTheRitual where
   runMessage msg a@(DisruptingTheRitual attrs@ActAttrs {..}) = case msg of

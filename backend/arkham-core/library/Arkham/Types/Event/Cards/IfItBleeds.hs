@@ -21,8 +21,8 @@ newtype IfItBleeds = IfItBleeds EventAttrs
 ifItBleeds :: EventCard IfItBleeds
 ifItBleeds = event IfItBleeds Cards.ifItBleeds
 
-instance HasActions env IfItBleeds where
-  getActions iid window (IfItBleeds attrs) = getActions iid window attrs
+instance HasAbilities env IfItBleeds where
+  getAbilities iid window (IfItBleeds attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env IfItBleeds
 

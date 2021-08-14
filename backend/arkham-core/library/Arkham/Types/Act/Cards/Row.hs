@@ -27,10 +27,10 @@ newtype Row = Row ActAttrs
 row :: ActCard Row
 row = act (3, A) Row Cards.row Nothing
 
-instance ActionRunner env => HasActions env Row where
-  getActions iid (WhenWouldDrawEncounterCard who) (Row x) | iid == who =
+instance ActionRunner env => HasAbilities env Row where
+  getAbilities iid (WhenWouldDrawEncounterCard who) (Row x) | iid == who =
     pure [mkAbility x 1 ForcedAbility]
-  getActions iid window (Row x) = getActions iid window x
+  getAbilities iid window (Row x) = getAbilities iid window x
 
 instance
   ( HasName env LocationId

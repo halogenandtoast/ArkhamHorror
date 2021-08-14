@@ -24,8 +24,8 @@ newtype AChanceEncounter = AChanceEncounter EventAttrs
 aChanceEncounter :: EventCard AChanceEncounter
 aChanceEncounter = event AChanceEncounter Cards.aChanceEncounter
 
-instance HasActions env AChanceEncounter where
-  getActions iid window (AChanceEncounter attrs) = getActions iid window attrs
+instance HasAbilities env AChanceEncounter where
+  getAbilities iid window (AChanceEncounter attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env AChanceEncounter
 

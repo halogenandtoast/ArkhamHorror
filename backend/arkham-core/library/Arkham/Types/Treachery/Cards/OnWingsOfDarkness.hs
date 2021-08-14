@@ -20,8 +20,8 @@ onWingsOfDarkness = treachery OnWingsOfDarkness Cards.onWingsOfDarkness
 
 instance HasModifiersFor env OnWingsOfDarkness
 
-instance HasActions env OnWingsOfDarkness where
-  getActions i window (OnWingsOfDarkness attrs) = getActions i window attrs
+instance HasAbilities env OnWingsOfDarkness where
+  getAbilities i window (OnWingsOfDarkness attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env OnWingsOfDarkness where
   runMessage msg t@(OnWingsOfDarkness attrs) = case msg of

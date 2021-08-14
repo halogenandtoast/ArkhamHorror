@@ -25,8 +25,8 @@ forgottenMarsh = location
 
 instance HasModifiersFor env ForgottenMarsh
 
-instance ActionRunner env => HasActions env ForgottenMarsh where
-  getActions i window (ForgottenMarsh attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env ForgottenMarsh where
+  getAbilities i window (ForgottenMarsh attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env ForgottenMarsh where
   runMessage msg l@(ForgottenMarsh attrs@LocationAttrs {..}) = case msg of

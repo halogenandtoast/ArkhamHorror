@@ -19,8 +19,8 @@ finalRhapsody = treachery FinalRhapsody Cards.finalRhapsody
 
 instance HasModifiersFor env FinalRhapsody
 
-instance HasActions env FinalRhapsody where
-  getActions i window (FinalRhapsody attrs) = getActions i window attrs
+instance HasAbilities env FinalRhapsody where
+  getAbilities i window (FinalRhapsody attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env FinalRhapsody where
   runMessage msg t@(FinalRhapsody attrs) = case msg of

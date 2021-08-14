@@ -25,8 +25,8 @@ drawnIn = agenda (4, A) DrawnIn Cards.drawnIn (Static 3)
 
 instance HasModifiersFor env DrawnIn
 
-instance HasActions env DrawnIn where
-  getActions i window (DrawnIn x) = getActions i window x
+instance HasAbilities env DrawnIn where
+  getAbilities i window (DrawnIn x) = getAbilities i window x
 
 leftmostLocation
   :: ( MonadReader env m

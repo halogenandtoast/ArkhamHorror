@@ -37,9 +37,9 @@ instance HasModifiersFor env ExhibitHallAthabaskanExhibit where
     = pure $ toModifiers attrs [ SkillModifier SkillAgility 2 | iid `on` attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env ExhibitHallAthabaskanExhibit where
-  getActions iid window (ExhibitHallAthabaskanExhibit attrs) =
-    getActions iid window attrs
+instance ActionRunner env => HasAbilities env ExhibitHallAthabaskanExhibit where
+  getAbilities iid window (ExhibitHallAthabaskanExhibit attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env ExhibitHallAthabaskanExhibit where
   runMessage msg l@(ExhibitHallAthabaskanExhibit attrs) = case msg of

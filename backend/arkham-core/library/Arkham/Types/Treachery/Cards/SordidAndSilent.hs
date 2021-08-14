@@ -22,8 +22,8 @@ sordidAndSilent = treachery SordidAndSilent Cards.sordidAndSilent
 
 instance HasModifiersFor env SordidAndSilent
 
-instance HasActions env SordidAndSilent where
-  getActions i window (SordidAndSilent attrs) = getActions i window attrs
+instance HasAbilities env SordidAndSilent where
+  getAbilities i window (SordidAndSilent attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env SordidAndSilent where
   runMessage msg t@(SordidAndSilent attrs@TreacheryAttrs {..}) = case msg of

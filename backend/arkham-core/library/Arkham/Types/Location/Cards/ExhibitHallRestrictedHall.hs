@@ -41,9 +41,9 @@ instance HasId (Maybe StoryEnemyId) env CardCode => HasModifiersFor env ExhibitH
         _ -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env ExhibitHallRestrictedHall where
-  getActions iid window (ExhibitHallRestrictedHall attrs) =
-    getActions iid window attrs
+instance ActionRunner env => HasAbilities env ExhibitHallRestrictedHall where
+  getAbilities iid window (ExhibitHallRestrictedHall attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env ExhibitHallRestrictedHall where
   runMessage msg (ExhibitHallRestrictedHall attrs) =

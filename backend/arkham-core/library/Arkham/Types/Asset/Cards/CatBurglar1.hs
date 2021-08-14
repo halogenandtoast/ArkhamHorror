@@ -49,9 +49,9 @@ ability a = (restrictedAbility
   { abilityDoesNotProvokeAttacksOfOpportunity = True
   }
 
-instance HasActions env CatBurglar1 where
-  getActions iid NonFast (CatBurglar1 a) | ownedBy a iid = pure [ability a]
-  getActions i window (CatBurglar1 x) = getActions i window x
+instance HasAbilities env CatBurglar1 where
+  getAbilities iid NonFast (CatBurglar1 a) | ownedBy a iid = pure [ability a]
+  getAbilities i window (CatBurglar1 x) = getAbilities i window x
 
 instance AssetRunner env => RunMessage env CatBurglar1 where
   runMessage msg (CatBurglar1 attrs) = case msg of

@@ -102,10 +102,10 @@ type GameRunner env
       , HasSet VictoryDisplayCardCode env ()
       )
     , HasSkillTest env
-    , HasActions env ()
-    , HasActions env AssetId
-    , HasActions env (ActionType, Trait)
-    , HasActions env ActionType
+    , HasAbilities env ()
+    , HasAbilities env AssetId
+    , HasAbilities env (ActionType, Trait)
+    , HasAbilities env ActionType
     , HasRecord env
     , HasTokenValue env InvestigatorId
     , CanBeWeakness env TreacheryId

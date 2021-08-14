@@ -22,8 +22,8 @@ ephemeralExhibits = treachery EphemeralExhibits Cards.ephemeralExhibits
 
 instance HasModifiersFor env EphemeralExhibits
 
-instance HasActions env EphemeralExhibits where
-  getActions i window (EphemeralExhibits attrs) = getActions i window attrs
+instance HasAbilities env EphemeralExhibits where
+  getAbilities i window (EphemeralExhibits attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env EphemeralExhibits where
   runMessage msg t@(EphemeralExhibits attrs) = case msg of

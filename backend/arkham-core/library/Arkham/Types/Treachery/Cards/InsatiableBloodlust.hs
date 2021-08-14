@@ -27,8 +27,8 @@ instance HasModifiersFor env InsatiableBloodlust where
       [EnemyFight 1, DamageDealt 1, HorrorDealt 1, CannotBeEvaded]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env InsatiableBloodlust where
-  getActions i window (InsatiableBloodlust attrs) = getActions i window attrs
+instance HasAbilities env InsatiableBloodlust where
+  getAbilities i window (InsatiableBloodlust attrs) = getAbilities i window attrs
 
 instance (TreacheryRunner env) => RunMessage env InsatiableBloodlust where
   runMessage msg t@(InsatiableBloodlust attrs@TreacheryAttrs {..}) =

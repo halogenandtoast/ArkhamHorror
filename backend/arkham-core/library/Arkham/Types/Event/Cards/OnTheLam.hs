@@ -18,8 +18,8 @@ onTheLam = event OnTheLam Cards.onTheLam
 
 instance HasModifiersFor env OnTheLam
 
-instance HasActions env OnTheLam where
-  getActions i window (OnTheLam attrs) = getActions i window attrs
+instance HasAbilities env OnTheLam where
+  getAbilities i window (OnTheLam attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env OnTheLam where
   runMessage msg e@(OnTheLam attrs@EventAttrs {..}) = case msg of

@@ -28,9 +28,9 @@ curseOfTheRougarou = treachery
 
 instance HasModifiersFor env CurseOfTheRougarou
 
-instance HasActions env CurseOfTheRougarou where
-  getActions iid window (CurseOfTheRougarou (attrs `With` _)) =
-    getActions iid window attrs
+instance HasAbilities env CurseOfTheRougarou where
+  getAbilities iid window (CurseOfTheRougarou (attrs `With` _)) =
+    getAbilities iid window attrs
 
 instance (TreacheryRunner env) => RunMessage env CurseOfTheRougarou where
   runMessage msg t@(CurseOfTheRougarou (attrs@TreacheryAttrs {..} `With` metadata))

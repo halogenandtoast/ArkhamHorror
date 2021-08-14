@@ -35,8 +35,8 @@ instance HasSet Trait env EnemyId => HasModifiersFor env HorrorsUnleashed where
       else pure []
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env HorrorsUnleashed where
-  getActions i window (HorrorsUnleashed x) = getActions i window x
+instance HasAbilities env HorrorsUnleashed where
+  getAbilities i window (HorrorsUnleashed x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env HorrorsUnleashed where
   runMessage msg a@(HorrorsUnleashed attrs) = case msg of

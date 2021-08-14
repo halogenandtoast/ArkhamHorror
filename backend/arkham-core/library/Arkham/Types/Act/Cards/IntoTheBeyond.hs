@@ -24,10 +24,10 @@ newtype IntoTheBeyond = IntoTheBeyond ActAttrs
 intoTheBeyond :: ActCard IntoTheBeyond
 intoTheBeyond = act (2, A) IntoTheBeyond Cards.intoTheBeyond Nothing
 
-instance HasActions env IntoTheBeyond where
-  getActions iid NonFast (IntoTheBeyond x) = withBaseActions iid NonFast x $ do
+instance HasAbilities env IntoTheBeyond where
+  getAbilities iid NonFast (IntoTheBeyond x) = withBaseActions iid NonFast x $ do
     pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
-  getActions iid window (IntoTheBeyond x) = getActions iid window x
+  getAbilities iid window (IntoTheBeyond x) = getAbilities iid window x
 
 instance (HasName env LocationId, ActRunner env) => RunMessage env IntoTheBeyond where
   runMessage msg a@(IntoTheBeyond attrs@ActAttrs {..}) = case msg of

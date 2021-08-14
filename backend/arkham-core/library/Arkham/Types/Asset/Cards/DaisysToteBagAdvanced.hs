@@ -29,8 +29,8 @@ newtype DaisysToteBagAdvanced = DaisysToteBagAdvanced AssetAttrs
 daisysToteBagAdvanced :: AssetCard DaisysToteBagAdvanced
 daisysToteBagAdvanced = asset DaisysToteBagAdvanced Cards.daisysToteBagAdvanced
 
-instance HasSet Trait env (InvestigatorId, CardId) => HasActions env DaisysToteBagAdvanced where
-  getActions iid (WhenPlayCard who cardId) (DaisysToteBagAdvanced a)
+instance HasSet Trait env (InvestigatorId, CardId) => HasAbilities env DaisysToteBagAdvanced where
+  getAbilities iid (WhenPlayCard who cardId) (DaisysToteBagAdvanced a)
     | ownedBy a iid && iid == who = do
       isTome <- elem Tome <$> getSet @Trait (iid, cardId)
       let
@@ -40,8 +40,8 @@ instance HasSet Trait env (InvestigatorId, CardId) => HasActions env DaisysToteB
             { abilityMetadata = Just (TargetMetadata $ CardIdTarget cardId)
             }
       pure [ ability | isTome ]
-  getActions iid window (DaisysToteBagAdvanced attrs) =
-    getActions iid window attrs
+  getAbilities iid window (DaisysToteBagAdvanced attrs) =
+    getAbilities iid window attrs
 
 instance HasModifiersFor env DaisysToteBagAdvanced where
   getModifiersFor _ (InvestigatorTarget iid) (DaisysToteBagAdvanced a)

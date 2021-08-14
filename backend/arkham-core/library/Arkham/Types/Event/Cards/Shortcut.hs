@@ -19,8 +19,8 @@ newtype Shortcut = Shortcut EventAttrs
 shortcut :: EventCard Shortcut
 shortcut = event Shortcut Cards.shortcut
 
-instance HasActions env Shortcut where
-  getActions iid window (Shortcut attrs) = getActions iid window attrs
+instance HasAbilities env Shortcut where
+  getAbilities iid window (Shortcut attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env Shortcut
 

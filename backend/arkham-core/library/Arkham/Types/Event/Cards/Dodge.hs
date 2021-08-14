@@ -18,8 +18,8 @@ dodge = event Dodge Cards.dodge
 
 instance HasModifiersFor env Dodge
 
-instance HasActions env Dodge where
-  getActions i window (Dodge attrs) = getActions i window attrs
+instance HasAbilities env Dodge where
+  getAbilities i window (Dodge attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env Dodge where
   runMessage msg e@(Dodge attrs@EventAttrs {..}) = case msg of

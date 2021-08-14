@@ -22,8 +22,8 @@ bandolier = bodyWith Bandolier Cards.bandolier (healthL ?~ 1)
 
 instance HasModifiersFor env Bandolier
 
-instance HasActions env Bandolier where
-  getActions iid window (Bandolier x) = getActions iid window x
+instance HasAbilities env Bandolier where
+  getAbilities iid window (Bandolier x) = getAbilities iid window x
 
 slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Weapon Nothing

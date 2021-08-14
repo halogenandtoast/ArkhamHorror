@@ -28,11 +28,11 @@ ability attrs token =
     { abilityMetadata = Just (TargetMetadata (TokenTarget token))
     }
 
-instance HasActions env LuckyDice2 where
-  getActions iid (AfterRevealToken who token) (LuckyDice2 a)
+instance HasAbilities env LuckyDice2 where
+  getAbilities iid (AfterRevealToken who token) (LuckyDice2 a)
     | ownedBy a iid && who == iid && tokenFace token /= AutoFail = pure
       [ability a token]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance HasModifiersFor env LuckyDice2
 

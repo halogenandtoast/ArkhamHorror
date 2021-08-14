@@ -26,8 +26,8 @@ silverTwilightAcolyte = enemyWith
 
 instance HasModifiersFor env SilverTwilightAcolyte
 
-instance ActionRunner env => HasActions env SilverTwilightAcolyte where
-  getActions i window (SilverTwilightAcolyte attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env SilverTwilightAcolyte where
+  getAbilities i window (SilverTwilightAcolyte attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env SilverTwilightAcolyte where
   runMessage msg (SilverTwilightAcolyte attrs@EnemyAttrs {..}) = case msg of

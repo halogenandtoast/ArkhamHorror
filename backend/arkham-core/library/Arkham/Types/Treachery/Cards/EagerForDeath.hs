@@ -23,8 +23,8 @@ eagerForDeath = treachery EagerForDeath Cards.eagerForDeath
 
 instance HasModifiersFor env EagerForDeath
 
-instance HasActions env EagerForDeath where
-  getActions i window (EagerForDeath attrs) = getActions i window attrs
+instance HasAbilities env EagerForDeath where
+  getAbilities i window (EagerForDeath attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env EagerForDeath where
   runMessage msg t@(EagerForDeath attrs) = case msg of

@@ -25,8 +25,8 @@ bloodRite = event BloodRite Cards.bloodRite
 
 instance HasModifiersFor env BloodRite
 
-instance HasActions env BloodRite where
-  getActions i window (BloodRite attrs) = getActions i window attrs
+instance HasAbilities env BloodRite where
+  getAbilities i window (BloodRite attrs) = getAbilities i window attrs
 
 instance EventRunner env => RunMessage env BloodRite where
   runMessage msg e@(BloodRite attrs@EventAttrs {..}) = case msg of

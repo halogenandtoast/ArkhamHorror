@@ -23,8 +23,8 @@ theyreGettingOut :: AgendaCard TheyreGettingOut
 theyreGettingOut =
   agenda (3, A) TheyreGettingOut Cards.theyreGettingOut (Static 10)
 
-instance HasActions env TheyreGettingOut where
-  getActions i window (TheyreGettingOut x) = getActions i window x
+instance HasAbilities env TheyreGettingOut where
+  getAbilities i window (TheyreGettingOut x) = getAbilities i window x
 
 instance HasModifiersFor env TheyreGettingOut
 

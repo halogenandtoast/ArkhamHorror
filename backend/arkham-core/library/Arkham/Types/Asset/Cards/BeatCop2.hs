@@ -42,10 +42,10 @@ ability a = restrictedAbility
   $ Costs [ExhaustCost (toTarget a), DamageCost (toSource a) (toTarget a) 1]
   )
 
-instance HasActions env BeatCop2 where
-  getActions iid FastPlayerWindow (BeatCop2 a) | ownedBy a iid =
+instance HasAbilities env BeatCop2 where
+  getAbilities iid FastPlayerWindow (BeatCop2 a) | ownedBy a iid =
     pure [ability a]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env BeatCop2 where
   runMessage msg a@(BeatCop2 attrs) = case msg of

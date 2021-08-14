@@ -36,10 +36,10 @@ fightAbility attrs = mkAbility attrs 1 $ ActionAbility
   (Just Action.Fight)
   (Costs [ActionCost 1, UseCost (toId attrs) Ammo 1])
 
-instance HasActions env Rolands38Special where
-  getActions iid NonFast (Rolands38Special a) | ownedBy a iid = do
+instance HasAbilities env Rolands38Special where
+  getAbilities iid NonFast (Rolands38Special a) | ownedBy a iid = do
     pure [fightAbility a]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Rolands38Special where
   runMessage msg a@(Rolands38Special attrs) = case msg of

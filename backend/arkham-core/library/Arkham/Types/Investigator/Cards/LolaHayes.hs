@@ -44,14 +44,14 @@ instance HasTokenValue env LolaHayes where
     pure $ TokenValue ElderSign (PositiveModifier 2)
   getTokenValue (LolaHayes attrs) iid token = getTokenValue attrs iid token
 
-instance InvestigatorRunner env => HasActions env LolaHayes where
-  getActions i (AfterDrawingStartingHand iid) (LolaHayes attrs)
+instance InvestigatorRunner env => HasAbilities env LolaHayes where
+  getAbilities i (AfterDrawingStartingHand iid) (LolaHayes attrs)
     | iid == toId attrs && i == iid = pure [mkAbility attrs 1 ForcedAbility]
-  getActions i FastPlayerWindow (LolaHayes attrs) | i == toId attrs = pure
+  getAbilities i FastPlayerWindow (LolaHayes attrs) | i == toId attrs = pure
     [ mkAbility attrs 2 (FastAbility Free)
         & (abilityLimitL .~ PlayerLimit PerRound 1)
     ]
-  getActions i window (LolaHayes attrs) = getActions i window attrs
+  getAbilities i window (LolaHayes attrs) = getAbilities i window attrs
 
 switchRole
   :: (MonadIO m, MonadReader env m, HasQueue env) => InvestigatorAttrs -> m ()

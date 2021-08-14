@@ -21,9 +21,9 @@ newtype HypnoticGaze = HypnoticGaze (EventAttrs `With` Maybe EnemyId)
 hypnoticGaze :: EventCard HypnoticGaze
 hypnoticGaze = event (HypnoticGaze . (`with` Nothing)) Cards.hypnoticGaze
 
-instance HasActions env HypnoticGaze where
-  getActions iid window (HypnoticGaze (attrs `With` _)) =
-    getActions iid window attrs
+instance HasAbilities env HypnoticGaze where
+  getAbilities iid window (HypnoticGaze (attrs `With` _)) =
+    getAbilities iid window attrs
 
 instance HasModifiersFor env HypnoticGaze
 

@@ -30,11 +30,11 @@ ability attrs = mkAbility
   $ Costs [ExhaustCost (toTarget attrs), PlaceClueOnLocationCost 1]
   )
 
-instance HasActions env DrWilliamTMaleson where
-  getActions iid (WhenDrawCard who card) (DrWilliamTMaleson attrs)
+instance HasAbilities env DrWilliamTMaleson where
+  getAbilities iid (WhenDrawCard who card) (DrWilliamTMaleson attrs)
     | ownedBy attrs iid && iid == who = pure
       [ ability attrs | toCardType card `elem` encounterCardTypes ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance HasModifiersFor env DrWilliamTMaleson
 

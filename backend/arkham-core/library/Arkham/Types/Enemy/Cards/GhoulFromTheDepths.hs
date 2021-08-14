@@ -25,8 +25,8 @@ ghoulFromTheDepths = enemyWith
 
 instance HasModifiersFor env GhoulFromTheDepths
 
-instance ActionRunner env => HasActions env GhoulFromTheDepths where
-  getActions i window (GhoulFromTheDepths attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env GhoulFromTheDepths where
+  getAbilities i window (GhoulFromTheDepths attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env GhoulFromTheDepths where
   runMessage msg (GhoulFromTheDepths attrs) =

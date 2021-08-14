@@ -29,8 +29,8 @@ slimeCoveredDhole = enemyWith
 
 instance HasModifiersFor env SlimeCoveredDhole
 
-instance ActionRunner env => HasActions env SlimeCoveredDhole where
-  getActions i window (SlimeCoveredDhole attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env SlimeCoveredDhole where
+  getAbilities i window (SlimeCoveredDhole attrs) = getAbilities i window attrs
 
 bayouLocations
   :: (MonadReader env m, HasSet LocationId env [Trait])

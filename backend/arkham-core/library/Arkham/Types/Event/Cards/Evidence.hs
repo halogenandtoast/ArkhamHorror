@@ -20,8 +20,8 @@ evidence = event Evidence Cards.evidence
 
 instance HasModifiersFor env Evidence
 
-instance HasActions env Evidence where
-  getActions i window (Evidence attrs) = getActions i window attrs
+instance HasAbilities env Evidence where
+  getAbilities i window (Evidence attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env Evidence where
   runMessage msg e@(Evidence attrs@EventAttrs {..}) = case msg of

@@ -54,10 +54,10 @@ ability attrs = mkAbility
   1
   (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 3])
 
-instance ActionRunner env => HasActions env ParlorCar where
-  getActions iid NonFast (ParlorCar attrs) | locationRevealed attrs =
+instance ActionRunner env => HasAbilities env ParlorCar where
+  getAbilities iid NonFast (ParlorCar attrs) | locationRevealed attrs =
     withBaseActions iid NonFast attrs $ pure [locationAbility (ability attrs)]
-  getActions iid window (ParlorCar attrs) = getActions iid window attrs
+  getAbilities iid window (ParlorCar attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env ParlorCar where
   runMessage msg l@(ParlorCar attrs@LocationAttrs {..}) = case msg of

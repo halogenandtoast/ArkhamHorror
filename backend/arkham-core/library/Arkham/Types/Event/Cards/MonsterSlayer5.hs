@@ -24,8 +24,8 @@ newtype MonsterSlayer5 = MonsterSlayer5 EventAttrs
 monsterSlayer5 :: EventCard MonsterSlayer5
 monsterSlayer5 = event MonsterSlayer5 Cards.monsterSlayer5
 
-instance HasActions env MonsterSlayer5 where
-  getActions iid window (MonsterSlayer5 attrs) = getActions iid window attrs
+instance HasAbilities env MonsterSlayer5 where
+  getAbilities iid window (MonsterSlayer5 attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env MonsterSlayer5
 

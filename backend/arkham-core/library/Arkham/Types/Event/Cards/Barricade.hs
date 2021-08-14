@@ -29,8 +29,8 @@ instance HasModifiersFor env Barricade where
     ]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env Barricade where
-  getActions i window (Barricade attrs) = getActions i window attrs
+instance HasAbilities env Barricade where
+  getAbilities i window (Barricade attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env Barricade where
   runMessage msg e@(Barricade attrs@EventAttrs {..}) = case msg of

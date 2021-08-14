@@ -39,9 +39,9 @@ ability attrs = (mkAbility
 
 instance HasModifiersFor env LadyEsprit
 
-instance HasActions env LadyEsprit where
-  getActions _ NonFast (LadyEsprit a) = pure [ability a]
-  getActions _ _ _ = pure []
+instance HasAbilities env LadyEsprit where
+  getAbilities _ NonFast (LadyEsprit a) = pure [ability a]
+  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env LadyEsprit where
   runMessage msg a@(LadyEsprit attrs) = case msg of

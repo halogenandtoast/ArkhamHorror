@@ -37,12 +37,12 @@ instance HasModifiersFor env LostMemories
 forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
 
-instance ActionRunner env => HasActions env LostMemories where
-  getActions iid (AfterRevealLocation who) (LostMemories attrs)
+instance ActionRunner env => HasAbilities env LostMemories where
+  getAbilities iid (AfterRevealLocation who) (LostMemories attrs)
     | iid `on` attrs && iid == who = do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid
       pure [ forcedAbility attrs | actionRemainingCount > 0 ]
-  getActions iid window (LostMemories attrs) = getActions iid window attrs
+  getAbilities iid window (LostMemories attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env LostMemories where
   runMessage msg l@(LostMemories attrs) = case msg of

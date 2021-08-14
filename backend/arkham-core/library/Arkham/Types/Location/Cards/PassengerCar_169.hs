@@ -44,8 +44,8 @@ instance HasCount ClueCount env LocationId => HasModifiersFor env PassengerCar_1
       Nothing -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env PassengerCar_169 where
-  getActions iid window (PassengerCar_169 attrs) = getActions iid window attrs
+instance ActionRunner env => HasAbilities env PassengerCar_169 where
+  getAbilities iid window (PassengerCar_169 attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env PassengerCar_169 where
   runMessage msg l@(PassengerCar_169 attrs@LocationAttrs {..}) = case msg of

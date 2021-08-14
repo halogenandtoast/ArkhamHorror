@@ -26,10 +26,10 @@ ability x = (mkAbility (toSource x) 1 (ReactionAbility Free))
   { abilityRestrictions = Just InvestigatorIsAlone
   }
 
-instance HasActions env LoneWolf where
-  getActions i (WhenTurnBegins who) (LoneWolf x) | ownedBy x i && i == who =
+instance HasAbilities env LoneWolf where
+  getAbilities i (WhenTurnBegins who) (LoneWolf x) | ownedBy x i && i == who =
     pure [ability x]
-  getActions iid window (LoneWolf attrs) = getActions iid window attrs
+  getAbilities iid window (LoneWolf attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env LoneWolf
 

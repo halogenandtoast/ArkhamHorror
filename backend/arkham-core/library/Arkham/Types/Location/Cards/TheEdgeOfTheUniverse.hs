@@ -39,9 +39,9 @@ instance HasPhase env => HasModifiersFor env TheEdgeOfTheUniverse where
       pure $ toModifiers attrs [ CannotDrawCards | phase == UpkeepPhase ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env TheEdgeOfTheUniverse where
-  getActions iid window (TheEdgeOfTheUniverse attrs) = do
-    actions <- getActions iid window attrs
+instance ActionRunner env => HasAbilities env TheEdgeOfTheUniverse where
+  getAbilities iid window (TheEdgeOfTheUniverse attrs) = do
+    actions <- getAbilities iid window attrs
     clueCount <- unClueCount <$> getCount iid
     pure $ if clueCount >= 2
       then actions

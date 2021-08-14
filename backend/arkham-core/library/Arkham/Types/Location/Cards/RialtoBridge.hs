@@ -30,8 +30,8 @@ rialtoBridge = locationWith
 
 instance HasModifiersFor env RialtoBridge
 
-instance ActionRunner env => HasActions env RialtoBridge where
-  getActions iid window (RialtoBridge attrs) = getActions iid window attrs
+instance ActionRunner env => HasAbilities env RialtoBridge where
+  getAbilities iid window (RialtoBridge attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env RialtoBridge where
   runMessage msg l@(RialtoBridge attrs) = case msg of

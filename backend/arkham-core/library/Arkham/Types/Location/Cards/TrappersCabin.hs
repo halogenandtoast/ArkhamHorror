@@ -39,8 +39,8 @@ instance HasModifiersFor env TrappersCabin where
       [ CannotGainResources | iid `member` locationInvestigators attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env TrappersCabin where
-  getActions iid NonFast (TrappersCabin attrs@LocationAttrs {..})
+instance ActionRunner env => HasAbilities env TrappersCabin where
+  getAbilities iid NonFast (TrappersCabin attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ do
       assetNotTaken <- isNothing <$> selectOne (assetIs Assets.bearTrap)
       pure
@@ -50,7 +50,7 @@ instance ActionRunner env => HasActions env TrappersCabin where
             )
         | assetNotTaken
         ]
-  getActions i window (TrappersCabin attrs) = getActions i window attrs
+  getAbilities i window (TrappersCabin attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env TrappersCabin where
   runMessage msg l@(TrappersCabin attrs) = case msg of

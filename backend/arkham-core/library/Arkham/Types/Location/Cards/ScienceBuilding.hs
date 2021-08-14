@@ -29,8 +29,8 @@ scienceBuilding = location
 
 instance HasModifiersFor env ScienceBuilding
 
-instance ActionRunner env => HasActions env ScienceBuilding where
-  getActions i window (ScienceBuilding attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env ScienceBuilding where
+  getAbilities i window (ScienceBuilding attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env ScienceBuilding where
   runMessage msg l@(ScienceBuilding attrs) = case msg of

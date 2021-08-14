@@ -20,8 +20,8 @@ dynamiteBlast2 = event DynamiteBlast2 Cards.dynamiteBlast2
 
 instance HasModifiersFor env DynamiteBlast2
 
-instance HasActions env DynamiteBlast2 where
-  getActions i window (DynamiteBlast2 attrs) = getActions i window attrs
+instance HasAbilities env DynamiteBlast2 where
+  getAbilities i window (DynamiteBlast2 attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env DynamiteBlast2 where
   -- TODO: Does not provoke attacks of opportunity

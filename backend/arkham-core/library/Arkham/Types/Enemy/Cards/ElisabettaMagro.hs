@@ -20,8 +20,8 @@ elisabettaMagro =
 
 instance HasModifiersFor env ElisabettaMagro
 
-instance EnemyAttrsHasActions env => HasActions env ElisabettaMagro where
-  getActions i window (ElisabettaMagro attrs) = getActions i window attrs
+instance EnemyAttrsHasAbilities env => HasAbilities env ElisabettaMagro where
+  getAbilities i window (ElisabettaMagro attrs) = getAbilities i window attrs
 
 instance EnemyAttrsRunMessage env => RunMessage env ElisabettaMagro where
   runMessage msg (ElisabettaMagro attrs) = case msg of

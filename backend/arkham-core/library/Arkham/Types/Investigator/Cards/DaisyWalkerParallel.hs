@@ -65,13 +65,13 @@ instance HasTokenValue env DaisyWalkerParallel where
   getTokenValue (DaisyWalkerParallel attrs) iid token =
     getTokenValue attrs iid token
 
-instance InvestigatorRunner env => HasActions env DaisyWalkerParallel where
-  getActions iid FastPlayerWindow (DaisyWalkerParallel attrs)
+instance InvestigatorRunner env => HasAbilities env DaisyWalkerParallel where
+  getAbilities iid FastPlayerWindow (DaisyWalkerParallel attrs)
     | iid == investigatorId attrs = withBaseActions iid FastPlayerWindow attrs
     $ do
         hasTomes <- (> 0) . unAssetCount <$> getCount (iid, [Tome])
         pure [ ability attrs | hasTomes ]
-  getActions i window (DaisyWalkerParallel attrs) = getActions i window attrs
+  getAbilities i window (DaisyWalkerParallel attrs) = getAbilities i window attrs
 
 instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
   runMessage msg i@(DaisyWalkerParallel attrs@InvestigatorAttrs {..}) =
@@ -83,7 +83,7 @@ instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
             (setToList investigatorAssets)
           pairs' <-
             filter (notNull . snd)
-              <$> traverse (\a -> (a, ) <$> getActions iid NonFast a) tomeAssets
+              <$> traverse (\a -> (a, ) <$> getAbilities iid NonFast a) tomeAssets
           if null pairs'
             then pure i
             else i <$ push

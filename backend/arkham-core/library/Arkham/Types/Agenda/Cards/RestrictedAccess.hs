@@ -27,8 +27,8 @@ restrictedAccess :: AgendaCard RestrictedAccess
 restrictedAccess =
   agenda (1, A) RestrictedAccess Cards.restrictedAccess (Static 5)
 
-instance HasActions env RestrictedAccess where
-  getActions i window (RestrictedAccess x) = getActions i window x
+instance HasAbilities env RestrictedAccess where
+  getAbilities i window (RestrictedAccess x) = getAbilities i window x
 
 instance HasModifiersFor env RestrictedAccess
 

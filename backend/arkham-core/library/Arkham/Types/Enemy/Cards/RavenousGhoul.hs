@@ -25,8 +25,8 @@ ravenousGhoul = enemyWith
 
 instance HasModifiersFor env RavenousGhoul
 
-instance ActionRunner env => HasActions env RavenousGhoul where
-  getActions i window (RavenousGhoul attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env RavenousGhoul where
+  getAbilities i window (RavenousGhoul attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env RavenousGhoul where
   runMessage msg (RavenousGhoul attrs) = RavenousGhoul <$> runMessage msg attrs

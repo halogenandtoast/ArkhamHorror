@@ -52,8 +52,8 @@ instance ToJSON EffectAttrs where
 instance FromJSON EffectAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "effect"
 
-instance HasActions env EffectAttrs where
-  getActions _ _ _ = pure []
+instance HasAbilities env EffectAttrs where
+  getAbilities _ _ _ = pure []
 
 instance HasQueue env => RunMessage env EffectAttrs where
   runMessage msg a@EffectAttrs {..} = case msg of

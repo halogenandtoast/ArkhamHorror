@@ -47,8 +47,8 @@ ability attrs =
   mkAbility (toSource attrs) 1 (FastAbility Free)
     & (abilityLimitL .~ GroupLimit PerGame 1)
 
-instance ActionRunner env => HasActions env ColdSpringGlen_244 where
-  getActions iid FastPlayerWindow (ColdSpringGlen_244 attrs) =
+instance ActionRunner env => HasAbilities env ColdSpringGlen_244 where
+  getAbilities iid FastPlayerWindow (ColdSpringGlen_244 attrs) =
     withBaseActions iid FastPlayerWindow attrs $ do
       investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
@@ -56,8 +56,8 @@ instance ActionRunner env => HasActions env ColdSpringGlen_244 where
         [ locationAbility (ability attrs)
         | investigatorsWithClues && anyAbominations
         ]
-  getActions iid window (ColdSpringGlen_244 attrs) =
-    getActions iid window attrs
+  getAbilities iid window (ColdSpringGlen_244 attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env ColdSpringGlen_244 where
   runMessage msg l@(ColdSpringGlen_244 attrs) = case msg of

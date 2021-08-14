@@ -32,7 +32,7 @@ deriving anyclass instance
   , GetCardDef env EnemyId
   , HasSkillTest env
   )
-  => HasActions env Event
+  => HasAbilities env Event
 
 instance HasCount ClueCount env InvestigatorId => HasModifiersFor env Event where
   getModifiersFor = genericGetModifiersFor

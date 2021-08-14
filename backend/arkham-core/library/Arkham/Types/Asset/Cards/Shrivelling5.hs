@@ -30,13 +30,13 @@ shrivelling5 = arcane Shrivelling5 Cards.shrivelling5
 
 instance HasModifiersFor env Shrivelling5
 
-instance HasActions env Shrivelling5 where
-  getActions iid NonFast (Shrivelling5 a) | ownedBy a iid = pure
+instance HasAbilities env Shrivelling5 where
+  getAbilities iid NonFast (Shrivelling5 a) | ownedBy a iid = pure
     [ mkAbility a 1 $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Charge 1])
     ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Shrivelling5 where
   runMessage msg a@(Shrivelling5 attrs) = case msg of

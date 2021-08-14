@@ -25,11 +25,11 @@ newtype FindingANewWay = FindingANewWay ActAttrs
 findingANewWay :: ActCard FindingANewWay
 findingANewWay = act (4, A) FindingANewWay Cards.findingANewWay Nothing
 
-instance HasActions env FindingANewWay where
-  getActions iid NonFast (FindingANewWay x) =
+instance HasAbilities env FindingANewWay where
+  getAbilities iid NonFast (FindingANewWay x) =
     withBaseActions iid NonFast x $ do
       pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
-  getActions iid window (FindingANewWay x) = getActions iid window x
+  getAbilities iid window (FindingANewWay x) = getAbilities iid window x
 
 instance ActRunner env => RunMessage env FindingANewWay where
   runMessage msg a@(FindingANewWay attrs@ActAttrs {..}) = case msg of

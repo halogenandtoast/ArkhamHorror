@@ -18,8 +18,8 @@ newtype IveHadWorse4 = IveHadWorse4 EventAttrs
 iveHadWorse4 :: EventCard IveHadWorse4
 iveHadWorse4 = event IveHadWorse4 Cards.iveHadWorse4
 
-instance HasActions env IveHadWorse4 where
-  getActions iid window (IveHadWorse4 attrs) = getActions iid window attrs
+instance HasAbilities env IveHadWorse4 where
+  getAbilities iid window (IveHadWorse4 attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env IveHadWorse4
 

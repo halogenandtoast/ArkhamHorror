@@ -26,8 +26,8 @@ humanitiesBuilding = location
 
 instance HasModifiersFor env HumanitiesBuilding
 
-instance ActionRunner env => HasActions env HumanitiesBuilding where
-  getActions i window (HumanitiesBuilding attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env HumanitiesBuilding where
+  getAbilities i window (HumanitiesBuilding attrs) = getAbilities i window attrs
 
 instance LocationRunner env => RunMessage env HumanitiesBuilding where
   runMessage msg l@(HumanitiesBuilding attrs) = case msg of

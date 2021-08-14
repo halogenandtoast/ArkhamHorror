@@ -20,8 +20,8 @@ sneakAttack = event SneakAttack Cards.sneakAttack
 
 instance HasModifiersFor env SneakAttack
 
-instance HasActions env SneakAttack where
-  getActions i window (SneakAttack attrs) = getActions i window attrs
+instance HasAbilities env SneakAttack where
+  getAbilities i window (SneakAttack attrs) = getAbilities i window attrs
 
 instance EventRunner env => RunMessage env SneakAttack where
   runMessage msg e@(SneakAttack attrs@EventAttrs {..}) = case msg of

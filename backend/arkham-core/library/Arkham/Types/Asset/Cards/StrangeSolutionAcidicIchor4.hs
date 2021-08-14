@@ -28,14 +28,14 @@ strangeSolutionAcidicIchor4 :: AssetCard StrangeSolutionAcidicIchor4
 strangeSolutionAcidicIchor4 =
   asset StrangeSolutionAcidicIchor4 Cards.strangeSolutionAcidicIchor4
 
-instance HasActions env StrangeSolutionAcidicIchor4 where
-  getActions iid NonFast (StrangeSolutionAcidicIchor4 attrs)
+instance HasAbilities env StrangeSolutionAcidicIchor4 where
+  getAbilities iid NonFast (StrangeSolutionAcidicIchor4 attrs)
     | ownedBy attrs iid = pure
       [ mkAbility attrs 1 $ ActionAbility (Just Action.Fight) $ Costs
           [ActionCost 1, UseCost (toId attrs) Supply 1]
       ]
-  getActions iid window (StrangeSolutionAcidicIchor4 attrs) =
-    getActions iid window attrs
+  getAbilities iid window (StrangeSolutionAcidicIchor4 attrs) =
+    getAbilities iid window attrs
 
 instance HasModifiersFor env StrangeSolutionAcidicIchor4 where
   getModifiersFor (SkillTestSource _ _ source _ (Just Action.Fight)) (InvestigatorTarget iid) (StrangeSolutionAcidicIchor4 a)

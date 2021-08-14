@@ -33,11 +33,11 @@ dimensionalDoorway = location
 
 instance HasModifiersFor env DimensionalDoorway
 
-instance ActionRunner env => HasActions env DimensionalDoorway where
-  getActions iid (AfterEndTurn who) (DimensionalDoorway attrs) | iid == who =
+instance ActionRunner env => HasAbilities env DimensionalDoorway where
+  getAbilities iid (AfterEndTurn who) (DimensionalDoorway attrs) | iid == who =
     pure [locationAbility (mkAbility (toSource attrs) 1 ForcedAbility)]
-  getActions iid window (DimensionalDoorway attrs) =
-    getActions iid window attrs
+  getAbilities iid window (DimensionalDoorway attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env DimensionalDoorway where
   runMessage msg l@(DimensionalDoorway attrs) = case msg of

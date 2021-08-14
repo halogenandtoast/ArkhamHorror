@@ -40,8 +40,8 @@ jimCulver = JimCulver $ baseAttrs
     }
   [Performer]
 
-instance InvestigatorRunner env => HasActions env JimCulver where
-  getActions i window (JimCulver attrs) = getActions i window attrs
+instance InvestigatorRunner env => HasAbilities env JimCulver where
+  getAbilities i window (JimCulver attrs) = getAbilities i window attrs
 
 instance HasTokenValue env JimCulver where
   getTokenValue (JimCulver attrs) iid ElderSign | iid == investigatorId attrs =

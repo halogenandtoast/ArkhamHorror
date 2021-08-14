@@ -30,8 +30,8 @@ umordhoth = enemy Umordhoth Cards.umordhoth (5, Static 6, 6) (3, 3)
 
 instance HasModifiersFor env Umordhoth
 
-instance ActionRunner env => HasActions env Umordhoth where
-  getActions iid NonFast (Umordhoth attrs@EnemyAttrs {..}) =
+instance ActionRunner env => HasAbilities env Umordhoth where
+  getAbilities iid NonFast (Umordhoth attrs@EnemyAttrs {..}) =
     withBaseActions iid NonFast attrs $ do
       maid <- selectOne (assetIs Cards.litaChantler)
       locationId <- getId @LocationId iid
@@ -43,7 +43,7 @@ instance ActionRunner env => HasActions env Umordhoth where
             [ mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 1
             | locationId == enemyLocation && miid == Just iid
             ]
-  getActions i window (Umordhoth attrs) = getActions i window attrs
+  getAbilities i window (Umordhoth attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env Umordhoth where
   runMessage msg e@(Umordhoth attrs@EnemyAttrs {..}) = case msg of

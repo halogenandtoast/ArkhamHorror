@@ -32,8 +32,8 @@ hermanCollins = enemyWith
 
 instance HasModifiersFor env HermanCollins
 
-instance ActionRunner env => HasActions env HermanCollins where
-  getActions iid NonFast (HermanCollins attrs@EnemyAttrs {..}) =
+instance ActionRunner env => HasAbilities env HermanCollins where
+  getAbilities iid NonFast (HermanCollins attrs@EnemyAttrs {..}) =
     withBaseActions iid NonFast attrs $ do
       locationId <- getId @LocationId iid
       pure
@@ -42,7 +42,7 @@ instance ActionRunner env => HasActions env HermanCollins where
             (Costs [ActionCost 1, HandDiscardCost 4 Nothing mempty mempty])
         | locationId == enemyLocation
         ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance EnemyRunner env => RunMessage env HermanCollins where
   runMessage msg e@(HermanCollins attrs) = case msg of

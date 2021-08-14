@@ -39,8 +39,8 @@ instance HasPhase env => HasModifiersFor env VipArea where
         else pure []
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env VipArea where
-  getActions iid window (VipArea attrs) = getActions iid window attrs
+instance ActionRunner env => HasAbilities env VipArea where
+  getAbilities iid window (VipArea attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env VipArea where
   runMessage msg (VipArea attrs) = VipArea <$> runMessage msg attrs

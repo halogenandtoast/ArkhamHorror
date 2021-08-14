@@ -36,14 +36,14 @@ instance HasModifiersFor env LockedDoor where
       [ CannotInvestigate | treacheryOnLocation lid attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env LockedDoor where
-  getActions iid NonFast (LockedDoor a) = do
+instance ActionRunner env => HasAbilities env LockedDoor where
+  getAbilities iid NonFast (LockedDoor a) = do
     investigatorLocationId <- getId @LocationId iid
     pure
       [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1
       | treacheryOnLocation investigatorLocationId a
       ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env LockedDoor where
   runMessage msg t@(LockedDoor attrs@TreacheryAttrs {..}) = case msg of

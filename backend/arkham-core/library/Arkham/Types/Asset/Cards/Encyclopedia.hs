@@ -31,12 +31,12 @@ encyclopedia = hand Encyclopedia Cards.encyclopedia
 
 instance HasModifiersFor env Encyclopedia
 
-instance HasActions env Encyclopedia where
-  getActions iid NonFast (Encyclopedia a) | ownedBy a iid = pure
+instance HasAbilities env Encyclopedia where
+  getAbilities iid NonFast (Encyclopedia a) | ownedBy a iid = pure
     [ mkAbility a 1 $ ActionAbility Nothing $ Costs
         [ActionCost 1, ExhaustCost (toTarget a), UseCost (toId a) Secret 1]
     ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Encyclopedia where
   runMessage msg a@(Encyclopedia attrs) = case msg of

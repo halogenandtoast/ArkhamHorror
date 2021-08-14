@@ -17,8 +17,8 @@ bulletproofVest3 =
 
 instance HasModifiersFor env BulletproofVest3
 
-instance HasActions env BulletproofVest3 where
-  getActions i window (BulletproofVest3 x) = getActions i window x
+instance HasAbilities env BulletproofVest3 where
+  getAbilities i window (BulletproofVest3 x) = getAbilities i window x
 
 instance (AssetRunner env) => RunMessage env BulletproofVest3 where
   runMessage msg (BulletproofVest3 attrs) =

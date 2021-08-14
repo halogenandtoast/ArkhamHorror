@@ -29,8 +29,8 @@ instance
   ( HasSet ConnectedLocationId env LocationId
   , HasId LocationId env InvestigatorId
   )
-  => HasActions env AbbessAllegriaDiBiase where
-  getActions iid FastPlayerWindow (AbbessAllegriaDiBiase attrs) = do
+  => HasAbilities env AbbessAllegriaDiBiase where
+  getAbilities iid FastPlayerWindow (AbbessAllegriaDiBiase attrs) = do
     abbessLocationId <- getAssetLocation attrs
     investigatorLocation <- getId @LocationId iid
     connectedLocationIds <- map unConnectedLocationId
@@ -40,8 +40,8 @@ instance
       | (abbessLocationId `elem` connectedLocationIds)
         || (abbessLocationId == investigatorLocation)
       ]
-  getActions iid window (AbbessAllegriaDiBiase attrs) =
-    getActions iid window attrs
+  getAbilities iid window (AbbessAllegriaDiBiase attrs) =
+    getAbilities iid window attrs
 
 instance HasModifiersFor env AbbessAllegriaDiBiase
 

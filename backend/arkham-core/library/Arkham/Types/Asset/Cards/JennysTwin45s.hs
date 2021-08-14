@@ -31,13 +31,13 @@ jennysTwin45s =
 
 instance HasModifiersFor env JennysTwin45s
 
-instance HasActions env JennysTwin45s where
-  getActions iid NonFast (JennysTwin45s a) | ownedBy a iid = pure
+instance HasAbilities env JennysTwin45s where
+  getAbilities iid NonFast (JennysTwin45s a) | ownedBy a iid = pure
     [ mkAbility a 1 $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
     ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env JennysTwin45s where
   runMessage msg a@(JennysTwin45s attrs) = case msg of

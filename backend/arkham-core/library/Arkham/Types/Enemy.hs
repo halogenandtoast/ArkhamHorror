@@ -52,10 +52,10 @@ preventedByModifier e msg (CannotTakeAction matcher) =
     Nothing -> False
 preventedByModifier _ _ _ = False
 
-instance ActionRunner env => HasActions env Enemy where
-  getActions investigator window x = do
+instance ActionRunner env => HasAbilities env Enemy where
+  getAbilities investigator window x = do
     modifiers' <- getModifiers (toSource x) (InvestigatorTarget investigator)
-    actions <- genericGetActions investigator window x
+    actions <- genericGetAbilities investigator window x
     pure $ filter
       (\action -> not $ any (preventedByModifier (toAttrs x) action) modifiers')
       actions

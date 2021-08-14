@@ -22,8 +22,8 @@ theCreaturesTracks = treachery TheCreaturesTracks Cards.theCreaturesTracks
 
 instance HasModifiersFor env TheCreaturesTracks
 
-instance HasActions env TheCreaturesTracks where
-  getActions i window (TheCreaturesTracks attrs) = getActions i window attrs
+instance HasAbilities env TheCreaturesTracks where
+  getAbilities i window (TheCreaturesTracks attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env TheCreaturesTracks where
   runMessage msg t@(TheCreaturesTracks attrs) = case msg of

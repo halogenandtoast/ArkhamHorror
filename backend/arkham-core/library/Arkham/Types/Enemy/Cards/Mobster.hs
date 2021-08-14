@@ -20,8 +20,8 @@ mobster = enemy Mobster Cards.mobster (2, Static 2, 2) (1, 0)
 
 instance HasModifiersFor env Mobster
 
-instance ActionRunner env => HasActions env Mobster where
-  getActions i window (Mobster attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env Mobster where
+  getAbilities i window (Mobster attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env Mobster where
   runMessage msg e@(Mobster attrs@EnemyAttrs {..}) = case msg of

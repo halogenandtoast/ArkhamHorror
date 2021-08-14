@@ -34,8 +34,8 @@ instance HasModifiersFor env WrackedByNightmares where
       [ ControlledAssetsCannotReady | treacheryOnInvestigator iid attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env WrackedByNightmares where
-  getActions iid NonFast (WrackedByNightmares a) =
+instance ActionRunner env => HasAbilities env WrackedByNightmares where
+  getAbilities iid NonFast (WrackedByNightmares a) =
     withTreacheryInvestigator a $ \tormented -> do
       treacheryLocation <- getId tormented
       investigatorLocationId <- getId @LocationId iid
@@ -43,7 +43,7 @@ instance ActionRunner env => HasActions env WrackedByNightmares where
         [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 2
         | treacheryLocation == investigatorLocationId
         ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance TreacheryRunner env => RunMessage env WrackedByNightmares where
   runMessage msg t@(WrackedByNightmares attrs@TreacheryAttrs {..}) =

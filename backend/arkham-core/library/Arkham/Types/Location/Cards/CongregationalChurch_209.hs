@@ -40,16 +40,16 @@ ability attrs = mkAbility
   $ Costs [ActionCost 1, HandDiscardCost 1 Nothing mempty mempty]
   )
 
-instance ActionRunner env => HasActions env CongregationalChurch_209 where
-  getActions iid NonFast (CongregationalChurch_209 attrs)
+instance ActionRunner env => HasAbilities env CongregationalChurch_209 where
+  getAbilities iid NonFast (CongregationalChurch_209 attrs)
     | locationRevealed attrs = withBaseActions iid NonFast attrs
     $ pure [locationAbility (ability attrs)]
-  getActions iid FastPlayerWindow (CongregationalChurch_209 attrs)
+  getAbilities iid FastPlayerWindow (CongregationalChurch_209 attrs)
     | locationRevealed attrs = withBaseActions iid FastPlayerWindow attrs
     $ pure
         [ drawCardUnderneathLocationAction attrs | locationClues attrs == 0 ]
-  getActions iid window (CongregationalChurch_209 attrs) =
-    getActions iid window attrs
+  getAbilities iid window (CongregationalChurch_209 attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env CongregationalChurch_209 where
   runMessage msg l@(CongregationalChurch_209 attrs) = case msg of

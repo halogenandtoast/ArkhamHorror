@@ -45,8 +45,8 @@ instance (HasSet InvestigatorId env LocationId, HasSet ConnectedLocationId env L
         ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env Narogath where
-  getActions i window (Narogath attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env Narogath where
+  getAbilities i window (Narogath attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env Narogath where
   runMessage msg (Narogath attrs@EnemyAttrs {..}) = case msg of

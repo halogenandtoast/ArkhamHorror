@@ -23,8 +23,8 @@ collapsingReality = treachery CollapsingReality Cards.collapsingReality
 
 instance HasModifiersFor env CollapsingReality
 
-instance HasActions env CollapsingReality where
-  getActions i window (CollapsingReality attrs) = getActions i window attrs
+instance HasAbilities env CollapsingReality where
+  getAbilities i window (CollapsingReality attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env CollapsingReality where
   runMessage msg t@(CollapsingReality attrs) = case msg of

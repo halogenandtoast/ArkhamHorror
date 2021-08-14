@@ -24,8 +24,8 @@ newtype DeadOfNight = DeadOfNight AgendaAttrs
 deadOfNight :: AgendaCard DeadOfNight
 deadOfNight = agenda (2, A) DeadOfNight Cards.deadOfNight (Static 3)
 
-instance HasActions env DeadOfNight where
-  getActions i window (DeadOfNight x) = getActions i window x
+instance HasAbilities env DeadOfNight where
+  getAbilities i window (DeadOfNight x) = getAbilities i window x
 
 instance HasModifiersFor env DeadOfNight where
   getModifiersFor _ (InvestigatorTarget _) (DeadOfNight a) =

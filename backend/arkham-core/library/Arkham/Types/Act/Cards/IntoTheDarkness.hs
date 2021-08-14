@@ -18,8 +18,8 @@ newtype IntoTheDarkness = IntoTheDarkness ActAttrs
 intoTheDarkness :: ActCard IntoTheDarkness
 intoTheDarkness = act (2, A) IntoTheDarkness Cards.intoTheDarkness Nothing
 
-instance HasActions env IntoTheDarkness where
-  getActions i window (IntoTheDarkness x) = getActions i window x
+instance HasAbilities env IntoTheDarkness where
+  getAbilities i window (IntoTheDarkness x) = getAbilities i window x
 
 instance ActRunner env => RunMessage env IntoTheDarkness where
   runMessage msg a@(IntoTheDarkness attrs@ActAttrs {..}) = case msg of

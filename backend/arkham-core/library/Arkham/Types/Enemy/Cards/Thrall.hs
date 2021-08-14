@@ -22,8 +22,8 @@ thrall = enemy Thrall Cards.thrall (2, Static 2, 2) (1, 1)
 
 instance HasModifiersFor env Thrall
 
-instance ActionRunner env => HasActions env Thrall where
-  getActions i window (Thrall attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env Thrall where
+  getAbilities i window (Thrall attrs) = getAbilities i window attrs
 
 instance EnemyRunner env => RunMessage env Thrall where
   runMessage msg e@(Thrall attrs@EnemyAttrs {..}) = case msg of

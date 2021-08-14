@@ -77,13 +77,13 @@ replaceToken token = withQueue $ \queue ->
   )
 
 withBaseActions
-  :: (MonadIO m, HasActions env a, MonadReader env m)
+  :: (MonadIO m, HasAbilities env a, MonadReader env m)
   => InvestigatorId
   -> Window
   -> a
   -> m [Ability]
   -> m [Ability]
-withBaseActions iid window a f = (<>) <$> getActions iid window a <*> f
+withBaseActions iid window a f = (<>) <$> getAbilities iid window a <*> f
 
 getCanPerformAbility
   :: (MonadReader env m, MonadIO m, CanCheckPlayable env)
@@ -315,10 +315,10 @@ instance
   , HasList UsedAbility env ()
   , CanCheckPlayable env
   )
-  => HasActions env () where
-  getActions iid window _ = do
+  => HasAbilities env () where
+  getAbilities iid window _ = do
     actions' <- concat <$> traverse
-      (getActions iid window)
+      (getAbilities iid window)
       ([minBound .. maxBound] :: [ActionType])
     actions'' <- catMaybes <$> for
       actions'
@@ -740,12 +740,12 @@ fightAction source n costs =
 
 hasFightActions
   :: forall env m
-   . (MonadIO m, MonadReader env m, HasActions env ActionType)
+   . (MonadIO m, MonadReader env m, HasAbilities env ActionType)
   => InvestigatorId
   -> Window
   -> m Bool
 hasFightActions i NonFast = do
-  enemyActions <- getActions i NonFast EnemyActionType
+  enemyActions <- getAbilities i NonFast EnemyActionType
   pure $ flip
     any
     enemyActions
@@ -756,12 +756,12 @@ hasFightActions _ _ = pure False
 
 hasEvadeActions
   :: forall env m
-   . (MonadIO m, MonadReader env m, HasActions env ActionType)
+   . (MonadIO m, MonadReader env m, HasAbilities env ActionType)
   => InvestigatorId
   -> Window
   -> m Bool
 hasEvadeActions i NonFast = do
-  enemyActions <- getActions i NonFast EnemyActionType
+  enemyActions <- getAbilities i NonFast EnemyActionType
   pure $ flip
     any
     enemyActions
@@ -772,12 +772,12 @@ hasEvadeActions _ _ = pure False
 
 hasInvestigateActions
   :: forall env m
-   . (MonadIO m, MonadReader env m, HasActions env ActionType)
+   . (MonadIO m, MonadReader env m, HasAbilities env ActionType)
   => InvestigatorId
   -> Window
   -> m Bool
 hasInvestigateActions i NonFast = do
-  locationActions <- getActions i NonFast LocationActionType
+  locationActions <- getAbilities i NonFast LocationActionType
   pure $ flip
     any
     locationActions
@@ -802,7 +802,7 @@ type CanCheckPlayable env
     , HasSet Trait env EnemyId
     , HasSet Trait env EnemyId
     , HasCount ClueCount env LocationId
-    , HasActions env ActionType
+    , HasAbilities env ActionType
     , HasSet EnemyId env InvestigatorId
     , HasCount ResourceCount env InvestigatorId
     , HasCount DoomCount env AssetId
@@ -966,7 +966,7 @@ passesRestriction iid location windows = \case
   ScenarioCardHasResignAbility -> do
     actions' <- concat . concat <$> sequence
       [ traverse
-          (getActions iid window)
+          (getAbilities iid window)
           ([minBound .. maxBound] :: [ActionType])
       | window <- windows
       ]

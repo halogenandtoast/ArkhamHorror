@@ -39,15 +39,15 @@ ability a = mkAbility
   $ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) Nothing]
   )
 
-instance ActionRunner env => HasActions env TheCarnevaleConspiracy where
-  getActions _ NonFast (TheCarnevaleConspiracy x) = do
+instance ActionRunner env => HasAbilities env TheCarnevaleConspiracy where
+  getAbilities _ NonFast (TheCarnevaleConspiracy x) = do
     maskedCarnevaleGoers <- selectList (AssetWithTitle "Masked Carnevale-Goer")
     filteredMaskedCarnevaleGoers <- flip filterM maskedCarnevaleGoers $ \aid ->
       do
         modifiers' <- getModifiers (toSource x) (AssetTarget aid)
         pure $ CannotBeRevealed `notElem` modifiers'
     pure [ ability x | notNull filteredMaskedCarnevaleGoers ]
-  getActions iid window (TheCarnevaleConspiracy x) = getActions iid window x
+  getAbilities iid window (TheCarnevaleConspiracy x) = getAbilities iid window x
 
 instance
   ( HasList UnderneathCard env ActDeck

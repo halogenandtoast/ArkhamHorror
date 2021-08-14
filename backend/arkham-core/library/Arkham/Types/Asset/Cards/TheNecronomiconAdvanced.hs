@@ -39,12 +39,12 @@ instance HasModifiersFor env TheNecronomiconAdvanced where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env TheNecronomiconAdvanced where
-  getActions iid NonFast (TheNecronomiconAdvanced a) | ownedBy a iid = pure
+instance HasAbilities env TheNecronomiconAdvanced where
+  getAbilities iid NonFast (TheNecronomiconAdvanced a) | ownedBy a iid = pure
     [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1
     | fromJustNote "Must be set" (assetHorror a) > 0
     ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env TheNecronomiconAdvanced where
   runMessage msg a@(TheNecronomiconAdvanced attrs) = case msg of

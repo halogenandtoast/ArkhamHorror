@@ -29,8 +29,8 @@ instance HasCount PlayerCount env () => HasModifiersFor env VaultOfEarthlyDemise
       pure $ toModifiers attrs [HealthModifier additionalHealth, EnemyFight x]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env VaultOfEarthlyDemise where
-  getActions i window (VaultOfEarthlyDemise attrs) = getActions i window attrs
+instance HasAbilities env VaultOfEarthlyDemise where
+  getAbilities i window (VaultOfEarthlyDemise attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env VaultOfEarthlyDemise where
   runMessage msg (VaultOfEarthlyDemise attrs@TreacheryAttrs {..}) = case msg of

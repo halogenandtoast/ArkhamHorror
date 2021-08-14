@@ -19,8 +19,8 @@ hallway =
 
 instance HasModifiersFor env Hallway
 
-instance ActionRunner env => HasActions env Hallway where
-  getActions i window (Hallway attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env Hallway where
+  getAbilities i window (Hallway attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env Hallway where
   runMessage msg (Hallway attrs) = Hallway <$> runMessage msg attrs

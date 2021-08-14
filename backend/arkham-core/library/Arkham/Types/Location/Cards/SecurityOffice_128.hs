@@ -39,11 +39,11 @@ ability attrs =
     { abilityLimit = PlayerLimit PerTurn 1
     }
 
-instance ActionRunner env => HasActions env SecurityOffice_128 where
-  getActions iid NonFast (SecurityOffice_128 attrs) =
+instance ActionRunner env => HasAbilities env SecurityOffice_128 where
+  getAbilities iid NonFast (SecurityOffice_128 attrs) =
     withBaseActions iid NonFast attrs $ pure [locationAbility (ability attrs)]
-  getActions iid window (SecurityOffice_128 attrs) =
-    getActions iid window attrs
+  getAbilities iid window (SecurityOffice_128 attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env SecurityOffice_128 where
   runMessage msg l@(SecurityOffice_128 attrs) = case msg of

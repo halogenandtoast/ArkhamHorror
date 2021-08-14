@@ -40,12 +40,12 @@ ability attrs =
   mkAbility (toSource attrs) 1 (FastAbility Free)
     & (abilityLimitL .~ GroupLimit PerGame 1)
 
-instance ActionRunner env => HasActions env TenAcreMeadow_246 where
-  getActions iid FastPlayerWindow (TenAcreMeadow_246 attrs) =
+instance ActionRunner env => HasAbilities env TenAcreMeadow_246 where
+  getAbilities iid FastPlayerWindow (TenAcreMeadow_246 attrs) =
     withBaseActions iid FastPlayerWindow attrs $ do
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
       pure [ locationAbility (ability attrs) | anyAbominations ]
-  getActions iid window (TenAcreMeadow_246 attrs) = getActions iid window attrs
+  getAbilities iid window (TenAcreMeadow_246 attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env TenAcreMeadow_246 where
   runMessage msg l@(TenAcreMeadow_246 attrs) = case msg of

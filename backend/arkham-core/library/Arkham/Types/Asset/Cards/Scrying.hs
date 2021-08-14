@@ -26,12 +26,12 @@ scrying = arcane Scrying Cards.scrying
 
 instance HasModifiersFor env Scrying
 
-instance HasActions env Scrying where
-  getActions iid NonFast (Scrying a) | ownedBy a iid = pure
+instance HasAbilities env Scrying where
+  getAbilities iid NonFast (Scrying a) | ownedBy a iid = pure
     [ mkAbility a 1 $ ActionAbility Nothing $ Costs
         [ActionCost 1, UseCost (toId a) Charge 1, ExhaustCost (toTarget a)]
     ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Scrying where
   runMessage msg a@(Scrying attrs) = case msg of

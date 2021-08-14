@@ -20,8 +20,8 @@ workingAHunch = event WorkingAHunch Cards.workingAHunch
 
 instance HasModifiersFor env WorkingAHunch
 
-instance HasActions env WorkingAHunch where
-  getActions i window (WorkingAHunch attrs) = getActions i window attrs
+instance HasAbilities env WorkingAHunch where
+  getAbilities i window (WorkingAHunch attrs) = getAbilities i window attrs
 
 instance EventRunner env => RunMessage env WorkingAHunch where
   runMessage msg e@(WorkingAHunch attrs@EventAttrs {..}) = case msg of

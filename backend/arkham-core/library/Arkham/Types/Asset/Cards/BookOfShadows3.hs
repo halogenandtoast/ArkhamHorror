@@ -32,12 +32,12 @@ instance HasModifiersFor env BookOfShadows3
 slot :: AssetAttrs -> Slot
 slot AssetAttrs { assetId } = Slot (AssetSource assetId) Nothing
 
-instance HasActions env BookOfShadows3 where
-  getActions iid NonFast (BookOfShadows3 a) | ownedBy a iid = pure
+instance HasAbilities env BookOfShadows3 where
+  getAbilities iid NonFast (BookOfShadows3 a) | ownedBy a iid = pure
     [ mkAbility a 1 $ ActionAbility Nothing $ Costs
         [ActionCost 1, ExhaustCost (toTarget a)]
     ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env BookOfShadows3 where
   runMessage msg a@(BookOfShadows3 attrs) = case msg of

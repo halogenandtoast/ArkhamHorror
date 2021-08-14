@@ -17,8 +17,8 @@ offerOfPower = treachery OfferOfPower Cards.offerOfPower
 
 instance HasModifiersFor env OfferOfPower
 
-instance HasActions env OfferOfPower where
-  getActions i window (OfferOfPower attrs) = getActions i window attrs
+instance HasAbilities env OfferOfPower where
+  getAbilities i window (OfferOfPower attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env OfferOfPower where
   runMessage msg t@(OfferOfPower attrs) = case msg of

@@ -24,8 +24,8 @@ massHysteria = treachery MassHysteria Cards.massHysteria
 
 instance HasModifiersFor env MassHysteria
 
-instance HasActions env MassHysteria where
-  getActions i window (MassHysteria attrs) = getActions i window attrs
+instance HasAbilities env MassHysteria where
+  getAbilities i window (MassHysteria attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env MassHysteria where
   runMessage msg t@(MassHysteria attrs) = case msg of

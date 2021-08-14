@@ -11,7 +11,7 @@ import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
 
 newtype RiseToTheOccasion = RiseToTheOccasion SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor env, HasActions env)
+  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riseToTheOccasion :: SkillCard RiseToTheOccasion

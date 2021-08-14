@@ -32,8 +32,8 @@ newtype Fold = Fold ActAttrs
 fold :: ActCard Fold
 fold = act (3, A) Fold Cards.fold Nothing
 
-instance ActionRunner env => HasActions env Fold where
-  getActions iid NonFast (Fold attrs) = withBaseActions iid NonFast attrs $ do
+instance ActionRunner env => HasAbilities env Fold where
+  getAbilities iid NonFast (Fold attrs) = withBaseActions iid NonFast attrs $ do
     investigatorLocationId <- getId @LocationId iid
     maid <- selectOne (assetIs Cards.peterClover)
     case maid of
@@ -48,7 +48,7 @@ instance ActionRunner env => HasActions env Fold where
               (ActionAbility (Just Parley) $ ActionCost 1)
           | isNothing miid && Just investigatorLocationId == assetLocationId
           ]
-  getActions i window (Fold x) = getActions i window x
+  getAbilities i window (Fold x) = getAbilities i window x
 
 instance ActRunner env => RunMessage env Fold where
   runMessage msg a@(Fold attrs@ActAttrs {..}) = case msg of

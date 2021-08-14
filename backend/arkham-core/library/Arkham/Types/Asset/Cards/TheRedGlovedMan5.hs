@@ -30,13 +30,13 @@ theRedGlovedMan5 :: AssetCard TheRedGlovedMan5
 theRedGlovedMan5 =
   ally (TheRedGlovedMan5 . (`with` Metadata [])) Cards.theRedGlovedMan5 (4, 4)
 
-instance HasActions env TheRedGlovedMan5 where
-  getActions i (WhenEnterPlay target) (TheRedGlovedMan5 (x `With` _))
+instance HasAbilities env TheRedGlovedMan5 where
+  getAbilities i (WhenEnterPlay target) (TheRedGlovedMan5 (x `With` _))
     | isTarget x target && ownedBy x i = pure
       [mkAbility x 1 $ ReactionAbility Free]
-  getActions i (PhaseEnds MythosPhase) (TheRedGlovedMan5 (x `With` _))
+  getAbilities i (PhaseEnds MythosPhase) (TheRedGlovedMan5 (x `With` _))
     | ownedBy x i = pure [mkAbility x 2 ForcedAbility]
-  getActions i window (TheRedGlovedMan5 (x `With` _)) = getActions i window x
+  getAbilities i window (TheRedGlovedMan5 (x `With` _)) = getAbilities i window x
 
 instance HasModifiersFor env TheRedGlovedMan5 where
   getModifiersFor _ (InvestigatorTarget iid) (TheRedGlovedMan5 (a `With` Metadata {..}))

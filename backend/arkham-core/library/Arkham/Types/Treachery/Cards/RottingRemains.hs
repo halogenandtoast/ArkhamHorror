@@ -19,8 +19,8 @@ rottingRemains = treachery RottingRemains Cards.rottingRemains
 
 instance HasModifiersFor env RottingRemains
 
-instance HasActions env RottingRemains where
-  getActions i window (RottingRemains attrs) = getActions i window attrs
+instance HasAbilities env RottingRemains where
+  getAbilities i window (RottingRemains attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env RottingRemains where
   runMessage msg t@(RottingRemains attrs@TreacheryAttrs {..}) = case msg of

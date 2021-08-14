@@ -23,8 +23,8 @@ wormhole = treachery Wormhole Cards.wormhole
 
 instance HasModifiersFor env Wormhole
 
-instance HasActions env Wormhole where
-  getActions i window (Wormhole attrs) = getActions i window attrs
+instance HasAbilities env Wormhole where
+  getAbilities i window (Wormhole attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env Wormhole where
   runMessage msg t@(Wormhole attrs) = case msg of

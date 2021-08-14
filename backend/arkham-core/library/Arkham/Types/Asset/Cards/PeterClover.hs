@@ -33,12 +33,12 @@ instance
   ( HasSet EnemyId env ([Trait], LocationId)
   , HasId LocationId env InvestigatorId
   )
-  => HasActions env PeterClover where
-  getActions iid FastPlayerWindow (PeterClover attrs) | ownedBy attrs iid = do
+  => HasAbilities env PeterClover where
+  getAbilities iid FastPlayerWindow (PeterClover attrs) | ownedBy attrs iid = do
     lid <- getId @LocationId iid
     criminals <- getSet @EnemyId ([Criminal], lid)
     pure [ ability attrs | notNull criminals ]
-  getActions iid window (PeterClover attrs) = getActions iid window attrs
+  getAbilities iid window (PeterClover attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env PeterClover
 

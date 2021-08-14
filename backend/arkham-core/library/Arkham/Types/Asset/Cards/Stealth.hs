@@ -27,10 +27,10 @@ newtype Stealth = Stealth AssetAttrs
 stealth :: AssetCard Stealth
 stealth = asset Stealth Cards.stealth
 
-instance HasActions env Stealth where
-  getActions iid NonFast (Stealth attrs) | ownedBy attrs iid =
+instance HasAbilities env Stealth where
+  getAbilities iid NonFast (Stealth attrs) | ownedBy attrs iid =
     pure [mkAbility attrs 1 $ ActionAbility (Just Action.Evade) $ ActionCost 1]
-  getActions iid window (Stealth attrs) = getActions iid window attrs
+  getAbilities iid window (Stealth attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env Stealth
 

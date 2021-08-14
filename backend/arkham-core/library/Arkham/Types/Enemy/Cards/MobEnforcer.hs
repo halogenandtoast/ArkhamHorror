@@ -33,8 +33,8 @@ mobEnforcer = enemyWith
 
 instance HasModifiersFor env MobEnforcer
 
-instance ActionRunner env => HasActions env MobEnforcer where
-  getActions iid NonFast (MobEnforcer attrs@EnemyAttrs {..}) =
+instance ActionRunner env => HasAbilities env MobEnforcer where
+  getAbilities iid NonFast (MobEnforcer attrs@EnemyAttrs {..}) =
     withBaseActions iid NonFast attrs $ do
       resourceCount <- getResourceCount iid
       locationId <- getId @LocationId iid
@@ -43,7 +43,7 @@ instance ActionRunner env => HasActions env MobEnforcer where
             $ ActionAbility (Just Parley) (Costs [ActionCost 1, ResourceCost 4])
         | resourceCount >= 4 && locationId == enemyLocation
         ]
-  getActions i window (MobEnforcer attrs) = getActions i window attrs
+  getAbilities i window (MobEnforcer attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env MobEnforcer where
   runMessage msg e@(MobEnforcer attrs@EnemyAttrs {..}) = case msg of

@@ -39,15 +39,15 @@ ability attrs =
     { abilityLimit = PlayerLimit PerGame 1
     }
 
-instance ActionRunner env => HasActions env DowntownFirstBankOfArkham where
-  getActions iid NonFast (DowntownFirstBankOfArkham attrs@LocationAttrs {..})
+instance ActionRunner env => HasAbilities env DowntownFirstBankOfArkham where
+  getAbilities iid NonFast (DowntownFirstBankOfArkham attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ do
       canGainResources <-
         notElem CannotGainResources
           <$> getInvestigatorModifiers iid (toSource attrs)
       pure [ locationAbility (ability attrs) | canGainResources ]
-  getActions iid window (DowntownFirstBankOfArkham attrs) =
-    getActions iid window attrs
+  getAbilities iid window (DowntownFirstBankOfArkham attrs) =
+    getAbilities iid window attrs
 
 instance (LocationRunner env) => RunMessage env DowntownFirstBankOfArkham where
   runMessage msg l@(DowntownFirstBankOfArkham attrs) = case msg of

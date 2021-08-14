@@ -24,8 +24,8 @@ instance HasModifiersFor env LeoDeLuca where
     pure [ toModifier a (AdditionalActions 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env LeoDeLuca where
-  getActions i window (LeoDeLuca x) = getActions i window x
+instance HasAbilities env LeoDeLuca where
+  getAbilities i window (LeoDeLuca x) = getAbilities i window x
 
 instance (AssetRunner env) => RunMessage env LeoDeLuca where
   runMessage msg (LeoDeLuca attrs@AssetAttrs {..}) = case msg of

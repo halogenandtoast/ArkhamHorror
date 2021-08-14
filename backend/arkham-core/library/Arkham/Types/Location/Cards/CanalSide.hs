@@ -36,10 +36,10 @@ instance HasModifiersFor env CanalSide
 ability :: LocationAttrs -> Ability
 ability attrs = mkAbility attrs 1 (ReactionAbility Free)
 
-instance ActionRunner env => HasActions env CanalSide where
-  getActions iid (AfterEntering who lid) (CanalSide attrs)
+instance ActionRunner env => HasAbilities env CanalSide where
+  getAbilities iid (AfterEntering who lid) (CanalSide attrs)
     | lid == toId attrs && iid == who = pure [ability attrs]
-  getActions iid window (CanalSide attrs) = getActions iid window attrs
+  getAbilities iid window (CanalSide attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env CanalSide where
   runMessage msg l@(CanalSide attrs) = case msg of

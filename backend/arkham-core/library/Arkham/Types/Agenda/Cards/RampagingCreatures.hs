@@ -25,8 +25,8 @@ rampagingCreatures =
 
 instance HasModifiersFor env RampagingCreatures
 
-instance HasActions env RampagingCreatures where
-  getActions i window (RampagingCreatures x) = getActions i window x
+instance HasAbilities env RampagingCreatures where
+  getAbilities i window (RampagingCreatures x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env RampagingCreatures where
   runMessage msg a@(RampagingCreatures attrs) = case msg of

@@ -20,8 +20,8 @@ blindingLight = event BlindingLight Cards.blindingLight
 
 instance HasModifiersFor env BlindingLight
 
-instance HasActions env BlindingLight where
-  getActions i window (BlindingLight attrs) = getActions i window attrs
+instance HasAbilities env BlindingLight where
+  getAbilities i window (BlindingLight attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env BlindingLight where
   runMessage msg e@(BlindingLight attrs@EventAttrs {..}) = case msg of

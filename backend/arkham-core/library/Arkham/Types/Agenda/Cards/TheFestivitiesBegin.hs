@@ -25,8 +25,8 @@ theFestivitiesBegin =
 
 instance HasModifiersFor env TheFestivitiesBegin
 
-instance HasActions env TheFestivitiesBegin where
-  getActions i window (TheFestivitiesBegin x) = getActions i window x
+instance HasAbilities env TheFestivitiesBegin where
+  getAbilities i window (TheFestivitiesBegin x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env TheFestivitiesBegin where
   runMessage msg a@(TheFestivitiesBegin attrs@AgendaAttrs {..}) = case msg of

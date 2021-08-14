@@ -38,11 +38,11 @@ ability :: AssetAttrs -> Ability
 ability a =
   mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a))
 
-instance HasActions env ToothOfEztli where
-  getActions iid (AfterPassSkillTest _ (TreacherySource _) who _) (ToothOfEztli a)
+instance HasAbilities env ToothOfEztli where
+  getAbilities iid (AfterPassSkillTest _ (TreacherySource _) who _) (ToothOfEztli a)
     | iid == who
     = pure [ ability a | ownedBy a iid ]
-  getActions i window (ToothOfEztli a) = getActions i window a
+  getAbilities i window (ToothOfEztli a) = getAbilities i window a
 
 instance AssetRunner env => RunMessage env ToothOfEztli where
   runMessage msg a@(ToothOfEztli attrs) = case msg of

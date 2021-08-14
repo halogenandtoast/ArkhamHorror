@@ -39,8 +39,8 @@ instance Query AssetMatcher env => HasModifiersFor env TheHiddenChamber where
       )
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env TheHiddenChamber where
-  getActions iid window (TheHiddenChamber attrs) = getActions iid window attrs
+instance ActionRunner env => HasAbilities env TheHiddenChamber where
+  getAbilities iid window (TheHiddenChamber attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env TheHiddenChamber where
   runMessage msg (TheHiddenChamber attrs) = case msg of

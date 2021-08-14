@@ -34,8 +34,8 @@ instance HasCount CardCount env InvestigatorId => HasModifiersFor env AcolyteOfU
       pure $ toModifiers a [ CannotBeEvaded | anyWithoutCards ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env AcolyteOfUmordhoth where
-  getActions i window (AcolyteOfUmordhoth attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env AcolyteOfUmordhoth where
+  getAbilities i window (AcolyteOfUmordhoth attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env AcolyteOfUmordhoth where
   runMessage msg (AcolyteOfUmordhoth attrs) =

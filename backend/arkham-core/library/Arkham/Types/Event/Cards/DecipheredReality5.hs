@@ -22,9 +22,9 @@ newtype DecipheredReality5 = DecipheredReality5 EventAttrs
 decipheredReality5 :: EventCard DecipheredReality5
 decipheredReality5 = event DecipheredReality5 Cards.decipheredReality5
 
-instance HasActions env DecipheredReality5 where
-  getActions iid window (DecipheredReality5 attrs) =
-    getActions iid window attrs
+instance HasAbilities env DecipheredReality5 where
+  getAbilities iid window (DecipheredReality5 attrs) =
+    getAbilities iid window attrs
 
 instance HasModifiersFor env DecipheredReality5 where
   getModifiersFor _ (LocationTarget _) (DecipheredReality5 attrs) =

@@ -28,8 +28,8 @@ farAboveYourHouse = location
 
 instance HasModifiersFor env FarAboveYourHouse
 
-instance ActionRunner env => HasActions env FarAboveYourHouse where
-  getActions i window (FarAboveYourHouse attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env FarAboveYourHouse where
+  getAbilities i window (FarAboveYourHouse attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env FarAboveYourHouse where
   runMessage msg l@(FarAboveYourHouse attrs) = case msg of

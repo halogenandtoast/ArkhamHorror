@@ -20,8 +20,8 @@ mindWipe3 = event MindWipe3 Cards.mindWipe3
 
 instance HasModifiersFor env MindWipe3
 
-instance HasActions env MindWipe3 where
-  getActions i window (MindWipe3 attrs) = getActions i window attrs
+instance HasAbilities env MindWipe3 where
+  getAbilities i window (MindWipe3 attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env MindWipe3 where
   runMessage msg e@(MindWipe3 attrs@EventAttrs {..}) = case msg of

@@ -25,8 +25,8 @@ huntingHorror = enemy HuntingHorror Cards.huntingHorror (2, Static 3, 2) (1, 1)
 
 instance HasModifiersFor env HuntingHorror
 
-instance ActionRunner env => HasActions env HuntingHorror where
-  getActions i window (HuntingHorror attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env HuntingHorror where
+  getAbilities i window (HuntingHorror attrs) = getAbilities i window attrs
 
 instance EnemyRunner env => RunMessage env HuntingHorror where
   runMessage msg e@(HuntingHorror attrs@EnemyAttrs {..}) = case msg of

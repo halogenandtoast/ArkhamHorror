@@ -26,8 +26,8 @@ psychosis = treachery Psychosis Cards.psychosis
 
 instance HasModifiersFor env Psychosis
 
-instance ActionRunner env => HasActions env Psychosis where
-  getActions iid NonFast (Psychosis a) =
+instance ActionRunner env => HasAbilities env Psychosis where
+  getAbilities iid NonFast (Psychosis a) =
     withTreacheryInvestigator a $ \tormented -> do
       investigatorLocationId <- getId @LocationId iid
       treacheryLocation <- getId tormented
@@ -35,7 +35,7 @@ instance ActionRunner env => HasActions env Psychosis where
         [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 2
         | treacheryLocation == investigatorLocationId
         ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env Psychosis where
   runMessage msg t@(Psychosis attrs@TreacheryAttrs {..}) = case msg of

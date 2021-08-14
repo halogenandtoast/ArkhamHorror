@@ -30,10 +30,10 @@ fastAbility a card = mkAbility
 
 instance HasModifiersFor env DrHenryArmitage
 
-instance HasActions env DrHenryArmitage where
-  getActions iid (AfterDrawCard who card) (DrHenryArmitage a)
+instance HasAbilities env DrHenryArmitage where
+  getAbilities iid (AfterDrawCard who card) (DrHenryArmitage a)
     | ownedBy a iid && iid == who = pure [fastAbility a card]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env DrHenryArmitage where
   runMessage msg a@(DrHenryArmitage attrs) = case msg of

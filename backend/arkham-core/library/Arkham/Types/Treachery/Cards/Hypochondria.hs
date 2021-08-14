@@ -26,8 +26,8 @@ hypochondria = treachery Hypochondria Cards.hypochondria
 
 instance HasModifiersFor env Hypochondria
 
-instance ActionRunner env => HasActions env Hypochondria where
-  getActions iid NonFast (Hypochondria a) =
+instance ActionRunner env => HasAbilities env Hypochondria where
+  getAbilities iid NonFast (Hypochondria a) =
     withTreacheryInvestigator a $ \tormented -> do
       treacheryLocation <- getId tormented
       investigatorLocationId <- getId @LocationId iid
@@ -35,7 +35,7 @@ instance ActionRunner env => HasActions env Hypochondria where
         [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 2
         | treacheryLocation == investigatorLocationId
         ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env Hypochondria where
   runMessage msg t@(Hypochondria attrs@TreacheryAttrs {..}) = case msg of

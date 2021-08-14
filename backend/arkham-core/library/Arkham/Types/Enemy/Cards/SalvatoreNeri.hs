@@ -35,8 +35,8 @@ instance
       pure $ toModifiers attrs [EnemyFight fightValue, EnemyEvade evadeValue]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyAttrsHasActions env => HasActions env SalvatoreNeri where
-  getActions i window (SalvatoreNeri attrs) = getActions i window attrs
+instance EnemyAttrsHasAbilities env => HasAbilities env SalvatoreNeri where
+  getAbilities i window (SalvatoreNeri attrs) = getAbilities i window attrs
 
 instance EnemyAttrsRunMessage env => RunMessage env SalvatoreNeri where
   runMessage msg (SalvatoreNeri attrs) = SalvatoreNeri <$> runMessage msg attrs

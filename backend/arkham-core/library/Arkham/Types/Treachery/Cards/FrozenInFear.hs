@@ -30,8 +30,8 @@ instance HasModifiersFor env FrozenInFear where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env FrozenInFear where
-  getActions i window (FrozenInFear attrs) = getActions i window attrs
+instance HasAbilities env FrozenInFear where
+  getAbilities i window (FrozenInFear attrs) = getAbilities i window attrs
 
 instance (TreacheryRunner env) => RunMessage env FrozenInFear where
   runMessage msg t@(FrozenInFear attrs@TreacheryAttrs {..}) = case msg of

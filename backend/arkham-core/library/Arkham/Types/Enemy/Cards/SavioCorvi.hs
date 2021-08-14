@@ -28,8 +28,8 @@ instance (HasSet ConnectedLocationId env LocationId, HasSet LocationId env ()) =
       pure $ toModifiers attrs [HunterConnectedTo acrossLocationId]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyAttrsHasActions env => HasActions env SavioCorvi where
-  getActions i window (SavioCorvi attrs) = getActions i window attrs
+instance EnemyAttrsHasAbilities env => HasAbilities env SavioCorvi where
+  getAbilities i window (SavioCorvi attrs) = getAbilities i window attrs
 
 instance EnemyAttrsRunMessage env => RunMessage env SavioCorvi where
   runMessage msg (SavioCorvi attrs) = SavioCorvi <$> runMessage msg attrs

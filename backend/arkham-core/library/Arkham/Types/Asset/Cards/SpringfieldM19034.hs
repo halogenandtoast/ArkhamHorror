@@ -30,13 +30,13 @@ springfieldM19034 = assetWith
   Cards.springfieldM19034
   (slotsL .~ [HandSlot, HandSlot])
 
-instance HasActions env SpringfieldM19034 where
-  getActions iid NonFast (SpringfieldM19034 a) | ownedBy a iid = pure
+instance HasAbilities env SpringfieldM19034 where
+  getAbilities iid NonFast (SpringfieldM19034 a) | ownedBy a iid = pure
     [ mkAbility a 1 $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Resource.Ammo 1])
     ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance HasModifiersFor env SpringfieldM19034
 

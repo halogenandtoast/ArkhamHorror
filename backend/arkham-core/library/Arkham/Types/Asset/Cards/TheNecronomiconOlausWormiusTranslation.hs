@@ -27,11 +27,11 @@ theNecronomiconOlausWormiusTranslation = hand
   TheNecronomiconOlausWormiusTranslation
   Cards.theNecronomiconOlausWormiusTranslation
 
-instance HasActions env TheNecronomiconOlausWormiusTranslation where
-  getActions iid NonFast (TheNecronomiconOlausWormiusTranslation a)
+instance HasAbilities env TheNecronomiconOlausWormiusTranslation where
+  getAbilities iid NonFast (TheNecronomiconOlausWormiusTranslation a)
     | ownedBy a iid = pure
       [mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance HasModifiersFor env TheNecronomiconOlausWormiusTranslation where
   getModifiersFor _ (InvestigatorTarget iid) (TheNecronomiconOlausWormiusTranslation a)

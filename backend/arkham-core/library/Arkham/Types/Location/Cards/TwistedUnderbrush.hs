@@ -32,13 +32,13 @@ twistedUnderbrush = location
 
 instance HasModifiersFor env TwistedUnderbrush
 
-instance ActionRunner env => HasActions env TwistedUnderbrush where
-  getActions iid NonFast (TwistedUnderbrush attrs@LocationAttrs {..})
+instance ActionRunner env => HasAbilities env TwistedUnderbrush where
+  getAbilities iid NonFast (TwistedUnderbrush attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ pure
       [ locationAbility
           (mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 1)
       ]
-  getActions i window (TwistedUnderbrush attrs) = getActions i window attrs
+  getAbilities i window (TwistedUnderbrush attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env TwistedUnderbrush where
   runMessage msg l@(TwistedUnderbrush attrs) = case msg of

@@ -19,8 +19,8 @@ newtype NoStoneUnturned = NoStoneUnturned EventAttrs
 noStoneUnturned :: EventCard NoStoneUnturned
 noStoneUnturned = event NoStoneUnturned Cards.noStoneUnturned
 
-instance HasActions env NoStoneUnturned where
-  getActions iid window (NoStoneUnturned attrs) = getActions iid window attrs
+instance HasAbilities env NoStoneUnturned where
+  getAbilities iid window (NoStoneUnturned attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env NoStoneUnturned
 

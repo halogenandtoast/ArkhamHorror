@@ -145,7 +145,7 @@ type ActionRunner env
     , HasList TakenAction env InvestigatorId
     , Query AssetMatcher env
     , GetCardDef env EnemyId
-    , HasActions env ActionType
+    , HasAbilities env ActionType
     , HasCostPayment env
     , ( HasCount
           ActionRemainingCount
@@ -201,23 +201,23 @@ type ActionRunner env
     , HasStep env ActStep
     )
 
-class HasActions1 env f where
-  getActions1 :: (HasCallStack, MonadReader env m, MonadIO m) => InvestigatorId -> Window -> f p -> m [Ability]
+class HasAbilities1 env f where
+  getAbilities1 :: (HasCallStack, MonadReader env m, MonadIO m) => InvestigatorId -> Window -> f p -> m [Ability]
 
-instance HasActions1 env f => HasActions1 env (M1 i c f) where
-  getActions1 iid window (M1 x) = getActions1 iid window x
+instance HasAbilities1 env f => HasAbilities1 env (M1 i c f) where
+  getAbilities1 iid window (M1 x) = getAbilities1 iid window x
 
-instance (HasActions1 env l, HasActions1 env r) => HasActions1 env (l :+: r) where
-  getActions1 iid window (L1 x) = getActions1 iid window x
-  getActions1 iid window (R1 x) = getActions1 iid window x
+instance (HasAbilities1 env l, HasAbilities1 env r) => HasAbilities1 env (l :+: r) where
+  getAbilities1 iid window (L1 x) = getAbilities1 iid window x
+  getAbilities1 iid window (R1 x) = getAbilities1 iid window x
 
-instance (HasActions env p) => HasActions1 env (K1 R p) where
-  getActions1 iid window (K1 x) = getActions iid window x
+instance (HasAbilities env p) => HasAbilities1 env (K1 R p) where
+  getAbilities1 iid window (K1 x) = getAbilities iid window x
 
-genericGetActions
+genericGetAbilities
   :: ( HasCallStack
      , Generic a
-     , HasActions1 env (Rep a)
+     , HasAbilities1 env (Rep a)
      , MonadReader env m
      , MonadIO m
      )
@@ -225,11 +225,11 @@ genericGetActions
   -> Window
   -> a
   -> m [Ability]
-genericGetActions iid window = getActions1 iid window . from
+genericGetAbilities iid window = getAbilities1 iid window . from
 
-class HasActions env a where
-  getActions :: (HasCallStack, MonadReader env m, MonadIO m) => InvestigatorId -> Window -> a -> m [Ability]
-  getActions _ _ _ = pure []
+class HasAbilities env a where
+  getAbilities :: (HasCallStack, MonadReader env m, MonadIO m) => InvestigatorId -> Window -> a -> m [Ability]
+  getAbilities _ _ _ = pure []
 
 class HasModifiersFor1 env f where
   getModifiersFor1 :: (HasCallStack, MonadReader env m) => Source -> Target -> f p -> m [Modifier]

@@ -23,8 +23,8 @@ newtype ThePaintedWorld = ThePaintedWorld EventAttrs
 thePaintedWorld :: EventCard ThePaintedWorld
 thePaintedWorld = event ThePaintedWorld Cards.thePaintedWorld
 
-instance HasActions env ThePaintedWorld where
-  getActions iid window (ThePaintedWorld attrs) = getActions iid window attrs
+instance HasAbilities env ThePaintedWorld where
+  getAbilities iid window (ThePaintedWorld attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env ThePaintedWorld
 

@@ -31,9 +31,9 @@ exhibitHallHallOfTheDead = locationWithRevealedSideConnections
 
 instance HasModifiersFor env ExhibitHallHallOfTheDead
 
-instance ActionRunner env => HasActions env ExhibitHallHallOfTheDead where
-  getActions iid window (ExhibitHallHallOfTheDead attrs) =
-    getActions iid window attrs
+instance ActionRunner env => HasAbilities env ExhibitHallHallOfTheDead where
+  getAbilities iid window (ExhibitHallHallOfTheDead attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env ExhibitHallHallOfTheDead where
   runMessage msg l@(ExhibitHallHallOfTheDead attrs) = case msg of

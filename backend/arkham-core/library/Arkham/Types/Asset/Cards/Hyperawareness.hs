@@ -30,12 +30,12 @@ instance HasModifiersFor env Hyperawareness
 ability :: Int -> AssetAttrs -> Ability
 ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)
 
-instance HasActions env Hyperawareness where
-  getActions iid (WhenSkillTest SkillIntellect) (Hyperawareness a) = do
+instance HasAbilities env Hyperawareness where
+  getAbilities iid (WhenSkillTest SkillIntellect) (Hyperawareness a) = do
     pure [ ability 1 a | ownedBy a iid ]
-  getActions iid (WhenSkillTest SkillAgility) (Hyperawareness a) = do
+  getAbilities iid (WhenSkillTest SkillAgility) (Hyperawareness a) = do
     pure [ ability 2 a | ownedBy a iid ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Hyperawareness where
   runMessage msg a@(Hyperawareness attrs) = case msg of

@@ -25,8 +25,8 @@ theyMustBeDestroyed :: ActCard TheyMustBeDestroyed
 theyMustBeDestroyed =
   act (2, A) TheyMustBeDestroyed Cards.theyMustBeDestroyed Nothing
 
-instance ActionRunner env => HasActions env TheyMustBeDestroyed where
-  getActions i window (TheyMustBeDestroyed x) = do
+instance ActionRunner env => HasAbilities env TheyMustBeDestroyed where
+  getAbilities i window (TheyMustBeDestroyed x) = do
     leadInvestigatorId <- getLeadInvestigatorId
     setAsideBroodOfYogSothothCount <- unSetAsideCount
       <$> getCount @SetAsideCount (CardCode "02255")
@@ -35,7 +35,7 @@ instance ActionRunner env => HasActions env TheyMustBeDestroyed where
     if (setAsideBroodOfYogSothothCount + inPlayBroodOfYogSothothCount) == 0
       then pure
         [ mkAbility (toSource x) 1 ForcedAbility | i == leadInvestigatorId ]
-      else getActions i window x
+      else getAbilities i window x
 
 instance ActRunner env => RunMessage env TheyMustBeDestroyed where
   runMessage msg a@(TheyMustBeDestroyed attrs@ActAttrs {..}) = case msg of

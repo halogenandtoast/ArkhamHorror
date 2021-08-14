@@ -23,8 +23,8 @@ riseOfTheGhouls =
 
 instance HasModifiersFor env RiseOfTheGhouls
 
-instance HasActions env RiseOfTheGhouls where
-  getActions i window (RiseOfTheGhouls x) = getActions i window x
+instance HasAbilities env RiseOfTheGhouls where
+  getAbilities i window (RiseOfTheGhouls x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env RiseOfTheGhouls where
   runMessage msg a@(RiseOfTheGhouls attrs@AgendaAttrs {..}) = case msg of

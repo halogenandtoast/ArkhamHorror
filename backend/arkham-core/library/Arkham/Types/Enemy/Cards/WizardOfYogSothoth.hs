@@ -27,8 +27,8 @@ wizardOfYogSothoth = enemyWith
 
 instance HasModifiersFor env WizardOfYogSothoth
 
-instance ActionRunner env => HasActions env WizardOfYogSothoth where
-  getActions i window (WizardOfYogSothoth attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env WizardOfYogSothoth where
+  getAbilities i window (WizardOfYogSothoth attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env WizardOfYogSothoth where
   runMessage msg e@(WizardOfYogSothoth attrs@EnemyAttrs {..}) = case msg of

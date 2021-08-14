@@ -24,8 +24,8 @@ instance HasModifiersFor env SilasBishop where
     pure $ toModifiers attrs [CannotMakeAttacksOfOpportunity]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env SilasBishop where
-  getActions i window (SilasBishop attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env SilasBishop where
+  getAbilities i window (SilasBishop attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env SilasBishop where
   runMessage msg (SilasBishop attrs) = SilasBishop <$> runMessage msg attrs

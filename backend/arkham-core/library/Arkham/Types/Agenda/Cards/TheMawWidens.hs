@@ -25,8 +25,8 @@ theMawWidens = agenda (2, A) TheMawWidens Cards.theMawWidens (Static 3)
 
 instance HasModifiersFor env TheMawWidens
 
-instance HasActions env TheMawWidens where
-  getActions i window (TheMawWidens x) = getActions i window x
+instance HasAbilities env TheMawWidens where
+  getAbilities i window (TheMawWidens x) = getAbilities i window x
 
 leftmostLocation
   :: ( MonadReader env m

@@ -21,8 +21,8 @@ newtype HiredMuscle1 = HiredMuscle1 AssetAttrs
 hiredMuscle1 :: AssetCard HiredMuscle1
 hiredMuscle1 = ally HiredMuscle1 Cards.hiredMuscle1 (3, 1)
 
-instance HasActions env HiredMuscle1 where
-  getActions iid window (HiredMuscle1 attrs) = getActions iid window attrs
+instance HasAbilities env HiredMuscle1 where
+  getAbilities iid window (HiredMuscle1 attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env HiredMuscle1 where
   getModifiersFor _ (InvestigatorTarget iid) (HiredMuscle1 a) =

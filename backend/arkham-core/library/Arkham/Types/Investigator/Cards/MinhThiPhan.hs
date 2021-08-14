@@ -49,11 +49,11 @@ ability attrs iid card =
     & (abilityLimitL .~ PerInvestigatorLimit iid PerRound 1)
     & (abilityMetadataL ?~ TargetMetadata (CardIdTarget $ toCardId card))
 
-instance InvestigatorRunner env => HasActions env MinhThiPhan where
-  getActions i (AfterCommitedCard who card) (MinhThiPhan attrs) = do
+instance InvestigatorRunner env => HasAbilities env MinhThiPhan where
+  getAbilities i (AfterCommitedCard who card) (MinhThiPhan attrs) = do
     atSameLocation <- liftA2 (==) (getId @LocationId i) (getId @LocationId who)
     pure [ ability attrs who card | atSameLocation ]
-  getActions i window (MinhThiPhan attrs) = getActions i window attrs
+  getAbilities i window (MinhThiPhan attrs) = getAbilities i window attrs
 
 instance HasTokenValue env MinhThiPhan where
   getTokenValue (MinhThiPhan attrs) iid ElderSign

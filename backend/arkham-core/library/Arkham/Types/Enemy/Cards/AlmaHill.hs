@@ -33,15 +33,15 @@ almaHill = enemyWith
 
 instance HasModifiersFor env AlmaHill
 
-instance ActionRunner env => HasActions env AlmaHill where
-  getActions iid NonFast (AlmaHill attrs@EnemyAttrs {..}) =
+instance ActionRunner env => HasAbilities env AlmaHill where
+  getAbilities iid NonFast (AlmaHill attrs@EnemyAttrs {..}) =
     withBaseActions iid NonFast attrs $ do
       locationId <- getId @LocationId iid
       pure
         [ mkAbility attrs 1 $ ActionAbility (Just Parley) (ActionCost 1)
         | locationId == enemyLocation
         ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (EnemyRunner env) => RunMessage env AlmaHill where
   runMessage msg e@(AlmaHill attrs@EnemyAttrs {..}) = case msg of

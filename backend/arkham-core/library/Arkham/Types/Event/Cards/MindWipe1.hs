@@ -24,8 +24,8 @@ mindWipe1 = event MindWipe1 Cards.mindWipe1
 
 instance HasModifiersFor env MindWipe1
 
-instance HasActions env MindWipe1 where
-  getActions i window (MindWipe1 attrs) = getActions i window attrs
+instance HasAbilities env MindWipe1 where
+  getAbilities i window (MindWipe1 attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env MindWipe1 where
   runMessage msg e@(MindWipe1 attrs@EventAttrs {..}) = case msg of

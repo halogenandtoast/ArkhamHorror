@@ -28,8 +28,8 @@ instance HasModifiersFor env ArcaneEnlightenment where
     pure [ toModifier attrs (HandSize 1) | ownedBy attrs iid ]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env ArcaneEnlightenment where
-  getActions i window (ArcaneEnlightenment x) = getActions i window x
+instance HasAbilities env ArcaneEnlightenment where
+  getAbilities i window (ArcaneEnlightenment x) = getAbilities i window x
 
 slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Tome Nothing

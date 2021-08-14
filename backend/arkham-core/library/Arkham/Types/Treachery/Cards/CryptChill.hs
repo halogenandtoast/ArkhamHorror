@@ -20,8 +20,8 @@ cryptChill = treachery CryptChill Cards.cryptChill
 
 instance HasModifiersFor env CryptChill
 
-instance HasActions env CryptChill where
-  getActions i window (CryptChill attrs) = getActions i window attrs
+instance HasAbilities env CryptChill where
+  getAbilities i window (CryptChill attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env CryptChill where
   runMessage msg t@(CryptChill attrs@TreacheryAttrs {..}) = case msg of

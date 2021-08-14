@@ -31,7 +31,7 @@ spec = describe "Duke" $ do
         $ do
             runMessages
             duke' <- updated duke
-            [doFight, _] <- getActionsOf investigator NonFast duke'
+            [doFight, _] <- getAbilitiesOf investigator NonFast duke'
             push $ UseAbility (toId investigator) doFight
             runMessages
             chooseOnlyOption "Fight enemy"
@@ -57,7 +57,7 @@ spec = describe "Duke" $ do
         $ do
             runMessages
             duke' <- updated duke
-            [_, investigateAction] <- getActionsOf investigator NonFast duke'
+            [_, investigateAction] <- getAbilitiesOf investigator NonFast duke'
             pushAll
               [ moveTo investigator location
               , UseAbility (toId investigator) investigateAction
@@ -88,7 +88,7 @@ spec = describe "Duke" $ do
             $ do
                 runMessages
                 duke' <- updated duke
-                [_, investigateAction] <- getActionsOf
+                [_, investigateAction] <- getAbilitiesOf
                   investigator
                   NonFast
                   duke'

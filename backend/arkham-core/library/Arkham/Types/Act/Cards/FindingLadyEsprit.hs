@@ -37,8 +37,8 @@ findingLadyEsprit = act
   Cards.findingLadyEsprit
   (Just $ GroupClueCost (PerPlayer 1) (Just $ LocationWithTrait Bayou))
 
-instance HasActions env FindingLadyEsprit where
-  getActions i window (FindingLadyEsprit x) = getActions i window x
+instance HasAbilities env FindingLadyEsprit where
+  getAbilities i window (FindingLadyEsprit x) = getAbilities i window x
 
 bayouLocations
   :: (MonadReader env m, HasSet LocationId env [Trait])

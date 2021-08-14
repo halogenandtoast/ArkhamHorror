@@ -49,8 +49,8 @@ instance HasModifiersFor env BrackishWaters where
 
 -- TODO: Cost is an OR and we should be able to capture this
 -- first idea is change discard to take a source @DiscardCost 1 [DiscardFromHand, DiscardFromPlay] (Just AssetType) mempty mempty@
-instance (HasList Card env ExtendedCardMatcher, ActionRunner env) => HasActions env BrackishWaters where
-  getActions iid NonFast (BrackishWaters attrs@LocationAttrs {..}) =
+instance (HasList Card env ExtendedCardMatcher, ActionRunner env) => HasAbilities env BrackishWaters where
+  getAbilities iid NonFast (BrackishWaters attrs@LocationAttrs {..}) =
     withBaseActions iid NonFast attrs $ do
       assetNotTaken <- isNothing <$> selectOne (assetIs Assets.fishingNet)
       inPlayAssetsCount <- getInPlayOf iid <&> count
@@ -69,7 +69,7 @@ instance (HasList Card env ExtendedCardMatcher, ActionRunner env) => HasActions 
           && (assetsCount >= 2)
           && assetNotTaken
         ]
-  getActions i window (BrackishWaters attrs) = getActions i window attrs
+  getAbilities i window (BrackishWaters attrs) = getAbilities i window attrs
 
 instance LocationRunner env => RunMessage env BrackishWaters where
   runMessage msg l@(BrackishWaters attrs) = case msg of

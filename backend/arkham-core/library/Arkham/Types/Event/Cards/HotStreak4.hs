@@ -18,8 +18,8 @@ hotStreak4 = event HotStreak4 Cards.hotStreak4
 
 instance HasModifiersFor env HotStreak4
 
-instance HasActions env HotStreak4 where
-  getActions i window (HotStreak4 attrs) = getActions i window attrs
+instance HasAbilities env HotStreak4 where
+  getAbilities i window (HotStreak4 attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env HotStreak4 where
   runMessage msg e@(HotStreak4 attrs@EventAttrs {..}) = case msg of

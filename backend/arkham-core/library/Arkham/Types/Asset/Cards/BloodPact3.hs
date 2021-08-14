@@ -25,15 +25,15 @@ newtype BloodPact3 = BloodPact3 AssetAttrs
 bloodPact3 :: AssetCard BloodPact3
 bloodPact3 = asset BloodPact3 Cards.bloodPact3
 
-instance HasActions env BloodPact3 where
-  getActions iid FastPlayerWindow (BloodPact3 a) | ownedBy a iid = do
+instance HasAbilities env BloodPact3 where
+  getAbilities iid FastPlayerWindow (BloodPact3 a) | ownedBy a iid = do
     pure
       [ (mkAbility (toSource a) idx (FastAbility $ ResourceCost 2))
           { abilityLimit = PlayerLimit PerTestOrAbility 1
           }
       | idx <- [1 .. 2]
       ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance HasModifiersFor env BloodPact3
 

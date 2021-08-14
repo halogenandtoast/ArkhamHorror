@@ -48,15 +48,15 @@ investigateAbility a = mkAbility
   2
   (ActionAbility (Just Action.Investigate) (ActionCost 1))
 
-instance ActionRunner env => HasActions env DestroyedPath where
-  getActions iid NonFast (DestroyedPath attrs) =
+instance ActionRunner env => HasAbilities env DestroyedPath where
+  getAbilities iid NonFast (DestroyedPath attrs) =
     withBaseActions iid NonFast attrs
       $ pure [locationAbility (investigateAbility attrs)]
-  getActions iid (AfterRevealLocation who) (DestroyedPath attrs) | iid == who =
+  getAbilities iid (AfterRevealLocation who) (DestroyedPath attrs) | iid == who =
     do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid
       pure [ locationAbility (forcedAbility attrs) | actionRemainingCount == 0 ]
-  getActions iid window (DestroyedPath attrs) = getActions iid window attrs
+  getAbilities iid window (DestroyedPath attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env DestroyedPath where
   runMessage msg l@(DestroyedPath attrs) = case msg of

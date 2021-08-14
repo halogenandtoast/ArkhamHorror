@@ -30,10 +30,10 @@ innocentReveler = ally InnocentReveler Cards.innocentReveler (2, 2)
 ability :: AssetAttrs -> Ability
 ability a = mkAbility a 1 (ActionAbility (Just Parley) (ActionCost 1))
 
-instance HasActions env InnocentReveler where
-  getActions _ NonFast (InnocentReveler attrs) =
+instance HasAbilities env InnocentReveler where
+  getAbilities _ NonFast (InnocentReveler attrs) =
     pure [ ability attrs | isNothing (assetInvestigator attrs) ]
-  getActions iid window (InnocentReveler attrs) = getActions iid window attrs
+  getAbilities iid window (InnocentReveler attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env InnocentReveler
 

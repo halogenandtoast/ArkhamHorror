@@ -28,8 +28,8 @@ angeredSpirits =
 
 instance HasModifiersFor env AngeredSpirits
 
-instance HasActions env AngeredSpirits where
-  getActions i FastPlayerWindow (AngeredSpirits attrs)
+instance HasAbilities env AngeredSpirits where
+  getAbilities i FastPlayerWindow (AngeredSpirits attrs)
     | treacheryOnInvestigator i attrs = do
       pure
         [ mkAbility attrs 1
@@ -38,7 +38,7 @@ instance HasActions env AngeredSpirits where
           $ AssetWithTrait Spell
           <> AssetOwnedBy You
         ]
-  getActions i window (AngeredSpirits attrs) = getActions i window attrs
+  getAbilities i window (AngeredSpirits attrs) = getAbilities i window attrs
 
 angeredSpiritsCharges :: TreacheryAttrs -> Int
 angeredSpiritsCharges TreacheryAttrs { treacheryResources } =

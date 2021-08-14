@@ -38,11 +38,11 @@ instance HasModifiersFor env TearThroughSpace
 forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
 
-instance ActionRunner env => HasActions env TearThroughSpace where
-  getActions iid AtEndOfRound (TearThroughSpace attrs) = do
+instance ActionRunner env => HasAbilities env TearThroughSpace where
+  getAbilities iid AtEndOfRound (TearThroughSpace attrs) = do
     leadInvestigator <- getLeadInvestigatorId
     pure [ forcedAbility attrs | iid == leadInvestigator ]
-  getActions iid window (TearThroughSpace attrs) = getActions iid window attrs
+  getAbilities iid window (TearThroughSpace attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env TearThroughSpace where
   runMessage msg l@(TearThroughSpace attrs) = case msg of

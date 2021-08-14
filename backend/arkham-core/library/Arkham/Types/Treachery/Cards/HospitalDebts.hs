@@ -40,8 +40,8 @@ ability a = (mkAbility (toSource a) 1 (FastAbility Free))
   { abilityLimit = PlayerLimit PerRound 2
   }
 
-instance ActionRunner env => HasActions env HospitalDebts where
-  getActions iid (DuringTurn who) (HospitalDebts a) | iid == who =
+instance ActionRunner env => HasAbilities env HospitalDebts where
+  getAbilities iid (DuringTurn who) (HospitalDebts a) | iid == who =
     withTreacheryInvestigator a $ \tormented -> do
       resourceCount <- getResourceCount iid
       treacheryLocationId <- getId tormented
@@ -50,7 +50,7 @@ instance ActionRunner env => HasActions env HospitalDebts where
         [ ability a
         | resourceCount > 0 && treacheryLocationId == investigatorLocationId
         ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env HospitalDebts where
   runMessage msg t@(HospitalDebts attrs@TreacheryAttrs {..}) = case msg of

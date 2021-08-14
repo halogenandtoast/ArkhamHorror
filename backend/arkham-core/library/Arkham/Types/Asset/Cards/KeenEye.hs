@@ -27,13 +27,13 @@ newtype KeenEye = KeenEye AssetAttrs
 keenEye :: AssetCard KeenEye
 keenEye = asset KeenEye Cards.keenEye
 
-instance HasActions env KeenEye where
-  getActions iid FastPlayerWindow (KeenEye a) | ownedBy a iid = do
+instance HasAbilities env KeenEye where
+  getAbilities iid FastPlayerWindow (KeenEye a) | ownedBy a iid = do
     pure
       [ mkAbility (toSource a) idx (FastAbility $ ResourceCost 2)
       | idx <- [1 .. 2]
       ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance HasModifiersFor env KeenEye
 

@@ -25,8 +25,8 @@ icyGhoul = enemyWith
 
 instance HasModifiersFor env IcyGhoul
 
-instance ActionRunner env => HasActions env IcyGhoul where
-  getActions i window (IcyGhoul attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env IcyGhoul where
+  getAbilities i window (IcyGhoul attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env IcyGhoul where
   runMessage msg (IcyGhoul attrs) = IcyGhoul <$> runMessage msg attrs

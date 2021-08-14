@@ -21,8 +21,8 @@ shellShock = treachery ShellShock Cards.shellShock
 
 instance HasModifiersFor env ShellShock
 
-instance HasActions env ShellShock where
-  getActions i window (ShellShock attrs) = getActions i window attrs
+instance HasAbilities env ShellShock where
+  getAbilities i window (ShellShock attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env ShellShock where
   runMessage msg t@(ShellShock attrs) = case msg of

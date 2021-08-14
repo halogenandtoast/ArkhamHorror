@@ -29,8 +29,8 @@ instance HasModifiersFor env CursedLuck where
       [ AnySkillValue (-1) | treacheryOnInvestigator iid attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env CursedLuck where
-  getActions i window (CursedLuck attrs) = getActions i window attrs
+instance HasAbilities env CursedLuck where
+  getAbilities i window (CursedLuck attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env CursedLuck where
   runMessage msg t@(CursedLuck attrs@TreacheryAttrs {..}) = case msg of

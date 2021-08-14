@@ -40,12 +40,12 @@ ability attrs =
     { abilityLimit = PlayerLimit PerGame 1
     }
 
-instance ActionRunner env => HasActions env NorthsideTrainStation where
-  getActions iid NonFast (NorthsideTrainStation attrs@LocationAttrs {..})
+instance ActionRunner env => HasAbilities env NorthsideTrainStation where
+  getAbilities iid NonFast (NorthsideTrainStation attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs
     $ pure [locationAbility (ability attrs)]
-  getActions iid window (NorthsideTrainStation attrs) =
-    getActions iid window attrs
+  getAbilities iid window (NorthsideTrainStation attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env NorthsideTrainStation where
   runMessage msg l@(NorthsideTrainStation attrs) = case msg of

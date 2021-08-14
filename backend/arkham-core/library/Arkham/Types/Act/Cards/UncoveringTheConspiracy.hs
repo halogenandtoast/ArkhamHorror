@@ -27,16 +27,16 @@ uncoveringTheConspiracy :: ActCard UncoveringTheConspiracy
 uncoveringTheConspiracy =
   act (1, A) UncoveringTheConspiracy Cards.uncoveringTheConspiracy Nothing
 
-instance HasActions env UncoveringTheConspiracy where
-  getActions _ NonFast (UncoveringTheConspiracy a) = do
+instance HasAbilities env UncoveringTheConspiracy where
+  getAbilities _ NonFast (UncoveringTheConspiracy a) = do
     pure
       [ mkAbility a 1
         $ ActionAbility Nothing
         $ ActionCost 1
         <> GroupClueCost (PerPlayer 2) Nothing
       ]
-  getActions iid window (UncoveringTheConspiracy attrs) =
-    getActions iid window attrs
+  getAbilities iid window (UncoveringTheConspiracy attrs) =
+    getAbilities iid window attrs
 
 instance ActRunner env => RunMessage env UncoveringTheConspiracy where
   runMessage msg a@(UncoveringTheConspiracy attrs@ActAttrs {..}) = case msg of

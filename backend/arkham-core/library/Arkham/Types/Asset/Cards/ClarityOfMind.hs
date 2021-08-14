@@ -25,8 +25,8 @@ newtype ClarityOfMind = ClarityOfMind AssetAttrs
 clarityOfMind :: AssetCard ClarityOfMind
 clarityOfMind = arcane ClarityOfMind Cards.clarityOfMind
 
-instance HasActions env ClarityOfMind where
-  getActions iid NonFast (ClarityOfMind a) = pure
+instance HasAbilities env ClarityOfMind where
+  getAbilities iid NonFast (ClarityOfMind a) = pure
     [ restrictedAbility
         (toSource a)
         1
@@ -38,7 +38,7 @@ instance HasActions env ClarityOfMind where
         )
     | ownedBy a iid
     ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance HasModifiersFor env ClarityOfMind
 

@@ -32,8 +32,8 @@ instance HasSet UniqueEnemyId env () => HasModifiersFor env MaskOfUmordhoth wher
       pure $ toModifiers attrs [HealthModifier 2, AddKeyword keyword]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env MaskOfUmordhoth where
-  getActions i window (MaskOfUmordhoth attrs) = getActions i window attrs
+instance HasAbilities env MaskOfUmordhoth where
+  getAbilities i window (MaskOfUmordhoth attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env MaskOfUmordhoth where
   runMessage msg t@(MaskOfUmordhoth attrs@TreacheryAttrs {..}) = case msg of

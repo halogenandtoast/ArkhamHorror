@@ -27,8 +27,8 @@ devoteeOfTheKey = enemyWith
 
 instance HasModifiersFor env DevoteeOfTheKey
 
-instance EnemyAttrsHasActions env => HasActions env DevoteeOfTheKey where
-  getActions i window (DevoteeOfTheKey attrs) = getActions i window attrs
+instance EnemyAttrsHasAbilities env => HasAbilities env DevoteeOfTheKey where
+  getAbilities i window (DevoteeOfTheKey attrs) = getAbilities i window attrs
 
 instance EnemyAttrsRunMessage env => RunMessage env DevoteeOfTheKey where
   runMessage msg e@(DevoteeOfTheKey attrs@EnemyAttrs {..}) = case msg of

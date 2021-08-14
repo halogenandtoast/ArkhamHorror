@@ -28,8 +28,8 @@ theRougarouFeeds =
 
 instance HasModifiersFor env TheRougarouFeeds
 
-instance HasActions env TheRougarouFeeds where
-  getActions i window (TheRougarouFeeds x) = getActions i window x
+instance HasAbilities env TheRougarouFeeds where
+  getAbilities i window (TheRougarouFeeds x) = getAbilities i window x
 
 getRougarou
   :: (MonadReader env m, HasId (Maybe StoryEnemyId) env CardCode)

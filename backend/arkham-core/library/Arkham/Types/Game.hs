@@ -2239,20 +2239,20 @@ locationFor
   :: (HasGame env, MonadReader env m) => InvestigatorId -> m LocationId
 locationFor iid = locationOf <$> getInvestigator iid
 
-instance (HasQueue env, HasGame env) => HasActions env ActionType where
-  getActions iid window actionType = do
+instance (HasQueue env, HasGame env) => HasAbilities env ActionType where
+  getAbilities iid window actionType = do
     g <- getGame
     case actionType of
-      EnemyActionType -> concatMapM' (getActions iid window) (g ^. enemiesL)
+      EnemyActionType -> concatMapM' (getAbilities iid window) (g ^. enemiesL)
       LocationActionType ->
-        concatMapM' (getActions iid window) (g ^. locationsL)
-      AssetActionType -> concatMapM' (getActions iid window) (g ^. assetsL)
+        concatMapM' (getAbilities iid window) (g ^. locationsL)
+      AssetActionType -> concatMapM' (getAbilities iid window) (g ^. assetsL)
       TreacheryActionType ->
-        concatMapM' (getActions iid window) (g ^. treacheriesL)
-      ActActionType -> concatMapM' (getActions iid window) (g ^. actsL)
-      AgendaActionType -> concatMapM' (getActions iid window) (g ^. agendasL)
+        concatMapM' (getAbilities iid window) (g ^. treacheriesL)
+      ActActionType -> concatMapM' (getAbilities iid window) (g ^. actsL)
+      AgendaActionType -> concatMapM' (getAbilities iid window) (g ^. agendasL)
       InvestigatorActionType ->
-        concatMapM' (getActions iid window) (g ^. investigatorsL)
+        concatMapM' (getAbilities iid window) (g ^. investigatorsL)
 
 instance HasGame env => HasId Difficulty env () where
   getId _ = do
@@ -2263,31 +2263,31 @@ instance HasGame env => HasId Difficulty env () where
       (const . difficultyOf)
       (g ^. modeL)
 
-instance (HasQueue env, HasGame env) => HasActions env (ActionType, Trait) where
-  getActions iid window (actionType, trait) = do
+instance (HasQueue env, HasGame env) => HasAbilities env (ActionType, Trait) where
+  getAbilities iid window (actionType, trait) = do
     g <- getGame
     case actionType of
       EnemyActionType -> concatMapM'
-        (getActions iid window)
+        (getAbilities iid window)
         (filterMap ((trait `elem`) . toTraits) $ g ^. enemiesL)
       LocationActionType -> concatMapM'
-        (getActions iid window)
+        (getAbilities iid window)
         (filterMap ((trait `elem`) . toTraits) $ g ^. locationsL)
       AssetActionType -> concatMapM'
-        (getActions iid window)
+        (getAbilities iid window)
         (filterMap ((trait `elem`) . toTraits) $ g ^. assetsL)
       TreacheryActionType -> concatMapM'
-        (getActions iid window)
+        (getAbilities iid window)
         (filterMap ((trait `elem`) . toTraits) $ g ^. treacheriesL)
       InvestigatorActionType -> pure [] -- do we need these
       ActActionType -> pure [] -- acts do not have traits
       AgendaActionType -> pure [] -- agendas do not have traits
 
-instance (HasQueue env, HasActions env ActionType, HasGame env) => HasActions env AssetId where
-  getActions iid window aid = getActions iid window =<< getAsset aid
+instance (HasQueue env, HasAbilities env ActionType, HasGame env) => HasAbilities env AssetId where
+  getAbilities iid window aid = getAbilities iid window =<< getAsset aid
 
-instance (HasQueue env, HasActions env ActionType, HasGame env) => HasActions env LocationId where
-  getActions iid window lid = getActions iid window =<< getLocation lid
+instance (HasQueue env, HasAbilities env ActionType, HasGame env) => HasAbilities env LocationId where
+  getAbilities iid window lid = getAbilities iid window =<< getLocation lid
 
 runPreGameMessage
   :: (GameRunner env, MonadReader env m, MonadIO m) => Message -> Game -> m Game

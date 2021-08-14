@@ -41,8 +41,8 @@ zoeySamaras = ZoeySamaras $ baseAttrs
     }
   [Believer, Hunter]
 
-instance InvestigatorRunner env => HasActions env ZoeySamaras where
-  getActions iid (AfterEnemyEngageInvestigator who _) (ZoeySamaras InvestigatorAttrs {..})
+instance InvestigatorRunner env => HasAbilities env ZoeySamaras where
+  getAbilities iid (AfterEnemyEngageInvestigator who _) (ZoeySamaras InvestigatorAttrs {..})
     | iid == investigatorId && iid == who
     = do
       let
@@ -53,7 +53,7 @@ instance InvestigatorRunner env => HasActions env ZoeySamaras where
         (InvestigatorTarget investigatorId)
       pure [ ability | CannotGainResources `notElem` modifiers' ]
 
-  getActions i window (ZoeySamaras attrs) = getActions i window attrs
+  getAbilities i window (ZoeySamaras attrs) = getAbilities i window attrs
 
 instance HasTokenValue env ZoeySamaras where
   getTokenValue (ZoeySamaras attrs) iid ElderSign

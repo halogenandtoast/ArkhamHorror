@@ -25,8 +25,8 @@ crisisOfIdentity = treachery CrisisOfIdentity Cards.crisisOfIdentity
 
 instance HasModifiersFor env CrisisOfIdentity
 
-instance HasActions env CrisisOfIdentity where
-  getActions i window (CrisisOfIdentity attrs) = getActions i window attrs
+instance HasAbilities env CrisisOfIdentity where
+  getAbilities i window (CrisisOfIdentity attrs) = getAbilities i window attrs
 
 instance
   ( HasSet SkillId env SkillMatcher

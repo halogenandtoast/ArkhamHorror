@@ -28,14 +28,14 @@ newtype WhittonGreene = WhittonGreene AssetAttrs
 whittonGreene :: AssetCard WhittonGreene
 whittonGreene = ally WhittonGreene Cards.whittonGreene (2, 2)
 
-instance HasActions env WhittonGreene where
-  getActions iid (AfterRevealLocation who) (WhittonGreene a)
+instance HasAbilities env WhittonGreene where
+  getAbilities iid (AfterRevealLocation who) (WhittonGreene a)
     | ownedBy a iid && iid == who = pure
       [mkAbility a 1 $ ReactionAbility $ ExhaustCost (toTarget a)]
-  getActions iid (AfterPutLocationIntoPlay who) (WhittonGreene a)
+  getAbilities iid (AfterPutLocationIntoPlay who) (WhittonGreene a)
     | ownedBy a iid && iid == who = pure
       [mkAbility a 1 $ ReactionAbility $ ExhaustCost (toTarget a)]
-  getActions iid window (WhittonGreene attrs) = getActions iid window attrs
+  getAbilities iid window (WhittonGreene attrs) = getAbilities iid window attrs
 
 instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor env WhittonGreene where
   getModifiersFor _ (InvestigatorTarget iid) (WhittonGreene a) | ownedBy a iid =

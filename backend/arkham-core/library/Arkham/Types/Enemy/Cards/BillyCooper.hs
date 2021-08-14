@@ -27,8 +27,8 @@ billyCooper = enemyWith
 
 instance HasModifiersFor env BillyCooper
 
-instance ActionRunner env => HasActions env BillyCooper where
-  getActions iid window (BillyCooper attrs) = getActions iid window attrs
+instance ActionRunner env => HasAbilities env BillyCooper where
+  getAbilities iid window (BillyCooper attrs) = getAbilities iid window attrs
 
 instance (EnemyRunner env) => RunMessage env BillyCooper where
   runMessage msg e@(BillyCooper attrs@EnemyAttrs {..}) = case msg of

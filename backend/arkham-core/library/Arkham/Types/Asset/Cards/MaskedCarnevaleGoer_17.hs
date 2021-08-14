@@ -34,10 +34,10 @@ ability attrs =
     { abilityRestrictions = OnLocation <$> assetLocation attrs
     }
 
-instance HasActions env MaskedCarnevaleGoer_17 where
-  getActions _ NonFast (MaskedCarnevaleGoer_17 attrs) = pure [ability attrs]
-  getActions iid window (MaskedCarnevaleGoer_17 attrs) =
-    getActions iid window attrs
+instance HasAbilities env MaskedCarnevaleGoer_17 where
+  getAbilities _ NonFast (MaskedCarnevaleGoer_17 attrs) = pure [ability attrs]
+  getAbilities iid window (MaskedCarnevaleGoer_17 attrs) =
+    getAbilities iid window attrs
 
 instance HasModifiersFor env MaskedCarnevaleGoer_17
 

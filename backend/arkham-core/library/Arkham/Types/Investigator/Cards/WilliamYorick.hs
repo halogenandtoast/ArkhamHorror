@@ -56,8 +56,8 @@ williamYorickRecursionLock :: IORef Bool
 williamYorickRecursionLock = unsafePerformIO $ newIORef False
 {-# NOINLINE williamYorickRecursionLock #-}
 
-instance InvestigatorRunner env => HasActions env WilliamYorick where
-  getActions i (AfterEnemyDefeated who _) (WilliamYorick attrs) | i == who = do
+instance InvestigatorRunner env => HasAbilities env WilliamYorick where
+  getAbilities i (AfterEnemyDefeated who _) (WilliamYorick attrs) | i == who = do
     locked <- readIORef williamYorickRecursionLock
     if locked
       then pure []
@@ -72,7 +72,7 @@ instance InvestigatorRunner env => HasActions env WilliamYorick where
         writeIORef williamYorickRecursionLock False
         pure
           [ mkAbility attrs 1 $ ReactionAbility Free | notNull playableTargets ]
-  getActions i window (WilliamYorick attrs) = getActions i window attrs
+  getAbilities i window (WilliamYorick attrs) = getAbilities i window attrs
 
 
 instance (InvestigatorRunner env) => RunMessage env WilliamYorick where

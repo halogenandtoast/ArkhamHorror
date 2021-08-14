@@ -28,13 +28,13 @@ lightningGun5 :: AssetCard LightningGun5
 lightningGun5 =
   assetWith LightningGun5 Cards.lightningGun5 (slotsL .~ [HandSlot, HandSlot])
 
-instance HasActions env LightningGun5 where
-  getActions iid NonFast (LightningGun5 a) | ownedBy a iid = pure
+instance HasAbilities env LightningGun5 where
+  getAbilities iid NonFast (LightningGun5 a) | ownedBy a iid = pure
     [ mkAbility a 1 $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Resource.Ammo 1])
     ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance HasModifiersFor env LightningGun5
 

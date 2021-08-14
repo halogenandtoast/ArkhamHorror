@@ -27,8 +27,8 @@ cloverClubPitBoss = enemyWith
 
 instance HasModifiersFor env CloverClubPitBoss
 
-instance ActionRunner env => HasActions env CloverClubPitBoss where
-  getActions i window (CloverClubPitBoss attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env CloverClubPitBoss where
+  getAbilities i window (CloverClubPitBoss attrs) = getAbilities i window attrs
 
 instance EnemyRunner env => RunMessage env CloverClubPitBoss where
   runMessage msg e@(CloverClubPitBoss attrs@EnemyAttrs {..}) = case msg of

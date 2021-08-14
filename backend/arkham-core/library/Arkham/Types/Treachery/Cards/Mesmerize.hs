@@ -23,8 +23,8 @@ mesmerize = treachery Mesmerize Cards.mesmerize
 
 instance HasModifiersFor env Mesmerize
 
-instance HasActions env Mesmerize where
-  getActions i window (Mesmerize attrs) = getActions i window attrs
+instance HasAbilities env Mesmerize where
+  getAbilities i window (Mesmerize attrs) = getAbilities i window attrs
 
 instance
   ( HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)

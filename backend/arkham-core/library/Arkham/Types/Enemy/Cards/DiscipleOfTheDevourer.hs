@@ -27,8 +27,8 @@ discipleOfTheDevourer = enemyWith
 
 instance HasModifiersFor env DiscipleOfTheDevourer
 
-instance ActionRunner env => HasActions env DiscipleOfTheDevourer where
-  getActions i window (DiscipleOfTheDevourer attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env DiscipleOfTheDevourer where
+  getAbilities i window (DiscipleOfTheDevourer attrs) = getAbilities i window attrs
 
 instance EnemyRunner env => RunMessage env DiscipleOfTheDevourer where
   runMessage msg (DiscipleOfTheDevourer attrs) = case msg of

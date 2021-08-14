@@ -22,16 +22,16 @@ getTheEngineRunning :: ActCard GetTheEngineRunning
 getTheEngineRunning =
   act (2, A) GetTheEngineRunning Cards.getTheEngineRunning Nothing
 
-instance ActionRunner env => HasActions env GetTheEngineRunning where
-  getActions i window (GetTheEngineRunning x) = do
+instance ActionRunner env => HasAbilities env GetTheEngineRunning where
+  getAbilities i window (GetTheEngineRunning x) = do
     mEngineCar <- getLocationIdWithTitle "Engine Car"
     case mEngineCar of
       Just engineCar -> do
         mustAdvance <- (== 0) . unClueCount <$> getCount engineCar
         if mustAdvance
           then pure [mkAbility x 1 ForcedAbility]
-          else getActions i window x
-      Nothing -> getActions i window x
+          else getAbilities i window x
+      Nothing -> getAbilities i window x
 
 instance ActRunner env => RunMessage env GetTheEngineRunning where
   runMessage msg a@(GetTheEngineRunning attrs@ActAttrs {..}) = case msg of

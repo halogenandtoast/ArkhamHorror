@@ -25,12 +25,12 @@ burglary = asset Burglary Cards.burglary
 
 instance HasModifiersFor env Burglary
 
-instance HasActions env Burglary where
-  getActions iid NonFast (Burglary a) | ownedBy a iid = pure
+instance HasAbilities env Burglary where
+  getAbilities iid NonFast (Burglary a) | ownedBy a iid = pure
     [ mkAbility a 1 $ ActionAbility (Just Action.Investigate) $ Costs
         [ActionCost 1, ExhaustCost (toTarget a)]
     ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Burglary where
   runMessage msg a@(Burglary attrs) = case msg of

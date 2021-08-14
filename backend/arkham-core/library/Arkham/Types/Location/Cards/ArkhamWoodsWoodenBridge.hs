@@ -32,9 +32,9 @@ arkhamWoodsWoodenBridge = locationWith
 
 instance HasModifiersFor env ArkhamWoodsWoodenBridge
 
-instance ActionRunner env => HasActions env ArkhamWoodsWoodenBridge where
-  getActions i window (ArkhamWoodsWoodenBridge attrs) =
-    getActions i window attrs
+instance ActionRunner env => HasAbilities env ArkhamWoodsWoodenBridge where
+  getAbilities i window (ArkhamWoodsWoodenBridge attrs) =
+    getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsWoodenBridge where
   runMessage msg l@(ArkhamWoodsWoodenBridge attrs@LocationAttrs {..}) =

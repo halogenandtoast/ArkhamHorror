@@ -110,11 +110,11 @@ instance SourceEntity ActAttrs where
 onSide :: ActSide -> ActAttrs -> Bool
 onSide side ActAttrs {..} = actSide actSequence == side
 
-instance HasActions env ActAttrs where
-  getActions _ FastPlayerWindow attrs@ActAttrs {..} = case actAdvanceCost of
+instance HasAbilities env ActAttrs where
+  getAbilities _ FastPlayerWindow attrs@ActAttrs {..} = case actAdvanceCost of
     Just cost -> pure [mkAbility attrs 100 (FastAbility cost)]
     Nothing -> pure []
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 type ActAttrsRunner env
   = ( HasQueue env

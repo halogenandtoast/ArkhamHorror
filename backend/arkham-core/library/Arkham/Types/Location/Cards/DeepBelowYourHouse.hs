@@ -28,8 +28,8 @@ deepBelowYourHouse = location
 
 instance HasModifiersFor env DeepBelowYourHouse
 
-instance ActionRunner env => HasActions env DeepBelowYourHouse where
-  getActions i window (DeepBelowYourHouse attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env DeepBelowYourHouse where
+  getAbilities i window (DeepBelowYourHouse attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env DeepBelowYourHouse where
   runMessage msg l@(DeepBelowYourHouse attrs) = case msg of

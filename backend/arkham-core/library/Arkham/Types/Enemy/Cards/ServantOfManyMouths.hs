@@ -29,10 +29,10 @@ instance HasModifiersFor env ServantOfManyMouths
 ability :: EnemyAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
-instance ActionRunner env => HasActions env ServantOfManyMouths where
-  getActions iid (AfterEnemyDefeated who eid) (ServantOfManyMouths attrs)
+instance ActionRunner env => HasAbilities env ServantOfManyMouths where
+  getAbilities iid (AfterEnemyDefeated who eid) (ServantOfManyMouths attrs)
     | eid == toId attrs && iid == who = pure [ability attrs]
-  getActions i window (ServantOfManyMouths attrs) = getActions i window attrs
+  getAbilities i window (ServantOfManyMouths attrs) = getAbilities i window attrs
 
 instance EnemyRunner env => RunMessage env ServantOfManyMouths where
   runMessage msg e@(ServantOfManyMouths attrs@EnemyAttrs {..}) = case msg of

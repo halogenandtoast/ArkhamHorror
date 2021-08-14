@@ -27,8 +27,8 @@ servantOfTheLurker = enemyWith
 
 instance HasModifiersFor env ServantOfTheLurker
 
-instance ActionRunner env => HasActions env ServantOfTheLurker where
-  getActions i window (ServantOfTheLurker attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env ServantOfTheLurker where
+  getAbilities i window (ServantOfTheLurker attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env ServantOfTheLurker where
   runMessage msg (ServantOfTheLurker attrs@EnemyAttrs {..}) = case msg of

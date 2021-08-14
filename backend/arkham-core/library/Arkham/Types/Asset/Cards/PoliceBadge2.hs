@@ -32,8 +32,8 @@ instance HasModifiersFor env PoliceBadge2 where
     pure [ toModifier a (SkillModifier SkillWillpower 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance HasId LocationId env InvestigatorId => HasActions env PoliceBadge2 where
-  getActions iid (DuringTurn who) (PoliceBadge2 a) | ownedBy a iid = do
+instance HasId LocationId env InvestigatorId => HasAbilities env PoliceBadge2 where
+  getAbilities iid (DuringTurn who) (PoliceBadge2 a) | ownedBy a iid = do
     atYourLocation <- liftA2
       (==)
       (getId @LocationId iid)
@@ -42,7 +42,7 @@ instance HasId LocationId env InvestigatorId => HasActions env PoliceBadge2 wher
       [ mkAbility a 1 $ FastAbility $ DiscardCost (toTarget a)
       | atYourLocation
       ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env PoliceBadge2 where
   runMessage msg a@(PoliceBadge2 attrs) = case msg of

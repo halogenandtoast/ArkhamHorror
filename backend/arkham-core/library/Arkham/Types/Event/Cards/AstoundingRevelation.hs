@@ -35,11 +35,11 @@ ability iid a = base
     1
     (ReactionAbility (DiscardCost (SearchedCardTarget iid $ toCardId a)))
 
-instance HasActions env AstoundingRevelation where
-  getActions iid (WhenAmongSearchedCards who) (AstoundingRevelation attrs)
+instance HasAbilities env AstoundingRevelation where
+  getAbilities iid (WhenAmongSearchedCards who) (AstoundingRevelation attrs)
     | iid == who = pure [ability iid attrs]
-  getActions iid window (AstoundingRevelation attrs) =
-    getActions iid window attrs
+  getAbilities iid window (AstoundingRevelation attrs) =
+    getAbilities iid window attrs
 
 instance HasModifiersFor env AstoundingRevelation
 

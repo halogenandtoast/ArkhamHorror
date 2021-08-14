@@ -41,14 +41,14 @@ rexMurphy = RexMurphy $ baseAttrs
     }
   [Reporter]
 
-instance InvestigatorRunner env => HasActions env RexMurphy where
-  getActions iid (AfterPassSkillTest (Just Action.Investigate) _ who n) (RexMurphy attrs@InvestigatorAttrs {..})
+instance InvestigatorRunner env => HasAbilities env RexMurphy where
+  getAbilities iid (AfterPassSkillTest (Just Action.Investigate) _ who n) (RexMurphy attrs@InvestigatorAttrs {..})
     | iid == investigatorId && n >= 2 && iid == who
     = do
       let ability = mkAbility (toSource attrs) 1 (ReactionAbility Free)
       clueCount' <- unClueCount <$> getCount investigatorLocation
       pure [ ability | clueCount' > 0 ]
-  getActions i window (RexMurphy attrs) = getActions i window attrs
+  getAbilities i window (RexMurphy attrs) = getAbilities i window attrs
 
 instance HasTokenValue env RexMurphy where
   getTokenValue (RexMurphy attrs) iid ElderSign | iid == investigatorId attrs =

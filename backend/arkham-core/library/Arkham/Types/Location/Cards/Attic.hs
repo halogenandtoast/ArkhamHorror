@@ -20,8 +20,8 @@ attic = location Attic Cards.attic 1 (PerPlayer 2) Triangle [Square]
 
 instance HasModifiersFor env Attic
 
-instance ActionRunner env => HasActions env Attic where
-  getActions i window (Attic attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env Attic where
+  getAbilities i window (Attic attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env Attic where
   runMessage msg a@(Attic attrs@LocationAttrs { locationId }) = case msg of

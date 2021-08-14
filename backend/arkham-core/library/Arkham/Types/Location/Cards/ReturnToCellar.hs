@@ -28,8 +28,8 @@ returnToCellar = location
 
 instance HasModifiersFor env ReturnToCellar
 
-instance ActionRunner env => HasActions env ReturnToCellar where
-  getActions i window (ReturnToCellar attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env ReturnToCellar where
+  getAbilities i window (ReturnToCellar attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env ReturnToCellar where
   runMessage msg (ReturnToCellar attrs) = case msg of

@@ -37,12 +37,12 @@ instance HasModifiersFor env UprootedWoods
 forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
 
-instance ActionRunner env => HasActions env UprootedWoods where
-  getActions iid (AfterRevealLocation who) (UprootedWoods attrs) | iid == who =
+instance ActionRunner env => HasAbilities env UprootedWoods where
+  getAbilities iid (AfterRevealLocation who) (UprootedWoods attrs) | iid == who =
     do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid
       pure [ locationAbility (forcedAbility attrs) | actionRemainingCount == 0 ]
-  getActions iid window (UprootedWoods attrs) = getActions iid window attrs
+  getAbilities iid window (UprootedWoods attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env UprootedWoods where
   runMessage msg l@(UprootedWoods attrs) = case msg of

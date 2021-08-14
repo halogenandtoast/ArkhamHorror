@@ -31,8 +31,8 @@ sophieInLovingMemory = assetWith
 ability :: AssetAttrs -> Ability
 ability attrs = mkAbility attrs 2 ForcedAbility & abilityLimitL .~ NoLimit
 
-instance HasCount DamageCount env InvestigatorId => HasActions env SophieInLovingMemory where
-  getActions iid _ (SophieInLovingMemory attrs) = whenOwnedBy attrs iid $ do
+instance HasCount DamageCount env InvestigatorId => HasAbilities env SophieInLovingMemory where
+  getAbilities iid _ (SophieInLovingMemory attrs) = whenOwnedBy attrs iid $ do
     damageCount <- unDamageCount <$> getCount iid
     pure [ ability attrs | damageCount >= 5 ]
 

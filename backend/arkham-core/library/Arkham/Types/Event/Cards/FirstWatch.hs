@@ -29,9 +29,9 @@ firstWatch :: EventCard FirstWatch
 firstWatch =
   event (FirstWatch . (`with` FirstWatchMetadata [])) Cards.firstWatch
 
-instance HasActions env FirstWatch where
-  getActions iid window (FirstWatch (attrs `With` _)) =
-    getActions iid window attrs
+instance HasAbilities env FirstWatch where
+  getAbilities iid window (FirstWatch (attrs `With` _)) =
+    getAbilities iid window attrs
 
 instance HasModifiersFor env FirstWatch
 

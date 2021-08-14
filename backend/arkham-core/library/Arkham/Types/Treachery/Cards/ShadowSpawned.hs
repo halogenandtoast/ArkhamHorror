@@ -35,8 +35,8 @@ instance HasCount ResourceCount env TreacheryId => HasModifiersFor env ShadowSpa
         )
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env ShadowSpawned where
-  getActions i window (ShadowSpawned attrs) = getActions i window attrs
+instance HasAbilities env ShadowSpawned where
+  getAbilities i window (ShadowSpawned attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env ShadowSpawned where
   runMessage msg t@(ShadowSpawned attrs) = case msg of

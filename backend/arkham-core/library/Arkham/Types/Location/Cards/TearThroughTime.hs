@@ -30,10 +30,10 @@ tearThroughTime = location
 
 instance HasModifiersFor env TearThroughTime
 
-instance ActionRunner env => HasActions env TearThroughTime where
-  getActions iid NonFast (TearThroughTime attrs) =
+instance ActionRunner env => HasAbilities env TearThroughTime where
+  getAbilities iid NonFast (TearThroughTime attrs) =
     withBaseActions iid NonFast attrs $ pure [resignAction attrs]
-  getActions iid window (TearThroughTime attrs) = getActions iid window attrs
+  getAbilities iid window (TearThroughTime attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env TearThroughTime where
   runMessage msg (TearThroughTime attrs) =

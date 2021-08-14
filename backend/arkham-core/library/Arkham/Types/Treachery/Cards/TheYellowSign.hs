@@ -21,8 +21,8 @@ theYellowSign = treachery TheYellowSign Cards.theYellowSign
 
 instance HasModifiersFor env TheYellowSign
 
-instance HasActions env TheYellowSign where
-  getActions i window (TheYellowSign attrs) = getActions i window attrs
+instance HasAbilities env TheYellowSign where
+  getAbilities i window (TheYellowSign attrs) = getAbilities i window attrs
 
 instance (TreacheryRunner env) => RunMessage env TheYellowSign where
   runMessage msg t@(TheYellowSign attrs@TreacheryAttrs {..}) = case msg of

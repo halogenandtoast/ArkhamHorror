@@ -27,14 +27,14 @@ ritualCandles = hand RitualCandles Cards.ritualCandles
 ability :: AssetAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
-instance HasActions env RitualCandles where
-  getActions iid (WhenRevealToken who token) (RitualCandles x)
+instance HasAbilities env RitualCandles where
+  getAbilities iid (WhenRevealToken who token) (RitualCandles x)
     | iid == who && ownedBy x iid
     = pure
       [ ability x
       | tokenFace token `elem` [Skull, Cultist, Tablet, ElderThing]
       ]
-  getActions iid window (RitualCandles x) = getActions iid window x
+  getAbilities iid window (RitualCandles x) = getAbilities iid window x
 
 instance HasModifiersFor env RitualCandles
 

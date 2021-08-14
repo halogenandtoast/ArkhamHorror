@@ -21,8 +21,8 @@ mysteriousChanting = treachery MysteriousChanting Cards.mysteriousChanting
 
 instance HasModifiersFor env MysteriousChanting
 
-instance HasActions env MysteriousChanting where
-  getActions i window (MysteriousChanting attrs) = getActions i window attrs
+instance HasAbilities env MysteriousChanting where
+  getAbilities i window (MysteriousChanting attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env MysteriousChanting where
   runMessage msg t@(MysteriousChanting attrs) = case msg of

@@ -37,12 +37,12 @@ instance HasModifiersFor env ATearInThePath
 forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
 
-instance ActionRunner env => HasActions env ATearInThePath where
-  getActions iid (AfterRevealLocation who) (ATearInThePath attrs) | iid == who =
+instance ActionRunner env => HasAbilities env ATearInThePath where
+  getAbilities iid (AfterRevealLocation who) (ATearInThePath attrs) | iid == who =
     do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid
       pure [ locationAbility (forcedAbility attrs) | actionRemainingCount == 0 ]
-  getActions iid window (ATearInThePath attrs) = getActions iid window attrs
+  getAbilities iid window (ATearInThePath attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env ATearInThePath where
   runMessage msg l@(ATearInThePath attrs) = case msg of

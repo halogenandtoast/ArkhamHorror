@@ -45,8 +45,8 @@ instance
   ( HasId LocationId env InvestigatorId
   , HasSet Trait env EnemyId
   )
-  => HasActions env LitaChantler where
-  getActions i (WhenSuccessfulAttackEnemy who eid) (LitaChantler a)
+  => HasAbilities env LitaChantler where
+  getAbilities i (WhenSuccessfulAttackEnemy who eid) (LitaChantler a)
     | ownedBy a i = do
       atYourLocation <- liftA2
         (==)
@@ -54,7 +54,7 @@ instance
         (getId @LocationId who)
       traits <- getSetList eid
       pure [ ability eid a | Monster `elem` traits && atYourLocation ]
-  getActions i window (LitaChantler a) = getActions i window a
+  getAbilities i window (LitaChantler a) = getAbilities i window a
 
 instance (AssetRunner env) => RunMessage env LitaChantler where
   runMessage msg a@(LitaChantler attrs) = case msg of

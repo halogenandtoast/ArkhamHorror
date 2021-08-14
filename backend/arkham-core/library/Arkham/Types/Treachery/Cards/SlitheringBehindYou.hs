@@ -23,8 +23,8 @@ slitheringBehindYou = treachery SlitheringBehindYou Cards.slitheringBehindYou
 
 instance HasModifiersFor env SlitheringBehindYou
 
-instance HasActions env SlitheringBehindYou where
-  getActions i window (SlitheringBehindYou attrs) = getActions i window attrs
+instance HasAbilities env SlitheringBehindYou where
+  getAbilities i window (SlitheringBehindYou attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env SlitheringBehindYou where
   runMessage msg t@(SlitheringBehindYou attrs) = case msg of

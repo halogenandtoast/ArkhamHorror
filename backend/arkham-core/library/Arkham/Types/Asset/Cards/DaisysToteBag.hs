@@ -22,8 +22,8 @@ daisysToteBag = asset DaisysToteBag Cards.daisysToteBag
 
 instance HasModifiersFor env DaisysToteBag
 
-instance HasActions env DaisysToteBag where
-  getActions i window (DaisysToteBag x) = getActions i window x
+instance HasAbilities env DaisysToteBag where
+  getAbilities i window (DaisysToteBag x) = getAbilities i window x
 
 slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Tome Nothing

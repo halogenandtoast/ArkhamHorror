@@ -18,7 +18,7 @@ type AssetRunner env
     , HasCostPayment env
     , HasModifiersFor env ()
     , HasList UsedAbility env ()
-    , HasActions env LocationId
+    , HasAbilities env LocationId
     , HasCount ActionRemainingCount env InvestigatorId
     , HasCount AssetCount env (InvestigatorId, [Trait])
     , HasCount CardCount env InvestigatorId

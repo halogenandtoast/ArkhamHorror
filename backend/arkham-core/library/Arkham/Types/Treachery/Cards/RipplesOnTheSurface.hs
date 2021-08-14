@@ -38,8 +38,8 @@ instance
       pure $ toModifiers attrs [ CannotCommitCards | isBayou ]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env RipplesOnTheSurface where
-  getActions i window (RipplesOnTheSurface attrs) = getActions i window attrs
+instance HasAbilities env RipplesOnTheSurface where
+  getAbilities i window (RipplesOnTheSurface attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env RipplesOnTheSurface where
   runMessage msg t@(RipplesOnTheSurface attrs@TreacheryAttrs {..}) =

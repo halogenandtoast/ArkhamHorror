@@ -26,9 +26,9 @@ administrationBuilding = location
 
 instance HasModifiersFor env AdministrationBuilding
 
-instance ActionRunner env => HasActions env AdministrationBuilding where
-  getActions i window (AdministrationBuilding attrs) =
-    getActions i window attrs
+instance ActionRunner env => HasAbilities env AdministrationBuilding where
+  getAbilities i window (AdministrationBuilding attrs) =
+    getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env AdministrationBuilding where
   runMessage msg l@(AdministrationBuilding attrs) = case msg of

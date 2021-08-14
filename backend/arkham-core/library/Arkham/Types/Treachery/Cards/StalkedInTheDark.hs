@@ -23,8 +23,8 @@ stalkedInTheDark = treachery StalkedInTheDark Cards.stalkedInTheDark
 
 instance HasModifiersFor env StalkedInTheDark
 
-instance HasActions env StalkedInTheDark where
-  getActions i window (StalkedInTheDark attrs) = getActions i window attrs
+instance HasAbilities env StalkedInTheDark where
+  getAbilities i window (StalkedInTheDark attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env StalkedInTheDark where
   runMessage msg t@(StalkedInTheDark attrs) = case msg of

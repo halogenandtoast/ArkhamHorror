@@ -52,12 +52,12 @@ ability attrs = base { abilityLimit = PlayerLimit PerRound 1 }
     1
     (FastAbility $ HandDiscardCost 1 Nothing mempty mempty)
 
-instance InvestigatorRunner env => HasActions env AshcanPete where
-  getActions iid FastPlayerWindow (AshcanPete attrs@InvestigatorAttrs {..})
+instance InvestigatorRunner env => HasAbilities env AshcanPete where
+  getAbilities iid FastPlayerWindow (AshcanPete attrs@InvestigatorAttrs {..})
     | iid == investigatorId = do
       exhaustedAssetIds <- select (AssetOwnedBy You <> AssetExhausted)
       pure [ ability attrs | notNull exhaustedAssetIds ]
-  getActions i window (AshcanPete attrs) = getActions i window attrs
+  getAbilities i window (AshcanPete attrs) = getAbilities i window attrs
 
 instance HasTokenValue env AshcanPete where
   getTokenValue (AshcanPete attrs) iid ElderSign | iid == investigatorId attrs =

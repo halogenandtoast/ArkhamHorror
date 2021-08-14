@@ -29,8 +29,8 @@ ability a = mkAbility a 1 (FastAbility $ ResourceCost 1)
 
 -- This card is a pain and the solution here is a hack
 -- we end up with a separate function for resource modification
-instance CanCheckPlayable env => HasActions env JoeyTheRatVigil where
-  getActions iid FastPlayerWindow (JoeyTheRatVigil attrs) | ownedBy attrs iid =
+instance CanCheckPlayable env => HasAbilities env JoeyTheRatVigil where
+  getAbilities iid FastPlayerWindow (JoeyTheRatVigil attrs) | ownedBy attrs iid =
     do
       availableResources <- unResourceCount <$> getCount iid
       handCards <- map unHandCard <$> getList iid
@@ -43,7 +43,7 @@ instance CanCheckPlayable env => HasActions env JoeyTheRatVigil where
         )
         items
       pure [ ability attrs | notNull playableItems ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance HasModifiersFor env JoeyTheRatVigil
 

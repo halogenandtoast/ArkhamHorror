@@ -45,7 +45,7 @@ spec = describe "Wracked by Nightmares" $ do
           let
             wrackedByNightmaresTreachery =
               game ^?! treacheriesL . to toList . ix 0
-          [discardWrackedByNightmares] <- getActionsOf
+          [discardWrackedByNightmares] <- getAbilitiesOf
             investigator
             NonFast
             wrackedByNightmaresTreachery

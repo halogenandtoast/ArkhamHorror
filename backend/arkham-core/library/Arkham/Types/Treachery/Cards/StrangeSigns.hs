@@ -23,8 +23,8 @@ strangeSigns = treachery StrangeSigns Cards.strangeSigns
 
 instance HasModifiersFor env StrangeSigns
 
-instance HasActions env StrangeSigns where
-  getActions i window (StrangeSigns attrs) = getActions i window attrs
+instance HasAbilities env StrangeSigns where
+  getAbilities i window (StrangeSigns attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env StrangeSigns where
   runMessage msg t@(StrangeSigns attrs@TreacheryAttrs {..}) = case msg of

@@ -27,8 +27,8 @@ instance HasModifiersFor env LightOfAforgomon where
     pure $ toModifiers attrs [TreatAllDamageAsDirect]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env LightOfAforgomon where
-  getActions i window (LightOfAforgomon attrs) = getActions i window attrs
+instance HasAbilities env LightOfAforgomon where
+  getAbilities i window (LightOfAforgomon attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env LightOfAforgomon where
   runMessage msg (LightOfAforgomon attrs@TreacheryAttrs {..}) = case msg of

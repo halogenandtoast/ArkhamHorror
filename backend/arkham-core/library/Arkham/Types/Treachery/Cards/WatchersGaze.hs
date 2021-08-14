@@ -25,8 +25,8 @@ watchersGaze = treachery WatchersGaze Cards.watchersGaze
 
 instance HasModifiersFor env WatchersGaze
 
-instance HasActions env WatchersGaze where
-  getActions i window (WatchersGaze attrs) = getActions i window attrs
+instance HasAbilities env WatchersGaze where
+  getAbilities i window (WatchersGaze attrs) = getAbilities i window attrs
 
 instance
   ( HasId (Maybe OwnerId) env AssetId

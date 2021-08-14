@@ -20,8 +20,8 @@ dynamiteBlast = event DynamiteBlast Cards.dynamiteBlast
 
 instance HasModifiersFor env DynamiteBlast
 
-instance HasActions env DynamiteBlast where
-  getActions i window (DynamiteBlast attrs) = getActions i window attrs
+instance HasAbilities env DynamiteBlast where
+  getAbilities i window (DynamiteBlast attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env DynamiteBlast where
   runMessage msg e@(DynamiteBlast attrs@EventAttrs {..}) = case msg of

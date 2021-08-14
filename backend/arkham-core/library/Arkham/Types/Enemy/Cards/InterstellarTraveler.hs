@@ -29,8 +29,8 @@ interstellarTraveler = enemyWith
 
 instance HasModifiersFor env InterstellarTraveler
 
-instance EnemyAttrsHasActions env => HasActions env InterstellarTraveler where
-  getActions i window (InterstellarTraveler attrs) = getActions i window attrs
+instance EnemyAttrsHasAbilities env => HasAbilities env InterstellarTraveler where
+  getAbilities i window (InterstellarTraveler attrs) = getAbilities i window attrs
 
 instance (HasCount ClueCount env LocationId, EnemyAttrsRunMessage env) => RunMessage env InterstellarTraveler where
   runMessage msg (InterstellarTraveler attrs) = case msg of

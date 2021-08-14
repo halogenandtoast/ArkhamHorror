@@ -21,8 +21,8 @@ newtype EmergencyAid = EmergencyAid EventAttrs
 emergencyAid :: EventCard EmergencyAid
 emergencyAid = event EmergencyAid Cards.emergencyAid
 
-instance HasActions env EmergencyAid where
-  getActions iid window (EmergencyAid attrs) = getActions iid window attrs
+instance HasAbilities env EmergencyAid where
+  getAbilities iid window (EmergencyAid attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env EmergencyAid
 

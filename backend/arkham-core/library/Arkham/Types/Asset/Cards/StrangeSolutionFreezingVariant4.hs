@@ -28,14 +28,14 @@ strangeSolutionFreezingVariant4 :: AssetCard StrangeSolutionFreezingVariant4
 strangeSolutionFreezingVariant4 =
   asset StrangeSolutionFreezingVariant4 Cards.strangeSolutionFreezingVariant4
 
-instance HasActions env StrangeSolutionFreezingVariant4 where
-  getActions iid NonFast (StrangeSolutionFreezingVariant4 attrs)
+instance HasAbilities env StrangeSolutionFreezingVariant4 where
+  getAbilities iid NonFast (StrangeSolutionFreezingVariant4 attrs)
     | ownedBy attrs iid = pure
       [ mkAbility attrs 1 $ ActionAbility (Just Action.Evade) $ Costs
           [ActionCost 1, UseCost (toId attrs) Supply 1]
       ]
-  getActions iid window (StrangeSolutionFreezingVariant4 attrs) =
-    getActions iid window attrs
+  getAbilities iid window (StrangeSolutionFreezingVariant4 attrs) =
+    getAbilities iid window attrs
 
 instance HasModifiersFor env StrangeSolutionFreezingVariant4 where
   getModifiersFor (SkillTestSource _ _ source _ (Just Action.Evade)) (InvestigatorTarget iid) (StrangeSolutionFreezingVariant4 a)

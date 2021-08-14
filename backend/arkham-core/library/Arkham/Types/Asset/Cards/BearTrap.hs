@@ -35,10 +35,10 @@ instance HasModifiersFor env BearTrap where
 ability :: AssetAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (FastAbility Free)
 
-instance HasActions env BearTrap where
-  getActions iid FastPlayerWindow (BearTrap attrs) | ownedBy attrs iid =
+instance HasAbilities env BearTrap where
+  getAbilities iid FastPlayerWindow (BearTrap attrs) | ownedBy attrs iid =
     pure [ ability attrs | isNothing (assetEnemy attrs) ]
-  getActions iid window (BearTrap x) = getActions iid window x
+  getAbilities iid window (BearTrap x) = getAbilities iid window x
 
 instance AssetRunner env => RunMessage env BearTrap where
   runMessage msg a@(BearTrap attrs@AssetAttrs {..}) = case msg of

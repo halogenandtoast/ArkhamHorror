@@ -25,10 +25,10 @@ newtype Blackjack = Blackjack AssetAttrs
 blackjack :: AssetCard Blackjack
 blackjack = hand Blackjack Cards.blackjack
 
-instance HasActions env Blackjack where
-  getActions iid NonFast (Blackjack a) | ownedBy a iid =
+instance HasAbilities env Blackjack where
+  getAbilities iid NonFast (Blackjack a) | ownedBy a iid =
     pure [mkAbility a 1 $ ActionAbility (Just Action.Fight) (ActionCost 1)]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance HasModifiersFor env Blackjack
 

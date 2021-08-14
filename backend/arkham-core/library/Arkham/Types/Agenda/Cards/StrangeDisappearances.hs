@@ -23,8 +23,8 @@ strangeDisappearances =
 
 instance HasModifiersFor env StrangeDisappearances
 
-instance HasActions env StrangeDisappearances where
-  getActions i window (StrangeDisappearances x) = getActions i window x
+instance HasAbilities env StrangeDisappearances where
+  getAbilities i window (StrangeDisappearances x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env StrangeDisappearances where
   runMessage msg a@(StrangeDisappearances attrs@AgendaAttrs {..}) = case msg of

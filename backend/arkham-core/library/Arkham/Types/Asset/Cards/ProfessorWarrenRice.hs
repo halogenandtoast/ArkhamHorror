@@ -33,8 +33,8 @@ instance HasModifiersFor env ProfessorWarrenRice where
     pure [ toModifier a (SkillModifier SkillIntellect 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env ProfessorWarrenRice where
-  getActions iid (AfterDiscoveringClues who loc) (ProfessorWarrenRice a)
+instance ActionRunner env => HasAbilities env ProfessorWarrenRice where
+  getAbilities iid (AfterDiscoveringClues who loc) (ProfessorWarrenRice a)
     | iid == who = do
       lid <- getId @LocationId iid
       lastClue <- (== 0) . unClueCount <$> getCount lid
@@ -42,7 +42,7 @@ instance ActionRunner env => HasActions env ProfessorWarrenRice where
         [ mkAbility a 1 $ ReactionAbility $ ExhaustCost (toTarget a)
         | lastClue && ownedBy a iid && loc == lid
         ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env ProfessorWarrenRice where
   runMessage msg a@(ProfessorWarrenRice attrs) = case msg of

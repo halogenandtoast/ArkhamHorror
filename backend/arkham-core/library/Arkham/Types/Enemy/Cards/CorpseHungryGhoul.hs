@@ -25,8 +25,8 @@ corpseHungryGhoul = enemyWith
 
 instance HasModifiersFor env CorpseHungryGhoul
 
-instance ActionRunner env => HasActions env CorpseHungryGhoul where
-  getActions i window (CorpseHungryGhoul attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env CorpseHungryGhoul where
+  getAbilities i window (CorpseHungryGhoul attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env CorpseHungryGhoul where
   runMessage msg (CorpseHungryGhoul attrs) =

@@ -31,8 +31,8 @@ instance HasModifiersFor env GraveyardGhouls where
     $ toModifiers attrs [CardsCannotLeaveYourDiscardPile]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyAttrsHasActions env => HasActions env GraveyardGhouls where
-  getActions i window (GraveyardGhouls attrs) = getActions i window attrs
+instance EnemyAttrsHasAbilities env => HasAbilities env GraveyardGhouls where
+  getAbilities i window (GraveyardGhouls attrs) = getAbilities i window attrs
 
 instance EnemyAttrsRunMessage env => RunMessage env GraveyardGhouls where
   runMessage msg (GraveyardGhouls attrs) =

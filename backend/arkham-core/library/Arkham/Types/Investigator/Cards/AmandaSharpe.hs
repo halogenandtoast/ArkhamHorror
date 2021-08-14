@@ -30,8 +30,8 @@ amandaSharpe = AmandaSharpe $ baseAttrs
     }
   [Miskatonic, Scholar]
 
-instance InvestigatorRunner env => HasActions env AmandaSharpe where
-  getActions i window (AmandaSharpe attrs) = getActions i window attrs
+instance InvestigatorRunner env => HasAbilities env AmandaSharpe where
+  getAbilities i window (AmandaSharpe attrs) = getAbilities i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env AmandaSharpe where
   runMessage msg (AmandaSharpe attrs) = AmandaSharpe <$> runMessage msg attrs

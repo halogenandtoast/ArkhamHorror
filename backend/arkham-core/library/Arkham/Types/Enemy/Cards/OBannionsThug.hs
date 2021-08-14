@@ -26,8 +26,8 @@ instance HasModifiersFor env OBannionsThug where
     $ toModifiers a [CannotGainResources]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env OBannionsThug where
-  getActions i window (OBannionsThug attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env OBannionsThug where
+  getAbilities i window (OBannionsThug attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env OBannionsThug where
   runMessage msg (OBannionsThug attrs) = OBannionsThug <$> runMessage msg attrs

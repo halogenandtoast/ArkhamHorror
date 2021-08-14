@@ -37,8 +37,8 @@ instance (HasName env AssetId, HasId (Maybe LocationId) env AssetId) => HasModif
       _ -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance EnemyAttrsHasActions env => HasActions env CarnevaleSentinel where
-  getActions i window (CarnevaleSentinel attrs) = getActions i window attrs
+instance EnemyAttrsHasAbilities env => HasAbilities env CarnevaleSentinel where
+  getAbilities i window (CarnevaleSentinel attrs) = getAbilities i window attrs
 
 instance EnemyAttrsRunMessage env => RunMessage env CarnevaleSentinel where
   runMessage msg (CarnevaleSentinel attrs) = case msg of

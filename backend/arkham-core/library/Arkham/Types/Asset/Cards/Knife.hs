@@ -28,15 +28,15 @@ knife = hand Knife Cards.knife
 
 instance HasModifiersFor env Knife
 
-instance HasActions env Knife where
-  getActions iid NonFast (Knife a) | ownedBy a iid = pure
+instance HasAbilities env Knife where
+  getAbilities iid NonFast (Knife a) | ownedBy a iid = pure
     [ mkAbility a 1 $ ActionAbility (Just Fight) (ActionCost 1)
     , mkAbility a 2
       $ ActionAbility
           (Just Fight)
           (Costs [ActionCost 1, DiscardCost (toTarget a)])
     ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Knife where
   runMessage msg a@(Knife attrs) = case msg of

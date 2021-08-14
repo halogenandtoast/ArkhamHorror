@@ -27,8 +27,8 @@ miskatonicQuad = location
 
 instance HasModifiersFor env MiskatonicQuad
 
-instance ActionRunner env => HasActions env MiskatonicQuad where
-  getActions = withResignAction
+instance ActionRunner env => HasAbilities env MiskatonicQuad where
+  getAbilities = withResignAction
 
 instance (LocationRunner env) => RunMessage env MiskatonicQuad where
   runMessage msg (MiskatonicQuad attrs) =

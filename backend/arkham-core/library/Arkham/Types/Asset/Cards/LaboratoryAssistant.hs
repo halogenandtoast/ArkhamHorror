@@ -29,11 +29,11 @@ instance HasModifiersFor env LaboratoryAssistant where
     pure $ toModifiers attrs [ HandSize 2 | ownedBy attrs iid ]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env LaboratoryAssistant where
-  getActions i (WhenEnterPlay target) (LaboratoryAssistant x)
+instance HasAbilities env LaboratoryAssistant where
+  getAbilities i (WhenEnterPlay target) (LaboratoryAssistant x)
     | isTarget x target && ownedBy x i = pure
       [mkAbility x 1 $ ReactionAbility Free]
-  getActions i window (LaboratoryAssistant x) = getActions i window x
+  getAbilities i window (LaboratoryAssistant x) = getAbilities i window x
 
 instance (AssetRunner env) => RunMessage env LaboratoryAssistant where
   runMessage msg a@(LaboratoryAssistant attrs) = case msg of

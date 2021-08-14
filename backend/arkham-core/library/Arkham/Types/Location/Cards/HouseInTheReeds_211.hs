@@ -32,8 +32,8 @@ houseInTheReeds_211 = location
 
 instance HasModifiersFor env HouseInTheReeds_211
 
-instance ActionRunner env => HasActions env HouseInTheReeds_211 where
-  getActions = withDrawCardUnderneathAction
+instance ActionRunner env => HasAbilities env HouseInTheReeds_211 where
+  getAbilities = withDrawCardUnderneathAction
 
 instance LocationRunner env => RunMessage env HouseInTheReeds_211 where
   runMessage msg l@(HouseInTheReeds_211 attrs) = case msg of

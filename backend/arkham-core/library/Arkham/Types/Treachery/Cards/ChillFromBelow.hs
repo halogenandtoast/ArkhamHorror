@@ -20,8 +20,8 @@ chillFromBelow = treachery ChillFromBelow Cards.chillFromBelow
 
 instance HasModifiersFor env ChillFromBelow
 
-instance HasActions env ChillFromBelow where
-  getActions i window (ChillFromBelow attrs) = getActions i window attrs
+instance HasAbilities env ChillFromBelow where
+  getAbilities i window (ChillFromBelow attrs) = getAbilities i window attrs
 
 instance (TreacheryRunner env) => RunMessage env ChillFromBelow where
   runMessage msg t@(ChillFromBelow attrs@TreacheryAttrs {..}) = case msg of

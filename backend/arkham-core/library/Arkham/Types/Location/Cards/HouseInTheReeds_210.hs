@@ -38,8 +38,8 @@ instance HasModifiersFor env HouseInTheReeds_210 where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env HouseInTheReeds_210 where
-  getActions = withDrawCardUnderneathAction
+instance ActionRunner env => HasAbilities env HouseInTheReeds_210 where
+  getAbilities = withDrawCardUnderneathAction
 
 instance LocationRunner env => RunMessage env HouseInTheReeds_210 where
   runMessage msg (HouseInTheReeds_210 attrs) =

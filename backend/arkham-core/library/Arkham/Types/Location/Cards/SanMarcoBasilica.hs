@@ -43,10 +43,10 @@ instance HasModifiersFor env SanMarcoBasilica
 ability :: LocationAttrs -> Ability
 ability a = mkAbility a 1 (ActionAbility Nothing $ ActionCost 1)
 
-instance ActionRunner env => HasActions env SanMarcoBasilica where
-  getActions iid NonFast (SanMarcoBasilica attrs) =
+instance ActionRunner env => HasAbilities env SanMarcoBasilica where
+  getAbilities iid NonFast (SanMarcoBasilica attrs) =
     withBaseActions iid NonFast attrs $ pure [ability attrs]
-  getActions iid window (SanMarcoBasilica attrs) = getActions iid window attrs
+  getAbilities iid window (SanMarcoBasilica attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env SanMarcoBasilica where
   runMessage msg l@(SanMarcoBasilica attrs) = case msg of

@@ -32,15 +32,15 @@ instance
   , HasSkillTest env
   , CanCheckPlayable env
   )
-  => HasActions env Asset where
-  getActions iid window x = do
+  => HasAbilities env Asset where
+  getAbilities iid window x = do
     inPlay <- member (toId x) <$> select AnyAsset
     modifiers' <- if inPlay
       then getModifiers (toSource x) (toTarget x)
       else pure []
     if Blank `elem` modifiers'
-      then getActions iid window (toAttrs x)
-      else genericGetActions iid window x
+      then getAbilities iid window (toAttrs x)
+      else genericGetAbilities iid window x
 
 instance
   ( HasId LocationId env InvestigatorId

@@ -38,8 +38,8 @@ instance HasSet Trait env LocationId => HasModifiersFor env BogGator where
         else []
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env BogGator where
-  getActions i window (BogGator attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env BogGator where
+  getAbilities i window (BogGator attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env BogGator where
   runMessage msg (BogGator attrs) = BogGator <$> runMessage msg attrs

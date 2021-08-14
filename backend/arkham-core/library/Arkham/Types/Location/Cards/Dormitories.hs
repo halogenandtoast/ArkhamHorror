@@ -38,11 +38,11 @@ ability attrs = mkAbility
     (GroupClueCost (PerPlayer 3) $ Just (LocationWithTitle "Dormitories"))
   )
 
-instance ActionRunner env => HasActions env Dormitories where
-  getActions iid FastPlayerWindow (Dormitories attrs@LocationAttrs {..})
+instance ActionRunner env => HasAbilities env Dormitories where
+  getAbilities iid FastPlayerWindow (Dormitories attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid FastPlayerWindow attrs
     $ pure [locationAbility (ability attrs)]
-  getActions iid window (Dormitories attrs) = getActions iid window attrs
+  getAbilities iid window (Dormitories attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env Dormitories where
   runMessage msg l@(Dormitories attrs) = case msg of

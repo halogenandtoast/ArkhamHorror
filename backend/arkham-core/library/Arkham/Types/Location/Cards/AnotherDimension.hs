@@ -38,15 +38,15 @@ forcedAbility a lid =
   mkAbility (toSource a) 1 ForcedAbility & abilityMetadataL ?~ TargetMetadata
     (LocationTarget lid)
 
-instance ActionRunner env => HasActions env AnotherDimension where
-  getActions iid (WhenLocationLeavesPlay lid) (AnotherDimension attrs) = do
+instance ActionRunner env => HasAbilities env AnotherDimension where
+  getAbilities iid (WhenLocationLeavesPlay lid) (AnotherDimension attrs) = do
     leadInvestigator <- getLeadInvestigatorId
     investigatorIds <- getSet @InvestigatorId lid
     pure
       [ forcedAbility attrs lid
       | iid == leadInvestigator && notNull investigatorIds
       ]
-  getActions iid window (AnotherDimension attrs) = getActions iid window attrs
+  getAbilities iid window (AnotherDimension attrs) = getAbilities iid window attrs
 
 instance (HasSet UnengagedEnemyId env LocationId, LocationRunner env) => RunMessage env AnotherDimension where
   runMessage msg l@(AnotherDimension attrs) = case msg of

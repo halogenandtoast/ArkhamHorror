@@ -44,10 +44,10 @@ ability :: InvestigatorAttrs -> Ability
 ability attrs = base { abilityLimit = PlayerLimit PerTurn 1 }
   where base = mkAbility (toSource attrs) 1 (FastAbility $ ResourceCost 2)
 
-instance HasActions env SkidsOToole where
-  getActions iid (DuringTurn who) (SkidsOToole a@InvestigatorAttrs {..})
+instance HasAbilities env SkidsOToole where
+  getAbilities iid (DuringTurn who) (SkidsOToole a@InvestigatorAttrs {..})
     | iid == investigatorId && iid == who = pure [ability a]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance HasTokenValue env SkidsOToole where
   getTokenValue (SkidsOToole attrs) iid ElderSign

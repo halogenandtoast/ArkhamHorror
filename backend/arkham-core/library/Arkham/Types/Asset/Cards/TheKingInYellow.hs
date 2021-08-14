@@ -35,8 +35,8 @@ theKingInYellow = handWith
 frequency :: Ord a => [a] -> [(a, Int)]
 frequency = map (head &&& length) . group . sort
 
-instance HasList CommittedSkillIcon env InvestigatorId => HasActions env TheKingInYellow where
-  getActions iid AfterPassSkillTest{} (TheKingInYellow attrs)
+instance HasList CommittedSkillIcon env InvestigatorId => HasAbilities env TheKingInYellow where
+  getAbilities iid AfterPassSkillTest{} (TheKingInYellow attrs)
     | ownedBy attrs iid = do
       committedSkillIcons <- map unCommittedSkillIcon <$> getList iid
       let frequencies = frequency committedSkillIcons
@@ -53,7 +53,7 @@ instance HasList CommittedSkillIcon env InvestigatorId => HasActions env TheKing
             [ mkAbility attrs 1 $ ReactionAbility Free
             | totalMatchingIcons >= 6
             ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance HasSet CommittedCardId env InvestigatorId => HasModifiersFor env TheKingInYellow where
   getModifiersFor _ SkillTestTarget (TheKingInYellow attrs) = do

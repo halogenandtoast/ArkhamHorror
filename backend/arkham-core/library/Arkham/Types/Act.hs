@@ -19,7 +19,7 @@ import Arkham.Types.Trait
 
 $(buildEntity "Act")
 
-deriving anyclass instance ActionRunner env => HasActions env Act
+deriving anyclass instance ActionRunner env => HasAbilities env Act
 
 instance
   ( HasName env LocationId

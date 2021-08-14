@@ -25,14 +25,14 @@ newtype InTheKnow1 = InTheKnow1 AssetAttrs
 inTheKnow1 :: AssetCard InTheKnow1
 inTheKnow1 = asset InTheKnow1 Cards.inTheKnow1
 
-instance HasActions env InTheKnow1 where
-  getActions iid NonFast (InTheKnow1 attrs) | ownedBy attrs iid = pure
+instance HasAbilities env InTheKnow1 where
+  getAbilities iid NonFast (InTheKnow1 attrs) | ownedBy attrs iid = pure
     [ mkAbility attrs 1
       $ ActionAbility (Just Action.Investigate)
       $ ActionCost 1
       <> UseCost (toId attrs) Secret 1
     ]
-  getActions iid window (InTheKnow1 attrs) = getActions iid window attrs
+  getAbilities iid window (InTheKnow1 attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env InTheKnow1
 
@@ -42,7 +42,7 @@ investigateAction = find ((== 101) . abilityIndex)
 
 instance
   ( Query LocationMatcher env
-  , HasActions env LocationId
+  , HasAbilities env LocationId
   , HasId LocationId env InvestigatorId
   , HasQueue env
   , HasModifiersFor env ()
@@ -53,7 +53,7 @@ instance
       investigatorLocation <- getId @LocationId iid
       locations <- selectList $ RevealedLocation <> InvestigatableLocation
       locationsWithActions <- traverse
-        (traverseToSnd $ getActions iid NonFast)
+        (traverseToSnd $ getAbilities iid NonFast)
         locations
       let
         locationsWithInvestigateActions = mapMaybe

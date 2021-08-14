@@ -17,8 +17,8 @@ newtype WhatHaveYouDone = WhatHaveYouDone ActAttrs
 whatHaveYouDone :: ActCard WhatHaveYouDone
 whatHaveYouDone = act (3, A) WhatHaveYouDone Cards.whatHaveYouDone Nothing
 
-instance HasActions env WhatHaveYouDone where
-  getActions i window (WhatHaveYouDone x) = getActions i window x
+instance HasAbilities env WhatHaveYouDone where
+  getAbilities i window (WhatHaveYouDone x) = getAbilities i window x
 
 instance ActRunner env => RunMessage env WhatHaveYouDone where
   runMessage msg a@(WhatHaveYouDone attrs@ActAttrs {..}) = case msg of

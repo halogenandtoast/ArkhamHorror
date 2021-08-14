@@ -20,7 +20,7 @@ crazedShoggoth :: EnemyCard CrazedShoggoth
 crazedShoggoth =
   enemy CrazedShoggoth Cards.crazedShoggoth (3, Static 6, 4) (2, 2)
 
-deriving newtype instance EnemyAttrsHasActions env => HasActions env CrazedShoggoth
+deriving newtype instance EnemyAttrsHasAbilities env => HasAbilities env CrazedShoggoth
 
 instance HasModifiersFor env CrazedShoggoth
 

@@ -22,8 +22,8 @@ theZealotsSeal = treachery TheZealotsSeal Cards.theZealotsSeal
 
 instance HasModifiersFor env TheZealotsSeal
 
-instance HasActions env TheZealotsSeal where
-  getActions i window (TheZealotsSeal attrs) = getActions i window attrs
+instance HasAbilities env TheZealotsSeal where
+  getAbilities i window (TheZealotsSeal attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env TheZealotsSeal where
   runMessage msg t@(TheZealotsSeal attrs@TreacheryAttrs {..}) = case msg of

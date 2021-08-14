@@ -30,8 +30,8 @@ bridgeOfSighs = locationWith
 
 instance HasModifiersFor env BridgeOfSighs
 
-instance ActionRunner env => HasActions env BridgeOfSighs where
-  getActions iid window (BridgeOfSighs attrs) = getActions iid window attrs
+instance ActionRunner env => HasAbilities env BridgeOfSighs where
+  getAbilities iid window (BridgeOfSighs attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env BridgeOfSighs where
   runMessage msg l@(BridgeOfSighs attrs) = case msg of

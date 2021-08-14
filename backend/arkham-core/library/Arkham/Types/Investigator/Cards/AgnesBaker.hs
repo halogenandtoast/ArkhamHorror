@@ -41,12 +41,12 @@ ability :: InvestigatorAttrs -> Ability
 ability attrs = base { abilityLimit = PlayerLimit PerPhase 1 }
   where base = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
-instance InvestigatorRunner env => HasActions env AgnesBaker where
-  getActions iid (WhenDealtHorror _ target) (AgnesBaker attrs)
+instance InvestigatorRunner env => HasAbilities env AgnesBaker where
+  getAbilities iid (WhenDealtHorror _ target) (AgnesBaker attrs)
     | isTarget attrs target && iid == toId attrs = do
       enemyIds <- getSet @EnemyId $ investigatorLocation attrs
       pure [ ability attrs | notNull enemyIds ]
-  getActions i window (AgnesBaker attrs) = getActions i window attrs
+  getAbilities i window (AgnesBaker attrs) = getAbilities i window attrs
 
 instance HasTokenValue env AgnesBaker where
   getTokenValue (AgnesBaker attrs) iid ElderSign | iid == toId attrs = do

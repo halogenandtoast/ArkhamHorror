@@ -57,10 +57,10 @@ investigateAbility attrs = mkAbility
     (Costs [ActionCost 1, ExhaustCost (toTarget attrs)])
   )
 
-instance HasActions env Duke where
-  getActions iid NonFast (Duke a) | ownedBy a iid =
+instance HasAbilities env Duke where
+  getAbilities iid NonFast (Duke a) | ownedBy a iid =
     pure [fightAbility a, investigateAbility a]
-  getActions i window (Duke x) = getActions i window x
+  getAbilities i window (Duke x) = getAbilities i window x
 
 dukeInvestigate :: AssetAttrs -> InvestigatorId -> LocationId -> Message
 dukeInvestigate attrs iid lid =
@@ -86,7 +86,7 @@ instance AssetRunner env => RunMessage env Duke where
               (pure $ isInvestigate a')
               (getCanAffordAbility iid a')
             )
-          =<< getActions iid NonFast lid
+          =<< getAbilities iid NonFast lid
       let
         investigateActions :: [Message] = map
           (UseAbility iid . (`applyAbilityModifiers` [ActionCostModifier (-1)]))

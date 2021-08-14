@@ -27,8 +27,8 @@ clawsOfSteam = treachery ClawsOfSteam Cards.clawsOfSteam
 
 instance HasModifiersFor env ClawsOfSteam
 
-instance HasActions env ClawsOfSteam where
-  getActions i window (ClawsOfSteam attrs) = getActions i window attrs
+instance HasAbilities env ClawsOfSteam where
+  getAbilities i window (ClawsOfSteam attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env ClawsOfSteam where
   runMessage msg t@(ClawsOfSteam attrs@TreacheryAttrs {..}) = case msg of

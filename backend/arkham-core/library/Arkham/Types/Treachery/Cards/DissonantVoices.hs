@@ -28,8 +28,8 @@ instance HasModifiersFor env DissonantVoices where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env DissonantVoices where
-  getActions i window (DissonantVoices attrs) = getActions i window attrs
+instance HasAbilities env DissonantVoices where
+  getAbilities i window (DissonantVoices attrs) = getAbilities i window attrs
 
 instance (TreacheryRunner env) => RunMessage env DissonantVoices where
   runMessage msg t@(DissonantVoices attrs@TreacheryAttrs {..}) = case msg of

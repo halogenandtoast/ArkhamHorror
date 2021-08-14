@@ -26,8 +26,8 @@ newtype ShadowsDeepen = ShadowsDeepen AgendaAttrs
 shadowsDeepen :: AgendaCard ShadowsDeepen
 shadowsDeepen = agenda (2, A) ShadowsDeepen Cards.shadowsDeepen (Static 7)
 
-instance HasActions env ShadowsDeepen where
-  getActions i window (ShadowsDeepen x) = getActions i window x
+instance HasAbilities env ShadowsDeepen where
+  getAbilities i window (ShadowsDeepen x) = getAbilities i window x
 
 instance HasModifiersFor env ShadowsDeepen
 

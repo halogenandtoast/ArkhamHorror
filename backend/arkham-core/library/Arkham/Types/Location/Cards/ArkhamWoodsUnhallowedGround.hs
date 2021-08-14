@@ -30,9 +30,9 @@ arkhamWoodsUnhallowedGround = locationWith
 
 instance HasModifiersFor env ArkhamWoodsUnhallowedGround
 
-instance ActionRunner env => HasActions env ArkhamWoodsUnhallowedGround where
-  getActions i window (ArkhamWoodsUnhallowedGround attrs) =
-    getActions i window attrs
+instance ActionRunner env => HasAbilities env ArkhamWoodsUnhallowedGround where
+  getAbilities i window (ArkhamWoodsUnhallowedGround attrs) =
+    getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsUnhallowedGround where
   runMessage msg l@(ArkhamWoodsUnhallowedGround attrs@LocationAttrs {..}) =

@@ -53,11 +53,11 @@ ability iid attrs = base { abilityMetadata = Just (IntMetadata 0) }
       ]
     )
 
-instance ActionRunner env => HasActions env FoulSwamp where
-  getActions iid NonFast (FoulSwamp attrs@LocationAttrs {..})
+instance ActionRunner env => HasAbilities env FoulSwamp where
+  getAbilities iid NonFast (FoulSwamp attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs
     $ pure [locationAbility (ability iid attrs)]
-  getActions i window (FoulSwamp attrs) = getActions i window attrs
+  getAbilities i window (FoulSwamp attrs) = getAbilities i window attrs
 
 instance LocationRunner env => RunMessage env FoulSwamp where
   runMessage msg l@(FoulSwamp attrs) = case msg of

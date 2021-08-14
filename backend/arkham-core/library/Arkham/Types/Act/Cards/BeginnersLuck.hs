@@ -41,10 +41,10 @@ ability token attrs = (mkAbility (toSource attrs) 1 (ReactionAbility Free))
   , abilityMetadata = Just (TargetMetadata $ TokenTarget token)
   }
 
-instance ActionRunner env => HasActions env BeginnersLuck where
-  getActions iid (WhenRevealToken who token) (BeginnersLuck x) | iid == who =
+instance ActionRunner env => HasAbilities env BeginnersLuck where
+  getAbilities iid (WhenRevealToken who token) (BeginnersLuck x) | iid == who =
     pure [ability token x]
-  getActions iid window (BeginnersLuck x) = getActions iid window x
+  getAbilities iid window (BeginnersLuck x) = getAbilities iid window x
 
 instance
   ( ActAttrsRunner env

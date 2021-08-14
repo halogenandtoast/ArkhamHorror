@@ -162,8 +162,8 @@ treacheryWith f cardDef g = CardBuilder
     }
   }
 
-instance HasActions env TreacheryAttrs where
-  getActions _ _ _ = pure []
+instance HasAbilities env TreacheryAttrs where
+  getAbilities _ _ _ = pure []
 
 is :: Target -> TreacheryAttrs -> Bool
 is (TreacheryTarget tid) t = tid == treacheryId t

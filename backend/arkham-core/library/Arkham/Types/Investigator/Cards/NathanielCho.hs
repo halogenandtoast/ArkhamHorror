@@ -30,8 +30,8 @@ nathanielCho = NathanielCho $ baseAttrs
     }
   [Criminal, Warden]
 
-instance InvestigatorRunner env => HasActions env NathanielCho where
-  getActions i window (NathanielCho attrs) = getActions i window attrs
+instance InvestigatorRunner env => HasAbilities env NathanielCho where
+  getAbilities i window (NathanielCho attrs) = getAbilities i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env NathanielCho where
   runMessage msg (NathanielCho attrs) = NathanielCho <$> runMessage msg attrs

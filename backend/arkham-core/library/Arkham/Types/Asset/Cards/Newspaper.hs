@@ -23,8 +23,8 @@ newtype Newspaper = Newspaper AssetAttrs
 newspaper :: AssetCard Newspaper
 newspaper = hand Newspaper Cards.newspaper
 
-instance HasActions env Newspaper where
-  getActions iid window (Newspaper attrs) = getActions iid window attrs
+instance HasAbilities env Newspaper where
+  getAbilities iid window (Newspaper attrs) = getAbilities iid window attrs
 
 instance HasCount ClueCount env InvestigatorId => HasModifiersFor env Newspaper where
   getModifiersFor _ (InvestigatorTarget iid) (Newspaper a) | ownedBy a iid = do

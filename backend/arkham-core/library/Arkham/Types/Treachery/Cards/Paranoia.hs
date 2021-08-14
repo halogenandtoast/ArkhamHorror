@@ -18,8 +18,8 @@ paranoia = treachery Paranoia Cards.paranoia
 
 instance HasModifiersFor env Paranoia
 
-instance HasActions env Paranoia where
-  getActions i window (Paranoia attrs) = getActions i window attrs
+instance HasAbilities env Paranoia where
+  getAbilities i window (Paranoia attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env Paranoia where
   runMessage msg t@(Paranoia attrs) = case msg of

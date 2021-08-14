@@ -32,11 +32,11 @@ instance HasModifiersFor env Gondola
 ability :: LocationAttrs -> Ability
 ability a = mkAbility a 1 (ActionAbility Nothing $ ActionCost 1)
 
-instance ActionRunner env => HasActions env Gondola where
-  getActions iid NonFast (Gondola attrs) =
+instance ActionRunner env => HasAbilities env Gondola where
+  getAbilities iid NonFast (Gondola attrs) =
     withBaseActions iid NonFast attrs $ do
       pure [locationAbility (ability attrs)]
-  getActions iid window (Gondola attrs) = getActions iid window attrs
+  getAbilities iid window (Gondola attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env Gondola where
   runMessage msg l@(Gondola attrs) = case msg of

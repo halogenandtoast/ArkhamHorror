@@ -29,8 +29,8 @@ instance HasModifiersFor env ToweringBeasts where
     $ toModifiers attrs [EnemyFight 1, HealthModifier 1]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env ToweringBeasts where
-  getActions i window (ToweringBeasts attrs) = getActions i window attrs
+instance HasAbilities env ToweringBeasts where
+  getAbilities i window (ToweringBeasts attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env ToweringBeasts where
   runMessage msg t@(ToweringBeasts attrs) = case msg of

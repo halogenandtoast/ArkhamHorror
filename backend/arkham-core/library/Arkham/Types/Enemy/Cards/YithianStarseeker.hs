@@ -27,8 +27,8 @@ yithianStarseeker = enemyWith
 
 instance HasModifiersFor env YithianStarseeker
 
-instance EnemyAttrsHasActions env => HasActions env YithianStarseeker where
-  getActions i window (YithianStarseeker attrs) = getActions i window attrs
+instance EnemyAttrsHasAbilities env => HasAbilities env YithianStarseeker where
+  getAbilities i window (YithianStarseeker attrs) = getAbilities i window attrs
 
 instance (HasCount DiscardCount env InvestigatorId, EnemyAttrsRunMessage env) => RunMessage env YithianStarseeker where
   runMessage msg (YithianStarseeker attrs) = case msg of

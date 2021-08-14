@@ -30,8 +30,8 @@ winifredHabbamock = WinifredHabbamock $ baseAttrs
     }
   [Criminal]
 
-instance InvestigatorRunner env => HasActions env WinifredHabbamock where
-  getActions i window (WinifredHabbamock attrs) = getActions i window attrs
+instance InvestigatorRunner env => HasAbilities env WinifredHabbamock where
+  getAbilities i window (WinifredHabbamock attrs) = getAbilities i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env WinifredHabbamock where
   runMessage msg (WinifredHabbamock attrs) =

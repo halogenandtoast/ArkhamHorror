@@ -19,8 +19,8 @@ newtype StandTogether3 = StandTogether3 EventAttrs
 standTogether3 :: EventCard StandTogether3
 standTogether3 = event StandTogether3 Cards.standTogether3
 
-instance HasActions env StandTogether3 where
-  getActions iid window (StandTogether3 attrs) = getActions iid window attrs
+instance HasAbilities env StandTogether3 where
+  getAbilities iid window (StandTogether3 attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env StandTogether3
 

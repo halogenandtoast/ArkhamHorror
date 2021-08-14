@@ -22,8 +22,8 @@ marshGug = enemy MarshGug Cards.marshGug (3, Static 4, 3) (2, 1)
 
 instance HasModifiersFor env MarshGug
 
-instance ActionRunner env => HasActions env MarshGug where
-  getActions i window (MarshGug attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env MarshGug where
+  getAbilities i window (MarshGug attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env MarshGug where
   runMessage msg e@(MarshGug attrs@EnemyAttrs {..}) = case msg of

@@ -33,8 +33,8 @@ instance HasModifiersFor env Haunted where
       [ AnySkillValue (-1) | treacheryOnInvestigator iid attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env Haunted where
-  getActions iid NonFast (Haunted a) =
+instance ActionRunner env => HasAbilities env Haunted where
+  getAbilities iid NonFast (Haunted a) =
     withTreacheryInvestigator a $ \tormented -> do
       investigatorLocationId <- getId @LocationId iid
       treacheryLocation <- getId tormented
@@ -42,7 +42,7 @@ instance ActionRunner env => HasActions env Haunted where
         [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 2
         | treacheryLocation == investigatorLocationId
         ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env Haunted where
   runMessage msg t@(Haunted attrs@TreacheryAttrs {..}) = case msg of

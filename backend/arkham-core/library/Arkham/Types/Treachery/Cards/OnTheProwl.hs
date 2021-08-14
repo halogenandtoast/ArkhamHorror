@@ -26,8 +26,8 @@ onTheProwl = treachery OnTheProwl Cards.onTheProwl
 
 instance HasModifiersFor env OnTheProwl
 
-instance HasActions env OnTheProwl where
-  getActions i window (OnTheProwl attrs) = getActions i window attrs
+instance HasAbilities env OnTheProwl where
+  getAbilities i window (OnTheProwl attrs) = getAbilities i window attrs
 
 bayouLocations
   :: (MonadReader env m, HasSet LocationId env [Trait])

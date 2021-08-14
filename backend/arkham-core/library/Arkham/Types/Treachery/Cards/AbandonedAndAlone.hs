@@ -17,8 +17,8 @@ abandonedAndAlone = treachery AbandonedAndAlone Cards.abandonedAndAlone
 
 instance HasModifiersFor env AbandonedAndAlone
 
-instance HasActions env AbandonedAndAlone where
-  getActions i window (AbandonedAndAlone attrs) = getActions i window attrs
+instance HasAbilities env AbandonedAndAlone where
+  getAbilities i window (AbandonedAndAlone attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env AbandonedAndAlone where
   runMessage msg t@(AbandonedAndAlone attrs) = case msg of

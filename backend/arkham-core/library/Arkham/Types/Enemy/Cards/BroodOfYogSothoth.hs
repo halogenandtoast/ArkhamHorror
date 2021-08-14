@@ -36,8 +36,8 @@ instance HasCount PlayerCount env () => HasModifiersFor env BroodOfYogSothoth wh
       ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env BroodOfYogSothoth where
-  getActions i window (BroodOfYogSothoth attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env BroodOfYogSothoth where
+  getAbilities i window (BroodOfYogSothoth attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env, HasName env AssetId) => RunMessage env BroodOfYogSothoth where
   runMessage msg e@(BroodOfYogSothoth attrs) = case msg of

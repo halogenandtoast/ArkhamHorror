@@ -26,8 +26,8 @@ chronophobia = treachery Chronophobia Cards.chronophobia
 
 instance HasModifiersFor env Chronophobia
 
-instance ActionRunner env => HasActions env Chronophobia where
-  getActions iid NonFast (Chronophobia a) =
+instance ActionRunner env => HasAbilities env Chronophobia where
+  getAbilities iid NonFast (Chronophobia a) =
     withTreacheryInvestigator a $ \tormented -> do
       investigatorLocationId <- getId @LocationId iid
       treacheryLocation <- getId tormented
@@ -35,7 +35,7 @@ instance ActionRunner env => HasActions env Chronophobia where
         [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 2
         | treacheryLocation == investigatorLocationId
         ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env Chronophobia where
   runMessage msg t@(Chronophobia attrs@TreacheryAttrs {..}) = case msg of

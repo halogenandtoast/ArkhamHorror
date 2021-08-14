@@ -28,10 +28,10 @@ timeIsRunningShort =
 
 instance HasModifiersFor env TimeIsRunningShort
 
-instance HasActions env TimeIsRunningShort where
-  getActions _ NonFast (TimeIsRunningShort a) =
+instance HasAbilities env TimeIsRunningShort where
+  getAbilities _ NonFast (TimeIsRunningShort a) =
     pure [mkAbility a 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (AgendaRunner env) => RunMessage env TimeIsRunningShort where
   runMessage msg a@(TimeIsRunningShort attrs@AgendaAttrs {..}) = case msg of

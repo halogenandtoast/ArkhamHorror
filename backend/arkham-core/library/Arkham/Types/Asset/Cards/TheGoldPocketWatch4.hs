@@ -30,12 +30,12 @@ repeatPhaseAbility p attrs = (mkAbility attrs 2 (ReactionAbility Free))
   { abilityMetadata = Just (TargetMetadata $ PhaseTarget p)
   }
 
-instance HasActions env TheGoldPocketWatch4 where
-  getActions iid (PhaseBegins p) (TheGoldPocketWatch4 attrs)
+instance HasAbilities env TheGoldPocketWatch4 where
+  getAbilities iid (PhaseBegins p) (TheGoldPocketWatch4 attrs)
     | ownedBy attrs iid = pure [skipPhaseAbility p attrs]
-  getActions iid (PhaseEnds p) (TheGoldPocketWatch4 attrs) | ownedBy attrs iid =
+  getAbilities iid (PhaseEnds p) (TheGoldPocketWatch4 attrs) | ownedBy attrs iid =
     pure [repeatPhaseAbility p attrs]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance HasModifiersFor env TheGoldPocketWatch4
 

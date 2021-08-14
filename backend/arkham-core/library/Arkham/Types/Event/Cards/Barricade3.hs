@@ -30,8 +30,8 @@ instance HasModifiersFor env Barricade3 where
       else pure []
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env Barricade3 where
-  getActions i window (Barricade3 attrs) = getActions i window attrs
+instance HasAbilities env Barricade3 where
+  getAbilities i window (Barricade3 attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env Barricade3 where
   runMessage msg e@(Barricade3 attrs@EventAttrs {..}) = case msg of

@@ -43,8 +43,8 @@ instance HasModifiersFor env MuseumHalls where
     pure $ toModifiers l [ Blocked | unrevealed l ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env MuseumHalls where
-  getActions iid NonFast (MuseumHalls attrs) | unrevealed attrs =
+instance ActionRunner env => HasAbilities env MuseumHalls where
+  getAbilities iid NonFast (MuseumHalls attrs) | unrevealed attrs =
     withBaseActions iid NonFast attrs $ do
       lid <- fromJustNote "missing location"
         <$> getLocationIdWithTitle "Museum Entrance"
@@ -57,7 +57,7 @@ instance ActionRunner env => HasActions env MuseumHalls where
             { abilityRestrictions = Just (OnLocation lid)
             }
         ]
-  getActions iid NonFast (MuseumHalls attrs) | revealed attrs =
+  getAbilities iid NonFast (MuseumHalls attrs) | revealed attrs =
     withBaseActions iid NonFast attrs $ pure
       [ locationAbility
           (mkAbility attrs 1 $ ActionAbility Nothing $ Costs
@@ -68,7 +68,7 @@ instance ActionRunner env => HasActions env MuseumHalls where
             ]
           )
       ]
-  getActions iid window (MuseumHalls attrs) = getActions iid window attrs
+  getAbilities iid window (MuseumHalls attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env MuseumHalls where
   runMessage msg l@(MuseumHalls attrs) = case msg of

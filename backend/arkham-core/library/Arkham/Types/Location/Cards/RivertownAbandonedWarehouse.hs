@@ -49,12 +49,12 @@ ability attrs = base { abilityLimit = GroupLimit PerGame 1 }
       ]
     )
 
-instance ActionRunner env => HasActions env RivertownAbandonedWarehouse where
-  getActions iid NonFast (RivertownAbandonedWarehouse attrs)
+instance ActionRunner env => HasAbilities env RivertownAbandonedWarehouse where
+  getAbilities iid NonFast (RivertownAbandonedWarehouse attrs)
     | locationRevealed attrs = withBaseActions iid NonFast attrs $ do
       pure [locationAbility (ability attrs)]
-  getActions iid window (RivertownAbandonedWarehouse attrs) =
-    getActions iid window attrs
+  getAbilities iid window (RivertownAbandonedWarehouse attrs) =
+    getAbilities iid window attrs
 
 willpowerCount :: Payment -> Int
 willpowerCount (DiscardCardPayment cards) =

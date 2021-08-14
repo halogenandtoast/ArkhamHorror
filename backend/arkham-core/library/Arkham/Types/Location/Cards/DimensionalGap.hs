@@ -37,10 +37,10 @@ instance HasModifiersFor env DimensionalGap
 forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
 
-instance ActionRunner env => HasActions env DimensionalGap where
-  getActions iid (AfterRevealLocation who) (DimensionalGap attrs) | iid == who =
+instance ActionRunner env => HasAbilities env DimensionalGap where
+  getAbilities iid (AfterRevealLocation who) (DimensionalGap attrs) | iid == who =
     pure [locationAbility (forcedAbility attrs)]
-  getActions iid window (DimensionalGap attrs) = getActions iid window attrs
+  getAbilities iid window (DimensionalGap attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env DimensionalGap where
   runMessage msg l@(DimensionalGap attrs) = case msg of

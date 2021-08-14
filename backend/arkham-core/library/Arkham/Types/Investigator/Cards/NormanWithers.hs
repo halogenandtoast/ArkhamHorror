@@ -30,8 +30,8 @@ normanWithers = NormanWithers $ baseAttrs
     }
   [Miskatonic]
 
-instance InvestigatorRunner env => HasActions env NormanWithers where
-  getActions i window (NormanWithers attrs) = getActions i window attrs
+instance InvestigatorRunner env => HasAbilities env NormanWithers where
+  getAbilities i window (NormanWithers attrs) = getAbilities i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env NormanWithers where
   runMessage msg (NormanWithers attrs) = NormanWithers <$> runMessage msg attrs

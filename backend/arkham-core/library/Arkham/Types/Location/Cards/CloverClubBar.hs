@@ -44,12 +44,12 @@ ability attrs = (mkAbility
   { abilityLimit = PlayerLimit PerGame 1
   }
 
-instance ActionRunner env => HasActions env CloverClubBar where
-  getActions iid NonFast (CloverClubBar attrs@LocationAttrs {..})
+instance ActionRunner env => HasAbilities env CloverClubBar where
+  getAbilities iid NonFast (CloverClubBar attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ do
       step <- unActStep <$> getStep
       pure [ locationAbility (ability attrs) | step == 1 ]
-  getActions iid window (CloverClubBar attrs) = getActions iid window attrs
+  getAbilities iid window (CloverClubBar attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env CloverClubBar where
   runMessage msg l@(CloverClubBar attrs@LocationAttrs {..}) = case msg of

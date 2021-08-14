@@ -38,8 +38,8 @@ instance
       pure $ toModifiers attrs [ CannotCommitCards | isBayou ]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env CursedSwamp where
-  getActions i window (CursedSwamp attrs) = getActions i window attrs
+instance HasAbilities env CursedSwamp where
+  getAbilities i window (CursedSwamp attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env CursedSwamp where
   runMessage msg t@(CursedSwamp attrs@TreacheryAttrs {..}) = case msg of

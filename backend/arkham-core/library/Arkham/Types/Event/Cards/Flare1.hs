@@ -40,8 +40,8 @@ findAllyMessages iid investigatorIds e =
     ]
   ]
 
-instance HasActions env Flare1 where
-  getActions i window (Flare1 attrs) = getActions i window attrs
+instance HasAbilities env Flare1 where
+  getAbilities i window (Flare1 attrs) = getAbilities i window attrs
 
 instance
   ( EventRunner env

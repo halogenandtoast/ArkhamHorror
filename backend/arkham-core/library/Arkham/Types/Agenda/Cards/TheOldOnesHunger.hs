@@ -23,8 +23,8 @@ theOldOnesHunger =
 
 instance HasModifiersFor env TheOldOnesHunger
 
-instance HasActions env TheOldOnesHunger where
-  getActions i window (TheOldOnesHunger x) = getActions i window x
+instance HasAbilities env TheOldOnesHunger where
+  getAbilities i window (TheOldOnesHunger x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env TheOldOnesHunger where
   runMessage msg a@(TheOldOnesHunger attrs@AgendaAttrs {..}) = case msg of

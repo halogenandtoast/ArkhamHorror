@@ -20,8 +20,8 @@ draggedUnder = treachery DraggedUnder Cards.draggedUnder
 
 instance HasModifiersFor env DraggedUnder
 
-instance HasActions env DraggedUnder where
-  getActions i window (DraggedUnder attrs) = getActions i window attrs
+instance HasAbilities env DraggedUnder where
+  getAbilities i window (DraggedUnder attrs) = getAbilities i window attrs
 
 instance (TreacheryRunner env) => RunMessage env DraggedUnder where
   runMessage msg t@(DraggedUnder attrs@TreacheryAttrs {..}) = case msg of

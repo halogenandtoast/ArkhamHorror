@@ -339,7 +339,7 @@ withResignAction
 withResignAction iid NonFast x | locationRevealed (toAttrs x) =
   withBaseActions iid NonFast attrs $ pure [locationResignAction attrs]
   where attrs = toAttrs x
-withResignAction iid window x = getActions iid window (toAttrs x)
+withResignAction iid window x = getAbilities iid window (toAttrs x)
 
 locationResignAction :: LocationAttrs -> Ability
 locationResignAction attrs = toLocationAbility attrs (resignAction attrs)
@@ -379,10 +379,10 @@ withDrawCardUnderneathAction iid NonFast x | locationRevealed (toAttrs x) =
     | iid `on` attrs && locationClues attrs == 0
     ]
   where attrs = toAttrs x
-withDrawCardUnderneathAction iid window x = getActions iid window (toAttrs x)
+withDrawCardUnderneathAction iid window x = getAbilities iid window (toAttrs x)
 
-instance ActionRunner env => HasActions env LocationAttrs where
-  getActions iid NonFast l@LocationAttrs {..} = do
+instance ActionRunner env => HasAbilities env LocationAttrs where
+  getAbilities iid NonFast l@LocationAttrs {..} = do
     canMoveTo <- getCanMoveTo locationId iid
     investigateAllowed <- getInvestigateAllowed iid l
     modifiers' <- getModifiers (toSource l) (InvestigatorTarget iid)
@@ -415,7 +415,7 @@ instance ActionRunner env => HasActions env LocationAttrs where
         IsAction Action.Move -> increaseActionCost costs n
         _ -> costToEnter
     applyMoveCostModifiers _ costs _ = costs
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 getShouldSpawnNonEliteAtConnectingInstead
   :: (MonadReader env m, HasModifiersFor env ()) => LocationAttrs -> m Bool

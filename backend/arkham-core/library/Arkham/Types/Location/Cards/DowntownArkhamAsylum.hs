@@ -39,12 +39,12 @@ ability attrs =
     { abilityLimit = PlayerLimit PerGame 1
     }
 
-instance ActionRunner env => HasActions env DowntownArkhamAsylum where
-  getActions iid NonFast (DowntownArkhamAsylum attrs@LocationAttrs {..})
+instance ActionRunner env => HasAbilities env DowntownArkhamAsylum where
+  getAbilities iid NonFast (DowntownArkhamAsylum attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs
     $ pure [locationAbility (ability attrs)]
-  getActions iid window (DowntownArkhamAsylum attrs) =
-    getActions iid window attrs
+  getAbilities iid window (DowntownArkhamAsylum attrs) =
+    getAbilities iid window attrs
 
 instance (LocationRunner env) => RunMessage env DowntownArkhamAsylum where
   runMessage msg l@(DowntownArkhamAsylum attrs) = case msg of

@@ -40,10 +40,10 @@ ability attrs =
   mkAbility (toSource attrs) 1 (FastAbility Free)
     & (abilityLimitL .~ GroupLimit PerGame 1)
 
-instance ActionRunner env => HasActions env DunwichVillage_242 where
-  getActions iid NonFast (DunwichVillage_242 attrs) =
+instance ActionRunner env => HasAbilities env DunwichVillage_242 where
+  getAbilities iid NonFast (DunwichVillage_242 attrs) =
     withResignAction iid NonFast attrs
-  getActions iid FastPlayerWindow (DunwichVillage_242 attrs) =
+  getAbilities iid FastPlayerWindow (DunwichVillage_242 attrs) =
     withBaseActions iid FastPlayerWindow attrs $ do
       investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
@@ -51,8 +51,8 @@ instance ActionRunner env => HasActions env DunwichVillage_242 where
         [ locationAbility (ability attrs)
         | investigatorsWithClues && anyAbominations
         ]
-  getActions iid window (DunwichVillage_242 attrs) =
-    getActions iid window attrs
+  getAbilities iid window (DunwichVillage_242 attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env DunwichVillage_242 where
   runMessage msg l@(DunwichVillage_242 attrs) = case msg of

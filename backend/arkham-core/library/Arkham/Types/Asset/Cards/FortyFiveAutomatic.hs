@@ -29,13 +29,13 @@ fortyFiveAutomatic = hand FortyFiveAutomatic Cards.fortyFiveAutomatic
 
 instance HasModifiersFor env FortyFiveAutomatic
 
-instance HasActions env FortyFiveAutomatic where
-  getActions iid NonFast (FortyFiveAutomatic a) | ownedBy a iid = pure
+instance HasAbilities env FortyFiveAutomatic where
+  getAbilities iid NonFast (FortyFiveAutomatic a) | ownedBy a iid = pure
     [ mkAbility a 1 $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
     ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env FortyFiveAutomatic where
   runMessage msg a@(FortyFiveAutomatic attrs) = case msg of

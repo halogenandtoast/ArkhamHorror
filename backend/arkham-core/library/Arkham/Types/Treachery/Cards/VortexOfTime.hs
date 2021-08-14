@@ -24,8 +24,8 @@ vortexOfTime = treachery VortexOfTime Cards.vortexOfTime
 
 instance HasModifiersFor env VortexOfTime
 
-instance HasActions env VortexOfTime where
-  getActions i window (VortexOfTime attrs) = getActions i window attrs
+instance HasAbilities env VortexOfTime where
+  getAbilities i window (VortexOfTime attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env VortexOfTime where
   runMessage msg t@(VortexOfTime attrs) = case msg of

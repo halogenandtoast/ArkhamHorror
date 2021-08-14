@@ -29,9 +29,9 @@ conglomerationOfSpheres = enemyWith
 
 instance HasModifiersFor env ConglomerationOfSpheres
 
-instance ActionRunner env => HasActions env ConglomerationOfSpheres where
-  getActions i window (ConglomerationOfSpheres attrs) =
-    getActions i window attrs
+instance ActionRunner env => HasAbilities env ConglomerationOfSpheres where
+  getAbilities i window (ConglomerationOfSpheres attrs) =
+    getAbilities i window attrs
 
 instance EnemyRunner env => RunMessage env ConglomerationOfSpheres where
   runMessage msg e@(ConglomerationOfSpheres attrs@EnemyAttrs {..}) =

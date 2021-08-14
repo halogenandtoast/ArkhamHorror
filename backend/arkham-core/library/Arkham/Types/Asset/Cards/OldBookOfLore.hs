@@ -25,12 +25,12 @@ oldBookOfLore = hand OldBookOfLore Cards.oldBookOfLore
 
 instance HasModifiersFor env OldBookOfLore
 
-instance HasActions env OldBookOfLore where
-  getActions iid NonFast (OldBookOfLore a) | ownedBy a iid = pure
+instance HasAbilities env OldBookOfLore where
+  getAbilities iid NonFast (OldBookOfLore a) | ownedBy a iid = pure
     [ mkAbility a 1 $ ActionAbility Nothing $ Costs
         [ActionCost 1, ExhaustCost $ toTarget a]
     ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env OldBookOfLore where
   runMessage msg a@(OldBookOfLore attrs) = case msg of

@@ -25,8 +25,8 @@ newtype InEveryShadow = InEveryShadow AgendaAttrs
 inEveryShadow :: AgendaCard InEveryShadow
 inEveryShadow = agenda (3, A) InEveryShadow Cards.inEveryShadow (Static 7)
 
-instance HasActions env InEveryShadow where
-  getActions i window (InEveryShadow x) = getActions i window x
+instance HasAbilities env InEveryShadow where
+  getAbilities i window (InEveryShadow x) = getAbilities i window x
 
 instance HasModifiersFor env InEveryShadow
 

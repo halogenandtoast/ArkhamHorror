@@ -23,8 +23,8 @@ beckoningForPower =
 
 instance HasModifiersFor env BeckoningForPower
 
-instance HasActions env BeckoningForPower where
-  getActions i window (BeckoningForPower x) = getActions i window x
+instance HasAbilities env BeckoningForPower where
+  getAbilities i window (BeckoningForPower x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env BeckoningForPower where
   runMessage msg a@(BeckoningForPower attrs@AgendaAttrs {..}) = case msg of

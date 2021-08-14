@@ -35,14 +35,14 @@ instance HasId LocationId env InvestigatorId => HasModifiersFor env SpectralMist
     pure $ toModifiers a [ Difficulty 1 | treacheryOnLocation lid a ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env SpectralMist where
-  getActions iid NonFast (SpectralMist a) = do
+instance ActionRunner env => HasAbilities env SpectralMist where
+  getAbilities iid NonFast (SpectralMist a) = do
     investigatorLocationId <- getId @LocationId iid
     pure
       [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1
       | treacheryOnLocation investigatorLocationId a
       ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env SpectralMist where
   runMessage msg t@(SpectralMist attrs@TreacheryAttrs {..}) = case msg of

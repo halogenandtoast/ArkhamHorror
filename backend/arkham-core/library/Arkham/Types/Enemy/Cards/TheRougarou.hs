@@ -39,9 +39,9 @@ isEngage ability = case abilityType ability of
   ActionAbility (Just Action.Engage) _ -> True
   _ -> False
 
-instance ActionRunner env => HasActions env TheRougarou where
-  getActions iid window (TheRougarou (attrs `With` _)) = do
-    actions' <- getActions iid window attrs
+instance ActionRunner env => HasAbilities env TheRougarou where
+  getAbilities iid window (TheRougarou (attrs `With` _)) = do
+    actions' <- getAbilities iid window attrs
     if any isEngage actions'
       then do
         playerCount <- getPlayerCount

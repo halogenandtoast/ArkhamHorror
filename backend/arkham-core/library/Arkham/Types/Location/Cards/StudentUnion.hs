@@ -29,14 +29,14 @@ studentUnion =
 
 instance HasModifiersFor env StudentUnion
 
-instance ActionRunner env => HasActions env StudentUnion where
-  getActions iid NonFast (StudentUnion attrs@LocationAttrs {..})
+instance ActionRunner env => HasAbilities env StudentUnion where
+  getAbilities iid NonFast (StudentUnion attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ do
       let
         ability =
           mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 2)
       pure [locationAbility ability]
-  getActions iid window (StudentUnion attrs) = getActions iid window attrs
+  getAbilities iid window (StudentUnion attrs) = getAbilities iid window attrs
 
 instance (LocationRunner env) => RunMessage env StudentUnion where
   runMessage msg l@(StudentUnion attrs) = case msg of

@@ -26,8 +26,8 @@ newtype LiquidCourage = LiquidCourage AssetAttrs
 liquidCourage :: AssetCard LiquidCourage
 liquidCourage = asset LiquidCourage Cards.liquidCourage
 
-instance HasActions env LiquidCourage where
-  getActions iid NonFast (LiquidCourage a) = pure
+instance HasAbilities env LiquidCourage where
+  getAbilities iid NonFast (LiquidCourage a) = pure
     [ restrictedAbility
         (toSource a)
         1
@@ -39,7 +39,7 @@ instance HasActions env LiquidCourage where
         )
     | ownedBy a iid
     ]
-  getActions iid window (LiquidCourage attrs) = getActions iid window attrs
+  getAbilities iid window (LiquidCourage attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env LiquidCourage
 

@@ -25,10 +25,10 @@ fastAbility a = mkAbility a 1 . FastAbility . ExhaustCost $ toTarget a
 
 instance HasModifiersFor env ArcaneInitiate
 
-instance HasActions env ArcaneInitiate where
-  getActions iid FastPlayerWindow (ArcaneInitiate a) | ownedBy a iid =
+instance HasAbilities env ArcaneInitiate where
+  getAbilities iid FastPlayerWindow (ArcaneInitiate a) | ownedBy a iid =
     pure [fastAbility a]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env ArcaneInitiate where
   runMessage msg a@(ArcaneInitiate attrs) = case msg of

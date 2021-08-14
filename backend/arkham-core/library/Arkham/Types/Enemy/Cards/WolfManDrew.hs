@@ -26,8 +26,8 @@ wolfManDrew = enemyWith
 
 instance HasModifiersFor env WolfManDrew
 
-instance ActionRunner env => HasActions env WolfManDrew where
-  getActions i window (WolfManDrew attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env WolfManDrew where
+  getAbilities i window (WolfManDrew attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env WolfManDrew where
   runMessage msg (WolfManDrew attrs) = case msg of

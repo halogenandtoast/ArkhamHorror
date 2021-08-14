@@ -18,8 +18,8 @@ newtype RelicHunter3 = RelicHunter3 AssetAttrs
 relicHunter3 :: AssetCard RelicHunter3
 relicHunter3 = asset RelicHunter3 Cards.relicHunter3
 
-instance HasActions env RelicHunter3 where
-  getActions iid window (RelicHunter3 attrs) = getActions iid window attrs
+instance HasAbilities env RelicHunter3 where
+  getAbilities iid window (RelicHunter3 attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env RelicHunter3
 

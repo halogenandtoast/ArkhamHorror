@@ -32,13 +32,13 @@ shotgun4 = assetWith Shotgun4 Cards.shotgun4 (slotsL .~ [HandSlot, HandSlot])
 
 instance HasModifiersFor env Shotgun4
 
-instance HasActions env Shotgun4 where
-  getActions iid NonFast (Shotgun4 a) | ownedBy a iid = pure
+instance HasAbilities env Shotgun4 where
+  getAbilities iid NonFast (Shotgun4 a) | ownedBy a iid = pure
     [ mkAbility a 1 $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
     ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Shotgun4 where
   runMessage msg a@(Shotgun4 attrs) = case msg of

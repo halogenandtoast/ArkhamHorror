@@ -23,8 +23,8 @@ theArkhamWoods = agenda (1, A) TheArkhamWoods Cards.theArkhamWoods (Static 4)
 
 instance HasModifiersFor env TheArkhamWoods
 
-instance HasActions env TheArkhamWoods where
-  getActions i window (TheArkhamWoods x) = getActions i window x
+instance HasAbilities env TheArkhamWoods where
+  getAbilities i window (TheArkhamWoods x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env TheArkhamWoods where
   runMessage msg a@(TheArkhamWoods attrs@AgendaAttrs {..}) = case msg of

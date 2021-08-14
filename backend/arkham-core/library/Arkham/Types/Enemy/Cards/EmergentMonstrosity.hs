@@ -23,8 +23,8 @@ emergentMonstrosity =
 
 instance HasModifiersFor env EmergentMonstrosity
 
-instance ActionRunner env => HasActions env EmergentMonstrosity where
-  getActions i window (EmergentMonstrosity attrs) = getActions i window attrs
+instance ActionRunner env => HasAbilities env EmergentMonstrosity where
+  getAbilities i window (EmergentMonstrosity attrs) = getAbilities i window attrs
 
 instance EnemyRunner env => RunMessage env EmergentMonstrosity where
   runMessage msg (EmergentMonstrosity attrs@EnemyAttrs {..}) = case msg of

@@ -34,11 +34,11 @@ ability attrs =
     { abilityLimit = PlayerLimit PerTurn 1
     }
 
-instance ActionRunner env => HasActions env YourHouse where
-  getActions iid NonFast (YourHouse attrs@LocationAttrs {..})
+instance ActionRunner env => HasAbilities env YourHouse where
+  getAbilities iid NonFast (YourHouse attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs
     $ pure [locationAbility (ability attrs)]
-  getActions iid window (YourHouse attrs) = getActions iid window attrs
+  getAbilities iid window (YourHouse attrs) = getAbilities iid window attrs
 
 instance (LocationRunner env) => RunMessage env YourHouse where
   runMessage msg l@(YourHouse attrs@LocationAttrs {..}) = case msg of

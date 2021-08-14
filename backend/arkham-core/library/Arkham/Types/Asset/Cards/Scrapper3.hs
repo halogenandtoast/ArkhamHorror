@@ -27,10 +27,10 @@ newtype Scrapper3 = Scrapper3 AssetAttrs
 scrapper3 :: AssetCard Scrapper3
 scrapper3 = asset Scrapper3 Cards.scrapper3
 
-instance HasActions env Scrapper3 where
-  getActions iid (WhenSkillTest _) (Scrapper3 a) | ownedBy a iid = do
+instance HasAbilities env Scrapper3 where
+  getAbilities iid (WhenSkillTest _) (Scrapper3 a) | ownedBy a iid = do
     pure [ mkAbility a idx $ FastAbility $ ResourceCost 1 | idx <- [1 .. 2] ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance HasModifiersFor env Scrapper3
 

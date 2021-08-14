@@ -26,12 +26,12 @@ tryAndTryAgain3 = asset TryAndTryAgain3 Cards.tryAndTryAgain3
 ability :: AssetAttrs -> Ability
 ability a = mkAbility a 1 (ReactionAbility $ ExhaustCost (toTarget a))
 
-instance HasList CommittedCard env InvestigatorId => HasActions env TryAndTryAgain3 where
-  getActions iid (AfterFailSkillTest _ _) (TryAndTryAgain3 attrs) = do
+instance HasList CommittedCard env InvestigatorId => HasAbilities env TryAndTryAgain3 where
+  getAbilities iid (AfterFailSkillTest _ _) (TryAndTryAgain3 attrs) = do
     committedSkills <-
       filter ((== SkillType) . toCardType) . map unCommittedCard <$> getList iid
     pure [ ability attrs | notNull committedSkills ]
-  getActions iid window (TryAndTryAgain3 attrs) = getActions iid window attrs
+  getAbilities iid window (TryAndTryAgain3 attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env TryAndTryAgain3
 

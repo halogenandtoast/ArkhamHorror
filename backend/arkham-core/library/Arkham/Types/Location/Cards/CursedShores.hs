@@ -35,13 +35,13 @@ cursedShores = location
 
 instance HasModifiersFor env CursedShores
 
-instance ActionRunner env => HasActions env CursedShores where
-  getActions iid NonFast (CursedShores attrs@LocationAttrs {..})
+instance ActionRunner env => HasAbilities env CursedShores where
+  getAbilities iid NonFast (CursedShores attrs@LocationAttrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ pure
       [ locationAbility
           (mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 1)
       ]
-  getActions i window (CursedShores attrs) = getActions i window attrs
+  getAbilities i window (CursedShores attrs) = getAbilities i window attrs
 
 instance LocationRunner env => RunMessage env CursedShores where
   runMessage msg l@(CursedShores attrs@LocationAttrs {..}) = case msg of

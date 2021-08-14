@@ -26,8 +26,8 @@ internalInjury = treachery InternalInjury Cards.internalInjury
 
 instance HasModifiersFor env InternalInjury
 
-instance ActionRunner env => HasActions env InternalInjury where
-  getActions iid NonFast (InternalInjury a) =
+instance ActionRunner env => HasAbilities env InternalInjury where
+  getAbilities iid NonFast (InternalInjury a) =
     withTreacheryInvestigator a $ \tormented -> do
       investigatorLocationId <- getId @LocationId iid
       treacheryLocation <- getId tormented
@@ -35,7 +35,7 @@ instance ActionRunner env => HasActions env InternalInjury where
         [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 2
         | treacheryLocation == investigatorLocationId
         ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env InternalInjury where
   runMessage msg t@(InternalInjury attrs@TreacheryAttrs {..}) = case msg of

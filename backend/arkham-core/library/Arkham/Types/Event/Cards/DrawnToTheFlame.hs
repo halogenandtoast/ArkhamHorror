@@ -18,8 +18,8 @@ drawnToTheFlame = event DrawnToTheFlame Cards.drawnToTheFlame
 
 instance HasModifiersFor env DrawnToTheFlame
 
-instance HasActions env DrawnToTheFlame where
-  getActions i window (DrawnToTheFlame attrs) = getActions i window attrs
+instance HasAbilities env DrawnToTheFlame where
+  getAbilities i window (DrawnToTheFlame attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env DrawnToTheFlame where
   runMessage msg e@(DrawnToTheFlame attrs@EventAttrs {..}) = case msg of

@@ -34,13 +34,13 @@ stepsOfYhagharl = location
 
 instance HasModifiersFor env StepsOfYhagharl
 
-instance ActionRunner env => HasActions env StepsOfYhagharl where
-  getActions iid (WhenWouldLeave who lid) (StepsOfYhagharl attrs) | iid == who =
+instance ActionRunner env => HasAbilities env StepsOfYhagharl where
+  getAbilities iid (WhenWouldLeave who lid) (StepsOfYhagharl attrs) | iid == who =
     pure
       [ locationAbility (mkAbility attrs 1 ForcedAbility)
       | lid == locationId attrs
       ]
-  getActions iid window (StepsOfYhagharl attrs) = getActions iid window attrs
+  getAbilities iid window (StepsOfYhagharl attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env StepsOfYhagharl where
   runMessage msg l@(StepsOfYhagharl attrs) = case msg of

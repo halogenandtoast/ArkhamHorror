@@ -33,12 +33,12 @@ instance HasModifiersFor env DreamsOfRlyeh where
       else []
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env DreamsOfRlyeh where
-  getActions iid NonFast (DreamsOfRlyeh a) = pure
+instance HasAbilities env DreamsOfRlyeh where
+  getAbilities iid NonFast (DreamsOfRlyeh a) = pure
     [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1
     | treacheryOnInvestigator iid a
     ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env DreamsOfRlyeh where
   runMessage msg t@(DreamsOfRlyeh attrs@TreacheryAttrs {..}) = case msg of

@@ -121,8 +121,8 @@ instance HasCardDef AgendaAttrs where
     Nothing ->
       error $ "missing card def for agenda " <> show (unAgendaId $ agendaId e)
 
-instance HasActions env AgendaAttrs where
-  getActions _ _ _ = pure []
+instance HasAbilities env AgendaAttrs where
+  getAbilities _ _ _ = pure []
 
 instance HasStep AgendaAttrs AgendaStep where
   getStep = asks $ agendaStep . agendaSequence

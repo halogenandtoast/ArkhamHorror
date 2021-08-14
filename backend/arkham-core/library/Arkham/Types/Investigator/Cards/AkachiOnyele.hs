@@ -52,8 +52,8 @@ instance HasTokenValue env AkachiOnyele where
     $ TokenValue ElderSign (PositiveModifier 1)
   getTokenValue (AkachiOnyele attrs) iid token = getTokenValue attrs iid token
 
-instance InvestigatorRunner env => HasActions env AkachiOnyele where
-  getActions i window (AkachiOnyele attrs) = getActions i window attrs
+instance InvestigatorRunner env => HasAbilities env AkachiOnyele where
+  getAbilities i window (AkachiOnyele attrs) = getAbilities i window attrs
 
 instance
   ( HasCount UsesCount env (AssetId, UseType)

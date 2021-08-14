@@ -48,9 +48,9 @@ instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env FireAx
       pure $ toModifiers a [ DamageDealt 1 | resourceCount == 0 ]
   getModifiersFor _ _ _ = pure []
 
-instance HasSkillTest env => HasActions env FireAxe where
-  getActions iid NonFast (FireAxe a) | ownedBy a iid = pure [fightAbility a]
-  getActions iid (WhenSkillTest _) (FireAxe a) | ownedBy a iid = do
+instance HasSkillTest env => HasAbilities env FireAxe where
+  getAbilities iid NonFast (FireAxe a) | ownedBy a iid = pure [fightAbility a]
+  getAbilities iid (WhenSkillTest _) (FireAxe a) | ownedBy a iid = do
     msource <- getSkillTestSource
     let
       using = case msource of
@@ -58,7 +58,7 @@ instance HasSkillTest env => HasActions env FireAxe where
           | isSource a source -> True
         _ -> False
     pure [ reactionAbility a | using ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env FireAxe where
   runMessage msg a@(FireAxe attrs) = case msg of

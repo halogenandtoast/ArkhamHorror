@@ -22,11 +22,11 @@ researchLibrarian = ally ResearchLibrarian Cards.researchLibrarian (1, 1)
 
 instance HasModifiersFor env ResearchLibrarian
 
-instance HasActions env ResearchLibrarian where
-  getActions i (WhenEnterPlay target) (ResearchLibrarian x)
+instance HasAbilities env ResearchLibrarian where
+  getAbilities i (WhenEnterPlay target) (ResearchLibrarian x)
     | isTarget x target && ownedBy x i = pure
       [mkAbility (toSource x) 1 (ReactionAbility Free)]
-  getActions i window (ResearchLibrarian x) = getActions i window x
+  getAbilities i window (ResearchLibrarian x) = getAbilities i window x
 
 instance (AssetRunner env) => RunMessage env ResearchLibrarian where
   runMessage msg a@(ResearchLibrarian attrs) = case msg of

@@ -20,12 +20,12 @@ rabbitsFoot = accessory RabbitsFoot Cards.rabbitsFoot
 
 instance HasModifiersFor env RabbitsFoot
 
-instance HasActions env RabbitsFoot where
-  getActions iid (AfterFailSkillTest who _) (RabbitsFoot a) | iid == who = pure
+instance HasAbilities env RabbitsFoot where
+  getAbilities iid (AfterFailSkillTest who _) (RabbitsFoot a) | iid == who = pure
     [ mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a))
     | ownedBy a iid
     ]
-  getActions i window (RabbitsFoot x) = getActions i window x
+  getAbilities i window (RabbitsFoot x) = getAbilities i window x
 
 instance AssetRunner env => RunMessage env RabbitsFoot where
   runMessage msg a@(RabbitsFoot attrs) = case msg of

@@ -34,8 +34,8 @@ instance HasSet Trait env LocationId => HasModifiersFor env AscendingTheHillV2 w
     pure $ toModifiers attrs [ CannotPlaceClues | Altered `notMember` traits ]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env AscendingTheHillV2 where
-  getActions i window (AscendingTheHillV2 x) = getActions i window x
+instance HasAbilities env AscendingTheHillV2 where
+  getAbilities i window (AscendingTheHillV2 x) = getAbilities i window x
 
 instance (HasName env LocationId, ActRunner env) => RunMessage env AscendingTheHillV2 where
   runMessage msg a@(AscendingTheHillV2 attrs@ActAttrs {..}) = case msg of

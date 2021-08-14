@@ -30,12 +30,12 @@ instance HasModifiersFor env DigDeep2
 ability :: Int -> AssetAttrs -> Ability
 ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)
 
-instance HasActions env DigDeep2 where
-  getActions iid (WhenSkillTest SkillWillpower) (DigDeep2 a) = do
+instance HasAbilities env DigDeep2 where
+  getAbilities iid (WhenSkillTest SkillWillpower) (DigDeep2 a) = do
     pure [ ability 1 a | ownedBy a iid ]
-  getActions iid (WhenSkillTest SkillAgility) (DigDeep2 a) = do
+  getAbilities iid (WhenSkillTest SkillAgility) (DigDeep2 a) = do
     pure [ ability 2 a | ownedBy a iid ]
-  getActions _ _ _ = pure []
+  getAbilities _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env DigDeep2 where
   runMessage msg a@(DigDeep2 attrs) = case msg of

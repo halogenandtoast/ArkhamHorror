@@ -26,8 +26,8 @@ theCurseSpreads =
 
 instance HasModifiersFor env TheCurseSpreads
 
-instance HasActions env TheCurseSpreads where
-  getActions i window (TheCurseSpreads x) = getActions i window x
+instance HasAbilities env TheCurseSpreads where
+  getAbilities i window (TheCurseSpreads x) = getAbilities i window x
 
 getRougarou
   :: (MonadReader env m, HasId (Maybe StoryEnemyId) env CardCode)

@@ -332,8 +332,8 @@ testUnconnectedLocations f1 f2 = do
     (f2 . (symbolL .~ Triangle) . (revealedSymbolL .~ Triangle))
   pure (location1, location2)
 
-getActionsOf
-  :: ( HasActions GameEnv a
+getAbilitiesOf
+  :: ( HasAbilities GameEnv a
      , TestEntity a
      , MonadIO m
      , MonadReader env m
@@ -345,9 +345,9 @@ getActionsOf
   -> Window
   -> a
   -> m [Ability]
-getActionsOf investigator window e = do
+getAbilitiesOf investigator window e = do
   e' <- updated e
-  toGameEnv >>= runReaderT (getActions (toId investigator) window e')
+  toGameEnv >>= runReaderT (getAbilities (toId investigator) window e')
 
 getChaosBagTokens
   :: (HasGameRef env, MonadIO m, MonadReader env m) => m [TokenFace]

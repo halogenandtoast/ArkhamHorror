@@ -23,12 +23,12 @@ newtype ArchaicGlyphs = ArchaicGlyphs AssetAttrs
 archaicGlyphs :: AssetCard ArchaicGlyphs
 archaicGlyphs = asset ArchaicGlyphs Cards.archaicGlyphs
 
-instance HasActions env ArchaicGlyphs where
-  getActions iid NonFast (ArchaicGlyphs attrs) | ownedBy attrs iid = pure
+instance HasAbilities env ArchaicGlyphs where
+  getAbilities iid NonFast (ArchaicGlyphs attrs) | ownedBy attrs iid = pure
     [ mkAbility attrs 1 $ ActionAbility Nothing $ SkillIconCost 1 $ singleton
         SkillIntellect
     ]
-  getActions iid window (ArchaicGlyphs attrs) = getActions iid window attrs
+  getAbilities iid window (ArchaicGlyphs attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env ArchaicGlyphs
 

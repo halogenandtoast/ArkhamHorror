@@ -292,9 +292,9 @@ getHandSize attrs = do
   applyModifier (HandSize m) n = max 0 (n + m)
   applyModifier _ n = n
 
-getActionsForTurn
+getAbilitiesForTurn
   :: (MonadReader env m, HasModifiersFor env ()) => InvestigatorAttrs -> m Int
-getActionsForTurn attrs = do
+getAbilitiesForTurn attrs = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier 3 modifiers
  where
@@ -601,11 +601,11 @@ canCommitToAnotherLocation attrs = do
 
 instance HasModifiersFor env InvestigatorAttrs
 
-instance (EntityInstanceRunner env, HasSkillTest env) => HasActions env InvestigatorAttrs where
-  getActions iid window attrs | iid == investigatorId attrs = concat <$> for
+instance (EntityInstanceRunner env, HasSkillTest env) => HasAbilities env InvestigatorAttrs where
+  getAbilities iid window attrs | iid == investigatorId attrs = concat <$> for
     (attrs ^.. handL . traverse . _PlayerCard)
-    (getActions iid (InHandWindow iid window) . toCardInstance iid . PlayerCard)
-  getActions _ _ _ = pure []
+    (getAbilities iid (InHandWindow iid window) . toCardInstance iid . PlayerCard)
+  getAbilities _ _ _ = pure []
 
 instance HasTokenValue env InvestigatorAttrs where
   getTokenValue _ _ _ = error "should not be asking this here"
@@ -1027,7 +1027,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   AddToVictory (EnemyTarget eid) -> pure $ a & engagedEnemiesL %~ deleteSet eid
   -- TODO: WARNING: HERE BE DRAGONS
   ChooseInvestigate iid _source _action | iid == investigatorId -> do
-    actions <- getActions iid NonFast ()
+    actions <- getAbilities iid NonFast ()
     let
       investigateActions = mapMaybe
         (\ability -> case abilityType ability of
@@ -1568,7 +1568,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     push (CheckWindow iid [AfterEndTurn iid])
     pure $ a & endedTurnL .~ True
   BeginInvestigation -> do
-    actionsForTurn <- getActionsForTurn a
+    actionsForTurn <- getAbilitiesForTurn a
     pure
       $ a
       & (endedTurnL .~ False)
@@ -1679,7 +1679,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     modifiers' <- getModifiers (toSource a) (toTarget a)
     committedCardIds <- map unCommittedCardId <$> getSetList iid
     committedCardCodes <- mapSet unCommittedCardCode <$> getSet ()
-    actions <- getActions iid (WhenSkillTest skillType) ()
+    actions <- getAbilities iid (WhenSkillTest skillType) ()
     isScenarioAbility <- getIsScenarioAbility
     clueCount <- unClueCount <$> getCount investigatorLocation
     source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
@@ -1828,7 +1828,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     a <$ push (RunWindow iid windows)
   RunWindow iid windows | iid == investigatorId -> do
     actions <- fmap (nub . concat) <$> for windows $ \window ->
-      getActions iid window ()
+      getAbilities iid window ()
     playableCards <- getPlayableCards a windows
     if notNull playableCards || notNull actions
       then if any isForced actions
@@ -1983,7 +1983,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 ]
               else choices
             )
-      actions <- fmap concat <$> for cards $ \card' -> getActions
+      actions <- fmap concat <$> for cards $ \card' -> getAbilities
         iid
         (WhenAmongSearchedCards iid)
         (toCardInstance iid $ PlayerCard card')
@@ -2044,12 +2044,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       msgs <- checkWindows [AfterPassSkillTest mAction source iid n]
       a <$ pushAll msgs
   PlayerWindow iid additionalActions isAdditional | iid == investigatorId -> do
-    actions <- getActions iid NonFast ()
+    actions <- getAbilities iid NonFast ()
     if any isForcedAction actions
       then a <$ push (chooseOne iid $ map (UseAbility iid) actions)
       else do
-        fastActions <- getActions iid (DuringTurn iid) ()
-        playerWindowActions <- getActions iid FastPlayerWindow ()
+        fastActions <- getAbilities iid (DuringTurn iid) ()
+        playerWindowActions <- getAbilities iid FastPlayerWindow ()
         modifiers <- getModifiers
           (InvestigatorSource iid)
           (InvestigatorTarget iid)
@@ -2109,12 +2109,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             )
           )
   PlayerWindow iid additionalActions isAdditional | iid /= investigatorId -> do
-    actions <- getActions iid NonFast ()
+    actions <- getAbilities iid NonFast ()
     if any isForcedAction actions
       then pure a -- handled by active player
       else do
-        fastActions <- getActions investigatorId (DuringTurn iid) ()
-        playerWindowActions <- getActions investigatorId FastPlayerWindow ()
+        fastActions <- getAbilities investigatorId (DuringTurn iid) ()
+        playerWindowActions <- getAbilities investigatorId FastPlayerWindow ()
         asIfInHandCards <- getAsIfInHandCards a
         let
           handCards = investigatorHand <> asIfInHandCards

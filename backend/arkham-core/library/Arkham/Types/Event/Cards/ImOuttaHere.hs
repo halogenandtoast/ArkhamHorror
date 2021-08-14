@@ -17,8 +17,8 @@ newtype ImOuttaHere = ImOuttaHere EventAttrs
 imOuttaHere :: EventCard ImOuttaHere
 imOuttaHere = event ImOuttaHere Cards.imOuttaHere
 
-instance HasActions env ImOuttaHere where
-  getActions iid window (ImOuttaHere attrs) = getActions iid window attrs
+instance HasAbilities env ImOuttaHere where
+  getAbilities iid window (ImOuttaHere attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env ImOuttaHere
 

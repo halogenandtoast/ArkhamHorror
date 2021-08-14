@@ -30,8 +30,8 @@ findingAWayInside = act
   Cards.findingAWayInside
   (Just $ GroupClueCost (Static 2) Nothing)
 
-instance HasActions env FindingAWayInside where
-  getActions i window (FindingAWayInside x) = getActions i window x
+instance HasAbilities env FindingAWayInside where
+  getAbilities i window (FindingAWayInside x) = getAbilities i window x
 
 instance ActRunner env => RunMessage env FindingAWayInside where
   runMessage msg a@(FindingAWayInside attrs@ActAttrs {..}) = case msg of

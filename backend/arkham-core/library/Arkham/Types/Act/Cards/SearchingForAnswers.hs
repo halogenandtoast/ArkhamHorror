@@ -27,9 +27,9 @@ searchingForAnswers :: ActCard SearchingForAnswers
 searchingForAnswers =
   act (1, A) SearchingForAnswers Cards.searchingForAnswers Nothing
 
-instance HasActions env SearchingForAnswers where
-  getActions iid window (SearchingForAnswers attrs) =
-    getActions iid window attrs
+instance HasAbilities env SearchingForAnswers where
+  getAbilities iid window (SearchingForAnswers attrs) =
+    getAbilities iid window attrs
 
 instance ActRunner env => RunMessage env SearchingForAnswers where
   runMessage msg a@(SearchingForAnswers attrs@ActAttrs {..}) = case msg of

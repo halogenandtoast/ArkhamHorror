@@ -35,10 +35,10 @@ ability attrs eid = base
     1
     (ReactionAbility $ Costs [ExhaustCost (toTarget attrs), ResourceCost 1])
 
-instance HasActions env ZoeysCross where
-  getActions iid (AfterEnemyEngageInvestigator who eid) (ZoeysCross a)
+instance HasAbilities env ZoeysCross where
+  getAbilities iid (AfterEnemyEngageInvestigator who eid) (ZoeysCross a)
     | ownedBy a iid && iid == who = pure [ability a eid]
-  getActions i window (ZoeysCross x) = getActions i window x
+  getAbilities i window (ZoeysCross x) = getAbilities i window x
 
 instance (AssetRunner env) => RunMessage env ZoeysCross where
   runMessage msg a@(ZoeysCross attrs) = case msg of

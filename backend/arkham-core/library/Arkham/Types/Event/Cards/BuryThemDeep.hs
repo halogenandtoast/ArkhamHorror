@@ -19,8 +19,8 @@ newtype BuryThemDeep = BuryThemDeep EventAttrs
 buryThemDeep :: EventCard BuryThemDeep
 buryThemDeep = event BuryThemDeep Cards.buryThemDeep
 
-instance HasActions env BuryThemDeep where
-  getActions iid window (BuryThemDeep attrs) = getActions iid window attrs
+instance HasAbilities env BuryThemDeep where
+  getAbilities iid window (BuryThemDeep attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env BuryThemDeep
 

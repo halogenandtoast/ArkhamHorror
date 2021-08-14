@@ -15,7 +15,7 @@ import Arkham.Types.Target
 
 newtype AcolyteOfUmordhoth = AcolyteOfUmordhoth EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasActions)
 
 acolyteOfUmordhoth :: EnemyCard AcolyteOfUmordhoth
 acolyteOfUmordhoth = enemyWith
@@ -33,9 +33,6 @@ instance HasCount CardCount env InvestigatorId => HasModifiersFor env AcolyteOfU
         (\iid -> (== 0) . unCardCount <$> getCount iid)
       pure $ toModifiers a [ CannotBeEvaded | anyWithoutCards ]
   getModifiersFor _ _ _ = pure []
-
-instance ActionRunner env => HasActions env AcolyteOfUmordhoth where
-  getActions i window (AcolyteOfUmordhoth attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env AcolyteOfUmordhoth where
   runMessage msg (AcolyteOfUmordhoth attrs) =

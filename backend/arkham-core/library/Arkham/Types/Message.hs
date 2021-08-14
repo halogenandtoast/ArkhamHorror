@@ -111,11 +111,11 @@ data DeckSignifier = InvestigatorDeck InvestigatorId | EncounterDeck
 -- cards that have been set aside
 
 data Message
-    = UseAbility InvestigatorId Ability
-    | AddAct ActId
+    = AddAct ActId
     | AddAgenda AgendaId
     | AddCampaignCardToDeck InvestigatorId CardDef
     | AddCampaignCardToEncounterDeck CardDef
+    | AddCardToScenarioDeck Card
     | AddConnection LocationId LocationSymbol
     | AddDirectConnection LocationId LocationId
     | AddFocusedToHand InvestigatorId Target CardId
@@ -127,7 +127,6 @@ data Message
     | AddToHand InvestigatorId Card
     | AddToHandFromDeck InvestigatorId CardId
     | AddToScenarioDeck Target
-    | AddCardToScenarioDeck Card
     | AddToVictory Target
     | AddToken TokenFace
     | AddTraits Target [Trait]
@@ -143,14 +142,15 @@ data Message
     | AfterEnterLocation InvestigatorId LocationId
     | AfterEvadeEnemy InvestigatorId EnemyId
     | AfterRevelation InvestigatorId TreacheryId
+    | AfterSkillTestEnds Source Target Int
     | AllCheckHandSize
     | AllDrawCardAndResource
     | AllDrawEncounterCard
     | AllInvestigatorsResigned
     | AllRandomDiscard
-    | AskPlayer Message
     | Ask InvestigatorId Question
     | AskMap (HashMap InvestigatorId Question)
+    | AskPlayer Message
     | AssetDamage AssetId Source Int Int
     | AssetDefeated AssetId
     | AttachAsset AssetId Target
@@ -171,49 +171,52 @@ data Message
     | BeginUpkeep
     | Blanked Message
     | CampaignStep (Maybe CampaignStep)
-    | CancelNext MessageType
-    | CancelSkillEffects
-    | CancelHorror InvestigatorId Int
     | CancelDamage InvestigatorId Int
     | CancelFailedByModifierEffects
+    | CancelHorror InvestigatorId Int
+    | CancelNext MessageType
+    | CancelSkillEffects
+    | CardLabel CardCode [Message]
+    | CheckAdditionalActionCosts InvestigatorId Target Source Action [Message]
     | CheckAttackOfOpportunity InvestigatorId Bool
     | CheckDefeated Source
     | CheckHandSize InvestigatorId
     | CheckWindow InvestigatorId [Window]
-    | ChooseOneRewardByEachPlayer [CardDef] [InvestigatorId]
-    | RunWindow InvestigatorId [Window]
     | ChooseAndDiscardAsset InvestigatorId AssetMatcher
     | ChooseAndDiscardCard InvestigatorId
     | ChooseEndTurn InvestigatorId
-    | ChooseInvestigate InvestigatorId Source Bool
     | ChooseEvadeEnemy InvestigatorId Source SkillType Bool
     | ChooseFightEnemy InvestigatorId Source SkillType (HashSet Trait) Bool
     | ChooseFightEnemyNotEngagedWithInvestigator InvestigatorId Source SkillType Bool
+    | ChooseInvestigate InvestigatorId Source Bool
     | ChooseLeadInvestigator
+    | ChooseOneRewardByEachPlayer [CardDef] [InvestigatorId]
     | ChoosePlayer InvestigatorId ChoosePlayerChoice
     | ChoosePlayerOrder [InvestigatorId] [InvestigatorId]
     | ChooseRandomLocation Target (HashSet LocationId)
-    | ChosenRandomLocation Target LocationId
     | ChooseTokenGroups Source InvestigatorId ChaosBagStep
+    | ChosenEvadeEnemy Source EnemyId
+    | ChosenRandomLocation Target LocationId
     | CommitCard InvestigatorId CardId
     | Continue Text
     | CreateEffect CardCode (Maybe (EffectMetadata Message)) Source Target
     | CreateEnemy Card
     | CreateEnemyAt Card LocationId (Maybe Target)
-    | CreatedEnemyAt EnemyId LocationId Target
     | CreateEnemyAtLocationMatching Card LocationMatcher
     | CreateEnemyEngagedWithPrey Card
     | CreatePayAbilityCostEffect Ability Source Target
-    | CreateWindowModifierEffect EffectWindow (EffectMetadata Message) Source Target
-    | CreateTokenEffect (EffectMetadata Message) Source Token
     | CreateStoryAssetAt Card LocationId
     | CreateStoryAssetAtLocationMatching Card LocationMatcher
+    | CreateTokenEffect (EffectMetadata Message) Source Token
     | CreateTokenValueEffect Int Source Target
     | CreateWeaknessInThreatArea Card InvestigatorId
+    | CreateWindowModifierEffect EffectWindow (EffectMetadata Message) Source Target
     | CreatedEffect EffectId (Maybe (EffectMetadata Message)) Source Target Window
+    | CreatedEnemyAt EnemyId LocationId Target
     | CrossOutRecord CampaignLogKey
     | Damage Target Source Int
     | DeckHasNoCards InvestigatorId (Maybe Target)
+    | DefeatEnemy EnemyId InvestigatorId Source
     | DisableEffect EffectId
     | Discard Target
     | DiscardCard InvestigatorId CardId
@@ -222,8 +225,8 @@ data Message
     | DiscardTopOfEncounterDeck InvestigatorId Int (Maybe Target)
     | DiscardTopOfEncounterDeckWithDiscardedCards InvestigatorId Int (Maybe Target) [EncounterCard]
     | Discarded Target Card
-    | DiscardedTopOfEncounterDeck InvestigatorId [EncounterCard] Target
     | DiscardedTopOfDeck InvestigatorId [PlayerCard] Target
+    | DiscardedTopOfEncounterDeck InvestigatorId [EncounterCard] Target
     | DiscoverClues InvestigatorId LocationId Int (Maybe Action)
     | DiscoverCluesAtLocation InvestigatorId LocationId Int (Maybe Action)
     | DisengageEnemy InvestigatorId EnemyId
@@ -231,24 +234,23 @@ data Message
     | DrawAnotherToken InvestigatorId
     | DrawCards InvestigatorId Int Bool
     | DrawEncounterCards Target Int -- Meant to allow events to handle (e.g. first watch)
+    | DrawStartingHand InvestigatorId
     | DrawToken InvestigatorId Token
     | DrewPlayerEnemy InvestigatorId Card
     | DrewTreachery InvestigatorId Card
     | DrivenInsane InvestigatorId
     | EmptyDeck InvestigatorId
-    | EndPhase
     | EndCheckWindow
     | EndEnemy
     | EndInvestigation
     | EndMythos
     | EndOfGame
-    | Exile Target
-    | Exiled Target Card
-    | ScenarioResolution Resolution
     | EndOfScenario
+    | EndPhase
     | EndRound
     | EndRoundWindow
     | EndSearch InvestigatorId Source
+    | EndSetup
     | EndTurn InvestigatorId
     | EndUpkeep
     | EnemiesAttack
@@ -257,15 +259,13 @@ data Message
     | EnemyAttacks [Message]
     | EnemyCheckEngagement EnemyId
     | EnemyDamage EnemyId InvestigatorId Source Int
-    | EnemySetDamage EnemyId Source Int
-    | DefeatEnemy EnemyId InvestigatorId Source
     | EnemyDefeated EnemyId InvestigatorId LocationId CardCode Source [Trait]
     | EnemyEngageInvestigator EnemyId InvestigatorId
+    | EnemyEntered EnemyId LocationId
     | EnemyEvaded InvestigatorId EnemyId
     | EnemyMove EnemyId LocationId LocationId
-    | EngagedEnemyMove EnemyId LocationId LocationId
-    | EnemyEntered EnemyId LocationId
     | EnemySetBearer EnemyId BearerId
+    | EnemySetDamage EnemyId Source Int
     | EnemySpawn (Maybe InvestigatorId) LocationId EnemyId
     | EnemySpawnAtLocationMatching (Maybe InvestigatorId) LocationMatcher EnemyId
     | EnemySpawnEngagedWithPrey EnemyId
@@ -273,20 +273,27 @@ data Message
     | EnemySpawnedAt LocationId EnemyId
     | EnemyWillAttack InvestigatorId EnemyId DamageStrategy
     | EngageEnemy InvestigatorId EnemyId Bool
+    | EngagedEnemyMove EnemyId LocationId LocationId
     | EvadeEnemy InvestigatorId EnemyId Source SkillType Bool
+    | EvadeLabel EnemyId [Message]
     | Exhaust Target
+    | Exile Target
+    | Exiled Target Card
     | FailSkillTest
     | FailedAttackEnemy InvestigatorId EnemyId
     | FailedSkillTest InvestigatorId (Maybe Action) Source Target SkillType Int
     | FightEnemy InvestigatorId EnemyId Source SkillType Bool
     | FindAndDrawEncounterCard InvestigatorId CardMatcher
     | FindEncounterCard InvestigatorId Target CardMatcher
+    | FinishedUpgradingDecks
     | FinishedWithMulligan InvestigatorId
     | FlavorText (Maybe Text) [Text]
+    | Flip Source Target
     | FocusCards [Card]
     | FocusTargets [Target]
     | FocusTokens [Token]
     | Force Message
+    | ForceTokenDraw TokenFace
     | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard
     | FoundEncounterCard InvestigatorId Target EncounterCard
     | FoundEncounterCardFrom InvestigatorId Target EncounterCardSource EncounterCard
@@ -299,23 +306,18 @@ data Message
     | HealAllDamage Target
     | HealDamage Target Int
     | HealHorror Target Int
-    | HuntersMove
     | HunterMove EnemyId
+    | HuntersMove
     | InDiscard InvestigatorId Message
     | InHand InvestigatorId Message
     | InitDeck InvestigatorId (Deck PlayerCard) -- used to initialize the deck for the campaign
-    | UpgradeDeck InvestigatorId (Deck PlayerCard) -- used to upgrade deck during campaign
-    | FinishedUpgradingDecks
-    | Flip Source Target
-    | InitiatePlayCardAsChoose InvestigatorId CardId [Card] [Message] Bool
-    | InitiatePlayCardAs InvestigatorId CardId Card [Message] Bool
     | InitiatePlayCard InvestigatorId CardId (Maybe Target) Bool
-    | InitiatePlayFastEvent InvestigatorId CardId (Maybe Target) Bool
+    | InitiatePlayCardAs InvestigatorId CardId Card [Message] Bool
+    | InitiatePlayCardAsChoose InvestigatorId CardId [Card] [Message] Bool
     | InitiatePlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
-    | CheckAdditionalActionCosts InvestigatorId Target Source Action [Message]
+    | InitiatePlayFastEvent InvestigatorId CardId (Maybe Target) Bool
     | Investigate InvestigatorId LocationId Source SkillType Bool
-    | -- | uses the internal method and then checks defeat
-      InvestigatorAssignDamage InvestigatorId Source DamageStrategy Int Int
+    | InvestigatorAssignDamage InvestigatorId Source DamageStrategy Int Int -- | uses the internal method and then checks defeat
     | InvestigatorCommittedCard InvestigatorId CardId
     | InvestigatorCommittedSkill InvestigatorId SkillId
     | InvestigatorDamage InvestigatorId Source Int Int
@@ -326,47 +328,43 @@ data Message
     | InvestigatorDiscardAllClues InvestigatorId
     | InvestigatorDiscoverClues InvestigatorId LocationId Int (Maybe Action)
     | InvestigatorDiscoverCluesAtTheirLocation InvestigatorId Int (Maybe Action)
-    | -- | meant to be used internally by investigators                  ^ damage ^ horror
-      InvestigatorDoAssignDamage InvestigatorId Source DamageStrategy Int Int [Target] [Target]
-    | InvestigatorDrawEncounterCard InvestigatorId
+    | InvestigatorDoAssignDamage InvestigatorId Source DamageStrategy Int Int [Target] [Target] -- | meant to be used internally by investigators                  ^ damage ^ horror
     | InvestigatorDoDrawEncounterCard InvestigatorId
+    | InvestigatorDrawEncounterCard InvestigatorId
     | InvestigatorDrawEnemy InvestigatorId LocationId EnemyId
     | InvestigatorDrewEncounterCard InvestigatorId EncounterCard
     | InvestigatorDrewPlayerCard InvestigatorId PlayerCard
     | InvestigatorEliminated InvestigatorId
     | InvestigatorKilled InvestigatorId
     | InvestigatorMulligan InvestigatorId
-    | InvestigatorsMulligan
-    | -- | This message exists in case the number of clues will change
-      InvestigatorPlaceAllCluesOnLocation InvestigatorId
+    | InvestigatorPlaceAllCluesOnLocation InvestigatorId -- | This message exists in case the number of clues will change
     | InvestigatorPlaceCluesOnLocation InvestigatorId Int
     | InvestigatorPlayAsset InvestigatorId AssetId [SlotType] [Trait]
-    | InvestigatorPlayedAsset InvestigatorId AssetId [SlotType] [Trait]
     | InvestigatorPlayDynamicAsset InvestigatorId AssetId [SlotType] [Trait] Int
     | InvestigatorPlayDynamicEvent InvestigatorId EventId Int
     | InvestigatorPlayEvent InvestigatorId EventId (Maybe Target) [Window]
+    | InvestigatorPlayedAsset InvestigatorId AssetId [SlotType] [Trait]
     | InvestigatorResigned InvestigatorId
     | InvestigatorSpendClues InvestigatorId Int
     | InvestigatorTakeDamage InvestigatorId Source Int Int
     | InvestigatorWhenDefeated Source InvestigatorId
     | InvestigatorWhenEliminated Source InvestigatorId
+    | InvestigatorsMulligan
     | Label Text [Message]
-    | CardLabel CardCode [Message]
     | LoadDeck InvestigatorId (Deck PlayerCard) -- used to reset the deck of the investigator
     | LookAtRevealed Source Target
     | LookAtTopOfDeck InvestigatorId Target Int
     | LoseActions InvestigatorId Source Int
-    | LoseResources InvestigatorId Int
     | LoseAllResources InvestigatorId
-    | SpendActions InvestigatorId Source Int
+    | LoseResources InvestigatorId Int
     | Move InvestigatorId LocationId LocationId
     | MoveAction InvestigatorId LocationId Cost Bool
     | MoveAllCluesTo Target
     | MoveAllTo LocationId
     | MoveFrom InvestigatorId LocationId
     | MoveTo InvestigatorId LocationId
-    | MoveToward Target LocationMatcher
     | MoveTopOfDeckToBottom Source DeckSignifier Int
+    | MoveToward Target LocationMatcher
     | MoveUntil LocationId Target
     | MovedBy InvestigatorId Source
     | NextAct ActId ActId
@@ -374,11 +372,11 @@ data Message
     | NextAgenda AgendaId AgendaId
     | NextCampaignStep (Maybe CampaignStep)
     | NextChaosBagStep Source (Maybe InvestigatorId) RequestedTokenStrategy
+    | PaidAbilityCost InvestigatorId (Maybe Action) Payment
     | PassSkillTest
     | PassedSkillTest InvestigatorId (Maybe Action) Source Target SkillType Int
     | PayAbilityCost Source InvestigatorId (Maybe Action) Window Cost
     | PayAbilityCostFinished EffectId Source InvestigatorId
-    | PaidAbilityCost InvestigatorId (Maybe Action) Payment
     | PayCardCost InvestigatorId CardId
     | PayDynamicCardCost InvestigatorId CardId Int [Message]
     | PayForCardAbility InvestigatorId Source (Maybe AbilityMetadata) Int
@@ -390,13 +388,14 @@ data Message
     | PlaceEnemyInVoid EnemyId
     | PlaceLocation LocationId CardDef
     | PlaceLocationMatching LocationMatcher
+    | PlaceOnBottomOfDeck InvestigatorId PlayerCard
     | PlaceResources Target Int
     | PlaceUnderneath Target [Card]
     | PlacedLocation Name CardCode LocationId
     | PlacedLocationDirection LocationId Direction LocationId
     | PlayCard InvestigatorId CardId (Maybe Target) Bool
-    | PlayFastEvent InvestigatorId CardId (Maybe Target) [Window]
     | PlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
+    | PlayFastEvent InvestigatorId CardId (Maybe Target) [Window]
     | PlayedCard InvestigatorId Card
     | PlayerWindow InvestigatorId [Message] Bool
     | PutCardIntoPlay InvestigatorId Card (Maybe Target)
@@ -412,8 +411,8 @@ data Message
     | RecordSet CampaignLogKey [CardCode]
     | RefillSlots InvestigatorId SlotType [AssetId]
     | Remember ScenarioLogKey
-    | RemoveAllCopiesOfCardFromGame InvestigatorId CardCode
     | RemoveAllClues Target
+    | RemoveAllCopiesOfCardFromGame InvestigatorId CardCode
     | RemoveAllDoom
     | RemoveCampaignCardFromDeck InvestigatorId CardCode
     | RemoveCardFromHand InvestigatorId CardId
@@ -424,11 +423,13 @@ data Message
     | RemoveFromDiscard InvestigatorId CardId
     | RemoveFromEncounterDiscard EncounterCard
     | RemoveFromGame Target
-    | RemovedFromGame Card
     | RemoveLocation LocationId
     | RemoveTraits Target [Trait]
+    | RemovedFromGame Card
     | RemovedFromPlay Source
     | ReplaceCurrentDraw Source InvestigatorId ChaosBagStep
+    | ReplaceInvestigatorAsset InvestigatorId Card
+    | ReplacedInvestigatorAsset InvestigatorId AssetId
     | RequestSetAsideCard Source CardCode
     | RequestTokens Source (Maybe InvestigatorId) Int RequestedTokenStrategy
     | RequestedEncounterCard Source (Maybe EncounterCard)
@@ -460,6 +461,8 @@ data Message
     | RunDrawFromBag Source (Maybe InvestigatorId) RequestedTokenStrategy
     | RunSkillTest InvestigatorId
     | RunSkillTestSourceNotification InvestigatorId Source
+    | RunWindow InvestigatorId [Window]
+    | ScenarioResolution Resolution
     | SearchCollectionForRandom InvestigatorId Source CardMatcher
     | SearchDeckForTraits InvestigatorId Target [Trait]
     | SearchDiscard InvestigatorId Target [Trait]
@@ -467,22 +470,20 @@ data Message
     | SearchTopOfDeckFound InvestigatorId Target DeckSignifier Card
     | SearchTopOfDeckNoneFound InvestigatorId Target
     | SetActions InvestigatorId Source Int
+    | SetActiveInvestigator InvestigatorId
     | SetEncounterDeck (Deck EncounterCard)
+    | SetLocationAsIf InvestigatorId LocationId
     | SetLocationLabel LocationId Text
     | SetRole InvestigatorId ClassSymbol
-    | ForceTokenDraw TokenFace
-    | SetActiveInvestigator InvestigatorId
     | SetTokens [TokenFace]
     | SetTokensForScenario
     | Setup
-    | EndSetup
     | SetupInvestigators
     | SetupStep Int
     | ShuffleAllFocusedIntoDeck InvestigatorId Target
     | ShuffleAllInEncounterDiscardBackIn CardCode
     | ShuffleBackIntoEncounterDeck Target
     | ShuffleCardsIntoDeck InvestigatorId [PlayerCard]
-    | PlaceOnBottomOfDeck InvestigatorId PlayerCard
     | ShuffleDiscardBackIn InvestigatorId
     | ShuffleEncounterDiscardBackIn
     | ShuffleIntoDeck InvestigatorId Target
@@ -492,11 +493,11 @@ data Message
     | SkillTestAsk Message
     | SkillTestCommitCard InvestigatorId CardId
     | SkillTestEnds Source
-    | AfterSkillTestEnds Source Target Int
     | SkillTestResults Int Int Int Int
     | SkillTestUncommitCard InvestigatorId CardId
     | SpawnEnemyAt Card LocationId
     | SpawnEnemyAtEngagedWith Card LocationId InvestigatorId
+    | SpendActions InvestigatorId Source Int
     | SpendClues Int [InvestigatorId]
     | SpendResources InvestigatorId Int
     | SpendUses Target UseType Int
@@ -508,16 +509,11 @@ data Message
     | Surge InvestigatorId Source
     | TakeAction InvestigatorId (Maybe Action) Cost
     | TakeControlOfAsset InvestigatorId AssetId
-    | ReplaceInvestigatorAsset InvestigatorId Card
-    | ReplacedInvestigatorAsset InvestigatorId AssetId
     | TakeControlOfSetAsideAsset InvestigatorId Card
     | TakeResources InvestigatorId Int Bool
-    | DrawStartingHand InvestigatorId
     | TakeStartingResources InvestigatorId
     | TakenAction InvestigatorId Action
     | TargetLabel Target [Message]
-    | EvadeLabel EnemyId [Message]
-    | ChosenEvadeEnemy Source EnemyId
     | TriggerSkillTest InvestigatorId
     | TryEvadeEnemy InvestigatorId EnemyId Source SkillType
     | UnengageNonMatching InvestigatorId [Trait]
@@ -525,15 +521,17 @@ data Message
     | UnfocusTargets
     | UnfocusTokens
     | UnsetActiveCard
+    | UpgradeDeck InvestigatorId (Deck PlayerCard) -- used to upgrade deck during campaign
+    | UseAbility InvestigatorId Ability
     | UseCardAbility InvestigatorId Source [Window] Int Payment
+    | UseCardAbilityChoice InvestigatorId Source [Window] Int Payment AbilityMetadata
     | UseLimitedAbility InvestigatorId Ability
     | UseScenarioSpecificAbility InvestigatorId (Maybe Target) Int
     | When Message
     | WhenAttackEnemy InvestigatorId EnemyId
-    | WhenWillEnterLocation InvestigatorId LocationId
     | WhenEnterLocation InvestigatorId LocationId
-    | SetLocationAsIf InvestigatorId LocationId
     | WhenEvadeEnemy InvestigatorId EnemyId
+    | WhenWillEnterLocation InvestigatorId LocationId
     | Will Message
     -- must be called on instance directly
     | SetOriginalCardCode CardCode

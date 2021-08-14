@@ -13,7 +13,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype WendysAmulet = WendysAmulet AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasActions)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wendysAmulet :: AssetCard WendysAmulet
@@ -30,9 +30,6 @@ instance HasId InvestigatorId env EventId => HasModifiersFor env WendysAmulet wh
       a
       [ PlaceOnBottomOfDeckInsteadOfDiscard | ownedBy a owner ]
   getModifiersFor _ _ _ = pure []
-
-instance HasActions env WendysAmulet where
-  getActions i window (WendysAmulet x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env WendysAmulet where
   runMessage msg (WendysAmulet attrs) = WendysAmulet <$> runMessage msg attrs

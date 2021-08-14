@@ -27,20 +27,8 @@ $(buildEntity "Asset")
 createAsset :: IsCard a => a -> Asset
 createAsset a = lookupAsset (toCardCode a) (AssetId $ toCardId a)
 
-instance
-  ( ActionRunner env
-  , HasSkillTest env
-  , CanCheckPlayable env
-  )
-  => HasActions env Asset where
-  getActions iid window x = do
-    inPlay <- member (toId x) <$> select AnyAsset
-    modifiers' <- if inPlay
-      then getModifiers (toSource x) (toTarget x)
-      else pure []
-    if Blank `elem` modifiers'
-      then getActions iid window (toAttrs x)
-      else defaultGetActions iid window x
+instance HasActions Asset where
+  getActions = genericGetActions
 
 instance
   ( HasId LocationId env InvestigatorId
@@ -63,7 +51,6 @@ instance
   ( HasList CommittedCard env InvestigatorId
   , HasId LeadInvestigatorId env ()
   , CanCheckPlayable env
-  , Query LocationMatcher env
   , AssetRunner env
   )
   => RunMessage env Asset where

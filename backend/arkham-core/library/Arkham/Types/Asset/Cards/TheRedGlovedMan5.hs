@@ -37,7 +37,8 @@ instance HasActions TheRedGlovedMan5 where
       x
       1
       OwnsThis
-      (ReactionAbility (EnterPlay (toTarget x)) Free)
+      (ReactionAbility (AssetEntersPlay Timing.When (AssetWithId $ toId x)) Free
+      )
     , restrictedAbility x 2 OwnsThis
       $ ForcedAbility (PhaseEnds Timing.When $ PhaseIs MythosPhase)
     ]
@@ -58,36 +59,44 @@ skillTypes =
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env TheRedGlovedMan5 where
   runMessage msg a@(TheRedGlovedMan5 (attrs `With` metadata)) = case msg of
-    UseCardAbility iid source windows 1 p | isSource attrs source ->
-      case metadata of
-        Metadata xs | length xs < 2 -> a <$ push
-          (chooseOne
-            iid
-            [ Label label [UseCardAbility iid source windows 1 p]
-            | (label, s) <- skillTypes
+    UseCardAbility iid source windows 1 p | isSource attrs source -> a <$ push
+      (chooseOne
+        iid
+        [ Label
+            label
+            [ UseCardAbilityChoice
+                iid
+                source
+                windows
+                1
+                p
+                (SkillChoiceMetadata s)
             ]
-          )
-    UseCardAbility iid source (Just (SkillChoiceMetadata [c])) 1 p
-      | isSource attrs source -> a <$ push
-        (chooseOne
-          iid
-          [ Label
-              label
-              [ UseCardAbility
-                  iid
-                  source
-                  (Just (SkillChoiceMetadata [c, s]))
-                  1
-                  p
+        | (label, s) <- skillTypes
+        ]
+      )
+    UseCardAbilityChoice iid source windows 1 p (SkillChoiceMetadata c)
+      | isSource attrs source -> case metadata of
+        Metadata [] -> do
+          push
+            (chooseOne
+              iid
+              [ Label
+                  label
+                  [ UseCardAbilityChoice
+                      iid
+                      source
+                      windows
+                      1
+                      p
+                      (SkillChoiceMetadata s)
+                  ]
+              | (label, s) <- filter ((/= c) . snd) skillTypes
               ]
-          | (label, s) <- filter ((/= c) . snd) skillTypes
-          ]
-        )
-    UseCardAbility _ source (Just (SkillChoiceMetadata [c, d])) 1 _
-      | isSource attrs source
-      -> pure $ TheRedGlovedMan5 $ attrs `with` Metadata [c, d]
-    UseCardAbility _ source (Just _) 1 _ | isSource attrs source ->
-      error "too many skills"
+            )
+          pure $ TheRedGlovedMan5 $ attrs `with` Metadata [c]
+        Metadata [x] -> pure $ TheRedGlovedMan5 $ attrs `with` Metadata [c, x]
+        _ -> error "Only two skills for the red gloved man"
     UseCardAbility _ source _ 2 _ | isSource attrs source ->
       a <$ push (Discard $ toTarget attrs)
     _ -> TheRedGlovedMan5 . (`with` metadata) <$> runMessage msg attrs

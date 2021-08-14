@@ -15,7 +15,7 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.LocationId
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (RevealLocation)
 import Arkham.Types.Message
 import Arkham.Types.Target
 

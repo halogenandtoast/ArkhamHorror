@@ -13,10 +13,10 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
-import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
 
 newtype ZebulonWhateley = ZebulonWhateley AssetAttrs
   deriving anyclass IsAsset
@@ -26,15 +26,17 @@ zebulonWhateley :: AssetCard ZebulonWhateley
 zebulonWhateley =
   allyWith ZebulonWhateley Cards.zebulonWhateley (1, 4) (isStoryL .~ True)
 
-ability :: AssetAttrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (ReactionAbility $ ExhaustCost (toTarget attrs))
-
-instance HasActions env ZebulonWhateley where
-  getActions iid (AfterPassSkillTest _ (TreacherySource _) who _) (ZebulonWhateley attrs)
-    | iid == who
-    = pure [ ability attrs | ownedBy attrs iid ]
-  getActions iid window (ZebulonWhateley attrs) = getActions iid window attrs
+instance HasActions ZebulonWhateley where
+  getActions (ZebulonWhateley x) =
+    [ restrictedAbility x 1 OwnsThis $ ReactionAbility
+        (SkillTestResult
+          Timing.After
+          You
+          (SkillTestOnTreachery AnyTreachery)
+          (SuccessResult AnyValue)
+        )
+        ExhaustThis
+    ]
 
 instance HasModifiersFor env ZebulonWhateley where
   getModifiersFor _ (InvestigatorTarget iid) (ZebulonWhateley a) =

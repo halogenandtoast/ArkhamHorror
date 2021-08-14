@@ -768,6 +768,7 @@ type CanCheckPlayable env
     , Query InvestigatorMatcher env
     , Query EnemyMatcher env
     , Query SkillMatcher env
+    , Query TreacheryMatcher env
     , Query ExtendedCardMatcher env
     , HasList CommittedSkillIcon env InvestigatorId
     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
@@ -1105,6 +1106,22 @@ windowMatches iid source window' = \case
     (&&)
     (member iid <$> select whoMatcher)
     (windowMatches iid source window' windowMatcher)
+  Matcher.RevealLocation timingMatcher whoMatcher locationMatcher ->
+    case window' of
+      Window t (Window.RevealLocation who locationId) | t == timingMatcher ->
+        liftA2
+          (&&)
+          (matchWho iid who whoMatcher)
+          (locationMatches iid source window' locationId locationMatcher)
+      _ -> pure False
+  Matcher.PutLocationIntoPlay timingMatcher whoMatcher locationMatcher ->
+    case window' of
+      Window t (Window.PutLocationIntoPlay who locationId)
+        | t == timingMatcher -> liftA2
+          (&&)
+          (matchWho iid who whoMatcher)
+          (locationMatches iid source window' locationId locationMatcher)
+      _ -> pure False
   Matcher.TargetReadies whenMatcher target -> case window' of
     Window t (Window.TargetReadies target') ->
       pure $ t == whenMatcher && target == target'
@@ -1210,6 +1227,10 @@ windowMatches iid source window' = \case
   Matcher.LocationLeavesPlay timingMatcher whereMatcher -> case window' of
     Window t (Window.LocationLeavesPlay locationId) | timingMatcher == t ->
       locationMatches iid source window' locationId whereMatcher
+    _ -> pure False
+  Matcher.MoveFromHunter timingMatcher enemyMatcher -> case window' of
+    Window t (Window.MoveFromHunter enemyId) | t == timingMatcher ->
+      enemyMatches iid enemyId enemyMatcher
     _ -> pure False
   Matcher.EnemyLeaves timingMatcher whereMatcher enemyMatcher ->
     case window' of
@@ -1377,6 +1398,7 @@ skillTestMatches
      , HasId LocationId env InvestigatorId
      , Query SkillMatcher env
      , Query EnemyMatcher env
+     , Query TreacheryMatcher env
      )
   => InvestigatorId
   -> Source
@@ -1388,6 +1410,9 @@ skillTestMatches iid source st = \case
   Matcher.UsingThis -> pure $ source == skillTestSource st
   Matcher.WhileInvestigating -> case skillTestAction st of
     Just Action.Investigate -> pure True
+    _ -> pure False
+  Matcher.SkillTestOnTreachery treacheryMatcher -> case skillTestSource st of
+    TreacherySource tid -> member tid <$> select treacheryMatcher
     _ -> pure False
   Matcher.WhileAttackingAnEnemy enemyMatcher -> case skillTestAction st of
     Just Action.Fight -> case skillTestTarget st of

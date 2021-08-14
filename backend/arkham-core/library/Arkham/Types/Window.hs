@@ -51,7 +51,7 @@ data WindowType
   | Entering InvestigatorId LocationId
   | PassSkillTest (Maybe Action) Source InvestigatorId Int
   | PlayCard InvestigatorId Card
-  | PutLocationIntoPlay InvestigatorId
+  | PutLocationIntoPlay InvestigatorId LocationId
   | RevealLocation InvestigatorId LocationId
   | SuccessfulAttackEnemy InvestigatorId EnemyId
   | SuccessfulInvestigation InvestigatorId LocationId

@@ -245,16 +245,22 @@ data TreacheryMatcher
   | TreacheryWithFullTitle Text Text
   | TreacheryWithId TreacheryId
   | TreacheryWithTrait Trait
+  | AnyTreachery
   | TreacheryOwnedBy InvestigatorId
   | TreacheryMatches [TreacheryMatcher]
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
 
 instance Semigroup TreacheryMatcher where
+  AnyTreachery <> x = x
+  x <> AnyTreachery = x
   TreacheryMatches xs <> TreacheryMatches ys = TreacheryMatches (xs <> ys)
   TreacheryMatches xs <> x = TreacheryMatches (x : xs)
   x <> TreacheryMatches xs = TreacheryMatches (x : xs)
   x <> y = TreacheryMatches [x, y]
+
+instance Monoid TreacheryMatcher where
+  mempty = AnyTreachery
 
 pattern NonWeaknessTreachery :: CardMatcher
 pattern NonWeaknessTreachery =
@@ -322,6 +328,7 @@ instance Semigroup CardMatcher where
 
 data WindowMatcher
   = EnemyDefeated Timing Who EnemyMatcher
+  | MoveFromHunter Timing EnemyMatcher
   | DuringTurnWindow Who WindowMatcher
   | AssetDefeated Timing AssetMatcher
   | EnemyEvaded Timing Who EnemyMatcher
@@ -355,6 +362,8 @@ data WindowMatcher
   | WouldDiscoverClues Timing Who
   | GainsClues Timing Who ValueMatcher
   | DiscoveringLastClue Timing Who Where
+  | RevealLocation Timing Who Where
+  | PutLocationIntoPlay Timing Who Where
   | AnyWindow
   | TargetReadies Timing Target
   -- ^ do not like Target here since it is not a real matcher
@@ -371,6 +380,7 @@ data SkillTestMatcher
   | SkillTestWithSkill SkillMatcher
   | AnySkillTest
   | SkillTestAtYourLocation
+  | SkillTestOnTreachery TreacheryMatcher
   | UsingThis
   | SkillTestMatches [SkillTestMatcher]
   deriving stock (Show, Eq, Generic)
@@ -387,7 +397,6 @@ instance Semigroup SkillTestMatcher where
 data SkillTestResultMatcher = FailureResult ValueMatcher | SuccessResult ValueMatcher | AnyResult
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
-
 
 pattern AtLeast :: GameValue Int -> ValueMatcher
 pattern AtLeast n <- GreaterThanOrEqualTo n where

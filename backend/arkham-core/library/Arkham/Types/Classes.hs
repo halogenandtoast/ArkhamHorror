@@ -58,6 +58,7 @@ type family QueryElement a where
   QueryElement ExtendedCardMatcher = Card
   QueryElement InvestigatorMatcher = InvestigatorId
   QueryElement LocationMatcher = LocationId
+  QueryElement TreacheryMatcher = TreacheryId
 
 selectList
   :: (HasCallStack, MonadReader env m, Query a env) => a -> m [QueryElement a]

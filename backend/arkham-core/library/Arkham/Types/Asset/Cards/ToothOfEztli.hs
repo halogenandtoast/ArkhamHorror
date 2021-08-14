@@ -14,10 +14,11 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Restriction
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
 
 newtype ToothOfEztli = ToothOfEztli AssetAttrs
   deriving anyclass IsAsset
@@ -34,15 +35,22 @@ instance HasModifiersFor env ToothOfEztli where
       [SkillModifier SkillWillpower 1, SkillModifier SkillAgility 1]
   getModifiersFor _ _ _ = pure []
 
-ability :: AssetAttrs -> Ability
-ability a =
-  mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a))
-
-instance HasActions env ToothOfEztli where
-  getActions iid (AfterPassSkillTest _ (TreacherySource _) who _) (ToothOfEztli a)
-    | iid == who
-    = pure [ ability a | ownedBy a iid ]
-  getActions i window (ToothOfEztli a) = getActions i window a
+instance HasActions ToothOfEztli where
+  getActions (ToothOfEztli x) =
+    [ restrictedAbility
+        x
+        1
+        OwnsThis
+        (ReactionAbility
+          (SkillTestResult
+            Timing.After
+            You
+            (SkillTestOnTreachery AnyTreachery)
+            (SuccessResult AnyValue)
+          )
+          ExhaustThis
+        )
+    ]
 
 instance AssetRunner env => RunMessage env ToothOfEztli where
   runMessage msg a@(ToothOfEztli attrs) = case msg of

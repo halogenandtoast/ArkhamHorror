@@ -14,7 +14,7 @@ import Arkham.Types.CampaignLogKey
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Message
-import Arkham.Types.Restriction
+import Arkham.Types.Restriction hiding (RevealLocation)
 import Arkham.Types.Target
 
 newtype ThePathToTheHill = ThePathToTheHill ActAttrs

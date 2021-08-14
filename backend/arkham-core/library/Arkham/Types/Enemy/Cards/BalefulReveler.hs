@@ -12,31 +12,29 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Id
-import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.RequestedTokenStrategy
+import Arkham.Types.Restriction
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
-import Arkham.Types.Window
 import Control.Monad.Extra (findM)
 
 newtype BalefulReveler = BalefulReveler EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 balefulReveler :: EnemyCard BalefulReveler
 balefulReveler =
   enemy BalefulReveler Cards.balefulReveler (4, PerPlayer 5, 3) (2, 2)
 
-instance HasModifiersFor env BalefulReveler
-
-forcedAbility :: EnemyAttrs -> Ability
-forcedAbility attrs =
-  (mkAbility attrs 1 ForcedAbility) { abilityLimit = GroupLimit PerRound 1 }
-
-instance EnemyAttrsHasActions env => HasActions env BalefulReveler where
-  getActions _ (AfterMoveFromHunter eid) (BalefulReveler attrs)
-    | eid == toId attrs = pure [forcedAbility attrs]
-  getActions i window (BalefulReveler attrs) = getActions i window attrs
+instance HasActions BalefulReveler where
+  getActions (BalefulReveler x) =
+    [ mkAbility
+          x
+          1
+          (ForcedAbility $ MoveFromHunter Timing.After $ EnemyWithId $ toId x)
+        & (abilityLimitL .~ GroupLimit PerRound 1)
+    ]
 
 instance EnemyAttrsRunMessage env => RunMessage env BalefulReveler where
   runMessage msg e@(BalefulReveler attrs) = case msg of

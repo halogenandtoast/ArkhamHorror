@@ -21,16 +21,6 @@
       :investigatorId="investigatorId"
       @choose="$emit('choose', $event)"
     />
-    <button
-      v-if="fightAction !== -1"
-      class="button fight-button"
-      @click="$emit('choose', fightAction)"
-    >Fight</button>
-    <button
-      v-if="engageAction !== -1"
-      class="button engage-button"
-      @click="$emit('choose', engageAction)"
-    >Engage</button>
     <AbilityButton
       v-for="ability in abilities"
       :key="ability"
@@ -161,6 +151,11 @@ export default defineComponent({
 
     function isActivate(v: Message) {
       if (v.tag === 'EvadeLabel' && v.contents[0] === id.value) {
+        return true
+      }
+
+      console.log(v)
+      if (v.tag === 'FightEnemy' && v.contents[1] === id.value) {
         return true
       }
 

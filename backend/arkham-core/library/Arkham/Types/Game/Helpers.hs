@@ -750,7 +750,7 @@ hasFightActions i NonFast = do
     any
     enemyActions
     \ability -> case abilityType ability of
-      ActionAbility (Just Action.Evade) _ -> True
+      ActionAbility (Just Action.Fight) _ -> True
       _ -> False
 hasFightActions _ _ = pure False
 

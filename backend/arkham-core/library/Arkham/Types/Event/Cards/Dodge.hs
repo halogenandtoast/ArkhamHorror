@@ -10,18 +10,13 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype Dodge = Dodge EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dodge :: EventCard Dodge
 dodge = event Dodge Cards.dodge
 
-instance HasModifiersFor env Dodge
-
-instance HasAbilities env Dodge where
-  getAbilities i window (Dodge attrs) = getAbilities i window attrs
-
-instance (EventRunner env) => RunMessage env Dodge where
+instance EventRunner env => RunMessage env Dodge where
   runMessage msg e@(Dodge attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent _ eid _ _ | eid == eventId -> do
       e <$ pushAll [CancelNext AttackMessage, Discard (EventTarget eid)]

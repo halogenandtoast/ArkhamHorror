@@ -10,16 +10,11 @@ import Arkham.Types.Message
 import Arkham.Types.Query
 
 newtype SearchForTheTruth = SearchForTheTruth EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 searchForTheTruth :: EventCard SearchForTheTruth
 searchForTheTruth = event SearchForTheTruth Cards.searchForTheTruth
-
-instance HasModifiersFor env SearchForTheTruth
-
-instance HasAbilities env SearchForTheTruth where
-  getAbilities i window (SearchForTheTruth attrs) = getAbilities i window attrs
 
 instance (HasQueue env, HasCount ClueCount env InvestigatorId) => RunMessage env SearchForTheTruth where
   runMessage msg e@(SearchForTheTruth attrs@EventAttrs {..}) = case msg of

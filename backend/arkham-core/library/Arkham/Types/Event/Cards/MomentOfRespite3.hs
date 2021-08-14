@@ -12,16 +12,11 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype MomentOfRespite3 = MomentOfRespite3 EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 momentOfRespite3 :: EventCard MomentOfRespite3
 momentOfRespite3 = event MomentOfRespite3 Cards.momentOfRespite3
-
-instance HasAbilities env MomentOfRespite3 where
-  getAbilities iid window (MomentOfRespite3 attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env MomentOfRespite3
 
 instance RunMessage env MomentOfRespite3 where
   runMessage msg e@(MomentOfRespite3 attrs) = case msg of

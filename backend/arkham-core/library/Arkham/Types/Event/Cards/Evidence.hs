@@ -12,16 +12,11 @@ import Arkham.Types.Query
 import Arkham.Types.Target
 
 newtype Evidence = Evidence EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 evidence :: EventCard Evidence
 evidence = event Evidence Cards.evidence
-
-instance HasModifiersFor env Evidence
-
-instance HasAbilities env Evidence where
-  getAbilities i window (Evidence attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env Evidence where
   runMessage msg e@(Evidence attrs@EventAttrs {..}) = case msg of

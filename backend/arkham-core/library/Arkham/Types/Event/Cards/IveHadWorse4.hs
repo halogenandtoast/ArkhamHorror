@@ -12,16 +12,11 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Message
 
 newtype IveHadWorse4 = IveHadWorse4 EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 iveHadWorse4 :: EventCard IveHadWorse4
 iveHadWorse4 = event IveHadWorse4 Cards.iveHadWorse4
-
-instance HasAbilities env IveHadWorse4 where
-  getAbilities iid window (IveHadWorse4 attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env IveHadWorse4
 
 dropUntilDamage :: [Message] -> [Message]
 dropUntilDamage = dropWhile (notElem DamageMessage . messageType)

@@ -10,18 +10,13 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype HotStreak2 = HotStreak2 EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hotStreak2 :: EventCard HotStreak2
 hotStreak2 = event HotStreak2 Cards.hotStreak2
 
-instance HasModifiersFor env HotStreak2
-
-instance HasAbilities env HotStreak2 where
-  getAbilities i window (HotStreak2 attrs) = getAbilities i window attrs
-
-instance (EventRunner env) => RunMessage env HotStreak2 where
+instance EventRunner env => RunMessage env HotStreak2 where
   runMessage msg e@(HotStreak2 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == eventId ->
       e <$ pushAll [TakeResources iid 10 False, Discard (EventTarget eid)]

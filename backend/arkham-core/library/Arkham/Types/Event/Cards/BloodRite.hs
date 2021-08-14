@@ -17,16 +17,11 @@ import Arkham.Types.Message
 import Arkham.Types.Source
 
 newtype BloodRite = BloodRite EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bloodRite :: EventCard BloodRite
 bloodRite = event BloodRite Cards.bloodRite
-
-instance HasModifiersFor env BloodRite
-
-instance HasAbilities env BloodRite where
-  getAbilities i window (BloodRite attrs) = getAbilities i window attrs
 
 instance EventRunner env => RunMessage env BloodRite where
   runMessage msg e@(BloodRite attrs@EventAttrs {..}) = case msg of

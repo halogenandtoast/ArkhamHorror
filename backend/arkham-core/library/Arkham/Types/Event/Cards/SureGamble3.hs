@@ -11,16 +11,11 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype SureGamble3 = SureGamble3 EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sureGamble3 :: EventCard SureGamble3
 sureGamble3 = event SureGamble3 Cards.sureGamble3
-
-instance HasModifiersFor env SureGamble3
-
-instance HasAbilities env SureGamble3 where
-  getAbilities i window (SureGamble3 attrs) = getAbilities i window attrs
 
 instance EventRunner env => RunMessage env SureGamble3 where
   runMessage msg e@(SureGamble3 attrs@EventAttrs {..}) = case msg of

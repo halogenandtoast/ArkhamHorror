@@ -22,18 +22,12 @@ newtype FirstWatchMetadata = FirstWatchMetadata { firstWatchPairings :: [(Invest
   deriving newtype (Show, Eq, ToJSON, FromJSON)
 
 newtype FirstWatch = FirstWatch (EventAttrs `With` FirstWatchMetadata)
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 firstWatch :: EventCard FirstWatch
 firstWatch =
   event (FirstWatch . (`with` FirstWatchMetadata [])) Cards.firstWatch
-
-instance HasAbilities env FirstWatch where
-  getAbilities iid window (FirstWatch (attrs `With` _)) =
-    getAbilities iid window attrs
-
-instance HasModifiersFor env FirstWatch
 
 instance (HasQueue env, HasSet InvestigatorId env (), HasCount PlayerCount env ()) => RunMessage env FirstWatch where
   runMessage msg e@(FirstWatch (attrs@EventAttrs {..} `With` metadata@FirstWatchMetadata {..}))

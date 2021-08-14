@@ -12,18 +12,13 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype MindWipe3 = MindWipe3 EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mindWipe3 :: EventCard MindWipe3
 mindWipe3 = event MindWipe3 Cards.mindWipe3
 
-instance HasModifiersFor env MindWipe3
-
-instance HasAbilities env MindWipe3 where
-  getAbilities i window (MindWipe3 attrs) = getAbilities i window attrs
-
-instance (EventRunner env) => RunMessage env MindWipe3 where
+instance EventRunner env => RunMessage env MindWipe3 where
   runMessage msg e@(MindWipe3 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       locationId <- getId @LocationId iid

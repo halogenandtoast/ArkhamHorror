@@ -13,18 +13,13 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 
 newtype Taunt = Taunt EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 taunt :: EventCard Taunt
 taunt = event Taunt Cards.taunt
 
-instance HasAbilities env Taunt where
-  getAbilities iid window (Taunt attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env Taunt
-
-instance (EventRunner env) => RunMessage env Taunt where
+instance EventRunner env => RunMessage env Taunt where
   runMessage msg e@(Taunt attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       lid <- getId @LocationId iid

@@ -14,7 +14,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype Backstab = Backstab EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 backstab :: EventCard Backstab
@@ -25,10 +25,7 @@ instance HasModifiersFor env Backstab where
     = pure $ toModifiers attrs [ DamageDealt 2 | isSource attrs source ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env Backstab where
-  getAbilities i window (Backstab attrs) = getAbilities i window attrs
-
-instance (HasQueue env) => RunMessage env Backstab where
+instance HasQueue env => RunMessage env Backstab where
   runMessage msg e@(Backstab attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       e <$ pushAll

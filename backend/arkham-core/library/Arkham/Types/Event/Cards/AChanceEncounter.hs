@@ -18,16 +18,11 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype AChanceEncounter = AChanceEncounter EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aChanceEncounter :: EventCard AChanceEncounter
 aChanceEncounter = event AChanceEncounter Cards.aChanceEncounter
-
-instance HasAbilities env AChanceEncounter where
-  getAbilities iid window (AChanceEncounter attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env AChanceEncounter
 
 instance
   ( HasModifiersFor env ()

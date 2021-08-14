@@ -10,18 +10,13 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype LookWhatIFound = LookWhatIFound EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lookWhatIFound :: EventCard LookWhatIFound
 lookWhatIFound = event LookWhatIFound Cards.lookWhatIFound
 
-instance HasModifiersFor env LookWhatIFound
-
-instance HasAbilities env LookWhatIFound where
-  getAbilities i window (LookWhatIFound attrs) = getAbilities i window attrs
-
-instance (EventRunner env) => RunMessage env LookWhatIFound where
+instance EventRunner env => RunMessage env LookWhatIFound where
   runMessage msg e@(LookWhatIFound attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       lid <- getId iid

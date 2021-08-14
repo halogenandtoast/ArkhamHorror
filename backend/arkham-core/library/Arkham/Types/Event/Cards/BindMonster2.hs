@@ -18,7 +18,7 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype BindMonster2 = BindMonster2 EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bindMonster2 :: EventCard BindMonster2
@@ -33,9 +33,7 @@ instance HasAbilities env BindMonster2 where
   getAbilities iid (WhenWouldReady target) (BindMonster2 attrs@EventAttrs {..})
     | iid == eventOwner = pure
       [ ability target attrs | target `elem` eventAttachedTarget ]
-  getAbilities iid window (BindMonster2 attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env BindMonster2
+  getAbilities _ _ _ = pure []
 
 instance HasQueue env => RunMessage env BindMonster2 where
   runMessage msg e@(BindMonster2 attrs@EventAttrs {..}) = case msg of

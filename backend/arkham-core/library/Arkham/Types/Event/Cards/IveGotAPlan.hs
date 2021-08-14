@@ -19,14 +19,11 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype IveGotAPlan = IveGotAPlan EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 iveGotAPlan :: EventCard IveGotAPlan
 iveGotAPlan = event IveGotAPlan Cards.iveGotAPlan
-
-instance HasAbilities env IveGotAPlan where
-  getAbilities iid window (IveGotAPlan attrs) = getAbilities iid window attrs
 
 instance (HasCount ClueCount env InvestigatorId) => HasModifiersFor env IveGotAPlan where
   getModifiersFor (SkillTestSource iid _ _ _ (Just Fight)) (InvestigatorTarget _) (IveGotAPlan attrs)

@@ -13,16 +13,11 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype StandTogether3 = StandTogether3 EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, TargetEntity)
 
 standTogether3 :: EventCard StandTogether3
 standTogether3 = event StandTogether3 Cards.standTogether3
-
-instance HasAbilities env StandTogether3 where
-  getAbilities iid window (StandTogether3 attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env StandTogether3
 
 instance
   ( HasId LocationId env InvestigatorId

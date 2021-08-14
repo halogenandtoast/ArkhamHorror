@@ -18,16 +18,11 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype MonsterSlayer5 = MonsterSlayer5 EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 monsterSlayer5 :: EventCard MonsterSlayer5
 monsterSlayer5 = event MonsterSlayer5 Cards.monsterSlayer5
-
-instance HasAbilities env MonsterSlayer5 where
-  getAbilities iid window (MonsterSlayer5 attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env MonsterSlayer5
 
 instance (HasSet Trait env EnemyId, HasSkillTest env) => RunMessage env MonsterSlayer5 where
   runMessage msg e@(MonsterSlayer5 attrs) = case msg of

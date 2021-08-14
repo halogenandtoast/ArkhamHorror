@@ -14,16 +14,11 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype BaitAndSwitch = BaitAndSwitch EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 baitAndSwitch :: EventCard BaitAndSwitch
 baitAndSwitch = event BaitAndSwitch Cards.baitAndSwitch
-
-instance HasModifiersFor env BaitAndSwitch
-
-instance HasAbilities env BaitAndSwitch where
-  getAbilities i window (BaitAndSwitch attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env BaitAndSwitch where
   runMessage msg e@(BaitAndSwitch attrs@EventAttrs {..}) = case msg of

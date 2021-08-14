@@ -12,16 +12,11 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype SneakAttack = SneakAttack EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sneakAttack :: EventCard SneakAttack
 sneakAttack = event SneakAttack Cards.sneakAttack
-
-instance HasModifiersFor env SneakAttack
-
-instance HasAbilities env SneakAttack where
-  getAbilities i window (SneakAttack attrs) = getAbilities i window attrs
 
 instance EventRunner env => RunMessage env SneakAttack where
   runMessage msg e@(SneakAttack attrs@EventAttrs {..}) = case msg of

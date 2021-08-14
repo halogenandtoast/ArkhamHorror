@@ -9,16 +9,11 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype WillToSurvive3 = WillToSurvive3 EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 willToSurvive3 :: EventCard WillToSurvive3
 willToSurvive3 = event WillToSurvive3 Cards.willToSurvive3
-
-instance HasModifiersFor env WillToSurvive3
-
-instance HasAbilities env WillToSurvive3 where
-  getAbilities i window (WillToSurvive3 attrs) = getAbilities i window attrs
 
 instance HasQueue env => RunMessage env WillToSurvive3 where
   runMessage msg e@(WillToSurvive3 attrs@EventAttrs {..}) = case msg of

@@ -13,16 +13,11 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype CloseCall2 = CloseCall2 EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 closeCall2 :: EventCard CloseCall2
 closeCall2 = event CloseCall2 Cards.closeCall2
-
-instance HasModifiersFor env CloseCall2
-
-instance HasAbilities env CloseCall2 where
-  getAbilities i window (CloseCall2 attrs) = getAbilities i window attrs
 
 instance RunMessage env CloseCall2 where
   runMessage msg e@(CloseCall2 attrs) = case msg of

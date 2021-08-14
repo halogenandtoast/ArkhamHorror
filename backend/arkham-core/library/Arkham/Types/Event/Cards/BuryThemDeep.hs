@@ -13,16 +13,11 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype BuryThemDeep = BuryThemDeep EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 buryThemDeep :: EventCard BuryThemDeep
 buryThemDeep = event BuryThemDeep Cards.buryThemDeep
-
-instance HasAbilities env BuryThemDeep where
-  getAbilities iid window (BuryThemDeep attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env BuryThemDeep
 
 instance RunMessage env BuryThemDeep where
   runMessage msg e@(BuryThemDeep attrs) = case msg of

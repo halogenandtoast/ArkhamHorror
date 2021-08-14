@@ -12,16 +12,11 @@ import Arkham.Types.Query
 import Arkham.Types.Target
 
 newtype WorkingAHunch = WorkingAHunch EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 workingAHunch :: EventCard WorkingAHunch
 workingAHunch = event WorkingAHunch Cards.workingAHunch
-
-instance HasModifiersFor env WorkingAHunch
-
-instance HasAbilities env WorkingAHunch where
-  getAbilities i window (WorkingAHunch attrs) = getAbilities i window attrs
 
 instance EventRunner env => RunMessage env WorkingAHunch where
   runMessage msg e@(WorkingAHunch attrs@EventAttrs {..}) = case msg of

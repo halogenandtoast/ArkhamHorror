@@ -11,17 +11,11 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Message
 
 newtype PreposterousSketches = PreposterousSketches EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 preposterousSketches :: EventCard PreposterousSketches
 preposterousSketches = event PreposterousSketches Cards.preposterousSketches
-
-instance HasAbilities env PreposterousSketches where
-  getAbilities iid window (PreposterousSketches attrs) =
-    getAbilities iid window attrs
-
-instance HasModifiersFor env PreposterousSketches
 
 instance RunMessage env PreposterousSketches where
   runMessage msg e@(PreposterousSketches attrs) = case msg of

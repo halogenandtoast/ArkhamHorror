@@ -11,18 +11,13 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype Lucky2 = Lucky2 EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lucky2 :: EventCard Lucky2
 lucky2 = event Lucky2 Cards.lucky2
 
-instance HasModifiersFor env Lucky2
-
-instance HasAbilities env Lucky2 where
-  getAbilities i window (Lucky2 attrs) = getAbilities i window attrs
-
-instance (EventRunner env) => RunMessage env Lucky2 where
+instance EventRunner env => RunMessage env Lucky2 where
   runMessage msg e@(Lucky2 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == eventId -> e <$ pushAll
       [ Discard (EventTarget eid)

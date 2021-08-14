@@ -10,18 +10,13 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype MindOverMatter = MindOverMatter EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mindOverMatter :: EventCard MindOverMatter
 mindOverMatter = event MindOverMatter Cards.mindOverMatter
 
-instance HasModifiersFor env MindOverMatter
-
-instance HasAbilities env MindOverMatter where
-  getAbilities i window (MindOverMatter attrs) = getAbilities i window attrs
-
-instance (EventRunner env) => RunMessage env MindOverMatter where
+instance EventRunner env => RunMessage env MindOverMatter where
   runMessage msg e@(MindOverMatter attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       e <$ pushAll

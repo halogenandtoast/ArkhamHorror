@@ -14,16 +14,11 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype ExtraAmmunition1 = ExtraAmmunition1 EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 extraAmmunition1 :: EventCard ExtraAmmunition1
 extraAmmunition1 = event ExtraAmmunition1 Cards.extraAmmunition1
-
-instance HasModifiersFor env ExtraAmmunition1
-
-instance HasAbilities env ExtraAmmunition1 where
-  getAbilities i window (ExtraAmmunition1 attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env ExtraAmmunition1 where
   runMessage msg e@(ExtraAmmunition1 attrs@EventAttrs {..}) = case msg of

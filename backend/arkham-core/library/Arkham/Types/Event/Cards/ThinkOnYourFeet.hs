@@ -13,16 +13,11 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype ThinkOnYourFeet = ThinkOnYourFeet EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thinkOnYourFeet :: EventCard ThinkOnYourFeet
 thinkOnYourFeet = event ThinkOnYourFeet Cards.thinkOnYourFeet
-
-instance HasAbilities env ThinkOnYourFeet where
-  getAbilities iid window (ThinkOnYourFeet attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env ThinkOnYourFeet
 
 instance
   ( HasQueue env

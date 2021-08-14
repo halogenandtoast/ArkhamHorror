@@ -15,16 +15,11 @@ import Arkham.Types.Query
 import Arkham.Types.Target
 
 newtype MoonlightRitual = MoonlightRitual EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 moonlightRitual :: EventCard MoonlightRitual
 moonlightRitual = event MoonlightRitual Cards.moonlightRitual
-
-instance HasAbilities env MoonlightRitual where
-  getAbilities iid window (MoonlightRitual attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env MoonlightRitual
 
 instance
   ( HasCount DoomCount env AssetId

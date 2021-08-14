@@ -11,18 +11,13 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype Elusive = Elusive EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 elusive :: EventCard Elusive
 elusive = event Elusive Cards.elusive
 
-instance HasModifiersFor env Elusive
-
-instance HasAbilities env Elusive where
-  getAbilities i window (Elusive attrs) = getAbilities i window attrs
-
-instance (EventRunner env) => RunMessage env Elusive where
+instance EventRunner env => RunMessage env Elusive where
   runMessage msg e@(Elusive attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       enemyIds <- getSetList iid

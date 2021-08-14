@@ -19,7 +19,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype AstoundingRevelation = AstoundingRevelation EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 astoundingRevelation :: EventCard AstoundingRevelation
@@ -38,10 +38,7 @@ ability iid a = base
 instance HasAbilities env AstoundingRevelation where
   getAbilities iid (WhenAmongSearchedCards who) (AstoundingRevelation attrs)
     | iid == who = pure [ability iid attrs]
-  getAbilities iid window (AstoundingRevelation attrs) =
-    getAbilities iid window attrs
-
-instance HasModifiersFor env AstoundingRevelation
+  getAbilities _ _ _ = pure []
 
 instance (Query AssetMatcher env, HasQueue env) => RunMessage env AstoundingRevelation where
   runMessage msg e@(AstoundingRevelation attrs) = case msg of

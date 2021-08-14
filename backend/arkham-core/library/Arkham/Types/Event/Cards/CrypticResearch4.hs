@@ -11,16 +11,11 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype CrypticResearch4 = CrypticResearch4 EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 crypticResearch4 :: EventCard CrypticResearch4
 crypticResearch4 = event CrypticResearch4 Cards.crypticResearch4
-
-instance HasModifiersFor env CrypticResearch4
-
-instance HasAbilities env CrypticResearch4 where
-  getAbilities i window (CrypticResearch4 attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env CrypticResearch4 where
   runMessage msg e@(CrypticResearch4 attrs@EventAttrs {..}) = case msg of

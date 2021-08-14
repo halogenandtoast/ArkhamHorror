@@ -13,16 +13,11 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype Improvisation = Improvisation EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 improvisation :: EventCard Improvisation
 improvisation = event Improvisation Cards.improvisation
-
-instance HasAbilities env Improvisation where
-  getAbilities iid window (Improvisation attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env Improvisation
 
 switchRole :: InvestigatorId -> Message
 switchRole iid = chooseOne

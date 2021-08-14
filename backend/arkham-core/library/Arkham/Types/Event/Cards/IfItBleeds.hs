@@ -15,16 +15,11 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype IfItBleeds = IfItBleeds EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ifItBleeds :: EventCard IfItBleeds
 ifItBleeds = event IfItBleeds Cards.ifItBleeds
-
-instance HasAbilities env IfItBleeds where
-  getAbilities iid window (IfItBleeds attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env IfItBleeds
 
 getWindowEnemyIds :: InvestigatorId -> [Window] -> [EnemyId]
 getWindowEnemyIds iid = mapMaybe \case

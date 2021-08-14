@@ -17,14 +17,11 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype EverVigilant1 = EverVigilant1 EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 everVigilant1 :: EventCard EverVigilant1
 everVigilant1 = event EverVigilant1 Cards.everVigilant1
-
-instance HasAbilities env EverVigilant1 where
-  getAbilities iid window (EverVigilant1 attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env EverVigilant1 where
   getModifiersFor _ (InvestigatorTarget iid) (EverVigilant1 attrs)

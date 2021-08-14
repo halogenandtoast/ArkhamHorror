@@ -15,7 +15,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype Barricade3 = Barricade3 EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 barricade3 :: EventCard Barricade3
@@ -29,9 +29,6 @@ instance HasModifiersFor env Barricade3 where
         [CannotBeEnteredByNonElite, SpawnNonEliteAtConnectingInstead]
       else pure []
   getModifiersFor _ _ _ = pure []
-
-instance HasAbilities env Barricade3 where
-  getAbilities i window (Barricade3 attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env Barricade3 where
   runMessage msg e@(Barricade3 attrs@EventAttrs {..}) = case msg of

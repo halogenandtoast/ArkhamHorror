@@ -13,16 +13,11 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype NoStoneUnturned = NoStoneUnturned EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 noStoneUnturned :: EventCard NoStoneUnturned
 noStoneUnturned = event NoStoneUnturned Cards.noStoneUnturned
-
-instance HasAbilities env NoStoneUnturned where
-  getAbilities iid window (NoStoneUnturned attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env NoStoneUnturned
 
 instance Query InvestigatorMatcher env => RunMessage env NoStoneUnturned where
   runMessage msg e@(NoStoneUnturned attrs) = case msg of

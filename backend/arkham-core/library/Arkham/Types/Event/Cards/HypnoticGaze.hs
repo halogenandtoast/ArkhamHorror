@@ -15,17 +15,11 @@ import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Token
 
 newtype HypnoticGaze = HypnoticGaze (EventAttrs `With` Maybe EnemyId)
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hypnoticGaze :: EventCard HypnoticGaze
 hypnoticGaze = event (HypnoticGaze . (`with` Nothing)) Cards.hypnoticGaze
-
-instance HasAbilities env HypnoticGaze where
-  getAbilities iid window (HypnoticGaze (attrs `With` _)) =
-    getAbilities iid window attrs
-
-instance HasModifiersFor env HypnoticGaze
 
 dropUntilAttack :: [Message] -> [Message]
 dropUntilAttack = dropWhile (notElem AttackMessage . messageType)

@@ -11,16 +11,11 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Message
 
 newtype AceInTheHole3 = AceInTheHole3 EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aceInTheHole3 :: EventCard AceInTheHole3
 aceInTheHole3 = event AceInTheHole3 Cards.aceInTheHole3
-
-instance HasAbilities env AceInTheHole3 where
-  getAbilities iid window (AceInTheHole3 attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env AceInTheHole3
 
 instance RunMessage env AceInTheHole3 where
   runMessage msg e@(AceInTheHole3 attrs) = case msg of

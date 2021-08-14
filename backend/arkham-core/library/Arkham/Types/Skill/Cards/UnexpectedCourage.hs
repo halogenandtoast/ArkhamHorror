@@ -8,17 +8,12 @@ import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
 
 newtype UnexpectedCourage = UnexpectedCourage SkillAttrs
-  deriving anyclass IsSkill
+  deriving anyclass (IsSkill, HasModifiersFor env, HasActions env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 unexpectedCourage :: SkillCard UnexpectedCourage
 unexpectedCourage = skill UnexpectedCourage Cards.unexpectedCourage
 
-instance HasModifiersFor env UnexpectedCourage
-
-instance HasActions env UnexpectedCourage where
-  getActions i window (UnexpectedCourage attrs) = getActions i window attrs
-
-instance (SkillRunner env) => RunMessage env UnexpectedCourage where
+instance SkillRunner env => RunMessage env UnexpectedCourage where
   runMessage msg (UnexpectedCourage attrs) =
     UnexpectedCourage <$> runMessage msg attrs

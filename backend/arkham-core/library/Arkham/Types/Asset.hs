@@ -40,7 +40,7 @@ instance
       else pure []
     if Blank `elem` modifiers'
       then getActions iid window (toAttrs x)
-      else defaultGetActions iid window x
+      else genericGetActions iid window x
 
 instance
   ( HasId LocationId env InvestigatorId

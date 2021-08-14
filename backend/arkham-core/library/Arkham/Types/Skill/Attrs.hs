@@ -74,8 +74,5 @@ skill f cardDef = CardBuilder
     }
   }
 
-instance HasActions env SkillAttrs where
-  getActions _ _ _ = pure []
-
 instance RunMessage env SkillAttrs where
   runMessage _ a = pure a

@@ -12,16 +12,11 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype Oops = Oops EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 oops :: EventCard Oops
 oops = event Oops Cards.oops
-
-instance  HasAbilities env Oops where
-  getAbilities iid window (Oops attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env Oops
 
 instance RunMessage env Oops where
   runMessage msg e@(Oops attrs) = case msg of

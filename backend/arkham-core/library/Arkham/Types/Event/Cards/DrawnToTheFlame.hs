@@ -10,18 +10,13 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype DrawnToTheFlame = DrawnToTheFlame EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drawnToTheFlame :: EventCard DrawnToTheFlame
 drawnToTheFlame = event DrawnToTheFlame Cards.drawnToTheFlame
 
-instance HasModifiersFor env DrawnToTheFlame
-
-instance HasAbilities env DrawnToTheFlame where
-  getAbilities i window (DrawnToTheFlame attrs) = getAbilities i window attrs
-
-instance (EventRunner env) => RunMessage env DrawnToTheFlame where
+instance EventRunner env => RunMessage env DrawnToTheFlame where
   runMessage msg e@(DrawnToTheFlame attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == eventId -> e <$ pushAll
       [ InvestigatorDrawEncounterCard iid

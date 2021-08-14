@@ -11,18 +11,13 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype DarkMemory = DarkMemory EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 darkMemory :: EventCard DarkMemory
 darkMemory = event DarkMemory Cards.darkMemory
 
-instance HasModifiersFor env DarkMemory
-
-instance HasAbilities env DarkMemory where
-  getAbilities i window (DarkMemory attrs) = getAbilities i window attrs
-
-instance (EventRunner env) => RunMessage env DarkMemory where
+instance EventRunner env => RunMessage env DarkMemory where
   runMessage msg e@(DarkMemory attrs@EventAttrs {..}) = case msg of
     InHand ownerId (EndTurn iid) | ownerId == iid -> e <$ pushAll
       [ RevealInHand $ toCardId attrs

@@ -13,16 +13,11 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype Shortcut = Shortcut EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shortcut :: EventCard Shortcut
 shortcut = event Shortcut Cards.shortcut
-
-instance HasAbilities env Shortcut where
-  getAbilities iid window (Shortcut attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env Shortcut
 
 instance
   ( HasQueue env

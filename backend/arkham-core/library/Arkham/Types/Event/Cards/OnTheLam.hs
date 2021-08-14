@@ -10,18 +10,13 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype OnTheLam = OnTheLam EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 onTheLam :: EventCard OnTheLam
 onTheLam = event OnTheLam Cards.onTheLam
 
-instance HasModifiersFor env OnTheLam
-
-instance HasAbilities env OnTheLam where
-  getAbilities i window (OnTheLam attrs) = getAbilities i window attrs
-
-instance (EventRunner env) => RunMessage env OnTheLam where
+instance EventRunner env => RunMessage env OnTheLam where
   runMessage msg e@(OnTheLam attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       e <$ unshiftEffect attrs (InvestigatorTarget iid)

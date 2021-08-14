@@ -11,18 +11,13 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype CunningDistraction = CunningDistraction EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cunningDistraction :: EventCard CunningDistraction
 cunningDistraction = event CunningDistraction Cards.cunningDistraction
 
-instance HasModifiersFor env CunningDistraction
-
-instance HasAbilities env CunningDistraction where
-  getAbilities i window (CunningDistraction attrs) = getAbilities i window attrs
-
-instance (EventRunner env) => RunMessage env CunningDistraction where
+instance EventRunner env => RunMessage env CunningDistraction where
   runMessage msg e@(CunningDistraction attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       locationId <- getId @LocationId iid

@@ -15,16 +15,11 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype EmergencyAid = EmergencyAid EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 emergencyAid :: EventCard EmergencyAid
 emergencyAid = event EmergencyAid Cards.emergencyAid
-
-instance HasAbilities env EmergencyAid where
-  getAbilities iid window (EmergencyAid attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env EmergencyAid
 
 instance
   ( HasQueue env

@@ -13,16 +13,11 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype SeekingAnswers = SeekingAnswers EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 seekingAnswers :: EventCard SeekingAnswers
 seekingAnswers = event SeekingAnswers Cards.seekingAnswers
-
-instance HasAbilities env SeekingAnswers where
-  getAbilities iid window (SeekingAnswers attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env SeekingAnswers
 
 instance (HasQueue env, HasId LocationId env InvestigatorId) => RunMessage env SeekingAnswers where
   runMessage msg e@(SeekingAnswers attrs@EventAttrs {..}) = case msg of

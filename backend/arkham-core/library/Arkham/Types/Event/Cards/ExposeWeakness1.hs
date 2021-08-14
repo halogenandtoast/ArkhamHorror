@@ -17,16 +17,11 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype ExposeWeakness1 = ExposeWeakness1 EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exposeWeakness1 :: EventCard ExposeWeakness1
 exposeWeakness1 = event ExposeWeakness1 Cards.exposeWeakness1
-
-instance HasAbilities env ExposeWeakness1 where
-  getAbilities iid window (ExposeWeakness1 attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env ExposeWeakness1
 
 instance
   ( HasCount FightCount env EnemyId

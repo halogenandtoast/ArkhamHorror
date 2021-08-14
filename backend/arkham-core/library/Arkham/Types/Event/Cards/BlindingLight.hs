@@ -12,16 +12,11 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype BlindingLight = BlindingLight EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blindingLight :: EventCard BlindingLight
 blindingLight = event BlindingLight Cards.blindingLight
-
-instance HasModifiersFor env BlindingLight
-
-instance HasAbilities env BlindingLight where
-  getAbilities i window (BlindingLight attrs) = getAbilities i window attrs
 
 instance (EventRunner env) => RunMessage env BlindingLight where
   runMessage msg e@(BlindingLight attrs@EventAttrs {..}) = case msg of

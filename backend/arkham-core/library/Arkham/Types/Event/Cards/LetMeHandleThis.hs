@@ -14,16 +14,11 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype LetMeHandleThis = LetMeHandleThis EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 letMeHandleThis :: EventCard LetMeHandleThis
 letMeHandleThis = event LetMeHandleThis Cards.letMeHandleThis
-
-instance HasModifiersFor env LetMeHandleThis
-
-instance HasAbilities env LetMeHandleThis where
-  getAbilities iid window (LetMeHandleThis attrs) = getAbilities iid window attrs
 
 instance HasQueue env => RunMessage env LetMeHandleThis where
   runMessage msg e@(LetMeHandleThis attrs@EventAttrs {..}) = case msg of

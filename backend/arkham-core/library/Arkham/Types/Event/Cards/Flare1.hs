@@ -16,13 +16,11 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype Flare1 = Flare1 EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, TargetEntity, SourceEntity)
 
 flare1 :: EventCard Flare1
 flare1 = event Flare1 Cards.flare1
-
-instance HasModifiersFor env Flare1
 
 findAllyMessages :: InvestigatorId -> [InvestigatorId] -> Flare1 -> [Message]
 findAllyMessages iid investigatorIds e =
@@ -39,9 +37,6 @@ findAllyMessages iid investigatorIds e =
     | iid' <- investigatorIds
     ]
   ]
-
-instance HasAbilities env Flare1 where
-  getAbilities i window (Flare1 attrs) = getAbilities i window attrs
 
 instance
   ( EventRunner env

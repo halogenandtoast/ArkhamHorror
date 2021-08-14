@@ -15,16 +15,11 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype Teamwork = Teamwork EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 teamwork :: EventCard Teamwork
 teamwork = event Teamwork Cards.teamwork
-
-instance HasAbilities env Teamwork where
-  getAbilities iid window (Teamwork attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env Teamwork
 
 -- | Resolve Teamwork Event
 --

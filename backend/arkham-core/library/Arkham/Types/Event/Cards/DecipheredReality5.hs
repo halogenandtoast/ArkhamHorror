@@ -16,15 +16,11 @@ import Arkham.Types.Query
 import Arkham.Types.Target
 
 newtype DecipheredReality5 = DecipheredReality5 EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 decipheredReality5 :: EventCard DecipheredReality5
 decipheredReality5 = event DecipheredReality5 Cards.decipheredReality5
-
-instance HasAbilities env DecipheredReality5 where
-  getAbilities iid window (DecipheredReality5 attrs) =
-    getAbilities iid window attrs
 
 instance HasModifiersFor env DecipheredReality5 where
   getModifiersFor _ (LocationTarget _) (DecipheredReality5 attrs) =

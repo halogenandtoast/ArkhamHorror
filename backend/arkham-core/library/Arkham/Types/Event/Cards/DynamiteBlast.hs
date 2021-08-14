@@ -12,18 +12,13 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype DynamiteBlast = DynamiteBlast EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dynamiteBlast :: EventCard DynamiteBlast
 dynamiteBlast = event DynamiteBlast Cards.dynamiteBlast
 
-instance HasModifiersFor env DynamiteBlast
-
-instance HasAbilities env DynamiteBlast where
-  getAbilities i window (DynamiteBlast attrs) = getAbilities i window attrs
-
-instance (EventRunner env) => RunMessage env DynamiteBlast where
+instance EventRunner env => RunMessage env DynamiteBlast where
   runMessage msg e@(DynamiteBlast attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       currentLocationId <- getId @LocationId iid

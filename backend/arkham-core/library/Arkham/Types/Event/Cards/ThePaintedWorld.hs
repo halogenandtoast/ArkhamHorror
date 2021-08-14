@@ -17,16 +17,11 @@ import Arkham.Types.Target
 import Arkham.Types.Window
 
 newtype ThePaintedWorld = ThePaintedWorld EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thePaintedWorld :: EventCard ThePaintedWorld
 thePaintedWorld = event ThePaintedWorld Cards.thePaintedWorld
-
-instance HasAbilities env ThePaintedWorld where
-  getAbilities iid window (ThePaintedWorld attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env ThePaintedWorld
 
 instance CanCheckPlayable env => RunMessage env ThePaintedWorld where
   runMessage msg e@(ThePaintedWorld attrs) = case msg of

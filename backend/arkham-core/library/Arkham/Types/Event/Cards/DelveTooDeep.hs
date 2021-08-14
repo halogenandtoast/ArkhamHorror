@@ -11,16 +11,11 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Message
 
 newtype DelveTooDeep = DelveTooDeep EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 delveTooDeep :: EventCard DelveTooDeep
 delveTooDeep = event DelveTooDeep Cards.delveTooDeep
-
-instance HasAbilities env DelveTooDeep where
-  getAbilities iid window (DelveTooDeep attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env DelveTooDeep
 
 instance HasQueue env => RunMessage env DelveTooDeep where
   runMessage msg e@(DelveTooDeep attrs@EventAttrs {..}) = case msg of

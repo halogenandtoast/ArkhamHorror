@@ -14,16 +14,11 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype WardOfProtection5 = WardOfProtection5 EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wardOfProtection5 :: EventCard WardOfProtection5
 wardOfProtection5 = event WardOfProtection5 Cards.wardOfProtection5
-
-instance HasModifiersFor env WardOfProtection5
-
-instance HasAbilities env WardOfProtection5 where
-  getAbilities i window (WardOfProtection5 attrs) = getAbilities i window attrs
 
 instance EventRunner env => RunMessage env WardOfProtection5 where
   runMessage msg e@(WardOfProtection5 attrs@EventAttrs {..}) = case msg of

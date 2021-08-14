@@ -27,7 +27,7 @@ instance HasAbilities env Lure1 where
   getAbilities iid AtEndOfRound (Lure1 attrs)
     | isJust (eventAttachedTarget attrs) = pure
       [ mkAbility attrs 1 ForcedAbility | eventOwner attrs == iid ]
-  getAbilities iid window (Lure1 attrs) = getAbilities iid window attrs
+  getAbilities _ _ _ = pure []
 
 instance HasModifiersFor env Lure1 where
   getModifiersFor _ (EnemyTarget _) (Lure1 attrs) =

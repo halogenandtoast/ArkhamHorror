@@ -18,6 +18,7 @@ import Arkham.Types.Token
 import Arkham.Types.Trait
 
 newtype AkachiOnyele = AkachiOnyele InvestigatorAttrs
+  deriving anyclass (IsInvestigator, HasAbilities env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasCount StartingUsesCount env (AssetId, UseType) => HasModifiersFor env AkachiOnyele where
@@ -51,9 +52,6 @@ instance HasTokenValue env AkachiOnyele where
     | iid == investigatorId attrs = pure
     $ TokenValue ElderSign (PositiveModifier 1)
   getTokenValue (AkachiOnyele attrs) iid token = getTokenValue attrs iid token
-
-instance InvestigatorRunner env => HasAbilities env AkachiOnyele where
-  getAbilities i window (AkachiOnyele attrs) = getAbilities i window attrs
 
 instance
   ( HasCount UsesCount env (AssetId, UseType)

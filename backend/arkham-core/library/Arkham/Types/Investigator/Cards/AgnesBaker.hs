@@ -18,11 +18,8 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype AgnesBaker = AgnesBaker InvestigatorAttrs
+  deriving anyclass (IsInvestigator, HasModifiersFor env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
-
-instance HasModifiersFor env AgnesBaker where
-  getModifiersFor source target (AgnesBaker attrs) =
-    getModifiersFor source target attrs
 
 agnesBaker :: AgnesBaker
 agnesBaker = AgnesBaker

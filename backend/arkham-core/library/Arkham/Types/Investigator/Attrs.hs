@@ -34,6 +34,8 @@ import Arkham.Types.Window
 import qualified Data.HashSet as HashSet
 import Data.UUID (nil)
 
+class IsInvestigator a
+
 type InvestigatorRunner env
   = (InnerInvestigatorRunner env, EntityInstanceRunner env)
 
@@ -604,7 +606,10 @@ instance HasModifiersFor env InvestigatorAttrs
 instance (EntityInstanceRunner env, HasSkillTest env) => HasAbilities env InvestigatorAttrs where
   getAbilities iid window attrs | iid == investigatorId attrs = concat <$> for
     (attrs ^.. handL . traverse . _PlayerCard)
-    (getAbilities iid (InHandWindow iid window) . toCardInstance iid . PlayerCard)
+    (getAbilities iid (InHandWindow iid window)
+    . toCardInstance iid
+    . PlayerCard
+    )
   getAbilities _ _ _ = pure []
 
 instance HasTokenValue env InvestigatorAttrs where

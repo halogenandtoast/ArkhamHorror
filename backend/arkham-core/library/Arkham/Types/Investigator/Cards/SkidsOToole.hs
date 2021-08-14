@@ -19,11 +19,8 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype SkidsOToole = SkidsOToole InvestigatorAttrs
+  deriving anyclass (IsInvestigator, HasModifiersFor env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
-
-instance HasModifiersFor env SkidsOToole where
-  getModifiersFor source target (SkidsOToole attrs) =
-    getModifiersFor source target attrs
 
 skidsOToole :: SkidsOToole
 skidsOToole = SkidsOToole $ baseAttrs

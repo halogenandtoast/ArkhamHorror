@@ -19,11 +19,8 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype RolandBanks = RolandBanks InvestigatorAttrs
+  deriving anyclass (IsInvestigator, HasModifiersFor env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
-
-instance HasModifiersFor env RolandBanks where
-  getModifiersFor source target (RolandBanks attrs) =
-    getModifiersFor source target attrs
 
 rolandBanks :: RolandBanks
 rolandBanks = RolandBanks

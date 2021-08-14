@@ -11,11 +11,8 @@ import Arkham.Types.Token
 import Arkham.Types.Trait
 
 newtype JennyBarnes = JennyBarnes InvestigatorAttrs
+  deriving anyclass (IsInvestigator, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
-
-instance HasModifiersFor env JennyBarnes where
-  getModifiersFor source target (JennyBarnes attrs) =
-    getModifiersFor source target attrs
 
 jennyBarnes :: JennyBarnes
 jennyBarnes = JennyBarnes $ baseAttrs
@@ -31,9 +28,6 @@ jennyBarnes = JennyBarnes $ baseAttrs
     , agility = 3
     }
   [Drifter]
-
-instance InvestigatorRunner env => HasAbilities env JennyBarnes where
-  getAbilities i window (JennyBarnes attrs) = getAbilities i window attrs
 
 instance HasTokenValue env JennyBarnes where
   getTokenValue (JennyBarnes attrs) iid ElderSign

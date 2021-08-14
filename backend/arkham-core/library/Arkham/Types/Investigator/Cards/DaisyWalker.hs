@@ -17,11 +17,8 @@ import Arkham.Types.Token
 import Arkham.Types.Trait
 
 newtype DaisyWalker = DaisyWalker InvestigatorAttrs
+  deriving anyclass (IsInvestigator, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
-
-instance HasModifiersFor env DaisyWalker where
-  getModifiersFor source target (DaisyWalker attrs) =
-    getModifiersFor source target attrs
 
 daisyWalker :: DaisyWalker
 daisyWalker =
@@ -37,9 +34,6 @@ daisyWalker =
     , combat = 2
     , agility = 2
     }
-
-instance InvestigatorRunner env => HasAbilities env DaisyWalker where
-  getAbilities i window (DaisyWalker attrs) = getAbilities i window attrs
 
 instance HasTokenValue env DaisyWalker where
   getTokenValue (DaisyWalker attrs) iid ElderSign | iid == toId attrs =

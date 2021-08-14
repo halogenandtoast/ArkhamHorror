@@ -16,6 +16,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype LolaHayes = LolaHayes InvestigatorAttrs
+  deriving anyclass IsInvestigator
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env LolaHayes where

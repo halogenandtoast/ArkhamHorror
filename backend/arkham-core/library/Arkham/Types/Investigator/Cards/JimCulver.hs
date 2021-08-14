@@ -16,6 +16,7 @@ import Arkham.Types.Token
 import Arkham.Types.Trait
 
 newtype JimCulver = JimCulver InvestigatorAttrs
+  deriving anyclass (IsInvestigator, HasAbilities env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env JimCulver where
@@ -39,9 +40,6 @@ jimCulver = JimCulver $ baseAttrs
     , agility = 2
     }
   [Performer]
-
-instance InvestigatorRunner env => HasAbilities env JimCulver where
-  getAbilities i window (JimCulver attrs) = getAbilities i window attrs
 
 instance HasTokenValue env JimCulver where
   getTokenValue (JimCulver attrs) iid ElderSign | iid == investigatorId attrs =

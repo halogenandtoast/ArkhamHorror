@@ -21,11 +21,8 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype AshcanPete = AshcanPete InvestigatorAttrs
+  deriving anyclass (IsInvestigator, HasModifiersFor env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
-
-instance HasModifiersFor env AshcanPete where
-  getModifiersFor source target (AshcanPete attrs) =
-    getModifiersFor source target attrs
 
 ashcanPete :: AshcanPete
 ashcanPete = AshcanPete $ base & startsWithL .~ [Assets.duke]

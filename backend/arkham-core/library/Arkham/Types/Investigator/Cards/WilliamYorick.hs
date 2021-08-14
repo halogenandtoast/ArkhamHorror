@@ -20,11 +20,8 @@ import Arkham.Types.Window
 import System.IO.Unsafe
 
 newtype WilliamYorick = WilliamYorick InvestigatorAttrs
+  deriving anyclass (IsInvestigator, HasModifiersFor env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
-
-instance HasModifiersFor env WilliamYorick where
-  getModifiersFor source target (WilliamYorick attrs) =
-    getModifiersFor source target attrs
 
 williamYorick :: WilliamYorick
 williamYorick = WilliamYorick $ baseAttrs
@@ -57,21 +54,24 @@ williamYorickRecursionLock = unsafePerformIO $ newIORef False
 {-# NOINLINE williamYorickRecursionLock #-}
 
 instance InvestigatorRunner env => HasAbilities env WilliamYorick where
-  getAbilities i (AfterEnemyDefeated who _) (WilliamYorick attrs) | i == who = do
-    locked <- readIORef williamYorickRecursionLock
-    if locked
-      then pure []
-      else do
-        writeIORef williamYorickRecursionLock True
-        let
-          targets =
-            filter ((== AssetType) . toCardType) (investigatorDiscard attrs)
-        playableTargets <- filterM
-          (getIsPlayable i [NonFast, DuringTurn i] . PlayerCard)
-          targets
-        writeIORef williamYorickRecursionLock False
-        pure
-          [ mkAbility attrs 1 $ ReactionAbility Free | notNull playableTargets ]
+  getAbilities i (AfterEnemyDefeated who _) (WilliamYorick attrs) | i == who =
+    do
+      locked <- readIORef williamYorickRecursionLock
+      if locked
+        then pure []
+        else do
+          writeIORef williamYorickRecursionLock True
+          let
+            targets =
+              filter ((== AssetType) . toCardType) (investigatorDiscard attrs)
+          playableTargets <- filterM
+            (getIsPlayable i [NonFast, DuringTurn i] . PlayerCard)
+            targets
+          writeIORef williamYorickRecursionLock False
+          pure
+            [ mkAbility attrs 1 $ ReactionAbility Free
+            | notNull playableTargets
+            ]
   getAbilities i window (WilliamYorick attrs) = getAbilities i window attrs
 
 

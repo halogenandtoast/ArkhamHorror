@@ -816,10 +816,9 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
     Blanked msg' -> runMessage msg' a
     UseCardAbility iid source _ 100 _ | isSource a source ->
       a <$ push
-        (FightEnemy iid (toId a) (InvestigatorSource iid) SkillCombat True)
-    UseCardAbility iid source _ 101 _ | isSource a source ->
-      a <$ push
-        (EvadeEnemy iid (toId a) (InvestigatorSource iid) SkillAgility True)
+        (FightEnemy iid (toId a) (InvestigatorSource iid) SkillCombat False)
+    UseCardAbility iid source _ 101 _ | isSource a source -> a <$ push
+      (EvadeEnemy iid (toId a) (InvestigatorSource iid) SkillAgility False)
     UseCardAbility iid source _ 102 _ | isSource a source ->
-      a <$ push (EngageEnemy iid (toId a) True)
+      a <$ push (EngageEnemy iid (toId a) False)
     _ -> pure a

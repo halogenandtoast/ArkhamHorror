@@ -24,6 +24,9 @@ export default defineComponent({
       if (ability.value.tag === "EvadeLabel") {
         return "Evade"
       }
+      if (ability.value.tag === "FightEnemy") {
+        return "Fight"
+      }
       const label = ability.value.tag === 'Run'
         ? (ability.value.contents[1]?.type?.tag === "ForcedAbility"
           ? "Forced"
@@ -44,6 +47,9 @@ export default defineComponent({
       if (ability.value.tag === "EvadeLabel") {
         return action === "Evade"
       }
+      if (ability.value.tag === "FightEnemy") {
+        return action === "Fight"
+      }
       const {tag} = ability.value.contents[1].type
       if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore" && tag !== "ActionAbilityWithSkill") {
         return false
@@ -53,7 +59,7 @@ export default defineComponent({
     }
 
     const isInvestigate = computed(() => isAction("Investigate"))
-    const isFight = computed(() => isAction("Fight"))
+    const isFight = computed(() => isAction("Fight") || ability.value.tag == "FightEnemy")
     const isEvade = computed(() => isAction("Evade"))
     const isEngage = computed(() => isAction("Engage"))
     const display = computed(() => !isAction("Move"))

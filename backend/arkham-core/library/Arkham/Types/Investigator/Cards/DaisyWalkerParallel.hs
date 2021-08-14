@@ -24,6 +24,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype DaisyWalkerParallel = DaisyWalkerParallel InvestigatorAttrs
+  deriving anyclass IsInvestigator
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 daisyWalkerParallel :: DaisyWalkerParallel
@@ -71,7 +72,8 @@ instance InvestigatorRunner env => HasAbilities env DaisyWalkerParallel where
     $ do
         hasTomes <- (> 0) . unAssetCount <$> getCount (iid, [Tome])
         pure [ ability attrs | hasTomes ]
-  getAbilities i window (DaisyWalkerParallel attrs) = getAbilities i window attrs
+  getAbilities i window (DaisyWalkerParallel attrs) =
+    getAbilities i window attrs
 
 instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
   runMessage msg i@(DaisyWalkerParallel attrs@InvestigatorAttrs {..}) =
@@ -83,7 +85,9 @@ instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
             (setToList investigatorAssets)
           pairs' <-
             filter (notNull . snd)
-              <$> traverse (\a -> (a, ) <$> getAbilities iid NonFast a) tomeAssets
+              <$> traverse
+                    (\a -> (a, ) <$> getAbilities iid NonFast a)
+                    tomeAssets
           if null pairs'
             then pure i
             else i <$ push

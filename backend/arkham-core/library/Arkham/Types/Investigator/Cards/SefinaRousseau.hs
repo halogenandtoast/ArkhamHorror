@@ -19,11 +19,8 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype SefinaRousseau = SefinaRousseau InvestigatorAttrs
+  deriving anyclass (IsInvestigator, HasModifiersFor env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
-
-instance HasModifiersFor env SefinaRousseau where
-  getModifiersFor source target (SefinaRousseau attrs) =
-    getModifiersFor source target attrs
 
 sefinaRousseau :: SefinaRousseau
 sefinaRousseau = SefinaRousseau $ baseAttrs

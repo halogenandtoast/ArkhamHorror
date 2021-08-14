@@ -294,14 +294,6 @@ instance IsCard PlayerCard where
 instance IsCard EncounterCard where
   toCardId = ecId
 
-class IsInvestigator a where
-  isResigned :: a -> Bool
-  isDefeated :: a -> Bool
-  isEliminated :: a -> Bool
-  isEliminated = uncurry (||) . (isResigned &&& isDefeated)
-  hasEndedTurn :: a -> Bool
-  hasResigned :: a -> Bool
-
 buildEntity :: String -> Q [Dec]
 buildEntity nm = do
   ClassI _ instances <- reify (TH.mkName $ "Is" ++ nm)

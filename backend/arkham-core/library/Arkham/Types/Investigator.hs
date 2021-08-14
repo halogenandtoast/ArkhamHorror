@@ -70,11 +70,20 @@ baseInvestigator
 baseInvestigator a b c d e f =
   BaseInvestigator' . BaseInvestigator . f $ baseAttrs a b c d e
 
-instance IsInvestigator Investigator where
-  isDefeated = view defeatedL . toAttrs
-  isResigned = view resignedL . toAttrs
-  hasEndedTurn = view endedTurnL . toAttrs
-  hasResigned = view resignedL . toAttrs
+isEliminated :: Investigator -> Bool
+isEliminated = uncurry (||) . (isResigned &&& isDefeated)
+
+isDefeated :: Investigator -> Bool
+isDefeated = view defeatedL . toAttrs
+
+isResigned :: Investigator -> Bool
+isResigned = view resignedL . toAttrs
+
+hasEndedTurn :: Investigator -> Bool
+hasEndedTurn = view endedTurnL . toAttrs
+
+hasResigned :: Investigator -> Bool
+hasResigned = view resignedL . toAttrs
 
 instance {-# OVERLAPPING #-} HasTraits Investigator where
   toTraits = toTraits . toAttrs
@@ -91,7 +100,8 @@ instance HasModifiersFor env BaseInvestigator where
     getModifiersFor source target attrs
 
 instance InvestigatorRunner env => HasAbilities env BaseInvestigator where
-  getAbilities iid window (BaseInvestigator attrs) = getAbilities iid window attrs
+  getAbilities iid window (BaseInvestigator attrs) =
+    getAbilities iid window attrs
 
 instance InvestigatorRunner env => RunMessage env BaseInvestigator where
   runMessage msg (BaseInvestigator attrs) =

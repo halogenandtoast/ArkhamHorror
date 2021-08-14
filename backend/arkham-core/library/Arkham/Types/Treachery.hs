@@ -25,7 +25,8 @@ createTreachery a iid =
 instance HasCardDef Treachery where
   toCardDef = toCardDef . toAttrs
 
-deriving anyclass instance ActionRunner env => HasAbilities env Treachery
+instance ActionRunner env => HasAbilities env Treachery where
+  getAbilities = genericGetAbilities
 
 instance
   ( GetCardDef env LocationId

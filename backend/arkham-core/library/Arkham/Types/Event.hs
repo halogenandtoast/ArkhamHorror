@@ -13,7 +13,6 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Name
 import Arkham.Types.Query
-import Arkham.Types.SkillTest
 import Arkham.Types.Source
 
 $(buildEntity "Event")
@@ -27,12 +26,8 @@ instance HasCardCode Event where
 instance HasCardDef Event where
   toCardDef = toCardDef . toAttrs
 
-deriving anyclass instance
-  ( CanCheckPlayable env
-  , GetCardDef env EnemyId
-  , HasSkillTest env
-  )
-  => HasAbilities env Event
+instance HasAbilities env Event where
+  getAbilities = genericGetAbilities
 
 instance HasCount ClueCount env InvestigatorId => HasModifiersFor env Event where
   getModifiersFor = genericGetModifiersFor

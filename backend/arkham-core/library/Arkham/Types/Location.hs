@@ -39,7 +39,8 @@ instance HasCardCode Location where
 instance IsCard Location where
   toCardId = toCardId . toAttrs
 
-deriving anyclass instance (HasList Card env ExtendedCardMatcher, ActionRunner env) => HasAbilities env Location
+instance (HasList Card env ExtendedCardMatcher, ActionRunner env) => HasAbilities env Location where
+  getAbilities = genericGetAbilities
 
 instance
   ( HasPhase env

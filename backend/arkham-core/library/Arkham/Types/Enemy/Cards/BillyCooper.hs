@@ -29,13 +29,19 @@ billyCooper = enemyWith
 
 instance HasActions BillyCooper where
   getActions (BillyCooper x) =
-    [ mkAbility x 1 $ ForcedAbility
-        (EnemyDefeated
-          Timing.After
-          Anyone
-          (EnemyWithTrait Monster <> EnemyAt (LocationWithId $ enemyLocation x))
+    mkAbility
+        x
+        1
+        (ForcedAbility
+          (EnemyDefeated
+            Timing.After
+            Anyone
+            (EnemyWithTrait Monster
+            <> EnemyAt (LocationWithId $ enemyLocation x)
+            )
+          )
         )
-    ]
+      : getActions x
 
 instance (EnemyRunner env) => RunMessage env BillyCooper where
   runMessage msg e@(BillyCooper attrs) = case msg of

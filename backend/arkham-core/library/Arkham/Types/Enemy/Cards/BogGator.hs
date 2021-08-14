@@ -19,7 +19,7 @@ import Arkham.Types.Trait
 
 newtype BogGator = BogGator EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasActions)
 
 bogGator :: EnemyCard BogGator
 bogGator = enemyWith
@@ -37,9 +37,6 @@ instance HasSet Trait env LocationId => HasModifiersFor env BogGator where
         then [EnemyFight 2, EnemyEvade 2]
         else []
   getModifiersFor _ _ _ = pure []
-
-instance ActionRunner env => HasActions env BogGator where
-  getActions i window (BogGator attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env BogGator where
   runMessage msg (BogGator attrs) = BogGator <$> runMessage msg attrs

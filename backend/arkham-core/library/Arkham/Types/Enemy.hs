@@ -55,7 +55,7 @@ preventedByModifier _ _ _ = False
 instance ActionRunner env => HasActions env Enemy where
   getActions investigator window x = do
     modifiers' <- getModifiers (toSource x) (InvestigatorTarget investigator)
-    actions <- defaultGetActions investigator window x
+    actions <- genericGetActions investigator window x
     pure $ filter
       (\action -> not $ any (preventedByModifier (toAttrs x) action) modifiers')
       actions

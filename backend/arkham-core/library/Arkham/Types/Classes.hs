@@ -214,7 +214,7 @@ instance (HasActions1 env l, HasActions1 env r) => HasActions1 env (l :+: r) whe
 instance (HasActions env p) => HasActions1 env (K1 R p) where
   getActions1 iid window (K1 x) = getActions iid window x
 
-defaultGetActions
+genericGetActions
   :: ( HasCallStack
      , Generic a
      , HasActions1 env (Rep a)
@@ -225,12 +225,11 @@ defaultGetActions
   -> Window
   -> a
   -> m [Ability]
-defaultGetActions iid window = getActions1 iid window . from
+genericGetActions iid window = getActions1 iid window . from
 
 class HasActions env a where
   getActions :: (HasCallStack, MonadReader env m, MonadIO m) => InvestigatorId -> Window -> a -> m [Ability]
-  default getActions :: (HasCallStack, Generic a, HasActions1 env (Rep a), MonadReader env m, MonadIO m) => InvestigatorId -> Window -> a -> m [Ability]
-  getActions = defaultGetActions
+  getActions _ _ _ = pure []
 
 class HasModifiersFor1 env f where
   getModifiersFor1 :: (HasCallStack, MonadReader env m) => Source -> Target -> f p -> m [Modifier]

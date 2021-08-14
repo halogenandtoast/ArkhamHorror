@@ -14,16 +14,11 @@ import Arkham.Types.Skill.Runner
 import Arkham.Types.Target
 
 newtype QuickThinking = QuickThinking SkillAttrs
-  deriving anyclass IsSkill
+  deriving anyclass (IsSkill, HasModifiersFor env, HasActions env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 quickThinking :: SkillCard QuickThinking
 quickThinking = skill QuickThinking Cards.quickThinking
-
-instance HasModifiersFor env QuickThinking
-
-instance HasActions env QuickThinking where
-  getActions iid window (QuickThinking attrs) = getActions iid window attrs
 
 instance SkillRunner env => RunMessage env QuickThinking where
   runMessage msg s@(QuickThinking attrs) = case msg of

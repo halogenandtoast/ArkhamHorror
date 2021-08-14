@@ -102,7 +102,7 @@ instance InvestigatorRunner env => HasActions env Investigator where
     modifiers' <- getModifiers (toSource investigator) (toTarget investigator)
     if Blank `elem` modifiers'
       then getActions iid window (toAttrs investigator)
-      else defaultGetActions iid window investigator
+      else genericGetActions iid window investigator
 
 instance
   ( HasCount UsesCount env (AssetId, UseType)

@@ -36,7 +36,7 @@ agnesBaker = AgnesBaker
 
 ability :: InvestigatorAttrs -> Ability
 ability attrs = base { abilityLimit = PlayerLimit PerPhase 1 }
-  where base = mkAbility (toSource attrs) 1 (ReactionAbility Free)
+  where base = mkAbility (toSource attrs) 1 (ResponseAbility Free)
 
 instance InvestigatorRunner env => HasAbilities env AgnesBaker where
   getAbilities iid (WhenDealtHorror _ target) (AgnesBaker attrs)

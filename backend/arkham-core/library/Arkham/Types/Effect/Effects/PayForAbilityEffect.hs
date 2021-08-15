@@ -24,6 +24,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
+import Arkham.Types.Window (Window(NonFast))
 
 newtype PayForAbilityEffect = PayForAbilityEffect (EffectAttrs `With` Payment)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -78,6 +79,76 @@ countAdditionalActionPayments (Payments ps) =
   sum $ map countAdditionalActionPayments ps
 countAdditionalActionPayments _ = 0
 
+startPayment
+  :: (MonadReader env m, MonadIO m, HasQueue env)
+  => InvestigatorId
+  -> Window
+  -> AbilityType
+  -> Source
+  -> Bool
+  -> m ()
+startPayment iid window abilityType abilitySource abilityDoesNotProvokeAttacksOfOpportunity
+  = case abilityType of
+    Objective aType -> startPayment
+      iid
+      window
+      aType
+      abilitySource
+      abilityDoesNotProvokeAttacksOfOpportunity
+    ForcedAbility -> pure ()
+    AbilityEffect cost -> push (PayAbilityCost abilitySource iid Nothing cost)
+    FastAbility cost -> push (PayAbilityCost abilitySource iid Nothing cost)
+    ReactionAbility _ cost ->
+      push (PayAbilityCost abilitySource iid Nothing cost)
+    ResponseAbility cost ->
+      push (PayAbilityCost abilitySource iid Nothing cost)
+    ActionAbilityWithBefore mAction _ cost -> do
+      -- we do not know which ability will be chosen
+      -- for now we assume this will trigger attacks of opportunity
+      pushAll
+        (PayAbilityCost abilitySource iid mAction cost
+        : [ TakenAction iid action | action <- maybeToList mAction ]
+        <> [ CheckAttackOfOpportunity iid False
+           | not abilityDoesNotProvokeAttacksOfOpportunity
+           ]
+        )
+    ActionAbilityWithSkill mAction _ cost ->
+      if mAction
+          `notElem` [ Just Action.Fight
+                    , Just Action.Evade
+                    , Just Action.Resign
+                    , Just Action.Parley
+                    ]
+        then pushAll
+          (PayAbilityCost abilitySource iid mAction cost
+          : [ TakenAction iid action | action <- maybeToList mAction ]
+          <> [ CheckAttackOfOpportunity iid False
+             | not abilityDoesNotProvokeAttacksOfOpportunity
+             ]
+          )
+        else pushAll
+          (PayAbilityCost abilitySource iid mAction cost
+          : [ TakenAction iid action | action <- maybeToList mAction ]
+          )
+    ActionAbility mAction cost ->
+      if mAction
+          `notElem` [ Just Action.Fight
+                    , Just Action.Evade
+                    , Just Action.Resign
+                    , Just Action.Parley
+                    ]
+        then pushAll
+          (PayAbilityCost abilitySource iid mAction cost
+          : [ TakenAction iid action | action <- maybeToList mAction ]
+          <> [ CheckAttackOfOpportunity iid False
+             | not abilityDoesNotProvokeAttacksOfOpportunity
+             ]
+          )
+        else pushAll
+          (PayAbilityCost abilitySource iid mAction cost
+          : [ TakenAction iid action | action <- maybeToList mAction ]
+          )
+
 instance
   ( HasQueue env
   , HasSet InScenarioInvestigatorId env ()
@@ -92,60 +163,13 @@ instance
       | eid == toId attrs
       -> do
         push (PayAbilityCostFinished (toId attrs) source iid)
-        e <$ case abilityType of
-          ForcedAbility -> pure ()
-          AbilityEffect cost ->
-            push (PayAbilityCost abilitySource iid Nothing cost)
-          FastAbility cost ->
-            push (PayAbilityCost abilitySource iid Nothing cost)
-          ReactionAbility cost ->
-            push (PayAbilityCost abilitySource iid Nothing cost)
-          ActionAbilityWithBefore mAction _ cost -> do
-            -- we do not know which ability will be chosen
-            -- for now we assume this will trigger attacks of opportunity
-            pushAll
-              (PayAbilityCost abilitySource iid mAction cost
-              : [ TakenAction iid action | action <- maybeToList mAction ]
-              <> [ CheckAttackOfOpportunity iid False
-                 | not abilityDoesNotProvokeAttacksOfOpportunity
-                 ]
-              )
-          ActionAbilityWithSkill mAction _ cost ->
-            if mAction
-                `notElem` [ Just Action.Fight
-                          , Just Action.Evade
-                          , Just Action.Resign
-                          , Just Action.Parley
-                          ]
-              then pushAll
-                (PayAbilityCost abilitySource iid mAction cost
-                : [ TakenAction iid action | action <- maybeToList mAction ]
-                <> [ CheckAttackOfOpportunity iid False
-                   | not abilityDoesNotProvokeAttacksOfOpportunity
-                   ]
-                )
-              else pushAll
-                (PayAbilityCost abilitySource iid mAction cost
-                : [ TakenAction iid action | action <- maybeToList mAction ]
-                )
-          ActionAbility mAction cost ->
-            if mAction
-                `notElem` [ Just Action.Fight
-                          , Just Action.Evade
-                          , Just Action.Resign
-                          , Just Action.Parley
-                          ]
-              then pushAll
-                (PayAbilityCost abilitySource iid mAction cost
-                : [ TakenAction iid action | action <- maybeToList mAction ]
-                <> [ CheckAttackOfOpportunity iid False
-                   | not abilityDoesNotProvokeAttacksOfOpportunity
-                   ]
-                )
-              else pushAll
-                (PayAbilityCost abilitySource iid mAction cost
-                : [ TakenAction iid action | action <- maybeToList mAction ]
-                )
+        e
+          <$ startPayment
+               iid
+               NonFast -- TODO: a thing
+               abilityType
+               abilitySource
+               abilityDoesNotProvokeAttacksOfOpportunity
     PayAbilityCost source iid mAction cost -> do
       let
         withPayment payment =
@@ -155,7 +179,7 @@ instance
           e <$ pushAll [ PayAbilityCost source iid mAction x | x <- xs ]
         UpTo 0 _ -> pure e
         UpTo n cost' -> do
-          canAfford <- getCanAffordCost iid source mAction cost'
+          canAfford <- getCanAffordCost iid source mAction [] cost'
           e <$ when
             canAfford
             (push $ chooseOne

@@ -42,7 +42,7 @@ minhThiPhan = MinhThiPhan $ baseAttrs
 
 ability :: InvestigatorAttrs -> InvestigatorId -> Card -> Ability
 ability attrs iid card =
-  mkAbility attrs 1 (ReactionAbility Free)
+  mkAbility attrs 1 (ResponseAbility Free)
     & (abilityLimitL .~ PerInvestigatorLimit iid PerRound 1)
     & (abilityMetadataL ?~ TargetMetadata (CardIdTarget $ toCardId card))
 

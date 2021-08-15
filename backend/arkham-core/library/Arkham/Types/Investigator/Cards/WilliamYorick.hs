@@ -65,11 +65,13 @@ instance InvestigatorRunner env => HasAbilities env WilliamYorick where
             targets =
               filter ((== AssetType) . toCardType) (investigatorDiscard attrs)
           playableTargets <- filterM
-            (getIsPlayable i [NonFast, DuringTurn i] . PlayerCard)
+            (getIsPlayable i (toSource attrs) [NonFast, DuringTurn i]
+            . PlayerCard
+            )
             targets
           writeIORef williamYorickRecursionLock False
           pure
-            [ mkAbility attrs 1 $ ReactionAbility Free
+            [ mkAbility attrs 1 $ ResponseAbility Free
             | notNull playableTargets
             ]
   getAbilities i window (WilliamYorick attrs) = getAbilities i window attrs
@@ -88,7 +90,7 @@ instance (InvestigatorRunner env) => RunMessage env WilliamYorick where
             else InitiatePlayCard iid (toCardId c) Nothing False
           ]
       playableTargets <- filterM
-        (getIsPlayable iid [NonFast, DuringTurn iid] . PlayerCard)
+        (getIsPlayable iid source [NonFast, DuringTurn iid] . PlayerCard)
         targets
       i <$ push
         (chooseOne iid

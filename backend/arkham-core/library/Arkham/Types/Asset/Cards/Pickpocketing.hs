@@ -27,7 +27,7 @@ instance HasModifiersFor env Pickpocketing
 instance HasAbilities env Pickpocketing where
   getAbilities iid (AfterEnemyEvaded who enemyId) (Pickpocketing a) | iid == who =
     withBaseActions iid (AfterEnemyEvaded who enemyId) a $ do
-      let ability = mkAbility a 1 $ ReactionAbility $ ExhaustCost (toTarget a)
+      let ability = mkAbility a 1 $ ResponseAbility $ ExhaustCost (toTarget a)
       pure [ ability | ownedBy a iid ]
   getAbilities i window (Pickpocketing a) = getAbilities i window a
 

@@ -517,7 +517,7 @@ getFastIsPlayable
 getFastIsPlayable _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
 getFastIsPlayable attrs windows c@(PlayerCard _) = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
-  isPlayable <- getIsPlayable (toId attrs) windows c
+  isPlayable <- getIsPlayable (toId attrs) (toSource attrs) windows c
   pure $ (canBecomeFast modifiers || isJust (cdFastWindow pcDef)) && isPlayable
  where
   pcDef = toCardDef c
@@ -759,6 +759,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             iid
             (toSource a)
             Nothing
+            [NonFast]
             (mconcat additionalCosts)
           when
             canPay
@@ -1703,7 +1704,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         else flip filter investigatorHand $ \case
           PlayerCard card ->
             let
-              passesRestrictions = flip
+              passesCriterias = flip
                 all
                 (cdCommitRestrictions $ toCardDef card)
                 \case
@@ -1730,7 +1731,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                  || skillType
                  `elem` cdSkills (toCardDef card)
                  )
-              && passesRestrictions
+              && passesCriterias
               && not prevented
           _ -> False
     if notNull committableCards || notNull committedCardIds || notNull actions
@@ -1776,7 +1777,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             \case
               PlayerCard card ->
                 let
-                  passesRestrictions = flip
+                  passesCriterias = flip
                     all
                     (cdCommitRestrictions $ toCardDef card)
                     \case
@@ -1806,7 +1807,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                      || skillType
                      `elem` cdSkills (toCardDef card)
                      )
-                  && passesRestrictions
+                  && passesCriterias
                   && not prevented
               _ -> False
       when (notNull committableCards || notNull committedCardIds) $ push
@@ -2068,7 +2069,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         isPlayableMap :: HashMap Card Bool <- mapFromList <$> for
           handCards
           (\c -> do
-            isPlayable <- getIsPlayable (toId a) windows c
+            isPlayable <- getIsPlayable (toId a) (toSource a) windows c
             pure (c, isPlayable)
           )
         let isPlayable c = findWithDefault False c isPlayableMap

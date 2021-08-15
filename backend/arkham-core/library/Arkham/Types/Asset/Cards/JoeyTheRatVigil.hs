@@ -30,14 +30,15 @@ ability a = mkAbility a 1 (FastAbility $ ResourceCost 1)
 -- This card is a pain and the solution here is a hack
 -- we end up with a separate function for resource modification
 instance CanCheckPlayable env => HasAbilities env JoeyTheRatVigil where
-  getAbilities iid FastPlayerWindow (JoeyTheRatVigil attrs) | ownedBy attrs iid =
-    do
+  getAbilities iid FastPlayerWindow (JoeyTheRatVigil attrs)
+    | ownedBy attrs iid = do
       availableResources <- unResourceCount <$> getCount iid
       handCards <- map unHandCard <$> getList iid
       let items = filter (member Item . toTraits) handCards
       playableItems <- filterM
         (getIsPlayableWithResources
           iid
+          (toSource attrs)
           (availableResources - 1)
           [DuringTurn iid, FastPlayerWindow]
         )
@@ -53,7 +54,7 @@ instance CanCheckPlayable env => RunMessage env JoeyTheRatVigil where
       handCards <- map unHandCard <$> getList iid
       let items = filter (member Item . toTraits) handCards
       playableItems <- filterM
-        (getIsPlayable iid [DuringTurn iid, FastPlayerWindow])
+        (getIsPlayable iid source [DuringTurn iid, FastPlayerWindow])
         items
       a <$ push
         (chooseOne

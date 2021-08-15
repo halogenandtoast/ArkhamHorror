@@ -27,10 +27,11 @@ instance CanCheckPlayable env => RunMessage env ThePaintedWorld where
   runMessage msg e@(ThePaintedWorld attrs) = case msg of
     InvestigatorPlayEvent iid eid _ windows | eid == toId attrs -> do
       playableCards <-
-        filterM (getIsPlayable iid $ DuringTurn iid : windows) =<< getList
-          (BasicCardMatch (NonExceptional <> EventCard)
-          <> CardIsBeneathInvestigator You
-          )
+        filterM (getIsPlayable iid (toSource attrs) $ DuringTurn iid : windows)
+          =<< getList
+                (BasicCardMatch (NonExceptional <> EventCard)
+                <> CardIsBeneathInvestigator You
+                )
       e <$ push
         (InitiatePlayCardAsChoose
           iid

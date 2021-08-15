@@ -50,7 +50,7 @@ instance HasList CommittedSkillIcon env InvestigatorId => HasAbilities env TheKi
               (SkillWild, n) -> n
               (_, n) -> n + findWithDefault 0 SkillWild frequencyMap
           pure
-            [ mkAbility attrs 1 $ ReactionAbility Free
+            [ mkAbility attrs 1 $ ResponseAbility Free
             | totalMatchingIcons >= 6
             ]
   getAbilities _ _ _ = pure []

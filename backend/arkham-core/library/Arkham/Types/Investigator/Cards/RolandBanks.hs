@@ -6,17 +6,19 @@ module Arkham.Types.Investigator.Cards.RolandBanks
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Card.CardDef
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Id
 import Arkham.Types.Investigator.Attrs
-import Arkham.Types.LocationId
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Stats
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window
+import Arkham.Types.WindowMatcher as Match
 
 newtype RolandBanks = RolandBanks InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
@@ -35,16 +37,15 @@ rolandBanks = RolandBanks
     , agility = 2
     }
 
-ability :: InvestigatorAttrs -> Ability
-ability attrs = base { abilityLimit = PlayerLimit PerRound 1 }
-  where base = mkAbility (toSource attrs) 1 (ReactionAbility Free)
-
-instance InvestigatorRunner env => HasAbilities env RolandBanks where
-  getAbilities iid (AfterEnemyDefeated who _) (RolandBanks a)
-    | iid == toId a && iid == who = do
-      clueCount <- unClueCount <$> getCount (investigatorLocation a)
-      pure [ ability a | clueCount > 0 ]
-  getAbilities _ _ _ = pure []
+instance HasAbilities env RolandBanks where
+  getAbilities _ _ (RolandBanks a) = pure
+    [ restrictedAbility
+          a
+          1
+          (Self <> LocationExists (YourLocation <> LocationWithClues))
+          (ReactionAbility (Match.EnemyDefeated Match.After You AnyEnemy) Free)
+        & (abilityLimitL .~ PlayerLimit PerRound 1)
+    ]
 
 instance HasCount ClueCount env LocationId => HasTokenValue env RolandBanks where
   getTokenValue (RolandBanks attrs) iid ElderSign | iid == toId attrs = do

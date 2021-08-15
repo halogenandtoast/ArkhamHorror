@@ -26,7 +26,7 @@ ability :: AssetAttrs -> Ability
 ability attrs = mkAbility
   attrs
   1
-  (ReactionAbility
+  (ResponseAbility
   $ Costs [ExhaustCost (toTarget attrs), PlaceClueOnLocationCost 1]
   )
 

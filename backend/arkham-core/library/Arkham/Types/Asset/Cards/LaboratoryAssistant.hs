@@ -32,7 +32,7 @@ instance HasModifiersFor env LaboratoryAssistant where
 instance HasAbilities env LaboratoryAssistant where
   getAbilities i (WhenEnterPlay target) (LaboratoryAssistant x)
     | isTarget x target && ownedBy x i = pure
-      [mkAbility x 1 $ ReactionAbility Free]
+      [mkAbility x 1 $ ResponseAbility Free]
   getAbilities i window (LaboratoryAssistant x) = getAbilities i window x
 
 instance (AssetRunner env) => RunMessage env LaboratoryAssistant where

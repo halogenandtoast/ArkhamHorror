@@ -42,7 +42,7 @@ instance (HasId LocationId env InvestigatorId) => HasModifiersFor env BrotherXav
   getModifiersFor _ _ _ = pure []
 
 ability :: AssetAttrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
+ability attrs = mkAbility (toSource attrs) 1 (ResponseAbility Free)
 
 instance HasAbilities env BrotherXavier1 where
   getAbilities iid (WhenDefeated source) (BrotherXavier1 a) | isSource a source =

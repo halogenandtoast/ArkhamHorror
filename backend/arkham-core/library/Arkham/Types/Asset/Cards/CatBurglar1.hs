@@ -37,7 +37,7 @@ ability :: AssetAttrs -> Ability
 ability a = (restrictedAbility
               a
               1
-              (AnyPlayRestriction
+              (AnyCriteria
                 [ EnemyExists EnemyEngagedWithYou
                 , LocationExists AccessibleLocation
                 ]

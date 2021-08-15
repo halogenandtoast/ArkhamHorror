@@ -30,7 +30,7 @@ instance HasSet Trait env EnemyId => HasAbilities env DiscOfItzamna2 where
   getAbilities iid (WhenEnemySpawns eid _) (DiscOfItzamna2 a) | ownedBy a iid = do
     traits <- getSet eid
     pure
-      [ mkAbility (toSource a) 1 (ReactionAbility Free)
+      [ mkAbility (toSource a) 1 (ResponseAbility Free)
       | Elite `notElem` traits
       ]
   getAbilities i window (DiscOfItzamna2 x) = getAbilities i window x

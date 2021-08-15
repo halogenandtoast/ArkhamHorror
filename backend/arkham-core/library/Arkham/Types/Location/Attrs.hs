@@ -350,15 +350,15 @@ drawCardUnderneathLocationAction attrs =
 
 toLocationAbility :: LocationAttrs -> Ability -> Ability
 toLocationAbility attrs ability = ability
-  { abilityRestrictions = Just
-    (fromMaybe mempty (abilityRestrictions ability) <> OnLocation (toId attrs))
+  { abilityCriteria = Just
+    (fromMaybe mempty (abilityCriteria ability) <> OnLocation (toId attrs))
   }
 
 locationAbility :: Ability -> Ability
 locationAbility ability = case abilitySource ability of
   LocationSource lid -> ability
-    { abilityRestrictions = Just
-      (fromMaybe mempty (abilityRestrictions ability) <> OnLocation lid)
+    { abilityCriteria = Just
+      (fromMaybe mempty (abilityCriteria ability) <> OnLocation lid)
     }
   _ -> ability
 

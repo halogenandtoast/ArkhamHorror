@@ -54,7 +54,7 @@ instance ActionRunner env => HasAbilities env MuseumHalls where
             1
             (ActionAbility Nothing $ ActionCost 1)
           )
-            { abilityRestrictions = Just (OnLocation lid)
+            { abilityCriteria = Just (OnLocation lid)
             }
         ]
   getAbilities iid NonFast (MuseumHalls attrs) | revealed attrs =

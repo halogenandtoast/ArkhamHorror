@@ -23,6 +23,7 @@ data WindowMatcher
   | DrawCard When Who CardMatcher
   | PhaseBegins When WindowPhaseMatcher
   | PlayerHasPlayableCard ExtendedCardMatcher
+  | AnyWindow
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

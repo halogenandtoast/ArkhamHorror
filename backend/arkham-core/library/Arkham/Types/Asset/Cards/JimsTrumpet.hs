@@ -29,7 +29,7 @@ instance HasModifiersFor env JimsTrumpet
 
 ability :: AssetAttrs -> Ability
 ability attrs =
-  mkAbility (toSource attrs) 1 (ReactionAbility $ ExhaustCost (toTarget attrs))
+  mkAbility (toSource attrs) 1 (ResponseAbility $ ExhaustCost (toTarget attrs))
 
 instance ActionRunner env => HasAbilities env JimsTrumpet where
   getAbilities iid (WhenRevealToken _ token) (JimsTrumpet a)

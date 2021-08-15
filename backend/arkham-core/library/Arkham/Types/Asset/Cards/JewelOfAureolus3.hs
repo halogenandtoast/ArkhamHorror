@@ -24,7 +24,7 @@ jewelOfAureolus3 = asset JewelOfAureolus3 Cards.jewelOfAureolus3
 
 ability :: AssetAttrs -> Ability
 ability attrs =
-  mkAbility attrs 1 (ReactionAbility $ ExhaustCost (toTarget attrs))
+  mkAbility attrs 1 (ResponseAbility $ ExhaustCost (toTarget attrs))
 
 instance
   ( HasSet InvestigatorId env LocationId

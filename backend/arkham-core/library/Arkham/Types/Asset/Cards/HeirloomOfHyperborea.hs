@@ -23,7 +23,7 @@ heirloomOfHyperborea =
 instance HasModifiersFor env HeirloomOfHyperborea
 
 reactionAbility :: AssetAttrs -> Ability
-reactionAbility attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
+reactionAbility attrs = mkAbility (toSource attrs) 1 (ResponseAbility Free)
 
 instance HasAbilities env HeirloomOfHyperborea where
   getAbilities iid (AfterPlayCard who card) (HeirloomOfHyperborea a)

@@ -25,7 +25,7 @@ instance HasModifiersFor env ResearchLibrarian
 instance HasAbilities env ResearchLibrarian where
   getAbilities i (WhenEnterPlay target) (ResearchLibrarian x)
     | isTarget x target && ownedBy x i = pure
-      [mkAbility (toSource x) 1 (ReactionAbility Free)]
+      [mkAbility (toSource x) 1 (ResponseAbility Free)]
   getAbilities i window (ResearchLibrarian x) = getAbilities i window x
 
 instance (AssetRunner env) => RunMessage env ResearchLibrarian where

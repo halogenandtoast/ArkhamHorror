@@ -24,7 +24,7 @@ tryAndTryAgain3 :: AssetCard TryAndTryAgain3
 tryAndTryAgain3 = asset TryAndTryAgain3 Cards.tryAndTryAgain3
 
 ability :: AssetAttrs -> Ability
-ability a = mkAbility a 1 (ReactionAbility $ ExhaustCost (toTarget a))
+ability a = mkAbility a 1 (ResponseAbility $ ExhaustCost (toTarget a))
 
 instance HasList CommittedCard env InvestigatorId => HasAbilities env TryAndTryAgain3 where
   getAbilities iid (AfterFailSkillTest _ _) (TryAndTryAgain3 attrs) = do

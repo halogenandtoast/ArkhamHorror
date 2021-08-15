@@ -10,6 +10,7 @@ import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
 import Arkham.Types.LocationId
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
@@ -40,7 +41,7 @@ instance AgendaRunner env => RunMessage env TheyreGettingOut where
     EndEnemy -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       unengagedEnemyIds <- mapSet unUnengagedEnemyId <$> getSet ()
-      mParlor <- getLocationIdWithTitle "Parlor"
+      mParlor <- selectOne (LocationWithTitle "Parlor")
       ghoulEnemyIds <- getSet Ghoul
       parlorEnemyIds <- maybe (pure mempty) getSet mParlor
       let
@@ -63,8 +64,8 @@ instance AgendaRunner env => RunMessage env TheyreGettingOut where
         (null enemiesToMove || null (catMaybes messages))
         (push (chooseOneAtATime leadInvestigatorId $ catMaybes messages))
     EndRoundWindow -> do
-      mParlor <- getLocationIdWithTitle "Parlor"
-      mHallway <- getLocationIdWithTitle "Hallway"
+      mParlor <- selectOne (LocationWithTitle "Parlor")
+      mHallway <- selectOne (LocationWithTitle "Hallway")
       parlorGhoulsCount <- case mParlor of
         Just parlor -> unEnemyCount <$> getCount (parlor, [Ghoul])
         Nothing -> pure 0

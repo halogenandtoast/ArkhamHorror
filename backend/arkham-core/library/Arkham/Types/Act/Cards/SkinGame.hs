@@ -39,7 +39,7 @@ instance ActRunner env => RunMessage env SkinGame where
   runMessage msg a@(SkinGame attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       vipAreaId <- fromJustNote "must exist"
-        <$> getLocationIdWithTitle "VIP Area"
+        <$> selectOne (LocationWithTitle "VIP Area")
       investigatorIds <- getSetList vipAreaId
       requiredClueCount <- getPlayerCountValue (PerPlayer 2)
       pushAll

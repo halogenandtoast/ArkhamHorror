@@ -30,10 +30,11 @@ adamLynch =
 instance HasAbilities env AdamLynch where
   getAbilities iid window (AdamLynch attrs) = getAbilities iid window attrs
 
-instance HasId (Maybe LocationId) env LocationMatcher => HasModifiersFor env AdamLynch where
+instance Query LocationMatcher env => HasModifiersFor env AdamLynch where
   getModifiersFor (InvestigatorSource iid) (LocationTarget lid) (AdamLynch attrs)
     = do
-      isSecurityOffice <- elem lid <$> getLocationIdWithTitle "Security Office"
+      isSecurityOffice <- elem lid
+        <$> select (LocationWithTitle "Security Office")
       pure $ toModifiers
         attrs
         [ ActionCostSetToModifier 1 | isSecurityOffice && ownedBy attrs iid ]

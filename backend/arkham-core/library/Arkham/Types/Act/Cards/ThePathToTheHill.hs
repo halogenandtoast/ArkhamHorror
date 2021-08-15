@@ -13,6 +13,7 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
@@ -43,7 +44,7 @@ instance ActRunner env => RunMessage env ThePathToTheHill where
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       locationIds <- getSetList ()
       ascendingPathId <- fromJustNote "must exist"
-        <$> getLocationIdWithTitle "Ascending Path"
+        <$> selectOne (LocationWithTitle "Ascending Path")
       useV1 <- getHasRecord TheInvestigatorsRestoredSilasBishop
       useV2 <- liftM2
         (||)

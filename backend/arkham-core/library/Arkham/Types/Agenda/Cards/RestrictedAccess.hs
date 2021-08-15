@@ -14,6 +14,7 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
@@ -58,12 +59,12 @@ instance AgendaRunner env => RunMessage env RestrictedAccess where
           (CardWithCardCode "02141")
     FoundEnemyInVoid _ target eid | isTarget attrs target -> do
       lid <- fromJustNote "Museum Halls missing"
-        <$> getLocationIdWithTitle "Museum Halls"
+        <$> selectOne (LocationWithTitle "Museum Halls")
       a <$ pushAll
         [EnemySpawnFromVoid Nothing lid eid, NextAgenda agendaId "02120"]
     FoundEncounterCard _ target ec | isTarget attrs target -> do
       lid <- fromJustNote "Museum Halls missing"
-        <$> getLocationIdWithTitle "Museum Halls"
+        <$> selectOne (LocationWithTitle "Museum Halls")
       a <$ pushAll
         [SpawnEnemyAt (EncounterCard ec) lid, NextAgenda agendaId "02120"]
     _ -> RestrictedAccess <$> runMessage msg attrs

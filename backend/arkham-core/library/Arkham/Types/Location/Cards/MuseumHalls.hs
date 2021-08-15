@@ -47,7 +47,7 @@ instance ActionRunner env => HasAbilities env MuseumHalls where
   getAbilities iid NonFast (MuseumHalls attrs) | unrevealed attrs =
     withBaseActions iid NonFast attrs $ do
       lid <- fromJustNote "missing location"
-        <$> getLocationIdWithTitle "Museum Entrance"
+        <$> selectOne (LocationWithTitle "Museum Entrance")
       pure
         [ (mkAbility
             (ProxySource (LocationSource lid) (toSource attrs))
@@ -75,7 +75,7 @@ instance LocationRunner env => RunMessage env MuseumHalls where
     UseCardAbility iid (ProxySource _ source) _ 1 _
       | isSource attrs source && unrevealed attrs -> do
         museumEntrance <- fromJustNote "missing location"
-          <$> getLocationIdWithTitle "Museum Entrance"
+          <$> selectOne (LocationWithTitle "Museum Entrance")
         l <$ push
           (BeginSkillTest
             iid

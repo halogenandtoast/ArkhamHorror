@@ -14,7 +14,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 
 newtype DevoteeOfTheKey = DevoteeOfTheKey EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 devoteeOfTheKey :: EnemyCard DevoteeOfTheKey
@@ -25,17 +25,19 @@ devoteeOfTheKey = enemyWith
   (1, 1)
   (spawnAtL ?~ LocationWithTitle "Base of the Hill")
 
-instance HasModifiersFor env DevoteeOfTheKey
-
 instance EnemyAttrsHasAbilities env => HasAbilities env DevoteeOfTheKey where
   getAbilities i window (DevoteeOfTheKey attrs) = getAbilities i window attrs
 
-instance EnemyAttrsRunMessage env => RunMessage env DevoteeOfTheKey where
+instance
+  ( Query LocationMatcher env
+  , EnemyAttrsRunMessage env
+  )
+  => RunMessage env DevoteeOfTheKey where
   runMessage msg e@(DevoteeOfTheKey attrs@EnemyAttrs {..}) = case msg of
     EndEnemy -> do
       leadInvestigatorId <- getLeadInvestigatorId
       sentinelPeak <- fromJustNote "missing location"
-        <$> getLocationIdWithTitle "Sentinel Peak"
+        <$> selectOne (LocationWithTitle "Sentinel Peak")
       if enemyLocation == sentinelPeak
         then
           e <$ pushAll

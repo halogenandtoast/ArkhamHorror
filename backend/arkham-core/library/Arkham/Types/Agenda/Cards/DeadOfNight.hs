@@ -35,12 +35,13 @@ instance HasModifiersFor env DeadOfNight where
 instance AgendaRunner env => RunMessage env DeadOfNight where
   runMessage msg a@(DeadOfNight attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
-      dormitoriesInPlay <- isJust <$> getLocationIdWithTitle "Dormitories"
+      dormitoriesInPlay <- isJust
+        <$> selectOne (LocationWithTitle "Dormitories")
       mExperimentId <- fmap unStoryEnemyId
         <$> getId (toCardCode Enemies.theExperiment)
       theExperiment <- EncounterCard <$> genEncounterCard Enemies.theExperiment
       scienceBuildingId <- fromJustNote "missing science building"
-        <$> getLocationIdWithTitle "Science Building"
+        <$> selectOne (LocationWithTitle "Science Building")
       a <$ pushAll
         ([ PlaceLocationMatching (LocationWithTitle "Dormitories")
          | not dormitoriesInPlay

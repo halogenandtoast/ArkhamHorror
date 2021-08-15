@@ -14,6 +14,7 @@ import Arkham.Types.Id
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Stats
 import Arkham.Types.Token
@@ -25,10 +26,11 @@ newtype RolandBanks = RolandBanks InvestigatorAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 rolandBanks :: RolandBanks
-rolandBanks = RolandBanks
-  $ baseAttrs "01001" "Roland Banks" Guardian stats [Agency, Detective]
- where
-  stats = Stats
+rolandBanks = RolandBanks $ baseAttrs
+  "01001"
+  ("Roland Banks" <:> "The Fed")
+  Guardian
+  Stats
     { health = 9
     , sanity = 5
     , willpower = 3
@@ -36,6 +38,7 @@ rolandBanks = RolandBanks
     , combat = 4
     , agility = 2
     }
+  [Agency, Detective]
 
 instance HasAbilities env RolandBanks where
   getAbilities _ _ (RolandBanks a) = pure
@@ -54,7 +57,7 @@ instance HasCount ClueCount env LocationId => HasTokenValue env RolandBanks wher
   getTokenValue (RolandBanks attrs) iid token = getTokenValue attrs iid token
 
 instance InvestigatorRunner env => RunMessage env RolandBanks where
-  runMessage msg rb@(RolandBanks attrs@InvestigatorAttrs {..}) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> rb <$ push
-      (DiscoverCluesAtLocation (toId attrs) investigatorLocation 1 Nothing)
-    _ -> RolandBanks <$> runMessage msg attrs
+  runMessage msg rb@(RolandBanks a) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource a source -> rb <$ push
+      (DiscoverCluesAtLocation (toId a) (investigatorLocation a) 1 Nothing)
+    _ -> RolandBanks <$> runMessage msg a

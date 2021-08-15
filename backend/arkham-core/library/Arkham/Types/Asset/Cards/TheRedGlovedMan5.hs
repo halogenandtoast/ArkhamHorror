@@ -33,7 +33,7 @@ theRedGlovedMan5 =
 instance HasAbilities env TheRedGlovedMan5 where
   getAbilities i (WhenEnterPlay target) (TheRedGlovedMan5 (x `With` _))
     | isTarget x target && ownedBy x i = pure
-      [mkAbility x 1 $ ReactionAbility Free]
+      [mkAbility x 1 $ ResponseAbility Free]
   getAbilities i (PhaseEnds MythosPhase) (TheRedGlovedMan5 (x `With` _))
     | ownedBy x i = pure [mkAbility x 2 ForcedAbility]
   getAbilities i window (TheRedGlovedMan5 (x `With` _)) = getAbilities i window x

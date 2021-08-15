@@ -26,7 +26,7 @@ drFrancisMorgan = ally DrFrancisMorgan Cards.drFrancisMorgan (4, 1)
 
 ability :: AssetAttrs -> Ability
 ability attrs =
-  mkAbility (toSource attrs) 1 (ReactionAbility $ ExhaustCost (toTarget attrs))
+  mkAbility (toSource attrs) 1 (ResponseAbility $ ExhaustCost (toTarget attrs))
 
 instance HasAbilities env DrFrancisMorgan where
   getAbilities iid (AfterEnemyDefeated who _) (DrFrancisMorgan attrs)

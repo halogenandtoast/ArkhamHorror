@@ -828,6 +828,7 @@ library
       Arkham.Types.Source
       Arkham.Types.Stats
       Arkham.Types.Target
+      Arkham.Types.Timing
       Arkham.Types.Token
       Arkham.Types.TokenId
       Arkham.Types.TokenResponse

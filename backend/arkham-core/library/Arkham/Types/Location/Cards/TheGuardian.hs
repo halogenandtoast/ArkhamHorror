@@ -34,7 +34,7 @@ theGuardian = locationWith
 instance HasModifiersFor env TheGuardian
 
 ability :: LocationAttrs -> Ability
-ability attrs = mkAbility attrs 1 (ReactionAbility Free)
+ability attrs = mkAbility attrs 1 (ResponseAbility Free)
 
 instance ActionRunner env => HasAbilities env TheGuardian where
   getAbilities iid (AfterEntering who lid) (TheGuardian attrs)

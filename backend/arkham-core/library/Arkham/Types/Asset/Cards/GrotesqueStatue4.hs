@@ -35,7 +35,7 @@ ability attrs source = base
   base = mkAbility
     (toSource attrs)
     1
-    (ReactionAbility $ UseCost (toId attrs) Charge 1)
+    (ResponseAbility $ UseCost (toId attrs) Charge 1)
 
 instance HasAbilities env GrotesqueStatue4 where
   getAbilities iid (WhenWouldRevealChaosToken source who) (GrotesqueStatue4 a)

@@ -42,7 +42,7 @@ markHarrigan =
 
 ability :: InvestigatorAttrs -> Ability
 ability attrs =
-  mkAbility attrs 1 (ReactionAbility Free) & abilityLimitL .~ PlayerLimit
+  mkAbility attrs 1 (ResponseAbility Free) & abilityLimitL .~ PlayerLimit
     PerPhase
     1
 

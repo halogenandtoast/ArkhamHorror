@@ -34,12 +34,12 @@ instance ActionRunner env => HasAbilities env CoverUp where
     withTreacheryInvestigator a $ \tormented -> do
       treacheryLocationId <- getId @LocationId tormented
       pure
-        [ mkAbility a 1 $ ReactionAbility Free
+        [ mkAbility a 1 $ ResponseAbility Free
         | (treacheryLocationId == lid) && (coverUpClues a > 0) && (n > 0)
         ]
   getAbilities _ _ _ = pure []
 
-instance (TreacheryRunner env) => RunMessage env CoverUp where
+instance TreacheryRunner env => RunMessage env CoverUp where
   runMessage msg t@(CoverUp attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RemoveCardFromHand iid (toCardId attrs)

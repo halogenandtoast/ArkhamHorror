@@ -49,7 +49,7 @@ data CardDef = CardDef
   , cdAction :: Maybe Action
   , cdRevelation :: Bool
   , cdVictoryPoints :: Maybe Int
-  , cdPlayRestrictions :: Maybe PlayRestriction
+  , cdCriteria :: Maybe Criteria
   , cdCommitRestrictions :: [CommitRestriction]
   , cdAttackOfOpportunityModifiers :: [AttackOfOpportunityModifier]
   , cdPermanent :: Bool
@@ -145,7 +145,7 @@ testCardDef cardType cardCode = CardDef
   , cdAction = Nothing
   , cdRevelation = False
   , cdVictoryPoints = Nothing
-  , cdPlayRestrictions = Nothing
+  , cdCriteria = Nothing
   , cdCommitRestrictions = []
   , cdAttackOfOpportunityModifiers = []
   , cdPermanent = False
@@ -162,7 +162,7 @@ data DiscardSignifier = AnyPlayerDiscard
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data PlayRestriction
+data Criteria
   = AnotherInvestigatorInSameLocation
   | InvestigatorIsAlone
   | ScenarioCardHasResignAbility
@@ -178,21 +178,22 @@ data PlayRestriction
   | NoEnemyExists EnemyMatcher
   | LocationExists LocationMatcher
   | OwnCardWithDoom
+  | Self
   | CardInDiscard DiscardSignifier [Trait]
   | ReturnableCardInDiscard DiscardSignifier [Trait]
-  | PlayRestrictions [PlayRestriction]
-  | AnyPlayRestriction [PlayRestriction]
+  | Criterias [Criteria]
+  | AnyCriteria [Criteria]
   | NoRestriction
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-instance Semigroup PlayRestriction where
+instance Semigroup Criteria where
   NoRestriction <> x = x
   x <> NoRestriction = x
-  PlayRestrictions xs <> PlayRestrictions ys = PlayRestrictions $ xs <> ys
-  PlayRestrictions xs <> x = PlayRestrictions $ x : xs
-  x <> PlayRestrictions xs = PlayRestrictions $ x : xs
-  x <> y = PlayRestrictions [x, y]
+  Criterias xs <> Criterias ys = Criterias $ xs <> ys
+  Criterias xs <> x = Criterias $ x : xs
+  x <> Criterias xs = Criterias $ x : xs
+  x <> y = Criterias [x, y]
 
-instance Monoid PlayRestriction where
+instance Monoid Criteria where
   mempty = NoRestriction

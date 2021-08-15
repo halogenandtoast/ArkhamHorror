@@ -2070,13 +2070,15 @@ instance HasGame env => HasSet FarthestEnemyId env (InvestigatorId, EnemyTrait) 
   getSet (iid, enemyTrait) = do
     start <- locationFor iid
     let
-      enemyMatches eid =
+      enemyMatches' eid =
         elem (unEnemyTrait enemyTrait) . toTraits <$> getEnemy eid
       enemyIdsForLocation = getSetList @EnemyId <=< getLocation
     setFromList
       . coerce
-      <$> (concatMapM (filterM enemyMatches <=< enemyIdsForLocation)
-          =<< getLongestPath start (anyM enemyMatches <=< enemyIdsForLocation)
+      <$> (concatMapM (filterM enemyMatches' <=< enemyIdsForLocation)
+          =<< getLongestPath
+                start
+                (anyM enemyMatches' <=< enemyIdsForLocation)
           )
 
 instance HasGame env => HasList (InvestigatorId, Distance) env EnemyTrait where

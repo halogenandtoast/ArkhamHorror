@@ -41,7 +41,7 @@ instance HasModifiersFor env ColdSpringGlen_245 where
   getModifiersFor _ _ _ = pure []
 
 ability :: LocationAttrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
+ability attrs = mkAbility (toSource attrs) 1 (ResponseAbility Free)
 
 instance ActionRunner env => HasAbilities env ColdSpringGlen_245 where
   getAbilities _ (WhenChosenRandomLocation lid) (ColdSpringGlen_245 attrs)

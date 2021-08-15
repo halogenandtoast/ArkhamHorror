@@ -34,7 +34,7 @@ canalSide = locationWith
 instance HasModifiersFor env CanalSide
 
 ability :: LocationAttrs -> Ability
-ability attrs = mkAbility attrs 1 (ReactionAbility Free)
+ability attrs = mkAbility attrs 1 (ResponseAbility Free)
 
 instance ActionRunner env => HasAbilities env CanalSide where
   getAbilities iid (AfterEntering who lid) (CanalSide attrs)

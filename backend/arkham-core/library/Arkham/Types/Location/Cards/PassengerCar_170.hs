@@ -20,6 +20,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
+import Arkham.Types.Window
 
 newtype PassengerCar_170 = PassengerCar_170 LocationAttrs
   deriving anyclass IsLocation
@@ -45,13 +46,14 @@ instance HasCount ClueCount env LocationId => HasModifiersFor env PassengerCar_1
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasAbilities env PassengerCar_170 where
-  getAbilities iid window (PassengerCar_170 attrs) = getAbilities iid window attrs
+  getAbilities iid window (PassengerCar_170 attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env PassengerCar_170 where
   runMessage msg l@(PassengerCar_170 attrs@LocationAttrs {..}) = case msg of
     AfterEnterLocation iid lid | lid == locationId -> do
       let cost = SkillIconCost 2 (singleton SkillIntellect)
-      hasSkills <- getCanAffordCost iid (toSource attrs) Nothing cost
+      hasSkills <- getCanAffordCost iid (toSource attrs) Nothing [NonFast] cost
       l <$ if hasSkills
         then push
           (chooseOne

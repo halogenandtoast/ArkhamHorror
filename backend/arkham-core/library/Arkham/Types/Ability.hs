@@ -8,26 +8,36 @@ import Arkham.Prelude
 import Arkham.Json
 import Arkham.Types.Ability.Limit as X
 import Arkham.Types.Ability.Type as X
+import Arkham.Types.Action (Action)
 import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes.Entity.Source
 import Arkham.Types.Cost
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import Arkham.Types.WindowMatcher
 
 data Ability = Ability
   { abilitySource :: Source
   , abilityIndex :: Int
   , abilityType :: AbilityType
   , abilityLimit :: AbilityLimit
+  , abilityWindow :: WindowMatcher
   , abilityMetadata :: Maybe AbilityMetadata
-  , abilityRestrictions :: Maybe PlayRestriction
+  , abilityCriteria :: Maybe Criteria
   , abilityDoesNotProvokeAttacksOfOpportunity :: Bool
   }
   deriving stock (Show, Generic)
+
+abilityCost :: Ability -> Cost
+abilityCost = abilityTypeCost . abilityType
+
+abilityAction :: Ability -> Maybe Action
+abilityAction = abilityTypeAction . abilityType
 
 abilityLimitL :: Lens' Ability AbilityLimit
 abilityLimitL = lens abilityLimit $ \m x -> m { abilityLimit = x }
@@ -58,28 +68,47 @@ data AbilityMetadata
   deriving anyclass (ToJSON, FromJSON)
 
 restrictedAbility
-  :: SourceEntity a => a -> Int -> PlayRestriction -> AbilityType -> Ability
+  :: SourceEntity a => a -> Int -> Criteria -> AbilityType -> Ability
 restrictedAbility entity idx restriction type' =
-  (mkAbility entity idx type') { abilityRestrictions = Just restriction }
+  (mkAbility entity idx type') { abilityCriteria = Just restriction }
 
 abilityEffect :: SourceEntity a => a -> Cost -> Ability
 abilityEffect a cost = mkAbility a (-1) (AbilityEffect cost)
+
+defaultAbilityLimit :: AbilityType -> AbilityLimit
+defaultAbilityLimit = \case
+  ForcedAbility -> PlayerLimit PerWindow 1
+  ReactionAbility _ _ -> PlayerLimit PerWindow 1
+  ResponseAbility _ -> PlayerLimit PerWindow 1
+  FastAbility _ -> NoLimit
+  ActionAbility _ _ -> NoLimit
+  ActionAbilityWithBefore{} -> NoLimit
+  ActionAbilityWithSkill{} -> NoLimit
+  AbilityEffect _ -> NoLimit
+  Objective aType -> defaultAbilityLimit aType
+
+defaultAbilityWindow :: AbilityType -> WindowMatcher
+defaultAbilityWindow = \case
+  FastAbility _ -> FastPlayerWindow
+  ActionAbility{} -> DuringTurn You
+  ActionAbilityWithBefore{} -> DuringTurn You
+  ActionAbilityWithSkill{} -> DuringTurn You
+  -- ForcedAbility window -> window
+  ForcedAbility -> AnyWindow
+  ReactionAbility window _ -> window
+  ResponseAbility _ -> AnyWindow
+  AbilityEffect _ -> AnyWindow
+  Objective aType -> defaultAbilityWindow aType
 
 mkAbility :: SourceEntity a => a -> Int -> AbilityType -> Ability
 mkAbility entity idx type' = Ability
   { abilitySource = toSource entity
   , abilityIndex = idx
   , abilityType = type'
-  , abilityLimit = case type' of
-    ForcedAbility -> PlayerLimit PerWindow 1
-    ReactionAbility _ -> PlayerLimit PerWindow 1
-    FastAbility _ -> NoLimit
-    ActionAbility _ _ -> NoLimit
-    ActionAbilityWithBefore {} -> NoLimit
-    ActionAbilityWithSkill {} -> NoLimit
-    AbilityEffect _ -> NoLimit
+  , abilityLimit = defaultAbilityLimit type'
+  , abilityWindow = defaultAbilityWindow type'
   , abilityMetadata = Nothing
-  , abilityRestrictions = Nothing
+  , abilityCriteria = Nothing
   , abilityDoesNotProvokeAttacksOfOpportunity = False
   }
 

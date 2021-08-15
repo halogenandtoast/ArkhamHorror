@@ -22,8 +22,8 @@ loneWolf :: AssetCard LoneWolf
 loneWolf = asset LoneWolf Cards.loneWolf
 
 ability :: AssetAttrs -> Ability
-ability x = (mkAbility (toSource x) 1 (ReactionAbility Free))
-  { abilityRestrictions = Just InvestigatorIsAlone
+ability x = (mkAbility (toSource x) 1 (ResponseAbility Free))
+  { abilityCriteria = Just InvestigatorIsAlone
   }
 
 instance HasAbilities env LoneWolf where

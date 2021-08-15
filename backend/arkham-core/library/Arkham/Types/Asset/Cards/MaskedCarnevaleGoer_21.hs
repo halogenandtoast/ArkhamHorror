@@ -29,7 +29,7 @@ maskedCarnevaleGoer_21 =
 ability :: AssetAttrs -> Ability
 ability attrs =
   (mkAbility attrs 1 (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1]))
-    { abilityRestrictions = OnLocation <$> assetLocation attrs
+    { abilityCriteria = OnLocation <$> assetLocation attrs
     }
 
 instance HasAbilities env MaskedCarnevaleGoer_21 where

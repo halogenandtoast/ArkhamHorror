@@ -34,7 +34,7 @@ ability attrs = (mkAbility
                     ]
                   )
                 )
-  { abilityRestrictions = OnLocation <$> assetLocation attrs
+  { abilityCriteria = OnLocation <$> assetLocation attrs
   }
 
 instance HasModifiersFor env LadyEsprit

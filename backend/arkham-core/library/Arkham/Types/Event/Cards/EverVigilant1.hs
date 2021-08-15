@@ -42,7 +42,7 @@ instance CanCheckPlayable env => RunMessage env EverVigilant1 where
         <> BasicCardMatch (CardWithType AssetType)
         )
       playableCards <- filterM
-        (getIsPlayable iid [DuringTurn iid, NonFast])
+        (getIsPlayable iid (toSource attrs) [DuringTurn iid, NonFast])
         cards
       e <$ when
         (notNull playableCards)

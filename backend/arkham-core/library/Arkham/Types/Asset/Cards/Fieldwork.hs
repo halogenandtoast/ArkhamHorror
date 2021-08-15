@@ -28,7 +28,7 @@ ability a = restrictedAbility
   a
   1
   ClueOnLocation
-  (ReactionAbility $ ExhaustCost $ toTarget a)
+  (ResponseAbility $ ExhaustCost $ toTarget a)
 
 instance HasAbilities env Fieldwork where
   getAbilities iid (AfterEntering iid' _) (Fieldwork attrs)

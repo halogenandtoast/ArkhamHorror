@@ -36,7 +36,7 @@ beginnersLuck = act
   (Just $ GroupClueCost (PerPlayer 4) Nothing)
 
 ability :: Token -> ActAttrs -> Ability
-ability token attrs = (mkAbility (toSource attrs) 1 (ReactionAbility Free))
+ability token attrs = (mkAbility (toSource attrs) 1 (ResponseAbility Free))
   { abilityLimit = GroupLimit PerRound 1
   , abilityMetadata = Just (TargetMetadata $ TokenTarget token)
   }

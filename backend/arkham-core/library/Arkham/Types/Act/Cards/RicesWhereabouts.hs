@@ -64,7 +64,8 @@ instance ActRunner env => RunMessage env RicesWhereabouts where
       push (AdvanceAct aid $ toSource attrs)
       pure . RicesWhereabouts $ attrs & sequenceL .~ Act 2 B
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
-      alchemyLabsInPlay <- isJust <$> getLocationIdWithTitle "Alchemy Labs"
+      alchemyLabsInPlay <- isJust
+        <$> selectOne (LocationWithTitle "Alchemy Labs")
       agendaStep <- unAgendaStep <$> getStep
       completedTheHouseAlwaysWins <-
         elem "02062" . map unCompletedScenarioId <$> getSetList ()

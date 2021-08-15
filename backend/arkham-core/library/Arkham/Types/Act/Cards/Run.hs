@@ -9,6 +9,7 @@ import qualified Arkham.Act.Cards as Cards
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
+import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (Run)
 import Arkham.Types.SkillType
 import Arkham.Types.Source
@@ -27,7 +28,7 @@ instance HasAbilities env Run where
 instance ActRunner env => RunMessage env Run where
   runMessage msg a@(Run attrs@ActAttrs {..}) = case msg of
     WhenEnterLocation iid lid -> do
-      isEngineCar <- elem lid <$> getLocationIdWithTitle "Engine Car"
+      isEngineCar <- elem lid <$> selectOne (LocationWithTitle "Engine Car")
       if isEngineCar
         then do
           pushAll

@@ -15,6 +15,7 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.LocationId
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
@@ -48,7 +49,7 @@ instance (HasName env LocationId, ActRunner env) => RunMessage env AscendingTheH
         & (sequenceL .~ Act (unActStep $ actStep actSequence) B)
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       sentinelPeak <- fromJustNote "must exist"
-        <$> getLocationIdWithTitle "Sentinel Peak"
+        <$> selectOne (LocationWithTitle "Sentinel Peak")
       sethBishop <- EncounterCard <$> genEncounterCard Enemies.sethBishop
       a <$ pushAll
         [CreateEnemyAt sethBishop sentinelPeak Nothing, NextAct actId "02281"]

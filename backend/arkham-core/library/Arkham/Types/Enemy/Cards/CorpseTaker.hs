@@ -35,8 +35,8 @@ instance EnemyRunner env => RunMessage env CorpseTaker where
   runMessage msg e@(CorpseTaker attrs@EnemyAttrs {..}) = case msg of
     EndMythos -> pure $ CorpseTaker $ attrs & doomL +~ 1
     EndEnemy -> do
-      mRivertown <- getLocationIdWithTitle "Rivertown"
-      mMainPath <- getLocationIdWithTitle "Main Path"
+      mRivertown <- selectOne (LocationWithTitle "Rivertown")
+      mMainPath <- selectOne (LocationWithTitle "Main Path")
       let
         locationId =
           fromJustNote "one of these has to exist" (mRivertown <|> mMainPath)

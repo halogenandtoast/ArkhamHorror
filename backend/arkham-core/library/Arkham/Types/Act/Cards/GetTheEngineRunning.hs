@@ -10,6 +10,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
@@ -24,7 +25,7 @@ getTheEngineRunning =
 
 instance ActionRunner env => HasAbilities env GetTheEngineRunning where
   getAbilities i window (GetTheEngineRunning x) = do
-    mEngineCar <- getLocationIdWithTitle "Engine Car"
+    mEngineCar <- selectOne $ LocationWithTitle "Engine Car"
     case mEngineCar of
       Just engineCar -> do
         mustAdvance <- (== 0) . unClueCount <$> getCount engineCar

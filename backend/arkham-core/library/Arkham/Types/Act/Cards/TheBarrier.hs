@@ -31,7 +31,7 @@ instance ActRunner env => RunMessage env TheBarrier where
   runMessage msg a@(TheBarrier attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       hallwayId <- fromJustNote "must exist"
-        <$> getLocationIdWithTitle "Hallway"
+        <$> selectOne (LocationWithTitle "Hallway")
       investigatorIds <- getSetList hallwayId
       requiredClueCount <- getPlayerCountValue (PerPlayer 3)
       pushAll

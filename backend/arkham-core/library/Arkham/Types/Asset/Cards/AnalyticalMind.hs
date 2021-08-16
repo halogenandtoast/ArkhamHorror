@@ -16,6 +16,7 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype AnalyticalMind = AnalyticalMind AssetAttrs
@@ -30,8 +31,9 @@ ability attrs =
   mkAbility attrs 1 (LegacyReactionAbility $ ExhaustCost (toTarget attrs))
 
 instance HasSet CommittedCardId env InvestigatorId => HasAbilities env AnalyticalMind where
-  getAbilities i (AfterCommitedCard who _) (AnalyticalMind attrs)
-    | ownedBy attrs i && i == who = do
+  getAbilities i (Window Timing.After (CommitedCard who _)) (AnalyticalMind attrs)
+    | ownedBy attrs i && i == who
+    = do
       cardCount <- length <$> getSetList @CommittedCardId i
       pure [ ability attrs | cardCount == 1 ]
   getAbilities i window (AnalyticalMind attrs) = getAbilities i window attrs
@@ -43,7 +45,12 @@ instance HasModifiersFor env AnalyticalMind where
       [CanCommitToSkillTestPerformedByAnInvestigatorAtAnotherLocation 1]
   getModifiersFor _ _ _ = pure []
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AnalyticalMind where
+instance
+  ( HasSet InvestigatorId env ()
+  , HasQueue env
+  , HasModifiersFor env ()
+  )
+  => RunMessage env AnalyticalMind where
   runMessage msg a@(AnalyticalMind attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (DrawCards iid 1 False)

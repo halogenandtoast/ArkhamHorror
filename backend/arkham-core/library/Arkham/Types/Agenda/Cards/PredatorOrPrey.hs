@@ -18,6 +18,7 @@ import Arkham.Types.Cost
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Source
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype PredatorOrPrey = PredatorOrPrey AgendaAttrs
@@ -30,7 +31,7 @@ predatorOrPrey = agenda (1, A) PredatorOrPrey Cards.predatorOrPrey (Static 6)
 instance HasModifiersFor env PredatorOrPrey
 
 instance HasAbilities env PredatorOrPrey where
-  getAbilities _ NonFast (PredatorOrPrey attrs) =
+  getAbilities _ (Window Timing.When NonFast) (PredatorOrPrey attrs) =
     pure [mkAbility attrs 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
   getAbilities _ _ _ = pure []
 

@@ -12,9 +12,10 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
-import Arkham.Types.Message
+import Arkham.Types.Message hiding (EnemyAttacks)
 import Arkham.Types.Query
 import Arkham.Types.Source
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype Aquinnah1 = Aquinnah1 AssetAttrs
@@ -34,7 +35,7 @@ dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
 instance HasModifiersFor env Aquinnah1
 
 instance ActionRunner env => HasAbilities env Aquinnah1 where
-  getAbilities iid (WhenEnemyAttacks who enemyId) (Aquinnah1 a)
+  getAbilities iid (Window Timing.When (EnemyAttacks who enemyId)) (Aquinnah1 a)
     | ownedBy a iid && iid == who = do
       locationId <- getId @LocationId iid
       enemyIds <- filterSet (/= enemyId) <$> getSet locationId

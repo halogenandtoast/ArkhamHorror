@@ -8,6 +8,7 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -16,6 +17,7 @@ import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype ClarityOfMind = ClarityOfMind AssetAttrs
@@ -26,7 +28,7 @@ clarityOfMind :: AssetCard ClarityOfMind
 clarityOfMind = arcane ClarityOfMind Cards.clarityOfMind
 
 instance HasAbilities env ClarityOfMind where
-  getAbilities iid NonFast (ClarityOfMind a) = pure
+  getAbilities iid (Window Timing.When NonFast) (ClarityOfMind a) = pure
     [ restrictedAbility
         (toSource a)
         1
@@ -42,13 +44,7 @@ instance HasAbilities env ClarityOfMind where
 
 instance HasModifiersFor env ClarityOfMind
 
-instance
-  ( HasQueue env
-  , HasModifiersFor env ()
-  , HasSet InvestigatorId env LocationId
-  , HasId LocationId env InvestigatorId
-  )
-  => RunMessage env ClarityOfMind where
+instance AssetRunner env => RunMessage env ClarityOfMind where
   runMessage msg a@(ClarityOfMind attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId @LocationId iid

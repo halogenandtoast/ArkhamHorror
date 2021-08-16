@@ -19,6 +19,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype ChicagoTypewriter4 = ChicagoTypewriter4 AssetAttrs
@@ -34,11 +35,12 @@ chicagoTypewriter4 = assetWith
 instance HasModifiersFor env ChicagoTypewriter4
 
 instance HasAbilities env ChicagoTypewriter4 where
-  getAbilities iid NonFast (ChicagoTypewriter4 a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility
-        (Just Action.Fight)
-        (Costs [ActionCost 1, AdditionalActionsCost, UseCost (toId a) Ammo 1])
-    ]
+  getAbilities iid (Window Timing.When NonFast) (ChicagoTypewriter4 a)
+    | ownedBy a iid = pure
+      [ mkAbility a 1 $ ActionAbility
+          (Just Action.Fight)
+          (Costs [ActionCost 1, AdditionalActionsCost, UseCost (toId a) Ammo 1])
+      ]
   getAbilities _ _ _ = pure []
 
 getAbilitiesSpent :: Payment -> Int

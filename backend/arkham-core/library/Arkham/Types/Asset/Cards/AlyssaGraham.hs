@@ -16,6 +16,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype AlyssaGraham = AlyssaGraham AssetAttrs
@@ -30,8 +31,8 @@ ability a =
   mkAbility (toSource a) 1 (FastAbility $ Costs [ExhaustCost (toTarget a)])
 
 instance HasAbilities env AlyssaGraham where
-  getAbilities iid FastPlayerWindow (AlyssaGraham a) | ownedBy a iid =
-    pure [ability a]
+  getAbilities iid (Window Timing.When FastPlayerWindow) (AlyssaGraham a)
+    | ownedBy a iid = pure [ability a]
   getAbilities _ _ _ = pure []
 
 instance HasModifiersFor env AlyssaGraham where

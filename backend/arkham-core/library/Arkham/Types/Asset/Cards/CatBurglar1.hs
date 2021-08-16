@@ -19,6 +19,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype CatBurglar1 = CatBurglar1 AssetAttrs
@@ -47,7 +48,8 @@ ability a =
     }
 
 instance HasAbilities env CatBurglar1 where
-  getAbilities iid NonFast (CatBurglar1 a) | ownedBy a iid = pure [ability a]
+  getAbilities iid (Window Timing.When NonFast) (CatBurglar1 a)
+    | ownedBy a iid = pure [ability a]
   getAbilities i window (CatBurglar1 x) = getAbilities i window x
 
 instance AssetRunner env => RunMessage env CatBurglar1 where

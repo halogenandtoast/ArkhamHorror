@@ -15,7 +15,9 @@ import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
+import qualified Arkham.Types.Window as Window
 
 newtype BindMonster2 = BindMonster2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor env)
@@ -25,14 +27,15 @@ bindMonster2 :: EventCard BindMonster2
 bindMonster2 = event BindMonster2 Cards.bindMonster2
 
 ability :: Target -> EventAttrs -> Ability
-ability target attrs = (mkAbility (toSource attrs) 1 (LegacyReactionAbility Free))
-  { abilityMetadata = Just (TargetMetadata target)
-  }
+ability target attrs =
+  (mkAbility (toSource attrs) 1 (LegacyReactionAbility Free))
+    { abilityMetadata = Just (TargetMetadata target)
+    }
 
 instance HasAbilities env BindMonster2 where
-  getAbilities iid (WhenWouldReady target) (BindMonster2 attrs@EventAttrs {..})
-    | iid == eventOwner = pure
-      [ ability target attrs | target `elem` eventAttachedTarget ]
+  getAbilities iid (Window Timing.When (Window.WouldReady target)) (BindMonster2 attrs@EventAttrs {..})
+    | iid == eventOwner
+    = pure [ ability target attrs | target `elem` eventAttachedTarget ]
   getAbilities _ _ _ = pure []
 
 instance HasQueue env => RunMessage env BindMonster2 where

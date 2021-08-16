@@ -15,6 +15,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
@@ -35,7 +36,7 @@ instance HasModifiersFor env WrackedByNightmares where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasAbilities env WrackedByNightmares where
-  getAbilities iid NonFast (WrackedByNightmares a) =
+  getAbilities iid (Window Timing.When NonFast) (WrackedByNightmares a) =
     withTreacheryInvestigator a $ \tormented -> do
       treacheryLocation <- getId tormented
       investigatorLocationId <- getId @LocationId iid

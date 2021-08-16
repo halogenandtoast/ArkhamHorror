@@ -15,11 +15,12 @@ import Arkham.Types.EffectMetadata
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Matcher
-import Arkham.Types.Message
+import Arkham.Types.Message hiding (RevealToken)
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -36,14 +37,16 @@ beginnersLuck = act
   (Just $ GroupClueCost (PerPlayer 4) Nothing)
 
 ability :: Token -> ActAttrs -> Ability
-ability token attrs = (mkAbility (toSource attrs) 1 (LegacyReactionAbility Free))
-  { abilityLimit = GroupLimit PerRound 1
-  , abilityMetadata = Just (TargetMetadata $ TokenTarget token)
-  }
+ability token attrs =
+  (mkAbility (toSource attrs) 1 (LegacyReactionAbility Free))
+    { abilityLimit = GroupLimit PerRound 1
+    , abilityMetadata = Just (TargetMetadata $ TokenTarget token)
+    }
 
 instance ActionRunner env => HasAbilities env BeginnersLuck where
-  getAbilities iid (WhenRevealToken who token) (BeginnersLuck x) | iid == who =
-    pure [ability token x]
+  getAbilities iid (Window Timing.When (RevealToken who token)) (BeginnersLuck x)
+    | iid == who
+    = pure [ability token x]
   getAbilities iid window (BeginnersLuck x) = getAbilities iid window x
 
 instance

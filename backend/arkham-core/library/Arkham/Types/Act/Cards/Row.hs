@@ -18,6 +18,7 @@ import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype Row = Row ActAttrs
@@ -28,8 +29,8 @@ row :: ActCard Row
 row = act (3, A) Row Cards.row Nothing
 
 instance ActionRunner env => HasAbilities env Row where
-  getAbilities iid (WhenWouldDrawEncounterCard who) (Row x) | iid == who =
-    pure [mkAbility x 1 ForcedAbility]
+  getAbilities iid (Window Timing.When (WouldDrawEncounterCard who)) (Row x)
+    | iid == who = pure [mkAbility x 1 ForcedAbility]
   getAbilities iid window (Row x) = getAbilities iid window x
 
 instance

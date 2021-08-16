@@ -20,6 +20,7 @@ import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype AlchemicalConcoction = AlchemicalConcoction AssetAttrs
@@ -30,8 +31,9 @@ alchemicalConcoction :: AssetCard AlchemicalConcoction
 alchemicalConcoction = asset AlchemicalConcoction Cards.alchemicalConcoction
 
 instance HasAbilities env AlchemicalConcoction where
-  getAbilities iid NonFast (AlchemicalConcoction a) | ownedBy a iid =
-    pure [mkAbility a 1 (ActionAbility (Just Action.Fight) $ ActionCost 1)]
+  getAbilities iid (Window Timing.When NonFast) (AlchemicalConcoction a)
+    | ownedBy a iid = pure
+      [mkAbility a 1 (ActionAbility (Just Action.Fight) $ ActionCost 1)]
   getAbilities _ _ _ = pure []
 
 instance (HasId CardCode env EnemyId, HasSkillTest env) => HasModifiersFor env AlchemicalConcoction where
@@ -46,7 +48,12 @@ instance (HasId CardCode env EnemyId, HasSkillTest env) => HasModifiersFor env A
         _ -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AlchemicalConcoction where
+instance
+  ( HasSet InvestigatorId env ()
+  , HasQueue env
+  , HasModifiersFor env ()
+  )
+  => RunMessage env AlchemicalConcoction where
   runMessage msg a@(AlchemicalConcoction attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ pushAll

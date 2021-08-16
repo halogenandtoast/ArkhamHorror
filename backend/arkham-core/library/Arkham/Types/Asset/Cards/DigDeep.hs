@@ -12,30 +12,27 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype DigDeep = DigDeep AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 digDeep :: AssetCard DigDeep
 digDeep = asset DigDeep Cards.digDeep
 
-instance HasModifiersFor env DigDeep
-
-ability :: Int -> AssetAttrs -> Ability
-ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)
-
 instance HasAbilities env DigDeep where
-  getAbilities iid (WhenSkillTest SkillWillpower) (DigDeep a) =
-    pure [ ability 1 a | ownedBy a iid ]
-  getAbilities iid (WhenSkillTest SkillAgility) (DigDeep a) =
-    pure [ ability 2 a | ownedBy a iid ]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (DigDeep a) = pure
+    [ restrictedAbility a idx (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ FastAbility
+      $ ResourceCost 1
+    | idx <- [1, 2]
+    ]
 
 instance (AssetRunner env) => RunMessage env DigDeep where
   runMessage msg a@(DigDeep attrs) = case msg of

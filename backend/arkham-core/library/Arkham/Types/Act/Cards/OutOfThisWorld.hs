@@ -16,6 +16,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype OutOfThisWorld = OutOfThisWorld ActAttrs
@@ -30,8 +31,8 @@ outOfThisWorld = act
   (Just $ GroupClueCost (PerPlayer 2) Nothing)
 
 instance HasAbilities env OutOfThisWorld where
-  getAbilities iid NonFast (OutOfThisWorld x) =
-    withBaseActions iid NonFast x $ do
+  getAbilities iid window@(Window Timing.When NonFast) (OutOfThisWorld x) =
+    withBaseActions iid window x $ do
       pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
   getAbilities iid window (OutOfThisWorld x) = getAbilities iid window x
 

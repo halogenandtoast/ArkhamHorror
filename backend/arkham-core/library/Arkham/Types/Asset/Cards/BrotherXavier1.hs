@@ -18,6 +18,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype BrotherXavier1 = BrotherXavier1 AssetAttrs
@@ -45,8 +46,8 @@ ability :: AssetAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (LegacyReactionAbility Free)
 
 instance HasAbilities env BrotherXavier1 where
-  getAbilities iid (WhenDefeated source) (BrotherXavier1 a) | isSource a source =
-    pure [ ability a | ownedBy a iid ]
+  getAbilities iid (Window Timing.When (Defeated source)) (BrotherXavier1 a)
+    | isSource a source = pure [ ability a | ownedBy a iid ]
   getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env BrotherXavier1 where

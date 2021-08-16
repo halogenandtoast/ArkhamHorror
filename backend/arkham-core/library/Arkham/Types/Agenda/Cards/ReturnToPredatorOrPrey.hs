@@ -18,6 +18,7 @@ import Arkham.Types.Cost
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Source
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype ReturnToPredatorOrPrey = ReturnToPredatorOrPrey AgendaAttrs
@@ -31,7 +32,7 @@ returnToPredatorOrPrey =
 instance HasModifiersFor env ReturnToPredatorOrPrey
 
 instance HasAbilities env ReturnToPredatorOrPrey where
-  getAbilities _ NonFast (ReturnToPredatorOrPrey attrs) =
+  getAbilities _ (Window Timing.When NonFast) (ReturnToPredatorOrPrey attrs) =
     pure [mkAbility attrs 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
   getAbilities _ _ _ = pure []
 

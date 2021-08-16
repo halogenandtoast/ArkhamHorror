@@ -15,6 +15,7 @@ import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
@@ -36,8 +37,9 @@ ability iid a = base
     (LegacyReactionAbility (DiscardCost (SearchedCardTarget iid $ toCardId a)))
 
 instance HasAbilities env AstoundingRevelation where
-  getAbilities iid (WhenAmongSearchedCards who) (AstoundingRevelation attrs)
-    | iid == who = pure [ability iid attrs]
+  getAbilities iid (Window Timing.When (AmongSearchedCards who)) (AstoundingRevelation attrs)
+    | iid == who
+    = pure [ability iid attrs]
   getAbilities _ _ _ = pure []
 
 instance (Query AssetMatcher env, HasQueue env) => RunMessage env AstoundingRevelation where

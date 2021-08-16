@@ -12,27 +12,32 @@ import Arkham.Types.Asset.Uses
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.SkillType
-import Arkham.Types.Window
 
 newtype ArchaicGlyphs = ArchaicGlyphs AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 archaicGlyphs :: AssetCard ArchaicGlyphs
 archaicGlyphs = asset ArchaicGlyphs Cards.archaicGlyphs
 
 instance HasAbilities env ArchaicGlyphs where
-  getAbilities iid NonFast (ArchaicGlyphs attrs) | ownedBy attrs iid = pure
-    [ mkAbility attrs 1 $ ActionAbility Nothing $ SkillIconCost 1 $ singleton
-        SkillIntellect
+  getAbilities _ _ (ArchaicGlyphs attrs) = pure
+    [ restrictedAbility attrs 1 OwnsThis
+      $ ActionAbility Nothing
+      $ SkillIconCost 1
+      $ singleton SkillIntellect
     ]
-  getAbilities iid window (ArchaicGlyphs attrs) = getAbilities iid window attrs
 
-instance HasModifiersFor env ArchaicGlyphs
-
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env ArchaicGlyphs where
+instance
+  ( HasSet InvestigatorId env ()
+  , HasQueue env
+  , HasModifiersFor env ()
+  )
+  => RunMessage env ArchaicGlyphs where
   runMessage msg a@(ArchaicGlyphs attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AddUses (toTarget attrs) Secret 1)

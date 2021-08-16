@@ -13,10 +13,11 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype DrHenryArmitage = DrHenryArmitage AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drHenryArmitage :: AssetCard DrHenryArmitage
@@ -28,10 +29,8 @@ fastAbility a card = mkAbility
   1
   (FastAbility $ Costs [DiscardCardCost card, ExhaustCost (toTarget a)])
 
-instance HasModifiersFor env DrHenryArmitage
-
 instance HasAbilities env DrHenryArmitage where
-  getAbilities iid (AfterDrawCard who card) (DrHenryArmitage a)
+  getAbilities iid (Window Timing.After (DrawCard who card)) (DrHenryArmitage a)
     | ownedBy a iid && iid == who = pure [fastAbility a card]
   getAbilities _ _ _ = pure []
 

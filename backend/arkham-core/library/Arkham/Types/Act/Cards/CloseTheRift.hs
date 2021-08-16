@@ -17,6 +17,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype CloseTheRift = CloseTheRift ActAttrs
@@ -34,8 +35,9 @@ closeTheRift = act
   )
 
 instance HasAbilities env CloseTheRift where
-  getAbilities iid NonFast (CloseTheRift x) = withBaseActions iid NonFast x $ do
-    pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
+  getAbilities iid window@(Window Timing.When NonFast) (CloseTheRift x) =
+    withBaseActions iid window x $ do
+      pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
   getAbilities iid window (CloseTheRift x) = getAbilities iid window x
 
 instance ActRunner env => RunMessage env CloseTheRift where

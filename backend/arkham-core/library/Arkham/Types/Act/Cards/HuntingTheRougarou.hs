@@ -17,8 +17,9 @@ import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window
+import Arkham.Types.Window hiding (EnemyDefeated)
 
 newtype HuntingTheRougarou = HuntingTheRougarou ActAttrs
   deriving anyclass IsAct
@@ -34,8 +35,8 @@ ability attrs = (mkAbility (toSource attrs) 1 (FastAbility Free))
   }
 
 instance ActionRunner env => HasAbilities env HuntingTheRougarou where
-  getAbilities iid FastPlayerWindow (HuntingTheRougarou a) =
-    withBaseActions iid FastPlayerWindow a $ do
+  getAbilities iid window@(Window Timing.When FastPlayerWindow) (HuntingTheRougarou a)
+    = withBaseActions iid window a $ do
       mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
       engagedWithTheRougarou <- maybe
         (pure False)

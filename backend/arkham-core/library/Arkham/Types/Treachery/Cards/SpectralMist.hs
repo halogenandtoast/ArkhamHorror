@@ -16,6 +16,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
@@ -36,7 +37,7 @@ instance HasId LocationId env InvestigatorId => HasModifiersFor env SpectralMist
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasAbilities env SpectralMist where
-  getAbilities iid NonFast (SpectralMist a) = do
+  getAbilities iid (Window Timing.When NonFast) (SpectralMist a) = do
     investigatorLocationId <- getId @LocationId iid
     pure
       [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1

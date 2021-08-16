@@ -14,6 +14,7 @@ import Arkham.Types.Resolution
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype DisruptingTheRitual = DisruptingTheRitual ActAttrs
@@ -29,7 +30,7 @@ disruptingTheRitual = actWith
   (cluesL ?~ 0)
 
 instance HasAbilities env DisruptingTheRitual where
-  getAbilities _ NonFast (DisruptingTheRitual a) = pure
+  getAbilities _ (Window Timing.When NonFast) (DisruptingTheRitual a) = pure
     [ mkAbility
         (toSource a)
         1

@@ -27,13 +27,15 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Query
+import {-# SOURCE #-} Arkham.Types.SkillTest
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait (Trait, toTraits)
-import Arkham.Types.Window
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 import Control.Monad.Extra (allM, andM, anyM)
 import Data.HashSet (size)
 import Data.UUID (nil)
@@ -125,9 +127,10 @@ meetsActionRestrictions iid window = \case
   ActionAbilityWithSkill mAction _ cost ->
     meetsActionRestrictions iid window $ ActionAbility mAction cost
   ActionAbility (Just action) _ -> case action of
-    Action.Fight -> hasFightActions iid window
-    Action.Evade -> hasEvadeActions iid window
-    Action.Investigate -> hasInvestigateActions iid window
+    Action.Fight -> hasFightActions iid (Matcher.DuringTurn Matcher.You)
+    Action.Evade -> hasEvadeActions iid (Matcher.DuringTurn Matcher.You)
+    Action.Investigate ->
+      hasInvestigateActions iid (Matcher.DuringTurn Matcher.You)
     -- The below actions may not be handled correctly yet
     Action.Ability -> pure True
     Action.Draw -> pure True
@@ -762,56 +765,41 @@ fightAction source n costs =
 
 hasFightActions
   :: forall env m
-   . (MonadIO m, MonadReader env m, HasAbilities env ActionType)
+   . (MonadIO m, MonadReader env m, Query Matcher.ActionMatcher env)
   => InvestigatorId
-  -> Window
+  -> Matcher.WindowMatcher
   -> m Bool
-hasFightActions i NonFast = do
-  enemyActions <- getAbilities i NonFast EnemyActionType
-  pure $ flip
-    any
-    enemyActions
-    \ability -> case abilityType ability of
-      ActionAbility (Just Action.Fight) _ -> True
-      _ -> False
-hasFightActions _ _ = pure False
+hasFightActions _ window = notNull
+  <$> select (Matcher.ActionIs Action.Fight <> Matcher.ActionWindow window)
 
 hasEvadeActions
   :: forall env m
-   . (MonadIO m, MonadReader env m, HasAbilities env ActionType)
+   . (MonadIO m, MonadReader env m, Query Matcher.ActionMatcher env)
   => InvestigatorId
-  -> Window
+  -> Matcher.WindowMatcher
   -> m Bool
-hasEvadeActions i NonFast = do
-  enemyActions <- getAbilities i NonFast EnemyActionType
-  pure $ flip
-    any
-    enemyActions
-    \ability -> case abilityType ability of
-      ActionAbility (Just Action.Evade) _ -> True
-      _ -> False
-hasEvadeActions _ _ = pure False
+hasEvadeActions _ window = notNull
+  <$> select (Matcher.ActionIs Action.Evade <> Matcher.ActionWindow window)
 
 hasInvestigateActions
   :: forall env m
-   . (MonadIO m, MonadReader env m, HasAbilities env ActionType)
+   . (MonadIO m, MonadReader env m, Query Matcher.ActionMatcher env)
   => InvestigatorId
-  -> Window
+  -> Matcher.WindowMatcher
   -> m Bool
-hasInvestigateActions i NonFast = do
-  locationActions <- getAbilities i NonFast LocationActionType
-  pure $ flip
-    any
-    locationActions
-    \ability -> case abilityType ability of
-      ActionAbility (Just Action.Investigate) _ -> True
-      _ -> False
-hasInvestigateActions _ _ = pure False
+hasInvestigateActions _ window = notNull <$> select
+  (Matcher.ActionIs Action.Investigate <> Matcher.ActionWindow window)
 
 type CanCheckPlayable env
   = ( HasModifiersFor env ()
     , Query Matcher.AssetMatcher env
     , Query Matcher.InvestigatorMatcher env
+    , Query Matcher.ActionMatcher env
+    , Query Matcher.LocationMatcher env
+    , Query Matcher.TreacheryMatcher env
+    , Query Matcher.EnemyMatcher env
+    , Query Matcher.SkillMatcher env
+    , HasSkillTest env
     , CanCheckFast env
     , HasSet ClassSymbol env AssetId
     , HasList HandCard env InvestigatorId
@@ -865,7 +853,9 @@ getIsPlayableWithResources _ _ _ _ (EncounterCard _) = pure False -- TODO: there
 getIsPlayableWithResources iid source availableResources windows c@(PlayerCard _)
   = do
     modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
-    let notFastWindow = any (`elem` windows) [DuringTurn iid]
+    let
+      notFastWindow =
+        any (`elem` windows) [Window Timing.When (Window.DuringTurn iid)]
     modifiedCardCost <- getModifiedCardCost iid c
     passesCriterias <- maybe
       (pure True)
@@ -875,8 +865,8 @@ getIsPlayableWithResources iid source availableResources windows c@(PlayerCard _
       (pure False)
       (cardInFastWindows iid source c windows)
       (cdFastWindow pcDef)
-    canEvade <- hasEvadeActions iid NonFast
-    canFight <- hasFightActions iid NonFast
+    canEvade <- hasEvadeActions iid (Matcher.DuringTurn Matcher.You)
+    canFight <- hasFightActions iid (Matcher.DuringTurn Matcher.You)
     passesLimits <- allM passesLimit (cdLimits pcDef)
     pure
       $ (cdCardType pcDef /= SkillType)
@@ -926,14 +916,28 @@ passesCriteria
   -> Criteria
   -> m Bool
 passesCriteria iid source windows = \case
+  Criteria.Never -> pure False
   Criteria.Self -> case source of
     InvestigatorSource iid' -> pure $ iid == iid'
     _ -> pure False
+  Criteria.OwnsThis -> case source of
+    AssetSource aid -> member aid
+      <$> select (Matcher.AssetOwnedBy $ Matcher.InvestigatorWithId iid)
+    _ -> pure False
+  Criteria.DuringSkillTest skillTestMatcher -> do
+    mSkillTest <- getSkillTest
+    case mSkillTest of
+      Nothing -> pure False
+      Just skillTest -> skillTestMatches iid source skillTest skillTestMatcher
   Criteria.DuringTurn who -> do
     iids <- select who
     pure
-      $ any ((`elem` windows) . DuringTurn) iids
-      || (iid `elem` iids && FastPlayerWindow `elem` windows)
+      $ any ((`elem` windows) . Window Timing.When . Window.DuringTurn) iids
+      || (iid
+         `elem` iids
+         && Window Timing.When Window.FastPlayerWindow
+         `elem` windows
+         )
   Criteria.CardExists cardMatcher -> notNull <$> getList @Card cardMatcher
   Criteria.ExtendedCardExists cardMatcher ->
     notNull <$> getList @Card cardMatcher
@@ -1119,121 +1123,121 @@ windowMatches iid source window' = \case
     -- cards <- filter (/= c) <$> getList cardMatcher
     cards <- getList cardMatcher
     anyM (getIsPlayable iid source [window']) cards
-  Matcher.PhaseBegins _whenMatcher phaseMatcher -> case window' of
-    AnyPhaseBegins -> pure $ phaseMatcher == Matcher.AnyPhase
-    PhaseBegins _ -> case phaseMatcher of
+  Matcher.PhaseBegins whenMatcher phaseMatcher -> case window' of
+    Window t Window.AnyPhaseBegins | t == whenMatcher ->
+      pure $ phaseMatcher == Matcher.AnyPhase
+    Window t (Window.PhaseBegins _) | t == whenMatcher -> case phaseMatcher of
       Matcher.AnyPhase -> pure True
     _ -> pure False
-  Matcher.AfterTurnBegins whoMatcher -> case window' of
-    AfterTurnBegins who -> matchWho iid who whoMatcher
+  Matcher.TurnBegins whenMatcher whoMatcher -> case window' of
+    Window t (Window.TurnBegins who) | t == whenMatcher ->
+      matchWho iid who whoMatcher
     _ -> pure False
-  Matcher.WhenWouldHaveSkillTestResult whoMatcher _ skillTestResultMatcher ->
-    case skillTestResultMatcher of
+  Matcher.WouldHaveSkillTestResult whenMatcher whoMatcher _ skillTestResultMatcher
+    -> case skillTestResultMatcher of
       Matcher.FailureResult _ -> case window' of
-        WhenWouldFailSkillTest who -> matchWho iid who whoMatcher
+        Window t (Window.WouldFailSkillTest who) | t == whenMatcher ->
+          matchWho iid who whoMatcher
         _ -> pure False
       Matcher.SuccessResult _ -> pure False -- no pass window exists yet, add below too if added
       Matcher.AnyResult -> case window' of
-        WhenWouldFailSkillTest who -> matchWho iid who whoMatcher
+        Window Timing.When (Window.WouldFailSkillTest who) ->
+          matchWho iid who whoMatcher
         -- TODO: Add success window if it exists
         _ -> pure False
   Matcher.SkillTestResult whenMatcher whoMatcher skillMatcher skillTestResultMatcher
     -> case skillTestResultMatcher of
       Matcher.FailureResult gameValueMatcher -> case window' of
-        AfterFailInvestigationSkillTest who n
-          | whenMatcher
-            == Timing.After
-            && skillMatcher
-            == Matcher.WhileInvestigating
-          -> liftA2
+        Window t (Window.FailInvestigationSkillTest who n)
+          | whenMatcher == t && skillMatcher == Matcher.WhileInvestigating -> liftA2
             (&&)
             (matchWho iid who whoMatcher)
             (gameValueMatches n gameValueMatcher)
-        AfterFailSkillTest who n
-          | whenMatcher == Timing.After && skillMatcher == Matcher.AnySkillTest -> liftA2
+        Window t (Window.FailSkillTest who n)
+          | whenMatcher == t && skillMatcher == Matcher.AnySkillTest -> liftA2
             (&&)
             (matchWho iid who whoMatcher)
             (gameValueMatches n gameValueMatcher)
         _ -> pure False
       Matcher.SuccessResult gameValueMatcher
         | skillMatcher == Matcher.AnySkillTest -> case window' of
-          AfterPassSkillTest _ _ who n | whenMatcher == Timing.After -> liftA2
+          Window t (Window.PassSkillTest _ _ who n) | whenMatcher == t -> liftA2
             (&&)
             (matchWho iid who whoMatcher)
             (gameValueMatches n gameValueMatcher)
           _ -> pure False
       Matcher.AnyResult -> case window' of
-        AfterFailSkillTest who _ | whenMatcher == Timing.After ->
+        Window t (Window.FailSkillTest who _) | whenMatcher == t ->
           matchWho iid who whoMatcher
-        AfterPassSkillTest _ _ who _ | whenMatcher == Timing.After ->
+        Window t (Window.PassSkillTest _ _ who _) | whenMatcher == t ->
           matchWho iid who whoMatcher
         _ -> pure False
       _ -> pure False
   Matcher.DuringTurn whoMatcher -> case window' of
-    NonFast -> matchWho iid iid whoMatcher
-    DuringTurn who -> matchWho iid who whoMatcher
-    FastPlayerWindow -> do
+    Window Timing.When Window.NonFast -> matchWho iid iid whoMatcher
+    Window Timing.When (Window.DuringTurn who) -> matchWho iid who whoMatcher
+    Window Timing.When Window.FastPlayerWindow -> do
       miid <- selectOne Matcher.TurnInvestigator
       pure $ Just iid == miid
     _ -> pure False
   Matcher.OrWindowMatcher matchers ->
     anyM (windowMatches iid source window') matchers
-  Matcher.WhenEnemySpawns whereMatcher enemyMatcher -> case window' of
-    WhenEnemySpawns enemyId locationId -> liftA2
-      (&&)
-      (enemyMatches enemyId enemyMatcher)
-      (locationMatches iid locationId whereMatcher)
-    _ -> pure False
+  Matcher.EnemySpawns timingMatcher whereMatcher enemyMatcher ->
+    case window' of
+      Window t (Window.EnemySpawns enemyId locationId) | t == timingMatcher ->
+        liftA2
+          (&&)
+          (enemyMatches enemyId enemyMatcher)
+          (locationMatches iid locationId whereMatcher)
+      _ -> pure False
   Matcher.EnemyAttacks timingMatcher whoMatcher enemyMatcher -> case window' of
-    WhenEnemyAttacks who enemyId | timingMatcher == Timing.When -> liftA2
+    Window t (Window.EnemyAttacks who enemyId) | timingMatcher == t -> liftA2
       (&&)
       (matchWho iid who whoMatcher)
       (enemyMatches enemyId enemyMatcher)
     _ -> pure False
   Matcher.EnemyEvaded timingMatcher whoMatcher enemyMatcher -> case window' of
-    AfterEnemyEvaded who enemyId | timingMatcher == Timing.After -> liftA2
+    Window t (Window.EnemyEvaded who enemyId) | timingMatcher == t -> liftA2
       (&&)
       (enemyMatches enemyId enemyMatcher)
       (matchWho iid who whoMatcher)
     _ -> pure False
   Matcher.MythosStep mythosStepMatcher -> case window' of
-    WhenAllDrawEncounterCard ->
+    Window t Window.AllDrawEncounterCard | t == Timing.When ->
       pure $ mythosStepMatcher == Matcher.WhenAllDrawEncounterCard
     _ -> pure False
   Matcher.RevealChaosToken whenMatcher whoMatcher tokenMatcher ->
     case window' of
-      WhenRevealToken who token | whenMatcher == Timing.When -> liftA2
-        (&&)
-        (matchWho iid who whoMatcher)
-        (matchToken who token tokenMatcher)
-      AfterRevealToken who token | whenMatcher == Timing.After -> liftA2
+      Window t (Window.RevealToken who token) | whenMatcher == t -> liftA2
         (&&)
         (matchWho iid who whoMatcher)
         (matchToken who token tokenMatcher)
       _ -> pure False
   Matcher.EnemyDefeated timingMatcher whoMatcher enemyMatcher ->
     case window' of
-      AfterEnemyDefeated who enemyId | timingMatcher == Timing.After -> liftA2
+      Window t (Window.EnemyDefeated who enemyId) | timingMatcher == t -> liftA2
         (&&)
         (enemyMatches enemyId enemyMatcher)
         (matchWho iid who whoMatcher)
       _ -> pure False
-  Matcher.FastPlayerWindow -> pure $ window' == FastPlayerWindow
-  Matcher.DealtDamageOrHorror whoMatcher -> case whoMatcher of
+  Matcher.FastPlayerWindow -> case window' of
+    Window Timing.When Window.FastPlayerWindow -> pure True
+    _ -> pure False
+  Matcher.DealtDamageOrHorror whenMatcher whoMatcher -> case whoMatcher of
     Matcher.You -> case window' of
-      WhenWouldTakeDamageOrHorror _ (InvestigatorTarget iid') _ _ ->
-        pure $ iid == iid'
+      Window t (Window.WouldTakeDamageOrHorror _ (InvestigatorTarget iid') _ _)
+        | t == whenMatcher -> pure $ iid == iid'
       _ -> pure False
     _ -> pure False
   Matcher.DrawCard whenMatcher whoMatcher cardMatcher -> case window' of
-    WhenDrawCard who card | whenMatcher == Timing.When -> liftA2
+    Window t (Window.DrawCard who card) | whenMatcher == t -> liftA2
       (&&)
       (matchWho iid who whoMatcher)
       (pure $ cardMatch card cardMatcher)
-    AfterDrawCard who card | whenMatcher == Timing.After -> liftA2
-      (&&)
-      (matchWho iid who whoMatcher)
-      (pure $ cardMatch card cardMatcher)
+    _ -> pure False
+  Matcher.AssetEntersPlay timingMatcher assetMatcher -> case window' of
+    Window t (Window.EnterPlay (AssetTarget aid)) | t == timingMatcher ->
+      member aid <$> select assetMatcher
     _ -> pure False
 
 matchWho
@@ -1300,6 +1304,9 @@ locationMatches iid locationId = \case
   Matcher.AccessibleLocation -> do
     yourLocationId <- getId @LocationId iid
     member (AccessibleLocationId locationId) <$> getSet yourLocationId
+  Matcher.AccessibleFrom locationMatcher -> do
+    lids <- selectList locationMatcher
+    anyM (fmap (member (AccessibleLocationId locationId)) . getSet) lids
   Matcher.ConnectedLocation -> do
     yourLocationId <- getId @LocationId iid
     member (ConnectedLocationId locationId) <$> getSet yourLocationId
@@ -1326,6 +1333,39 @@ locationMatches iid locationId = \case
       (InvestigatorSource iid)
       (LocationTarget locationId)
     pure $ CannotInvestigate `notElem` modifiers
+
+skillTestMatches
+  :: ( MonadReader env m
+     , HasId LocationId env InvestigatorId
+     , Query Matcher.SkillMatcher env
+     , Query Matcher.EnemyMatcher env
+     , Query Matcher.TreacheryMatcher env
+     )
+  => InvestigatorId
+  -> Source
+  -> SkillTest
+  -> Matcher.SkillTestMatcher
+  -> m Bool
+skillTestMatches iid source st = \case
+  Matcher.AnySkillTest -> pure True
+  Matcher.UsingThis -> pure $ source == skillTestSource st
+  Matcher.WhileInvestigating -> case skillTestAction st of
+    Just Action.Investigate -> pure True
+    _ -> pure False
+  Matcher.SkillTestOnTreachery treacheryMatcher -> case skillTestSource st of
+    TreacherySource tid -> member tid <$> select treacheryMatcher
+    _ -> pure False
+  Matcher.WhileAttackingAnEnemy enemyMatcher -> case skillTestAction st of
+    Just Action.Fight -> case skillTestTarget st of
+      EnemyTarget eid -> member eid <$> select enemyMatcher
+      _ -> pure False
+    _ -> pure False
+  Matcher.SkillTestWithSkill sk -> notNull <$> select sk
+  Matcher.SkillTestAtYourLocation -> liftA2
+    (==)
+    (getId @LocationId iid)
+    (getId @LocationId $ skillTestInvestigator st)
+  Matcher.SkillTestMatches ms -> allM (skillTestMatches iid source st) ms
 
 matchToken
   :: (HasTokenValue env (), MonadReader env m, MonadIO m)

@@ -23,6 +23,7 @@ import Arkham.Types.Resolution
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype Fold = Fold ActAttrs
@@ -33,21 +34,22 @@ fold :: ActCard Fold
 fold = act (3, A) Fold Cards.fold Nothing
 
 instance ActionRunner env => HasAbilities env Fold where
-  getAbilities iid NonFast (Fold attrs) = withBaseActions iid NonFast attrs $ do
-    investigatorLocationId <- getId @LocationId iid
-    maid <- selectOne (assetIs Cards.peterClover)
-    case maid of
-      Nothing -> pure []
-      Just aid -> do
-        miid <- fmap unOwnerId <$> getId aid
-        assetLocationId <- getId aid
-        pure
-          [ mkAbility
-              (ProxySource (AssetSource aid) (toSource attrs))
-              1
-              (ActionAbility (Just Parley) $ ActionCost 1)
-          | isNothing miid && Just investigatorLocationId == assetLocationId
-          ]
+  getAbilities iid window@(Window Timing.When NonFast) (Fold attrs) =
+    withBaseActions iid window attrs $ do
+      investigatorLocationId <- getId @LocationId iid
+      maid <- selectOne (assetIs Cards.peterClover)
+      case maid of
+        Nothing -> pure []
+        Just aid -> do
+          miid <- fmap unOwnerId <$> getId aid
+          assetLocationId <- getId aid
+          pure
+            [ mkAbility
+                (ProxySource (AssetSource aid) (toSource attrs))
+                1
+                (ActionAbility (Just Parley) $ ActionCost 1)
+            | isNothing miid && Just investigatorLocationId == assetLocationId
+            ]
   getAbilities i window (Fold x) = getAbilities i window x
 
 instance ActRunner env => RunMessage env Fold where

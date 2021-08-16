@@ -11,6 +11,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target

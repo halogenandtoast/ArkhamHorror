@@ -6,20 +6,20 @@ module Arkham.Types.Investigator.Cards.RolandBanks
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.Card.CardDef
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Id
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Matcher
-import Arkham.Types.Message
+import Arkham.Types.Message hiding (EnemyDefeated)
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Stats
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.WindowMatcher as Match
 
 newtype RolandBanks = RolandBanks InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
@@ -46,7 +46,7 @@ instance HasAbilities env RolandBanks where
           a
           1
           (Self <> LocationExists (YourLocation <> LocationWithClues))
-          (ReactionAbility (Match.EnemyDefeated Match.After You AnyEnemy) Free)
+          (ReactionAbility (EnemyDefeated Timing.After You AnyEnemy) Free)
         & (abilityLimitL .~ PlayerLimit PerRound 1)
     ]
 

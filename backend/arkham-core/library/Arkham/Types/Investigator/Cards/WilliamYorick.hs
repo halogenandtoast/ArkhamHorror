@@ -3,7 +3,7 @@ module Arkham.Types.Investigator.Cards.WilliamYorick where
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.Card hiding (DuringTurn)
+import Arkham.Types.Card
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost

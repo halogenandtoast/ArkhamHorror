@@ -7,9 +7,9 @@ import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (museumHalls)
 import Arkham.Types.Ability
-import Arkham.Types.Card.CardDef
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers

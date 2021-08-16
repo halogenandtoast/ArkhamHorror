@@ -6,7 +6,6 @@ module Arkham.Types.Location.Cards.DiningCar
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (diningCar)
-import Arkham.Types.Card.CardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.Direction
 import Arkham.Types.GameValue
@@ -15,6 +14,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query

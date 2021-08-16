@@ -6,7 +6,7 @@ import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
-import Arkham.Types.Card hiding (DuringTurn)
+import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ClassSymbol
@@ -18,7 +18,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (DuringTurn, EnemyEvaded, FastPlayerWindow)
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name

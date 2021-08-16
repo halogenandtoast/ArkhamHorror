@@ -7,6 +7,7 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Id
 import qualified Arkham.Types.Keyword as Keyword
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target

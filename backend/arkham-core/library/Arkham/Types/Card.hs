@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Types.Card.CardCode as X
 import Arkham.Types.Card.CardDef as X
-import Arkham.Types.Card.CardMatcher as X
 import Arkham.Types.Card.CardType as X
 import Arkham.Types.Card.Class as X
 import Arkham.Types.Card.Cost

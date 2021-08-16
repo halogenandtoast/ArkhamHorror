@@ -11,6 +11,7 @@ import Arkham.Types.Event.Cards
 import Arkham.Types.Event.Runner
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Source

@@ -11,7 +11,7 @@ import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Investigator.Attrs
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (FastPlayerWindow)
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Stats

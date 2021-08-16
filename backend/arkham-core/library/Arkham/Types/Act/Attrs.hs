@@ -15,7 +15,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost as X
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (FastPlayerWindow)
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Query

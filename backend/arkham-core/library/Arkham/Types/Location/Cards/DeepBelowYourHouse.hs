@@ -3,12 +3,12 @@ module Arkham.Types.Location.Cards.DeepBelowYourHouse where
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (deepBelowYourHouse)
-import Arkham.Types.Card.CardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
@@ -29,7 +29,8 @@ deepBelowYourHouse = location
 instance HasModifiersFor env DeepBelowYourHouse
 
 instance ActionRunner env => HasAbilities env DeepBelowYourHouse where
-  getAbilities i window (DeepBelowYourHouse attrs) = getAbilities i window attrs
+  getAbilities i window (DeepBelowYourHouse attrs) =
+    getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env DeepBelowYourHouse where
   runMessage msg l@(DeepBelowYourHouse attrs) = case msg of

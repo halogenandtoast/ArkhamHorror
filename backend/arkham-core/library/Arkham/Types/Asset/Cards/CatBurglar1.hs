@@ -10,9 +10,9 @@ import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Card.CardDef
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.LocationId
 import Arkham.Types.Matcher
 import Arkham.Types.Message
@@ -34,20 +34,17 @@ instance HasModifiersFor env CatBurglar1 where
   getModifiersFor _ _ _ = pure []
 
 ability :: AssetAttrs -> Ability
-ability a = (restrictedAbility
-              a
-              1
-              (AnyCriteria
-                [ EnemyExists EnemyEngagedWithYou
-                , LocationExists AccessibleLocation
-                ]
-              )
-              (ActionAbility Nothing
-              $ Costs [ActionCost 1, ExhaustCost (toTarget a)]
-              )
-            )
-  { abilityDoesNotProvokeAttacksOfOpportunity = True
-  }
+ability a =
+  (restrictedAbility
+      a
+      1
+      (AnyCriteria
+        [EnemyExists EnemyEngagedWithYou, LocationExists AccessibleLocation]
+      )
+      (ActionAbility Nothing $ Costs [ActionCost 1, ExhaustCost (toTarget a)])
+    )
+    { abilityDoesNotProvokeAttacksOfOpportunity = True
+    }
 
 instance HasAbilities env CatBurglar1 where
   getAbilities iid NonFast (CatBurglar1 a) | ownedBy a iid = pure [ability a]

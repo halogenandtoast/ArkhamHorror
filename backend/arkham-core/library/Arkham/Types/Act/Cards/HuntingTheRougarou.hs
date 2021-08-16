@@ -11,7 +11,7 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Id
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (EnemyDefeated, FastPlayerWindow)
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution

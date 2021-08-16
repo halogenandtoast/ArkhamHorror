@@ -36,7 +36,7 @@ instance HasModifiersFor env ToothOfEztli where
 
 ability :: AssetAttrs -> Ability
 ability a =
-  mkAbility (toSource a) 1 (ResponseAbility $ ExhaustCost (toTarget a))
+  mkAbility (toSource a) 1 (LegacyReactionAbility $ ExhaustCost (toTarget a))
 
 instance HasAbilities env ToothOfEztli where
   getAbilities iid (AfterPassSkillTest _ (TreacherySource _) who _) (ToothOfEztli a)

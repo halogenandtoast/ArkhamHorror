@@ -25,7 +25,7 @@ ritualCandles :: AssetCard RitualCandles
 ritualCandles = hand RitualCandles Cards.ritualCandles
 
 ability :: AssetAttrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (ResponseAbility Free)
+ability attrs = mkAbility (toSource attrs) 1 (LegacyReactionAbility Free)
 
 instance HasAbilities env RitualCandles where
   getAbilities iid (WhenRevealToken who token) (RitualCandles x)

@@ -5,7 +5,7 @@ import Arkham.Prelude
 import qualified Arkham.Types.Action as Action
 import qualified Arkham.Types.Asset.Uses as Uses
 import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.CardDef
+import Arkham.Types.Card.CardDef hiding (DuringTurn)
 import qualified Arkham.Types.Card.CardDef as Restriction
 import Arkham.Types.Card.CardMatcher
 import Arkham.Types.Card.CardType

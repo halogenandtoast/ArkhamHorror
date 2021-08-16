@@ -44,7 +44,7 @@ instance InvestigatorRunner env => HasAbilities env ZoeySamaras where
     = do
       let
         ability =
-          mkAbility (InvestigatorSource investigatorId) 1 (ResponseAbility Free)
+          mkAbility (InvestigatorSource investigatorId) 1 (LegacyReactionAbility Free)
       modifiers' <- getModifiers
         (InvestigatorSource investigatorId)
         (InvestigatorTarget investigatorId)

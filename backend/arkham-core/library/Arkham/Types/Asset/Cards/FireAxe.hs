@@ -38,7 +38,7 @@ fightAbility attrs = mkAbility
 
 reactionAbility :: AssetAttrs -> Ability
 reactionAbility attrs = base { abilityLimit = PlayerLimit PerTestOrAbility 3 } -- per attack
-  where base = mkAbility (toSource attrs) 2 (ResponseAbility $ ResourceCost 1)
+  where base = mkAbility (toSource attrs) 2 (LegacyReactionAbility $ ResourceCost 1)
 
 instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env FireAxe where
   getModifiersFor (SkillTestSource _ _ source _ (Just Action.Fight)) (InvestigatorTarget iid) (FireAxe a)

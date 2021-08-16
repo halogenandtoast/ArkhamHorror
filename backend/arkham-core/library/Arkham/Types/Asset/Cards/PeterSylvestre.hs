@@ -31,7 +31,7 @@ instance HasModifiersFor env PeterSylvestre where
   getModifiersFor _ _ _ = pure []
 
 ability :: AssetAttrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (ResponseAbility Free)
+ability attrs = mkAbility (toSource attrs) 1 (LegacyReactionAbility Free)
 
 instance HasAbilities env PeterSylvestre where
   getAbilities iid (AfterEndTurn who) (PeterSylvestre a)

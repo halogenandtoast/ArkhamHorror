@@ -24,7 +24,7 @@ luckyDice2 = accessory LuckyDice2 Cards.luckyDice2
 
 ability :: AssetAttrs -> Token -> Ability
 ability attrs token =
-  (mkAbility (toSource attrs) 1 (ResponseAbility $ ResourceCost 2))
+  (mkAbility (toSource attrs) 1 (LegacyReactionAbility $ ResourceCost 2))
     { abilityMetadata = Just (TargetMetadata (TokenTarget token))
     }
 

@@ -1,25 +1,25 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Types.Card.CardDef where
 
-import Arkham.Prelude
+import           Arkham.Prelude
 
-import Arkham.Json
-import Arkham.Types.Action (Action)
-import Arkham.Types.Asset.Uses
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.CardMatcher
-import Arkham.Types.Card.CardType
-import Arkham.Types.Card.Cost
-import Arkham.Types.ClassSymbol
-import Arkham.Types.CommitRestriction
-import Arkham.Types.EncounterSet
-import Arkham.Types.Id
-import Arkham.Types.Keyword (HasKeywords(..), Keyword)
-import Arkham.Types.Matcher
-import Arkham.Types.Name
-import Arkham.Types.SkillType
-import Arkham.Types.Trait
-import Arkham.Types.WindowMatcher (WindowMatcher)
+import           Arkham.Json
+import           Arkham.Types.Action            (Action)
+import           Arkham.Types.Asset.Uses
+import           Arkham.Types.Card.CardCode
+import           Arkham.Types.Card.CardMatcher
+import           Arkham.Types.Card.CardType
+import           Arkham.Types.Card.Cost
+import           Arkham.Types.ClassSymbol
+import           Arkham.Types.CommitRestriction
+import           Arkham.Types.EncounterSet
+import           Arkham.Types.Id
+import           Arkham.Types.Keyword           (HasKeywords (..), Keyword)
+import           Arkham.Types.Matcher
+import           Arkham.Types.Name
+import           Arkham.Types.SkillType
+import           Arkham.Types.Trait
+import           Arkham.Types.WindowMatcher     (WindowMatcher)
 
 data AttackOfOpportunityModifier = DoesNotProvokeAttacksOfOpportunity
   deriving stock (Show, Eq, Generic)
@@ -34,32 +34,32 @@ data EventChoice = EventChooseN Int EventChoicesRepeatable
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 data CardDef = CardDef
-  { cdCardCode :: CardCode
-  , cdName :: Name
-  , cdRevealedName :: Maybe Name
-  , cdCost :: Maybe CardCost
-  , cdLevel :: Int
-  , cdCardType :: CardType
-  , cdWeakness :: Bool
-  , cdClassSymbol :: Maybe ClassSymbol
-  , cdSkills :: [SkillType]
-  , cdCardTraits :: HashSet Trait
-  , cdKeywords :: HashSet Keyword
-  , cdFastWindow :: Maybe WindowMatcher
-  , cdAction :: Maybe Action
-  , cdRevelation :: Bool
-  , cdVictoryPoints :: Maybe Int
-  , cdCriteria :: Maybe Criteria
-  , cdCommitRestrictions :: [CommitRestriction]
+  { cdCardCode                     :: CardCode
+  , cdName                         :: Name
+  , cdRevealedName                 :: Maybe Name
+  , cdCost                         :: Maybe CardCost
+  , cdLevel                        :: Int
+  , cdCardType                     :: CardType
+  , cdWeakness                     :: Bool
+  , cdClassSymbol                  :: Maybe ClassSymbol
+  , cdSkills                       :: [SkillType]
+  , cdCardTraits                   :: HashSet Trait
+  , cdKeywords                     :: HashSet Keyword
+  , cdFastWindow                   :: Maybe WindowMatcher
+  , cdAction                       :: Maybe Action
+  , cdRevelation                   :: Bool
+  , cdVictoryPoints                :: Maybe Int
+  , cdCriteria                     :: Maybe Criteria
+  , cdCommitRestrictions           :: [CommitRestriction]
   , cdAttackOfOpportunityModifiers :: [AttackOfOpportunityModifier]
-  , cdPermanent :: Bool
-  , cdEncounterSet :: Maybe EncounterSet
-  , cdEncounterSetQuantity :: Maybe Int
-  , cdUnique :: Bool
-  , cdDoubleSided :: Bool
-  , cdLimits :: [CardLimit]
-  , cdExceptional :: Bool
-  , cdUses :: Uses
+  , cdPermanent                    :: Bool
+  , cdEncounterSet                 :: Maybe EncounterSet
+  , cdEncounterSetQuantity         :: Maybe Int
+  , cdUnique                       :: Bool
+  , cdDoubleSided                  :: Bool
+  , cdLimits                       :: [CardLimit]
+  , cdExceptional                  :: Bool
+  , cdUses                         :: Uses
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
@@ -116,17 +116,17 @@ instance HasCardCode CardDef where
 
 cardMatch :: (HasCardCode a, HasCardDef a) => a -> CardMatcher -> Bool
 cardMatch a = \case
-  AnyCard -> True
-  CardWithType cardType' -> toCardType a == cardType'
+  AnyCard                   -> True
+  CardWithType cardType'    -> toCardType a == cardType'
   CardWithCardCode cardCode -> toCardCode a == cardCode
-  CardWithTitle title -> (nameTitle . cdName $ toCardDef a) == title
-  CardWithTrait trait -> trait `member` toTraits a
-  CardWithClass role -> cdClassSymbol (toCardDef a) == Just role
-  CardMatches ms -> all (cardMatch a) ms
-  CardWithOneOf ms -> any (cardMatch a) ms
-  CardWithoutKeyword k -> k `notMember` cdKeywords (toCardDef a)
-  NonWeakness -> not . cdWeakness $ toCardDef a
-  NonExceptional -> not . cdExceptional $ toCardDef a
+  CardWithTitle title       -> (nameTitle . cdName $ toCardDef a) == title
+  CardWithTrait trait       -> trait `member` toTraits a
+  CardWithClass role        -> cdClassSymbol (toCardDef a) == Just role
+  CardMatches ms            -> all (cardMatch a) ms
+  CardWithOneOf ms          -> any (cardMatch a) ms
+  CardWithoutKeyword k      -> k `notMember` cdKeywords (toCardDef a)
+  NonWeakness               -> not . cdWeakness $ toCardDef a
+  NonExceptional            -> not . cdExceptional $ toCardDef a
 
 testCardDef :: CardType -> CardCode -> CardDef
 testCardDef cardType cardCode = CardDef
@@ -168,6 +168,7 @@ data Criteria
   | ScenarioCardHasResignAbility
   | ClueOnLocation
   | FirstAction
+  | DuringTurn InvestigatorMatcher
   | OnLocation LocationId
   | CardExists CardMatcher
   | ExtendedCardExists ExtendedCardMatcher
@@ -188,12 +189,12 @@ data Criteria
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 instance Semigroup Criteria where
-  NoRestriction <> x = x
-  x <> NoRestriction = x
+  NoRestriction <> x           = x
+  x <> NoRestriction           = x
   Criterias xs <> Criterias ys = Criterias $ xs <> ys
-  Criterias xs <> x = Criterias $ x : xs
-  x <> Criterias xs = Criterias $ x : xs
-  x <> y = Criterias [x, y]
+  Criterias xs <> x            = Criterias $ x : xs
+  x <> Criterias xs            = Criterias $ x : xs
+  x <> y                       = Criterias [x, y]
 
 instance Monoid Criteria where
   mempty = NoRestriction

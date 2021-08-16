@@ -25,7 +25,7 @@ bindMonster2 :: EventCard BindMonster2
 bindMonster2 = event BindMonster2 Cards.bindMonster2
 
 ability :: Target -> EventAttrs -> Ability
-ability target attrs = (mkAbility (toSource attrs) 1 (ResponseAbility Free))
+ability target attrs = (mkAbility (toSource attrs) 1 (LegacyReactionAbility Free))
   { abilityMetadata = Just (TargetMetadata target)
   }
 

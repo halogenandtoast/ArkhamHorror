@@ -27,7 +27,7 @@ analyticalMind = asset AnalyticalMind Cards.analyticalMind
 
 ability :: AssetAttrs -> Ability
 ability attrs =
-  mkAbility attrs 1 (ResponseAbility $ ExhaustCost (toTarget attrs))
+  mkAbility attrs 1 (LegacyReactionAbility $ ExhaustCost (toTarget attrs))
 
 instance HasSet CommittedCardId env InvestigatorId => HasAbilities env AnalyticalMind where
   getAbilities i (AfterCommitedCard who _) (AnalyticalMind attrs)

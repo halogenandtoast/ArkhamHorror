@@ -7,7 +7,8 @@ import Arkham.Types.Ability
 import Arkham.Types.Action (Action, TakenAction(..))
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.CampaignLogKey
-import Arkham.Types.Card
+import Arkham.Types.Card hiding (DuringTurn)
+import qualified Arkham.Types.Card as Criteria
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
 import Arkham.Types.ClassSymbol
@@ -116,6 +117,7 @@ meetsActionRestrictions
   -> AbilityType
   -> m Bool
 meetsActionRestrictions iid window = \case
+  Objective aType -> meetsActionRestrictions iid window aType
   ActionAbilityWithBefore mAction mBeforeAction cost -> liftA2
     (||)
     (meetsActionRestrictions iid window $ ActionAbility mAction cost)
@@ -137,7 +139,7 @@ meetsActionRestrictions iid window = \case
     Action.Resource -> pure True
   ActionAbility Nothing _ -> pure True
   FastAbility _ -> pure True
-  ResponseAbility _ -> pure True
+  LegacyReactionAbility _ -> pure True
   ReactionAbility _ _ -> pure True
   ForcedAbility -> pure True
   AbilityEffect _ -> pure True
@@ -173,7 +175,8 @@ getCanAffordAbilityCost iid Ability {..} = case abilityType of
     (||)
     (getCanAffordCost iid abilitySource mAction [] cost)
     (getCanAffordCost iid abilitySource mBeforeAction [] cost)
-  ResponseAbility cost -> getCanAffordCost iid abilitySource Nothing [] cost
+  LegacyReactionAbility cost ->
+    getCanAffordCost iid abilitySource Nothing [] cost
   ReactionAbility _ cost -> getCanAffordCost iid abilitySource Nothing [] cost
   FastAbility cost -> getCanAffordCost iid abilitySource Nothing [] cost
   ForcedAbility -> pure True
@@ -187,7 +190,7 @@ getCanAffordUse
   -> m Bool
 getCanAffordUse iid ability = case abilityLimit ability of
   NoLimit -> case abilityType ability of
-    ResponseAbility _ ->
+    LegacyReactionAbility _ ->
       notElem (iid, ability) . map unUsedAbility <$> getList ()
     ReactionAbility _ _ ->
       notElem (iid, ability) . map unUsedAbility <$> getList ()
@@ -925,6 +928,11 @@ passesCriteria iid source windows = \case
   Self -> case source of
     InvestigatorSource iid' -> pure $ iid == iid'
     _ -> pure False
+  Criteria.DuringTurn who -> do
+    iids <- select who
+    pure
+      $ any ((`elem` windows) . DuringTurn) iids
+      || (iid `elem` iids && FastPlayerWindow `elem` windows)
   CardExists cardMatcher -> notNull <$> getList @Card cardMatcher
   ExtendedCardExists cardMatcher -> notNull <$> getList @Card cardMatcher
   PlayableCardExists cardMatcher -> do

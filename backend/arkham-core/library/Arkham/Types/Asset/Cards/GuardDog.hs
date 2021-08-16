@@ -29,7 +29,7 @@ ability source attrs = base
   { abilityLimit = PlayerLimit PerTestOrAbility 1
   , abilityMetadata = Just (SourceMetadata source)
   }
-  where base = mkAbility (toSource attrs) 1 (ResponseAbility Free)
+  where base = mkAbility (toSource attrs) 1 (LegacyReactionAbility Free)
 
 instance HasAbilities env GuardDog where
   getAbilities iid (WhenDealtDamage source@(EnemySource _) target) (GuardDog attrs)

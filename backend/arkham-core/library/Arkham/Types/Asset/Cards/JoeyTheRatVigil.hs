@@ -9,7 +9,7 @@ import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
-import Arkham.Types.Card
+import Arkham.Types.Card hiding (DuringTurn)
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message

@@ -29,7 +29,7 @@ scavenging = asset Scavenging Cards.scavenging
 instance HasModifiersFor env Scavenging
 
 ability :: AssetAttrs -> Ability
-ability a = mkAbility a 1 $ ResponseAbility $ ExhaustCost (toTarget a)
+ability a = mkAbility a 1 $ LegacyReactionAbility $ ExhaustCost (toTarget a)
 
 instance ActionRunner env => HasAbilities env Scavenging where
   getAbilities iid (AfterPassSkillTest (Just Action.Investigate) _ who n) (Scavenging a)

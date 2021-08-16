@@ -14,7 +14,7 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Id
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (PhaseBegins)
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Phase

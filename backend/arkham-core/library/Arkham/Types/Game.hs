@@ -17,7 +17,7 @@ import Arkham.Types.Agenda
 import Arkham.Types.Asset
 import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.Campaign
-import Arkham.Types.Card hiding (DuringTurn)
+import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
@@ -44,7 +44,14 @@ import qualified Arkham.Types.Keyword as Keyword
 import qualified Arkham.Types.Label as L
 import Arkham.Types.Location
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding
+  ( AfterTurnBegins
+  , DuringTurn
+  , EnemyAttacks
+  , EnemyDefeated
+  , FastPlayerWindow
+  , WhenEnemySpawns
+  )
 import qualified Arkham.Types.Matcher as M
 import Arkham.Types.Message
 import Arkham.Types.Modifier

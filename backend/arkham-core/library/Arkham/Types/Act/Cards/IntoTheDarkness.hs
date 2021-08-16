@@ -8,6 +8,7 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Source
 

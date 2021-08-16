@@ -3,13 +3,13 @@ module Arkham.Types.Location.Cards.Easttown where
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (easttown)
-import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher
 import Arkham.Types.Modifier
 import Arkham.Types.Target
 import Arkham.Types.Trait

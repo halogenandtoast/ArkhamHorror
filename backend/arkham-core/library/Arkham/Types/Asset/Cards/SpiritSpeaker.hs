@@ -12,7 +12,7 @@ import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (FastPlayerWindow)
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
@@ -26,12 +26,13 @@ spiritSpeaker :: AssetCard SpiritSpeaker
 spiritSpeaker = asset SpiritSpeaker Cards.spiritSpeaker
 
 instance Query AssetMatcher env => HasAbilities env SpiritSpeaker where
-  getAbilities iid FastPlayerWindow (SpiritSpeaker attrs) | ownedBy attrs iid = do
-    targets <- select (AssetOwnedBy You <> AssetWithUseType Charge)
-    pure
-      [ mkAbility attrs 1 $ FastAbility $ ExhaustCost (toTarget attrs)
-      | notNull targets
-      ]
+  getAbilities iid FastPlayerWindow (SpiritSpeaker attrs) | ownedBy attrs iid =
+    do
+      targets <- select (AssetOwnedBy You <> AssetWithUseType Charge)
+      pure
+        [ mkAbility attrs 1 $ FastAbility $ ExhaustCost (toTarget attrs)
+        | notNull targets
+        ]
   getAbilities iid window (SpiritSpeaker attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env SpiritSpeaker

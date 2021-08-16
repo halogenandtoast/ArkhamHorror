@@ -13,7 +13,7 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Id
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (EnemyDefeated)
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution

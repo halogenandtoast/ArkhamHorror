@@ -12,7 +12,7 @@ import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (EnemyDefeated)
 import Arkham.Types.Message
 import Arkham.Types.Resolution
 

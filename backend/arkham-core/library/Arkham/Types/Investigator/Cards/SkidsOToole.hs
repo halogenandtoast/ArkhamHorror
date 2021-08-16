@@ -6,12 +6,12 @@ module Arkham.Types.Investigator.Cards.SkidsOToole
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.Card.CardDef
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Investigator.Attrs
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (DuringTurn)
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Stats

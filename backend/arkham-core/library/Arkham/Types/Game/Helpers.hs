@@ -8,12 +8,13 @@ import Arkham.Types.Action (Action, TakenAction(..))
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card hiding (DuringTurn)
-import qualified Arkham.Types.Card as Criteria
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria (Criteria)
+import qualified Arkham.Types.Criteria as Criteria
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
 import Arkham.Types.GameValue
@@ -21,7 +22,7 @@ import Arkham.Types.Id
 import Arkham.Types.Keyword
 import qualified Arkham.Types.Keyword as Keyword
 import qualified Arkham.Types.Label as Location
-import Arkham.Types.Matcher
+import qualified Arkham.Types.Matcher as Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
@@ -29,11 +30,10 @@ import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait (Trait, toTraits)
 import Arkham.Types.Window
-import Arkham.Types.WindowMatcher (ValueMatcher, WindowMatcher)
-import qualified Arkham.Types.WindowMatcher as Matcher
 import Control.Monad.Extra (allM, andM, anyM)
 import Data.HashSet (size)
 import Data.UUID (nil)
@@ -242,10 +242,11 @@ getCanAffordCost iid source mAction windows = \case
   Costs xs -> and <$> traverse (getCanAffordCost iid source mAction windows) xs
   ExhaustCost target -> case target of
     AssetTarget aid -> do
-      readyAssetIds <- selectList AssetReady
+      readyAssetIds <- selectList Matcher.AssetReady
       pure $ aid `elem` readyAssetIds
     _ -> error "Not handled"
-  ExhaustAssetCost matcher -> notNull <$> select (matcher <> AssetReady)
+  ExhaustAssetCost matcher ->
+    notNull <$> select (matcher <> Matcher.AssetReady)
   UseCost aid _uType n -> do
     uses <- unUsesCount <$> getCount aid
     pure $ uses >= n
@@ -739,21 +740,21 @@ skillTestModifiers source target modifiers = CreateWindowModifierEffect
   (toTarget target)
 
 getJustLocationIdByName
-  :: (MonadReader env m, HasId (Maybe LocationId) env LocationMatcher)
+  :: (MonadReader env m, HasId (Maybe LocationId) env Matcher.LocationMatcher)
   => Name
   -> m LocationId
 getJustLocationIdByName name =
   fromJustNote ("Missing " <> show name) <$> getLocationIdByName name
 
 getLocationIdByName
-  :: (MonadReader env m, HasId (Maybe LocationId) env LocationMatcher)
+  :: (MonadReader env m, HasId (Maybe LocationId) env Matcher.LocationMatcher)
   => Name
   -> m (Maybe LocationId)
 getLocationIdByName name = getId matcher
  where
   matcher = case (nameTitle name, nameSubtitle name) of
-    (title, Just subtitle) -> LocationWithFullTitle title subtitle
-    (title, Nothing) -> LocationWithTitle title
+    (title, Just subtitle) -> Matcher.LocationWithFullTitle title subtitle
+    (title, Nothing) -> Matcher.LocationWithTitle title
 
 fightAction :: SourceEntity source => source -> Int -> [Cost] -> Ability
 fightAction source n costs =
@@ -809,25 +810,25 @@ hasInvestigateActions _ _ = pure False
 
 type CanCheckPlayable env
   = ( HasModifiersFor env ()
-    , Query AssetMatcher env
-    , Query InvestigatorMatcher env
+    , Query Matcher.AssetMatcher env
+    , Query Matcher.InvestigatorMatcher env
     , CanCheckFast env
     , HasSet ClassSymbol env AssetId
     , HasList HandCard env InvestigatorId
-    , HasList Card env ExtendedCardMatcher
+    , HasList Card env Matcher.ExtendedCardMatcher
     , HasCount ActionTakenCount env InvestigatorId
     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
     , HasSet InvestigatorId env LocationId
     , HasSet EnemyId env LocationId
-    , HasSet EnemyId env EnemyMatcher
-    , HasSet LocationId env LocationMatcher
+    , HasSet EnemyId env Matcher.EnemyMatcher
+    , HasSet LocationId env Matcher.LocationMatcher
     , HasSet Trait env EnemyId
     , HasSet Trait env EnemyId
     , HasCount ClueCount env LocationId
     , HasCount SpendableClueCount env ()
     , HasCount SpendableClueCount env InvestigatorId
     , HasCount UsesCount env AssetId
-    , HasId (Maybe LocationId) env LocationMatcher
+    , HasId (Maybe LocationId) env Matcher.LocationMatcher
     , HasList TakenAction env InvestigatorId
     , HasSet Trait env Source
     , HasAbilities env ActionType
@@ -836,8 +837,8 @@ type CanCheckPlayable env
     , HasCount DoomCount env AssetId
     , HasCount DoomCount env InvestigatorId
     , HasList DiscardedPlayerCard env InvestigatorId
-    , HasSet InvestigatorId env InvestigatorMatcher
-    , HasSet AssetId env AssetMatcher
+    , HasSet InvestigatorId env Matcher.InvestigatorMatcher
+    , HasSet AssetId env Matcher.AssetMatcher
     , HasSet InvestigatorId env ()
     )
 
@@ -901,14 +902,14 @@ getIsPlayableWithResources iid source availableResources windows c@(PlayerCard _
   passesLimit (LimitPerInvestigator m) = case toCardType c of
     AssetType -> do
       n <- size <$> getSet @AssetId
-        (AssetOwnedBy (InvestigatorWithId iid)
-        <> AssetWithTitle (nameTitle $ toName c)
+        (Matcher.AssetOwnedBy (Matcher.InvestigatorWithId iid)
+        <> Matcher.AssetWithTitle (nameTitle $ toName c)
         )
       pure $ m > n
     _ -> error $ "Not handling card type: " <> show (toCardType c)
   passesLimit (LimitPerTrait t m) = case toCardType c of
     AssetType -> do
-      n <- size <$> getSet @AssetId (AssetWithTrait t)
+      n <- size <$> getSet @AssetId (Matcher.AssetWithTrait t)
       pure $ m > n
     _ -> error $ "Not handling card type: " <> show (toCardType c)
 
@@ -925,7 +926,7 @@ passesCriteria
   -> Criteria
   -> m Bool
 passesCriteria iid source windows = \case
-  Self -> case source of
+  Criteria.Self -> case source of
     InvestigatorSource iid' -> pure $ iid == iid'
     _ -> pure False
   Criteria.DuringTurn who -> do
@@ -933,19 +934,20 @@ passesCriteria iid source windows = \case
     pure
       $ any ((`elem` windows) . DuringTurn) iids
       || (iid `elem` iids && FastPlayerWindow `elem` windows)
-  CardExists cardMatcher -> notNull <$> getList @Card cardMatcher
-  ExtendedCardExists cardMatcher -> notNull <$> getList @Card cardMatcher
-  PlayableCardExists cardMatcher -> do
+  Criteria.CardExists cardMatcher -> notNull <$> getList @Card cardMatcher
+  Criteria.ExtendedCardExists cardMatcher ->
+    notNull <$> getList @Card cardMatcher
+  Criteria.PlayableCardExists cardMatcher -> do
     results <- getList @Card cardMatcher
     anyM (getIsPlayable iid source windows) results
-  FirstAction -> do
+  Criteria.FirstAction -> do
     n <- unActionTakenCount <$> getCount iid
     pure $ n == 0
-  NoRestriction -> pure True
-  OnLocation lid -> do
+  Criteria.NoRestriction -> pure True
+  Criteria.OnLocation lid -> do
     location <- getId iid
     pure $ location == lid
-  ReturnableCardInDiscard AnyPlayerDiscard traits -> do
+  Criteria.ReturnableCardInDiscard Criteria.AnyPlayerDiscard traits -> do
     investigatorIds <-
       filterM
           (fmap (notElem CardsCannotLeaveYourDiscardPile)
@@ -964,7 +966,7 @@ passesCriteria iid source windows = \case
         traitsToMatch ->
           filter (any (`elem` traitsToMatch) . toTraits) discards
     pure $ notNull filteredDiscards
-  CardInDiscard AnyPlayerDiscard traits -> do
+  Criteria.CardInDiscard Criteria.AnyPlayerDiscard traits -> do
     investigatorIds <- getInvestigatorIds
     discards <-
       concat
@@ -977,39 +979,40 @@ passesCriteria iid source windows = \case
         traitsToMatch ->
           filter (any (`elem` traitsToMatch) . toTraits) discards
     pure $ notNull filteredDiscards
-  ClueOnLocation -> do
+  Criteria.ClueOnLocation -> do
     location <- getId iid
     liftA2
       (&&)
       (pure $ location /= LocationId (CardId nil))
       ((> 0) . unClueCount <$> getCount location)
-  EnemyExists matcher -> notNull <$> getSet @EnemyId matcher
-  NoEnemyExists matcher -> null <$> getSet @EnemyId matcher
-  AssetExists matcher -> notNull <$> getSet @AssetId matcher
-  InvestigatorExists matcher -> notNull <$> getSet @InvestigatorId matcher
-  Criterias rs -> allM (passesCriteria iid source windows) rs
-  AnyCriteria rs -> anyM (passesCriteria iid source windows) rs
-  LocationExists matcher -> notNull <$> getSet @LocationId matcher
-  AnotherInvestigatorInSameLocation -> do
+  Criteria.EnemyExists matcher -> notNull <$> getSet @EnemyId matcher
+  Criteria.NoEnemyExists matcher -> null <$> getSet @EnemyId matcher
+  Criteria.AssetExists matcher -> notNull <$> getSet @AssetId matcher
+  Criteria.InvestigatorExists matcher ->
+    notNull <$> getSet @InvestigatorId matcher
+  Criteria.Criterias rs -> allM (passesCriteria iid source windows) rs
+  Criteria.AnyCriteria rs -> anyM (passesCriteria iid source windows) rs
+  Criteria.LocationExists matcher -> notNull <$> getSet @LocationId matcher
+  Criteria.AnotherInvestigatorInSameLocation -> do
     location <- getId iid
     liftA2
       (&&)
       (pure $ location /= LocationId (CardId nil))
       (notNull <$> getSet @InvestigatorId location)
-  InvestigatorIsAlone -> do
+  Criteria.InvestigatorIsAlone -> do
     location <- getId iid
     liftA2
       (&&)
       (pure $ location /= LocationId (CardId nil))
       ((== 1) . size <$> getSet @InvestigatorId location)
-  OwnCardWithDoom -> do
-    assetIds <- selectList (AssetOwnedBy You)
+  Criteria.OwnCardWithDoom -> do
+    assetIds <- selectList (Matcher.AssetOwnedBy Matcher.You)
     investigatorDoomCount <- unDoomCount <$> getCount iid
     assetsWithDoomCount <- filterM
       (fmap ((> 0) . unDoomCount) . getCount)
       assetIds
     pure $ investigatorDoomCount > 0 || notNull assetsWithDoomCount
-  ScenarioCardHasResignAbility -> do
+  Criteria.ScenarioCardHasResignAbility -> do
     actions' <- concat . concat <$> sequence
       [ traverse
           (getAbilities iid window)
@@ -1024,7 +1027,10 @@ passesCriteria iid source windows = \case
         _ -> False
 
 getModifiedCardCost
-  :: (MonadReader env m, HasModifiersFor env (), HasList Card env CardMatcher)
+  :: ( MonadReader env m
+     , HasModifiersFor env ()
+     , HasList Card env Matcher.CardMatcher
+     )
   => InvestigatorId
   -> Card
   -> m Int
@@ -1055,9 +1061,9 @@ getModifiedCardCost iid c@(EncounterCard _) = do
 
 type CanCheckFast env
   = ( HasSet Trait env EnemyId
-    , HasSet InvestigatorId env Who
+    , HasSet InvestigatorId env Matcher.Who
     , HasList UnderneathCard env InvestigatorId
-    , HasList Card env CardMatcher
+    , HasList Card env Matcher.CardMatcher
     , HasCount DamageCount env InvestigatorId
     , HasCount HorrorCount env InvestigatorId
     , HasCount ClueCount env LocationId
@@ -1074,7 +1080,7 @@ type CanCheckFast env
     , HasId CardCode env EnemyId
     , HasSet Trait env LocationId
     , HasSet Keyword env EnemyId
-    , HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)
+    , HasSet FarthestLocationId env (InvestigatorId, Matcher.LocationMatcher)
     , HasName env LocationId
     , HasName env EnemyId
     , HasCount PlayerCount env ()
@@ -1093,7 +1099,7 @@ cardInFastWindows
   -> Source
   -> Card
   -> [Window]
-  -> WindowMatcher
+  -> Matcher.WindowMatcher
   -> m Bool
 cardInFastWindows iid source _ windows matcher =
   anyM (\window -> windowMatches iid source window matcher) windows
@@ -1104,7 +1110,7 @@ windowMatches
   => InvestigatorId
   -> Source
   -> Window
-  -> WindowMatcher
+  -> Matcher.WindowMatcher
   -> m Bool
 windowMatches iid source window' = \case
   Matcher.AnyWindow -> pure True
@@ -1136,7 +1142,7 @@ windowMatches iid source window' = \case
       Matcher.FailureResult gameValueMatcher -> case window' of
         AfterFailInvestigationSkillTest who n
           | whenMatcher
-            == Matcher.After
+            == Timing.After
             && skillMatcher
             == Matcher.WhileInvestigating
           -> liftA2
@@ -1144,22 +1150,22 @@ windowMatches iid source window' = \case
             (matchWho iid who whoMatcher)
             (gameValueMatches n gameValueMatcher)
         AfterFailSkillTest who n
-          | whenMatcher == Matcher.After && skillMatcher == Matcher.AnySkillTest -> liftA2
+          | whenMatcher == Timing.After && skillMatcher == Matcher.AnySkillTest -> liftA2
             (&&)
             (matchWho iid who whoMatcher)
             (gameValueMatches n gameValueMatcher)
         _ -> pure False
       Matcher.SuccessResult gameValueMatcher
         | skillMatcher == Matcher.AnySkillTest -> case window' of
-          AfterPassSkillTest _ _ who n | whenMatcher == Matcher.After -> liftA2
+          AfterPassSkillTest _ _ who n | whenMatcher == Timing.After -> liftA2
             (&&)
             (matchWho iid who whoMatcher)
             (gameValueMatches n gameValueMatcher)
           _ -> pure False
       Matcher.AnyResult -> case window' of
-        AfterFailSkillTest who _ | whenMatcher == Matcher.After ->
+        AfterFailSkillTest who _ | whenMatcher == Timing.After ->
           matchWho iid who whoMatcher
-        AfterPassSkillTest _ _ who _ | whenMatcher == Matcher.After ->
+        AfterPassSkillTest _ _ who _ | whenMatcher == Timing.After ->
           matchWho iid who whoMatcher
         _ -> pure False
       _ -> pure False
@@ -1167,7 +1173,7 @@ windowMatches iid source window' = \case
     NonFast -> matchWho iid iid whoMatcher
     DuringTurn who -> matchWho iid who whoMatcher
     FastPlayerWindow -> do
-      miid <- selectOne TurnInvestigator
+      miid <- selectOne Matcher.TurnInvestigator
       pure $ Just iid == miid
     _ -> pure False
   Matcher.OrWindowMatcher matchers ->
@@ -1179,13 +1185,13 @@ windowMatches iid source window' = \case
       (locationMatches iid locationId whereMatcher)
     _ -> pure False
   Matcher.EnemyAttacks timingMatcher whoMatcher enemyMatcher -> case window' of
-    WhenEnemyAttacks who enemyId | timingMatcher == Matcher.When -> liftA2
+    WhenEnemyAttacks who enemyId | timingMatcher == Timing.When -> liftA2
       (&&)
       (matchWho iid who whoMatcher)
       (enemyMatches enemyId enemyMatcher)
     _ -> pure False
   Matcher.EnemyEvaded timingMatcher whoMatcher enemyMatcher -> case window' of
-    AfterEnemyEvaded who enemyId | timingMatcher == Matcher.After -> liftA2
+    AfterEnemyEvaded who enemyId | timingMatcher == Timing.After -> liftA2
       (&&)
       (enemyMatches enemyId enemyMatcher)
       (matchWho iid who whoMatcher)
@@ -1196,35 +1202,35 @@ windowMatches iid source window' = \case
     _ -> pure False
   Matcher.RevealChaosToken whenMatcher whoMatcher tokenMatcher ->
     case window' of
-      WhenRevealToken who token | whenMatcher == Matcher.When -> liftA2
+      WhenRevealToken who token | whenMatcher == Timing.When -> liftA2
         (&&)
         (matchWho iid who whoMatcher)
         (matchToken who token tokenMatcher)
-      AfterRevealToken who token | whenMatcher == Matcher.After -> liftA2
+      AfterRevealToken who token | whenMatcher == Timing.After -> liftA2
         (&&)
         (matchWho iid who whoMatcher)
         (matchToken who token tokenMatcher)
       _ -> pure False
   Matcher.EnemyDefeated timingMatcher whoMatcher enemyMatcher ->
     case window' of
-      AfterEnemyDefeated who enemyId | timingMatcher == Matcher.After -> liftA2
+      AfterEnemyDefeated who enemyId | timingMatcher == Timing.After -> liftA2
         (&&)
         (enemyMatches enemyId enemyMatcher)
         (matchWho iid who whoMatcher)
       _ -> pure False
   Matcher.FastPlayerWindow -> pure $ window' == FastPlayerWindow
   Matcher.DealtDamageOrHorror whoMatcher -> case whoMatcher of
-    You -> case window' of
+    Matcher.You -> case window' of
       WhenWouldTakeDamageOrHorror _ (InvestigatorTarget iid') _ _ ->
         pure $ iid == iid'
       _ -> pure False
     _ -> pure False
   Matcher.DrawCard whenMatcher whoMatcher cardMatcher -> case window' of
-    WhenDrawCard who card | whenMatcher == Matcher.When -> liftA2
+    WhenDrawCard who card | whenMatcher == Timing.When -> liftA2
       (&&)
       (matchWho iid who whoMatcher)
       (pure $ cardMatch card cardMatcher)
-    AfterDrawCard who card | whenMatcher == Matcher.After -> liftA2
+    AfterDrawCard who card | whenMatcher == Timing.After -> liftA2
       (&&)
       (matchWho iid who whoMatcher)
       (pure $ cardMatch card cardMatcher)
@@ -1234,29 +1240,29 @@ matchWho
   :: (MonadReader env m, CanCheckPlayable env)
   => InvestigatorId
   -> InvestigatorId
-  -> InvestigatorMatcher
+  -> Matcher.InvestigatorMatcher
   -> m Bool
 matchWho iid who = \case
-  Anyone -> pure True
-  You -> pure $ who == iid
-  NotYou -> pure $ who /= iid
-  TurnInvestigator -> do
-    mTurn <- selectOne TurnInvestigator
+  Matcher.Anyone -> pure True
+  Matcher.You -> pure $ who == iid
+  Matcher.NotYou -> pure $ who /= iid
+  Matcher.TurnInvestigator -> do
+    mTurn <- selectOne Matcher.TurnInvestigator
     pure $ who == iid && Just iid == mTurn
-  InvestigatorAtYourLocation ->
+  Matcher.InvestigatorAtYourLocation ->
     liftA2 (==) (getId @LocationId iid) (getId @LocationId who)
-  InvestigatorCanMove -> do
+  Matcher.InvestigatorCanMove -> do
     notElem CannotMove
       <$> getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
-  InvestigatorWithDamage -> (> 0) . unDamageCount <$> getCount who
-  InvestigatorWithHorror -> (> 0) . unHorrorCount <$> getCount who
-  InvestigatorWithId iid' -> pure $ who == iid'
-  InvestigatorMatches is -> allM (matchWho iid who) is
+  Matcher.InvestigatorWithDamage -> (> 0) . unDamageCount <$> getCount who
+  Matcher.InvestigatorWithHorror -> (> 0) . unHorrorCount <$> getCount who
+  Matcher.InvestigatorWithId iid' -> pure $ who == iid'
+  Matcher.InvestigatorMatches is -> allM (matchWho iid who) is
 
 gameValueMatches
   :: (MonadReader env m, HasCount PlayerCount env ())
   => Int
-  -> ValueMatcher
+  -> Matcher.ValueMatcher
   -> m Bool
 gameValueMatches n = \case
   Matcher.AnyValue -> pure True
@@ -1265,7 +1271,7 @@ gameValueMatches n = \case
 enemyMatches
   :: (MonadReader env m, CanCheckPlayable env)
   => EnemyId
-  -> EnemyMatcher
+  -> Matcher.EnemyMatcher
   -> m Bool
 enemyMatches enemyId mtchr = member enemyId <$> getSet mtchr
 
@@ -1273,46 +1279,49 @@ locationMatches
   :: (MonadReader env m, CanCheckPlayable env)
   => InvestigatorId
   -> LocationId
-  -> LocationMatcher
+  -> Matcher.LocationMatcher
   -> m Bool
 locationMatches iid locationId = \case
-  LocationWithLabel label ->
+  Matcher.LocationWithLabel label ->
     (== label) . Location.unLabel <$> Location.getLabel locationId
-  LocationWithTitle title -> (== title) . nameTitle <$> getName locationId
-  LocationWithFullTitle title subtitle ->
+  Matcher.LocationWithTitle title ->
+    (== title) . nameTitle <$> getName locationId
+  Matcher.LocationWithFullTitle title subtitle ->
     (== Name title (Just subtitle)) <$> getName locationId
-  LocationWithId lid -> pure $ lid == locationId
-  Anywhere -> pure True
-  EmptyLocation -> liftA2
+  Matcher.LocationWithId lid -> pure $ lid == locationId
+  Matcher.Anywhere -> pure True
+  Matcher.EmptyLocation -> liftA2
     (&&)
     (null <$> getSet @EnemyId locationId)
     (null <$> getSet @InvestigatorId locationId)
-  LocationWithoutInvestigators -> null <$> getSet @InvestigatorId locationId
-  LocationWithoutEnemies -> null <$> getSet @EnemyId locationId
-  AccessibleLocation -> do
+  Matcher.LocationWithoutInvestigators ->
+    null <$> getSet @InvestigatorId locationId
+  Matcher.LocationWithoutEnemies -> null <$> getSet @EnemyId locationId
+  Matcher.AccessibleLocation -> do
     yourLocationId <- getId @LocationId iid
     member (AccessibleLocationId locationId) <$> getSet yourLocationId
-  ConnectedLocation -> do
+  Matcher.ConnectedLocation -> do
     yourLocationId <- getId @LocationId iid
     member (ConnectedLocationId locationId) <$> getSet yourLocationId
-  RevealedLocation -> member (RevealedLocationId locationId) <$> getSet ()
-  LocationWithClues -> (> 0) . unClueCount <$> getCount locationId
-  YourLocation -> do
+  Matcher.RevealedLocation ->
+    member (RevealedLocationId locationId) <$> getSet ()
+  Matcher.LocationWithClues -> (> 0) . unClueCount <$> getCount locationId
+  Matcher.YourLocation -> do
     yourLocationId <- getId @LocationId iid
     pure $ locationId == yourLocationId
-  NotYourLocation -> do
+  Matcher.NotYourLocation -> do
     yourLocationId <- getId @LocationId iid
     pure $ locationId /= yourLocationId
-  FarthestLocationFromYou matcher' ->
+  Matcher.FarthestLocationFromYou matcher' ->
     member (FarthestLocationId locationId) <$> getSet (iid, matcher')
-  LocationWithTrait t -> member t <$> getSet locationId
-  LocationMatchers ms -> allM (locationMatches iid locationId) ms
-  FirstLocation ms -> anyM (locationMatches iid locationId) ms -- a bit weird here since first means nothing
-  LocationWithoutTreacheryWithCardCode cCode -> do
+  Matcher.LocationWithTrait t -> member t <$> getSet locationId
+  Matcher.LocationMatchers ms -> allM (locationMatches iid locationId) ms
+  Matcher.FirstLocation ms -> anyM (locationMatches iid locationId) ms -- a bit weird here since first means nothing
+  Matcher.LocationWithoutTreacheryWithCardCode cCode -> do
     treacheryIds <- getSetList @TreacheryId locationId
     cardCodes <- traverse (getId @CardCode) treacheryIds
     pure $ cCode `notElem` cardCodes
-  InvestigatableLocation -> do
+  Matcher.InvestigatableLocation -> do
     modifiers <- getModifiers
       (InvestigatorSource iid)
       (LocationTarget locationId)

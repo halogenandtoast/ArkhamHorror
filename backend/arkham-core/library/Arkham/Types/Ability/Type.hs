@@ -4,9 +4,9 @@ import Arkham.Prelude
 
 import Arkham.Types.Action
 import Arkham.Types.Cost
+import Arkham.Types.Matcher
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.WindowMatcher
 
 data AbilityType
   = FastAbility Cost
@@ -48,7 +48,8 @@ abilityTypeCost = \case
 applyAbilityTypeModifiers :: AbilityType -> [ModifierType] -> AbilityType
 applyAbilityTypeModifiers aType modifiers = case aType of
   FastAbility cost -> FastAbility $ applyCostModifiers cost modifiers
-  LegacyReactionAbility cost -> LegacyReactionAbility $ applyCostModifiers cost modifiers
+  LegacyReactionAbility cost ->
+    LegacyReactionAbility $ applyCostModifiers cost modifiers
   ReactionAbility window cost ->
     ReactionAbility window $ applyCostModifiers cost modifiers
   ActionAbility mAction cost ->

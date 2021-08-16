@@ -13,6 +13,7 @@ import Arkham.Types.Card
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Source

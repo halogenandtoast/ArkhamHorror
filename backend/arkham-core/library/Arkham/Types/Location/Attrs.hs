@@ -17,15 +17,13 @@ import Arkham.Types.Card
 import Arkham.Types.Card.CardDef as X
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Direction
-import Arkham.Types.EnemyId
-import Arkham.Types.EventId
 import Arkham.Types.Exception
 import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -35,7 +33,6 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.TreacheryId
 import Arkham.Types.Window
 
 class IsLocation a

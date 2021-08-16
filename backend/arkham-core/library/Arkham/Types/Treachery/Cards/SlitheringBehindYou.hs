@@ -9,6 +9,7 @@ import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
@@ -24,7 +25,8 @@ slitheringBehindYou = treachery SlitheringBehindYou Cards.slitheringBehindYou
 instance HasModifiersFor env SlitheringBehindYou
 
 instance HasAbilities env SlitheringBehindYou where
-  getAbilities i window (SlitheringBehindYou attrs) = getAbilities i window attrs
+  getAbilities i window (SlitheringBehindYou attrs) =
+    getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env SlitheringBehindYou where
   runMessage msg t@(SlitheringBehindYou attrs) = case msg of

@@ -6,6 +6,7 @@ import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -22,7 +23,8 @@ mysteriousChanting = treachery MysteriousChanting Cards.mysteriousChanting
 instance HasModifiersFor env MysteriousChanting
 
 instance HasAbilities env MysteriousChanting where
-  getAbilities i window (MysteriousChanting attrs) = getAbilities i window attrs
+  getAbilities i window (MysteriousChanting attrs) =
+    getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env MysteriousChanting where
   runMessage msg t@(MysteriousChanting attrs) = case msg of

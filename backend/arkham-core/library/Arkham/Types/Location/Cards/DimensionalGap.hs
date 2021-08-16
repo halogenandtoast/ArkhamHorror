@@ -13,6 +13,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Window
 
@@ -38,9 +39,10 @@ forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
 
 instance ActionRunner env => HasAbilities env DimensionalGap where
-  getAbilities iid (AfterRevealLocation who) (DimensionalGap attrs) | iid == who =
-    pure [locationAbility (forcedAbility attrs)]
-  getAbilities iid window (DimensionalGap attrs) = getAbilities iid window attrs
+  getAbilities iid (AfterRevealLocation who) (DimensionalGap attrs)
+    | iid == who = pure [locationAbility (forcedAbility attrs)]
+  getAbilities iid window (DimensionalGap attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env DimensionalGap where
   runMessage msg l@(DimensionalGap attrs) = case msg of

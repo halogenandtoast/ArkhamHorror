@@ -12,7 +12,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Exception
 import Arkham.Types.Id
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (FastPlayerWindow)
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Window
@@ -26,8 +26,8 @@ keyToTheChamber =
   assetWith KeyToTheChamber Cards.keyToTheChamber (isStoryL .~ True)
 
 instance (HasId LocationId env InvestigatorId, HasSet ConnectedLocationId env LocationId, HasId (Maybe LocationId) env LocationMatcher) => HasAbilities env KeyToTheChamber where
-  getAbilities iid FastPlayerWindow (KeyToTheChamber attrs) | ownedBy attrs iid =
-    do
+  getAbilities iid FastPlayerWindow (KeyToTheChamber attrs)
+    | ownedBy attrs iid = do
       mHiddenChamberId <- getId @(Maybe LocationId)
         (LocationWithTitle "The Hidden Chamber")
       case mHiddenChamberId of
@@ -39,7 +39,8 @@ instance (HasId LocationId env InvestigatorId, HasSet ConnectedLocationId env Lo
             | hiddenChamberId `elem` connectedLocationIds
             ]
         Nothing -> pure []
-  getAbilities iid window (KeyToTheChamber attrs) = getAbilities iid window attrs
+  getAbilities iid window (KeyToTheChamber attrs) =
+    getAbilities iid window attrs
 
 instance HasModifiersFor env KeyToTheChamber
 

@@ -6,11 +6,10 @@ module Arkham.Types.Event.Cards.ThePaintedWorld
 import Arkham.Prelude
 
 import qualified Arkham.Event.Cards as Cards
-import Arkham.Types.Card.CardMatcher
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Game.Helpers
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (DuringTurn)
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target

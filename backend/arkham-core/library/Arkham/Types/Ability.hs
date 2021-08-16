@@ -9,17 +9,16 @@ import Arkham.Json
 import Arkham.Types.Ability.Limit as X
 import Arkham.Types.Ability.Type as X
 import Arkham.Types.Action (Action)
-import Arkham.Types.Card.CardDef hiding (DuringTurn)
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes.Entity.Source
 import Arkham.Types.Cost
+import Arkham.Types.Criteria (Criteria)
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.WindowMatcher
 
 data Ability = Ability
   { abilitySource :: Source

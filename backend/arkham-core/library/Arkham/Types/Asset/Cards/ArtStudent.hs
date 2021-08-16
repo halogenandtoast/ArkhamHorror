@@ -23,7 +23,7 @@ artStudent = ally ArtStudent Cards.artStudent (1, 2)
 instance HasAbilities env ArtStudent where
   getAbilities i (WhenEnterPlay target) (ArtStudent x)
     | isTarget x target && ownedBy x i = pure
-      [mkAbility (toSource x) 1 (ResponseAbility Free)]
+      [mkAbility (toSource x) 1 (LegacyReactionAbility Free)]
   getAbilities iid window (ArtStudent attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env ArtStudent

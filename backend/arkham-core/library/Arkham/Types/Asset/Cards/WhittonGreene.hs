@@ -31,10 +31,10 @@ whittonGreene = ally WhittonGreene Cards.whittonGreene (2, 2)
 instance HasAbilities env WhittonGreene where
   getAbilities iid (AfterRevealLocation who) (WhittonGreene a)
     | ownedBy a iid && iid == who = pure
-      [mkAbility a 1 $ ResponseAbility $ ExhaustCost (toTarget a)]
+      [mkAbility a 1 $ LegacyReactionAbility $ ExhaustCost (toTarget a)]
   getAbilities iid (AfterPutLocationIntoPlay who) (WhittonGreene a)
     | ownedBy a iid && iid == who = pure
-      [mkAbility a 1 $ ResponseAbility $ ExhaustCost (toTarget a)]
+      [mkAbility a 1 $ LegacyReactionAbility $ ExhaustCost (toTarget a)]
   getAbilities iid window (WhittonGreene attrs) = getAbilities iid window attrs
 
 instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor env WhittonGreene where

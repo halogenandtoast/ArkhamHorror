@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Types.Asset.Uses hiding (Key)
 import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.CardDef
+import Arkham.Types.Card.CardDef hiding (DuringTurn)
 import Arkham.Types.Card.CardType
 import Arkham.Types.Card.Cost
 import Arkham.Types.ClassSymbol

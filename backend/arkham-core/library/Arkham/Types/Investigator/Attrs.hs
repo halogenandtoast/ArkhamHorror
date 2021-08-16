@@ -6,7 +6,7 @@ import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
-import Arkham.Types.Card
+import Arkham.Types.Card hiding (DuringTurn)
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ClassSymbol

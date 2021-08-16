@@ -35,7 +35,7 @@ instance HasSet Trait env (InvestigatorId, CardId) => HasAbilities env DaisysTot
       isTome <- elem Tome <$> getSet @Trait (iid, cardId)
       let
         ability =
-          (mkAbility (toSource a) 1 (ResponseAbility $ ExhaustCost (toTarget a))
+          (mkAbility (toSource a) 1 (LegacyReactionAbility $ ExhaustCost (toTarget a))
             )
             { abilityMetadata = Just (TargetMetadata $ CardIdTarget cardId)
             }

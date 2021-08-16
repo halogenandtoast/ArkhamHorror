@@ -54,7 +54,7 @@ ability attrs token = base
   base = mkAbility
     (toSource attrs)
     1
-    (ResponseAbility $ HandDiscardCost 1 Nothing mempty mempty)
+    (LegacyReactionAbility $ HandDiscardCost 1 Nothing mempty mempty)
 
 instance InvestigatorRunner env => HasAbilities env WendyAdams where
   getAbilities iid (WhenRevealToken who token) (WendyAdams attrs@InvestigatorAttrs {..})

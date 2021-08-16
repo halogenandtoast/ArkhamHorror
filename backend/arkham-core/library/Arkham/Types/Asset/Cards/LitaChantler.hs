@@ -37,7 +37,7 @@ instance HasId LocationId env InvestigatorId => HasModifiersFor env LitaChantler
   getModifiersFor _ _ _ = pure []
 
 ability :: EnemyId -> AssetAttrs -> Ability
-ability eid a = (mkAbility (toSource a) 1 (ResponseAbility Free))
+ability eid a = (mkAbility (toSource a) 1 (LegacyReactionAbility Free))
   { abilityMetadata = Just $ TargetMetadata (EnemyTarget eid)
   }
 

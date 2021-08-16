@@ -26,7 +26,7 @@ instance HasModifiersFor env RabbitsFoot3
 
 ability :: AssetAttrs -> Int -> Ability
 ability attrs n =
-  (mkAbility (toSource attrs) 1 (ResponseAbility $ ExhaustCost (toTarget attrs))
+  (mkAbility (toSource attrs) 1 (LegacyReactionAbility $ ExhaustCost (toTarget attrs))
     )
     { abilityMetadata = Just (IntMetadata n)
     }

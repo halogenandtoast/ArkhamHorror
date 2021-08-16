@@ -6,17 +6,18 @@ module Arkham.Types.Investigator.Cards.SkidsOToole
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Card.CardDef
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Investigator.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype SkidsOToole = SkidsOToole InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
@@ -37,14 +38,15 @@ skidsOToole = SkidsOToole $ baseAttrs
     }
   [Criminal]
 
-ability :: InvestigatorAttrs -> Ability
-ability attrs = base { abilityLimit = PlayerLimit PerTurn 1 }
-  where base = mkAbility (toSource attrs) 1 (FastAbility $ ResourceCost 2)
-
 instance HasAbilities env SkidsOToole where
-  getAbilities iid (DuringTurn who) (SkidsOToole a@InvestigatorAttrs {..})
-    | iid == investigatorId && iid == who = pure [ability a]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (SkidsOToole a) = pure
+    [ restrictedAbility
+          a
+          1
+          (Self <> DuringTurn You)
+          (FastAbility $ ResourceCost 2)
+        & (abilityLimitL .~ PlayerLimit PerTurn 1)
+    ]
 
 instance HasTokenValue env SkidsOToole where
   getTokenValue (SkidsOToole attrs) iid ElderSign

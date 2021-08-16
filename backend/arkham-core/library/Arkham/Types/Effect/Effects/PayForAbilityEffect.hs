@@ -100,7 +100,7 @@ startPayment iid window abilityType abilitySource abilityDoesNotProvokeAttacksOf
     FastAbility cost -> push (PayAbilityCost abilitySource iid Nothing cost)
     ReactionAbility _ cost ->
       push (PayAbilityCost abilitySource iid Nothing cost)
-    ResponseAbility cost ->
+    LegacyReactionAbility cost ->
       push (PayAbilityCost abilitySource iid Nothing cost)
     ActionAbilityWithBefore mAction _ cost -> do
       -- we do not know which ability will be chosen

@@ -10,7 +10,7 @@ import Arkham.Types.WindowMatcher
 
 data AbilityType
   = FastAbility Cost
-  | ResponseAbility Cost
+  | LegacyReactionAbility Cost
   | ReactionAbility WindowMatcher Cost
   | ActionAbility (Maybe Action) Cost
   | ActionAbilityWithSkill (Maybe Action) SkillType Cost
@@ -25,7 +25,7 @@ abilityTypeAction :: AbilityType -> Maybe Action
 abilityTypeAction = \case
   FastAbility _ -> Nothing
   ReactionAbility{} -> Nothing
-  ResponseAbility{} -> Nothing
+  LegacyReactionAbility{} -> Nothing
   ActionAbility mAction _ -> mAction
   ActionAbilityWithSkill mAction _ _ -> mAction
   ActionAbilityWithBefore mAction _ _ -> mAction
@@ -37,7 +37,7 @@ abilityTypeCost :: AbilityType -> Cost
 abilityTypeCost = \case
   FastAbility cost -> cost
   ReactionAbility _ cost -> cost
-  ResponseAbility cost -> cost
+  LegacyReactionAbility cost -> cost
   ActionAbility _ cost -> cost
   ActionAbilityWithSkill _ _ cost -> cost
   ActionAbilityWithBefore _ _ cost -> cost
@@ -48,7 +48,7 @@ abilityTypeCost = \case
 applyAbilityTypeModifiers :: AbilityType -> [ModifierType] -> AbilityType
 applyAbilityTypeModifiers aType modifiers = case aType of
   FastAbility cost -> FastAbility $ applyCostModifiers cost modifiers
-  ResponseAbility cost -> ResponseAbility $ applyCostModifiers cost modifiers
+  LegacyReactionAbility cost -> LegacyReactionAbility $ applyCostModifiers cost modifiers
   ReactionAbility window cost ->
     ReactionAbility window $ applyCostModifiers cost modifiers
   ActionAbility mAction cost ->

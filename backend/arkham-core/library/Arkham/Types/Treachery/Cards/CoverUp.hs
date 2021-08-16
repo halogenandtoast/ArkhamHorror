@@ -34,7 +34,7 @@ instance ActionRunner env => HasAbilities env CoverUp where
     withTreacheryInvestigator a $ \tormented -> do
       treacheryLocationId <- getId @LocationId tormented
       pure
-        [ mkAbility a 1 $ ResponseAbility Free
+        [ mkAbility a 1 $ LegacyReactionAbility Free
         | (treacheryLocationId == lid) && (coverUpClues a > 0) && (n > 0)
         ]
   getAbilities _ _ _ = pure []

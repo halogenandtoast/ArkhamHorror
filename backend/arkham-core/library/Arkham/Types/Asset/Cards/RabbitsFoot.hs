@@ -22,7 +22,7 @@ instance HasModifiersFor env RabbitsFoot
 
 instance HasAbilities env RabbitsFoot where
   getAbilities iid (AfterFailSkillTest who _) (RabbitsFoot a) | iid == who = pure
-    [ mkAbility (toSource a) 1 (ResponseAbility $ ExhaustCost (toTarget a))
+    [ mkAbility (toSource a) 1 (LegacyReactionAbility $ ExhaustCost (toTarget a))
     | ownedBy a iid
     ]
   getAbilities i window (RabbitsFoot x) = getAbilities i window x

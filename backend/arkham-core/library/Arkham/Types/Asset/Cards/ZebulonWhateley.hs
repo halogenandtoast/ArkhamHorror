@@ -28,7 +28,7 @@ zebulonWhateley =
 
 ability :: AssetAttrs -> Ability
 ability attrs =
-  mkAbility (toSource attrs) 1 (ResponseAbility $ ExhaustCost (toTarget attrs))
+  mkAbility (toSource attrs) 1 (LegacyReactionAbility $ ExhaustCost (toTarget attrs))
 
 instance HasAbilities env ZebulonWhateley where
   getAbilities iid (AfterPassSkillTest _ (TreacherySource _) who _) (ZebulonWhateley attrs)

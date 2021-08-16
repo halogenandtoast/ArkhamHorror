@@ -27,7 +27,7 @@ servantOfManyMouths =
 instance HasModifiersFor env ServantOfManyMouths
 
 ability :: EnemyAttrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (ResponseAbility Free)
+ability attrs = mkAbility (toSource attrs) 1 (LegacyReactionAbility Free)
 
 instance ActionRunner env => HasAbilities env ServantOfManyMouths where
   getAbilities iid (AfterEnemyDefeated who eid) (ServantOfManyMouths attrs)

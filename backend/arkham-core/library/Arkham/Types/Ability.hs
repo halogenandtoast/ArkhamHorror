@@ -9,7 +9,7 @@ import Arkham.Json
 import Arkham.Types.Ability.Limit as X
 import Arkham.Types.Ability.Type as X
 import Arkham.Types.Action (Action)
-import Arkham.Types.Card.CardDef
+import Arkham.Types.Card.CardDef hiding (DuringTurn)
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes.Entity.Source
 import Arkham.Types.Cost
@@ -79,7 +79,7 @@ defaultAbilityLimit :: AbilityType -> AbilityLimit
 defaultAbilityLimit = \case
   ForcedAbility -> PlayerLimit PerWindow 1
   ReactionAbility _ _ -> PlayerLimit PerWindow 1
-  ResponseAbility _ -> PlayerLimit PerWindow 1
+  LegacyReactionAbility _ -> PlayerLimit PerWindow 1
   FastAbility _ -> NoLimit
   ActionAbility _ _ -> NoLimit
   ActionAbilityWithBefore{} -> NoLimit
@@ -96,7 +96,7 @@ defaultAbilityWindow = \case
   -- ForcedAbility window -> window
   ForcedAbility -> AnyWindow
   ReactionAbility window _ -> window
-  ResponseAbility _ -> AnyWindow
+  LegacyReactionAbility _ -> AnyWindow
   AbilityEffect _ -> AnyWindow
   Objective aType -> defaultAbilityWindow aType
 

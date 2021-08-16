@@ -33,7 +33,7 @@ ability iid a = base
   base = mkAbility
     (toSource a)
     1
-    (ResponseAbility (DiscardCost (SearchedCardTarget iid $ toCardId a)))
+    (LegacyReactionAbility (DiscardCost (SearchedCardTarget iid $ toCardId a)))
 
 instance HasAbilities env AstoundingRevelation where
   getAbilities iid (WhenAmongSearchedCards who) (AstoundingRevelation attrs)

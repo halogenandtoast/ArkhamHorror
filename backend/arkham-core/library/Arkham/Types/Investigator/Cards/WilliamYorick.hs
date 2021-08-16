@@ -3,7 +3,7 @@ module Arkham.Types.Investigator.Cards.WilliamYorick where
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.Card
+import Arkham.Types.Card hiding (DuringTurn)
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -71,7 +71,7 @@ instance InvestigatorRunner env => HasAbilities env WilliamYorick where
             targets
           writeIORef williamYorickRecursionLock False
           pure
-            [ mkAbility attrs 1 $ ResponseAbility Free
+            [ mkAbility attrs 1 $ LegacyReactionAbility Free
             | notNull playableTargets
             ]
   getAbilities i window (WilliamYorick attrs) = getAbilities i window attrs

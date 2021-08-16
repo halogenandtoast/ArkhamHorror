@@ -39,7 +39,7 @@ instance ActionRunner env => HasAbilities env ProfessorWarrenRice where
       lid <- getId @LocationId iid
       lastClue <- (== 0) . unClueCount <$> getCount lid
       pure
-        [ mkAbility a 1 $ ResponseAbility $ ExhaustCost (toTarget a)
+        [ mkAbility a 1 $ LegacyReactionAbility $ ExhaustCost (toTarget a)
         | lastClue && ownedBy a iid && loc == lid
         ]
   getAbilities _ _ _ = pure []

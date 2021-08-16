@@ -1118,6 +1118,14 @@ windowMatches
   -> m Bool
 windowMatches iid source window' = \case
   Matcher.AnyWindow -> pure True
+  Matcher.PlacedCounter whenMatcher whoMatcher counterMatcher ->
+    case window' of
+      Window t (Window.PlacedHorror iid')
+        | t == whenMatcher && counterMatcher == Matcher.HorrorCounter -> matchWho
+          iid
+          iid'
+          whoMatcher
+      _ -> pure False
   Matcher.PlayerHasPlayableCard cardMatcher -> do
     -- TODO: do we need to grab the card source?
     -- cards <- filter (/= c) <$> getList cardMatcher
@@ -1132,6 +1140,12 @@ windowMatches iid source window' = \case
   Matcher.TurnBegins whenMatcher whoMatcher -> case window' of
     Window t (Window.TurnBegins who) | t == whenMatcher ->
       matchWho iid who whoMatcher
+    _ -> pure False
+  Matcher.Enters whenMatcher whoMatcher whereMatcher -> case window' of
+    Window t (Window.Entering iid' lid) | whenMatcher == t -> liftA2
+      (&&)
+      (matchWho iid iid' whoMatcher)
+      (locationMatches iid lid whereMatcher)
     _ -> pure False
   Matcher.WouldHaveSkillTestResult whenMatcher whoMatcher _ skillTestResultMatcher
     -> case skillTestResultMatcher of
@@ -1271,6 +1285,10 @@ gameValueMatches
 gameValueMatches n = \case
   Matcher.AnyValue -> pure True
   Matcher.LessThan gv -> (n <) <$> getPlayerCountValue gv
+  Matcher.GreaterThan gv -> (n >) <$> getPlayerCountValue gv
+  Matcher.LessThanOrEqualTo gv -> (n <=) <$> getPlayerCountValue gv
+  Matcher.GreaterThanOrEqualTo gv -> (n >=) <$> getPlayerCountValue gv
+  Matcher.EqualTo gv -> (n ==) <$> getPlayerCountValue gv
 
 enemyMatches
   :: (MonadReader env m, CanCheckPlayable env)
@@ -1312,7 +1330,8 @@ locationMatches iid locationId = \case
     member (ConnectedLocationId locationId) <$> getSet yourLocationId
   Matcher.RevealedLocation ->
     member (RevealedLocationId locationId) <$> getSet ()
-  Matcher.LocationWithClues -> (> 0) . unClueCount <$> getCount locationId
+  Matcher.LocationWithClues valueMatcher ->
+    (`gameValueMatches` valueMatcher) . unClueCount =<< getCount locationId
   Matcher.YourLocation -> do
     yourLocationId <- getId @LocationId iid
     pure $ locationId == yourLocationId

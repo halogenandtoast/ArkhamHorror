@@ -96,7 +96,7 @@ export default defineComponent({
       }
     })
     const isFastActionAbility = computed(() => ability.value.tag === "UseAbility" && ability.value.contents[1].type.tag === "FastAbility")
-    const isReactionAbility = computed(() => ability.value.tag === "UseAbility" && (ability.value.contents[1].type.tag === "ReactionAbility" || ability.value.contents[1].type.tag === "ResponseAbility"))
+    const isReactionAbility = computed(() => ability.value.tag === "UseAbility" && (ability.value.contents[1].type.tag === "ReactionAbility" || ability.value.contents[1].type.tag === "LegacyReactionAbility"))
     const isForcedAbility = computed(() => ability.value.tag === "UseAbility" && ability.value.contents[1].type.tag === "ForcedAbility")
 
     const isNeutralAbility = computed(() => !(isInvestigate.value || isFight.value || isEvade.value || isEngage.value))

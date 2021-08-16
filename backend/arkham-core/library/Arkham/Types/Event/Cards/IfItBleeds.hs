@@ -9,9 +9,10 @@ import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Id
-import Arkham.Types.Message
+import Arkham.Types.Message hiding (EnemyDefeated)
 import Arkham.Types.Query
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype IfItBleeds = IfItBleeds EventAttrs
@@ -23,7 +24,7 @@ ifItBleeds = event IfItBleeds Cards.ifItBleeds
 
 getWindowEnemyIds :: InvestigatorId -> [Window] -> [EnemyId]
 getWindowEnemyIds iid = mapMaybe \case
-  AfterEnemyDefeated who eid | iid == who -> Just eid
+  Window Timing.After (EnemyDefeated who eid) | iid == who -> Just eid
   _ -> Nothing
 
 instance

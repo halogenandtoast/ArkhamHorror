@@ -14,6 +14,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
@@ -41,8 +42,8 @@ ability a = (mkAbility (toSource a) 1 (FastAbility Free))
   }
 
 instance ActionRunner env => HasAbilities env HospitalDebts where
-  getAbilities iid (DuringTurn who) (HospitalDebts a) | iid == who =
-    withTreacheryInvestigator a $ \tormented -> do
+  getAbilities iid (Window Timing.When (DuringTurn who)) (HospitalDebts a)
+    | iid == who = withTreacheryInvestigator a $ \tormented -> do
       resourceCount <- getResourceCount iid
       treacheryLocationId <- getId tormented
       investigatorLocationId <- getId @LocationId iid

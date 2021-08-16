@@ -8,6 +8,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -15,6 +16,7 @@ import Arkham.Types.Name
 import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 class IsAsset a
@@ -250,7 +252,12 @@ defeated AssetAttrs {..} =
 instance HasAbilities env AssetAttrs where
   getAbilities _ _ _ = pure []
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs where
+instance
+  ( HasSet InvestigatorId env ()
+  , HasQueue env
+  , HasModifiersFor env ()
+  )
+  => RunMessage env AssetAttrs where
   runMessage msg a@AssetAttrs {..} = case msg of
     ReadyExhausted -> case assetInvestigator of
       Just iid -> do
@@ -320,7 +327,7 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AssetAttrs whe
         applyModifier (Uses uType m) (AdditionalStartingUses n) =
           Uses uType (n + m)
         applyModifier m _ = m
-      push $ CheckWindow iid [WhenEnterPlay $ toTarget a]
+      pushAll =<< checkWindows [Window Timing.When (EnterPlay $ toTarget a)]
       pure
         $ a
         & (investigatorL ?~ iid)

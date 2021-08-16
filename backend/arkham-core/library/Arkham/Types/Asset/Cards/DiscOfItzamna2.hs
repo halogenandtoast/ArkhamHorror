@@ -9,31 +9,28 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
+import Arkham.Types.Criteria
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Trait
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
 
 newtype DiscOfItzamna2 = DiscOfItzamna2 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 discOfItzamna2 :: AssetCard DiscOfItzamna2
 discOfItzamna2 = accessory DiscOfItzamna2 Cards.discOfItzamna2
 
-instance HasModifiersFor env DiscOfItzamna2
-
-instance HasSet Trait env EnemyId => HasAbilities env DiscOfItzamna2 where
-  getAbilities iid (WhenEnemySpawns eid _) (DiscOfItzamna2 a) | ownedBy a iid = do
-    traits <- getSet eid
-    pure
-      [ mkAbility (toSource a) 1 (LegacyReactionAbility Free)
-      | Elite `notElem` traits
-      ]
-  getAbilities i window (DiscOfItzamna2 x) = getAbilities i window x
+instance HasAbilities env DiscOfItzamna2 where
+  getAbilities _ _ (DiscOfItzamna2 a) = pure
+    [ restrictedAbility a 1 OwnsThis
+        $ ReactionAbility
+            (EnemySpawns Timing.When YourLocation NonEliteEnemy)
+            Free
+    ]
 
 instance (AssetRunner env) => RunMessage env DiscOfItzamna2 where
   runMessage msg a@(DiscOfItzamna2 attrs) = case msg of

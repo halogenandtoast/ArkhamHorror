@@ -16,6 +16,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Resolution
 import Arkham.Types.Source
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 import qualified Data.HashSet as HashSet
 
@@ -28,7 +29,7 @@ uncoveringTheConspiracy =
   act (1, A) UncoveringTheConspiracy Cards.uncoveringTheConspiracy Nothing
 
 instance HasAbilities env UncoveringTheConspiracy where
-  getAbilities _ NonFast (UncoveringTheConspiracy a) = do
+  getAbilities _ (Window Timing.When NonFast) (UncoveringTheConspiracy a) = do
     pure
       [ mkAbility a 1
         $ ActionAbility Nothing

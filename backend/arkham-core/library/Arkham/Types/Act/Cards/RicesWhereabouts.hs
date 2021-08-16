@@ -21,6 +21,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.ScenarioId
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype RicesWhereabouts = RicesWhereabouts ActAttrs
@@ -37,7 +38,8 @@ ability attrs = mkAbility
   (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1])
 
 instance HasAbilities env RicesWhereabouts where
-  getAbilities _ NonFast (RicesWhereabouts x) = pure [ability x]
+  getAbilities _ (Window Timing.When NonFast) (RicesWhereabouts x) =
+    pure [ability x]
   getAbilities iid window (RicesWhereabouts x) = getAbilities iid window x
 
 instance ActRunner env => RunMessage env RicesWhereabouts where

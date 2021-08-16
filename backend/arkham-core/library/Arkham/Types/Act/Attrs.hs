@@ -21,6 +21,7 @@ import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 class IsAct a
@@ -111,9 +112,10 @@ onSide :: ActSide -> ActAttrs -> Bool
 onSide side ActAttrs {..} = actSide actSequence == side
 
 instance HasAbilities env ActAttrs where
-  getAbilities _ FastPlayerWindow attrs@ActAttrs {..} = case actAdvanceCost of
-    Just cost -> pure [mkAbility attrs 100 (FastAbility cost)]
-    Nothing -> pure []
+  getAbilities _ (Window Timing.When FastPlayerWindow) attrs@ActAttrs {..} =
+    case actAdvanceCost of
+      Just cost -> pure [mkAbility attrs 100 (FastAbility cost)]
+      Nothing -> pure []
   getAbilities _ _ _ = pure []
 
 type ActAttrsRunner env
@@ -133,7 +135,9 @@ advanceActSideA
 advanceActSideA attrs = do
   leadInvestigatorId <- getLeadInvestigatorId
   pure
-    [ CheckWindow leadInvestigatorId [WhenActAdvance (toId attrs)]
+    [ CheckWindow
+      leadInvestigatorId
+      [Window Timing.When (ActAdvance $ toId attrs)]
     , chooseOne leadInvestigatorId [AdvanceAct (toId attrs) (toSource attrs)]
     ]
 

@@ -57,6 +57,8 @@ type family QueryElement a where
   QueryElement AssetMatcher = AssetId
   QueryElement InvestigatorMatcher = InvestigatorId
   QueryElement LocationMatcher = LocationId
+  QueryElement EnemyMatcher = EnemyId
+  QueryElement TreacheryMatcher = TreacheryId
   QueryElement ExtendedCardMatcher = Card
 
 selectList

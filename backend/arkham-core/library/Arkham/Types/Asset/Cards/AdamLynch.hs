@@ -9,6 +9,7 @@ import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Classes
+import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -39,7 +40,12 @@ instance Query LocationMatcher env => HasModifiersFor env AdamLynch where
         [ ActionCostSetToModifier 1 | isSecurityOffice && ownedBy attrs iid ]
   getModifiersFor _ _ _ = pure []
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AdamLynch where
+instance
+  ( HasSet InvestigatorId env ()
+  , HasQueue env
+  , HasModifiersFor env ()
+  )
+  => RunMessage env AdamLynch where
   runMessage msg a@(AdamLynch attrs) = case msg of
     Discard target | isTarget attrs target ->
       a <$ pushAll [AddToken Tablet, RemoveFromGame target]

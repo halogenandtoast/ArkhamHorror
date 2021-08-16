@@ -134,7 +134,7 @@ onTheLam :: CardDef
 onTheLam = (event "01010" "On the Lam" 1 Neutral)
   { cdCardTraits = setFromList [Tactic]
   , cdSkills = [SkillIntellect, SkillAgility, SkillWild, SkillWild]
-  , cdFastWindow = Just (AfterTurnBegins You)
+  , cdFastWindow = Just (TurnBegins Timing.After You)
   }
 
 darkMemory :: CardDef
@@ -224,7 +224,7 @@ sneakAttack = (event "01052" "Sneak Attack" 2 Rogue)
   { cdSkills = [SkillIntellect, SkillCombat]
   , cdCardTraits = setFromList [Tactic]
   , cdCriteria = Just
-    $ Criteria.EnemyExists (EnemyAtYourLocation <> ExhaustedEnemy)
+    $ Criteria.EnemyExists (EnemyAt YourLocation <> ExhaustedEnemy)
   }
 
 sureGamble3 :: CardDef
@@ -268,7 +268,7 @@ mindWipe1 = (event "01068" "Mind Wipe" 1 Mystic)
   , cdLevel = 1
   , cdFastWindow = Just (PhaseBegins Timing.After AnyPhase)
   , cdCriteria = Just
-    (Criteria.EnemyExists $ EnemyAtYourLocation <> NonEliteEnemy)
+    (Criteria.EnemyExists $ EnemyAt YourLocation <> NonEliteEnemy)
   }
 
 blindingLight2 :: CardDef
@@ -302,7 +302,9 @@ lucky :: CardDef
 lucky = (event "01080" "Lucky!" 1 Survivor)
   { cdCardTraits = setFromList [Fortune]
   , cdFastWindow = Just
-    (WhenWouldHaveSkillTestResult You AnySkillTest $ FailureResult AnyValue)
+    (WouldHaveSkillTestResult Timing.When You AnySkillTest
+    $ FailureResult AnyValue
+    )
   }
 
 closeCall2 :: CardDef
@@ -310,7 +312,7 @@ closeCall2 = (event "01083" "Close Call" 2 Survivor)
   { cdSkills = [SkillCombat, SkillAgility]
   , cdCardTraits = setFromList [Fortune]
   , cdFastWindow = Just
-    (EnemyEvaded Timing.After Anyone (EnemyAtYourLocation <> NonWeaknessEnemy))
+    (EnemyEvaded Timing.After Anyone (EnemyAt YourLocation <> NonWeaknessEnemy))
   , cdLevel = 2
   }
 
@@ -318,7 +320,9 @@ lucky2 :: CardDef
 lucky2 = (event "01084" "Lucky!" 1 Survivor)
   { cdCardTraits = setFromList [Fortune]
   , cdFastWindow = Just
-    (WhenWouldHaveSkillTestResult You AnySkillTest $ FailureResult AnyValue)
+    (WouldHaveSkillTestResult Timing.When You AnySkillTest
+    $ FailureResult AnyValue
+    )
   , cdLevel = 2
   }
 
@@ -383,7 +387,7 @@ thinkOnYourFeet :: CardDef
 thinkOnYourFeet = (event "02025" "Think on Your Feet" 1 Rogue)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = singleton Trick
-  , cdFastWindow = Just (WhenEnemySpawns YourLocation AnyEnemy)
+  , cdFastWindow = Just (EnemySpawns Timing.When YourLocation AnyEnemy)
   , cdCriteria = Just
     (Criteria.LocationExists AccessibleLocation
     <> Criteria.InvestigatorExists (You <> InvestigatorCanMove)
@@ -448,7 +452,7 @@ oops = (event "02113" "Oops!" 2 Survivor)
   , cdCardTraits = singleton Fortune
   , cdFastWindow =
     Just
-    $ SkillTestResult Timing.After You WhileAttackingAnEnemy
+    $ SkillTestResult Timing.After You (WhileAttackingAnEnemy AnyEnemy)
     $ FailureResult
     $ LessThan
     $ Static 3
@@ -523,7 +527,7 @@ exposeWeakness1 = (event "02228" "Expose Weakness" 0 Seeker)
   { cdSkills = [SkillIntellect, SkillCombat, SkillCombat]
   , cdCardTraits = singleton Insight
   , cdFastWindow = Just FastPlayerWindow
-  , cdCriteria = Just $ Criteria.EnemyExists EnemyAtYourLocation
+  , cdCriteria = Just $ Criteria.EnemyExists $ EnemyAt YourLocation
   , cdLevel = 1
   }
 
@@ -531,7 +535,7 @@ iveHadWorse4 :: CardDef
 iveHadWorse4 = (event "02261" "\"I've had worse…\"" 0 Guardian)
   { cdSkills = [SkillWillpower, SkillWillpower, SkillAgility]
   , cdCardTraits = singleton Spirit
-  , cdFastWindow = Just (DealtDamageOrHorror You)
+  , cdFastWindow = Just (DealtDamageOrHorror Timing.When You)
   , cdLevel = 4
   }
 
@@ -562,7 +566,7 @@ momentOfRespite3 :: CardDef
 momentOfRespite3 = (event "02273" "Moment of Respite" 3 Neutral)
   { cdSkills = [SkillWillpower, SkillWillpower]
   , cdCardTraits = singleton Spirit
-  , cdCriteria = Just $ Criteria.NoEnemyExists EnemyAtYourLocation
+  , cdCriteria = Just $ Criteria.NoEnemyExists $ EnemyAt YourLocation
   , cdLevel = 3
   }
 
@@ -606,7 +610,7 @@ buryThemDeep = (event "03016" "Bury Them Deep" 0 Neutral)
   { cdSkills = [SkillWillpower, SkillCombat, SkillWild]
   , cdCardTraits = singleton Task
   , cdFastWindow = Just
-    (EnemyDefeated Timing.After Anyone $ NonEliteEnemy <> EnemyAtYourLocation)
+    (EnemyDefeated Timing.After Anyone $ NonEliteEnemy <> EnemyAt YourLocation)
   , cdVictoryPoints = Just 1
   }
 

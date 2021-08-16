@@ -12,32 +12,29 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype BookOfShadows3 = BookOfShadows3 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bookOfShadows3 :: AssetCard BookOfShadows3
 bookOfShadows3 = hand BookOfShadows3 Cards.bookOfShadows3
 
-instance HasModifiersFor env BookOfShadows3
-
 slot :: AssetAttrs -> Slot
 slot AssetAttrs { assetId } = Slot (AssetSource assetId) Nothing
 
 instance HasAbilities env BookOfShadows3 where
-  getAbilities iid NonFast (BookOfShadows3 a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility Nothing $ Costs
+  getAbilities _ _ (BookOfShadows3 a) = pure
+    [ restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ Costs
         [ActionCost 1, ExhaustCost (toTarget a)]
     ]
-  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env BookOfShadows3 where
   runMessage msg a@(BookOfShadows3 attrs) = case msg of

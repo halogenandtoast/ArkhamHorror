@@ -16,7 +16,9 @@ data Criteria
   | ScenarioCardHasResignAbility
   | ClueOnLocation
   | FirstAction
+  | OwnsThis
   | DuringTurn InvestigatorMatcher
+  | DuringSkillTest SkillTestMatcher
   | OnLocation LocationId
   | CardExists CardMatcher
   | ExtendedCardExists ExtendedCardMatcher
@@ -33,10 +35,13 @@ data Criteria
   | Criterias [Criteria]
   | AnyCriteria [Criteria]
   | NoRestriction
+  | Never
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 instance Semigroup Criteria where
+  Never <> _ = Never
+  _ <> Never = Never
   NoRestriction <> x = x
   x <> NoRestriction = x
   Criterias xs <> Criterias ys = Criterias $ xs <> ys

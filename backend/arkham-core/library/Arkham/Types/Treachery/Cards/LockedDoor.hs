@@ -17,6 +17,7 @@ import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
@@ -37,7 +38,7 @@ instance HasModifiersFor env LockedDoor where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasAbilities env LockedDoor where
-  getAbilities iid NonFast (LockedDoor a) = do
+  getAbilities iid (Window Timing.When NonFast) (LockedDoor a) = do
     investigatorLocationId <- getId @LocationId iid
     pure
       [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1

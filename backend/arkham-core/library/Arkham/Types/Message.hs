@@ -33,7 +33,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window
+import Arkham.Types.Window (Window)
 import Control.Exception
 
 data MessageType

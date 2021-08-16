@@ -10,6 +10,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
@@ -26,8 +27,8 @@ fastAbility a = mkAbility a 1 . FastAbility . ExhaustCost $ toTarget a
 instance HasModifiersFor env ArcaneInitiate
 
 instance HasAbilities env ArcaneInitiate where
-  getAbilities iid FastPlayerWindow (ArcaneInitiate a) | ownedBy a iid =
-    pure [fastAbility a]
+  getAbilities iid (Window Timing.When FastPlayerWindow) (ArcaneInitiate a)
+    | ownedBy a iid = pure [fastAbility a]
   getAbilities _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env ArcaneInitiate where

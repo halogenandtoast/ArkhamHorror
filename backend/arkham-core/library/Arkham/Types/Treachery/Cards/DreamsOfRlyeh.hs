@@ -14,6 +14,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
@@ -34,7 +35,7 @@ instance HasModifiersFor env DreamsOfRlyeh where
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities env DreamsOfRlyeh where
-  getAbilities iid NonFast (DreamsOfRlyeh a) = pure
+  getAbilities iid (Window Timing.When NonFast) (DreamsOfRlyeh a) = pure
     [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1
     | treacheryOnInvestigator iid a
     ]

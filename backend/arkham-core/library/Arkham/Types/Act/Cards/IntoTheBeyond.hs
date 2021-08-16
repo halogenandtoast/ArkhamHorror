@@ -15,6 +15,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype IntoTheBeyond = IntoTheBeyond ActAttrs
@@ -25,8 +26,9 @@ intoTheBeyond :: ActCard IntoTheBeyond
 intoTheBeyond = act (2, A) IntoTheBeyond Cards.intoTheBeyond Nothing
 
 instance HasAbilities env IntoTheBeyond where
-  getAbilities iid NonFast (IntoTheBeyond x) = withBaseActions iid NonFast x $ do
-    pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
+  getAbilities iid window@(Window Timing.When NonFast) (IntoTheBeyond x) =
+    withBaseActions iid window x $ do
+      pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
   getAbilities iid window (IntoTheBeyond x) = getAbilities iid window x
 
 instance (HasName env LocationId, ActRunner env) => RunMessage env IntoTheBeyond where

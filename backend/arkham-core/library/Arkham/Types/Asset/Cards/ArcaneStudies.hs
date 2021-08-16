@@ -12,30 +12,27 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype ArcaneStudies = ArcaneStudies AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arcaneStudies :: AssetCard ArcaneStudies
 arcaneStudies = asset ArcaneStudies Cards.arcaneStudies
 
-instance HasModifiersFor env ArcaneStudies
-
-ability :: Int -> AssetAttrs -> Ability
-ability idx a = mkAbility a idx $ FastAbility $ ResourceCost 1
-
 instance HasAbilities env ArcaneStudies where
-  getAbilities iid (WhenSkillTest SkillWillpower) (ArcaneStudies a) =
-    pure [ ability 1 a | ownedBy a iid ]
-  getAbilities iid (WhenSkillTest SkillIntellect) (ArcaneStudies a) =
-    pure [ ability 2 a | ownedBy a iid ]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (ArcaneStudies a) = pure
+    [ restrictedAbility a idx (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ FastAbility
+      $ ResourceCost 1
+    | idx <- [1, 2]
+    ]
 
 instance AssetRunner env => RunMessage env ArcaneStudies where
   runMessage msg a@(ArcaneStudies attrs) = case msg of

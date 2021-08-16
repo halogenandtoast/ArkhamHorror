@@ -10,40 +10,40 @@ import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype AbbessAllegriaDiBiase = AbbessAllegriaDiBiase AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 abbessAllegriaDiBiase :: AssetCard AbbessAllegriaDiBiase
 abbessAllegriaDiBiase =
   ally AbbessAllegriaDiBiase Cards.abbessAllegriaDiBiase (2, 2)
 
-ability :: AssetAttrs -> Ability
-ability attrs = mkAbility attrs 1 (FastAbility $ ExhaustCost (toTarget attrs))
-
-instance
-  ( HasSet ConnectedLocationId env LocationId
-  , HasId LocationId env InvestigatorId
-  )
-  => HasAbilities env AbbessAllegriaDiBiase where
-  getAbilities iid FastPlayerWindow (AbbessAllegriaDiBiase attrs) = do
-    abbessLocationId <- getAssetLocation attrs
-    investigatorLocation <- getId @LocationId iid
-    connectedLocationIds <- map unConnectedLocationId
-      <$> getSetList investigatorLocation
-    pure
-      [ ability attrs
-      | (abbessLocationId `elem` connectedLocationIds)
-        || (abbessLocationId == investigatorLocation)
-      ]
-  getAbilities iid window (AbbessAllegriaDiBiase attrs) =
-    getAbilities iid window attrs
-
-instance HasModifiersFor env AbbessAllegriaDiBiase
+instance HasAbilities env AbbessAllegriaDiBiase where
+  getAbilities _ _ (AbbessAllegriaDiBiase attrs) =
+    pure $ case assetLocation attrs of
+      Just abbessLocation ->
+        [ restrictedAbility
+            attrs
+            1
+            (AnyCriteria
+              [ LocationExists
+                (LocationWithId abbessLocation <> AccessibleLocation)
+              , LocationExists
+                (AccessibleFrom (LocationWithId abbessLocation)
+                <> AccessibleLocation
+                )
+              ]
+            )
+            (FastAbility $ ExhaustCost (toTarget attrs))
+        ]
+      Nothing -> []
 
 getAssetLocation
   :: (MonadReader env m, HasId LocationId env InvestigatorId)
@@ -58,6 +58,7 @@ getAssetLocation AssetAttrs {..} = case assetLocation of
 instance
   ( HasSet ConnectedLocationId env LocationId
   , HasId LocationId env InvestigatorId
+  , HasSet InvestigatorId env ()
   , HasQueue env
   , HasModifiersFor env ()
   )

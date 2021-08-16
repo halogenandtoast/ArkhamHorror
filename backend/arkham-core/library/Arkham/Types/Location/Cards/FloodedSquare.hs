@@ -46,7 +46,7 @@ instance ActionRunner env => HasAbilities env FloodedSquare where
     withBaseActions iid NonFast attrs $ do
       counterClockwiseLocation <- getCounterClockwiseLocation (toId attrs)
       nonEliteEnemies <- getSet @EnemyId $ EnemyMatchAll
-        [NonEliteEnemy, EnemyAtLocation counterClockwiseLocation]
+        [NonEliteEnemy, EnemyAt $ LocationWithId counterClockwiseLocation]
       pure [ ability attrs | notNull nonEliteEnemies ]
   getAbilities iid window (FloodedSquare attrs) = getAbilities iid window attrs
 
@@ -59,7 +59,7 @@ instance
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       counterClockwiseLocation <- getCounterClockwiseLocation (toId attrs)
       nonEliteEnemies <- getSetList @EnemyId $ EnemyMatchAll
-        [NonEliteEnemy, EnemyAtLocation counterClockwiseLocation]
+        [NonEliteEnemy, EnemyAt $ LocationWithId counterClockwiseLocation]
       l <$ push
         (chooseOne
           iid

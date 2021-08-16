@@ -21,6 +21,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype TheCarnevaleConspiracy = TheCarnevaleConspiracy ActAttrs
@@ -40,14 +41,15 @@ ability a = mkAbility
   )
 
 instance ActionRunner env => HasAbilities env TheCarnevaleConspiracy where
-  getAbilities _ NonFast (TheCarnevaleConspiracy x) = do
+  getAbilities _ (Window Timing.When NonFast) (TheCarnevaleConspiracy x) = do
     maskedCarnevaleGoers <- selectList (AssetWithTitle "Masked Carnevale-Goer")
     filteredMaskedCarnevaleGoers <- flip filterM maskedCarnevaleGoers $ \aid ->
       do
         modifiers' <- getModifiers (toSource x) (AssetTarget aid)
         pure $ CannotBeRevealed `notElem` modifiers'
     pure [ ability x | notNull filteredMaskedCarnevaleGoers ]
-  getAbilities iid window (TheCarnevaleConspiracy x) = getAbilities iid window x
+  getAbilities iid window (TheCarnevaleConspiracy x) =
+    getAbilities iid window x
 
 instance
   ( HasList UnderneathCard env ActDeck

@@ -15,10 +15,11 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
-import Arkham.Types.Message
+import Arkham.Types.Message hiding (PlayCard)
 import Arkham.Types.Modifier
 import Arkham.Types.Slot
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
@@ -30,14 +31,19 @@ daisysToteBagAdvanced :: AssetCard DaisysToteBagAdvanced
 daisysToteBagAdvanced = asset DaisysToteBagAdvanced Cards.daisysToteBagAdvanced
 
 instance HasSet Trait env (InvestigatorId, CardId) => HasAbilities env DaisysToteBagAdvanced where
-  getAbilities iid (WhenPlayCard who cardId) (DaisysToteBagAdvanced a)
-    | ownedBy a iid && iid == who = do
-      isTome <- elem Tome <$> getSet @Trait (iid, cardId)
+  getAbilities iid (Window Timing.When (PlayCard who card)) (DaisysToteBagAdvanced a)
+    | ownedBy a iid && iid == who
+    = do
+      isTome <- elem Tome <$> getSet @Trait (iid, toCardId card)
       let
         ability =
-          (mkAbility (toSource a) 1 (LegacyReactionAbility $ ExhaustCost (toTarget a))
+          (mkAbility
+              (toSource a)
+              1
+              (LegacyReactionAbility $ ExhaustCost (toTarget a))
             )
-            { abilityMetadata = Just (TargetMetadata $ CardIdTarget cardId)
+            { abilityMetadata = Just
+              (TargetMetadata $ CardIdTarget $ toCardId card)
             }
       pure [ ability | isTome ]
   getAbilities iid window (DaisysToteBagAdvanced attrs) =

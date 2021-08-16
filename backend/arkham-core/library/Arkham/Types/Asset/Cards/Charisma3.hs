@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Slot
@@ -26,7 +27,7 @@ instance HasModifiersFor env Charisma3
 slot :: AssetAttrs -> Slot
 slot attrs = Slot (toSource attrs) Nothing
 
-instance HasModifiersFor env () => RunMessage env Charisma3 where
+instance AssetRunner env => RunMessage env Charisma3 where
   runMessage msg (Charisma3 attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       push $ AddSlot iid AllySlot (slot attrs)

@@ -14,6 +14,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype Burglary = Burglary AssetAttrs
@@ -26,10 +27,11 @@ burglary = asset Burglary Cards.burglary
 instance HasModifiersFor env Burglary
 
 instance HasAbilities env Burglary where
-  getAbilities iid NonFast (Burglary a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility (Just Action.Investigate) $ Costs
-        [ActionCost 1, ExhaustCost (toTarget a)]
-    ]
+  getAbilities iid (Window Timing.When NonFast) (Burglary a) | ownedBy a iid =
+    pure
+      [ mkAbility a 1 $ ActionAbility (Just Action.Investigate) $ Costs
+          [ActionCost 1, ExhaustCost (toTarget a)]
+      ]
   getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Burglary where

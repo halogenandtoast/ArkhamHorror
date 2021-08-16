@@ -19,8 +19,10 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
-import Arkham.Types.Window
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 import qualified Data.HashMap.Strict as HashMap
 import Data.Semigroup
 
@@ -293,7 +295,8 @@ instance SkillTestRunner env => RunMessage env SkillTest where
             )
         pure $ s & (setAsideTokensL %~ (tokenFaces <>))
     RevealToken SkillTestSource{} iid token -> do
-      push (CheckWindow iid [AfterRevealToken iid token])
+      push
+        (CheckWindow iid [Window Timing.After (Window.RevealToken iid token)])
       pure $ s & revealedTokensL %~ (token :)
     RevealSkillTestTokens iid -> do
       revealedTokenFaces <- flip
@@ -352,7 +355,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
            ]
       pure $ s & resultL .~ FailedBy True difficulty
     StartSkillTest _ -> do
-      windowMsgs <- checkWindows [FastPlayerWindow]
+      windowMsgs <- checkWindows [Window Timing.When Window.FastPlayerWindow]
       s <$ pushAll
         (HashMap.foldMapWithKey
             (\k (i, _) -> [CommitCard i k])
@@ -575,7 +578,8 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         withQueue_ $ filter $ \case
           Will FailedSkillTest{} -> False
           Will PassedSkillTest{} -> False
-          CheckWindow _ [WhenWouldFailSkillTest _] -> False
+          CheckWindow _ [Window Timing.When (Window.WouldFailSkillTest _)] ->
+            False
           Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResults])
             | skillTestInvestigator == skillTestInvestigator' -> False
           _ -> True

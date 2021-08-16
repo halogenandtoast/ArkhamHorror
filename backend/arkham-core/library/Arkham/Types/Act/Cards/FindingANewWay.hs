@@ -16,6 +16,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Resolution
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype FindingANewWay = FindingANewWay ActAttrs
@@ -26,8 +27,8 @@ findingANewWay :: ActCard FindingANewWay
 findingANewWay = act (4, A) FindingANewWay Cards.findingANewWay Nothing
 
 instance HasAbilities env FindingANewWay where
-  getAbilities iid NonFast (FindingANewWay x) =
-    withBaseActions iid NonFast x $ do
+  getAbilities iid (Window Timing.When NonFast) (FindingANewWay x) =
+    withBaseActions iid (Window Timing.When NonFast) x $ do
       pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
   getAbilities iid window (FindingANewWay x) = getAbilities iid window x
 

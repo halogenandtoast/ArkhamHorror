@@ -10,7 +10,9 @@ import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
+import qualified Arkham.Types.Window as Window
 
 newtype BuryThemDeep = BuryThemDeep EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
@@ -21,8 +23,9 @@ buryThemDeep = event BuryThemDeep Cards.buryThemDeep
 
 instance RunMessage env BuryThemDeep where
   runMessage msg e@(BuryThemDeep attrs) = case msg of
-    InvestigatorPlayEvent _ eid _ [AfterEnemyDefeated _ enemyId]
-      | eid == toId attrs -> do
+    InvestigatorPlayEvent _ eid _ [Window Timing.After (Window.EnemyDefeated _ enemyId)]
+      | eid == toId attrs
+      -> do
         push $ AddToVictory (toTarget attrs)
         e <$ replaceMessage
           (Discard $ EnemyTarget enemyId)

@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
@@ -43,5 +44,5 @@ instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env DarkHo
 
   getModifiersFor _ _ _ = pure []
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env DarkHorse where
+instance AssetRunner env => RunMessage env DarkHorse where
   runMessage msg (DarkHorse attrs) = DarkHorse <$> runMessage msg attrs

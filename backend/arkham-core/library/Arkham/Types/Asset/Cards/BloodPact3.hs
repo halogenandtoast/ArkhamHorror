@@ -12,30 +12,26 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype BloodPact3 = BloodPact3 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bloodPact3 :: AssetCard BloodPact3
 bloodPact3 = asset BloodPact3 Cards.bloodPact3
 
 instance HasAbilities env BloodPact3 where
-  getAbilities iid FastPlayerWindow (BloodPact3 a) | ownedBy a iid = do
-    pure
-      [ (mkAbility (toSource a) idx (FastAbility $ ResourceCost 2))
-          { abilityLimit = PlayerLimit PerTestOrAbility 1
-          }
-      | idx <- [1 .. 2]
-      ]
-  getAbilities _ _ _ = pure []
-
-instance HasModifiersFor env BloodPact3
+  getAbilities _ _ (BloodPact3 x) = pure
+    [ restrictedAbility x idx OwnsThis (FastAbility $ ResourceCost 2)
+      & abilityLimitL
+      .~ PlayerLimit PerTestOrAbility 1
+    | idx <- [1 .. 2]
+    ]
 
 instance AssetRunner env => RunMessage env BloodPact3 where
   runMessage msg a@(BloodPact3 attrs) = case msg of

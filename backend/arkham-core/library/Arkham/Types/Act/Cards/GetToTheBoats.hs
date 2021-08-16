@@ -19,6 +19,7 @@ import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Phase
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype GetToTheBoats = GetToTheBoats ActAttrs
@@ -32,9 +33,10 @@ ability :: ActAttrs -> Ability
 ability a = mkAbility a 1 ForcedAbility
 
 instance ActionRunner env => HasAbilities env GetToTheBoats where
-  getAbilities iid (PhaseBegins MythosPhase) (GetToTheBoats x) = do
-    leadInvestigatorId <- getLeadInvestigatorId
-    pure [ ability x | iid == leadInvestigatorId ]
+  getAbilities iid (Window Timing.When (PhaseBegins MythosPhase)) (GetToTheBoats x)
+    = do
+      leadInvestigatorId <- getLeadInvestigatorId
+      pure [ ability x | iid == leadInvestigatorId ]
   getAbilities iid window (GetToTheBoats x) = getAbilities iid window x
 
 instance

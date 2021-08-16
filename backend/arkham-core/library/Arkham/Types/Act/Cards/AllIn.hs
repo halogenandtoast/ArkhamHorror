@@ -23,6 +23,7 @@ import Arkham.Types.Resolution
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype AllIn = AllIn ActAttrs
@@ -33,21 +34,22 @@ allIn :: ActCard AllIn
 allIn = act (3, A) AllIn Cards.allIn Nothing
 
 instance ActionRunner env => HasAbilities env AllIn where
-  getAbilities iid NonFast (AllIn attrs) = withBaseActions iid NonFast attrs $ do
-    investigatorLocationId <- getId @LocationId iid
-    maid <- selectOne (assetIs Cards.drFrancisMorgan)
-    case maid of
-      Nothing -> pure []
-      Just aid -> do
-        miid <- fmap unOwnerId <$> getId aid
-        assetLocationId <- getId aid
-        pure
-          [ mkAbility
-              (ProxySource (AssetSource aid) (toSource attrs))
-              1
-              (ActionAbility (Just Parley) $ ActionCost 1)
-          | isNothing miid && Just investigatorLocationId == assetLocationId
-          ]
+  getAbilities iid (Window Timing.When NonFast) (AllIn attrs) =
+    withBaseActions iid (Window Timing.When NonFast) attrs $ do
+      investigatorLocationId <- getId @LocationId iid
+      maid <- selectOne (assetIs Cards.drFrancisMorgan)
+      case maid of
+        Nothing -> pure []
+        Just aid -> do
+          miid <- fmap unOwnerId <$> getId aid
+          assetLocationId <- getId aid
+          pure
+            [ mkAbility
+                (ProxySource (AssetSource aid) (toSource attrs))
+                1
+                (ActionAbility (Just Parley) $ ActionCost 1)
+            | isNothing miid && Just investigatorLocationId == assetLocationId
+            ]
   getAbilities i window (AllIn x) = getAbilities i window x
 
 instance ActRunner env => RunMessage env AllIn where

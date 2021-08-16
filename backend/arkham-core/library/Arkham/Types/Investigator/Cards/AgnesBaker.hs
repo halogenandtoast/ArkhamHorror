@@ -9,23 +9,25 @@ import Arkham.Types.Ability
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EnemyId
+import Arkham.Types.Criteria
 import Arkham.Types.Investigator.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Stats
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype AgnesBaker = AgnesBaker InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 agnesBaker :: AgnesBaker
-agnesBaker = AgnesBaker
-  $ baseAttrs "01004" "Agnes Baker" Mystic stats [Sorcerer]
- where
-  stats = Stats
+agnesBaker = AgnesBaker $ baseAttrs
+  "01004"
+  "Agnes Baker"
+  Mystic
+  Stats
     { health = 6
     , sanity = 8
     , willpower = 5
@@ -33,17 +35,17 @@ agnesBaker = AgnesBaker
     , combat = 2
     , agility = 3
     }
+  [Sorcerer]
 
-ability :: InvestigatorAttrs -> Ability
-ability attrs = base { abilityLimit = PlayerLimit PerPhase 1 }
-  where base = mkAbility (toSource attrs) 1 (LegacyReactionAbility Free)
-
-instance InvestigatorRunner env => HasAbilities env AgnesBaker where
-  getAbilities iid (WhenDealtHorror _ target) (AgnesBaker attrs)
-    | isTarget attrs target && iid == toId attrs = do
-      enemyIds <- getSet @EnemyId $ investigatorLocation attrs
-      pure [ ability attrs | notNull enemyIds ]
-  getAbilities i window (AgnesBaker attrs) = getAbilities i window attrs
+instance HasAbilities env AgnesBaker where
+  getAbilities _ _ (AgnesBaker x) = pure
+    [ restrictedAbility
+          x
+          1
+          (Self <> EnemyExists (EnemyAt YourLocation))
+          (ReactionAbility (PlacedCounter Timing.When You HorrorCounter) Free)
+        & (abilityLimitL .~ PlayerLimit PerPhase 1)
+    ]
 
 instance HasTokenValue env AgnesBaker where
   getTokenValue (AgnesBaker attrs) iid ElderSign | iid == toId attrs = do
@@ -51,10 +53,10 @@ instance HasTokenValue env AgnesBaker where
     pure $ TokenValue ElderSign tokenValue'
   getTokenValue (AgnesBaker attrs) iid token = getTokenValue attrs iid token
 
-instance (InvestigatorRunner env) => RunMessage env AgnesBaker where
+instance (Query EnemyMatcher env, InvestigatorRunner env) => RunMessage env AgnesBaker where
   runMessage msg i@(AgnesBaker attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      enemyIds <- getSetList $ investigatorLocation attrs
+      enemyIds <- selectList (EnemyAt YourLocation)
       i <$ push
         (chooseOne
           (toId attrs)

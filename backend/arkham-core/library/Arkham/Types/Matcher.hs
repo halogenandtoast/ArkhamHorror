@@ -4,6 +4,7 @@ module Arkham.Types.Matcher where
 
 import Arkham.Prelude
 
+import Arkham.Types.Action (Action)
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardType
@@ -95,13 +96,12 @@ data EnemyMatcher
   | EnemyWithFullTitle Text Text
   | EnemyWithId EnemyId
   | EnemyWithTrait Trait
+  | EnemyAt LocationMatcher
   | EnemyWithoutTrait Trait
   | EnemyWithKeyword Keyword
   | AnyEnemy
   | ExhaustedEnemy
   | NonWeaknessEnemy
-  | EnemyAtYourLocation
-  | EnemyAtLocation LocationId
   | EnemyMatchAll [EnemyMatcher]
   | EnemyEngagedWithYou
   deriving stock (Show, Eq, Generic)
@@ -148,6 +148,7 @@ data LocationMatcher
   | Anywhere
   | EmptyLocation
   | AccessibleLocation
+  | AccessibleFrom LocationMatcher
   | ConnectedLocation
   | LocationWithClues
   | LocationWithoutInvestigators
@@ -177,7 +178,7 @@ data SkillMatcher
   | SkillOwnedBy InvestigatorId
   | SkillMatches [SkillMatcher]
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
 
 instance Semigroup SkillMatcher where
   SkillMatches xs <> SkillMatches ys = SkillMatches (xs <> ys)
@@ -193,7 +194,7 @@ data TreacheryMatcher
   | TreacheryOwnedBy InvestigatorId
   | TreacheryMatches [TreacheryMatcher]
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
 
 instance Semigroup TreacheryMatcher where
   TreacheryMatches xs <> TreacheryMatches ys = TreacheryMatches (xs <> ys)
@@ -262,16 +263,18 @@ data WindowMatcher
   = EnemyDefeated Timing Who EnemyMatcher
   | EnemyEvaded Timing Who EnemyMatcher
   | MythosStep WindowMythosStepMatcher
+  | AssetEntersPlay Timing AssetMatcher
   | EnemyAttacks Timing Who EnemyMatcher
   | RevealChaosToken Timing Who WindowTokenMatcher
   | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
-  | WhenWouldHaveSkillTestResult Who SkillTestMatcher SkillTestResultMatcher
-  | WhenEnemySpawns Where EnemyMatcher
+  | PlacedCounter Timing Who CounterMatcher
+  | WouldHaveSkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
+  | EnemySpawns Timing Where EnemyMatcher
   | FastPlayerWindow
-  | AfterTurnBegins Who
+  | TurnBegins Timing Who
   | DuringTurn Who
   | OrWindowMatcher [WindowMatcher]
-  | DealtDamageOrHorror Who
+  | DealtDamageOrHorror Timing Who
   | DrawCard Timing Who CardMatcher
   | PhaseBegins Timing WindowPhaseMatcher
   | PlayerHasPlayableCard ExtendedCardMatcher
@@ -279,9 +282,25 @@ data WindowMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data SkillTestMatcher = WhileInvestigating | WhileAttackingAnEnemy | AnySkillTest
+data SkillTestMatcher
+  = WhileInvestigating
+  | WhileAttackingAnEnemy EnemyMatcher
+  | SkillTestWithSkill SkillMatcher
+  | AnySkillTest
+  | SkillTestAtYourLocation
+  | SkillTestOnTreachery TreacheryMatcher
+  | UsingThis
+  | SkillTestMatches [SkillTestMatcher]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+instance Semigroup SkillTestMatcher where
+  AnySkillTest <> x = x
+  x <> AnySkillTest = x
+  SkillTestMatches xs <> SkillTestMatches ys = SkillTestMatches $ xs <> ys
+  SkillTestMatches xs <> x = SkillTestMatches $ xs <> [x]
+  x <> SkillTestMatches xs = SkillTestMatches $ x : xs
+  x <> y = SkillTestMatches [x, y]
 
 data SkillTestResultMatcher = FailureResult ValueMatcher | SuccessResult ValueMatcher | AnyResult
   deriving stock (Show, Eq, Generic)
@@ -302,3 +321,26 @@ data WindowPhaseMatcher = AnyPhase
 data WindowMythosStepMatcher = WhenAllDrawEncounterCard
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data CounterMatcher = HorrorCounter
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data ActionMatcher
+  = ActionOnLocation LocationId
+  | ActionIs Action
+  | ActionWindow WindowMatcher
+  | ActionMatches [ActionMatcher]
+  | AnyAction
+  | ActionOnScenarioCard
+
+instance Semigroup ActionMatcher where
+  AnyAction <> x = x
+  x <> AnyAction = x
+  ActionMatches xs <> ActionMatches ys = ActionMatches $ xs <> ys
+  ActionMatches xs <> x = ActionMatches $ xs <> [x]
+  x <> ActionMatches xs = ActionMatches $ x : xs
+  x <> y = ActionMatches [x, y]
+
+instance Monoid ActionMatcher where
+  mempty = AnyAction

@@ -771,7 +771,6 @@ getEnemiesMatching matcher = do
       pure . (== Name title (Just subtitle)) . toName
     EnemyWithId enemyId -> pure . (== enemyId) . toId
     NonEliteEnemy -> fmap (notElem Elite) . getSet . toId
-    EnemyAtLocation lid -> fmap (== lid) . getId
     EnemyMatchAll ms -> \enemy -> allM (`matcherFilter` enemy) ms
     EnemyWithTrait t -> fmap (member t) . getSet . toId
     EnemyWithoutTrait t -> fmap (notMember t) . getSet . toId
@@ -782,10 +781,8 @@ getEnemiesMatching matcher = do
     EnemyEngagedWithYou -> \enemy -> do
       iid <- view activeInvestigatorIdL <$> getGame
       member iid <$> getSet (toId enemy)
-    M.EnemyAtYourLocation -> \enemy -> do
-      yourLocation <-
-        getLocation =<< locationFor . view activeInvestigatorIdL =<< getGame
-      (toId yourLocation ==) <$> getId (toId enemy)
+    M.EnemyAt locationMatcher -> \enemy ->
+      liftA2 member (getId @LocationId $ toId enemy) (select locationMatcher)
 
 getAgenda
   :: (HasCallStack, MonadReader env m, HasGame env) => AgendaId -> m Agenda
@@ -989,6 +986,9 @@ instance HasGame env => Query AssetMatcher env where
 
 instance HasGame env => Query LocationMatcher env where
   select = fmap (setFromList . map toId) . getLocationsMatching
+
+instance HasGame env => Query EnemyMatcher env where
+  select = fmap (setFromList . map toId) . getEnemiesMatching
 
 instance HasGame env => Query InvestigatorMatcher env where
   select = fmap (setFromList . map toId) . getInvestigatorsMatching

@@ -10,29 +10,29 @@ import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Blackjack = Blackjack AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blackjack :: AssetCard Blackjack
 blackjack = hand Blackjack Cards.blackjack
 
 instance HasAbilities env Blackjack where
-  getAbilities iid NonFast (Blackjack a) | ownedBy a iid =
-    pure [mkAbility a 1 $ ActionAbility (Just Action.Fight) (ActionCost 1)]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (Blackjack a) = pure
+    [ restrictedAbility a 1 OwnsThis
+        $ ActionAbility (Just Action.Fight) (ActionCost 1)
+    ]
 
-instance HasModifiersFor env Blackjack
-
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Blackjack where
+instance AssetRunner env => RunMessage env Blackjack where
   runMessage msg a@(Blackjack attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifiers

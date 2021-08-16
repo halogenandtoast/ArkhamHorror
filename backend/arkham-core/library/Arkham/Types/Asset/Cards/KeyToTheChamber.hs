@@ -8,14 +8,14 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Exception
-import Arkham.Types.Id
-import Arkham.Types.Matcher hiding (FastPlayerWindow)
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype KeyToTheChamber = KeyToTheChamber AssetAttrs
   deriving anyclass IsAsset
@@ -25,26 +25,20 @@ keyToTheChamber :: AssetCard KeyToTheChamber
 keyToTheChamber =
   assetWith KeyToTheChamber Cards.keyToTheChamber (isStoryL .~ True)
 
-instance (HasId LocationId env InvestigatorId, HasSet ConnectedLocationId env LocationId, HasId (Maybe LocationId) env LocationMatcher) => HasAbilities env KeyToTheChamber where
-  getAbilities iid FastPlayerWindow (KeyToTheChamber attrs)
-    | ownedBy attrs iid = do
-      mHiddenChamberId <- getId @(Maybe LocationId)
-        (LocationWithTitle "The Hidden Chamber")
-      case mHiddenChamberId of
-        Just hiddenChamberId -> do
-          lid <- getId @LocationId iid
-          connectedLocationIds <- map unConnectedLocationId <$> getSetList lid
-          pure
-            [ mkAbility (toSource attrs) 1 (FastAbility Free)
-            | hiddenChamberId `elem` connectedLocationIds
-            ]
-        Nothing -> pure []
-  getAbilities iid window (KeyToTheChamber attrs) =
-    getAbilities iid window attrs
+instance HasAbilities env KeyToTheChamber where
+  getAbilities _ _ (KeyToTheChamber attrs) = pure
+    [ restrictedAbility
+        attrs
+        1
+        (OwnsThis <> LocationExists
+          (ConnectedLocation <> LocationWithTitle "The Hidden Chamber")
+        )
+        (FastAbility Free)
+    ]
 
 instance HasModifiersFor env KeyToTheChamber
 
-instance (HasQueue env, HasModifiersFor env (), HasId (Maybe LocationId) env LocationMatcher) => RunMessage env KeyToTheChamber where
+instance AssetRunner env => RunMessage env KeyToTheChamber where
   runMessage msg a@(KeyToTheChamber attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       a <$ push (TakeControlOfAsset iid $ toId a)

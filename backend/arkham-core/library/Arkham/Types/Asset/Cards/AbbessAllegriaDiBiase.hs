@@ -14,8 +14,6 @@ import Arkham.Types.Criteria
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype AbbessAllegriaDiBiase = AbbessAllegriaDiBiase AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)

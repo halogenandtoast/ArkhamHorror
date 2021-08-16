@@ -150,7 +150,7 @@ data LocationMatcher
   | AccessibleLocation
   | AccessibleFrom LocationMatcher
   | ConnectedLocation
-  | LocationWithClues
+  | LocationWithClues ValueMatcher
   | LocationWithoutInvestigators
   | LocationWithoutEnemies
   | RevealedLocation
@@ -273,6 +273,7 @@ data WindowMatcher
   | FastPlayerWindow
   | TurnBegins Timing Who
   | DuringTurn Who
+  | Enters Timing Who Where
   | OrWindowMatcher [WindowMatcher]
   | DealtDamageOrHorror Timing Who
   | DrawCard Timing Who CardMatcher
@@ -306,7 +307,21 @@ data SkillTestResultMatcher = FailureResult ValueMatcher | SuccessResult ValueMa
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data ValueMatcher = LessThan (GameValue Int) | AnyValue
+pattern AtLeast :: GameValue Int -> ValueMatcher
+pattern AtLeast n <- GreaterThanOrEqualTo n where
+  AtLeast n = GreaterThanOrEqualTo n
+
+pattern AtMost :: GameValue Int -> ValueMatcher
+pattern AtMost n <- LessThanOrEqualTo n where
+  AtMost n = LessThanOrEqualTo n
+
+data ValueMatcher
+  = LessThan (GameValue Int)
+  | GreaterThan (GameValue Int)
+  | LessThanOrEqualTo (GameValue Int)
+  | GreaterThanOrEqualTo (GameValue Int)
+  | EqualTo (GameValue Int)
+  | AnyValue
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

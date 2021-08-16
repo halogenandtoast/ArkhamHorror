@@ -8,36 +8,40 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
+import Arkham.Types.GameValue
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
 
 newtype Fieldwork = Fieldwork AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fieldwork :: AssetCard Fieldwork
 fieldwork = asset Fieldwork Cards.fieldwork
 
-ability :: AssetAttrs -> Ability
-ability a = restrictedAbility
-  a
-  1
-  ClueOnLocation
-  (LegacyReactionAbility $ ExhaustCost $ toTarget a)
-
 instance HasAbilities env Fieldwork where
-  getAbilities iid (AfterEntering iid' _) (Fieldwork attrs)
-    | ownedBy attrs iid && iid == iid' = pure [ability attrs]
-  getAbilities iid window (Fieldwork attrs) = getAbilities iid window attrs
+  getAbilities _ _ (Fieldwork attrs) = pure
+    [ restrictedAbility
+        attrs
+        1
+        OwnsThis
+        (ReactionAbility
+            (Enters Timing.After You
+            $ LocationWithClues (GreaterThan $ Static 0)
+            )
+        $ ExhaustCost
+        $ toTarget attrs
+        )
+    ]
 
-instance HasModifiersFor env Fieldwork
-
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Fieldwork where
+instance AssetRunner env => RunMessage env Fieldwork where
   runMessage msg a@(Fieldwork attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a

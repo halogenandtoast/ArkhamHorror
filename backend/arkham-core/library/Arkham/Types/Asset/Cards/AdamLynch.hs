@@ -18,7 +18,7 @@ import Arkham.Types.Target
 import Arkham.Types.Token
 
 newtype AdamLynch = AdamLynch AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 adamLynch :: AssetCard AdamLynch
@@ -26,9 +26,6 @@ adamLynch =
   allyWith AdamLynch Cards.adamLynch (1, 1)
     $ (isStoryL .~ True)
     . (slotsL .~ mempty)
-
-instance HasAbilities env AdamLynch where
-  getAbilities iid window (AdamLynch attrs) = getAbilities iid window attrs
 
 instance Query LocationMatcher env => HasModifiersFor env AdamLynch where
   getModifiersFor (InvestigatorSource iid) (LocationTarget lid) (AdamLynch attrs)

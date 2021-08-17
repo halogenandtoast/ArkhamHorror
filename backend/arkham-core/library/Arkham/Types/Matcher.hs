@@ -245,6 +245,7 @@ data CardMatcher
   | CardWithClass ClassSymbol
   | CardWithOneOf [CardMatcher]
   | CardMatches [CardMatcher]
+  | IsEncounterCard
   | NonWeakness
   | NonExceptional
   | AnyCard

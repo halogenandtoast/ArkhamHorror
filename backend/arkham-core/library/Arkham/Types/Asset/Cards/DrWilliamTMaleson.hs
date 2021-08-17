@@ -12,31 +12,27 @@ import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.CardType
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
+import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Window
 
 newtype DrWilliamTMaleson = DrWilliamTMaleson AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drWilliamTMaleson :: AssetCard DrWilliamTMaleson
 drWilliamTMaleson = ally DrWilliamTMaleson Cards.drWilliamTMaleson (2, 2)
 
-ability :: AssetAttrs -> Ability
-ability attrs = mkAbility
-  attrs
-  1
-  (LegacyReactionAbility
-  $ Costs [ExhaustCost (toTarget attrs), PlaceClueOnLocationCost 1]
-  )
-
 instance HasAbilities env DrWilliamTMaleson where
-  getAbilities iid (WhenDrawCard who card) (DrWilliamTMaleson attrs)
-    | ownedBy attrs iid && iid == who = pure
-      [ ability attrs | toCardType card `elem` encounterCardTypes ]
-  getAbilities _ _ _ = pure []
-
-instance HasModifiersFor env DrWilliamTMaleson
+  getAbilities _ _ (DrWilliamTMaleson attrs) = pure
+    [ restrictedAbility
+        attrs
+        1
+        OwnsThis
+        (ReactionAbility (DrawCard When You $ BasicCardMatch IsEncounterCard)
+        $ Costs [ExhaustCost (toTarget attrs), PlaceClueOnLocationCost 1]
+        )
+    ]
 
 dropUntilDraw :: [Message] -> [Message]
 dropUntilDraw = dropWhile (notElem DrawEncounterCardMessage . messageType)

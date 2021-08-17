@@ -22,6 +22,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype TrappersCabin = TrappersCabin LocationAttrs
@@ -40,8 +41,9 @@ instance HasModifiersFor env TrappersCabin where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasAbilities env TrappersCabin where
-  getAbilities iid NonFast (TrappersCabin attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs $ do
+  getAbilities iid window@(Window Timing.When NonFast) (TrappersCabin attrs@LocationAttrs {..})
+    | locationRevealed
+    = withBaseActions iid window attrs $ do
       assetNotTaken <- isNothing <$> selectOne (assetIs Assets.bearTrap)
       pure
         [ locationAbility

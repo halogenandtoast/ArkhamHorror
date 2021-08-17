@@ -13,13 +13,15 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs
-import Arkham.Types.Message
+import Arkham.Types.Message hiding (RevealToken)
 import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 newtype WendyAdams = WendyAdams InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
@@ -57,7 +59,7 @@ ability attrs token = base
     (LegacyReactionAbility $ HandDiscardCost 1 Nothing mempty mempty)
 
 instance InvestigatorRunner env => HasAbilities env WendyAdams where
-  getAbilities iid (WhenRevealToken who token) (WendyAdams attrs@InvestigatorAttrs {..})
+  getAbilities iid (Window Timing.When (Window.RevealToken who token)) (WendyAdams attrs@InvestigatorAttrs {..})
     | iid == investigatorId && iid == who
     = pure [ability attrs token]
   getAbilities i window (WendyAdams attrs) = getAbilities i window attrs
@@ -78,7 +80,9 @@ instance (InvestigatorRunner env) => RunMessage env WendyAdams where
           ]
     When (DrawToken iid token) | iid == investigatorId -> i <$ pushAll
       [ FocusTokens [token]
-      , CheckWindow investigatorId [WhenDrawToken investigatorId token]
+      , CheckWindow
+        investigatorId
+        [Window Timing.When (Window.DrawToken investigatorId token)]
       , UnfocusTokens
       ]
     ResolveToken _drawnToken ElderSign iid | iid == investigatorId -> do

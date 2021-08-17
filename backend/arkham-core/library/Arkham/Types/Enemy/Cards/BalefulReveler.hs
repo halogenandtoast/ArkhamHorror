@@ -15,6 +15,7 @@ import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.RequestedTokenStrategy
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Window
 import Control.Monad.Extra (findM)
@@ -30,12 +31,14 @@ balefulReveler =
 instance HasModifiersFor env BalefulReveler
 
 forcedAbility :: EnemyAttrs -> Ability
-forcedAbility attrs =
-  (mkAbility attrs 1 ForcedAbility) { abilityLimit = GroupLimit PerRound 1 }
+forcedAbility attrs = (mkAbility attrs 1 LegacyForcedAbility)
+  { abilityLimit = GroupLimit PerRound 1
+  }
 
 instance EnemyAttrsHasAbilities env => HasAbilities env BalefulReveler where
-  getAbilities _ (AfterMoveFromHunter eid) (BalefulReveler attrs)
-    | eid == toId attrs = pure [forcedAbility attrs]
+  getAbilities _ (Window Timing.After (MoveFromHunter eid)) (BalefulReveler attrs)
+    | eid == toId attrs
+    = pure [forcedAbility attrs]
   getAbilities i window (BalefulReveler attrs) = getAbilities i window attrs
 
 instance EnemyAttrsRunMessage env => RunMessage env BalefulReveler where

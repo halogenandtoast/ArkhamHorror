@@ -16,6 +16,7 @@ import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -50,8 +51,9 @@ ability attrs = base { abilityLimit = PlayerLimit PerRound 1 }
     (FastAbility $ HandDiscardCost 1 Nothing mempty mempty)
 
 instance InvestigatorRunner env => HasAbilities env AshcanPete where
-  getAbilities iid FastPlayerWindow (AshcanPete attrs@InvestigatorAttrs {..})
-    | iid == investigatorId = do
+  getAbilities iid (Window Timing.When FastPlayerWindow) (AshcanPete attrs@InvestigatorAttrs {..})
+    | iid == investigatorId
+    = do
       exhaustedAssetIds <- select (AssetOwnedBy You <> AssetExhausted)
       pure [ ability attrs | notNull exhaustedAssetIds ]
   getAbilities i window (AshcanPete attrs) = getAbilities i window attrs

@@ -12,27 +12,29 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Scrapper3 = Scrapper3 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 scrapper3 :: AssetCard Scrapper3
 scrapper3 = asset Scrapper3 Cards.scrapper3
 
 instance HasAbilities env Scrapper3 where
-  getAbilities iid (WhenSkillTest _) (Scrapper3 a) | ownedBy a iid = do
-    pure [ mkAbility a idx $ FastAbility $ ResourceCost 1 | idx <- [1 .. 2] ]
-  getAbilities _ _ _ = pure []
-
-instance HasModifiersFor env Scrapper3
+  getAbilities _ _ (Scrapper3 a) = pure
+    [ restrictedAbility a idx (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ FastAbility
+      $ ResourceCost 1
+    | idx <- [1, 2]
+    ]
 
 instance AssetRunner env => RunMessage env Scrapper3 where
   runMessage msg a@(Scrapper3 attrs) = case msg of

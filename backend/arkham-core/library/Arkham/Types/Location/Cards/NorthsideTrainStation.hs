@@ -16,11 +16,12 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype NorthsideTrainStation = NorthsideTrainStation LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 northsideTrainStation :: LocationCard NorthsideTrainStation
@@ -32,8 +33,6 @@ northsideTrainStation = location
   T
   [Diamond, Triangle]
 
-instance HasModifiersFor env NorthsideTrainStation
-
 ability :: LocationAttrs -> Ability
 ability attrs =
   (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
@@ -41,9 +40,9 @@ ability attrs =
     }
 
 instance ActionRunner env => HasAbilities env NorthsideTrainStation where
-  getAbilities iid NonFast (NorthsideTrainStation attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs
-    $ pure [locationAbility (ability attrs)]
+  getAbilities iid window@(Window Timing.When NonFast) (NorthsideTrainStation attrs@LocationAttrs {..})
+    | locationRevealed
+    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window (NorthsideTrainStation attrs) =
     getAbilities iid window attrs
 

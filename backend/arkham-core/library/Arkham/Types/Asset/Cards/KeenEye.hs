@@ -12,30 +12,26 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype KeenEye = KeenEye AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 keenEye :: AssetCard KeenEye
 keenEye = asset KeenEye Cards.keenEye
 
 instance HasAbilities env KeenEye where
-  getAbilities iid FastPlayerWindow (KeenEye a) | ownedBy a iid = do
-    pure
-      [ mkAbility (toSource a) idx (FastAbility $ ResourceCost 2)
-      | idx <- [1 .. 2]
-      ]
-  getAbilities _ _ _ = pure []
-
-instance HasModifiersFor env KeenEye
+  getAbilities _ _ (KeenEye a) = pure
+    [ restrictedAbility a idx OwnsThis (FastAbility $ ResourceCost 2)
+    | idx <- [1, 2]
+    ]
 
 instance AssetRunner env => RunMessage env KeenEye where
   runMessage msg a@(KeenEye attrs) = case msg of

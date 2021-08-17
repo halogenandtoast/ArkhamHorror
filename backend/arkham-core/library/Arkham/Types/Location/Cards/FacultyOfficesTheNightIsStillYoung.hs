@@ -16,12 +16,13 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Matcher hiding (FastPlayerWindow)
+import Arkham.Types.Matcher hiding (FastPlayerWindow, RevealLocation)
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Resolution
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window
+import Arkham.Types.Window hiding (RevealLocation)
 
 newtype FacultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung LocationAttrs
   deriving anyclass IsLocation
@@ -44,9 +45,9 @@ instance HasModifiersFor env FacultyOfficesTheNightIsStillYoung where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasAbilities env FacultyOfficesTheNightIsStillYoung where
-  getAbilities iid FastPlayerWindow (FacultyOfficesTheNightIsStillYoung attrs@LocationAttrs {..})
+  getAbilities iid window@(Window Timing.When FastPlayerWindow) (FacultyOfficesTheNightIsStillYoung attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid FastPlayerWindow attrs $ pure
+    = withBaseActions iid window attrs $ pure
       [ locationAbility
           (mkAbility attrs 1 $ FastAbility
             (GroupClueCost

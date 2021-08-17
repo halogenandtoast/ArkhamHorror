@@ -9,6 +9,7 @@ import qualified Arkham.Asset.Cards as Cards
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Modifier
 import Arkham.Types.Source
@@ -31,5 +32,5 @@ instance HasModifiersFor env FineClothes where
     = pure $ toModifiers a [Difficulty (-2)]
   getModifiersFor _ _ _ = pure []
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env FineClothes where
+instance AssetRunner env => RunMessage env FineClothes where
   runMessage msg (FineClothes attrs) = FineClothes <$> runMessage msg attrs

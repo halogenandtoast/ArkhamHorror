@@ -8,7 +8,6 @@ import Arkham.Prelude
 import qualified Arkham.Skill.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Skill.Attrs
-import Arkham.Types.Skill.Runner
 
 newtype RiseToTheOccasion = RiseToTheOccasion SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities env)
@@ -17,6 +16,6 @@ newtype RiseToTheOccasion = RiseToTheOccasion SkillAttrs
 riseToTheOccasion :: SkillCard RiseToTheOccasion
 riseToTheOccasion = skill RiseToTheOccasion Cards.riseToTheOccasion
 
-instance SkillRunner env => RunMessage env RiseToTheOccasion where
+instance RunMessage env RiseToTheOccasion where
   runMessage msg (RiseToTheOccasion attrs) =
     RiseToTheOccasion <$> runMessage msg attrs

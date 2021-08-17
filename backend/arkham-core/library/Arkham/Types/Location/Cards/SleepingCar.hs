@@ -20,6 +20,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.ScenarioLogKey
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype SleepingCar = SleepingCar LocationAttrs
@@ -52,8 +53,9 @@ ability attrs =
     }
 
 instance ActionRunner env => HasAbilities env SleepingCar where
-  getAbilities iid NonFast (SleepingCar attrs) | locationRevealed attrs =
-    withBaseActions iid NonFast attrs $ pure [locationAbility (ability attrs)]
+  getAbilities iid window@(Window Timing.When NonFast) (SleepingCar attrs)
+    | locationRevealed attrs = withBaseActions iid window attrs
+    $ pure [locationAbility (ability attrs)]
   getAbilities iid window (SleepingCar attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env SleepingCar where

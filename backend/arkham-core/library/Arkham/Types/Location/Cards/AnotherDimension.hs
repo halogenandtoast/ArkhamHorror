@@ -16,10 +16,11 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype AnotherDimension = AnotherDimension LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 anotherDimension :: LocationCard AnotherDimension
@@ -31,22 +32,22 @@ anotherDimension = location
   Circle
   [Square, Diamond, Triangle]
 
-instance HasModifiersFor env AnotherDimension
-
 forcedAbility :: LocationAttrs -> LocationId -> Ability
 forcedAbility a lid =
-  mkAbility (toSource a) 1 ForcedAbility & abilityMetadataL ?~ TargetMetadata
+  mkAbility (toSource a) 1 LegacyForcedAbility & abilityMetadataL ?~ TargetMetadata
     (LocationTarget lid)
 
 instance ActionRunner env => HasAbilities env AnotherDimension where
-  getAbilities iid (WhenLocationLeavesPlay lid) (AnotherDimension attrs) = do
-    leadInvestigator <- getLeadInvestigatorId
-    investigatorIds <- getSet @InvestigatorId lid
-    pure
-      [ forcedAbility attrs lid
-      | iid == leadInvestigator && notNull investigatorIds
-      ]
-  getAbilities iid window (AnotherDimension attrs) = getAbilities iid window attrs
+  getAbilities iid (Window Timing.When (LocationLeavesPlay lid)) (AnotherDimension attrs)
+    = do
+      leadInvestigator <- getLeadInvestigatorId
+      investigatorIds <- getSet @InvestigatorId lid
+      pure
+        [ forcedAbility attrs lid
+        | iid == leadInvestigator && notNull investigatorIds
+        ]
+  getAbilities iid window (AnotherDimension attrs) =
+    getAbilities iid window attrs
 
 instance (HasSet UnengagedEnemyId env LocationId, LocationRunner env) => RunMessage env AnotherDimension where
   runMessage msg l@(AnotherDimension attrs) = case msg of

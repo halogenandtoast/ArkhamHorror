@@ -35,7 +35,7 @@ instance (HasQueue env, HasSet LocationId env LocationMatcher) => RunMessage env
     CreatedEffect eid _ _ (InvestigationTarget iid lid) | eid == effectId ->
       e <$ push (Investigate iid lid (toSource attrs) SkillIntellect False)
     SuccessfulInvestigation iid _ source | isSource attrs source -> do
-      lids <- getSetList (ConnectedLocation <> LocationWithClues)
+      lids <- getSetList (ConnectedLocation <> LocationWithAnyClues)
       e <$ pushAll
         [ chooseOne
           iid

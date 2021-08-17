@@ -15,10 +15,11 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype TwistedUnderbrush = TwistedUnderbrush LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 twistedUnderbrush :: LocationCard TwistedUnderbrush
@@ -30,11 +31,10 @@ twistedUnderbrush = location
   Moon
   [Diamond, Moon]
 
-instance HasModifiersFor env TwistedUnderbrush
-
 instance ActionRunner env => HasAbilities env TwistedUnderbrush where
-  getAbilities iid NonFast (TwistedUnderbrush attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs $ pure
+  getAbilities iid window@(Window Timing.When NonFast) (TwistedUnderbrush attrs@LocationAttrs {..})
+    | locationRevealed
+    = withBaseActions iid window attrs $ pure
       [ locationAbility
           (mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 1)
       ]

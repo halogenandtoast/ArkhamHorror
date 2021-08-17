@@ -14,6 +14,7 @@ import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Message
 import Arkham.Types.Stats
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -50,9 +51,9 @@ ability attrs = (mkAbility attrs 1 (ActionAbility Nothing $ ActionCost 1))
   }
 
 instance InvestigatorRunner env => HasAbilities env SefinaRousseau where
-  getAbilities i NonFast (SefinaRousseau attrs) | i == toId attrs =
-    withBaseActions i NonFast attrs
-      $ pure [ ability attrs | notNull (investigatorCardsUnderneath attrs) ]
+  getAbilities i window@(Window Timing.When NonFast) (SefinaRousseau attrs)
+    | i == toId attrs = withBaseActions i window attrs
+    $ pure [ ability attrs | notNull (investigatorCardsUnderneath attrs) ]
   getAbilities i window (SefinaRousseau attrs) = getAbilities i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env SefinaRousseau where

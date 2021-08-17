@@ -23,6 +23,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype BrackishWaters = BrackishWaters LocationAttrs
@@ -50,8 +51,8 @@ instance HasModifiersFor env BrackishWaters where
 -- TODO: Cost is an OR and we should be able to capture this
 -- first idea is change discard to take a source @DiscardCost 1 [DiscardFromHand, DiscardFromPlay] (Just AssetType) mempty mempty@
 instance (HasList Card env ExtendedCardMatcher, ActionRunner env) => HasAbilities env BrackishWaters where
-  getAbilities iid NonFast (BrackishWaters attrs@LocationAttrs {..}) =
-    withBaseActions iid NonFast attrs $ do
+  getAbilities iid window@(Window Timing.When NonFast) (BrackishWaters attrs@LocationAttrs {..})
+    = withBaseActions iid window attrs $ do
       assetNotTaken <- isNothing <$> selectOne (assetIs Assets.fishingNet)
       inPlayAssetsCount <- getInPlayOf iid <&> count
         (\case

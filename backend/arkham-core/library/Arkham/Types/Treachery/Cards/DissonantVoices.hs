@@ -10,7 +10,6 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
-import Arkham.Types.Treachery.Runner
 
 newtype DissonantVoices= DissonantVoices TreacheryAttrs
   deriving anyclass IsTreachery
@@ -31,7 +30,7 @@ instance HasModifiersFor env DissonantVoices where
 instance HasAbilities env DissonantVoices where
   getAbilities i window (DissonantVoices attrs) = getAbilities i window attrs
 
-instance (TreacheryRunner env) => RunMessage env DissonantVoices where
+instance RunMessage env DissonantVoices where
   runMessage msg t@(DissonantVoices attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))

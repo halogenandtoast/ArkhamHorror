@@ -16,7 +16,7 @@ import Arkham.Types.Difficulty
 import Arkham.Types.Direction
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Id
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (RevealLocation)
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution

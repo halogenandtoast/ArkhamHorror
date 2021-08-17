@@ -25,6 +25,7 @@ import Arkham.Types.Id
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Matcher hiding (EnemyDefeated, RevealLocation)
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
@@ -32,8 +33,10 @@ import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 class IsLocation a
 
@@ -326,15 +329,15 @@ withResignAction
   :: ( Entity location
      , EntityAttrs location ~ LocationAttrs
      , MonadReader env m
-     , MonadIO m
      , ActionRunner env
      )
   => InvestigatorId
   -> Window
   -> location
   -> m [Ability]
-withResignAction iid NonFast x | locationRevealed (toAttrs x) =
-  withBaseActions iid NonFast attrs $ pure [locationResignAction attrs]
+withResignAction iid window@(Window Timing.When Window.NonFast) x
+  | locationRevealed (toAttrs x) = withBaseActions iid window attrs
+  $ pure [locationResignAction attrs]
   where attrs = toAttrs x
 withResignAction iid window x = getAbilities iid window (toAttrs x)
 
@@ -348,14 +351,18 @@ drawCardUnderneathLocationAction attrs =
 toLocationAbility :: LocationAttrs -> Ability -> Ability
 toLocationAbility attrs ability = ability
   { abilityCriteria = Just
-    (fromMaybe mempty (abilityCriteria ability) <> OnLocation (toId attrs))
+    (fromMaybe mempty (abilityCriteria ability)
+    <> OnLocation (LocationWithId $ toId attrs)
+    )
   }
 
 locationAbility :: Ability -> Ability
 locationAbility ability = case abilitySource ability of
   LocationSource lid -> ability
     { abilityCriteria = Just
-      (fromMaybe mempty (abilityCriteria ability) <> OnLocation lid)
+      (fromMaybe mempty (abilityCriteria ability)
+      <> OnLocation (LocationWithId lid)
+      )
     }
   _ -> ability
 
@@ -363,15 +370,14 @@ withDrawCardUnderneathAction
   :: ( Entity location
      , EntityAttrs location ~ LocationAttrs
      , MonadReader env m
-     , MonadIO m
      , ActionRunner env
      )
   => InvestigatorId
   -> Window
   -> location
   -> m [Ability]
-withDrawCardUnderneathAction iid NonFast x | locationRevealed (toAttrs x) =
-  withBaseActions iid NonFast attrs $ pure
+withDrawCardUnderneathAction iid window@(Window Timing.When Window.NonFast) x
+  | locationRevealed (toAttrs x) = withBaseActions iid window attrs $ pure
     [ drawCardUnderneathAction attrs
     | iid `on` attrs && locationClues attrs == 0
     ]
@@ -379,19 +385,20 @@ withDrawCardUnderneathAction iid NonFast x | locationRevealed (toAttrs x) =
 withDrawCardUnderneathAction iid window x = getAbilities iid window (toAttrs x)
 
 instance ActionRunner env => HasAbilities env LocationAttrs where
-  getAbilities iid NonFast l@LocationAttrs {..} = do
-    canMoveTo <- getCanMoveTo locationId iid
-    investigateAllowed <- getInvestigateAllowed iid l
-    modifiers' <- getModifiers (toSource l) (InvestigatorTarget iid)
-    takenActions <- setFromList . map unTakenAction <$> getList iid
-    pure
-      $ moveActions modifiers' takenActions canMoveTo
-      <> investigateActions investigateAllowed
+  getAbilities iid (Window Timing.When Window.NonFast) l@LocationAttrs {..} =
+    do
+      canMoveTo <- getCanMoveTo locationId iid
+      investigateAllowed <- getInvestigateAllowed iid l
+      modifiers' <- getModifiers (toSource l) (InvestigatorTarget iid)
+      takenActions <- setFromList . map unTakenAction <$> getList iid
+      pure
+        $ moveActions modifiers' takenActions canMoveTo
+        <> investigateActions investigateAllowed
    where
     costToEnter =
       if locationRevealed then ActionCost 1 else locationCostToEnterUnrevealed
     investigateActions investigateAllowed =
-      [ restrictedAbility l 101 (OnLocation $ toId l)
+      [ restrictedAbility l 101 (OnLocation $ LocationWithId $ toId l)
           $ ActionAbility (Just Action.Investigate) (ActionCost 1)
       | investigateAllowed
       ]
@@ -448,13 +455,16 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       -> a <$ push (SuccessfulInvestigation iid locationId source)
     SuccessfulInvestigation iid lid _ | lid == locationId -> do
       modifiers' <- getModifiers (InvestigatorSource iid) (LocationTarget lid)
+      whenWindowMsgs <- checkWindows
+        [Window Timing.When (Window.SuccessfulInvestigation iid lid)]
+      afterWindowMsgs <- checkWindows
+        [Window Timing.After (Window.SuccessfulInvestigation iid lid)]
       a <$ unless
         (AlternateSuccessfullInvestigation `elem` modifiers')
         (pushAll
-          [ CheckWindow iid [WhenSuccessfulInvestigation iid lid]
-          , InvestigatorDiscoverClues iid lid 1 (Just Action.Investigate)
-          , CheckWindow iid [AfterSuccessfulInvestigation iid lid]
-          ]
+        $ whenWindowMsgs
+        <> [InvestigatorDiscoverClues iid lid 1 (Just Action.Investigate)]
+        <> afterWindowMsgs
         )
     PlaceUnderneath target cards | isTarget a target ->
       pure $ a & cardsUnderneathL %~ (<> cards)
@@ -550,12 +560,18 @@ instance LocationRunner env => RunMessage env LocationAttrs where
     DiscoverCluesAtLocation iid lid n maction | lid == locationId -> do
       let discoveredClues = min n locationClues
       checkWindowMsgs <- checkWindows
-        [WhenDiscoverClues iid lid discoveredClues]
+        [Window Timing.When (Window.DiscoverClues iid lid discoveredClues)]
       a <$ pushAll
         (checkWindowMsgs <> [DiscoverClues iid lid discoveredClues maction])
     AfterDiscoverClues iid lid n | lid == locationId -> do
-      pushAll =<< checkWindows [AfterDiscoveringClues iid lid]
-      pure $ a & cluesL -~ n
+      let lastClue = locationClues - n <= 0
+      pushAll =<< checkWindows
+        (Window Timing.After (Window.DiscoverClues iid lid n)
+        : [ Window Timing.After (Window.DiscoveringLastClue iid lid)
+          | lastClue
+          ]
+        )
+      pure $ a & cluesL %~ max 0 . subtract n
     InvestigatorEliminated iid -> pure $ a & investigatorsL %~ deleteSet iid
     WhenEnterLocation iid lid
       | lid /= locationId && iid `elem` locationInvestigators
@@ -634,11 +650,11 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       locationClueCount <- if CannotPlaceClues `elem` modifiers'
         then pure 0
         else fromGameValue locationRevealClues . unPlayerCount <$> getCount ()
-      pushAll
-        $ AddConnection lid locationRevealedSymbol
-        : [ CheckWindow iid [AfterRevealLocation iid]
-          | iid <- maybeToList miid
-          ]
+      windowMsgs <- checkWindows
+        [ Window Timing.After (Window.RevealLocation iid lid)
+        | iid <- maybeToList miid
+        ]
+      pushAll $ AddConnection lid locationRevealedSymbol : windowMsgs
       pure $ a & cluesL +~ locationClueCount & revealedL .~ True
     LookAtRevealed source target | isTarget a target -> do
       push (Label "Continue" [After (LookAtRevealed source target)])

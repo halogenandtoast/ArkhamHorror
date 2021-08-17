@@ -19,6 +19,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype ParlorCar = ParlorCar LocationAttrs
@@ -55,8 +56,9 @@ ability attrs = mkAbility
   (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 3])
 
 instance ActionRunner env => HasAbilities env ParlorCar where
-  getAbilities iid NonFast (ParlorCar attrs) | locationRevealed attrs =
-    withBaseActions iid NonFast attrs $ pure [locationAbility (ability attrs)]
+  getAbilities iid window@(Window Timing.When NonFast) (ParlorCar attrs)
+    | locationRevealed attrs = withBaseActions iid window attrs
+    $ pure [locationAbility (ability attrs)]
   getAbilities iid window (ParlorCar attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env ParlorCar where

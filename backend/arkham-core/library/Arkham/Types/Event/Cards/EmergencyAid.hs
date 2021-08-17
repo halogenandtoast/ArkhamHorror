@@ -30,7 +30,7 @@ instance
   runMessage msg e@(EmergencyAid attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       investigatorIds <- getSetList
-        (InvestigatorAtYourLocation <> InvestigatorWithDamage)
+        (InvestigatorAt YourLocation <> InvestigatorWithAnyDamage)
       let investigatorTargets = map InvestigatorTarget investigatorIds
       allyTargets <- map AssetTarget <$> selectList
         (AssetWithDamage <> AssetWithTrait Ally <> AssetOneOf

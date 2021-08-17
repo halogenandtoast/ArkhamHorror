@@ -16,10 +16,11 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype VictoriaDevereux = VictoriaDevereux EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 victoriaDevereux :: EnemyCard VictoriaDevereux
@@ -30,11 +31,9 @@ victoriaDevereux = enemyWith
   (1, 0)
   (spawnAtL ?~ LocationWithTitle "Northside")
 
-instance HasModifiersFor env VictoriaDevereux
-
 instance ActionRunner env => HasAbilities env VictoriaDevereux where
-  getAbilities iid NonFast (VictoriaDevereux attrs@EnemyAttrs {..}) =
-    withBaseActions iid NonFast attrs $ do
+  getAbilities iid window@(Window Timing.When NonFast) (VictoriaDevereux attrs@EnemyAttrs {..})
+    = withBaseActions iid window attrs $ do
       locationId <- getId @LocationId iid
       pure
         [ mkAbility attrs 1

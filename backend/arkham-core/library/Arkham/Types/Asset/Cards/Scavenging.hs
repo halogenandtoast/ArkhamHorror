@@ -7,40 +7,46 @@ import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
-import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
+import Arkham.Types.GameValue
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype Scavenging = Scavenging AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 scavenging :: AssetCard Scavenging
 scavenging = asset Scavenging Cards.scavenging
 
-instance HasModifiersFor env Scavenging
-
-ability :: AssetAttrs -> Ability
-ability a = mkAbility a 1 $ LegacyReactionAbility $ ExhaustCost (toTarget a)
-
-instance ActionRunner env => HasAbilities env Scavenging where
-  getAbilities iid (AfterPassSkillTest (Just Action.Investigate) _ who n) (Scavenging a)
-    | ownedBy a iid && n >= 2 && iid == who
-    = do
-      hasItemInDiscard <- any (member Item . toTraits) <$> getDiscardOf iid
-      cardsCanLeaveDiscard <-
-        notElem CardsCannotLeaveYourDiscardPile
-          <$> getModifiers (toSource a) (InvestigatorTarget iid)
-      pure [ ability a | hasItemInDiscard && cardsCanLeaveDiscard ]
-  getAbilities i window (Scavenging x) = getAbilities i window x
+instance HasAbilities env Scavenging where
+  getAbilities _ _ (Scavenging a) = pure
+    [ restrictedAbility
+          a
+          1
+          (OwnsThis <> InvestigatorExists
+            (You
+            <> DiscardWith (HasCard $ CardWithTrait Item)
+            <> InvestigatorWithoutModifier CardsCannotLeaveYourDiscardPile
+            )
+          )
+        $ ReactionAbility
+            (SkillTestResult
+              Timing.After
+              You
+              WhileInvestigating
+              (SuccessResult $ AtLeast $ Static 2)
+            )
+            (ExhaustCost $ toTarget a)
+    ]
 
 instance AssetRunner env => RunMessage env Scavenging where
   runMessage msg a@(Scavenging attrs) = case msg of

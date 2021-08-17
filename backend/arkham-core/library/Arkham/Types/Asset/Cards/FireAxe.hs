@@ -13,15 +13,15 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
-import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype FireAxe = FireAxe AssetAttrs
   deriving anyclass IsAsset
@@ -29,16 +29,6 @@ newtype FireAxe = FireAxe AssetAttrs
 
 fireAxe :: AssetCard FireAxe
 fireAxe = hand FireAxe Cards.fireAxe
-
-fightAbility :: AssetAttrs -> Ability
-fightAbility attrs = mkAbility
-  (toSource attrs)
-  1
-  (ActionAbility (Just Action.Fight) (ActionCost 1))
-
-reactionAbility :: AssetAttrs -> Ability
-reactionAbility attrs = base { abilityLimit = PlayerLimit PerTestOrAbility 3 } -- per attack
-  where base = mkAbility (toSource attrs) 2 (LegacyReactionAbility $ ResourceCost 1)
 
 instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env FireAxe where
   getModifiersFor (SkillTestSource _ _ source _ (Just Action.Fight)) (InvestigatorTarget iid) (FireAxe a)
@@ -48,17 +38,18 @@ instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env FireAx
       pure $ toModifiers a [ DamageDealt 1 | resourceCount == 0 ]
   getModifiersFor _ _ _ = pure []
 
-instance HasSkillTest env => HasAbilities env FireAxe where
-  getAbilities iid NonFast (FireAxe a) | ownedBy a iid = pure [fightAbility a]
-  getAbilities iid (WhenSkillTest _) (FireAxe a) | ownedBy a iid = do
-    msource <- getSkillTestSource
-    let
-      using = case msource of
-        Just (SkillTestSource _ _ source _ (Just Action.Fight))
-          | isSource a source -> True
-        _ -> False
-    pure [ reactionAbility a | using ]
-  getAbilities _ _ _ = pure []
+instance HasAbilities env FireAxe where
+  getAbilities _ _ (FireAxe a) = pure
+    [ restrictedAbility a 1 OwnsThis
+      $ ActionAbility (Just Action.Fight) (ActionCost 1)
+    , restrictedAbility
+        a
+        2
+        (OwnsThis
+        <> DuringSkillTest (WhileAttackingAnEnemy AnyEnemy <> UsingThis)
+        )
+      $ FastAbility (ResourceCost 1)
+    ]
 
 instance (AssetRunner env) => RunMessage env FireAxe where
   runMessage msg a@(FireAxe attrs) = case msg of

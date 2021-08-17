@@ -12,13 +12,13 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
+import Arkham.Types.Criteria
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype PoliceBadge2 = PoliceBadge2 AssetAttrs
   deriving anyclass IsAsset
@@ -32,17 +32,17 @@ instance HasModifiersFor env PoliceBadge2 where
     pure [ toModifier a (SkillModifier SkillWillpower 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance HasId LocationId env InvestigatorId => HasAbilities env PoliceBadge2 where
-  getAbilities iid (DuringTurn who) (PoliceBadge2 a) | ownedBy a iid = do
-    atYourLocation <- liftA2
-      (==)
-      (getId @LocationId iid)
-      (getId @LocationId who)
-    pure
-      [ mkAbility a 1 $ FastAbility $ DiscardCost (toTarget a)
-      | atYourLocation
-      ]
-  getAbilities _ _ _ = pure []
+instance HasAbilities env PoliceBadge2 where
+  getAbilities _ _ (PoliceBadge2 a) = pure
+    [ restrictedAbility
+        a
+        1
+        (OwnsThis <> InvestigatorExists
+          (TurnInvestigator <> InvestigatorAt YourLocation)
+        )
+      $ FastAbility
+      $ DiscardCost (toTarget a)
+    ]
 
 instance AssetRunner env => RunMessage env PoliceBadge2 where
   runMessage msg a@(PoliceBadge2 attrs) = case msg of

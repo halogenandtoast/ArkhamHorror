@@ -6,7 +6,6 @@ import qualified Arkham.Treachery.Cards as Cards (abandonedAndAlone)
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Treachery.Attrs
-import Arkham.Types.Treachery.Runner
 
 newtype AbandonedAndAlone = AbandonedAndAlone TreacheryAttrs
   deriving anyclass IsTreachery
@@ -20,7 +19,7 @@ instance HasModifiersFor env AbandonedAndAlone
 instance HasAbilities env AbandonedAndAlone where
   getAbilities i window (AbandonedAndAlone attrs) = getAbilities i window attrs
 
-instance TreacheryRunner env => RunMessage env AbandonedAndAlone where
+instance RunMessage env AbandonedAndAlone where
   runMessage msg t@(AbandonedAndAlone attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       t <$ pushAll

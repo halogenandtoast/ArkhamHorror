@@ -39,7 +39,13 @@ instance HasId Difficulty env () => HasModifiersFor env UndimensionedAndUnseenTa
         ]
   getModifiersFor _ _ _ = pure []
 
-instance (HasId Difficulty env (), HasQueue env, HasCount ClueCount env EnemyId, HasSet StoryEnemyId env CardCode) => RunMessage env UndimensionedAndUnseenTabletToken where
+instance
+  ( HasId Difficulty env ()
+  , HasQueue env
+  , HasCount ClueCount env EnemyId
+  , HasSet StoryEnemyId env CardCode
+  )
+  => RunMessage env UndimensionedAndUnseenTabletToken where
   runMessage msg e@(UndimensionedAndUnseenTabletToken attrs) = case msg of
     CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == effectId attrs -> do
       broodOfYogSothoth <- map unStoryEnemyId

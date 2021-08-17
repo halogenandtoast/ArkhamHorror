@@ -17,11 +17,12 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Name
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 import Control.Monad.Extra (findM)
 
 newtype EndlessBridge = EndlessBridge LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 endlessBridge :: LocationCard EndlessBridge
@@ -33,13 +34,11 @@ endlessBridge = location
   Triangle
   [Square, Squiggle]
 
-instance HasModifiersFor env EndlessBridge
-
 forcedAbility :: LocationAttrs -> Ability
-forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
+forcedAbility a = mkAbility (toSource a) 1 LegacyForcedAbility
 
 instance ActionRunner env => HasAbilities env EndlessBridge where
-  getAbilities iid (AfterLeaving who lid) (EndlessBridge attrs)
+  getAbilities iid (Window Timing.After (Leaving who lid)) (EndlessBridge attrs)
     | lid == toId attrs && who == iid = do
       leadInvestigator <- getLeadInvestigatorId
       pure [ forcedAbility attrs | iid == leadInvestigator ]

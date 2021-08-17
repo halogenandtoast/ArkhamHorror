@@ -19,20 +19,19 @@ import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Source
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype Umordhoth = Umordhoth EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 umordhoth :: EnemyCard Umordhoth
 umordhoth = enemy Umordhoth Cards.umordhoth (5, Static 6, 6) (3, 3)
 
-instance HasModifiersFor env Umordhoth
-
 instance ActionRunner env => HasAbilities env Umordhoth where
-  getAbilities iid NonFast (Umordhoth attrs@EnemyAttrs {..}) =
-    withBaseActions iid NonFast attrs $ do
+  getAbilities iid window@(Window Timing.When NonFast) (Umordhoth attrs@EnemyAttrs {..})
+    = withBaseActions iid window attrs $ do
       maid <- selectOne (assetIs Cards.litaChantler)
       locationId <- getId @LocationId iid
       case maid of

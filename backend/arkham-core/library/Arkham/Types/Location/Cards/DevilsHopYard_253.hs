@@ -17,11 +17,12 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype DevilsHopYard_253 = DevilsHopYard_253 LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 devilsHopYard_253 :: LocationCard DevilsHopYard_253
@@ -33,23 +34,22 @@ devilsHopYard_253 = location
   Hourglass
   [Square, Plus]
 
-instance HasModifiersFor env DevilsHopYard_253
-
 ability :: LocationAttrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (FastAbility Free)
     & (abilityLimitL .~ GroupLimit PerGame 1)
 
 instance ActionRunner env => HasAbilities env DevilsHopYard_253 where
-  getAbilities iid FastPlayerWindow (DevilsHopYard_253 attrs) =
-    withBaseActions iid FastPlayerWindow attrs $ do
+  getAbilities iid window@(Window Timing.When FastPlayerWindow) (DevilsHopYard_253 attrs)
+    = withBaseActions iid window attrs $ do
       investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
       pure
         [ locationAbility (ability attrs)
         | investigatorsWithClues && anyAbominations
         ]
-  getAbilities iid window (DevilsHopYard_253 attrs) = getAbilities iid window attrs
+  getAbilities iid window (DevilsHopYard_253 attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env DevilsHopYard_253 where
   runMessage msg l@(DevilsHopYard_253 attrs) = case msg of

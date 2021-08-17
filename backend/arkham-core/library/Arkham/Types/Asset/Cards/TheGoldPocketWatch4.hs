@@ -8,38 +8,32 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Phase
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
 
 newtype TheGoldPocketWatch4 = TheGoldPocketWatch4 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theGoldPocketWatch4 :: AssetCard TheGoldPocketWatch4
 theGoldPocketWatch4 = asset TheGoldPocketWatch4 Cards.theGoldPocketWatch4
 
-skipPhaseAbility :: Phase -> AssetAttrs -> Ability
-skipPhaseAbility _ attrs = mkAbility attrs 1 (LegacyReactionAbility Free)
-
-repeatPhaseAbility :: Phase -> AssetAttrs -> Ability
-repeatPhaseAbility p attrs = (mkAbility attrs 2 (LegacyReactionAbility Free))
-  { abilityMetadata = Just (TargetMetadata $ PhaseTarget p)
-  }
-
 instance HasAbilities env TheGoldPocketWatch4 where
-  getAbilities iid (PhaseBegins p) (TheGoldPocketWatch4 attrs)
-    | ownedBy attrs iid = pure [skipPhaseAbility p attrs]
-  getAbilities iid (PhaseEnds p) (TheGoldPocketWatch4 attrs) | ownedBy attrs iid =
-    pure [repeatPhaseAbility p attrs]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (TheGoldPocketWatch4 attrs) = pure
+    [ restrictedAbility attrs 1 OwnsThis
+      $ ReactionAbility (PhaseBegins Timing.When AnyPhase) Free
+    , restrictedAbility attrs 2 OwnsThis
+      $ ReactionAbility (PhaseEnds Timing.When AnyPhase) Free
+    ]
 
-instance HasModifiersFor env TheGoldPocketWatch4
-
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env TheGoldPocketWatch4 where
+instance AssetRunner env => RunMessage env TheGoldPocketWatch4 where
   runMessage msg a@(TheGoldPocketWatch4 attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ pushAll [RemoveFromGame (toTarget attrs), EndPhase]

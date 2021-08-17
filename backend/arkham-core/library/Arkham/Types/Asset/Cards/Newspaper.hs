@@ -9,6 +9,7 @@ import qualified Arkham.Asset.Cards as Cards
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Id
 import Arkham.Types.Modifier
@@ -35,5 +36,5 @@ instance HasCount ClueCount env InvestigatorId => HasModifiersFor env Newspaper 
       ]
   getModifiersFor _ _ _ = pure []
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Newspaper where
+instance AssetRunner env => RunMessage env Newspaper where
   runMessage msg (Newspaper attrs) = Newspaper <$> runMessage msg attrs

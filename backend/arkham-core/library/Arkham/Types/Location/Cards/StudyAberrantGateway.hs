@@ -17,10 +17,11 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Source
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype StudyAberrantGateway = StudyAberrantGateway LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 studyAberrantGateway :: LocationCard StudyAberrantGateway
@@ -32,11 +33,9 @@ studyAberrantGateway = location
   Circle
   [T]
 
-instance HasModifiersFor env StudyAberrantGateway
-
 instance ActionRunner env => HasAbilities env StudyAberrantGateway where
-  getAbilities iid NonFast (StudyAberrantGateway attrs) =
-    withBaseActions iid NonFast attrs $ do
+  getAbilities iid window@(Window Timing.When NonFast) (StudyAberrantGateway attrs)
+    = withBaseActions iid window attrs $ do
       leadInvestigatorId <- getLeadInvestigatorId
       pure
         [ locationAbility

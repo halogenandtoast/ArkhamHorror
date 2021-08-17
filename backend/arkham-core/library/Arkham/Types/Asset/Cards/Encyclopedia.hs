@@ -13,6 +13,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Id
@@ -20,23 +21,19 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Encyclopedia = Encyclopedia AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 encyclopedia :: AssetCard Encyclopedia
 encyclopedia = hand Encyclopedia Cards.encyclopedia
 
-instance HasModifiersFor env Encyclopedia
-
 instance HasAbilities env Encyclopedia where
-  getAbilities iid NonFast (Encyclopedia a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility Nothing $ Costs
+  getAbilities _ _ (Encyclopedia a) = pure
+    [ restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ Costs
         [ActionCost 1, ExhaustCost (toTarget a), UseCost (toId a) Secret 1]
     ]
-  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Encyclopedia where
   runMessage msg a@(Encyclopedia attrs) = case msg of

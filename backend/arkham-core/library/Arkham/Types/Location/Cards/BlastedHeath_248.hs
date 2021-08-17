@@ -18,11 +18,12 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype BlastedHeath_248 = BlastedHeath_248 LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blastedHeath_248 :: LocationCard BlastedHeath_248
@@ -34,23 +35,22 @@ blastedHeath_248 = location
   Square
   [Circle, Hourglass]
 
-instance HasModifiersFor env BlastedHeath_248
-
 ability :: LocationAttrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (FastAbility Free)
     & (abilityLimitL .~ GroupLimit PerGame 1)
 
 instance ActionRunner env => HasAbilities env BlastedHeath_248 where
-  getAbilities iid FastPlayerWindow (BlastedHeath_248 attrs) =
-    withBaseActions iid FastPlayerWindow attrs $ do
+  getAbilities iid window@(Window Timing.When FastPlayerWindow) (BlastedHeath_248 attrs)
+    = withBaseActions iid window attrs $ do
       investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
       pure
         [ locationAbility (ability attrs)
         | investigatorsWithClues && anyAbominations
         ]
-  getAbilities iid window (BlastedHeath_248 attrs) = getAbilities iid window attrs
+  getAbilities iid window (BlastedHeath_248 attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env BlastedHeath_248 where
   runMessage msg l@(BlastedHeath_248 attrs) = case msg of

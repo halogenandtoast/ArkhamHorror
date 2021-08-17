@@ -30,7 +30,7 @@ row = act (3, A) Row Cards.row Nothing
 
 instance ActionRunner env => HasAbilities env Row where
   getAbilities iid (Window Timing.When (WouldDrawEncounterCard who)) (Row x)
-    | iid == who = pure [mkAbility x 1 ForcedAbility]
+    | iid == who = pure [mkAbility x 1 LegacyForcedAbility]
   getAbilities iid window (Row x) = getAbilities iid window x
 
 instance

@@ -39,7 +39,7 @@ instance (LocationRunner env) => RunMessage env ArkhamWoodsLakeside where
     RevealToken (SkillTestSource _ _ source _ (Just Action.Investigate)) iid _
       | isSource attrs source && iid `elem` locationInvestigators -> do
         let
-          ability = (mkAbility (toSource attrs) 0 ForcedAbility)
+          ability = (mkAbility (toSource attrs) 0 LegacyForcedAbility)
             { abilityLimit = PlayerLimit PerRound 1
             }
         unused <- getGroupIsUnused ability

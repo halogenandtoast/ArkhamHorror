@@ -14,28 +14,24 @@ import Arkham.Types.Card
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype InnocentReveler = InnocentReveler AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 innocentReveler :: AssetCard InnocentReveler
 innocentReveler = ally InnocentReveler Cards.innocentReveler (2, 2)
 
-ability :: AssetAttrs -> Ability
-ability a = mkAbility a 1 (ActionAbility (Just Parley) (ActionCost 1))
-
 instance HasAbilities env InnocentReveler where
-  getAbilities _ NonFast (InnocentReveler attrs) =
-    pure [ ability attrs | isNothing (assetInvestigator attrs) ]
-  getAbilities iid window (InnocentReveler attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env InnocentReveler
+  getAbilities _ _ (InnocentReveler x) = pure
+    [ restrictedAbility x 1 (Unowned <> OnSameLocation)
+        $ ActionAbility (Just Parley) (ActionCost 1)
+    ]
 
 instance
   ( HasSet InvestigatorId env ()

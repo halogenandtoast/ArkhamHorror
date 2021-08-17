@@ -42,7 +42,7 @@ instance (LocationRunner env) => RunMessage env ArkhamWoodsWoodenBridge where
       RevealToken (SkillTestSource _ _ _ _ (Just Action.Evade)) iid _
         | iid `elem` locationInvestigators -> do
           let
-            ability = (mkAbility (toSource attrs) 0 ForcedAbility)
+            ability = (mkAbility (toSource attrs) 0 LegacyForcedAbility)
               { abilityLimit = PlayerLimit PerTestOrAbility 1
               }
           unused <- getIsUnused' iid ability

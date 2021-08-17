@@ -18,11 +18,12 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype RivertownAbandonedWarehouse = RivertownAbandonedWarehouse LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rivertownAbandonedWarehouse :: LocationCard RivertownAbandonedWarehouse
@@ -33,9 +34,6 @@ rivertownAbandonedWarehouse = location
   (PerPlayer 1)
   Circle
   [Moon, Diamond, Square, Squiggle, Hourglass]
-
-instance HasModifiersFor env RivertownAbandonedWarehouse where
-  getModifiersFor _ _ _ = pure []
 
 ability :: LocationAttrs -> Ability
 ability attrs = base { abilityLimit = GroupLimit PerGame 1 }
@@ -50,8 +48,9 @@ ability attrs = base { abilityLimit = GroupLimit PerGame 1 }
     )
 
 instance ActionRunner env => HasAbilities env RivertownAbandonedWarehouse where
-  getAbilities iid NonFast (RivertownAbandonedWarehouse attrs)
-    | locationRevealed attrs = withBaseActions iid NonFast attrs $ do
+  getAbilities iid window@(Window Timing.When NonFast) (RivertownAbandonedWarehouse attrs)
+    | locationRevealed attrs
+    = withBaseActions iid window attrs $ do
       pure [locationAbility (ability attrs)]
   getAbilities iid window (RivertownAbandonedWarehouse attrs) =
     getAbilities iid window attrs

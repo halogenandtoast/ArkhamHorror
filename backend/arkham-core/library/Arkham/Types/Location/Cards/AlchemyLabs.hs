@@ -20,7 +20,8 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Window hiding (SuccessfulInvestigation)
 
 newtype AlchemyLabs = AlchemyLabs LocationAttrs
   deriving anyclass IsLocation
@@ -36,8 +37,9 @@ instance HasModifiersFor env AlchemyLabs where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasAbilities env AlchemyLabs where
-  getAbilities iid NonFast (AlchemyLabs attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs $ do
+  getAbilities iid window@(Window Timing.When NonFast) (AlchemyLabs attrs@LocationAttrs {..})
+    | locationRevealed
+    = withBaseActions iid window attrs $ do
       let
         ability = mkAbility attrs 1
           $ ActionAbility (Just Action.Investigate) (ActionCost 1)

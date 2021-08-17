@@ -13,9 +13,9 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
-import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
+import Arkham.Types.Window hiding (EndTurn)
 
 newtype InternalInjury = InternalInjury TreacheryAttrs
   deriving anyclass IsTreachery
@@ -27,7 +27,7 @@ internalInjury = treachery InternalInjury Cards.internalInjury
 instance HasModifiersFor env InternalInjury
 
 instance ActionRunner env => HasAbilities env InternalInjury where
-  getAbilities iid NonFast (InternalInjury a) =
+  getAbilities iid (Window Timing.When NonFast) (InternalInjury a) =
     withTreacheryInvestigator a $ \tormented -> do
       investigatorLocationId <- getId @LocationId iid
       treacheryLocation <- getId tormented
@@ -37,7 +37,7 @@ instance ActionRunner env => HasAbilities env InternalInjury where
         ]
   getAbilities _ _ _ = pure []
 
-instance (TreacheryRunner env) => RunMessage env InternalInjury where
+instance RunMessage env InternalInjury where
   runMessage msg t@(InternalInjury attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)

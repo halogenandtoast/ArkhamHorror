@@ -12,8 +12,9 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
+import Arkham.Types.Message hiding (RevealLocation)
 import Arkham.Types.Query
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype SlaughteredWoods = SlaughteredWoods LocationAttrs
@@ -35,14 +36,16 @@ slaughteredWoods = locationWith
 instance HasModifiersFor env SlaughteredWoods
 
 forcedAbility :: LocationAttrs -> Ability
-forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
+forcedAbility a = mkAbility (toSource a) 1 LegacyForcedAbility
 
 instance ActionRunner env => HasAbilities env SlaughteredWoods where
-  getAbilities iid (AfterRevealLocation who) (SlaughteredWoods attrs)
-    | iid == who = do
+  getAbilities iid (Window Timing.After (RevealLocation who _)) (SlaughteredWoods attrs)
+    | iid == who
+    = do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid
       pure [ locationAbility (forcedAbility attrs) | actionRemainingCount == 0 ]
-  getAbilities iid window (SlaughteredWoods attrs) = getAbilities iid window attrs
+  getAbilities iid window (SlaughteredWoods attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env SlaughteredWoods where
   runMessage msg l@(SlaughteredWoods attrs) = case msg of

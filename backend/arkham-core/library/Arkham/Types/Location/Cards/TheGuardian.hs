@@ -15,10 +15,11 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype TheGuardian = TheGuardian LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theGuardian :: LocationCard TheGuardian
@@ -31,13 +32,11 @@ theGuardian = locationWith
   []
   (connectsToL .~ singleton RightOf)
 
-instance HasModifiersFor env TheGuardian
-
 ability :: LocationAttrs -> Ability
 ability attrs = mkAbility attrs 1 (LegacyReactionAbility Free)
 
 instance ActionRunner env => HasAbilities env TheGuardian where
-  getAbilities iid (AfterEntering who lid) (TheGuardian attrs)
+  getAbilities iid (Window Timing.After (Entering who lid)) (TheGuardian attrs)
     | lid == toId attrs && iid == who = pure [ability attrs]
   getAbilities iid window (TheGuardian attrs) = getAbilities iid window attrs
 

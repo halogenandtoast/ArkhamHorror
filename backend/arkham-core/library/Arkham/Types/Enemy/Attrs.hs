@@ -31,9 +31,11 @@ import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
-import Arkham.Types.Window
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 import Data.List.Extra (firstJust)
 import Data.UUID (nil)
 
@@ -304,7 +306,7 @@ type EnemyAttrsHasAbilities env
     )
 
 instance EnemyAttrsHasAbilities env => HasAbilities env EnemyAttrs where
-  getAbilities iid NonFast e@EnemyAttrs {..} = do
+  getAbilities iid (Window Timing.When Window.NonFast) e@EnemyAttrs {..} = do
     canFight <- getCanFight enemyId iid
     canEngage <- getCanEngage enemyId iid
     canEvade <- getCanEvade enemyId iid
@@ -634,13 +636,18 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
         [] -> pure a
         [lid] -> a <$ pushAll
           [ EnemyMove enemyId enemyLocation lid
-          , CheckWindow leadInvestigatorId [AfterMoveFromHunter enemyId]
+          , CheckWindow
+            leadInvestigatorId
+            [Window Timing.After (Window.MoveFromHunter enemyId)]
           ]
         ls -> a <$ pushAll
           (chooseOne
               leadInvestigatorId
               (map (EnemyMove enemyId enemyLocation) ls)
-          : [CheckWindow leadInvestigatorId [AfterMoveFromHunter enemyId]]
+          : [ CheckWindow
+                leadInvestigatorId
+                [Window Timing.After (Window.MoveFromHunter enemyId)]
+            ]
           )
     EnemiesAttack | notNull enemyEngagedInvestigators && not enemyExhausted ->
       do
@@ -662,8 +669,10 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
     After (PassedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ _)
       | isTarget a target
       -> do
-        whenWindows <- checkWindows [WhenSuccessfulAttackEnemy iid enemyId]
-        afterWindows <- checkWindows [AfterSuccessfulAttackEnemy iid enemyId]
+        whenWindows <- checkWindows
+          [Window Timing.When (Window.SuccessfulAttackEnemy iid enemyId)]
+        afterWindows <- checkWindows
+          [Window Timing.After (Window.SuccessfulAttackEnemy iid enemyId)]
         a
           <$ pushAll
                (whenWindows
@@ -678,7 +687,9 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
           then push (EnemyAttack iid enemyId DamageAny)
           else pushAll
             [ FailedAttackEnemy iid enemyId
-            , CheckWindow iid [AfterFailAttackEnemy iid enemyId]
+            , CheckWindow
+              iid
+              [Window Timing.After (Window.FailAttackEnemy iid enemyId)]
             ]
     EnemyAttackIfEngaged eid miid | eid == enemyId -> a <$ case miid of
       Just iid | iid `elem` enemyEngagedInvestigators ->

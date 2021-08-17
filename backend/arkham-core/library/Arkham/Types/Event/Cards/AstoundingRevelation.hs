@@ -8,6 +8,7 @@ import Arkham.Prelude
 import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Uses (UseType(..))
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Event.Attrs

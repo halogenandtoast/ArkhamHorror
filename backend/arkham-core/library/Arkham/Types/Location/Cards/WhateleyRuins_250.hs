@@ -20,6 +20,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
@@ -49,15 +50,16 @@ ability attrs =
     & (abilityLimitL .~ GroupLimit PerGame 1)
 
 instance ActionRunner env => HasAbilities env WhateleyRuins_250 where
-  getAbilities iid FastPlayerWindow (WhateleyRuins_250 attrs) =
-    withBaseActions iid FastPlayerWindow attrs $ do
+  getAbilities iid window@(Window Timing.When FastPlayerWindow) (WhateleyRuins_250 attrs)
+    = withBaseActions iid window attrs $ do
       investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
       pure
         [ locationAbility (ability attrs)
         | investigatorsWithClues && anyAbominations
         ]
-  getAbilities iid window (WhateleyRuins_250 attrs) = getAbilities iid window attrs
+  getAbilities iid window (WhateleyRuins_250 attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env WhateleyRuins_250 where
   runMessage msg l@(WhateleyRuins_250 attrs) = case msg of

@@ -12,14 +12,16 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (RevealLocation)
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype WhittonGreene = WhittonGreene AssetAttrs
   deriving anyclass IsAsset
@@ -29,13 +31,15 @@ whittonGreene :: AssetCard WhittonGreene
 whittonGreene = ally WhittonGreene Cards.whittonGreene (2, 2)
 
 instance HasAbilities env WhittonGreene where
-  getAbilities iid (AfterRevealLocation who) (WhittonGreene a)
-    | ownedBy a iid && iid == who = pure
-      [mkAbility a 1 $ LegacyReactionAbility $ ExhaustCost (toTarget a)]
-  getAbilities iid (AfterPutLocationIntoPlay who) (WhittonGreene a)
-    | ownedBy a iid && iid == who = pure
-      [mkAbility a 1 $ LegacyReactionAbility $ ExhaustCost (toTarget a)]
-  getAbilities iid window (WhittonGreene attrs) = getAbilities iid window attrs
+  getAbilities _ _ (WhittonGreene x) = pure
+    [ restrictedAbility x 1 OwnsThis $ ReactionAbility
+        (OrWindowMatcher
+          [ RevealLocation Timing.After You Anywhere
+          , PutLocationIntoPlay Timing.After You Anywhere
+          ]
+        )
+        (ExhaustCost $ toTarget x)
+    ]
 
 instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor env WhittonGreene where
   getModifiersFor _ (InvestigatorTarget iid) (WhittonGreene a) | ownedBy a iid =

@@ -17,11 +17,12 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype DunwichVillage_242 = DunwichVillage_242 LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dunwichVillage_242 :: LocationCard DunwichVillage_242
@@ -33,18 +34,16 @@ dunwichVillage_242 = location
   Circle
   [Triangle, Square, Diamond]
 
-instance HasModifiersFor env DunwichVillage_242
-
 ability :: LocationAttrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (FastAbility Free)
     & (abilityLimitL .~ GroupLimit PerGame 1)
 
 instance ActionRunner env => HasAbilities env DunwichVillage_242 where
-  getAbilities iid NonFast (DunwichVillage_242 attrs) =
-    withResignAction iid NonFast attrs
-  getAbilities iid FastPlayerWindow (DunwichVillage_242 attrs) =
-    withBaseActions iid FastPlayerWindow attrs $ do
+  getAbilities iid window@(Window Timing.When NonFast) (DunwichVillage_242 attrs)
+    = withResignAction iid window attrs
+  getAbilities iid window@(Window Timing.When FastPlayerWindow) (DunwichVillage_242 attrs)
+    = withBaseActions iid window attrs $ do
       investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
       pure

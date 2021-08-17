@@ -13,12 +13,12 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (RevealLocation)
 import Arkham.Types.Message
 import Arkham.Types.Trait
 
 newtype CongregationalChurch_208 = CongregationalChurch_208 LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 congregationalChurch_208 :: LocationCard CongregationalChurch_208
@@ -29,8 +29,6 @@ congregationalChurch_208 = location
   (PerPlayer 1)
   Diamond
   [Plus, Triangle, Squiggle]
-
-instance HasModifiersFor env CongregationalChurch_208
 
 instance ActionRunner env => HasAbilities env CongregationalChurch_208 where
   getAbilities = withDrawCardUnderneathAction

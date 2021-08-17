@@ -6,7 +6,7 @@ module Arkham.Types.Event.Cards.SleightOfHand
 import Arkham.Prelude
 
 import qualified Arkham.Event.Cards as Cards
-import Arkham.Types.Card.CardCode
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Id

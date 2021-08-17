@@ -33,7 +33,7 @@ instance ActionRunner env => HasAbilities env SearchingForTheTome where
       Just restrictedHall -> do
         mustAdvance <- (== 0) . unClueCount <$> getCount restrictedHall
         if mustAdvance
-          then pure [mkAbility x 1 ForcedAbility]
+          then pure [mkAbility x 1 LegacyForcedAbility]
           else getAbilities i window x
       Nothing -> getAbilities i window x
 

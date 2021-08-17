@@ -34,7 +34,7 @@ instance ActionRunner env => HasAbilities env TheChamberOfTheBeast where
     leadInvestigatorId <- getLeadInvestigatorId
     if clueCount == 0
       then pure
-        [ mkAbility (toSource x) 1 ForcedAbility | i == leadInvestigatorId ]
+        [ mkAbility (toSource x) 1 LegacyForcedAbility | i == leadInvestigatorId ]
       else getAbilities i window x
 
 instance ActRunner env => RunMessage env TheChamberOfTheBeast where

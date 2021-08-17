@@ -19,10 +19,11 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype DunwichVillage_243 = DunwichVillage_243 LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dunwichVillage_243 :: LocationCard DunwichVillage_243
@@ -34,19 +35,18 @@ dunwichVillage_243 = location
   Circle
   [Triangle, Square, Diamond]
 
-instance HasModifiersFor env DunwichVillage_243
-
 ability :: LocationAttrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (ActionAbility Nothing (ActionCost 1))
 
 instance ActionRunner env => HasAbilities env DunwichVillage_243 where
-  getAbilities iid NonFast (DunwichVillage_243 attrs) = do
-    baseActions <- withResignAction iid NonFast attrs
-    broodOfYogSothoth <- getSet @EnemyId (CardCode "02255")
-    pure
-      $ baseActions
-      <> [ locationAbility (ability attrs) | notNull broodOfYogSothoth ]
+  getAbilities iid window@(Window Timing.When NonFast) (DunwichVillage_243 attrs)
+    = do
+      baseActions <- withResignAction iid window attrs
+      broodOfYogSothoth <- getSet @EnemyId (CardCode "02255")
+      pure
+        $ baseActions
+        <> [ locationAbility (ability attrs) | notNull broodOfYogSothoth ]
   getAbilities iid window (DunwichVillage_243 attrs) =
     getAbilities iid window attrs
 

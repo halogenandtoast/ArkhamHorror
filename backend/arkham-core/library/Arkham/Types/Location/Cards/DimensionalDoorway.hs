@@ -13,13 +13,14 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
+import Arkham.Types.Message hiding (EndTurn)
 import Arkham.Types.Query
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype DimensionalDoorway = DimensionalDoorway LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dimensionalDoorway :: LocationCard DimensionalDoorway
@@ -31,11 +32,10 @@ dimensionalDoorway = location
   Squiggle
   [Triangle, Moon]
 
-instance HasModifiersFor env DimensionalDoorway
-
 instance ActionRunner env => HasAbilities env DimensionalDoorway where
-  getAbilities iid (AfterEndTurn who) (DimensionalDoorway attrs) | iid == who =
-    pure [locationAbility (mkAbility (toSource attrs) 1 ForcedAbility)]
+  getAbilities iid (Window Timing.After (EndTurn who)) (DimensionalDoorway attrs)
+    | iid == who
+    = pure [locationAbility (mkAbility (toSource attrs) 1 LegacyForcedAbility)]
   getAbilities iid window (DimensionalDoorway attrs) =
     getAbilities iid window attrs
 

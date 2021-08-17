@@ -14,29 +14,26 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Shrivelling5 = Shrivelling5 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 shrivelling5 :: AssetCard Shrivelling5
 shrivelling5 = arcane Shrivelling5 Cards.shrivelling5
 
-instance HasModifiersFor env Shrivelling5
-
 instance HasAbilities env Shrivelling5 where
-  getAbilities iid NonFast (Shrivelling5 a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility
+  getAbilities _ _ (Shrivelling5 a) = pure
+    [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Charge 1])
     ]
-  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Shrivelling5 where
   runMessage msg a@(Shrivelling5 attrs) = case msg of

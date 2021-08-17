@@ -17,10 +17,11 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype VenetianGarden = VenetianGarden LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 venetianGarden :: LocationCard VenetianGarden
@@ -33,8 +34,6 @@ venetianGarden = locationWith
   []
   (connectsToL .~ singleton RightOf)
 
-instance HasModifiersFor env VenetianGarden
-
 ability :: LocationAttrs -> Ability
 ability a =
   (mkAbility a 1 $ ActionAbility Nothing (Costs [ActionCost 2, ResourceCost 2]))
@@ -42,9 +41,10 @@ ability a =
     }
 
 instance ActionRunner env => HasAbilities env VenetianGarden where
-  getAbilities iid NonFast (VenetianGarden attrs) =
-    withBaseActions iid NonFast attrs $ pure [locationAbility (ability attrs)]
-  getAbilities iid window (VenetianGarden attrs) = getAbilities iid window attrs
+  getAbilities iid window@(Window Timing.When NonFast) (VenetianGarden attrs) =
+    withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
+  getAbilities iid window (VenetianGarden attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env VenetianGarden where
   runMessage msg l@(VenetianGarden attrs) = case msg of

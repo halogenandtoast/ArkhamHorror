@@ -27,12 +27,7 @@ $(buildEntity "Asset")
 createAsset :: IsCard a => a -> Asset
 createAsset a = lookupAsset (toCardCode a) (AssetId $ toCardId a)
 
-instance
-  ( ActionRunner env
-  , HasSkillTest env
-  , CanCheckPlayable env
-  )
-  => HasAbilities env Asset where
+instance ActionRunner env => HasAbilities env Asset where
   getAbilities iid window x = do
     inPlay <- member (toId x) <$> select AnyAsset
     modifiers' <- if inPlay
@@ -60,10 +55,7 @@ instance
   getModifiersFor = genericGetModifiersFor
 
 instance
-  ( HasList CommittedCard env InvestigatorId
-  , HasId LeadInvestigatorId env ()
-  , CanCheckPlayable env
-  , Query LocationMatcher env
+  ( CanCheckPlayable env
   , AssetRunner env
   )
   => RunMessage env Asset where
@@ -121,6 +113,9 @@ instance HasId (Maybe LocationId) env Asset where
 instance HasCount DoomCount env Asset where
   getCount = pure . DoomCount . assetDoom . toAttrs
 
+instance HasCount HorrorCount env Asset where
+  getCount = pure . HorrorCount . fromMaybe 0 . assetHorror . toAttrs
+
 instance HasCount ClueCount env Asset where
   getCount = pure . ClueCount . assetClues . toAttrs
 
@@ -176,3 +171,6 @@ assetEnemy = Attrs.assetEnemy . toAttrs
 
 assetLocation :: Asset -> Maybe LocationId
 assetLocation = Attrs.assetLocation . toAttrs
+
+assetOwner :: Asset -> Maybe InvestigatorId
+assetOwner = Attrs.assetInvestigator . toAttrs

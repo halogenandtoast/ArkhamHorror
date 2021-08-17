@@ -15,6 +15,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -39,12 +40,14 @@ zoeySamaras = ZoeySamaras $ baseAttrs
   [Believer, Hunter]
 
 instance InvestigatorRunner env => HasAbilities env ZoeySamaras where
-  getAbilities iid (AfterEnemyEngageInvestigator who _) (ZoeySamaras InvestigatorAttrs {..})
+  getAbilities iid (Window Timing.After (EnemyEngaged who _)) (ZoeySamaras InvestigatorAttrs {..})
     | iid == investigatorId && iid == who
     = do
       let
-        ability =
-          mkAbility (InvestigatorSource investigatorId) 1 (LegacyReactionAbility Free)
+        ability = mkAbility
+          (InvestigatorSource investigatorId)
+          1
+          (LegacyReactionAbility Free)
       modifiers' <- getModifiers
         (InvestigatorSource investigatorId)
         (InvestigatorTarget investigatorId)

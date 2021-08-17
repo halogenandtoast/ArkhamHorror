@@ -13,12 +13,15 @@ import Arkham.Types.Source
 import Arkham.Types.Trait
 
 type AssetRunner env
-  = ( HasQueue env
-    , Query AssetMatcher env
+  = ( Query AssetMatcher env
+    , Query ActionMatcher env
+    , Query LocationMatcher env
     , HasCostPayment env
     , HasModifiersFor env ()
     , HasList UsedAbility env ()
+    , HasList CommittedCard env InvestigatorId
     , HasAbilities env LocationId
+    , HasId LeadInvestigatorId env ()
     , HasCount ActionRemainingCount env InvestigatorId
     , HasCount AssetCount env (InvestigatorId, [Trait])
     , HasCount CardCount env InvestigatorId

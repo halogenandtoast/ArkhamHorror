@@ -9,14 +9,17 @@ import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Phase
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
 
 newtype Metadata = Metadata { chosenSkills :: [SkillType] }
   deriving stock (Show, Generic, Eq)
@@ -31,12 +34,14 @@ theRedGlovedMan5 =
   ally (TheRedGlovedMan5 . (`with` Metadata [])) Cards.theRedGlovedMan5 (4, 4)
 
 instance HasAbilities env TheRedGlovedMan5 where
-  getAbilities i (WhenEnterPlay target) (TheRedGlovedMan5 (x `With` _))
-    | isTarget x target && ownedBy x i = pure
-      [mkAbility x 1 $ LegacyReactionAbility Free]
-  getAbilities i (PhaseEnds MythosPhase) (TheRedGlovedMan5 (x `With` _))
-    | ownedBy x i = pure [mkAbility x 2 ForcedAbility]
-  getAbilities i window (TheRedGlovedMan5 (x `With` _)) = getAbilities i window x
+  getAbilities _ _ (TheRedGlovedMan5 (x `With` _)) = pure
+    [ restrictedAbility x 1 OwnsThis
+      $ ReactionAbility
+          (AssetEntersPlay Timing.When (AssetWithId $ toId x))
+          Free
+    , restrictedAbility x 2 OwnsThis
+      $ ForcedAbility (PhaseEnds Timing.When $ PhaseIs MythosPhase)
+    ]
 
 instance HasModifiersFor env TheRedGlovedMan5 where
   getModifiersFor _ (InvestigatorTarget iid) (TheRedGlovedMan5 (a `With` Metadata {..}))
@@ -52,7 +57,7 @@ skillTypes =
   , ("Agility", SkillAgility)
   ]
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env TheRedGlovedMan5 where
+instance AssetRunner env => RunMessage env TheRedGlovedMan5 where
   runMessage msg a@(TheRedGlovedMan5 (attrs `With` metadata)) = case msg of
     UseCardAbility iid source Nothing 1 p | isSource attrs source -> a <$ push
       (chooseOne

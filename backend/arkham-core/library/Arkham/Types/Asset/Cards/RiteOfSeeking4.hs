@@ -10,39 +10,32 @@ import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype RiteOfSeeking4 = RiteOfSeeking4 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riteOfSeeking4 :: AssetCard RiteOfSeeking4
 riteOfSeeking4 = arcane RiteOfSeeking4 Cards.riteOfSeeking4
 
 instance HasAbilities env RiteOfSeeking4 where
-  getAbilities iid NonFast (RiteOfSeeking4 a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility
+  getAbilities _ _ (RiteOfSeeking4 a) = pure
+    [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Investigate)
         (Costs [ActionCost 1, UseCost (toId a) Charge 1])
     ]
-  getAbilities _ _ _ = pure []
 
-instance HasModifiersFor env RiteOfSeeking4
-
-instance
-  ( HasQueue env
-  , HasModifiersFor env ()
-  , HasId LocationId env InvestigatorId
-  )
-  => RunMessage env RiteOfSeeking4 where
+instance AssetRunner env => RunMessage env RiteOfSeeking4 where
   runMessage msg a@(RiteOfSeeking4 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId @LocationId iid

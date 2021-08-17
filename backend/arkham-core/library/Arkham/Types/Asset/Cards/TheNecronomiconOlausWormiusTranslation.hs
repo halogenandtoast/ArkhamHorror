@@ -8,14 +8,15 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype TheNecronomiconOlausWormiusTranslation = TheNecronomiconOlausWormiusTranslation AssetAttrs
   deriving anyclass IsAsset
@@ -28,17 +29,15 @@ theNecronomiconOlausWormiusTranslation = hand
   Cards.theNecronomiconOlausWormiusTranslation
 
 instance HasAbilities env TheNecronomiconOlausWormiusTranslation where
-  getAbilities iid NonFast (TheNecronomiconOlausWormiusTranslation a)
-    | ownedBy a iid = pure
-      [mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (TheNecronomiconOlausWormiusTranslation a) =
+    pure [restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ ActionCost 1]
 
 instance HasModifiersFor env TheNecronomiconOlausWormiusTranslation where
   getModifiersFor _ (InvestigatorTarget iid) (TheNecronomiconOlausWormiusTranslation a)
     = pure $ toModifiers a [ SkillModifier SkillIntellect 1 | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env TheNecronomiconOlausWormiusTranslation where
+instance AssetRunner env => RunMessage env TheNecronomiconOlausWormiusTranslation where
   runMessage msg a@(TheNecronomiconOlausWormiusTranslation attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (TakeResources iid 2 False)

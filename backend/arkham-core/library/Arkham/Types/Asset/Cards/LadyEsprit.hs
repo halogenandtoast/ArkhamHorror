@@ -14,34 +14,27 @@ import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype LadyEsprit = LadyEsprit AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ladyEsprit :: AssetCard LadyEsprit
 ladyEsprit = allyWith LadyEsprit Cards.ladyEsprit (2, 4) (isStoryL .~ True)
 
-ability :: AssetAttrs -> Ability
-ability attrs = (mkAbility
-                  (toSource attrs)
-                  1
-                  (ActionAbility Nothing $ Costs
-                    [ ActionCost 1
-                    , ExhaustCost (toTarget attrs)
-                    , HorrorCost (toSource attrs) (toTarget attrs) 1
-                    ]
-                  )
-                )
-  { abilityCriteria = OnLocation <$> assetLocation attrs
-  }
-
-instance HasModifiersFor env LadyEsprit
-
 instance HasAbilities env LadyEsprit where
-  getAbilities _ NonFast (LadyEsprit a) = pure [ability a]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (LadyEsprit x) = pure
+    [ restrictedAbility
+        x
+        1
+        OnSameLocation
+        (ActionAbility Nothing $ Costs
+          [ ActionCost 1
+          , ExhaustCost (toTarget x)
+          , HorrorCost (toSource x) (toTarget x) 1
+          ]
+        )
+    ]
 
 instance AssetRunner env => RunMessage env LadyEsprit where
   runMessage msg a@(LadyEsprit attrs) = case msg of

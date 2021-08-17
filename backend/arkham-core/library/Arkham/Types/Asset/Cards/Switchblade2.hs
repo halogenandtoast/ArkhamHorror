@@ -13,25 +13,24 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Switchblade2 = Switchblade2 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 switchblade2 :: AssetCard Switchblade2
 switchblade2 = hand Switchblade2 Cards.switchblade2
 
-instance HasModifiersFor env Switchblade2
-
 instance HasAbilities env Switchblade2 where
-  getAbilities iid NonFast (Switchblade2 a) | ownedBy a iid =
-    pure [mkAbility a 1 $ ActionAbility (Just Action.Fight) (ActionCost 1)]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (Switchblade2 a) = pure
+    [ restrictedAbility a 1 OwnsThis
+        $ ActionAbility (Just Action.Fight) (ActionCost 1)
+    ]
 
 instance AssetRunner env => RunMessage env Switchblade2 where
   runMessage msg a@(Switchblade2 attrs) = case msg of

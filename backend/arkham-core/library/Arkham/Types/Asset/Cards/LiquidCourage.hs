@@ -8,6 +8,7 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -17,39 +18,27 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype LiquidCourage = LiquidCourage AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 liquidCourage :: AssetCard LiquidCourage
 liquidCourage = asset LiquidCourage Cards.liquidCourage
 
 instance HasAbilities env LiquidCourage where
-  getAbilities iid NonFast (LiquidCourage a) = pure
+  getAbilities _ _ (LiquidCourage x) = pure
     [ restrictedAbility
-        (toSource a)
+        x
         1
-        (InvestigatorExists
-        $ InvestigatorAtYourLocation
-        <> InvestigatorWithHorror
+        (OwnsThis <> InvestigatorExists
+          (InvestigatorAt YourLocation <> InvestigatorWithAnyHorror)
         )
-        (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (toId a) Supply 1]
+        (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (toId x) Supply 1]
         )
-    | ownedBy a iid
     ]
-  getAbilities iid window (LiquidCourage attrs) = getAbilities iid window attrs
 
-instance HasModifiersFor env LiquidCourage
-
-instance
-  ( HasQueue env
-  , HasModifiersFor env ()
-  , HasSet InvestigatorId env LocationId
-  , HasId LocationId env InvestigatorId
-  )
-  => RunMessage env LiquidCourage where
+instance AssetRunner env => RunMessage env LiquidCourage where
   runMessage msg a@(LiquidCourage attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId @LocationId iid

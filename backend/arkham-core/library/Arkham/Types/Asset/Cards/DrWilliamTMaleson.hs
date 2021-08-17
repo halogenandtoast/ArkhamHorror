@@ -8,13 +8,13 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Card.CardDef
-import Arkham.Types.Card.CardType
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Matcher
 import Arkham.Types.Message
+import qualified Arkham.Types.Timing as Timing
 
 newtype DrWilliamTMaleson = DrWilliamTMaleson AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
@@ -29,7 +29,8 @@ instance HasAbilities env DrWilliamTMaleson where
         attrs
         1
         OwnsThis
-        (ReactionAbility (DrawCard When You $ BasicCardMatch IsEncounterCard)
+        (ReactionAbility
+            (DrawCard Timing.When You $ BasicCardMatch IsEncounterCard)
         $ Costs [ExhaustCost (toTarget attrs), PlaceClueOnLocationCost 1]
         )
     ]
@@ -37,7 +38,7 @@ instance HasAbilities env DrWilliamTMaleson where
 dropUntilDraw :: [Message] -> [Message]
 dropUntilDraw = dropWhile (notElem DrawEncounterCardMessage . messageType)
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env DrWilliamTMaleson where
+instance AssetRunner env => RunMessage env DrWilliamTMaleson where
   runMessage msg a@(DrWilliamTMaleson attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       card <- withQueue $ \queue ->

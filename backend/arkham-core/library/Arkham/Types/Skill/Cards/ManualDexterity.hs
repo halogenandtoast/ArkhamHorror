@@ -6,7 +6,6 @@ import qualified Arkham.Skill.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Skill.Attrs
-import Arkham.Types.Skill.Runner
 import Arkham.Types.Target
 
 newtype ManualDexterity = ManualDexterity SkillAttrs
@@ -16,7 +15,7 @@ newtype ManualDexterity = ManualDexterity SkillAttrs
 manualDexterity :: SkillCard ManualDexterity
 manualDexterity = skill ManualDexterity Cards.manualDexterity
 
-instance SkillRunner env => RunMessage env ManualDexterity where
+instance RunMessage env ManualDexterity where
   runMessage msg s@(ManualDexterity attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest _ _ _ (SkillTarget sid) _ _ | sid == skillId ->
       s <$ push (DrawCards skillOwner 1 False)

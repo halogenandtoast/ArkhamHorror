@@ -16,11 +16,12 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype MiskatonicUniversity = MiskatonicUniversity LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miskatonicUniversity :: LocationCard MiskatonicUniversity
@@ -32,11 +33,10 @@ miskatonicUniversity = location
   Diamond
   [T, Plus, Circle, Square]
 
-instance HasModifiersFor env MiskatonicUniversity
-
 instance ActionRunner env => HasAbilities env MiskatonicUniversity where
-  getAbilities iid NonFast (MiskatonicUniversity attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs $ pure
+  getAbilities iid window@(Window Timing.When NonFast) (MiskatonicUniversity attrs@LocationAttrs {..})
+    | locationRevealed
+    = withBaseActions iid window attrs $ pure
       [ locationAbility
           (mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 1)
       ]

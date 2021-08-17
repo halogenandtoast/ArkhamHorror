@@ -15,6 +15,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype SouthsideHistoricalSociety = SouthsideHistoricalSociety LocationAttrs
@@ -39,9 +40,9 @@ ability attrs =
     }
 
 instance ActionRunner env => HasAbilities env SouthsideHistoricalSociety where
-  getAbilities iid NonFast (SouthsideHistoricalSociety attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs
-    $ pure [locationAbility (ability attrs)]
+  getAbilities iid window@(Window Timing.When NonFast) (SouthsideHistoricalSociety attrs@LocationAttrs {..})
+    | locationRevealed
+    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window (SouthsideHistoricalSociety attrs) =
     getAbilities iid window attrs
 

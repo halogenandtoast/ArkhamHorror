@@ -17,11 +17,12 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype TenAcreMeadow_246 = TenAcreMeadow_246 LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tenAcreMeadow_246 :: LocationCard TenAcreMeadow_246
@@ -33,19 +34,18 @@ tenAcreMeadow_246 = location
   Diamond
   [Circle, Triangle, Plus]
 
-instance HasModifiersFor env TenAcreMeadow_246
-
 ability :: LocationAttrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (FastAbility Free)
     & (abilityLimitL .~ GroupLimit PerGame 1)
 
 instance ActionRunner env => HasAbilities env TenAcreMeadow_246 where
-  getAbilities iid FastPlayerWindow (TenAcreMeadow_246 attrs) =
-    withBaseActions iid FastPlayerWindow attrs $ do
+  getAbilities iid window@(Window Timing.When FastPlayerWindow) (TenAcreMeadow_246 attrs)
+    = withBaseActions iid window attrs $ do
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
       pure [ locationAbility (ability attrs) | anyAbominations ]
-  getAbilities iid window (TenAcreMeadow_246 attrs) = getAbilities iid window attrs
+  getAbilities iid window (TenAcreMeadow_246 attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env TenAcreMeadow_246 where
   runMessage msg l@(TenAcreMeadow_246 attrs) = case msg of

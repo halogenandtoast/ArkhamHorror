@@ -9,9 +9,9 @@ import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -40,7 +40,7 @@ instance HasModifiersFor env AlyssaGraham where
     pure [ toModifier a (SkillModifier SkillIntellect 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance (HasQueue env, HasModifiersFor env (), HasSet InvestigatorId env ()) => RunMessage env AlyssaGraham where
+instance AssetRunner env => RunMessage env AlyssaGraham where
   runMessage msg a@(AlyssaGraham attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       targets <- map InvestigatorTarget <$> getSetList ()

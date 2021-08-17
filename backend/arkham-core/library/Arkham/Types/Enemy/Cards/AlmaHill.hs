@@ -17,6 +17,7 @@ import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Source
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype AlmaHill = AlmaHill EnemyAttrs
@@ -34,8 +35,8 @@ almaHill = enemyWith
 instance HasModifiersFor env AlmaHill
 
 instance ActionRunner env => HasAbilities env AlmaHill where
-  getAbilities iid NonFast (AlmaHill attrs@EnemyAttrs {..}) =
-    withBaseActions iid NonFast attrs $ do
+  getAbilities iid window@(Window Timing.When NonFast) (AlmaHill attrs@EnemyAttrs {..})
+    = withBaseActions iid window attrs $ do
       locationId <- getId @LocationId iid
       pure
         [ mkAbility attrs 1 $ ActionAbility (Just Parley) (ActionCost 1)

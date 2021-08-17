@@ -20,10 +20,11 @@ import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Source
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Window hiding (SuccessfulInvestigation)
 
 newtype BaseOfTheHill = BaseOfTheHill LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 baseOfTheHill :: LocationCard BaseOfTheHill
@@ -35,8 +36,6 @@ baseOfTheHill = location
   Triangle
   [Square, Plus, Squiggle, Hourglass]
 
-instance HasModifiersFor env BaseOfTheHill
-
 ability :: LocationAttrs -> Ability
 ability attrs =
   mkAbility
@@ -46,9 +45,10 @@ ability attrs =
     & (abilityLimitL .~ PlayerLimit PerRound 1)
 
 instance ActionRunner env => HasAbilities env BaseOfTheHill where
-  getAbilities iid NonFast (BaseOfTheHill attrs) | locationRevealed attrs = do
-    actions <- withResignAction iid NonFast attrs
-    pure $ locationAbility (ability attrs) : actions
+  getAbilities iid window@(Window Timing.When NonFast) (BaseOfTheHill attrs)
+    | locationRevealed attrs = do
+      actions <- withResignAction iid window attrs
+      pure $ locationAbility (ability attrs) : actions
   getAbilities iid window (BaseOfTheHill attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env BaseOfTheHill where

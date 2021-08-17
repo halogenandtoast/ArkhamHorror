@@ -9,56 +9,40 @@ import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Exception
+import Arkham.Types.GameValue
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype PowderOfIbnGhazi = PowderOfIbnGhazi AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 powderOfIbnGhazi :: AssetCard PowderOfIbnGhazi
 powderOfIbnGhazi = asset PowderOfIbnGhazi Cards.powderOfIbnGhazi
 
-instance
-  ( HasId LocationId env InvestigatorId
-  , HasSet ExhaustedEnemyId env LocationId
-  , HasSet StoryEnemyId env CardCode
-  )
-  => HasAbilities env PowderOfIbnGhazi where
-  getAbilities iid FastPlayerWindow (PowderOfIbnGhazi attrs) =
-    withBaseActions iid FastPlayerWindow attrs $ do
-      broodOfYogSothoth <- mapSet unStoryEnemyId <$> getSet (CardCode "02255")
-      lid <- getId @LocationId iid
-      exhaustedBroodOfYogSothothAtLocation <-
-        intersection broodOfYogSothoth
-        . mapSet unExhaustedEnemyId
-        <$> getSet lid
-      pure
-        [ mkAbility attrs 1 $ LegacyReactionAbility Free
-        | ownedBy attrs iid
-          && notNull exhaustedBroodOfYogSothothAtLocation
-          && (assetClues attrs > 0)
-        ]
-  getAbilities iid window (PowderOfIbnGhazi attrs) = getAbilities iid window attrs
+instance HasAbilities env PowderOfIbnGhazi where
+  getAbilities _ _ (PowderOfIbnGhazi x) = pure
+    [ restrictedAbility
+        x
+        1
+        (OwnsThis <> CluesOnThis (GreaterThan $ Static 0) <> EnemyExists
+          (ExhaustedEnemy <> EnemyAt YourLocation <> EnemyWithTitle
+            "Brood of Yog-Sothoth"
+          )
+        )
+        (FastAbility Free)
+    ]
 
-instance HasModifiersFor env PowderOfIbnGhazi
-
-instance
-  ( HasQueue env
-  , HasModifiersFor env ()
-  , HasSet ExhaustedEnemyId env LocationId
-  , HasId LocationId env InvestigatorId
-  , HasSet StoryEnemyId env CardCode
-  , HasRecord env
-  )
-  => RunMessage env PowderOfIbnGhazi where
+instance AssetRunner env => RunMessage env PowderOfIbnGhazi where
   runMessage msg (PowderOfIbnGhazi attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs -> do
       survivedCount <- countM

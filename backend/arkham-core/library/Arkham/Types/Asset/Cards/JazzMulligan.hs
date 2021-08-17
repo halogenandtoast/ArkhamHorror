@@ -10,8 +10,10 @@ import Arkham.Types.Ability
 import Arkham.Types.Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -19,7 +21,6 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype JazzMulligan = JazzMulligan AssetAttrs
   deriving anyclass IsAsset
@@ -29,20 +30,12 @@ jazzMulligan :: AssetCard JazzMulligan
 jazzMulligan =
   allyWith JazzMulligan Cards.jazzMulligan (2, 2) (isStoryL .~ True)
 
-ability :: AssetAttrs -> Ability
-ability attrs = mkAbility attrs 1 $ ActionAbility (Just Parley) $ ActionCost 1
-
-instance HasId LocationId env InvestigatorId => HasAbilities env JazzMulligan where
-  getAbilities iid NonFast (JazzMulligan attrs) = do
-    lid <- getId iid
-    case assetLocation attrs of
-      Just location ->
-        pure
-          [ ability attrs
-          | lid == location && isNothing (assetInvestigator attrs)
-          ]
-      _ -> pure mempty
-  getAbilities iid window (JazzMulligan attrs) = getAbilities iid window attrs
+instance HasAbilities env JazzMulligan where
+  getAbilities _ _ (JazzMulligan x) = pure
+    [ restrictedAbility x 1 (Unowned <> OnSameLocation)
+      $ ActionAbility (Just Parley)
+      $ ActionCost 1
+    ]
 
 instance HasSet Trait env LocationId => HasModifiersFor env JazzMulligan where
   getModifiersFor (InvestigatorSource iid) (LocationTarget lid) (JazzMulligan attrs)
@@ -52,7 +45,7 @@ instance HasSet Trait env LocationId => HasModifiersFor env JazzMulligan where
       pure [ toModifier attrs Blank | Miskatonic `member` traits ]
   getModifiersFor _ _ _ = pure []
 
-instance (HasQueue env, HasModifiersFor env (), HasId LocationId env InvestigatorId) => RunMessage env JazzMulligan where
+instance AssetRunner env => RunMessage env JazzMulligan where
   runMessage msg a@(JazzMulligan attrs@AssetAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId iid

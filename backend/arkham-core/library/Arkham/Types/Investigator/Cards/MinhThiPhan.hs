@@ -17,6 +17,7 @@ import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -47,9 +48,13 @@ ability attrs iid card =
     & (abilityMetadataL ?~ TargetMetadata (CardIdTarget $ toCardId card))
 
 instance InvestigatorRunner env => HasAbilities env MinhThiPhan where
-  getAbilities i (AfterCommitedCard who card) (MinhThiPhan attrs) = do
-    atSameLocation <- liftA2 (==) (getId @LocationId i) (getId @LocationId who)
-    pure [ ability attrs who card | atSameLocation ]
+  getAbilities i (Window Timing.After (CommitedCard who card)) (MinhThiPhan attrs)
+    = do
+      atSameLocation <- liftA2
+        (==)
+        (getId @LocationId i)
+        (getId @LocationId who)
+      pure [ ability attrs who card | atSameLocation ]
   getAbilities i window (MinhThiPhan attrs) = getAbilities i window attrs
 
 instance HasTokenValue env MinhThiPhan where

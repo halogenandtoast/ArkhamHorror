@@ -17,10 +17,11 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype ArkhamWoodsQuietGlade = ArkhamWoodsQuietGlade LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsQuietGlade :: LocationCard ArkhamWoodsQuietGlade
@@ -35,8 +36,6 @@ arkhamWoodsQuietGlade = locationWith
   . (revealedSymbolL .~ Moon)
   )
 
-instance HasModifiersFor env ArkhamWoodsQuietGlade
-
 ability :: LocationAttrs -> Ability
 ability attrs =
   (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
@@ -44,9 +43,9 @@ ability attrs =
     }
 
 instance ActionRunner env => HasAbilities env ArkhamWoodsQuietGlade where
-  getAbilities iid NonFast (ArkhamWoodsQuietGlade attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs
-    $ pure [locationAbility (ability attrs)]
+  getAbilities iid window@(Window Timing.When NonFast) (ArkhamWoodsQuietGlade attrs@LocationAttrs {..})
+    | locationRevealed
+    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window (ArkhamWoodsQuietGlade attrs) =
     getAbilities iid window attrs
 

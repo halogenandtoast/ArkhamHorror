@@ -17,11 +17,12 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Name
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 import Control.Monad.Extra (findM)
 
 newtype TearThroughSpace = TearThroughSpace LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tearThroughSpace :: LocationCard TearThroughSpace
@@ -33,16 +34,16 @@ tearThroughSpace = location
   Square
   [Diamond, Triangle, Square]
 
-instance HasModifiersFor env TearThroughSpace
-
 forcedAbility :: LocationAttrs -> Ability
-forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
+forcedAbility a = mkAbility (toSource a) 1 LegacyForcedAbility
 
 instance ActionRunner env => HasAbilities env TearThroughSpace where
-  getAbilities iid AtEndOfRound (TearThroughSpace attrs) = do
-    leadInvestigator <- getLeadInvestigatorId
-    pure [ forcedAbility attrs | iid == leadInvestigator ]
-  getAbilities iid window (TearThroughSpace attrs) = getAbilities iid window attrs
+  getAbilities iid (Window Timing.When AtEndOfRound) (TearThroughSpace attrs) =
+    do
+      leadInvestigator <- getLeadInvestigatorId
+      pure [ forcedAbility attrs | iid == leadInvestigator ]
+  getAbilities iid window (TearThroughSpace attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env TearThroughSpace where
   runMessage msg l@(TearThroughSpace attrs) = case msg of

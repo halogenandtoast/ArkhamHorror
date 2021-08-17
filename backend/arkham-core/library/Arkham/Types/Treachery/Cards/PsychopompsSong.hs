@@ -11,6 +11,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Exception
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 import Arkham.Types.Window
@@ -25,10 +26,10 @@ psychopompsSong = treachery PsychopompsSong Cards.psychopompsSong
 instance HasModifiersFor env PsychopompsSong
 
 ability :: TreacheryAttrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 ForcedAbility
+ability attrs = mkAbility (toSource attrs) 1 LegacyForcedAbility
 
 instance HasAbilities env PsychopompsSong where
-  getAbilities iid (WhenWouldTakeDamage _ (InvestigatorTarget iid')) (PsychopompsSong attrs)
+  getAbilities iid (Window Timing.When (WouldTakeDamage _ (InvestigatorTarget iid'))) (PsychopompsSong attrs)
     | treacheryOnInvestigator iid attrs && iid == iid'
     = pure [ability attrs]
   getAbilities i window (PsychopompsSong attrs) = getAbilities i window attrs

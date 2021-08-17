@@ -12,11 +12,13 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
 
 newtype PeterSylvestre2 = PeterSylvestre2 AssetAttrs
   deriving anyclass IsAsset
@@ -32,13 +34,14 @@ instance HasModifiersFor env PeterSylvestre2 where
       [SkillModifier SkillAgility 1, SkillModifier SkillWillpower 1]
   getModifiersFor _ _ _ = pure []
 
-ability :: AssetAttrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (LegacyReactionAbility Free)
-
 instance HasAbilities env PeterSylvestre2 where
-  getAbilities iid (AfterEndTurn who) (PeterSylvestre2 a)
-    | ownedBy a iid && iid == who = pure [ ability a | assetSanityDamage a > 0 ]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (PeterSylvestre2 x) = pure
+    [ restrictedAbility
+        x
+        1
+        (OwnsThis <> AssetExists (AssetWithId (toId x) <> AssetWithHorror))
+        (ReactionAbility (TurnEnds Timing.After You) Free)
+    ]
 
 instance (AssetRunner env) => RunMessage env PeterSylvestre2 where
   runMessage msg (PeterSylvestre2 attrs) = case msg of

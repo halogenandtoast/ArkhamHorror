@@ -13,21 +13,19 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
-import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
+import Arkham.Types.Window hiding (EndTurn)
 
 newtype Chronophobia = Chronophobia TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chronophobia :: TreacheryCard Chronophobia
 chronophobia = treachery Chronophobia Cards.chronophobia
 
-instance HasModifiersFor env Chronophobia
-
 instance ActionRunner env => HasAbilities env Chronophobia where
-  getAbilities iid NonFast (Chronophobia a) =
+  getAbilities iid (Window Timing.When NonFast) (Chronophobia a) =
     withTreacheryInvestigator a $ \tormented -> do
       investigatorLocationId <- getId @LocationId iid
       treacheryLocation <- getId tormented
@@ -37,7 +35,7 @@ instance ActionRunner env => HasAbilities env Chronophobia where
         ]
   getAbilities _ _ _ = pure []
 
-instance (TreacheryRunner env) => RunMessage env Chronophobia where
+instance RunMessage env Chronophobia where
   runMessage msg t@(Chronophobia attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)

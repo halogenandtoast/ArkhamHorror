@@ -20,6 +20,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype FoulSwamp = FoulSwamp LocationAttrs
@@ -54,9 +55,10 @@ ability iid attrs = base { abilityMetadata = Just (IntMetadata 0) }
     )
 
 instance ActionRunner env => HasAbilities env FoulSwamp where
-  getAbilities iid NonFast (FoulSwamp attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs
-    $ pure [locationAbility (ability iid attrs)]
+  getAbilities iid window@(Window Timing.When NonFast) (FoulSwamp attrs@LocationAttrs {..})
+    | locationRevealed
+    = withBaseActions iid window attrs
+      $ pure [locationAbility (ability iid attrs)]
   getAbilities i window (FoulSwamp attrs) = getAbilities i window attrs
 
 instance LocationRunner env => RunMessage env FoulSwamp where

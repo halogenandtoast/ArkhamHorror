@@ -6,8 +6,9 @@ import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
-import Arkham.Types.Message
+import Arkham.Types.Message hiding (RevealToken)
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype SureGamble3 = SureGamble3 EventAttrs
@@ -19,8 +20,8 @@ sureGamble3 = event SureGamble3 Cards.sureGamble3
 
 instance EventRunner env => RunMessage env SureGamble3 where
   runMessage msg e@(SureGamble3 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent _ eid _ [WhenRevealToken _ token] | eid == eventId ->
-      e <$ pushAll
+    InvestigatorPlayEvent _ eid _ [Window Timing.When (RevealToken _ token)]
+      | eid == eventId -> e <$ pushAll
         [ CreateEffect "01088" Nothing (toSource attrs) (TokenTarget token)
         , Discard (toTarget attrs)
         ]

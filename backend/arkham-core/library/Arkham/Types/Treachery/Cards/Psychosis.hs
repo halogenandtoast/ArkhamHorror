@@ -13,8 +13,8 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
-import Arkham.Types.Treachery.Runner
 import Arkham.Types.Window
 
 newtype Psychosis = Psychosis TreacheryAttrs
@@ -27,7 +27,7 @@ psychosis = treachery Psychosis Cards.psychosis
 instance HasModifiersFor env Psychosis
 
 instance ActionRunner env => HasAbilities env Psychosis where
-  getAbilities iid NonFast (Psychosis a) =
+  getAbilities iid (Window Timing.When NonFast) (Psychosis a) =
     withTreacheryInvestigator a $ \tormented -> do
       investigatorLocationId <- getId @LocationId iid
       treacheryLocation <- getId tormented
@@ -37,7 +37,7 @@ instance ActionRunner env => HasAbilities env Psychosis where
         ]
   getAbilities _ _ _ = pure []
 
-instance (TreacheryRunner env) => RunMessage env Psychosis where
+instance RunMessage env Psychosis where
   runMessage msg t@(Psychosis attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)

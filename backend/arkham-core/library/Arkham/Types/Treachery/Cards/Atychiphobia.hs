@@ -9,35 +9,28 @@ import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
+import Arkham.Types.Criteria
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
-import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
 
 newtype Atychiphobia = Atychiphobia TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 atychiphobia :: TreacheryCard Atychiphobia
 atychiphobia = treachery Atychiphobia Cards.atychiphobia
 
-instance HasModifiersFor env Atychiphobia
+instance HasAbilities env Atychiphobia where
+  getAbilities _ _ (Atychiphobia a) = pure
+    [ restrictedAbility a 1 (InThreatAreaOf $ InvestigatorAt YourLocation)
+      $ ActionAbility Nothing
+      $ ActionCost 2
+    ]
 
-instance ActionRunner env => HasAbilities env Atychiphobia where
-  getAbilities iid NonFast (Atychiphobia a) =
-    withTreacheryInvestigator a $ \tormented -> do
-      investigatorLocationId <- getId @LocationId iid
-      treacheryLocation <- getId tormented
-      pure
-        [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 2
-        | treacheryLocation == investigatorLocationId
-        ]
-  getAbilities _ _ _ = pure []
-
-instance (TreacheryRunner env) => RunMessage env Atychiphobia where
+instance RunMessage env Atychiphobia where
   runMessage msg t@(Atychiphobia attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)

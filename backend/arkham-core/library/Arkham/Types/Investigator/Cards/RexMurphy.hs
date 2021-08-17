@@ -11,13 +11,14 @@ import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Investigator.Attrs
-import Arkham.Types.Message
+import Arkham.Types.Message hiding (PassSkillTest)
 import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Stats
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window
+import Arkham.Types.Window hiding (FailSkillTest)
 
 newtype RexMurphy = RexMurphy InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
@@ -39,7 +40,7 @@ rexMurphy = RexMurphy $ baseAttrs
   [Reporter]
 
 instance InvestigatorRunner env => HasAbilities env RexMurphy where
-  getAbilities iid (AfterPassSkillTest (Just Action.Investigate) _ who n) (RexMurphy attrs@InvestigatorAttrs {..})
+  getAbilities iid (Window Timing.After (PassSkillTest (Just Action.Investigate) _ who n)) (RexMurphy attrs@InvestigatorAttrs {..})
     | iid == investigatorId && n >= 2 && iid == who
     = do
       let ability = mkAbility (toSource attrs) 1 (LegacyReactionAbility Free)

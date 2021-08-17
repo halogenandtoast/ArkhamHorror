@@ -14,24 +14,24 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (RevealLocation)
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Window hiding (RevealLocation)
 
 newtype StudentUnion = StudentUnion LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 studentUnion :: LocationCard StudentUnion
 studentUnion =
   location StudentUnion Cards.studentUnion 1 (Static 2) Diamond [Plus, Equals]
 
-instance HasModifiersFor env StudentUnion
-
 instance ActionRunner env => HasAbilities env StudentUnion where
-  getAbilities iid NonFast (StudentUnion attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs $ do
+  getAbilities iid window@(Window Timing.When NonFast) (StudentUnion attrs@LocationAttrs {..})
+    | locationRevealed
+    = withBaseActions iid window attrs $ do
       let
         ability =
           mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 2)

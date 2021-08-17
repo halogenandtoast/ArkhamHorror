@@ -8,18 +8,21 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Card
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers
-import Arkham.Types.Id
+import Arkham.Types.GameValue
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Query
 import Arkham.Types.Target
 
 newtype SophieInLovingMemory = SophieInLovingMemory AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sophieInLovingMemory :: AssetCard SophieInLovingMemory
@@ -28,17 +31,21 @@ sophieInLovingMemory = assetWith
   Cards.sophieInLovingMemory
   (canLeavePlayByNormalMeansL .~ False)
 
-ability :: AssetAttrs -> Ability
-ability attrs = mkAbility attrs 2 ForcedAbility & abilityLimitL .~ NoLimit
+instance HasAbilities env SophieInLovingMemory where
+  getAbilities _ _ (SophieInLovingMemory x) = pure
+    [ restrictedAbility x 1 (OwnsThis <> DuringSkillTest AnySkillTest)
+    $ FastAbility
+    $ DirectDamageCost (toSource x) You 1
+    , restrictedAbility
+      x
+      2
+      (OwnsThis <> InvestigatorExists
+        (You <> InvestigatorWithDamage (AtLeast $ Static 5))
+      )
+      LegacyForcedAbility
+    ]
 
-instance HasCount DamageCount env InvestigatorId => HasAbilities env SophieInLovingMemory where
-  getAbilities iid _ (SophieInLovingMemory attrs) = whenOwnedBy attrs iid $ do
-    damageCount <- unDamageCount <$> getCount iid
-    pure [ ability attrs | damageCount >= 5 ]
-
-instance HasModifiersFor env SophieInLovingMemory
-
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env SophieInLovingMemory where
+instance AssetRunner env => RunMessage env SophieInLovingMemory where
   runMessage msg a@(SophieInLovingMemory attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push

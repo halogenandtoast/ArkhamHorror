@@ -14,30 +14,27 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype JennysTwin45s = JennysTwin45s AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jennysTwin45s :: AssetCard JennysTwin45s
 jennysTwin45s =
   assetWith JennysTwin45s Cards.jennysTwin45s (slotsL .~ [HandSlot, HandSlot])
 
-instance HasModifiersFor env JennysTwin45s
-
 instance HasAbilities env JennysTwin45s where
-  getAbilities iid NonFast (JennysTwin45s a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility
+  getAbilities _ _ (JennysTwin45s a) = pure
+    [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
     ]
-  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env JennysTwin45s where
   runMessage msg a@(JennysTwin45s attrs) = case msg of

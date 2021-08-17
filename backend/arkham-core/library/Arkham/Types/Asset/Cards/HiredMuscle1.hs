@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Message
@@ -29,7 +30,7 @@ instance HasModifiersFor env HiredMuscle1 where
     pure [ toModifier a (SkillModifier SkillCombat 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env HiredMuscle1 where
+instance AssetRunner env => RunMessage env HiredMuscle1 where
   runMessage msg a@(HiredMuscle1 attrs@AssetAttrs {..}) = case msg of
     EndUpkeep -> do
       let iid = fromJustNote "must be owned" assetInvestigator

@@ -9,7 +9,6 @@ import qualified Arkham.Skill.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Skill.Attrs
-import Arkham.Types.Skill.Runner
 import Arkham.Types.Token
 
 newtype StrokeOfLuck2 = StrokeOfLuck2 SkillAttrs
@@ -19,7 +18,7 @@ newtype StrokeOfLuck2 = StrokeOfLuck2 SkillAttrs
 strokeOfLuck2 :: SkillCard StrokeOfLuck2
 strokeOfLuck2 = skill StrokeOfLuck2 Cards.strokeOfLuck2
 
-instance SkillRunner env => RunMessage env StrokeOfLuck2 where
+instance RunMessage env StrokeOfLuck2 where
   runMessage msg s@(StrokeOfLuck2 attrs) = case msg of
     RevealToken _ iid token | tokenFace token /= AutoFail -> s <$ push
       (chooseOne

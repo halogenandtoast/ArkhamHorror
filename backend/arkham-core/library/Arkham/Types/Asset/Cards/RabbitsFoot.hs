@@ -8,24 +8,24 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
+import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
 
 newtype RabbitsFoot = RabbitsFoot AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rabbitsFoot :: AssetCard RabbitsFoot
 rabbitsFoot = accessory RabbitsFoot Cards.rabbitsFoot
 
-instance HasModifiersFor env RabbitsFoot
-
 instance HasAbilities env RabbitsFoot where
-  getAbilities iid (AfterFailSkillTest who _) (RabbitsFoot a) | iid == who = pure
-    [ mkAbility (toSource a) 1 (LegacyReactionAbility $ ExhaustCost (toTarget a))
-    | ownedBy a iid
+  getAbilities _ _ (RabbitsFoot a) = pure
+    [ restrictedAbility a 1 OwnsThis $ ReactionAbility
+        (SkillTestResult Timing.After You AnySkillTest (FailureResult AnyValue))
+        (ExhaustCost $ toTarget a)
     ]
-  getAbilities i window (RabbitsFoot x) = getAbilities i window x
 
 instance AssetRunner env => RunMessage env RabbitsFoot where
   runMessage msg a@(RabbitsFoot attrs) = case msg of

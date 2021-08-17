@@ -12,30 +12,27 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Hyperawareness2 = Hyperawareness2 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hyperawareness2 :: AssetCard Hyperawareness2
 hyperawareness2 = asset Hyperawareness2 Cards.hyperawareness2
 
-instance HasModifiersFor env Hyperawareness2
-
-ability :: Int -> AssetAttrs -> Ability
-ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)
-
 instance HasAbilities env Hyperawareness2 where
-  getAbilities iid (WhenSkillTest SkillIntellect) (Hyperawareness2 a) = do
-    pure [ ability 1 a | ownedBy a iid ]
-  getAbilities iid (WhenSkillTest SkillAgility) (Hyperawareness2 a) = do
-    pure [ ability 2 a | ownedBy a iid ]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (Hyperawareness2 a) = pure
+    [ restrictedAbility a idx (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ FastAbility
+      $ ResourceCost 1
+    | idx <- [1, 2]
+    ]
 
 instance (AssetRunner env) => RunMessage env Hyperawareness2 where
   runMessage msg a@(Hyperawareness2 attrs) = case msg of

@@ -14,6 +14,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
@@ -21,24 +22,20 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Shotgun4 = Shotgun4 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shotgun4 :: AssetCard Shotgun4
 shotgun4 = assetWith Shotgun4 Cards.shotgun4 (slotsL .~ [HandSlot, HandSlot])
 
-instance HasModifiersFor env Shotgun4
-
 instance HasAbilities env Shotgun4 where
-  getAbilities iid NonFast (Shotgun4 a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility
+  getAbilities _ _ (Shotgun4 a) = pure
+    [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
     ]
-  getAbilities _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Shotgun4 where
   runMessage msg a@(Shotgun4 attrs) = case msg of

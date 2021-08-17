@@ -11,40 +11,38 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
-import Arkham.Types.Window
 
 newtype JimsTrumpet = JimsTrumpet AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 jimsTrumpet :: AssetCard JimsTrumpet
 jimsTrumpet = hand JimsTrumpet Cards.jimsTrumpet
 
-instance HasModifiersFor env JimsTrumpet
-
-ability :: AssetAttrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (LegacyReactionAbility $ ExhaustCost (toTarget attrs))
-
-instance ActionRunner env => HasAbilities env JimsTrumpet where
-  getAbilities iid (WhenRevealToken _ token) (JimsTrumpet a)
-    | ownedBy a iid && tokenFace token == Skull = do
-      locationId <- getId @LocationId iid
-      connectedLocationIds <- map unConnectedLocationId
-        <$> getSetList locationId
-      investigatorIds <- for
-        (locationId : connectedLocationIds)
-        (getSetList @InvestigatorId)
-      horrorCounts <- for
-        (concat investigatorIds)
-        ((unHorrorCount <$>) . getCount)
-      pure [ ability a | any (> 0) horrorCounts ]
-  getAbilities i window (JimsTrumpet x) = getAbilities i window x
+instance HasAbilities env JimsTrumpet where
+  getAbilities _ _ (JimsTrumpet x) = pure
+    [ restrictedAbility
+        x
+        1
+        (OwnsThis <> InvestigatorExists
+          (AnyInvestigator
+              [InvestigatorAt YourLocation, InvestigatorAt ConnectedLocation]
+          <> InvestigatorWithAnyHorror
+          )
+        )
+        (ReactionAbility
+          (RevealChaosToken Timing.When You (TokenFaceIs Skull))
+          (ExhaustCost $ toTarget x)
+        )
+    ]
 
 instance AssetRunner env => RunMessage env JimsTrumpet where
   runMessage msg a@(JimsTrumpet attrs@AssetAttrs {..}) = case msg of

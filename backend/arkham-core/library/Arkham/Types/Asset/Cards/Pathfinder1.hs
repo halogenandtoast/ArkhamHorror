@@ -8,38 +8,31 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Window
 
 newtype Pathfinder1 = Pathfinder1 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pathfinder1 :: AssetCard Pathfinder1
 pathfinder1 = asset Pathfinder1 Cards.pathfinder1
 
-ability :: AssetAttrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (FastAbility $ ExhaustCost (toTarget attrs))
+instance HasAbilities env Pathfinder1 where
+  getAbilities _ _ (Pathfinder1 attrs) = pure
+    [ restrictedAbility
+        attrs
+        1
+        (OwnsThis <> InvestigatorExists (You <> UnengagedInvestigator))
+        (FastAbility $ ExhaustCost (toTarget attrs))
+    ]
 
-instance HasSet EnemyId env InvestigatorId => HasAbilities env Pathfinder1 where
-  getAbilities iid (DuringTurn who) (Pathfinder1 attrs) | iid == who = do
-    engagedEnemies <- getSet @EnemyId iid
-    pure [ ability attrs | null engagedEnemies ]
-  getAbilities _ _ _ = pure []
-
-instance HasModifiersFor env Pathfinder1
-
-instance
-  ( HasQueue env
-  , HasModifiersFor env ()
-  , HasSet AccessibleLocationId env LocationId
-  , HasId LocationId env InvestigatorId
-  )
-  => RunMessage env Pathfinder1 where
+instance AssetRunner env => RunMessage env Pathfinder1 where
   runMessage msg a@(Pathfinder1 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       accessibleLocationIds <-

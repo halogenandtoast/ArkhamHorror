@@ -22,10 +22,11 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype SanMarcoBasilica = SanMarcoBasilica LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sanMarcoBasilica :: LocationCard SanMarcoBasilica
@@ -38,15 +39,14 @@ sanMarcoBasilica = locationWith
   []
   (connectsToL .~ singleton RightOf)
 
-instance HasModifiersFor env SanMarcoBasilica
-
 ability :: LocationAttrs -> Ability
 ability a = mkAbility a 1 (ActionAbility Nothing $ ActionCost 1)
 
 instance ActionRunner env => HasAbilities env SanMarcoBasilica where
-  getAbilities iid NonFast (SanMarcoBasilica attrs) =
-    withBaseActions iid NonFast attrs $ pure [ability attrs]
-  getAbilities iid window (SanMarcoBasilica attrs) = getAbilities iid window attrs
+  getAbilities iid window@(Window Timing.When NonFast) (SanMarcoBasilica attrs)
+    = withBaseActions iid window attrs $ pure [ability attrs]
+  getAbilities iid window (SanMarcoBasilica attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env SanMarcoBasilica where
   runMessage msg l@(SanMarcoBasilica attrs) = case msg of

@@ -5,7 +5,6 @@ import Arkham.Prelude
 import qualified Arkham.Skill.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Skill.Attrs
-import Arkham.Types.Skill.Runner
 
 newtype UnexpectedCourage = UnexpectedCourage SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities env)
@@ -14,6 +13,6 @@ newtype UnexpectedCourage = UnexpectedCourage SkillAttrs
 unexpectedCourage :: SkillCard UnexpectedCourage
 unexpectedCourage = skill UnexpectedCourage Cards.unexpectedCourage
 
-instance SkillRunner env => RunMessage env UnexpectedCourage where
+instance RunMessage env UnexpectedCourage where
   runMessage msg (UnexpectedCourage attrs) =
     UnexpectedCourage <$> runMessage msg attrs

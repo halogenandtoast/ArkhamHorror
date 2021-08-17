@@ -1,8 +1,10 @@
+{-# LANGUAGE PatternSynonyms #-}
+
 module Arkham.Types.Criteria where
 
 import Arkham.Prelude
 
-import Arkham.Types.Id
+import Arkham.Types.GameValue
 import Arkham.Types.Matcher
 import Arkham.Types.Trait
 
@@ -10,44 +12,56 @@ data DiscardSignifier = AnyPlayerDiscard
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data Criteria
+pattern AnyHorrorOnThis :: Criterion
+pattern AnyHorrorOnThis <- HorrorOnThis (GreaterThan (Static 0)) where
+  AnyHorrorOnThis = HorrorOnThis (GreaterThan (Static 0))
+
+data Criterion
   = AnotherInvestigatorInSameLocation
   | InvestigatorIsAlone
   | ScenarioCardHasResignAbility
   | ClueOnLocation
-  | FirstAction
-  | OwnsThis
+  | Self
   | DuringTurn InvestigatorMatcher
-  | DuringSkillTest SkillTestMatcher
-  | OnLocation LocationId
+  | FirstAction
+  | OnLocation LocationMatcher
   | CardExists CardMatcher
   | ExtendedCardExists ExtendedCardMatcher
   | PlayableCardExists ExtendedCardMatcher
   | AssetExists AssetMatcher
   | InvestigatorExists InvestigatorMatcher
   | EnemyExists EnemyMatcher
+  | SetAsideCardExists CardMatcher
   | NoEnemyExists EnemyMatcher
   | LocationExists LocationMatcher
+  | InvestigatorsHaveSpendableClues ValueMatcher
+  | CluesOnThis ValueMatcher
+  | HorrorOnThis ValueMatcher
   | OwnCardWithDoom
-  | Self
+  | OwnsThis
+  | OnSameLocation
+  | Unowned
+  | DuringSkillTest SkillTestMatcher
+  | InThreatAreaOf InvestigatorMatcher
   | CardInDiscard DiscardSignifier [Trait]
   | ReturnableCardInDiscard DiscardSignifier [Trait]
-  | Criterias [Criteria]
-  | AnyCriteria [Criteria]
+  | Criteria [Criterion]
+  | AnyCriterion [Criterion]
   | NoRestriction
   | Never
+  | Negate Criterion
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-instance Semigroup Criteria where
+instance Semigroup Criterion where
   Never <> _ = Never
   _ <> Never = Never
   NoRestriction <> x = x
   x <> NoRestriction = x
-  Criterias xs <> Criterias ys = Criterias $ xs <> ys
-  Criterias xs <> x = Criterias $ x : xs
-  x <> Criterias xs = Criterias $ x : xs
-  x <> y = Criterias [x, y]
+  Criteria xs <> Criteria ys = Criteria $ xs <> ys
+  Criteria xs <> x = Criteria $ x : xs
+  x <> Criteria xs = Criteria $ x : xs
+  x <> y = Criteria [x, y]
 
-instance Monoid Criteria where
+instance Monoid Criterion where
   mempty = NoRestriction

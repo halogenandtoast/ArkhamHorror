@@ -9,7 +9,6 @@ import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Cards.RottingRemains
-import Arkham.Types.Treachery.Runner
 
 newtype RottingRemainsBloodOnTheAltar = RottingRemainsBloodOnTheAltar RottingRemains
   deriving anyclass IsTreachery
@@ -20,6 +19,6 @@ rottingRemainsBloodOnTheAltar = treachery
   (RottingRemainsBloodOnTheAltar . RottingRemains)
   Cards.rottingRemainsBloodOnTheAltar
 
-instance TreacheryRunner env => RunMessage env RottingRemainsBloodOnTheAltar where
+instance RunMessage env RottingRemainsBloodOnTheAltar where
   runMessage msg (RottingRemainsBloodOnTheAltar inner) =
     RottingRemainsBloodOnTheAltar <$> runMessage msg inner

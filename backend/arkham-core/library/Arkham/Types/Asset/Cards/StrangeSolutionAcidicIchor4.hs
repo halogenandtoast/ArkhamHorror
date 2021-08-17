@@ -10,15 +10,16 @@ import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype StrangeSolutionAcidicIchor4 = StrangeSolutionAcidicIchor4 AssetAttrs
   deriving anyclass IsAsset
@@ -29,13 +30,11 @@ strangeSolutionAcidicIchor4 =
   asset StrangeSolutionAcidicIchor4 Cards.strangeSolutionAcidicIchor4
 
 instance HasAbilities env StrangeSolutionAcidicIchor4 where
-  getAbilities iid NonFast (StrangeSolutionAcidicIchor4 attrs)
-    | ownedBy attrs iid = pure
-      [ mkAbility attrs 1 $ ActionAbility (Just Action.Fight) $ Costs
-          [ActionCost 1, UseCost (toId attrs) Supply 1]
-      ]
-  getAbilities iid window (StrangeSolutionAcidicIchor4 attrs) =
-    getAbilities iid window attrs
+  getAbilities _ _ (StrangeSolutionAcidicIchor4 attrs) = pure
+    [ restrictedAbility attrs 1 OwnsThis
+      $ ActionAbility (Just Action.Fight)
+      $ Costs [ActionCost 1, UseCost (toId attrs) Supply 1]
+    ]
 
 instance HasModifiersFor env StrangeSolutionAcidicIchor4 where
   getModifiersFor (SkillTestSource _ _ source _ (Just Action.Fight)) (InvestigatorTarget iid) (StrangeSolutionAcidicIchor4 a)
@@ -43,11 +42,7 @@ instance HasModifiersFor env StrangeSolutionAcidicIchor4 where
     = pure $ toModifiers a [BaseSkillOf SkillCombat 6, DamageDealt 2]
   getModifiersFor _ _ _ = pure []
 
-instance
-  ( HasQueue env
-  , HasModifiersFor env ()
-  )
-  => RunMessage env StrangeSolutionAcidicIchor4 where
+instance AssetRunner env => RunMessage env StrangeSolutionAcidicIchor4 where
   runMessage msg a@(StrangeSolutionAcidicIchor4 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ push (ChooseFightEnemy iid source SkillCombat mempty False)

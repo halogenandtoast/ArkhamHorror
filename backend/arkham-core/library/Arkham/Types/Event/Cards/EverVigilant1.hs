@@ -14,6 +14,7 @@ import Arkham.Types.Matcher hiding (DuringTurn)
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype EverVigilant1 = EverVigilant1 EventAttrs
@@ -42,7 +43,11 @@ instance CanCheckPlayable env => RunMessage env EverVigilant1 where
         <> BasicCardMatch (CardWithType AssetType)
         )
       playableCards <- filterM
-        (getIsPlayable iid (toSource attrs) [DuringTurn iid, NonFast])
+        (getIsPlayable
+          iid
+          (toSource attrs)
+          [Window Timing.When (DuringTurn iid), Window Timing.When NonFast]
+        )
         cards
       e <$ when
         (notNull playableCards)

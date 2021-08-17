@@ -18,10 +18,11 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype CursedShores = CursedShores LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cursedShores :: LocationCard CursedShores
@@ -33,11 +34,10 @@ cursedShores = location
   Square
   [Plus, Triangle, Diamond, Hourglass]
 
-instance HasModifiersFor env CursedShores
-
 instance ActionRunner env => HasAbilities env CursedShores where
-  getAbilities iid NonFast (CursedShores attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs $ pure
+  getAbilities iid window@(Window Timing.When NonFast) (CursedShores attrs@LocationAttrs {..})
+    | locationRevealed
+    = withBaseActions iid window attrs $ pure
       [ locationAbility
           (mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 1)
       ]

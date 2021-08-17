@@ -7,8 +7,7 @@ import Arkham.Types.Query
 import Arkham.Types.ScenarioId
 
 type CampaignRunner env
-  = ( HasQueue env
-    , HasSet InvestigatorId env ()
+  = ( HasSet InvestigatorId env ()
     , HasId LeadInvestigatorId env ()
     , HasRecord env
     , HasList CampaignStoryCard env ()

@@ -15,11 +15,12 @@ data AbilityType
   | ActionAbility (Maybe Action) Cost
   | ActionAbilityWithSkill (Maybe Action) SkillType Cost
   | ActionAbilityWithBefore (Maybe Action) (Maybe Action) Cost -- Action is first type, before is second
-  | ForcedAbility
+  | LegacyForcedAbility
+  | ForcedAbility WindowMatcher
   | AbilityEffect Cost
   | Objective AbilityType
   deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
 
 abilityTypeAction :: AbilityType -> Maybe Action
 abilityTypeAction = \case
@@ -29,7 +30,8 @@ abilityTypeAction = \case
   ActionAbility mAction _ -> mAction
   ActionAbilityWithSkill mAction _ _ -> mAction
   ActionAbilityWithBefore mAction _ _ -> mAction
-  ForcedAbility -> Nothing
+  LegacyForcedAbility -> Nothing
+  ForcedAbility _ -> Nothing
   AbilityEffect _ -> Nothing
   Objective aType -> abilityTypeAction aType
 
@@ -41,7 +43,8 @@ abilityTypeCost = \case
   ActionAbility _ cost -> cost
   ActionAbilityWithSkill _ _ cost -> cost
   ActionAbilityWithBefore _ _ cost -> cost
-  ForcedAbility -> Free
+  LegacyForcedAbility -> Free
+  ForcedAbility _ -> Free
   AbilityEffect cost -> cost
   Objective aType -> abilityTypeCost aType
 
@@ -59,7 +62,8 @@ applyAbilityTypeModifiers aType modifiers = case aType of
   ActionAbilityWithBefore mAction mBeforeAction cost ->
     ActionAbilityWithBefore mAction mBeforeAction
       $ applyCostModifiers cost modifiers
-  ForcedAbility -> ForcedAbility
+  LegacyForcedAbility -> LegacyForcedAbility
+  ForcedAbility window -> ForcedAbility window
   AbilityEffect cost -> AbilityEffect cost -- modifiers don't yet apply here
   Objective aType' -> Objective $ applyAbilityTypeModifiers aType' modifiers
 

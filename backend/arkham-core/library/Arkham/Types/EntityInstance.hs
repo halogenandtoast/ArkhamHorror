@@ -17,7 +17,6 @@ import Arkham.Types.Location
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Skill
-import Arkham.Types.SkillTest
 import Arkham.Types.Treachery
 
 data EntityInstance
@@ -36,7 +35,7 @@ instance (EntityInstanceRunner env, InnerInvestigatorRunner env) => RunMessage e
   runMessage msg (SkillInstance x) = SkillInstance <$> runMessage msg x
   runMessage msg (TreacheryInstance x) = TreacheryInstance <$> runMessage msg x
 
-instance (EntityInstanceRunner env, HasSkillTest env) => HasAbilities env EntityInstance where
+instance EntityInstanceRunner env => HasAbilities env EntityInstance where
   getAbilities iid window (AssetInstance x) = getAbilities iid window x
   getAbilities iid window (EnemyInstance x) = getAbilities iid window x
   getAbilities iid window (EventInstance x) = getAbilities iid window x

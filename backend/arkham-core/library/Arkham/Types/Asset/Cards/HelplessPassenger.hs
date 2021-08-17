@@ -9,48 +9,33 @@ import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Action
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Direction
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype HelplessPassenger = HelplessPassenger AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 helplessPassenger :: AssetCard HelplessPassenger
 helplessPassenger =
   allyWith HelplessPassenger Cards.helplessPassenger (1, 1) (isStoryL .~ True)
 
-ability :: AssetAttrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (ActionAbility (Just Parley) $ ActionCost 1)
+instance HasAbilities env HelplessPassenger where
+  getAbilities _ _ (HelplessPassenger attrs) = pure
+    [ restrictedAbility
+        attrs
+        1
+        (Unowned <> OnSameLocation)
+        (ActionAbility (Just Parley) $ ActionCost 1)
+    ]
 
-instance HasId LocationId env InvestigatorId => HasAbilities env HelplessPassenger where
-  getAbilities iid NonFast (HelplessPassenger attrs) = do
-    lid <- getId iid
-    case assetLocation attrs of
-      Just location ->
-        pure
-          [ ability attrs
-          | lid == location && isNothing (assetInvestigator attrs)
-          ]
-      _ -> pure mempty
-  getAbilities iid window (HelplessPassenger attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env HelplessPassenger
-
-instance
-  ( HasQueue env
-  , HasModifiersFor env ()
-  , HasId LocationId env InvestigatorId
-  , HasSet InScenarioInvestigatorId env ()
-  , HasId (Maybe LocationId) env (Direction, LocationId)
-  )
-  => RunMessage env HelplessPassenger where
+instance AssetRunner env => RunMessage env HelplessPassenger where
   runMessage msg a@(HelplessPassenger attrs@AssetAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid

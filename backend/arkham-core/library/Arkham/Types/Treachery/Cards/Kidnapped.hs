@@ -13,6 +13,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
@@ -28,8 +29,8 @@ kidnapped = treachery Kidnapped Cards.kidnapped
 instance HasModifiersFor env Kidnapped
 
 instance HasAbilities env Kidnapped where
-  getAbilities _ (WhenAgendaAdvance aid) (Kidnapped attrs)
-    | treacheryOnAgenda aid attrs = pure [mkAbility attrs 1 ForcedAbility]
+  getAbilities _ (Window Timing.When (AgendaAdvance aid)) (Kidnapped attrs)
+    | treacheryOnAgenda aid attrs = pure [mkAbility attrs 1 LegacyForcedAbility]
   getAbilities i window (Kidnapped attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env Kidnapped where

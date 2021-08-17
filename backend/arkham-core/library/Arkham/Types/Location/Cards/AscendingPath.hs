@@ -22,7 +22,8 @@ import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Source
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Window hiding (SuccessfulInvestigation)
 
 newtype AscendingPath = AscendingPath LocationAttrs
   deriving anyclass IsLocation
@@ -52,8 +53,8 @@ ability attrs =
     & (abilityLimitL .~ PlayerLimit PerRound 1)
 
 instance ActionRunner env => HasAbilities env AscendingPath where
-  getAbilities iid NonFast (AscendingPath attrs) =
-    withBaseActions iid NonFast attrs
+  getAbilities iid window@(Window Timing.When NonFast) (AscendingPath attrs) =
+    withBaseActions iid window attrs
       $ pure [ locationAbility (ability attrs) | locationRevealed attrs ]
   getAbilities iid window (AscendingPath attrs) = getAbilities iid window attrs
 

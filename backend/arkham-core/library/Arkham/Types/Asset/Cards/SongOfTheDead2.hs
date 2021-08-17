@@ -6,32 +6,34 @@ module Arkham.Types.Asset.Cards.SongOfTheDead2
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
+import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype SongOfTheDead2 = SongOfTheDead2 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 songOfTheDead2 :: AssetCard SongOfTheDead2
 songOfTheDead2 = arcane SongOfTheDead2 Cards.songOfTheDead2
 
 instance HasAbilities env SongOfTheDead2 where
-  getAbilities iid NonFast (SongOfTheDead2 a) = whenOwnedBy a iid
-    $ pure [fightAction a 1 [ActionCost 1, UseCost (toId a) Charge 1]]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (SongOfTheDead2 x) = pure
+    [ restrictedAbility x 1 OwnsThis $ ActionAbility (Just Action.Fight) $ Costs
+        [ActionCost 1, UseCost (toId x) Charge 1]
+    ]
 
-instance HasModifiersFor env SongOfTheDead2
-
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env SongOfTheDead2 where
+instance AssetRunner env => RunMessage env SongOfTheDead2 where
   runMessage msg a@(SongOfTheDead2 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier

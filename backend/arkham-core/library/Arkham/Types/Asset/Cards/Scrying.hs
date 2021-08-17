@@ -12,26 +12,23 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Scrying = Scrying AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 scrying :: AssetCard Scrying
 scrying = arcane Scrying Cards.scrying
 
-instance HasModifiersFor env Scrying
-
 instance HasAbilities env Scrying where
-  getAbilities iid NonFast (Scrying a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility Nothing $ Costs
-        [ActionCost 1, UseCost (toId a) Charge 1, ExhaustCost (toTarget a)]
+  getAbilities _ _ (Scrying a) = pure
+    [ restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ Costs
+        [ActionCost 1, UseCost (toId a) Charge 1, ExhaustCost $ toTarget a]
     ]
-  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Scrying where
   runMessage msg a@(Scrying attrs) = case msg of

@@ -11,34 +11,25 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EnemyId
+import Arkham.Types.Criteria
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
 
 newtype ZoeysCross = ZoeysCross AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 zoeysCross :: AssetCard ZoeysCross
 zoeysCross = accessory ZoeysCross Cards.zoeysCross
 
-instance HasModifiersFor env ZoeysCross
-
-ability :: AssetAttrs -> EnemyId -> Ability
-ability attrs eid = base
-  { abilityMetadata = Just (TargetMetadata (EnemyTarget eid))
-  }
- where
-  base = mkAbility
-    (toSource attrs)
-    1
-    (LegacyReactionAbility $ Costs [ExhaustCost (toTarget attrs), ResourceCost 1])
-
 instance HasAbilities env ZoeysCross where
-  getAbilities iid (AfterEnemyEngageInvestigator who eid) (ZoeysCross a)
-    | ownedBy a iid && iid == who = pure [ability a eid]
-  getAbilities i window (ZoeysCross x) = getAbilities i window x
+  getAbilities _ _ (ZoeysCross x) = pure
+    [ restrictedAbility x 1 OwnsThis
+      $ ReactionAbility (EnemyEngaged Timing.After You AnyEnemy)
+      $ Costs [ExhaustCost (toTarget x), ResourceCost 1]
+    ]
 
 instance (AssetRunner env) => RunMessage env ZoeysCross where
   runMessage msg a@(ZoeysCross attrs) = case msg of

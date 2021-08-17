@@ -13,30 +13,27 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Knife = Knife AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 knife :: AssetCard Knife
 knife = hand Knife Cards.knife
 
-instance HasModifiersFor env Knife
-
 instance HasAbilities env Knife where
-  getAbilities iid NonFast (Knife a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility (Just Fight) (ActionCost 1)
-    , mkAbility a 2
+  getAbilities _ _ (Knife a) = pure
+    [ restrictedAbility a 1 OwnsThis $ ActionAbility (Just Fight) (ActionCost 1)
+    , restrictedAbility a 2 OwnsThis
       $ ActionAbility
           (Just Fight)
           (Costs [ActionCost 1, DiscardCost (toTarget a)])
     ]
-  getAbilities _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Knife where
   runMessage msg a@(Knife attrs) = case msg of

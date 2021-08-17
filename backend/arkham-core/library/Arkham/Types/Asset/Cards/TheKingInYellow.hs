@@ -5,22 +5,23 @@ module Arkham.Types.Asset.Cards.TheKingInYellow
 
 import Arkham.Prelude hiding (head)
 
-import Prelude (head)
-
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
+import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
+import Arkham.Types.GameValue
 import Arkham.Types.Id
+import Arkham.Types.Matcher hiding (PlayCard)
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
-import Data.Function (on)
+import qualified Arkham.Types.Timing as Timing
 
 newtype TheKingInYellow = TheKingInYellow AssetAttrs
   deriving anyclass IsAsset
@@ -32,28 +33,17 @@ theKingInYellow = handWith
   Cards.theKingInYellow
   (canLeavePlayByNormalMeansL .~ False)
 
-frequency :: Ord a => [a] -> [(a, Int)]
-frequency = map (head &&& length) . group . sort
-
-instance HasList CommittedSkillIcon env InvestigatorId => HasAbilities env TheKingInYellow where
-  getAbilities iid AfterPassSkillTest{} (TheKingInYellow attrs)
-    | ownedBy attrs iid = do
-      committedSkillIcons <- map unCommittedSkillIcon <$> getList iid
-      let frequencies = frequency committedSkillIcons
-      case frequencies of
-        [] -> pure []
-        (x : xs) -> do
-          let
-            mostFrequent = maximumBy (compare `on` snd) (ncons x xs)
-            frequencyMap :: HashMap SkillType Int = mapFromList frequencies
-            totalMatchingIcons = case mostFrequent of
-              (SkillWild, n) -> n
-              (_, n) -> n + findWithDefault 0 SkillWild frequencyMap
-          pure
-            [ mkAbility attrs 1 $ LegacyReactionAbility Free
-            | totalMatchingIcons >= 6
-            ]
-  getAbilities _ _ _ = pure []
+instance HasAbilities env TheKingInYellow where
+  getAbilities _ _ (TheKingInYellow x) = pure
+    [ restrictedAbility x 1 OwnsThis $ ReactionAbility
+        (SkillTestResult
+            Timing.After
+            (You <> ContributedMatchingIcons (AtLeast $ Static 6))
+            AnySkillTest
+        $ SuccessResult AnyValue
+        )
+        Free
+    ]
 
 instance HasSet CommittedCardId env InvestigatorId => HasModifiersFor env TheKingInYellow where
   getModifiersFor _ SkillTestTarget (TheKingInYellow attrs) = do
@@ -66,7 +56,7 @@ instance HasSet CommittedCardId env InvestigatorId => HasModifiersFor env TheKin
       ]
   getModifiersFor _ _ _ = pure []
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env TheKingInYellow where
+instance AssetRunner env => RunMessage env TheKingInYellow where
   runMessage msg a@(TheKingInYellow attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       a <$ push (PlayCard iid (toCardId attrs) Nothing False)

@@ -23,8 +23,10 @@ import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window (Window(NonFast))
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 newtype PayForAbilityEffect = PayForAbilityEffect (EffectAttrs `With` Payment)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -95,7 +97,8 @@ startPayment iid window abilityType abilitySource abilityDoesNotProvokeAttacksOf
       aType
       abilitySource
       abilityDoesNotProvokeAttacksOfOpportunity
-    ForcedAbility -> pure ()
+    LegacyForcedAbility -> pure ()
+    ForcedAbility _ -> pure ()
     AbilityEffect cost -> push (PayAbilityCost abilitySource iid Nothing cost)
     FastAbility cost -> push (PayAbilityCost abilitySource iid Nothing cost)
     ReactionAbility _ cost ->
@@ -155,6 +158,7 @@ instance
   , HasCostPayment env
   , HasSet Trait env Source
   , HasModifiersFor env ()
+  , Query InvestigatorMatcher env
   , HasCount ActionRemainingCount env InvestigatorId
   )
   => RunMessage env PayForAbilityEffect where
@@ -166,7 +170,7 @@ instance
         e
           <$ startPayment
                iid
-               NonFast -- TODO: a thing
+               (Window Timing.When Window.NonFast) -- TODO: a thing
                abilityType
                abilitySource
                abilityDoesNotProvokeAttacksOfOpportunity
@@ -237,6 +241,13 @@ instance
             pushAll [AssetDamage aid source x 0, CheckDefeated source]
             withPayment $ DamagePayment x
           _ -> error "can't target for damage cost"
+        DirectDamageCost _ investigatorMatcher x -> do
+          investigators <- selectList investigatorMatcher
+          case investigators of
+            [iid'] -> do
+              push (InvestigatorDirectDamage iid' source x 0)
+              withPayment $ DirectDamagePayment x
+            _ -> error "exactly one investigator expected for direct damage"
         ResourceCost x -> do
           push (SpendResources iid x)
           withPayment $ ResourcePayment x

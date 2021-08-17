@@ -16,7 +16,6 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
-import Arkham.Types.Treachery.Runner
 
 newtype ClawsOfSteam = ClawsOfSteam TreacheryAttrs
   deriving anyclass IsTreachery
@@ -30,7 +29,7 @@ instance HasModifiersFor env ClawsOfSteam
 instance HasAbilities env ClawsOfSteam where
   getAbilities i window (ClawsOfSteam attrs) = getAbilities i window attrs
 
-instance TreacheryRunner env => RunMessage env ClawsOfSteam where
+instance RunMessage env ClawsOfSteam where
   runMessage msg t@(ClawsOfSteam attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RevelationSkillTest iid source SkillWillpower 3

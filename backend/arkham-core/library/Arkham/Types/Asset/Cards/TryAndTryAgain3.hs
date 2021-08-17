@@ -8,38 +8,37 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
 
 newtype TryAndTryAgain3 = TryAndTryAgain3 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tryAndTryAgain3 :: AssetCard TryAndTryAgain3
 tryAndTryAgain3 = asset TryAndTryAgain3 Cards.tryAndTryAgain3
 
-ability :: AssetAttrs -> Ability
-ability a = mkAbility a 1 (LegacyReactionAbility $ ExhaustCost (toTarget a))
+instance HasAbilities env TryAndTryAgain3 where
+  getAbilities _ _ (TryAndTryAgain3 x) = pure
+    [ restrictedAbility x 1 OwnsThis $ ReactionAbility
+        (SkillTestResult
+          Timing.After
+          Anyone
+          (SkillTestWithSkill YourSkill)
+          (FailureResult AnyValue)
+        )
+        (ExhaustCost $ toTarget x)
+    ]
 
-instance HasList CommittedCard env InvestigatorId => HasAbilities env TryAndTryAgain3 where
-  getAbilities iid (AfterFailSkillTest _ _) (TryAndTryAgain3 attrs) = do
-    committedSkills <-
-      filter ((== SkillType) . toCardType) . map unCommittedCard <$> getList iid
-    pure [ ability attrs | notNull committedSkills ]
-  getAbilities iid window (TryAndTryAgain3 attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env TryAndTryAgain3
-
-instance
-  ( HasList CommittedCard env InvestigatorId
-  , HasQueue env, HasModifiersFor env ()
-  )
-  => RunMessage env TryAndTryAgain3 where
+instance AssetRunner env => RunMessage env TryAndTryAgain3 where
   runMessage msg a@(TryAndTryAgain3 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       committedSkills <-

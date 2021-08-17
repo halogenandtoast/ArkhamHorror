@@ -12,7 +12,6 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
-import Arkham.Types.Treachery.Runner
 
 newtype Indebted = Indebted TreacheryAttrs
   deriving anyclass IsTreachery
@@ -31,7 +30,7 @@ instance HasModifiersFor env Indebted where
 instance HasAbilities env Indebted where
   getAbilities iid window (Indebted attrs) = getAbilities iid window attrs
 
-instance (TreacheryRunner env) => RunMessage env Indebted where
+instance RunMessage env Indebted where
   runMessage msg t@(Indebted attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)

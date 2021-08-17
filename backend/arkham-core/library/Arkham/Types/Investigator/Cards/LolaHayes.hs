@@ -11,6 +11,7 @@ import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Stats
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -46,12 +47,14 @@ instance HasTokenValue env LolaHayes where
   getTokenValue (LolaHayes attrs) iid token = getTokenValue attrs iid token
 
 instance InvestigatorRunner env => HasAbilities env LolaHayes where
-  getAbilities i (AfterDrawingStartingHand iid) (LolaHayes attrs)
-    | iid == toId attrs && i == iid = pure [mkAbility attrs 1 ForcedAbility]
-  getAbilities i FastPlayerWindow (LolaHayes attrs) | i == toId attrs = pure
-    [ mkAbility attrs 2 (FastAbility Free)
-        & (abilityLimitL .~ PlayerLimit PerRound 1)
-    ]
+  getAbilities i (Window Timing.After (DrawingStartingHand iid)) (LolaHayes attrs)
+    | iid == toId attrs && i == iid
+    = pure [mkAbility attrs 1 LegacyForcedAbility]
+  getAbilities i (Window Timing.When FastPlayerWindow) (LolaHayes attrs)
+    | i == toId attrs = pure
+      [ mkAbility attrs 2 (FastAbility Free)
+          & (abilityLimitL .~ PlayerLimit PerRound 1)
+      ]
   getAbilities i window (LolaHayes attrs) = getAbilities i window attrs
 
 switchRole

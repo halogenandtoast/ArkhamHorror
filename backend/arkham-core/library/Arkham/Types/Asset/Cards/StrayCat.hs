@@ -8,31 +8,24 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype StrayCat = StrayCat AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strayCat :: AssetCard StrayCat
 strayCat = ally StrayCat Cards.strayCat (1, 0)
 
-instance HasModifiersFor env StrayCat
-
-ability :: AssetAttrs -> Ability
-ability a = mkAbility (toSource a) 1 (FastAbility (DiscardCost $ toTarget a))
-
 instance HasAbilities env StrayCat where
-  getAbilities iid FastPlayerWindow (StrayCat a) | ownedBy a iid =
-    withBaseActions iid FastPlayerWindow a $ pure [ability a]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (StrayCat a) = pure
+    [restrictedAbility a 1 OwnsThis $ FastAbility $ DiscardCost $ toTarget a]
 
 instance AssetRunner env => RunMessage env StrayCat where
   runMessage msg a@(StrayCat attrs) = case msg of

@@ -16,17 +16,16 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype YourHouse = YourHouse LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yourHouse :: LocationCard YourHouse
 yourHouse =
   location YourHouse Cards.yourHouse 2 (PerPlayer 1) Squiggle [Circle]
-
-instance HasModifiersFor env YourHouse
 
 ability :: LocationAttrs -> Ability
 ability attrs =
@@ -35,9 +34,9 @@ ability attrs =
     }
 
 instance ActionRunner env => HasAbilities env YourHouse where
-  getAbilities iid NonFast (YourHouse attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs
-    $ pure [locationAbility (ability attrs)]
+  getAbilities iid window@(Window Timing.When NonFast) (YourHouse attrs@LocationAttrs {..})
+    | locationRevealed
+    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window (YourHouse attrs) = getAbilities iid window attrs
 
 instance (LocationRunner env) => RunMessage env YourHouse where

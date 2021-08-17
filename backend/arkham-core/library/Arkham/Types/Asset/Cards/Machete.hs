@@ -13,26 +13,25 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Machete = Machete AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 machete :: AssetCard Machete
 machete = hand Machete Cards.machete
 
-instance HasModifiersFor env Machete
-
 instance HasAbilities env Machete where
-  getAbilities iid NonFast (Machete a) | ownedBy a iid =
-    pure [mkAbility a 1 $ ActionAbility (Just Action.Fight) (ActionCost 1)]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (Machete a) = pure
+    [ restrictedAbility a 1 OwnsThis
+        $ ActionAbility (Just Action.Fight) (ActionCost 1)
+    ]
 
 instance AssetRunner env => RunMessage env Machete where
   runMessage msg a@(Machete attrs) = case msg of

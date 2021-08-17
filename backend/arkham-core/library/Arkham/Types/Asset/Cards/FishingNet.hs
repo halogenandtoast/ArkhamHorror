@@ -6,19 +6,21 @@ module Arkham.Types.Asset.Cards.FishingNet
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Keyword
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype FishingNet = FishingNet AssetAttrs
   deriving anyclass IsAsset
@@ -33,23 +35,14 @@ instance HasModifiersFor env FishingNet where
     [ RemoveKeyword Retaliate | assetEnemy attrs == Just eid ]
   getModifiersFor _ _ _ = pure []
 
-ability :: AssetAttrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (FastAbility Free)
-
-instance ActionRunner env => HasAbilities env FishingNet where
-  getAbilities iid FastPlayerWindow (FishingNet attrs) | ownedBy attrs iid = do
-    mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
-    case mrougarou of
-      Nothing -> pure []
-      Just eid -> do
-        investigatorLocation <- getId @LocationId iid
-        exhaustedEnemies <- map unExhaustedEnemyId
-          <$> getSetList investigatorLocation
-        pure
-          [ ability attrs
-          | eid `elem` exhaustedEnemies && isNothing (assetEnemy attrs)
-          ]
-  getAbilities iid window (FishingNet x) = getAbilities iid window x
+instance HasAbilities env FishingNet where
+  getAbilities _ _ (FishingNet x) = pure
+    [restrictedAbility x 1 restriction $ FastAbility Free]
+   where
+    restriction = case assetEnemy x of
+      Just _ -> Never
+      Nothing -> OwnsThis <> EnemyExists
+        (ExhaustedEnemy <> EnemyAt YourLocation <> enemyIs Cards.theRougarou)
 
 instance AssetRunner env => RunMessage env FishingNet where
   runMessage msg a@(FishingNet attrs@AssetAttrs {..}) = case msg of

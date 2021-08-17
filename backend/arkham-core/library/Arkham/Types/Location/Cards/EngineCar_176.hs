@@ -14,7 +14,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (RevealLocation)
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query

@@ -12,7 +12,6 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Skill.Attrs
-import Arkham.Types.Skill.Runner
 import Arkham.Types.SkillTest
 import Arkham.Types.Target
 
@@ -26,7 +25,6 @@ theHomeFront = skill TheHomeFront Cards.theHomeFront
 instance
   ( HasSkillTest env
   , HasCount DamageCount env InvestigatorId
-  , SkillRunner env
   )
   => RunMessage env TheHomeFront where
   runMessage msg s@(TheHomeFront attrs@SkillAttrs {..}) = case msg of

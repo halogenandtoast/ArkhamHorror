@@ -16,10 +16,11 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype StMarysHospital = StMarysHospital LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stMarysHospital :: LocationCard StMarysHospital
@@ -31,8 +32,6 @@ stMarysHospital = location
   Plus
   [Diamond, Square]
 
-instance HasModifiersFor env StMarysHospital
-
 ability :: LocationAttrs -> Ability
 ability attrs =
   (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
@@ -40,10 +39,11 @@ ability attrs =
     }
 
 instance ActionRunner env => HasAbilities env StMarysHospital where
-  getAbilities iid NonFast (StMarysHospital attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs
-    $ pure [locationAbility (ability attrs)]
-  getAbilities iid window (StMarysHospital attrs) = getAbilities iid window attrs
+  getAbilities iid window@(Window Timing.When NonFast) (StMarysHospital attrs@LocationAttrs {..})
+    | locationRevealed
+    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
+  getAbilities iid window (StMarysHospital attrs) =
+    getAbilities iid window attrs
 
 instance (LocationRunner env) => RunMessage env StMarysHospital where
   runMessage msg l@(StMarysHospital attrs) = case msg of

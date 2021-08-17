@@ -12,7 +12,6 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
-import Arkham.Types.Treachery.Runner
 
 newtype GraspingHands = GraspingHands TreacheryAttrs
   deriving anyclass IsTreachery
@@ -26,7 +25,7 @@ instance HasModifiersFor env GraspingHands
 instance HasAbilities env GraspingHands where
   getAbilities i window (GraspingHands attrs) = getAbilities i window attrs
 
-instance TreacheryRunner env => RunMessage env GraspingHands where
+instance RunMessage env GraspingHands where
   runMessage msg t@(GraspingHands attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RevelationSkillTest iid source SkillAgility 3

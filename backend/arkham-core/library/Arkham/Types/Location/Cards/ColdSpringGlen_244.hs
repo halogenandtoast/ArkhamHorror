@@ -19,6 +19,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
@@ -48,8 +49,8 @@ ability attrs =
     & (abilityLimitL .~ GroupLimit PerGame 1)
 
 instance ActionRunner env => HasAbilities env ColdSpringGlen_244 where
-  getAbilities iid FastPlayerWindow (ColdSpringGlen_244 attrs) =
-    withBaseActions iid FastPlayerWindow attrs $ do
+  getAbilities iid window@(Window Timing.When FastPlayerWindow) (ColdSpringGlen_244 attrs)
+    = withBaseActions iid window attrs $ do
       investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
       pure

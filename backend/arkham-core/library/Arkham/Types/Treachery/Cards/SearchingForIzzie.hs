@@ -16,6 +16,7 @@ import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 import Arkham.Types.Window
@@ -30,7 +31,7 @@ searchingForIzzie = treachery SearchingForIzzie Cards.searchingForIzzie
 instance HasModifiersFor env SearchingForIzzie
 
 instance ActionRunner env => HasAbilities env SearchingForIzzie where
-  getAbilities iid NonFast (SearchingForIzzie attrs) = do
+  getAbilities iid (Window Timing.When NonFast) (SearchingForIzzie attrs) = do
     investigatorLocationId <- getId @LocationId iid
     pure
       [ mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 2

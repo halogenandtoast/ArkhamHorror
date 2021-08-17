@@ -9,56 +9,42 @@ import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype InTheKnow1 = InTheKnow1 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 inTheKnow1 :: AssetCard InTheKnow1
 inTheKnow1 = asset InTheKnow1 Cards.inTheKnow1
 
 instance HasAbilities env InTheKnow1 where
-  getAbilities iid NonFast (InTheKnow1 attrs) | ownedBy attrs iid = pure
-    [ mkAbility attrs 1
+  getAbilities _ _ (InTheKnow1 attrs) = pure
+    [ restrictedAbility attrs 1 OwnsThis
       $ ActionAbility (Just Action.Investigate)
       $ ActionCost 1
       <> UseCost (toId attrs) Secret 1
     ]
-  getAbilities iid window (InTheKnow1 attrs) = getAbilities iid window attrs
 
-instance HasModifiersFor env InTheKnow1
-
--- investigate is 101
-investigateAction :: [Ability] -> Maybe Ability
-investigateAction = find ((== 101) . abilityIndex)
-
-instance
-  ( Query LocationMatcher env
-  , HasAbilities env LocationId
-  , HasId LocationId env InvestigatorId
-  , HasQueue env
-  , HasModifiersFor env ()
-  )
-  => RunMessage env InTheKnow1 where
+instance AssetRunner env => RunMessage env InTheKnow1 where
   runMessage msg a@(InTheKnow1 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       investigatorLocation <- getId @LocationId iid
       locations <- selectList $ RevealedLocation <> InvestigatableLocation
-      locationsWithActions <- traverse
-        (traverseToSnd $ getAbilities iid NonFast)
+      locationsWithInvestigate <- concat <$> for
         locations
-      let
-        locationsWithInvestigateActions = mapMaybe
-          (\(lid, actions) -> (lid, ) <$> investigateAction actions)
-          locationsWithActions
+        \lid -> do
+          investigateActions <-
+            selectList $ ActionOnLocation lid <> ActionIs Action.Investigate
+          pure $ map (lid, ) investigateActions
       a <$ push
         (chooseOne
           iid
@@ -68,7 +54,7 @@ instance
               , UseAbility iid investigate
               , SetLocationAsIf iid investigatorLocation
               ]
-          | (location, investigate) <- locationsWithInvestigateActions
+          | (location, investigate) <- locationsWithInvestigate
           ]
         )
     _ -> InTheKnow1 <$> runMessage msg attrs

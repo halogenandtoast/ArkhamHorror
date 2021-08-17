@@ -10,18 +10,19 @@ import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import qualified Arkham.Types.Asset.Uses as Resource
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype LightningGun5 = LightningGun5 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lightningGun5 :: AssetCard LightningGun5
@@ -29,16 +30,13 @@ lightningGun5 =
   assetWith LightningGun5 Cards.lightningGun5 (slotsL .~ [HandSlot, HandSlot])
 
 instance HasAbilities env LightningGun5 where
-  getAbilities iid NonFast (LightningGun5 a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility
+  getAbilities _ _ (LightningGun5 a) = pure
+    [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Resource.Ammo 1])
     ]
-  getAbilities _ _ _ = pure []
 
-instance HasModifiersFor env LightningGun5
-
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env LightningGun5 where
+instance AssetRunner env => RunMessage env LightningGun5 where
   runMessage msg (LightningGun5 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       pushAll

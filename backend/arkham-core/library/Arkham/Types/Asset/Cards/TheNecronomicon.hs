@@ -10,14 +10,15 @@ import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Source
 import Arkham.Types.Target
 import qualified Arkham.Types.Token as Token
-import Arkham.Types.Window
 
 newtype TheNecronomicon = TheNecronomicon AssetAttrs
   deriving anyclass IsAsset
@@ -39,11 +40,11 @@ instance HasModifiersFor env TheNecronomicon where
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities env TheNecronomicon where
-  getAbilities iid NonFast (TheNecronomicon a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1
-    | fromJustNote "Must be set" (assetHorror a) > 0
+  getAbilities _ _ (TheNecronomicon a) = pure
+    [ restrictedAbility a 1 (OwnsThis <> AnyHorrorOnThis)
+      $ ActionAbility Nothing
+      $ ActionCost 1
     ]
-  getAbilities _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env TheNecronomicon where
   runMessage msg a@(TheNecronomicon attrs) = case msg of

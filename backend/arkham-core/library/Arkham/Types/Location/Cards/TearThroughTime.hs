@@ -13,10 +13,11 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype TearThroughTime = TearThroughTime LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tearThroughTime :: LocationCard TearThroughTime
@@ -28,12 +29,11 @@ tearThroughTime = location
   Moon
   [Circle, Plus, Squiggle]
 
-instance HasModifiersFor env TearThroughTime
-
 instance ActionRunner env => HasAbilities env TearThroughTime where
-  getAbilities iid NonFast (TearThroughTime attrs) =
-    withBaseActions iid NonFast attrs $ pure [resignAction attrs]
-  getAbilities iid window (TearThroughTime attrs) = getAbilities iid window attrs
+  getAbilities iid window@(Window Timing.When NonFast) (TearThroughTime attrs)
+    = withBaseActions iid window attrs $ pure [resignAction attrs]
+  getAbilities iid window (TearThroughTime attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env TearThroughTime where
   runMessage msg (TearThroughTime attrs) =

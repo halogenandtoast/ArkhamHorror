@@ -7,14 +7,17 @@ import Arkham.Prelude
 
 import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 newtype CoverUp = CoverUp TreacheryAttrs
   deriving anyclass IsTreachery
@@ -30,8 +33,9 @@ coverUpClues TreacheryAttrs { treacheryClues } =
 instance HasModifiersFor env CoverUp
 
 instance ActionRunner env => HasAbilities env CoverUp where
-  getAbilities iid (WhenDiscoverClues who lid n) (CoverUp a) | iid == who =
-    withTreacheryInvestigator a $ \tormented -> do
+  getAbilities iid (Window Timing.When (Window.DiscoverClues who lid n)) (CoverUp a)
+    | iid == who
+    = withTreacheryInvestigator a $ \tormented -> do
       treacheryLocationId <- getId @LocationId tormented
       pure
         [ mkAbility a 1 $ LegacyReactionAbility Free

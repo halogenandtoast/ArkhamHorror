@@ -16,10 +16,11 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype OvergrownCairns = OvergrownCairns LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 overgrownCairns :: LocationCard OvergrownCairns
@@ -31,8 +32,6 @@ overgrownCairns = location
   Equals
   [Hourglass, Equals]
 
-instance HasModifiersFor env OvergrownCairns
-
 ability :: LocationAttrs -> Ability
 ability attrs = base { abilityLimit = PlayerLimit PerGame 1 }
  where
@@ -42,9 +41,9 @@ ability attrs = base { abilityLimit = PlayerLimit PerGame 1 }
     (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
 
 instance ActionRunner env => HasAbilities env OvergrownCairns where
-  getAbilities iid NonFast (OvergrownCairns attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs
-    $ pure [locationAbility (ability attrs)]
+  getAbilities iid window@(Window Timing.When NonFast) (OvergrownCairns attrs@LocationAttrs {..})
+    | locationRevealed
+    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities i window (OvergrownCairns attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env OvergrownCairns where

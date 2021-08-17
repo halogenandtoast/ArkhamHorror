@@ -31,7 +31,10 @@ type InnerInvestigatorRunner env
     , Query AssetMatcher env
     , Query InvestigatorMatcher env
     , HasList SlotType env AssetId
-    , (HasAbilities env (), HasAbilities env AssetId, HasAbilities env ActionType)
+    , ( HasAbilities env ()
+      , HasAbilities env AssetId
+      , HasAbilities env ActionType
+      )
     , ( HasCount ActionTakenCount env InvestigatorId
       , HasCount ActionRemainingCount env InvestigatorId
       , HasCount
@@ -92,7 +95,6 @@ type InnerInvestigatorRunner env
     , HasModifiersFor env ()
     , (HasName env AssetId, HasName env LocationId)
     , HasPlayerCard env AssetId
-    , HasQueue env
     , HasRecord env
     , ( ( HasSet AccessibleLocationId env LocationId
         , HasSet ActId env TreacheryCardCode

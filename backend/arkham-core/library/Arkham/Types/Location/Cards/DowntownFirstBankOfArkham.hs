@@ -16,10 +16,11 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype DowntownFirstBankOfArkham = DowntownFirstBankOfArkham LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 downtownFirstBankOfArkham :: LocationCard DowntownFirstBankOfArkham
@@ -31,8 +32,6 @@ downtownFirstBankOfArkham = location
   Triangle
   [Moon, T]
 
-instance HasModifiersFor env DowntownFirstBankOfArkham
-
 ability :: LocationAttrs -> Ability
 ability attrs =
   (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
@@ -40,8 +39,9 @@ ability attrs =
     }
 
 instance ActionRunner env => HasAbilities env DowntownFirstBankOfArkham where
-  getAbilities iid NonFast (DowntownFirstBankOfArkham attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs $ do
+  getAbilities iid window@(Window Timing.When NonFast) (DowntownFirstBankOfArkham attrs@LocationAttrs {..})
+    | locationRevealed
+    = withBaseActions iid window attrs $ do
       canGainResources <-
         notElem CannotGainResources
           <$> getInvestigatorModifiers iid (toSource attrs)

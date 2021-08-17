@@ -10,36 +10,30 @@ import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
+import Arkham.Types.Criteria
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Kukri = Kukri AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 kukri :: AssetCard Kukri
 kukri = hand Kukri Cards.kukri
 
 instance HasAbilities env Kukri where
-  getAbilities iid NonFast (Kukri a) | ownedBy a iid =
-    pure [mkAbility a 1 $ ActionAbility (Just Action.Fight) (ActionCost 1)]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (Kukri a) = pure
+    [ restrictedAbility a 1 OwnsThis
+        $ ActionAbility (Just Action.Fight) (ActionCost 1)
+    ]
 
-instance HasModifiersFor env Kukri
-
-instance
-  ( HasQueue env
-  , HasModifiersFor env ()
-  , HasCount ActionRemainingCount env InvestigatorId
-  )
-  => RunMessage env Kukri where
+instance AssetRunner env => RunMessage env Kukri where
   runMessage msg a@(Kukri attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier

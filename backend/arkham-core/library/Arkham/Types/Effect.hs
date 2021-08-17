@@ -141,6 +141,7 @@ instance
   , HasList DiscardedPlayerCard env InvestigatorId
   , HasCount ActionRemainingCount env InvestigatorId
   , HasSet ClassSymbol env InvestigatorId
+  , Query InvestigatorMatcher env
   )
   => RunMessage env Effect where
   runMessage = genericRunMessage

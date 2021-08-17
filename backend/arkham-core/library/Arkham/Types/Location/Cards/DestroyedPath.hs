@@ -15,14 +15,15 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
+import Arkham.Types.Message hiding (RevealLocation)
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Window hiding (SuccessfulInvestigation)
 
 newtype DestroyedPath = DestroyedPath LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 destroyedPath :: LocationCard DestroyedPath
@@ -37,10 +38,8 @@ destroyedPath = locationWith
   . (revealedConnectedSymbolsL .~ setFromList [Triangle, Equals])
   )
 
-instance HasModifiersFor env DestroyedPath
-
 forcedAbility :: LocationAttrs -> Ability
-forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
+forcedAbility a = mkAbility (toSource a) 1 LegacyForcedAbility
 
 investigateAbility :: LocationAttrs -> Ability
 investigateAbility a = mkAbility
@@ -49,11 +48,12 @@ investigateAbility a = mkAbility
   (ActionAbility (Just Action.Investigate) (ActionCost 1))
 
 instance ActionRunner env => HasAbilities env DestroyedPath where
-  getAbilities iid NonFast (DestroyedPath attrs) =
-    withBaseActions iid NonFast attrs
+  getAbilities iid window@(Window Timing.When NonFast) (DestroyedPath attrs) =
+    withBaseActions iid window attrs
       $ pure [locationAbility (investigateAbility attrs)]
-  getAbilities iid (AfterRevealLocation who) (DestroyedPath attrs) | iid == who =
-    do
+  getAbilities iid (Window Timing.After (RevealLocation who _)) (DestroyedPath attrs)
+    | iid == who
+    = do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid
       pure [ locationAbility (forcedAbility attrs) | actionRemainingCount == 0 ]
   getAbilities iid window (DestroyedPath attrs) = getAbilities iid window attrs

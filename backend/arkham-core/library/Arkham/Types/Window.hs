@@ -32,7 +32,7 @@ data WindowType
   | DealtHorror Source Target
   | Defeated Source
   | DiscoverClues InvestigatorId LocationId Int
-  | DiscoveringClues InvestigatorId LocationId -- name conflict resolution
+  | DiscoveringLastClue InvestigatorId LocationId
   | DrawCard InvestigatorId Card
   | DrawToken InvestigatorId Token
   | DrawingStartingHand InvestigatorId
@@ -40,7 +40,7 @@ data WindowType
   | EndTurn InvestigatorId
   | EnemyAttacks InvestigatorId EnemyId
   | EnemyDefeated InvestigatorId EnemyId
-  | EnemyEngageInvestigator InvestigatorId EnemyId
+  | EnemyEngaged InvestigatorId EnemyId
   | EnemyEvaded InvestigatorId EnemyId
   | EnemySpawns EnemyId LocationId
   | EnterPlay Target
@@ -61,14 +61,15 @@ data WindowType
   | PhaseEnds Phase
   | PlacedHorror InvestigatorId
   | PlayCard InvestigatorId Card
-  | PutLocationIntoPlay InvestigatorId
-  | RevealLocation InvestigatorId
+  | PutLocationIntoPlay InvestigatorId LocationId
+  | RevealLocation InvestigatorId LocationId
   | RevealToken InvestigatorId Token
   | RevealTokenWithNegativeModifier InvestigatorId Token
   | SkillTest SkillType
   | SuccessfulAttackEnemy InvestigatorId EnemyId
   | SuccessfulInvestigation InvestigatorId LocationId
   | TurnBegins InvestigatorId
+  | TurnEnds InvestigatorId
   | WouldDrawEncounterCard InvestigatorId
   | WouldFailSkillTest InvestigatorId
   | WouldLeave InvestigatorId LocationId

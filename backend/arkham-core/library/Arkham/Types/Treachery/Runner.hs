@@ -14,8 +14,7 @@ import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
 
 type TreacheryRunner env
-  = ( HasQueue env
-    , HasHistory env
+  = ( HasHistory env
     , Query AssetMatcher env
     , HasCount ActsRemainingCount env ()
     , HasCount CardCount env InvestigatorId

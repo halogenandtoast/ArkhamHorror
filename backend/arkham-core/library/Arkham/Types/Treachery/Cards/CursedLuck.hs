@@ -13,7 +13,6 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
-import Arkham.Types.Treachery.Runner
 
 newtype CursedLuck = CursedLuck TreacheryAttrs
   deriving anyclass IsTreachery
@@ -32,7 +31,7 @@ instance HasModifiersFor env CursedLuck where
 instance HasAbilities env CursedLuck where
   getAbilities i window (CursedLuck attrs) = getAbilities i window attrs
 
-instance TreacheryRunner env => RunMessage env CursedLuck where
+instance RunMessage env CursedLuck where
   runMessage msg t@(CursedLuck attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))

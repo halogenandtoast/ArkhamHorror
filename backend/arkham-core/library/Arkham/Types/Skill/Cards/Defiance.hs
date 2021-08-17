@@ -11,7 +11,6 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Skill.Attrs
-import Arkham.Types.Skill.Runner
 import Arkham.Types.Target
 import Arkham.Types.Token
 
@@ -22,7 +21,7 @@ newtype Defiance = Defiance SkillAttrs
 defiance :: SkillCard Defiance
 defiance = skill Defiance Cards.defiance
 
-instance SkillRunner env => RunMessage env Defiance where
+instance RunMessage env Defiance where
   runMessage msg s@(Defiance attrs) = case msg of
     BeforeRevealTokens -> do
       s <$ push

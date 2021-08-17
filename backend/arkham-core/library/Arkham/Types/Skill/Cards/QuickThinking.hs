@@ -10,7 +10,6 @@ import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Skill.Attrs
-import Arkham.Types.Skill.Runner
 import Arkham.Types.Target
 
 newtype QuickThinking = QuickThinking SkillAttrs
@@ -20,7 +19,7 @@ newtype QuickThinking = QuickThinking SkillAttrs
 quickThinking :: SkillCard QuickThinking
 quickThinking = skill QuickThinking Cards.quickThinking
 
-instance SkillRunner env => RunMessage env QuickThinking where
+instance RunMessage env QuickThinking where
   runMessage msg s@(QuickThinking attrs) = case msg of
     PassedSkillTest iid _ _ SkillTestInitiatorTarget{} _ n | n >= 2 -> s <$ push
       (chooseOne

@@ -6,6 +6,7 @@ module Arkham.Types.Event.Cards.ThePaintedWorld
 import Arkham.Prelude
 
 import qualified Arkham.Event.Cards as Cards
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Game.Helpers
@@ -13,6 +14,7 @@ import Arkham.Types.Matcher hiding (DuringTurn)
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype ThePaintedWorld = ThePaintedWorld EventAttrs
@@ -26,7 +28,11 @@ instance CanCheckPlayable env => RunMessage env ThePaintedWorld where
   runMessage msg e@(ThePaintedWorld attrs) = case msg of
     InvestigatorPlayEvent iid eid _ windows | eid == toId attrs -> do
       playableCards <-
-        filterM (getIsPlayable iid (toSource attrs) $ DuringTurn iid : windows)
+        filterM
+            (getIsPlayable iid (toSource attrs)
+            $ Window Timing.When (DuringTurn iid)
+            : windows
+            )
           =<< getList
                 (BasicCardMatch (NonExceptional <> EventCard)
                 <> CardIsBeneathInvestigator You

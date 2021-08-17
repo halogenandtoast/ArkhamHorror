@@ -12,12 +12,13 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
+import Arkham.Types.Message hiding (RevealLocation)
 import Arkham.Types.Query
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype ATearInThePath = ATearInThePath LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aTearInThePath :: LocationCard ATearInThePath
@@ -32,17 +33,17 @@ aTearInThePath = locationWith
   . (revealedConnectedSymbolsL .~ setFromList [Square, Squiggle])
   )
 
-instance HasModifiersFor env ATearInThePath
-
 forcedAbility :: LocationAttrs -> Ability
-forcedAbility a = mkAbility (toSource a) 1 ForcedAbility
+forcedAbility a = mkAbility (toSource a) 1 LegacyForcedAbility
 
 instance ActionRunner env => HasAbilities env ATearInThePath where
-  getAbilities iid (AfterRevealLocation who) (ATearInThePath attrs) | iid == who =
-    do
+  getAbilities iid (Window Timing.After (RevealLocation who _)) (ATearInThePath attrs)
+    | iid == who
+    = do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid
       pure [ locationAbility (forcedAbility attrs) | actionRemainingCount == 0 ]
-  getAbilities iid window (ATearInThePath attrs) = getAbilities iid window attrs
+  getAbilities iid window (ATearInThePath attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env ATearInThePath where
   runMessage msg l@(ATearInThePath attrs) = case msg of

@@ -59,6 +59,7 @@ data Payment
   | UsesPayment Int
   | HorrorPayment Int
   | DamagePayment Int
+  | DirectDamagePayment Int
   | SkillIconPayment [SkillType]
   | Payments [Payment]
   | NoPayment
@@ -76,6 +77,7 @@ data Cost
   | RemoveCost Target
   | Costs [Cost]
   | DamageCost Source Target Int
+  | DirectDamageCost Source InvestigatorMatcher Int
   | DiscardCost Target
   | DiscardCardCost Card
   | DoomCost Source Target Int
@@ -88,7 +90,7 @@ data Cost
   | UseCost AssetId UseType Int
   | UpTo Int Cost
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
 
 instance Semigroup Cost where
   Free <> a = a

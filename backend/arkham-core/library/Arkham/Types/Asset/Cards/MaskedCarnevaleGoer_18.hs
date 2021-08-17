@@ -10,6 +10,7 @@ import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
@@ -17,43 +18,31 @@ import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Id
 import Arkham.Types.Message
-import Arkham.Types.Query
 import Arkham.Types.Source
-import Arkham.Types.Window
 
 newtype MaskedCarnevaleGoer_18 = MaskedCarnevaleGoer_18 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, TargetEntity)
 
 maskedCarnevaleGoer_18 :: AssetCard MaskedCarnevaleGoer_18
 maskedCarnevaleGoer_18 =
   asset MaskedCarnevaleGoer_18 Cards.maskedCarnevaleGoer_18
 
-ability :: AssetAttrs -> Ability
-ability attrs =
-  (mkAbility attrs 1 (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1]))
-    { abilityCriteria = OnLocation <$> assetLocation attrs
-    }
-
 instance HasAbilities env MaskedCarnevaleGoer_18 where
-  getAbilities _ NonFast (MaskedCarnevaleGoer_18 attrs) = pure [ability attrs]
-  getAbilities iid window (MaskedCarnevaleGoer_18 attrs) =
-    getAbilities iid window attrs
-
-instance HasModifiersFor env MaskedCarnevaleGoer_18
+  getAbilities _ _ (MaskedCarnevaleGoer_18 x) = pure
+    [ restrictedAbility
+        x
+        1
+        OnSameLocation
+        (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1])
+    ]
 
 locationOf :: AssetAttrs -> LocationId
 locationOf AssetAttrs { assetLocation } = case assetLocation of
   Just lid -> lid
   Nothing -> error "impossible"
 
-instance
-  ( HasSet InvestigatorId env LocationId
-  , HasQueue env
-  , HasModifiersFor env ()
-  , HasId LeadInvestigatorId env ()
-  )
-  => RunMessage env MaskedCarnevaleGoer_18 where
+instance AssetRunner env => RunMessage env MaskedCarnevaleGoer_18 where
   runMessage msg a@(MaskedCarnevaleGoer_18 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       let

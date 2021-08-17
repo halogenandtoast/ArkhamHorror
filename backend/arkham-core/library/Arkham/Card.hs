@@ -4,7 +4,8 @@ import Arkham.Prelude
 
 import Arkham.EncounterCard
 import Arkham.PlayerCard
-import Arkham.Types.Card
+import {-# SOURCE #-} Arkham.Types.Card
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard

@@ -7,12 +7,13 @@ import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Slot
 
 newtype RelicHunter3 = RelicHunter3 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 relicHunter3 :: AssetCard RelicHunter3
@@ -21,12 +22,10 @@ relicHunter3 = asset RelicHunter3 Cards.relicHunter3
 instance HasAbilities env RelicHunter3 where
   getAbilities iid window (RelicHunter3 attrs) = getAbilities iid window attrs
 
-instance HasModifiersFor env RelicHunter3
-
 slot :: AssetAttrs -> Slot
 slot attrs = Slot (toSource attrs) Nothing
 
-instance HasModifiersFor env () => RunMessage env RelicHunter3 where
+instance AssetRunner env => RunMessage env RelicHunter3 where
   runMessage msg (RelicHunter3 attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       push $ AddSlot iid AccessorySlot (slot attrs)

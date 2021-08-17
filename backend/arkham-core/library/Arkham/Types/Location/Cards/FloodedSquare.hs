@@ -20,10 +20,11 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Matcher hiding (EnemyEvaded)
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Window hiding (EnemyEvaded)
 
 newtype FloodedSquare = FloodedSquare LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 floodedSquare :: LocationCard FloodedSquare
@@ -36,14 +37,12 @@ floodedSquare = locationWith
   []
   (connectsToL .~ singleton RightOf)
 
-instance HasModifiersFor env FloodedSquare
-
 ability :: LocationAttrs -> Ability
 ability a = mkAbility a 1 (ActionAbility Nothing $ ActionCost 1)
 
 instance ActionRunner env => HasAbilities env FloodedSquare where
-  getAbilities iid NonFast (FloodedSquare attrs) =
-    withBaseActions iid NonFast attrs $ do
+  getAbilities iid window@(Window Timing.When NonFast) (FloodedSquare attrs) =
+    withBaseActions iid window attrs $ do
       counterClockwiseLocation <- getCounterClockwiseLocation (toId attrs)
       nonEliteEnemies <- getSet @EnemyId $ EnemyMatchAll
         [NonEliteEnemy, EnemyAt $ LocationWithId counterClockwiseLocation]

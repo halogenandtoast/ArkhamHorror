@@ -16,10 +16,11 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype MiskatonicUniversityMiskatonicMuseum = MiskatonicUniversityMiskatonicMuseum LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miskatonicUniversityMiskatonicMuseum
@@ -32,17 +33,15 @@ miskatonicUniversityMiskatonicMuseum = location
   Diamond
   [T, Plus, Circle, Square]
 
-instance HasModifiersFor env MiskatonicUniversityMiskatonicMuseum
-
 ability :: LocationAttrs -> Ability
 ability attrs = base { abilityLimit = PlayerLimit PerGame 1 }
  where
   base = mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
 
 instance ActionRunner env => HasAbilities env MiskatonicUniversityMiskatonicMuseum where
-  getAbilities iid NonFast (MiskatonicUniversityMiskatonicMuseum attrs@LocationAttrs {..})
+  getAbilities iid window@(Window Timing.When NonFast) (MiskatonicUniversityMiskatonicMuseum attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid NonFast attrs $ pure [locationAbility (ability attrs)]
+    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window (MiskatonicUniversityMiskatonicMuseum attrs) =
     getAbilities iid window attrs
 

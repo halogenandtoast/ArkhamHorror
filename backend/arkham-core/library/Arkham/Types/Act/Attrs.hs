@@ -119,8 +119,7 @@ instance HasAbilities env ActAttrs where
   getAbilities _ _ _ = pure []
 
 type ActAttrsRunner env
-  = ( HasQueue env
-    , HasSet InScenarioInvestigatorId env ()
+  = ( HasSet InScenarioInvestigatorId env ()
     , HasSet InvestigatorId env ()
     , HasCount PlayerCount env ()
     , HasId LeadInvestigatorId env ()

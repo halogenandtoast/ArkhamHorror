@@ -17,7 +17,8 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Resolution
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Window hiding (EnemyDefeated)
 
 newtype Cnidathqua = Cnidathqua EnemyAttrs
     deriving anyclass IsEnemy
@@ -37,8 +38,9 @@ instance HasModifiersFor env Cnidathqua where
   getModifiersFor _ _ _ = pure []
 
 instance EnemyAttrsHasAbilities env => HasAbilities env Cnidathqua where
-  getAbilities i (AfterFailAttackEnemy who eid) (Cnidathqua attrs)
-    | eid == toId attrs && i == who = pure [mkAbility attrs 1 ForcedAbility]
+  getAbilities i (Window Timing.After (FailAttackEnemy who eid)) (Cnidathqua attrs)
+    | eid == toId attrs && i == who
+    = pure [mkAbility attrs 1 LegacyForcedAbility]
   getAbilities i window (Cnidathqua attrs) = getAbilities i window attrs
 
 instance EnemyAttrsRunMessage env => RunMessage env Cnidathqua where

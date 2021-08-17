@@ -8,7 +8,6 @@ import Arkham.Types.AgendaId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
-import Arkham.Types.Exception
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
@@ -16,7 +15,6 @@ import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
 
 class IsTreachery a
@@ -109,34 +107,25 @@ treacheryOnLocation = treacheryOn . LocationTarget
 treacheryOnAgenda :: AgendaId -> TreacheryAttrs -> Bool
 treacheryOnAgenda = treacheryOn . AgendaTarget
 
-withTreacheryEnemy :: MonadIO m => TreacheryAttrs -> (EnemyId -> m a) -> m a
+withTreacheryEnemy :: TreacheryAttrs -> (EnemyId -> m a) -> m a
 withTreacheryEnemy attrs f = case treacheryAttachedTarget attrs of
   Just (EnemyTarget eid) -> f eid
-  _ -> throwIO
-    (InvalidState
-    $ tshow (cdName $ toCardDef attrs)
-    <> " must be attached to an enemy"
-    )
+  _ ->
+    error $ show (cdName $ toCardDef attrs) <> " must be attached to an enemy"
 
-withTreacheryLocation
-  :: MonadIO m => TreacheryAttrs -> (LocationId -> m a) -> m a
+withTreacheryLocation :: TreacheryAttrs -> (LocationId -> m a) -> m a
 withTreacheryLocation attrs f = case treacheryAttachedTarget attrs of
   Just (LocationTarget lid) -> f lid
-  _ -> throwIO
-    (InvalidState
-    $ tshow (cdName $ toCardDef attrs)
-    <> " must be attached to a location"
-    )
+  _ ->
+    error $ show (cdName $ toCardDef attrs) <> " must be attached to a location"
 
-withTreacheryInvestigator
-  :: MonadIO m => TreacheryAttrs -> (InvestigatorId -> m a) -> m a
+withTreacheryInvestigator :: TreacheryAttrs -> (InvestigatorId -> m a) -> m a
 withTreacheryInvestigator attrs f = case treacheryAttachedTarget attrs of
   Just (InvestigatorTarget iid) -> f iid
-  _ -> throwIO
-    (InvalidState
-    $ tshow (cdName $ toCardDef attrs)
-    <> " must be attached to an investigator"
-    )
+  _ ->
+    error
+      $ show (cdName $ toCardDef attrs)
+      <> " must be attached to an investigator"
 
 treachery
   :: (TreacheryAttrs -> a)
@@ -171,7 +160,7 @@ is (CardCodeTarget cardCode) t = cardCode == cdCardCode (toCardDef t)
 is (CardIdTarget cardId) t = cardId == unTreacheryId (treacheryId t)
 is _ _ = False
 
-instance TreacheryRunner env => RunMessage env TreacheryAttrs where
+instance RunMessage env TreacheryAttrs where
   runMessage msg a@TreacheryAttrs {..} = case msg of
     InvestigatorEliminated iid
       | InvestigatorTarget iid `elem` treacheryAttachedTarget -> a

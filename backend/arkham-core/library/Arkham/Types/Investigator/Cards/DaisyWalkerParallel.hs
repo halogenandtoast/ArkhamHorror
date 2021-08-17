@@ -19,6 +19,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -67,11 +68,11 @@ instance HasTokenValue env DaisyWalkerParallel where
     getTokenValue attrs iid token
 
 instance InvestigatorRunner env => HasAbilities env DaisyWalkerParallel where
-  getAbilities iid FastPlayerWindow (DaisyWalkerParallel attrs)
-    | iid == investigatorId attrs = withBaseActions iid FastPlayerWindow attrs
-    $ do
-        hasTomes <- (> 0) . unAssetCount <$> getCount (iid, [Tome])
-        pure [ ability attrs | hasTomes ]
+  getAbilities iid window@(Window Timing.When FastPlayerWindow) (DaisyWalkerParallel attrs)
+    | iid == investigatorId attrs
+    = withBaseActions iid window attrs $ do
+      hasTomes <- (> 0) . unAssetCount <$> getCount (iid, [Tome])
+      pure [ ability attrs | hasTomes ]
   getAbilities i window (DaisyWalkerParallel attrs) =
     getAbilities i window attrs
 
@@ -86,7 +87,9 @@ instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
           pairs' <-
             filter (notNull . snd)
               <$> traverse
-                    (\a -> (a, ) <$> getAbilities iid NonFast a)
+                    (\a ->
+                      (a, ) <$> getAbilities iid (Window Timing.When NonFast) a
+                    )
                     tomeAssets
           if null pairs'
             then pure i

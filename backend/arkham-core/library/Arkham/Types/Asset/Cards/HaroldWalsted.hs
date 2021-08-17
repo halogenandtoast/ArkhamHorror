@@ -9,6 +9,7 @@ import qualified Arkham.Asset.Cards as Cards
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Id
 import Arkham.Types.Message
@@ -44,7 +45,7 @@ instance
         [ SkillModifier SkillIntellect 2 | isMiskatonic && ownedBy attrs iid ]
   getModifiersFor _ _ _ = pure []
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env HaroldWalsted where
+instance AssetRunner env  => RunMessage env HaroldWalsted where
   runMessage msg a@(HaroldWalsted attrs) = case msg of
     Discard target | isTarget attrs target ->
       a <$ pushAll [AddToken Tablet, RemoveFromGame target]

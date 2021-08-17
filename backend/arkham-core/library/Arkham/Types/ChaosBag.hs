@@ -15,8 +15,10 @@ import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Source
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
-import Arkham.Types.Window
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 import Control.Monad.State
 
 isUndecided :: ChaosBagStepState -> Bool
@@ -180,7 +182,9 @@ decideFirstUndecided source miid strategy f = \case
   Undecided step -> case step of
     Draw ->
       ( f $ Undecided Draw
-      , [ CheckWindow iid [WhenWouldRevealChaosToken source iid]
+      , [ CheckWindow
+            iid
+            [Window Timing.When (Window.WouldRevealChaosToken source iid)]
         | iid <- maybeToList miid
         ]
       <> [NextChaosBagStep source miid strategy]
@@ -331,8 +335,10 @@ instance
         Resolved tokenFaces' -> do
           checkWindowMsgs <- case miid of
             Nothing -> pure []
-            Just iid ->
-              checkWindows [ WhenRevealToken iid token | token <- tokenFaces' ]
+            Just iid -> checkWindows
+              [ Window Timing.When (Window.RevealToken iid token)
+              | token <- tokenFaces'
+              ]
           c <$ pushAll
             (FocusTokens tokenFaces'
             : checkWindowMsgs

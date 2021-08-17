@@ -20,6 +20,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype PassengerCar_171 = PassengerCar_171 LocationAttrs
@@ -53,7 +54,12 @@ instance LocationRunner env => RunMessage env PassengerCar_171 where
   runMessage msg l@(PassengerCar_171 attrs@LocationAttrs {..}) = case msg of
     AfterEnterLocation iid lid | lid == locationId -> do
       let cost = SkillIconCost 1 (singleton SkillWild)
-      hasSkills <- getCanAffordCost iid (toSource attrs) Nothing [NonFast] cost
+      hasSkills <- getCanAffordCost
+        iid
+        (toSource attrs)
+        Nothing
+        [Window Timing.When NonFast]
+        cost
       l <$ if hasSkills
         then push
           (chooseOne

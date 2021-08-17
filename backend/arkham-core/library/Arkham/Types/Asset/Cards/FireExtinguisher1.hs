@@ -10,30 +10,27 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype FireExtinguisher1 = FireExtinguisher1 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 fireExtinguisher1 :: AssetCard FireExtinguisher1
 fireExtinguisher1 = hand FireExtinguisher1 Cards.fireExtinguisher1
 
-instance HasModifiersFor env FireExtinguisher1
-
 instance HasAbilities env FireExtinguisher1 where
-  getAbilities iid NonFast (FireExtinguisher1 a) | ownedBy a iid = do
-    pure
-      [ mkAbility a 1 $ ActionAbility (Just Action.Fight) (ActionCost 1)
-      , mkAbility a 2 $ ActionAbility
-        (Just Action.Evade)
-        (Costs [ActionCost 1, ExileCost $ toTarget a])
-      ]
-  getAbilities i window (FireExtinguisher1 x) = getAbilities i window x
+  getAbilities _ _ (FireExtinguisher1 a) = pure
+    [ restrictedAbility a 1 OwnsThis
+      $ ActionAbility (Just Action.Fight) (ActionCost 1)
+    , restrictedAbility a 2 OwnsThis $ ActionAbility
+      (Just Action.Evade)
+      (Costs [ActionCost 1, ExileCost $ toTarget a])
+    ]
 
 instance (AssetRunner env) => RunMessage env FireExtinguisher1 where
   runMessage msg a@(FireExtinguisher1 attrs) = case msg of

@@ -15,17 +15,16 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype Northside = Northside LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 northside :: LocationCard Northside
 northside =
   location Northside Cards.northside 3 (PerPlayer 2) T [Diamond, Triangle]
-
-instance HasModifiersFor env Northside
 
 ability :: LocationAttrs -> Ability
 ability attrs = base { abilityLimit = GroupLimit PerGame 1 }
@@ -36,9 +35,9 @@ ability attrs = base { abilityLimit = GroupLimit PerGame 1 }
     (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 5])
 
 instance ActionRunner env => HasAbilities env Northside where
-  getAbilities iid NonFast (Northside attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs
-    $ pure [locationAbility (ability attrs)]
+  getAbilities iid window@(Window Timing.When NonFast) (Northside attrs@LocationAttrs {..})
+    | locationRevealed
+    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window (Northside attrs) = getAbilities iid window attrs
 
 instance (LocationRunner env) => RunMessage env Northside where

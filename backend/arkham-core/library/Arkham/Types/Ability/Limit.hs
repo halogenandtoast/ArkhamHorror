@@ -5,9 +5,13 @@ import Arkham.Prelude
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Trait
 
-data AbilityLimit = PerInvestigatorLimit InvestigatorId AbilityLimitType Int | PlayerLimit AbilityLimitType Int | GroupLimit AbilityLimitType Int | NoLimit
+data AbilityLimit
+  = PerInvestigatorLimit InvestigatorId AbilityLimitType Int
+  | PlayerLimit AbilityLimitType Int
+  | GroupLimit AbilityLimitType Int
+  | NoLimit
   deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
 
 abilityLimitType :: AbilityLimit -> Maybe AbilityLimitType
 abilityLimitType (PerInvestigatorLimit _ t _) = Just t
@@ -30,4 +34,4 @@ data AbilityLimitType
   | PerTestOrAbility
   | PerSearch (Maybe Trait)
   deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)

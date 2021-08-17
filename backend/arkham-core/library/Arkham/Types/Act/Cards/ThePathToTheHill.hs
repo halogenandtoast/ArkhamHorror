@@ -13,7 +13,7 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (RevealLocation)
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
@@ -34,7 +34,7 @@ instance ActionRunner env => HasAbilities env ThePathToTheHill where
     clueCount <- unSpendableClueCount <$> getCount ()
     requiredClueCount <- getPlayerCountValue (PerPlayer 2)
     if clueCount >= requiredClueCount
-      then pure [mkAbility x 1 ForcedAbility]
+      then pure [mkAbility x 1 LegacyForcedAbility]
       else getAbilities i window x
 
 instance ActRunner env => RunMessage env ThePathToTheHill where

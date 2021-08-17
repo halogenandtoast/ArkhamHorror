@@ -11,26 +11,23 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype OldBookOfLore = OldBookOfLore AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 oldBookOfLore :: AssetCard OldBookOfLore
 oldBookOfLore = hand OldBookOfLore Cards.oldBookOfLore
 
-instance HasModifiersFor env OldBookOfLore
-
 instance HasAbilities env OldBookOfLore where
-  getAbilities iid NonFast (OldBookOfLore a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility Nothing $ Costs
+  getAbilities _ _ (OldBookOfLore a) = pure
+    [ restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ Costs
         [ActionCost 1, ExhaustCost $ toTarget a]
     ]
-  getAbilities _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env OldBookOfLore where
   runMessage msg a@(OldBookOfLore attrs) = case msg of

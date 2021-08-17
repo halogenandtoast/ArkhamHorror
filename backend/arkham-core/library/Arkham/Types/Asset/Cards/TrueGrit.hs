@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
@@ -35,5 +36,5 @@ instance (HasId LocationId env InvestigatorId) => HasModifiersFor env TrueGrit w
         ]
   getModifiersFor _ _ _ = pure []
 
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env TrueGrit where
+instance AssetRunner env => RunMessage env TrueGrit where
   runMessage msg (TrueGrit attrs) = TrueGrit <$> runMessage msg attrs

@@ -20,6 +20,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype WhateleyRuins_251 = WhateleyRuins_251 LocationAttrs
@@ -47,8 +48,9 @@ ability attrs =
   mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
 
 instance ActionRunner env => HasAbilities env WhateleyRuins_251 where
-  getAbilities iid NonFast (WhateleyRuins_251 attrs) | locationRevealed attrs =
-    withBaseActions iid NonFast attrs $ pure [locationAbility (ability attrs)]
+  getAbilities iid window@(Window Timing.When NonFast) (WhateleyRuins_251 attrs)
+    | locationRevealed attrs = withBaseActions iid window attrs
+    $ pure [locationAbility (ability attrs)]
   getAbilities i window (WhateleyRuins_251 attrs) = getAbilities i window attrs
 
 instance LocationRunner env => RunMessage env WhateleyRuins_251 where

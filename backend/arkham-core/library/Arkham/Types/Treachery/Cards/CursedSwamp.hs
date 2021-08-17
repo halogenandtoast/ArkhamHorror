@@ -16,7 +16,6 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
-import Arkham.Types.Treachery.Runner
 
 newtype CursedSwamp = CursedSwamp TreacheryAttrs
   deriving anyclass IsTreachery
@@ -41,7 +40,7 @@ instance
 instance HasAbilities env CursedSwamp where
   getAbilities i window (CursedSwamp attrs) = getAbilities i window attrs
 
-instance TreacheryRunner env => RunMessage env CursedSwamp where
+instance RunMessage env CursedSwamp where
   runMessage msg t@(CursedSwamp attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RevelationSkillTest iid source SkillWillpower 3

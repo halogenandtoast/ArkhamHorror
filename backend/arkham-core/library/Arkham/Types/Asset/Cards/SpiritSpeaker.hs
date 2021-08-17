@@ -8,42 +8,33 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
+import Arkham.Types.Criteria
 import Arkham.Types.Matcher hiding (FastPlayerWindow)
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype SpiritSpeaker = SpiritSpeaker AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 spiritSpeaker :: AssetCard SpiritSpeaker
 spiritSpeaker = asset SpiritSpeaker Cards.spiritSpeaker
 
-instance Query AssetMatcher env => HasAbilities env SpiritSpeaker where
-  getAbilities iid FastPlayerWindow (SpiritSpeaker attrs) | ownedBy attrs iid =
-    do
-      targets <- select (AssetOwnedBy You <> AssetWithUseType Charge)
-      pure
-        [ mkAbility attrs 1 $ FastAbility $ ExhaustCost (toTarget attrs)
-        | notNull targets
-        ]
-  getAbilities iid window (SpiritSpeaker attrs) = getAbilities iid window attrs
+instance HasAbilities env SpiritSpeaker where
+  getAbilities _ _ (SpiritSpeaker attrs) = pure
+    [ restrictedAbility
+        attrs
+        1
+        (OwnsThis <> AssetExists (AssetOwnedBy You <> AssetWithUseType Charge))
+        (FastAbility $ ExhaustCost $ toTarget attrs)
+    ]
 
-instance HasModifiersFor env SpiritSpeaker
-
-instance
-  ( HasCount UsesCount env AssetId
-  , Query AssetMatcher env
-  , HasQueue env
-  , HasModifiersFor env ()
-  )
-  => RunMessage env SpiritSpeaker where
+instance AssetRunner env => RunMessage env SpiritSpeaker where
   runMessage msg a@(SpiritSpeaker attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       assetIds <- selectList (AssetOwnedBy You <> AssetWithUseType Charge)

@@ -12,30 +12,27 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype PhysicalTraining2 = PhysicalTraining2 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 physicalTraining2 :: AssetCard PhysicalTraining2
 physicalTraining2 = asset PhysicalTraining2 Cards.physicalTraining2
 
-instance HasModifiersFor env PhysicalTraining2
-
-ability :: Int -> AssetAttrs -> Ability
-ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)
-
 instance HasAbilities env PhysicalTraining2 where
-  getAbilities iid (WhenSkillTest SkillWillpower) (PhysicalTraining2 a) =
-    pure [ ability 1 a | ownedBy a iid ]
-  getAbilities iid (WhenSkillTest SkillCombat) (PhysicalTraining2 a) =
-    pure [ ability 2 a | ownedBy a iid ]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (PhysicalTraining2 a) = pure
+    [ restrictedAbility a idx (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ FastAbility
+      $ ResourceCost 1
+    | idx <- [1, 2]
+    ]
 
 instance (AssetRunner env) => RunMessage env PhysicalTraining2 where
   runMessage msg a@(PhysicalTraining2 attrs) = case msg of

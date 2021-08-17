@@ -13,14 +13,15 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Duke = Duke AssetAttrs
   deriving anyclass IsAsset
@@ -38,29 +39,26 @@ instance HasModifiersFor env Duke where
     = pure $ toModifiers a [BaseSkillOf SkillIntellect 4]
   getModifiersFor _ _ _ = pure []
 
-fightAbility :: AssetAttrs -> Ability
-fightAbility attrs = mkAbility
-  (toSource attrs)
-  1
-  (ActionAbility
-    (Just Action.Fight)
-    (Costs [ActionCost 1, ExhaustCost (toTarget attrs)])
-  )
-
-investigateAbility :: AssetAttrs -> Ability
-investigateAbility attrs = mkAbility
-  (toSource attrs)
-  2
-  (ActionAbilityWithBefore
-    (Just Action.Investigate)
-    (Just Action.Move)
-    (Costs [ActionCost 1, ExhaustCost (toTarget attrs)])
-  )
-
 instance HasAbilities env Duke where
-  getAbilities iid NonFast (Duke a) | ownedBy a iid =
-    pure [fightAbility a, investigateAbility a]
-  getAbilities i window (Duke x) = getAbilities i window x
+  getAbilities _ _ (Duke a) = pure
+    [ restrictedAbility
+      a
+      1
+      OwnsThis
+      (ActionAbility
+        (Just Action.Fight)
+        (Costs [ActionCost 1, ExhaustCost $ toTarget a])
+      )
+    , restrictedAbility
+      a
+      2
+      OwnsThis
+      (ActionAbilityWithBefore
+        (Just Action.Investigate)
+        (Just Action.Move)
+        (Costs [ActionCost 1, ExhaustCost $ toTarget a])
+      )
+    ]
 
 dukeInvestigate :: AssetAttrs -> InvestigatorId -> LocationId -> Message
 dukeInvestigate attrs iid lid =
@@ -86,7 +84,7 @@ instance AssetRunner env => RunMessage env Duke where
               (pure $ isInvestigate a')
               (getCanAffordAbility iid a')
             )
-          =<< getAbilities iid NonFast lid
+          =<< selectList (ActionOnLocation lid)
       let
         investigateActions :: [Message] = map
           (UseAbility iid . (`applyAbilityModifiers` [ActionCostModifier (-1)]))

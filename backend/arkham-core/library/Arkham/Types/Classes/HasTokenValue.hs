@@ -10,7 +10,7 @@ import Arkham.Types.Token
 import GHC.Generics
 
 class HasTokenValue1 env f where
-  getTokenValue1 :: (MonadReader env m, MonadIO m) => f p -> InvestigatorId -> TokenFace -> m TokenValue
+  getTokenValue1 :: (MonadReader env m) => f p -> InvestigatorId -> TokenFace -> m TokenValue
 
 instance (HasTokenValue1 env f) => HasTokenValue1 env (M1 i c f) where
   getTokenValue1 (M1 x) iid token = getTokenValue1 x iid token
@@ -23,12 +23,12 @@ instance (HasTokenValue env p) => HasTokenValue1 env (K1 R p) where
   getTokenValue1 (K1 x) iid token = getTokenValue x iid token
 
 class HasTokenValue env a where
-  getTokenValue :: (MonadReader env m, MonadIO m) => a -> InvestigatorId -> TokenFace -> m TokenValue
-  default getTokenValue :: (Generic a, HasTokenValue1 env (Rep a), MonadReader env m, MonadIO m) => a -> InvestigatorId -> TokenFace -> m TokenValue
+  getTokenValue :: (MonadReader env m) => a -> InvestigatorId -> TokenFace -> m TokenValue
+  default getTokenValue :: (Generic a, HasTokenValue1 env (Rep a), MonadReader env m) => a -> InvestigatorId -> TokenFace -> m TokenValue
   getTokenValue = defaultGetTokenValue
 
 defaultGetTokenValue
-  :: (Generic a, HasTokenValue1 env (Rep a), MonadReader env m, MonadIO m)
+  :: (Generic a, HasTokenValue1 env (Rep a), MonadReader env m)
   => a
   -> InvestigatorId
   -> TokenFace

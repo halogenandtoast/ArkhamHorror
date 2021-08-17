@@ -16,6 +16,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype HermanCollins = HermanCollins EnemyAttrs
@@ -33,8 +34,8 @@ hermanCollins = enemyWith
 instance HasModifiersFor env HermanCollins
 
 instance ActionRunner env => HasAbilities env HermanCollins where
-  getAbilities iid NonFast (HermanCollins attrs@EnemyAttrs {..}) =
-    withBaseActions iid NonFast attrs $ do
+  getAbilities iid window@(Window Timing.When NonFast) (HermanCollins attrs@EnemyAttrs {..})
+    = withBaseActions iid window attrs $ do
       locationId <- getId @LocationId iid
       pure
         [ mkAbility attrs 1 $ ActionAbility

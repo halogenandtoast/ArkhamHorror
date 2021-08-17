@@ -11,31 +11,30 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Source
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
 
 newtype GuardDog = GuardDog AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 guardDog :: AssetCard GuardDog
 guardDog = ally GuardDog Cards.guardDog (3, 1)
 
-instance HasModifiersFor env GuardDog
-
-ability :: Source -> AssetAttrs -> Ability
-ability source attrs = base
-  { abilityLimit = PlayerLimit PerTestOrAbility 1
-  , abilityMetadata = Just (SourceMetadata source)
-  }
-  where base = mkAbility (toSource attrs) 1 (LegacyReactionAbility Free)
-
 instance HasAbilities env GuardDog where
-  getAbilities iid (WhenDealtDamage source@(EnemySource _) target) (GuardDog attrs)
-    | isTarget attrs target
-    = pure [ ability source attrs | ownedBy attrs iid ]
-  getAbilities i window (GuardDog attrs) = getAbilities i window attrs
+  getAbilities _ _ (GuardDog x) = pure
+    [ restrictedAbility
+        x
+        1
+        OwnsThis
+        (ReactionAbility
+          (AssetDealtDamage Timing.When (AssetWithId (toId x)))
+          Free
+        )
+    ]
 
 instance (AssetRunner env) => RunMessage env GuardDog where
   runMessage msg a@(GuardDog attrs) = case msg of

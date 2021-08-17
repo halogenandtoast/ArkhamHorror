@@ -8,15 +8,17 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Id
+import Arkham.Types.Matcher hiding (EnemyEvaded)
 import Arkham.Types.Message
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype PeterClover = PeterClover AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 peterClover :: AssetCard PeterClover
@@ -25,30 +27,18 @@ peterClover =
     $ (slotsL .~ [])
     . (isStoryL .~ True)
 
-ability :: AssetAttrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (FastAbility $ ExhaustCost (toTarget attrs))
+instance HasAbilities env PeterClover where
+  getAbilities _ _ (PeterClover attrs) = pure
+    [ restrictedAbility
+        attrs
+        1
+        (OwnsThis
+        <> EnemyExists (EnemyAt YourLocation <> EnemyWithTrait Criminal)
+        )
+        (FastAbility $ ExhaustCost $ toTarget attrs)
+    ]
 
-instance
-  ( HasSet EnemyId env ([Trait], LocationId)
-  , HasId LocationId env InvestigatorId
-  )
-  => HasAbilities env PeterClover where
-  getAbilities iid FastPlayerWindow (PeterClover attrs) | ownedBy attrs iid = do
-    lid <- getId @LocationId iid
-    criminals <- getSet @EnemyId ([Criminal], lid)
-    pure [ ability attrs | notNull criminals ]
-  getAbilities iid window (PeterClover attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env PeterClover
-
-instance
-  ( HasQueue env
-  , HasModifiersFor env ()
-  , HasSet EnemyId env ([Trait], LocationId)
-  , HasId LocationId env InvestigatorId
-  )
-  => RunMessage env PeterClover where
+instance AssetRunner env => RunMessage env PeterClover where
   runMessage msg a@(PeterClover attrs@AssetAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId @LocationId iid

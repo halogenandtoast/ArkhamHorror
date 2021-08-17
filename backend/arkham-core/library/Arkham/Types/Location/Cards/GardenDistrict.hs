@@ -18,21 +18,21 @@ import Arkham.Types.Message
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype GardenDistrict = GardenDistrict LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 gardenDistrict :: LocationCard GardenDistrict
 gardenDistrict =
   location GardenDistrict Cards.gardenDistrict 1 (Static 0) Plus [Square, Plus]
 
-instance HasModifiersFor env GardenDistrict
-
 instance ActionRunner env => HasAbilities env GardenDistrict where
-  getAbilities iid NonFast (GardenDistrict attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs $ pure
+  getAbilities iid window@(Window Timing.When NonFast) (GardenDistrict attrs@LocationAttrs {..})
+    | locationRevealed
+    = withBaseActions iid window attrs $ pure
       [ locationAbility
           (mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 1)
       ]

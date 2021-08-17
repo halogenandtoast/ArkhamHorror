@@ -17,11 +17,12 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype CloverClubLounge = CloverClubLounge LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cloverClubLounge :: LocationCard CloverClubLounge
@@ -32,8 +33,6 @@ cloverClubLounge = location
   (Static 0)
   Circle
   [Moon, Square, Triangle]
-
-instance HasModifiersFor env CloverClubLounge
 
 ability :: LocationAttrs -> Ability
 ability attrs =
@@ -51,11 +50,13 @@ ability attrs =
     }
 
 instance ActionRunner env => HasAbilities env CloverClubLounge where
-  getAbilities iid NonFast (CloverClubLounge attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs $ do
+  getAbilities iid window@(Window Timing.When NonFast) (CloverClubLounge attrs@LocationAttrs {..})
+    | locationRevealed
+    = withBaseActions iid window attrs $ do
       step <- unActStep <$> getStep
       pure [ locationAbility (ability attrs) | step == 1 ]
-  getAbilities iid window (CloverClubLounge attrs) = getAbilities iid window attrs
+  getAbilities iid window (CloverClubLounge attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env CloverClubLounge where
   runMessage msg l@(CloverClubLounge attrs@LocationAttrs {..}) = case msg of

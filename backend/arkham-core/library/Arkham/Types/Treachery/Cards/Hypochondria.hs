@@ -13,21 +13,19 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
-import Arkham.Types.Treachery.Runner
 import Arkham.Types.Window
 
 newtype Hypochondria = Hypochondria TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hypochondria :: TreacheryCard Hypochondria
 hypochondria = treachery Hypochondria Cards.hypochondria
 
-instance HasModifiersFor env Hypochondria
-
 instance ActionRunner env => HasAbilities env Hypochondria where
-  getAbilities iid NonFast (Hypochondria a) =
+  getAbilities iid (Window Timing.When NonFast) (Hypochondria a) =
     withTreacheryInvestigator a $ \tormented -> do
       treacheryLocation <- getId tormented
       investigatorLocationId <- getId @LocationId iid
@@ -37,7 +35,7 @@ instance ActionRunner env => HasAbilities env Hypochondria where
         ]
   getAbilities _ _ _ = pure []
 
-instance (TreacheryRunner env) => RunMessage env Hypochondria where
+instance RunMessage env Hypochondria where
   runMessage msg t@(Hypochondria attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)

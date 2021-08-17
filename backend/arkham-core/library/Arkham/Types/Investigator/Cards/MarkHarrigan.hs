@@ -14,6 +14,7 @@ import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Message
 import Arkham.Types.Stats
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -47,11 +48,12 @@ ability attrs =
     1
 
 instance InvestigatorRunner env => HasAbilities env MarkHarrigan where
-  getAbilities i (WhenDealtDamage _ target) (MarkHarrigan attrs)
-    | isTarget attrs target && i == toId attrs = pure [ability attrs]
-  getAbilities i (WhenDealtDamage _ (AssetTarget aid)) (MarkHarrigan attrs)
-    | aid `elem` investigatorAssets attrs && i == toId attrs = pure
-      [ability attrs]
+  getAbilities i (Window Timing.When (DealtDamage _ target)) (MarkHarrigan attrs)
+    | isTarget attrs target && i == toId attrs
+    = pure [ability attrs]
+  getAbilities i (Window Timing.When (DealtDamage _ (AssetTarget aid))) (MarkHarrigan attrs)
+    | aid `elem` investigatorAssets attrs && i == toId attrs
+    = pure [ability attrs]
   getAbilities i window (MarkHarrigan attrs) = getAbilities i window attrs
 
 instance HasTokenValue env MarkHarrigan where

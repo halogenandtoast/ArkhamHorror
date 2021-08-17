@@ -15,10 +15,11 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype CanalSide = CanalSide LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 canalSide :: LocationCard CanalSide
@@ -31,13 +32,11 @@ canalSide = locationWith
   []
   (connectsToL .~ singleton RightOf)
 
-instance HasModifiersFor env CanalSide
-
 ability :: LocationAttrs -> Ability
 ability attrs = mkAbility attrs 1 (LegacyReactionAbility Free)
 
 instance ActionRunner env => HasAbilities env CanalSide where
-  getAbilities iid (AfterEntering who lid) (CanalSide attrs)
+  getAbilities iid (Window Timing.After (Entering who lid)) (CanalSide attrs)
     | lid == toId attrs && iid == who = pure [ability attrs]
   getAbilities iid window (CanalSide attrs) = getAbilities iid window attrs
 

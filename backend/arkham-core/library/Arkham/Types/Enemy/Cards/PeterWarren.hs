@@ -17,10 +17,11 @@ import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Source
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype PeterWarren = PeterWarren EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 peterWarren :: EnemyCard PeterWarren
@@ -31,11 +32,9 @@ peterWarren = enemyWith
   (1, 0)
   (spawnAtL ?~ LocationWithTitle "Miskatonic University")
 
-instance HasModifiersFor env PeterWarren
-
 instance ActionRunner env => HasAbilities env PeterWarren where
-  getAbilities iid NonFast (PeterWarren attrs@EnemyAttrs {..}) =
-    withBaseActions iid NonFast attrs $ do
+  getAbilities iid window@(Window Timing.When NonFast) (PeterWarren attrs@EnemyAttrs {..})
+    = withBaseActions iid window attrs $ do
       locationId <- getId @LocationId iid
       pure
         [ mkAbility attrs 1

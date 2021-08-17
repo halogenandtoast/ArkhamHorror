@@ -22,8 +22,10 @@ import Arkham.Types.Scenario.Deck as X
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
-import Arkham.Types.Window
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
   deriving newtype (Show, IsString, ToJSON, FromJSON, Eq)
@@ -191,27 +193,10 @@ findLocationKey locationMatcher locations = fst
     LocationWithTitle title' -> title == title'
     LocationWithFullTitle title' subtitle' ->
       title == title' && Just subtitle' == msubtitle
-    LocationWithLabel _ -> error "can not use label"
-    LocationWithId _ -> error "can not use id"
-    Anywhere -> True
-    -- TODO: Encode these into an either?
-    EmptyLocation -> error "needs to find a singular location"
-    FarthestLocationFromYou _ -> error "needs to find a singular location"
-    LocationMatchers _ -> error "not implemented"
-    LocationWithTrait _ -> error "not implemented"
-    LocationWithoutInvestigators -> error "needs to find a singular location"
-    LocationWithoutEnemies -> error "needs to find a singular location"
-    RevealedLocation -> error "needs to find a singular location"
-    LocationWithoutTreachery _ -> error "needs to find a singular location"
-    YourLocation -> error ":("
-    AccessibleLocation -> error ":("
-    ConnectedLocation -> error ":("
-    LocationWithClues -> error ":("
-    NotYourLocation -> error ":("
-    LocationWithoutTreacheryWithCardCode _ -> error ":("
-    FirstLocation _ -> error ":("
-    InvestigatableLocation -> error ":("
-
+    _ ->
+      error
+        $ "can not uniquely determine via location matcher: "
+        <> show locationMatcher
 
 type ScenarioAttrsRunner env
   = ( HasSet InScenarioInvestigatorId env ()
@@ -219,7 +204,6 @@ type ScenarioAttrsRunner env
     , HasId (Maybe CampaignId) env ()
     , HasSet LocationId env ()
     , HasId LeadInvestigatorId env ()
-    , HasQueue env
     )
 
 getIsStandalone
@@ -303,7 +287,10 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioAttrsRunner env)
           a <$ pushAll
             [ CheckWindow
               leadInvestigatorId
-              [WhenChosenRandomLocation randomLocationId]
+              [ Window
+                  Timing.When
+                  (Window.ChosenRandomLocation randomLocationId)
+              ]
             , ChosenRandomLocation target randomLocationId
             ]
     PlaceLocation _ cardDef -> pure $ a & setAsideCardsL %~ deleteFirstMatch

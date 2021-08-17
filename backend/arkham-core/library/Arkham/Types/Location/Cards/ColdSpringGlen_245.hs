@@ -18,7 +18,9 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
+import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 newtype ColdSpringGlen_245 = ColdSpringGlen_245 LocationAttrs
   deriving anyclass IsLocation
@@ -44,8 +46,9 @@ ability :: LocationAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (LegacyReactionAbility Free)
 
 instance ActionRunner env => HasAbilities env ColdSpringGlen_245 where
-  getAbilities _ (WhenChosenRandomLocation lid) (ColdSpringGlen_245 attrs)
-    | lid == toId attrs = pure [locationAbility (ability attrs)]
+  getAbilities _ (Window Timing.When (Window.ChosenRandomLocation lid)) (ColdSpringGlen_245 attrs)
+    | lid == toId attrs
+    = pure [locationAbility (ability attrs)]
   getAbilities iid window (ColdSpringGlen_245 attrs) =
     getAbilities iid window attrs
 

@@ -32,7 +32,7 @@ instance TreacheryRunner env => RunMessage env RexsCurse where
     Will (PassedSkillTest iid _ _ SkillTestInitiatorTarget{} _ _)
       | treacheryOnInvestigator iid attrs -> do
         let
-          ability = (mkAbility (toSource attrs) 0 ForcedAbility)
+          ability = (mkAbility (toSource attrs) 0 LegacyForcedAbility)
             { abilityLimit = PlayerLimit PerTestOrAbility 1
             }
         usedAbilities <- map unUsedAbility <$> getList ()

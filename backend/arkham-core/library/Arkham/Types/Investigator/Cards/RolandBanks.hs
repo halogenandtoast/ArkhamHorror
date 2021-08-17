@@ -45,7 +45,7 @@ instance HasAbilities env RolandBanks where
     [ restrictedAbility
           a
           1
-          (Self <> LocationExists (YourLocation <> LocationWithClues))
+          (Self <> LocationExists (YourLocation <> LocationWithAnyClues))
           (ReactionAbility (EnemyDefeated Timing.After You AnyEnemy) Free)
         & (abilityLimitL .~ PlayerLimit PerRound 1)
     ]

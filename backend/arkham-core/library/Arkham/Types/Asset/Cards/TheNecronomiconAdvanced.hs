@@ -10,13 +10,14 @@ import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
 import qualified Arkham.Types.Token as Token
-import Arkham.Types.Window
 
 newtype TheNecronomiconAdvanced = TheNecronomiconAdvanced AssetAttrs
   deriving anyclass IsAsset
@@ -40,11 +41,11 @@ instance HasModifiersFor env TheNecronomiconAdvanced where
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities env TheNecronomiconAdvanced where
-  getAbilities iid NonFast (TheNecronomiconAdvanced a) | ownedBy a iid = pure
-    [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1
-    | fromJustNote "Must be set" (assetHorror a) > 0
+  getAbilities _ _ (TheNecronomiconAdvanced a) = pure
+    [ restrictedAbility a 1 (OwnsThis <> AnyHorrorOnThis)
+      $ ActionAbility Nothing
+      $ ActionCost 1
     ]
-  getAbilities _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env TheNecronomiconAdvanced where
   runMessage msg a@(TheNecronomiconAdvanced attrs) = case msg of

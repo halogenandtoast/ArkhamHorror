@@ -12,7 +12,6 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
-import Arkham.Types.Treachery.Runner
 
 newtype FrozenInFear = FrozenInFear TreacheryAttrs
   deriving anyclass IsTreachery
@@ -33,7 +32,7 @@ instance HasModifiersFor env FrozenInFear where
 instance HasAbilities env FrozenInFear where
   getAbilities i window (FrozenInFear attrs) = getAbilities i window attrs
 
-instance (TreacheryRunner env) => RunMessage env FrozenInFear where
+instance RunMessage env FrozenInFear where
   runMessage msg t@(FrozenInFear attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)

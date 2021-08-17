@@ -5,6 +5,7 @@ module Arkham.Types.Effect.Effects.DaisysToteBagAdvanced
 
 import Arkham.Prelude
 
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers

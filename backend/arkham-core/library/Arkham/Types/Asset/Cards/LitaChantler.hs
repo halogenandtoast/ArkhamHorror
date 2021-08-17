@@ -9,13 +9,15 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype LitaChantler = LitaChantler AssetAttrs
   deriving anyclass IsAsset
@@ -36,27 +38,24 @@ instance HasId LocationId env InvestigatorId => HasModifiersFor env LitaChantler
           pure [ toModifier a (SkillModifier SkillCombat 1) | sameLocation ]
   getModifiersFor _ _ _ = pure []
 
-ability :: EnemyId -> AssetAttrs -> Ability
-ability eid a = (mkAbility (toSource a) 1 (LegacyReactionAbility Free))
-  { abilityMetadata = Just $ TargetMetadata (EnemyTarget eid)
-  }
+instance HasAbilities env LitaChantler where
+  getAbilities _ _ (LitaChantler a) = pure
+    [ restrictedAbility
+        a
+        1
+        OwnsThis
+        (ReactionAbility
+          (SkillTestResult
+            Timing.When
+            (InvestigatorAt YourLocation)
+            (WhileAttackingAnEnemy $ EnemyWithTrait Monster)
+            (SuccessResult AnyValue)
+          )
+          Free
+        )
+    ]
 
-instance
-  ( HasId LocationId env InvestigatorId
-  , HasSet Trait env EnemyId
-  )
-  => HasAbilities env LitaChantler where
-  getAbilities i (WhenSuccessfulAttackEnemy who eid) (LitaChantler a)
-    | ownedBy a i = do
-      atYourLocation <- liftA2
-        (==)
-        (getId @LocationId i)
-        (getId @LocationId who)
-      traits <- getSetList eid
-      pure [ ability eid a | Monster `elem` traits && atYourLocation ]
-  getAbilities i window (LitaChantler a) = getAbilities i window a
-
-instance (AssetRunner env) => RunMessage env LitaChantler where
+instance AssetRunner env => RunMessage env LitaChantler where
   runMessage msg a@(LitaChantler attrs) = case msg of
     UseCardAbility _ source (Just (TargetMetadata target)) 1 _
       | isSource attrs source -> do

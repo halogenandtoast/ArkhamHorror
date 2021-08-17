@@ -116,7 +116,6 @@ instance InvestigatorRunner env => HasAbilities env Investigator where
 
 instance
   ( HasCount UsesCount env (AssetId, UseType)
-  , Query EnemyMatcher env
   , InvestigatorRunner env
   )
   => RunMessage env Investigator where

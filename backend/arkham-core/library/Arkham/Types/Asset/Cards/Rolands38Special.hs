@@ -14,32 +14,27 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Rolands38Special = Rolands38Special AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rolands38Special :: AssetCard Rolands38Special
 rolands38Special = hand Rolands38Special Cards.rolands38Special
 
-instance HasModifiersFor env Rolands38Special
-
-fightAbility :: AssetAttrs -> Ability
-fightAbility attrs = mkAbility attrs 1 $ ActionAbility
-  (Just Action.Fight)
-  (Costs [ActionCost 1, UseCost (toId attrs) Ammo 1])
-
 instance HasAbilities env Rolands38Special where
-  getAbilities iid NonFast (Rolands38Special a) | ownedBy a iid = do
-    pure [fightAbility a]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (Rolands38Special x) = pure
+    [ restrictedAbility x 1 OwnsThis $ ActionAbility
+        (Just Action.Fight)
+        (Costs [ActionCost 1, UseCost (toId x) Ammo 1])
+    ]
 
 instance AssetRunner env => RunMessage env Rolands38Special where
   runMessage msg a@(Rolands38Special attrs) = case msg of

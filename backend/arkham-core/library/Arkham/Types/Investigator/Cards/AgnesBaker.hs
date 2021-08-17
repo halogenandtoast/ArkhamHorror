@@ -53,7 +53,7 @@ instance HasTokenValue env AgnesBaker where
     pure $ TokenValue ElderSign tokenValue'
   getTokenValue (AgnesBaker attrs) iid token = getTokenValue attrs iid token
 
-instance (Query EnemyMatcher env, InvestigatorRunner env) => RunMessage env AgnesBaker where
+instance InvestigatorRunner env => RunMessage env AgnesBaker where
   runMessage msg i@(AgnesBaker attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       enemyIds <- selectList (EnemyAt YourLocation)

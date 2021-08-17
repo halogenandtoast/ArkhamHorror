@@ -8,6 +8,7 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -16,10 +17,9 @@ import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype StrangeSolutionRestorativeConcoction4 = StrangeSolutionRestorativeConcoction4 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strangeSolutionRestorativeConcoction4
@@ -28,27 +28,19 @@ strangeSolutionRestorativeConcoction4 = asset
   StrangeSolutionRestorativeConcoction4
   Cards.strangeSolutionRestorativeConcoction4
 
-ability :: AssetAttrs -> Ability
-ability a = restrictedAbility
-  a
-  1
-  (InvestigatorExists $ InvestigatorAtYourLocation <> InvestigatorWithDamage)
-  (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (toId a) Supply 1])
-
 instance HasAbilities env StrangeSolutionRestorativeConcoction4 where
-  getAbilities iid NonFast (StrangeSolutionRestorativeConcoction4 attrs)
-    | ownedBy attrs iid = pure [ability attrs]
-  getAbilities iid window (StrangeSolutionRestorativeConcoction4 attrs) =
-    getAbilities iid window attrs
+  getAbilities _ _ (StrangeSolutionRestorativeConcoction4 x) = pure
+    [ restrictedAbility
+        x
+        1
+        (OwnsThis <> InvestigatorExists
+          (InvestigatorAt YourLocation <> InvestigatorWithAnyDamage)
+        )
+      $ ActionAbility Nothing
+      $ Costs [ActionCost 1, UseCost (toId x) Supply 1]
+    ]
 
-instance HasModifiersFor env StrangeSolutionRestorativeConcoction4
-
-instance
-  ( HasSet InvestigatorId env LocationId
-  , HasId LocationId env InvestigatorId
-  , HasQueue env, HasModifiersFor env ()
-  )
-  => RunMessage env StrangeSolutionRestorativeConcoction4 where
+instance AssetRunner env => RunMessage env StrangeSolutionRestorativeConcoction4 where
   runMessage msg a@(StrangeSolutionRestorativeConcoction4 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid

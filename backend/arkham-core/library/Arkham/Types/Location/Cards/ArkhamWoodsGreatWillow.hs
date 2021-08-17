@@ -44,7 +44,7 @@ instance LocationRunner env => RunMessage env ArkhamWoodsGreatWillow where
         | iid `elem` locationInvestigators
         -> do
           let
-            ability = (mkAbility (toSource attrs) 0 ForcedAbility)
+            ability = (mkAbility (toSource attrs) 0 LegacyForcedAbility)
               { abilityLimit = GroupLimit PerRound 1
               }
           unused <- getGroupIsUnused ability

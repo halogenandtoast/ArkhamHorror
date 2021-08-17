@@ -29,7 +29,6 @@ type ScenarioRunner env
     , HasList DeckCard env InvestigatorId
     , HasList CampaignStoryCard env ()
     , HasName env LocationId
-    , HasQueue env
     , HasRecord env
     , HasSet AgendaId env ()
     , HasSet ClosestEnemyId env (InvestigatorId, [Trait])

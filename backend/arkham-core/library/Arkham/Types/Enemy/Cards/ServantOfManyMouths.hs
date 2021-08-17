@@ -11,28 +11,29 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.Message
+import Arkham.Types.Message hiding (EnemyDefeated)
 import Arkham.Types.Query
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype ServantOfManyMouths = ServantOfManyMouths EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 servantOfManyMouths :: EnemyCard ServantOfManyMouths
 servantOfManyMouths =
   enemy ServantOfManyMouths Cards.servantOfManyMouths (3, Static 2, 1) (2, 0)
 
-instance HasModifiersFor env ServantOfManyMouths
-
 ability :: EnemyAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (LegacyReactionAbility Free)
 
 instance ActionRunner env => HasAbilities env ServantOfManyMouths where
-  getAbilities iid (AfterEnemyDefeated who eid) (ServantOfManyMouths attrs)
-    | eid == toId attrs && iid == who = pure [ability attrs]
-  getAbilities i window (ServantOfManyMouths attrs) = getAbilities i window attrs
+  getAbilities iid (Window Timing.After (EnemyDefeated who eid)) (ServantOfManyMouths attrs)
+    | eid == toId attrs && iid == who
+    = pure [ability attrs]
+  getAbilities i window (ServantOfManyMouths attrs) =
+    getAbilities i window attrs
 
 instance EnemyRunner env => RunMessage env ServantOfManyMouths where
   runMessage msg e@(ServantOfManyMouths attrs@EnemyAttrs {..}) = case msg of

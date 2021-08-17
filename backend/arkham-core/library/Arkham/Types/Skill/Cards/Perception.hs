@@ -6,7 +6,6 @@ import qualified Arkham.Skill.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Skill.Attrs
-import Arkham.Types.Skill.Runner
 import Arkham.Types.Target
 
 newtype Perception = Perception SkillAttrs
@@ -16,7 +15,7 @@ newtype Perception = Perception SkillAttrs
 perception :: SkillCard Perception
 perception = skill Perception Cards.perception
 
-instance SkillRunner env => RunMessage env Perception where
+instance RunMessage env Perception where
   runMessage msg s@(Perception attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest _ _ _ (SkillTarget sid) _ _ | sid == skillId ->
       s <$ push (DrawCards skillOwner 1 False)

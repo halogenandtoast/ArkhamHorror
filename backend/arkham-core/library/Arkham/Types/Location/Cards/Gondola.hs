@@ -18,23 +18,22 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype Gondola = Gondola LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 gondola :: LocationCard Gondola
 gondola = location Gondola Cards.gondola 5 (Static 0) NoSymbol []
 
-instance HasModifiersFor env Gondola
-
 ability :: LocationAttrs -> Ability
 ability a = mkAbility a 1 (ActionAbility Nothing $ ActionCost 1)
 
 instance ActionRunner env => HasAbilities env Gondola where
-  getAbilities iid NonFast (Gondola attrs) =
-    withBaseActions iid NonFast attrs $ do
+  getAbilities iid window@(Window Timing.When NonFast) (Gondola attrs) =
+    withBaseActions iid window attrs $ do
       pure [locationAbility (ability attrs)]
   getAbilities iid window (Gondola attrs) = getAbilities iid window attrs
 

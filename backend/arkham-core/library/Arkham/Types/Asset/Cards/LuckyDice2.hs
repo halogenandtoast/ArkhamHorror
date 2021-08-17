@@ -8,35 +8,31 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
-import Arkham.Types.Window
 
 newtype LuckyDice2 = LuckyDice2 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 luckyDice2 :: AssetCard LuckyDice2
 luckyDice2 = accessory LuckyDice2 Cards.luckyDice2
 
-ability :: AssetAttrs -> Token -> Ability
-ability attrs token =
-  (mkAbility (toSource attrs) 1 (LegacyReactionAbility $ ResourceCost 2))
-    { abilityMetadata = Just (TargetMetadata (TokenTarget token))
-    }
-
 instance HasAbilities env LuckyDice2 where
-  getAbilities iid (AfterRevealToken who token) (LuckyDice2 a)
-    | ownedBy a iid && who == iid && tokenFace token /= AutoFail = pure
-      [ability a token]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (LuckyDice2 a) = pure
+    [ restrictedAbility a 1 OwnsThis $ ReactionAbility
+        (RevealChaosToken Timing.After You (TokenFaceIsNot AutoFail))
+        (ResourceCost 2)
+    ]
 
-instance HasModifiersFor env LuckyDice2
-
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env LuckyDice2 where
+instance AssetRunner env => RunMessage env LuckyDice2 where
   runMessage msg a@(LuckyDice2 attrs) = case msg of
     UseCardAbility iid source (Just (TargetMetadata target@(TokenTarget _))) 1 _
       | isSource attrs source -> a <$ pushAll

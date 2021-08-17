@@ -17,7 +17,6 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
-import Arkham.Types.Treachery.Runner
 
 newtype UnhallowedCountry = UnhallowedCountry TreacheryAttrs
   deriving anyclass IsTreachery
@@ -46,7 +45,7 @@ instance (HasSet Trait env AssetId, HasId (Maybe OwnerId) env AssetId) => HasMod
 instance HasAbilities env UnhallowedCountry where
   getAbilities i window (UnhallowedCountry attrs) = getAbilities i window attrs
 
-instance TreacheryRunner env => RunMessage env UnhallowedCountry where
+instance RunMessage env UnhallowedCountry where
   runMessage msg t@(UnhallowedCountry attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)

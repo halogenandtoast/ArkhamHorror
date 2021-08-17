@@ -7,7 +7,6 @@ module Arkham.Types.Classes
 
 import Arkham.Prelude hiding (to)
 
-import Arkham.Card
 import Arkham.Types.Ability
 import Arkham.Types.Action hiding (Ability)
 import Arkham.Types.Card
@@ -60,6 +59,8 @@ type family QueryElement a where
   QueryElement EnemyMatcher = EnemyId
   QueryElement TreacheryMatcher = TreacheryId
   QueryElement ExtendedCardMatcher = Card
+  QueryElement ActionMatcher = Ability
+  QueryElement SkillMatcher = SkillId
 
 selectList
   :: (HasCallStack, MonadReader env m, Query a env) => a -> m [QueryElement a]
@@ -133,8 +134,7 @@ instance HasVictoryPoints PlayerCard where
   getVictoryPoints = cdVictoryPoints . toCardDef
 
 type ActionRunner env
-  = ( HasQueue env
-    , HasTokenValue env ()
+  = ( HasTokenValue env ()
     , HasSet LocationId env LocationMatcher
     , HasSet TreacheryId env LocationId
     , HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)
@@ -199,7 +199,7 @@ type ActionRunner env
     )
 
 class HasAbilities1 env f where
-  getAbilities1 :: (HasCallStack, MonadReader env m, MonadIO m) => InvestigatorId -> Window -> f p -> m [Ability]
+  getAbilities1 :: (HasCallStack, MonadReader env m) => InvestigatorId -> Window -> f p -> m [Ability]
 
 instance HasAbilities1 env f => HasAbilities1 env (M1 i c f) where
   getAbilities1 iid window (M1 x) = getAbilities1 iid window x
@@ -212,12 +212,7 @@ instance (HasAbilities env p) => HasAbilities1 env (K1 R p) where
   getAbilities1 iid window (K1 x) = getAbilities iid window x
 
 genericGetAbilities
-  :: ( HasCallStack
-     , Generic a
-     , HasAbilities1 env (Rep a)
-     , MonadReader env m
-     , MonadIO m
-     )
+  :: (HasCallStack, Generic a, HasAbilities1 env (Rep a), MonadReader env m)
   => InvestigatorId
   -> Window
   -> a
@@ -225,7 +220,7 @@ genericGetAbilities
 genericGetAbilities iid window = getAbilities1 iid window . from
 
 class HasAbilities env a where
-  getAbilities :: (HasCallStack, MonadReader env m, MonadIO m) => InvestigatorId -> Window -> a -> m [Ability]
+  getAbilities :: (HasCallStack, MonadReader env m) => InvestigatorId -> Window -> a -> m [Ability]
   getAbilities _ _ _ = pure []
 
 class HasModifiersFor1 env f where
@@ -274,22 +269,6 @@ class Exhaustable a where
   isExhausted = not . isReady
   isReady = not . isExhausted
   {-# MINIMAL isExhausted | isReady #-}
-
-class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
-  toCard :: a -> Card
-  toCard a = lookupCard (cdCardCode $ toCardDef a) (toCardId a)
-  toCardId :: a -> CardId
-
-instance IsCard Card where
-  toCardId = \case
-    PlayerCard pc -> toCardId pc
-    EncounterCard ec -> toCardId ec
-
-instance IsCard PlayerCard where
-  toCardId = pcId
-
-instance IsCard EncounterCard where
-  toCardId = ecId
 
 buildEntity :: String -> Q [Dec]
 buildEntity nm = do

@@ -155,7 +155,7 @@ dodge = (event "01023" "Dodge" 1 Guardian)
   { cdSkills = [SkillWillpower, SkillAgility]
   , cdCardTraits = setFromList [Tactic]
   , cdFastWindow = Just
-    (EnemyAttacks Timing.When InvestigatorAtYourLocation AnyEnemy)
+    (EnemyAttacks Timing.When (InvestigatorAt YourLocation) AnyEnemy)
   }
 
 dynamiteBlast :: CardDef
@@ -203,7 +203,7 @@ elusive = (event "01050" "Elusive" 2 Rogue)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = singleton Tactic
   , cdFastWindow = Just $ DuringTurn You
-  , cdCriteria = Just $ Criteria.AnyCriteria
+  , cdCriteria = Just $ Criteria.AnyCriterion
     [ Criteria.EnemyExists EnemyEngagedWithYou
     , Criteria.LocationExists
     $ RevealedLocation
@@ -251,7 +251,8 @@ wardOfProtection :: CardDef
 wardOfProtection = (event "01065" "Ward of Protection" 1 Mystic)
   { cdSkills = [SkillWild]
   , cdCardTraits = setFromList [Spell, Spirit]
-  , cdFastWindow = Just (DrawCard Timing.When You NonWeaknessTreachery)
+  , cdFastWindow = Just
+    (DrawCard Timing.When You $ BasicCardMatch NonWeaknessTreachery)
   }
 
 blindingLight :: CardDef
@@ -373,7 +374,7 @@ shortcut = (event "02022" "Shortcut" 0 Seeker)
   , cdFastWindow = Just (DuringTurn You)
   , cdCriteria = Just
     (Criteria.LocationExists AccessibleLocation <> Criteria.InvestigatorExists
-      (InvestigatorCanMove <> InvestigatorAtYourLocation)
+      (InvestigatorCanMove <> InvestigatorAt YourLocation)
     )
   }
 
@@ -413,14 +414,14 @@ emergencyAid :: CardDef
 emergencyAid = (event "02105" "Emergency Aid" 2 Guardian)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = setFromList [Insight, Science]
-  , cdCriteria = Just $ Criteria.AnyCriteria
+  , cdCriteria = Just $ Criteria.AnyCriterion
     [ Criteria.AssetExists
-      (AssetOwnedBy InvestigatorAtYourLocation
+      (AssetOwnedBy (InvestigatorAt YourLocation)
       <> AssetWithDamage
       <> AssetWithTrait Ally
       )
     , Criteria.InvestigatorExists
-      (InvestigatorAtYourLocation <> InvestigatorWithDamage)
+      (InvestigatorAt YourLocation <> InvestigatorWithAnyDamage)
     ]
   }
 
@@ -435,7 +436,7 @@ contraband = (event "02109" "Contraband" 4 Rogue)
   { cdSkills = [SkillWillpower, SkillIntellect]
   , cdCardTraits = setFromList [Supply, Illicit]
   , cdCriteria = Just $ Criteria.AssetExists
-    (AssetOwnedBy InvestigatorAtYourLocation
+    (AssetOwnedBy (InvestigatorAt YourLocation)
     <> AssetOneOf [AssetWithUses Uses.Ammo, AssetWithUses Uses.Supply]
     )
   }
@@ -486,7 +487,7 @@ hypnoticGaze = (event "02153" "Hypnotic Gaze" 3 Mystic)
   { cdSkills = [SkillCombat, SkillAgility]
   , cdCardTraits = singleton Spell
   , cdFastWindow = Just
-    (EnemyAttacks Timing.When InvestigatorAtYourLocation AnyEnemy)
+    (EnemyAttacks Timing.When (InvestigatorAt YourLocation) AnyEnemy)
   }
 
 lure1 :: CardDef
@@ -590,7 +591,8 @@ wardOfProtection5 :: CardDef
 wardOfProtection5 = (event "02307" "Ward of Protection" 1 Mystic)
   { cdSkills = [SkillWillpower, SkillWild]
   , cdCardTraits = setFromList [Spell, Spirit]
-  , cdFastWindow = Just $ DrawCard Timing.When You NonWeaknessTreachery
+  , cdFastWindow = Just $ DrawCard Timing.When You $ BasicCardMatch
+    NonWeaknessTreachery
   , cdLevel = 5
   }
 
@@ -626,8 +628,11 @@ letMeHandleThis = (event "03022" "\"Let me handle this!\"" 0 Guardian)
   { cdSkills = [SkillWillpower, SkillCombat]
   , cdCardTraits = setFromList [Spirit]
   , cdFastWindow =
-    Just $ DrawCard Timing.After NotYou $ NonPeril <> CardWithOneOf
-      (map CardWithType encounterCardTypes)
+    Just
+    $ DrawCard Timing.After NotYou
+    $ BasicCardMatch
+    $ NonPeril
+    <> CardWithOneOf (map CardWithType encounterCardTypes)
   }
 
 everVigilant1 :: CardDef
@@ -725,7 +730,7 @@ contraband2 = (event "51005" "Contraband" 3 Rogue)
   , cdCardTraits = setFromList [Supply, Illicit]
   , cdLevel = 2
   , cdCriteria = Just $ Criteria.AssetExists
-    (AssetOwnedBy InvestigatorAtYourLocation
+    (AssetOwnedBy (InvestigatorAt YourLocation)
     <> AssetOneOf [AssetWithUseType Uses.Ammo, AssetWithUseType Uses.Supply]
     )
   }

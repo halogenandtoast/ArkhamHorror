@@ -6,11 +6,11 @@ module Arkham.Types.Skill.Cards.Leadership
 import Arkham.Prelude
 
 import qualified Arkham.Skill.Cards as Cards
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Modifier
 import Arkham.Types.Skill.Attrs
-import Arkham.Types.Skill.Runner
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -28,5 +28,5 @@ instance HasModifiersFor env Leadership where
     = pure $ toModifiers attrs [AddSkillIcons [SkillWillpower, SkillWild]]
   getModifiersFor _ _ _ = pure []
 
-instance SkillRunner env => RunMessage env Leadership where
+instance RunMessage env Leadership where
   runMessage msg (Leadership attrs) = Leadership <$> runMessage msg attrs

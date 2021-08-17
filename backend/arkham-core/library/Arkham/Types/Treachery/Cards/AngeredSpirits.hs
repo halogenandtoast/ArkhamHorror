@@ -8,11 +8,13 @@ import Arkham.Prelude
 import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Uses
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Matcher hiding (FastPlayerWindow)
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
@@ -29,7 +31,7 @@ angeredSpirits =
 instance HasModifiersFor env AngeredSpirits
 
 instance HasAbilities env AngeredSpirits where
-  getAbilities i FastPlayerWindow (AngeredSpirits attrs)
+  getAbilities i (Window Timing.When FastPlayerWindow) (AngeredSpirits attrs)
     | treacheryOnInvestigator i attrs = do
       pure
         [ mkAbility attrs 1

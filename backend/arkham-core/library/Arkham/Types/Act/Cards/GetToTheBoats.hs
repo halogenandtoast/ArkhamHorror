@@ -30,7 +30,7 @@ getToTheBoats :: ActCard GetToTheBoats
 getToTheBoats = act (2, A) GetToTheBoats Cards.getToTheBoats Nothing
 
 ability :: ActAttrs -> Ability
-ability a = mkAbility a 1 ForcedAbility
+ability a = mkAbility a 1 LegacyForcedAbility
 
 instance ActionRunner env => HasAbilities env GetToTheBoats where
   getAbilities iid (Window Timing.When (PhaseBegins MythosPhase)) (GetToTheBoats x)

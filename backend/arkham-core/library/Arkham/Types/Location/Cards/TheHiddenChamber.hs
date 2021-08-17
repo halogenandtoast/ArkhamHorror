@@ -14,7 +14,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (RevealLocation)
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
@@ -40,7 +40,8 @@ instance Query AssetMatcher env => HasModifiersFor env TheHiddenChamber where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasAbilities env TheHiddenChamber where
-  getAbilities iid window (TheHiddenChamber attrs) = getAbilities iid window attrs
+  getAbilities iid window (TheHiddenChamber attrs) =
+    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env TheHiddenChamber where
   runMessage msg (TheHiddenChamber attrs) = case msg of

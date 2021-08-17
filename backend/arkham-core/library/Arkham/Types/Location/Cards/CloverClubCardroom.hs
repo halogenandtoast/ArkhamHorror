@@ -17,6 +17,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.RequestedTokenStrategy
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Window
 
@@ -44,8 +45,9 @@ ability attrs = base { abilityLimit = GroupLimit PerRound 1 }
     (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
 
 instance ActionRunner env => HasAbilities env CloverClubCardroom where
-  getAbilities iid NonFast (CloverClubCardroom attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs $ do
+  getAbilities iid window@(Window Timing.When NonFast) (CloverClubCardroom attrs@LocationAttrs {..})
+    | locationRevealed
+    = withBaseActions iid window attrs $ do
       step <- unActStep <$> getStep
       pure [ locationAbility (ability attrs) | step == 1 ]
   getAbilities iid window (CloverClubCardroom attrs) =

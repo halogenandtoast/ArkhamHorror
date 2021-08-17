@@ -230,11 +230,7 @@ type SkillTestRunner env
 -- per the FAQ the double negative modifier ceases to be active
 -- when Sure Gamble is used so we overwrite both Negative and DoubleNegative
 getModifiedTokenValue
-  :: ( MonadReader env m
-     , HasModifiersFor env ()
-     , HasTokenValue env ()
-     , MonadIO m
-     )
+  :: (MonadReader env m, HasModifiersFor env (), HasTokenValue env ())
   => SkillTest
   -> Token
   -> m Int

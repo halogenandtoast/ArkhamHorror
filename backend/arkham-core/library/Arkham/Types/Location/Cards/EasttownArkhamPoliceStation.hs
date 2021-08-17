@@ -18,6 +18,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype EasttownArkhamPoliceStation = EasttownArkhamPoliceStation LocationAttrs
@@ -43,9 +44,9 @@ ability attrs =
     }
 
 instance ActionRunner env => HasAbilities env EasttownArkhamPoliceStation where
-  getAbilities iid NonFast (EasttownArkhamPoliceStation attrs)
-    | locationRevealed attrs = withBaseActions iid NonFast attrs
-    $ pure [locationAbility (ability attrs)]
+  getAbilities iid window@(Window Timing.When NonFast) (EasttownArkhamPoliceStation attrs)
+    | locationRevealed attrs
+    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window (EasttownArkhamPoliceStation attrs) =
     getAbilities iid window attrs
 

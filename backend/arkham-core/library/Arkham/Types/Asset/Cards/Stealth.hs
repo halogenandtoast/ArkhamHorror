@@ -10,31 +10,32 @@ import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Window
 
 newtype Stealth = Stealth AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stealth :: AssetCard Stealth
 stealth = asset Stealth Cards.stealth
 
 instance HasAbilities env Stealth where
-  getAbilities iid NonFast (Stealth attrs) | ownedBy attrs iid =
-    pure [mkAbility attrs 1 $ ActionAbility (Just Action.Evade) $ ActionCost 1]
-  getAbilities iid window (Stealth attrs) = getAbilities iid window attrs
+  getAbilities _ _ (Stealth attrs) = pure
+    [ restrictedAbility attrs 1 OwnsThis
+      $ ActionAbility (Just Action.Evade)
+      $ ActionCost 1
+    ]
 
-instance HasModifiersFor env Stealth
-
-instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Stealth where
+instance AssetRunner env => RunMessage env Stealth where
   runMessage msg a@(Stealth attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (ChooseEvadeEnemy iid source SkillAgility False)

@@ -15,10 +15,11 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype CongregationalChurch_209 = CongregationalChurch_209 LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 congregationalChurch_209 :: LocationCard CongregationalChurch_209
@@ -30,8 +31,6 @@ congregationalChurch_209 = location
   Diamond
   [Plus, Triangle, Squiggle]
 
-instance HasModifiersFor env CongregationalChurch_209
-
 ability :: LocationAttrs -> Ability
 ability attrs = mkAbility
   (toSource attrs)
@@ -41,13 +40,14 @@ ability attrs = mkAbility
   )
 
 instance ActionRunner env => HasAbilities env CongregationalChurch_209 where
-  getAbilities iid NonFast (CongregationalChurch_209 attrs)
-    | locationRevealed attrs = withBaseActions iid NonFast attrs
-    $ pure [locationAbility (ability attrs)]
-  getAbilities iid FastPlayerWindow (CongregationalChurch_209 attrs)
-    | locationRevealed attrs = withBaseActions iid FastPlayerWindow attrs
-    $ pure
-        [ drawCardUnderneathLocationAction attrs | locationClues attrs == 0 ]
+  getAbilities iid window@(Window Timing.When NonFast) (CongregationalChurch_209 attrs)
+    | locationRevealed attrs
+    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
+  getAbilities iid window@(Window Timing.When FastPlayerWindow) (CongregationalChurch_209 attrs)
+    | locationRevealed attrs
+    = withBaseActions iid window attrs
+      $ pure
+          [ drawCardUnderneathLocationAction attrs | locationClues attrs == 0 ]
   getAbilities iid window (CongregationalChurch_209 attrs) =
     getAbilities iid window attrs
 

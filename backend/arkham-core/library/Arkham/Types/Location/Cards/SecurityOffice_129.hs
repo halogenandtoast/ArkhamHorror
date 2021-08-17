@@ -18,6 +18,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype SecurityOffice_129 = SecurityOffice_129 LocationAttrs
@@ -42,8 +43,8 @@ ability attrs =
     }
 
 instance ActionRunner env => HasAbilities env SecurityOffice_129 where
-  getAbilities iid NonFast (SecurityOffice_129 attrs) =
-    withBaseActions iid NonFast attrs $ pure [locationAbility (ability attrs)]
+  getAbilities iid window@(Window Timing.When NonFast) (SecurityOffice_129 attrs)
+    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window (SecurityOffice_129 attrs) =
     getAbilities iid window attrs
 

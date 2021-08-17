@@ -12,7 +12,7 @@ import Arkham.Types.Action (Action)
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes.Entity.Source
 import Arkham.Types.Cost
-import Arkham.Types.Criteria (Criteria)
+import Arkham.Types.Criteria (Criterion)
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Modifier
@@ -27,10 +27,11 @@ data Ability = Ability
   , abilityLimit :: AbilityLimit
   , abilityWindow :: WindowMatcher
   , abilityMetadata :: Maybe AbilityMetadata
-  , abilityCriteria :: Maybe Criteria
+  , abilityCriteria :: Maybe Criterion
   , abilityDoesNotProvokeAttacksOfOpportunity :: Bool
   }
   deriving stock (Show, Generic)
+  deriving anyclass Hashable
 
 abilityCost :: Ability -> Cost
 abilityCost = abilityTypeCost . abilityType
@@ -64,10 +65,10 @@ data AbilityMetadata
   | EncounterCardMetadata EncounterCard
   | SkillChoiceMetadata [SkillType]
   deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
 
 restrictedAbility
-  :: SourceEntity a => a -> Int -> Criteria -> AbilityType -> Ability
+  :: SourceEntity a => a -> Int -> Criterion -> AbilityType -> Ability
 restrictedAbility entity idx restriction type' =
   (mkAbility entity idx type') { abilityCriteria = Just restriction }
 
@@ -76,7 +77,8 @@ abilityEffect a cost = mkAbility a (-1) (AbilityEffect cost)
 
 defaultAbilityLimit :: AbilityType -> AbilityLimit
 defaultAbilityLimit = \case
-  ForcedAbility -> PlayerLimit PerWindow 1
+  ForcedAbility _ -> PlayerLimit PerWindow 1
+  LegacyForcedAbility -> PlayerLimit PerWindow 1
   ReactionAbility _ _ -> PlayerLimit PerWindow 1
   LegacyReactionAbility _ -> PlayerLimit PerWindow 1
   FastAbility _ -> NoLimit
@@ -92,8 +94,8 @@ defaultAbilityWindow = \case
   ActionAbility{} -> DuringTurn You
   ActionAbilityWithBefore{} -> DuringTurn You
   ActionAbilityWithSkill{} -> DuringTurn You
-  -- ForcedAbility window -> window
-  ForcedAbility -> AnyWindow
+  ForcedAbility window -> window
+  LegacyForcedAbility -> AnyWindow
   ReactionAbility window _ -> window
   LegacyReactionAbility _ -> AnyWindow
   AbilityEffect _ -> AnyWindow

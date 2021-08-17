@@ -19,6 +19,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype JeremiahPierce = JeremiahPierce EnemyAttrs
@@ -38,8 +39,8 @@ jeremiahPierce = enemyWith
 instance HasModifiersFor env JeremiahPierce
 
 instance ActionRunner env => HasAbilities env JeremiahPierce where
-  getAbilities iid NonFast (JeremiahPierce attrs@EnemyAttrs {..}) =
-    withBaseActions iid NonFast attrs $ do
+  getAbilities iid window@(Window Timing.When NonFast) (JeremiahPierce attrs@EnemyAttrs {..})
+    = withBaseActions iid window attrs $ do
       locationId <- getId @LocationId iid
       pure
         [ mkAbility attrs 1 $ ActionAbility (Just Parley) (ActionCost 1)

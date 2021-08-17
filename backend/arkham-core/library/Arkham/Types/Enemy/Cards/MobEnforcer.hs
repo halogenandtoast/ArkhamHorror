@@ -17,6 +17,7 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Prey
 import Arkham.Types.Source
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype MobEnforcer = MobEnforcer EnemyAttrs
@@ -34,8 +35,8 @@ mobEnforcer = enemyWith
 instance HasModifiersFor env MobEnforcer
 
 instance ActionRunner env => HasAbilities env MobEnforcer where
-  getAbilities iid NonFast (MobEnforcer attrs@EnemyAttrs {..}) =
-    withBaseActions iid NonFast attrs $ do
+  getAbilities iid window@(Window Timing.When NonFast) (MobEnforcer attrs@EnemyAttrs {..})
+    = withBaseActions iid window attrs $ do
       resourceCount <- getResourceCount iid
       locationId <- getId @LocationId iid
       pure

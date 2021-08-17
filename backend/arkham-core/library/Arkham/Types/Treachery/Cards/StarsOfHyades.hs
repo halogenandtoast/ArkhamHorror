@@ -12,7 +12,6 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
-import Arkham.Types.Treachery.Runner
 
 newtype StarsOfHyades = StarsOfHyades TreacheryAttrs
   deriving anyclass IsTreachery
@@ -29,7 +28,6 @@ instance HasAbilities env StarsOfHyades where
 instance
   ( HasList UnderneathCard env InvestigatorId
   , HasList DeckCard env InvestigatorId
-  , TreacheryRunner env
   )
   => RunMessage env StarsOfHyades where
   runMessage msg t@(StarsOfHyades attrs) = case msg of

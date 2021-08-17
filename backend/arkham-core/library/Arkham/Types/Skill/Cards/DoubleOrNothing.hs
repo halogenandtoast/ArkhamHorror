@@ -3,15 +3,14 @@ module Arkham.Types.Skill.Cards.DoubleOrNothing
   , DoubleOrNothing(..)
   ) where
 
-import           Arkham.Prelude
+import Arkham.Prelude
 
-import qualified Arkham.Skill.Cards        as Cards
-import           Arkham.Types.Classes
-import           Arkham.Types.Game.Helpers
-import           Arkham.Types.Modifier
-import           Arkham.Types.Skill.Attrs
-import           Arkham.Types.Skill.Runner
-import           Arkham.Types.Target
+import qualified Arkham.Skill.Cards as Cards
+import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers
+import Arkham.Types.Modifier
+import Arkham.Types.Skill.Attrs
+import Arkham.Types.Target
 
 newtype DoubleOrNothing = DoubleOrNothing SkillAttrs
   deriving anyclass (IsSkill, HasAbilities env)
@@ -25,6 +24,6 @@ instance HasModifiersFor env DoubleOrNothing where
     pure $ toModifiers attrs [DoubleDifficulty, DoubleSuccess]
   getModifiersFor _ _ _ = pure []
 
-instance SkillRunner env => RunMessage env DoubleOrNothing where
+instance RunMessage env DoubleOrNothing where
   runMessage msg (DoubleOrNothing attrs) =
     DoubleOrNothing <$> runMessage msg attrs

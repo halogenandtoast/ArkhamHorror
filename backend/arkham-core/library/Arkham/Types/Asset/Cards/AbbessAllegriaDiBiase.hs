@@ -30,7 +30,7 @@ instance HasAbilities env AbbessAllegriaDiBiase where
         [ restrictedAbility
             attrs
             1
-            (AnyCriteria
+            (AnyCriterion
               [ LocationExists
                 (LocationWithId abbessLocation <> AccessibleLocation)
               , LocationExists

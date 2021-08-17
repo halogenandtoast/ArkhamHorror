@@ -15,6 +15,7 @@ import Arkham.Types.Matcher hiding (FastPlayerWindow)
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Resolution
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype Dormitories = Dormitories LocationAttrs
@@ -39,9 +40,9 @@ ability attrs = mkAbility
   )
 
 instance ActionRunner env => HasAbilities env Dormitories where
-  getAbilities iid FastPlayerWindow (Dormitories attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid FastPlayerWindow attrs
-    $ pure [locationAbility (ability attrs)]
+  getAbilities iid window@(Window Timing.When FastPlayerWindow) (Dormitories attrs@LocationAttrs {..})
+    | locationRevealed
+    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window (Dormitories attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env Dormitories where

@@ -16,6 +16,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
@@ -41,9 +42,9 @@ ability attrs =
     }
 
 instance ActionRunner env => HasAbilities env SouthsideMasBoardingHouse where
-  getAbilities iid NonFast (SouthsideMasBoardingHouse attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs
-    $ pure [locationAbility (ability attrs)]
+  getAbilities iid window@(Window Timing.When NonFast) (SouthsideMasBoardingHouse attrs@LocationAttrs {..})
+    | locationRevealed
+    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window (SouthsideMasBoardingHouse attrs) =
     getAbilities iid window attrs
 

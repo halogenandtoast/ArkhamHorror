@@ -17,10 +17,11 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.ScenarioLogKey
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype CloverClubBar = CloverClubBar LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cloverClubBar :: LocationCard CloverClubBar
@@ -31,8 +32,6 @@ cloverClubBar = location
   (Static 0)
   Square
   [Triangle, Circle]
-
-instance HasModifiersFor env CloverClubBar
 
 ability :: LocationAttrs -> Ability
 ability attrs = (mkAbility
@@ -45,8 +44,9 @@ ability attrs = (mkAbility
   }
 
 instance ActionRunner env => HasAbilities env CloverClubBar where
-  getAbilities iid NonFast (CloverClubBar attrs@LocationAttrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs $ do
+  getAbilities iid window@(Window Timing.When NonFast) (CloverClubBar attrs@LocationAttrs {..})
+    | locationRevealed
+    = withBaseActions iid window attrs $ do
       step <- unActStep <$> getStep
       pure [ locationAbility (ability attrs) | step == 1 ]
   getAbilities iid window (CloverClubBar attrs) = getAbilities iid window attrs

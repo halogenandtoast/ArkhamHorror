@@ -20,6 +20,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype Parlor = Parlor LocationAttrs
@@ -35,9 +36,10 @@ instance HasModifiersFor env Parlor where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasAbilities env Parlor where
-  getAbilities iid NonFast (Parlor attrs@LocationAttrs {..}) | locationRevealed =
-    do
-      actions <- withResignAction iid NonFast attrs
+  getAbilities iid window@(Window Timing.When NonFast) (Parlor attrs@LocationAttrs {..})
+    | locationRevealed
+    = do
+      actions <- withResignAction iid window attrs
       maid <- selectOne (assetIs Cards.litaChantler)
       case maid of
         Nothing -> pure actions

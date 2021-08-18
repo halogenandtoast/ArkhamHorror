@@ -103,6 +103,7 @@ allPlayerAssetCards = mapFromList $ map
   , catBurglar1
   , celaenoFragments
   , charisma3
+  , cherishedKeepsake
   , chicagoTypewriter4
   , clarityOfMind
   , daisysToteBag
@@ -1232,6 +1233,12 @@ stealth :: CardDef
 stealth = (asset "03028" "Stealth" 2 Rogue)
   { cdSkills = [SkillAgility]
   , cdCardTraits = singleton Talent
+  }
+
+cherishedKeepsake :: CardDef
+cherishedKeepsake = (asset "03114" "Cherished Keepsake" 0 Survivor)
+  { cdSkills = [SkillWillpower]
+  , cdCardTraits = setFromList [Item, Charm]
   }
 
 toothOfEztli :: CardDef

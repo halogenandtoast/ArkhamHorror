@@ -15,6 +15,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Runner
 
 newtype ShadowSpawned = ShadowSpawned TreacheryAttrs
   deriving anyclass IsTreachery
@@ -37,7 +38,7 @@ instance HasCount ResourceCount env TreacheryId => HasModifiersFor env ShadowSpa
 instance HasAbilities env ShadowSpawned where
   getAbilities i window (ShadowSpawned attrs) = getAbilities i window attrs
 
-instance RunMessage env ShadowSpawned where
+instance TreacheryRunner env => RunMessage env ShadowSpawned where
   runMessage msg t@(ShadowSpawned attrs) = case msg of
     PlaceEnemyInVoid eid
       | EnemyTarget eid `elem` treacheryAttachedTarget attrs -> pure t

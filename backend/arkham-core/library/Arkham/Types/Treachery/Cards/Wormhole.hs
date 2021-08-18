@@ -13,6 +13,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Runner
 
 newtype Wormhole = Wormhole TreacheryAttrs
   deriving anyclass IsTreachery
@@ -26,7 +27,7 @@ instance HasModifiersFor env Wormhole
 instance HasAbilities env Wormhole where
   getAbilities i window (Wormhole attrs) = getAbilities i window attrs
 
-instance RunMessage env Wormhole where
+instance TreacheryRunner env => RunMessage env Wormhole where
   runMessage msg t@(Wormhole attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       [ DiscardEncounterUntilFirst

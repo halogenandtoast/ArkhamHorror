@@ -204,6 +204,7 @@ type ScenarioAttrsRunner env
     , HasId (Maybe CampaignId) env ()
     , HasSet LocationId env ()
     , HasId LeadInvestigatorId env ()
+    , HasQueue env
     )
 
 getIsStandalone

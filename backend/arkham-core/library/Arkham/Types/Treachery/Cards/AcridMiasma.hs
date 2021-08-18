@@ -14,6 +14,7 @@ import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Runner
 
 newtype AcridMiasma = AcridMiasma TreacheryAttrs
   deriving anyclass IsTreachery
@@ -30,6 +31,7 @@ instance HasAbilities env AcridMiasma where
 instance
   ( HasSet ClosestLocationId env (InvestigatorId, LocationMatcher)
   , HasSet EnemyId env EnemyMatcher
+  , TreacheryRunner env
   )
   => RunMessage env AcridMiasma where
   runMessage msg t@(AcridMiasma attrs) = case msg of

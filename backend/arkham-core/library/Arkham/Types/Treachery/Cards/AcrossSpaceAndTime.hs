@@ -9,6 +9,7 @@ import qualified Arkham.Treachery.Cards as Cards (acrossSpaceAndTime)
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Runner
 
 newtype AcrossSpaceAndTime = AcrossSpaceAndTime TreacheryAttrs
   deriving anyclass IsTreachery
@@ -23,7 +24,7 @@ instance HasAbilities env AcrossSpaceAndTime where
   getAbilities i window (AcrossSpaceAndTime attrs) =
     getAbilities i window attrs
 
-instance RunMessage env AcrossSpaceAndTime where
+instance TreacheryRunner env => RunMessage env AcrossSpaceAndTime where
   runMessage msg t@(AcrossSpaceAndTime attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ pushAll [DiscardTopOfDeck iid 3 Nothing, Discard (toTarget attrs)]

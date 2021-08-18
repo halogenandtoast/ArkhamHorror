@@ -16,7 +16,8 @@ import Arkham.Types.Source
 import Arkham.Types.Trait
 
 type LocationRunner env
-  = ( Query AssetMatcher env
+  = ( HasQueue env
+    , Query AssetMatcher env
     , Query LocationMatcher env
     , HasCostPayment env
     , HasCount ActionRemainingCount env InvestigatorId

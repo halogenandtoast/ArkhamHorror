@@ -11,6 +11,7 @@ import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Runner
 
 newtype Metadata = Metadata { dealtDamageThisTurn :: Bool }
   deriving stock (Show, Eq, Generic)
@@ -31,7 +32,7 @@ instance HasAbilities env CurseOfTheRougarou where
   getAbilities iid window (CurseOfTheRougarou (attrs `With` _)) =
     getAbilities iid window attrs
 
-instance RunMessage env CurseOfTheRougarou where
+instance TreacheryRunner env => RunMessage env CurseOfTheRougarou where
   runMessage msg t@(CurseOfTheRougarou (attrs@TreacheryAttrs {..} `With` metadata))
     = case msg of
       Revelation iid source | isSource attrs source -> do

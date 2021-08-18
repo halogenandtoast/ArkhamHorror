@@ -15,6 +15,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Runner
 import Arkham.Types.Window
 
 newtype Hypochondria = Hypochondria TreacheryAttrs
@@ -35,7 +36,7 @@ instance ActionRunner env => HasAbilities env Hypochondria where
         ]
   getAbilities _ _ _ = pure []
 
-instance RunMessage env Hypochondria where
+instance TreacheryRunner env => RunMessage env Hypochondria where
   runMessage msg t@(Hypochondria attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)

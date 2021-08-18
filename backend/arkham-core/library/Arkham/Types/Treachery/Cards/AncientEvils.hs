@@ -7,6 +7,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Runner
 
 newtype AncientEvils = AncientEvils TreacheryAttrs
   deriving anyclass IsTreachery
@@ -20,7 +21,7 @@ instance HasModifiersFor env AncientEvils
 instance HasAbilities env AncientEvils where
   getAbilities i window (AncientEvils attrs) = getAbilities i window attrs
 
-instance RunMessage env AncientEvils where
+instance TreacheryRunner env => RunMessage env AncientEvils where
   runMessage msg t@(AncientEvils attrs@TreacheryAttrs {..}) = case msg of
     Revelation _ source | isSource attrs source -> do
       t <$ pushAll

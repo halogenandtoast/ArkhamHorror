@@ -9,6 +9,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Runner
 
 newtype DraggedUnder = DraggedUnder TreacheryAttrs
   deriving anyclass IsTreachery
@@ -22,7 +23,7 @@ instance HasModifiersFor env DraggedUnder
 instance HasAbilities env DraggedUnder where
   getAbilities i window (DraggedUnder attrs) = getAbilities i window attrs
 
-instance RunMessage env DraggedUnder where
+instance TreacheryRunner env => RunMessage env DraggedUnder where
   runMessage msg t@(DraggedUnder attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillAgility 3)

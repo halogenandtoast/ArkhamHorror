@@ -11,6 +11,7 @@ import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Runner
 
 newtype EphemeralExhibits = EphemeralExhibits TreacheryAttrs
   deriving anyclass IsTreachery
@@ -24,7 +25,7 @@ instance HasModifiersFor env EphemeralExhibits
 instance HasAbilities env EphemeralExhibits where
   getAbilities i window (EphemeralExhibits attrs) = getAbilities i window attrs
 
-instance RunMessage env EphemeralExhibits where
+instance TreacheryRunner env => RunMessage env EphemeralExhibits where
   runMessage msg t@(EphemeralExhibits attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ push
       (BeginSkillTest

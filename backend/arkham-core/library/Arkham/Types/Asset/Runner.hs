@@ -13,7 +13,8 @@ import Arkham.Types.Source
 import Arkham.Types.Trait
 
 type AssetRunner env
-  = ( Query AssetMatcher env
+  = ( HasQueue env
+    , Query AssetMatcher env
     , Query ActionMatcher env
     , Query LocationMatcher env
     , HasCostPayment env

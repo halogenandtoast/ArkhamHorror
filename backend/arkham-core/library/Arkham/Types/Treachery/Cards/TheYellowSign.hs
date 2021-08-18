@@ -10,6 +10,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Runner
 
 newtype TheYellowSign = TheYellowSign TreacheryAttrs
   deriving anyclass IsTreachery
@@ -23,7 +24,7 @@ instance HasModifiersFor env TheYellowSign
 instance HasAbilities env TheYellowSign where
   getAbilities i window (TheYellowSign attrs) = getAbilities i window attrs
 
-instance RunMessage env TheYellowSign where
+instance TreacheryRunner env => RunMessage env TheYellowSign where
   runMessage msg t@(TheYellowSign attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       [ BeginSkillTest

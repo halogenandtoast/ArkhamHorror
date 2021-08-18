@@ -6,6 +6,7 @@ import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Runner
 
 newtype OfferOfPower = OfferOfPower TreacheryAttrs
   deriving anyclass IsTreachery
@@ -19,7 +20,7 @@ instance HasModifiersFor env OfferOfPower
 instance HasAbilities env OfferOfPower where
   getAbilities i window (OfferOfPower attrs) = getAbilities i window attrs
 
-instance RunMessage env OfferOfPower where
+instance TreacheryRunner env => RunMessage env OfferOfPower where
   runMessage msg t@(OfferOfPower attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       t <$ pushAll

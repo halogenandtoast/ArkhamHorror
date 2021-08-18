@@ -18,6 +18,7 @@ import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
+import Arkham.Types.Treachery.Runner
 import Arkham.Types.Window
 
 newtype HospitalDebts = HospitalDebts TreacheryAttrs
@@ -53,7 +54,7 @@ instance ActionRunner env => HasAbilities env HospitalDebts where
         ]
   getAbilities _ _ _ = pure []
 
-instance RunMessage env HospitalDebts where
+instance TreacheryRunner env => RunMessage env HospitalDebts where
   runMessage msg t@(HospitalDebts attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RemoveCardFromHand iid (toCardId attrs)

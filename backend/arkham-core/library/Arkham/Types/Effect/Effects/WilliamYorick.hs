@@ -24,7 +24,6 @@ instance HasModifiersFor env WilliamYorick
 instance
   ( HasList DiscardedPlayerCard env InvestigatorId
   , HasModifiersFor env ()
-  , HasQueue env
   )
   => RunMessage env WilliamYorick where
   runMessage msg e@(WilliamYorick attrs) = case msg of

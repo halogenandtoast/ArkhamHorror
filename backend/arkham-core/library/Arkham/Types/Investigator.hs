@@ -43,7 +43,6 @@ data Investigator
   | WendyAdams' WendyAdams
   | WilliamYorick' WilliamYorick
   | ZoeySamaras' ZoeySamaras
-  | BaseInvestigator' BaseInvestigator
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -58,17 +57,6 @@ deriving anyclass instance HasCount ClueCount env LocationId => HasTokenValue en
 
 instance Eq Investigator where
   a == b = toId a == toId b
-
-baseInvestigator
-  :: InvestigatorId
-  -> Name
-  -> ClassSymbol
-  -> Stats
-  -> [Trait]
-  -> (InvestigatorAttrs -> InvestigatorAttrs)
-  -> Investigator
-baseInvestigator a b c d e f =
-  BaseInvestigator' . BaseInvestigator . f $ baseAttrs a b c d e
 
 isEliminated :: Investigator -> Bool
 isEliminated = uncurry (||) . (isResigned &&& isDefeated)
@@ -87,25 +75,6 @@ hasResigned = view resignedL . toAttrs
 
 instance {-# OVERLAPPING #-} HasTraits Investigator where
   toTraits = toTraits . toAttrs
-
-instance HasTokenValue env BaseInvestigator where
-  getTokenValue (BaseInvestigator attrs) iid token =
-    getTokenValue attrs iid token
-
-newtype BaseInvestigator = BaseInvestigator InvestigatorAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
-
-instance HasModifiersFor env BaseInvestigator where
-  getModifiersFor source target (BaseInvestigator attrs) =
-    getModifiersFor source target attrs
-
-instance InvestigatorRunner env => HasAbilities env BaseInvestigator where
-  getAbilities iid window (BaseInvestigator attrs) =
-    getAbilities iid window attrs
-
-instance InvestigatorRunner env => RunMessage env BaseInvestigator where
-  runMessage msg (BaseInvestigator attrs) =
-    BaseInvestigator <$> runMessage msg attrs
 
 instance InvestigatorRunner env => HasAbilities env Investigator where
   getAbilities iid window investigator = do

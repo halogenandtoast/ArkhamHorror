@@ -82,7 +82,7 @@ replaceToken token = withQueue $ \queue ->
   )
 
 withBaseActions
-  :: (HasAbilities env a, MonadReader env m)
+  :: (HasAbilities env a, MonadReader env m, MonadIO m)
   => InvestigatorId
   -> Window
   -> a
@@ -91,7 +91,7 @@ withBaseActions
 withBaseActions iid window a f = (<>) <$> getAbilities iid window a <*> f
 
 getCanPerformAbility
-  :: (MonadReader env m, CanCheckPlayable env)
+  :: (MonadReader env m, CanCheckPlayable env, MonadIO m)
   => InvestigatorId
   -> Source
   -> Window
@@ -850,7 +850,7 @@ type CanCheckPlayable env
     )
 
 getIsPlayable
-  :: (HasCallStack, MonadReader env m, CanCheckPlayable env)
+  :: (HasCallStack, MonadReader env m, CanCheckPlayable env, MonadIO m)
   => InvestigatorId
   -> Source
   -> [Window]
@@ -861,7 +861,7 @@ getIsPlayable iid source windows c = do
   getIsPlayableWithResources iid source availableResources windows c
 
 getIsPlayableWithResources
-  :: (HasCallStack, MonadReader env m, CanCheckPlayable env)
+  :: (HasCallStack, MonadReader env m, CanCheckPlayable env, MonadIO m)
   => InvestigatorId
   -> Source
   -> Int
@@ -923,7 +923,12 @@ getIsPlayableWithResources iid source availableResources windows c@(PlayerCard _
     _ -> error $ "Not handling card type: " <> show (toCardType c)
 
 passesCriteria
-  :: (HasCallStack, MonadReader env m, CanCheckFast env, CanCheckPlayable env)
+  :: ( HasCallStack
+     , MonadReader env m
+     , CanCheckFast env
+     , CanCheckPlayable env
+     , MonadIO m
+     )
   => InvestigatorId
   -> Source
   -> [Window]
@@ -1151,7 +1156,7 @@ depthGuard = unsafePerformIO $ newIORef 0
 {-# NOINLINE depthGuard #-}
 
 cardInFastWindows
-  :: (MonadReader env m, CanCheckPlayable env)
+  :: (MonadReader env m, CanCheckPlayable env, MonadIO m)
   => InvestigatorId
   -> Source
   -> Card
@@ -1162,7 +1167,7 @@ cardInFastWindows iid source _ windows matcher =
   anyM (\window -> windowMatches iid source window matcher) windows
 
 windowMatches
-  :: (MonadReader env m, CanCheckPlayable env)
+  :: (MonadReader env m, CanCheckPlayable env, MonadIO m)
   => InvestigatorId
   -> Source
   -> Window

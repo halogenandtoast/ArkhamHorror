@@ -512,7 +512,7 @@ getCanAfford a@InvestigatorAttrs {..} actionType = do
   pure $ actionCost <= investigatorRemainingActions
 
 getFastIsPlayable
-  :: (HasCallStack, MonadReader env m, CanCheckPlayable env)
+  :: (HasCallStack, MonadReader env m, CanCheckPlayable env, MonadIO m)
   => InvestigatorAttrs
   -> [Window]
   -> Card
@@ -543,7 +543,7 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
     else go (m - 1) (d, PlayerCard c : h, cs)
 
 getPlayableCards
-  :: (HasCallStack, MonadReader env m, CanCheckPlayable env)
+  :: (HasCallStack, MonadReader env m, CanCheckPlayable env, MonadIO m)
   => InvestigatorAttrs
   -> [Window]
   -> m [Card]
@@ -553,7 +553,7 @@ getPlayableCards a@InvestigatorAttrs {..} windows = do
   pure $ playableHandCards <> playableDiscards
 
 getPlayableDiscards
-  :: (MonadReader env m, CanCheckPlayable env)
+  :: (MonadReader env m, CanCheckPlayable env, MonadIO m)
   => InvestigatorAttrs
   -> [Window]
   -> m [Card]
@@ -618,29 +618,33 @@ instance EntityInstanceRunner env => HasAbilities env InvestigatorAttrs where
 instance HasTokenValue env InvestigatorAttrs where
   getTokenValue _ _ _ = error "should not be asking this here"
 
-instance LocalInvestigatorRunner env => RunMessage env InvestigatorAttrs where
+instance
+  ( EntityInstanceRunner env
+  , InvestigatorRunner env
+  )
+  => RunMessage env InvestigatorAttrs where
   runMessage msg i | doNotMask msg = do
-    -- traverseOf_
-    --   (handL . traverse . _PlayerCard)
-    --   (runMessage msg . toCardInstance (toId i) . PlayerCard)
-    --   i
-    -- traverseOf_
-    --   (discardL . traverse)
-    --   (runMessage msg . toCardInstance (toId i) . PlayerCard)
-    --   i
+    traverseOf_
+      (handL . traverse . _PlayerCard)
+      (runMessage msg . toCardInstance (toId i) . PlayerCard)
+      i
+    traverseOf_
+      (discardL . traverse)
+      (runMessage msg . toCardInstance (toId i) . PlayerCard)
+      i
     runInvestigatorMessage msg i
   runMessage msg i = do
-    -- traverseOf_
-    --   (handL . traverse . _PlayerCard)
-    --   (runMessage (InHand (toId i) msg) . toCardInstance (toId i) . PlayerCard)
-    --   i
-    -- traverseOf_
-    --   (discardL . traverse)
-    --   (runMessage (InDiscard (toId i) msg)
-    --   . toCardInstance (toId i)
-    --   . PlayerCard
-    --   )
-    --   i
+    traverseOf_
+      (handL . traverse . _PlayerCard)
+      (runMessage (InHand (toId i) msg) . toCardInstance (toId i) . PlayerCard)
+      i
+    traverseOf_
+      (discardL . traverse)
+      (runMessage (InDiscard (toId i) msg)
+      . toCardInstance (toId i)
+      . PlayerCard
+      )
+      i
     runInvestigatorMessage msg i
 
 hasModifier
@@ -681,33 +685,13 @@ getAsIfInHandCards attrs = do
     modifiersPermitPlay
     (zip (investigatorDiscard attrs) [0 :: Int ..])
 
-type LocalInvestigatorRunner env
-  = ( HasModifiersFor env ()
-    , HasCostPayment env
-    , HasSet Trait env Source
-    , HasSet InvestigatorId env ()
-    , HasList SlotType env AssetId
-    , HasSet Trait env AssetId
-    , HasSkillTest env
-    , HasPlayerCard env AssetId
-    , HasSet FightableEnemyId env (InvestigatorId, Source)
-    , HasSet Trait env EnemyId
-    , HasSet EnemyId env LocationId
-    , HasSet AloofEnemyId env LocationId
-    , HasSet InvestigatorId env EnemyId
-    , HasId CardCode env AssetId
-    , HasSet CommittedCardId env InvestigatorId
-    , HasSet CommittedCardCode env ()
-    , CanBeWeakness env TreacheryId
-    , HasHistory env
-    )
-
 runInvestigatorMessage
-  :: ( MonadReader env m
+  :: ( EntityInstanceRunner env
+     , InvestigatorRunner env
      , HasQueue env
-     , MonadIO m
+     , MonadReader env m
      , MonadRandom m
-     , LocalInvestigatorRunner env
+     , MonadIO m
      )
   => Message
   -> InvestigatorAttrs
@@ -1742,11 +1726,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     modifiers' <- getModifiers (toSource a) (toTarget a)
     committedCardIds <- map unCommittedCardId <$> getSetList iid
     committedCardCodes <- mapSet unCommittedCardCode <$> getSet ()
-    actions <- getAbilities
-      iid
-      (Window Timing.When (Window.SkillTest skillType))
-      ()
-    isScenarioAbility <- getIsScenarioAbility
+    let
+      actions = []
+      isScenarioAbility = False
+    -- actions <- getAbilities
+    --   iid
+    --   (Window Timing.When (Window.SkillTest skillType))
+    --   ()
+    -- isScenarioAbility <- getIsScenarioAbility
     clueCount <- unClueCount <$> getCount investigatorLocation
     source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
 
@@ -1820,7 +1807,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   BeforeSkillTest iid skillType skillDifficulty | iid /= investigatorId -> do
     locationId <- getId iid
-    isScenarioAbility <- getIsScenarioAbility
+    let isScenarioAbility = False
+    -- isScenarioAbility <- getIsScenarioAbility
     clueCount <- unClueCount <$> getCount locationId
     canCommit <- canCommitToAnotherLocation a
     when (locationId == investigatorLocation || canCommit) $ do
@@ -1893,8 +1881,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   CheckWindow iid windows | iid == investigatorId -> do
     a <$ push (RunWindow iid windows)
   RunWindow iid windows | iid == investigatorId -> do
-    actions <- fmap (nub . concat) <$> for windows $ \window ->
-      getAbilities iid window ()
+    let actions = []
+    -- actions <- fmap (nub . concat) <$> for windows $ \window ->
+    --   getAbilities iid window ()
     playableCards <- getPlayableCards a windows
     if notNull playableCards || notNull actions
       then if any isForced actions
@@ -2049,10 +2038,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 ]
               else choices
             )
-      actions <- fmap concat <$> for cards $ \card' -> getAbilities
-        iid
-        (Window Timing.When (Window.AmongSearchedCards iid))
-        (toCardInstance iid $ PlayerCard card')
+      let actions = []
+      -- actions <- fmap concat <$> for cards $ \card' -> getAbilities
+      --   iid
+      --   (Window Timing.When (Window.AmongSearchedCards iid))
+      --   (toCardInstance iid $ PlayerCard card')
       -- TODO: This is for astounding revelation and only one research action is possible
       -- so we are able to short circuit here, but we may have additional cards in the
       -- future so we may want to make this more versatile
@@ -2114,18 +2104,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         [Window Timing.After (Window.PassSkillTest mAction source iid n)]
       a <$ pushAll msgs
   PlayerWindow iid additionalActions isAdditional | iid == investigatorId -> do
-    actions <- getAbilities iid (Window Timing.When Window.NonFast) ()
+    let actions = []
+    -- actions <- getAbilities iid (Window Timing.When Window.NonFast) ()
     if any isForcedAction actions
       then a <$ push (chooseOne iid $ map (UseAbility iid) actions)
       else do
-        fastActions <- getAbilities
-          iid
-          (Window Timing.When (Window.DuringTurn iid))
-          ()
-        playerWindowActions <- getAbilities
-          iid
-          (Window Timing.When Window.FastPlayerWindow)
-          ()
+        let
+          fastActions = []
+          playerWindowActions = []
+        -- fastActions <- getAbilities
+        --   iid
+        --   (Window Timing.When (Window.DuringTurn iid))
+        --   ()
+        -- playerWindowActions <- getAbilities
+        --   iid
+        --   (Window Timing.When Window.FastPlayerWindow)
+        --   ()
         modifiers <- getModifiers
           (InvestigatorSource iid)
           (InvestigatorTarget iid)
@@ -2188,18 +2182,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             )
           )
   PlayerWindow iid additionalActions isAdditional | iid /= investigatorId -> do
-    actions <- getAbilities iid (Window Timing.When Window.NonFast) ()
+    let actions = []
+    -- actions <- getAbilities iid (Window Timing.When Window.NonFast) ()
     if any isForcedAction actions
       then pure a -- handled by active player
       else do
-        fastActions <- getAbilities
-          investigatorId
-          (Window Timing.When (Window.DuringTurn iid))
-          ()
-        playerWindowActions <- getAbilities
-          investigatorId
-          (Window Timing.When Window.FastPlayerWindow)
-          ()
+        let
+          fastActions = []
+          playerWindowActions = []
+        -- fastActions <- getAbilities
+        --   investigatorId
+        --   (Window Timing.When (Window.DuringTurn iid))
+        --   ()
+        -- playerWindowActions <- getAbilities
+        --   investigatorId
+        --   (Window Timing.When Window.FastPlayerWindow)
+        --   ()
         asIfInHandCards <- getAsIfInHandCards a
         let
           handCards = investigatorHand <> asIfInHandCards

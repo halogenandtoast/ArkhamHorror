@@ -32,6 +32,7 @@ import Arkham.Types.Direction
 import Arkham.Types.Effect
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Enemy
+import Arkham.Types.EntityInstance
 import Arkham.Types.Event
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Helpers
@@ -3727,11 +3728,11 @@ instance (HasQueue env, HasGame env) => RunMessage env Game where
       >>= traverseOf (skillTestL . traverse) (runMessage msg)
       >>= traverseOf (skillsL . traverse) (runMessage msg)
       >>= traverseOf (investigatorsL . traverse) (runMessage msg)
-      -- >>= traverseOf
-      --       (discardL . traverse)
-      --       (\c -> c <$ runMessage
-      --         (maskedMsg (InDiscard (gameLeadInvestigatorId g)))
-      --         (toCardInstance (gameLeadInvestigatorId g) (EncounterCard c))
-      --       )
+      >>= traverseOf
+            (discardL . traverse)
+            (\c -> c <$ runMessage
+              (maskedMsg (InDiscard (gameLeadInvestigatorId g)))
+              (toCardInstance (gameLeadInvestigatorId g) (EncounterCard c))
+            )
       >>= runGameMessage msg
-    -- where maskedMsg f = if doNotMask msg then msg else f msg
+    where maskedMsg f = if doNotMask msg then msg else f msg

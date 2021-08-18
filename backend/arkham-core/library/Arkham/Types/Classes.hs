@@ -199,7 +199,7 @@ type ActionRunner env
     )
 
 class HasAbilities1 env f where
-  getAbilities1 :: (HasCallStack, MonadReader env m) => InvestigatorId -> Window -> f p -> m [Ability]
+  getAbilities1 :: (HasCallStack, MonadReader env m, MonadIO m) => InvestigatorId -> Window -> f p -> m [Ability]
 
 instance HasAbilities1 env f => HasAbilities1 env (M1 i c f) where
   getAbilities1 iid window (M1 x) = getAbilities1 iid window x
@@ -212,7 +212,12 @@ instance (HasAbilities env p) => HasAbilities1 env (K1 R p) where
   getAbilities1 iid window (K1 x) = getAbilities iid window x
 
 genericGetAbilities
-  :: (HasCallStack, Generic a, HasAbilities1 env (Rep a), MonadReader env m)
+  :: ( HasCallStack
+     , Generic a
+     , HasAbilities1 env (Rep a)
+     , MonadReader env m
+     , MonadIO m
+     )
   => InvestigatorId
   -> Window
   -> a
@@ -220,7 +225,7 @@ genericGetAbilities
 genericGetAbilities iid window = getAbilities1 iid window . from
 
 class HasAbilities env a where
-  getAbilities :: (HasCallStack, MonadReader env m) => InvestigatorId -> Window -> a -> m [Ability]
+  getAbilities :: (HasCallStack, MonadReader env m, MonadIO m) => InvestigatorId -> Window -> a -> m [Ability]
   getAbilities _ _ _ = pure []
 
 class HasModifiersFor1 env f where

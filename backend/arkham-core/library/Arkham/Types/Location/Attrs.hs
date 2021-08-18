@@ -330,6 +330,7 @@ withResignAction
      , EntityAttrs location ~ LocationAttrs
      , MonadReader env m
      , ActionRunner env
+     , MonadIO m
      )
   => InvestigatorId
   -> Window
@@ -371,6 +372,7 @@ withDrawCardUnderneathAction
      , EntityAttrs location ~ LocationAttrs
      , MonadReader env m
      , ActionRunner env
+     , MonadIO m
      )
   => InvestigatorId
   -> Window

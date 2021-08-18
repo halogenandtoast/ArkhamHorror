@@ -12,6 +12,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Runner
 
 newtype VisionsOfFuturesPast = VisionsOfFuturesPast TreacheryAttrs
   deriving anyclass IsTreachery
@@ -27,7 +28,7 @@ instance HasAbilities env VisionsOfFuturesPast where
   getAbilities i window (VisionsOfFuturesPast attrs) =
     getAbilities i window attrs
 
-instance RunMessage env VisionsOfFuturesPast where
+instance TreacheryRunner env => RunMessage env VisionsOfFuturesPast where
   runMessage msg t@(VisionsOfFuturesPast attrs@TreacheryAttrs {..}) =
     case msg of
       Revelation iid source | isSource attrs source -> t <$ pushAll

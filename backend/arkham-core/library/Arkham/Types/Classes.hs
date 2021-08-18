@@ -134,7 +134,8 @@ instance HasVictoryPoints PlayerCard where
   getVictoryPoints = cdVictoryPoints . toCardDef
 
 type ActionRunner env
-  = ( HasTokenValue env ()
+  = ( HasQueue env
+    , HasTokenValue env ()
     , HasSet LocationId env LocationMatcher
     , HasSet TreacheryId env LocationId
     , HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)

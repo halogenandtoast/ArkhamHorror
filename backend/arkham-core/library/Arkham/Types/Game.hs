@@ -34,6 +34,7 @@ import Arkham.Types.EffectMetadata
 import Arkham.Types.Enemy
 import Arkham.Types.Event
 import Arkham.Types.Game.Helpers
+import Arkham.Types.GameRunner
 import Arkham.Types.Helpers
 import Arkham.Types.History
 import Arkham.Types.Id
@@ -2336,7 +2337,7 @@ instance HasGame env => Query SkillMatcher env where
 instance HasGame env => Query TreacheryMatcher env where
   select = fmap (setFromList . map toId) . getTreacheriesMatching
 
-instance HasGame env => HasAbilities env ActionType where
+instance (HasQueue env, HasGame env) => HasAbilities env ActionType where
   getAbilities iid window actionType = do
     g <- getGame
     case actionType of
@@ -2360,7 +2361,7 @@ instance HasGame env => HasId Difficulty env () where
       (const . difficultyOf)
       (g ^. modeL)
 
-instance HasGame env => HasAbilities env (ActionType, Trait) where
+instance (HasQueue env, HasGame env) => HasAbilities env (ActionType, Trait) where
   getAbilities iid window (actionType, trait) = do
     g <- getGame
     case actionType of
@@ -2380,14 +2381,14 @@ instance HasGame env => HasAbilities env (ActionType, Trait) where
       ActActionType -> pure [] -- acts do not have traits
       AgendaActionType -> pure [] -- agendas do not have traits
 
-instance (HasAbilities env ActionType, HasGame env) => HasAbilities env AssetId where
+instance (HasQueue env, HasAbilities env ActionType, HasGame env) => HasAbilities env AssetId where
   getAbilities iid window aid = getAbilities iid window =<< getAsset aid
 
-instance (HasAbilities env ActionType, HasGame env) => HasAbilities env LocationId where
+instance (HasQueue env, HasAbilities env ActionType, HasGame env) => HasAbilities env LocationId where
   getAbilities iid window lid = getAbilities iid window =<< getLocation lid
 
 runPreGameMessage
-  :: (HasQueue env, MonadReader env m, MonadIO m) => Message -> Game -> m Game
+  :: (GameRunner env, MonadReader env m, MonadIO m) => Message -> Game -> m Game
 runPreGameMessage msg g = case msg of
   CheckWindow{} -> do
     push EndCheckWindow

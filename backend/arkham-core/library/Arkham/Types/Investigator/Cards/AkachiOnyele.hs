@@ -53,11 +53,7 @@ instance HasTokenValue env AkachiOnyele where
     $ TokenValue ElderSign (PositiveModifier 1)
   getTokenValue (AkachiOnyele attrs) iid token = getTokenValue attrs iid token
 
-instance
-  ( HasCount UsesCount env (AssetId, UseType)
-  , InvestigatorRunner env
-  )
-  => RunMessage env AkachiOnyele where
+instance InvestigatorRunner env => RunMessage env AkachiOnyele where
   runMessage msg i@(AkachiOnyele attrs) = case msg of
     ResolveToken _ ElderSign iid | iid == toId attrs -> do
       targets <- map AssetTarget <$> filterM

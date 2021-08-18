@@ -6,7 +6,8 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 
 type SkillRunner env
-  = ( HasSet ConnectedLocationId env LocationId
+  = ( HasQueue env
+    , HasSet ConnectedLocationId env LocationId
     , HasSet BlockedLocationId env ()
     , HasSet EnemyId env InvestigatorId
     , HasId LocationId env InvestigatorId

@@ -15,6 +15,7 @@ import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Target
+import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
 
 class IsTreachery a
@@ -160,7 +161,7 @@ is (CardCodeTarget cardCode) t = cardCode == cdCardCode (toCardDef t)
 is (CardIdTarget cardId) t = cardId == unTreacheryId (treacheryId t)
 is _ _ = False
 
-instance RunMessage env TreacheryAttrs where
+instance TreacheryRunner env => RunMessage env TreacheryAttrs where
   runMessage msg a@TreacheryAttrs {..} = case msg of
     InvestigatorEliminated iid
       | InvestigatorTarget iid `elem` treacheryAttachedTarget -> a

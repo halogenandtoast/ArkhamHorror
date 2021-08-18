@@ -27,7 +27,8 @@ import Arkham.Types.Source
 import Arkham.Types.Trait
 
 type InnerInvestigatorRunner env
-  = ( CanBeWeakness env TreacheryId
+  = ( HasQueue env
+    , CanBeWeakness env TreacheryId
     , HasTokenValue env ()
     , Query AssetMatcher env
     , Query InvestigatorMatcher env

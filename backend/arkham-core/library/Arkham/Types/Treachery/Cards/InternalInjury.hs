@@ -15,6 +15,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Runner
 import Arkham.Types.Window hiding (EndTurn)
 
 newtype InternalInjury = InternalInjury TreacheryAttrs
@@ -37,7 +38,7 @@ instance ActionRunner env => HasAbilities env InternalInjury where
         ]
   getAbilities _ _ _ = pure []
 
-instance RunMessage env InternalInjury where
+instance TreacheryRunner env => RunMessage env InternalInjury where
   runMessage msg t@(InternalInjury attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)

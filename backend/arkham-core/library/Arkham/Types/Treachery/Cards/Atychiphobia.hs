@@ -15,6 +15,7 @@ import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Runner
 
 newtype Atychiphobia = Atychiphobia TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor env)
@@ -30,7 +31,7 @@ instance HasAbilities env Atychiphobia where
       $ ActionCost 2
     ]
 
-instance RunMessage env Atychiphobia where
+instance TreacheryRunner env => RunMessage env Atychiphobia where
   runMessage msg t@(Atychiphobia attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)

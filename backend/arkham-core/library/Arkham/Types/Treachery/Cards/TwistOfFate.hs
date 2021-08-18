@@ -11,6 +11,7 @@ import Arkham.Types.Message
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Token
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Runner
 
 newtype TwistOfFate = TwistOfFate TreacheryAttrs
   deriving anyclass IsTreachery
@@ -24,7 +25,7 @@ instance HasModifiersFor env TwistOfFate
 instance HasAbilities env TwistOfFate where
   getAbilities i window (TwistOfFate attrs) = getAbilities i window attrs
 
-instance RunMessage env TwistOfFate where
+instance TreacheryRunner env => RunMessage env TwistOfFate where
   runMessage msg t@(TwistOfFate attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RequestTokens source (Just iid) 1 SetAside)

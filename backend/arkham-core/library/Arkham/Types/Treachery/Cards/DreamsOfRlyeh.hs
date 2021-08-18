@@ -17,6 +17,7 @@ import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
+import Arkham.Types.Treachery.Runner
 import Arkham.Types.Window
 
 newtype DreamsOfRlyeh = DreamsOfRlyeh TreacheryAttrs
@@ -40,7 +41,7 @@ instance HasAbilities env DreamsOfRlyeh where
     ]
   getAbilities _ _ _ = pure []
 
-instance RunMessage env DreamsOfRlyeh where
+instance TreacheryRunner env => RunMessage env DreamsOfRlyeh where
   runMessage msg t@(DreamsOfRlyeh attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))

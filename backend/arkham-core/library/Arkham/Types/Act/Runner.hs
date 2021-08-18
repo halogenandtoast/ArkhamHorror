@@ -13,7 +13,8 @@ import Arkham.Types.Token
 import Arkham.Types.Trait (Trait)
 
 type ActRunner env
-  = ( Query AssetMatcher env
+  = ( HasQueue env
+    , Query AssetMatcher env
     , Query LocationMatcher env
     , HasCount ClueCount env AssetId
     , HasCount DamageCount env EnemyId

@@ -8,6 +8,7 @@ import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Runner
 
 newtype RottingRemains = RottingRemains TreacheryAttrs
   deriving anyclass IsTreachery
@@ -21,7 +22,7 @@ instance HasModifiersFor env RottingRemains
 instance HasAbilities env RottingRemains where
   getAbilities i window (RottingRemains attrs) = getAbilities i window attrs
 
-instance RunMessage env RottingRemains where
+instance TreacheryRunner env => RunMessage env RottingRemains where
   runMessage msg t@(RottingRemains attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RevelationSkillTest iid source SkillWillpower 3

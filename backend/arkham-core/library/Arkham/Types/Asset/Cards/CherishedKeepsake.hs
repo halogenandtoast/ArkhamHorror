@@ -15,8 +15,8 @@ cherishedKeepsake :: AssetCard CherishedKeepsake
 cherishedKeepsake =
   accessoryWith CherishedKeepsake Cards.cherishedKeepsake (sanityL ?~ 2)
 
-instance HasActions env CherishedKeepsake where
-  getActions i window (CherishedKeepsake x) = getActions i window x
+instance HasAbilities env CherishedKeepsake where
+  getAbilities i window (CherishedKeepsake x) = getAbilities i window x
 
 instance (AssetRunner env) => RunMessage env CherishedKeepsake where
   runMessage msg (CherishedKeepsake attrs) =

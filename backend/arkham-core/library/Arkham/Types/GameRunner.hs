@@ -19,7 +19,8 @@ import Arkham.Types.SkillTest
 import Arkham.Types.Trait
 
 type GameRunner env
-  = ( Query AssetMatcher env
+  = ( HasQueue env
+    , Query AssetMatcher env
     , ( HasCount ActsRemainingCount env ()
       , HasCount ActionTakenCount env InvestigatorId
       , HasCount AssetCount env (InvestigatorId, [Trait])

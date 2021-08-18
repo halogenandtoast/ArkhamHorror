@@ -22,7 +22,7 @@ instance RunMessage env p => RunMessage1 env (K1 R p) where
   runMessage1 msg (K1 x) = K1 <$> runMessage msg x
 
 class RunMessage env a where
-  runMessage :: (HasCallStack, MonadIO m, MonadRandom m, MonadReader env m, HasQueue env) => Message -> a -> m a
+  runMessage :: (HasCallStack, MonadReader env m, HasQueue env, MonadIO m, MonadRandom m) => Message -> a -> m a
 
 genericRunMessage
   :: ( Generic a

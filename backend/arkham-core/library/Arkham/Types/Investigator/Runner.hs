@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Action
+import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
@@ -30,6 +31,7 @@ type InnerInvestigatorRunner env
     , HasTokenValue env ()
     , Query AssetMatcher env
     , Query InvestigatorMatcher env
+    , HasCount UsesCount env (AssetId, UseType)
     , HasList SlotType env AssetId
     , ( HasAbilities env ()
       , HasAbilities env AssetId

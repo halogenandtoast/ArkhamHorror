@@ -32,7 +32,6 @@ import Arkham.Types.Direction
 import Arkham.Types.Effect
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Enemy
-import Arkham.Types.EntityInstance
 import Arkham.Types.Event
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Helpers
@@ -576,25 +575,22 @@ getTreacheriesMatching matcher = do
     AnyTreachery -> pure allTreacheries'
     _ -> pure allTreacheries'
 
-getActionsMatching
-  :: (HasCallStack, MonadReader env m, HasGame env)
-  => ActionMatcher
-  -> m [Ability]
-getActionsMatching matcher = do
+getActionsMatching :: MonadReader env m => ActionMatcher -> m [Ability]
+getActionsMatching _ = pure []
   -- both iid and window won't matter
-  iid <- view activeInvestigatorIdL <$> getGame
-  let window = Window Timing.When (Window.DuringTurn iid)
-  abilities <- concat <$> traverse
-    (getAbilities iid window)
-    ([minBound .. maxBound] :: [ActionType])
-  case matcher of
-    AnyAction -> pure abilities
-    -- TODO: too lazy to do these right now
-    ActionOnLocation _ -> pure []
-    ActionIs _ -> pure []
-    ActionWindow _ -> pure []
-    ActionMatches _ -> pure []
-    ActionOnScenarioCard -> pure []
+  -- iid <- view activeInvestigatorIdL <$> getGame
+  -- let window = Window Timing.When (Window.DuringTurn iid)
+  -- abilities <- concat <$> traverse
+  --   (getAbilities iid window)
+  --   ([minBound .. maxBound] :: [ActionType])
+  -- case matcher of
+  --   AnyAction -> pure abilities
+  --   -- TODO: too lazy to do these right now
+  --   ActionOnLocation _ -> pure []
+  --   ActionIs _ -> pure []
+  --   ActionWindow _ -> pure []
+  --   ActionMatches _ -> pure []
+  --   ActionOnScenarioCard -> pure []
 
 getLocationMatching
   :: (HasCallStack, MonadReader env m, HasGame env)
@@ -2331,7 +2327,7 @@ locationFor
   :: (HasGame env, MonadReader env m) => InvestigatorId -> m LocationId
 locationFor iid = locationOf <$> getInvestigator iid
 
-instance HasGame env => Query ActionMatcher env where
+instance Query ActionMatcher env where
   select = fmap setFromList . getActionsMatching
 
 instance HasGame env => Query SkillMatcher env where
@@ -3728,11 +3724,11 @@ instance (HasQueue env, HasGame env) => RunMessage env Game where
       >>= traverseOf (skillTestL . traverse) (runMessage msg)
       >>= traverseOf (skillsL . traverse) (runMessage msg)
       >>= traverseOf (investigatorsL . traverse) (runMessage msg)
-      >>= traverseOf
-            (discardL . traverse)
-            (\c -> c <$ runMessage
-              (maskedMsg (InDiscard (gameLeadInvestigatorId g)))
-              (toCardInstance (gameLeadInvestigatorId g) (EncounterCard c))
-            )
+      -- >>= traverseOf
+      --       (discardL . traverse)
+      --       (\c -> c <$ runMessage
+      --         (maskedMsg (InDiscard (gameLeadInvestigatorId g)))
+      --         (toCardInstance (gameLeadInvestigatorId g) (EncounterCard c))
+      --       )
       >>= runGameMessage msg
-    where maskedMsg f = if doNotMask msg then msg else f msg
+    -- where maskedMsg f = if doNotMask msg then msg else f msg

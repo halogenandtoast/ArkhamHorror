@@ -618,11 +618,7 @@ instance EntityInstanceRunner env => HasAbilities env InvestigatorAttrs where
 instance HasTokenValue env InvestigatorAttrs where
   getTokenValue _ _ _ = error "should not be asking this here"
 
-instance
-  ( EntityInstanceRunner env
-  , InvestigatorRunner env
-  )
-  => RunMessage env InvestigatorAttrs where
+instance RunMessage env InvestigatorAttrs where
   runMessage msg i | doNotMask msg = do
     traverseOf_
       (handL . traverse . _PlayerCard)
@@ -685,14 +681,14 @@ getAsIfInHandCards attrs = do
     modifiersPermitPlay
     (zip (investigatorDiscard attrs) [0 :: Int ..])
 
+type RunInvestigatorMessage env
+  = ( HasSet CommittedCardCode env ()
+    , HasSet CommittedCardId env InvestigatorId
+    , HasId CardCode env AssetId
+    )
+
 runInvestigatorMessage
-  :: ( EntityInstanceRunner env
-     , InvestigatorRunner env
-     , HasQueue env
-     , MonadReader env m
-     , MonadRandom m
-     , MonadIO m
-     )
+  :: (MonadReader env m, HasQueue env, MonadIO m, RunInvestigatorMessage env)
   => Message
   -> InvestigatorAttrs
   -> m InvestigatorAttrs

@@ -7,7 +7,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Action (Action, TakenAction(..))
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.CampaignLogKey
-import Arkham.Types.Card hiding (DuringTurn)
+import Arkham.Types.Card
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
 import Arkham.Types.ClassSymbol

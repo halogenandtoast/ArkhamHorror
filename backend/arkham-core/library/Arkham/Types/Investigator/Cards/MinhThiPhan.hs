@@ -65,13 +65,13 @@ instance HasTokenValue env MinhThiPhan where
 
 instance (InvestigatorRunner env) => RunMessage env MinhThiPhan where
   runMessage msg i@(MinhThiPhan attrs) = case msg of
-    UseCardAbility _ source (Just (TargetMetadata target)) 1 _
+    UseCardAbility _ source [Window _ (CommitedCard _ card)] 1 _
       | isSource attrs source -> i <$ push
         (CreateEffect
           (unInvestigatorId $ toId attrs)
           Nothing
           (toSource attrs)
-          target
+          (CardIdTarget $ toCardId card)
         )
     ResolveToken _ ElderSign iid | iid == toId attrs -> do
       investigatorIds <- getInvestigatorIds

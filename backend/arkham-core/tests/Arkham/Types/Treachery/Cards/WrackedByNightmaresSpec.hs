@@ -50,7 +50,7 @@ spec = describe "Wracked by Nightmares" $ do
             nonFast
             wrackedByNightmaresTreachery
           pushAll
-            [ UseAbility (toId investigator) discardWrackedByNightmares
+            [ UseAbility (toId investigator) discardWrackedByNightmares []
             , ReadyExhausted
             ]
           runMessages

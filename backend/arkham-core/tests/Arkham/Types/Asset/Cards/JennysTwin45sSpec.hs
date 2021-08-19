@@ -64,7 +64,7 @@ spec = describe "Jenny's Twin .45s" $ do
             , UseCardAbility
               (toId investigator)
               (AssetSource . AssetId $ pcId jennysTwin45s)
-              Nothing
+              []
               1
               (UsesPayment 1)
             ]

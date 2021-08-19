@@ -55,7 +55,7 @@ spec = describe "Searching for Izzie" $ do
             nonFast
             updatedSearchingForIzzie
 
-          push $ UseAbility (toId investigator) searchingForIzzieAction
+          push $ UseAbility (toId investigator) searchingForIzzieAction []
           runMessages
           chooseOnlyOption "start skill test"
           chooseOnlyOption "apply results"

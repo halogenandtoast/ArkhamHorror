@@ -38,7 +38,7 @@ spec = describe "Arcane Initiate" $ do
                 investigator
                 fastPlayerWindow
                 arcaneInitiate
-              push $ UseAbility (toId investigator) ability
+              push $ UseAbility (toId investigator) ability []
               runMessages
               chooseOnlyOption "search top of deck"
               chooseOnlyOption "take spell card"
@@ -58,7 +58,7 @@ spec = describe "Arcane Initiate" $ do
             investigator
             fastPlayerWindow
             arcaneInitiate
-          push $ UseAbility (toId investigator) ability
+          push $ UseAbility (toId investigator) ability []
           runMessages
           chooseOnlyOption "search top of deck"
           chooseOptionMatching

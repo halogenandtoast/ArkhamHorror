@@ -82,7 +82,7 @@ replaceToken token = withQueue $ \queue ->
   )
 
 withBaseActions
-  :: (HasAbilities env a, MonadReader env m, MonadIO m)
+  :: (HasAbilities env a, HasQueue env, MonadReader env m, MonadIO m)
   => InvestigatorId
   -> Window
   -> a
@@ -91,7 +91,7 @@ withBaseActions
 withBaseActions iid window a f = (<>) <$> getAbilities iid window a <*> f
 
 getCanPerformAbility
-  :: (MonadReader env m, CanCheckPlayable env, MonadIO m)
+  :: (MonadReader env m, HasQueue env, CanCheckPlayable env, MonadIO m)
   => InvestigatorId
   -> Source
   -> Window
@@ -341,7 +341,6 @@ isForcedAction ability = abilityType ability == LegacyForcedAbility
 
 instance
   ( HasCostPayment env
-  , MonadReader env m
   , HasList UsedAbility env ()
   , CanCheckPlayable env
   )
@@ -850,7 +849,12 @@ type CanCheckPlayable env
     )
 
 getIsPlayable
-  :: (HasCallStack, MonadReader env m, CanCheckPlayable env, MonadIO m)
+  :: ( HasCallStack
+     , MonadReader env m
+     , HasQueue env
+     , CanCheckPlayable env
+     , MonadIO m
+     )
   => InvestigatorId
   -> Source
   -> [Window]
@@ -861,7 +865,12 @@ getIsPlayable iid source windows c = do
   getIsPlayableWithResources iid source availableResources windows c
 
 getIsPlayableWithResources
-  :: (HasCallStack, MonadReader env m, CanCheckPlayable env, MonadIO m)
+  :: ( HasCallStack
+     , HasQueue env
+     , MonadReader env m
+     , CanCheckPlayable env
+     , MonadIO m
+     )
   => InvestigatorId
   -> Source
   -> Int
@@ -924,6 +933,7 @@ getIsPlayableWithResources iid source availableResources windows c@(PlayerCard _
 
 passesCriteria
   :: ( HasCallStack
+     , HasQueue env
      , MonadReader env m
      , CanCheckFast env
      , CanCheckPlayable env
@@ -1156,7 +1166,7 @@ depthGuard = unsafePerformIO $ newIORef 0
 {-# NOINLINE depthGuard #-}
 
 cardInFastWindows
-  :: (MonadReader env m, CanCheckPlayable env, MonadIO m)
+  :: (MonadReader env m, HasQueue env, CanCheckPlayable env, MonadIO m)
   => InvestigatorId
   -> Source
   -> Card
@@ -1167,7 +1177,7 @@ cardInFastWindows iid source _ windows matcher =
   anyM (\window -> windowMatches iid source window matcher) windows
 
 windowMatches
-  :: (MonadReader env m, CanCheckPlayable env, MonadIO m)
+  :: (MonadReader env m, HasQueue env, CanCheckPlayable env, MonadIO m)
   => InvestigatorId
   -> Source
   -> Window

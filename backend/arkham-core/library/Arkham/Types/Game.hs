@@ -2337,7 +2337,7 @@ instance HasGame env => Query SkillMatcher env where
 instance HasGame env => Query TreacheryMatcher env where
   select = fmap (setFromList . map toId) . getTreacheriesMatching
 
-instance (HasQueue env, HasGame env) => HasAbilities env ActionType where
+instance HasGame env => HasAbilities env ActionType where
   getAbilities iid window actionType = do
     g <- getGame
     case actionType of
@@ -2361,7 +2361,7 @@ instance HasGame env => HasId Difficulty env () where
       (const . difficultyOf)
       (g ^. modeL)
 
-instance (HasQueue env, HasGame env) => HasAbilities env (ActionType, Trait) where
+instance HasGame env => HasAbilities env (ActionType, Trait) where
   getAbilities iid window (actionType, trait) = do
     g <- getGame
     case actionType of
@@ -2381,10 +2381,10 @@ instance (HasQueue env, HasGame env) => HasAbilities env (ActionType, Trait) whe
       ActActionType -> pure [] -- acts do not have traits
       AgendaActionType -> pure [] -- agendas do not have traits
 
-instance (HasQueue env, HasAbilities env ActionType, HasGame env) => HasAbilities env AssetId where
+instance (HasAbilities env ActionType, HasGame env) => HasAbilities env AssetId where
   getAbilities iid window aid = getAbilities iid window =<< getAsset aid
 
-instance (HasQueue env, HasAbilities env ActionType, HasGame env) => HasAbilities env LocationId where
+instance (HasAbilities env ActionType, HasGame env) => HasAbilities env LocationId where
   getAbilities iid window lid = getAbilities iid window =<< getLocation lid
 
 runPreGameMessage

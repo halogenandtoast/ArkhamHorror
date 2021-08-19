@@ -8,8 +8,13 @@ import Arkham.Prelude
 import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
+import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 newtype Oops = Oops EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
@@ -18,12 +23,27 @@ newtype Oops = Oops EventAttrs
 oops :: EventCard Oops
 oops = event Oops Cards.oops
 
-instance RunMessage env Oops where
+instance
+  ( HasId LocationId env InvestigatorId
+  , Query EnemyMatcher env
+  )
+  => RunMessage env Oops where
   runMessage msg e@(Oops attrs) = case msg of
-    InvestigatorPlayEvent iid eid (Just (EnemyTarget targetId)) _
-      | eid == toId attrs -> e <$ pushAll
-        [ CancelFailedByModifierEffects
-        , InvestigatorDamageEnemy iid targetId
-        , Discard (toTarget attrs)
-        ]
+    InvestigatorPlayEvent iid eid _ [Window Timing.After (Window.FailAttackEnemy _ targetId _)]
+      | eid == toId attrs
+      -> do
+        location <- getId @LocationId iid
+        enemies <- filter (/= targetId)
+          <$> selectList (EnemyAt $ LocationWithId location)
+        let
+          damageMsg = case enemies of
+            [] -> error "event should not have been playable"
+            [x] -> InvestigatorDamageEnemy iid x
+            xs -> chooseOne
+              iid
+              [ TargetLabel (EnemyTarget x) [InvestigatorDamageEnemy iid x]
+              | x <- xs
+              ]
+        e <$ pushAll
+          [CancelFailedByModifierEffects, damageMsg, Discard (toTarget attrs)]
     _ -> Oops <$> runMessage msg attrs

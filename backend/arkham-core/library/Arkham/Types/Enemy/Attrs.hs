@@ -679,7 +679,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
                <> [InvestigatorDamageEnemy iid enemyId]
                <> afterWindows
                )
-    After (FailedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ _)
+    After (FailedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ n)
       | isTarget a target
       -> do
         keywords <- getModifiedKeywords a
@@ -689,7 +689,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
             [ FailedAttackEnemy iid enemyId
             , CheckWindow
               iid
-              [Window Timing.After (Window.FailAttackEnemy iid enemyId)]
+              [Window Timing.After (Window.FailAttackEnemy iid enemyId n)]
             ]
     EnemyAttackIfEngaged eid miid | eid == enemyId -> a <$ case miid of
       Just iid | iid `elem` enemyEngagedInvestigators ->

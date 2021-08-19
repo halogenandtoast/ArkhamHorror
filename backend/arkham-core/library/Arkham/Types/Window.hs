@@ -45,7 +45,7 @@ data WindowType
   | EnemySpawns EnemyId LocationId
   | EnterPlay Target
   | Entering InvestigatorId LocationId
-  | FailAttackEnemy InvestigatorId EnemyId
+  | FailAttackEnemy InvestigatorId EnemyId Int
   | FailInvestigationSkillTest InvestigatorId Int
   | FailSkillTest InvestigatorId Int
   | FailSkillTestAtOrLess InvestigatorId Int

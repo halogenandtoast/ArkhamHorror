@@ -1269,6 +1269,14 @@ windowMatches iid source window' = \case
             (&&)
             (matchWho iid who whoMatcher)
             (gameValueMatches n gameValueMatcher)
+        Window t (Window.FailAttackEnemy who enemyId n) | whenMatcher == t ->
+          case skillMatcher of
+            Matcher.WhileAttackingAnEnemy enemyMatcher -> andM
+              [ matchWho iid who whoMatcher
+              , gameValueMatches n gameValueMatcher
+              , enemyMatches enemyId enemyMatcher
+              ]
+            _ -> pure False
         Window t (Window.FailSkillTest who n)
           | whenMatcher == t && skillMatcher == Matcher.AnySkillTest -> liftA2
             (&&)

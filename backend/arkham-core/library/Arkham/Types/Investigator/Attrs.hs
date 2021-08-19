@@ -512,7 +512,12 @@ getCanAfford a@InvestigatorAttrs {..} actionType = do
   pure $ actionCost <= investigatorRemainingActions
 
 getFastIsPlayable
-  :: (HasCallStack, MonadReader env m, CanCheckPlayable env, MonadIO m)
+  :: ( HasCallStack
+     , MonadReader env m
+     , HasQueue env
+     , CanCheckPlayable env
+     , MonadIO m
+     )
   => InvestigatorAttrs
   -> [Window]
   -> Card
@@ -543,7 +548,12 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
     else go (m - 1) (d, PlayerCard c : h, cs)
 
 getPlayableCards
-  :: (HasCallStack, MonadReader env m, CanCheckPlayable env, MonadIO m)
+  :: ( HasCallStack
+     , HasQueue env
+     , MonadReader env m
+     , CanCheckPlayable env
+     , MonadIO m
+     )
   => InvestigatorAttrs
   -> [Window]
   -> m [Card]
@@ -553,7 +563,7 @@ getPlayableCards a@InvestigatorAttrs {..} windows = do
   pure $ playableHandCards <> playableDiscards
 
 getPlayableDiscards
-  :: (MonadReader env m, CanCheckPlayable env, MonadIO m)
+  :: (MonadReader env m, HasQueue env, CanCheckPlayable env, MonadIO m)
   => InvestigatorAttrs
   -> [Window]
   -> m [Card]

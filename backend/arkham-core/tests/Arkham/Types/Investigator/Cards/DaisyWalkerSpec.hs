@@ -27,7 +27,7 @@ spec = describe "Daisy Walker" $ do
               `shouldReturn` True
 
   context "elder sign" $ do
-    it "allows you to draw one card for each Tome you control" $ do
+    it "forces you to draw one card for each Tome you control" $ do
       let daisyWalker = lookupInvestigator "01002"
       deckCards <- testPlayerCards 2
       tome1 <- createAsset <$> genPlayerCard Cards.oldBookOfLore
@@ -45,11 +45,5 @@ spec = describe "Daisy Walker" $ do
             runMessages
             chooseOnlyOption "start skill test"
             chooseOnlyOption "apply results"
-            chooseOptionMatching
-              "draw cards"
-              (\case
-                DrawCards{} -> True
-                _ -> False
-              )
             (handOf <$> updated daisyWalker)
               `shouldMatchListM` map PlayerCard deckCards

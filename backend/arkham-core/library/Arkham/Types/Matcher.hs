@@ -332,7 +332,7 @@ data WindowMatcher
   | RevealChaosToken Timing Who TokenMatcher
   | WouldRevealChaosToken Timing Who
   | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
-  | PlacedCounter Timing Who CounterMatcher
+  | PlacedCounter Timing Who CounterMatcher ValueMatcher
   | WouldHaveSkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | EnemySpawns Timing Where EnemyMatcher
   | FastPlayerWindow
@@ -421,7 +421,7 @@ data WindowMythosStepMatcher = WhenAllDrawEncounterCard
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data CounterMatcher = HorrorCounter
+data CounterMatcher = HorrorCounter | DamageCounter
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

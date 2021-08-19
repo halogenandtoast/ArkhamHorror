@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+
 module Arkham.Types.Game.Helpers where
 
 import Arkham.Prelude
@@ -336,9 +337,6 @@ getCanAffordCost iid source mAction windows = \case
           )
       >= n
 
-isForcedAction :: Ability -> Bool
-isForcedAction ability = abilityType ability == LegacyForcedAbility
-
 instance
   ( HasCostPayment env
   , HasList UsedAbility env ()
@@ -362,13 +360,21 @@ instance
           AssetSource aid -> insertSet Neutral <$> getSet aid
           _ -> pure $ singleton Neutral
         let
+          -- Lola Hayes: Forced abilities will always trigger
           prevents (CanOnlyUseCardsInRole role) =
             null (singleton role `intersect` cardClasses)
+              && not (isForcedAbility ability)
           prevents _ = False
-        if any prevents investigatorModifiers
+          -- If the window is fast we only permit fast abilities, but forced
+          -- abilities need to be everpresent so we include them
+          needsToBeFast =
+            windowType window
+              == Window.FastPlayerWindow
+              && (not (isFastAbility ability) || isForcedAbility ability)
+        if any prevents investigatorModifiers || needsToBeFast
           then pure Nothing
           else pure $ Just $ applyAbilityModifiers ability modifiers'
-    let forcedActions = nub $ filter isForcedAction actions''
+    let forcedActions = nub $ filter isForcedAbility actions''
     forcedActions' <- filterM (getCanAffordAbility iid) forcedActions
     if null forcedActions'
       then filterM
@@ -1185,13 +1191,18 @@ windowMatches
   -> m Bool
 windowMatches iid source window' = \case
   Matcher.AnyWindow -> pure True
-  Matcher.PlacedCounter whenMatcher whoMatcher counterMatcher ->
+  Matcher.PlacedCounter whenMatcher whoMatcher counterMatcher valueMatcher ->
     case window' of
-      Window t (Window.PlacedHorror iid')
-        | t == whenMatcher && counterMatcher == Matcher.HorrorCounter -> matchWho
-          iid
-          iid'
-          whoMatcher
+      Window t (Window.PlacedHorror iid' n)
+        | t == whenMatcher && counterMatcher == Matcher.HorrorCounter -> liftA2
+          (&&)
+          (matchWho iid iid' whoMatcher)
+          (gameValueMatches n valueMatcher)
+      Window t (Window.PlacedDamage iid' n)
+        | t == whenMatcher && counterMatcher == Matcher.DamageCounter -> liftA2
+          (&&)
+          (matchWho iid iid' whoMatcher)
+          (gameValueMatches n valueMatcher)
       _ -> pure False
   Matcher.RevealLocation timingMatcher whoMatcher locationMatcher ->
     case window' of

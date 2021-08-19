@@ -29,7 +29,7 @@ spec = describe "Fire Axe" $ do
         )
       $ do
           runMessages
-          [doFight] <- getAbilitiesOf investigator NonFast fireAxe
+          [doFight] <- getAbilitiesOf investigator nonFast fireAxe
           push $ UseAbility (toId investigator) doFight
           runMessages
           chooseOnlyOption "Fight enemy"
@@ -57,7 +57,7 @@ spec = describe "Fire Axe" $ do
         )
       $ do
           runMessages
-          [doFight] <- getAbilitiesOf investigator NonFast fireAxe
+          [doFight] <- getAbilitiesOf investigator nonFast fireAxe
           push $ UseAbility (toId investigator) doFight
           runMessages
           chooseOnlyOption "Fight enemy"
@@ -96,7 +96,7 @@ spec = describe "Fire Axe" $ do
         )
       $ do
           runMessages
-          [doFight] <- getAbilitiesOf investigator NonFast fireAxe
+          [doFight] <- getAbilitiesOf investigator nonFast fireAxe
           push $ UseAbility (toId investigator) doFight
           runMessages
           chooseOnlyOption "Fight enemy"
@@ -135,7 +135,7 @@ spec = describe "Fire Axe" $ do
         )
       $ do
           runMessages
-          [doFight] <- getAbilitiesOf investigator NonFast fireAxe
+          [doFight] <- getAbilitiesOf investigator nonFast fireAxe
           push $ UseAbility (toId investigator) doFight
           runMessages
           chooseOnlyOption "Fight enemy"

@@ -574,14 +574,14 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
             [ EnemyEngageInvestigator eid investigatorId
             | investigatorId <- investigatorIds
             ]
-          else unless
-            (null investigatorIds)
-            (push $ chooseOne
+          else case investigatorIds of
+            [] -> pure ()
+            [x] -> push $ EnemyEngageInvestigator eid x
+            xs -> push $ chooseOne
               leadInvestigatorId
               [ EnemyEngageInvestigator eid investigatorId
-              | investigatorId <- investigatorIds
+              | investigatorId <- xs
               ]
-            )
         )
     HuntersMove | null enemyEngagedInvestigators && not enemyExhausted -> do
       keywords <- getModifiedKeywords a

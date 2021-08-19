@@ -59,7 +59,8 @@ data WindowType
   | PassSkillTest (Maybe Action) Source InvestigatorId Int
   | PhaseBegins Phase
   | PhaseEnds Phase
-  | PlacedHorror InvestigatorId
+  | PlacedHorror InvestigatorId Int
+  | PlacedDamage InvestigatorId Int
   | PlayCard InvestigatorId Card
   | PutLocationIntoPlay InvestigatorId LocationId
   | RevealLocation InvestigatorId LocationId

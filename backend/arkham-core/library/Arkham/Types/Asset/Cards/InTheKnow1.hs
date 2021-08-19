@@ -36,7 +36,7 @@ instance HasAbilities env InTheKnow1 where
 
 instance AssetRunner env => RunMessage env InTheKnow1 where
   runMessage msg a@(InTheKnow1 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source windows 1 _ | isSource attrs source -> do
       investigatorLocation <- getId @LocationId iid
       locations <- selectList $ RevealedLocation <> InvestigatableLocation
       locationsWithInvestigate <- concat <$> for
@@ -51,7 +51,7 @@ instance AssetRunner env => RunMessage env InTheKnow1 where
           [ TargetLabel
               (LocationTarget location)
               [ SetLocationAsIf iid location
-              , UseAbility iid investigate
+              , UseAbility iid investigate windows
               , SetLocationAsIf iid investigatorLocation
               ]
           | (location, investigate) <- locationsWithInvestigate

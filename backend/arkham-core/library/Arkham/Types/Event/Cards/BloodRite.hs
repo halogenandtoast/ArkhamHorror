@@ -6,7 +6,6 @@ module Arkham.Types.Event.Cards.BloodRite
 import Arkham.Prelude
 
 import qualified Arkham.Event.Cards as Cards
-import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -25,14 +24,20 @@ bloodRite = event BloodRite Cards.bloodRite
 
 instance EventRunner env => RunMessage env BloodRite where
   runMessage msg e@(BloodRite attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> e <$ pushAll
+    InvestigatorPlayEvent iid eid _ windows | eid == eventId -> e <$ pushAll
       [ DrawCards iid 2 False
-      , PayForCardAbility iid (EventSource eid) (Just $ IntMetadata 0) 1
+      , PayForCardAbility
+        iid
+        (EventSource eid)
+        windows
+        1
+        (DiscardCardPayment [])
       , Discard (toTarget attrs)
       ]
-    PayForCardAbility iid source meta@(Just (IntMetadata n)) 1
-      | isSource attrs source -> if n == 2
-        then e <$ push (UseCardAbility iid source meta 1 NoPayment)
+    PayForCardAbility iid source windows 1 payment@(DiscardCardPayment discardedCards)
+      | isSource attrs source
+      -> if length discardedCards == 2
+        then e <$ push (UseCardAbility iid source windows 1 payment)
         else do
           cards <- map unDiscardableHandCard <$> getList iid
           e <$ push
@@ -42,23 +47,27 @@ instance EventRunner env => RunMessage env BloodRite where
                   , PayForCardAbility
                     iid
                     source
-                    (Just (IntMetadata $ n + 1))
+                    windows
                     1
+                    (DiscardCardPayment $ card : discardedCards)
                   ]
               | card <- cards
               ]
             <> [ Label
-                   ("Continue having discarded " <> tshow n <> " cards")
-                   [UseCardAbility iid source meta 1 NoPayment]
+                   ("Continue having discarded "
+                   <> tshow (length discardedCards)
+                   <> " cards"
+                   )
+                   [UseCardAbility iid source windows 1 payment]
                ]
             )
-    UseCardAbility iid source (Just (IntMetadata n)) 1 _
+    UseCardAbility iid source _ 1 (DiscardCardPayment xs)
       | isSource attrs source -> do
         locationId <- getId @LocationId iid
         enemyIds <- getSetList @EnemyId locationId
         e <$ pushAll
           (replicate
-            n
+            (length xs)
             (chooseOne iid
             $ [Label "Gain Resource" [TakeResources iid 1 False]]
             <> [ Label

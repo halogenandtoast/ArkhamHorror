@@ -16,6 +16,8 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Source
 import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 newtype GuardDog = GuardDog AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
@@ -38,8 +40,9 @@ instance HasAbilities env GuardDog where
 
 instance (AssetRunner env) => RunMessage env GuardDog where
   runMessage msg a@(GuardDog attrs) = case msg of
-    UseCardAbility _ source (Just (SourceMetadata (EnemySource eid))) 1 _
-      | isSource attrs source -> a <$ push
+    UseCardAbility _ source [Window Timing.When (Window.DealtDamage (EnemySource eid) _)] 1 _
+      | isSource attrs source
+      -> a <$ push
         (chooseOne
           (getInvestigator attrs)
           [ EnemyDamage eid (getInvestigator attrs) (toSource attrs) 1

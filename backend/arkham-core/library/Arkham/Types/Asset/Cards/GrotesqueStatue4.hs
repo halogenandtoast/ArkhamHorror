@@ -17,6 +17,8 @@ import Arkham.Types.Criteria
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 newtype GrotesqueStatue4 = GrotesqueStatue4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
@@ -38,8 +40,9 @@ instance HasAbilities env GrotesqueStatue4 where
 
 instance AssetRunner env => RunMessage env GrotesqueStatue4 where
   runMessage msg a@(GrotesqueStatue4 attrs) = case msg of
-    UseCardAbility iid source (Just (SourceMetadata drawSource)) 1 _
-      | isSource attrs source -> do
+    UseCardAbility iid source [Window Timing.When (Window.WouldRevealChaosToken drawSource _)] 1 _
+      | isSource attrs source
+      -> do
         when (useCount (assetUses attrs) == 1) $ push (Discard (toTarget attrs))
         a <$ push
           (ReplaceCurrentDraw drawSource iid

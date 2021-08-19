@@ -24,6 +24,8 @@ spec = do
           logger
           investigator
           [ addToHand investigator (PlayerCard dodge)
+          , enemySpawn location enemy
+          , moveTo investigator location
           , enemyAttack investigator enemy
           ]
           ((enemiesL %~ insertEntity enemy)

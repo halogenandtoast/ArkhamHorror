@@ -17,6 +17,8 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 newtype LuckyDice2 = LuckyDice2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
@@ -34,7 +36,9 @@ instance HasAbilities env LuckyDice2 where
 
 instance AssetRunner env => RunMessage env LuckyDice2 where
   runMessage msg a@(LuckyDice2 attrs) = case msg of
-    UseCardAbility iid source (Just (TargetMetadata target@(TokenTarget _))) 1 _
+    UseCardAbility iid source [Window _ (Window.RevealToken _ token)] 1 _
       | isSource attrs source -> a <$ pushAll
-        [CreateEffect "02230" Nothing source target, DrawAnotherToken iid]
+        [ CreateEffect "02230" Nothing source (TokenTarget token)
+        , DrawAnotherToken iid
+        ]
     _ -> LuckyDice2 <$> runMessage msg attrs

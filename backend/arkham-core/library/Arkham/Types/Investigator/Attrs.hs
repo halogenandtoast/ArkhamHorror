@@ -774,6 +774,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   (abilityEffect a $ mconcat additionalCosts)
                   (toSource a)
                   (toTarget a)
+                  []
               ]
             <> msgs
             )
@@ -1702,8 +1703,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       (pushAll
         [ShuffleDiscardBackIn iid, InvestigatorDamage iid EmptyDeckSource 0 1]
       )
-  UseAbility iid ability@Ability {..} | iid == investigatorId ->
-    a <$ push (CreatePayAbilityCostEffect ability abilitySource (toTarget a))
+  UseAbility iid ability@Ability {..} windows | iid == investigatorId ->
+    a <$ push
+      (CreatePayAbilityCostEffect ability abilitySource (toTarget a) windows)
   AllDrawCardAndResource | not (a ^. defeatedL || a ^. resignedL) -> do
     unlessM (hasModifier a CannotDrawCards)
       $ push (DrawCards investigatorId 1 False)
@@ -1925,6 +1927,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
          (abilityEffect a cost)
          (toSource a)
          (toTarget a)
+         []
      ]
     <> [ TakenAction iid action | action <- maybeToList mAction ]
     )

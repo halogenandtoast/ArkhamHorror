@@ -32,6 +32,7 @@ import Arkham.Types.Direction
 import Arkham.Types.Effect
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Enemy
+import Arkham.Types.EntityInstance
 import Arkham.Types.Event
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameRunner
@@ -2491,7 +2492,7 @@ runGameMessage msg g = case msg of
   AfterEnterLocation iid lid -> do
     msgs <- checkWindows [Window Timing.After (Window.Entering iid lid)]
     g <$ pushAll msgs
-  CreateEffect cardCode meffectMetadata source target -> do
+  CreateEffect cardCode meffectMetadata source target windows -> do
     (effectId, effect) <- createEffect cardCode meffectMetadata source target
     push (CreatedEffect effectId meffectMetadata source target)
     pure $ g & effectsL %~ insertMap effectId effect
@@ -2505,9 +2506,9 @@ runGameMessage msg g = case msg of
         target
       )
     pure $ g & effectsL %~ insertMap effectId effect
-  CreatePayAbilityCostEffect ability source target -> do
+  CreatePayAbilityCostEffect ability source target windows -> do
     (effectId, effect) <- createPayForAbilityEffect ability source target
-    push (CreatedEffect effectId (Just $ EffectAbility ability) source target)
+    push (CreatedEffect effectId (Just $ EffectAbility ability) source target windows)
     pure $ g & effectsL %~ insertMap effectId effect
   CreateWindowModifierEffect effectWindow effectMetadata source target -> do
     (effectId, effect) <- createWindowModifierEffect
@@ -3725,11 +3726,11 @@ instance (HasQueue env, HasGame env) => RunMessage env Game where
       >>= traverseOf (skillTestL . traverse) (runMessage msg)
       >>= traverseOf (skillsL . traverse) (runMessage msg)
       >>= traverseOf (investigatorsL . traverse) (runMessage msg)
-      -- >>= traverseOf
-      --       (discardL . traverse)
-      --       (\c -> c <$ runMessage
-      --         (maskedMsg (InDiscard (gameLeadInvestigatorId g)))
-      --         (toCardInstance (gameLeadInvestigatorId g) (EncounterCard c))
-      --       )
+      >>= traverseOf
+            (discardL . traverse)
+            (\c -> c <$ runMessage
+              (maskedMsg (InDiscard (gameLeadInvestigatorId g)))
+              (toCardInstance (gameLeadInvestigatorId g) (EncounterCard c))
+            )
       >>= runGameMessage msg
-    -- where maskedMsg f = if doNotMask msg then msg else f msg
+    where maskedMsg f = if doNotMask msg then msg else f msg

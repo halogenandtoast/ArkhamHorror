@@ -66,7 +66,7 @@ instance InvestigatorRunner env => HasAbilities env WendyAdams where
 
 instance (InvestigatorRunner env) => RunMessage env WendyAdams where
   runMessage msg i@(WendyAdams attrs@InvestigatorAttrs {..}) = case msg of
-    UseCardAbility _ (InvestigatorSource iid) (Just (TargetMetadata (TokenTarget token))) 1 _
+    UseCardAbility _ (InvestigatorSource iid) [Window _ (Window.RevealToken _ token)] 1 _
       | iid == investigatorId
       -> do
         cancelToken token

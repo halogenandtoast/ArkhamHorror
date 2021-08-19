@@ -38,7 +38,7 @@ instance HasModifiersFor env Cnidathqua where
   getModifiersFor _ _ _ = pure []
 
 instance EnemyAttrsHasAbilities env => HasAbilities env Cnidathqua where
-  getAbilities i (Window Timing.After (FailAttackEnemy who eid)) (Cnidathqua attrs)
+  getAbilities i (Window Timing.After (FailAttackEnemy who eid _)) (Cnidathqua attrs)
     | eid == toId attrs && i == who
     = pure [mkAbility attrs 1 LegacyForcedAbility]
   getAbilities i window (Cnidathqua attrs) = getAbilities i window attrs

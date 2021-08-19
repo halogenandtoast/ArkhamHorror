@@ -32,14 +32,14 @@ newtype PayForAbilityEffect = PayForAbilityEffect (EffectAttrs `With` Payment)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 payForAbilityEffect
-  :: EffectId -> Ability -> Source -> Target -> PayForAbilityEffect
-payForAbilityEffect eid ability source target =
+  :: EffectId -> Ability -> Source -> Target -> [Window] -> PayForAbilityEffect
+payForAbilityEffect eid ability source target windows =
   PayForAbilityEffect $ (`with` NoPayment) $ EffectAttrs
     { effectId = eid
     , effectSource = source
     , effectTarget = target
     , effectCardCode = Nothing
-    , effectMetadata = Just (EffectAbility ability)
+    , effectMetadata = Just (EffectAbility (ability, windows))
     , effectTraits = mempty
     , effectWindow = Nothing
     }
@@ -163,7 +163,7 @@ instance
   )
   => RunMessage env PayForAbilityEffect where
   runMessage msg e@(PayForAbilityEffect (attrs `With` payments)) = case msg of
-    CreatedEffect eid (Just (EffectAbility Ability {..})) source (InvestigatorTarget iid)
+    CreatedEffect eid (Just (EffectAbility (Ability {..}, _))) source (InvestigatorTarget iid)
       | eid == toId attrs
       -> do
         push (PayAbilityCostFinished (toId attrs) source iid)
@@ -381,9 +381,9 @@ instance
       pure $ PayForAbilityEffect (attrs `with` (payments <> payment))
     PayAbilityCostFinished eid source iid | eid == toId attrs ->
       case effectMetadata attrs of
-        Just (EffectAbility Ability {..}) -> e <$ pushAll
+        Just (EffectAbility (Ability {..}, windows)) -> e <$ pushAll
           [ DisableEffect $ toId attrs
-          , UseCardAbility iid source abilityMetadata abilityIndex payments
+          , UseCardAbility iid source windows abilityIndex payments
           ]
         _ -> e <$ push (DisableEffect $ toId attrs)
     _ -> PayForAbilityEffect . (`with` payments) <$> runMessage msg attrs

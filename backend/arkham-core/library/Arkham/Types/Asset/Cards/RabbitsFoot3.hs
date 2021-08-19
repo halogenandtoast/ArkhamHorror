@@ -16,6 +16,8 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 newtype RabbitsFoot3 = RabbitsFoot3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
@@ -33,7 +35,7 @@ instance HasAbilities env RabbitsFoot3 where
 
 instance AssetRunner env => RunMessage env RabbitsFoot3 where
   runMessage msg a@(RabbitsFoot3 attrs) = case msg of
-    UseCardAbility iid source (Just (IntMetadata x)) 1 _
+    UseCardAbility iid source [Window _ (Window.FailSkillTest _ x)] 1 _
       | isSource attrs source -> a <$ push
         (SearchTopOfDeck
           iid

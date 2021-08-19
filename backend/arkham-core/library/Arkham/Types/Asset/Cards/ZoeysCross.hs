@@ -14,8 +14,9 @@ import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 newtype ZoeysCross = ZoeysCross AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
@@ -33,6 +34,6 @@ instance HasAbilities env ZoeysCross where
 
 instance (AssetRunner env) => RunMessage env ZoeysCross where
   runMessage msg a@(ZoeysCross attrs) = case msg of
-    UseCardAbility iid source (Just (TargetMetadata (EnemyTarget eid))) 1 _
+    UseCardAbility iid source [Window _ (Window.EnemyEngaged _ eid)] 1 _
       | isSource attrs source -> a <$ push (EnemyDamage eid iid source 1)
     _ -> ZoeysCross <$> runMessage msg attrs

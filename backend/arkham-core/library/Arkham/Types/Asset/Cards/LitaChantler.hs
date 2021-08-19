@@ -18,6 +18,8 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 newtype LitaChantler = LitaChantler AssetAttrs
   deriving anyclass IsAsset
@@ -57,8 +59,10 @@ instance HasAbilities env LitaChantler where
 
 instance AssetRunner env => RunMessage env LitaChantler where
   runMessage msg a@(LitaChantler attrs) = case msg of
-    UseCardAbility _ source (Just (TargetMetadata target)) 1 _
-      | isSource attrs source -> do
-        a <$ push (skillTestModifier attrs target (DamageTaken 1))
+    UseCardAbility _ source [Window Timing.When (Window.SuccessfulAttackEnemy _ enemyId _)] 1 _
+      | isSource attrs source
+      -> do
+        a <$ push
+          (skillTestModifier attrs (EnemyTarget enemyId) (DamageTaken 1))
     _ -> LitaChantler <$> runMessage msg attrs
 

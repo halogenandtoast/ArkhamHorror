@@ -666,13 +666,13 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
           skillType
           enemyFight'
         )
-    After (PassedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ _)
+    After (PassedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ n)
       | isTarget a target
       -> do
         whenWindows <- checkWindows
-          [Window Timing.When (Window.SuccessfulAttackEnemy iid enemyId)]
+          [Window Timing.When (Window.SuccessfulAttackEnemy iid enemyId n)]
         afterWindows <- checkWindows
-          [Window Timing.After (Window.SuccessfulAttackEnemy iid enemyId)]
+          [Window Timing.After (Window.SuccessfulAttackEnemy iid enemyId n)]
         a
           <$ pushAll
                (whenWindows

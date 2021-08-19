@@ -67,7 +67,7 @@ data WindowType
   | RevealToken InvestigatorId Token
   | RevealTokenWithNegativeModifier InvestigatorId Token
   | SkillTest SkillType
-  | SuccessfulAttackEnemy InvestigatorId EnemyId
+  | SuccessfulAttackEnemy InvestigatorId EnemyId Int
   | SuccessfulInvestigation InvestigatorId LocationId
   | TurnBegins InvestigatorId
   | TurnEnds InvestigatorId

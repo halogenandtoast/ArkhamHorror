@@ -15,8 +15,9 @@ import Arkham.Types.Criteria
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Phase
-import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 newtype TheGoldPocketWatch4 = TheGoldPocketWatch4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
@@ -37,7 +38,7 @@ instance AssetRunner env => RunMessage env TheGoldPocketWatch4 where
   runMessage msg a@(TheGoldPocketWatch4 attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ pushAll [RemoveFromGame (toTarget attrs), EndPhase]
-    UseCardAbility _ source (Just (TargetMetadata (PhaseTarget p))) 2 _
+    UseCardAbility _ source [Window _ (Window.PhaseEnds p)] 2 _
       | isSource attrs source -> do
         let
           phaseMsg = case p of

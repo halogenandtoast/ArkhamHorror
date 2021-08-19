@@ -73,6 +73,7 @@ instance LocationRunner env => RunMessage env PassengerCar_169 where
                   (abilityEffect attrs cost)
                   (toSource attrs)
                   (toTarget attrs)
+                  []
               ]
             ]
           )

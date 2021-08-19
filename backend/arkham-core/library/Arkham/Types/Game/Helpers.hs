@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 
 module Arkham.Types.Game.Helpers where
 
@@ -1289,6 +1290,14 @@ windowMatches iid source window' = \case
             (&&)
             (matchWho iid who whoMatcher)
             (gameValueMatches n gameValueMatcher)
+          Window t (Window.SuccessfulAttackEnemy who enemyId n)
+            | whenMatcher == t -> case skillMatcher of
+              Matcher.WhileAttackingAnEnemy enemyMatcher -> andM
+                [ matchWho iid who whoMatcher
+                , gameValueMatches n gameValueMatcher
+                , enemyMatches enemyId enemyMatcher
+                ]
+              _ -> pure False
           _ -> pure False
       Matcher.AnyResult -> case window' of
         Window t (Window.FailSkillTest who _) | whenMatcher == t ->

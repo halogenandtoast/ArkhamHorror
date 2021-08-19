@@ -59,36 +59,44 @@ skillTypes =
 
 instance AssetRunner env => RunMessage env TheRedGlovedMan5 where
   runMessage msg a@(TheRedGlovedMan5 (attrs `With` metadata)) = case msg of
-    UseCardAbility iid source Nothing 1 p | isSource attrs source -> a <$ push
+    UseCardAbility iid source windows 1 p | isSource attrs source -> a <$ push
       (chooseOne
         iid
         [ Label
             label
-            [UseCardAbility iid source (Just (SkillChoiceMetadata [s])) 1 p]
+            [ UseCardAbilityChoice
+                iid
+                source
+                windows
+                1
+                p
+                (SkillChoiceMetadata s)
+            ]
         | (label, s) <- skillTypes
         ]
       )
-    UseCardAbility iid source (Just (SkillChoiceMetadata [c])) 1 p
-      | isSource attrs source -> a <$ push
-        (chooseOne
-          iid
-          [ Label
-              label
-              [ UseCardAbility
-                  iid
-                  source
-                  (Just (SkillChoiceMetadata [c, s]))
-                  1
-                  p
+    UseCardAbilityChoice iid source windows 1 p (SkillChoiceMetadata c)
+      | isSource attrs source -> case metadata of
+        Metadata [] -> do
+          push
+            (chooseOne
+              iid
+              [ Label
+                  label
+                  [ UseCardAbilityChoice
+                      iid
+                      source
+                      windows
+                      1
+                      p
+                      (SkillChoiceMetadata s)
+                  ]
+              | (label, s) <- filter ((/= c) . snd) skillTypes
               ]
-          | (label, s) <- filter ((/= c) . snd) skillTypes
-          ]
-        )
-    UseCardAbility _ source (Just (SkillChoiceMetadata [c, d])) 1 _
-      | isSource attrs source
-      -> pure $ TheRedGlovedMan5 $ attrs `with` Metadata [c, d]
-    UseCardAbility _ source (Just _) 1 _ | isSource attrs source ->
-      error "too many skills"
+            )
+          pure $ TheRedGlovedMan5 $ attrs `with` Metadata [c]
+        Metadata [x] -> pure $ TheRedGlovedMan5 $ attrs `with` Metadata [c, x]
+        _ -> error "Only two skills for the red gloved man"
     UseCardAbility _ source _ 2 _ | isSource attrs source ->
       a <$ push (Discard $ toTarget attrs)
     _ -> TheRedGlovedMan5 . (`with` metadata) <$> runMessage msg attrs

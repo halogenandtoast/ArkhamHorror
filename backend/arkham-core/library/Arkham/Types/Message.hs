@@ -111,7 +111,7 @@ data DeckSignifier = InvestigatorDeck InvestigatorId | EncounterDeck
 -- cards that have been set aside
 
 data Message
-    = UseAbility InvestigatorId Ability
+    = UseAbility InvestigatorId Ability [Window]
     | AddAct ActId
     | AddAgenda AgendaId
     | AddCampaignCardToDeck InvestigatorId CardDef
@@ -203,7 +203,7 @@ data Message
     | CreatedEnemyAt EnemyId LocationId Target
     | CreateEnemyAtLocationMatching Card LocationMatcher
     | CreateEnemyEngagedWithPrey Card
-    | CreatePayAbilityCostEffect Ability Source Target
+    | CreatePayAbilityCostEffect Ability Source Target [Window]
     | CreateWindowModifierEffect EffectWindow (EffectMetadata Message) Source Target
     | CreateTokenEffect (EffectMetadata Message) Source Token
     | CreateStoryAssetAt Card LocationId
@@ -381,7 +381,7 @@ data Message
     | PaidAbilityCost InvestigatorId (Maybe Action) Payment
     | PayCardCost InvestigatorId CardId
     | PayDynamicCardCost InvestigatorId CardId Int [Message]
-    | PayForCardAbility InvestigatorId Source (Maybe AbilityMetadata) Int
+    | PayForCardAbility InvestigatorId Source [Window] Int Payment
     | PayedForDynamicCard InvestigatorId CardId Int Bool
     | PerformEnemyAttack InvestigatorId EnemyId DamageStrategy
     | PlaceClues Target Int
@@ -525,7 +525,8 @@ data Message
     | UnfocusTargets
     | UnfocusTokens
     | UnsetActiveCard
-    | UseCardAbility InvestigatorId Source (Maybe AbilityMetadata) Int Payment
+    | UseCardAbility InvestigatorId Source [Window] Int Payment
+    | UseCardAbilityChoice InvestigatorId Source [Window] Int Payment AbilityMetadata
     | UseLimitedAbility InvestigatorId Ability
     | UseScenarioSpecificAbility InvestigatorId (Maybe Target) Int
     | When Message

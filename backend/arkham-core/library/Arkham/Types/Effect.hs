@@ -22,6 +22,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait
+import Arkham.Types.Window (Window)
 
 createEffect
   :: MonadRandom m
@@ -65,10 +66,15 @@ createTokenEffect effectMetadata source token = do
   pure (eid, buildTokenEffect eid effectMetadata source token)
 
 createPayForAbilityEffect
-  :: MonadRandom m => Ability -> Source -> Target -> m (EffectId, Effect)
-createPayForAbilityEffect ability source target = do
+  :: MonadRandom m
+  => Ability
+  -> Source
+  -> Target
+  -> [Window]
+  -> m (EffectId, Effect)
+createPayForAbilityEffect ability source target windows = do
   eid <- getRandom
-  pure (eid, buildPayForAbilityEffect eid ability source target)
+  pure (eid, buildPayForAbilityEffect eid ability source target windows)
 
 data Effect
   = OnTheLam' OnTheLam
@@ -246,6 +252,7 @@ buildTokenEffect
 buildTokenEffect eid metadata source token =
   TokenEffect' $ tokenEffect eid metadata source token
 
-buildPayForAbilityEffect :: EffectId -> Ability -> Source -> Target -> Effect
-buildPayForAbilityEffect eid ability source target =
-  PayForAbilityEffect' $ payForAbilityEffect eid ability source target
+buildPayForAbilityEffect
+  :: EffectId -> Ability -> Source -> Target -> [Window] -> Effect
+buildPayForAbilityEffect eid ability source target windows =
+  PayForAbilityEffect' $ payForAbilityEffect eid ability source target windows

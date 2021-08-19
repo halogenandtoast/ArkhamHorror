@@ -2349,8 +2349,8 @@ instance HasGame env => HasAbilities env ActionType where
         concatMapM' (getAbilities iid window) (g ^. treacheriesL)
       ActActionType -> concatMapM' (getAbilities iid window) (g ^. actsL)
       AgendaActionType -> concatMapM' (getAbilities iid window) (g ^. agendasL)
-      InvestigatorActionType -> pure []
-        -- concatMapM' (getAbilities iid window) (g ^. investigatorsL)
+      InvestigatorActionType ->
+        concatMapM' (getAbilities iid window) (g ^. investigatorsL)
 
 instance HasGame env => HasId Difficulty env () where
   getId _ = do

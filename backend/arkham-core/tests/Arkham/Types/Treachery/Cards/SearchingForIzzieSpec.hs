@@ -52,7 +52,7 @@ spec = describe "Searching for Izzie" $ do
 
           [searchingForIzzieAction] <- getAbilitiesOf
             investigator
-            NonFast
+            nonFast
             updatedSearchingForIzzie
 
           push $ UseAbility (toId investigator) searchingForIzzieAction

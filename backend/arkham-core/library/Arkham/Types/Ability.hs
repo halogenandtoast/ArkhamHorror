@@ -116,3 +116,33 @@ mkAbility entity idx type' = Ability
 applyAbilityModifiers :: Ability -> [ModifierType] -> Ability
 applyAbilityModifiers a@Ability { abilityType } modifiers =
   a { abilityType = applyAbilityTypeModifiers abilityType modifiers }
+
+isForcedAbility :: Ability -> Bool
+isForcedAbility Ability { abilityType } = go abilityType
+ where
+  go = \case
+    LegacyForcedAbility -> True
+    ForcedAbility{} -> True
+    Objective aType -> go aType
+    FastAbility{} -> False
+    LegacyReactionAbility{} -> False
+    ReactionAbility{} -> False
+    ActionAbility{} -> False
+    ActionAbilityWithSkill{} -> False
+    ActionAbilityWithBefore{} -> False
+    AbilityEffect{} -> False
+
+isFastAbility :: Ability -> Bool
+isFastAbility Ability { abilityType } = go abilityType
+ where
+  go = \case
+    FastAbility{} -> True
+    LegacyForcedAbility -> False
+    ForcedAbility{} -> False
+    Objective aType -> go aType
+    LegacyReactionAbility{} -> False
+    ReactionAbility{} -> False
+    ActionAbility{} -> False
+    ActionAbilityWithSkill{} -> False
+    ActionAbilityWithBefore{} -> False
+    AbilityEffect{} -> False

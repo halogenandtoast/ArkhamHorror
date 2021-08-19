@@ -138,7 +138,13 @@ hasTrauma :: (HasTrauma a) => (Int, Int) -> a -> Bool
 hasTrauma n a = getTrauma a == n
 
 getDoom
-  :: (TargetEntity a, HasGameRef env, HasStdGen env, MonadReader env m)
+  :: ( TargetEntity a
+     , HasGameRef env
+     , HasQueue env
+     , HasStdGen env
+     , MonadReader env m
+     , MonadIO m
+     )
   => a
   -> m Int
 getDoom a = case toTarget a of

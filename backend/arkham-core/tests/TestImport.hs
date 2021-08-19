@@ -49,6 +49,8 @@ import Arkham.Types.GameValue as X
 import Arkham.Types.Helpers as X
 import Arkham.Types.Investigator as X
 import Arkham.Types.Investigator.Attrs
+import qualified Arkham.Types.Investigator.Attrs as Investigator
+import Arkham.Types.Investigator.Cards.JennyBarnes
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location as X
 import Arkham.Types.Location.Attrs
@@ -66,8 +68,10 @@ import Arkham.Types.SkillType as X
 import Arkham.Types.Source as X
 import Arkham.Types.Stats as X
 import Arkham.Types.Target as X
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token as X
 import Arkham.Types.Window as X
+  (Window(..), WindowType(DuringTurn, FastPlayerWindow, NonFast))
 import Control.Lens as X (set, (^?!))
 import Control.Monad.Fail as X
 import Control.Monad.State as X (get)
@@ -103,6 +107,15 @@ refShouldBe :: (HasCallStack, Show a, Eq a, MonadIO m) => IORef a -> a -> m ()
 ref `refShouldBe` y = do
   result <- liftIO $ readIORef ref
   liftIO $ result `shouldBe` y
+
+nonFast :: Window
+nonFast = Window Timing.When NonFast
+
+fastPlayerWindow :: Window
+fastPlayerWindow = Window Timing.When FastPlayerWindow
+
+duringTurn :: InvestigatorId -> Window
+duringTurn = Window Timing.When . DuringTurn
 
 getId
   :: ( HasId id GameEnv a
@@ -163,7 +176,7 @@ getCanAffordCost
   -> Cost
   -> m Bool
 getCanAffordCost iid source maction cost =
-  toGameEnv >>= runReaderT (Helpers.getCanAffordCost iid source maction cost)
+  toGameEnv >>= runReaderT (Helpers.getCanAffordCost iid source maction [] cost)
 
 getModifiers
   :: (MonadReader env m, HasGameRef env, MonadIO m, HasQueue env, HasStdGen env)
@@ -277,6 +290,9 @@ testLocationWithDef defF attrsF = do
       )
     <$> getRandom
 
+-- | We use Jenny Barnes because here abilities are the least
+-- disruptive during tests since they won't add extra windows
+-- or abilities
 testInvestigator
   :: MonadIO m
   => CardCode
@@ -287,7 +303,12 @@ testInvestigator cardCode f =
     investigatorId = InvestigatorId cardCode
     name = mkName (unCardCode cardCode)
     stats = Stats 5 5 5 5 5 5
-  in pure $ baseInvestigator investigatorId name Neutral stats [] f
+  in pure $ JennyBarnes' $ JennyBarnes $ f $ Investigator.baseAttrs
+    investigatorId
+    name
+    Neutral
+    stats
+    []
 
 testConnectedLocations
   :: MonadRandom m

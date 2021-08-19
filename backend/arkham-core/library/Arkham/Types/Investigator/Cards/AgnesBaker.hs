@@ -10,6 +10,7 @@ import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
+import Arkham.Types.GameValue
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message
@@ -43,7 +44,10 @@ instance HasAbilities env AgnesBaker where
           x
           1
           (Self <> EnemyExists (EnemyAt YourLocation))
-          (ReactionAbility (PlacedCounter Timing.When You HorrorCounter) Free)
+          (ReactionAbility
+            (PlacedCounter Timing.When You HorrorCounter (AtLeast $ Static 1))
+            Free
+          )
         & (abilityLimitL .~ PlayerLimit PerPhase 1)
     ]
 

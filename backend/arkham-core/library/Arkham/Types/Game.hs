@@ -2492,7 +2492,7 @@ runGameMessage msg g = case msg of
   AfterEnterLocation iid lid -> do
     msgs <- checkWindows [Window Timing.After (Window.Entering iid lid)]
     g <$ pushAll msgs
-  CreateEffect cardCode meffectMetadata source target windows -> do
+  CreateEffect cardCode meffectMetadata source target -> do
     (effectId, effect) <- createEffect cardCode meffectMetadata source target
     push (CreatedEffect effectId meffectMetadata source target)
     pure $ g & effectsL %~ insertMap effectId effect
@@ -2507,8 +2507,18 @@ runGameMessage msg g = case msg of
       )
     pure $ g & effectsL %~ insertMap effectId effect
   CreatePayAbilityCostEffect ability source target windows -> do
-    (effectId, effect) <- createPayForAbilityEffect ability source target
-    push (CreatedEffect effectId (Just $ EffectAbility ability) source target windows)
+    (effectId, effect) <- createPayForAbilityEffect
+      ability
+      source
+      target
+      windows
+    push
+      (CreatedEffect
+        effectId
+        (Just $ EffectAbility (ability, windows))
+        source
+        target
+      )
     pure $ g & effectsL %~ insertMap effectId effect
   CreateWindowModifierEffect effectWindow effectMetadata source target -> do
     (effectId, effect) <- createWindowModifierEffect
@@ -2838,7 +2848,7 @@ runGameMessage msg g = case msg of
           pure $ g & eventsL %~ insertMap eid event
         _ -> pure g
       EncounterCard _ -> pure g
-  UseAbility iid ability ->
+  UseAbility iid ability _ ->
     pure $ g & usedAbilitiesL %~ ((iid, ability, gameWindowDepth g) :)
   UseLimitedAbility iid ability ->
     pure $ g & usedAbilitiesL %~ ((iid, ability, gameWindowDepth g) :)

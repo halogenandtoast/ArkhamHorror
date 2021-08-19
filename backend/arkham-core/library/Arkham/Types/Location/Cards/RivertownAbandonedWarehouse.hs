@@ -63,7 +63,7 @@ willpowerCount _ = 0
 
 instance LocationRunner env => RunMessage env RivertownAbandonedWarehouse where
   runMessage msg l@(RivertownAbandonedWarehouse attrs) = case msg of
-    UseCardAbility iid source Nothing 1 payments | isSource attrs source -> do
+    UseCardAbility iid source _ 1 payments | isSource attrs source -> do
       let doomToRemove = willpowerCount payments
       cultists <- getSetList Cultist
       l <$ unless

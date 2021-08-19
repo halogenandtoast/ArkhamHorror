@@ -79,7 +79,7 @@ instance InvestigatorRunner env => HasAbilities env DaisyWalkerParallel where
 instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
   runMessage msg i@(DaisyWalkerParallel attrs@InvestigatorAttrs {..}) =
     case msg of
-      UseCardAbility iid (InvestigatorSource iid') _ 1 _
+      UseCardAbility iid (InvestigatorSource iid') windows 1 _
         | investigatorId == iid' -> do
           tomeAssets <- filterM
             ((elem Tome <$>) . getSet)
@@ -97,7 +97,11 @@ instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
               (chooseOneAtATime iid $ map
                 (\(tome, actions) -> TargetLabel
                   (AssetTarget tome)
-                  [Run [chooseOne iid $ map (UseAbility iid) actions]]
+                  [ Run
+                      [ chooseOne iid
+                          $ map (($ windows) . UseAbility iid) actions
+                      ]
+                  ]
                 )
                 pairs'
               )
@@ -108,12 +112,7 @@ instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
         i <$ push
           (chooseOne
             iid
-            [ UseCardAbility
-              iid
-              (TokenEffectSource ElderSign)
-              Nothing
-              2
-              NoPayment
+            [ UseCardAbility iid (TokenEffectSource ElderSign) [] 2 NoPayment
             , Continue "Do not use Daisy's ability"
             ]
           )

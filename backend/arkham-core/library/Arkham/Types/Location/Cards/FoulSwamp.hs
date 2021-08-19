@@ -63,23 +63,23 @@ instance ActionRunner env => HasAbilities env FoulSwamp where
 
 instance LocationRunner env => RunMessage env FoulSwamp where
   runMessage msg l@(FoulSwamp attrs) = case msg of
-    PayForCardAbility iid source meta@(Just (IntMetadata n)) 1
+    PayForCardAbility iid source windows 1 payment@(HorrorPayment n)
       | isSource attrs source -> if n == 3
-        then runMessage (UseCardAbility iid source meta 1 NoPayment) l
+        then runMessage (UseCardAbility iid source windows 1 payment) l
         else do
           push $ chooseOne
             iid
             [ Run
               [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
-              , PayForCardAbility iid source (Just (IntMetadata $ n + 1)) 1
+              , PayForCardAbility iid source windows 1 (HorrorPayment $ n + 1)
               ]
             , Label
               ("Test with +" <> tshow n <> " Willpower")
-              [UseCardAbility iid source meta 1 NoPayment]
+              [UseCardAbility iid source windows 1 payment]
             ]
           pure l
-    UseCardAbility iid source (Just (IntMetadata n)) 1 _
-      | isSource attrs source -> l <$ pushAll
+    UseCardAbility iid source _ 1 (HorrorPayment n) | isSource attrs source ->
+      l <$ pushAll
         [ skillTestModifier
           attrs
           (InvestigatorTarget iid)

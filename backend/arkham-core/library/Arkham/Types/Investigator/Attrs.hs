@@ -607,12 +607,14 @@ canCommitToAnotherLocation attrs = do
 instance HasModifiersFor env InvestigatorAttrs
 
 instance EntityInstanceRunner env => HasAbilities env InvestigatorAttrs where
-  getAbilities iid window attrs | iid == investigatorId attrs = concat <$> for
-    (attrs ^.. handL . traverse . _PlayerCard)
-    (getAbilities iid (Window Timing.When (Window.InHandWindow iid window))
-    . toCardInstance iid
-    . PlayerCard
-    )
+  getAbilities iid window attrs | iid == investigatorId attrs = do
+    let window' = Window Timing.When (Window.InHandWindow iid window)
+    concat <$> for
+      (attrs ^.. handL . traverse . _PlayerCard)
+      (filterM
+          (windowMatches iid (InvestigatorSource iid) window' . abilityWindow)
+      <=< (getAbilities iid window' . toCardInstance iid . PlayerCard)
+      )
   getAbilities _ _ _ = pure []
 
 instance HasTokenValue env InvestigatorAttrs where
@@ -1892,13 +1894,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           )
         else a <$ push
           (chooseOne iid
-          $ [ Run $ if isJust (cdFastWindow $ toCardDef c)
-                then [PlayFastEvent iid (toCardId c) Nothing windows]
-                else
-                  [ PayCardCost iid (toCardId c)
-                    , PlayCard iid (toCardId c) Nothing False
-                    ]
-                    <> [RunWindow iid windows]
+          $ [ Run
+                $ if isJust (cdFastWindow $ toCardDef c)
+                    && toCardType c
+                    == EventType
+                  then
+                    [PlayFastEvent iid (toCardId c) Nothing windows]
+                  else
+                    [ PayCardCost iid (toCardId c)
+                      , PlayCard iid (toCardId c) Nothing False
+                      ]
+                      <> [RunWindow iid windows]
             | c <- playableCards
             ]
           <> map
@@ -2178,9 +2184,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                , isPlayable c && isDynamic c
                ]
             <> [ChooseEndTurn iid]
-            <> map (($ windows) . UseAbility iid) actions
-            <> map (($ windows) . UseAbility iid) fastActions
-            <> map (($ windows) . UseAbility iid) playerWindowActions
+            <> map
+                 (($ windows) . UseAbility iid)
+                 (nub $ actions <> fastActions <> playerWindowActions)
             )
           )
   PlayerWindow iid additionalActions isAdditional | iid /= investigatorId -> do
@@ -2231,10 +2237,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                  | c <- handCards
                  , fastIsPlayable c && isDynamic c
                  ]
-              <> map (($ windows) . UseAbility investigatorId) fastActions
               <> map
                    (($ windows) . UseAbility investigatorId)
-                   playerWindowActions
+                   (nub $ fastActions <> playerWindowActions)
         a <$ unless
           (null choices)
           (push $ AskPlayer $ chooseOne investigatorId choices)

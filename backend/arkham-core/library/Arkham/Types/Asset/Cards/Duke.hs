@@ -65,13 +65,6 @@ dukeInvestigate :: AssetAttrs -> InvestigatorId -> LocationId -> Message
 dukeInvestigate attrs iid lid =
   Investigate iid lid (toSource attrs) SkillIntellect False
 
-isInvestigate :: Ability -> Bool
-isInvestigate ability = case abilityType ability of
-  ActionAbility (Just Action.Investigate) _ -> True
-  ActionAbilityWithBefore (Just Action.Investigate) _ _ -> True
-  ActionAbilityWithBefore _ (Just Action.Investigate) _ -> True
-  _ -> False
-
 instance AssetRunner env => RunMessage env Duke where
   runMessage msg a@(Duke attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
@@ -80,10 +73,11 @@ instance AssetRunner env => RunMessage env Duke where
       lid <- getId @LocationId iid
       investigateAbilities :: [Ability] <-
         filterM
-            (\a' -> liftA2
-              (&&)
-              (pure $ isInvestigate a')
-              (getCanAffordAbility iid a')
+            (andM . sequence
+              [ pure . (`abilityIs` Action.Investigate)
+              , getCanAffordAbility iid
+                . (`applyAbilityModifiers` [ActionCostModifier (-1)])
+              ]
             )
           =<< selectList (ActionOnLocation lid)
       let
@@ -98,7 +92,7 @@ instance AssetRunner env => RunMessage env Duke where
           . (`applyAbilityModifiers` [ActionCostModifier (-1)])
           )
           investigateAbilities
-      accessibleLocationIds <- map unAccessibleLocationId <$> getSetList lid
+      accessibleLocationIds <- selectList (AccessibleTo $ LocationWithId lid)
       a <$ if null accessibleLocationIds
         then pushAll investigateActions
         else push

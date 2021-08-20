@@ -21,6 +21,7 @@ putApiV1ArkhamGameUndoR gameId = do
 
   case arkhamGameChoices of
     [] -> pure ()
+    [_] -> pure () -- can't undo the initial change
     choice : remaining -> do
       writeChannel <- getChannel gameId
 

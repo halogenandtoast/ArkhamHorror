@@ -16,6 +16,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Act
 import Arkham.Types.ActId
 import Arkham.Types.Action (Action, TakenAction)
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Agenda
 import Arkham.Types.Asset
 import Arkham.Types.Asset.Uses (UseType)
@@ -78,7 +79,6 @@ import Arkham.Types.Treachery
 import Arkham.Types.Treachery.Attrs (treacheryOwner)
 import Arkham.Types.Window (Window(..))
 import qualified Arkham.Types.Window as Window
-import Control.Monad.Extra (allM, anyM, mapMaybeM)
 import Control.Monad.Random.Lazy hiding (filterM, foldM)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (filterM, foldM)
@@ -695,9 +695,21 @@ getLocationsMatching = \case
       <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
     filter ((`member` matches) . toId) . toList . view locationsL <$> getGame
   InvestigatableLocation -> toList . view locationsL <$> getGame
+  AccessibleFrom matcher -> do
+    -- returns locations which are accessible from locations found by the matcher
+    accessibleLocations <- map AccessibleLocationId <$> getSetList matcher
+    filter ((`elem` accessibleLocations) . AccessibleLocationId . toId)
+      . toList
+      . view locationsL
+      <$> getGame
+  AccessibleTo matcher -> do
+    -- returns locations which have access to the locations found by the matcher
+    targets <- map AccessibleLocationId <$> getSetList matcher
+    locations <- toList . view locationsL <$> getGame
+    filterM
+      (fmap (\set -> all (`member` set) targets) . getSet . toId)
+      locations
   -- TODO: to lazy to do these right now
-  AccessibleFrom _ -> pure []
-  AccessibleTo _ -> pure []
   LocationWithResources _ -> pure []
   -- these can not be queried
   LocationLeavingPlay -> pure []
@@ -852,7 +864,33 @@ getEnemiesMatching matcher = do
       member iid <$> getSet (toId enemy)
     M.EnemyAt locationMatcher -> \enemy ->
       liftA2 member (getId @LocationId $ toId enemy) (select locationMatcher)
-    CanFightEnemy -> pure . const True -- TODO: Need to implement logic
+    CanFightEnemy -> \enemy -> do
+      let window = Window Timing.When Window.NonFast
+      iid <- view activeInvestigatorIdL <$> getGame
+      getAbilities iid window enemy >>= anyM
+        (andM . sequence
+          [ pure . (`abilityIs` Action.Fight)
+          , getCanPerformAbility iid (InvestigatorSource iid) window
+          ]
+        )
+    CanEvadeEnemy -> \enemy -> do
+      let window = Window Timing.When Window.NonFast
+      iid <- view activeInvestigatorIdL <$> getGame
+      getAbilities iid window enemy >>= anyM
+        (andM . sequence
+          [ pure . (`abilityIs` Action.Evade)
+          , getCanPerformAbility iid (InvestigatorSource iid) window
+          ]
+        )
+    CanEngageEnemy -> \enemy -> do
+      let window = Window Timing.When Window.NonFast
+      iid <- view activeInvestigatorIdL <$> getGame
+      getAbilities iid window enemy >>= anyM
+        (andM . sequence
+          [ pure . (`abilityIs` Action.Engage)
+          , getCanPerformAbility iid (InvestigatorSource iid) window
+          ]
+        )
 
 getAgenda
   :: (HasCallStack, MonadReader env m, HasGame env) => AgendaId -> m Agenda

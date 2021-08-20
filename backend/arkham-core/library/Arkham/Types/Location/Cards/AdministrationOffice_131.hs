@@ -38,7 +38,7 @@ instance HasCount CardCount env InvestigatorId => HasModifiersFor env Administra
       pure $ toModifiers attrs [ CannotInvestigate | cardsInHand <= 4 ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env AdministrationOffice_131 where
+instance HasAbilities env AdministrationOffice_131 where
   getAbilities iid window (AdministrationOffice_131 attrs) =
     getAbilities iid window attrs
 

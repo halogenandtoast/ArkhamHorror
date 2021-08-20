@@ -39,7 +39,7 @@ instance Query AssetMatcher env => HasModifiersFor env TheHiddenChamber where
       )
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env TheHiddenChamber where
+instance HasAbilities env TheHiddenChamber where
   getAbilities iid window (TheHiddenChamber attrs) =
     getAbilities iid window attrs
 

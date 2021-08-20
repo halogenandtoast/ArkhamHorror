@@ -36,7 +36,7 @@ instance HasModifiersFor env AlchemyLabs where
     pure $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env AlchemyLabs where
+instance HasAbilities env AlchemyLabs where
   getAbilities iid window@(Window Timing.When NonFast) (AlchemyLabs attrs@LocationAttrs {..})
     | locationRevealed
     = withBaseActions iid window attrs $ do

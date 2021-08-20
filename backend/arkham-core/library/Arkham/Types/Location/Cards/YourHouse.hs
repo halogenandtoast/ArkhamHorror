@@ -33,7 +33,7 @@ ability attrs =
     { abilityLimit = PlayerLimit PerTurn 1
     }
 
-instance ActionRunner env => HasAbilities env YourHouse where
+instance HasAbilities env YourHouse where
   getAbilities iid window@(Window Timing.When NonFast) (YourHouse attrs@LocationAttrs {..})
     | locationRevealed
     = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]

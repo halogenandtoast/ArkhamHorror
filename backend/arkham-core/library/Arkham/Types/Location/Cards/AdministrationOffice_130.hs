@@ -38,7 +38,7 @@ instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env Admini
       pure $ toModifiers attrs [ CannotInvestigate | resources <= 4 ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env AdministrationOffice_130 where
+instance HasAbilities env AdministrationOffice_130 where
   getAbilities iid window (AdministrationOffice_130 attrs) =
     getAbilities iid window attrs
 

@@ -22,7 +22,7 @@ laBellaLuna =
 
 instance HasModifiersFor env LaBellaLuna
 
-instance ActionRunner env => HasAbilities env LaBellaLuna where
+instance HasAbilities env LaBellaLuna where
   getAbilities = withResignAction
 
 instance LocationRunner env => RunMessage env LaBellaLuna where

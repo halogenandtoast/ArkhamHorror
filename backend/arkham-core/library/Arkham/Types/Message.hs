@@ -376,7 +376,8 @@ data Message
     | NextChaosBagStep Source (Maybe InvestigatorId) RequestedTokenStrategy
     | PassSkillTest
     | PassedSkillTest InvestigatorId (Maybe Action) Source Target SkillType Int
-    | PayAbilityCost Source InvestigatorId (Maybe Action) Cost
+    | PayAbilityCost Source InvestigatorId (Maybe Action) Bool Cost
+    -- ^ Bool is to check if we should ignore additional costs
     | PayAbilityCostFinished EffectId Source InvestigatorId
     | PaidAbilityCost InvestigatorId (Maybe Action) Payment
     | PayCardCost InvestigatorId CardId

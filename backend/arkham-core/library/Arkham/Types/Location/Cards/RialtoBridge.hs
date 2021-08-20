@@ -30,7 +30,7 @@ rialtoBridge = locationWith
 
 instance HasModifiersFor env RialtoBridge
 
-instance ActionRunner env => HasAbilities env RialtoBridge where
+instance HasAbilities env RialtoBridge where
   getAbilities iid window (RialtoBridge attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env RialtoBridge where

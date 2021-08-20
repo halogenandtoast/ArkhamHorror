@@ -25,7 +25,7 @@ ritualGrounds = location
 
 instance HasModifiersFor env RitualGrounds
 
-instance ActionRunner env => HasAbilities env RitualGrounds where
+instance HasAbilities env RitualGrounds where
   getAbilities i window (RitualGrounds attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env RitualGrounds where

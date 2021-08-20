@@ -35,7 +35,7 @@ canalSide = locationWith
 ability :: LocationAttrs -> Ability
 ability attrs = mkAbility attrs 1 (LegacyReactionAbility Free)
 
-instance ActionRunner env => HasAbilities env CanalSide where
+instance HasAbilities env CanalSide where
   getAbilities iid (Window Timing.After (Entering who lid)) (CanalSide attrs)
     | lid == toId attrs && iid == who = pure [ability attrs]
   getAbilities iid window (CanalSide attrs) = getAbilities iid window attrs

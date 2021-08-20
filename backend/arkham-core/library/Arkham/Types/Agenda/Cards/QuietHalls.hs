@@ -11,7 +11,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.ScenarioId
-import Control.Monad.Extra (mapMaybeM)
 
 newtype QuietHalls = QuietHalls AgendaAttrs
   deriving anyclass IsAgenda

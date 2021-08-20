@@ -28,7 +28,7 @@ deepBelowYourHouse = location
 
 instance HasModifiersFor env DeepBelowYourHouse
 
-instance ActionRunner env => HasAbilities env DeepBelowYourHouse where
+instance HasAbilities env DeepBelowYourHouse where
   getAbilities i window (DeepBelowYourHouse attrs) =
     getAbilities i window attrs
 

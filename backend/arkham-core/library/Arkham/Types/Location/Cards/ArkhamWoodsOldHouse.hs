@@ -29,7 +29,7 @@ arkhamWoodsOldHouse = locationWith
 
 instance HasModifiersFor env ArkhamWoodsOldHouse
 
-instance ActionRunner env => HasAbilities env ArkhamWoodsOldHouse where
+instance HasAbilities env ArkhamWoodsOldHouse where
   getAbilities i window (ArkhamWoodsOldHouse attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsOldHouse where

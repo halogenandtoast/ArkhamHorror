@@ -44,7 +44,7 @@ ability attrs =
       (ActionAbility (Just Action.Investigate) (ActionCost 1))
     & (abilityLimitL .~ PlayerLimit PerRound 1)
 
-instance ActionRunner env => HasAbilities env BaseOfTheHill where
+instance HasAbilities env BaseOfTheHill where
   getAbilities iid window@(Window Timing.When NonFast) (BaseOfTheHill attrs)
     | locationRevealed attrs = do
       actions <- withResignAction iid window attrs

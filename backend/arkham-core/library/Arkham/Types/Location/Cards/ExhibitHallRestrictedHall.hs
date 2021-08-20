@@ -41,7 +41,7 @@ instance HasId (Maybe StoryEnemyId) env CardCode => HasModifiersFor env ExhibitH
         _ -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env ExhibitHallRestrictedHall where
+instance HasAbilities env ExhibitHallRestrictedHall where
   getAbilities iid window (ExhibitHallRestrictedHall attrs) =
     getAbilities iid window attrs
 

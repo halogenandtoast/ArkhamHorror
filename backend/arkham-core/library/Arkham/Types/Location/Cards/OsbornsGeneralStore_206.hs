@@ -35,7 +35,7 @@ instance HasModifiersFor env OsbornsGeneralStore_206 where
       [ CannotGainResources | iid `member` locationInvestigators attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env OsbornsGeneralStore_206 where
+instance HasAbilities env OsbornsGeneralStore_206 where
   getAbilities = withDrawCardUnderneathAction
 
 instance LocationRunner env => RunMessage env OsbornsGeneralStore_206 where

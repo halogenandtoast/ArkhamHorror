@@ -26,7 +26,7 @@ administrationBuilding = location
 
 instance HasModifiersFor env AdministrationBuilding
 
-instance ActionRunner env => HasAbilities env AdministrationBuilding where
+instance HasAbilities env AdministrationBuilding where
   getAbilities i window (AdministrationBuilding attrs) =
     getAbilities i window attrs
 

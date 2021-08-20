@@ -24,7 +24,7 @@ graveyard =
 
 instance HasModifiersFor env Graveyard
 
-instance ActionRunner env => HasAbilities env Graveyard where
+instance HasAbilities env Graveyard where
   getAbilities i window (Graveyard attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env Graveyard where

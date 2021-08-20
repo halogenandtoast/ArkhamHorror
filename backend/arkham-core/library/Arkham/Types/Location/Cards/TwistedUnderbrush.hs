@@ -31,7 +31,7 @@ twistedUnderbrush = location
   Moon
   [Diamond, Moon]
 
-instance ActionRunner env => HasAbilities env TwistedUnderbrush where
+instance HasAbilities env TwistedUnderbrush where
   getAbilities iid window@(Window Timing.When NonFast) (TwistedUnderbrush attrs@LocationAttrs {..})
     | locationRevealed
     = withBaseActions iid window attrs $ pure

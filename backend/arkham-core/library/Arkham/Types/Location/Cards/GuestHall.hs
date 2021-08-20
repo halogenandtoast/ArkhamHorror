@@ -35,7 +35,7 @@ instance HasModifiersFor env GuestHall where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env GuestHall where
+instance HasAbilities env GuestHall where
   getAbilities i window (GuestHall attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env GuestHall where

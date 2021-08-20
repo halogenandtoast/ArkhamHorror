@@ -42,7 +42,7 @@ ability attrs =
     { abilityLimit = PlayerLimit PerTurn 1
     }
 
-instance ActionRunner env => HasAbilities env SecurityOffice_129 where
+instance HasAbilities env SecurityOffice_129 where
   getAbilities iid window@(Window Timing.When NonFast) (SecurityOffice_129 attrs)
     = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window (SecurityOffice_129 attrs) =

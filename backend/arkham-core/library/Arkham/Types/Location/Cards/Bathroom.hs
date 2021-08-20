@@ -22,7 +22,7 @@ bathroom = location Bathroom Cards.bathroom 1 (PerPlayer 1) Star [T]
 
 instance HasModifiersFor env Bathroom
 
-instance ActionRunner env => HasAbilities env Bathroom where
+instance HasAbilities env Bathroom where
   getAbilities i window (Bathroom attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env Bathroom where

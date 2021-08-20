@@ -55,7 +55,7 @@ ability attrs = mkAbility
   1
   (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 3])
 
-instance ActionRunner env => HasAbilities env ParlorCar where
+instance HasAbilities env ParlorCar where
   getAbilities iid window@(Window Timing.When NonFast) (ParlorCar attrs)
     | locationRevealed attrs = withBaseActions iid window attrs
     $ pure [locationAbility (ability attrs)]

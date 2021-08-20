@@ -34,7 +34,7 @@ cursedShores = location
   Square
   [Plus, Triangle, Diamond, Hourglass]
 
-instance ActionRunner env => HasAbilities env CursedShores where
+instance HasAbilities env CursedShores where
   getAbilities iid window@(Window Timing.When NonFast) (CursedShores attrs@LocationAttrs {..})
     | locationRevealed
     = withBaseActions iid window attrs $ pure

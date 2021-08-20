@@ -99,17 +99,21 @@ startPayment iid window abilityType abilitySource abilityDoesNotProvokeAttacksOf
       abilityDoesNotProvokeAttacksOfOpportunity
     LegacyForcedAbility -> pure ()
     ForcedAbility _ -> pure ()
-    AbilityEffect cost -> push (PayAbilityCost abilitySource iid Nothing cost)
-    FastAbility cost -> push (PayAbilityCost abilitySource iid Nothing cost)
+    AbilityEffect cost ->
+      push (PayAbilityCost abilitySource iid Nothing False cost)
+    FastAbility cost ->
+      push (PayAbilityCost abilitySource iid Nothing False cost)
     ReactionAbility _ cost ->
-      push (PayAbilityCost abilitySource iid Nothing cost)
+      push (PayAbilityCost abilitySource iid Nothing False cost)
     LegacyReactionAbility cost ->
-      push (PayAbilityCost abilitySource iid Nothing cost)
+      push (PayAbilityCost abilitySource iid Nothing False cost)
     ActionAbilityWithBefore mAction _ cost -> do
       -- we do not know which ability will be chosen
       -- for now we assume this will trigger attacks of opportunity
+      -- we also skip additional cost checks and abilities of this type
+      -- will need to trigger the appropriate check
       pushAll
-        (PayAbilityCost abilitySource iid mAction cost
+        (PayAbilityCost abilitySource iid mAction True cost
         : [ TakenAction iid action | action <- maybeToList mAction ]
         <> [ CheckAttackOfOpportunity iid False
            | not abilityDoesNotProvokeAttacksOfOpportunity
@@ -123,14 +127,14 @@ startPayment iid window abilityType abilitySource abilityDoesNotProvokeAttacksOf
                     , Just Action.Parley
                     ]
         then pushAll
-          (PayAbilityCost abilitySource iid mAction cost
+          (PayAbilityCost abilitySource iid mAction False cost
           : [ TakenAction iid action | action <- maybeToList mAction ]
           <> [ CheckAttackOfOpportunity iid False
              | not abilityDoesNotProvokeAttacksOfOpportunity
              ]
           )
         else pushAll
-          (PayAbilityCost abilitySource iid mAction cost
+          (PayAbilityCost abilitySource iid mAction False cost
           : [ TakenAction iid action | action <- maybeToList mAction ]
           )
     ActionAbility mAction cost ->
@@ -141,14 +145,14 @@ startPayment iid window abilityType abilitySource abilityDoesNotProvokeAttacksOf
                     , Just Action.Parley
                     ]
         then pushAll
-          (PayAbilityCost abilitySource iid mAction cost
+          (PayAbilityCost abilitySource iid mAction False cost
           : [ TakenAction iid action | action <- maybeToList mAction ]
           <> [ CheckAttackOfOpportunity iid False
              | not abilityDoesNotProvokeAttacksOfOpportunity
              ]
           )
         else pushAll
-          (PayAbilityCost abilitySource iid mAction cost
+          (PayAbilityCost abilitySource iid mAction False cost
           : [ TakenAction iid action | action <- maybeToList mAction ]
           )
 
@@ -174,13 +178,17 @@ instance
                abilityType
                abilitySource
                abilityDoesNotProvokeAttacksOfOpportunity
-    PayAbilityCost source iid mAction cost -> do
+    PayAbilityCost source iid mAction skipAdditionalCosts cost -> do
       let
         withPayment payment =
           pure $ PayForAbilityEffect (attrs `With` (payments <> payment))
       case cost of
         Costs xs ->
-          e <$ pushAll [ PayAbilityCost source iid mAction x | x <- xs ]
+          e
+            <$ pushAll
+                 [ PayAbilityCost source iid mAction skipAdditionalCosts x
+                 | x <- xs
+                 ]
         UpTo 0 _ -> pure e
         UpTo n cost' -> do
           canAfford <- getCanAffordCost iid source mAction [] cost'
@@ -190,8 +198,13 @@ instance
               iid
               [ Label
                 "Pay dynamic cost"
-                [ PayAbilityCost source iid mAction cost'
-                , PayAbilityCost source iid mAction (UpTo (n - 1) cost')
+                [ PayAbilityCost source iid mAction skipAdditionalCosts cost'
+                , PayAbilityCost
+                  source
+                  iid
+                  mAction
+                  skipAdditionalCosts
+                  (UpTo (n - 1) cost')
                 ]
               , Label "Done with dynamic cost" []
               ]
@@ -206,7 +219,13 @@ instance
               iid
               [ TargetLabel
                   target
-                  [PayAbilityCost source iid mAction (ExhaustCost target)]
+                  [ PayAbilityCost
+                      source
+                      iid
+                      mAction
+                      skipAdditionalCosts
+                      (ExhaustCost target)
+                  ]
               | target <- targets
               ]
             )
@@ -265,6 +284,7 @@ instance
                     (InvestigatorSource iid)
                     iid
                     Nothing
+                    skipAdditionalCosts
                     (ActionCost 1)
                   , PaidAbilityCost iid Nothing AdditionalActionPayment
                   , msg
@@ -278,7 +298,9 @@ instance
                 ]
               )
         ActionCost x -> do
-          costModifier <- getActionCostModifier iid mAction
+          costModifier <- if skipAdditionalCosts
+            then pure 0
+            else getActionCostModifier iid mAction
           let modifiedActionCost = max 0 (x + costModifier)
           push (SpendActions iid source modifiedActionCost)
           withPayment $ ActionPayment x
@@ -335,6 +357,7 @@ instance
                       (InvestigatorSource iid)
                       iid
                       Nothing
+                      skipAdditionalCosts
                       (DiscardCardCost $ PlayerCard card)
                   ]
               | card <- cards
@@ -371,6 +394,7 @@ instance
                     source
                     iid
                     mAction
+                    skipAdditionalCosts
                     (SkillIconCost (x - n) skillTypes)
                   ]
               )

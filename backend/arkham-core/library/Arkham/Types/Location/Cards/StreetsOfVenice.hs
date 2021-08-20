@@ -32,7 +32,7 @@ streetsOfVenice = locationWith
   []
   (connectsToL .~ singleton RightOf)
 
-instance ActionRunner env => HasAbilities env StreetsOfVenice where
+instance HasAbilities env StreetsOfVenice where
   getAbilities _ (Window Timing.When FastPlayerWindow) (StreetsOfVenice attrs)
     = pure [locationAbility $ mkAbility attrs 1 (FastAbility Free)]
   getAbilities iid window (StreetsOfVenice attrs) =

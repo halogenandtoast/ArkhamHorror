@@ -31,7 +31,7 @@ artGallery = locationWith
 
 instance HasModifiersFor env ArtGallery
 
-instance ActionRunner env => HasAbilities env ArtGallery where
+instance HasAbilities env ArtGallery where
   getAbilities iid window (ArtGallery attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env ArtGallery where

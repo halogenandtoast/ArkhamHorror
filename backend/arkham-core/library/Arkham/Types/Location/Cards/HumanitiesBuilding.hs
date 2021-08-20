@@ -26,7 +26,7 @@ humanitiesBuilding = location
 
 instance HasModifiersFor env HumanitiesBuilding
 
-instance ActionRunner env => HasAbilities env HumanitiesBuilding where
+instance HasAbilities env HumanitiesBuilding where
   getAbilities i window (HumanitiesBuilding attrs) = getAbilities i window attrs
 
 instance LocationRunner env => RunMessage env HumanitiesBuilding where

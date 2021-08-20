@@ -40,7 +40,7 @@ ability attrs = base { abilityLimit = PlayerLimit PerGame 1 }
     1
     (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
 
-instance ActionRunner env => HasAbilities env OvergrownCairns where
+instance HasAbilities env OvergrownCairns where
   getAbilities iid window@(Window Timing.When NonFast) (OvergrownCairns attrs@LocationAttrs {..})
     | locationRevealed
     = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]

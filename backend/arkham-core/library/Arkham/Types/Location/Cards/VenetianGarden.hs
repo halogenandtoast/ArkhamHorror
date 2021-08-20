@@ -40,7 +40,7 @@ ability a =
     { abilityLimit = PlayerLimit PerGame 1
     }
 
-instance ActionRunner env => HasAbilities env VenetianGarden where
+instance HasAbilities env VenetianGarden where
   getAbilities iid window@(Window Timing.When NonFast) (VenetianGarden attrs) =
     withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window (VenetianGarden attrs) =

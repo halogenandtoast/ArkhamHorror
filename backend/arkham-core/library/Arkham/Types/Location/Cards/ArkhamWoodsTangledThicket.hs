@@ -29,7 +29,7 @@ arkhamWoodsTangledThicket = locationWith
 
 instance HasModifiersFor env ArkhamWoodsTangledThicket
 
-instance ActionRunner env => HasAbilities env ArkhamWoodsTangledThicket where
+instance HasAbilities env ArkhamWoodsTangledThicket where
   getAbilities i window (ArkhamWoodsTangledThicket attrs) =
     getAbilities i window attrs
 

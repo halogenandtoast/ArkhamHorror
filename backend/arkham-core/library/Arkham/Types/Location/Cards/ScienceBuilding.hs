@@ -29,7 +29,7 @@ scienceBuilding = location
 
 instance HasModifiersFor env ScienceBuilding
 
-instance ActionRunner env => HasAbilities env ScienceBuilding where
+instance HasAbilities env ScienceBuilding where
   getAbilities i window (ScienceBuilding attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env ScienceBuilding where

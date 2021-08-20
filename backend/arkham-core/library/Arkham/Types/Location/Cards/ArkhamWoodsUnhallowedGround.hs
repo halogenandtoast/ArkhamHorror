@@ -30,7 +30,7 @@ arkhamWoodsUnhallowedGround = locationWith
 
 instance HasModifiersFor env ArkhamWoodsUnhallowedGround
 
-instance ActionRunner env => HasAbilities env ArkhamWoodsUnhallowedGround where
+instance HasAbilities env ArkhamWoodsUnhallowedGround where
   getAbilities i window (ArkhamWoodsUnhallowedGround attrs) =
     getAbilities i window attrs
 

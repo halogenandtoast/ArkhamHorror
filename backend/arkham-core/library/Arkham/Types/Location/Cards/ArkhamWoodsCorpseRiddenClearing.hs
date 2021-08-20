@@ -36,7 +36,7 @@ instance HasModifiersFor env ArkhamWoodsCorpseRiddenClearing where
       [ MaxDamageTaken 1 | eid `elem` locationEnemies attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env ArkhamWoodsCorpseRiddenClearing where
+instance HasAbilities env ArkhamWoodsCorpseRiddenClearing where
   getAbilities i window (ArkhamWoodsCorpseRiddenClearing attrs) =
     getAbilities i window attrs
 

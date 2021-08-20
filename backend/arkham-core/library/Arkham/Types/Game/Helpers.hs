@@ -38,7 +38,6 @@ import Arkham.Types.Token
 import Arkham.Types.Trait (Trait, toTraits)
 import Arkham.Types.Window (Window(..))
 import qualified Arkham.Types.Window as Window
-import Control.Monad.Extra (allM, andM, anyM)
 import Data.HashSet (size)
 import qualified Data.HashSet as HashSet
 import Data.UUID (nil)

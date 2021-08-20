@@ -38,7 +38,7 @@ ability attrs = base { abilityLimit = PlayerLimit PerGame 1 }
  where
   base = mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
 
-instance ActionRunner env => HasAbilities env MiskatonicUniversityMiskatonicMuseum where
+instance HasAbilities env MiskatonicUniversityMiskatonicMuseum where
   getAbilities iid window@(Window Timing.When NonFast) (MiskatonicUniversityMiskatonicMuseum attrs@LocationAttrs {..})
     | locationRevealed
     = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]

@@ -29,7 +29,7 @@ arkhamWoodsCliffside = locationWith
 
 instance HasModifiersFor env ArkhamWoodsCliffside
 
-instance ActionRunner env => HasAbilities env ArkhamWoodsCliffside where
+instance HasAbilities env ArkhamWoodsCliffside where
   getAbilities i window (ArkhamWoodsCliffside attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsCliffside where

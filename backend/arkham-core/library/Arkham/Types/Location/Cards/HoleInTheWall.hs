@@ -26,7 +26,7 @@ holeInTheWall = location
 
 instance HasModifiersFor env HoleInTheWall
 
-instance ActionRunner env => HasAbilities env HoleInTheWall where
+instance HasAbilities env HoleInTheWall where
   getAbilities i window (HoleInTheWall attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env HoleInTheWall where

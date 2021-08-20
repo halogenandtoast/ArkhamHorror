@@ -19,7 +19,7 @@ hallway =
 
 instance HasModifiersFor env Hallway
 
-instance ActionRunner env => HasAbilities env Hallway where
+instance HasAbilities env Hallway where
   getAbilities i window (Hallway attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env Hallway where

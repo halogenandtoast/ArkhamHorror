@@ -31,7 +31,7 @@ arkhamWoodsTwistingPaths = locationWith
 
 instance HasModifiersFor env ArkhamWoodsTwistingPaths
 
-instance ActionRunner env => HasAbilities env ArkhamWoodsTwistingPaths where
+instance HasAbilities env ArkhamWoodsTwistingPaths where
   getAbilities i window (ArkhamWoodsTwistingPaths attrs) =
     getAbilities i window attrs
 

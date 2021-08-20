@@ -32,7 +32,7 @@ dimensionalDoorway = location
   Squiggle
   [Triangle, Moon]
 
-instance ActionRunner env => HasAbilities env DimensionalDoorway where
+instance HasAbilities env DimensionalDoorway where
   getAbilities iid (Window Timing.After (EndTurn who)) (DimensionalDoorway attrs)
     | iid == who
     = pure [locationAbility (mkAbility (toSource attrs) 1 LegacyForcedAbility)]

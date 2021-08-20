@@ -34,7 +34,7 @@ ability attrs = base { abilityLimit = GroupLimit PerGame 1 }
     1
     (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 5])
 
-instance ActionRunner env => HasAbilities env Northside where
+instance HasAbilities env Northside where
   getAbilities iid window@(Window Timing.When NonFast) (Northside attrs@LocationAttrs {..})
     | locationRevealed
     = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]

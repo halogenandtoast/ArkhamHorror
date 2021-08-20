@@ -28,7 +28,7 @@ returnToCellar = location
 
 instance HasModifiersFor env ReturnToCellar
 
-instance ActionRunner env => HasAbilities env ReturnToCellar where
+instance HasAbilities env ReturnToCellar where
   getAbilities i window (ReturnToCellar attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env ReturnToCellar where

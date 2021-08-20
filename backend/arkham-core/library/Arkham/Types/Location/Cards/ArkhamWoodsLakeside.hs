@@ -31,7 +31,7 @@ arkhamWoodsLakeside = locationWithRevealedSideConnections
 
 instance HasModifiersFor env ArkhamWoodsLakeside
 
-instance ActionRunner env => HasAbilities env ArkhamWoodsLakeside where
+instance HasAbilities env ArkhamWoodsLakeside where
   getAbilities i window (ArkhamWoodsLakeside attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsLakeside where

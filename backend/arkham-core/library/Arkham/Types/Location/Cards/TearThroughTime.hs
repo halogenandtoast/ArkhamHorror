@@ -29,7 +29,7 @@ tearThroughTime = location
   Moon
   [Circle, Plus, Squiggle]
 
-instance ActionRunner env => HasAbilities env TearThroughTime where
+instance HasAbilities env TearThroughTime where
   getAbilities iid window@(Window Timing.When NonFast) (TearThroughTime attrs)
     = withBaseActions iid window attrs $ pure [resignAction attrs]
   getAbilities iid window (TearThroughTime attrs) =

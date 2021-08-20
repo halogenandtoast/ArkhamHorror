@@ -44,7 +44,7 @@ instance HasModifiersFor env FacultyOfficesTheNightIsStillYoung where
     $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env FacultyOfficesTheNightIsStillYoung where
+instance HasAbilities env FacultyOfficesTheNightIsStillYoung where
   getAbilities iid window@(Window Timing.When FastPlayerWindow) (FacultyOfficesTheNightIsStillYoung attrs@LocationAttrs {..})
     | locationRevealed
     = withBaseActions iid window attrs $ pure

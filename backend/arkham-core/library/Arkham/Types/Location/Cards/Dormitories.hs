@@ -39,7 +39,7 @@ ability attrs = mkAbility
     (GroupClueCost (PerPlayer 3) $ Just (LocationWithTitle "Dormitories"))
   )
 
-instance ActionRunner env => HasAbilities env Dormitories where
+instance HasAbilities env Dormitories where
   getAbilities iid window@(Window Timing.When FastPlayerWindow) (Dormitories attrs@LocationAttrs {..})
     | locationRevealed
     = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]

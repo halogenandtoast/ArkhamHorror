@@ -21,7 +21,7 @@ ritualSite =
 
 instance HasModifiersFor env RitualSite
 
-instance ActionRunner env => HasAbilities env RitualSite where
+instance HasAbilities env RitualSite where
   getAbilities i window (RitualSite attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env RitualSite where

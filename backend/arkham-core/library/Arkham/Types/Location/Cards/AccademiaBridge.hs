@@ -30,7 +30,7 @@ accademiaBridge = locationWith
 
 instance HasModifiersFor env AccademiaBridge
 
-instance ActionRunner env => HasAbilities env AccademiaBridge where
+instance HasAbilities env AccademiaBridge where
   getAbilities iid window (AccademiaBridge attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env AccademiaBridge where

@@ -54,7 +54,7 @@ ability iid attrs = base { abilityMetadata = Just (IntMetadata 0) }
       ]
     )
 
-instance ActionRunner env => HasAbilities env FoulSwamp where
+instance HasAbilities env FoulSwamp where
   getAbilities iid window@(Window Timing.When NonFast) (FoulSwamp attrs@LocationAttrs {..})
     | locationRevealed
     = withBaseActions iid window attrs

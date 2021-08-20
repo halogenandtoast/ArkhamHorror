@@ -25,7 +25,7 @@ audubonPark = location
 
 instance HasModifiersFor env AudubonPark
 
-instance ActionRunner env => HasAbilities env AudubonPark where
+instance HasAbilities env AudubonPark where
   getAbilities i window (AudubonPark attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env AudubonPark where

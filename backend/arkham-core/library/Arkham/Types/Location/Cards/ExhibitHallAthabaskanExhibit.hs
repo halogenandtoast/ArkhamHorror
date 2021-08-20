@@ -37,7 +37,7 @@ instance HasModifiersFor env ExhibitHallAthabaskanExhibit where
     = pure $ toModifiers attrs [ SkillModifier SkillAgility 2 | iid `on` attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env ExhibitHallAthabaskanExhibit where
+instance HasAbilities env ExhibitHallAthabaskanExhibit where
   getAbilities iid window (ExhibitHallAthabaskanExhibit attrs) =
     getAbilities iid window attrs
 

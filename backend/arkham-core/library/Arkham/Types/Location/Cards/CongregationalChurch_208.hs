@@ -30,7 +30,7 @@ congregationalChurch_208 = location
   Diamond
   [Plus, Triangle, Squiggle]
 
-instance ActionRunner env => HasAbilities env CongregationalChurch_208 where
+instance HasAbilities env CongregationalChurch_208 where
   getAbilities = withDrawCardUnderneathAction
 
 instance LocationRunner env => RunMessage env CongregationalChurch_208 where

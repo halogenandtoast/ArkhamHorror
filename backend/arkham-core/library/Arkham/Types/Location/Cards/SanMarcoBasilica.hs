@@ -42,7 +42,7 @@ sanMarcoBasilica = locationWith
 ability :: LocationAttrs -> Ability
 ability a = mkAbility a 1 (ActionAbility Nothing $ ActionCost 1)
 
-instance ActionRunner env => HasAbilities env SanMarcoBasilica where
+instance HasAbilities env SanMarcoBasilica where
   getAbilities iid window@(Window Timing.When NonFast) (SanMarcoBasilica attrs)
     = withBaseActions iid window attrs $ pure [ability attrs]
   getAbilities iid window (SanMarcoBasilica attrs) =

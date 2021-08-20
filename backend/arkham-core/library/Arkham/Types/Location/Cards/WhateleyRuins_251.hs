@@ -47,7 +47,7 @@ ability :: LocationAttrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
 
-instance ActionRunner env => HasAbilities env WhateleyRuins_251 where
+instance HasAbilities env WhateleyRuins_251 where
   getAbilities iid window@(Window Timing.When NonFast) (WhateleyRuins_251 attrs)
     | locationRevealed attrs = withBaseActions iid window attrs
     $ pure [locationAbility (ability attrs)]

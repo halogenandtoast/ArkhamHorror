@@ -22,7 +22,7 @@ broadmoor =
 
 instance HasModifiersFor env Broadmoor
 
-instance ActionRunner env => HasAbilities env Broadmoor where
+instance HasAbilities env Broadmoor where
   getAbilities = withResignAction
 
 instance LocationRunner env => RunMessage env Broadmoor where

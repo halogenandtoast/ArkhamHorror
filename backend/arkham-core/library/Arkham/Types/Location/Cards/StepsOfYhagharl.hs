@@ -33,7 +33,7 @@ stepsOfYhagharl = location
   Plus
   [Diamond, Moon]
 
-instance ActionRunner env => HasAbilities env StepsOfYhagharl where
+instance HasAbilities env StepsOfYhagharl where
   getAbilities iid (Window Timing.When (WouldLeave who lid)) (StepsOfYhagharl attrs)
     | iid == who
     = pure

@@ -35,7 +35,7 @@ frozenSpring = locationWith
 forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 LegacyForcedAbility
 
-instance ActionRunner env => HasAbilities env FrozenSpring where
+instance HasAbilities env FrozenSpring where
   getAbilities iid (Window Timing.After (RevealLocation who _)) (FrozenSpring attrs)
     | iid == who
     = pure [locationAbility (forcedAbility attrs)]

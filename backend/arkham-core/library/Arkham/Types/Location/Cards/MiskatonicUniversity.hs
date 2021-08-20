@@ -33,7 +33,7 @@ miskatonicUniversity = location
   Diamond
   [T, Plus, Circle, Square]
 
-instance ActionRunner env => HasAbilities env MiskatonicUniversity where
+instance HasAbilities env MiskatonicUniversity where
   getAbilities iid window@(Window Timing.When NonFast) (MiskatonicUniversity attrs@LocationAttrs {..})
     | locationRevealed
     = withBaseActions iid window attrs $ pure

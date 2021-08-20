@@ -39,7 +39,7 @@ ability attrs = mkAbility
   $ Costs [ActionCost 1, HandDiscardCost 1 Nothing mempty mempty]
   )
 
-instance ActionRunner env => HasAbilities env CongregationalChurch_209 where
+instance HasAbilities env CongregationalChurch_209 where
   getAbilities iid window@(Window Timing.When NonFast) (CongregationalChurch_209 attrs)
     | locationRevealed attrs
     = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]

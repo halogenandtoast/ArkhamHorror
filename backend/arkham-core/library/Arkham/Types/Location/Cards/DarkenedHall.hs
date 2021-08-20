@@ -31,7 +31,7 @@ darkenedHall = locationWith
 
 instance HasModifiersFor env DarkenedHall
 
-instance ActionRunner env => HasAbilities env DarkenedHall where
+instance HasAbilities env DarkenedHall where
   getAbilities iid window (DarkenedHall attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env DarkenedHall where

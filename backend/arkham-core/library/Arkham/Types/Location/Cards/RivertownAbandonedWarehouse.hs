@@ -47,7 +47,7 @@ ability attrs = base { abilityLimit = GroupLimit PerGame 1 }
       ]
     )
 
-instance ActionRunner env => HasAbilities env RivertownAbandonedWarehouse where
+instance HasAbilities env RivertownAbandonedWarehouse where
   getAbilities iid window@(Window Timing.When NonFast) (RivertownAbandonedWarehouse attrs)
     | locationRevealed attrs
     = withBaseActions iid window attrs $ do

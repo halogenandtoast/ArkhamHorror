@@ -32,7 +32,7 @@ arkhamWoodsWoodenBridge = locationWith
 
 instance HasModifiersFor env ArkhamWoodsWoodenBridge
 
-instance ActionRunner env => HasAbilities env ArkhamWoodsWoodenBridge where
+instance HasAbilities env ArkhamWoodsWoodenBridge where
   getAbilities i window (ArkhamWoodsWoodenBridge attrs) =
     getAbilities i window attrs
 

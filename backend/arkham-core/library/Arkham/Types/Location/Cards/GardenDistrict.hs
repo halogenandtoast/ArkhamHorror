@@ -29,7 +29,7 @@ gardenDistrict :: LocationCard GardenDistrict
 gardenDistrict =
   location GardenDistrict Cards.gardenDistrict 1 (Static 0) Plus [Square, Plus]
 
-instance ActionRunner env => HasAbilities env GardenDistrict where
+instance HasAbilities env GardenDistrict where
   getAbilities iid window@(Window Timing.When NonFast) (GardenDistrict attrs@LocationAttrs {..})
     | locationRevealed
     = withBaseActions iid window attrs $ pure

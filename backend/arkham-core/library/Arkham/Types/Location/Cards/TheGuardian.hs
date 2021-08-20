@@ -35,7 +35,7 @@ theGuardian = locationWith
 ability :: LocationAttrs -> Ability
 ability attrs = mkAbility attrs 1 (LegacyReactionAbility Free)
 
-instance ActionRunner env => HasAbilities env TheGuardian where
+instance HasAbilities env TheGuardian where
   getAbilities iid (Window Timing.After (Entering who lid)) (TheGuardian attrs)
     | lid == toId attrs && iid == who = pure [ability attrs]
   getAbilities iid window (TheGuardian attrs) = getAbilities iid window attrs

@@ -52,7 +52,7 @@ ability attrs =
     { abilityLimit = GroupLimit PerGame 1
     }
 
-instance ActionRunner env => HasAbilities env SleepingCar where
+instance HasAbilities env SleepingCar where
   getAbilities iid window@(Window Timing.When NonFast) (SleepingCar attrs)
     | locationRevealed attrs = withBaseActions iid window attrs
     $ pure [locationAbility (ability attrs)]

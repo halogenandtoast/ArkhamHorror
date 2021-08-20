@@ -39,7 +39,7 @@ ability attrs = mkAbility
   1
   (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 1])
 
-instance ActionRunner env => HasAbilities env OsbornsGeneralStore_207 where
+instance HasAbilities env OsbornsGeneralStore_207 where
   getAbilities iid window@(Window Timing.When NonFast) (OsbornsGeneralStore_207 attrs)
     | locationRevealed attrs
     = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]

@@ -28,7 +28,7 @@ blastedHeath_249 = location
 
 instance HasModifiersFor env BlastedHeath_249
 
-instance ActionRunner env => HasAbilities env BlastedHeath_249 where
+instance HasAbilities env BlastedHeath_249 where
   getAbilities iid window (BlastedHeath_249 attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env BlastedHeath_249 where

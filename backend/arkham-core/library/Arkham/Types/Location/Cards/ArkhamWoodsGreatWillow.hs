@@ -32,7 +32,7 @@ arkhamWoodsGreatWillow = locationWith
 
 instance HasModifiersFor env ArkhamWoodsGreatWillow
 
-instance ActionRunner env => HasAbilities env ArkhamWoodsGreatWillow where
+instance HasAbilities env ArkhamWoodsGreatWillow where
   getAbilities i window (ArkhamWoodsGreatWillow attrs) =
     getAbilities i window attrs
 

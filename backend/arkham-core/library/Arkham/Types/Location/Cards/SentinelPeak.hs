@@ -33,7 +33,7 @@ sentinelPeak = locationWith
 
 instance HasModifiersFor env SentinelPeak
 
-instance ActionRunner env => HasAbilities env SentinelPeak where
+instance HasAbilities env SentinelPeak where
   getAbilities iid window (SentinelPeak attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env SentinelPeak where

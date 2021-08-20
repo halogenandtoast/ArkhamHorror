@@ -31,7 +31,7 @@ instance HasModifiersFor env Easttown where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env Easttown where
+instance HasAbilities env Easttown where
   getAbilities i window (Easttown attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env Easttown where

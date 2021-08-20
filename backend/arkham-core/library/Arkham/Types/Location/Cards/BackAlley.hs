@@ -28,7 +28,7 @@ backAlley = locationWith
 
 instance HasModifiersFor env BackAlley
 
-instance ActionRunner env => HasAbilities env BackAlley where
+instance HasAbilities env BackAlley where
   getAbilities = withResignAction
 
 instance LocationRunner env => RunMessage env BackAlley where

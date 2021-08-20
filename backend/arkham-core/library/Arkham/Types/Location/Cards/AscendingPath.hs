@@ -52,7 +52,7 @@ ability attrs =
       (ActionAbility (Just Action.Investigate) (ActionCost 1))
     & (abilityLimitL .~ PlayerLimit PerRound 1)
 
-instance ActionRunner env => HasAbilities env AscendingPath where
+instance HasAbilities env AscendingPath where
   getAbilities iid window@(Window Timing.When NonFast) (AscendingPath attrs) =
     withBaseActions iid window attrs
       $ pure [ locationAbility (ability attrs) | locationRevealed attrs ]

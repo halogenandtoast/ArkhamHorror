@@ -31,7 +31,7 @@ exhibitHallEgyptianExhibit = locationWithRevealedSideConnections
 
 instance HasModifiersFor env ExhibitHallEgyptianExhibit
 
-instance ActionRunner env => HasAbilities env ExhibitHallEgyptianExhibit where
+instance HasAbilities env ExhibitHallEgyptianExhibit where
   getAbilities iid window (ExhibitHallEgyptianExhibit attrs) =
     getAbilities iid window attrs
 

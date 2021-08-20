@@ -45,7 +45,7 @@ instance HasModifiersFor env ColdSpringGlen_245 where
 ability :: LocationAttrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (LegacyReactionAbility Free)
 
-instance ActionRunner env => HasAbilities env ColdSpringGlen_245 where
+instance HasAbilities env ColdSpringGlen_245 where
   getAbilities _ (Window Timing.When (Window.ChosenRandomLocation lid)) (ColdSpringGlen_245 attrs)
     | lid == toId attrs
     = pure [locationAbility (ability attrs)]

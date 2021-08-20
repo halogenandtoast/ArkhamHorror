@@ -42,7 +42,7 @@ ability attrs =
     { abilityLimit = PlayerLimit PerTurn 1
     }
 
-instance ActionRunner env => HasAbilities env ArkhamWoodsQuietGlade where
+instance HasAbilities env ArkhamWoodsQuietGlade where
   getAbilities iid window@(Window Timing.When NonFast) (ArkhamWoodsQuietGlade attrs@LocationAttrs {..})
     | locationRevealed
     = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]

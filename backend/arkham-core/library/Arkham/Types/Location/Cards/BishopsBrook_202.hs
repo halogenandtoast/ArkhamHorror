@@ -34,7 +34,7 @@ instance HasModifiersFor env BishopsBrook_202 where
     = pure $ toModifiers attrs [HorrorDealt 1]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env BishopsBrook_202 where
+instance HasAbilities env BishopsBrook_202 where
   getAbilities = withDrawCardUnderneathAction
 
 instance LocationRunner env => RunMessage env BishopsBrook_202 where

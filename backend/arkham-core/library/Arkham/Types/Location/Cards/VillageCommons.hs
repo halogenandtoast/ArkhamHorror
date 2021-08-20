@@ -27,7 +27,7 @@ villageCommons = location
 
 instance HasModifiersFor env VillageCommons
 
-instance ActionRunner env => HasAbilities env VillageCommons where
+instance HasAbilities env VillageCommons where
   getAbilities = withResignAction
 
 instance LocationRunner env => RunMessage env VillageCommons where

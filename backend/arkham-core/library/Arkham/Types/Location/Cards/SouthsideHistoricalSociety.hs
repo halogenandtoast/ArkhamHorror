@@ -39,7 +39,7 @@ ability attrs =
     { abilityLimit = PlayerLimit PerGame 1
     }
 
-instance ActionRunner env => HasAbilities env SouthsideHistoricalSociety where
+instance HasAbilities env SouthsideHistoricalSociety where
   getAbilities iid window@(Window Timing.When NonFast) (SouthsideHistoricalSociety attrs@LocationAttrs {..})
     | locationRevealed
     = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]

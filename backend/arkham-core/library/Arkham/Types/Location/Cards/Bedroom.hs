@@ -20,7 +20,7 @@ bedroom = location Bedroom Cards.bedroom 2 (PerPlayer 1) Heart [T]
 
 instance HasModifiersFor env Bedroom
 
-instance ActionRunner env => HasAbilities env Bedroom where
+instance HasAbilities env Bedroom where
   getAbilities i window (Bedroom attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env Bedroom where

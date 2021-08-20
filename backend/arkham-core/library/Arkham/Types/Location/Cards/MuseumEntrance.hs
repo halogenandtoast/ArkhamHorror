@@ -28,7 +28,7 @@ instance HasModifiersFor env MuseumEntrance where
     pure $ toModifiers attrs [ CannotGainResources | iid `on` attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env MuseumEntrance where
+instance HasAbilities env MuseumEntrance where
   getAbilities = withResignAction
 
 instance LocationRunner env => RunMessage env MuseumEntrance where

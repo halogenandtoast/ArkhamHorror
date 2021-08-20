@@ -28,7 +28,7 @@ studentUnion :: LocationCard StudentUnion
 studentUnion =
   location StudentUnion Cards.studentUnion 1 (Static 2) Diamond [Plus, Equals]
 
-instance ActionRunner env => HasAbilities env StudentUnion where
+instance HasAbilities env StudentUnion where
   getAbilities iid window@(Window Timing.When NonFast) (StudentUnion attrs@LocationAttrs {..})
     | locationRevealed
     = withBaseActions iid window attrs $ do

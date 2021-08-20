@@ -28,7 +28,7 @@ returnToAttic = location
 
 instance HasModifiersFor env ReturnToAttic
 
-instance ActionRunner env => HasAbilities env ReturnToAttic where
+instance HasAbilities env ReturnToAttic where
   getAbilities i window (ReturnToAttic attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env ReturnToAttic where

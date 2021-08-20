@@ -37,7 +37,7 @@ dimensionalGap = locationWith
 forcedAbility :: LocationAttrs -> Ability
 forcedAbility a = mkAbility (toSource a) 1 LegacyForcedAbility
 
-instance ActionRunner env => HasAbilities env DimensionalGap where
+instance HasAbilities env DimensionalGap where
   getAbilities iid (Window Timing.After (RevealLocation who _)) (DimensionalGap attrs)
     | iid == who
     = pure [locationAbility (forcedAbility attrs)]

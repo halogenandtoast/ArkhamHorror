@@ -39,7 +39,7 @@ instance HasModifiersFor env FauborgMarigny where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env FauborgMarigny where
+instance HasAbilities env FauborgMarigny where
   getAbilities = withResignAction
 
 instance (LocationRunner env) => RunMessage env FauborgMarigny where

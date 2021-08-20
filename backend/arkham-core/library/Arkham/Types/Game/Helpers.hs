@@ -102,7 +102,9 @@ getCanPerformAbility !iid !source !window !ability = do
 -- it is in the right window
 -- passes restrictions
   let
-    mAction = abilityAction ability
+    mAction = case abilityType ability of
+      ActionAbilityWithBefore _ mBeforeAction _ -> mBeforeAction
+      _ -> abilityAction ability
     cost = abilityCost ability
   andM
     [ getCanAffordCost iid (abilitySource ability) mAction [window] cost
@@ -183,10 +185,8 @@ getCanAffordAbilityCost iid Ability {..} = case abilityType of
     getCanAffordCost iid abilitySource mAction [] cost
   ActionAbilityWithSkill mAction _ cost ->
     getCanAffordCost iid abilitySource mAction [] cost
-  ActionAbilityWithBefore mAction mBeforeAction cost -> liftA2
-    (||)
-    (getCanAffordCost iid abilitySource mAction [] cost)
-    (getCanAffordCost iid abilitySource mBeforeAction [] cost)
+  ActionAbilityWithBefore _ mBeforeAction cost ->
+    getCanAffordCost iid abilitySource mBeforeAction [] cost
   LegacyReactionAbility cost ->
     getCanAffordCost iid abilitySource Nothing [] cost
   ReactionAbility _ cost -> getCanAffordCost iid abilitySource Nothing [] cost

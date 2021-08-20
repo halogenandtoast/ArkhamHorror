@@ -124,10 +124,8 @@ meetsActionRestrictions _ _ Ability {..} = go abilityType
  where
   go = \case
     Objective aType -> go aType
-    ActionAbilityWithBefore mAction mBeforeAction cost -> liftA2
-      (||)
-      (go $ ActionAbility mAction cost)
-      (go $ ActionAbility mBeforeAction cost)
+    ActionAbilityWithBefore _ mBeforeAction cost ->
+      go $ ActionAbility mBeforeAction cost
     ActionAbilityWithSkill mAction _ cost -> go $ ActionAbility mAction cost
     ActionAbility (Just action) _ -> case action of
       Action.Fight -> case abilitySource of

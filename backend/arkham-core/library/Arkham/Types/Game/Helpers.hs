@@ -1,5 +1,4 @@
-{-# OPTIONS_GHC -fno-warn-orphans #-}
-{-# OPTIONS_GHC -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Types.Game.Helpers where
 
@@ -84,7 +83,7 @@ replaceToken token = withQueue $ \queue ->
   )
 
 withBaseActions
-  :: (HasAbilities env a, HasQueue env, MonadReader env m, MonadIO m)
+  :: (HasAbilities env a, MonadReader env m)
   => InvestigatorId
   -> Window
   -> a
@@ -93,7 +92,7 @@ withBaseActions
 withBaseActions iid window a f = (<>) <$> getAbilities iid window a <*> f
 
 getCanPerformAbility
-  :: (MonadReader env m, HasQueue env, CanCheckPlayable env, MonadIO m)
+  :: (MonadReader env m, CanCheckPlayable env)
   => InvestigatorId
   -> Source
   -> Window
@@ -856,12 +855,7 @@ type CanCheckPlayable env
     )
 
 getIsPlayable
-  :: ( HasCallStack
-     , MonadReader env m
-     , HasQueue env
-     , CanCheckPlayable env
-     , MonadIO m
-     )
+  :: (HasCallStack, MonadReader env m, CanCheckPlayable env)
   => InvestigatorId
   -> Source
   -> [Window]
@@ -872,12 +866,7 @@ getIsPlayable iid source windows c = do
   getIsPlayableWithResources iid source availableResources windows c
 
 getIsPlayableWithResources
-  :: ( HasCallStack
-     , HasQueue env
-     , MonadReader env m
-     , CanCheckPlayable env
-     , MonadIO m
-     )
+  :: (HasCallStack, MonadReader env m, CanCheckPlayable env)
   => InvestigatorId
   -> Source
   -> Int
@@ -939,13 +928,7 @@ getIsPlayableWithResources iid source availableResources windows c@(PlayerCard _
     _ -> error $ "Not handling card type: " <> show (toCardType c)
 
 passesCriteria
-  :: ( HasCallStack
-     , HasQueue env
-     , MonadReader env m
-     , CanCheckFast env
-     , CanCheckPlayable env
-     , MonadIO m
-     )
+  :: (HasCallStack, MonadReader env m, CanCheckFast env, CanCheckPlayable env)
   => InvestigatorId
   -> Source
   -> [Window]
@@ -1173,7 +1156,7 @@ depthGuard = unsafePerformIO $ newIORef 0
 {-# NOINLINE depthGuard #-}
 
 cardInFastWindows
-  :: (MonadReader env m, HasQueue env, CanCheckPlayable env, MonadIO m)
+  :: (MonadReader env m, CanCheckPlayable env)
   => InvestigatorId
   -> Source
   -> Card
@@ -1184,7 +1167,7 @@ cardInFastWindows iid source _ windows matcher =
   anyM (\window -> windowMatches iid source window matcher) windows
 
 windowMatches
-  :: (MonadReader env m, HasQueue env, CanCheckPlayable env, MonadIO m)
+  :: (MonadReader env m, CanCheckPlayable env)
   => InvestigatorId
   -> Source
   -> Window
@@ -1466,7 +1449,7 @@ enemyMatches
   => EnemyId
   -> Matcher.EnemyMatcher
   -> m Bool
-enemyMatches enemyId mtchr = member enemyId <$> getSet mtchr
+enemyMatches !enemyId !mtchr = member enemyId <$> getSet mtchr
 
 locationMatches
   :: (MonadReader env m, CanCheckPlayable env)

@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Types.Asset.Cards.Aquinnah1
   ( Aquinnah1(..)
   , aquinnah1
@@ -26,7 +28,7 @@ aquinnah1 :: AssetCard Aquinnah1
 aquinnah1 = ally Aquinnah1 Cards.aquinnah1 (1, 4)
 
 reactionAbility :: AssetAttrs -> Ability
-reactionAbility attrs = mkAbility attrs 1 $ FastAbility $ Costs
+reactionAbility attrs = mkAbility attrs 1 $ LegacyReactionAbility $ Costs
   [ExhaustCost (toTarget attrs), HorrorCost (toSource attrs) (toTarget attrs) 1]
 
 dropUntilAttack :: [Message] -> [Message]
@@ -39,7 +41,7 @@ instance ActionRunner env => HasAbilities env Aquinnah1 where
     | ownedBy a iid && iid == who = do
       locationId <- getId @LocationId iid
       enemyIds <- filterSet (/= enemyId) <$> getSet locationId
-      pure [ reactionAbility a | notNull enemyIds ]
+      pure [ reactionAbility a | notNull (traceShowId enemyIds) ]
   getAbilities i window (Aquinnah1 x) = getAbilities i window x
 
 instance AssetRunner env => RunMessage env Aquinnah1 where

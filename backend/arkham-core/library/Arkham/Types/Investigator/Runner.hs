@@ -176,7 +176,7 @@ type InnerInvestigatorRunner env
         , HasSet UnrevealedLocationId env LocationMatcher
         )
       )
-    , (HasStep env ActStep, HasStep env AgendaStep)
+    , (HasStep ActStep env (), HasStep AgendaStep env ())
     , HasSkillTest env
     , GetCardDef env EnemyId
     )

@@ -159,7 +159,7 @@ instance
   ( HasSet InvestigatorId env ()
   , HasSet DefeatedInvestigatorId env ()
   , ScenarioAttrsRunner env
-  , HasStep env ActStep
+  , HasStep ActStep env ()
   , HasId (Maybe EnemyId) env EnemyMatcher
   , HasId (Maybe LocationId) env LocationMatcher
   , HasCount XPCount env ()
@@ -250,7 +250,7 @@ instance
           , MovedBy iid (toSource attrs)
           ]
     ScenarioResolution NoResolution -> do
-      step <- unActStep <$> getStep
+      step <- unActStep <$> getStep ()
       push (ScenarioResolution . Resolution $ if step == 4 then 2 else 4)
       pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution 1) -> do

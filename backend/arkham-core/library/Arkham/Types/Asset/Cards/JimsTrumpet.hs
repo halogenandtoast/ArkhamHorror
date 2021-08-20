@@ -39,7 +39,7 @@ instance HasAbilities env JimsTrumpet where
           )
         )
         (ReactionAbility
-          (RevealChaosToken Timing.When You (TokenFaceIs Skull))
+          (RevealChaosToken Timing.When Anyone (TokenFaceIs Skull))
           (ExhaustCost $ toTarget x)
         )
     ]

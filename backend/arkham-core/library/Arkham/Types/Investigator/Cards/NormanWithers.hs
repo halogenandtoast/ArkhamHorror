@@ -9,6 +9,7 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 
 newtype NormanWithers = NormanWithers InvestigatorAttrs
+  deriving anyclass (HasAbilities env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env NormanWithers where
@@ -29,9 +30,6 @@ normanWithers = NormanWithers $ baseAttrs
     , agility = 1
     }
   [Miskatonic]
-
-instance InvestigatorRunner env => HasAbilities env NormanWithers where
-  getAbilities i window (NormanWithers attrs) = getAbilities i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env NormanWithers where
   runMessage msg (NormanWithers attrs) = NormanWithers <$> runMessage msg attrs

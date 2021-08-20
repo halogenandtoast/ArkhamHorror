@@ -182,6 +182,8 @@ instance SourceEntity LocationAttrs where
   toSource = LocationSource . toId
   isSource LocationAttrs { locationId } (LocationSource lid) =
     locationId == lid
+  isSource LocationAttrs { locationId } (ProxySource (LocationSource lid) _) =
+    locationId == lid
   isSource _ _ = False
 
 instance IsCard LocationAttrs where
@@ -330,7 +332,6 @@ withResignAction
      , EntityAttrs location ~ LocationAttrs
      , MonadReader env m
      , ActionRunner env
-     , MonadIO m
      )
   => InvestigatorId
   -> Window
@@ -372,7 +373,6 @@ withDrawCardUnderneathAction
      , EntityAttrs location ~ LocationAttrs
      , MonadReader env m
      , ActionRunner env
-     , MonadIO m
      )
   => InvestigatorId
   -> Window
@@ -678,16 +678,12 @@ instance LocationRunner env => RunMessage env LocationAttrs where
           pure $ a & cardsUnderneathL .~ rest
         _ -> throwIO $ InvalidState "Not expecting a player card or empty yet"
     Blanked msg' -> runMessage msg' a
-    UseCardAbility iid source _ 101 _ | isSource a source ->
-      a
-        <$ push
-             (Investigate
-               iid
-               (toId a)
-               (InvestigatorSource iid)
-               SkillIntellect
-               False
-             )
+    UseCardAbility iid source _ 101 _ | isSource a source -> do
+      let
+        triggerSource = case source of
+          ProxySource _ s -> s
+          _ -> InvestigatorSource iid
+      a <$ push (Investigate iid (toId a) triggerSource SkillIntellect False)
     UseCardAbility iid source _ 102 _ | isSource a source -> a <$ push
       (MoveAction
         iid

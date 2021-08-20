@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.ArcaneStudies2Spec
 
 import TestImport.Lifted
 
+import Arkham.Types.Ability
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
@@ -26,13 +27,17 @@ spec = describe "Arcane Studies (2)" $ do
           chooseOptionMatching
             "use ability"
             (\case
-              Run{} -> True
+              Run (x : _) -> case x of
+                UseAbility _ a _ -> abilityIndex a == 1
+                _ -> False
               _ -> False
             )
           chooseOptionMatching
             "use ability"
             (\case
-              Run{} -> True
+              Run (x : _) -> case x of
+                UseAbility _ a _ -> abilityIndex a == 1
+                _ -> False
               _ -> False
             )
           chooseOptionMatching
@@ -63,13 +68,17 @@ spec = describe "Arcane Studies (2)" $ do
           chooseOptionMatching
             "use ability"
             (\case
-              Run{} -> True
+              Run (x : _) -> case x of
+                UseAbility _ a _ -> abilityIndex a == 2
+                _ -> False
               _ -> False
             )
           chooseOptionMatching
             "use ability"
             (\case
-              Run{} -> True
+              Run (x : _) -> case x of
+                UseAbility _ a _ -> abilityIndex a == 2
+                _ -> False
               _ -> False
             )
           chooseOptionMatching

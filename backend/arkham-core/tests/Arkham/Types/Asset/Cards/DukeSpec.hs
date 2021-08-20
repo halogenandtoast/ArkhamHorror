@@ -58,10 +58,7 @@ spec = describe "Duke" $ do
             runMessages
             duke' <- updated duke
             [_, investigateAction] <- getAbilitiesOf investigator nonFast duke'
-            pushAll
-              [ moveTo investigator location
-              , UseAbility (toId investigator) investigateAction []
-              ]
+            push $ UseAbility (toId investigator) investigateAction []
             runMessages
             chooseOnlyOption "Start skill test"
             chooseOnlyOption "Apply results"

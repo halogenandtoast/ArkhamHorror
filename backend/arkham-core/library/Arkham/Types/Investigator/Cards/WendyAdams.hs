@@ -11,6 +11,7 @@ import Arkham.Types.Card
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.EntityInstance
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Message hiding (RevealToken)
@@ -58,7 +59,7 @@ ability attrs token = base
     1
     (LegacyReactionAbility $ HandDiscardCost 1 Nothing mempty mempty)
 
-instance InvestigatorRunner env => HasAbilities env WendyAdams where
+instance EntityInstanceRunner env => HasAbilities env WendyAdams where
   getAbilities iid (Window Timing.When (Window.RevealToken who token)) (WendyAdams attrs@InvestigatorAttrs {..})
     | iid == investigatorId && iid == who
     = pure [ability attrs token]

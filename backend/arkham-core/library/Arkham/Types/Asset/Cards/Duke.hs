@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Types.Asset.Cards.Duke
   ( Duke(..)
   , duke
@@ -89,6 +90,11 @@ instance AssetRunner env => RunMessage env Duke where
         investigateActions :: [Message] = map
           (($ windows)
           . UseAbility iid
+          . (\a' -> a'
+              { abilityDoesNotProvokeAttacksOfOpportunity = True
+              , abilitySource = ProxySource (abilitySource a') source
+              }
+            )
           . (`applyAbilityModifiers` [ActionCostModifier (-1)])
           )
           investigateAbilities

@@ -6,19 +6,26 @@ import TestImport.Lifted
 
 import qualified Arkham.Enemy.Cards as Cards
 import qualified Arkham.Event.Cards as Cards
+import qualified Arkham.Types.Investigator.Attrs as Investigator
 
 spec :: Spec
 spec = describe "Close Call (2)" $ do
   it "shuffles the enemy just evaded back into the encounter deck" $ do
-    investigator <- testInvestigator "00000" id
+    investigator <- testInvestigator "00000" (Investigator.resourcesL .~ 2)
     closeCall2 <- genPlayerCard Cards.closeCall2
     enemy <- testEnemy id
+    location <- testLocation id
     gameTest
         investigator
         [ addToHand investigator (PlayerCard closeCall2)
+        , placedLocation location
+        , enemySpawn location enemy
+        , moveTo investigator location
         , EnemyEvaded (toId investigator) (toId enemy)
         ]
-        (enemiesL %~ insertEntity enemy)
+        ((enemiesL %~ insertEntity enemy)
+        . (locationsL %~ insertEntity location)
+        )
       $ do
           runMessages
           chooseOptionMatching

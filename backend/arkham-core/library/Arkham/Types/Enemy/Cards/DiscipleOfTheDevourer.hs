@@ -28,7 +28,8 @@ discipleOfTheDevourer = enemyWith
 instance HasModifiersFor env DiscipleOfTheDevourer
 
 instance ActionRunner env => HasAbilities env DiscipleOfTheDevourer where
-  getAbilities i window (DiscipleOfTheDevourer attrs) = getAbilities i window attrs
+  getAbilities i window (DiscipleOfTheDevourer attrs) =
+    getAbilities i window attrs
 
 instance EnemyRunner env => RunMessage env DiscipleOfTheDevourer where
   runMessage msg (DiscipleOfTheDevourer attrs) = case msg of
@@ -36,7 +37,7 @@ instance EnemyRunner env => RunMessage env DiscipleOfTheDevourer where
       let
         messages =
           [PlaceDoom (toTarget attrs) 1, InvestigatorPlaceCluesOnLocation iid 1]
-      step <- unAgendaStep <$> getStep
+      step <- unAgendaStep <$> getStep ()
       if step == 1 then push (chooseOne iid messages) else pushAll messages
       DiscipleOfTheDevourer <$> runMessage msg attrs
     _ -> DiscipleOfTheDevourer <$> runMessage msg attrs

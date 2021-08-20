@@ -43,6 +43,6 @@ type ActRunner env
     , HasSet Trait env AssetId
     , HasSet UnrevealedLocationId env ()
     , HasSet VictoryDisplayCardCode env ()
-    , HasStep env AgendaStep
+    , HasStep AgendaStep env ()
     , HasList LocationName env ()
     )

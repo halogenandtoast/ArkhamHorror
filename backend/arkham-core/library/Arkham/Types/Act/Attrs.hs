@@ -86,8 +86,8 @@ instance FromJSON ActAttrs where
 
 instance HasModifiersFor env ActAttrs
 
-instance HasStep ActAttrs ActStep where
-  getStep = asks $ actStep . actSequence
+instance HasStep ActStep env ActAttrs where
+  getStep = pure . actStep . actSequence
 
 instance Entity ActAttrs where
   type EntityId ActAttrs = ActId

@@ -512,12 +512,7 @@ getCanAfford a@InvestigatorAttrs {..} actionType = do
   pure $ actionCost <= investigatorRemainingActions
 
 getFastIsPlayable
-  :: ( HasCallStack
-     , MonadReader env m
-     , HasQueue env
-     , CanCheckPlayable env
-     , MonadIO m
-     )
+  :: (HasCallStack, MonadReader env m, CanCheckPlayable env)
   => InvestigatorAttrs
   -> [Window]
   -> Card
@@ -548,12 +543,7 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
     else go (m - 1) (d, PlayerCard c : h, cs)
 
 getPlayableCards
-  :: ( HasCallStack
-     , HasQueue env
-     , MonadReader env m
-     , CanCheckPlayable env
-     , MonadIO m
-     )
+  :: (HasCallStack, MonadReader env m, CanCheckPlayable env)
   => InvestigatorAttrs
   -> [Window]
   -> m [Card]
@@ -563,7 +553,7 @@ getPlayableCards a@InvestigatorAttrs {..} windows = do
   pure $ playableHandCards <> playableDiscards
 
 getPlayableDiscards
-  :: (MonadReader env m, HasQueue env, CanCheckPlayable env, MonadIO m)
+  :: (MonadReader env m, CanCheckPlayable env)
   => InvestigatorAttrs
   -> [Window]
   -> m [Card]
@@ -2057,13 +2047,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       let window = Window Timing.When (Window.AmongSearchedCards iid)
       actions <- fmap concat <$> for cards $ \card' ->
         getAbilities iid window (toCardInstance iid $ PlayerCard card')
+          >>= filterM (windowMatches iid source window . abilityWindow)
       -- TODO: This is for astounding revelation and only one research action is possible
       -- so we are able to short circuit here, but we may have additional cards in the
       -- future so we may want to make this more versatile
       unless (null actions) $ push
         (chooseOne iid
         $ map (($ [window]) . UseAbility iid) actions
-        <> [Continue "Skip playing fast cards or using reactions"]
+        <> [Continue "Skip playing fast cards or using reactions!!!"]
         )
       push (FocusCards $ map PlayerCard cards)
       pure $ a & deckL .~ Deck deck

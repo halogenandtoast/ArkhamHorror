@@ -10,6 +10,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.EntityInstance
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Message hiding (PassSkillTest)
 import Arkham.Types.Query
@@ -39,7 +40,7 @@ rexMurphy = RexMurphy $ baseAttrs
     }
   [Reporter]
 
-instance InvestigatorRunner env => HasAbilities env RexMurphy where
+instance EntityInstanceRunner env => HasAbilities env RexMurphy where
   getAbilities iid (Window Timing.After (PassSkillTest (Just Action.Investigate) _ who n)) (RexMurphy attrs@InvestigatorAttrs {..})
     | iid == investigatorId && n >= 2 && iid == who
     = do

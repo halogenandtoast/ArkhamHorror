@@ -26,7 +26,7 @@ aquinnah3 :: AssetCard Aquinnah3
 aquinnah3 = ally Aquinnah3 Cards.aquinnah3 (1, 4)
 
 reactionAbility :: AssetAttrs -> Ability
-reactionAbility attrs = mkAbility attrs 1 $ FastAbility $ Costs
+reactionAbility attrs = mkAbility attrs 1 $ LegacyReactionAbility $ Costs
   [ExhaustCost (toTarget attrs), HorrorCost (toSource attrs) (toTarget attrs) 1]
 
 dropUntilAttack :: [Message] -> [Message]

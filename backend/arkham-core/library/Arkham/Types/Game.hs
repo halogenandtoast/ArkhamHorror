@@ -3,6 +3,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StrictData #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 
 module Arkham.Types.Game where
 
@@ -558,6 +559,16 @@ getInvestigatorsMatching = \case
       . toList
       . view investigatorsL
       <$> getGame
+  AnyInvestigator [] -> pure []
+  AnyInvestigator (x : xs) -> do
+    matches :: HashSet InvestigatorId <-
+      foldl' union
+      <$> (setFromList . map toId <$> getInvestigatorsMatching x)
+      <*> traverse (fmap (setFromList . map toId) . getInvestigatorsMatching) xs
+    filter ((`member` matches) . toId)
+      . toList
+      . view investigatorsL
+      <$> getGame
   -- TODO: too lazy to do these right now
   UnengagedInvestigator -> pure []
   UneliminatedInvestigator -> pure []
@@ -567,7 +578,6 @@ getInvestigatorsMatching = \case
   InvestigatorWithoutModifier _ -> pure []
   InvestigatorEngagedWith _ -> pure []
   InvestigatorWithResources _ -> pure []
-  AnyInvestigator _ -> pure []
 
 getTreacheriesMatching
   :: (MonadReader env m, HasGame env) => TreacheryMatcher -> m [Treachery]
@@ -577,22 +587,21 @@ getTreacheriesMatching matcher = do
     AnyTreachery -> pure allTreacheries'
     _ -> pure allTreacheries'
 
-getActionsMatching :: MonadReader env m => ActionMatcher -> m [Ability]
-getActionsMatching _ = pure []
-  -- both iid and window won't matter
-  -- iid <- view activeInvestigatorIdL <$> getGame
-  -- let window = Window Timing.When (Window.DuringTurn iid)
-  -- abilities <- concat <$> traverse
-  --   (getAbilities iid window)
-  --   ([minBound .. maxBound] :: [ActionType])
-  -- case matcher of
-  --   AnyAction -> pure abilities
-  --   -- TODO: too lazy to do these right now
-  --   ActionOnLocation _ -> pure []
-  --   ActionIs _ -> pure []
-  --   ActionWindow _ -> pure []
-  --   ActionMatches _ -> pure []
-  --   ActionOnScenarioCard -> pure []
+getActionsMatching
+  :: (HasGame env, MonadReader env m) => ActionMatcher -> m [Ability]
+getActionsMatching matcher = guardYourLocation $ \_ -> do
+  iid <- view activeInvestigatorIdL <$> getGame
+  let window = Window Timing.When Window.NonFast
+  abilities <- concat <$> traverse
+    (getAbilities iid window)
+    ([minBound .. maxBound] :: [ActionType])
+  case matcher of
+    AnyAction -> pure abilities
+    ActionOnLocation lid -> getLocation lid >>= getAbilities iid window
+    ActionIs _ -> pure []
+    ActionWindow _ -> pure []
+    ActionMatches _ -> pure []
+    ActionOnScenarioCard -> pure []
 
 getLocationMatching
   :: (HasCallStack, MonadReader env m, HasGame env)
@@ -693,11 +702,12 @@ getLocationsMatching = \case
   -- these can not be queried
   LocationLeavingPlay -> pure []
   SameLocation -> pure []
- where
-  guardYourLocation body = do
-    mlid <- locationFor . view activeInvestigatorIdL =<< getGame
-    if mlid /= LocationId (CardId nil) then body mlid else pure []
 
+guardYourLocation
+  :: (MonadReader env m, HasGame env) => (LocationId -> m [a]) -> m [a]
+guardYourLocation body = do
+  mlid <- locationFor . view activeInvestigatorIdL =<< getGame
+  if mlid /= LocationId (CardId nil) then body mlid else pure []
 
 getAssetsMatching
   :: (HasCallStack, MonadReader env m, HasGame env) => AssetMatcher -> m [Asset]
@@ -1440,18 +1450,18 @@ instance HasGame env => HasModifiersFor env () where
 instance HasGame env => HasPhase env where
   getPhase = view phaseL <$> getGame
 
-instance {-# OVERLAPPABLE #-} HasGame env => HasStep env AgendaStep where
-  getStep = do
+instance HasGame env => HasStep AgendaStep env () where
+  getStep _ = do
     agendas <- toList . view agendasL <$> getGame
     case agendas of
-      [agenda] -> runReaderT getStep agenda
+      [agenda] -> getStep agenda
       _ -> error "wrong number of agendas"
 
-instance {-# OVERLAPPABLE #-} HasGame env => HasStep env ActStep where
-  getStep = do
+instance HasGame env => HasStep ActStep env () where
+  getStep _ = do
     acts <- toList . view actsL <$> getGame
     case acts of
-      [act] -> runReaderT getStep act
+      [act] -> getStep act
       _ -> error "wrong number of agendas"
 
 instance HasGame env => HasPlayerCard env AssetId where
@@ -2329,7 +2339,7 @@ locationFor
   :: (HasGame env, MonadReader env m) => InvestigatorId -> m LocationId
 locationFor iid = locationOf <$> getInvestigator iid
 
-instance Query ActionMatcher env where
+instance HasGame env => Query ActionMatcher env where
   select = fmap setFromList . getActionsMatching
 
 instance HasGame env => Query SkillMatcher env where

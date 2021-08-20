@@ -37,8 +37,8 @@ instance
 instance HasSet Trait env LocationId => HasModifiersFor env Act where
   getModifiersFor = genericGetModifiersFor
 
-instance HasStep Act ActStep where
-  getStep = ask >>= runReaderT getStep . toAttrs
+instance HasStep ActStep env Act where
+  getStep = getStep . toAttrs
 
 instance Entity Act where
   type EntityId Act = ActId

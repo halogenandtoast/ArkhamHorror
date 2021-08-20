@@ -9,6 +9,7 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 
 newtype RitaYoung = RitaYoung InvestigatorAttrs
+  deriving anyclass (HasAbilities env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env RitaYoung where
@@ -29,9 +30,6 @@ ritaYoung = RitaYoung $ baseAttrs
     , agility = 5
     }
   [Miskatonic]
-
-instance InvestigatorRunner env => HasAbilities env RitaYoung where
-  getAbilities i window (RitaYoung attrs) = getAbilities i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env RitaYoung where
   runMessage msg (RitaYoung attrs) = RitaYoung <$> runMessage msg attrs

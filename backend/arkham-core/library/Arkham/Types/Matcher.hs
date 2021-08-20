@@ -129,6 +129,8 @@ data EnemyMatcher
   | EnemyIs CardCode
   | AnyEnemy
   | CanFightEnemy
+  | CanEvadeEnemy
+  | CanEngageEnemy
   | ExhaustedEnemy
   | NonWeaknessEnemy
   | EnemyMatchAll [EnemyMatcher]

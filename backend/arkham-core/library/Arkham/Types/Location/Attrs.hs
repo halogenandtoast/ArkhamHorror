@@ -10,7 +10,6 @@ import Arkham.Prelude
 import Arkham.Json
 import Arkham.Location.Cards
 import Arkham.Types.Ability
-import Arkham.Types.Action (TakenAction(..))
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
@@ -328,11 +327,7 @@ canEnterLocation eid lid = do
     _ -> False
 
 withResignAction
-  :: ( Entity location
-     , EntityAttrs location ~ LocationAttrs
-     , MonadReader env m
-     , ActionRunner env
-     )
+  :: (Entity location, EntityAttrs location ~ LocationAttrs, MonadReader env m)
   => InvestigatorId
   -> Window
   -> location
@@ -369,11 +364,7 @@ locationAbility ability = case abilitySource ability of
   _ -> ability
 
 withDrawCardUnderneathAction
-  :: ( Entity location
-     , EntityAttrs location ~ LocationAttrs
-     , MonadReader env m
-     , ActionRunner env
-     )
+  :: (Entity location, EntityAttrs location ~ LocationAttrs, MonadReader env m)
   => InvestigatorId
   -> Window
   -> location
@@ -386,42 +377,16 @@ withDrawCardUnderneathAction iid window@(Window Timing.When Window.NonFast) x
   where attrs = toAttrs x
 withDrawCardUnderneathAction iid window x = getAbilities iid window (toAttrs x)
 
-instance ActionRunner env => HasAbilities env LocationAttrs where
-  getAbilities iid (Window Timing.When Window.NonFast) l@LocationAttrs {..} =
-    do
-      canMoveTo <- getCanMoveTo locationId iid
-      investigateAllowed <- getInvestigateAllowed iid l
-      modifiers' <- getModifiers (toSource l) (InvestigatorTarget iid)
-      takenActions <- setFromList . map unTakenAction <$> getList iid
-      pure
-        $ moveActions modifiers' takenActions canMoveTo
-        <> investigateActions investigateAllowed
-   where
-    costToEnter =
-      if locationRevealed then ActionCost 1 else locationCostToEnterUnrevealed
-    investigateActions investigateAllowed =
-      [ restrictedAbility l 101 (OnLocation $ LocationWithId $ toId l)
-          $ ActionAbility (Just Action.Investigate) (ActionCost 1)
-      | investigateAllowed
-      ]
-    moveActions modifiers' takenActions canMoveTo =
-      [ mkAbility l 102 $ ActionAbility
-          (Just Action.Move)
-          (foldl' (applyMoveCostModifiers takenActions) costToEnter modifiers')
-      | canMoveTo
-      ]
-    applyMoveCostModifiers
-      :: HashSet Action.Action -> Cost -> ModifierType -> Cost
-    applyMoveCostModifiers takenActions costs (ActionCostOf actionTarget n) =
-      case actionTarget of
-        FirstOneOf as
-          | Action.Move `elem` as && null
-            (takenActions `intersect` setFromList as)
-          -> increaseActionCost costs n
-        IsAction Action.Move -> increaseActionCost costs n
-        _ -> costToEnter
-    applyMoveCostModifiers _ costs _ = costs
-  getAbilities _ _ _ = pure []
+instance HasAbilities env LocationAttrs where
+  getAbilities _ _ l = pure
+    [ restrictedAbility l 101 (OnLocation $ LocationWithId $ toId l)
+      $ ActionAbility (Just Action.Investigate) (ActionCost 1)
+    , restrictedAbility
+        l
+        102
+        (OnLocation $ AccessibleTo $ LocationWithId $ toId l)
+      $ ActionAbility (Just Action.Move) (ActionCost 1)
+    ]
 
 getShouldSpawnNonEliteAtConnectingInstead
   :: (MonadReader env m, HasModifiersFor env ()) => LocationAttrs -> m Bool

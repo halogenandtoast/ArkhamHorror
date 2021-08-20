@@ -92,7 +92,7 @@ withBaseActions
 withBaseActions iid window a f = (<>) <$> getAbilities iid window a <*> f
 
 getCanPerformAbility
-  :: (MonadReader env m, CanCheckPlayable env)
+  :: (MonadReader env m, CanCheckPlayable env, HasCallStack)
   => InvestigatorId
   -> Source
   -> Window
@@ -107,7 +107,7 @@ getCanPerformAbility !iid !source !window !ability = do
     cost = abilityCost ability
   andM
     [ getCanAffordCost iid (abilitySource ability) mAction [window] cost
-    , meetsActionRestrictions iid window (abilityType ability)
+    , meetsActionRestrictions iid window ability
     , windowMatches iid source window (abilityWindow ability)
     , maybe
       (pure True)
@@ -119,37 +119,45 @@ meetsActionRestrictions
   :: (MonadReader env m, CanCheckPlayable env)
   => InvestigatorId
   -> Window
-  -> AbilityType
+  -> Ability
   -> m Bool
-meetsActionRestrictions iid window = \case
-  Objective aType -> meetsActionRestrictions iid window aType
-  ActionAbilityWithBefore mAction mBeforeAction cost -> liftA2
-    (||)
-    (meetsActionRestrictions iid window $ ActionAbility mAction cost)
-    (meetsActionRestrictions iid window $ ActionAbility mBeforeAction cost)
-  ActionAbilityWithSkill mAction _ cost ->
-    meetsActionRestrictions iid window $ ActionAbility mAction cost
-  ActionAbility (Just action) _ -> case action of
-    Action.Fight -> hasFightActions iid (Matcher.DuringTurn Matcher.You)
-    Action.Evade -> hasEvadeActions iid (Matcher.DuringTurn Matcher.You)
-    Action.Investigate ->
-      hasInvestigateActions iid (Matcher.DuringTurn Matcher.You)
-    -- The below actions may not be handled correctly yet
-    Action.Ability -> pure True
-    Action.Draw -> pure True
-    Action.Engage -> pure True
-    Action.Move -> pure True
-    Action.Parley -> pure True
-    Action.Play -> pure True
-    Action.Resign -> pure True
-    Action.Resource -> pure True
-  ActionAbility Nothing _ -> pure True
-  FastAbility _ -> pure True
-  LegacyReactionAbility _ -> pure True
-  ReactionAbility _ _ -> pure True
-  LegacyForcedAbility -> pure True
-  ForcedAbility _ -> pure True
-  AbilityEffect _ -> pure True
+meetsActionRestrictions _ _ Ability {..} = go abilityType
+ where
+  go = \case
+    Objective aType -> go aType
+    ActionAbilityWithBefore mAction mBeforeAction cost -> liftA2
+      (||)
+      (go $ ActionAbility mAction cost)
+      (go $ ActionAbility mBeforeAction cost)
+    ActionAbilityWithSkill mAction _ cost -> go $ ActionAbility mAction cost
+    ActionAbility (Just action) _ -> case action of
+      Action.Fight -> case abilitySource of
+        EnemySource _ -> pure True
+        _ -> notNull <$> select Matcher.CanFightEnemy
+      Action.Evade -> case abilitySource of
+        EnemySource _ -> pure True
+        _ -> notNull <$> select Matcher.CanEvadeEnemy
+      Action.Engage -> case abilitySource of
+        EnemySource _ -> pure True
+        _ -> notNull <$> select Matcher.CanEngageEnemy
+      Action.Investigate -> case abilitySource of
+        LocationSource _ -> pure True
+        _ -> notNull <$> select Matcher.InvestigatableLocation
+      -- The below actions may not be handled correctly yet
+      Action.Ability -> pure True
+      Action.Draw -> pure True
+      Action.Move -> pure True
+      Action.Parley -> pure True
+      Action.Play -> pure True
+      Action.Resign -> pure True
+      Action.Resource -> pure True
+    ActionAbility Nothing _ -> pure True
+    FastAbility _ -> pure True
+    LegacyReactionAbility _ -> pure True
+    ReactionAbility _ _ -> pure True
+    LegacyForcedAbility -> pure True
+    ForcedAbility _ -> pure True
+    AbilityEffect _ -> pure True
 
 getCanAffordAbility
   :: ( MonadReader env m
@@ -239,6 +247,7 @@ getCanAffordCost
      , HasModifiersFor env ()
      , HasCostPayment env
      , HasSet Trait env Source
+     , HasCallStack
      )
   => InvestigatorId
   -> Source
@@ -344,7 +353,7 @@ instance
   )
   => HasAbilities env () where
   getAbilities iid window _ = do
-    actions' <- concat <$> traverse
+    actions' <- nub . concat <$> traverse
       (getAbilities iid window)
       ([minBound .. maxBound] :: [ActionType])
     actions'' <- catMaybes <$> for
@@ -374,7 +383,7 @@ instance
         if any prevents investigatorModifiers || needsToBeFast
           then pure Nothing
           else pure $ Just $ applyAbilityModifiers ability modifiers'
-    let forcedActions = nub $ filter isForcedAbility actions''
+    let forcedActions = filter isForcedAbility actions''
     forcedActions' <- filterM (getCanAffordAbility iid) forcedActions
     if null forcedActions'
       then filterM

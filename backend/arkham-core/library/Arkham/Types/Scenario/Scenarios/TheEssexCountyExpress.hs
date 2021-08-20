@@ -87,12 +87,12 @@ theEssexCountyExpressIntro = FlavorText
 
 instance
   ( HasTokenValue env InvestigatorId
-  , HasStep env AgendaStep
+  , HasStep AgendaStep env ()
   )
   => HasTokenValue env TheEssexCountyExpress where
   getTokenValue (TheEssexCountyExpress attrs) iid = \case
     Skull -> do
-      step <- unAgendaStep <$> getStep
+      step <- unAgendaStep <$> getStep ()
       pure $ toTokenValue attrs Skull step (step + 1)
     Cultist -> pure $ toTokenValue attrs Cultist 1 0
     Tablet -> pure $ toTokenValue attrs Tablet 2 4

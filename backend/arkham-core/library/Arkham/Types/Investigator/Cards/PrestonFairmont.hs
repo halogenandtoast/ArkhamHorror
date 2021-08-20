@@ -9,6 +9,7 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 
 newtype PrestonFairmont = PrestonFairmont InvestigatorAttrs
+  deriving anyclass (HasAbilities env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env PrestonFairmont where
@@ -29,9 +30,6 @@ prestonFairmont = PrestonFairmont $ baseAttrs
     , agility = 1
     }
   [SilverTwilight, Socialite]
-
-instance InvestigatorRunner env => HasAbilities env PrestonFairmont where
-  getAbilities i window (PrestonFairmont attrs) = getAbilities i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env PrestonFairmont where
   runMessage msg (PrestonFairmont attrs) =

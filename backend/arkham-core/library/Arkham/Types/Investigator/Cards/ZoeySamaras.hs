@@ -8,6 +8,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
+import Arkham.Types.EntityInstance
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Message
@@ -39,7 +40,7 @@ zoeySamaras = ZoeySamaras $ baseAttrs
     }
   [Believer, Hunter]
 
-instance InvestigatorRunner env => HasAbilities env ZoeySamaras where
+instance EntityInstanceRunner env => HasAbilities env ZoeySamaras where
   getAbilities iid (Window Timing.After (EnemyEngaged who _)) (ZoeySamaras InvestigatorAttrs {..})
     | iid == investigatorId && iid == who
     = do

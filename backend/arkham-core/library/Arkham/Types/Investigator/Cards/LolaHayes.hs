@@ -6,6 +6,7 @@ import Arkham.Types.Ability
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.EntityInstance
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Message
@@ -46,7 +47,7 @@ instance HasTokenValue env LolaHayes where
     pure $ TokenValue ElderSign (PositiveModifier 2)
   getTokenValue (LolaHayes attrs) iid token = getTokenValue attrs iid token
 
-instance InvestigatorRunner env => HasAbilities env LolaHayes where
+instance EntityInstanceRunner env => HasAbilities env LolaHayes where
   getAbilities i (Window Timing.After (DrawingStartingHand iid)) (LolaHayes attrs)
     | iid == toId attrs && i == iid
     = pure [mkAbility attrs 1 LegacyForcedAbility]

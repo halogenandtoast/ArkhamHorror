@@ -10,6 +10,7 @@ import Arkham.Types.Card
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.EntityInstance
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Investigator.Attrs
@@ -47,7 +48,7 @@ ability attrs iid card =
     & (abilityLimitL .~ PerInvestigatorLimit iid PerRound 1)
     & (abilityMetadataL ?~ TargetMetadata (CardIdTarget $ toCardId card))
 
-instance InvestigatorRunner env => HasAbilities env MinhThiPhan where
+instance EntityInstanceRunner env => HasAbilities env MinhThiPhan where
   getAbilities i (Window Timing.After (CommitedCard who card)) (MinhThiPhan attrs)
     = do
       atSameLocation <- liftA2

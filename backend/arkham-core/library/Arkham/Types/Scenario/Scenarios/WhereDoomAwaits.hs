@@ -132,7 +132,7 @@ instance HasRecord WhereDoomAwaits where
 
 instance
   ( HasTokenValue env InvestigatorId
-  , HasStep env AgendaStep
+  , HasStep AgendaStep env ()
   , HasSet Trait env LocationId
   , HasId LocationId env InvestigatorId
   )
@@ -146,7 +146,7 @@ instance
         else pure $ toTokenValue attrs Skull 1 2
     Cultist -> pure $ TokenValue Cultist NoModifier
     Tablet -> do
-      agendaStep <- unAgendaStep <$> getStep
+      agendaStep <- unAgendaStep <$> getStep ()
       pure $ TokenValue
         Tablet
         (if isEasyStandard attrs

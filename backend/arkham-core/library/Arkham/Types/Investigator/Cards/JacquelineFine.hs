@@ -9,6 +9,7 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 
 newtype JacquelineFine = JacquelineFine InvestigatorAttrs
+  deriving anyclass (HasAbilities env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env JacquelineFine where
@@ -29,9 +30,6 @@ jacquelineFine = JacquelineFine $ baseAttrs
     , agility = 2
     }
   [Clairvoyant]
-
-instance InvestigatorRunner env => HasAbilities env JacquelineFine where
-  getAbilities i window (JacquelineFine attrs) = getAbilities i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env JacquelineFine where
   runMessage msg (JacquelineFine attrs) =

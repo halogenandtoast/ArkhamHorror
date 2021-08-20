@@ -43,12 +43,13 @@ instance HasAbilities env FireAxe where
     [ restrictedAbility a 1 OwnsThis
       $ ActionAbility (Just Action.Fight) (ActionCost 1)
     , restrictedAbility
-        a
-        2
-        (OwnsThis
-        <> DuringSkillTest (WhileAttackingAnEnemy AnyEnemy <> UsingThis)
-        )
-      $ FastAbility (ResourceCost 1)
+      a
+      2
+      (OwnsThis <> DuringSkillTest (WhileAttackingAnEnemy AnyEnemy <> UsingThis)
+      )
+      (FastAbility (ResourceCost 1))
+    & abilityLimitL
+    .~ PlayerLimit PerTestOrAbility 3
     ]
 
 instance (AssetRunner env) => RunMessage env FireAxe where

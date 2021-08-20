@@ -68,7 +68,7 @@ instance ActRunner env => RunMessage env RicesWhereabouts where
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       alchemyLabsInPlay <- isJust
         <$> selectOne (LocationWithTitle "Alchemy Labs")
-      agendaStep <- unAgendaStep <$> getStep
+      agendaStep <- unAgendaStep <$> getStep ()
       completedTheHouseAlwaysWins <-
         elem "02062" . map unCompletedScenarioId <$> getSetList ()
       theExperiment <- EncounterCard <$> genEncounterCard Enemies.theExperiment

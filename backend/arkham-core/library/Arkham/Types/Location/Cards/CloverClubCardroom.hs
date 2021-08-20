@@ -48,7 +48,7 @@ instance ActionRunner env => HasAbilities env CloverClubCardroom where
   getAbilities iid window@(Window Timing.When NonFast) (CloverClubCardroom attrs@LocationAttrs {..})
     | locationRevealed
     = withBaseActions iid window attrs $ do
-      step <- unActStep <$> getStep
+      step <- unActStep <$> getStep ()
       pure [ locationAbility (ability attrs) | step == 1 ]
   getAbilities iid window (CloverClubCardroom attrs) =
     getAbilities iid window attrs

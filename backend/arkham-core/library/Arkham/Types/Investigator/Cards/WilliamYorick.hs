@@ -7,6 +7,7 @@ import Arkham.Types.Card
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.EntityInstance
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Investigator.Attrs
@@ -54,7 +55,7 @@ williamYorickRecursionLock :: IORef Bool
 williamYorickRecursionLock = unsafePerformIO $ newIORef False
 {-# NOINLINE williamYorickRecursionLock #-}
 
-instance InvestigatorRunner env => HasAbilities env WilliamYorick where
+instance EntityInstanceRunner env => HasAbilities env WilliamYorick where
   getAbilities i (Window Timing.After (EnemyDefeated who _)) (WilliamYorick attrs)
     | i == who
     = if unsafePerformIO $ readIORef williamYorickRecursionLock

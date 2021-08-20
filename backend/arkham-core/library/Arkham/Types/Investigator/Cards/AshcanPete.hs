@@ -10,6 +10,7 @@ import Arkham.Types.Ability
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.EntityInstance
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Matcher hiding (FastPlayerWindow)
 import Arkham.Types.Message
@@ -50,7 +51,7 @@ ability attrs = base { abilityLimit = PlayerLimit PerRound 1 }
     1
     (FastAbility $ HandDiscardCost 1 Nothing mempty mempty)
 
-instance InvestigatorRunner env => HasAbilities env AshcanPete where
+instance EntityInstanceRunner env => HasAbilities env AshcanPete where
   getAbilities iid (Window Timing.When FastPlayerWindow) (AshcanPete attrs@InvestigatorAttrs {..})
     | iid == investigatorId
     = do

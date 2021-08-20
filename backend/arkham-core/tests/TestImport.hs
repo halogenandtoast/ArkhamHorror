@@ -423,6 +423,7 @@ chooseOnlyOption
      , HasGameRef env
      , HasStdGen env
      , HasMessageLogger env
+     , HasCallStack
      )
   => String
   -> m ()

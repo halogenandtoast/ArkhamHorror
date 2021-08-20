@@ -8,6 +8,7 @@ import Arkham.Types.Card
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.EntityInstance
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs
@@ -50,7 +51,7 @@ ability attrs = (mkAbility attrs 1 (ActionAbility Nothing $ ActionCost 1))
   { abilityDoesNotProvokeAttacksOfOpportunity = True
   }
 
-instance InvestigatorRunner env => HasAbilities env SefinaRousseau where
+instance EntityInstanceRunner env => HasAbilities env SefinaRousseau where
   getAbilities i window@(Window Timing.When NonFast) (SefinaRousseau attrs)
     | i == toId attrs = withBaseActions i window attrs
     $ pure [ ability attrs | notNull (investigatorCardsUnderneath attrs) ]

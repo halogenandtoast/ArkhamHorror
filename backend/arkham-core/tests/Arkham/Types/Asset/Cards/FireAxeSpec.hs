@@ -29,7 +29,7 @@ spec = describe "Fire Axe" $ do
         )
       $ do
           runMessages
-          [doFight] <- getAbilitiesOf investigator nonFast fireAxe
+          [doFight, _] <- getAbilitiesOf investigator nonFast fireAxe
           push $ UseAbility (toId investigator) doFight []
           runMessages
           chooseOnlyOption "Fight enemy"
@@ -57,7 +57,7 @@ spec = describe "Fire Axe" $ do
         )
       $ do
           runMessages
-          [doFight] <- getAbilitiesOf investigator nonFast fireAxe
+          [doFight, _] <- getAbilitiesOf investigator nonFast fireAxe
           push $ UseAbility (toId investigator) doFight []
           runMessages
           chooseOnlyOption "Fight enemy"
@@ -68,9 +68,21 @@ spec = describe "Fire Axe" $ do
               _ -> False
             )
           chooseOptionMatching
+            "Skip playing fast cards or using reactions and continue"
+            (\case
+              Continue{} -> True
+              _ -> False
+            )
+          chooseOptionMatching
             "Start Skill Test"
             (\case
               StartSkillTest{} -> True
+              _ -> False
+            )
+          chooseOptionMatching
+            "Skip playing fast cards or using reactions and continue"
+            (\case
+              Continue{} -> True
               _ -> False
             )
           chooseOnlyOption "Apply Results"
@@ -96,7 +108,7 @@ spec = describe "Fire Axe" $ do
         )
       $ do
           runMessages
-          [doFight] <- getAbilitiesOf investigator nonFast fireAxe
+          [doFight, _] <- getAbilitiesOf investigator nonFast fireAxe
           push $ UseAbility (toId investigator) doFight []
           runMessages
           chooseOnlyOption "Fight enemy"
@@ -135,7 +147,7 @@ spec = describe "Fire Axe" $ do
         )
       $ do
           runMessages
-          [doFight] <- getAbilitiesOf investigator nonFast fireAxe
+          [doFight, _] <- getAbilitiesOf investigator nonFast fireAxe
           push $ UseAbility (toId investigator) doFight []
           runMessages
           chooseOnlyOption "Fight enemy"

@@ -9,6 +9,7 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 
 newtype WinifredHabbamock = WinifredHabbamock InvestigatorAttrs
+  deriving anyclass (HasAbilities env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env WinifredHabbamock where
@@ -29,9 +30,6 @@ winifredHabbamock = WinifredHabbamock $ baseAttrs
     , agility = 5
     }
   [Criminal]
-
-instance InvestigatorRunner env => HasAbilities env WinifredHabbamock where
-  getAbilities i window (WinifredHabbamock attrs) = getAbilities i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env WinifredHabbamock where
   runMessage msg (WinifredHabbamock attrs) =

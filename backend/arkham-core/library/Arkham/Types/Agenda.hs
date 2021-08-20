@@ -34,8 +34,8 @@ instance HasList UnderneathCard env Agenda where
 instance HasCount DoomCount env Agenda where
   getCount = getCount . toAttrs
 
-instance HasStep Agenda AgendaStep where
-  getStep = ask >>= runReaderT getStep . toAttrs
+instance HasStep AgendaStep env Agenda where
+  getStep = getStep . toAttrs
 
 deriving anyclass instance ActionRunner env => HasAbilities env Agenda
 

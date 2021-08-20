@@ -9,6 +9,7 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 
 newtype DexterDrake = DexterDrake InvestigatorAttrs
+  deriving anyclass (HasAbilities env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env DexterDrake where
@@ -29,9 +30,6 @@ dexterDrake = DexterDrake $ baseAttrs
     , agility = 2
     }
   [Sorcerer, Veteran]
-
-instance InvestigatorRunner env => HasAbilities env DexterDrake where
-  getAbilities i window (DexterDrake attrs) = getAbilities i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env DexterDrake where
   runMessage msg (DexterDrake attrs) = DexterDrake <$> runMessage msg attrs

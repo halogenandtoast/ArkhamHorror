@@ -9,6 +9,7 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 
 newtype TommyMuldoon = TommyMuldoon InvestigatorAttrs
+  deriving anyclass (HasAbilities env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env TommyMuldoon where
@@ -29,9 +30,6 @@ tommyMuldoon = TommyMuldoon $ baseAttrs
     , agility = 2
     }
   [Police, Warden]
-
-instance InvestigatorRunner env => HasAbilities env TommyMuldoon where
-  getAbilities i window (TommyMuldoon attrs) = getAbilities i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env TommyMuldoon where
   runMessage msg (TommyMuldoon attrs) = TommyMuldoon <$> runMessage msg attrs

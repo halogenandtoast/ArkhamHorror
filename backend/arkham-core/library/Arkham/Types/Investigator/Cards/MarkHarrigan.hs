@@ -10,6 +10,7 @@ import Arkham.Types.Ability
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.EntityInstance
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Message
 import Arkham.Types.Stats
@@ -47,7 +48,7 @@ ability attrs =
     PerPhase
     1
 
-instance InvestigatorRunner env => HasAbilities env MarkHarrigan where
+instance EntityInstanceRunner env => HasAbilities env MarkHarrigan where
   getAbilities i (Window Timing.When (DealtDamage _ target)) (MarkHarrigan attrs)
     | isTarget attrs target && i == toId attrs
     = pure [ability attrs]

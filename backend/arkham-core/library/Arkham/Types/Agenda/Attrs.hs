@@ -125,8 +125,8 @@ instance HasCardDef AgendaAttrs where
 instance HasAbilities env AgendaAttrs where
   getAbilities _ _ _ = pure []
 
-instance HasStep AgendaAttrs AgendaStep where
-  getStep = asks $ agendaStep . agendaSequence
+instance HasStep AgendaStep env AgendaAttrs where
+  getStep = pure . agendaStep . agendaSequence
 
 instance HasList UnderneathCard env AgendaAttrs where
   getList = pure . map UnderneathCard . agendaCardsUnderneath

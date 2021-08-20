@@ -47,7 +47,7 @@ data Scenario
 instance
   ( HasSet ClosestAssetId env (InvestigatorId, AssetMatcher)
   , HasId (Maybe LocationId) env LocationMatcher
-  , HasStep env ActStep
+  , HasStep ActStep env ()
   , ScenarioRunner env
   )
   => RunMessage env Scenario where
@@ -92,7 +92,7 @@ instance
   , HasTokenValue env InvestigatorId
   , HasId LocationId env InvestigatorId
   , HasId CardCode env EnemyId
-  , HasStep env AgendaStep
+  , HasStep AgendaStep env ()
   , HasModifiersFor env ()
   )
   => HasTokenValue env Scenario where

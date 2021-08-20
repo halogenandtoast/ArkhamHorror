@@ -51,5 +51,5 @@ type EnemyRunner env
     , HasSet Trait env LocationId
     , HasSet Trait env Source
     , HasSkillTest env
-    , HasStep env AgendaStep
+    , HasStep AgendaStep env ()
     )

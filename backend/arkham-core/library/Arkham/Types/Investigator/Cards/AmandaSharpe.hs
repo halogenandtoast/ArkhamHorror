@@ -9,6 +9,7 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 
 newtype AmandaSharpe = AmandaSharpe InvestigatorAttrs
+  deriving anyclass (HasAbilities env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env AmandaSharpe where
@@ -29,9 +30,6 @@ amandaSharpe = AmandaSharpe $ baseAttrs
     , agility = 2
     }
   [Miskatonic, Scholar]
-
-instance InvestigatorRunner env => HasAbilities env AmandaSharpe where
-  getAbilities i window (AmandaSharpe attrs) = getAbilities i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env AmandaSharpe where
   runMessage msg (AmandaSharpe attrs) = AmandaSharpe <$> runMessage msg attrs

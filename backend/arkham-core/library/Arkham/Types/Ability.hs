@@ -3,31 +3,31 @@ module Arkham.Types.Ability
   , module X
   ) where
 
-import           Arkham.Prelude
+import Arkham.Prelude
 
-import           Arkham.Json
-import           Arkham.Types.Ability.Limit         as X
-import           Arkham.Types.Ability.Type          as X
-import           Arkham.Types.Action                (Action)
-import           Arkham.Types.Card.EncounterCard
-import           Arkham.Types.Classes.Entity.Source
-import           Arkham.Types.Cost
-import           Arkham.Types.Criteria              (Criterion)
-import           Arkham.Types.Id
-import           Arkham.Types.Matcher
-import           Arkham.Types.Modifier
-import           Arkham.Types.SkillType
-import           Arkham.Types.Source
-import           Arkham.Types.Target
+import Arkham.Json
+import Arkham.Types.Ability.Limit as X
+import Arkham.Types.Ability.Type as X
+import Arkham.Types.Action (Action)
+import Arkham.Types.Card.EncounterCard
+import Arkham.Types.Classes.Entity.Source
+import Arkham.Types.Cost
+import Arkham.Types.Criteria (Criterion)
+import Arkham.Types.Id
+import Arkham.Types.Matcher
+import Arkham.Types.Modifier
+import Arkham.Types.SkillType
+import Arkham.Types.Source
+import Arkham.Types.Target
 
 data Ability = Ability
-  { abilitySource                             :: Source
-  , abilityIndex                              :: Int
-  , abilityType                               :: AbilityType
-  , abilityLimit                              :: AbilityLimit
-  , abilityWindow                             :: WindowMatcher
-  , abilityMetadata                           :: Maybe AbilityMetadata
-  , abilityCriteria                           :: Maybe Criterion
+  { abilitySource :: Source
+  , abilityIndex :: Int
+  , abilityType :: AbilityType
+  , abilityLimit :: AbilityLimit
+  , abilityWindow :: WindowMatcher
+  , abilityMetadata :: Maybe AbilityMetadata
+  , abilityCriteria :: Maybe Criterion
   , abilityDoesNotProvokeAttacksOfOpportunity :: Bool
   }
   deriving stock (Show, Generic)
@@ -80,29 +80,29 @@ abilityEffect a cost = mkAbility a (-1) (AbilityEffect cost)
 
 defaultAbilityLimit :: AbilityType -> AbilityLimit
 defaultAbilityLimit = \case
-  ForcedAbility _           -> PlayerLimit PerWindow 1
-  LegacyForcedAbility       -> PlayerLimit PerWindow 1
-  ReactionAbility _ _       -> PlayerLimit PerWindow 1
-  LegacyReactionAbility _   -> PlayerLimit PerWindow 1
-  FastAbility _             -> NoLimit
-  ActionAbility _ _         -> NoLimit
+  ForcedAbility _ -> PlayerLimit PerWindow 1
+  LegacyForcedAbility -> PlayerLimit PerWindow 1
+  ReactionAbility _ _ -> PlayerLimit PerWindow 1
+  LegacyReactionAbility _ -> PlayerLimit PerWindow 1
+  FastAbility _ -> NoLimit
+  ActionAbility _ _ -> NoLimit
   ActionAbilityWithBefore{} -> NoLimit
-  ActionAbilityWithSkill{}  -> NoLimit
-  AbilityEffect _           -> NoLimit
-  Objective aType           -> defaultAbilityLimit aType
+  ActionAbilityWithSkill{} -> NoLimit
+  AbilityEffect _ -> NoLimit
+  Objective aType -> defaultAbilityLimit aType
 
 defaultAbilityWindow :: AbilityType -> WindowMatcher
 defaultAbilityWindow = \case
-  FastAbility _             -> FastPlayerWindow
-  ActionAbility{}           -> DuringTurn You
+  FastAbility _ -> FastPlayerWindow
+  ActionAbility{} -> DuringTurn You
   ActionAbilityWithBefore{} -> DuringTurn You
-  ActionAbilityWithSkill{}  -> DuringTurn You
-  ForcedAbility window      -> window
-  LegacyForcedAbility       -> AnyWindow
-  ReactionAbility window _  -> window
-  LegacyReactionAbility _   -> AnyWindow
-  AbilityEffect _           -> AnyWindow
-  Objective aType           -> defaultAbilityWindow aType
+  ActionAbilityWithSkill{} -> DuringTurn You
+  ForcedAbility window -> window
+  LegacyForcedAbility -> AnyWindow
+  ReactionAbility window _ -> window
+  LegacyReactionAbility _ -> AnyWindow
+  AbilityEffect _ -> AnyWindow
+  Objective aType -> defaultAbilityWindow aType
 
 mkAbility :: SourceEntity a => a -> Int -> AbilityType -> Ability
 mkAbility entity idx type' = Ability
@@ -124,28 +124,28 @@ isForcedAbility :: Ability -> Bool
 isForcedAbility Ability { abilityType } = go abilityType
  where
   go = \case
-    LegacyForcedAbility       -> True
-    ForcedAbility{}           -> True
-    Objective aType           -> go aType
-    FastAbility{}             -> False
-    LegacyReactionAbility{}   -> False
-    ReactionAbility{}         -> False
-    ActionAbility{}           -> False
-    ActionAbilityWithSkill{}  -> False
+    LegacyForcedAbility -> True
+    ForcedAbility{} -> True
+    Objective aType -> go aType
+    FastAbility{} -> False
+    LegacyReactionAbility{} -> False
+    ReactionAbility{} -> False
+    ActionAbility{} -> False
+    ActionAbilityWithSkill{} -> False
     ActionAbilityWithBefore{} -> False
-    AbilityEffect{}           -> False
+    AbilityEffect{} -> False
 
 isFastAbility :: Ability -> Bool
 isFastAbility Ability { abilityType } = go abilityType
  where
   go = \case
-    FastAbility{}             -> True
-    LegacyForcedAbility       -> False
-    ForcedAbility{}           -> False
-    Objective aType           -> go aType
-    LegacyReactionAbility{}   -> False
-    ReactionAbility{}         -> False
-    ActionAbility{}           -> False
-    ActionAbilityWithSkill{}  -> False
+    FastAbility{} -> True
+    LegacyForcedAbility -> False
+    ForcedAbility{} -> False
+    Objective aType -> go aType
+    LegacyReactionAbility{} -> False
+    ReactionAbility{} -> False
+    ActionAbility{} -> False
+    ActionAbilityWithSkill{} -> False
     ActionAbilityWithBefore{} -> False
-    AbilityEffect{}           -> False
+    AbilityEffect{} -> False

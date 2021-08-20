@@ -20,29 +20,6 @@ export default defineComponent({
   setup(props) {
     const ability: ComputedRef<Message> = computed(() => props.ability.tag == 'Run' ? props.ability.contents[0] : props.ability)
 
-    const abilityLabel = computed(() => {
-      if (ability.value.tag === "EvadeLabel") {
-        return "Evade"
-      }
-      if (ability.value.tag === "FightEnemy") {
-        return "Fight"
-      }
-      const label = ability.value.tag === 'Run'
-        ? (ability.value.contents[1]?.type?.tag === "ForcedAbility"
-          ? "Forced"
-          : ability.value.contents[0].contents[1].type.contents[0]
-          )
-        : (ability.value.contents[1]?.type?.tag === "ForcedAbility"
-          ? "Forced"
-          : ability.value.contents[1].type.contents[0]
-          )
-      if (label) {
-        return typeof label === "string" ? label : label.contents
-      }
-
-      return ""
-    })
-
     const isAction = (action: string) => {
       if (ability.value.tag === "EvadeLabel") {
         return action === "Evade"
@@ -100,6 +77,35 @@ export default defineComponent({
     const isForcedAbility = computed(() => ability.value.tag === "UseAbility" && ability.value.contents[1].type.tag === "ForcedAbility")
 
     const isNeutralAbility = computed(() => !(isInvestigate.value || isFight.value || isEvade.value || isEngage.value))
+
+    const abilityLabel = computed(() => {
+      if (ability.value.tag === "EvadeLabel") {
+        return "Evade"
+      }
+
+      if (ability.value.tag === "FightEnemy") {
+        return "Fight"
+      }
+
+      if (isForcedAbility.value === true) {
+        return "Forced"
+      }
+
+      if (isReactionAbility.value === true) {
+        return ""
+      }
+
+      const label = ability.value.tag === 'Run'
+        ? ability.value.contents[0].contents[1].type.contents[0]
+        : ability.value.contents[1].type.contents[0]
+
+      if (label) {
+        return typeof label === "string" ? label : label.contents
+      }
+
+      return ""
+    })
+
 
     const classObject = computed(() => {
       return {

@@ -30,7 +30,8 @@ machete = hand Machete Cards.machete
 instance HasAbilities env Machete where
   getAbilities _ _ (Machete a) = pure
     [ restrictedAbility a 1 OwnsThis
-        $ ActionAbility (Just Action.Fight) (ActionCost 1)
+      $ ActionAbility (Just Action.Fight)
+      $ ActionCost 1
     ]
 
 instance AssetRunner env => RunMessage env Machete where

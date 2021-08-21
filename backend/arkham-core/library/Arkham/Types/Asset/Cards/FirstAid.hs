@@ -13,9 +13,8 @@ import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
-import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype FirstAid = FirstAid AssetAttrs
@@ -27,26 +26,21 @@ firstAid = asset FirstAid Cards.firstAid
 
 instance HasAbilities env FirstAid where
   getAbilities _ _ (FirstAid x) = pure
-    [ restrictedAbility
-        x
-        1
-        OwnsThis
-        (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (toId x) Supply 1]
-        )
+    [ restrictedAbility x 1 OwnsThis $ ActionAbility Nothing $ Costs
+        [ActionCost 1, UseCost (toId x) Supply 1]
     ]
 
 instance AssetRunner env => RunMessage env FirstAid where
-  runMessage msg a@(FirstAid attrs@AssetAttrs {..}) = case msg of
-    UseCardAbility iid (AssetSource aid) _ 1 _ | aid == assetId -> do
-      lid <- getId @LocationId iid
-      investigatorTargets <- map InvestigatorTarget <$> getSetList lid
+  runMessage msg a@(FirstAid attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      targets <- selectListMap InvestigatorTarget $ InvestigatorAt YourLocation
       a <$ push
         (chooseOne
           iid
           [ TargetLabel
               target
               [chooseOne iid [HealDamage target 1, HealHorror target 1]]
-          | target <- investigatorTargets
+          | target <- targets
           ]
         )
     _ -> FirstAid <$> runMessage msg attrs

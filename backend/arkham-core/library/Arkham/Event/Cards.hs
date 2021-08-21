@@ -148,6 +148,8 @@ evidence = (event "01022" "Evidence!" 1 Guardian)
   { cdSkills = [SkillIntellect, SkillIntellect]
   , cdCardTraits = setFromList [Insight]
   , cdFastWindow = Just (EnemyDefeated Timing.After You AnyEnemy)
+  , cdCriteria = Just
+    (Criteria.LocationExists $ YourLocation <> LocationWithAnyClues)
   }
 
 dodge :: CardDef

@@ -7,7 +7,6 @@ import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
-import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
@@ -23,15 +22,13 @@ extraAmmunition1 = event ExtraAmmunition1 Cards.extraAmmunition1
 instance (EventRunner env) => RunMessage env ExtraAmmunition1 where
   runMessage msg e@(ExtraAmmunition1 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
-      investigatorIds <- getSetList @InvestigatorId =<< getId @LocationId iid
-      firearms <- selectList
-        (AssetWithTrait Firearm <> AssetOneOf
-          (map (AssetOwnedBy . InvestigatorWithId) investigatorIds)
+      firearms <-
+        selectListMap AssetTarget $ AssetWithTrait Firearm <> AssetOwnedBy
+          (InvestigatorAt YourLocation)
+      e <$ pushAll
+        (case firearms of
+          [] -> error "should not have been playable"
+          [x] -> [AddUses x Ammo 3, discard attrs]
+          xs -> [chooseOne iid [ AddUses x Ammo 3 | x <- xs ], discard attrs]
         )
-      e <$ if null firearms
-        then push . Discard $ toTarget attrs
-        else pushAll
-          [ chooseOne iid [ AddUses (AssetTarget aid) Ammo 3 | aid <- firearms ]
-          , Discard (toTarget attrs)
-          ]
     _ -> ExtraAmmunition1 <$> runMessage msg attrs

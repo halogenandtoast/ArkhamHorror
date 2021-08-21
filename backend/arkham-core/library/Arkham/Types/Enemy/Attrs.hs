@@ -198,11 +198,10 @@ spawnAtEmptyLocation iid eid = do
 
 spawnAt
   :: (MonadIO m, MonadReader env m, HasQueue env)
-  => Maybe InvestigatorId
-  -> EnemyId
+  => EnemyId
   -> LocationMatcher
   -> m ()
-spawnAt miid eid locationMatcher =
+spawnAt eid locationMatcher =
   pushAll $ resolve (EnemySpawnAtLocationMatching Nothing locationMatcher eid)
 
 spawnAtOneOf
@@ -792,7 +791,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
         <$ (case enemySpawnAt of
              Nothing -> pushAll (resolve (EnemySpawn (Just iid) lid eid))
              Just matcher -> do
-               spawnAt Nothing enemyId matcher
+               spawnAt enemyId matcher
            )
     InvestigatorEliminated iid ->
       pure $ a & engagedInvestigatorsL %~ deleteSet iid

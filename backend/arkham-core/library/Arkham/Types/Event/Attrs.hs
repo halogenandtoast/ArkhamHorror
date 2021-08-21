@@ -94,6 +94,8 @@ instance TargetEntity EventAttrs where
   isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
   isTarget _ _ = False
 
+instance DiscardableEntity EventAttrs
+
 instance SourceEntity EventAttrs where
   toSource = EventSource . toId
   isSource EventAttrs { eventId } (EventSource eid) = eventId == eid

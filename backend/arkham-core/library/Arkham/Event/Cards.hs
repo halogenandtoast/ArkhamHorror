@@ -171,6 +171,11 @@ extraAmmunition1 = (event "01026" "Extra Ammunition" 2 Guardian)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Supply]
   , cdLevel = 1
+  , cdCriteria = Just
+    (Criteria.AssetExists
+    $ AssetOwnedBy (InvestigatorAt YourLocation)
+    <> AssetWithTrait Firearm
+    )
   }
 
 mindOverMatter :: CardDef

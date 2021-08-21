@@ -40,13 +40,7 @@ instance HasAbilities env GuardDog where
 
 instance (AssetRunner env) => RunMessage env GuardDog where
   runMessage msg a@(GuardDog attrs) = case msg of
-    UseCardAbility _ source [Window Timing.When (Window.DealtDamage (EnemySource eid) _)] 1 _
+    UseCardAbility iid source [Window Timing.When (Window.DealtDamage (EnemySource eid) _)] 1 _
       | isSource attrs source
-      -> a <$ push
-        (chooseOne
-          (getInvestigator attrs)
-          [ EnemyDamage eid (getInvestigator attrs) (toSource attrs) 1
-          , Continue "Do not use Guard Dog's ability"
-          ]
-        )
+      -> a <$ push (EnemyDamage eid iid source 1)
     _ -> GuardDog <$> runMessage msg attrs

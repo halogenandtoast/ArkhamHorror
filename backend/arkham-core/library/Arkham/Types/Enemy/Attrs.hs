@@ -193,9 +193,8 @@ spawnAtEmptyLocation iid eid = do
   emptyLocations <- map unEmptyLocationId <$> getSetList ()
   case emptyLocations of
     [] -> push (Discard (EnemyTarget eid))
-    [lid] -> push (EnemySpawn (Just iid) lid eid)
-    lids ->
-      push (chooseOne iid [ EnemySpawn (Just iid) lid eid | lid <- lids ])
+    [lid] -> push (EnemySpawn Nothing lid eid)
+    lids -> push (chooseOne iid [ EnemySpawn Nothing lid eid | lid <- lids ])
 
 spawnAt
   :: (MonadIO m, MonadReader env m, HasQueue env)
@@ -204,7 +203,7 @@ spawnAt
   -> LocationMatcher
   -> m ()
 spawnAt miid eid locationMatcher =
-  pushAll $ resolve (EnemySpawnAtLocationMatching miid locationMatcher eid)
+  pushAll $ resolve (EnemySpawnAtLocationMatching Nothing locationMatcher eid)
 
 spawnAtOneOf
   :: (MonadIO m, HasSet LocationId env (), MonadReader env m, HasQueue env)
@@ -216,13 +215,13 @@ spawnAtOneOf iid eid targetLids = do
   locations' <- getSet ()
   case setToList (setFromList targetLids `intersection` locations') of
     [] -> push (Discard (EnemyTarget eid))
-    [lid] -> pushAll (resolve $ EnemySpawn (Just iid) lid eid)
+    [lid] -> pushAll (resolve $ EnemySpawn Nothing lid eid)
     lids -> push
       (chooseOne
         iid
         [ TargetLabel
             (LocationTarget lid)
-            (resolve $ EnemySpawn (Just iid) lid eid)
+            (resolve $ EnemySpawn Nothing lid eid)
         | lid <- lids
         ]
       )

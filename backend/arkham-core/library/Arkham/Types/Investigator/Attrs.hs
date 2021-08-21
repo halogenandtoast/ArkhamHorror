@@ -1088,10 +1088,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       , AfterEvadeEnemy iid eid
       ]
   MoveAction iid lid cost True | iid == investigatorId -> a <$ pushAll
-    [ TakeAction iid (Just Action.Move) cost
-    , CheckAttackOfOpportunity iid False
-    , MoveAction iid lid cost False
-    ]
+    [TakeAction iid (Just Action.Move) cost, MoveAction iid lid cost False]
   MoveAction iid lid _cost False | iid == investigatorId ->
     a <$ pushAll (resolve $ Move iid investigatorLocation lid)
   Move iid fromLocationId toLocationId | iid == investigatorId -> a <$ pushAll
@@ -1899,7 +1896,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                     && toCardType c
                     == EventType
                   then
-                    [PlayFastEvent iid (toCardId c) Nothing windows]
+                    [ PlayFastEvent iid (toCardId c) Nothing windows
+                    , RunWindow iid windows
+                    ]
                   else
                     [ PayCardCost iid (toCardId c)
                       , PlayCard iid (toCardId c) Nothing False

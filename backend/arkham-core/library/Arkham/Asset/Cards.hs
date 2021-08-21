@@ -1217,7 +1217,7 @@ fieldwork = (asset "03024" "Fieldwork" 2 Seeker)
   }
 
 archaicGlyphs :: CardDef
-archaicGlyphs = (asset "03025" "Archaic Glyphs" 0 Seeker)
+archaicGlyphs = (asset "03025" ("Archaic Glyphs" <:> "Untranslated") 0 Seeker)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Item, Occult, Tome]
   }
@@ -1227,6 +1227,7 @@ inTheKnow1 = (asset "03027" "In the Know" 3 Seeker)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = singleton Talent
   , cdUses = Uses Secret 3
+  , cdLevel = 1
   }
 
 stealth :: CardDef

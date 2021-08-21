@@ -542,6 +542,10 @@ data Message
     deriving stock (Show, Eq, Generic)
     deriving anyclass (ToJSON, FromJSON)
 
+chooseOrRunOne :: InvestigatorId -> [Message] -> Message
+chooseOrRunOne _ [x] = x
+chooseOrRunOne iid msgs = chooseOne iid msgs
+
 chooseOne :: InvestigatorId -> [Message] -> Message
 chooseOne _ [] = throw $ InvalidState "No messages for chooseOne"
 chooseOne iid msgs = Ask iid (ChooseOne msgs)

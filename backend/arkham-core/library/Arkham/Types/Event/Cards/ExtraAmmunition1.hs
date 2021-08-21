@@ -26,9 +26,7 @@ instance (EventRunner env) => RunMessage env ExtraAmmunition1 where
         selectListMap AssetTarget $ AssetWithTrait Firearm <> AssetOwnedBy
           (InvestigatorAt YourLocation)
       e <$ pushAll
-        (case firearms of
-          [] -> error "should not have been playable"
-          [x] -> [AddUses x Ammo 3, discard attrs]
-          xs -> [chooseOne iid [ AddUses x Ammo 3 | x <- xs ], discard attrs]
-        )
+        [ chooseOrRunOne iid [ AddUses firearm Ammo 3 | firearm <- firearms ]
+        , discard attrs
+        ]
     _ -> ExtraAmmunition1 <$> runMessage msg attrs

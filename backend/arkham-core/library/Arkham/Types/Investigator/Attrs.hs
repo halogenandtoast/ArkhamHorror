@@ -1889,32 +1889,43 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             (Run . (: [RunWindow iid windows]) . ($ windows) . UseAbility iid)
             actions
           )
-        else a <$ push
-          (chooseOne iid
-          $ [ Run
-                $ if isJust (cdFastWindow $ toCardDef c)
-                    && toCardType c
-                    == EventType
-                  then
-                    [ PlayFastEvent iid (toCardId c) Nothing windows
-                    , RunWindow iid windows
-                    ]
-                  else
-                    [ PayCardCost iid (toCardId c)
-                      , PlayCard iid (toCardId c) Nothing False
+        else do
+          actionsWithMatchingWindows <- for actions $ \ability ->
+            (ability, )
+              <$> filterM
+                    (\w -> windowMatches
+                      iid
+                      (abilitySource ability)
+                      w
+                      (abilityWindow ability)
+                    )
+                    windows
+          a <$ push
+            (chooseOne iid
+            $ [ Run
+                  $ if isJust (cdFastWindow $ toCardDef c)
+                      && toCardType c
+                      == EventType
+                    then
+                      [ PlayFastEvent iid (toCardId c) Nothing windows
+                      , RunWindow iid windows
                       ]
-                      <> [RunWindow iid windows]
-            | c <- playableCards
-            ]
-          <> map
-               (Run
-               . (: [RunWindow iid windows])
-               . ($ windows)
-               . UseAbility iid
-               )
-               actions
-          <> [Continue "Skip playing fast cards or using reactions"]
-          )
+                    else
+                      [ PayCardCost iid (toCardId c)
+                        , PlayCard iid (toCardId c) Nothing False
+                        ]
+                        <> [RunWindow iid windows]
+              | c <- playableCards
+              ]
+            <> map
+                 (\(ability, windows') ->
+                   Run
+                     . (: [RunWindow iid windows]) -- original set of windows
+                     $ UseAbility iid ability windows'
+                 )
+                 actionsWithMatchingWindows
+            <> [Continue "Skip playing fast cards or using reactions"]
+            )
       else pure a
   SpendActions iid _ n | iid == investigatorId ->
     pure $ a & remainingActionsL %~ max 0 . subtract n

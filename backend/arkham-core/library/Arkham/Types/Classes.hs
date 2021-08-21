@@ -32,6 +32,7 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window (Window)
 import qualified Data.Char as C
+import qualified Data.HashSet as HashSet
 import GHC.Generics
 import Language.Haskell.TH.Syntax hiding (Name)
 import qualified Language.Haskell.TH.Syntax as TH
@@ -62,9 +63,19 @@ type family QueryElement a where
   QueryElement ActionMatcher = Ability
   QueryElement SkillMatcher = SkillId
 
+selectCount :: (HasCallStack, MonadReader env m, Query a env) => a -> m Int
+selectCount = fmap HashSet.size . select
+
 selectList
   :: (HasCallStack, MonadReader env m, Query a env) => a -> m [QueryElement a]
-selectList = fmap setToList . select
+selectList = selectListMap id
+
+selectListMap
+  :: (HasCallStack, MonadReader env m, Query a env)
+  => (QueryElement a -> b)
+  -> a
+  -> m [b]
+selectListMap f = fmap (map f . setToList) . select
 
 selectOne
   :: (HasCallStack, MonadReader env m, Query a env)

@@ -17,6 +17,7 @@ type AssetRunner env
     , Query AssetMatcher env
     , Query ActionMatcher env
     , Query LocationMatcher env
+    , Query InvestigatorMatcher env
     , HasCostPayment env
     , HasModifiersFor env ()
     , HasList UsedAbility env ()

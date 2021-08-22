@@ -324,7 +324,7 @@ instance
         [RemovedFromPlay $ toSource a, Discarded (toTarget a) (toCard a)]
     Exile target | a `isTarget` target ->
       a <$ pushAll [RemovedFromPlay $ toSource a, Exiled target (toCard a)]
-    InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
+    InvestigatorPlayedAsset iid aid _ _ | aid == assetId -> do
       -- we specifically use the investigator source here because the
       -- asset has no knowledge of being owned yet, and this will allow
       -- us to bring the investigator's id into scope

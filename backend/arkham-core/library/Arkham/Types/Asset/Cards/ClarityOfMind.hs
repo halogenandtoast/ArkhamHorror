@@ -13,49 +13,36 @@ import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
-import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype ClarityOfMind = ClarityOfMind AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 clarityOfMind :: AssetCard ClarityOfMind
 clarityOfMind = arcane ClarityOfMind Cards.clarityOfMind
 
 instance HasAbilities env ClarityOfMind where
-  getAbilities iid (Window Timing.When NonFast) (ClarityOfMind a) = pure
+  getAbilities _ _ (ClarityOfMind a) = pure
     [ restrictedAbility
-        (toSource a)
+        a
         1
-        (InvestigatorExists
-        $ InvestigatorAt YourLocation
-        <> InvestigatorWithAnyHorror
+        (OwnsThis <> InvestigatorExists
+          (InvestigatorAt YourLocation <> InvestigatorWithAnyHorror)
         )
-        (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (toId a) Charge 1]
-        )
-    | ownedBy a iid
+      $ ActionAbility Nothing
+      $ Costs [ActionCost 1, UseCost (toId a) Charge 1]
     ]
-  getAbilities _ _ _ = pure []
-
-instance HasModifiersFor env ClarityOfMind
 
 instance AssetRunner env => RunMessage env ClarityOfMind where
   runMessage msg a@(ClarityOfMind attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      lid <- getId @LocationId iid
-      iids <- getSetList @InvestigatorId lid
+      targets <- selectListMap InvestigatorTarget (InvestigatorAt YourLocation)
       a <$ push
-        (chooseOne
+        (chooseOrRunOne
           iid
-          [ TargetLabel
-              (InvestigatorTarget iid')
-              [HealHorror (InvestigatorTarget iid') 1]
-          | iid' <- iids
-          ]
+          [ TargetLabel target [HealHorror target 1] | target <- targets ]
         )
     _ -> ClarityOfMind <$> runMessage msg attrs

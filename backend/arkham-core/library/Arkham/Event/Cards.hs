@@ -262,8 +262,11 @@ wardOfProtection :: CardDef
 wardOfProtection = (event "01065" "Ward of Protection" 1 Mystic)
   { cdSkills = [SkillWild]
   , cdCardTraits = setFromList [Spell, Spirit]
-  , cdFastWindow = Just
-    (DrawCard Timing.When You $ BasicCardMatch NonWeaknessTreachery)
+  , cdFastWindow = Just $ DrawCard
+    Timing.When
+    You
+    (BasicCardMatch NonWeaknessTreachery)
+    EncounterDeck
   }
 
 blindingLight :: CardDef
@@ -607,8 +610,11 @@ wardOfProtection5 :: CardDef
 wardOfProtection5 = (event "02307" "Ward of Protection" 1 Mystic)
   { cdSkills = [SkillWillpower, SkillWild]
   , cdCardTraits = setFromList [Spell, Spirit]
-  , cdFastWindow = Just $ DrawCard Timing.When You $ BasicCardMatch
-    NonWeaknessTreachery
+  , cdFastWindow = Just $ DrawCard
+    Timing.When
+    You
+    (BasicCardMatch NonWeaknessTreachery)
+    EncounterDeck
   , cdLevel = 5
   }
 
@@ -643,12 +649,13 @@ letMeHandleThis :: CardDef
 letMeHandleThis = (event "03022" "\"Let me handle this!\"" 0 Guardian)
   { cdSkills = [SkillWillpower, SkillCombat]
   , cdCardTraits = setFromList [Spirit]
-  , cdFastWindow =
-    Just
-    $ DrawCard Timing.After NotYou
-    $ BasicCardMatch
-    $ NonPeril
-    <> CardWithOneOf (map CardWithType encounterCardTypes)
+  , cdFastWindow = Just $ DrawCard
+    Timing.After
+    NotYou
+    (BasicCardMatch $ NonPeril <> CardWithOneOf
+      (map CardWithType encounterCardTypes)
+    )
+    EncounterDeck
   }
 
 everVigilant1 :: CardDef

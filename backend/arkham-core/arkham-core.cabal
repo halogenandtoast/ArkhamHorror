@@ -325,6 +325,7 @@ library
       Arkham.Types.CommitRestriction
       Arkham.Types.Cost
       Arkham.Types.Criteria
+      Arkham.Types.Deck
       Arkham.Types.Decks
       Arkham.Types.Difficulty
       Arkham.Types.Direction

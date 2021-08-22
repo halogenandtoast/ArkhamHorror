@@ -28,6 +28,7 @@ import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ChaosBag
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes hiding (discard)
+import qualified Arkham.Types.Deck as Deck
 import Arkham.Types.Decks
 import Arkham.Types.Difficulty
 import Arkham.Types.Direction
@@ -2608,14 +2609,18 @@ runGameMessage msg g = case msg of
   LookAtTopOfDeck _ EncounterDeckTarget n -> do
     let cards = map EncounterCard . take n $ unDeck (gameEncounterDeck g)
     g <$ pushAll [FocusCards cards, Label "Continue" [UnfocusCards]]
-  MoveTopOfDeckToBottom _ EncounterDeck n -> do
+  MoveTopOfDeckToBottom _ Deck.EncounterDeck n -> do
     let (cards, deck) = splitAt n (unDeck $ gameEncounterDeck g)
     pure $ g & encounterDeckL .~ Deck (deck <> cards)
   SearchTopOfDeck iid _ EncounterDeckTarget n _traits strategy -> do
     let (cards, encounterDeck) = splitAt n $ unDeck (gameEncounterDeck g)
     case strategy of
       DeferSearchedToTarget target -> g <$ pushAll
-        [ SearchTopOfDeckFound iid target EncounterDeck (EncounterCard card)
+        [ SearchTopOfDeckFound
+            iid
+            target
+            Deck.EncounterDeck
+            (EncounterCard card)
         | card <- cards
         ]
       PutBackInAnyOrder -> do
@@ -3687,7 +3692,10 @@ runGameMessage msg g = case msg of
       treachery = createTreachery card iid
       treacheryId = toId treachery
     checkWindowMessages <- checkWindows
-      [Window Timing.When (Window.DrawCard iid $ EncounterCard card)]
+      [ Window
+          Timing.When
+          (Window.DrawCard iid (EncounterCard card) Deck.EncounterDeck)
+      ]
     pushAll
       $ checkWindowMessages
       <> [ Revelation iid (TreacherySource treacheryId)

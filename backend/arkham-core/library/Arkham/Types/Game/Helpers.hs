@@ -16,6 +16,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria (Criterion)
 import qualified Arkham.Types.Criteria as Criteria
+import Arkham.Types.Deck
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
 import Arkham.Types.GameValue
@@ -304,6 +305,7 @@ getCanAffordCost iid source mAction windows = \case
     pure $ resources >= n
   DiscardCost _ -> pure True -- TODO: Make better
   DiscardCardCost _ -> pure True -- TODO: Make better
+  DiscardDrawnCardCost -> pure True -- TODO: Make better
   ExileCost _ -> pure True -- TODO: Make better
   RemoveCost _ -> pure True -- TODO: Make better
   HorrorCost{} -> pure True -- TODO: Make better
@@ -1404,12 +1406,14 @@ windowMatches iid source window' = \case
         (matchWho iid who whoMatcher)
         (locationMatches iid source window' lid whereMatcher)
       _ -> pure False
-  Matcher.DrawCard whenMatcher whoMatcher cardMatcher -> case window' of
-    Window t (Window.DrawCard who card) | whenMatcher == t -> liftA2
-      (&&)
-      (matchWho iid who whoMatcher)
-      (member card <$> select cardMatcher)
-    _ -> pure False
+  Matcher.DrawCard whenMatcher whoMatcher cardMatcher deckMatcher ->
+    case window' of
+      Window t (Window.DrawCard who card deck) | whenMatcher == t -> andM
+        [ matchWho iid who whoMatcher
+        , member card <$> select cardMatcher
+        , deckMatch iid deck deckMatcher
+        ]
+      _ -> pure False
   Matcher.PlayCard whenMatcher whoMatcher cardMatcher -> case window' of
     Window t (Window.PlayCard who card) | whenMatcher == t -> liftA2
       (&&)
@@ -1645,3 +1649,14 @@ cardListMatches
 cardListMatches cards = \case
   Matcher.LengthIs valueMatcher -> gameValueMatches (length cards) valueMatcher
   Matcher.HasCard cardMatcher -> pure $ any (`cardMatch` cardMatcher) cards
+
+deckMatch
+  :: (MonadReader env m, CanCheckPlayable env)
+  => InvestigatorId
+  -> DeckSignifier
+  -> Matcher.DeckMatcher
+  -> m Bool
+deckMatch iid deckSignifier = \case
+  Matcher.EncounterDeck -> pure $ deckSignifier == EncounterDeck
+  Matcher.DeckOf investigatorMatcher -> matchWho iid iid investigatorMatcher
+  Matcher.AnyDeck -> pure True

@@ -36,7 +36,9 @@ instance HasAbilities env EsotericFormula where
     [ restrictedAbility
         x
         1
-        (OwnsThis <> EnemyExists (CanFightEnemy <> EnemyWithTrait Abomination))
+        (OwnsThis <> EnemyCriteria
+          (EnemyExists $ CanFightEnemy <> EnemyWithTrait Abomination)
+        )
         (ActionAbility (Just Action.Fight) (ActionCost 1))
     ]
 

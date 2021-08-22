@@ -135,14 +135,20 @@ data EnemyMatcher
   | NonWeaknessEnemy
   | EnemyMatchAll [EnemyMatcher]
   | EnemyEngagedWithYou
+  | NotEnemy EnemyMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 instance Semigroup EnemyMatcher where
+  AnyEnemy <> x = x
+  x <> AnyEnemy = x
   EnemyMatchAll xs <> EnemyMatchAll ys = EnemyMatchAll (xs <> ys)
   EnemyMatchAll xs <> x = EnemyMatchAll (x : xs)
   x <> EnemyMatchAll xs = EnemyMatchAll (x : xs)
   x <> y = EnemyMatchAll [x, y]
+
+instance Monoid EnemyMatcher where
+  mempty = AnyEnemy
 
 data EventMatcher
   = EventWithTitle Text

@@ -211,7 +211,7 @@ elusive = (event "01050" "Elusive" 2 Rogue)
   , cdCardTraits = singleton Tactic
   , cdFastWindow = Just $ DuringTurn You
   , cdCriteria = Just $ Criteria.AnyCriterion
-    [ Criteria.EnemyExists EnemyEngagedWithYou
+    [ Criteria.EnemyCriteria $ Criteria.EnemyExists EnemyEngagedWithYou
     , Criteria.LocationExists
     $ RevealedLocation
     <> LocationWithoutEnemies
@@ -231,7 +231,11 @@ sneakAttack = (event "01052" "Sneak Attack" 2 Rogue)
   { cdSkills = [SkillIntellect, SkillCombat]
   , cdCardTraits = setFromList [Tactic]
   , cdCriteria = Just
-    $ Criteria.EnemyExists (EnemyAt YourLocation <> ExhaustedEnemy)
+    (Criteria.EnemyCriteria
+    $ Criteria.EnemyExists
+    $ EnemyAt YourLocation
+    <> ExhaustedEnemy
+    )
   }
 
 sureGamble3 :: CardDef
@@ -276,7 +280,11 @@ mindWipe1 = (event "01068" "Mind Wipe" 1 Mystic)
   , cdLevel = 1
   , cdFastWindow = Just (PhaseBegins Timing.After AnyPhase)
   , cdCriteria = Just
-    (Criteria.EnemyExists $ EnemyAt YourLocation <> NonEliteEnemy)
+    (Criteria.EnemyCriteria
+    $ Criteria.EnemyExists
+    $ EnemyAt YourLocation
+    <> NonEliteEnemy
+    )
   }
 
 blindingLight2 :: CardDef
@@ -535,7 +543,8 @@ exposeWeakness1 = (event "02228" "Expose Weakness" 0 Seeker)
   { cdSkills = [SkillIntellect, SkillCombat, SkillCombat]
   , cdCardTraits = singleton Insight
   , cdFastWindow = Just FastPlayerWindow
-  , cdCriteria = Just $ Criteria.EnemyExists $ EnemyAt YourLocation
+  , cdCriteria = Just
+    (Criteria.EnemyCriteria $ Criteria.EnemyExists $ EnemyAt YourLocation)
   , cdLevel = 1
   }
 

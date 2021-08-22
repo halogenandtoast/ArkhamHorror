@@ -207,6 +207,11 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   background: #d0d9dc;
+
+  @media (prefers-color-scheme: dark) {
+    background: #1C1C1C;
+  }
+
   box-sizing: border-box;
 }
 

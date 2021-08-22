@@ -216,6 +216,10 @@ export default defineComponent({
   padding: 10px;
   box-sizing: border-box;
 
+  @media (prefers-color-scheme: dark) {
+    background: #1C1C1C;
+  }
+
   & :deep(.asset) {
     margin-right: 5px;
   }

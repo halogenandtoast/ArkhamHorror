@@ -1048,7 +1048,8 @@ passesCriteria iid source windows = \case
       (&&)
       (pure $ location /= LocationId (CardId nil))
       ((> 0) . unClueCount <$> getCount location)
-  Criteria.EnemyExists matcher -> notNull <$> getSet @EnemyId matcher
+  Criteria.EnemyCriteria enemyCriteria ->
+    passesEnemyCriteria iid source windows enemyCriteria
   Criteria.NoEnemyExists matcher -> null <$> getSet @EnemyId matcher
   Criteria.SetAsideCardExists matcher ->
     notNull <$> getSet @SetAsideCardId matcher
@@ -1092,6 +1093,31 @@ passesCriteria iid source windows = \case
       \ability -> case abilityType ability of
         ActionAbility (Just Action.Resign) _ -> True
         _ -> False
+
+-- | Build a matcher and check the list
+passesEnemyCriteria
+  :: (HasCallStack, MonadReader env m, CanCheckPlayable env)
+  => InvestigatorId
+  -> Source
+  -> [Window]
+  -> Criteria.EnemyCriterion
+  -> m Bool
+passesEnemyCriteria _iid _source windows criterion = notNull
+  <$> getSet @EnemyId (matcher criterion)
+ where
+  matcher = \case
+    Criteria.EnemyMatchesCriteria ms -> concatMap matcher ms
+    Criteria.EnemyExists m -> m
+    Criteria.NotAttackingEnemy ->
+      -- TODO: should not be multiple enemies, but if so need to OR not AND matcher
+      let
+        getAttackingEnemy = \case
+          Window _ (Window.EnemyAttacks _ eid) -> Just eid
+          _ -> Nothing
+      in
+        case mapMaybe getAttackingEnemy windows of
+          [] -> error "can not be called without enemy source"
+          xs -> Matcher.NotEnemy (concatMap Matcher.EnemyWithId xs)
 
 getModifiedCardCost
   :: ( MonadReader env m

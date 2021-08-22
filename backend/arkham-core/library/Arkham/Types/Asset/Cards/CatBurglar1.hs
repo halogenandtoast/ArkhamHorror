@@ -39,7 +39,7 @@ ability a = (restrictedAbility
               a
               1
               (AnyCriterion
-                [ EnemyExists EnemyEngagedWithYou
+                [ EnemyCriteria $ EnemyExists EnemyEngagedWithYou
                 , LocationExists AccessibleLocation
                 ]
               )

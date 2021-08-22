@@ -452,6 +452,11 @@ export default defineComponent({
 
 .scenario-body {
   background-image: linear-gradient(darken(#E5EAEC, 10), #E5EAEC);
+
+  @media (prefers-color-scheme: dark) {
+    background-image: linear-gradient(#282A36, darken(#282A36, 2));
+  }
+
   width: 100%;
   height: 100%;
   z-index: 1;

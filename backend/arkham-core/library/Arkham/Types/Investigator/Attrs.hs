@@ -13,6 +13,7 @@ import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes hiding (discard)
 import Arkham.Types.CommitRestriction
 import Arkham.Types.Cost
+import Arkham.Types.Deck
 import Arkham.Types.EntityInstance
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Helpers
@@ -1671,6 +1672,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           <> [ InvestigatorDrewPlayerCard iid card | card <- maybeToList mcard ]
           <> [DrawCards iid (n - 1) False]
         pure $ a & handL %~ handUpdate & deckL .~ Deck deck
+  InvestigatorDrewPlayerCard iid card -> do
+    windowMsgs <- checkWindows
+      [ Window
+          Timing.After
+          (Window.DrawCard iid (PlayerCard card) $ InvestigatorDeck iid)
+      ]
+    a <$ pushAll windowMsgs
   InvestigatorSpendClues iid n | iid == investigatorId -> pure $ a & cluesL -~ n
   SpendResources iid n | iid == investigatorId ->
     pure $ a & resourcesL %~ max 0 . subtract n

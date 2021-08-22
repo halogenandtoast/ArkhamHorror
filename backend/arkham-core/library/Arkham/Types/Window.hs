@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Types.Action (Action)
 import Arkham.Types.Card (Card)
+import Arkham.Types.Deck
 import Arkham.Types.Id
 import Arkham.Types.Phase (Phase)
 import Arkham.Types.SkillType (SkillType)
@@ -33,7 +34,7 @@ data WindowType
   | Defeated Source
   | DiscoverClues InvestigatorId LocationId Int
   | DiscoveringLastClue InvestigatorId LocationId
-  | DrawCard InvestigatorId Card
+  | DrawCard InvestigatorId Card DeckSignifier
   | DrawToken InvestigatorId Token
   | DrawingStartingHand InvestigatorId
   | DuringTurn InvestigatorId

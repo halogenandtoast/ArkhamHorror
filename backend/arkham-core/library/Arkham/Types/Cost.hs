@@ -80,6 +80,7 @@ data Cost
   | DirectDamageCost Source InvestigatorMatcher Int
   | DiscardCost Target
   | DiscardCardCost Card
+  | DiscardDrawnCardCost
   | DoomCost Source Target Int
   | ExileCost Target
   | HandDiscardCost Int (Maybe CardType) (HashSet Trait) (HashSet SkillType)

@@ -235,6 +235,17 @@ instance
         DiscardCardCost card -> do
           push (DiscardCard iid (toCardId card))
           withPayment $ DiscardCardPayment [card]
+        DiscardDrawnCardCost -> case effectMetadata attrs of
+          Just (EffectAbility (_, windows)) -> do
+            let
+              getDrawnCard [] = error "can not find drawn card in windows"
+              getDrawnCard (x : xs) = case x of
+                Window _ (Window.DrawCard _ c _) -> c
+                _ -> getDrawnCard xs
+              card = getDrawnCard windows
+            push (DiscardCard iid (toCardId card))
+            withPayment $ DiscardCardPayment [card]
+          _ -> error "invalid metadata for ability"
         ExileCost target -> do
           push (Exile target)
           withPayment $ ExilePayment [target]

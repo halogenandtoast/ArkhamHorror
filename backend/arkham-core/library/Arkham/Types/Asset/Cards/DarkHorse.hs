@@ -17,14 +17,11 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype DarkHorse = DarkHorse AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 darkHorse :: AssetCard DarkHorse
 darkHorse = asset DarkHorse Cards.darkHorse
-
-instance HasAbilities env DarkHorse where
-  getAbilities iid window (DarkHorse attrs) = getAbilities iid window attrs
 
 instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env DarkHorse where
   getModifiersFor _ (InvestigatorTarget iid) (DarkHorse a) | ownedBy a iid = do

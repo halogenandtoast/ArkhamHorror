@@ -21,15 +21,12 @@ import Arkham.Types.Token
 import Arkham.Types.Trait
 
 newtype HaroldWalsted = HaroldWalsted AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 haroldWalsted :: AssetCard HaroldWalsted
 haroldWalsted =
   allyWith HaroldWalsted Cards.haroldWalsted (1, 1) (isStoryL .~ True)
-
-instance HasAbilities env HaroldWalsted where
-  getAbilities iid window (HaroldWalsted attrs) = getAbilities iid window attrs
 
 instance
   ( HasSet Trait env LocationId

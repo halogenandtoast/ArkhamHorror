@@ -14,16 +14,15 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype ChicagoTypewriter4 = ChicagoTypewriter4 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chicagoTypewriter4 :: AssetCard ChicagoTypewriter4
@@ -32,23 +31,18 @@ chicagoTypewriter4 = assetWith
   Cards.chicagoTypewriter4
   (slotsL .~ [HandSlot, HandSlot])
 
-instance HasModifiersFor env ChicagoTypewriter4
-
 instance HasAbilities env ChicagoTypewriter4 where
-  getAbilities iid (Window Timing.When NonFast) (ChicagoTypewriter4 a)
-    | ownedBy a iid = pure
-      [ mkAbility a 1 $ ActionAbility
-          (Just Action.Fight)
-          (Costs [ActionCost 1, AdditionalActionsCost, UseCost (toId a) Ammo 1])
-      ]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (ChicagoTypewriter4 a) = pure
+    [ restrictedAbility a 1 OwnsThis $ ActionAbility (Just Action.Fight) $ Costs
+        [ActionCost 1, AdditionalActionsCost, UseCost (toId a) Ammo 1]
+    ]
 
 getAbilitiesSpent :: Payment -> Int
 getAbilitiesSpent (ActionPayment n) = n
 getAbilitiesSpent (Payments ps) = sum $ map getAbilitiesSpent ps
 getAbilitiesSpent _ = 0
 
-instance (AssetRunner env) => RunMessage env ChicagoTypewriter4 where
+instance AssetRunner env => RunMessage env ChicagoTypewriter4 where
   runMessage msg a@(ChicagoTypewriter4 attrs) = case msg of
     UseCardAbility iid source _ 1 payment | isSource attrs source -> do
       let actionsSpent = getAbilitiesSpent payment

@@ -14,6 +14,7 @@ import Arkham.Types.Card.Id
 import Arkham.Types.ChaosBagStepState
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Cost
+import Arkham.Types.Deck
 import Arkham.Types.Direction
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectId
@@ -100,10 +101,6 @@ data ActionType
     | AgendaActionType
     | InvestigatorActionType
     deriving stock (Bounded, Enum, Show)
-
-data DeckSignifier = InvestigatorDeck InvestigatorId | EncounterDeck
-    deriving stock (Show, Eq, Generic)
-    deriving anyclass (ToJSON, FromJSON)
 
 -- TODO: Better handle in play and out of play
 -- Out of play refers to player's hand, in any deck,

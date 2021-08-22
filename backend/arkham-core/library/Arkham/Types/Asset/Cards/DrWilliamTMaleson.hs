@@ -30,7 +30,12 @@ instance HasAbilities env DrWilliamTMaleson where
         1
         OwnsThis
         (ReactionAbility
-            (DrawCard Timing.When You $ BasicCardMatch IsEncounterCard)
+            (DrawCard
+              Timing.When
+              You
+              (BasicCardMatch IsEncounterCard)
+              (DeckOf You)
+            )
         $ Costs [ExhaustCost (toTarget attrs), PlaceClueOnLocationCost 1]
         )
     ]

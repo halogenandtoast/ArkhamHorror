@@ -351,7 +351,7 @@ data WindowMatcher
   | Enters Timing Who Where
   | OrWindowMatcher [WindowMatcher]
   | DealtDamageOrHorror Timing Who
-  | DrawCard Timing Who ExtendedCardMatcher
+  | DrawCard Timing Who ExtendedCardMatcher DeckMatcher
   | PlayCard Timing Who ExtendedCardMatcher
   | PhaseBegins Timing PhaseMatcher
   | PhaseEnds Timing PhaseMatcher
@@ -454,5 +454,9 @@ instance Monoid ActionMatcher where
   mempty = AnyAction
 
 data CardListMatcher = LengthIs ValueMatcher | HasCard CardMatcher
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data DeckMatcher = EncounterDeck | DeckOf InvestigatorMatcher | AnyDeck
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

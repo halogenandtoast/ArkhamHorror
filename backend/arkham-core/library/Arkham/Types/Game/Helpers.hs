@@ -380,17 +380,15 @@ instance
         if any prevents investigatorModifiers || needsToBeFast
           then pure Nothing
           else pure $ Just $ applyAbilityModifiers ability modifiers'
-    let forcedActions = filter isForcedAbility actions''
-    forcedActions' <- filterM (getCanAffordAbility iid) forcedActions
-    if null forcedActions'
-      then filterM
-        (\action -> liftA2
-          (&&)
-          (getCanPerformAbility iid (abilitySource action) window action)
-          (getCanAffordAbility iid action)
-        )
-        actions''
-      else pure forcedActions'
+    actions''' <- filterM
+      (\action -> liftA2
+        (&&)
+        (getCanPerformAbility iid (abilitySource action) window action)
+        (getCanAffordAbility iid action)
+      )
+      actions''
+    let forcedActions = filter isForcedAbility actions'''
+    if null forcedActions then pure actions''' else pure forcedActions
 
 enemyAtInvestigatorLocation
   :: ( MonadReader env m

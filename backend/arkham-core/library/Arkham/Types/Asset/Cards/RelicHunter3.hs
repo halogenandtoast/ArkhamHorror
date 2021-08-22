@@ -13,14 +13,11 @@ import Arkham.Types.Message
 import Arkham.Types.Slot
 
 newtype RelicHunter3 = RelicHunter3 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 relicHunter3 :: AssetCard RelicHunter3
 relicHunter3 = asset RelicHunter3 Cards.relicHunter3
-
-instance HasAbilities env RelicHunter3 where
-  getAbilities iid window (RelicHunter3 attrs) = getAbilities iid window attrs
 
 slot :: AssetAttrs -> Slot
 slot attrs = Slot (toSource attrs) Nothing

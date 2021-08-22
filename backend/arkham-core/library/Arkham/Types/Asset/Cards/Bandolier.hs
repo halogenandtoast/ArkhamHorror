@@ -14,16 +14,11 @@ import Arkham.Types.Slot
 import Arkham.Types.Trait
 
 newtype Bandolier = Bandolier AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bandolier :: AssetCard Bandolier
 bandolier = bodyWith Bandolier Cards.bandolier (healthL ?~ 1)
-
-instance HasModifiersFor env Bandolier
-
-instance HasAbilities env Bandolier where
-  getAbilities iid window (Bandolier x) = getAbilities iid window x
 
 slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Weapon Nothing

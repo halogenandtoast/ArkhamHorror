@@ -16,14 +16,11 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype HiredMuscle1 = HiredMuscle1 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hiredMuscle1 :: AssetCard HiredMuscle1
 hiredMuscle1 = ally HiredMuscle1 Cards.hiredMuscle1 (3, 1)
-
-instance HasAbilities env HiredMuscle1 where
-  getAbilities iid window (HiredMuscle1 attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env HiredMuscle1 where
   getModifiersFor _ (InvestigatorTarget iid) (HiredMuscle1 a) =

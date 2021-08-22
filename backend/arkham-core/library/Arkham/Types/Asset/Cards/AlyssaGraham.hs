@@ -12,12 +12,11 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype AlyssaGraham = AlyssaGraham AssetAttrs
   deriving anyclass IsAsset
@@ -26,14 +25,11 @@ newtype AlyssaGraham = AlyssaGraham AssetAttrs
 alyssaGraham :: AssetCard AlyssaGraham
 alyssaGraham = ally AlyssaGraham Cards.alyssaGraham (1, 3)
 
-ability :: AssetAttrs -> Ability
-ability a =
-  mkAbility (toSource a) 1 (FastAbility $ Costs [ExhaustCost (toTarget a)])
-
 instance HasAbilities env AlyssaGraham where
-  getAbilities iid (Window Timing.When FastPlayerWindow) (AlyssaGraham a)
-    | ownedBy a iid = pure [ability a]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (AlyssaGraham a) = pure
+    [ restrictedAbility a 1 OwnsThis $ FastAbility $ Costs
+        [ExhaustCost (toTarget a)]
+    ]
 
 instance HasModifiersFor env AlyssaGraham where
   getModifiersFor _ (InvestigatorTarget iid) (AlyssaGraham a) =

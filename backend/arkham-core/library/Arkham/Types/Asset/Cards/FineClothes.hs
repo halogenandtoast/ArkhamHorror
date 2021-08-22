@@ -16,15 +16,12 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype FineClothes = FineClothes AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fineClothes :: AssetCard FineClothes
 fineClothes =
   bodyWith FineClothes Cards.fineClothes $ (healthL ?~ 1) . (sanityL ?~ 1)
-
-instance HasAbilities env FineClothes where
-  getAbilities iid window (FineClothes attrs) = getAbilities iid window attrs
 
 instance HasModifiersFor env FineClothes where
   getModifiersFor (SkillTestSource iid _ _ _ (Just Action.Parley)) (InvestigatorTarget iid') (FineClothes a)

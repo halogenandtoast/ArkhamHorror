@@ -13,16 +13,11 @@ import Arkham.Types.Message
 import Arkham.Types.Slot
 
 newtype Charisma3 = Charisma3 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 charisma3 :: AssetCard Charisma3
 charisma3 = asset Charisma3 Cards.charisma3
-
-instance HasAbilities env Charisma3 where
-  getAbilities iid window (Charisma3 attrs) = getAbilities iid window attrs
-
-instance HasModifiersFor env Charisma3
 
 slot :: AssetAttrs -> Slot
 slot attrs = Slot (toSource attrs) Nothing

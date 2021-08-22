@@ -1273,28 +1273,32 @@ windowMatches iid source window' = \case
             (matchWho iid who whoMatcher)
             (gameValueMatches n gameValueMatcher)
         _ -> pure False
-      Matcher.SuccessResult gameValueMatcher
-        | skillMatcher == Matcher.AnySkillTest -> case window' of
-          Window t (Window.PassSkillTest _ _ who n) | whenMatcher == t -> liftA2
+      Matcher.SuccessResult gameValueMatcher -> case window' of
+        Window t (Window.PassInvestigationSkillTest who n)
+          | whenMatcher == t && skillMatcher == Matcher.WhileInvestigating -> liftA2
             (&&)
             (matchWho iid who whoMatcher)
             (gameValueMatches n gameValueMatcher)
-          Window t (Window.SuccessfulAttackEnemy who enemyId n)
-            | whenMatcher == t -> case skillMatcher of
-              Matcher.WhileAttackingAnEnemy enemyMatcher -> andM
-                [ matchWho iid who whoMatcher
-                , gameValueMatches n gameValueMatcher
-                , enemyMatches enemyId enemyMatcher
-                ]
-              _ -> pure False
-          _ -> pure False
+        Window t (Window.SuccessfulAttackEnemy who enemyId n)
+          | whenMatcher == t -> case skillMatcher of
+            Matcher.WhileAttackingAnEnemy enemyMatcher -> andM
+              [ matchWho iid who whoMatcher
+              , gameValueMatches n gameValueMatcher
+              , enemyMatches enemyId enemyMatcher
+              ]
+            _ -> pure False
+        Window t (Window.PassSkillTest _ _ who n)
+          | whenMatcher == t && skillMatcher == Matcher.AnySkillTest -> liftA2
+            (&&)
+            (matchWho iid who whoMatcher)
+            (gameValueMatches n gameValueMatcher)
+        _ -> pure False
       Matcher.AnyResult -> case window' of
         Window t (Window.FailSkillTest who _) | whenMatcher == t ->
           matchWho iid who whoMatcher
         Window t (Window.PassSkillTest _ _ who _) | whenMatcher == t ->
           matchWho iid who whoMatcher
         _ -> pure False
-      _ -> pure False
   Matcher.DuringTurn whoMatcher -> case window' of
     Window Timing.When Window.NonFast -> matchWho iid iid whoMatcher
     Window Timing.When (Window.DuringTurn who) -> matchWho iid who whoMatcher

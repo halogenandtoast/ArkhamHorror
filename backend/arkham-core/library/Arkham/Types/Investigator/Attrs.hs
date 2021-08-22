@@ -2121,8 +2121,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       a <$ pushAll windowMsgs
   After (PassedSkillTest iid mAction source (InvestigatorTarget iid') _ n)
     | iid == iid' && iid == investigatorId -> do
+      let
+        windows = maybe
+          []
+          (\case
+            Action.Investigate ->
+              [Window Timing.After (Window.PassInvestigationSkillTest iid n)]
+            _ -> []
+          )
+          mAction
       msgs <- checkWindows
-        [Window Timing.After (Window.PassSkillTest mAction source iid n)]
+        (Window Timing.After (Window.PassSkillTest mAction source iid n)
+        : windows
+        )
       a <$ pushAll msgs
   PlayerWindow iid additionalActions isAdditional | iid == investigatorId -> do
     let

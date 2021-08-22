@@ -1,4 +1,7 @@
-module Arkham.Types.Asset.Cards.ArcaneInitiate where
+module Arkham.Types.Asset.Cards.ArcaneInitiate
+  ( arcaneInitiate
+  , ArcaneInitiate(..)
+  ) where
 
 import Arkham.Prelude
 
@@ -8,43 +11,40 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype ArcaneInitiate = ArcaneInitiate AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arcaneInitiate :: AssetCard ArcaneInitiate
 arcaneInitiate = ally ArcaneInitiate Cards.arcaneInitiate (1, 2)
 
-fastAbility :: AssetAttrs -> Ability
-fastAbility a = mkAbility a 1 . FastAbility . ExhaustCost $ toTarget a
-
-instance HasModifiersFor env ArcaneInitiate
-
 instance HasAbilities env ArcaneInitiate where
-  getAbilities iid (Window Timing.When FastPlayerWindow) (ArcaneInitiate a)
-    | ownedBy a iid = pure [fastAbility a]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (ArcaneInitiate a) = pure
+    [ restrictedAbility a 1 OwnsThis
+    $ ForcedAbility
+    $ AssetEntersPlay Timing.When
+    $ AssetWithId
+    $ toId a
+    , restrictedAbility a 2 OwnsThis $ FastAbility $ ExhaustCost $ toTarget a
+    ]
 
 instance (AssetRunner env) => RunMessage env ArcaneInitiate where
   runMessage msg a@(ArcaneInitiate attrs) = case msg of
-    InvestigatorPlayedAsset _ aid _ _ | aid == assetId attrs ->
-      ArcaneInitiate <$> runMessage msg (attrs & doomL +~ 1)
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
-      (chooseOne
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      a <$ push (PlaceDoom (toTarget attrs) 1)
+    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+      push $ chooseOne
         iid
-        [ SearchTopOfDeck
-            iid
-            source
-            (InvestigatorTarget iid)
-            3
-            [Spell]
-            (ShuffleBackIn $ DrawFound iid)
+        [ SearchTopOfDeck iid source (InvestigatorTarget iid) 3 [Spell]
+          $ ShuffleBackIn
+          $ DrawFound iid
         ]
-      )
+      pure a
     _ -> ArcaneInitiate <$> runMessage msg attrs

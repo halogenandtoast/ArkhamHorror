@@ -1345,6 +1345,10 @@ windowMatches iid source window' = \case
         (matchWho iid who whoMatcher)
         (matchToken who token tokenMatcher)
       _ -> pure False
+  Matcher.AssetDefeated timingMatcher assetMatcher -> case window' of
+    Window t (Window.AssetDefeated assetId) | timingMatcher == t ->
+      member assetId <$> select assetMatcher
+    _ -> pure False
   Matcher.EnemyDefeated timingMatcher whoMatcher enemyMatcher ->
     case window' of
       Window t (Window.EnemyDefeated who enemyId) | timingMatcher == t -> liftA2

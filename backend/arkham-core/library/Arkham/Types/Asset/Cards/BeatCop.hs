@@ -13,7 +13,6 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
-import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -38,16 +37,10 @@ instance HasAbilities env BeatCop where
         $ FastAbility (DiscardCost $ toTarget x)
     ]
 
--- | See: PlayerCardWithBehavior
 instance AssetRunner env => RunMessage env BeatCop where
   runMessage msg a@(BeatCop attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      locationId <- getId @LocationId iid
-      locationEnemyIds <- getSetList locationId
-      a
-        <$ push
-             (chooseOne
-               iid
-               [ EnemyDamage eid iid source 1 | eid <- locationEnemyIds ]
-             )
+      enemies <- selectList (EnemyAt YourLocation)
+      a <$ push
+        (chooseOrRunOne iid [ EnemyDamage eid iid source 1 | eid <- enemies ])
     _ -> BeatCop <$> runMessage msg attrs

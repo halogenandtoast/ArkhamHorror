@@ -12,14 +12,15 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Id
-import Arkham.Types.Message
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (AssetDefeated)
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype BrotherXavier1 = BrotherXavier1 AssetAttrs
   deriving anyclass IsAsset
@@ -42,22 +43,18 @@ instance (HasId LocationId env InvestigatorId) => HasModifiersFor env BrotherXav
         ]
   getModifiersFor _ _ _ = pure []
 
-ability :: AssetAttrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (LegacyReactionAbility Free)
-
 instance HasAbilities env BrotherXavier1 where
-  getAbilities iid (Window Timing.When (Defeated source)) (BrotherXavier1 a)
-    | isSource a source = pure [ ability a | ownedBy a iid ]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (BrotherXavier1 a) = pure
+    [ restrictedAbility a 1 OwnsThis
+        $ ReactionAbility
+            (AssetDefeated Timing.When $ AssetWithId $ toId a)
+            Free
+    ]
 
 instance AssetRunner env => RunMessage env BrotherXavier1 where
   runMessage msg a@(BrotherXavier1 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      locationId <- getId @LocationId (getInvestigator attrs)
-      locationEnemyIds <- getSetList locationId
+      enemies <- selectList (EnemyAt YourLocation)
       a <$ pushAll
-        [ chooseOne
-            iid
-            [ EnemyDamage eid iid (toSource attrs) 2 | eid <- locationEnemyIds ]
-        ]
+        [chooseOrRunOne iid [ EnemyDamage eid iid source 2 | eid <- enemies ]]
     _ -> BrotherXavier1 <$> runMessage msg attrs

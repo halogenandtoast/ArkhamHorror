@@ -324,6 +324,7 @@ instance Semigroup CardMatcher where
 
 data WindowMatcher
   = EnemyDefeated Timing Who EnemyMatcher
+  | AssetDefeated Timing AssetMatcher
   | EnemyEvaded Timing Who EnemyMatcher
   | EnemyEngaged Timing Who EnemyMatcher
   | MythosStep WindowMythosStepMatcher

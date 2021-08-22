@@ -30,7 +30,7 @@ data Criterion
   | PlayableCardExists ExtendedCardMatcher
   | AssetExists AssetMatcher
   | InvestigatorExists InvestigatorMatcher
-  | EnemyExists EnemyMatcher
+  | EnemyCriteria EnemyCriterion
   | SetAsideCardExists CardMatcher
   | NoEnemyExists EnemyMatcher
   | LocationExists LocationMatcher
@@ -65,3 +65,14 @@ instance Semigroup Criterion where
 
 instance Monoid Criterion where
   mempty = NoRestriction
+
+data EnemyCriterion = EnemyExists EnemyMatcher | NotAttackingEnemy | EnemyMatchesCriteria [EnemyCriterion]
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+instance Semigroup EnemyCriterion where
+  EnemyMatchesCriteria xs <> EnemyMatchesCriteria ys =
+    EnemyMatchesCriteria $ xs <> ys
+  EnemyMatchesCriteria xs <> x = EnemyMatchesCriteria $ x : xs
+  x <> EnemyMatchesCriteria xs = EnemyMatchesCriteria $ x : xs
+  x <> y = EnemyMatchesCriteria [x, y]

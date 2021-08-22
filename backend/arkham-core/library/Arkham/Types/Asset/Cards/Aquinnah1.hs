@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Types.Asset.Cards.Aquinnah1
   ( Aquinnah1(..)
   , aquinnah1
@@ -13,36 +11,35 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (EnemyAttacks)
 import Arkham.Types.Query
 import Arkham.Types.Source
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype Aquinnah1 = Aquinnah1 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aquinnah1 :: AssetCard Aquinnah1
 aquinnah1 = ally Aquinnah1 Cards.aquinnah1 (1, 4)
 
-reactionAbility :: AssetAttrs -> Ability
-reactionAbility attrs = mkAbility attrs 1 $ LegacyReactionAbility $ Costs
-  [ExhaustCost (toTarget attrs), HorrorCost (toSource attrs) (toTarget attrs) 1]
-
 dropUntilAttack :: [Message] -> [Message]
 dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
 
-instance HasModifiersFor env Aquinnah1
-
-instance ActionRunner env => HasAbilities env Aquinnah1 where
-  getAbilities iid (Window Timing.When (EnemyAttacks who enemyId)) (Aquinnah1 a)
-    | ownedBy a iid && iid == who = do
-      locationId <- getId @LocationId iid
-      enemyIds <- filterSet (/= enemyId) <$> getSet locationId
-      pure [ reactionAbility a | notNull (traceShowId enemyIds) ]
-  getAbilities i window (Aquinnah1 x) = getAbilities i window x
+instance HasAbilities env Aquinnah1 where
+  getAbilities _ _ (Aquinnah1 a) = pure
+    [ restrictedAbility
+        a
+        1
+        (OwnsThis <> EnemyCriteria
+          (NotAttackingEnemy <> EnemyExists (EnemyAt YourLocation))
+        )
+      $ ReactionAbility (EnemyAttacks Timing.When You AnyEnemy)
+      $ Costs [ExhaustCost (toTarget a), HorrorCost (toSource a) (toTarget a) 1]
+    ]
 
 instance AssetRunner env => RunMessage env Aquinnah1 where
   runMessage msg a@(Aquinnah1 attrs) = case msg of

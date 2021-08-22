@@ -264,6 +264,10 @@ i.action {
   -webkit-font-smoothing: antialiased;
   position: relative;
 
+  @media (prefers-color-scheme: dark) {
+    color: #EEE;
+  }
+
   &:before {
     font-family: "Arkham";
     content: "\0049";

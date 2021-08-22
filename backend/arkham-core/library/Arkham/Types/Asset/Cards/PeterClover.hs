@@ -32,8 +32,8 @@ instance HasAbilities env PeterClover where
     [ restrictedAbility
         attrs
         1
-        (OwnsThis
-        <> EnemyExists (EnemyAt YourLocation <> EnemyWithTrait Criminal)
+        (OwnsThis <> EnemyCriteria
+          (EnemyExists $ EnemyAt YourLocation <> EnemyWithTrait Criminal)
         )
         (FastAbility $ ExhaustCost $ toTarget attrs)
     ]

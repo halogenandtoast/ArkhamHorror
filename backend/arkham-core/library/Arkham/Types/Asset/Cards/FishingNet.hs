@@ -41,8 +41,12 @@ instance HasAbilities env FishingNet where
    where
     restriction = case assetEnemy x of
       Just _ -> Never
-      Nothing -> OwnsThis <> EnemyExists
-        (ExhaustedEnemy <> EnemyAt YourLocation <> enemyIs Cards.theRougarou)
+      Nothing -> OwnsThis <> EnemyCriteria
+        (EnemyExists
+        $ ExhaustedEnemy
+        <> EnemyAt YourLocation
+        <> enemyIs Cards.theRougarou
+        )
 
 instance AssetRunner env => RunMessage env FishingNet where
   runMessage msg a@(FishingNet attrs@AssetAttrs {..}) = case msg of

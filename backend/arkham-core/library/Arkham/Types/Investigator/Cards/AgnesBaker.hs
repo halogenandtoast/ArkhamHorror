@@ -43,7 +43,7 @@ instance HasAbilities env AgnesBaker where
     [ restrictedAbility
           x
           1
-          (Self <> EnemyExists (EnemyAt YourLocation))
+          (Self <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
           (ReactionAbility
             (PlacedCounter Timing.When You HorrorCounter (AtLeast $ Static 1))
             Free

@@ -33,7 +33,10 @@ instance HasModifiersFor env BeatCop2 where
 
 instance HasAbilities env BeatCop2 where
   getAbilities _ _ (BeatCop2 x) = pure
-    [ restrictedAbility x 1 (OwnsThis <> EnemyExists (EnemyAt YourLocation))
+    [ restrictedAbility
+        x
+        1
+        (OwnsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
       $ FastAbility
       $ Costs [ExhaustCost (toTarget x), DamageCost (toSource x) (toTarget x) 1]
     ]

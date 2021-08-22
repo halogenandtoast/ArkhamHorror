@@ -847,6 +847,7 @@ getEnemiesMatching matcher = do
   filterM (matcherFilter matcher) allGameEnemies
  where
   matcherFilter = \case
+    NotEnemy m -> fmap not . matcherFilter m
     EnemyWithTitle title -> pure . (== title) . nameTitle . toName
     EnemyWithFullTitle title subtitle ->
       pure . (== Name title (Just subtitle)) . toName

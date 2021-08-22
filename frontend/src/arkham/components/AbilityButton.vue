@@ -138,11 +138,9 @@ export default defineComponent({
 <style lang="scss" scoped>
 .button{
   margin-top: 2px;
-  border: 0;
   color: #fff;
   cursor: pointer;
   border-radius: 4px;
-  border: 1px solid #ff00ff;
   background-color: #555;
 }
 

@@ -58,6 +58,7 @@ data WindowType
   | MoveFromHunter EnemyId
   | NonFast
   | PassSkillTest (Maybe Action) Source InvestigatorId Int
+  | PassInvestigationSkillTest InvestigatorId Int
   | PhaseBegins Phase
   | PhaseEnds Phase
   | PlacedHorror InvestigatorId Int

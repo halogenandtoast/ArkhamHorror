@@ -13,7 +13,6 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
-import Arkham.Types.LocationId
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -42,11 +41,10 @@ instance HasAbilities env BeatCop2 where
 instance AssetRunner env => RunMessage env BeatCop2 where
   runMessage msg a@(BeatCop2 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      locationId <- getId @LocationId (getInvestigator attrs)
-      locationEnemyIds <- getSetList locationId
+      enemies <- selectList (EnemyAt YourLocation)
       a <$ push
-        (chooseOne
+        (chooseOrRunOne
           iid
-          [ EnemyDamage eid iid (toSource attrs) 1 | eid <- locationEnemyIds ]
+          [ EnemyDamage eid iid (toSource attrs) 1 | eid <- enemies ]
         )
     _ -> BeatCop2 <$> runMessage msg attrs

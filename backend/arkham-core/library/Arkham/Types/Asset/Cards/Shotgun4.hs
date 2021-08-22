@@ -32,9 +32,8 @@ shotgun4 = assetWith Shotgun4 Cards.shotgun4 (slotsL .~ [HandSlot, HandSlot])
 
 instance HasAbilities env Shotgun4 where
   getAbilities _ _ (Shotgun4 a) = pure
-    [ restrictedAbility a 1 OwnsThis $ ActionAbility
-        (Just Action.Fight)
-        (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
+    [ restrictedAbility a 1 OwnsThis $ ActionAbility (Just Action.Fight) $ Costs
+        [ActionCost 1, UseCost (toId a) Ammo 1]
     ]
 
 instance (AssetRunner env) => RunMessage env Shotgun4 where

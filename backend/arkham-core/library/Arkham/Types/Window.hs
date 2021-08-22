@@ -38,6 +38,7 @@ data WindowType
   | DrawingStartingHand InvestigatorId
   | DuringTurn InvestigatorId
   | EndTurn InvestigatorId
+  | AssetDefeated AssetId
   | EnemyAttacks InvestigatorId EnemyId
   | EnemyDefeated InvestigatorId EnemyId
   | EnemyEngaged InvestigatorId EnemyId

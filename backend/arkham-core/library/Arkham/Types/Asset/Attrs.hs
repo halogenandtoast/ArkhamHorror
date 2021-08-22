@@ -17,7 +17,8 @@ import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 class IsAsset a
 
@@ -273,8 +274,14 @@ instance
       pure $ a & doomL %~ min 0 . subtract n
     RemoveClues target n | isTarget a target ->
       pure $ a & cluesL %~ max 0 . subtract n
-    CheckDefeated _ ->
-      a <$ when (defeated a) (pushAll $ resolve $ AssetDefeated assetId)
+    CheckDefeated _ -> do
+      when (defeated a) $ do
+        whenWindows <- checkWindows
+          [Window Timing.When (Window.AssetDefeated $ toId a)]
+        afterWindows <- checkWindows
+          [Window Timing.When (Window.AssetDefeated $ toId a)]
+        pushAll $ whenWindows <> resolve (AssetDefeated assetId) <> afterWindows
+      pure a
     AssetDefeated aid | aid == assetId -> a <$ push (Discard $ toTarget a)
     AssetDamage aid _ health sanity | aid == assetId ->
       pure $ a & healthDamageL +~ health & sanityDamageL +~ sanity
@@ -327,7 +334,8 @@ instance
         applyModifier (Uses uType m) (AdditionalStartingUses n) =
           Uses uType (n + m)
         applyModifier m _ = m
-      pushAll =<< checkWindows [Window Timing.When (EnterPlay $ toTarget a)]
+      pushAll
+        =<< checkWindows [Window Timing.When (Window.EnterPlay $ toTarget a)]
       pure
         $ a
         & (investigatorL ?~ iid)

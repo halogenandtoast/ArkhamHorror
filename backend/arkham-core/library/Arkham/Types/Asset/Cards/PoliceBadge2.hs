@@ -16,7 +16,6 @@ import Arkham.Types.Criteria
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 
@@ -34,19 +33,15 @@ instance HasModifiersFor env PoliceBadge2 where
 
 instance HasAbilities env PoliceBadge2 where
   getAbilities _ _ (PoliceBadge2 a) = pure
-    [ restrictedAbility
-        a
-        1
-        (OwnsThis <> InvestigatorExists
-          (TurnInvestigator <> InvestigatorAt YourLocation)
-        )
-      $ FastAbility
-      $ DiscardCost (toTarget a)
-    ]
+    [restrictedAbility a 1 criteria $ FastAbility $ DiscardCost (toTarget a)]
+   where
+    criteria = OwnsThis
+      <> InvestigatorExists (TurnInvestigator <> InvestigatorAt YourLocation)
 
 instance AssetRunner env => RunMessage env PoliceBadge2 where
   runMessage msg a@(PoliceBadge2 attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      activeInvestigatorId <- unActiveInvestigatorId <$> getId ()
-      a <$ push (GainActions activeInvestigatorId source 2)
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      selectOne TurnInvestigator >>= \case
+        Nothing -> error "must exist"
+        Just iid -> a <$ push (GainActions iid source 2)
     _ -> PoliceBadge2 <$> runMessage msg attrs

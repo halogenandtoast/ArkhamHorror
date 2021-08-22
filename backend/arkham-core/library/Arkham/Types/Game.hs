@@ -49,7 +49,8 @@ import qualified Arkham.Types.Label as L
 import Arkham.Types.Location
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Matcher hiding
-  ( DuringTurn
+  ( AssetDefeated
+  , DuringTurn
   , EnemyAttacks
   , EnemyDefeated
   , FastPlayerWindow

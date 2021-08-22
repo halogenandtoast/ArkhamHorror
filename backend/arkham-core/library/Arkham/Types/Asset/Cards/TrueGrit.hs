@@ -15,14 +15,11 @@ import Arkham.Types.Modifier
 import Arkham.Types.Source
 
 newtype TrueGrit = TrueGrit AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 trueGrit :: AssetCard TrueGrit
 trueGrit = assetWith TrueGrit Cards.trueGrit (healthL ?~ 3)
-
-instance HasAbilities env TrueGrit where
-  getAbilities iid window (TrueGrit attrs) = getAbilities iid window attrs
 
 instance (HasId LocationId env InvestigatorId) => HasModifiersFor env TrueGrit where
   getModifiersFor (InvestigatorSource iid) target (TrueGrit a)

@@ -1448,10 +1448,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         else PlayCard iid cardId mtarget asAction
       ]
   PlayCard iid cardId mtarget True | iid == investigatorId -> do
+    modifiers' <- traceShowId
+      <$> getModifiers (InvestigatorSource iid) (CardIdTarget cardId)
     let
       card = findCard cardId a
       isFast = case card of
-        PlayerCard pc -> isJust (cdFastWindow $ toCardDef pc)
+        PlayerCard pc ->
+          isJust (cdFastWindow $ toCardDef pc) || BecomesFast `elem` modifiers'
         _ -> False
       maction = case card of
         PlayerCard pc -> cdAction (toCardDef pc)

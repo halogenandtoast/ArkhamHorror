@@ -118,6 +118,7 @@ data Effect
   | JeremiahPierce' JeremiahPierce
   | CurseOfTheRougarouTabletToken' CurseOfTheRougarouTabletToken
   | CursedShores' CursedShores
+  | DaisysToteBagAdvanced' DaisysToteBagAdvanced
   | WindowModifierEffect' WindowModifierEffect
   | PayForAbilityEffect' PayForAbilityEffect
   | TokenEffect' TokenEffect
@@ -227,6 +228,7 @@ allEffects = mapFromList
   , ("50044", JeremiahPierce' . jeremiahPierce)
   , ("81001", CurseOfTheRougarouTabletToken' . curseOfTheRougarouTabletToken)
   , ("81007", CursedShores' . cursedShores)
+  , ("90002", DaisysToteBagAdvanced' . daisysToteBagAdvanced)
   ]
 
 buildTokenValueEffect :: EffectId -> Int -> Source -> Target -> Effect

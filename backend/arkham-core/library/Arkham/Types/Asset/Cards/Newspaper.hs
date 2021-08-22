@@ -18,14 +18,11 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype Newspaper = Newspaper AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 newspaper :: AssetCard Newspaper
 newspaper = hand Newspaper Cards.newspaper
-
-instance HasAbilities env Newspaper where
-  getAbilities iid window (Newspaper attrs) = getAbilities iid window attrs
 
 instance HasCount ClueCount env InvestigatorId => HasModifiersFor env Newspaper where
   getModifiersFor _ (InvestigatorTarget iid) (Newspaper a) | ownedBy a iid = do

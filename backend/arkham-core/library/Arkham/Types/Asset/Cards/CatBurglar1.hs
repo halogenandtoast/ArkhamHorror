@@ -34,26 +34,22 @@ instance HasModifiersFor env CatBurglar1 where
     pure $ toModifiers a [ SkillModifier SkillAgility 1 | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-ability :: AssetAttrs -> Ability
-ability a = (restrictedAbility
-              a
-              1
-              (AnyCriterion
-                [ EnemyCriteria $ EnemyExists EnemyEngagedWithYou
-                , LocationExists AccessibleLocation
-                ]
-              )
-              (ActionAbility Nothing
-              $ Costs [ActionCost 1, ExhaustCost (toTarget a)]
-              )
-            )
-  { abilityDoesNotProvokeAttacksOfOpportunity = True
-  }
 
 instance HasAbilities env CatBurglar1 where
-  getAbilities iid (Window Timing.When NonFast) (CatBurglar1 a)
-    | ownedBy a iid = pure [ability a]
-  getAbilities i window (CatBurglar1 x) = getAbilities i window x
+  getAbilities _ _ (CatBurglar1 a) = pure
+    [ (restrictedAbility
+        a
+        1
+        (OwnsThis <> AnyCriterion
+          [ EnemyCriteria $ EnemyExists EnemyEngagedWithYou
+          , LocationExists AccessibleLocation
+          ]
+        )
+        (ActionAbility Nothing $ Costs [ActionCost 1, ExhaustCost (toTarget a)])
+      )
+        { abilityDoesNotProvokeAttacksOfOpportunity = True
+        }
+    ]
 
 instance AssetRunner env => RunMessage env CatBurglar1 where
   runMessage msg (CatBurglar1 attrs) = case msg of

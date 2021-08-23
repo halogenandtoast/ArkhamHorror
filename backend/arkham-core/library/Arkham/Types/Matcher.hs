@@ -347,6 +347,7 @@ data WindowMatcher
   | FastPlayerWindow
   | TurnBegins Timing Who
   | TurnEnds Timing Who
+  | RoundEnds Timing
   | DuringTurn Who
   | Enters Timing Who Where
   | OrWindowMatcher [WindowMatcher]

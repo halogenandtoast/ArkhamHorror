@@ -1279,6 +1279,9 @@ windowMatches iid source window' = \case
     Window t (Window.TurnEnds who) | t == whenMatcher ->
       matchWho iid who whoMatcher
     _ -> pure False
+  Matcher.RoundEnds whenMatcher -> case window' of
+    Window t Window.AtEndOfRound -> pure $ t == whenMatcher
+    _ -> pure False
   Matcher.Enters whenMatcher whoMatcher whereMatcher -> case window' of
     Window t (Window.Entering iid' lid) | whenMatcher == t -> liftA2
       (&&)

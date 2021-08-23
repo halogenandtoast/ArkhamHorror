@@ -50,13 +50,16 @@
       </div>
 
       <div class="deck-container">
-        <img
-          :class="{ 'deck--can-draw': drawCardsAction !== -1 }"
-          class="deck"
-          :src="`${baseUrl}/img/arkham/player_back.jpg`"
-          width="150px"
-          @click="$emit('choose', drawCardsAction)"
-        />
+        <div class="top-of-deck">
+          <img
+            :class="{ 'deck--can-draw': drawCardsAction !== -1 }"
+            class="deck"
+            :src="`${baseUrl}/img/arkham/player_back.jpg`"
+            width="150px"
+            @click="$emit('choose', drawCardsAction)"
+          />
+          <span class="deck-size">{{player.deckSize}}</span>
+        </div>
         <template v-if="debug">
           <button @click="debugChoose({tag: 'SearchDeckForTraits', contents: [investigatorId, { tag: 'InvestigatorTarget', contents: investigatorId }, []]})">Select Draw</button>
         </template>
@@ -246,5 +249,19 @@ export default defineComponent({
 .deck-container {
   display: flex;
   flex-direction: column;
+}
+
+.top-of-deck {
+  position: relative;
+}
+
+.deck-size {
+  position: absolute;
+  font-weight: bold;
+  font-size: 1.2em;
+  color: rgba(255, 255, 255, 0.6);
+  left: 50%;
+  top: 43%;
+  transform: translateX(-50%) translateY(-50%);
 }
 </style>

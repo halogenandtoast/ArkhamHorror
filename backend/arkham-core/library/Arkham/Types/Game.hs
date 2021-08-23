@@ -81,7 +81,7 @@ import Arkham.Types.Treachery
 import Arkham.Types.Treachery.Attrs (treacheryOwner)
 import Arkham.Types.Window (Window(..))
 import qualified Arkham.Types.Window as Window
-import Control.Monad.Random.Lazy hiding (filterM, foldM)
+import Control.Monad.Random.Lazy hiding (filterM, foldM, fromList)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (filterM, foldM)
 import qualified Data.Aeson.Diff as Diff
@@ -370,6 +370,15 @@ withModifiers a = do
   modifiers' <- getModifiersFor source (toTarget a) ()
   pure $ a `with` ModifierData modifiers'
 
+newtype WithDeckSize = WithDeckSize Investigator
+  deriving newtype TargetEntity
+
+instance ToJSON WithDeckSize where
+  toJSON (WithDeckSize i) = case toJSON i of
+    Object o ->
+      Object $ HashMap.insert "deckSize" (toJSON $ length $ deckOf i) o
+    _ -> error "failed to serialize investigator"
+
 withSkillTestModifiers
   :: (MonadReader env m, TargetEntity a, HasModifiersFor env (), HasCallStack)
   => SkillTest
@@ -389,8 +398,8 @@ instance ToJSON Game where
     , "seed" .= toJSON gameSeed
     , "mode" .= toJSON gameMode
     , "locations" .= toJSON (runReader (traverse withModifiers gameLocations) g)
-    , "investigators"
-      .= toJSON (runReader (traverse withModifiers gameInvestigators) g)
+    , "investigators" .= toJSON
+      (runReader (traverse (withModifiers . WithDeckSize) gameInvestigators) g)
     , "enemies" .= toJSON (runReader (traverse withModifiers gameEnemies) g)
     , "enemiesInVoid"
       .= toJSON (runReader (traverse withModifiers gameEnemiesInVoid) g)
@@ -446,9 +455,10 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     , "id" .= toJSON gid
     , "log" .= toJSON glog
     , "mode" .= toJSON gameMode
+    , "encounterDeckSize" .= toJSON (length $ unDeck gameEncounterDeck)
     , "locations" .= toJSON (runReader (traverse withModifiers gameLocations) g)
-    , "investigators"
-      .= toJSON (runReader (traverse withModifiers gameInvestigators) g)
+    , "investigators" .= toJSON
+      (runReader (traverse (withModifiers . WithDeckSize) gameInvestigators) g)
     , "enemies" .= toJSON (runReader (traverse withModifiers gameEnemies) g)
     , "enemiesInVoid"
       .= toJSON (runReader (traverse withModifiers gameEnemiesInVoid) g)

@@ -13,8 +13,8 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Message
 
 newtype AccademiaBridge = AccademiaBridge LocationAttrs
-  deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 accademiaBridge :: LocationCard AccademiaBridge
 accademiaBridge = locationWith
@@ -25,11 +25,6 @@ accademiaBridge = locationWith
   NoSymbol
   []
   (connectsToL .~ singleton RightOf)
-
-instance HasModifiersFor env AccademiaBridge
-
-instance HasAbilities env AccademiaBridge where
-  getAbilities iid window (AccademiaBridge attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env AccademiaBridge where
   runMessage msg l@(AccademiaBridge attrs) = case msg of

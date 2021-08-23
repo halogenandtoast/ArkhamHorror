@@ -14,7 +14,7 @@ import Arkham.Types.Trait
 
 newtype Easttown = Easttown LocationAttrs
   deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 easttown :: LocationCard Easttown
 easttown =
@@ -28,9 +28,6 @@ instance HasModifiersFor env Easttown where
       | iid `member` locationInvestigators attrs
       ]
   getModifiersFor _ _ _ = pure []
-
-instance HasAbilities env Easttown where
-  getAbilities i window (Easttown attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env Easttown where
   runMessage msg (Easttown attrs) = Easttown <$> runMessage msg attrs

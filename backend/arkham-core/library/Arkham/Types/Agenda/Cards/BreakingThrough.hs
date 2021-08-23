@@ -17,17 +17,12 @@ import Arkham.Types.GameValue
 import Arkham.Types.Message
 
 newtype BreakingThrough = BreakingThrough AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 breakingThrough :: AgendaCard BreakingThrough
 breakingThrough =
   agenda (3, A) BreakingThrough Cards.breakingThrough (Static 6)
-
-instance HasModifiersFor env BreakingThrough
-
-instance HasAbilities env BreakingThrough where
-  getAbilities i window (BreakingThrough x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env BreakingThrough where
   runMessage msg a@(BreakingThrough attrs@AgendaAttrs {..}) = case msg of

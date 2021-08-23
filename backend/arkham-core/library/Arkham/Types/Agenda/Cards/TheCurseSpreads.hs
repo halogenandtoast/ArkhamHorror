@@ -17,17 +17,12 @@ import Arkham.Types.Message
 import Arkham.Types.Resolution
 
 newtype TheCurseSpreads = TheCurseSpreads AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theCurseSpreads :: AgendaCard TheCurseSpreads
 theCurseSpreads =
   agenda (3, A) TheCurseSpreads Cards.theCurseSpreads (Static 8)
-
-instance HasModifiersFor env TheCurseSpreads
-
-instance HasAbilities env TheCurseSpreads where
-  getAbilities i window (TheCurseSpreads x) = getAbilities i window x
 
 getRougarou
   :: (MonadReader env m, HasId (Maybe StoryEnemyId) env CardCode)

@@ -19,17 +19,12 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype ACreatureOfTheBayou = ACreatureOfTheBayou AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aCreatureOfTheBayou :: AgendaCard ACreatureOfTheBayou
 aCreatureOfTheBayou =
   agenda (1, A) ACreatureOfTheBayou Cards.aCreatureOfTheBayou (Static 5)
-
-instance HasModifiersFor env ACreatureOfTheBayou
-
-instance HasAbilities env ACreatureOfTheBayou where
-  getAbilities i window (ACreatureOfTheBayou x) = getAbilities i window x
 
 getRougarou
   :: (MonadReader env m, HasId (Maybe StoryEnemyId) env CardCode)

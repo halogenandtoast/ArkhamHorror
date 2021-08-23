@@ -21,17 +21,12 @@ import Arkham.Types.Target
 import Arkham.Types.TreacheryId
 
 newtype RestrictedAccess = RestrictedAccess AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 restrictedAccess :: AgendaCard RestrictedAccess
 restrictedAccess =
   agenda (1, A) RestrictedAccess Cards.restrictedAccess (Static 5)
-
-instance HasAbilities env RestrictedAccess where
-  getAbilities i window (RestrictedAccess x) = getAbilities i window x
-
-instance HasModifiersFor env RestrictedAccess
 
 instance AgendaRunner env => RunMessage env RestrictedAccess where
   runMessage msg a@(RestrictedAccess attrs@AgendaAttrs {..}) = case msg of

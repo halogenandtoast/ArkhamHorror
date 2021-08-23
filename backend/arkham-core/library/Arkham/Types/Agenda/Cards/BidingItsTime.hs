@@ -21,16 +21,11 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype BidingItsTime = BidingItsTime AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bidingItsTime :: AgendaCard BidingItsTime
 bidingItsTime = agenda (2, A) BidingItsTime Cards.bidingItsTime (Static 6)
-
-instance HasModifiersFor env BidingItsTime
-
-instance HasAbilities env BidingItsTime where
-  getAbilities i window (BidingItsTime x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env BidingItsTime where
   runMessage msg a@(BidingItsTime attrs) = case msg of

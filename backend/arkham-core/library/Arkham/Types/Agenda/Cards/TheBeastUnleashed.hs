@@ -17,17 +17,12 @@ import Arkham.Types.Resolution
 import Arkham.Types.Target
 
 newtype TheBeastUnleashed = TheBeastUnleashed AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theBeastUnleashed :: AgendaCard TheBeastUnleashed
 theBeastUnleashed =
   agenda (3, A) TheBeastUnleashed Cards.theBeastUnleashed (Static 2)
-
-instance HasAbilities env TheBeastUnleashed where
-  getAbilities i window (TheBeastUnleashed x) = getAbilities i window x
-
-instance HasModifiersFor env TheBeastUnleashed
 
 instance AgendaRunner env => RunMessage env TheBeastUnleashed where
   runMessage msg a@(TheBeastUnleashed attrs@AgendaAttrs {..}) = case msg of

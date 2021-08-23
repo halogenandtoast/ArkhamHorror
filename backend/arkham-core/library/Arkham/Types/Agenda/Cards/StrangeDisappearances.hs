@@ -14,17 +14,12 @@ import Arkham.Types.Message
 import Arkham.Types.Query
 
 newtype StrangeDisappearances = StrangeDisappearances AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strangeDisappearances :: AgendaCard StrangeDisappearances
 strangeDisappearances =
   agenda (1, A) StrangeDisappearances Cards.strangeDisappearances (Static 6)
-
-instance HasModifiersFor env StrangeDisappearances
-
-instance HasAbilities env StrangeDisappearances where
-  getAbilities i window (StrangeDisappearances x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env StrangeDisappearances where
   runMessage msg a@(StrangeDisappearances attrs@AgendaAttrs {..}) = case msg of

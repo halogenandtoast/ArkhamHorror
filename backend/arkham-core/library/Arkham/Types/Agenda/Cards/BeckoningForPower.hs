@@ -14,17 +14,12 @@ import Arkham.Types.Message
 import Arkham.Types.Resolution
 
 newtype BeckoningForPower = BeckoningForPower AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 beckoningForPower :: AgendaCard BeckoningForPower
 beckoningForPower =
   agenda (2, A) BeckoningForPower Cards.beckoningForPower (Static 10)
-
-instance HasModifiersFor env BeckoningForPower
-
-instance HasAbilities env BeckoningForPower where
-  getAbilities i window (BeckoningForPower x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env BeckoningForPower where
   runMessage msg a@(BeckoningForPower attrs@AgendaAttrs {..}) = case msg of

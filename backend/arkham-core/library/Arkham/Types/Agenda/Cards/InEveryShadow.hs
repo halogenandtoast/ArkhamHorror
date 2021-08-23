@@ -19,16 +19,11 @@ import Arkham.Types.Target
 import Arkham.Types.TreacheryId
 
 newtype InEveryShadow = InEveryShadow AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 inEveryShadow :: AgendaCard InEveryShadow
 inEveryShadow = agenda (3, A) InEveryShadow Cards.inEveryShadow (Static 7)
-
-instance HasAbilities env InEveryShadow where
-  getAbilities i window (InEveryShadow x) = getAbilities i window x
-
-instance HasModifiersFor env InEveryShadow
 
 instance AgendaRunner env => RunMessage env InEveryShadow where
   runMessage msg a@(InEveryShadow attrs@AgendaAttrs {..}) = case msg of

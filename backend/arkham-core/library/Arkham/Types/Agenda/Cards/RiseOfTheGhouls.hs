@@ -15,17 +15,12 @@ import Arkham.Types.Source
 import Arkham.Types.Trait
 
 newtype RiseOfTheGhouls = RiseOfTheGhouls AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riseOfTheGhouls :: AgendaCard RiseOfTheGhouls
 riseOfTheGhouls =
   agenda (2, A) RiseOfTheGhouls Cards.riseOfTheGhouls (Static 7)
-
-instance HasModifiersFor env RiseOfTheGhouls
-
-instance HasAbilities env RiseOfTheGhouls where
-  getAbilities i window (RiseOfTheGhouls x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env RiseOfTheGhouls where
   runMessage msg a@(RiseOfTheGhouls attrs@AgendaAttrs {..}) = case msg of

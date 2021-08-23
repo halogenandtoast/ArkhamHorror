@@ -14,17 +14,12 @@ import Arkham.Types.Message
 import Arkham.Types.Query
 
 newtype TheOldOnesHunger = TheOldOnesHunger AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theOldOnesHunger :: AgendaCard TheOldOnesHunger
 theOldOnesHunger =
   agenda (2, A) TheOldOnesHunger Cards.theOldOnesHunger (Static 6)
-
-instance HasModifiersFor env TheOldOnesHunger
-
-instance HasAbilities env TheOldOnesHunger where
-  getAbilities i window (TheOldOnesHunger x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env TheOldOnesHunger where
   runMessage msg a@(TheOldOnesHunger attrs@AgendaAttrs {..}) = case msg of

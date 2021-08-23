@@ -19,17 +19,12 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype TheRougarouFeeds = TheRougarouFeeds AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theRougarouFeeds :: AgendaCard TheRougarouFeeds
 theRougarouFeeds =
   agenda (2, A) TheRougarouFeeds Cards.theRougarouFeeds (Static 6)
-
-instance HasModifiersFor env TheRougarouFeeds
-
-instance HasAbilities env TheRougarouFeeds where
-  getAbilities i window (TheRougarouFeeds x) = getAbilities i window x
 
 getRougarou
   :: (MonadReader env m, HasId (Maybe StoryEnemyId) env CardCode)

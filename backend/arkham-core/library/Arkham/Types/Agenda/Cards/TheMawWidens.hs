@@ -6,38 +6,22 @@ module Arkham.Types.Agenda.Cards.TheMawWidens
 import Arkham.Prelude
 
 import qualified Arkham.Agenda.Cards as Cards
+import Arkham.Scenarios.TheEssexCountyExpress.Helpers
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
-import Arkham.Types.Direction
 import Arkham.Types.GameValue
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Query
 
 newtype TheMawWidens = TheMawWidens AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theMawWidens :: AgendaCard TheMawWidens
 theMawWidens = agenda (2, A) TheMawWidens Cards.theMawWidens (Static 3)
-
-instance HasModifiersFor env TheMawWidens
-
-instance HasAbilities env TheMawWidens where
-  getAbilities i window (TheMawWidens x) = getAbilities i window x
-
-leftmostLocation
-  :: ( MonadReader env m
-     , HasId (Maybe LocationId) env (Direction, LocationId)
-     , MonadIO m
-     )
-  => LocationId
-  -> m LocationId
-leftmostLocation lid = do
-  mlid' <- getId (LeftOf, lid)
-  maybe (pure lid) leftmostLocation mlid'
 
 instance AgendaRunner env => RunMessage env TheMawWidens where
   runMessage msg a@(TheMawWidens attrs@AgendaAttrs {..}) = case msg of

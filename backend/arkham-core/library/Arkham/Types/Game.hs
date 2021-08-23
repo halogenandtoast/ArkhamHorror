@@ -581,11 +581,15 @@ getInvestigatorsMatching = \case
       . toList
       . view investigatorsL
       <$> getGame
+  HandWith cardListMatcher ->
+    filterM ((`cardListMatches` cardListMatcher) . handOf)
+      . toList
+      . view investigatorsL
+      =<< getGame
   -- TODO: too lazy to do these right now
   UnengagedInvestigator -> pure []
   UneliminatedInvestigator -> pure []
   ContributedMatchingIcons _ -> pure []
-  HandWith _ -> pure []
   DiscardWith _ -> pure []
   InvestigatorWithoutModifier _ -> pure []
   InvestigatorEngagedWith _ -> pure []
@@ -699,10 +703,17 @@ getLocationsMatching = \case
   LocationWithTrait trait ->
     filter hasMatchingTrait . toList . view locationsL <$> getGame
     where hasMatchingTrait = (trait `member`) . toTraits
-  LocationMatchers [] -> pure []
-  LocationMatchers (x : xs) -> do
+  LocationMatchAll [] -> pure []
+  LocationMatchAll (x : xs) -> do
     matches :: HashSet LocationId <-
       foldl' intersection
+      <$> (setFromList . map toId <$> getLocationsMatching x)
+      <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
+    filter ((`member` matches) . toId) . toList . view locationsL <$> getGame
+  LocationMatchAny [] -> pure []
+  LocationMatchAny (x : xs) -> do
+    matches :: HashSet LocationId <-
+      foldl' union
       <$> (setFromList . map toId <$> getLocationsMatching x)
       <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
     filter ((`member` matches) . toId) . toList . view locationsL <$> getGame
@@ -875,6 +886,7 @@ getEnemiesMatching matcher = do
     EnemyEngagedWithYou -> \enemy -> do
       iid <- view activeInvestigatorIdL <$> getGame
       member iid <$> getSet (toId enemy)
+    UnengagedEnemy -> \enemy -> null <$> getSet @InvestigatorId (toId enemy)
     M.EnemyAt locationMatcher -> \enemy ->
       liftA2 member (getId @LocationId $ toId enemy) (select locationMatcher)
     CanFightEnemy -> \enemy -> do
@@ -1716,8 +1728,7 @@ instance HasGame env => HasSet VictoryDisplayCardCode env () where
     setFromList . map (coerce . toCardCode) . view victoryDisplayL <$> getGame
 
 instance HasGame env => HasSet VictoryDisplayCard env () where
-  getSet _ =
-    setFromList . map coerce . view victoryDisplayL <$> getGame
+  getSet _ = setFromList . map coerce . view victoryDisplayL <$> getGame
 
 instance HasGame env => HasSet ClueCount env () where
   getSet _ = do

@@ -19,17 +19,12 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype PastPresentAndFuture = PastPresentAndFuture AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pastPresentAndFuture :: AgendaCard PastPresentAndFuture
 pastPresentAndFuture =
   agenda (2, A) PastPresentAndFuture Cards.pastPresentAndFuture (Static 4)
-
-instance HasModifiersFor env PastPresentAndFuture
-
-instance HasAbilities env PastPresentAndFuture where
-  getAbilities i window (PastPresentAndFuture x) = getAbilities i window x
 
 instance (HasRecord env, AgendaRunner env) => RunMessage env PastPresentAndFuture where
   runMessage msg a@(PastPresentAndFuture attrs@AgendaAttrs {..}) = case msg of

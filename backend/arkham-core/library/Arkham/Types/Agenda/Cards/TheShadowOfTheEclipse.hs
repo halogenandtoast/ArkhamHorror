@@ -17,17 +17,12 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype TheShadowOfTheEclipse = TheShadowOfTheEclipse AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theShadowOfTheEclipse :: AgendaCard TheShadowOfTheEclipse
 theShadowOfTheEclipse =
   agenda (2, A) TheShadowOfTheEclipse Cards.theShadowOfTheEclipse (Static 3)
-
-instance HasModifiersFor env TheShadowOfTheEclipse
-
-instance HasAbilities env TheShadowOfTheEclipse where
-  getAbilities i window (TheShadowOfTheEclipse x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env TheShadowOfTheEclipse where
   runMessage msg a@(TheShadowOfTheEclipse attrs@AgendaAttrs {..}) = case msg of

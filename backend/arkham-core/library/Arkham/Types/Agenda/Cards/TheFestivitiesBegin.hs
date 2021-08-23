@@ -16,17 +16,12 @@ import Arkham.Types.GameValue
 import Arkham.Types.Message
 
 newtype TheFestivitiesBegin = TheFestivitiesBegin AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theFestivitiesBegin :: AgendaCard TheFestivitiesBegin
 theFestivitiesBegin =
   agenda (1, A) TheFestivitiesBegin Cards.theFestivitiesBegin (Static 8)
-
-instance HasModifiersFor env TheFestivitiesBegin
-
-instance HasAbilities env TheFestivitiesBegin where
-  getAbilities i window (TheFestivitiesBegin x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env TheFestivitiesBegin where
   runMessage msg a@(TheFestivitiesBegin attrs@AgendaAttrs {..}) = case msg of

@@ -17,17 +17,12 @@ import Arkham.Types.Message
 import Arkham.Types.Resolution
 
 newtype TheEndOfAllThings = TheEndOfAllThings AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theEndOfAllThings :: AgendaCard TheEndOfAllThings
 theEndOfAllThings =
   agenda (4, A) TheEndOfAllThings Cards.theEndOfAllThings (Static 2)
-
-instance HasModifiersFor env TheEndOfAllThings
-
-instance HasAbilities env TheEndOfAllThings where
-  getAbilities i window (TheEndOfAllThings x) = getAbilities i window x
 
 instance (HasId (Maybe EnemyId) env EnemyMatcher, AgendaRunner env) => RunMessage env TheEndOfAllThings where
   runMessage msg a@(TheEndOfAllThings attrs@AgendaAttrs {..}) = case msg of

@@ -16,17 +16,12 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype RampagingCreatures = RampagingCreatures AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rampagingCreatures :: AgendaCard RampagingCreatures
 rampagingCreatures =
   agenda (1, A) RampagingCreatures Cards.rampagingCreatures (Static 5)
-
-instance HasModifiersFor env RampagingCreatures
-
-instance HasAbilities env RampagingCreatures where
-  getAbilities i window (RampagingCreatures x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env RampagingCreatures where
   runMessage msg a@(RampagingCreatures attrs) = case msg of

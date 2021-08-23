@@ -1,11 +1,14 @@
 <template>
   <div class="encounter-deck">
-    <img
-      class="deck"
-      :src="`${baseUrl}/img/arkham/back.png`"
-      :class="{ 'can-interact': deckAction !== -1 }"
-      @click="$emit('choose', deckAction)"
-    />
+    <div class="top-of-deck">
+      <img
+        class="deck"
+        :src="`${baseUrl}/img/arkham/back.png`"
+        :class="{ 'can-interact': deckAction !== -1 }"
+        @click="$emit('choose', deckAction)"
+      />
+      <span class="deck-size">{{game.encounterDeckSize}}</span>
+    </div>
     <img
       v-if="investigatorPortrait"
       class="portrait"
@@ -97,5 +100,19 @@ export default defineComponent({
 .encounter-deck {
   display: flex;
   flex-direction: column;
+}
+
+.top-of-deck {
+  position: relative;
+}
+
+.deck-size {
+  position: absolute;
+  font-weight: bold;
+  font-size: 1.2em;
+  color: rgba(255, 255, 255, 0.6);
+  left: 50%;
+  bottom: 0%;
+  transform: translateX(-50%) translateY(-50%);
 }
 </style>

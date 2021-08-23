@@ -5,6 +5,7 @@ import Arkham.Prelude
 import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Enemy.Cards as Enemies
+import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
@@ -13,9 +14,10 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Matcher hiding (RevealLocation)
 import Arkham.Types.Message
+import Arkham.Types.Source
+import qualified Arkham.Types.Timing as Timing
 
 newtype TheBarrier = TheBarrier ActAttrs
   deriving anyclass IsAct
@@ -25,23 +27,18 @@ theBarrier :: ActCard TheBarrier
 theBarrier = act (2, A) TheBarrier Cards.theBarrier Nothing
 
 instance HasAbilities env TheBarrier where
-  getAbilities i window (TheBarrier x) = getAbilities i window x
+  getAbilities _ _ (TheBarrier x) = pure
+    [ mkAbility x 1
+      $ Objective
+      $ ReactionAbility (RoundEnds Timing.When)
+      $ GroupClueCost (PerPlayer 3) (Just $ LocationWithTitle "Hallway")
+    ]
 
 instance ActRunner env => RunMessage env TheBarrier where
-  runMessage msg a@(TheBarrier attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      hallwayId <- fromJustNote "must exist"
-        <$> selectOne (LocationWithTitle "Hallway")
-      investigatorIds <- getSetList hallwayId
-      requiredClueCount <- getPlayerCountValue (PerPlayer 3)
-      pushAll
-        (SpendClues requiredClueCount investigatorIds
-        : [ chooseOne iid [AdvanceAct aid $ toSource attrs]
-          | iid <- investigatorIds
-          ]
-        )
-      pure $ TheBarrier $ attrs & sequenceL .~ Act 2 B
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+  runMessage msg a@(TheBarrier attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      a <$ push (AdvanceAct (toId a) (InvestigatorSource iid))
+    AdvanceAct aid _ | aid == toId a && onSide B attrs -> do
       hallwayId <- getJustLocationIdByName "Hallway"
       ghoulPriest <- EncounterCard <$> genEncounterCard Enemies.ghoulPriest
       litaChantler <- PlayerCard <$> genPlayerCard Assets.litaChantler
@@ -52,19 +49,4 @@ instance ActRunner env => RunMessage env TheBarrier where
         , CreateEnemyAt ghoulPriest hallwayId Nothing
         , NextAct aid "01110"
         ]
-    EndRoundWindow -> do
-      investigatorIds <- getSetList @InvestigatorId
-        (LocationWithTitle "Hallway")
-      leadInvestigatorId <- getLeadInvestigatorId
-      totalSpendableClueCount <- getSpendableClueCount investigatorIds
-      requiredClueCount <- getPlayerCountValue (PerPlayer 3)
-      if totalSpendableClueCount >= requiredClueCount
-        then a <$ push
-          (chooseOne
-            leadInvestigatorId
-            [ AdvanceAct actId (toSource attrs)
-            , Continue "Continue without advancing act"
-            ]
-          )
-        else pure a
     _ -> TheBarrier <$> runMessage msg attrs

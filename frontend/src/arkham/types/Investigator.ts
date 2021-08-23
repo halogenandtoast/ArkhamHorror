@@ -10,6 +10,7 @@ import {
 export interface Investigator {
   tag: string;
   contents: InvestigatorContents;
+  deckSize: number;
 }
 
 type ClassSymbol = 'Guardian' | 'Seeker' | 'Rogue' | 'Mystic' | 'Survivor' | 'Neutral';
@@ -88,4 +89,5 @@ export const investigatorContentsDecoder = JsonDecoder.object<InvestigatorConten
 export const investigatorDecoder = JsonDecoder.object<Investigator>({
   tag: JsonDecoder.string,
   contents: investigatorContentsDecoder,
+  deckSize: JsonDecoder.number,
 }, 'Investigator');

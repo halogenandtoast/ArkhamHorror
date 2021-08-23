@@ -20,8 +20,8 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 
 newtype SaracenicScript = SaracenicScript ActAttrs
-  deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 saracenicScript :: ActCard SaracenicScript
 saracenicScript = act

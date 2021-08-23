@@ -13,15 +13,12 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype Trapped = Trapped ActAttrs
-  deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 trapped :: ActCard Trapped
 trapped =
   act (1, A) Trapped Cards.trapped (Just $ GroupClueCost (PerPlayer 2) Nothing)
-
-instance HasAbilities env Trapped where
-  getAbilities i window (Trapped x) = getAbilities i window x
 
 instance ActRunner env => RunMessage env Trapped where
   runMessage msg a@(Trapped attrs@ActAttrs {..}) = case msg of

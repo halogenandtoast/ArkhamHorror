@@ -22,8 +22,8 @@ import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype Row = Row ActAttrs
-  deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 row :: ActCard Row
 row = act (3, A) Row Cards.row Nothing

@@ -16,8 +16,8 @@ import Arkham.Types.Prey
 import Arkham.Types.Trait
 
 newtype SlimeCoveredDhole = SlimeCoveredDhole EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 slimeCoveredDhole :: EnemyCard SlimeCoveredDhole
 slimeCoveredDhole = enemyWith
@@ -26,11 +26,6 @@ slimeCoveredDhole = enemyWith
   (2, Static 3, 3)
   (1, 1)
   (preyL .~ LowestRemainingHealth)
-
-instance HasModifiersFor env SlimeCoveredDhole
-
-instance ActionRunner env => HasAbilities env SlimeCoveredDhole where
-  getAbilities i window (SlimeCoveredDhole attrs) = getAbilities i window attrs
 
 bayouLocations
   :: (MonadReader env m, HasSet LocationId env [Trait])

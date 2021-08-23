@@ -22,8 +22,8 @@ import Arkham.Types.ScenarioId
 import Arkham.Types.Trait
 
 newtype SkinGame = SkinGame ActAttrs
-  deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 skinGame :: ActCard SkinGame
 skinGame = act

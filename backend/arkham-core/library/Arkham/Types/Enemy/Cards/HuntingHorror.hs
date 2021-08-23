@@ -17,16 +17,11 @@ import Arkham.Types.Token
 import Data.UUID (nil)
 
 newtype HuntingHorror = HuntingHorror EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 huntingHorror :: EnemyCard HuntingHorror
 huntingHorror = enemy HuntingHorror Cards.huntingHorror (2, Static 3, 2) (1, 1)
-
-instance HasModifiersFor env HuntingHorror
-
-instance ActionRunner env => HasAbilities env HuntingHorror where
-  getAbilities i window (HuntingHorror attrs) = getAbilities i window attrs
 
 instance EnemyRunner env => RunMessage env HuntingHorror where
   runMessage msg e@(HuntingHorror attrs@EnemyAttrs {..}) = case msg of

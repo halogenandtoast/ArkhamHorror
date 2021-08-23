@@ -17,7 +17,7 @@ import Arkham.Types.Query
 
 newtype ScreechingByakhee = ScreechingByakhee EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 screechingByakhee :: EnemyCard ScreechingByakhee
 screechingByakhee = enemyWith
@@ -37,9 +37,6 @@ instance HasCount RemainingSanity env InvestigatorId => HasModifiersFor env Scre
         else []
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env ScreechingByakhee where
-  getAbilities i window (ScreechingByakhee attrs) = getAbilities i window attrs
-
-instance (EnemyRunner env) => RunMessage env ScreechingByakhee where
+instance EnemyRunner env => RunMessage env ScreechingByakhee where
   runMessage msg (ScreechingByakhee attrs) =
     ScreechingByakhee <$> runMessage msg attrs

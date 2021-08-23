@@ -15,7 +15,7 @@ import Arkham.Types.Target
 
 newtype OBannionsThug = OBannionsThug EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 oBannionsThug :: EnemyCard OBannionsThug
 oBannionsThug = enemy OBannionsThug Cards.oBannionsThug (4, Static 2, 2) (2, 0)
@@ -25,9 +25,6 @@ instance HasModifiersFor env OBannionsThug where
     | iid `elem` enemyEngagedInvestigators = pure
     $ toModifiers a [CannotGainResources]
   getModifiersFor _ _ _ = pure []
-
-instance ActionRunner env => HasAbilities env OBannionsThug where
-  getAbilities i window (OBannionsThug attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env OBannionsThug where
   runMessage msg (OBannionsThug attrs) = OBannionsThug <$> runMessage msg attrs

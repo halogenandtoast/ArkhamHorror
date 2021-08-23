@@ -19,7 +19,7 @@ import Arkham.Types.Target
 
 newtype CarnevaleSentinel = CarnevaleSentinel EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 carnevaleSentinel :: EnemyCard CarnevaleSentinel
 carnevaleSentinel =
@@ -36,9 +36,6 @@ instance (HasName env AssetId, HasId (Maybe LocationId) env AssetId) => HasModif
           [ CannotBeRevealed | nameTitle name == "Masked Carnevale-Goer" ]
       _ -> pure []
   getModifiersFor _ _ _ = pure []
-
-instance EnemyAttrsHasAbilities env => HasAbilities env CarnevaleSentinel where
-  getAbilities i window (CarnevaleSentinel attrs) = getAbilities i window attrs
 
 instance EnemyAttrsRunMessage env => RunMessage env CarnevaleSentinel where
   runMessage msg (CarnevaleSentinel attrs) = case msg of

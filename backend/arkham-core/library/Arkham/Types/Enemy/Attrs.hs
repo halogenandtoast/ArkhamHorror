@@ -14,6 +14,7 @@ import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue as X
@@ -293,39 +294,30 @@ canEnterLocation eid lid = do
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits
     _ -> False
 
-type EnemyAttrsHasAbilities env
-  = ( HasCostPayment env
-    , HasSet InvestigatorId env EnemyId
-    , HasSet Keyword env EnemyId
-    , HasSet Trait env Source
-    , HasId LocationId env InvestigatorId
-    , HasId LocationId env EnemyId
-    , HasModifiersFor env ()
-    )
-
-instance EnemyAttrsHasAbilities env => HasAbilities env EnemyAttrs where
-  getAbilities iid (Window Timing.When Window.NonFast) e@EnemyAttrs {..} = do
-    canFight <- getCanFight enemyId iid
-    canEngage <- getCanEngage enemyId iid
-    canEvade <- getCanEvade enemyId iid
-    pure
-      $ fightEnemyActions canFight
-      <> engageEnemyActions canEngage
-      <> evadeEnemyActions canEvade
-   where
-    fightEnemyActions canFight =
-      [ mkAbility e 100 $ ActionAbility (Just Action.Fight) (ActionCost 1)
-      | canFight
-      ]
-    evadeEnemyActions canEvade =
-      [ mkAbility e 101 $ ActionAbility (Just Action.Evade) (ActionCost 1)
-      | canEvade
-      ]
-    engageEnemyActions canEngage =
-      [ mkAbility e 102 $ ActionAbility (Just Action.Engage) (ActionCost 1)
-      | canEngage
-      ]
-  getAbilities _ _ _ = pure []
+instance HasAbilities env EnemyAttrs where
+  getAbilities _ _ e = pure
+    [ restrictedAbility
+        e
+        100
+        (OnSameLocation <> AnyCriterion
+          [ Negate $ EnemyCriteria $ ThisEnemy AloofEnemy
+          , EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith Anyone
+          ]
+        )
+      $ ActionAbility (Just Action.Fight) (ActionCost 1)
+    , restrictedAbility
+        e
+        101
+        (OnSameLocation <> EnemyCriteria (ThisEnemy $ EnemyIsEngagedWith You))
+      $ ActionAbility (Just Action.Evade) (ActionCost 1)
+    , restrictedAbility
+        e
+        102
+        (OnSameLocation
+        <> Negate (EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith You)
+        )
+      $ ActionAbility (Just Action.Engage) (ActionCost 1)
+    ]
 
 instance Entity EnemyAttrs where
   type EntityId EnemyAttrs = EnemyId

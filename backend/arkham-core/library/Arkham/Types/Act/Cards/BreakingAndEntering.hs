@@ -20,8 +20,8 @@ import Arkham.Types.Name
 import Arkham.Types.Target
 
 newtype BreakingAndEntering = BreakingAndEntering ActAttrs
-  deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 breakingAndEntering :: ActCard BreakingAndEntering
 breakingAndEntering =

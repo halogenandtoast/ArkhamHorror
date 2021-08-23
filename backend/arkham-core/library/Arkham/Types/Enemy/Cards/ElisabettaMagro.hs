@@ -11,17 +11,12 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Message
 
 newtype ElisabettaMagro = ElisabettaMagro EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 elisabettaMagro :: EnemyCard ElisabettaMagro
 elisabettaMagro =
   enemy ElisabettaMagro Cards.elisabettaMagro (3, Static 4, 4) (1, 1)
-
-instance HasModifiersFor env ElisabettaMagro
-
-instance EnemyAttrsHasAbilities env => HasAbilities env ElisabettaMagro where
-  getAbilities i window (ElisabettaMagro attrs) = getAbilities i window attrs
 
 instance EnemyAttrsRunMessage env => RunMessage env ElisabettaMagro where
   runMessage msg (ElisabettaMagro attrs) = case msg of

@@ -68,7 +68,11 @@ instance Semigroup Criterion where
 instance Monoid Criterion where
   mempty = NoRestriction
 
-data EnemyCriterion = EnemyExists EnemyMatcher | NotAttackingEnemy | EnemyMatchesCriteria [EnemyCriterion]
+data EnemyCriterion
+  = EnemyExists EnemyMatcher
+  | NotAttackingEnemy
+  | ThisEnemy EnemyMatcher
+  | EnemyMatchesCriteria [EnemyCriterion]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

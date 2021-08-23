@@ -14,8 +14,8 @@ import Arkham.Types.Prey
 import Arkham.Types.SkillType
 
 newtype CloverClubPitBoss = CloverClubPitBoss EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 cloverClubPitBoss :: EnemyCard CloverClubPitBoss
 cloverClubPitBoss = enemyWith
@@ -24,11 +24,6 @@ cloverClubPitBoss = enemyWith
   (3, Static 4, 3)
   (2, 0)
   (preyL .~ HighestSkill SkillIntellect)
-
-instance HasModifiersFor env CloverClubPitBoss
-
-instance ActionRunner env => HasAbilities env CloverClubPitBoss where
-  getAbilities i window (CloverClubPitBoss attrs) = getAbilities i window attrs
 
 instance EnemyRunner env => RunMessage env CloverClubPitBoss where
   runMessage msg e@(CloverClubPitBoss attrs@EnemyAttrs {..}) = case msg of

@@ -32,10 +32,10 @@ instance HasAbilities env WhatHaveYouDone where
     ]
 
 instance ActRunner env => RunMessage env WhatHaveYouDone where
-  runMessage msg a@(WhatHaveYouDone attrs@ActAttrs {..}) = case msg of
+  runMessage msg a@(WhatHaveYouDone attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ push (AdvanceAct actId $ InvestigatorSource iid)
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+      a <$ push (AdvanceAct (toId attrs) $ InvestigatorSource iid)
+    AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       push
         (chooseOne

@@ -106,6 +106,10 @@ instance Monoid AssetMatcher where
 enemyIs :: HasCardCode a => a -> EnemyMatcher
 enemyIs = EnemyIs . toCardCode
 
+pattern AloofEnemy :: EnemyMatcher
+pattern AloofEnemy <- EnemyWithKeyword Keyword.Aloof where
+  AloofEnemy = EnemyWithKeyword Keyword.Aloof
+
 pattern HunterEnemy :: EnemyMatcher
 pattern HunterEnemy <- EnemyWithKeyword Keyword.Hunter where
   HunterEnemy = EnemyWithKeyword Keyword.Hunter
@@ -126,6 +130,7 @@ data EnemyMatcher
   | EnemyAt LocationMatcher
   | EnemyWithoutTrait Trait
   | EnemyWithKeyword Keyword
+  | EnemyIsEngagedWith InvestigatorMatcher
   | EnemyIs CardCode
   | AnyEnemy
   | CanFightEnemy

@@ -19,8 +19,8 @@ import Arkham.Types.Query
 import Arkham.Types.Resolution
 
 newtype TheChamberOfTheBeast = TheChamberOfTheBeast ActAttrs
-  deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theChamberOfTheBeast :: ActCard TheChamberOfTheBeast
 theChamberOfTheBeast =
@@ -33,8 +33,11 @@ instance ActionRunner env => HasAbilities env TheChamberOfTheBeast where
     clueCount <- maybe (pure 0) (fmap unClueCount . getCount) mHiddenChamberId
     leadInvestigatorId <- getLeadInvestigatorId
     if clueCount == 0
-      then pure
-        [ mkAbility (toSource x) 1 LegacyForcedAbility | i == leadInvestigatorId ]
+      then
+        pure
+          [ mkAbility (toSource x) 1 LegacyForcedAbility
+          | i == leadInvestigatorId
+          ]
       else getAbilities i window x
 
 instance ActRunner env => RunMessage env TheChamberOfTheBeast where

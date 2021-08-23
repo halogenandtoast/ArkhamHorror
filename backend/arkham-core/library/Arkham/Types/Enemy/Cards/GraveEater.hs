@@ -12,18 +12,13 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Message
 
 newtype GraveEater = GraveEater EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 graveEater :: EnemyCard GraveEater
 graveEater = enemy GraveEater Cards.graveEater (2, Static 2, 2) (1, 1)
 
-instance HasModifiersFor env GraveEater
-
-instance ActionRunner env => HasAbilities env GraveEater where
-  getAbilities i window (GraveEater attrs) = getAbilities i window attrs
-
-instance (EnemyRunner env) => RunMessage env GraveEater where
+instance EnemyRunner env => RunMessage env GraveEater where
   runMessage msg e@(GraveEater attrs) = case msg of
     After (EnemyAttack iid eid _) | eid == enemyId attrs ->
       e <$ push (RandomDiscard iid)

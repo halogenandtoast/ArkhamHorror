@@ -15,7 +15,7 @@ import Arkham.Types.Target
 
 newtype GrapplingHorror = GrapplingHorror EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 grapplingHorror :: EnemyCard GrapplingHorror
 grapplingHorror =
@@ -28,9 +28,6 @@ instance HasModifiersFor env GrapplingHorror where
       else pure []
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env GrapplingHorror where
-  getAbilities i window (GrapplingHorror attrs) = getAbilities i window attrs
-
-instance (EnemyRunner env) => RunMessage env GrapplingHorror where
+instance EnemyRunner env => RunMessage env GrapplingHorror where
   runMessage msg (GrapplingHorror attrs) =
     GrapplingHorror <$> runMessage msg attrs

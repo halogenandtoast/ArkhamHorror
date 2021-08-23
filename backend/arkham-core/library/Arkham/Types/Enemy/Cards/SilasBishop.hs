@@ -14,7 +14,7 @@ import Arkham.Types.Modifier
 
 newtype SilasBishop = SilasBishop EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 silasBishop :: EnemyCard SilasBishop
 silasBishop = enemy SilasBishop Cards.silasBishop (3, PerPlayer 6, 7) (2, 2)
@@ -24,8 +24,5 @@ instance HasModifiersFor env SilasBishop where
     pure $ toModifiers attrs [CannotMakeAttacksOfOpportunity]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env SilasBishop where
-  getAbilities i window (SilasBishop attrs) = getAbilities i window attrs
-
-instance (EnemyRunner env) => RunMessage env SilasBishop where
+instance EnemyRunner env => RunMessage env SilasBishop where
   runMessage msg (SilasBishop attrs) = SilasBishop <$> runMessage msg attrs

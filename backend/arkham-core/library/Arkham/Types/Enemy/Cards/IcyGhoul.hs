@@ -12,8 +12,8 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
 
 newtype IcyGhoul = IcyGhoul EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 icyGhoul :: EnemyCard IcyGhoul
 icyGhoul = enemyWith
@@ -23,10 +23,5 @@ icyGhoul = enemyWith
   (2, 1)
   (spawnAtL ?~ LocationWithTitle "Cellar")
 
-instance HasModifiersFor env IcyGhoul
-
-instance ActionRunner env => HasAbilities env IcyGhoul where
-  getAbilities i window (IcyGhoul attrs) = getAbilities i window attrs
-
-instance (EnemyRunner env) => RunMessage env IcyGhoul where
+instance EnemyRunner env => RunMessage env IcyGhoul where
   runMessage msg (IcyGhoul attrs) = IcyGhoul <$> runMessage msg attrs

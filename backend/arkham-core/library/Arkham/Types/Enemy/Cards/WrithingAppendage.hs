@@ -13,17 +13,12 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 
 newtype WrithingAppendage = WrithingAppendage EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 writhingAppendage :: EnemyCard WrithingAppendage
 writhingAppendage =
   enemy WrithingAppendage Cards.writhingAppendage (2, Static 2, 4) (1, 0)
-
-instance HasModifiersFor env WrithingAppendage
-
-instance EnemyAttrsHasAbilities env => HasAbilities env WrithingAppendage where
-  getAbilities i window (WrithingAppendage attrs) = getAbilities i window attrs
 
 instance
   ( HasId (Maybe StoryEnemyId) env CardCode

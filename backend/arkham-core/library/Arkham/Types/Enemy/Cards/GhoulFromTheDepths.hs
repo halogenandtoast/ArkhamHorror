@@ -12,8 +12,8 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
 
 newtype GhoulFromTheDepths = GhoulFromTheDepths EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 ghoulFromTheDepths :: EnemyCard GhoulFromTheDepths
 ghoulFromTheDepths = enemyWith
@@ -22,11 +22,6 @@ ghoulFromTheDepths = enemyWith
   (3, Static 4, 2)
   (1, 1)
   (spawnAtL ?~ LocationWithTitle "Bathroom")
-
-instance HasModifiersFor env GhoulFromTheDepths
-
-instance ActionRunner env => HasAbilities env GhoulFromTheDepths where
-  getAbilities i window (GhoulFromTheDepths attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env GhoulFromTheDepths where
   runMessage msg (GhoulFromTheDepths attrs) =

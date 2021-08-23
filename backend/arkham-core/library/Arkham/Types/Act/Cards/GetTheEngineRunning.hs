@@ -16,8 +16,8 @@ import Arkham.Types.Query
 import Arkham.Types.Resolution
 
 newtype GetTheEngineRunning = GetTheEngineRunning ActAttrs
-  deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 getTheEngineRunning :: ActCard GetTheEngineRunning
 getTheEngineRunning =

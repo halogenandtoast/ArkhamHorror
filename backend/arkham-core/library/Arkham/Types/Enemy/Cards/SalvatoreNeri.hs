@@ -17,7 +17,7 @@ import Arkham.Types.Target
 
 newtype SalvatoreNeri = SalvatoreNeri EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 salvatoreNeri :: EnemyCard SalvatoreNeri
 salvatoreNeri = enemy SalvatoreNeri Cards.salvatoreNeri (0, Static 3, 0) (0, 2)
@@ -34,9 +34,6 @@ instance
       evadeValue <- getSkillValue SkillAgility iid
       pure $ toModifiers attrs [EnemyFight fightValue, EnemyEvade evadeValue]
   getModifiersFor _ _ _ = pure []
-
-instance EnemyAttrsHasAbilities env => HasAbilities env SalvatoreNeri where
-  getAbilities i window (SalvatoreNeri attrs) = getAbilities i window attrs
 
 instance EnemyAttrsRunMessage env => RunMessage env SalvatoreNeri where
   runMessage msg (SalvatoreNeri attrs) = SalvatoreNeri <$> runMessage msg attrs

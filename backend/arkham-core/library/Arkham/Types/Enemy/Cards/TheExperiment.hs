@@ -16,7 +16,7 @@ import Arkham.Types.Query
 
 newtype TheExperiment = TheExperiment EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 theExperiment :: EnemyCard TheExperiment
 theExperiment = enemy TheExperiment Cards.theExperiment (4, Static 7, 2) (2, 2)
@@ -26,9 +26,6 @@ instance HasCount PlayerCount env () => HasModifiersFor env TheExperiment where
     modifier <- getPlayerCountValue (PerPlayer 3)
     pure $ toModifiers attrs [HealthModifier modifier]
   getModifiersFor _ _ _ = pure []
-
-instance ActionRunner env => HasAbilities env TheExperiment where
-  getAbilities i window (TheExperiment attrs) = getAbilities i window attrs
 
 instance EnemyRunner env => RunMessage env TheExperiment where
   runMessage msg (TheExperiment attrs) = case msg of

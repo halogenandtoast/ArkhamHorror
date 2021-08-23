@@ -13,18 +13,13 @@ import Arkham.Types.Message
 import Arkham.Types.Source
 
 newtype GoatSpawn = GoatSpawn EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 goatSpawn :: EnemyCard GoatSpawn
 goatSpawn = enemy GoatSpawn Cards.goatSpawn (3, Static 3, 2) (1, 0)
 
-instance HasModifiersFor env GoatSpawn
-
-instance ActionRunner env => HasAbilities env GoatSpawn where
-  getAbilities i window (GoatSpawn attrs) = getAbilities i window attrs
-
-instance (EnemyRunner env) => RunMessage env GoatSpawn where
+instance EnemyRunner env => RunMessage env GoatSpawn where
   runMessage msg (GoatSpawn attrs@EnemyAttrs {..}) = case msg of
     EnemyDefeated eid _ _ _ _ _ | eid == enemyId -> do
       investigatorIds <- getSetList enemyLocation

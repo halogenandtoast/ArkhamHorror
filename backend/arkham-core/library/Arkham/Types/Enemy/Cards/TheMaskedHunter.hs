@@ -17,7 +17,7 @@ import Arkham.Types.Target
 
 newtype TheMaskedHunter = TheMaskedHunter EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 theMaskedHunter :: EnemyCard TheMaskedHunter
 theMaskedHunter = enemyWith
@@ -36,9 +36,6 @@ instance HasCount PlayerCount env () => HasModifiersFor env TheMaskedHunter wher
       then pure $ toModifiers a [CannotDiscoverClues, CannotSpendClues]
       else pure []
   getModifiersFor _ _ _ = pure []
-
-instance ActionRunner env => HasAbilities env TheMaskedHunter where
-  getAbilities i window (TheMaskedHunter attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env TheMaskedHunter where
   runMessage msg (TheMaskedHunter attrs) =

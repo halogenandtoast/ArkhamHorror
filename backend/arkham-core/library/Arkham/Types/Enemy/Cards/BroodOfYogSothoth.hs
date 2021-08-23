@@ -20,7 +20,7 @@ import Arkham.Types.Source
 
 newtype BroodOfYogSothoth = BroodOfYogSothoth EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 broodOfYogSothoth :: EnemyCard BroodOfYogSothoth
 broodOfYogSothoth =
@@ -35,9 +35,6 @@ instance HasCount PlayerCount env () => HasModifiersFor env BroodOfYogSothoth wh
       , CanOnlyBeAttackedByAbilityOn (singleton $ CardCode "02219")
       ]
   getModifiersFor _ _ _ = pure []
-
-instance ActionRunner env => HasAbilities env BroodOfYogSothoth where
-  getAbilities i window (BroodOfYogSothoth attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env, HasName env AssetId) => RunMessage env BroodOfYogSothoth where
   runMessage msg e@(BroodOfYogSothoth attrs) = case msg of

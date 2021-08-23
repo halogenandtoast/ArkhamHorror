@@ -14,8 +14,8 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 
 newtype DiscipleOfTheDevourer = DiscipleOfTheDevourer EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 discipleOfTheDevourer :: EnemyCard DiscipleOfTheDevourer
 discipleOfTheDevourer = enemyWith
@@ -24,12 +24,6 @@ discipleOfTheDevourer = enemyWith
   (3, Static 1, 1)
   (1, 0)
   (spawnAtL ?~ FarthestLocationFromYou EmptyLocation)
-
-instance HasModifiersFor env DiscipleOfTheDevourer
-
-instance ActionRunner env => HasAbilities env DiscipleOfTheDevourer where
-  getAbilities i window (DiscipleOfTheDevourer attrs) =
-    getAbilities i window attrs
 
 instance EnemyRunner env => RunMessage env DiscipleOfTheDevourer where
   runMessage msg (DiscipleOfTheDevourer attrs) = case msg of

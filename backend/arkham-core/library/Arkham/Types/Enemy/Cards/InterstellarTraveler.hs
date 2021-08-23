@@ -16,8 +16,8 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype InterstellarTraveler = InterstellarTraveler EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 interstellarTraveler :: EnemyCard InterstellarTraveler
 interstellarTraveler = enemyWith
@@ -26,11 +26,6 @@ interstellarTraveler = enemyWith
   (4, Static 3, 2)
   (1, 2)
   (spawnAtL ?~ LocationWithTrait Extradimensional)
-
-instance HasModifiersFor env InterstellarTraveler
-
-instance EnemyAttrsHasAbilities env => HasAbilities env InterstellarTraveler where
-  getAbilities i window (InterstellarTraveler attrs) = getAbilities i window attrs
 
 instance (HasCount ClueCount env LocationId, EnemyAttrsRunMessage env) => RunMessage env InterstellarTraveler where
   runMessage msg (InterstellarTraveler attrs) = case msg of

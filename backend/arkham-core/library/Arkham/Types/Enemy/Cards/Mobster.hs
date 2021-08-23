@@ -12,18 +12,13 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Message
 
 newtype Mobster = Mobster EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 mobster :: EnemyCard Mobster
 mobster = enemy Mobster Cards.mobster (2, Static 2, 2) (1, 0)
 
-instance HasModifiersFor env Mobster
-
-instance ActionRunner env => HasAbilities env Mobster where
-  getAbilities i window (Mobster attrs) = getAbilities i window attrs
-
-instance (EnemyRunner env) => RunMessage env Mobster where
+instance EnemyRunner env => RunMessage env Mobster where
   runMessage msg e@(Mobster attrs@EnemyAttrs {..}) = case msg of
     After (PerformEnemyAttack iid eid _) | eid == enemyId ->
       e <$ push (SpendResources iid 1)

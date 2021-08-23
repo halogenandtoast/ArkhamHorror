@@ -13,8 +13,8 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 
 newtype WolfManDrew = WolfManDrew EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 wolfManDrew :: EnemyCard WolfManDrew
 wolfManDrew = enemyWith
@@ -24,12 +24,7 @@ wolfManDrew = enemyWith
   (2, 0)
   (spawnAtL ?~ LocationWithTitle "Downtown")
 
-instance HasModifiersFor env WolfManDrew
-
-instance ActionRunner env => HasAbilities env WolfManDrew where
-  getAbilities i window (WolfManDrew attrs) = getAbilities i window attrs
-
-instance (EnemyRunner env) => RunMessage env WolfManDrew where
+instance EnemyRunner env => RunMessage env WolfManDrew where
   runMessage msg (WolfManDrew attrs) = case msg of
     PerformEnemyAttack _ eid _ | eid == enemyId attrs ->
       WolfManDrew <$> runMessage msg (attrs & damageL %~ max 0 . subtract 1)

@@ -13,8 +13,8 @@ import Arkham.Types.Message
 import Arkham.Types.Prey
 
 newtype SilverTwilightAcolyte = SilverTwilightAcolyte EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 silverTwilightAcolyte :: EnemyCard SilverTwilightAcolyte
 silverTwilightAcolyte = enemyWith
@@ -24,12 +24,7 @@ silverTwilightAcolyte = enemyWith
   (1, 0)
   (preyL .~ SetToBearer)
 
-instance HasModifiersFor env SilverTwilightAcolyte
-
-instance ActionRunner env => HasAbilities env SilverTwilightAcolyte where
-  getAbilities i window (SilverTwilightAcolyte attrs) = getAbilities i window attrs
-
-instance (EnemyRunner env) => RunMessage env SilverTwilightAcolyte where
+instance EnemyRunner env => RunMessage env SilverTwilightAcolyte where
   runMessage msg (SilverTwilightAcolyte attrs@EnemyAttrs {..}) = case msg of
     EnemyAttack _ eid _ | eid == enemyId -> do
       push PlaceDoomOnAgenda

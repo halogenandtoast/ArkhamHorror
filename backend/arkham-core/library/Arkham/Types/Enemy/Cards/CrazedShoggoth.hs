@@ -13,17 +13,12 @@ import Arkham.Types.Message
 import Arkham.Types.Trait
 
 newtype CrazedShoggoth = CrazedShoggoth EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 crazedShoggoth :: EnemyCard CrazedShoggoth
 crazedShoggoth =
   enemy CrazedShoggoth Cards.crazedShoggoth (3, Static 6, 4) (2, 2)
-
-instance EnemyAttrsHasAbilities env => HasAbilities env CrazedShoggoth where
-  getAbilities i window (CrazedShoggoth attrs) = getAbilities i window attrs
-
-instance HasModifiersFor env CrazedShoggoth
 
 instance
   ( HasSet ClosestLocationId env (LocationId , [Trait])

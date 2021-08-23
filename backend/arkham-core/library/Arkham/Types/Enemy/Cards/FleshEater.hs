@@ -12,8 +12,8 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
 
 newtype FleshEater = FleshEater EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 fleshEater :: EnemyCard FleshEater
 fleshEater = enemyWith
@@ -23,10 +23,5 @@ fleshEater = enemyWith
   (1, 2)
   (spawnAtL ?~ LocationWithTitle "Attic")
 
-instance HasModifiersFor env FleshEater
-
-instance ActionRunner env => HasAbilities env FleshEater where
-  getAbilities i window (FleshEater attrs) = getAbilities i window attrs
-
-instance (EnemyRunner env) => RunMessage env FleshEater where
+instance EnemyRunner env => RunMessage env FleshEater where
   runMessage msg (FleshEater attrs) = FleshEater <$> runMessage msg attrs

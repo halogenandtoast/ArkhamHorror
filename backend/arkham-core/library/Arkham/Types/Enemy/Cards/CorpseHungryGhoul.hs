@@ -12,8 +12,8 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
 
 newtype CorpseHungryGhoul = CorpseHungryGhoul EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 corpseHungryGhoul :: EnemyCard CorpseHungryGhoul
 corpseHungryGhoul = enemyWith
@@ -23,11 +23,6 @@ corpseHungryGhoul = enemyWith
   (2, 2)
   (spawnAtL ?~ LocationWithTitle "Bedroom")
 
-instance HasModifiersFor env CorpseHungryGhoul
-
-instance ActionRunner env => HasAbilities env CorpseHungryGhoul where
-  getAbilities i window (CorpseHungryGhoul attrs) = getAbilities i window attrs
-
-instance (EnemyRunner env) => RunMessage env CorpseHungryGhoul where
+instance EnemyRunner env => RunMessage env CorpseHungryGhoul where
   runMessage msg (CorpseHungryGhoul attrs) =
     CorpseHungryGhoul <$> runMessage msg attrs

@@ -18,6 +18,7 @@ pattern AnyHorrorOnThis <- HorrorOnThis (GreaterThan (Static 0)) where
 
 data Criterion
   = AnotherInvestigatorInSameLocation
+  | InVictoryDisplay CardMatcher ValueMatcher
   | InvestigatorIsAlone
   | ScenarioCardHasResignAbility
   | ClueOnLocation

@@ -53,6 +53,10 @@ class (Hashable set, Eq set) => HasSet set env a where
   getSetList :: (HasCallStack, MonadReader env m) => a -> m [set]
   getSetList a = setToList <$> getSet a
 
+getSetListMap
+  :: (HasSet set env a, MonadReader env m) => (set -> set') -> a -> m [set']
+getSetListMap f a = map f <$> getSetList a
+
 type family QueryElement a where
   QueryElement AssetMatcher = AssetId
   QueryElement InvestigatorMatcher = InvestigatorId

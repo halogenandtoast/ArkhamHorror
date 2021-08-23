@@ -1715,6 +1715,10 @@ instance HasGame env => HasSet VictoryDisplayCardCode env () where
   getSet _ =
     setFromList . map (coerce . toCardCode) . view victoryDisplayL <$> getGame
 
+instance HasGame env => HasSet VictoryDisplayCard env () where
+  getSet _ =
+    setFromList . map coerce . view victoryDisplayL <$> getGame
+
 instance HasGame env => HasSet ClueCount env () where
   getSet _ = do
     investigators <- toList . view investigatorsL <$> getGame

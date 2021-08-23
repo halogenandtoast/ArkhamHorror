@@ -314,6 +314,7 @@ data CardMatcher
   | CardWithOneOf [CardMatcher]
   | CardMatches [CardMatcher]
   | IsEncounterCard
+  | CardIsUnique
   | NonWeakness
   | NonExceptional
   | AnyCard

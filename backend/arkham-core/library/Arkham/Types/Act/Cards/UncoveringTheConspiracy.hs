@@ -8,53 +8,47 @@ import Arkham.Prelude
 import qualified Arkham.Act.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
-import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
-import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Resolution
 import Arkham.Types.Source
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
-import qualified Data.HashSet as HashSet
+import Arkham.Types.Trait
 
 newtype UncoveringTheConspiracy = UncoveringTheConspiracy ActAttrs
-  deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 uncoveringTheConspiracy :: ActCard UncoveringTheConspiracy
 uncoveringTheConspiracy =
   act (1, A) UncoveringTheConspiracy Cards.uncoveringTheConspiracy Nothing
 
 instance HasAbilities env UncoveringTheConspiracy where
-  getAbilities _ (Window Timing.When NonFast) (UncoveringTheConspiracy a) = do
-    pure
-      [ mkAbility a 1
-        $ ActionAbility Nothing
-        $ ActionCost 1
-        <> GroupClueCost (PerPlayer 2) Nothing
-      ]
-  getAbilities iid window (UncoveringTheConspiracy attrs) =
-    getAbilities iid window attrs
+  getAbilities _ _ (UncoveringTheConspiracy a) = pure
+    [ mkAbility a 1
+    $ ActionAbility Nothing
+    $ ActionCost 1
+    <> GroupClueCost (PerPlayer 2) Nothing
+    , restrictedAbility
+      a
+      2
+      (InVictoryDisplay
+        (CardWithTrait Cultist <> CardIsUnique)
+        (EqualTo $ Static 6)
+      )
+    $ Objective
+    $ ForcedAbility AnyWindow
+    ]
 
 instance ActRunner env => RunMessage env UncoveringTheConspiracy where
-  runMessage msg a@(UncoveringTheConspiracy attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      push (chooseOne leadInvestigatorId [AdvanceAct aid $ toSource attrs])
-      pure $ UncoveringTheConspiracy $ attrs & sequenceL .~ Act 1 B
-    AdvanceAct aid _ | aid == actId && onSide B attrs ->
+  runMessage msg a@(UncoveringTheConspiracy attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      a <$ push (UseScenarioSpecificAbility iid Nothing 1)
+    UseCardAbility iid source _ 2 _ | isSource attrs source ->
+      a <$ push (AdvanceAct (toId attrs) (InvestigatorSource iid))
+    AdvanceAct aid _ | aid == toId attrs && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 1)
-    After (AddToVictory _) -> do
-      victoryDisplay <- mapSet unVictoryDisplayCardCode <$> getSet ()
-      let
-        cultists =
-          setFromList ["01121b", "01137", "01138", "01139", "01140", "01141"]
-      a <$ when
-        (cultists `HashSet.isSubsetOf` victoryDisplay)
-        (push (AdvanceAct actId $ toSource attrs))
-    UseCardAbility iid (ActSource aid) _ 1 _ | aid == actId -> do
-      a <$ pushAll [UseScenarioSpecificAbility iid Nothing 1]
     _ -> UncoveringTheConspiracy <$> runMessage msg attrs

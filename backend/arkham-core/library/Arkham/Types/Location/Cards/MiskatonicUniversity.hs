@@ -9,14 +9,13 @@ import qualified Arkham.Location.Cards as Cards (miskatonicUniversity)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype MiskatonicUniversity = MiskatonicUniversity LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -32,16 +31,12 @@ miskatonicUniversity = location
   [T, Plus, Circle, Square]
 
 instance HasAbilities env MiskatonicUniversity where
-  getAbilities iid window@(Window Timing.When NonFast) (MiskatonicUniversity attrs@LocationAttrs {..})
-    | locationRevealed
-    = withBaseAbilities iid window attrs $ pure
-      [ locationAbility
-          (mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 1)
-      ]
-  getAbilities iid window (MiskatonicUniversity attrs) =
-    getAbilities iid window attrs
+  getAbilities iid window (MiskatonicUniversity x) | locationRevealed x =
+    withBaseAbilities iid window x
+      $ pure [restrictedAbility x 1 Here $ ActionAbility Nothing $ ActionCost 1]
+  getAbilities iid window (MiskatonicUniversity x) = getAbilities iid window x
 
-instance (LocationRunner env) => RunMessage env MiskatonicUniversity where
+instance LocationRunner env => RunMessage env MiskatonicUniversity where
   runMessage msg l@(MiskatonicUniversity attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (SearchTopOfDeck

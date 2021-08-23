@@ -18,31 +18,26 @@ import Arkham.Types.Cost
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Source
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype PredatorOrPrey = PredatorOrPrey AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 predatorOrPrey :: AgendaCard PredatorOrPrey
 predatorOrPrey = agenda (1, A) PredatorOrPrey Cards.predatorOrPrey (Static 6)
 
-instance HasModifiersFor env PredatorOrPrey
-
 instance HasAbilities env PredatorOrPrey where
-  getAbilities _ (Window Timing.When NonFast) (PredatorOrPrey attrs) =
+  getAbilities _ _ (PredatorOrPrey attrs) =
     pure [mkAbility attrs 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
-  getAbilities _ _ _ = pure []
 
 instance (AgendaRunner env) => RunMessage env PredatorOrPrey where
   runMessage msg a@(PredatorOrPrey attrs@AgendaAttrs {..}) = case msg of
+    UseCardAbility iid (AgendaSource aid) _ 1 _ | aid == agendaId -> do
+      push (Resign iid)
+      PredatorOrPrey <$> runMessage msg attrs
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
       theMaskedHunter <- EncounterCard
         <$> genEncounterCard Enemies.theMaskedHunter
       a <$ pushAll
         [CreateEnemyEngagedWithPrey theMaskedHunter, NextAgenda aid "01122"]
-    UseCardAbility iid (AgendaSource aid) _ 1 _ | aid == agendaId -> do
-      push (Resign iid)
-      PredatorOrPrey <$> runMessage msg attrs
     _ -> PredatorOrPrey <$> runMessage msg attrs

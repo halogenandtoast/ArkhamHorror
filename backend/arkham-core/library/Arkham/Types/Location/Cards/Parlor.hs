@@ -8,8 +8,8 @@ import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
-import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
@@ -20,8 +20,6 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype Parlor = Parlor LocationAttrs
   deriving anyclass IsLocation
@@ -35,28 +33,19 @@ instance HasModifiersFor env Parlor where
     pure $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env Parlor where
-  getAbilities iid window@(Window Timing.When NonFast) (Parlor attrs@LocationAttrs {..})
-    | locationRevealed
-    = do
-      actions <- withResignAction iid window attrs
-      maid <- selectOne (assetIs Cards.litaChantler)
-      case maid of
-        Nothing -> pure actions
-        Just aid -> do
-          miid <- fmap unOwnerId <$> getId aid
-          assetLocationId <- getId aid
-          investigatorLocationId <- getId @LocationId iid
-          pure
-            $ actions
-            <> [ mkAbility
-                   (ProxySource (AssetSource aid) (toSource attrs))
-                   1
-                   (ActionAbility (Just Action.Parley) $ ActionCost 1)
-               | isNothing miid
-                 && Just investigatorLocationId
-                 == assetLocationId
-               ]
+instance HasAbilities env Parlor where
+  getAbilities iid window (Parlor attrs@LocationAttrs {..}) | locationRevealed =
+    withResignAction iid window attrs $ pure
+      [ restrictedAbility
+          (ProxySource
+            (AssetMatcherSource $ assetIs Cards.litaChantler)
+            (toSource attrs)
+          )
+          1
+          (Unowned <> OnSameLocation)
+        $ ActionAbility (Just Action.Parley)
+        $ ActionCost 1
+      ]
   getAbilities iid window (Parlor attrs) = getAbilities iid window attrs
 
 instance (LocationRunner env) => RunMessage env Parlor where

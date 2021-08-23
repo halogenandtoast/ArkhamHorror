@@ -28,7 +28,7 @@ findingANewWay = act (4, A) FindingANewWay Cards.findingANewWay Nothing
 
 instance HasAbilities env FindingANewWay where
   getAbilities iid (Window Timing.When NonFast) (FindingANewWay x) =
-    withBaseActions iid (Window Timing.When NonFast) x $ do
+    withBaseAbilities iid (Window Timing.When NonFast) x $ do
       pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
   getAbilities iid window (FindingANewWay x) = getAbilities iid window x
 

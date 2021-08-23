@@ -42,7 +42,7 @@ ability a = mkAbility a 1 (ActionAbility Nothing $ ActionCost 1)
 
 instance ActionRunner env => HasAbilities env FloodedSquare where
   getAbilities iid window@(Window Timing.When NonFast) (FloodedSquare attrs) =
-    withBaseActions iid window attrs $ do
+    withBaseAbilities iid window attrs $ do
       counterClockwiseLocation <- getCounterClockwiseLocation (toId attrs)
       nonEliteEnemies <- getSet @EnemyId $ EnemyMatchAll
         [NonEliteEnemy, EnemyAt $ LocationWithId counterClockwiseLocation]

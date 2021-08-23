@@ -36,7 +36,7 @@ instance HasModifiersFor env AlmaHill
 
 instance ActionRunner env => HasAbilities env AlmaHill where
   getAbilities iid window@(Window Timing.When NonFast) (AlmaHill attrs@EnemyAttrs {..})
-    = withBaseActions iid window attrs $ do
+    = withBaseAbilities iid window attrs $ do
       locationId <- getId @LocationId iid
       pure
         [ mkAbility attrs 1 $ ActionAbility (Just Parley) (ActionCost 1)

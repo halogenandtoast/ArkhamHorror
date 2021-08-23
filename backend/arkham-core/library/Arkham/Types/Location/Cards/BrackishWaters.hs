@@ -52,7 +52,7 @@ instance HasModifiersFor env BrackishWaters where
 -- first idea is change discard to take a source @DiscardCost 1 [DiscardFromHand, DiscardFromPlay] (Just AssetType) mempty mempty@
 instance (HasList Card env ExtendedCardMatcher, ActionRunner env) => HasAbilities env BrackishWaters where
   getAbilities iid window@(Window Timing.When NonFast) (BrackishWaters attrs@LocationAttrs {..})
-    = withBaseActions iid window attrs $ do
+    = withBaseAbilities iid window attrs $ do
       assetNotTaken <- isNothing <$> selectOne (assetIs Assets.fishingNet)
       inPlayAssetsCount <- getInPlayOf iid <&> count
         (\case

@@ -37,7 +37,7 @@ cursedShores = location
 instance HasAbilities env CursedShores where
   getAbilities iid window@(Window Timing.When NonFast) (CursedShores attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid window attrs $ pure
+    = withBaseAbilities iid window attrs $ pure
       [ locationAbility
           (mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 1)
       ]

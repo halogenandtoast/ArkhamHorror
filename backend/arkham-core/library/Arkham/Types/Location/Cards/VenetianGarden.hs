@@ -42,7 +42,7 @@ ability a =
 
 instance HasAbilities env VenetianGarden where
   getAbilities iid window@(Window Timing.When NonFast) (VenetianGarden attrs) =
-    withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
+    withBaseAbilities iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window (VenetianGarden attrs) =
     getAbilities iid window attrs
 

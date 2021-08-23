@@ -36,7 +36,7 @@ closeTheRift = act
 
 instance HasAbilities env CloseTheRift where
   getAbilities iid window@(Window Timing.When NonFast) (CloseTheRift x) =
-    withBaseActions iid window x $ do
+    withBaseAbilities iid window x $ do
       pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
   getAbilities iid window (CloseTheRift x) = getAbilities iid window x
 

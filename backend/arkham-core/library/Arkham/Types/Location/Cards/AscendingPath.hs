@@ -54,7 +54,7 @@ ability attrs =
 
 instance HasAbilities env AscendingPath where
   getAbilities iid window@(Window Timing.When NonFast) (AscendingPath attrs) =
-    withBaseActions iid window attrs
+    withBaseAbilities iid window attrs
       $ pure [ locationAbility (ability attrs) | locationRevealed attrs ]
   getAbilities iid window (AscendingPath attrs) = getAbilities iid window attrs
 

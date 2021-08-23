@@ -34,7 +34,7 @@ twistedUnderbrush = location
 instance HasAbilities env TwistedUnderbrush where
   getAbilities iid window@(Window Timing.When NonFast) (TwistedUnderbrush attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid window attrs $ pure
+    = withBaseAbilities iid window attrs $ pure
       [ locationAbility
           (mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 1)
       ]

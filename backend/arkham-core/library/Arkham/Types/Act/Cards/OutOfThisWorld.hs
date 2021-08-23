@@ -32,7 +32,7 @@ outOfThisWorld = act
 
 instance HasAbilities env OutOfThisWorld where
   getAbilities iid window@(Window Timing.When NonFast) (OutOfThisWorld x) =
-    withBaseActions iid window x $ do
+    withBaseAbilities iid window x $ do
       pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
   getAbilities iid window (OutOfThisWorld x) = getAbilities iid window x
 

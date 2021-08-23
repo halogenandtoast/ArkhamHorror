@@ -39,6 +39,7 @@ data Criterion
   | HorrorOnThis ValueMatcher
   | OwnCardWithDoom
   | OwnsThis
+  | Here
   | OnSameLocation
   | Unowned
   | DuringSkillTest SkillTestMatcher

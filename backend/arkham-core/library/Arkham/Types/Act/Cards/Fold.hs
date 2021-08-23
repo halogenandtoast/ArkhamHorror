@@ -35,7 +35,7 @@ fold = act (3, A) Fold Cards.fold Nothing
 
 instance ActionRunner env => HasAbilities env Fold where
   getAbilities iid window@(Window Timing.When NonFast) (Fold attrs) =
-    withBaseActions iid window attrs $ do
+    withBaseAbilities iid window attrs $ do
       investigatorLocationId <- getId @LocationId iid
       maid <- selectOne (assetIs Cards.peterClover)
       case maid of

@@ -42,7 +42,7 @@ ability attrs =
 
 instance ActionRunner env => HasAbilities env BlastedHeath_248 where
   getAbilities iid window@(Window Timing.When FastPlayerWindow) (BlastedHeath_248 attrs)
-    = withBaseActions iid window attrs $ do
+    = withBaseAbilities iid window attrs $ do
       investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
       pure

@@ -29,7 +29,8 @@ instance HasModifiersFor env MuseumEntrance where
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities env MuseumEntrance where
-  getAbilities = withResignAction
+  getAbilities iid window (MuseumEntrance a) =
+    withBaseAbilities iid window a $ pure [locationResignAction a]
 
 instance LocationRunner env => RunMessage env MuseumEntrance where
   runMessage msg (MuseumEntrance attrs) =

@@ -10,6 +10,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.EnemyId
 import Arkham.Types.Exception
 import Arkham.Types.GameValue
@@ -19,8 +20,6 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype DunwichVillage_243 = DunwichVillage_243 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -35,18 +34,19 @@ dunwichVillage_243 = location
   Circle
   [Triangle, Square, Diamond]
 
-ability :: LocationAttrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (ActionAbility Nothing (ActionCost 1))
-
-instance ActionRunner env => HasAbilities env DunwichVillage_243 where
-  getAbilities iid window@(Window Timing.When NonFast) (DunwichVillage_243 attrs)
-    = do
-      baseActions <- withResignAction iid window attrs
-      broodOfYogSothoth <- getSet @EnemyId (CardCode "02255")
+instance HasAbilities env DunwichVillage_243 where
+  getAbilities iid window (DunwichVillage_243 x) | locationRevealed x =
+    withResignAction iid window x $ do
       pure
-        $ baseActions
-        <> [ locationAbility (ability attrs) | notNull broodOfYogSothoth ]
+        [ restrictedAbility
+            x
+            1
+            (Here <> EnemyCriteria
+              (EnemyExists $ EnemyWithTitle "Brood of Yog-Sothoth")
+            )
+          $ ActionAbility Nothing
+          $ ActionCost 1
+        ]
   getAbilities iid window (DunwichVillage_243 attrs) =
     getAbilities iid window attrs
 

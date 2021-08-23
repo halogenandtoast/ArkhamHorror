@@ -33,7 +33,7 @@ ability a = mkAbility a 1 (ActionAbility Nothing $ ActionCost 1)
 
 instance HasAbilities env Gondola where
   getAbilities iid window@(Window Timing.When NonFast) (Gondola attrs) =
-    withBaseActions iid window attrs $ do
+    withBaseAbilities iid window attrs $ do
       pure [locationAbility (ability attrs)]
   getAbilities iid window (Gondola attrs) = getAbilities iid window attrs
 

@@ -54,7 +54,7 @@ ability attrs =
 
 instance HasAbilities env SleepingCar where
   getAbilities iid window@(Window Timing.When NonFast) (SleepingCar attrs)
-    | locationRevealed attrs = withBaseActions iid window attrs
+    | locationRevealed attrs = withBaseAbilities iid window attrs
     $ pure [locationAbility (ability attrs)]
   getAbilities iid window (SleepingCar attrs) = getAbilities iid window attrs
 

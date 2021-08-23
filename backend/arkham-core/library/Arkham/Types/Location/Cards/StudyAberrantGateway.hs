@@ -35,7 +35,7 @@ studyAberrantGateway = location
 
 instance ActionRunner env => HasAbilities env StudyAberrantGateway where
   getAbilities iid window@(Window Timing.When NonFast) (StudyAberrantGateway attrs)
-    = withBaseActions iid window attrs $ do
+    = withBaseAbilities iid window attrs $ do
       leadInvestigatorId <- getLeadInvestigatorId
       pure
         [ locationAbility

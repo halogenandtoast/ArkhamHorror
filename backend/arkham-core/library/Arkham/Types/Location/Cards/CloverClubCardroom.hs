@@ -47,7 +47,7 @@ ability attrs = base { abilityLimit = GroupLimit PerRound 1 }
 instance ActionRunner env => HasAbilities env CloverClubCardroom where
   getAbilities iid window@(Window Timing.When NonFast) (CloverClubCardroom attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid window attrs $ do
+    = withBaseAbilities iid window attrs $ do
       step <- unActStep <$> getStep ()
       pure [ locationAbility (ability attrs) | step == 1 ]
   getAbilities iid window (CloverClubCardroom attrs) =

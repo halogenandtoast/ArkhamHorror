@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (villageCommons)
 import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -28,7 +29,8 @@ villageCommons = location
 instance HasModifiersFor env VillageCommons
 
 instance HasAbilities env VillageCommons where
-  getAbilities = withResignAction
+  getAbilities iid window (VillageCommons a) =
+    withBaseAbilities iid window a $ pure [locationResignAction a]
 
 instance LocationRunner env => RunMessage env VillageCommons where
   runMessage msg (VillageCommons attrs) =

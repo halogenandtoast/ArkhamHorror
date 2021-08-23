@@ -32,7 +32,7 @@ gardenDistrict =
 instance HasAbilities env GardenDistrict where
   getAbilities iid window@(Window Timing.When NonFast) (GardenDistrict attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid window attrs $ pure
+    = withBaseAbilities iid window attrs $ pure
       [ locationAbility
           (mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 1)
       ]

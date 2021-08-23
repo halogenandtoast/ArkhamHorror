@@ -31,7 +31,7 @@ tearThroughTime = location
 
 instance HasAbilities env TearThroughTime where
   getAbilities iid window@(Window Timing.When NonFast) (TearThroughTime attrs)
-    = withBaseActions iid window attrs $ pure [resignAction attrs]
+    = withBaseAbilities iid window attrs $ pure [resignAction attrs]
   getAbilities iid window (TearThroughTime attrs) =
     getAbilities iid window attrs
 

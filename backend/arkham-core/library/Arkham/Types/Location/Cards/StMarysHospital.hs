@@ -41,7 +41,7 @@ ability attrs =
 instance HasAbilities env StMarysHospital where
   getAbilities iid window@(Window Timing.When NonFast) (StMarysHospital attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
+    = withBaseAbilities iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window (StMarysHospital attrs) =
     getAbilities iid window attrs
 

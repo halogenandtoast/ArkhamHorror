@@ -36,7 +36,7 @@ instance HasModifiersFor env MobEnforcer
 
 instance ActionRunner env => HasAbilities env MobEnforcer where
   getAbilities iid window@(Window Timing.When NonFast) (MobEnforcer attrs@EnemyAttrs {..})
-    = withBaseActions iid window attrs $ do
+    = withBaseAbilities iid window attrs $ do
       resourceCount <- getResourceCount iid
       locationId <- getId @LocationId iid
       pure

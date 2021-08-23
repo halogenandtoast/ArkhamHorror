@@ -36,7 +36,7 @@ ability attrs = (mkAbility (toSource attrs) 1 (FastAbility Free))
 
 instance ActionRunner env => HasAbilities env HuntingTheRougarou where
   getAbilities iid window@(Window Timing.When FastPlayerWindow) (HuntingTheRougarou a)
-    = withBaseActions iid window a $ do
+    = withBaseAbilities iid window a $ do
       mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
       engagedWithTheRougarou <- maybe
         (pure False)

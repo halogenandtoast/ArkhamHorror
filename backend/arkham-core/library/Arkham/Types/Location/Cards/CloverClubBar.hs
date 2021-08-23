@@ -46,7 +46,7 @@ ability attrs = (mkAbility
 instance ActionRunner env => HasAbilities env CloverClubBar where
   getAbilities iid window@(Window Timing.When NonFast) (CloverClubBar attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid window attrs $ do
+    = withBaseAbilities iid window attrs $ do
       step <- unActStep <$> getStep ()
       pure [ locationAbility (ability attrs) | step == 1 ]
   getAbilities iid window (CloverClubBar attrs) = getAbilities iid window attrs

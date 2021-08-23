@@ -33,7 +33,7 @@ victoriaDevereux = enemyWith
 
 instance ActionRunner env => HasAbilities env VictoriaDevereux where
   getAbilities iid window@(Window Timing.When NonFast) (VictoriaDevereux attrs@EnemyAttrs {..})
-    = withBaseActions iid window attrs $ do
+    = withBaseAbilities iid window attrs $ do
       locationId <- getId @LocationId iid
       pure
         [ mkAbility attrs 1

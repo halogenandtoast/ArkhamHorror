@@ -41,7 +41,7 @@ ability attrs = base { abilityLimit = PlayerLimit PerGame 1 }
 instance HasAbilities env MiskatonicUniversityMiskatonicMuseum where
   getAbilities iid window@(Window Timing.When NonFast) (MiskatonicUniversityMiskatonicMuseum attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
+    = withBaseAbilities iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window (MiskatonicUniversityMiskatonicMuseum attrs) =
     getAbilities iid window attrs
 

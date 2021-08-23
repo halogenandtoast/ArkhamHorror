@@ -9,17 +9,16 @@ import qualified Arkham.Location.Cards as Cards (southsideMasBoardingHouse)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype SouthsideMasBoardingHouse = SouthsideMasBoardingHouse LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 southsideMasBoardingHouse :: LocationCard SouthsideMasBoardingHouse
@@ -31,22 +30,17 @@ southsideMasBoardingHouse = location
   Square
   [Diamond, Plus, Circle]
 
-instance HasModifiersFor env SouthsideMasBoardingHouse
-
-ability :: LocationAttrs -> Ability
-ability attrs =
-  (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
-    { abilityLimit = PlayerLimit PerGame 1
-    }
-
 instance HasAbilities env SouthsideMasBoardingHouse where
-  getAbilities iid window@(Window Timing.When NonFast) (SouthsideMasBoardingHouse attrs@LocationAttrs {..})
-    | locationRevealed
-    = withBaseAbilities iid window attrs $ pure [locationAbility (ability attrs)]
+  getAbilities iid window (SouthsideMasBoardingHouse x) | locationRevealed x =
+    withBaseAbilities iid window x $ pure
+      [ restrictedAbility x 1 Here (ActionAbility Nothing $ ActionCost 1)
+        & abilityLimitL
+        .~ PlayerLimit PerGame 1
+      ]
   getAbilities iid window (SouthsideMasBoardingHouse attrs) =
     getAbilities iid window attrs
 
-instance (LocationRunner env) => RunMessage env SouthsideMasBoardingHouse where
+instance LocationRunner env => RunMessage env SouthsideMasBoardingHouse where
   runMessage msg l@(SouthsideMasBoardingHouse attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (SearchDeckForTraits iid (InvestigatorTarget iid) [Ally])

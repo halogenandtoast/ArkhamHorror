@@ -9,8 +9,6 @@ import qualified Arkham.Location.Cards as Cards (broadmoor)
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
 
 newtype Broadmoor = Broadmoor LocationAttrs
   deriving anyclass IsLocation

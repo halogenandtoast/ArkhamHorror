@@ -6,8 +6,6 @@ import qualified Arkham.Location.Cards as Cards (arkhamWoodsCliffside)
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 
@@ -30,7 +28,8 @@ arkhamWoodsCliffside = locationWith
 instance HasModifiersFor env ArkhamWoodsCliffside
 
 instance HasAbilities env ArkhamWoodsCliffside where
-  getAbilities i window (ArkhamWoodsCliffside attrs) = getAbilities i window attrs
+  getAbilities i window (ArkhamWoodsCliffside attrs) =
+    getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsCliffside where
   runMessage msg (ArkhamWoodsCliffside attrs@LocationAttrs {..}) = case msg of

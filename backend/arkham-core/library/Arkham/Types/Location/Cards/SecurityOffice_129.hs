@@ -13,8 +13,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
@@ -44,7 +42,8 @@ ability attrs =
 
 instance HasAbilities env SecurityOffice_129 where
   getAbilities iid window@(Window Timing.When NonFast) (SecurityOffice_129 attrs)
-    = withBaseAbilities iid window attrs $ pure [locationAbility (ability attrs)]
+    = withBaseAbilities iid window attrs
+      $ pure [locationAbility (ability attrs)]
   getAbilities iid window (SecurityOffice_129 attrs) =
     getAbilities iid window attrs
 

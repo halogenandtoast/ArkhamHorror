@@ -6,8 +6,6 @@ import qualified Arkham.Location.Cards as Cards (humanitiesBuilding)
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Query
 
@@ -27,7 +25,8 @@ humanitiesBuilding = location
 instance HasModifiersFor env HumanitiesBuilding
 
 instance HasAbilities env HumanitiesBuilding where
-  getAbilities i window (HumanitiesBuilding attrs) = getAbilities i window attrs
+  getAbilities i window (HumanitiesBuilding attrs) =
+    getAbilities i window attrs
 
 instance LocationRunner env => RunMessage env HumanitiesBuilding where
   runMessage msg l@(HumanitiesBuilding attrs) = case msg of

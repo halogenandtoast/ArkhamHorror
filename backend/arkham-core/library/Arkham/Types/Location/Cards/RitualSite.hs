@@ -6,8 +6,6 @@ import qualified Arkham.Location.Cards as Cards (ritualSite)
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Query
 

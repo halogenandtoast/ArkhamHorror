@@ -10,11 +10,9 @@ import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
 
 newtype VillageCommons = VillageCommons LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 villageCommons :: LocationCard VillageCommons
@@ -25,8 +23,6 @@ villageCommons = location
   (Static 0)
   Plus
   [Square, Circle, Moon]
-
-instance HasModifiersFor env VillageCommons
 
 instance HasAbilities env VillageCommons where
   getAbilities iid window (VillageCommons a) =

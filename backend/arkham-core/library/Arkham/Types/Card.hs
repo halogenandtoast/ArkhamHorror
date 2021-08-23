@@ -51,6 +51,7 @@ cardMatch :: IsCard a => a -> CardMatcher -> Bool
 cardMatch a = \case
   AnyCard -> True
   IsEncounterCard -> toCardType a `elem` encounterCardTypes
+  CardIsUnique -> cdUnique $ toCardDef a
   CardWithType cardType' -> toCardType a == cardType'
   CardWithCardCode cardCode -> toCardCode a == cardCode
   CardWithId cardId -> toCardId a == cardId
@@ -109,6 +110,10 @@ newtype DeckCard = DeckCard { unDeckCard ::PlayerCard }
 newtype HandCard = HandCard { unHandCard ::Card }
   deriving stock (Show, Generic)
   deriving newtype (ToJSON, FromJSON)
+
+newtype VictoryDisplayCard = VictoryDisplayCard { unVictoryDisplayCard ::Card }
+  deriving stock (Show, Eq, Generic)
+  deriving newtype (ToJSON, FromJSON, Hashable)
 
 newtype UnderneathCard = UnderneathCard { unUnderneathCard ::Card }
   deriving stock (Show, Generic)

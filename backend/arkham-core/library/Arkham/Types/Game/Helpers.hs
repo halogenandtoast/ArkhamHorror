@@ -386,10 +386,8 @@ instance
           prevents _ = False
           -- If the window is fast we only permit fast abilities, but forced
           -- abilities need to be everpresent so we include them
-          needsToBeFast =
-            windowType window
-              == Window.FastPlayerWindow
-              && (not (isFastAbility ability) || isForcedAbility ability)
+          needsToBeFast = windowType window == Window.FastPlayerWindow && not
+            (isFastAbility ability || isForcedAbility ability)
         if any prevents investigatorModifiers || needsToBeFast
           then pure Nothing
           else pure $ Just $ applyAbilityModifiers ability modifiers'
@@ -823,6 +821,7 @@ hasInvestigateActions _ window = notNull <$> select
 
 type CanCheckPlayable env
   = ( HasModifiersFor env ()
+    , HasSet VictoryDisplayCard env ()
     , Query Matcher.AssetMatcher env
     , Query Matcher.InvestigatorMatcher env
     , Query Matcher.ActionMatcher env
@@ -1095,6 +1094,10 @@ passesCriteria iid source windows = \case
       (&&)
       (pure $ location /= LocationId (CardId nil))
       ((== 1) . size <$> getSet @InvestigatorId location)
+  Criteria.InVictoryDisplay cardMatcher valueMatcher -> do
+    vCards <-
+      filter (`cardMatch` cardMatcher) <$> getSetListMap unVictoryDisplayCard ()
+    gameValueMatches (length vCards) valueMatcher
   Criteria.OwnCardWithDoom -> do
     assetIds <- selectList (Matcher.AssetOwnedBy Matcher.You)
     investigatorDoomCount <- unDoomCount <$> getCount iid

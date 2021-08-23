@@ -2535,6 +2535,7 @@ runGameMessage msg g = case msg of
       & (agendasL .~ mempty)
       & (treacheriesL .~ mempty)
       & (eventsL .~ mempty)
+      & (skillsL .~ mempty)
       & (gameStateL .~ IsActive)
       & (usedAbilitiesL .~ mempty)
       & (turnPlayerInvestigatorIdL .~ Nothing)
@@ -3117,13 +3118,21 @@ runGameMessage msg g = case msg of
       [Window Timing.After (Window.EnemyDefeated iid eid)]
     enemy <- getEnemy eid
     let
+      victoryMsgs =
+        [ AddToVictory (EnemyTarget eid) | isJust (getEnemyVictory enemy) ]
       defeatMsgs = if isJust (getEnemyVictory enemy)
-        then [AddToVictory (EnemyTarget eid), RemoveEnemy eid]
+        then [RemoveEnemy eid]
         else [Discard (EnemyTarget eid)]
 
     withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
 
-    g <$ pushAll (whenMsgs <> [When msg, After msg] <> afterMsgs <> defeatMsgs)
+    g <$ pushAll
+      (whenMsgs
+      <> [When msg, After msg]
+      <> victoryMsgs
+      <> afterMsgs
+      <> defeatMsgs
+      )
   Discard (SearchedCardTarget iid cardId) -> do
     let
       card = fromJustNote "must exist"
@@ -3153,17 +3162,13 @@ runGameMessage msg g = case msg of
     push $ After msg
     case card of
       PlayerCard _ -> error "can not be player card yet?"
-      EncounterCard ec ->
-        pure
-          $ g
-          & (enemiesL %~ deleteMap eid)
-          & (victoryDisplayL %~ (EncounterCard ec :))
+      EncounterCard ec -> pure $ g & (victoryDisplayL %~ (EncounterCard ec :))
   AddToVictory (EventTarget eid) -> do
     event <- getEvent eid
     push $ After msg
     pure
       $ g
-      & (eventsL %~ deleteMap eid)
+      & (eventsL %~ deleteMap eid) -- we might not want to remove here?
       & (victoryDisplayL %~ (toCard event :))
   BeginInvestigation -> do
     investigatorIds <- getInvestigatorIds

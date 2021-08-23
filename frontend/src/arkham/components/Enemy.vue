@@ -154,7 +154,6 @@ export default defineComponent({
         return true
       }
 
-      console.log(v)
       if (v.tag === 'FightEnemy' && v.contents[1] === id.value) {
         return true
       }

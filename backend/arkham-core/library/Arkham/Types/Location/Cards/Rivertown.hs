@@ -8,8 +8,8 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 
 newtype Rivertown = Rivertown LocationAttrs
-  deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 rivertown :: LocationCard Rivertown
 rivertown = location
@@ -20,10 +20,5 @@ rivertown = location
   Circle
   [Moon, Diamond, Square, Squiggle, Hourglass]
 
-instance HasModifiersFor env Rivertown
-
-instance HasAbilities env Rivertown where
-  getAbilities i window (Rivertown attrs) = getAbilities i window attrs
-
-instance (LocationRunner env) => RunMessage env Rivertown where
+instance LocationRunner env => RunMessage env Rivertown where
   runMessage msg (Rivertown attrs) = Rivertown <$> runMessage msg attrs

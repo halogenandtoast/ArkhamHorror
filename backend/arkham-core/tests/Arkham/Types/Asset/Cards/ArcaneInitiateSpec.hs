@@ -17,6 +17,7 @@ spec = describe "Arcane Initiate" $ do
         (assetsL %~ insertEntity arcaneInitiate)
       $ do
           runMessages
+          chooseOnlyOption "trigger forced ability"
           doomCount <- getCount =<< updated arcaneInitiate
           doomCount `shouldBe` DoomCount 1
 
@@ -28,13 +29,14 @@ spec = describe "Arcane Initiate" $ do
         otherCards <- testPlayerCards 2
         gameTest
             investigator
-            [ playAsset investigator arcaneInitiate
-            , loadDeck investigator (card : otherCards)
+            [ loadDeck investigator (card : otherCards)
+            , playAsset investigator arcaneInitiate
             ]
             (assetsL %~ insertEntity arcaneInitiate)
           $ do
               runMessages
-              [ability] <- getAbilitiesOf
+              chooseOnlyOption "trigger forced ability"
+              [_, ability] <- getAbilitiesOf
                 investigator
                 fastPlayerWindow
                 arcaneInitiate
@@ -50,11 +52,12 @@ spec = describe "Arcane Initiate" $ do
     cards <- testPlayerCards 3
     gameTest
         investigator
-        [playAsset investigator arcaneInitiate, loadDeck investigator cards]
+        [loadDeck investigator cards, playAsset investigator arcaneInitiate]
         (assetsL %~ insertEntity arcaneInitiate)
       $ do
           runMessages
-          [ability] <- getAbilitiesOf
+          chooseOnlyOption "trigger forced ability"
+          [_, ability] <- getAbilitiesOf
             investigator
             fastPlayerWindow
             arcaneInitiate

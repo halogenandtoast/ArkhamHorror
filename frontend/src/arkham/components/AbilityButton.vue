@@ -123,7 +123,7 @@ export default defineComponent({
         'fight-button': isFight.value,
         'evade-button': isEvade.value,
         'engage-button': isEngage.value,
-        'objective': isObjective.value,
+        'objective-button': isObjective.value,
       }
     })
 
@@ -148,6 +148,10 @@ export default defineComponent({
   cursor: pointer;
   border-radius: 4px;
   background-color: #555;
+}
+
+.objective-button {
+  background-color: #465550;
 }
 
 .investigate-button {

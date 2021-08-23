@@ -46,7 +46,7 @@ instance HasModifiersFor env MuseumHalls where
 
 instance ActionRunner env => HasAbilities env MuseumHalls where
   getAbilities iid window@(Window Timing.When NonFast) (MuseumHalls attrs)
-    | unrevealed attrs = withBaseActions iid window attrs $ do
+    | unrevealed attrs = withBaseAbilities iid window attrs $ do
       lid <- fromJustNote "missing location"
         <$> selectOne (LocationWithTitle "Museum Entrance")
       pure
@@ -59,7 +59,7 @@ instance ActionRunner env => HasAbilities env MuseumHalls where
             }
         ]
   getAbilities iid window@(Window Timing.When NonFast) (MuseumHalls attrs)
-    | revealed attrs = withBaseActions iid window attrs $ pure
+    | revealed attrs = withBaseAbilities iid window attrs $ pure
       [ locationAbility
           (mkAbility attrs 1 $ ActionAbility Nothing $ Costs
             [ ActionCost 1

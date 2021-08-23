@@ -11,6 +11,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
@@ -36,19 +37,16 @@ baseOfTheHill = location
   Triangle
   [Square, Plus, Squiggle, Hourglass]
 
-ability :: LocationAttrs -> Ability
-ability attrs =
-  mkAbility
-      (toSource attrs)
-      1
-      (ActionAbility (Just Action.Investigate) (ActionCost 1))
-    & (abilityLimitL .~ PlayerLimit PerRound 1)
-
 instance HasAbilities env BaseOfTheHill where
   getAbilities iid window@(Window Timing.When NonFast) (BaseOfTheHill attrs)
-    | locationRevealed attrs = do
-      actions <- withResignAction iid window attrs
-      pure $ locationAbility (ability attrs) : actions
+    | locationRevealed attrs = withResignAction iid window attrs $ pure
+      [ restrictedAbility
+            attrs
+            1
+            Here
+            (ActionAbility (Just Action.Investigate) (ActionCost 1))
+          & (abilityLimitL .~ PlayerLimit PerRound 1)
+      ]
   getAbilities iid window (BaseOfTheHill attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env BaseOfTheHill where

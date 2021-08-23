@@ -71,7 +71,7 @@ instance HasTokenValue env DaisyWalkerParallel where
 instance EntityInstanceRunner env => HasAbilities env DaisyWalkerParallel where
   getAbilities iid window@(Window Timing.When FastPlayerWindow) (DaisyWalkerParallel attrs)
     | iid == investigatorId attrs
-    = withBaseActions iid window attrs $ do
+    = withBaseAbilities iid window attrs $ do
       hasTomes <- (> 0) . unAssetCount <$> getCount (iid, [Tome])
       pure [ ability attrs | hasTomes ]
   getAbilities i window (DaisyWalkerParallel attrs) =

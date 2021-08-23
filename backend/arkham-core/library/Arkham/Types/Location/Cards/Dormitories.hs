@@ -42,7 +42,7 @@ ability attrs = mkAbility
 instance HasAbilities env Dormitories where
   getAbilities iid window@(Window Timing.When FastPlayerWindow) (Dormitories attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
+    = withBaseAbilities iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window (Dormitories attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env Dormitories where

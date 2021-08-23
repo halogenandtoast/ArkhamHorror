@@ -37,7 +37,8 @@ ability attrs = base { abilityLimit = GroupLimit PerGame 1 }
 instance HasAbilities env Northside where
   getAbilities iid window@(Window Timing.When NonFast) (Northside attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
+    = withBaseAbilities iid window attrs
+      $ pure [locationAbility (ability attrs)]
   getAbilities iid window (Northside attrs) = getAbilities iid window attrs
 
 instance (LocationRunner env) => RunMessage env Northside where

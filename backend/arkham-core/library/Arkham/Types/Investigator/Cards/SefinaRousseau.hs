@@ -53,7 +53,7 @@ ability attrs = (mkAbility attrs 1 (ActionAbility Nothing $ ActionCost 1))
 
 instance EntityInstanceRunner env => HasAbilities env SefinaRousseau where
   getAbilities i window@(Window Timing.When NonFast) (SefinaRousseau attrs)
-    | i == toId attrs = withBaseActions i window attrs
+    | i == toId attrs = withBaseAbilities i window attrs
     $ pure [ ability attrs | notNull (investigatorCardsUnderneath attrs) ]
   getAbilities i window (SefinaRousseau attrs) = getAbilities i window attrs
 

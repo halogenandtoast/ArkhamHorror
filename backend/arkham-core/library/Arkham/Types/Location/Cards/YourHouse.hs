@@ -36,7 +36,7 @@ ability attrs =
 instance HasAbilities env YourHouse where
   getAbilities iid window@(Window Timing.When NonFast) (YourHouse attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
+    = withBaseAbilities iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window (YourHouse attrs) = getAbilities iid window attrs
 
 instance (LocationRunner env) => RunMessage env YourHouse where

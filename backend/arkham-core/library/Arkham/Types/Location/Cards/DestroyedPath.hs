@@ -49,7 +49,7 @@ investigateAbility a = mkAbility
 
 instance ActionRunner env => HasAbilities env DestroyedPath where
   getAbilities iid window@(Window Timing.When NonFast) (DestroyedPath attrs) =
-    withBaseActions iid window attrs
+    withBaseAbilities iid window attrs
       $ pure [locationAbility (investigateAbility attrs)]
   getAbilities iid (Window Timing.After (RevealLocation who _)) (DestroyedPath attrs)
     | iid == who

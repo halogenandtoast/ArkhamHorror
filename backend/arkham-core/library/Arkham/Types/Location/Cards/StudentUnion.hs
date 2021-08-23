@@ -31,7 +31,7 @@ studentUnion =
 instance HasAbilities env StudentUnion where
   getAbilities iid window@(Window Timing.When NonFast) (StudentUnion attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid window attrs $ do
+    = withBaseAbilities iid window attrs $ do
       let
         ability =
           mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 2)

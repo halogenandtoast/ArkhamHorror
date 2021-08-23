@@ -7,13 +7,14 @@ import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (miskatonicQuad)
 import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 
 newtype MiskatonicQuad = MiskatonicQuad LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miskatonicQuad :: LocationCard MiskatonicQuad
@@ -25,10 +26,9 @@ miskatonicQuad = location
   Plus
   [Triangle, Hourglass, Square, Diamond, Circle]
 
-instance HasModifiersFor env MiskatonicQuad
-
 instance HasAbilities env MiskatonicQuad where
-  getAbilities = withResignAction
+  getAbilities iid window (MiskatonicQuad a) =
+    withBaseAbilities iid window a $ pure [locationResignAction a]
 
 instance (LocationRunner env) => RunMessage env MiskatonicQuad where
   runMessage msg (MiskatonicQuad attrs) =

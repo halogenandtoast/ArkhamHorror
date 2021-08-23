@@ -31,7 +31,7 @@ umordhoth = enemy Umordhoth Cards.umordhoth (5, Static 6, 6) (3, 3)
 
 instance ActionRunner env => HasAbilities env Umordhoth where
   getAbilities iid window@(Window Timing.When NonFast) (Umordhoth attrs@EnemyAttrs {..})
-    = withBaseActions iid window attrs $ do
+    = withBaseAbilities iid window attrs $ do
       maid <- selectOne (assetIs Cards.litaChantler)
       locationId <- getId @LocationId iid
       case maid of

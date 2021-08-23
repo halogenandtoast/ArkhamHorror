@@ -45,7 +45,7 @@ ability attrs =
 instance HasAbilities env ArkhamWoodsQuietGlade where
   getAbilities iid window@(Window Timing.When NonFast) (ArkhamWoodsQuietGlade attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
+    = withBaseAbilities iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window (ArkhamWoodsQuietGlade attrs) =
     getAbilities iid window attrs
 

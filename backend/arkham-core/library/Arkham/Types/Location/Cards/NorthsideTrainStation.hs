@@ -42,7 +42,7 @@ ability attrs =
 instance HasAbilities env NorthsideTrainStation where
   getAbilities iid window@(Window Timing.When NonFast) (NorthsideTrainStation attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
+    = withBaseAbilities iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window (NorthsideTrainStation attrs) =
     getAbilities iid window attrs
 

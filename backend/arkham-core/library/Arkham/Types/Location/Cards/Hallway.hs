@@ -10,17 +10,12 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 
 newtype Hallway = Hallway LocationAttrs
-  deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 hallway :: LocationCard Hallway
 hallway =
   location Hallway Cards.hallway 1 (Static 0) Square [Triangle, Plus, Diamond]
-
-instance HasModifiersFor env Hallway
-
-instance HasAbilities env Hallway where
-  getAbilities i window (Hallway attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env Hallway where
   runMessage msg (Hallway attrs) = Hallway <$> runMessage msg attrs

@@ -57,7 +57,7 @@ ability iid attrs = base { abilityMetadata = Just (IntMetadata 0) }
 instance HasAbilities env FoulSwamp where
   getAbilities iid window@(Window Timing.When NonFast) (FoulSwamp attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid window attrs
+    = withBaseAbilities iid window attrs
       $ pure [locationAbility (ability iid attrs)]
   getAbilities i window (FoulSwamp attrs) = getAbilities i window attrs
 

@@ -42,10 +42,10 @@ ability attrs = mkAbility
 instance HasAbilities env OsbornsGeneralStore_207 where
   getAbilities iid window@(Window Timing.When NonFast) (OsbornsGeneralStore_207 attrs)
     | locationRevealed attrs
-    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
+    = withBaseAbilities iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window@(Window Timing.When FastPlayerWindow) (OsbornsGeneralStore_207 attrs)
     | locationRevealed attrs
-    = withBaseActions iid window attrs $ pure
+    = withBaseAbilities iid window attrs $ pure
       [ drawCardUnderneathAction attrs
       | iid `on` attrs && locationClues attrs == 0
       ]

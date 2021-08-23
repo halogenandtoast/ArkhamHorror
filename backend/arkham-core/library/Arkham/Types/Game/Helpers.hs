@@ -82,14 +82,14 @@ replaceToken token = withQueue $ \queue ->
   , ()
   )
 
-withBaseActions
+withBaseAbilities
   :: (HasAbilities env a, MonadReader env m)
   => InvestigatorId
   -> Window
   -> a
   -> m [Ability]
   -> m [Ability]
-withBaseActions iid window a f = (<>) <$> getAbilities iid window a <*> f
+withBaseAbilities iid window a f = (<>) <$> getAbilities iid window a <*> f
 
 getCanPerformAbility
   :: (MonadReader env m, CanCheckPlayable env, HasCallStack)
@@ -355,8 +355,19 @@ instance
     actions' <- nub . concat <$> traverse
       (getAbilities iid window)
       ([minBound .. maxBound] :: [ActionType])
-    actions'' <- catMaybes <$> for
+    actionsWithSources <- concat <$> for
       actions'
+      \action -> do
+        case abilitySource action of
+          ProxySource (AssetMatcherSource m) base -> do
+            sources <- selectListMap AssetSource m
+            pure $ map
+              (\source -> action { abilitySource = ProxySource source base })
+              sources
+          _ -> pure [action]
+
+    actions'' <- catMaybes <$> for
+      actionsWithSources
       \ability -> do
         modifiers' <- getModifiers
           (InvestigatorSource iid)
@@ -390,7 +401,7 @@ instance
       )
       actions''
     let forcedActions = filter isForcedAbility actions'''
-    if null forcedActions then pure actions''' else pure forcedActions
+    pure $ if null forcedActions then actions''' else forcedActions
 
 enemyAtInvestigatorLocation
   :: ( MonadReader env m
@@ -723,6 +734,7 @@ sourceToTarget = \case
   AbilitySource{} -> error "not implemented"
   ActDeckSource -> ActDeckTarget
   AgendaDeckSource -> AgendaDeckTarget
+  AssetMatcherSource{} -> error "not converted"
 
 addCampaignCardToDeckChoice
   :: InvestigatorId -> [InvestigatorId] -> CardDef -> Message
@@ -959,6 +971,9 @@ passesCriteria iid source windows = \case
   Criteria.Self -> case source of
     InvestigatorSource iid' -> pure $ iid == iid'
     _ -> pure False
+  Criteria.Here -> case source of
+    LocationSource lid -> (== lid) <$> getId iid
+    _ -> pure False
   Criteria.OwnsThis -> case source of
     AssetSource aid -> member aid
       <$> select (Matcher.AssetOwnedBy $ Matcher.InvestigatorWithId iid)
@@ -983,9 +998,14 @@ passesCriteria iid source windows = \case
     AssetSource aid -> do
       mOwner <- getId @(Maybe OwnerId) aid
       pure $ isNothing mOwner
+    ProxySource (AssetSource aid) _ -> do
+      mOwner <- getId @(Maybe OwnerId) aid
+      pure $ isNothing mOwner
     _ -> error $ "missing OwnsThis check for source: " <> show source
   Criteria.OnSameLocation -> case source of
-    AssetSource aid -> do
+    AssetSource aid ->
+      liftA2 (==) (getId @LocationId aid) (getId @LocationId iid)
+    ProxySource (AssetSource aid) _ ->
       liftA2 (==) (getId @LocationId aid) (getId @LocationId iid)
     _ -> error $ "missing OnSameLocation check for source: " <> show source
   Criteria.DuringTurn who -> do

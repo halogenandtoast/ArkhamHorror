@@ -43,7 +43,7 @@ ability attrs = base { abilityLimit = PlayerLimit PerGame 1 }
 instance HasAbilities env OvergrownCairns where
   getAbilities iid window@(Window Timing.When NonFast) (OvergrownCairns attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
+    = withBaseAbilities iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities i window (OvergrownCairns attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env OvergrownCairns where

@@ -44,7 +44,7 @@ ability attrs =
 instance HasAbilities env SouthsideMasBoardingHouse where
   getAbilities iid window@(Window Timing.When NonFast) (SouthsideMasBoardingHouse attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
+    = withBaseAbilities iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window (SouthsideMasBoardingHouse attrs) =
     getAbilities iid window attrs
 

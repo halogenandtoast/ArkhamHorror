@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (mainPath)
 import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -25,7 +26,8 @@ mainPath =
 instance HasModifiersFor env MainPath
 
 instance HasAbilities env MainPath where
-  getAbilities = withResignAction
+  getAbilities iid window (MainPath a) =
+    withBaseAbilities iid window a $ pure [locationResignAction a]
 
 instance (LocationRunner env) => RunMessage env MainPath where
   runMessage msg l@(MainPath attrs@LocationAttrs {..}) = case msg of

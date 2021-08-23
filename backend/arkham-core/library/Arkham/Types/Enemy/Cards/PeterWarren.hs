@@ -34,7 +34,7 @@ peterWarren = enemyWith
 
 instance ActionRunner env => HasAbilities env PeterWarren where
   getAbilities iid window@(Window Timing.When NonFast) (PeterWarren attrs@EnemyAttrs {..})
-    = withBaseActions iid window attrs $ do
+    = withBaseAbilities iid window attrs $ do
       locationId <- getId @LocationId iid
       pure
         [ mkAbility attrs 1

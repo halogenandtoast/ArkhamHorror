@@ -27,7 +27,7 @@ intoTheBeyond = act (2, A) IntoTheBeyond Cards.intoTheBeyond Nothing
 
 instance HasAbilities env IntoTheBeyond where
   getAbilities iid window@(Window Timing.When NonFast) (IntoTheBeyond x) =
-    withBaseActions iid window x $ do
+    withBaseAbilities iid window x $ do
       pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
   getAbilities iid window (IntoTheBeyond x) = getAbilities iid window x
 

@@ -43,7 +43,7 @@ instance HasModifiersFor env TrappersCabin where
 instance ActionRunner env => HasAbilities env TrappersCabin where
   getAbilities iid window@(Window Timing.When NonFast) (TrappersCabin attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid window attrs $ do
+    = withBaseAbilities iid window attrs $ do
       assetNotTaken <- isNothing <$> selectOne (assetIs Assets.bearTrap)
       pure
         [ locationAbility

@@ -41,7 +41,7 @@ ability attrs =
 
 instance ActionRunner env => HasAbilities env TenAcreMeadow_246 where
   getAbilities iid window@(Window Timing.When FastPlayerWindow) (TenAcreMeadow_246 attrs)
-    = withBaseActions iid window attrs $ do
+    = withBaseAbilities iid window attrs $ do
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
       pure [ locationAbility (ability attrs) | anyAbominations ]
   getAbilities iid window (TenAcreMeadow_246 attrs) =

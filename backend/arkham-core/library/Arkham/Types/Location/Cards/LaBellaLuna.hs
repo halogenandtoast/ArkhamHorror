@@ -23,7 +23,7 @@ laBellaLuna =
 instance HasModifiersFor env LaBellaLuna
 
 instance HasAbilities env LaBellaLuna where
-  getAbilities = withResignAction
+  getAbilities _ _ (LaBellaLuna a) = pure [locationResignAction a]
 
 instance LocationRunner env => RunMessage env LaBellaLuna where
   runMessage msg (LaBellaLuna attrs) = LaBellaLuna <$> runMessage msg attrs

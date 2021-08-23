@@ -35,7 +35,7 @@ allIn = act (3, A) AllIn Cards.allIn Nothing
 
 instance ActionRunner env => HasAbilities env AllIn where
   getAbilities iid (Window Timing.When NonFast) (AllIn attrs) =
-    withBaseActions iid (Window Timing.When NonFast) attrs $ do
+    withBaseAbilities iid (Window Timing.When NonFast) attrs $ do
       investigatorLocationId <- getId @LocationId iid
       maid <- selectOne (assetIs Cards.drFrancisMorgan)
       case maid of

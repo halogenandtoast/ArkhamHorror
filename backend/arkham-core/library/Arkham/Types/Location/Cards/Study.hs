@@ -10,16 +10,11 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 
 newtype Study = Study LocationAttrs
-  deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 study :: LocationCard Study
 study = location Study Cards.study 2 (PerPlayer 2) Circle []
-
-instance HasModifiersFor env Study
-
-instance HasAbilities env Study where
-  getAbilities i window (Study attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env Study where
   runMessage msg (Study attrs) = Study <$> runMessage msg attrs

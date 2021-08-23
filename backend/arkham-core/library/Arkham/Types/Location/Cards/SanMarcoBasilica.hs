@@ -44,7 +44,7 @@ ability a = mkAbility a 1 (ActionAbility Nothing $ ActionCost 1)
 
 instance HasAbilities env SanMarcoBasilica where
   getAbilities iid window@(Window Timing.When NonFast) (SanMarcoBasilica attrs)
-    = withBaseActions iid window attrs $ pure [ability attrs]
+    = withBaseAbilities iid window attrs $ pure [ability attrs]
   getAbilities iid window (SanMarcoBasilica attrs) =
     getAbilities iid window attrs
 

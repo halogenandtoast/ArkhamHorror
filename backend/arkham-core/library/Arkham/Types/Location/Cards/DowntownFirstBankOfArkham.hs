@@ -41,7 +41,7 @@ ability attrs =
 instance ActionRunner env => HasAbilities env DowntownFirstBankOfArkham where
   getAbilities iid window@(Window Timing.When NonFast) (DowntownFirstBankOfArkham attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid window attrs $ do
+    = withBaseAbilities iid window attrs $ do
       canGainResources <-
         notElem CannotGainResources
           <$> getInvestigatorModifiers iid (toSource attrs)

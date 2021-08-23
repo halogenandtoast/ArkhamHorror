@@ -47,7 +47,7 @@ instance HasModifiersFor env FacultyOfficesTheNightIsStillYoung where
 instance HasAbilities env FacultyOfficesTheNightIsStillYoung where
   getAbilities iid window@(Window Timing.When FastPlayerWindow) (FacultyOfficesTheNightIsStillYoung attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid window attrs $ pure
+    = withBaseAbilities iid window attrs $ pure
       [ locationAbility
           (mkAbility attrs 1 $ FastAbility
             (GroupClueCost

@@ -1658,6 +1658,7 @@ instance HasGame env => HasSet Trait env Source where
     TestSource traits -> pure traits
     ProxySource _ _ -> pure mempty
     ResourceSource -> pure mempty
+    AssetMatcherSource{} -> pure mempty -- should have been replaced
 
 instance HasGame env => HasSet Trait env (InvestigatorId, CardId) where
   getSet (iid, cid) =

@@ -39,7 +39,7 @@ instance HasModifiersFor env AlchemyLabs where
 instance HasAbilities env AlchemyLabs where
   getAbilities iid window@(Window Timing.When NonFast) (AlchemyLabs attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseActions iid window attrs $ do
+    = withBaseAbilities iid window attrs $ do
       let
         ability = mkAbility attrs 1
           $ ActionAbility (Just Action.Investigate) (ActionCost 1)

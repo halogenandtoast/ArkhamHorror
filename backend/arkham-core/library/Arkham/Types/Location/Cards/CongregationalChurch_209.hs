@@ -42,10 +42,10 @@ ability attrs = mkAbility
 instance HasAbilities env CongregationalChurch_209 where
   getAbilities iid window@(Window Timing.When NonFast) (CongregationalChurch_209 attrs)
     | locationRevealed attrs
-    = withBaseActions iid window attrs $ pure [locationAbility (ability attrs)]
+    = withBaseAbilities iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window@(Window Timing.When FastPlayerWindow) (CongregationalChurch_209 attrs)
     | locationRevealed attrs
-    = withBaseActions iid window attrs
+    = withBaseAbilities iid window attrs
       $ pure
           [ drawCardUnderneathLocationAction attrs | locationClues attrs == 0 ]
   getAbilities iid window (CongregationalChurch_209 attrs) =

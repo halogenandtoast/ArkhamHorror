@@ -10,16 +10,13 @@ import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Exception
-import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype DunwichVillage_242 = DunwichVillage_242 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -40,10 +37,8 @@ ability attrs =
     & (abilityLimitL .~ GroupLimit PerGame 1)
 
 instance ActionRunner env => HasAbilities env DunwichVillage_242 where
-  getAbilities iid window@(Window Timing.When NonFast) (DunwichVillage_242 attrs)
-    = withResignAction iid window attrs
-  getAbilities iid window@(Window Timing.When FastPlayerWindow) (DunwichVillage_242 attrs)
-    = withBaseActions iid window attrs $ do
+  getAbilities iid window (DunwichVillage_242 attrs) | locationRevealed attrs =
+    withResignAction iid window attrs $ do
       investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
       anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
       pure

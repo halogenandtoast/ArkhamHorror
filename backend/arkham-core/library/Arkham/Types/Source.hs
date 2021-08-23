@@ -9,6 +9,7 @@ import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Id
 import Arkham.Types.EffectId
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Token
@@ -44,5 +45,6 @@ data Source
   | ActDeckSource
   | AgendaDeckSource
   | YouSource
+  | AssetMatcherSource AssetMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

@@ -56,7 +56,6 @@ import Arkham.Types.Location as X
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Cards.Study
 import Arkham.Types.LocationId as X
-import Arkham.Types.LocationSymbol
 import Arkham.Types.Message as X
 import Arkham.Types.Modifier
 import Arkham.Types.Name

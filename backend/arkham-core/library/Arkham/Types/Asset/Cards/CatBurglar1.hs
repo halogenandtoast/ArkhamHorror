@@ -19,8 +19,6 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype CatBurglar1 = CatBurglar1 AssetAttrs
   deriving anyclass IsAsset

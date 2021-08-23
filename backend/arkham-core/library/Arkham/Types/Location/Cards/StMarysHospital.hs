@@ -13,6 +13,7 @@ import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 
@@ -32,7 +33,11 @@ stMarysHospital = location
 instance HasAbilities env StMarysHospital where
   getAbilities iid window (StMarysHospital x) | locationRevealed x =
     withBaseAbilities iid window x $ pure
-      [ restrictedAbility x 1 Here (ActionAbility Nothing $ ActionCost 1)
+      [ restrictedAbility
+          x
+          1
+          (Here <> InvestigatorExists (You <> InvestigatorWithAnyDamage))
+          (ActionAbility Nothing $ ActionCost 1)
         & abilityLimitL
         .~ PlayerLimit PerGame 1
       ]

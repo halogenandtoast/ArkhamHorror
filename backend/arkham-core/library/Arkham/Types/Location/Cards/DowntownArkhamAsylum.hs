@@ -12,8 +12,6 @@ import Arkham.Types.Cost
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
@@ -41,7 +39,8 @@ ability attrs =
 instance HasAbilities env DowntownArkhamAsylum where
   getAbilities iid window@(Window Timing.When NonFast) (DowntownArkhamAsylum attrs@LocationAttrs {..})
     | locationRevealed
-    = withBaseAbilities iid window attrs $ pure [locationAbility (ability attrs)]
+    = withBaseAbilities iid window attrs
+      $ pure [locationAbility (ability attrs)]
   getAbilities iid window (DowntownArkhamAsylum attrs) =
     getAbilities iid window attrs
 

@@ -13,8 +13,6 @@ import Arkham.Types.Id
 import qualified Arkham.Types.Label as L
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Cards
-import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier

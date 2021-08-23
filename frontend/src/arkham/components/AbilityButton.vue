@@ -72,6 +72,7 @@ export default defineComponent({
         return contents === 2
       }
     })
+    const isObjective = computed(() => ability.value.tag === "UseAbility" && ability.value.contents[1].type.tag === "Objective")
     const isFastActionAbility = computed(() => ability.value.tag === "UseAbility" && ability.value.contents[1].type.tag === "FastAbility")
     const isReactionAbility = computed(() => ability.value.tag === "UseAbility" && (ability.value.contents[1].type.tag === "ReactionAbility" || ability.value.contents[1].type.tag === "LegacyReactionAbility"))
     const isForcedAbility = computed(() => ability.value.tag === "UseAbility" && ability.value.contents[1].type.tag === "ForcedAbility")
@@ -89,6 +90,10 @@ export default defineComponent({
 
       if (isForcedAbility.value === true) {
         return "Forced"
+      }
+
+      if (isObjective.value === true) {
+        return "Objective"
       }
 
       if (isReactionAbility.value === true) {
@@ -118,6 +123,7 @@ export default defineComponent({
         'fight-button': isFight.value,
         'evade-button': isEvade.value,
         'engage-button': isEngage.value,
+        'objective': isObjective.value,
       }
     })
 

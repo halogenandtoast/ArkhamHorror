@@ -8,8 +8,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import qualified Arkham.Types.Timing as Timing
@@ -31,7 +29,7 @@ instance HasAbilities env Cellar where
     ]
 
 instance LocationRunner env => RunMessage env Cellar where
-  runMessage msg a@(Cellar attrs@LocationAttrs {..}) = case msg of
+  runMessage msg a@(Cellar attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0)
     _ -> Cellar <$> runMessage msg attrs

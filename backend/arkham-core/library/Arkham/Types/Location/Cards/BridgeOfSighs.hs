@@ -10,8 +10,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Direction
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 
 newtype BridgeOfSighs = BridgeOfSighs LocationAttrs

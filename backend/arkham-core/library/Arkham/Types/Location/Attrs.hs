@@ -14,7 +14,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.CardDef as X
-import Arkham.Types.Classes
+import Arkham.Types.Classes as X
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Direction
@@ -22,8 +22,8 @@ import Arkham.Types.Exception
 import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
+import Arkham.Types.Location.Runner as X
+import Arkham.Types.LocationSymbol as X
 import Arkham.Types.Matcher hiding (EnemyDefeated, RevealLocation)
 import Arkham.Types.Message
 import Arkham.Types.Modifier

@@ -3,25 +3,38 @@ module Arkham.Types.Act.Cards.WhatHaveYouDone where
 import Arkham.Prelude
 
 import qualified Arkham.Act.Cards as Cards
+import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
-import Arkham.Types.Message
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (EnemyDefeated)
 import Arkham.Types.Resolution
+import Arkham.Types.Source
+import qualified Arkham.Types.Timing as Timing
 
 newtype WhatHaveYouDone = WhatHaveYouDone ActAttrs
-  deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 whatHaveYouDone :: ActCard WhatHaveYouDone
 whatHaveYouDone = act (3, A) WhatHaveYouDone Cards.whatHaveYouDone Nothing
 
 instance HasAbilities env WhatHaveYouDone where
-  getAbilities i window (WhatHaveYouDone x) = getAbilities i window x
+  getAbilities _ _ (WhatHaveYouDone x) = pure
+    [ mkAbility x 1
+      $ Objective
+      $ ForcedAbility
+      $ EnemyDefeated Timing.When Anyone
+      $ enemyIs Cards.ghoulPriest
+    ]
 
 instance ActRunner env => RunMessage env WhatHaveYouDone where
   runMessage msg a@(WhatHaveYouDone attrs@ActAttrs {..}) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      a <$ push (AdvanceAct actId $ InvestigatorSource iid)
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       push
@@ -36,6 +49,4 @@ instance ActRunner env => RunMessage env WhatHaveYouDone where
           ]
         )
       pure $ WhatHaveYouDone $ attrs & sequenceL .~ Act 3 B
-    EnemyDefeated _ _ _ "01116" _ _ ->
-      a <$ push (AdvanceAct actId $ toSource attrs)
     _ -> WhatHaveYouDone <$> runMessage msg attrs

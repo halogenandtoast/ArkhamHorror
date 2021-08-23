@@ -12,8 +12,6 @@ import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
-import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -48,12 +46,11 @@ instance HasAbilities env Parlor where
       ]
   getAbilities iid window (Parlor attrs) = getAbilities iid window attrs
 
-instance (LocationRunner env) => RunMessage env Parlor where
+instance LocationRunner env => RunMessage env Parlor where
   runMessage msg l@(Parlor attrs@LocationAttrs {..}) = case msg of
     UseCardAbility iid (ProxySource _ source) _ 1 _
       | isSource attrs source && locationRevealed -> do
-        maid <- selectOne (assetIs Cards.litaChantler)
-        case maid of
+        selectOne (assetIs Cards.litaChantler) >>= \case
           Nothing -> error "this ability should not be able to be used"
           Just aid -> l <$ push
             (BeginSkillTest
@@ -66,8 +63,7 @@ instance (LocationRunner env) => RunMessage env Parlor where
             )
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        maid <- selectOne (assetIs Cards.litaChantler)
-        case maid of
+        selectOne (assetIs Cards.litaChantler) >>= \case
           Nothing -> error "this ability should not be able to be used"
           Just aid -> l <$ push (TakeControlOfAsset iid aid)
     _ -> Parlor <$> runMessage msg attrs

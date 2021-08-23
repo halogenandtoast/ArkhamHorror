@@ -10,8 +10,6 @@ import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
 import Arkham.Types.Message hiding (RevealLocation)
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window

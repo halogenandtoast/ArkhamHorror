@@ -26,8 +26,8 @@ import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype BeginnersLuck = BeginnersLuck ActAttrs
-  deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 beginnersLuck :: ActCard BeginnersLuck
 beginnersLuck = act

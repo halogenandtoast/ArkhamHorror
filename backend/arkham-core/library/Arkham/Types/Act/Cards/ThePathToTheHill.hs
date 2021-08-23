@@ -19,8 +19,8 @@ import Arkham.Types.Query
 import Arkham.Types.Target
 
 newtype ThePathToTheHill = ThePathToTheHill ActAttrs
-  deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thePathToTheHill :: ActCard ThePathToTheHill
 thePathToTheHill = act

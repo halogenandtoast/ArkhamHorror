@@ -12,8 +12,8 @@ import Arkham.Types.Matcher
 import Arkham.Types.Prey
 
 newtype Poleman = Poleman EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 poleman :: EnemyCard Poleman
 poleman = enemyWith
@@ -24,11 +24,6 @@ poleman = enemyWith
   ((spawnAtL ?~ LocationWithTitle "Canal-side")
   . (preyL .~ HasMostMatchingAsset (AssetWithTitle "Innocent Reveler"))
   )
-
-instance HasModifiersFor env Poleman
-
-instance EnemyAttrsHasAbilities env => HasAbilities env Poleman where
-  getAbilities i window (Poleman attrs) = getAbilities i window attrs
 
 instance EnemyAttrsRunMessage env => RunMessage env Poleman where
   runMessage msg (Poleman attrs) = Poleman <$> runMessage msg attrs

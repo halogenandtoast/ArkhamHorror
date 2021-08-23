@@ -15,16 +15,11 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype DarkYoungHost = DarkYoungHost EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 darkYoungHost :: EnemyCard DarkYoungHost
 darkYoungHost = enemy DarkYoungHost Cards.darkYoungHost (4, Static 5, 2) (2, 2)
-
-instance HasModifiersFor env DarkYoungHost
-
-instance ActionRunner env => HasAbilities env DarkYoungHost where
-  getAbilities i window (DarkYoungHost attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env DarkYoungHost where
   runMessage msg e@(DarkYoungHost attrs@EnemyAttrs {..}) = case msg of

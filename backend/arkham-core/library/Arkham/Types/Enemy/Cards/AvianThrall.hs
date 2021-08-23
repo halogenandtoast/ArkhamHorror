@@ -19,7 +19,7 @@ import Arkham.Types.Trait
 
 newtype AvianThrall = AvianThrall EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 avianThrall :: EnemyCard AvianThrall
 avianThrall = enemyWith
@@ -37,9 +37,6 @@ instance HasSet Trait env AssetId => HasModifiersFor env AvianThrall where
         attrs
         [ EnemyFight (-3) | any (`elem` [Ranged, Firearm, Spell]) traits ]
   getModifiersFor _ _ _ = pure []
-
-instance ActionRunner env => HasAbilities env AvianThrall where
-  getAbilities i window (AvianThrall attrs) = getAbilities i window attrs
 
 instance EnemyRunner env => RunMessage env AvianThrall where
   runMessage msg (AvianThrall attrs) = AvianThrall <$> runMessage msg attrs

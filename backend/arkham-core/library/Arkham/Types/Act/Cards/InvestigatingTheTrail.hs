@@ -16,8 +16,8 @@ import Arkham.Types.GameValue
 import Arkham.Types.Message
 
 newtype InvestigatingTheTrail = InvestigatingTheTrail ActAttrs
-  deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 investigatingTheTrail :: ActCard InvestigatingTheTrail
 investigatingTheTrail = act

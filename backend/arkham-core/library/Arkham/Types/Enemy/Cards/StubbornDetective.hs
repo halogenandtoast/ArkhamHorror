@@ -17,7 +17,7 @@ import Arkham.Types.Target
 
 newtype StubbornDetective = StubbornDetective EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 stubbornDetective :: EnemyCard StubbornDetective
 stubbornDetective = enemyWith
@@ -35,9 +35,6 @@ instance HasId LocationId env InvestigatorId => HasModifiersFor env StubbornDete
       pure $ toModifiers a [ Blank | locationId == enemyLocation ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env StubbornDetective where
-  getAbilities i window (StubbornDetective attrs) = getAbilities i window attrs
-
-instance (EnemyRunner env) => RunMessage env StubbornDetective where
+instance EnemyRunner env => RunMessage env StubbornDetective where
   runMessage msg (StubbornDetective attrs) =
     StubbornDetective <$> runMessage msg attrs

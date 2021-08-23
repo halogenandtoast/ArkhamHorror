@@ -15,8 +15,8 @@ import Arkham.Types.Query
 import Arkham.Types.Source
 
 newtype YithianObserver = YithianObserver EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 yithianObserver :: EnemyCard YithianObserver
 yithianObserver = enemyWith
@@ -26,12 +26,7 @@ yithianObserver = enemyWith
   (1, 1)
   (preyL .~ FewestCards)
 
-instance HasModifiersFor env YithianObserver
-
-instance ActionRunner env => HasAbilities env YithianObserver where
-  getAbilities i window (YithianObserver attrs) = getAbilities i window attrs
-
-instance (EnemyRunner env) => RunMessage env YithianObserver where
+instance EnemyRunner env => RunMessage env YithianObserver where
   runMessage msg e@(YithianObserver attrs@EnemyAttrs {..}) = case msg of
     PerformEnemyAttack iid eid damageStrategy | eid == enemyId -> do
       cardCount' <- unCardCount <$> getCount iid

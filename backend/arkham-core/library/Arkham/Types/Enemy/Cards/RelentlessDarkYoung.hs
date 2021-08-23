@@ -14,8 +14,8 @@ import Arkham.Types.Prey
 import Arkham.Types.SkillType
 
 newtype RelentlessDarkYoung = RelentlessDarkYoung EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 relentlessDarkYoung :: EnemyCard RelentlessDarkYoung
 relentlessDarkYoung = enemyWith
@@ -25,12 +25,7 @@ relentlessDarkYoung = enemyWith
   (2, 1)
   (preyL .~ LowestSkill SkillAgility)
 
-instance HasModifiersFor env RelentlessDarkYoung
-
-instance ActionRunner env => HasAbilities env RelentlessDarkYoung where
-  getAbilities i window (RelentlessDarkYoung attrs) = getAbilities i window attrs
-
-instance (EnemyRunner env) => RunMessage env RelentlessDarkYoung where
+instance EnemyRunner env => RunMessage env RelentlessDarkYoung where
   runMessage msg (RelentlessDarkYoung attrs) = case msg of
     EndRound ->
       pure $ RelentlessDarkYoung $ attrs & damageL %~ max 0 . subtract 2

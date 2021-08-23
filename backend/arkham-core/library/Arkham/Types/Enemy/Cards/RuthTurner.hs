@@ -13,8 +13,8 @@ import Arkham.Types.Matcher hiding (EnemyEvaded)
 import Arkham.Types.Message
 
 newtype RuthTurner = RuthTurner EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 ruthTurner :: EnemyCard RuthTurner
 ruthTurner = enemyWith
@@ -23,11 +23,6 @@ ruthTurner = enemyWith
   (2, Static 4, 5)
   (1, 0)
   (spawnAtL ?~ LocationWithTitle "St. Mary's Hospital")
-
-instance HasModifiersFor env RuthTurner
-
-instance ActionRunner env => HasAbilities env RuthTurner where
-  getAbilities i window (RuthTurner attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env RuthTurner where
   runMessage msg e@(RuthTurner attrs) = case msg of

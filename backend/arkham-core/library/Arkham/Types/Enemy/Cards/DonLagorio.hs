@@ -16,7 +16,7 @@ import Arkham.Types.Target
 
 newtype DonLagorio = DonLagorio EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 donLagorio :: EnemyCard DonLagorio
 donLagorio = enemy DonLagorio Cards.donLagorio (4, Static 4, 3) (2, 0)
@@ -30,9 +30,6 @@ instance (HasSet ConnectedLocationId env LocationId, HasSet LocationId env ()) =
         (enemyLocation attrs)
       pure $ toModifiers attrs [HunterConnectedTo counterClockwiseLocationId]
   getModifiersFor _ _ _ = pure []
-
-instance EnemyAttrsHasAbilities env => HasAbilities env DonLagorio where
-  getAbilities i window (DonLagorio attrs) = getAbilities i window attrs
 
 instance EnemyAttrsRunMessage env => RunMessage env DonLagorio where
   runMessage msg (DonLagorio attrs) = DonLagorio <$> runMessage msg attrs

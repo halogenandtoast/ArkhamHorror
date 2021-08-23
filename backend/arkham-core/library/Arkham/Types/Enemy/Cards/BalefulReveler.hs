@@ -21,21 +21,19 @@ import Arkham.Types.Window
 import Control.Monad.Extra (findM)
 
 newtype BalefulReveler = BalefulReveler EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 balefulReveler :: EnemyCard BalefulReveler
 balefulReveler =
   enemy BalefulReveler Cards.balefulReveler (4, PerPlayer 5, 3) (2, 2)
 
-instance HasModifiersFor env BalefulReveler
-
 forcedAbility :: EnemyAttrs -> Ability
 forcedAbility attrs = (mkAbility attrs 1 LegacyForcedAbility)
   { abilityLimit = GroupLimit PerRound 1
   }
 
-instance EnemyAttrsHasAbilities env => HasAbilities env BalefulReveler where
+instance HasAbilities env BalefulReveler where
   getAbilities _ (Window Timing.After (MoveFromHunter eid)) (BalefulReveler attrs)
     | eid == toId attrs
     = pure [forcedAbility attrs]

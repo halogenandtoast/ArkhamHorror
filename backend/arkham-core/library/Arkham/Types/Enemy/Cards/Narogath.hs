@@ -22,7 +22,7 @@ import qualified Arkham.Types.Trait as Trait
 
 newtype Narogath = Narogath EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 narogath :: EnemyCard Narogath
 narogath = enemyWith
@@ -44,9 +44,6 @@ instance (HasSet InvestigatorId env LocationId, HasSet ConnectedLocationId env L
         | not enemyExhausted && iid `elem` iids
         ]
   getModifiersFor _ _ _ = pure []
-
-instance ActionRunner env => HasAbilities env Narogath where
-  getAbilities i window (Narogath attrs) = getAbilities i window attrs
 
 instance (EnemyRunner env) => RunMessage env Narogath where
   runMessage msg (Narogath attrs@EnemyAttrs {..}) = case msg of

@@ -14,18 +14,13 @@ import Arkham.Types.Message
 import Arkham.Types.Trait
 
 newtype MarshGug = MarshGug EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 marshGug :: EnemyCard MarshGug
 marshGug = enemy MarshGug Cards.marshGug (3, Static 4, 3) (2, 1)
 
-instance HasModifiersFor env MarshGug
-
-instance ActionRunner env => HasAbilities env MarshGug where
-  getAbilities i window (MarshGug attrs) = getAbilities i window attrs
-
-instance (EnemyRunner env) => RunMessage env MarshGug where
+instance EnemyRunner env => RunMessage env MarshGug where
   runMessage msg e@(MarshGug attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy _ _ eid | eid == enemyId -> do
       leadInvestigatorId <- getLeadInvestigatorId

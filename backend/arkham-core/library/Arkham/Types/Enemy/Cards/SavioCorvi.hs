@@ -16,7 +16,7 @@ import Arkham.Types.Target
 
 newtype SavioCorvi = SavioCorvi EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 savioCorvi :: EnemyCard SavioCorvi
 savioCorvi = enemy SavioCorvi Cards.savioCorvi (3, Static 5, 3) (1, 1)
@@ -27,9 +27,6 @@ instance (HasSet ConnectedLocationId env LocationId, HasSet LocationId env ()) =
       acrossLocationId <- getAcrossLocation (enemyLocation attrs)
       pure $ toModifiers attrs [HunterConnectedTo acrossLocationId]
   getModifiersFor _ _ _ = pure []
-
-instance EnemyAttrsHasAbilities env => HasAbilities env SavioCorvi where
-  getAbilities i window (SavioCorvi attrs) = getAbilities i window attrs
 
 instance EnemyAttrsRunMessage env => RunMessage env SavioCorvi where
   runMessage msg (SavioCorvi attrs) = SavioCorvi <$> runMessage msg attrs

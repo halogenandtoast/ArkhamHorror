@@ -15,8 +15,8 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 
 newtype CorpseTaker = CorpseTaker EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 corpseTaker :: EnemyCard CorpseTaker
 corpseTaker = enemyWith
@@ -25,11 +25,6 @@ corpseTaker = enemyWith
   (4, Static 3, 3)
   (1, 2)
   (spawnAtL ?~ FarthestLocationFromYou EmptyLocation)
-
-instance HasModifiersFor env CorpseTaker
-
-instance ActionRunner env => HasAbilities env CorpseTaker where
-  getAbilities i window (CorpseTaker attrs) = getAbilities i window attrs
 
 instance EnemyRunner env => RunMessage env CorpseTaker where
   runMessage msg e@(CorpseTaker attrs@EnemyAttrs {..}) = case msg of

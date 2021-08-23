@@ -17,23 +17,16 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype SwampLeech = SwampLeech EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 swampLeech :: EnemyCard SwampLeech
 swampLeech = enemy SwampLeech Cards.swampLeech (4, Static 1, 0) (1, 0)
 
-instance HasModifiersFor env SwampLeech
-
-isEvade :: Ability -> Bool
-isEvade ability = case abilityType ability of
-  ActionAbility (Just Action.Evade) _ -> True
-  _ -> False
-
-instance ActionRunner env => HasAbilities env SwampLeech where
+instance HasAbilities env SwampLeech where
   getAbilities i window (SwampLeech attrs) = do
     actions' <- getAbilities i window attrs
-    pure $ filter (not . isEvade) actions'
+    pure $ filter (not . (`abilityIs` Action.Evade)) actions'
 
 instance EnemyRunner env => RunMessage env SwampLeech where
   runMessage msg e@(SwampLeech attrs@EnemyAttrs {..}) = case msg of

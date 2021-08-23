@@ -13,8 +13,8 @@ import Arkham.Types.Prey
 import Arkham.Types.SkillType
 
 newtype GhoulPriest = GhoulPriest EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 ghoulPriest :: EnemyCard GhoulPriest
 ghoulPriest = enemyWith
@@ -24,10 +24,5 @@ ghoulPriest = enemyWith
   (2, 2)
   (preyL .~ HighestSkill SkillCombat)
 
-instance HasModifiersFor env GhoulPriest
-
-instance ActionRunner env => HasAbilities env GhoulPriest where
-  getAbilities i window (GhoulPriest attrs) = getAbilities i window attrs
-
-instance (EnemyRunner env) => RunMessage env GhoulPriest where
+instance EnemyRunner env => RunMessage env GhoulPriest where
   runMessage msg (GhoulPriest attrs) = GhoulPriest <$> runMessage msg attrs

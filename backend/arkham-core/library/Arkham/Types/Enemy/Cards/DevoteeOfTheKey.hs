@@ -15,7 +15,7 @@ import Arkham.Types.Message
 
 newtype DevoteeOfTheKey = DevoteeOfTheKey EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 devoteeOfTheKey :: EnemyCard DevoteeOfTheKey
 devoteeOfTheKey = enemyWith
@@ -24,9 +24,6 @@ devoteeOfTheKey = enemyWith
   (3, Static 3, 3)
   (1, 1)
   (spawnAtL ?~ LocationWithTitle "Base of the Hill")
-
-instance EnemyAttrsHasAbilities env => HasAbilities env DevoteeOfTheKey where
-  getAbilities i window (DevoteeOfTheKey attrs) = getAbilities i window attrs
 
 instance
   ( Query LocationMatcher env

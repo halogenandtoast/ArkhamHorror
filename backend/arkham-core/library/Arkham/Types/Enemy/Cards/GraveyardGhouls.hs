@@ -15,7 +15,7 @@ import Arkham.Types.Target
 
 newtype GraveyardGhouls = GraveyardGhouls EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 graveyardGhouls :: EnemyCard GraveyardGhouls
 graveyardGhouls = enemyWith
@@ -30,9 +30,6 @@ instance HasModifiersFor env GraveyardGhouls where
     | iid `elem` enemyEngagedInvestigators attrs = pure
     $ toModifiers attrs [CardsCannotLeaveYourDiscardPile]
   getModifiersFor _ _ _ = pure []
-
-instance EnemyAttrsHasAbilities env => HasAbilities env GraveyardGhouls where
-  getAbilities i window (GraveyardGhouls attrs) = getAbilities i window attrs
 
 instance EnemyAttrsRunMessage env => RunMessage env GraveyardGhouls where
   runMessage msg (GraveyardGhouls attrs) =

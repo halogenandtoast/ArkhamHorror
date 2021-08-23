@@ -15,8 +15,8 @@ import Arkham.Types.Prey
 import Arkham.Types.SkillType
 
 newtype LupineThrall = LupineThrall EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 lupineThrall :: EnemyCard LupineThrall
 lupineThrall = enemyWith
@@ -25,11 +25,6 @@ lupineThrall = enemyWith
   (4, Static 3, 4)
   (1, 1)
   (preyL .~ LowestSkill SkillAgility)
-
-instance ActionRunner env => HasAbilities env LupineThrall where
-  getAbilities i window (LupineThrall attrs) = getAbilities i window attrs
-
-instance HasModifiersFor env LupineThrall
 
 instance EnemyRunner env => RunMessage env LupineThrall where
   runMessage msg e@(LupineThrall attrs@EnemyAttrs {..}) = case msg of

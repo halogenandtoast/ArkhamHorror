@@ -14,17 +14,12 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 
 newtype EmergentMonstrosity = EmergentMonstrosity EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 emergentMonstrosity :: EnemyCard EmergentMonstrosity
 emergentMonstrosity =
   enemy EmergentMonstrosity Cards.emergentMonstrosity (4, Static 5, 3) (2, 2)
-
-instance HasModifiersFor env EmergentMonstrosity
-
-instance ActionRunner env => HasAbilities env EmergentMonstrosity where
-  getAbilities i window (EmergentMonstrosity attrs) = getAbilities i window attrs
 
 instance EnemyRunner env => RunMessage env EmergentMonstrosity where
   runMessage msg (EmergentMonstrosity attrs@EnemyAttrs {..}) = case msg of

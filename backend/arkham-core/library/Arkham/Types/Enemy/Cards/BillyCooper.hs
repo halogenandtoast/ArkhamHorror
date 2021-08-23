@@ -14,8 +14,8 @@ import Arkham.Types.Message
 import Arkham.Types.Trait
 
 newtype BillyCooper = BillyCooper EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 billyCooper :: EnemyCard BillyCooper
 billyCooper = enemyWith
@@ -25,12 +25,7 @@ billyCooper = enemyWith
   (2, 0)
   (spawnAtL ?~ LocationWithTitle "Easttown")
 
-instance HasModifiersFor env BillyCooper
-
-instance ActionRunner env => HasAbilities env BillyCooper where
-  getAbilities iid window (BillyCooper attrs) = getAbilities iid window attrs
-
-instance (EnemyRunner env) => RunMessage env BillyCooper where
+instance EnemyRunner env => RunMessage env BillyCooper where
   runMessage msg e@(BillyCooper attrs@EnemyAttrs {..}) = case msg of
     After (EnemyDefeated _ _ lid _ _ traits)
       | lid == enemyLocation && Monster `elem` traits -> e

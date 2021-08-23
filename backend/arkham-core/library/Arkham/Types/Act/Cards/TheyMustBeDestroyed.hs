@@ -18,8 +18,8 @@ import Arkham.Types.Query
 import Arkham.Types.Resolution
 
 newtype TheyMustBeDestroyed = TheyMustBeDestroyed ActAttrs
-  deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theyMustBeDestroyed :: ActCard TheyMustBeDestroyed
 theyMustBeDestroyed =
@@ -33,8 +33,11 @@ instance ActionRunner env => HasAbilities env TheyMustBeDestroyed where
     inPlayBroodOfYogSothothCount <- length
       <$> getSet @EnemyId (CardCode "02255")
     if (setAsideBroodOfYogSothothCount + inPlayBroodOfYogSothothCount) == 0
-      then pure
-        [ mkAbility (toSource x) 1 LegacyForcedAbility | i == leadInvestigatorId ]
+      then
+        pure
+          [ mkAbility (toSource x) 1 LegacyForcedAbility
+          | i == leadInvestigatorId
+          ]
       else getAbilities i window x
 
 instance ActRunner env => RunMessage env TheyMustBeDestroyed where

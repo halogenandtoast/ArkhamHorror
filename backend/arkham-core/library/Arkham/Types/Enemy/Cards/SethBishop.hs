@@ -10,16 +10,11 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 
 newtype SethBishop = SethBishop EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 sethBishop :: EnemyCard SethBishop
 sethBishop = enemy SethBishop Cards.sethBishop (5, PerPlayer 3, 5) (1, 1)
-
-instance HasModifiersFor env SethBishop
-
-instance EnemyAttrsHasAbilities env => HasAbilities env SethBishop where
-  getAbilities i window (SethBishop attrs) = getAbilities i window attrs
 
 instance EnemyAttrsRunMessage env => RunMessage env SethBishop where
   runMessage msg (SethBishop attrs) = SethBishop <$> runMessage msg attrs

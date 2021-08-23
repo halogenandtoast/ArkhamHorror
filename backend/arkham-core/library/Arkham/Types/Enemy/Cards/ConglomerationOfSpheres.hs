@@ -16,8 +16,8 @@ import Arkham.Types.SkillType
 import Arkham.Types.Trait
 
 newtype ConglomerationOfSpheres = ConglomerationOfSpheres EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 conglomerationOfSpheres :: EnemyCard ConglomerationOfSpheres
 conglomerationOfSpheres = enemyWith
@@ -26,12 +26,6 @@ conglomerationOfSpheres = enemyWith
   (1, Static 6, 4)
   (1, 1)
   (preyL .~ LowestSkill SkillWillpower)
-
-instance HasModifiersFor env ConglomerationOfSpheres
-
-instance ActionRunner env => HasAbilities env ConglomerationOfSpheres where
-  getAbilities i window (ConglomerationOfSpheres attrs) =
-    getAbilities i window attrs
 
 instance EnemyRunner env => RunMessage env ConglomerationOfSpheres where
   runMessage msg e@(ConglomerationOfSpheres attrs@EnemyAttrs {..}) =

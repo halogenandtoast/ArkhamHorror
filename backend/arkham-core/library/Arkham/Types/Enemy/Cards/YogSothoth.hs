@@ -16,7 +16,7 @@ import Arkham.Types.Source
 
 newtype YogSothoth = YogSothoth EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 yogSothoth :: EnemyCard YogSothoth
 yogSothoth = enemy YogSothoth Cards.yogSothoth (4, Static 4, 0) (1, 5)
@@ -31,9 +31,6 @@ instance HasCount PlayerCount env () => HasModifiersFor env YogSothoth where
       , CannotBeEvaded
       ]
   getModifiersFor _ _ _ = pure []
-
-instance EnemyAttrsHasAbilities env => HasAbilities env YogSothoth where
-  getAbilities i window (YogSothoth attrs) = getAbilities i window attrs
 
 instance EnemyAttrsRunMessage env => RunMessage env YogSothoth where
   runMessage msg e@(YogSothoth attrs@EnemyAttrs {..}) = case msg of

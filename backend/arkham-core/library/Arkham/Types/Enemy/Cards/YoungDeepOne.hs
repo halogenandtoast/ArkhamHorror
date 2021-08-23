@@ -15,8 +15,8 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 
 newtype YoungDeepOne = YoungDeepOne EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 youngDeepOne :: EnemyCard YoungDeepOne
 youngDeepOne = enemyWith
@@ -26,12 +26,7 @@ youngDeepOne = enemyWith
   (1, 1)
   (preyL .~ LowestSkill SkillCombat)
 
-instance HasModifiersFor env YoungDeepOne
-
-instance ActionRunner env => HasAbilities env YoungDeepOne where
-  getAbilities i window (YoungDeepOne attrs) = getAbilities i window attrs
-
-instance (EnemyRunner env) => RunMessage env YoungDeepOne where
+instance EnemyRunner env => RunMessage env YoungDeepOne where
   runMessage msg (YoungDeepOne attrs@EnemyAttrs {..}) = case msg of
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
       push (InvestigatorAssignDamage iid (EnemySource eid) DamageAny 0 1)

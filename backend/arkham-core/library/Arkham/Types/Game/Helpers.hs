@@ -1004,6 +1004,8 @@ passesCriteria iid source windows = \case
   Criteria.OnSameLocation -> case source of
     AssetSource aid ->
       liftA2 (==) (getId @LocationId aid) (getId @LocationId iid)
+    EnemySource eid ->
+      liftA2 (==) (getId @LocationId eid) (getId @LocationId iid)
     ProxySource (AssetSource aid) _ ->
       liftA2 (==) (getId @LocationId aid) (getId @LocationId iid)
     _ -> error $ "missing OnSameLocation check for source: " <> show source
@@ -1127,12 +1129,15 @@ passesEnemyCriteria
   -> [Window]
   -> Criteria.EnemyCriterion
   -> m Bool
-passesEnemyCriteria _iid _source windows criterion = notNull
+passesEnemyCriteria _iid source windows criterion = notNull
   <$> getSet @EnemyId (matcher criterion)
  where
   matcher = \case
     Criteria.EnemyMatchesCriteria ms -> concatMap matcher ms
     Criteria.EnemyExists m -> m
+    Criteria.ThisEnemy enemyMatcher -> case source of
+      EnemySource eid -> Matcher.EnemyWithId eid <> enemyMatcher
+      _ -> error "Invalid source for ThisEnemy"
     Criteria.NotAttackingEnemy ->
       -- TODO: should not be multiple enemies, but if so need to OR not AND matcher
       let
@@ -1582,6 +1587,8 @@ locationMatches investigatorId source window locationId = \case
   Matcher.LocationWithTrait t -> member t <$> getSet locationId
   Matcher.LocationMatchAll ms ->
     allM (locationMatches investigatorId source window locationId) ms
+  Matcher.LocationMatchAny ms ->
+    anyM (locationMatches investigatorId source window locationId) ms
   Matcher.FirstLocation ms ->
     anyM (locationMatches investigatorId source window locationId) ms -- a bit weird here since first means nothing
   Matcher.LocationWithoutTreacheryWithCardCode cCode -> do

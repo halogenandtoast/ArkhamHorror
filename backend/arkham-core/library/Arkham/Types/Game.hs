@@ -883,6 +883,10 @@ getEnemiesMatching matcher = do
     AnyEnemy -> pure . const True
     EnemyIs cardCode -> pure . (== cardCode) . toCardCode
     NonWeaknessEnemy -> pure . not . cdWeakness . toCardDef
+    EnemyIsEngagedWith investigatorMatcher -> \enemy -> do
+      iids <-
+        setFromList . map toId <$> getInvestigatorsMatching investigatorMatcher
+      notNull . intersection iids <$> getSet (toId enemy)
     EnemyEngagedWithYou -> \enemy -> do
       iid <- view activeInvestigatorIdL <$> getGame
       member iid <$> getSet (toId enemy)

@@ -27,8 +27,8 @@ import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype Fold = Fold ActAttrs
-  deriving anyclass IsAct
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fold :: ActCard Fold
 fold = act (3, A) Fold Cards.fold Nothing

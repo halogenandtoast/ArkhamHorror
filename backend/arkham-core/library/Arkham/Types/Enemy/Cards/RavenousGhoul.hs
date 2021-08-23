@@ -12,8 +12,8 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Prey
 
 newtype RavenousGhoul = RavenousGhoul EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 ravenousGhoul :: EnemyCard RavenousGhoul
 ravenousGhoul = enemyWith
@@ -23,10 +23,5 @@ ravenousGhoul = enemyWith
   (1, 1)
   (preyL .~ LowestRemainingHealth)
 
-instance HasModifiersFor env RavenousGhoul
-
-instance ActionRunner env => HasAbilities env RavenousGhoul where
-  getAbilities i window (RavenousGhoul attrs) = getAbilities i window attrs
-
-instance (EnemyRunner env) => RunMessage env RavenousGhoul where
+instance EnemyRunner env => RunMessage env RavenousGhoul where
   runMessage msg (RavenousGhoul attrs) = RavenousGhoul <$> runMessage msg attrs

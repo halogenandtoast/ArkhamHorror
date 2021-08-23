@@ -27,7 +27,7 @@ instance HasAbilities env WhatHaveYouDone where
     [ mkAbility x 1
       $ Objective
       $ ForcedAbility
-      $ EnemyDefeated Timing.When Anyone
+      $ EnemyDefeated Timing.After Anyone
       $ enemyIs Cards.ghoulPriest
     ]
 

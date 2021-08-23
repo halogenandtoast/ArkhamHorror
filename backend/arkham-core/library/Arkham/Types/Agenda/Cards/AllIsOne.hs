@@ -18,16 +18,11 @@ import Arkham.Types.Message
 import Arkham.Types.Source
 
 newtype AllIsOne = AllIsOne AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 allIsOne :: AgendaCard AllIsOne
 allIsOne = agenda (1, A) AllIsOne Cards.allIsOne (Static 4)
-
-instance HasModifiersFor env AllIsOne
-
-instance HasAbilities env AllIsOne where
-  getAbilities i window (AllIsOne x) = getAbilities i window x
 
 isEncounterCardSource :: Source -> Bool
 isEncounterCardSource = \case

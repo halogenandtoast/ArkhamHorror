@@ -18,7 +18,7 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype TheRitualBegins = TheRitualBegins AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theRitualBegins :: AgendaCard TheRitualBegins
@@ -30,9 +30,6 @@ instance HasModifiersFor env TheRitualBegins where
     | agendaSequence attrs == Agenda 2 A = pure
     $ toModifiers attrs [EnemyFight 1, EnemyEvade 1]
   getModifiersFor _ _ _ = pure []
-
-instance HasAbilities env TheRitualBegins where
-  getAbilities i window (TheRitualBegins x) = getAbilities i window x
 
 instance (AgendaRunner env) => RunMessage env TheRitualBegins where
   runMessage msg a@(TheRitualBegins attrs@AgendaAttrs {..}) = case msg of

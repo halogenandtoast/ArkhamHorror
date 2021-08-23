@@ -17,17 +17,12 @@ import Arkham.Types.Resolution
 import Arkham.Types.Target
 
 newtype VengeanceAwaits = VengeanceAwaits AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 vengeanceAwaits :: AgendaCard VengeanceAwaits
 vengeanceAwaits =
   agenda (3, A) VengeanceAwaits Cards.vengeanceAwaits (Static 5)
-
-instance HasModifiersFor env VengeanceAwaits
-
-instance HasAbilities env VengeanceAwaits where
-  getAbilities i window (VengeanceAwaits x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env VengeanceAwaits where
   runMessage msg a@(VengeanceAwaits attrs@AgendaAttrs {..}) = case msg of

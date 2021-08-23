@@ -21,14 +21,11 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype TheCloverClub = TheCloverClub AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theCloverClub :: AgendaCard TheCloverClub
 theCloverClub = agenda (1, A) TheCloverClub Cards.theCloverClub (Static 4)
-
-instance HasAbilities env TheCloverClub where
-  getAbilities i window (TheCloverClub x) = getAbilities i window x
 
 instance (HasSet EnemyId env (), HasSet Trait env EnemyId) => HasModifiersFor env TheCloverClub where
   getModifiersFor _ (EnemyTarget eid) (TheCloverClub attrs) | onSide A attrs =

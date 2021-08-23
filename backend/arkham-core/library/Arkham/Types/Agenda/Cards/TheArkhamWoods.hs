@@ -16,16 +16,11 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype TheArkhamWoods = TheArkhamWoods AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theArkhamWoods :: AgendaCard TheArkhamWoods
 theArkhamWoods = agenda (1, A) TheArkhamWoods Cards.theArkhamWoods (Static 4)
-
-instance HasModifiersFor env TheArkhamWoods
-
-instance HasAbilities env TheArkhamWoods where
-  getAbilities i window (TheArkhamWoods x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env TheArkhamWoods where
   runMessage msg a@(TheArkhamWoods attrs@AgendaAttrs {..}) = case msg of

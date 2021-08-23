@@ -18,14 +18,11 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype DeadOfNight = DeadOfNight AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deadOfNight :: AgendaCard DeadOfNight
 deadOfNight = agenda (2, A) DeadOfNight Cards.deadOfNight (Static 3)
-
-instance HasAbilities env DeadOfNight where
-  getAbilities i window (DeadOfNight x) = getAbilities i window x
 
 instance HasModifiersFor env DeadOfNight where
   getModifiersFor _ (InvestigatorTarget _) (DeadOfNight a) =

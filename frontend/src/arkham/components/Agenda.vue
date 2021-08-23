@@ -80,11 +80,16 @@ export default defineComponent({
 
     const interactAction = computed(() => choices.value.findIndex(canInteract));
 
+    function isAbility(v: Message) {
+     return (v.tag === 'UseAbility' && v.contents[1].source.tag === 'AgendaSource' && v.contents[1].source.contents === id.value)
+    }
+
     const abilities = computed(() => {
-      return choices
-        .value
+      return choices.value
         .reduce<number[]>((acc, v, i) => {
-          if (v.tag === 'UseAbility' && v.contents[1].source.tag === 'AgendaSource' && v.contents[1].source.contents === id.value) {
+          if (v.tag === 'Run' && isAbility(v.contents[0])) {
+            return [...acc, i];
+          } else if (isAbility(v)) {
             return [...acc, i];
           }
 

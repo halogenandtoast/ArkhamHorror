@@ -1580,7 +1580,7 @@ locationMatches investigatorId source window locationId = \case
   Matcher.FarthestLocationFromYou matcher' ->
     member (FarthestLocationId locationId) <$> getSet (investigatorId, matcher')
   Matcher.LocationWithTrait t -> member t <$> getSet locationId
-  Matcher.LocationMatchers ms ->
+  Matcher.LocationMatchAll ms ->
     allM (locationMatches investigatorId source window locationId) ms
   Matcher.FirstLocation ms ->
     anyM (locationMatches investigatorId source window locationId) ms -- a bit weird here since first means nothing

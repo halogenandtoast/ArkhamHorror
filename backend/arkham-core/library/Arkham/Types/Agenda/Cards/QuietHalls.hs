@@ -13,16 +13,11 @@ import Arkham.Types.Query
 import Arkham.Types.ScenarioId
 
 newtype QuietHalls = QuietHalls AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 quietHalls :: AgendaCard QuietHalls
 quietHalls = agenda (1, A) QuietHalls Cards.quietHalls (Static 7)
-
-instance HasModifiersFor env QuietHalls
-
-instance HasAbilities env QuietHalls where
-  getAbilities i window (QuietHalls x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env QuietHalls where
   runMessage msg a@(QuietHalls attrs@AgendaAttrs {..}) = case msg of

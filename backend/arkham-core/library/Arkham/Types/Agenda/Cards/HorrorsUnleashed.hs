@@ -20,7 +20,7 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype HorrorsUnleashed = HorrorsUnleashed AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 horrorsUnleashed :: AgendaCard HorrorsUnleashed
@@ -34,9 +34,6 @@ instance HasSet Trait env EnemyId => HasModifiersFor env HorrorsUnleashed where
       then pure $ toModifiers attrs [EnemyFight 1, EnemyEvade 1]
       else pure []
   getModifiersFor _ _ _ = pure []
-
-instance HasAbilities env HorrorsUnleashed where
-  getAbilities i window (HorrorsUnleashed x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env HorrorsUnleashed where
   runMessage msg a@(HorrorsUnleashed attrs) = case msg of

@@ -6,6 +6,7 @@ module Arkham.Types.Agenda.Cards.DrawnIn
 import Arkham.Prelude
 
 import qualified Arkham.Agenda.Cards as Cards
+import Arkham.Scenarios.TheEssexCountyExpress.Helpers
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
@@ -17,27 +18,11 @@ import Arkham.Types.Message
 import Arkham.Types.Query
 
 newtype DrawnIn = DrawnIn AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drawnIn :: AgendaCard DrawnIn
 drawnIn = agenda (4, A) DrawnIn Cards.drawnIn (Static 3)
-
-instance HasModifiersFor env DrawnIn
-
-instance HasAbilities env DrawnIn where
-  getAbilities i window (DrawnIn x) = getAbilities i window x
-
-leftmostLocation
-  :: ( MonadReader env m
-     , HasId (Maybe LocationId) env (Direction, LocationId)
-     , MonadIO m
-     )
-  => LocationId
-  -> m LocationId
-leftmostLocation lid = do
-  mlid' <- getId (LeftOf, lid)
-  maybe (pure lid) leftmostLocation mlid'
 
 instance AgendaRunner env => RunMessage env DrawnIn where
   runMessage msg a@(DrawnIn attrs@AgendaAttrs {..}) = case msg of

@@ -19,17 +19,12 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype ChaosInTheCloverClub = ChaosInTheCloverClub AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chaosInTheCloverClub :: AgendaCard ChaosInTheCloverClub
 chaosInTheCloverClub =
   agenda (3, A) ChaosInTheCloverClub Cards.chaosInTheCloverClub (Static 7)
-
-instance HasAbilities env ChaosInTheCloverClub where
-  getAbilities i window (ChaosInTheCloverClub x) = getAbilities i window x
-
-instance HasModifiersFor env ChaosInTheCloverClub
 
 instance AgendaRunner env => RunMessage env ChaosInTheCloverClub where
   runMessage msg a@(ChaosInTheCloverClub attrs@AgendaAttrs {..}) = case msg of

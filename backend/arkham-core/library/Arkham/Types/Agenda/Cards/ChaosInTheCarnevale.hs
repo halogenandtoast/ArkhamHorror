@@ -18,17 +18,12 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 
 newtype ChaosInTheCarnevale = ChaosInTheCarnevale AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chaosInTheCarnevale :: AgendaCard ChaosInTheCarnevale
 chaosInTheCarnevale =
   agenda (3, A) ChaosInTheCarnevale Cards.chaosInTheCarnevale (Static 3)
-
-instance HasModifiersFor env ChaosInTheCarnevale
-
-instance HasAbilities env ChaosInTheCarnevale where
-  getAbilities i window (ChaosInTheCarnevale x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env ChaosInTheCarnevale where
   runMessage msg a@(ChaosInTheCarnevale attrs@AgendaAttrs {..}) = case msg of

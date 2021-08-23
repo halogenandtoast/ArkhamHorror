@@ -21,16 +21,11 @@ import Arkham.Types.Target
 import Arkham.Types.TreacheryId
 
 newtype ShadowsDeepen = ShadowsDeepen AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shadowsDeepen :: AgendaCard ShadowsDeepen
 shadowsDeepen = agenda (2, A) ShadowsDeepen Cards.shadowsDeepen (Static 7)
-
-instance HasAbilities env ShadowsDeepen where
-  getAbilities i window (ShadowsDeepen x) = getAbilities i window x
-
-instance HasModifiersFor env ShadowsDeepen
 
 instance AgendaRunner env => RunMessage env ShadowsDeepen where
   runMessage msg a@(ShadowsDeepen attrs@AgendaAttrs {..}) = case msg of

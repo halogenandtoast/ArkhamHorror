@@ -21,17 +21,12 @@ import Arkham.Types.Query
 import Data.Maybe (fromJust)
 
 newtype UndergroundMuscle = UndergroundMuscle AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 undergroundMuscle :: AgendaCard UndergroundMuscle
 undergroundMuscle =
   agenda (2, A) UndergroundMuscle Cards.undergroundMuscle (Static 3)
-
-instance HasAbilities env UndergroundMuscle where
-  getAbilities i window (UndergroundMuscle x) = getAbilities i window x
-
-instance HasModifiersFor env UndergroundMuscle
 
 instance AgendaRunner env => RunMessage env UndergroundMuscle where
   runMessage msg (UndergroundMuscle attrs@AgendaAttrs {..}) = case msg of

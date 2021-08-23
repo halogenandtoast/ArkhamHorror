@@ -15,16 +15,11 @@ import Arkham.Types.Message
 import Arkham.Types.Resolution
 
 newtype OutOfTime = OutOfTime AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 outOfTime :: AgendaCard OutOfTime
 outOfTime = agenda (5, A) OutOfTime Cards.outOfTime (Static 3)
-
-instance HasModifiersFor env OutOfTime
-
-instance HasAbilities env OutOfTime where
-  getAbilities i window (OutOfTime x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env OutOfTime where
   runMessage msg a@(OutOfTime attrs@AgendaAttrs {..}) = case msg of

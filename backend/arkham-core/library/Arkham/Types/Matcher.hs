@@ -135,6 +135,7 @@ data EnemyMatcher
   | NonWeaknessEnemy
   | EnemyMatchAll [EnemyMatcher]
   | EnemyEngagedWithYou
+  | UnengagedEnemy
   | NotEnemy EnemyMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
@@ -212,16 +213,17 @@ data LocationMatcher
   | FarthestLocationFromYou LocationMatcher
   | LocationWithTrait Trait
   | LocationWithoutTreacheryWithCardCode CardCode
-  | LocationMatchers [LocationMatcher]
+  | LocationMatchAll [LocationMatcher]
+  | LocationMatchAny [LocationMatcher]
   | FirstLocation [LocationMatcher]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 instance Semigroup LocationMatcher where
-  LocationMatchers xs <> LocationMatchers ys = LocationMatchers $ xs <> ys
-  LocationMatchers xs <> x = LocationMatchers (x : xs)
-  x <> LocationMatchers xs = LocationMatchers (x : xs)
-  x <> y = LocationMatchers [x, y]
+  LocationMatchAll xs <> LocationMatchAll ys = LocationMatchAll $ xs <> ys
+  LocationMatchAll xs <> x = LocationMatchAll (x : xs)
+  x <> LocationMatchAll xs = LocationMatchAll (x : xs)
+  x <> y = LocationMatchAll [x, y]
 
 data SkillMatcher
   = SkillWithTitle Text

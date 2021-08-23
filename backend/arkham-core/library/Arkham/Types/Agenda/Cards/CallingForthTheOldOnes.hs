@@ -13,17 +13,12 @@ import Arkham.Types.GameValue
 import Arkham.Types.Message
 
 newtype CallingForthTheOldOnes = CallingForthTheOldOnes AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 callingForthTheOldOnes :: AgendaCard CallingForthTheOldOnes
 callingForthTheOldOnes =
   agenda (1, A) CallingForthTheOldOnes Cards.callingForthTheOldOnes (Static 12)
-
-instance HasModifiersFor env CallingForthTheOldOnes
-
-instance HasAbilities env CallingForthTheOldOnes where
-  getAbilities i window (CallingForthTheOldOnes x) = getAbilities i window x
 
 instance AgendaRunner env => RunMessage env CallingForthTheOldOnes where
   runMessage msg a@(CallingForthTheOldOnes attrs@AgendaAttrs {..}) =

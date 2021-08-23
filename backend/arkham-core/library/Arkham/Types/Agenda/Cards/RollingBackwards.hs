@@ -6,6 +6,7 @@ module Arkham.Types.Agenda.Cards.RollingBackwards
 import Arkham.Prelude
 
 import qualified Arkham.Agenda.Cards as Cards
+import Arkham.Scenarios.TheEssexCountyExpress.Helpers
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
@@ -17,28 +18,12 @@ import Arkham.Types.Message
 import Arkham.Types.Query
 
 newtype RollingBackwards = RollingBackwards AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rollingBackwards :: AgendaCard RollingBackwards
 rollingBackwards =
   agenda (3, A) RollingBackwards Cards.rollingBackwards (Static 4)
-
-instance HasModifiersFor env RollingBackwards
-
-instance HasAbilities env RollingBackwards where
-  getAbilities i window (RollingBackwards x) = getAbilities i window x
-
-leftmostLocation
-  :: ( MonadReader env m
-     , HasId (Maybe LocationId) env (Direction, LocationId)
-     , MonadIO m
-     )
-  => LocationId
-  -> m LocationId
-leftmostLocation lid = do
-  mlid' <- getId (LeftOf, lid)
-  maybe (pure lid) leftmostLocation mlid'
 
 instance AgendaRunner env => RunMessage env RollingBackwards where
   runMessage msg a@(RollingBackwards attrs@AgendaAttrs {..}) = case msg of

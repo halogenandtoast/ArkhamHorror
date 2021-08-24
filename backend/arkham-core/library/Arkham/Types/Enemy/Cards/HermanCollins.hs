@@ -10,17 +10,15 @@ import Arkham.Types.Ability
 import Arkham.Types.Action hiding (Ability)
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype HermanCollins = HermanCollins EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hermanCollins :: EnemyCard HermanCollins
@@ -31,19 +29,14 @@ hermanCollins = enemyWith
   (1, 1)
   (spawnAtL ?~ LocationWithTitle "Graveyard")
 
-instance HasModifiersFor env HermanCollins
-
-instance ActionRunner env => HasAbilities env HermanCollins where
-  getAbilities iid window@(Window Timing.When NonFast) (HermanCollins attrs@EnemyAttrs {..})
-    = withBaseAbilities iid window attrs $ do
-      locationId <- getId @LocationId iid
+instance HasAbilities env HermanCollins where
+  getAbilities iid window (HermanCollins attrs) =
+    withBaseAbilities iid window attrs $ do
       pure
-        [ mkAbility attrs 1 $ ActionAbility
+        [ restrictedAbility attrs 1 OnSameLocation $ ActionAbility
             (Just Parley)
             (Costs [ActionCost 1, HandDiscardCost 4 Nothing mempty mempty])
-        | locationId == enemyLocation
         ]
-  getAbilities _ _ _ = pure []
 
 instance EnemyRunner env => RunMessage env HermanCollins where
   runMessage msg e@(HermanCollins attrs) = case msg of

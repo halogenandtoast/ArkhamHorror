@@ -14,17 +14,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype MysteriousChanting = MysteriousChanting TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mysteriousChanting :: TreacheryCard MysteriousChanting
 mysteriousChanting = treachery MysteriousChanting Cards.mysteriousChanting
-
-instance HasModifiersFor env MysteriousChanting
-
-instance HasAbilities env MysteriousChanting where
-  getAbilities i window (MysteriousChanting attrs) =
-    getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env MysteriousChanting where
   runMessage msg t@(MysteriousChanting attrs) = case msg of

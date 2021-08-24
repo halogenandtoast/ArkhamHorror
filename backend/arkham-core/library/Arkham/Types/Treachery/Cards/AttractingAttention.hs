@@ -15,16 +15,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype AttractingAttention = AttractingAttention TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 attractingAttention :: TreacheryCard AttractingAttention
 attractingAttention = treachery AttractingAttention Cards.attractingAttention
-
-instance HasModifiersFor env AttractingAttention
-
-instance HasAbilities env AttractingAttention where
-  getAbilities i window (AttractingAttention attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env AttractingAttention where
   runMessage msg t@(AttractingAttention attrs) = case msg of

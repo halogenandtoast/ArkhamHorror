@@ -16,16 +16,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype VastExpanse = VastExpanse TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 vastExpanse :: TreacheryCard VastExpanse
 vastExpanse = treachery VastExpanse Cards.vastExpanse
-
-instance HasModifiersFor env VastExpanse
-
-instance HasAbilities env VastExpanse where
-  getAbilities i window (VastExpanse attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env VastExpanse where
   runMessage msg t@(VastExpanse attrs) = case msg of

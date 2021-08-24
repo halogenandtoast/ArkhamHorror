@@ -12,18 +12,13 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype ChillFromBelow = ChillFromBelow TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chillFromBelow :: TreacheryCard ChillFromBelow
 chillFromBelow = treachery ChillFromBelow Cards.chillFromBelow
 
-instance HasModifiersFor env ChillFromBelow
-
-instance HasAbilities env ChillFromBelow where
-  getAbilities i window (ChillFromBelow attrs) = getAbilities i window attrs
-
-instance (TreacheryRunner env) => RunMessage env ChillFromBelow where
+instance TreacheryRunner env => RunMessage env ChillFromBelow where
   runMessage msg t@(ChillFromBelow attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RevelationSkillTest iid source SkillWillpower 3

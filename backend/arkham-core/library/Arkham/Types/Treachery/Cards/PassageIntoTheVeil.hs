@@ -16,16 +16,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype PassageIntoTheVeil = PassageIntoTheVeil TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 passageIntoTheVeil :: TreacheryCard PassageIntoTheVeil
 passageIntoTheVeil = treachery PassageIntoTheVeil Cards.passageIntoTheVeil
-
-instance HasModifiersFor env PassageIntoTheVeil
-
-instance HasAbilities env PassageIntoTheVeil where
-  getAbilities i window (PassageIntoTheVeil attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env PassageIntoTheVeil where
   runMessage msg t@(PassageIntoTheVeil attrs) = case msg of

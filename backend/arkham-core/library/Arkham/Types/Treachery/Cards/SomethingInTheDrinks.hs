@@ -14,17 +14,12 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype SomethingInTheDrinks = SomethingInTheDrinks TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 somethingInTheDrinks :: TreacheryCard SomethingInTheDrinks
 somethingInTheDrinks =
   treachery SomethingInTheDrinks Cards.somethingInTheDrinks
-
-instance HasModifiersFor env SomethingInTheDrinks
-
-instance HasAbilities env SomethingInTheDrinks where
-  getAbilities i window (SomethingInTheDrinks attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env SomethingInTheDrinks where
   runMessage msg t@(SomethingInTheDrinks attrs) = case msg of

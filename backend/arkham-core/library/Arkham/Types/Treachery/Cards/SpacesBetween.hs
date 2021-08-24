@@ -15,16 +15,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype SpacesBetween = SpacesBetween TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 spacesBetween :: TreacheryCard SpacesBetween
 spacesBetween = treachery SpacesBetween Cards.spacesBetween
-
-instance HasModifiersFor env SpacesBetween
-
-instance HasAbilities env SpacesBetween where
-  getAbilities i window (SpacesBetween attrs) = getAbilities i window attrs
 
 instance (GetCardDef env LocationId, TreacheryRunner env) => RunMessage env SpacesBetween where
   runMessage msg t@(SpacesBetween attrs) = case msg of

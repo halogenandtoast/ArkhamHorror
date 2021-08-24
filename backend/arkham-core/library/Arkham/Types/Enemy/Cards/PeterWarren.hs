@@ -10,15 +10,13 @@ import Arkham.Types.Ability
 import Arkham.Types.Action hiding (Ability)
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Source
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype PeterWarren = PeterWarren EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
@@ -32,18 +30,15 @@ peterWarren = enemyWith
   (1, 0)
   (spawnAtL ?~ LocationWithTitle "Miskatonic University")
 
-instance ActionRunner env => HasAbilities env PeterWarren where
-  getAbilities iid window@(Window Timing.When NonFast) (PeterWarren attrs@EnemyAttrs {..})
-    = withBaseAbilities iid window attrs $ do
-      locationId <- getId @LocationId iid
+instance HasAbilities env PeterWarren where
+  getAbilities iid window (PeterWarren attrs) =
+    withBaseAbilities iid window attrs $ do
       pure
-        [ mkAbility attrs 1
+        [ restrictedAbility attrs 1 OnSameLocation
             $ ActionAbility (Just Parley) (Costs [ActionCost 1, ClueCost 2])
-        | locationId == enemyLocation
         ]
-  getAbilities _ _ _ = pure []
 
-instance (EnemyRunner env) => RunMessage env PeterWarren where
+instance EnemyRunner env => RunMessage env PeterWarren where
   runMessage msg e@(PeterWarren attrs@EnemyAttrs {..}) = case msg of
     UseCardAbility _ (EnemySource eid) _ 1 _ | eid == enemyId ->
       e <$ push (AddToVictory $ toTarget attrs)

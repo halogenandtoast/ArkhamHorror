@@ -13,19 +13,14 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype FalseLead = FalseLead TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 falseLead :: TreacheryCard FalseLead
 falseLead = treachery FalseLead Cards.falseLead
 
-instance HasModifiersFor env FalseLead
-
-instance HasAbilities env FalseLead where
-  getAbilities i window (FalseLead attrs) = getAbilities i window attrs
-
 instance TreacheryRunner env => RunMessage env FalseLead where
-  runMessage msg t@(FalseLead attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(FalseLead attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       playerClueCount <- unClueCount <$> getCount iid
       if playerClueCount == 0
@@ -40,5 +35,5 @@ instance TreacheryRunner env => RunMessage env FalseLead where
           , Discard $ toTarget attrs
           ]
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
-      | tid == treacheryId -> t <$ push (InvestigatorPlaceCluesOnLocation iid n)
+      | tid == toId attrs -> t <$ push (InvestigatorPlaceCluesOnLocation iid n)
     _ -> FalseLead <$> runMessage msg attrs

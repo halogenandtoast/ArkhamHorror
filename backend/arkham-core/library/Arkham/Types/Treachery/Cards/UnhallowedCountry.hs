@@ -20,7 +20,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype UnhallowedCountry = UnhallowedCountry TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 unhallowedCountry :: TreacheryCard UnhallowedCountry
@@ -42,9 +42,6 @@ instance (HasSet Trait env AssetId, HasId (Maybe OwnerId) env AssetId) => HasMod
         [ Blank | treacheryOnInvestigator iid attrs && Ally `member` traits ]
       Nothing -> []
   getModifiersFor _ _ _ = pure []
-
-instance HasAbilities env UnhallowedCountry where
-  getAbilities i window (UnhallowedCountry attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env UnhallowedCountry where
   runMessage msg t@(UnhallowedCountry attrs@TreacheryAttrs {..}) = case msg of

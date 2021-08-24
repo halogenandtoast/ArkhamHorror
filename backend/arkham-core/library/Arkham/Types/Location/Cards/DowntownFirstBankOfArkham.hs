@@ -43,7 +43,7 @@ instance HasAbilities env DowntownFirstBankOfArkham where
   getAbilities iid window (DowntownFirstBankOfArkham attrs) =
     getAbilities iid window attrs
 
-instance (LocationRunner env) => RunMessage env DowntownFirstBankOfArkham where
+instance LocationRunner env => RunMessage env DowntownFirstBankOfArkham where
   runMessage msg l@(DowntownFirstBankOfArkham attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (TakeResources iid 3 False)

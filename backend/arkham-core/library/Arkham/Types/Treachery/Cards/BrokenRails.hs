@@ -15,16 +15,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype BrokenRails = BrokenRails TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 brokenRails :: TreacheryCard BrokenRails
 brokenRails = treachery BrokenRails Cards.brokenRails
-
-instance HasModifiersFor env BrokenRails
-
-instance HasAbilities env BrokenRails where
-  getAbilities i window (BrokenRails attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env BrokenRails where
   runMessage msg t@(BrokenRails attrs) = case msg of

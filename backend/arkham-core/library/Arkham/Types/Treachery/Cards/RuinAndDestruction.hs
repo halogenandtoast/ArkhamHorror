@@ -16,16 +16,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype RuinAndDestruction = RuinAndDestruction TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ruinAndDestruction :: TreacheryCard RuinAndDestruction
 ruinAndDestruction = treachery RuinAndDestruction Cards.ruinAndDestruction
-
-instance HasModifiersFor env RuinAndDestruction
-
-instance HasAbilities env RuinAndDestruction where
-  getAbilities i window (RuinAndDestruction attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env RuinAndDestruction where
   runMessage msg t@(RuinAndDestruction attrs) = case msg of

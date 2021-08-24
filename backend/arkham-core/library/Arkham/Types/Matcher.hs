@@ -338,6 +338,7 @@ instance Semigroup CardMatcher where
 
 data WindowMatcher
   = EnemyDefeated Timing Who EnemyMatcher
+  | AgendaAdvances Timing AgendaMatcher
   | AssetDefeated Timing AssetMatcher
   | EnemyEvaded Timing Who EnemyMatcher
   | EnemyEngaged Timing Who EnemyMatcher
@@ -359,6 +360,8 @@ data WindowMatcher
   | DuringTurn Who
   | Enters Timing Who Where
   | OrWindowMatcher [WindowMatcher]
+  | DealtDamage Timing Who
+  | DealtHorror Timing Who
   | DealtDamageOrHorror Timing Who
   | DrawCard Timing Who ExtendedCardMatcher DeckMatcher
   | PlayCard Timing Who ExtendedCardMatcher
@@ -467,5 +470,9 @@ data CardListMatcher = LengthIs ValueMatcher | HasCard CardMatcher
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 data DeckMatcher = EncounterDeck | DeckOf InvestigatorMatcher | AnyDeck
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+newtype AgendaMatcher = AgendaWithId AgendaId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

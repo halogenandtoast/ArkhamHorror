@@ -15,7 +15,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype Indebted = Indebted TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 indebted :: TreacheryCard Indebted
@@ -27,9 +27,6 @@ instance HasModifiersFor env Indebted where
       attrs
       [ StartingResources (-2) | treacheryOnInvestigator iid attrs ]
   getModifiersFor _ _ _ = pure []
-
-instance HasAbilities env Indebted where
-  getAbilities iid window (Indebted attrs) = getAbilities iid window attrs
 
 instance TreacheryRunner env => RunMessage env Indebted where
   runMessage msg t@(Indebted attrs@TreacheryAttrs {..}) = case msg of

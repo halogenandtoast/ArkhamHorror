@@ -12,16 +12,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype DraggedUnder = DraggedUnder TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 draggedUnder :: TreacheryCard DraggedUnder
 draggedUnder = treachery DraggedUnder Cards.draggedUnder
-
-instance HasModifiersFor env DraggedUnder
-
-instance HasAbilities env DraggedUnder where
-  getAbilities i window (DraggedUnder attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env DraggedUnder where
   runMessage msg t@(DraggedUnder attrs@TreacheryAttrs {..}) = case msg of

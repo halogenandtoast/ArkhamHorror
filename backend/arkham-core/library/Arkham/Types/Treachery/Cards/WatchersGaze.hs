@@ -17,16 +17,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype WatchersGaze = WatchersGaze TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 watchersGaze :: TreacheryCard WatchersGaze
 watchersGaze = treachery WatchersGaze Cards.watchersGaze
-
-instance HasModifiersFor env WatchersGaze
-
-instance HasAbilities env WatchersGaze where
-  getAbilities i window (WatchersGaze attrs) = getAbilities i window attrs
 
 instance
   ( HasId (Maybe OwnerId) env AssetId

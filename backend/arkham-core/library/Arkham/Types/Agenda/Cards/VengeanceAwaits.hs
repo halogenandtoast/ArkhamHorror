@@ -5,6 +5,7 @@ import Arkham.Prelude
 import qualified Arkham.Agenda.Cards as Cards
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
+import Arkham.Types.Ability
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
@@ -12,38 +13,58 @@ import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
-import Arkham.Types.Message
+import Arkham.Types.Id
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (EnemyDefeated)
 import Arkham.Types.Resolution
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 
 newtype VengeanceAwaits = VengeanceAwaits AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsAgenda, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 vengeanceAwaits :: AgendaCard VengeanceAwaits
 vengeanceAwaits =
   agenda (3, A) VengeanceAwaits Cards.vengeanceAwaits (Static 5)
 
+instance HasAbilities env VengeanceAwaits where
+  getAbilities _ _ (VengeanceAwaits a) | onSide A a = pure
+    [ mkAbility a 1
+      $ ForcedAbility
+      $ AgendaAdvances Timing.When
+      $ AgendaWithId
+      $ toId a
+    ]
+  getAbilities _ _ (VengeanceAwaits a) = pure -- on side b
+    [ mkAbility a 2
+      $ Objective
+      $ ForcedAbility
+      $ EnemyDefeated Timing.After Anyone
+      $ enemyIs Enemies.umordhoth
+    ]
+
 instance AgendaRunner env => RunMessage env VengeanceAwaits where
   runMessage msg a@(VengeanceAwaits attrs@AgendaAttrs {..}) = case msg of
-    EnemyDefeated _ _ _ "01157" _ _ ->
-      a <$ push (ScenarioResolution $ Resolution 2)
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
-      actIds <- getSetList ()
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+      actIds <- getSetList @ActId ()
       umordhoth <- EncounterCard <$> genEncounterCard Enemies.umordhoth
       a <$ if "01146" `elem` actIds
         then do
           ritualSiteId <- getRandom
           pushAll
-            $ [ PlaceLocation ritualSiteId Locations.ritualSite
-              , CreateEnemyAt umordhoth ritualSiteId Nothing
-              ]
-            <> [ Discard (ActTarget actId) | actId <- actIds ]
+            [ PlaceLocation ritualSiteId Locations.ritualSite
+            , CreateEnemyAt umordhoth ritualSiteId Nothing
+            ]
         else do
           ritualSiteId <- getJustLocationIdByName "Ritual Site"
-          enemyIds <- getSetList ritualSiteId
+          enemies <- getSetListMap EnemyTarget ritualSiteId
           pushAll
-            $ [ Discard (EnemyTarget eid) | eid <- enemyIds ]
+            $ [ Discard enemy | enemy <- enemies ]
             <> [CreateEnemyAt umordhoth ritualSiteId Nothing]
-            <> [ Discard (ActTarget actId) | actId <- actIds ]
+    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+      a <$ push (ScenarioResolution $ Resolution 2)
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
+      actIds <- getSetList ()
+      a <$ pushAll [ Discard (ActTarget actId) | actId <- actIds ]
     _ -> VengeanceAwaits <$> runMessage msg attrs

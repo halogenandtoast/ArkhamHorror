@@ -1239,10 +1239,11 @@ windowMatches
   -> m Bool
 windowMatches iid source window' = \case
   Matcher.AnyWindow -> pure True
-  Matcher.AgendaAdvances timingMatcher agendaMatcher -> case window' of
-    Window t (Window.AgendaAdvance aid) | t == timingMatcher ->
-      pure $ agendaMatches aid agendaMatcher
-    _ -> pure False
+  Matcher.AgendaAdvances timingMatcher agendaMatcher ->
+    case traceShowId window' of
+      Window t (Window.AgendaAdvance aid) | t == timingMatcher ->
+        pure $ agendaMatches aid agendaMatcher
+      _ -> pure False
   Matcher.PlacedCounter whenMatcher whoMatcher counterMatcher valueMatcher ->
     case window' of
       Window t (Window.PlacedHorror iid' n)
@@ -1711,4 +1712,4 @@ deckMatch iid deckSignifier = \case
   Matcher.AnyDeck -> pure True
 
 agendaMatches :: AgendaId -> Matcher.AgendaMatcher -> Bool
-agendaMatches aid (Matcher.AgendaWithId aid') = aid == aid'
+agendaMatches aid (Matcher.AgendaWithId aid') = traceShowId $ aid == aid'

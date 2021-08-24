@@ -23,8 +23,8 @@ theArkhamWoods :: AgendaCard TheArkhamWoods
 theArkhamWoods = agenda (1, A) TheArkhamWoods Cards.theArkhamWoods (Static 4)
 
 instance AgendaRunner env => RunMessage env TheArkhamWoods where
-  runMessage msg a@(TheArkhamWoods attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B ->
+  runMessage msg a@(TheArkhamWoods attrs) = case msg of
+    AdvanceAgenda aid | aid == toId a && agendaSequence attrs == Agenda 1 B ->
       a <$ push
         (Run
           [ ShuffleEncounterDiscardBackIn
@@ -33,14 +33,13 @@ instance AgendaRunner env => RunMessage env TheArkhamWoods where
             (CardWithType EnemyType <> CardWithTrait Monster)
           ]
         )
-    RequestedEncounterCard (AgendaSource aid) mcard | aid == agendaId ->
-      case mcard of
-        Nothing -> a <$ push (NextAgenda aid "01144")
-        Just card -> do
-          mainPathId <- getJustLocationIdByName "Main Path"
-          a <$ pushAll
-            [ SpawnEnemyAt (EncounterCard card) mainPathId
-            , PlaceDoom (CardIdTarget $ toCardId card) 1
-            , NextAgenda aid "01144"
-            ]
+    RequestedEncounterCard source mcard | isSource attrs source -> case mcard of
+      Nothing -> a <$ push (NextAgenda (toId a) "01144")
+      Just card -> do
+        mainPathId <- getJustLocationIdByName "Main Path"
+        a <$ pushAll
+          [ SpawnEnemyAt (EncounterCard card) mainPathId
+          , PlaceDoom (CardIdTarget $ toCardId card) 1
+          , NextAgenda (toId a) "01144"
+          ]
     _ -> TheArkhamWoods <$> runMessage msg attrs

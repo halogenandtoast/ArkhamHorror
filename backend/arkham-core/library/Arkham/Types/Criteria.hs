@@ -6,6 +6,7 @@ import Arkham.Prelude
 
 import Arkham.Types.GameValue
 import Arkham.Types.Matcher
+import Arkham.Types.Modifier
 import Arkham.Types.Trait
 
 data DiscardSignifier = AnyPlayerDiscard
@@ -15,6 +16,18 @@ data DiscardSignifier = AnyPlayerDiscard
 pattern AnyHorrorOnThis :: Criterion
 pattern AnyHorrorOnThis <- HorrorOnThis (GreaterThan (Static 0)) where
   AnyHorrorOnThis = HorrorOnThis (GreaterThan (Static 0))
+
+pattern CanGainResources :: Criterion
+pattern CanGainResources <-
+  InvestigatorExists (InvestigatorMatches [You, InvestigatorWithoutModifier CannotGainResources]) where
+  CanGainResources = InvestigatorExists
+    (InvestigatorMatches [You, InvestigatorWithoutModifier CannotGainResources])
+
+pattern CanDrawCards :: Criterion
+pattern CanDrawCards <-
+  InvestigatorExists (InvestigatorMatches [You, InvestigatorWithoutModifier CannotDrawCards]) where
+  CanDrawCards = InvestigatorExists
+    (InvestigatorMatches [You, InvestigatorWithoutModifier CannotDrawCards])
 
 data Criterion
   = AnotherInvestigatorInSameLocation

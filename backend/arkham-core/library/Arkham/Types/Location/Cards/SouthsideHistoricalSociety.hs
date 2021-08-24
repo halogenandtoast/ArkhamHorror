@@ -31,14 +31,18 @@ southsideHistoricalSociety = location
 instance HasAbilities env SouthsideHistoricalSociety where
   getAbilities iid window (SouthsideHistoricalSociety x) | locationRevealed x =
     withBaseAbilities iid window x $ pure
-      [ restrictedAbility x 1 Here (ActionAbility Nothing $ ActionCost 1)
+      [ restrictedAbility
+          x
+          1
+          (Here <> CanDrawCards)
+          (ActionAbility Nothing $ ActionCost 1)
         & abilityLimitL
         .~ PlayerLimit PerGame 1
       ]
   getAbilities iid window (SouthsideHistoricalSociety x) =
     getAbilities iid window x
 
-instance (LocationRunner env) => RunMessage env SouthsideHistoricalSociety where
+instance LocationRunner env => RunMessage env SouthsideHistoricalSociety where
   runMessage msg l@(SouthsideHistoricalSociety attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (DrawCards iid 3 False)

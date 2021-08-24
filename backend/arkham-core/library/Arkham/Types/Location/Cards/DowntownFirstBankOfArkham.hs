@@ -9,13 +9,11 @@ import qualified Arkham.Location.Cards as Cards (downtownFirstBankOfArkham)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Message
-import Arkham.Types.Modifier
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype DowntownFirstBankOfArkham = DowntownFirstBankOfArkham LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -30,20 +28,18 @@ downtownFirstBankOfArkham = location
   Triangle
   [Moon, T]
 
-ability :: LocationAttrs -> Ability
-ability attrs =
-  (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
-    { abilityLimit = PlayerLimit PerGame 1
-    }
-
-instance ActionRunner env => HasAbilities env DowntownFirstBankOfArkham where
-  getAbilities iid window@(Window Timing.When NonFast) (DowntownFirstBankOfArkham attrs@LocationAttrs {..})
-    | locationRevealed
-    = withBaseAbilities iid window attrs $ do
-      canGainResources <-
-        notElem CannotGainResources
-          <$> getInvestigatorModifiers iid (toSource attrs)
-      pure [ locationAbility (ability attrs) | canGainResources ]
+instance HasAbilities env DowntownFirstBankOfArkham where
+  getAbilities iid window (DowntownFirstBankOfArkham attrs)
+    | locationRevealed attrs = withBaseAbilities iid window attrs $ do
+      pure
+        [ restrictedAbility
+            attrs
+            1
+            (Here <> CanGainResources)
+            (ActionAbility Nothing $ ActionCost 1)
+          & abilityLimitL
+          .~ PlayerLimit PerGame 1
+        ]
   getAbilities iid window (DowntownFirstBankOfArkham attrs) =
     getAbilities iid window attrs
 

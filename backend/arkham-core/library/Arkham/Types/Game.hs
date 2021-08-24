@@ -1,9 +1,5 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE InstanceSigs #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StrictData #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
-{-# OPTIONS_GHC -Wno-deprecations #-}
 
 module Arkham.Types.Game where
 
@@ -14,7 +10,6 @@ import Arkham.Json
 import Arkham.PlayerCard
 import Arkham.Types.Ability
 import Arkham.Types.Act
-import Arkham.Types.ActId
 import Arkham.Types.Action (Action, TakenAction)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Agenda
@@ -164,7 +159,10 @@ class HasMessageLogger a where
 getGame :: (HasGame env, MonadReader env m) => m Game
 getGame = view gameL
 
-data GameChoice = AskChoice InvestigatorId Int | DebugMessage Message | UpgradeChoice Message
+data GameChoice
+  = AskChoice InvestigatorId Int
+  | DebugMessage Message
+  | UpgradeChoice Message
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

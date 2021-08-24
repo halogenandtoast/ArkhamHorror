@@ -147,12 +147,7 @@ instance
       pure $ a & treacheriesL %~ insertSet tid
     AdvanceAgenda aid | aid == agendaId && agendaSide agendaSequence == A -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      pushAll
-        [ CheckWindow
-          leadInvestigatorId
-          [Window Timing.When (AgendaAdvance agendaId)]
-        , chooseOne leadInvestigatorId [AdvanceAgenda agendaId]
-        ]
+      push $ chooseOne leadInvestigatorId [AdvanceAgenda agendaId]
       pure
         $ a
         & (sequenceL .~ Agenda (unAgendaStep $ agendaStep agendaSequence) B)
@@ -160,9 +155,16 @@ instance
     AdvanceAgendaIfThresholdSatisfied -> do
       perPlayerDoomThreshold <- getPlayerCountValue (a ^. doomThresholdL)
       totalDoom <- unDoomCount <$> getCount ()
-      a <$ when
-        (totalDoom >= perPlayerDoomThreshold)
-        (pushAll [AdvanceAgenda agendaId, RemoveAllDoom])
+      when (totalDoom >= perPlayerDoomThreshold) $ do
+        leadInvestigatorId <- getLeadInvestigatorId
+        pushAll
+          [ CheckWindow
+            leadInvestigatorId
+            [Window Timing.When (AgendaAdvance agendaId)]
+          , AdvanceAgenda agendaId
+          , RemoveAllDoom
+          ]
+      pure a
     RemoveAllDoom -> do
       pure $ a & doomL .~ 0
     RevertAgenda aid | aid == agendaId && onSide B a ->

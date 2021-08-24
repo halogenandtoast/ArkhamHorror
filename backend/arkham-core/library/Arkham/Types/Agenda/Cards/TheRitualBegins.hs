@@ -13,7 +13,6 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
 
@@ -31,30 +30,29 @@ instance HasModifiersFor env TheRitualBegins where
     $ toModifiers attrs [EnemyFight 1, EnemyEvade 1]
   getModifiersFor _ _ _ = pure []
 
-instance (AgendaRunner env) => RunMessage env TheRitualBegins where
+instance AgendaRunner env => RunMessage env TheRitualBegins where
   runMessage msg a@(TheRitualBegins attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
-      investigatorIds <- getSetList ()
+      iids <- getInvestigatorIds
       a <$ pushAll
         ([ BeginSkillTest
              iid
-             (AgendaSource agendaId)
+             (toSource attrs)
              (InvestigatorTarget iid)
              Nothing
              SkillWillpower
              6
-         | iid <- investigatorIds
+         | iid <- iids
          ]
         <> [NextAgenda agendaId "01145"]
         )
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> a <$ push
-        (SearchCollectionForRandom
-          iid
-          (AgendaSource agendaId)
-          (CardWithType PlayerTreacheryType <> CardWithTrait Madness)
+        (SearchCollectionForRandom iid source
+        $ CardWithType PlayerTreacheryType
+        <> CardWithTrait Madness
         )
-    RequestedPlayerCard iid (AgendaSource aid) mcard | aid == agendaId ->
+    RequestedPlayerCard iid source mcard | isSource attrs source ->
       case mcard of
         Nothing -> pure a
         Just card -> a <$ push (AddToHand iid (PlayerCard card))

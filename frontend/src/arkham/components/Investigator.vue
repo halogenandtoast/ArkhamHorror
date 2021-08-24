@@ -300,7 +300,7 @@ i.action {
 }
 
 .tomeAction {
-  color: $seeker;
+  color: $seeker !important;
 }
 
 .player-card {

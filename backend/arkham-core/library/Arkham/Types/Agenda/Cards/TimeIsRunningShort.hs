@@ -15,7 +15,6 @@ import Arkham.Types.Cost
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Resolution
-import Arkham.Types.Source
 
 newtype TimeIsRunningShort = TimeIsRunningShort AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor env)

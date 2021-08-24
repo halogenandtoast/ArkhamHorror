@@ -9,16 +9,14 @@ import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
 
 newtype DreamsOfRlyeh = DreamsOfRlyeh TreacheryAttrs
   deriving anyclass IsTreachery
@@ -35,26 +33,24 @@ instance HasModifiersFor env DreamsOfRlyeh where
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities env DreamsOfRlyeh where
-  getAbilities iid (Window Timing.When NonFast) (DreamsOfRlyeh a) = pure
-    [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1
-    | treacheryOnInvestigator iid a
+  getAbilities _ _ (DreamsOfRlyeh a) = pure
+    [ restrictedAbility a 1 OnSameLocation $ ActionAbility Nothing $ ActionCost
+        1
     ]
-  getAbilities _ _ _ = pure []
 
 instance TreacheryRunner env => RunMessage env DreamsOfRlyeh where
   runMessage msg t@(DreamsOfRlyeh attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))
-    UseCardAbility iid (TreacherySource tid) _ 1 _ | tid == treacheryId ->
-      t <$ push
-        (BeginSkillTest
-          iid
-          (TreacherySource treacheryId)
-          (InvestigatorTarget iid)
-          Nothing
-          SkillWillpower
-          3
-        )
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> t <$ push
+      (BeginSkillTest
+        iid
+        source
+        (InvestigatorTarget iid)
+        Nothing
+        SkillWillpower
+        3
+      )
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> t <$ push (Discard $ toTarget attrs)
     _ -> DreamsOfRlyeh <$> runMessage msg attrs

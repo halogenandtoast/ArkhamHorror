@@ -18,14 +18,12 @@ import Arkham.Types.Resolution
 import Arkham.Types.Source
 
 newtype TimeIsRunningShort = TimeIsRunningShort AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 timeIsRunningShort :: AgendaCard TimeIsRunningShort
 timeIsRunningShort =
   agenda (2, A) TimeIsRunningShort Cards.timeIsRunningShort (Static 8)
-
-instance HasModifiersFor env TimeIsRunningShort
 
 instance HasAbilities env TimeIsRunningShort where
   getAbilities _ _ (TimeIsRunningShort a) =
@@ -35,7 +33,6 @@ instance AgendaRunner env => RunMessage env TimeIsRunningShort where
   runMessage msg a@(TimeIsRunningShort attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B ->
       a <$ push (ScenarioResolution $ Resolution 2)
-    UseCardAbility iid (AgendaSource aid) _ 1 _ | aid == agendaId -> do
-      push (Resign iid)
-      TimeIsRunningShort <$> runMessage msg attrs
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      a <$ push (Resign iid)
     _ -> TimeIsRunningShort <$> runMessage msg attrs

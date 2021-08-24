@@ -8,7 +8,8 @@ import Arkham.Prelude
 
 import Arkham.Json
 import Arkham.Types.Action
-import Arkham.Types.Card
+import Arkham.Types.Card.CardCode
+import Arkham.Types.Card.CardType
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Id
 import Arkham.Types.Keyword

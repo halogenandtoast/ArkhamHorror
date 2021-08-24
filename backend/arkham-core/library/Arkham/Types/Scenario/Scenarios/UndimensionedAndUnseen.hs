@@ -157,7 +157,6 @@ instance
 
 instance
   ( HasId CardCode env EnemyId
-  , HasId (Maybe LocationId) env LocationMatcher
   , HasSkillTest env
   , HasCount XPCount env ()
   , HasSet InvestigatorId env ()

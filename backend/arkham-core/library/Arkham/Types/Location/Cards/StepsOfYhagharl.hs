@@ -32,7 +32,7 @@ stepsOfYhagharl = location
   [Diamond, Moon]
 
 instance HasAbilities env StepsOfYhagharl where
-  getAbilities iid (Window Timing.When (WouldLeave who lid)) (StepsOfYhagharl attrs)
+  getAbilities iid (Window Timing.When (Leaving who lid)) (StepsOfYhagharl attrs)
     | iid == who
     = pure
       [ locationAbility (mkAbility attrs 1 LegacyForcedAbility)

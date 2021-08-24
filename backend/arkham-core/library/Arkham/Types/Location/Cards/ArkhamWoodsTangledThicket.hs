@@ -10,8 +10,8 @@ import Arkham.Types.Message
 import Arkham.Types.SkillType
 
 newtype ArkhamWoodsTangledThicket = ArkhamWoodsTangledThicket LocationAttrs
-  deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 arkhamWoodsTangledThicket :: LocationCard ArkhamWoodsTangledThicket
 arkhamWoodsTangledThicket = locationWith
@@ -25,12 +25,7 @@ arkhamWoodsTangledThicket = locationWith
   . (revealedSymbolL .~ Equals)
   )
 
-instance HasModifiersFor env ArkhamWoodsTangledThicket
-
-instance HasAbilities env ArkhamWoodsTangledThicket where
-  getAbilities i window (ArkhamWoodsTangledThicket attrs) =
-    getAbilities i window attrs
-
+-- TODO: Move this to a modifier
 instance (LocationRunner env) => RunMessage env ArkhamWoodsTangledThicket where
   runMessage msg (ArkhamWoodsTangledThicket attrs@LocationAttrs {..}) =
     case msg of

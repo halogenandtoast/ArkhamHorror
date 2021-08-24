@@ -14,20 +14,19 @@ import Arkham.Types.Message
 import Arkham.Types.Trait
 
 newtype MainPath = MainPath LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mainPath :: LocationCard MainPath
 mainPath =
   location MainPath Cards.mainPath 2 (Static 0) Squiggle [Square, Plus]
 
-instance HasModifiersFor env MainPath
-
 instance HasAbilities env MainPath where
   getAbilities iid window (MainPath a) =
     withBaseAbilities iid window a $ pure [locationResignAction a]
 
-instance (LocationRunner env) => RunMessage env MainPath where
+-- TODO: make constant ability "connected to woods" a modifier
+instance LocationRunner env => RunMessage env MainPath where
   runMessage msg l@(MainPath attrs@LocationAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (Resign iid)

@@ -359,6 +359,7 @@ data WindowMatcher
   | RoundEnds Timing
   | DuringTurn Who
   | Enters Timing Who Where
+  | Leaves Timing Who Where
   | OrWindowMatcher [WindowMatcher]
   | DealtDamage Timing Who
   | DealtHorror Timing Who
@@ -375,7 +376,7 @@ data WindowMatcher
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 data SkillTestMatcher
-  = WhileInvestigating
+  = WhileInvestigating LocationMatcher
   | WhileAttackingAnEnemy EnemyMatcher
   | SkillTestWithSkill SkillMatcher
   | AnySkillTest

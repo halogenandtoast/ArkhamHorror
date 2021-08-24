@@ -2117,12 +2117,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & discardL .~ []
   After (FailedSkillTest iid mAction _ (InvestigatorTarget iid') _ n)
     | iid == iid' && iid == investigatorId -> do
+      mTarget <- getSkillTestTarget
       let
         windows = maybe
           []
           (\case
-            Action.Investigate ->
-              [Window Timing.After (Window.FailInvestigationSkillTest iid n)]
+            Action.Investigate -> case mTarget of
+              Just (LocationTarget lid) ->
+                [ Window
+                    Timing.After
+                    (Window.FailInvestigationSkillTest iid lid n)
+                ]
+              _ -> error "expected location source for investigate"
             _ -> []
           )
           mAction
@@ -2131,12 +2137,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       a <$ pushAll windowMsgs
   After (PassedSkillTest iid mAction source (InvestigatorTarget iid') _ n)
     | iid == iid' && iid == investigatorId -> do
+      mTarget <- getSkillTestTarget
       let
         windows = maybe
           []
           (\case
-            Action.Investigate ->
-              [Window Timing.After (Window.PassInvestigationSkillTest iid n)]
+            Action.Investigate -> case mTarget of
+              Just (LocationTarget lid) ->
+                [ Window
+                    Timing.After
+                    (Window.PassInvestigationSkillTest iid lid n)
+                ]
+              _ -> error "expecting location source for investigate"
             _ -> []
           )
           mAction

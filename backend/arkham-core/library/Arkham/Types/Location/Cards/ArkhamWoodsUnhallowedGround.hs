@@ -3,15 +3,19 @@ module Arkham.Types.Location.Cards.ArkhamWoodsUnhallowedGround where
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (arkhamWoodsUnhallowedGround)
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 
 newtype ArkhamWoodsUnhallowedGround = ArkhamWoodsUnhallowedGround LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsUnhallowedGround :: LocationCard ArkhamWoodsUnhallowedGround
@@ -26,28 +30,30 @@ arkhamWoodsUnhallowedGround = locationWith
   . (revealedSymbolL .~ Triangle)
   )
 
-instance HasModifiersFor env ArkhamWoodsUnhallowedGround
-
 instance HasAbilities env ArkhamWoodsUnhallowedGround where
-  getAbilities i window (ArkhamWoodsUnhallowedGround attrs) =
-    getAbilities i window attrs
+  getAbilities i window (ArkhamWoodsUnhallowedGround x) | locationRevealed x =
+    withBaseAbilities i window x $ pure
+      [ mkAbility x 1
+        $ ForcedAbility
+        $ Enters Timing.After You
+        $ LocationWithId
+        $ toId x
+      ]
+  getAbilities i window (ArkhamWoodsUnhallowedGround x) =
+    getAbilities i window x
 
-instance (LocationRunner env) => RunMessage env ArkhamWoodsUnhallowedGround where
-  runMessage msg l@(ArkhamWoodsUnhallowedGround attrs@LocationAttrs {..}) =
-    case msg of
-      MoveTo iid lid | lid == locationId -> do
-        push
-          (BeginSkillTest
-            iid
-            (toSource attrs)
-            (InvestigatorTarget iid)
-            Nothing
-            SkillWillpower
-            4
-          )
-        ArkhamWoodsUnhallowedGround <$> runMessage msg attrs
-      FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
-        | isSource attrs source
-        -> l <$ push
-          (InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1)
-      _ -> ArkhamWoodsUnhallowedGround <$> runMessage msg attrs
+instance LocationRunner env => RunMessage env ArkhamWoodsUnhallowedGround where
+  runMessage msg l@(ArkhamWoodsUnhallowedGround attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+      (BeginSkillTest
+        iid
+        source
+        (InvestigatorTarget iid)
+        Nothing
+        SkillWillpower
+        4
+      )
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
+      | isSource attrs source -> l
+      <$ push (InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1)
+    _ -> ArkhamWoodsUnhallowedGround <$> runMessage msg attrs

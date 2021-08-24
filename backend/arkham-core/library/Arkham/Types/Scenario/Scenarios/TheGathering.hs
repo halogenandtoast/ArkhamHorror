@@ -66,7 +66,7 @@ instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env (Investigato
     Tablet -> pure $ toTokenValue attrs Tablet 2 4
     otherFace -> getTokenValue attrs iid otherFace
 
-instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env TheGathering where
+instance ScenarioRunner env => RunMessage env TheGathering where
   runMessage msg s@(TheGathering attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds

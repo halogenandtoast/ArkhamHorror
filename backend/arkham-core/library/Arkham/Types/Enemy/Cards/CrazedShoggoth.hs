@@ -8,6 +8,7 @@ import Arkham.Prelude
 import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Trait

@@ -189,7 +189,7 @@ investigatorDefeat = do
          | iid <- defeatedInvestigatorIds
          ]
 
-instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env TheEssexCountyExpress where
+instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
   runMessage msg s@(TheEssexCountyExpress attrs@ScenarioAttrs {..}) =
     case msg of
       SetTokensForScenario -> do

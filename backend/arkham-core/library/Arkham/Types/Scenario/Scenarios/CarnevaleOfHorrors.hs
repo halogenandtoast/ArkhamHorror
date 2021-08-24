@@ -155,7 +155,6 @@ additionalRewards s = do
 
 instance
   ( HasSet ClosestAssetId env (InvestigatorId, AssetMatcher)
-  , HasId (Maybe LocationId) env LocationMatcher
   , ScenarioRunner env
   )
   => RunMessage env CarnevaleOfHorrors where

@@ -204,6 +204,7 @@ type ScenarioAttrsRunner env
     , HasId (Maybe CampaignId) env ()
     , HasSet LocationId env ()
     , HasId LeadInvestigatorId env ()
+    , Query LocationMatcher env
     , HasQueue env
     )
 
@@ -211,7 +212,7 @@ getIsStandalone
   :: (MonadReader env m, HasId (Maybe CampaignId) env ()) => m Bool
 getIsStandalone = isNothing <$> getId @(Maybe CampaignId) ()
 
-instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioAttrsRunner env) => RunMessage env ScenarioAttrs where
+instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
   runMessage msg a@ScenarioAttrs {..} = case msg of
     Setup -> a <$ pushEnd BeginInvestigation
     StartCampaign -> do
@@ -223,7 +224,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioAttrsRunner env)
       standalone <- getIsStandalone
       a <$ if standalone then push $ LoadDeck iid deck else pure ()
     PlaceLocationMatching locationMatcher -> do
-      mlid <- getId @(Maybe LocationId) locationMatcher
+      mlid <- selectOne locationMatcher
       case mlid of
         Just _ -> pure a
         Nothing -> do
@@ -240,10 +241,12 @@ instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioAttrsRunner env)
             _ -> error
               "We want there to be only one location when targetting names"
     EnemySpawnAtLocationMatching miid locationMatcher eid -> do
-      mlid <- getId locationMatcher
-      a <$ case mlid of
-        Nothing -> push (Discard (EnemyTarget eid))
-        Just lid -> push (EnemySpawn miid lid eid)
+      lids <- selectList locationMatcher
+      leadInvestigatorId <- getLeadInvestigatorId
+      a <$ case lids of
+        [] -> push (Discard (EnemyTarget eid))
+        [lid] -> pushAll (resolve $ EnemySpawn miid lid eid)
+        xs -> spawnAtOneOf (fromMaybe leadInvestigatorId miid) eid xs
     PlaceDoomOnAgenda -> do
       agendaIds <- getSetList @AgendaId ()
       case agendaIds of

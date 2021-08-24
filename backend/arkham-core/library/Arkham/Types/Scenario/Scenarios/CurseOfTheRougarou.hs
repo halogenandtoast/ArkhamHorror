@@ -14,7 +14,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Id
-import Arkham.Types.Matcher hiding (RevealLocation)
 import Arkham.Types.Message
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
@@ -103,7 +102,7 @@ instance (HasTokenValue env InvestigatorId, HasSet Trait env LocationId, HasId L
     ElderThing -> pure $ TokenValue ElderThing (NegativeModifier 4)
     otherFace -> getTokenValue attrs iid otherFace
 
-instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env CurseOfTheRougarou where
+instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
   runMessage msg s@(CurseOfTheRougarou (attrs `With` metadata)) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds

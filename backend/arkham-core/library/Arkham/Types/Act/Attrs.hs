@@ -150,4 +150,7 @@ instance ActAttrsRunner env => RunMessage env ActAttrs where
       a <$ when (null investigatorIds) (push AllInvestigatorsResigned)
     UseCardAbility iid source _ 100 _ | isSource a source ->
       a <$ push (AdvanceAct (toId a) (InvestigatorSource iid))
+    PlaceClues (ActTarget aid) n | aid == actId -> do
+      let totalClues = n + fromMaybe 0 actClues
+      pure $ a { actClues = Just totalClues }
     _ -> pure a

@@ -20,6 +20,7 @@ huntingNightgaunt :: EnemyCard HuntingNightgaunt
 huntingNightgaunt =
   enemy HuntingNightgaunt Cards.huntingNightgaunt (3, Static 4, 1) (1, 1)
 
+-- TODO: Move this to a modifier somehow
 instance EnemyRunner env => RunMessage env HuntingNightgaunt where
   runMessage msg (HuntingNightgaunt attrs@EnemyAttrs {..}) = case msg of
     WhenEvadeEnemy _ eid | eid == enemyId -> do

@@ -40,6 +40,9 @@ instance HasSet Trait env LocationId => HasModifiersFor env Act where
 instance HasStep ActStep env Act where
   getStep = getStep . toAttrs
 
+instance HasCount ClueCount env Act where
+  getCount = pure . ClueCount . fromMaybe 0 . actClues . toAttrs
+
 instance Entity Act where
   type EntityId Act = ActId
   type EntityAttrs Act = ActAttrs

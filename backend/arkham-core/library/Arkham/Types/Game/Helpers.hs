@@ -844,6 +844,7 @@ type CanCheckPlayable env
     , HasCount ResourceCount env LocationId
     , HasCount (Maybe ClueCount) env TreacheryId
     , HasCount ClueCount env AssetId
+    , HasCount ClueCount env ActId
     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
     , HasSet InvestigatorId env LocationId
     , HasSet EnemyId env LocationId
@@ -984,6 +985,10 @@ passesCriteria iid source windows = \case
       Nothing -> pure False
       Just skillTest -> skillTestMatches iid source skillTest skillTestMatcher
   Criteria.CluesOnThis valueMatcher -> case source of
+    LocationSource lid -> do
+      (`gameValueMatches` valueMatcher) . unClueCount =<< getCount lid
+    ActSource aid -> do
+      (`gameValueMatches` valueMatcher) . unClueCount =<< getCount aid
     AssetSource aid -> do
       (`gameValueMatches` valueMatcher) . unClueCount =<< getCount aid
     TreacherySource tid -> do
@@ -1239,11 +1244,10 @@ windowMatches
   -> m Bool
 windowMatches iid source window' = \case
   Matcher.AnyWindow -> pure True
-  Matcher.AgendaAdvances timingMatcher agendaMatcher ->
-    case traceShowId window' of
-      Window t (Window.AgendaAdvance aid) | t == timingMatcher ->
-        pure $ agendaMatches aid agendaMatcher
-      _ -> pure False
+  Matcher.AgendaAdvances timingMatcher agendaMatcher -> case window' of
+    Window t (Window.AgendaAdvance aid) | t == timingMatcher ->
+      pure $ agendaMatches aid agendaMatcher
+    _ -> pure False
   Matcher.PlacedCounter whenMatcher whoMatcher counterMatcher valueMatcher ->
     case window' of
       Window t (Window.PlacedHorror iid' n)
@@ -1305,6 +1309,12 @@ windowMatches iid source window' = \case
       (matchWho iid iid' whoMatcher)
       (locationMatches iid source window' lid whereMatcher)
     _ -> pure False
+  Matcher.Leaves whenMatcher whoMatcher whereMatcher -> case window' of
+    Window t (Window.Leaving iid' lid) | whenMatcher == t -> liftA2
+      (&&)
+      (matchWho iid iid' whoMatcher)
+      (locationMatches iid source window' lid whereMatcher)
+    _ -> pure False
   Matcher.WouldHaveSkillTestResult whenMatcher whoMatcher _ skillTestResultMatcher
     -> case skillTestResultMatcher of
       Matcher.FailureResult _ -> case window' of
@@ -1320,11 +1330,14 @@ windowMatches iid source window' = \case
   Matcher.SkillTestResult whenMatcher whoMatcher skillMatcher skillTestResultMatcher
     -> case skillTestResultMatcher of
       Matcher.FailureResult gameValueMatcher -> case window' of
-        Window t (Window.FailInvestigationSkillTest who n)
-          | whenMatcher == t && skillMatcher == Matcher.WhileInvestigating -> liftA2
-            (&&)
-            (matchWho iid who whoMatcher)
-            (gameValueMatches n gameValueMatcher)
+        Window t (Window.FailInvestigationSkillTest who lid n)
+          | whenMatcher == t -> case skillMatcher of
+            Matcher.WhileInvestigating whereMatcher -> andM
+              [ matchWho iid who whoMatcher
+              , gameValueMatches n gameValueMatcher
+              , locationMatches iid source window' lid whereMatcher
+              ]
+            _ -> pure False
         Window t (Window.FailAttackEnemy who enemyId n) | whenMatcher == t ->
           case skillMatcher of
             Matcher.WhileAttackingAnEnemy enemyMatcher -> andM
@@ -1340,11 +1353,14 @@ windowMatches iid source window' = \case
             (gameValueMatches n gameValueMatcher)
         _ -> pure False
       Matcher.SuccessResult gameValueMatcher -> case window' of
-        Window t (Window.PassInvestigationSkillTest who n)
-          | whenMatcher == t && skillMatcher == Matcher.WhileInvestigating -> liftA2
-            (&&)
-            (matchWho iid who whoMatcher)
-            (gameValueMatches n gameValueMatcher)
+        Window t (Window.PassInvestigationSkillTest who lid n)
+          | whenMatcher == t -> case skillMatcher of
+            Matcher.WhileInvestigating whereMatcher -> andM
+              [ matchWho iid who whoMatcher
+              , gameValueMatches n gameValueMatcher
+              , locationMatches iid source window' lid whereMatcher
+              ]
+            _ -> pure False
         Window t (Window.SuccessfulAttackEnemy who enemyId n)
           | whenMatcher == t -> case skillMatcher of
             Matcher.WhileAttackingAnEnemy enemyMatcher -> andM
@@ -1623,6 +1639,7 @@ skillTestMatches
      , HasId LocationId env InvestigatorId
      , Query Matcher.SkillMatcher env
      , Query Matcher.EnemyMatcher env
+     , Query Matcher.LocationMatcher env
      , Query Matcher.TreacheryMatcher env
      )
   => InvestigatorId
@@ -1633,8 +1650,10 @@ skillTestMatches
 skillTestMatches iid source st = \case
   Matcher.AnySkillTest -> pure True
   Matcher.UsingThis -> pure $ source == skillTestSource st
-  Matcher.WhileInvestigating -> case skillTestAction st of
-    Just Action.Investigate -> pure True
+  Matcher.WhileInvestigating locationMatcher -> case skillTestAction st of
+    Just Action.Investigate -> case skillTestSource st of
+      LocationSource lid -> member lid <$> select locationMatcher
+      _ -> pure False
     _ -> pure False
   Matcher.SkillTestOnTreachery treacheryMatcher -> case skillTestSource st of
     TreacherySource tid -> member tid <$> select treacheryMatcher
@@ -1712,4 +1731,25 @@ deckMatch iid deckSignifier = \case
   Matcher.AnyDeck -> pure True
 
 agendaMatches :: AgendaId -> Matcher.AgendaMatcher -> Bool
-agendaMatches aid (Matcher.AgendaWithId aid') = traceShowId $ aid == aid'
+agendaMatches aid (Matcher.AgendaWithId aid') = aid == aid'
+
+spawnAtOneOf
+  :: (MonadIO m, HasSet LocationId env (), MonadReader env m, HasQueue env)
+  => InvestigatorId
+  -> EnemyId
+  -> [LocationId]
+  -> m ()
+spawnAtOneOf iid eid targetLids = do
+  locations' <- getSet ()
+  case setToList (setFromList targetLids `intersection` locations') of
+    [] -> push (Discard (EnemyTarget eid))
+    [lid] -> pushAll (resolve $ EnemySpawn Nothing lid eid)
+    lids -> push
+      (chooseOne
+        iid
+        [ TargetLabel
+            (LocationTarget lid)
+            (resolve $ EnemySpawn Nothing lid eid)
+        | lid <- lids
+        ]
+      )

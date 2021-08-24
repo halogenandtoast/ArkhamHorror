@@ -3,16 +3,20 @@ module Arkham.Types.Location.Cards.ArkhamWoodsTwistingPaths where
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (arkhamWoodsTwistingPaths)
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.EffectMetadata
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 
 newtype ArkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsTwistingPaths :: LocationCard ArkhamWoodsTwistingPaths
@@ -27,31 +31,32 @@ arkhamWoodsTwistingPaths = locationWith
   . (revealedSymbolL .~ T)
   )
 
-instance HasModifiersFor env ArkhamWoodsTwistingPaths
-
 instance HasAbilities env ArkhamWoodsTwistingPaths where
+  getAbilities i window (ArkhamWoodsTwistingPaths attrs)
+    | locationRevealed attrs = withBaseAbilities i window attrs $ pure
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ Leaves Timing.When You
+        $ LocationWithId
+        $ toId attrs
+      ]
   getAbilities i window (ArkhamWoodsTwistingPaths attrs) =
     getAbilities i window attrs
 
-instance (LocationRunner env) => RunMessage env ArkhamWoodsTwistingPaths where
-  runMessage msg l@(ArkhamWoodsTwistingPaths attrs@LocationAttrs {..}) =
-    case msg of
-      Will (MoveTo iid lid)
-        | iid `elem` locationInvestigators && lid /= locationId -> do
-          moveFrom <- popMessage -- MoveFrom
-          moveTo <- popMessage -- MoveTo
-          l <$ pushAll
-            [ CreateEffect
-              "01151"
-              (Just $ EffectMessages (catMaybes [moveFrom, moveTo]))
-              (toSource attrs)
-              (InvestigatorTarget iid)
-            , BeginSkillTest
-              iid
-              (toSource attrs)
-              (InvestigatorTarget iid)
-              Nothing
-              SkillIntellect
-              3
-            ]
-      _ -> ArkhamWoodsTwistingPaths <$> runMessage msg attrs
+instance LocationRunner env => RunMessage env ArkhamWoodsTwistingPaths where
+  runMessage msg l@(ArkhamWoodsTwistingPaths attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      moveFrom <- popMessageMatching \case
+        MoveFrom iid' lid' -> iid' == iid && toId l == lid'
+        _ -> False
+      moveTo <- popMessageMatching \case
+        MoveTo iid' _ -> iid == iid' -- we don't know where they are going for the cancel
+        _ -> False
+      let
+        target = InvestigatorTarget iid
+        effectMetadata = Just $ EffectMessages (catMaybes [moveFrom, moveTo])
+      l <$ pushAll
+        [ CreateEffect "01151" effectMetadata source target
+        , BeginSkillTest iid source target Nothing SkillIntellect 3
+        ]
+    _ -> ArkhamWoodsTwistingPaths <$> runMessage msg attrs

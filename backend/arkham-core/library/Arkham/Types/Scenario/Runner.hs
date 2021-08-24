@@ -49,5 +49,6 @@ type ScenarioRunner env
     , HasSet Trait env LocationId
     , HasSet VictoryDisplayCardCode env ()
     , HasSkillTest env
+    , Query LocationMatcher env
     )
 

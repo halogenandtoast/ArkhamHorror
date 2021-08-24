@@ -32,7 +32,7 @@ instance HasModifiersFor env DrMilanChristopher where
 instance HasAbilities env DrMilanChristopher where
   getAbilities _ _ (DrMilanChristopher x) = pure
     [ restrictedAbility x 1 OwnsThis $ ReactionAbility
-        (SkillTestResult Timing.After You WhileInvestigating
+        (SkillTestResult Timing.After You (WhileInvestigating Anywhere)
         $ SuccessResult AnyValue
         )
         Free

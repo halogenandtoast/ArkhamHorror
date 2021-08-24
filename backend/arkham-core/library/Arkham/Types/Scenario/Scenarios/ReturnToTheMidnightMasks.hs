@@ -12,7 +12,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Id
-import Arkham.Types.Matcher hiding (RevealLocation)
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Scenario.Attrs
@@ -43,7 +42,7 @@ instance (HasTokenValue env InvestigatorId, HasCount DoomCount env (), HasCount 
   getTokenValue (ReturnToTheMidnightMasks theMidnightMasks') iid =
     getTokenValue theMidnightMasks' iid
 
-instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env ReturnToTheMidnightMasks where
+instance ScenarioRunner env => RunMessage env ReturnToTheMidnightMasks where
   runMessage msg (ReturnToTheMidnightMasks theMidnightMasks'@(TheMidnightMasks attrs))
     = case msg of
       Setup -> do

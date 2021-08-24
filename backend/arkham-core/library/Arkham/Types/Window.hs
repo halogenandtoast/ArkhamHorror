@@ -48,7 +48,7 @@ data WindowType
   | EnterPlay Target
   | Entering InvestigatorId LocationId
   | FailAttackEnemy InvestigatorId EnemyId Int
-  | FailInvestigationSkillTest InvestigatorId Int
+  | FailInvestigationSkillTest InvestigatorId LocationId Int
   | FailSkillTest InvestigatorId Int
   | FailSkillTestAtOrLess InvestigatorId Int
   | FastPlayerWindow
@@ -59,7 +59,7 @@ data WindowType
   | MoveFromHunter EnemyId
   | NonFast
   | PassSkillTest (Maybe Action) Source InvestigatorId Int
-  | PassInvestigationSkillTest InvestigatorId Int
+  | PassInvestigationSkillTest InvestigatorId LocationId Int
   | PhaseBegins Phase
   | PhaseEnds Phase
   | PlacedHorror InvestigatorId Int
@@ -76,7 +76,6 @@ data WindowType
   | TurnEnds InvestigatorId
   | WouldDrawEncounterCard InvestigatorId
   | WouldFailSkillTest InvestigatorId
-  | WouldLeave InvestigatorId LocationId
   | WouldReady Target
   | WouldRevealChaosToken Source InvestigatorId
   | WouldTakeDamage Source Target

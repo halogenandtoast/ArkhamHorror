@@ -919,6 +919,10 @@ getEnemiesMatching matcher = do
           ]
         )
 
+getAct :: (HasCallStack, MonadReader env m, HasGame env) => ActId -> m Act
+getAct aid = fromJustNote missingAct . preview (actsL . ix aid) <$> getGame
+  where missingAct = "Unknown act: " <> show aid
+
 getAgenda
   :: (HasCallStack, MonadReader env m, HasGame env) => AgendaId -> m Agenda
 getAgenda aid =
@@ -1306,6 +1310,9 @@ instance HasGame env => HasCount TreacheryCount env (LocationId, CardCode) where
       | (i, c) <- mapToList (g ^. treacheriesL)
       , i `member` treacheries
       ]
+
+instance HasGame env => HasCount ClueCount env ActId where
+  getCount = getCount <=< getAct
 
 instance HasGame env => HasCount ClueCount env AssetId where
   getCount = getCount <=< getAsset
@@ -2573,7 +2580,7 @@ runGameMessage msg g = case msg of
     g <$ pushAll [ InvestigatorMulligan iid | iid <- g ^. playerOrderL ]
   InvestigatorMulligan iid -> pure $ g & activeInvestigatorIdL .~ iid
   Will (MoveFrom iid lid) -> do
-    msgs <- checkWindows [Window Timing.When (Window.WouldLeave iid lid)]
+    msgs <- checkWindows [Window Timing.When (Window.Leaving iid lid)]
     g <$ pushAll msgs
   After (MoveFrom iid lid) -> do
     msgs <- checkWindows [Window Timing.After (Window.Leaving iid lid)]
@@ -3437,6 +3444,10 @@ runGameMessage msg g = case msg of
     pure $ g & assetsL . at assetId ?~ asset
   When (EnemySpawn _ lid eid) -> do
     windowMsgs <- checkWindows [Window Timing.When (Window.EnemySpawns eid lid)]
+    g <$ pushAll windowMsgs
+  After (EnemySpawn _ lid eid) -> do
+    windowMsgs <- checkWindows
+      [Window Timing.After (Window.EnemySpawns eid lid)]
     g <$ pushAll windowMsgs
   SpawnEnemyAt card lid -> do
     let

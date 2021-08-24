@@ -12,7 +12,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Id
-import Arkham.Types.Matcher hiding (RevealLocation)
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Resolution
@@ -66,7 +65,7 @@ instance (HasTokenValue env InvestigatorId, HasCount DiscardCount env Investigat
     ElderThing -> pure $ TokenValue Tablet (NegativeModifier 0) -- determined by an effect
     otherFace -> getTokenValue attrs iid otherFace
 
-instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env ExtracurricularActivity where
+instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
   runMessage msg s@(ExtracurricularActivity attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds

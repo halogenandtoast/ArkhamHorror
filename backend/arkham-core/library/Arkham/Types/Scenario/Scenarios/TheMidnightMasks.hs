@@ -102,7 +102,7 @@ introPart2 = FlavorText
     \ cultists we find before midnight, the better.”"
   ]
 
-instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env TheMidnightMasks where
+instance ScenarioRunner env => RunMessage env TheMidnightMasks where
   runMessage msg s@(TheMidnightMasks attrs@ScenarioAttrs {..}) = case msg of
     Setup -> do
       count' <- getPlayerCount

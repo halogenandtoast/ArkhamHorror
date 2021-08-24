@@ -6,17 +6,21 @@ module Arkham.Types.Enemy.Cards.YithianObserver
 import Arkham.Prelude
 
 import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.Message
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (EnemyAttacks)
+import Arkham.Types.Modifier
 import Arkham.Types.Prey
 import Arkham.Types.Query
-import Arkham.Types.Source
+import qualified Arkham.Types.Timing as Timing
 
 newtype YithianObserver = YithianObserver EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yithianObserver :: EnemyCard YithianObserver
 yithianObserver = enemyWith
@@ -26,26 +30,28 @@ yithianObserver = enemyWith
   (1, 1)
   (preyL .~ FewestCards)
 
+instance HasAbilities env YithianObserver where
+  getAbilities iid window (YithianObserver a) =
+    withBaseAbilities iid window a $ pure
+      [ mkAbility a 1
+        $ ForcedAbility
+        $ EnemyAttacks Timing.When You
+        $ EnemyWithId
+        $ toId a
+      ]
+
 instance EnemyRunner env => RunMessage env YithianObserver where
-  runMessage msg e@(YithianObserver attrs@EnemyAttrs {..}) = case msg of
-    PerformEnemyAttack iid eid damageStrategy | eid == enemyId -> do
+  runMessage msg e@(YithianObserver attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       cardCount' <- unCardCount <$> getCount iid
       if cardCount' == 0
-        then e <$ push
-          (InvestigatorAssignDamage
-            iid
-            (EnemySource enemyId)
-            damageStrategy
-            (enemyHealthDamage + 1)
-            (enemySanityDamage + 1)
-          )
-        else e <$ pushAll
-          [ RandomDiscard iid
-          , InvestigatorAssignDamage
-            iid
-            (EnemySource enemyId)
-            DamageAny
-            enemyHealthDamage
-            enemySanityDamage
-          ]
+        then
+          e
+            <$ push
+                 (skillTestModifiers
+                   source
+                   (toTarget attrs)
+                   [DamageDealt 1, HorrorDealt 1]
+                 )
+        else e <$ push (RandomDiscard iid)
     _ -> YithianObserver <$> runMessage msg attrs

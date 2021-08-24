@@ -46,7 +46,6 @@ data Scenario
 
 instance
   ( HasSet ClosestAssetId env (InvestigatorId, AssetMatcher)
-  , HasId (Maybe LocationId) env LocationMatcher
   , HasStep ActStep env ()
   , ScenarioRunner env
   )
@@ -142,7 +141,7 @@ instance HasTokenValue env InvestigatorId => HasTokenValue env BaseScenario wher
     ElderThing -> pure $ TokenValue ElderThing (NegativeModifier 1)
     otherFace -> getTokenValue attrs iid otherFace
 
-instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env BaseScenario where
+instance ScenarioRunner env => RunMessage env BaseScenario where
   runMessage msg a@(BaseScenario attrs) = case msg of
     ScenarioResolution NoResolution -> pure a
     _ -> BaseScenario <$> runMessage msg attrs

@@ -16,7 +16,6 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
-import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
@@ -63,26 +62,11 @@ instance (TreacheryRunner env) => RunMessage env LockedDoor where
             [ AttachTreachery treacheryId (LocationTarget x) | x <- xs ]
           )
       LockedDoor <$> runMessage msg attrs
-    UseCardAbility iid (TreacherySource tid) _ 1 _ | tid == treacheryId ->
-      t <$ push
-        (chooseOne
-          iid
-          [ BeginSkillTest
-            iid
-            (toSource attrs)
-            (toTarget attrs)
-            Nothing
-            SkillCombat
-            4
-          , BeginSkillTest
-            iid
-            (toSource attrs)
-            (toTarget attrs)
-            Nothing
-            SkillAgility
-            4
-          ]
-        )
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      let
+        target = toTarget attrs
+        beginSkillTest sType = BeginSkillTest iid source target Nothing sType 4
+      t <$ push (chooseOne iid $ map beginSkillTest [SkillCombat, SkillAgility])
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> t <$ push (Discard $ toTarget attrs)
     _ -> LockedDoor <$> runMessage msg attrs

@@ -6,22 +6,37 @@ module Arkham.Types.Enemy.Cards.Acolyte
 import Arkham.Prelude
 
 import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
+import Arkham.Types.Matcher
 import Arkham.Types.Message
+import qualified Arkham.Types.Timing as Timing
 
 newtype Acolyte = Acolyte EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 acolyte :: EnemyCard Acolyte
-acolyte = enemy Acolyte Cards.acolyte (3, Static 1, 2) (1, 0)
+acolyte = enemyWith
+  Acolyte
+  Cards.acolyte
+  (3, Static 1, 2)
+  (1, 0)
+  (spawnAtL ?~ EmptyLocation)
+
+instance HasAbilities env Acolyte where
+  getAbilities _ _ (Acolyte a) = pure
+    [ mkAbility a 1
+      $ ForcedAbility
+      $ EnemySpawns Timing.After Anywhere
+      $ EnemyWithId
+      $ toId a
+    ]
 
 instance EnemyRunner env => RunMessage env Acolyte where
-  runMessage msg e@(Acolyte attrs@EnemyAttrs {..}) = case msg of
-    InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
-      e <$ spawnAtEmptyLocation iid eid
-    EnemySpawn _ _ eid | eid == enemyId ->
-      Acolyte <$> runMessage msg (attrs & doomL +~ 1)
+  runMessage msg e@(Acolyte attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      e <$ push (PlaceDoom (toTarget attrs) 1)
     _ -> Acolyte <$> runMessage msg attrs

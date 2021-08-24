@@ -17,7 +17,7 @@ import Arkham.Types.Message
 
 newtype InvestigatingTheTrail = InvestigatingTheTrail ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 investigatingTheTrail :: ActCard InvestigatingTheTrail
 investigatingTheTrail = act
@@ -26,21 +26,8 @@ investigatingTheTrail = act
   Cards.investigatingTheTrail
   (Just $ GroupClueCost (PerPlayer 3) Nothing)
 
-instance HasAbilities env InvestigatingTheTrail where
-  getAbilities i window (InvestigatingTheTrail x) = getAbilities i window x
-
 instance ActRunner env => RunMessage env InvestigatingTheTrail where
   runMessage msg a@(InvestigatingTheTrail attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      investigatorIds <- getInvestigatorIds
-      requiredClues <- getPlayerCountValue (PerPlayer 3)
-      pushAll
-        (SpendClues requiredClues investigatorIds
-        : [ chooseOne iid [AdvanceAct aid (toSource attrs)]
-          | iid <- investigatorIds
-          ]
-        )
-      pure $ InvestigatingTheTrail $ attrs & (sequenceL .~ Act 1 B)
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       mRitualSiteId <- getLocationIdByName "Ritual Site"
       mainPathId <- getJustLocationIdByName "Main Path"

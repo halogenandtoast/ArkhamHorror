@@ -205,27 +205,6 @@ spawnAt
 spawnAt eid locationMatcher =
   pushAll $ resolve (EnemySpawnAtLocationMatching Nothing locationMatcher eid)
 
-spawnAtOneOf
-  :: (MonadIO m, HasSet LocationId env (), MonadReader env m, HasQueue env)
-  => InvestigatorId
-  -> EnemyId
-  -> [LocationId]
-  -> m ()
-spawnAtOneOf iid eid targetLids = do
-  locations' <- getSet ()
-  case setToList (setFromList targetLids `intersection` locations') of
-    [] -> push (Discard (EnemyTarget eid))
-    [lid] -> pushAll (resolve $ EnemySpawn Nothing lid eid)
-    lids -> push
-      (chooseOne
-        iid
-        [ TargetLabel
-            (LocationTarget lid)
-            (resolve $ EnemySpawn Nothing lid eid)
-        | lid <- lids
-        ]
-      )
-
 modifiedEnemyFight
   :: (MonadReader env m, HasModifiersFor env (), HasSkillTest env)
   => EnemyAttrs

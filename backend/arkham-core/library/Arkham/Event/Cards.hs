@@ -311,7 +311,7 @@ lookWhatIFound = (event "01079" "\"Look what I found!\"" 2 Survivor)
   , cdCardTraits = singleton Fortune
   , cdFastWindow =
     Just
-    $ SkillTestResult Timing.After You WhileInvestigating
+    $ SkillTestResult Timing.After You (WhileInvestigating Anywhere)
     $ FailureResult
     $ LessThan
     $ Static 3

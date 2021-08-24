@@ -10,8 +10,8 @@ import Arkham.Types.Message
 import Arkham.Types.SkillType
 
 newtype ArkhamWoodsCliffside = ArkhamWoodsCliffside LocationAttrs
-  deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 arkhamWoodsCliffside :: LocationCard ArkhamWoodsCliffside
 arkhamWoodsCliffside = locationWith
@@ -25,13 +25,8 @@ arkhamWoodsCliffside = locationWith
   . (revealedSymbolL .~ Hourglass)
   )
 
-instance HasModifiersFor env ArkhamWoodsCliffside
-
-instance HasAbilities env ArkhamWoodsCliffside where
-  getAbilities i window (ArkhamWoodsCliffside attrs) =
-    getAbilities i window attrs
-
-instance (LocationRunner env) => RunMessage env ArkhamWoodsCliffside where
+-- TODO: Move this to a modifier
+instance LocationRunner env => RunMessage env ArkhamWoodsCliffside where
   runMessage msg (ArkhamWoodsCliffside attrs@LocationAttrs {..}) = case msg of
     Investigate iid lid s _ False | lid == locationId -> do
       let investigate = Investigate iid lid s SkillAgility False

@@ -1,4 +1,7 @@
-module Arkham.Types.Treachery.Cards.UmordhothsWrath where
+module Arkham.Types.Treachery.Cards.UmordhothsWrath
+  ( umordhothsWrath
+  , UmordhothsWrath(..)
+  ) where
 
 import Arkham.Prelude
 
@@ -7,7 +10,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.SkillType
-import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
@@ -20,40 +22,7 @@ umordhothsWrath :: TreacheryCard UmordhothsWrath
 umordhothsWrath = treachery UmordhothsWrath Cards.umordhothsWrath
 
 instance TreacheryRunner env => RunMessage env UmordhothsWrath where
-  runMessage msg t@(UmordhothsWrath attrs@TreacheryAttrs {..}) = case msg of
-    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
-      | tid == treacheryId -> t
-      <$ push (HandlePointOfFailure iid (TreacheryTarget tid) n)
-    HandlePointOfFailure _ (TreacheryTarget tid) 0 | tid == treacheryId ->
-      pure t
-    HandlePointOfFailure iid (TreacheryTarget tid) n | tid == treacheryId -> do
-      cardCount' <- unCardCount <$> getCount iid
-      if cardCount' > 0
-        then t <$ pushAll
-          [ chooseOne
-            iid
-            [ Label "Discard a card from your hand" [RandomDiscard iid]
-            , Label
-              "Take 1 damage and 1 horror"
-              [ InvestigatorAssignDamage
-                  iid
-                  (TreacherySource treacheryId)
-                  DamageAny
-                  1
-                  1
-              ]
-            ]
-          , HandlePointOfFailure iid (TreacheryTarget treacheryId) (n - 1)
-          ]
-        else t <$ pushAll
-          [ InvestigatorAssignDamage
-            iid
-            (TreacherySource treacheryId)
-            DamageAny
-            1
-            1
-          , HandlePointOfFailure iid (TreacheryTarget treacheryId) (n - 1)
-          ]
+  runMessage msg t@(UmordhothsWrath attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ push
       (BeginSkillTest
         iid
@@ -63,4 +32,25 @@ instance TreacheryRunner env => RunMessage env UmordhothsWrath where
         SkillWillpower
         5
       )
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
+      | isSource attrs source -> t
+      <$ push (HandlePointOfFailure iid (toTarget attrs) n)
+    HandlePointOfFailure _ target 0 | isTarget attrs target -> pure t
+    HandlePointOfFailure iid target n | isTarget attrs target -> do
+      cardCount' <- unCardCount <$> getCount iid
+      if cardCount' > 0
+        then t <$ pushAll
+          [ chooseOne
+            iid
+            [ Label "Discard a card from your hand" [RandomDiscard iid]
+            , Label
+              "Take 1 damage and 1 horror"
+              [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1]
+            ]
+          , HandlePointOfFailure iid (toTarget attrs) (n - 1)
+          ]
+        else t <$ pushAll
+          [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1
+          , HandlePointOfFailure iid (toTarget attrs) (n - 1)
+          ]
     _ -> UmordhothsWrath <$> runMessage msg attrs

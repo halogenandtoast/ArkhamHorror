@@ -20,7 +20,6 @@ import Arkham.Types.Exception
 import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
-import Arkham.Types.Matcher hiding (RevealLocation)
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Resolution
@@ -165,7 +164,7 @@ getRemoveNecronomicon = do
     , owner `elem` defeatedInvestigatorIds
     ]
 
-instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env BloodOnTheAltar where
+instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
   runMessage msg s@(BloodOnTheAltar (attrs@ScenarioAttrs {..} `With` metadata@(BloodOnTheAltarMetadata sacrificed)))
     = case msg of
       SetTokensForScenario -> do

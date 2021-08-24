@@ -3,6 +3,7 @@ module Arkham.Types.Act.Cards.IntoTheDarkness where
 import Arkham.Prelude
 
 import qualified Arkham.Act.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
@@ -11,6 +12,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Source
+import qualified Arkham.Types.Timing as Timing
 
 newtype IntoTheDarkness = IntoTheDarkness ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)
@@ -20,14 +22,19 @@ intoTheDarkness :: ActCard IntoTheDarkness
 intoTheDarkness = act (2, A) IntoTheDarkness Cards.intoTheDarkness Nothing
 
 instance HasAbilities env IntoTheDarkness where
-  getAbilities i window (IntoTheDarkness x) = getAbilities i window x
+  getAbilities _ _ (IntoTheDarkness attrs) | onSide A attrs = pure
+    [ mkAbility attrs 1
+      $ Objective
+      $ ForcedAbility
+      $ Enters Timing.After Anyone
+      $ LocationWithTitle "Ritual Site"
+    ]
+  getAbilities _ _ _ = pure []
 
 instance ActRunner env => RunMessage env IntoTheDarkness where
   runMessage msg a@(IntoTheDarkness attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      push (chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)])
-      pure $ IntoTheDarkness $ attrs & (sequenceL .~ Act 2 B)
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+      a <$ push (AdvanceAct actId source)
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       playerCount <- getPlayerCount
       if playerCount > 3
@@ -53,9 +60,4 @@ instance ActRunner env => RunMessage env IntoTheDarkness where
       Just card -> do
         ritualSiteId <- getJustLocationIdByName "Ritual Site"
         a <$ pushAll [SpawnEnemyAt (EncounterCard card) ritualSiteId]
-    WhenEnterLocation _ lid -> do
-      mRitualSiteId <- getLocationIdByName "Ritual Site"
-      a <$ when
-        (mRitualSiteId == Just lid)
-        (push $ AdvanceAct actId (toSource attrs))
     _ -> IntoTheDarkness <$> runMessage msg attrs

@@ -42,7 +42,7 @@ instance HasAbilities env Scavenging where
             (SkillTestResult
               Timing.After
               You
-              WhileInvestigating
+              (WhileInvestigating Anywhere)
               (SuccessResult $ AtLeast $ Static 2)
             )
             (ExhaustCost $ toTarget a)

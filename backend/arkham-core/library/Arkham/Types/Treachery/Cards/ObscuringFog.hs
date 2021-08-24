@@ -3,18 +3,21 @@ module Arkham.Types.Treachery.Cards.ObscuringFog where
 import Arkham.Prelude
 
 import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype ObscuringFog = ObscuringFog TreacheryAttrs
-  deriving anyclass (IsTreachery, HasAbilities env)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 obscuringFog :: TreacheryCard ObscuringFog
@@ -25,6 +28,17 @@ instance HasModifiersFor env ObscuringFog where
     pure
       $ toModifiers attrs [ ShroudModifier 2 | treacheryOnLocation lid attrs ]
   getModifiersFor _ _ _ = pure []
+
+instance HasAbilities env ObscuringFog where
+  getAbilities _ _ (ObscuringFog a) = case treacheryAttachedTarget a of
+    Just (LocationTarget lid) -> pure
+      [ mkAbility a 1 $ ForcedAbility $ SkillTestResult
+          Timing.After
+          Anyone
+          (WhileInvestigating $ LocationWithId lid)
+          (SuccessResult AnyValue)
+      ]
+    _ -> pure []
 
 instance TreacheryRunner env => RunMessage env ObscuringFog where
   runMessage msg t@(ObscuringFog attrs@TreacheryAttrs {..}) = case msg of
@@ -37,6 +51,6 @@ instance TreacheryRunner env => RunMessage env ObscuringFog where
         else do
           t <$ push
             (AttachTreachery treacheryId $ LocationTarget currentLocationId)
-    SuccessfulInvestigation _ lid _ | treacheryOnLocation lid attrs ->
-      t <$ push (Discard (TreacheryTarget treacheryId))
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      t <$ push (Discard $ toTarget attrs)
     _ -> ObscuringFog <$> runMessage msg attrs

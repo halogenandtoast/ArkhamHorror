@@ -161,7 +161,6 @@ instance
   , ScenarioAttrsRunner env
   , HasStep ActStep env ()
   , HasId (Maybe EnemyId) env EnemyMatcher
-  , HasId (Maybe LocationId) env LocationMatcher
   , HasCount XPCount env ()
   , HasModifiersFor env ()
   )

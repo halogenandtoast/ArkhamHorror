@@ -50,7 +50,7 @@ instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env [Trait]) => 
     ElderThing -> pure $ toTokenValue attrs ElderThing 5 7
     otherFace -> getTokenValue attrs iid otherFace
 
-instance (HasId (Maybe LocationId) env LocationMatcher, ScenarioRunner env) => RunMessage env TheDevourerBelow where
+instance ScenarioRunner env => RunMessage env TheDevourerBelow where
   runMessage msg s@(TheDevourerBelow attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds

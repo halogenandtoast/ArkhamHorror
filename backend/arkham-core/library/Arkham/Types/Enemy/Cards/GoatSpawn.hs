@@ -6,26 +6,37 @@ module Arkham.Types.Enemy.Cards.GoatSpawn
 import Arkham.Prelude
 
 import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.Message
-import Arkham.Types.Source
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (EnemyDefeated)
+import qualified Arkham.Types.Timing as Timing
 
 newtype GoatSpawn = GoatSpawn EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 goatSpawn :: EnemyCard GoatSpawn
 goatSpawn = enemy GoatSpawn Cards.goatSpawn (3, Static 3, 2) (1, 0)
 
+instance HasAbilities env GoatSpawn where
+  getAbilities iid window (GoatSpawn a) = withBaseAbilities iid window a $ pure
+    [ mkAbility a 1
+      $ ForcedAbility
+      $ EnemyDefeated Timing.When Anyone
+      $ EnemyWithId
+      $ toId a
+    ]
+
 instance EnemyRunner env => RunMessage env GoatSpawn where
-  runMessage msg (GoatSpawn attrs@EnemyAttrs {..}) = case msg of
-    EnemyDefeated eid _ _ _ _ _ | eid == enemyId -> do
-      investigatorIds <- getSetList enemyLocation
-      pushAll
-        [ InvestigatorAssignDamage iid (EnemySource eid) DamageAny 0 1
+  runMessage msg e@(GoatSpawn attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+      investigatorIds <- getSetList $ enemyLocation attrs
+      e <$ pushAll
+        [ InvestigatorAssignDamage iid source DamageAny 0 1
         | iid <- investigatorIds
         ]
-      GoatSpawn <$> runMessage msg attrs
     _ -> GoatSpawn <$> runMessage msg attrs

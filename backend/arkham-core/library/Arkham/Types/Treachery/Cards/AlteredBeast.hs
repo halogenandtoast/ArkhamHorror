@@ -15,18 +15,13 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype AlteredBeast = AlteredBeast TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alteredBeast :: TreacheryCard AlteredBeast
 alteredBeast = treachery AlteredBeast Cards.alteredBeast
 
-instance HasModifiersFor env AlteredBeast
-
-instance HasAbilities env AlteredBeast where
-  getAbilities i window (AlteredBeast attrs) = getAbilities i window attrs
-
-instance (TreacheryRunner env) => RunMessage env AlteredBeast where
+instance TreacheryRunner env => RunMessage env AlteredBeast where
   runMessage msg t@(AlteredBeast attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       abominations <- getSetList @EnemyId Abomination

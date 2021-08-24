@@ -13,16 +13,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype ShellShock = ShellShock TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shellShock :: TreacheryCard ShellShock
 shellShock = treachery ShellShock Cards.shellShock
-
-instance HasModifiersFor env ShellShock
-
-instance HasAbilities env ShellShock where
-  getAbilities i window (ShellShock attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env ShellShock where
   runMessage msg t@(ShellShock attrs) = case msg of

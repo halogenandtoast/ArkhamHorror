@@ -13,11 +13,7 @@ import Arkham.Types.Treachery.Runner
 
 newtype RottingRemainsBloodOnTheAltar = RottingRemainsBloodOnTheAltar RottingRemains
   deriving anyclass IsTreachery
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env)
-
-instance HasAbilities env RottingRemainsBloodOnTheAltar where
-  getAbilities i window (RottingRemainsBloodOnTheAltar attrs) =
-    getAbilities i window attrs
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env, HasAbilities env)
 
 rottingRemainsBloodOnTheAltar :: TreacheryCard RottingRemainsBloodOnTheAltar
 rottingRemainsBloodOnTheAltar = treachery

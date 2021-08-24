@@ -12,16 +12,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype MaskedHorrors = MaskedHorrors TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 maskedHorrors :: TreacheryCard MaskedHorrors
 maskedHorrors = treachery MaskedHorrors Cards.maskedHorrors
-
-instance HasModifiersFor env MaskedHorrors
-
-instance HasAbilities env MaskedHorrors where
-  getAbilities i window (MaskedHorrors attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env MaskedHorrors where
   runMessage msg t@(MaskedHorrors attrs@TreacheryAttrs {..}) = case msg of

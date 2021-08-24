@@ -14,16 +14,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype SordidAndSilent = SordidAndSilent TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sordidAndSilent :: TreacheryCard SordidAndSilent
 sordidAndSilent = treachery SordidAndSilent Cards.sordidAndSilent
-
-instance HasModifiersFor env SordidAndSilent
-
-instance HasAbilities env SordidAndSilent where
-  getAbilities i window (SordidAndSilent attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env SordidAndSilent where
   runMessage msg t@(SordidAndSilent attrs@TreacheryAttrs {..}) = case msg of

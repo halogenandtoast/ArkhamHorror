@@ -10,6 +10,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -17,11 +18,9 @@ import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
 
 newtype LockedDoor = LockedDoor TreacheryAttrs
   deriving anyclass IsTreachery
@@ -37,14 +36,13 @@ instance HasModifiersFor env LockedDoor where
       [ CannotInvestigate | treacheryOnLocation lid attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env LockedDoor where
-  getAbilities iid (Window Timing.When NonFast) (LockedDoor a) = do
-    investigatorLocationId <- getId @LocationId iid
+instance HasAbilities env LockedDoor where
+  getAbilities _ _ (LockedDoor a) = do
     pure
-      [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1
-      | treacheryOnLocation investigatorLocationId a
+      [ restrictedAbility a 1 OnSameLocation
+        $ ActionAbility Nothing
+        $ ActionCost 1
       ]
-  getAbilities _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env LockedDoor where
   runMessage msg t@(LockedDoor attrs@TreacheryAttrs {..}) = case msg of

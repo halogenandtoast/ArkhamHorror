@@ -19,7 +19,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype RipplesOnTheSurface = RipplesOnTheSurface TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ripplesOnTheSurface :: TreacheryCard RipplesOnTheSurface
@@ -37,10 +37,6 @@ instance
       isBayou <- member Bayou <$> getSet locationId
       pure $ toModifiers attrs [ CannotCommitCards | isBayou ]
   getModifiersFor _ _ _ = pure []
-
-instance HasAbilities env RipplesOnTheSurface where
-  getAbilities i window (RipplesOnTheSurface attrs) =
-    getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env RipplesOnTheSurface where
   runMessage msg t@(RipplesOnTheSurface attrs@TreacheryAttrs {..}) =

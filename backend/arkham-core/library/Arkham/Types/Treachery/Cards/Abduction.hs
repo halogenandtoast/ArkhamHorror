@@ -16,16 +16,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype Abduction = Abduction TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 abduction :: TreacheryCard Abduction
 abduction = treachery Abduction Cards.abduction
-
-instance HasModifiersFor env Abduction
-
-instance HasAbilities env Abduction where
-  getAbilities i window (Abduction attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env Abduction where
   runMessage msg t@(Abduction attrs) = case msg of

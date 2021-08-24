@@ -10,14 +10,12 @@ import Arkham.Types.Ability
 import Arkham.Types.Action hiding (Ability)
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype VictoriaDevereux = VictoriaDevereux EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
@@ -31,18 +29,15 @@ victoriaDevereux = enemyWith
   (1, 0)
   (spawnAtL ?~ LocationWithTitle "Northside")
 
-instance ActionRunner env => HasAbilities env VictoriaDevereux where
-  getAbilities iid window@(Window Timing.When NonFast) (VictoriaDevereux attrs@EnemyAttrs {..})
-    = withBaseAbilities iid window attrs $ do
-      locationId <- getId @LocationId iid
+instance HasAbilities env VictoriaDevereux where
+  getAbilities iid window (VictoriaDevereux attrs) =
+    withBaseAbilities iid window attrs $ do
       pure
-        [ mkAbility attrs 1
+        [ restrictedAbility attrs 1 OnSameLocation
             $ ActionAbility (Just Parley) (Costs [ActionCost 1, ResourceCost 5])
-        | locationId == enemyLocation
         ]
-  getAbilities _ _ _ = pure []
 
-instance (EnemyRunner env) => RunMessage env VictoriaDevereux where
+instance EnemyRunner env => RunMessage env VictoriaDevereux where
   runMessage msg e@(VictoriaDevereux attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ push (AddToVictory $ toTarget attrs)

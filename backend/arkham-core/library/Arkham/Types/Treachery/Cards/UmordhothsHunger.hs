@@ -13,16 +13,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype UmordhothsHunger = UmordhothsHunger TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 umordhothsHunger :: TreacheryCard UmordhothsHunger
 umordhothsHunger = treachery UmordhothsHunger Cards.umordhothsHunger
-
-instance HasModifiersFor env UmordhothsHunger
-
-instance HasAbilities env UmordhothsHunger where
-  getAbilities i window (UmordhothsHunger attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env UmordhothsHunger where
   runMessage msg t@(UmordhothsHunger attrs) = case msg of

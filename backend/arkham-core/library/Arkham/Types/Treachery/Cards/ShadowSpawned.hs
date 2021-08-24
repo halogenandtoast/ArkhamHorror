@@ -18,7 +18,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype ShadowSpawned = ShadowSpawned TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shadowSpawned :: TreacheryCard ShadowSpawned
@@ -34,9 +34,6 @@ instance HasCount ResourceCount env TreacheryId => HasModifiersFor env ShadowSpa
         <> [ AddKeyword Keyword.Massive | n >= 3 ]
         )
   getModifiersFor _ _ _ = pure []
-
-instance HasAbilities env ShadowSpawned where
-  getAbilities i window (ShadowSpawned attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env ShadowSpawned where
   runMessage msg t@(ShadowSpawned attrs) = case msg of

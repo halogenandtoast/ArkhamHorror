@@ -10,16 +10,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype Paranoia = Paranoia TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 paranoia :: TreacheryCard Paranoia
 paranoia = treachery Paranoia Cards.paranoia
-
-instance HasModifiersFor env Paranoia
-
-instance HasAbilities env Paranoia where
-  getAbilities i window (Paranoia attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env Paranoia where
   runMessage msg t@(Paranoia attrs) = case msg of

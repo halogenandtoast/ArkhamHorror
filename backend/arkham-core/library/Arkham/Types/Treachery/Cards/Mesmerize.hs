@@ -15,16 +15,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype Mesmerize = Mesmerize TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mesmerize :: TreacheryCard Mesmerize
 mesmerize = treachery Mesmerize Cards.mesmerize
-
-instance HasModifiersFor env Mesmerize
-
-instance HasAbilities env Mesmerize where
-  getAbilities i window (Mesmerize attrs) = getAbilities i window attrs
 
 instance
   ( HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)

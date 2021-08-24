@@ -16,17 +16,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype SlitheringBehindYou = SlitheringBehindYou TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 slitheringBehindYou :: TreacheryCard SlitheringBehindYou
 slitheringBehindYou = treachery SlitheringBehindYou Cards.slitheringBehindYou
-
-instance HasModifiersFor env SlitheringBehindYou
-
-instance HasAbilities env SlitheringBehindYou where
-  getAbilities i window (SlitheringBehindYou attrs) =
-    getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env SlitheringBehindYou where
   runMessage msg t@(SlitheringBehindYou attrs) = case msg of

@@ -15,16 +15,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype StarsOfHyades = StarsOfHyades TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 starsOfHyades :: TreacheryCard StarsOfHyades
 starsOfHyades = treachery StarsOfHyades Cards.starsOfHyades
-
-instance HasModifiersFor env StarsOfHyades
-
-instance HasAbilities env StarsOfHyades where
-  getAbilities i window (StarsOfHyades attrs) = getAbilities i window attrs
 
 instance
   ( HasList UnderneathCard env InvestigatorId

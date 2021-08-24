@@ -12,17 +12,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype AcrossSpaceAndTime = AcrossSpaceAndTime TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 acrossSpaceAndTime :: TreacheryCard AcrossSpaceAndTime
 acrossSpaceAndTime = treachery AcrossSpaceAndTime Cards.acrossSpaceAndTime
-
-instance HasModifiersFor env AcrossSpaceAndTime
-
-instance HasAbilities env AcrossSpaceAndTime where
-  getAbilities i window (AcrossSpaceAndTime attrs) =
-    getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env AcrossSpaceAndTime where
   runMessage msg t@(AcrossSpaceAndTime attrs) = case msg of

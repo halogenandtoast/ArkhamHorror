@@ -19,16 +19,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype ClawsOfSteam = ClawsOfSteam TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 clawsOfSteam :: TreacheryCard ClawsOfSteam
 clawsOfSteam = treachery ClawsOfSteam Cards.clawsOfSteam
-
-instance HasModifiersFor env ClawsOfSteam
-
-instance HasAbilities env ClawsOfSteam where
-  getAbilities i window (ClawsOfSteam attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env ClawsOfSteam where
   runMessage msg t@(ClawsOfSteam attrs@TreacheryAttrs {..}) = case msg of

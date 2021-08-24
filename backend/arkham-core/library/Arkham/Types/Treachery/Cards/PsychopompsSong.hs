@@ -9,30 +9,30 @@ import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Exception
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
 
 newtype PsychopompsSong = PsychopompsSong TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 psychopompsSong :: TreacheryCard PsychopompsSong
 psychopompsSong = treachery PsychopompsSong Cards.psychopompsSong
 
-instance HasModifiersFor env PsychopompsSong
-
-ability :: TreacheryAttrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 LegacyForcedAbility
-
 instance HasAbilities env PsychopompsSong where
-  getAbilities iid (Window Timing.When (WouldTakeDamage _ (InvestigatorTarget iid'))) (PsychopompsSong attrs)
-    | treacheryOnInvestigator iid attrs && iid == iid'
-    = pure [ability attrs]
-  getAbilities i window (PsychopompsSong attrs) = getAbilities i window attrs
+  getAbilities _ _ (PsychopompsSong attrs) =
+    case treacheryAttachedTarget attrs of
+      Just (InvestigatorTarget iid) -> pure
+        [ mkAbility attrs 1
+          $ ForcedAbility
+          $ DealtDamage Timing.When
+          $ InvestigatorWithId iid
+        ]
+      Nothing -> pure []
 
 instance TreacheryRunner env => RunMessage env PsychopompsSong where
   runMessage msg t@(PsychopompsSong attrs@TreacheryAttrs {..}) = case msg of

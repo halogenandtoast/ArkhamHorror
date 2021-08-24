@@ -17,16 +17,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype CrisisOfIdentity = CrisisOfIdentity TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 crisisOfIdentity :: TreacheryCard CrisisOfIdentity
 crisisOfIdentity = treachery CrisisOfIdentity Cards.crisisOfIdentity
-
-instance HasModifiersFor env CrisisOfIdentity
-
-instance HasAbilities env CrisisOfIdentity where
-  getAbilities i window (CrisisOfIdentity attrs) = getAbilities i window attrs
 
 instance
   ( HasSet SkillId env SkillMatcher

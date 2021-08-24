@@ -14,7 +14,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype ObscuringFog = ObscuringFog TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 obscuringFog :: TreacheryCard ObscuringFog
@@ -25,9 +25,6 @@ instance HasModifiersFor env ObscuringFog where
     pure
       $ toModifiers attrs [ ShroudModifier 2 | treacheryOnLocation lid attrs ]
   getModifiersFor _ _ _ = pure []
-
-instance HasAbilities env ObscuringFog where
-  getAbilities i window (ObscuringFog attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env ObscuringFog where
   runMessage msg t@(ObscuringFog attrs@TreacheryAttrs {..}) = case msg of

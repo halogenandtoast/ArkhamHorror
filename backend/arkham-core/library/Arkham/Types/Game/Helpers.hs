@@ -822,6 +822,7 @@ hasInvestigateActions _ window = notNull <$> select
 type CanCheckPlayable env
   = ( HasModifiersFor env ()
     , HasSet VictoryDisplayCard env ()
+    , HasId (Maybe LocationId) env TreacheryId
     , Query Matcher.AssetMatcher env
     , Query Matcher.InvestigatorMatcher env
     , Query Matcher.ActionMatcher env
@@ -1006,6 +1007,9 @@ passesCriteria iid source windows = \case
       liftA2 (==) (getId @LocationId aid) (getId @LocationId iid)
     EnemySource eid ->
       liftA2 (==) (getId @LocationId eid) (getId @LocationId iid)
+    TreacherySource tid -> getId tid >>= \case
+      Just lid -> (== lid) <$> getId @LocationId iid
+      Nothing -> pure False
     ProxySource (AssetSource aid) _ ->
       liftA2 (==) (getId @LocationId aid) (getId @LocationId iid)
     _ -> error $ "missing OnSameLocation check for source: " <> show source
@@ -1235,6 +1239,10 @@ windowMatches
   -> m Bool
 windowMatches iid source window' = \case
   Matcher.AnyWindow -> pure True
+  Matcher.AgendaAdvances timingMatcher agendaMatcher -> case window' of
+    Window t (Window.AgendaAdvance aid) | t == timingMatcher ->
+      pure $ agendaMatches aid agendaMatcher
+    _ -> pure False
   Matcher.PlacedCounter whenMatcher whoMatcher counterMatcher valueMatcher ->
     case window' of
       Window t (Window.PlacedHorror iid' n)
@@ -1425,6 +1433,14 @@ windowMatches iid source window' = \case
       Window t (Window.WouldTakeDamageOrHorror _ (InvestigatorTarget iid') _ _)
         | t == whenMatcher -> pure $ iid == iid'
       _ -> pure False
+    _ -> pure False
+  Matcher.DealtDamage whenMatcher whoMatcher -> case window' of
+    Window t (Window.DealtDamage _ (InvestigatorTarget iid'))
+      | t == whenMatcher -> matchWho iid iid' whoMatcher
+    _ -> pure False
+  Matcher.DealtHorror whenMatcher whoMatcher -> case window' of
+    Window t (Window.DealtHorror _ (InvestigatorTarget iid'))
+      | t == whenMatcher -> matchWho iid iid' whoMatcher
     _ -> pure False
   Matcher.AssetDealtDamage timingMatcher assetMatcher -> case window' of
     Window t (Window.DealtDamage _ (AssetTarget aid)) | t == timingMatcher ->
@@ -1693,3 +1709,6 @@ deckMatch iid deckSignifier = \case
   Matcher.EncounterDeck -> pure $ deckSignifier == EncounterDeck
   Matcher.DeckOf investigatorMatcher -> matchWho iid iid investigatorMatcher
   Matcher.AnyDeck -> pure True
+
+agendaMatches :: AgendaId -> Matcher.AgendaMatcher -> Bool
+agendaMatches aid (Matcher.AgendaWithId aid') = aid == aid'

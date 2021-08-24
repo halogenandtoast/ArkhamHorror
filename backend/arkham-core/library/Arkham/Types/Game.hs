@@ -1709,6 +1709,15 @@ instance HasGame env => HasSet InvestigatorId env EnemyId where
 instance HasGame env => HasSet TreacheryId env InvestigatorId where
   getSet = getSet <=< getInvestigator
 
+instance HasGame env => HasId (Maybe LocationId) env TreacheryId where
+  getId tid = do
+    t <- getTreachery tid
+    case treacheryTarget t of
+      Just (InvestigatorTarget iid) -> Just <$> getId iid
+      Just (EnemyTarget eid) -> Just <$> getId eid
+      Just (LocationTarget lid) -> pure $ Just lid
+      _ -> pure Nothing
+
 instance HasGame env => HasSet EnemyId env InvestigatorId where
   getSet iid = getEngagedEnemies <$> getInvestigator iid
 

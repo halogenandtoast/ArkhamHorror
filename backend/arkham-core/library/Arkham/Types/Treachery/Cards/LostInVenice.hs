@@ -14,16 +14,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype LostInVenice = LostInVenice TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lostInVenice :: TreacheryCard LostInVenice
 lostInVenice = treachery LostInVenice Cards.lostInVenice
-
-instance HasModifiersFor env LostInVenice
-
-instance HasAbilities env LostInVenice where
-  getAbilities i window (LostInVenice attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env LostInVenice where
   runMessage msg t@(LostInVenice attrs) = case msg of

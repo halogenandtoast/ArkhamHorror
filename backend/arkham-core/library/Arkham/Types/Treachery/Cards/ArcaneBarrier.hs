@@ -15,16 +15,11 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype ArcaneBarrier = ArcaneBarrier TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arcaneBarrier :: TreacheryCard ArcaneBarrier
 arcaneBarrier = treachery ArcaneBarrier Cards.arcaneBarrier
-
-instance HasModifiersFor env ArcaneBarrier
-
-instance HasAbilities env ArcaneBarrier where
-  getAbilities i window (ArcaneBarrier attrs) = getAbilities i window attrs
 
 instance TreacheryRunner env => RunMessage env ArcaneBarrier where
   runMessage msg t@(ArcaneBarrier attrs) = case msg of

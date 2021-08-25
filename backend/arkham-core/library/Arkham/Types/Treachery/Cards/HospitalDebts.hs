@@ -10,16 +10,16 @@ import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
-import Arkham.Types.Message
+import Arkham.Types.Criteria
+import Arkham.Types.GameValue
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (InvestigatorEliminated)
 import Arkham.Types.Modifier
-import Arkham.Types.Source
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
 
 newtype HospitalDebts = HospitalDebts TreacheryAttrs
   deriving anyclass IsTreachery
@@ -37,31 +37,36 @@ instance HasModifiersFor env HospitalDebts where
       [ XPModifier (-2) | treacheryOnInvestigator iid attrs && resources' < 6 ]
   getModifiersFor _ _ _ = pure []
 
-ability :: TreacheryAttrs -> Ability
-ability a = (mkAbility (toSource a) 1 (FastAbility Free))
-  { abilityLimit = PlayerLimit PerRound 2
-  }
-
-instance ActionRunner env => HasAbilities env HospitalDebts where
-  getAbilities iid (Window Timing.When (DuringTurn who)) (HospitalDebts a)
-    | iid == who = withTreacheryInvestigator a $ \tormented -> do
-      resourceCount <- getResourceCount iid
-      treacheryLocationId <- getId tormented
-      investigatorLocationId <- getId @LocationId iid
-      pure
-        [ ability a
-        | resourceCount > 0 && treacheryLocationId == investigatorLocationId
+instance HasAbilities env HospitalDebts where
+  getAbilities _ _ (HospitalDebts a) =
+    pure
+      $ (restrictedAbility
+            a
+            1
+            (OnSameLocation <> InvestigatorExists
+              (You <> InvestigatorWithResources (AtLeast $ Static 1))
+            )
+            (FastAbility Free)
+        & abilityLimitL
+        .~ PlayerLimit PerRound 2
+        )
+      : [ restrictedAbility a 2 (ResourcesOnThis $ LessThan $ Static 6)
+          $ ForcedAbility
+          $ OrWindowMatcher
+              [ GameEnds Timing.When
+              , InvestigatorEliminated Timing.When (InvestigatorWithId iid)
+              ]
+        | iid <- maybeToList (treacheryOwner a)
         ]
-  getAbilities _ _ _ = pure []
 
 instance TreacheryRunner env => RunMessage env HospitalDebts where
-  runMessage msg t@(HospitalDebts attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(HospitalDebts attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RemoveCardFromHand iid (toCardId attrs)
-      , AttachTreachery treacheryId (InvestigatorTarget iid)
+      , AttachTreachery (toId attrs) (InvestigatorTarget iid)
       ]
-    UseCardAbility iid (TreacherySource tid) _ 1 _ | tid == treacheryId -> do
-      push (SpendResources iid 1)
-      pure $ HospitalDebts
-        (attrs { treacheryResources = (+ 1) <$> treacheryResources })
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      t <$ pushAll [SpendResources iid 1, PlaceResources (toTarget attrs) 1]
+    -- This is handled as a modifier currently but we still issue the UI ability
+    UseCardAbility _ source _ 2 _ | isSource attrs source -> pure t
     _ -> HospitalDebts <$> runMessage msg attrs

@@ -51,6 +51,7 @@ data Criterion
   | InvestigatorsHaveSpendableClues ValueMatcher
   | CluesOnThis ValueMatcher
   | ChargesOnThis ValueMatcher
+  | ResourcesOnThis ValueMatcher
   | HorrorOnThis ValueMatcher
   | OwnCardWithDoom
   | OwnsThis

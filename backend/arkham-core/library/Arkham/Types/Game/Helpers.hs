@@ -989,6 +989,10 @@ passesCriteria iid source windows = \case
     TreacherySource tid ->
       (`gameValueMatches` valueMatcher) . unResourceCount =<< getCount tid
     _ -> error "missing ChargesOnThis check"
+  Criteria.ResourcesOnThis valueMatcher -> case source of
+    TreacherySource tid ->
+      (`gameValueMatches` valueMatcher) . unResourceCount =<< getCount tid
+    _ -> error "missing ChargesOnThis check"
   Criteria.CluesOnThis valueMatcher -> case source of
     LocationSource lid -> do
       (`gameValueMatches` valueMatcher) . unClueCount =<< getCount lid

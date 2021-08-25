@@ -2892,13 +2892,9 @@ runGameMessage msg g = case msg of
       , Window Timing.When Window.NonFast
       , Window Timing.When Window.FastPlayerWindow
       ]
-    case
-        find
-          ((== cardId) . toCardId)
-          (traceShowId playableCards <> handOf investigator)
-      of
-        Nothing -> pure g -- card was discarded before playing
-        Just card -> runGameMessage (PutCardIntoPlay iid card mtarget) g
+    case find ((== cardId) . toCardId) (playableCards <> handOf investigator) of
+      Nothing -> pure g -- card was discarded before playing
+      Just card -> runGameMessage (PutCardIntoPlay iid card mtarget) g
   PlayFastEvent iid cardId mtarget windows -> do
     investigator <- getInvestigator iid
     playableCards <- getPlayableCards (toAttrs investigator) windows

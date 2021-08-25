@@ -50,6 +50,7 @@ import Arkham.Types.Matcher hiding
   , EnemyAttacks
   , EnemyDefeated
   , FastPlayerWindow
+  , InvestigatorEliminated
   , PlayCard
   , RevealLocation
   )

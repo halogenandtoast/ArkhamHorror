@@ -27,6 +27,7 @@ data WindowType
   | AmongSearchedCards InvestigatorId
   | AnyPhaseBegins
   | AtEndOfRound
+  | EndOfGame
   | ChosenRandomLocation LocationId
   | CommitedCard InvestigatorId Card
   | DealtDamage Source Target
@@ -39,6 +40,7 @@ data WindowType
   | DrawingStartingHand InvestigatorId
   | DuringTurn InvestigatorId
   | EndTurn InvestigatorId
+  | InvestigatorEliminated InvestigatorId
   | AssetDefeated AssetId
   | EnemyAttacks InvestigatorId EnemyId
   | EnemyDefeated InvestigatorId EnemyId

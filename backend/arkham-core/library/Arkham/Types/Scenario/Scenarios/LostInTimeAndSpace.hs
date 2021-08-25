@@ -156,8 +156,7 @@ investigatorDefeat = do
       <> [ InvestigatorKilled iid | iid <- defeatedInvestigatorIds ]
 
 instance
-  ( HasSet InvestigatorId env ()
-  , HasSet DefeatedInvestigatorId env ()
+  ( HasSet DefeatedInvestigatorId env ()
   , ScenarioAttrsRunner env
   , HasStep ActStep env ()
   , HasId (Maybe EnemyId) env EnemyMatcher

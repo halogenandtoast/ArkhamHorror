@@ -842,6 +842,7 @@ type CanCheckPlayable env
     , HasCount ActionTakenCount env InvestigatorId
     , HasCount HorrorCount env AssetId
     , HasCount ResourceCount env LocationId
+    , HasCount ResourceCount env TreacheryId
     , HasCount (Maybe ClueCount) env TreacheryId
     , HasCount ClueCount env AssetId
     , HasCount ClueCount env ActId
@@ -984,6 +985,10 @@ passesCriteria iid source windows = \case
     case mSkillTest of
       Nothing -> pure False
       Just skillTest -> skillTestMatches iid source skillTest skillTestMatcher
+  Criteria.ChargesOnThis valueMatcher -> case source of
+    TreacherySource tid ->
+      (`gameValueMatches` valueMatcher) . unResourceCount =<< getCount tid
+    _ -> error "missing ChargesOnThis check"
   Criteria.CluesOnThis valueMatcher -> case source of
     LocationSource lid -> do
       (`gameValueMatches` valueMatcher) . unClueCount =<< getCount lid
@@ -1269,6 +1274,13 @@ windowMatches iid source window' = \case
           (matchWho iid who whoMatcher)
           (locationMatches iid source window' locationId locationMatcher)
       _ -> pure False
+  Matcher.GameEnds timingMatcher -> case window' of
+    Window t Window.EndOfGame -> pure $ t == timingMatcher
+    _ -> pure False
+  Matcher.InvestigatorEliminated timingMatcher whoMatcher -> case window' of
+    Window t (Window.InvestigatorEliminated who) | t == timingMatcher ->
+      matchWho iid who whoMatcher
+    _ -> pure False
   Matcher.PutLocationIntoPlay timingMatcher whoMatcher locationMatcher ->
     case window' of
       Window t (Window.PutLocationIntoPlay who locationId)
@@ -1463,6 +1475,14 @@ windowMatches iid source window' = \case
     Window t (Window.DealtDamage _ (AssetTarget aid)) | t == timingMatcher ->
       member aid <$> select assetMatcher
     _ -> pure False
+  Matcher.DiscoverClues whenMatcher whoMatcher whereMatcher valueMatcher ->
+    case window' of
+      Window t (Window.DiscoverClues who lid n) | whenMatcher == t -> andM
+        [ matchWho iid who whoMatcher
+        , locationMatches iid source window' lid whereMatcher
+        , gameValueMatches n valueMatcher
+        ]
+      _ -> pure False
   Matcher.DiscoveringLastClue whenMatcher whoMatcher whereMatcher ->
     case window' of
       Window t (Window.DiscoveringLastClue who lid) | whenMatcher == t -> liftA2

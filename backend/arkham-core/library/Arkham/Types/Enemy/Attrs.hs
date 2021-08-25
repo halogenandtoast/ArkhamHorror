@@ -22,7 +22,8 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword (HasKeywords(..), Keyword)
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.LocationId
-import Arkham.Types.Matcher hiding (DuringTurn, EnemyDefeated, EnemyEvaded)
+import Arkham.Types.Matcher hiding
+  (DuringTurn, EnemyDefeated, EnemyEvaded, InvestigatorEliminated)
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name

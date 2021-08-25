@@ -20,7 +20,14 @@ import Arkham.Types.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Matcher hiding
-  (DuringTurn, EnemyEvaded, FastPlayerWindow, PlayCard, RevealLocation)
+  ( DiscoverClues
+  , DuringTurn
+  , EnemyEvaded
+  , FastPlayerWindow
+  , InvestigatorEliminated
+  , PlayCard
+  , RevealLocation
+  )
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
@@ -576,7 +583,6 @@ getPlayableDiscards attrs@InvestigatorAttrs {..} windows = do
             )
          )
   allowsPlayFromDiscard _ _ _ = False
-
 
 getPossibleSkillTypeChoices
   :: (MonadReader env m, HasModifiersFor env ())

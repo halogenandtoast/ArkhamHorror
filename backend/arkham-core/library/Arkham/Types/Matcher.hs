@@ -346,6 +346,7 @@ data WindowMatcher
   | AssetEntersPlay Timing AssetMatcher
   | AssetDealtDamage Timing AssetMatcher
   | DiscoveringLastClue Timing Who Where
+  | DiscoverClues Timing Who Where ValueMatcher
   | EnemyAttacks Timing Who EnemyMatcher
   | RevealChaosToken Timing Who TokenMatcher
   | WouldRevealChaosToken Timing Who
@@ -371,6 +372,8 @@ data WindowMatcher
   | PlayerHasPlayableCard ExtendedCardMatcher
   | RevealLocation Timing Who Where
   | PutLocationIntoPlay Timing Who Where
+  | GameEnds Timing
+  | InvestigatorEliminated Timing Who
   | AnyWindow
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

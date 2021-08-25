@@ -12,7 +12,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (DiscoverClues)
 import Arkham.Types.Message hiding (DiscoverClues)
 import Arkham.Types.Name
 import qualified Arkham.Types.Timing as Timing

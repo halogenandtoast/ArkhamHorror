@@ -157,7 +157,6 @@ instance
 
 instance
   ( HasCount XPCount env ()
-  , HasSet InvestigatorId env ()
   , HasSet LocationId env [Trait]
   , HasRecord env
   , ScenarioAttrsRunner env

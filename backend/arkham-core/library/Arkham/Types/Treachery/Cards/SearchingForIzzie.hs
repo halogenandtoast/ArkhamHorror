@@ -19,7 +19,7 @@ import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
+import Arkham.Types.Window hiding (EndOfGame)
 
 newtype SearchingForIzzie = SearchingForIzzie TreacheryAttrs
   deriving anyclass IsTreachery

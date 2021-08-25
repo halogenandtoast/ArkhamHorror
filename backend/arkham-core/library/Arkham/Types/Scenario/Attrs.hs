@@ -13,7 +13,7 @@ import Arkham.Types.Difficulty
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Location as X
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (InvestigatorEliminated)
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Query
@@ -200,6 +200,7 @@ findLocationKey locationMatcher locations = fst
 
 type ScenarioAttrsRunner env
   = ( HasSet InScenarioInvestigatorId env ()
+    , HasSet InvestigatorId env ()
     , HasSet AgendaId env ()
     , HasId (Maybe CampaignId) env ()
     , HasSet LocationId env ()
@@ -265,7 +266,12 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
           pure $ a & inResolutionL .~ True -- must set to avoid redundancy when scenario kills investigator
         else pure a
     AllInvestigatorsResigned -> a <$ push (ScenarioResolution NoResolution)
-    InvestigatorWhenEliminated _ iid -> a <$ push (InvestigatorEliminated iid)
+    InvestigatorWhenEliminated _ iid -> do
+      whenMsgs <- checkWindows
+        [Window Timing.When (Window.InvestigatorEliminated iid)]
+      afterMsgs <- checkWindows
+        [Window Timing.When (Window.InvestigatorEliminated iid)]
+      a <$ pushAll (whenMsgs <> [InvestigatorEliminated iid] <> afterMsgs)
     Remember logKey -> pure $ a & logL %~ insertSet logKey
     ResolveToken _drawnToken token _iid | token == AutoFail ->
       a <$ push FailSkillTest

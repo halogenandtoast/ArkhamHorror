@@ -24,7 +24,8 @@ import Arkham.Types.Id
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner as X
 import Arkham.Types.LocationSymbol as X
-import Arkham.Types.Matcher hiding (EnemyDefeated, RevealLocation)
+import Arkham.Types.Matcher hiding
+  (DiscoverClues, EnemyDefeated, InvestigatorEliminated, RevealLocation)
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name

@@ -159,7 +159,6 @@ instance
   ( HasId CardCode env EnemyId
   , HasSkillTest env
   , HasCount XPCount env ()
-  , HasSet InvestigatorId env ()
   , HasSet StoryEnemyId env CardCode
   , HasList DeckCard env InvestigatorId
   , HasRecord env

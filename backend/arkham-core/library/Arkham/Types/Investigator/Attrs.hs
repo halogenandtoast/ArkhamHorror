@@ -560,7 +560,9 @@ getPlayableDiscards
   -> m [Card]
 getPlayableDiscards attrs@InvestigatorAttrs {..} windows = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
-  filterM (getFastIsPlayable attrs windows) (possibleCards modifiers)
+  filterM
+    (getIsPlayable (toId attrs) (toSource attrs) windows)
+    (possibleCards modifiers)
  where
   possibleCards modifiers = map (PlayerCard . snd) $ filter
     (canPlayFromDiscard modifiers)

@@ -13,7 +13,6 @@ import Arkham.Types.Criteria
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Matcher hiding (DuringTurn)
 import Arkham.Types.Message
-import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
 import Arkham.Types.Token
@@ -55,10 +54,10 @@ instance HasTokenValue env SkidsOToole where
   getTokenValue (SkidsOToole attrs) iid token = getTokenValue attrs iid token
 
 instance InvestigatorRunner env => RunMessage env SkidsOToole where
-  runMessage msg i@(SkidsOToole attrs@InvestigatorAttrs {..}) = case msg of
-    UseCardAbility _ (InvestigatorSource iid) _ 1 _ | iid == investigatorId ->
-      pure . SkidsOToole $ attrs & remainingActionsL +~ 1
+  runMessage msg i@(SkidsOToole attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      i <$ push (GainActions (toId attrs) source 1)
     PassedSkillTest iid _ _ (TokenTarget token) _ _
-      | iid == investigatorId && tokenFace token == ElderSign -> i
+      | iid == toId attrs && tokenFace token == ElderSign -> i
       <$ push (TakeResources iid 2 False)
     _ -> SkidsOToole <$> runMessage msg attrs

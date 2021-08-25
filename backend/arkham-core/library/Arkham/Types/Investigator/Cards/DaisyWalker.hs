@@ -20,6 +20,7 @@ newtype DaisyWalker = DaisyWalker InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
+-- TODO: Tome action should be a modifier and actions should quantify restrictions
 daisyWalker :: DaisyWalker
 daisyWalker =
   DaisyWalker $ (baseAttrs "01002" "Daisy Walker" Seeker stats [Miskatonic])

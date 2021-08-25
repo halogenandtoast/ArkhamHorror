@@ -67,6 +67,7 @@ allPlayerEventCards = mapFromList $ map
   , contraband2
   , crypticResearch4
   , cunningDistraction
+  , daringManeuver
   , darkMemory
   , decipheredReality5
   , delveTooDeep
@@ -680,6 +681,15 @@ sleightOfHand = (event "03029" "Sleight of Hand" 1 Rogue)
   , cdFastWindow = Just $ DuringTurn You
   , cdCriteria = Just
     (Criteria.PlayableCardExists $ BasicCardMatch (CardWithTrait Item))
+  }
+
+daringManeuver :: CardDef
+daringManeuver = (event "03030" "Daring Maneuver" 0 Rogue)
+  { cdSkills = [SkillWild]
+  , cdCardTraits = singleton Gambit
+  , cdFastWindow =
+    Just $ WouldHaveSkillTestResult Timing.When You AnySkillTest $ SuccessResult
+      AnyValue
   }
 
 secondWind :: CardDef

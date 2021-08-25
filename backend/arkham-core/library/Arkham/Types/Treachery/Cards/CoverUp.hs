@@ -10,17 +10,18 @@ import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
-import Arkham.Types.Message
+import Arkham.Types.Criteria
+import Arkham.Types.GameValue
+import Arkham.Types.Matcher hiding (DiscoverClues)
+import qualified Arkham.Types.Matcher as Matcher
+import Arkham.Types.Message hiding (InvestigatorEliminated)
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
 
 newtype CoverUp = CoverUp TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env)
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 coverUp :: TreacheryCard CoverUp
@@ -30,18 +31,28 @@ coverUpClues :: TreacheryAttrs -> Int
 coverUpClues TreacheryAttrs { treacheryClues } =
   fromJustNote "must be set" treacheryClues
 
-instance HasModifiersFor env CoverUp
-
-instance ActionRunner env => HasAbilities env CoverUp where
-  getAbilities iid (Window Timing.When (Window.DiscoverClues who lid n)) (CoverUp a)
-    | iid == who
-    = withTreacheryInvestigator a $ \tormented -> do
-      treacheryLocationId <- getId @LocationId tormented
-      pure
-        [ mkAbility a 1 $ LegacyReactionAbility Free
-        | (treacheryLocationId == lid) && (coverUpClues a > 0) && (n > 0)
+instance HasAbilities env CoverUp where
+  getAbilities _ _ (CoverUp a) =
+    pure
+      $ restrictedAbility
+          a
+          1
+          (OnSameLocation <> CluesOnThis (AtLeast $ Static 1))
+          (ReactionAbility
+            (Matcher.DiscoverClues Timing.When You YourLocation
+            $ AtLeast
+            $ Static 1
+            )
+            Free
+          )
+      : [ restrictedAbility a 2 (CluesOnThis $ AtLeast $ Static 1)
+          $ ForcedAbility
+          $ OrWindowMatcher
+              [ GameEnds Timing.When
+              , InvestigatorEliminated Timing.When (InvestigatorWithId iid)
+              ]
+        | iid <- maybeToList (treacheryOwner a)
         ]
-  getAbilities _ _ _ = pure []
 
 instance TreacheryRunner env => RunMessage env CoverUp where
   runMessage msg t@(CoverUp attrs@TreacheryAttrs {..}) = case msg of
@@ -49,11 +60,6 @@ instance TreacheryRunner env => RunMessage env CoverUp where
       [ RemoveCardFromHand iid (toCardId attrs)
       , AttachTreachery treacheryId (InvestigatorTarget iid)
       ]
-    InvestigatorEliminated iid | treacheryOnInvestigator iid attrs ->
-      runMessage EndOfGame t >>= \case
-        CoverUp attrs' -> CoverUp <$> runMessage msg attrs'
-    EndOfGame | coverUpClues attrs > 0 -> withTreacheryInvestigator attrs
-      $ \tormented -> t <$ push (SufferTrauma tormented 0 1)
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       cluesToRemove <- withQueue $ \queue -> do
         let
@@ -66,4 +72,8 @@ instance TreacheryRunner env => RunMessage env CoverUp where
         (before <> remaining, m)
       let remainingClues = max 0 (coverUpClues attrs - cluesToRemove)
       pure $ CoverUp (attrs { treacheryClues = Just remainingClues })
+    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+      withTreacheryInvestigator
+        attrs
+        \tormented -> t <$ push (SufferTrauma tormented 0 1)
     _ -> CoverUp <$> runMessage msg attrs

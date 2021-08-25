@@ -50,6 +50,7 @@ data Criterion
   | LocationExists LocationMatcher
   | InvestigatorsHaveSpendableClues ValueMatcher
   | CluesOnThis ValueMatcher
+  | ChargesOnThis ValueMatcher
   | HorrorOnThis ValueMatcher
   | OwnCardWithDoom
   | OwnsThis

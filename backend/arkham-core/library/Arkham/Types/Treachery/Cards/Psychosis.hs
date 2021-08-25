@@ -9,43 +9,36 @@ import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
+import Arkham.Types.Criteria
+import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Source
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
 
 newtype Psychosis = Psychosis TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 psychosis :: TreacheryCard Psychosis
 psychosis = treachery Psychosis Cards.psychosis
 
-instance HasModifiersFor env Psychosis
-
-instance ActionRunner env => HasAbilities env Psychosis where
-  getAbilities iid (Window Timing.When NonFast) (Psychosis a) =
-    withTreacheryInvestigator a $ \tormented -> do
-      investigatorLocationId <- getId @LocationId iid
-      treacheryLocation <- getId tormented
-      pure
-        [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 2
-        | treacheryLocation == investigatorLocationId
-        ]
-  getAbilities _ _ _ = pure []
+instance HasAbilities env Psychosis where
+  getAbilities _ _ (Psychosis a) = pure
+    [ restrictedAbility a 1 (InThreatAreaOf You) $ ForcedAbility $ DealtHorror
+      Timing.After
+      You
+    , restrictedAbility a 2 OnSameLocation $ ActionAbility Nothing $ ActionCost
+      2
+    ]
 
 instance TreacheryRunner env => RunMessage env Psychosis where
-  runMessage msg t@(Psychosis attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(Psychosis attrs) = case msg of
     Revelation iid source | isSource attrs source ->
-      t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)
-    After (InvestigatorTakeDamage iid _ _ n)
-      | treacheryOnInvestigator iid attrs && n > 0
-      -> t <$ push
-        (InvestigatorDirectDamage iid (TreacherySource treacheryId) 1 0)
-    UseCardAbility _ (TreacherySource tid) _ 1 _ | tid == treacheryId ->
-      t <$ push (Discard (TreacheryTarget treacheryId))
+      t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      t <$ push (InvestigatorDirectDamage iid source 1 0)
+    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+      t <$ push (Discard $ toTarget attrs)
     _ -> Psychosis <$> runMessage msg attrs

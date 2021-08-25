@@ -19,8 +19,6 @@ lucky = event Lucky Cards.lucky
 
 instance EventRunner env => RunMessage env Lucky where
   runMessage msg e@(Lucky attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> e <$ pushAll
-      [ Discard (EventTarget eid)
-      , CreateEffect "01080" Nothing (EventSource eid) (InvestigatorTarget iid)
-      ]
+    InvestigatorPlayEvent iid eid _ _ | eid == eventId ->
+      e <$ unshiftEffect attrs (InvestigatorTarget iid)
     _ -> Lucky <$> runMessage msg attrs

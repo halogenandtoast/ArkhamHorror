@@ -14,16 +14,11 @@ import Arkham.Types.Slot
 import Arkham.Types.Trait
 
 newtype DaisysToteBag = DaisysToteBag AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 daisysToteBag :: AssetCard DaisysToteBag
 daisysToteBag = asset DaisysToteBag Cards.daisysToteBag
-
-instance HasModifiersFor env DaisysToteBag
-
-instance HasAbilities env DaisysToteBag where
-  getAbilities i window (DaisysToteBag x) = getAbilities i window x
 
 slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Tome Nothing

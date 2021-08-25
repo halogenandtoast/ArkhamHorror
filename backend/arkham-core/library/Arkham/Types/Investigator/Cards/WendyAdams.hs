@@ -11,13 +11,13 @@ import Arkham.Types.Card
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EntityInstance
+import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (RevealToken)
 import Arkham.Types.Source
 import Arkham.Types.Stats
-import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
@@ -48,22 +48,17 @@ instance HasTokenValue env WendyAdams where
     pure $ TokenValue ElderSign (PositiveModifier 0)
   getTokenValue (WendyAdams attrs) iid token = getTokenValue attrs iid token
 
-ability :: InvestigatorAttrs -> Token -> Ability
-ability attrs token = base
-  { abilityLimit = PlayerLimit PerTestOrAbility 1
-  , abilityMetadata = Just (TargetMetadata $ TokenTarget token)
-  }
- where
-  base = mkAbility
-    (toSource attrs)
-    1
-    (LegacyReactionAbility $ HandDiscardCost 1 Nothing mempty mempty)
-
-instance EntityInstanceRunner env => HasAbilities env WendyAdams where
-  getAbilities iid (Window Timing.When (Window.RevealToken who token)) (WendyAdams attrs@InvestigatorAttrs {..})
-    | iid == investigatorId && iid == who
-    = pure [ability attrs token]
-  getAbilities i window (WendyAdams attrs) = getAbilities i window attrs
+instance HasAbilities env WendyAdams where
+  getAbilities _ _ (WendyAdams attrs) = pure
+    [ restrictedAbility
+          attrs
+          1
+          Self
+          (ReactionAbility (RevealChaosToken Timing.When You AnyToken)
+          $ HandDiscardCost 1 Nothing mempty mempty
+          )
+        & (abilityLimitL .~ PlayerLimit PerTestOrAbility 1)
+    ]
 
 instance (InvestigatorRunner env) => RunMessage env WendyAdams where
   runMessage msg i@(WendyAdams attrs@InvestigatorAttrs {..}) = case msg of
@@ -79,13 +74,13 @@ instance (InvestigatorRunner env) => RunMessage env WendyAdams where
           , UnfocusTokens
           , DrawAnotherToken iid
           ]
-    When (DrawToken iid token) | iid == investigatorId -> i <$ pushAll
-      [ FocusTokens [token]
-      , CheckWindow
-        investigatorId
-        [Window Timing.When (Window.DrawToken investigatorId token)]
-      , UnfocusTokens
-      ]
+    -- When (DrawToken iid token) | iid == investigatorId -> i <$ pushAll
+    --   [ FocusTokens [token]
+    --   , CheckWindow
+    --     investigatorId
+    --     [Window Timing.When (Window.DrawToken investigatorId token)]
+    --   , UnfocusTokens
+    --   ]
     ResolveToken _drawnToken ElderSign iid | iid == investigatorId -> do
       maid <- getId @(Maybe AssetId) (CardCode "01014")
       i <$ when (isJust maid) (push PassSkillTest)

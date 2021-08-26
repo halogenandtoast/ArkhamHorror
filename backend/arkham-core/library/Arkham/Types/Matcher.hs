@@ -387,7 +387,12 @@ data SkillTestMatcher
   | SkillTestAtYourLocation
   | SkillTestOnTreachery TreacheryMatcher
   | UsingThis
+  | SkillTestSourceMatches SourceMatcher
   | SkillTestMatches [SkillTestMatcher]
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+newtype SourceMatcher = SourceWithTrait Trait
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

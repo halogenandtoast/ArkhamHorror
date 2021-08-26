@@ -205,6 +205,7 @@ allPlayerAssetCards = mapFromList $ map
   , smokingPipe
   , sophieInLovingMemory
   , sophieItWasAllMyFault
+  , spiritAthame1
   , stealth
   , streetwise3
   , painkillers
@@ -1251,6 +1252,13 @@ alchemicalTransmutation = (asset "03032" "Alchemical Transmutation" 1 Mystic)
   { cdSkills = [SkillWillpower]
   , cdCardTraits = singleton Spell
   , cdUses = Uses Charge 3
+  }
+
+spiritAthame1 :: CardDef
+spiritAthame1 = (asset "03035" "Spirit Athame" 3 Mystic)
+  { cdSkills = [SkillCombat]
+  , cdCardTraits = setFromList [Item, Relic, Weapon, Melee]
+  , cdLevel = 1
   }
 
 cherishedKeepsake :: CardDef

@@ -114,6 +114,7 @@ data Effect
   | LetMeHandleThis' LetMeHandleThis
   | Fieldwork' Fieldwork
   | SleightOfHand' SleightOfHand
+  | Lockpicks1' Lockpicks1
   | MindWipe3' MindWipe3
   | JeremiahPierce' JeremiahPierce
   | CurseOfTheRougarouTabletToken' CurseOfTheRougarouTabletToken
@@ -224,6 +225,7 @@ allEffects = mapFromList
   , ("03022", LetMeHandleThis' . letMeHandleThis)
   , ("03024", Fieldwork' . fieldwork)
   , ("03029", SleightOfHand' . sleightOfHand)
+  , ("03031", Lockpicks1' . lockpicks1)
   , ("50008", MindWipe3' . mindWipe3)
   , ("50044", JeremiahPierce' . jeremiahPierce)
   , ("81001", CurseOfTheRougarouTabletToken' . curseOfTheRougarouTabletToken)

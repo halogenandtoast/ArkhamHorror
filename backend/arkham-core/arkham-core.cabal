@@ -545,6 +545,7 @@ library
       Arkham.Types.Event.Cards.Teamwork
       Arkham.Types.Event.Cards.ThePaintedWorld
       Arkham.Types.Event.Cards.ThinkOnYourFeet
+      Arkham.Types.Event.Cards.UncageTheSoul
       Arkham.Types.Event.Cards.WardOfProtection
       Arkham.Types.Event.Cards.WardOfProtection5
       Arkham.Types.Event.Cards.WillToSurvive3

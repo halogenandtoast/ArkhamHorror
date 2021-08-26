@@ -1039,6 +1039,12 @@ passesCriteria iid source windows = \case
   Criteria.CardExists cardMatcher -> notNull <$> getList @Card cardMatcher
   Criteria.ExtendedCardExists cardMatcher ->
     notNull <$> getList @Card cardMatcher
+  Criteria.PlayableCardExistsWithCostReduction n cardMatcher -> do
+    availableResources <- unResourceCount <$> getCount iid
+    results <- getList @Card cardMatcher
+    anyM
+      (getIsPlayableWithResources iid source (availableResources + n) windows)
+      results
   Criteria.PlayableCardExists cardMatcher -> do
     results <- getList @Card cardMatcher
     anyM (getIsPlayable iid source windows) results

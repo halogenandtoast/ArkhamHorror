@@ -42,6 +42,7 @@ data Criterion
   | CardExists CardMatcher
   | ExtendedCardExists ExtendedCardMatcher
   | PlayableCardExists ExtendedCardMatcher
+  | PlayableCardExistsWithCostReduction Int ExtendedCardMatcher
   | AssetExists AssetMatcher
   | InvestigatorExists InvestigatorMatcher
   | EnemyCriteria EnemyCriterion

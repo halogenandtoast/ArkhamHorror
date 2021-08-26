@@ -692,6 +692,18 @@ daringManeuver = (event "03030" "Daring Maneuver" 0 Rogue)
       AnyValue
   }
 
+uncageTheSoul :: CardDef
+uncageTheSoul = (event "03033" "Uncage the Soul" 0 Mystic)
+  { cdSkills = [SkillWillpower, SkillWillpower]
+  , cdCardTraits = singleton Spirit
+  , cdCriteria = Just
+    (Criteria.PlayableCardExistsWithCostReduction 3
+    $ InHandOf You
+    <> BasicCardMatch
+         (CardWithOneOf [CardWithTrait Spell, CardWithTrait Ritual])
+    )
+  }
+
 secondWind :: CardDef
 secondWind = (event "04149" "Second Wind" 1 Guardian)
   { cdSkills = [SkillWillpower]

@@ -204,6 +204,7 @@ data LocationMatcher
   | NotYourLocation
   | LocationIs CardCode
   | Anywhere
+  | Unblocked
   | EmptyLocation
   | AccessibleLocation
   | AccessibleFrom LocationMatcher

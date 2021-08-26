@@ -80,6 +80,7 @@ allPlayerAssetCards = mapFromList $ map
   (toCardCode &&& id)
   [ abbessAllegriaDiBiase
   , adaptable1
+  , alchemicalTransmutation
   , alyssaGraham
   , analyticalMind
   , aquinnah1
@@ -1243,6 +1244,13 @@ lockpicks1 = (asset "03031" "Lockpicks" 3 Rogue)
   , cdCardTraits = setFromList [Item, Tool, Illicit]
   , cdUses = Uses Supply 3
   , cdLevel = 1
+  }
+
+alchemicalTransmutation :: CardDef
+alchemicalTransmutation = (asset "03032" "Alchemical Transmutation" 1 Mystic)
+  { cdSkills = [SkillWillpower]
+  , cdCardTraits = singleton Spell
+  , cdUses = Uses Charge 3
   }
 
 cherishedKeepsake :: CardDef

@@ -132,6 +132,7 @@ library
       Arkham.Types.Asset.Cards.AdamLynch
       Arkham.Types.Asset.Cards.Adaptable1
       Arkham.Types.Asset.Cards.AlchemicalConcoction
+      Arkham.Types.Asset.Cards.AlchemicalTransmutation
       Arkham.Types.Asset.Cards.AlyssaGraham
       Arkham.Types.Asset.Cards.AnalyticalMind
       Arkham.Types.Asset.Cards.Aquinnah1
@@ -335,6 +336,7 @@ library
       Arkham.Types.Effect.Attrs
       Arkham.Types.Effect.Effects
       Arkham.Types.Effect.Effects.AChanceEncounter
+      Arkham.Types.Effect.Effects.AlchemicalTransmutation
       Arkham.Types.Effect.Effects.ArcaneBarrier
       Arkham.Types.Effect.Effects.ArkhamWoodsTwistingPaths
       Arkham.Types.Effect.Effects.BaseballBat

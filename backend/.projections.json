@@ -241,7 +241,8 @@
       "  asset {dot} Cards.{dot|snakecase|camelcase}",
       "",
       "instance HasAbilities env {dot} where",
-      "  getAbilities iid window ({dot} attrs) = getActions iid window attrs",
+      "  getAbilities _iid _window ({dot} _attrs) = pure []",
+
       "",
       "instance (HasQueue env, HasModifiersFor env ()) => RunMessage env {dot} where",
       "  runMessage msg ({dot} attrs) = {dot} <$> runMessage msg attrs"

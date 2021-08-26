@@ -53,6 +53,7 @@ allPlayerEventCards = mapFromList $ map
   [ aChanceEncounter
   , aceInTheHole3
   , astoundingRevelation
+  , astralTravel
   , backstab
   , baitAndSwitch
   , barricade
@@ -702,6 +703,15 @@ uncageTheSoul = (event "03033" "Uncage the Soul" 0 Mystic)
     <> BasicCardMatch
          (CardWithOneOf [CardWithTrait Spell, CardWithTrait Ritual])
     )
+  }
+
+astralTravel :: CardDef
+astralTravel = (event "03034" "Astral Travel" 3 Mystic)
+  { cdSkills = [SkillWillpower, SkillAgility]
+  , cdCardTraits = singleton Spell
+  , cdAction = Just Action.Move
+  , cdCriteria = Just
+    (Criteria.LocationExists $ RevealedLocation <> Unblocked <> NotYourLocation)
   }
 
 secondWind :: CardDef

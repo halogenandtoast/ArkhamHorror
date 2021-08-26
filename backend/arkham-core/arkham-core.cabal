@@ -473,6 +473,7 @@ library
       Arkham.Types.Event.Cards.AceInTheHole3
       Arkham.Types.Event.Cards.AChanceEncounter
       Arkham.Types.Event.Cards.AstoundingRevelation
+      Arkham.Types.Event.Cards.AstralTravel
       Arkham.Types.Event.Cards.Backstab
       Arkham.Types.Event.Cards.BaitAndSwitch
       Arkham.Types.Event.Cards.Barricade

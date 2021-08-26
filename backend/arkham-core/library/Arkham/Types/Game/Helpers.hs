@@ -1605,6 +1605,9 @@ locationMatches investigatorId source window locationId = \case
   Matcher.LocationWithId lid -> pure $ lid == locationId
   Matcher.LocationIs cardCode -> (== cardCode) <$> getId locationId
   Matcher.Anywhere -> pure True
+  Matcher.Unblocked -> notElem Blocked <$> getModifiers
+    (InvestigatorSource investigatorId)
+    (LocationTarget locationId)
   Matcher.EmptyLocation -> liftA2
     (&&)
     (null <$> getSet @EnemyId locationId)

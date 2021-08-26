@@ -660,6 +660,11 @@ getLocationsMatching = \case
   LocationWithId locationId ->
     filter ((== locationId) . toId) . toList . view locationsL <$> getGame
   Anywhere -> toList . view locationsL <$> getGame
+  Unblocked -> do
+    filterM (\l -> notElem Blocked <$> getModifiers (toSource l) (toTarget l))
+      . toList
+      . view locationsL
+      =<< getGame
   LocationIs cardCode ->
     filter ((== cardCode) . toCardCode) . toList . view locationsL <$> getGame
   EmptyLocation ->

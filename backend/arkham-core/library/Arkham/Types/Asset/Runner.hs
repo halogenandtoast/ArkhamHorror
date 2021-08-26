@@ -19,6 +19,7 @@ type AssetRunner env
     , Query LocationMatcher env
     , Query InvestigatorMatcher env
     , Query EnemyMatcher env
+    , HasSkillValue env InvestigatorId
     , HasCostPayment env
     , HasModifiersFor env ()
     , HasList UsedAbility env ()

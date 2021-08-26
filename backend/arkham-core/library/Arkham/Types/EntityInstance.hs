@@ -69,6 +69,7 @@ type EntityInstanceRunner env
     , Query LocationMatcher env
     , Query ExtendedCardMatcher env
     , HasAbilities env LocationId
+    , HasSkillValue env InvestigatorId
     , HasHistory env
     , HasId CardCode env TreacheryId
     , L.GetLabel env LocationId

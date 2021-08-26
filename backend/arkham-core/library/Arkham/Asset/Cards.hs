@@ -160,6 +160,7 @@ allPlayerAssetCards = mapFromList $ map
   , lightningGun5
   , liquidCourage
   , litaChantler
+  , lockpicks1
   , loneWolf
   , luckyDice2
   , machete
@@ -1234,6 +1235,14 @@ stealth :: CardDef
 stealth = (asset "03028" "Stealth" 2 Rogue)
   { cdSkills = [SkillAgility]
   , cdCardTraits = singleton Talent
+  }
+
+lockpicks1 :: CardDef
+lockpicks1 = (asset "03031" "Lockpicks" 3 Rogue)
+  { cdSkills = [SkillIntellect]
+  , cdCardTraits = setFromList [Item, Tool, Illicit]
+  , cdUses = Uses Supply 3
+  , cdLevel = 1
   }
 
 cherishedKeepsake :: CardDef

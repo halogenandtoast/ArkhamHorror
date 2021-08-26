@@ -1580,6 +1580,13 @@ gameValueMatches n = \case
   Matcher.GreaterThanOrEqualTo gv -> (n >=) <$> getPlayerCountValue gv
   Matcher.EqualTo gv -> (n ==) <$> getPlayerCountValue gv
 
+sourceMatches
+  :: (MonadReader env m, HasSet Trait env Source)
+  => Source
+  -> Matcher.SourceMatcher
+  -> m Bool
+sourceMatches s (Matcher.SourceWithTrait t) = elem t <$> getSet s
+
 enemyMatches
   :: (MonadReader env m, CanCheckPlayable env)
   => EnemyId
@@ -1670,6 +1677,7 @@ locationMatches investigatorId source window locationId = \case
 skillTestMatches
   :: ( MonadReader env m
      , HasId LocationId env InvestigatorId
+     , HasSet Trait env Source
      , Query Matcher.SkillMatcher env
      , Query Matcher.EnemyMatcher env
      , Query Matcher.LocationMatcher env
@@ -1683,6 +1691,8 @@ skillTestMatches
 skillTestMatches iid source st = \case
   Matcher.AnySkillTest -> pure True
   Matcher.UsingThis -> pure $ source == skillTestSource st
+  Matcher.SkillTestSourceMatches sourceMatcher ->
+    sourceMatches (skillTestSource st) sourceMatcher
   Matcher.WhileInvestigating locationMatcher -> case skillTestAction st of
     Just Action.Investigate -> case skillTestSource st of
       LocationSource lid -> member lid <$> select locationMatcher

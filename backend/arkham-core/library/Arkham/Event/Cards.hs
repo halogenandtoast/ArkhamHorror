@@ -86,6 +86,7 @@ allPlayerEventCards = mapFromList $ map
   , extraAmmunition1
   , firstWatch
   , flare1
+  , hidingSpot
   , hotStreak2
   , hotStreak4
   , hypnoticGaze
@@ -491,7 +492,8 @@ standTogether3 :: CardDef
 standTogether3 = (event "02148" "Stand Together" 0 Guardian)
   { cdSkills = [SkillWillpower, SkillWillpower]
   , cdCardTraits = singleton Spirit
-  , cdCriteria = Just Criteria.AnotherInvestigatorInSameLocation
+  , cdCriteria = Just
+    $ Criteria.InvestigatorExists (InvestigatorAt YourLocation)
   , cdLevel = 3
   }
 
@@ -588,7 +590,12 @@ momentOfRespite3 :: CardDef
 momentOfRespite3 = (event "02273" "Moment of Respite" 3 Neutral)
   { cdSkills = [SkillWillpower, SkillWillpower]
   , cdCardTraits = singleton Spirit
-  , cdCriteria = Just $ Criteria.NoEnemyExists $ EnemyAt YourLocation
+  , cdCriteria =
+    Just
+    $ Criteria.Negate
+    $ Criteria.EnemyCriteria
+    $ Criteria.EnemyExists
+    $ EnemyAt YourLocation
   , cdLevel = 3
   }
 
@@ -712,6 +719,13 @@ astralTravel = (event "03034" "Astral Travel" 3 Mystic)
   , cdAction = Just Action.Move
   , cdCriteria = Just
     (Criteria.LocationExists $ RevealedLocation <> Unblocked <> NotYourLocation)
+  }
+
+hidingSpot :: CardDef
+hidingSpot = (event "03038" "Hiding Spot" 1 Survivor)
+  { cdSkills = [SkillAgility, SkillAgility]
+  , cdCardTraits = setFromList [Tactic, Trick]
+  , cdFastWindow = Just AnyWindow
   }
 
 secondWind :: CardDef

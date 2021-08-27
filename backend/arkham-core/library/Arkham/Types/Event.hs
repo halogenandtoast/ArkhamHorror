@@ -11,6 +11,7 @@ import Arkham.Types.Event.Cards
 import Arkham.Types.Event.Runner
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Source
@@ -29,7 +30,11 @@ instance HasCardDef Event where
 instance HasAbilities env Event where
   getAbilities = genericGetAbilities
 
-instance HasCount ClueCount env InvestigatorId => HasModifiersFor env Event where
+instance
+  ( HasCount ClueCount env InvestigatorId
+  , Query EnemyMatcher env
+  )
+  => HasModifiersFor env Event where
   getModifiersFor = genericGetModifiersFor
 
 instance

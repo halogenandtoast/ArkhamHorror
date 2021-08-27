@@ -14,6 +14,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
+import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
@@ -34,9 +35,9 @@ instance HasAbilities env GravediggersShovel where
     ]
 
 instance AssetRunner env => RunMessage env GravediggersShovel where
-  runMessage msg (GravediggersShovel attrs) = case msg of
+  runMessage msg a@(GravediggersShovel attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
-      [ skillTestModifiers
+      [ skillTestModifier
         attrs
         (InvestigatorTarget iid)
         (SkillModifier SkillCombat 2)

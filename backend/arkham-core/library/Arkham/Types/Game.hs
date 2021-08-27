@@ -32,6 +32,7 @@ import Arkham.Types.EffectMetadata
 import Arkham.Types.Enemy
 import Arkham.Types.EntityInstance
 import Arkham.Types.Event
+import Arkham.Types.Event.Attrs (eventAttachedTarget)
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameRunner
 import Arkham.Types.Helpers
@@ -1729,6 +1730,15 @@ instance HasGame env => HasId (Maybe LocationId) env TreacheryId where
       Just (InvestigatorTarget iid) -> Just <$> getId iid
       Just (EnemyTarget eid) -> Just <$> getId eid
       Just (LocationTarget lid) -> pure $ Just lid
+      _ -> pure Nothing
+
+instance HasGame env => HasId (Maybe LocationId) env EventId where
+  getId eid = do
+    e <- getEvent eid
+    case eventAttachedTarget (toAttrs e) of
+      Just (InvestigatorTarget investigator) -> Just <$> getId investigator
+      Just (EnemyTarget enemy) -> Just <$> getId enemy
+      Just (LocationTarget location) -> pure $ Just location
       _ -> pure Nothing
 
 instance HasGame env => HasSet EnemyId env InvestigatorId where

@@ -30,39 +30,38 @@ pattern CanDrawCards <-
     (InvestigatorMatches [You, InvestigatorWithoutModifier CannotDrawCards])
 
 data Criterion
-  = AnotherInvestigatorInSameLocation
-  | InVictoryDisplay CardMatcher ValueMatcher
-  | InvestigatorIsAlone
-  | ScenarioCardHasResignAbility
-  | ClueOnLocation
-  | Self
-  | DuringTurn InvestigatorMatcher
-  | FirstAction
-  | OnLocation LocationMatcher
+  = AssetExists AssetMatcher
   | CardExists CardMatcher
-  | ExtendedCardExists ExtendedCardMatcher
-  | PlayableCardExists ExtendedCardMatcher
-  | PlayableCardExistsWithCostReduction Int ExtendedCardMatcher
-  | AssetExists AssetMatcher
-  | InvestigatorExists InvestigatorMatcher
-  | EnemyCriteria EnemyCriterion
-  | SetAsideCardExists CardMatcher
-  | NoEnemyExists EnemyMatcher
-  | LocationExists LocationMatcher
-  | InvestigatorsHaveSpendableClues ValueMatcher
-  | CluesOnThis ValueMatcher
+  | CardInDiscard DiscardSignifier [Trait]
   | ChargesOnThis ValueMatcher
-  | ResourcesOnThis ValueMatcher
+  | ClueOnLocation
+  | CluesOnThis ValueMatcher
+  | DuringSkillTest SkillTestMatcher
+  | DuringTurn InvestigatorMatcher
+  | EnemyCriteria EnemyCriterion
+  | ExtendedCardExists ExtendedCardMatcher
+  | FirstAction
+  | Here
   | HorrorOnThis ValueMatcher
+  | InThreatAreaOf InvestigatorMatcher
+  | InVictoryDisplay CardMatcher ValueMatcher
+  | InvestigatorExists InvestigatorMatcher
+  | InvestigatorIsAlone
+  | InvestigatorsHaveSpendableClues ValueMatcher
+  | LocationExists LocationMatcher
+  | OnLocation LocationMatcher
+  | OnSameLocation
   | OwnCardWithDoom
   | OwnsThis
-  | Here
-  | OnSameLocation
-  | Unowned
-  | DuringSkillTest SkillTestMatcher
-  | InThreatAreaOf InvestigatorMatcher
-  | CardInDiscard DiscardSignifier [Trait]
+  | PlayableCardExists ExtendedCardMatcher
+  | PlayableCardExistsWithCostReduction Int ExtendedCardMatcher
+  | ResourcesOnThis ValueMatcher
   | ReturnableCardInDiscard DiscardSignifier [Trait]
+  | ScenarioCardHasResignAbility
+  | Self
+  | SetAsideCardExists CardMatcher
+  | Unowned
+  -- Special Criterion
   | Criteria [Criterion]
   | AnyCriterion [Criterion]
   | NoRestriction
@@ -87,6 +86,7 @@ instance Monoid Criterion where
 data EnemyCriterion
   = EnemyExists EnemyMatcher
   | NotAttackingEnemy
+  | EnemyExistsAtAttachedLocation EnemyMatcher
   | ThisEnemy EnemyMatcher
   | EnemyMatchesCriteria [EnemyCriterion]
   deriving stock (Show, Eq, Generic)

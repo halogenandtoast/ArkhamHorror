@@ -823,6 +823,7 @@ type CanCheckPlayable env
   = ( HasModifiersFor env ()
     , HasSet VictoryDisplayCard env ()
     , HasId (Maybe LocationId) env TreacheryId
+    , HasId (Maybe LocationId) env EventId
     , Query Matcher.AssetMatcher env
     , Query Matcher.InvestigatorMatcher env
     , Query Matcher.ActionMatcher env
@@ -1097,7 +1098,6 @@ passesCriteria iid source windows = \case
       ((> 0) . unClueCount <$> getCount location)
   Criteria.EnemyCriteria enemyCriteria ->
     passesEnemyCriteria iid source windows enemyCriteria
-  Criteria.NoEnemyExists matcher -> null <$> getSet @EnemyId matcher
   Criteria.SetAsideCardExists matcher ->
     notNull <$> getSet @SetAsideCardId matcher
   Criteria.AssetExists matcher -> notNull <$> getSet @AssetId matcher
@@ -1108,12 +1108,6 @@ passesCriteria iid source windows = \case
   Criteria.Criteria rs -> allM (passesCriteria iid source windows) rs
   Criteria.AnyCriterion rs -> anyM (passesCriteria iid source windows) rs
   Criteria.LocationExists matcher -> notNull <$> getSet @LocationId matcher
-  Criteria.AnotherInvestigatorInSameLocation -> do
-    location <- getId iid
-    liftA2
-      (&&)
-      (pure $ location /= LocationId (CardId nil))
-      (notNull <$> getSet @InvestigatorId location)
   Criteria.InvestigatorIsAlone -> do
     location <- getId iid
     liftA2
@@ -1153,14 +1147,20 @@ passesEnemyCriteria
   -> [Window]
   -> Criteria.EnemyCriterion
   -> m Bool
-passesEnemyCriteria _iid source windows criterion = notNull
-  <$> getSet @EnemyId (matcher criterion)
+passesEnemyCriteria _iid source windows criterion =
+  notNull <$> (getSet @EnemyId =<< matcher criterion)
  where
   matcher = \case
-    Criteria.EnemyMatchesCriteria ms -> concatMap matcher ms
-    Criteria.EnemyExists m -> m
+    Criteria.EnemyMatchesCriteria ms -> mconcatMapM matcher ms
+    Criteria.EnemyExists m -> pure m
+    Criteria.EnemyExistsAtAttachedLocation m -> case source of
+      EventSource e -> do
+        getId @(Maybe LocationId) e >>= \case
+          Nothing -> error "Event must be attached"
+          Just lid -> pure $ m <> Matcher.EnemyAt (Matcher.LocationWithId lid)
+      _ -> error $ "Does not handle source: " <> show source
     Criteria.ThisEnemy enemyMatcher -> case source of
-      EnemySource eid -> Matcher.EnemyWithId eid <> enemyMatcher
+      EnemySource eid -> pure $ Matcher.EnemyWithId eid <> enemyMatcher
       _ -> error "Invalid source for ThisEnemy"
     Criteria.NotAttackingEnemy ->
       -- TODO: should not be multiple enemies, but if so need to OR not AND matcher
@@ -1171,7 +1171,7 @@ passesEnemyCriteria _iid source windows criterion = notNull
       in
         case mapMaybe getAttackingEnemy windows of
           [] -> error "can not be called without enemy source"
-          xs -> Matcher.NotEnemy (concatMap Matcher.EnemyWithId xs)
+          xs -> pure $ Matcher.NotEnemy (concatMap Matcher.EnemyWithId xs)
 
 getModifiedCardCost
   :: ( MonadReader env m

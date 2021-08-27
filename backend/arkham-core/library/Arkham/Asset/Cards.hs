@@ -155,6 +155,7 @@ allPlayerAssetCards = mapFromList $ map
   , kukri
   , laboratoryAssistant
   , ladyEsprit
+  , lantern
   , leatherCoat
   , leoDeLuca
   , leoDeLuca1
@@ -1259,6 +1260,12 @@ spiritAthame1 = (asset "03035" "Spirit Athame" 3 Mystic)
   { cdSkills = [SkillCombat]
   , cdCardTraits = setFromList [Item, Relic, Weapon, Melee]
   , cdLevel = 1
+  }
+
+lantern :: CardDef
+lantern = (asset "03036" "Lantern" 2 Survivor)
+  { cdSkills = [SkillIntellect]
+  , cdCardTraits = setFromList [Item, Tool]
   }
 
 cherishedKeepsake :: CardDef

@@ -32,7 +32,7 @@ instance HasAbilities env PsychopompsSong where
           $ DealtDamage Timing.When
           $ InvestigatorWithId iid
         ]
-      Nothing -> pure []
+      _ -> pure []
 
 instance TreacheryRunner env => RunMessage env PsychopompsSong where
   runMessage msg t@(PsychopompsSong attrs@TreacheryAttrs {..}) = case msg of

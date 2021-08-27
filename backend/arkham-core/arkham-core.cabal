@@ -213,6 +213,7 @@ library
       Arkham.Types.Asset.Cards.Kukri
       Arkham.Types.Asset.Cards.LaboratoryAssistant
       Arkham.Types.Asset.Cards.LadyEsprit
+      Arkham.Types.Asset.Cards.Lantern
       Arkham.Types.Asset.Cards.LeatherCoat
       Arkham.Types.Asset.Cards.LeoDeLuca
       Arkham.Types.Asset.Cards.LeoDeLuca1

@@ -186,6 +186,7 @@ library
       Arkham.Types.Asset.Cards.ForbiddenKnowledge
       Arkham.Types.Asset.Cards.FortyFiveAutomatic
       Arkham.Types.Asset.Cards.FortyOneDerringer
+      Arkham.Types.Asset.Cards.GravediggersShovel
       Arkham.Types.Asset.Cards.GrotesqueStatue4
       Arkham.Types.Asset.Cards.GuardDog
       Arkham.Types.Asset.Cards.HardKnocks

@@ -132,6 +132,7 @@ allPlayerAssetCards = mapFromList $ map
   , forbiddenKnowledge
   , fortyFiveAutomatic
   , fortyOneDerringer
+  , gravediggersShovel
   , grotesqueStatue4
   , guardDog
   , hardKnocks
@@ -1266,6 +1267,12 @@ lantern :: CardDef
 lantern = (asset "03036" "Lantern" 2 Survivor)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Item, Tool]
+  }
+
+gravediggersShovel :: CardDef
+gravediggersShovel = (asset "03037" "Gravedigger's Shovel" 2 Survivor)
+  { cdSkills = [SkillCombat]
+  , cdCardTraits = setFromList [Item, Tool, Weapon, Melee]
   }
 
 cherishedKeepsake :: CardDef

@@ -9,10 +9,8 @@ import Arkham.Types.Classes
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Game.Helpers
-import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 
@@ -23,8 +21,8 @@ lockpicks1 :: EffectArgs -> Lockpicks1
 lockpicks1 = Lockpicks1 . uncurry4 (baseAttrs "03031")
 
 instance HasModifiersFor env Lockpicks1 where
-  getModifiersFor _ target@(InvestigatorTarget iid) (Lockpicks1 a)
-    | target == effectTarget a = case effectMetadata a of
+  getModifiersFor _ target (Lockpicks1 a) | target == effectTarget a =
+    case effectMetadata a of
       Just (EffectInt n) -> pure $ toModifiers a [AnySkillValue n]
       _ -> error "needs to be set"
   getModifiersFor _ _ _ = pure []

@@ -7,7 +7,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 import Arkham.Types.Message
-import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype Lucky = Lucky EventAttrs

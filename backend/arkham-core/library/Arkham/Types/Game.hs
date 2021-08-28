@@ -1645,6 +1645,30 @@ instance HasGame env => HasSet Keyword env EnemyId where
       . toKeywords
       <$> getEnemy eid
 
+instance HasGame env => HasSet Keyword env TreacheryId where
+  getSet tid = do
+    modifiers' <- liftA2
+      (<>)
+      (getModifiers GameSource (TreacheryTarget tid))
+      (getModifiers GameSource (CardIdTarget $ unTreacheryId tid))
+    let
+      addedKeywords = setFromList $ mapMaybe
+        (\case
+          AddKeyword keyword -> Just keyword
+          _ -> Nothing
+        )
+        modifiers'
+      removedKeywords = setFromList $ mapMaybe
+        (\case
+          RemoveKeyword keyword -> Just keyword
+          _ -> Nothing
+        )
+        modifiers'
+    (`difference` removedKeywords)
+      . union addedKeywords
+      . toKeywords
+      <$> getTreachery tid
+
 instance HasGame env => HasList UnderneathCard env LocationId where
   getList = getList <=< getLocation
 
@@ -1848,10 +1872,15 @@ instance HasGame env => HasList Card env ExtendedCardMatcher where
   getList matcher = do
     investigatorIds <- getInvestigatorIds
     handCards <- map unHandCard . concat <$> traverse getList investigatorIds
+    discards <- getDiscards investigatorIds
     underneathCards <-
       map unUnderneathCard . concat <$> traverse getList investigatorIds
-    filterM (`matches` matcher) (handCards <> underneathCards)
+    filterM (`matches` matcher) (handCards <> underneathCards <> discards)
    where
+    getDiscards iids =
+      map PlayerCard
+        . concat
+        <$> traverse (fmap discardOf . getInvestigator) iids
     matches c = \case
       BasicCardMatch cm -> pure $ cardMatch c cm
       InHandOf who -> do
@@ -1860,11 +1889,8 @@ instance HasGame env => HasList Card env ExtendedCardMatcher where
         pure $ c `elem` cards
       InDiscardOf who -> do
         iids <- selectList who
-        cards <-
-          map PlayerCard
-          . concat
-          <$> traverse (fmap discardOf . getInvestigator) iids
-        pure $ c `elem` cards
+        discards <- getDiscards iids
+        pure $ c `elem` discards
       CardIsBeneathInvestigator who -> do
         iids <- getSetList @InvestigatorId who
         cards <- map unUnderneathCard . concat <$> traverse getList iids
@@ -3768,28 +3794,34 @@ runGameMessage msg g = case msg of
     let
       treachery = createTreachery card iid
       treacheryId = toId treachery
-    checkWindowMessages <- checkWindows
-      [ Window
-          Timing.When
-          (Window.DrawCard iid (EncounterCard card) Deck.EncounterDeck)
-      ]
-    pushAll
-      $ checkWindowMessages
-      <> [ Revelation iid (TreacherySource treacheryId)
-         , AfterRevelation iid treacheryId
-         ]
-      <> [ Surge iid (TreacherySource treacheryId)
-         | Keyword.Surge `member` toKeywords treachery
-         ]
 
     let
       historyItem = mempty { historyTreacheriesDrawn = [toCardCode treachery] }
+
+    push (ResolveTreachery iid treacheryId)
 
     pure
       $ g
       & (treacheriesL . at treacheryId ?~ treachery)
       & (activeCardL ?~ EncounterCard card)
       & (phaseHistoryL %~ HashMap.insertWith (<>) iid historyItem)
+  ResolveTreachery iid treacheryId -> do
+    treachery <- getTreachery treacheryId
+    keywords <- getSet treacheryId
+    checkWindowMessages <- checkWindows
+      [ Window
+          Timing.When
+          (Window.DrawCard iid (toCard treachery) Deck.EncounterDeck)
+      ]
+    g <$ pushAll
+      (checkWindowMessages
+      <> [ Revelation iid (TreacherySource treacheryId)
+         , AfterRevelation iid treacheryId
+         ]
+      <> [ Surge iid (TreacherySource treacheryId)
+         | Keyword.Surge `member` keywords
+         ]
+      )
   DrewTreachery iid (PlayerCard card) -> do
     let
       treachery = createTreachery card iid

@@ -368,6 +368,7 @@ library
       Arkham.Types.Effect.Effects.MindWipe3
       Arkham.Types.Effect.Effects.MinhThiPhan
       Arkham.Types.Effect.Effects.OnTheLam
+      Arkham.Types.Effect.Effects.Overzealous
       Arkham.Types.Effect.Effects.PayForAbilityEffect
       Arkham.Types.Effect.Effects.PushedIntoTheBeyond
       Arkham.Types.Effect.Effects.QuickThinking
@@ -908,6 +909,7 @@ library
       Arkham.Types.Treachery.Cards.OfferOfPower
       Arkham.Types.Treachery.Cards.OnTheProwl
       Arkham.Types.Treachery.Cards.OnWingsOfDarkness
+      Arkham.Types.Treachery.Cards.Overzealous
       Arkham.Types.Treachery.Cards.Paranoia
       Arkham.Types.Treachery.Cards.PassageIntoTheVeil
       Arkham.Types.Treachery.Cards.PsychopompsSong

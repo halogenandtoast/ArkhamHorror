@@ -72,6 +72,7 @@ allPlayerTreacheryCards = mapFromList $ map
   , hypochondria
   , indebted
   , internalInjury
+  , overzealous
   , paranoia
   , psychosis
   , rexsCurse
@@ -517,6 +518,10 @@ angeredSpirits =
 crisisOfIdentity :: CardDef
 crisisOfIdentity =
   (weakness "03019" "Crisis of Identity") { cdCardTraits = singleton Madness }
+
+overzealous :: CardDef
+overzealous =
+  (weakness "03040" "Overzealous") { cdCardTraits = singleton Flaw }
 
 theZealotsSeal :: CardDef
 theZealotsSeal = (treachery "50024" "The Zealot's Seal" ReturnToTheGathering 2)

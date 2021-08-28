@@ -24,16 +24,21 @@ resourceful = skill Resourceful Cards.resourceful
 
 instance SkillRunner env => RunMessage env Resourceful where
   runMessage msg s@(Resourceful attrs) = case msg of
-    PassedSkillTest iid _ _ target _ _ | isTarget attrs target -> do
-      targets <- selectListMap
-        (CardIdTarget . toCardId)
-        (InDiscardOf (InvestigatorWithId iid) <> BasicCardMatch
+    PassedSkillTest _ _ _ target _ _ | isTarget attrs target -> do
+      targets <- selectList
+        (InDiscardOf (InvestigatorWithId $ skillOwner attrs) <> BasicCardMatch
           (CardWithClass Survivor <> NotCard (CardWithTitle "Resourceful"))
         )
       s <$ when
         (notNull targets)
         (push $ chooseOne
-          iid
-          [ TargetLabel card [ReturnToHand iid card] | card <- targets ]
+          (skillOwner attrs)
+          [ TargetLabel
+              (CardIdTarget $ toCardId card)
+              [ RemoveFromDiscard (skillOwner attrs) (toCardId card)
+              , AddToHand (skillOwner attrs) card
+              ]
+          | card <- targets
+          ]
         )
     _ -> Resourceful <$> runMessage msg attrs

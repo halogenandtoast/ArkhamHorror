@@ -231,6 +231,7 @@ data Message
     | DrawToken InvestigatorId Token
     | DrewPlayerEnemy InvestigatorId Card
     | DrewTreachery InvestigatorId Card
+    | ResolveTreachery InvestigatorId TreacheryId
     | DrivenInsane InvestigatorId
     | EmptyDeck InvestigatorId
     | EndPhase

@@ -128,6 +128,14 @@ withTreacheryInvestigator attrs f = case treacheryAttachedTarget attrs of
       $ show (cdName $ toCardDef attrs)
       <> " must be attached to an investigator"
 
+withTreacheryOwner :: TreacheryAttrs -> (InvestigatorId -> m a) -> m a
+withTreacheryOwner attrs f = case treacheryOwner attrs of
+  Just iid -> f iid
+  _ ->
+    error
+      $ show (cdName $ toCardDef attrs)
+      <> " must be owned by an investigator"
+
 treachery
   :: (TreacheryAttrs -> a)
   -> CardDef

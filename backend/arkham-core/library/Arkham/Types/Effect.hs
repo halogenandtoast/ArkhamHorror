@@ -116,6 +116,7 @@ data Effect
   | SleightOfHand' SleightOfHand
   | Lockpicks1' Lockpicks1
   | AlchemicalTransmutation' AlchemicalTransmutation
+  | Overzealous' Overzealous
   | MindWipe3' MindWipe3
   | JeremiahPierce' JeremiahPierce
   | CurseOfTheRougarouTabletToken' CurseOfTheRougarouTabletToken
@@ -228,6 +229,7 @@ allEffects = mapFromList
   , ("03029", SleightOfHand' . sleightOfHand)
   , ("03031", Lockpicks1' . lockpicks1)
   , ("03032", AlchemicalTransmutation' . alchemicalTransmutation)
+  , ("03040", Overzealous' . overzealous)
   , ("50008", MindWipe3' . mindWipe3)
   , ("50044", JeremiahPierce' . jeremiahPierce)
   , ("81001", CurseOfTheRougarouTabletToken' . curseOfTheRougarouTabletToken)

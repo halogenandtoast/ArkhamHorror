@@ -1855,8 +1855,15 @@ instance HasGame env => HasList Card env ExtendedCardMatcher where
     matches c = \case
       BasicCardMatch cm -> pure $ cardMatch c cm
       InHandOf who -> do
-        iids <- getSetList @InvestigatorId who
+        iids <- selectList who
         cards <- map unHandCard . concat <$> traverse getList iids
+        pure $ c `elem` cards
+      InDiscardOf who -> do
+        iids <- selectList who
+        cards <-
+          map PlayerCard
+          . concat
+          <$> traverse (fmap discardOf . getInvestigator) iids
         pure $ c `elem` cards
       CardIsBeneathInvestigator who -> do
         iids <- getSetList @InvestigatorId who

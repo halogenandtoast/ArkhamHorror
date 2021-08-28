@@ -60,6 +60,7 @@ allPlayerSkillCards = mapFromList $ map
   , overpower
   , perception
   , quickThinking
+  , resourceful
   , riseToTheOccasion
   , strokeOfLuck2
   , survivalInstinct
@@ -215,6 +216,16 @@ theHomeFront =
   (skill "03007" "The Home Front" (replicate 4 SkillCombat) Neutral)
     { cdCardTraits = setFromList [Practiced, Expert]
     }
+
+resourceful :: CardDef
+resourceful = (skill
+                "03039"
+                "Resourceful"
+                [SkillIntellect, SkillCombat, SkillAgility]
+                Survivor
+              )
+  { cdCardTraits = singleton Innate
+  }
 
 trueUnderstanding :: CardDef
 trueUnderstanding = (skill "04153" "True Understanding" [SkillWild] Seeker)

@@ -298,6 +298,7 @@ data ExtendedCardMatcher
   = BasicCardMatch CardMatcher
   | CardIsBeneathInvestigator Who
   | InHandOf Who
+  | InDiscardOf Who
   | ExtendedCardWithOneOf [ExtendedCardMatcher]
   | ExtendedCardMatches [ExtendedCardMatcher]
   deriving stock (Show, Eq, Generic)
@@ -321,6 +322,7 @@ data CardMatcher
   | CardWithClass ClassSymbol
   | CardWithOneOf [CardMatcher]
   | CardMatches [CardMatcher]
+  | NotCard CardMatcher
   | IsEncounterCard
   | CardIsUnique
   | NonWeakness

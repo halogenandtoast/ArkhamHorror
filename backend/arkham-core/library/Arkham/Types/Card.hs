@@ -63,6 +63,7 @@ cardMatch a = \case
   CardWithoutKeyword k -> k `notMember` cdKeywords (toCardDef a)
   NonWeakness -> not . cdWeakness $ toCardDef a
   NonExceptional -> not . cdExceptional $ toCardDef a
+  NotCard m -> not (cardMatch a m)
 
 instance IsCard PlayerCard where
   toCardId = pcId

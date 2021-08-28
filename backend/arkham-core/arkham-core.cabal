@@ -824,6 +824,7 @@ library
       Arkham.Types.Skill.Cards.Overpower
       Arkham.Types.Skill.Cards.Perception
       Arkham.Types.Skill.Cards.QuickThinking
+      Arkham.Types.Skill.Cards.Resourceful
       Arkham.Types.Skill.Cards.RiseToTheOccasion
       Arkham.Types.Skill.Cards.StrokeOfLuck2
       Arkham.Types.Skill.Cards.SurvivalInstinct

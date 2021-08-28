@@ -1,12 +1,12 @@
 module Arkham.Types.Skill.Runner where
 
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
+import Arkham.Types.Matcher
 
 type SkillRunner env
   = ( HasQueue env
+    , Query ExtendedCardMatcher env
     , HasSet ConnectedLocationId env LocationId
     , HasSet BlockedLocationId env ()
     , HasSet EnemyId env InvestigatorId

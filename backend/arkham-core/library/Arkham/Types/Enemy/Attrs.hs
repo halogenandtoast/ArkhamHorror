@@ -720,13 +720,17 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
           [Window Timing.When (Window.EnemyWouldBeDefeated eid)]
         afterMsgs <- checkWindows
           [Window Timing.After (Window.EnemyWouldBeDefeated eid)]
-        push $ EnemyDefeated
-          eid
-          iid
-          enemyLocation
-          (toCardCode a)
-          source
-          (setToList $ toTraits a)
+        pushAll
+          $ whenMsgs
+          <> afterMsgs
+          <> [ EnemyDefeated
+                 eid
+                 iid
+                 enemyLocation
+                 (toCardCode a)
+                 source
+                 (setToList $ toTraits a)
+             ]
       pure $ a & damageL +~ amount'
     DefeatEnemy eid iid source | eid == enemyId -> a <$ push
       (EnemyDefeated

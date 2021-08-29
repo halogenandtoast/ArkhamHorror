@@ -7,57 +7,65 @@ import Arkham.Prelude
 
 import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
+import Arkham.Types.Criteria
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype RexsCurse = RexsCurse TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor env)
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 rexsCurse :: TreacheryCard RexsCurse
 rexsCurse = treachery RexsCurse Cards.rexsCurse
 
-instance HasModifiersFor env RexsCurse
-
 instance HasAbilities env RexsCurse where
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (RexsCurse x) = pure
+    [ restrictedAbility
+        x
+        1
+        (InThreatAreaOf You)
+        (ForcedAbility
+        $ WouldHaveSkillTestResult Timing.When You AnySkillTest
+        $ SuccessResult AnyValue
+        )
+      & abilityLimitL
+      .~ PlayerLimit PerTestOrAbility 1
+    ]
 
 instance TreacheryRunner env => RunMessage env RexsCurse where
   runMessage msg t@(RexsCurse attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))
-    Will (PassedSkillTest iid _ _ SkillTestInitiatorTarget{} _ _)
-      | treacheryOnInvestigator iid attrs -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      retainedMessages <- withQueue $ \queue ->
         let
-          ability = (mkAbility (toSource attrs) 0 LegacyForcedAbility)
-            { abilityLimit = PlayerLimit PerTestOrAbility 1
-            }
-        usedAbilities <- map unUsedAbility <$> getList ()
-        when ((iid, ability) `notElem` usedAbilities) $ do
-          retainedMessages <- withQueue $ \queue ->
-            let
-              (remainingWillPass, queue') = flip span queue $ \case
-                Will PassedSkillTest{} -> True
-                _ -> False
-              (before, after) = flip break queue' $ \case
-                Ask iid' (ChooseOne [SkillTestApplyResults]) | iid == iid' ->
-                  True
-                _ -> False
-              remaining = case after of
-                [] -> []
-                (_ : xs) -> xs
-            in (before <> remaining, remainingWillPass)
-          pushAll
-            $ retainedMessages
-            <> [ UseAbility iid ability []
-               , ReturnSkillTestRevealedTokens
-               , AddSkillTestSubscriber (TreacheryTarget treacheryId)
-               , DrawAnotherToken iid
-               ]
-        pure t
+          (remainingWillPass, queue') = flip span queue $ \case
+            Will PassedSkillTest{} -> True
+            _ -> False
+          (before, after) = flip break queue' $ \case
+            Ask iid' (ChooseOne [SkillTestApplyResults]) | iid == iid' -> True
+            _ -> False
+          remaining = case after of
+            [] -> []
+            (_ : xs) -> xs
+        in (before <> remaining, remainingWillPass)
+      pushAll
+        $ retainedMessages
+        <> [ CreateEffect
+             (toCardCode attrs)
+             Nothing
+             (toSource attrs)
+             (toTarget attrs)
+           , ReturnSkillTestRevealedTokens
+           , DrawAnotherToken iid
+           ]
+      pure t
     FailedSkillTest iid _ _ (TreacheryTarget tid) _ _ | tid == treacheryId ->
       t <$ push (ShuffleIntoDeck iid (TreacheryTarget treacheryId))
     _ -> RexsCurse <$> runMessage msg attrs

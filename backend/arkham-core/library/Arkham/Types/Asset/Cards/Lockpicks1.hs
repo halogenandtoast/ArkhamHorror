@@ -52,6 +52,6 @@ instance
           (Just $ EffectInt agility)
           (toSource attrs)
           (InvestigatorTarget iid)
-        , Investigate iid lid source SkillIntellect False
+        , Investigate iid lid source Nothing SkillIntellect False
         ]
     _ -> Lockpicks1 <$> runMessage msg attrs

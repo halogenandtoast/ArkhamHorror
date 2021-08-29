@@ -66,9 +66,10 @@ instance LocationRunner env => RunMessage env DestroyedPath where
         iid
         (toId attrs)
         (AbilitySource source 2)
+        Nothing
         SkillIntellect
         False
       )
-    SuccessfulInvestigation _ _ (AbilitySource source 2)
+    SuccessfulInvestigation _ _ (AbilitySource source 2) _
       | isSource attrs source -> l <$ push (RemoveDoom (toTarget attrs) 1)
     _ -> DestroyedPath <$> runMessage msg attrs

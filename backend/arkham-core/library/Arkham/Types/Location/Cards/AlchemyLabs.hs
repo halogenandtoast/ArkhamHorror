@@ -18,6 +18,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
+import Arkham.Types.Source
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window hiding (SuccessfulInvestigation)
 
@@ -46,11 +47,19 @@ instance HasAbilities env AlchemyLabs where
 
 instance LocationRunner env => RunMessage env AlchemyLabs where
   runMessage msg l@(AlchemyLabs attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ push (Investigate iid (locationId attrs) source SkillIntellect False)
-    SuccessfulInvestigation iid _ source | isSource attrs source -> do
-      maid <- selectOne (assetIs Cards.alchemicalConcoction)
-      l <$ case maid of
-        Just aid -> push (TakeControlOfAsset iid aid)
-        Nothing -> pure ()
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+      (Investigate
+        iid
+        (locationId attrs)
+        (AbilitySource source 1)
+        Nothing
+        SkillIntellect
+        False
+      )
+    SuccessfulInvestigation iid _ (AbilitySource source 1) _
+      | isSource attrs source -> do
+        maid <- selectOne (assetIs Cards.alchemicalConcoction)
+        l <$ case maid of
+          Just aid -> push (TakeControlOfAsset iid aid)
+          Nothing -> pure ()
     _ -> AlchemyLabs <$> runMessage msg attrs

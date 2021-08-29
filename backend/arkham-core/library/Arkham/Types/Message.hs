@@ -184,7 +184,6 @@ data Message
     | ChooseAndDiscardAsset InvestigatorId AssetMatcher
     | ChooseAndDiscardCard InvestigatorId
     | ChooseEndTurn InvestigatorId
-    | ChooseInvestigate InvestigatorId Source Bool
     | ChooseEvadeEnemy InvestigatorId Source SkillType Bool
     | ChooseFightEnemy InvestigatorId Source SkillType (HashSet Trait) Bool
     | ChooseFightEnemyNotEngagedWithInvestigator InvestigatorId Source SkillType Bool
@@ -313,7 +312,8 @@ data Message
     | InitiatePlayFastEvent InvestigatorId CardId (Maybe Target) Bool
     | InitiatePlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
     | CheckAdditionalActionCosts InvestigatorId Target Source Action [Message]
-    | Investigate InvestigatorId LocationId Source SkillType Bool
+    | -- Maybe Target is handler for success
+      Investigate InvestigatorId LocationId Source (Maybe Target) SkillType Bool
     | -- | uses the internal method and then checks defeat
       InvestigatorAssignDamage InvestigatorId Source DamageStrategy Int Int
     | InvestigatorCommittedCard InvestigatorId CardId
@@ -504,7 +504,7 @@ data Message
     | StartCampaign
     | StartScenario Name ScenarioId
     | StartSkillTest InvestigatorId
-    | SuccessfulInvestigation InvestigatorId LocationId Source
+    | SuccessfulInvestigation InvestigatorId LocationId Source Target
     | SufferTrauma InvestigatorId Int Int
     | Surge InvestigatorId Source
     | TakeAction InvestigatorId (Maybe Action) Cost

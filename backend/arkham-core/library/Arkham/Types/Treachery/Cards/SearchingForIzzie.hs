@@ -13,9 +13,7 @@ import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (InvestigatorEliminated)
-import Arkham.Types.Query
 import Arkham.Types.SkillType
-import Arkham.Types.Source
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
@@ -56,19 +54,17 @@ instance TreacheryRunner env => RunMessage env SearchingForIzzie where
               [ AttachTreachery treacheryId target | target <- xs ]
             )
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      withTreacheryLocation attrs $ \attachedLocationId -> do
-        shroud <- unShroud <$> getCount attachedLocationId
-        t <$ push
-          (BeginSkillTest
-            iid
-            source
-            (InvestigatorTarget iid)
-            (Just Action.Investigate)
-            SkillIntellect
-            shroud
-          )
-    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> t <$ push (Discard $ toTarget attrs)
+      withTreacheryLocation attrs $ \locationId -> t <$ push
+        (Investigate
+          iid
+          locationId
+          source
+          (Just $ toTarget attrs)
+          SkillIntellect
+          False
+        )
+    SuccessfulInvestigation _ _ _ target | isTarget attrs target ->
+      t <$ push (Discard target)
     UseCardAbility _ source _ 2 _ | isSource attrs source ->
       let investigator = fromJustNote "missing investigator" treacheryOwner
       in t <$ push (SufferTrauma investigator 0 1)

@@ -12,6 +12,7 @@ type EventRunner env
   = ( HasQueue env
     , Query AssetMatcher env
     , Query LocationMatcher env
+    , HasCount Shroud env LocationId
     , HasCount ClueCount env InvestigatorId
     , HasCount ClueCount env LocationId
     , HasCount PlayerCount env ()

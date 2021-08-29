@@ -62,7 +62,7 @@ instance HasAbilities env Duke where
 
 dukeInvestigate :: AssetAttrs -> InvestigatorId -> LocationId -> Message
 dukeInvestigate attrs iid lid =
-  Investigate iid lid (toSource attrs) SkillIntellect False
+  Investigate iid lid (toSource attrs) Nothing SkillIntellect False
 
 instance AssetRunner env => RunMessage env Duke where
   runMessage msg a@(Duke attrs) = case msg of

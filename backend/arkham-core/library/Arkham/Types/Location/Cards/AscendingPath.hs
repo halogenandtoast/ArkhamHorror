@@ -63,10 +63,11 @@ instance LocationRunner env => RunMessage env AscendingPath where
         iid
         (toId attrs)
         (AbilitySource source 1)
+        Nothing
         SkillIntellect
         False
       )
-    SuccessfulInvestigation _ _ (AbilitySource source 1)
+    SuccessfulInvestigation _ _ (AbilitySource source 1) _
       | isSource attrs source -> do
         setAsideCards <- map unSetAsideCard <$> getList ()
         let alteredPaths = filter ((== "Altered Path") . toName) setAsideCards

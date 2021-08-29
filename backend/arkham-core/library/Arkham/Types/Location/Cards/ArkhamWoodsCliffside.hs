@@ -28,7 +28,7 @@ arkhamWoodsCliffside = locationWith
 -- TODO: Move this to a modifier
 instance LocationRunner env => RunMessage env ArkhamWoodsCliffside where
   runMessage msg (ArkhamWoodsCliffside attrs@LocationAttrs {..}) = case msg of
-    Investigate iid lid s _ False | lid == locationId -> do
-      let investigate = Investigate iid lid s SkillAgility False
+    Investigate iid lid s mt _ False | lid == locationId -> do
+      let investigate = Investigate iid lid s mt SkillAgility False
       ArkhamWoodsCliffside <$> runMessage investigate attrs
     _ -> ArkhamWoodsCliffside <$> runMessage msg attrs

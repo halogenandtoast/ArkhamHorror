@@ -1041,22 +1041,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       else a & engagedEnemiesL %~ deleteSet eid
   AddToVictory (EnemyTarget eid) -> pure $ a & engagedEnemiesL %~ deleteSet eid
   -- TODO: WARNING: HERE BE DRAGONS
-  ChooseInvestigate iid _source _action | iid == investigatorId -> do
-    let window = Window Timing.When Window.NonFast
-    actions <- getAbilities iid window ()
-    let
-      investigateActions = mapMaybe
-        (\ability -> case abilityType ability of
-          ActionAbility (Just Action.Investigate) cost -> Just $ ability
-            { abilityType = ActionAbility
-              (Just Action.Investigate)
-              (decreaseActionCost cost 1)
-            }
-          _ -> Nothing
-        )
-        actions
-    a <$ push
-      (chooseOne iid $ map (($ [window]) . UseAbility iid) investigateActions)
   ChooseEvadeEnemy iid source skillType isAction | iid == investigatorId ->
     a <$ push
       (chooseOne
@@ -1316,18 +1300,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 <> map damageAsset validAssets
         else pure []
       a <$ push (chooseOne iid $ healthDamageMessages <> sanityDamageMessages)
-  Investigate iid lid source skillType True | iid == investigatorId -> do
-    modifiers <- getModifiers (toSource a) (LocationTarget lid)
-    let
-      investigateCost = foldr applyModifier 1 modifiers
-      applyModifier (ActionCostOf (IsAction Action.Investigate) m) n =
-        max 0 (n + m)
-      applyModifier _ n = n
-    a <$ pushAll
-      [ TakeAction iid (Just Action.Investigate) (ActionCost investigateCost)
-      , CheckAttackOfOpportunity iid False
-      , Investigate iid lid source skillType False
-      ]
+  Investigate iid lid source mTarget skillType True | iid == investigatorId ->
+    do
+      modifiers <- getModifiers (toSource a) (LocationTarget lid)
+      let
+        investigateCost = foldr applyModifier 1 modifiers
+        applyModifier (ActionCostOf (IsAction Action.Investigate) m) n =
+          max 0 (n + m)
+        applyModifier _ n = n
+      a <$ pushAll
+        [ TakeAction iid (Just Action.Investigate) (ActionCost investigateCost)
+        , CheckAttackOfOpportunity iid False
+        , Investigate iid lid source mTarget skillType False
+        ]
   InvestigatorDiscoverCluesAtTheirLocation iid n maction
     | iid == investigatorId -> runMessage
       (InvestigatorDiscoverClues iid investigatorLocation n maction)
@@ -2151,6 +2136,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           []
           (\case
             Action.Investigate -> case mTarget of
+              Just (ProxyTarget (LocationTarget lid) _) ->
+                [ Window
+                    Timing.After
+                    (Window.PassInvestigationSkillTest iid lid n)
+                ]
               Just (LocationTarget lid) ->
                 [ Window
                     Timing.After

@@ -44,6 +44,6 @@ instance AssetRunner env => RunMessage env RiteOfSeeking where
       lid <- getId @LocationId iid
       a <$ pushAll
         [ CreateEffect "02028" Nothing source (InvestigationTarget iid lid)
-        , Investigate iid lid source SkillWillpower False
+        , Investigate iid lid source Nothing SkillWillpower False
         ]
     _ -> RiteOfSeeking <$> runMessage msg attrs

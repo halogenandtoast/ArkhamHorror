@@ -40,6 +40,6 @@ instance (AssetRunner env) => RunMessage env Flashlight where
       lid <- getId iid
       a <$ pushAll
         [ skillTestModifier attrs (LocationTarget lid) (ShroudModifier (-2))
-        , Investigate iid lid source SkillIntellect False
+        , Investigate iid lid source Nothing SkillIntellect False
         ]
     _ -> Flashlight <$> runMessage msg attrs

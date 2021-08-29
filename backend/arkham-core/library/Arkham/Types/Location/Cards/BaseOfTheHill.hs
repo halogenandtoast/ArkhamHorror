@@ -54,10 +54,11 @@ instance LocationRunner env => RunMessage env BaseOfTheHill where
         iid
         (toId attrs)
         (AbilitySource source 1)
+        Nothing
         SkillIntellect
         False
       )
-    SuccessfulInvestigation _ _ (AbilitySource source 1)
+    SuccessfulInvestigation _ _ (AbilitySource source 1) _
       | isSource attrs source -> do
         setAsideCards <- map unSetAsideCard <$> getList @SetAsideCard ()
         let

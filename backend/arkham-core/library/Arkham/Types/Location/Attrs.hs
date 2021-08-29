@@ -403,7 +403,7 @@ on iid LocationAttrs { locationInvestigators } =
 
 instance LocationRunner env => RunMessage env LocationAttrs where
   runMessage msg a@LocationAttrs {..} = case msg of
-    Investigate iid lid source skillType False | lid == locationId -> do
+    Investigate iid lid source mTarget skillType False | lid == locationId -> do
       allowed <- getInvestigateAllowed iid a
       if allowed
         then do
@@ -412,7 +412,11 @@ instance LocationRunner env => RunMessage env LocationAttrs where
             (BeginSkillTest
               iid
               source
-              (LocationTarget lid)
+              (maybe
+                (LocationTarget lid)
+                (ProxyTarget (LocationTarget lid))
+                mTarget
+              )
               (Just Action.Investigate)
               skillType
               shroudValue'
@@ -420,8 +424,12 @@ instance LocationRunner env => RunMessage env LocationAttrs where
         else pure a
     PassedSkillTest iid (Just Action.Investigate) source (SkillTestInitiatorTarget target) _ _
       | isTarget a target
-      -> a <$ push (SuccessfulInvestigation iid locationId source)
-    SuccessfulInvestigation iid lid _ | lid == locationId -> do
+      -> a <$ push (SuccessfulInvestigation iid locationId source target)
+    PassedSkillTest iid (Just Action.Investigate) source (SkillTestInitiatorTarget (ProxyTarget target investigationTarget)) _ _
+      | isTarget a target
+      -> a <$ push
+        (SuccessfulInvestigation iid locationId source investigationTarget)
+    SuccessfulInvestigation iid lid _ target | isTarget a target -> do
       modifiers' <- getModifiers (InvestigatorSource iid) (LocationTarget lid)
       whenWindowMsgs <- checkWindows
         [Window Timing.When (Window.SuccessfulInvestigation iid lid)]
@@ -649,7 +657,8 @@ instance LocationRunner env => RunMessage env LocationAttrs where
         triggerSource = case source of
           ProxySource _ s -> s
           _ -> InvestigatorSource iid
-      a <$ push (Investigate iid (toId a) triggerSource SkillIntellect False)
+      a <$ push
+        (Investigate iid (toId a) triggerSource Nothing SkillIntellect False)
     UseCardAbility iid source _ 102 _ | isSource a source -> a <$ push
       (MoveAction
         iid

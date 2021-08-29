@@ -45,6 +45,6 @@ instance AssetRunner env => RunMessage env RiteOfSeeking4 where
           source
           (InvestigatorTarget iid)
           (SkillModifier SkillWillpower 2)
-        , Investigate iid lid source SkillWillpower False
+        , Investigate iid lid source Nothing SkillWillpower False
         ]
     _ -> RiteOfSeeking4 <$> runMessage msg attrs

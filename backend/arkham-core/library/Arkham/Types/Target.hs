@@ -44,5 +44,6 @@ data Target
   | ResourceTarget
   | YouTarget
   | InvestigationTarget InvestigatorId LocationId
+  | ProxyTarget Target Target
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

@@ -29,7 +29,7 @@ arkhamWoodsTangledThicket = locationWith
 instance (LocationRunner env) => RunMessage env ArkhamWoodsTangledThicket where
   runMessage msg (ArkhamWoodsTangledThicket attrs@LocationAttrs {..}) =
     case msg of
-      Investigate iid lid s _ False | lid == locationId -> do
-        let investigate = Investigate iid lid s SkillCombat False
+      Investigate iid lid s mt _ False | lid == locationId -> do
+        let investigate = Investigate iid lid s mt SkillCombat False
         ArkhamWoodsTangledThicket <$> runMessage investigate attrs
       _ -> ArkhamWoodsTangledThicket <$> runMessage msg attrs

@@ -42,7 +42,6 @@ instance
   , HasSet FightableEnemyId env (InvestigatorId, Source)
   , HasCount HealthDamageCount env EnemyId
   , HasCount SanityDamageCount env EnemyId
-  , HasCount Shroud env LocationId
   , HasCount FightCount env EnemyId
   , CanCheckPlayable env
   , HasHistory env

@@ -14,6 +14,7 @@ import Arkham.Types.Criteria
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Matcher hiding (FastPlayerWindow)
 import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.Stats
 import Arkham.Types.Target
 import Arkham.Types.Token
@@ -45,7 +46,9 @@ instance HasAbilities env AshcanPete where
     [ restrictedAbility
         x
         1
-        (Self <> AssetExists (AssetOwnedBy You <> AssetExhausted))
+        (Self <> AssetExists (AssetOwnedBy You <> AssetExhausted) <> Negate
+          (SelfHasModifier ControlledAssetsCannotReady)
+        )
       $ FastAbility
       $ HandDiscardCost 1 Nothing mempty mempty
     ]

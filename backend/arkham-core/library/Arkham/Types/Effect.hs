@@ -80,7 +80,6 @@ data Effect
   = OnTheLam' OnTheLam
   | MindOverMatter' MindOverMatter
   | Deduction' Deduction
-  | Burglary' Burglary
   | Shrivelling' Shrivelling
   | BlindingLight' BlindingLight
   | MindWipe1' MindWipe1
@@ -92,7 +91,6 @@ data Effect
   | SureGamble3' SureGamble3
   | ArkhamWoodsTwistingPaths' ArkhamWoodsTwistingPaths
   | HuntingNightgaunt' HuntingNightgaunt
-  | SeekingAnswers' SeekingAnswers
   | RiteOfSeeking' RiteOfSeeking
   | BindMonster2' BindMonster2
   | PushedIntoTheBeyond' PushedIntoTheBeyond
@@ -138,7 +136,6 @@ instance
 instance
   ( HasQueue env
   , HasId (Maybe OwnerId) env AssetId
-  , HasSet LocationId env LocationMatcher
   , HasSet Trait env EnemyId
   , HasCostPayment env
   , HasSet InScenarioInvestigatorId env ()
@@ -191,7 +188,6 @@ allEffects = mapFromList
   [ ("01010", OnTheLam' . onTheLam)
   , ("01036", MindOverMatter' . mindOverMatter)
   , ("01039", Deduction' . deduction)
-  , ("01045", Burglary' . burglary)
   , ("01060", Shrivelling' . shrivelling)
   , ("01066", BlindingLight' . blindingLight)
   , ("01068", MindWipe1' . mindWipe1)
@@ -203,7 +199,6 @@ allEffects = mapFromList
   , ("01088", SureGamble3' . sureGamble3)
   , ("01151", ArkhamWoodsTwistingPaths' . arkhamWoodsTwistingPaths)
   , ("01172", HuntingNightgaunt' . huntingNightgaunt)
-  , ("02023", SeekingAnswers' . seekingAnswers)
   , ("02028", RiteOfSeeking' . riteOfSeeking)
   , ("02031", BindMonster2' . bindMonster2)
   , ("02100", PushedIntoTheBeyond' . pushedIntoTheBeyond)

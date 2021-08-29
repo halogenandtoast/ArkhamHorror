@@ -61,6 +61,7 @@ data Criterion
   | Self
   | SetAsideCardExists CardMatcher
   | Unowned
+  | SelfHasModifier ModifierType
   -- Special Criterion
   | Criteria [Criterion]
   | AnyCriterion [Criterion]

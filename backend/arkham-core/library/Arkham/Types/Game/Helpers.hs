@@ -1743,6 +1743,7 @@ skillTestMatches iid source st = \case
       _ -> pure False
     _ -> pure False
   Matcher.SkillTestWithSkill sk -> notNull <$> select sk
+  Matcher.SkillTestWithSkillType sType -> pure $ skillTestSkillType st == sType
   Matcher.SkillTestAtYourLocation -> liftA2
     (==)
     (getId @LocationId iid)

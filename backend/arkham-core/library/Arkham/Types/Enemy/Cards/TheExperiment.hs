@@ -6,20 +6,36 @@ module Arkham.Types.Enemy.Cards.TheExperiment
 import Arkham.Prelude
 
 import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
-import Arkham.Types.Message
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (EnemyDefeated)
 import Arkham.Types.Modifier
+import Arkham.Types.Phase
 import Arkham.Types.Query
+import qualified Arkham.Types.Timing as Timing
 
 newtype TheExperiment = TheExperiment EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theExperiment :: EnemyCard TheExperiment
 theExperiment = enemy TheExperiment Cards.theExperiment (4, Static 7, 2) (2, 2)
+
+instance HasAbilities env TheExperiment where
+  getAbilities i w (TheExperiment x) = withBaseAbilities i w x $ pure
+    [ mkAbility x 1 $ ForcedAbility $ PhaseBegins Timing.When $ PhaseIs
+      EnemyPhase
+    , mkAbility x 2
+    $ Objective
+    $ ForcedAbility
+    $ EnemyDefeated Timing.When You
+    $ EnemyWithId
+    $ toId x
+    ]
 
 instance HasCount PlayerCount env () => HasModifiersFor env TheExperiment where
   getModifiersFor _ target (TheExperiment attrs) | isTarget attrs target = do
@@ -28,10 +44,10 @@ instance HasCount PlayerCount env () => HasModifiersFor env TheExperiment where
   getModifiersFor _ _ _ = pure []
 
 instance EnemyRunner env => RunMessage env TheExperiment where
-  runMessage msg (TheExperiment attrs) = case msg of
-    EnemyDefeated eid _ _ _ _ _ | eid == enemyId attrs -> do
+  runMessage msg e@(TheExperiment attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      e <$ push (Ready $ toTarget attrs)
+    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
       actId <- fromJustNote "missing act" . headMay <$> getSetList ()
-      push (AdvanceAct actId (toSource attrs))
-      TheExperiment <$> runMessage msg attrs
-    BeginEnemy -> TheExperiment <$> runMessage ReadyExhausted attrs
+      e <$ push (AdvanceAct actId $ toSource attrs)
     _ -> TheExperiment <$> runMessage msg attrs

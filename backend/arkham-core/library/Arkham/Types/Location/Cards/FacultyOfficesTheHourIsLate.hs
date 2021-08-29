@@ -11,7 +11,7 @@ import Arkham.Types.Modifier
 
 newtype FacultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate LocationAttrs
   deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 facultyOfficesTheHourIsLate :: LocationCard FacultyOfficesTheHourIsLate
 facultyOfficesTheHourIsLate = location
@@ -28,10 +28,6 @@ instance HasModifiersFor env FacultyOfficesTheHourIsLate where
     $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env FacultyOfficesTheHourIsLate where
-  getAbilities i window (FacultyOfficesTheHourIsLate attrs) =
-    getAbilities i window attrs
-
-instance (LocationRunner env) => RunMessage env FacultyOfficesTheHourIsLate where
+instance LocationRunner env => RunMessage env FacultyOfficesTheHourIsLate where
   runMessage msg (FacultyOfficesTheHourIsLate attrs) =
     FacultyOfficesTheHourIsLate <$> runMessage msg attrs

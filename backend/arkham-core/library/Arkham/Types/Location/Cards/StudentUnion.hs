@@ -13,9 +13,10 @@ import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
-import Arkham.Types.Matcher hiding (RevealLocation)
-import Arkham.Types.Message
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (RevealLocation)
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 
 newtype StudentUnion = StudentUnion LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -28,17 +29,23 @@ studentUnion =
 instance HasAbilities env StudentUnion where
   getAbilities iid window (StudentUnion attrs) =
     withBaseAbilities iid window attrs $ do
-      pure
-        [ restrictedAbility attrs 1 Here (ActionAbility Nothing $ ActionCost 2)
-        | locationRevealed attrs
-        ]
+      pure $ if locationRevealed attrs
+        then
+          [ mkAbility attrs 1
+          $ ForcedAbility
+          $ RevealLocation Timing.After Anyone
+          $ LocationWithId
+          $ toId attrs
+          , restrictedAbility attrs 2 Here $ ActionAbility Nothing $ ActionCost
+            2
+          ]
+        else []
 
 instance LocationRunner env => RunMessage env StudentUnion where
   runMessage msg l@(StudentUnion attrs) = case msg of
-    RevealLocation _ lid | lid == locationId attrs -> do
-      push $ PlaceLocationMatching (LocationWithTitle "Dormitories")
-      StudentUnion <$> runMessage msg attrs
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ pushAll
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      l <$ push (PlaceLocationMatching $ LocationWithTitle "Dormitories")
+    UseCardAbility iid source _ 2 _ | isSource attrs source -> l <$ pushAll
       [ HealDamage (InvestigatorTarget iid) 1
       , HealHorror (InvestigatorTarget iid) 1
       ]

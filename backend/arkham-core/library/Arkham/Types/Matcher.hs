@@ -17,6 +17,7 @@ import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
 import {-# SOURCE #-} Arkham.Types.Modifier
 import Arkham.Types.Phase
+import Arkham.Types.SkillType
 import Arkham.Types.Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
@@ -395,6 +396,7 @@ data SkillTestMatcher
   = WhileInvestigating LocationMatcher
   | WhileAttackingAnEnemy EnemyMatcher
   | SkillTestWithSkill SkillMatcher
+  | SkillTestWithSkillType SkillType
   | AnySkillTest
   | SkillTestAtYourLocation
   | SkillTestOnTreachery TreacheryMatcher

@@ -7,21 +7,22 @@ import Arkham.Prelude
 
 import Arkham.Agenda.Cards
 import Arkham.Json
+import Arkham.Types.Agenda.AdvancementReason
 import Arkham.Types.Agenda.Sequence as X
 import qualified Arkham.Types.Agenda.Sequence as AS
-import Arkham.Types.AgendaId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 class IsAgenda a
 
@@ -136,6 +137,7 @@ instance
   , HasCount DoomCount env ()
   , HasCount PlayerCount env ()
   , HasId LeadInvestigatorId env ()
+  , HasSet InvestigatorId env ()
   )
   => RunMessage env AgendaAttrs
   where
@@ -156,11 +158,28 @@ instance
       perPlayerDoomThreshold <- getPlayerCountValue (a ^. doomThresholdL)
       totalDoom <- unDoomCount <$> getCount ()
       when (totalDoom >= perPlayerDoomThreshold) $ do
+        whenMsgs <- checkWindows
+          [ Window
+              Timing.When
+              (Window.AgendaWouldAdvance DoomThreshold $ toId a)
+          ]
+        afterMsgs <- checkWindows
+          [ Window
+              Timing.After
+              (Window.AgendaWouldAdvance DoomThreshold $ toId a)
+          ]
+        pushAll $ whenMsgs <> afterMsgs <> [DoAdvanceAgendaIfThresholdSatisfied]
+      pure a
+    DoAdvanceAgendaIfThresholdSatisfied -> do
+      -- This status can change due to the above windows so we much check again
+      perPlayerDoomThreshold <- getPlayerCountValue (a ^. doomThresholdL)
+      totalDoom <- unDoomCount <$> getCount ()
+      when (totalDoom >= perPlayerDoomThreshold) $ do
         leadInvestigatorId <- getLeadInvestigatorId
         pushAll
           [ CheckWindow
             leadInvestigatorId
-            [Window Timing.When (AgendaAdvance agendaId)]
+            [Window Timing.When (Window.AgendaAdvance agendaId)]
           , AdvanceAgenda agendaId
           , RemoveAllDoom
           ]

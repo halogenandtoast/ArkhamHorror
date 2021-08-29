@@ -21,6 +21,7 @@ import Arkham.Types.Id
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Matcher hiding
   ( DiscoverClues
+  , Discarded
   , DuringTurn
   , EnemyEvaded
   , FastPlayerWindow

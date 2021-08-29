@@ -700,6 +700,7 @@ targetToSource = \case
   AgendaDeckTarget -> AgendaDeckSource
   InvestigationTarget{} -> error "not converted"
   YouTarget -> YouSource
+  ProxyTarget{} -> error "can not convert"
 
 sourceToTarget :: Source -> Target
 sourceToTarget = \case
@@ -1263,10 +1264,26 @@ windowMatches
   -> m Bool
 windowMatches iid source window' = \case
   Matcher.AnyWindow -> pure True
+  Matcher.TookControlOfAsset timing whoMatcher assetMatcher -> case window' of
+    Window t (Window.TookControlOfAsset who aid) | t == timing -> liftA2
+      (&&)
+      (matchWho iid who whoMatcher)
+      (member aid <$> select assetMatcher)
+    _ -> pure False
+  Matcher.Discarded timing whoMatcher cardMatcher -> case window' of
+    Window t (Window.Discarded who card) | t == timing ->
+      (cardMatch card cardMatcher &&) <$> matchWho iid who whoMatcher
+    _ -> pure False
   Matcher.AgendaAdvances timingMatcher agendaMatcher -> case window' of
     Window t (Window.AgendaAdvance aid) | t == timingMatcher ->
       pure $ agendaMatches aid agendaMatcher
     _ -> pure False
+  Matcher.AgendaWouldAdvance timingMatcher advancementReason agendaMatcher ->
+    case window' of
+      Window t (Window.AgendaWouldAdvance advancementReason' aid)
+        | t == timingMatcher && advancementReason == advancementReason'
+        -> pure $ agendaMatches aid agendaMatcher
+      _ -> pure False
   Matcher.PlacedCounter whenMatcher whoMatcher counterMatcher valueMatcher ->
     case window' of
       Window t (Window.PlacedHorror iid' n)
@@ -1468,8 +1485,19 @@ windowMatches iid source window' = \case
         (enemyMatches enemyId enemyMatcher)
         (matchWho iid who whoMatcher)
       _ -> pure False
+  Matcher.EnemyEnters timingMatcher whereMatcher enemyMatcher ->
+    case window' of
+      Window t (Window.EnemyEnters enemyId lid) | timingMatcher == t -> liftA2
+        (&&)
+        (enemyMatches enemyId enemyMatcher)
+        (locationMatches iid source window' lid whereMatcher)
+      _ -> pure False
   Matcher.EnemyWouldBeDefeated timingMatcher enemyMatcher -> case window' of
     Window t (Window.EnemyWouldBeDefeated enemyId) | timingMatcher == t ->
+      enemyMatches enemyId enemyMatcher
+    _ -> pure False
+  Matcher.EnemyWouldReady timingMatcher enemyMatcher -> case window' of
+    Window t (Window.WouldReady (EnemyTarget enemyId)) | timingMatcher == t ->
       enemyMatches enemyId enemyMatcher
     _ -> pure False
   Matcher.FastPlayerWindow -> case window' of

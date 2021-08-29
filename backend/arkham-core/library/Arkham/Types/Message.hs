@@ -135,6 +135,7 @@ data Message
     | AdvanceAct ActId Source
     | AdvanceAgenda AgendaId
     | AdvanceAgendaIfThresholdSatisfied
+    | DoAdvanceAgendaIfThresholdSatisfied
     | AdvanceCurrentAgenda
     | After Message
     | AfterAttackEnemy InvestigatorId EnemyId

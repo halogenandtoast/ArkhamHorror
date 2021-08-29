@@ -345,7 +345,11 @@ instance
           )
     InvestigatorPlayDynamicAsset iid aid slots traits _ | aid == assetId ->
       a <$ push (InvestigatorPlayAsset iid aid slots traits)
-    TakeControlOfAsset iid aid | aid == assetId ->
+    TakeControlOfAsset iid aid | aid == assetId -> do
+      pushAll =<< checkWindows
+        ((`Window` Window.TookControlOfAsset iid aid)
+        <$> [Timing.When, Timing.After]
+        )
       pure $ a & investigatorL ?~ iid
     ReplacedInvestigatorAsset iid aid | aid == assetId ->
       pure $ a & investigatorL ?~ iid

@@ -9,15 +9,15 @@ import qualified Arkham.Event.Cards as Cards (bindMonster2)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Exception
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
-import qualified Arkham.Types.Window as Window
 
 newtype BindMonster2 = BindMonster2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor env)
@@ -26,17 +26,13 @@ newtype BindMonster2 = BindMonster2 EventAttrs
 bindMonster2 :: EventCard BindMonster2
 bindMonster2 = event BindMonster2 Cards.bindMonster2
 
-ability :: Target -> EventAttrs -> Ability
-ability target attrs =
-  (mkAbility (toSource attrs) 1 (LegacyReactionAbility Free))
-    { abilityMetadata = Just (TargetMetadata target)
-    }
-
 instance HasAbilities env BindMonster2 where
-  getAbilities iid (Window Timing.When (Window.WouldReady target)) (BindMonster2 attrs@EventAttrs {..})
-    | iid == eventOwner
-    = pure [ ability target attrs | target `elem` eventAttachedTarget ]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (BindMonster2 x) = pure $ case eventAttachedTarget x of
+    Just (EnemyTarget eid) ->
+      [ restrictedAbility x 1 OwnsThis
+          $ ReactionAbility (EnemyWouldReady Timing.When $ EnemyWithId eid) Free
+      ]
+    _ -> []
 
 instance HasQueue env => RunMessage env BindMonster2 where
   runMessage msg e@(BindMonster2 attrs@EventAttrs {..}) = case msg of

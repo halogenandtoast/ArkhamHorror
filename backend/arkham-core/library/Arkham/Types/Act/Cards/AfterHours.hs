@@ -12,7 +12,7 @@ import Arkham.Types.Message
 
 newtype AfterHours = AfterHours ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 afterHours :: ActCard AfterHours
 afterHours = act
@@ -20,9 +20,6 @@ afterHours = act
   AfterHours
   Cards.afterHours
   (Just $ GroupClueCost (PerPlayer 3) Nothing)
-
-instance HasAbilities env AfterHours where
-  getAbilities i window (AfterHours x) = getAbilities i window x
 
 instance ActRunner env => RunMessage env AfterHours where
   runMessage msg a@(AfterHours attrs@ActAttrs {..}) = case msg of

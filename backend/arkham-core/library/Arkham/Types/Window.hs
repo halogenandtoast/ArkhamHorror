@@ -3,6 +3,7 @@ module Arkham.Types.Window where
 import Arkham.Prelude
 
 import Arkham.Types.Action (Action)
+import Arkham.Types.Agenda.AdvancementReason
 import Arkham.Types.Card (Card)
 import Arkham.Types.Deck
 import Arkham.Types.Id
@@ -23,6 +24,7 @@ data Window = Window
 data WindowType
   = ActAdvance ActId
   | AgendaAdvance AgendaId
+  | AgendaWouldAdvance AgendaAdvancementReason AgendaId
   | AllDrawEncounterCard
   | AmongSearchedCards InvestigatorId
   | AnyPhaseBegins
@@ -36,18 +38,21 @@ data WindowType
   | DiscoverClues InvestigatorId LocationId Int
   | DiscoveringLastClue InvestigatorId LocationId
   | DrawCard InvestigatorId Card DeckSignifier
+  | Discarded InvestigatorId Card
   | DrawToken InvestigatorId Token
   | DrawingStartingHand InvestigatorId
   | DuringTurn InvestigatorId
   | EndTurn InvestigatorId
   | InvestigatorEliminated InvestigatorId
   | AssetDefeated AssetId
+  | TookControlOfAsset InvestigatorId AssetId
   | EnemyAttacks InvestigatorId EnemyId
   | EnemyDefeated InvestigatorId EnemyId
   | EnemyWouldBeDefeated EnemyId
   | EnemyEngaged InvestigatorId EnemyId
   | EnemyEvaded InvestigatorId EnemyId
   | EnemySpawns EnemyId LocationId
+  | EnemyEnters EnemyId LocationId
   | EnterPlay Target
   | Entering InvestigatorId LocationId
   | FailAttackEnemy InvestigatorId EnemyId Int

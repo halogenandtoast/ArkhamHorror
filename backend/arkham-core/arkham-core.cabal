@@ -78,6 +78,7 @@ library
       Arkham.Types.ActId
       Arkham.Types.Action
       Arkham.Types.Agenda
+      Arkham.Types.Agenda.AdvancementReason
       Arkham.Types.Agenda.Attrs
       Arkham.Types.Agenda.Cards
       Arkham.Types.Agenda.Cards.ACreatureOfTheBayou

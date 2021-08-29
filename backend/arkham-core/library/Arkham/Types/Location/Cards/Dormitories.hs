@@ -6,6 +6,7 @@ import qualified Arkham.Location.Cards as Cards (dormitories)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -13,8 +14,6 @@ import Arkham.Types.Matcher hiding (FastPlayerWindow)
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Resolution
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype Dormitories = Dormitories LocationAttrs
   deriving anyclass IsLocation
@@ -29,19 +28,14 @@ instance HasModifiersFor env Dormitories where
     pure $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []
 
-ability :: LocationAttrs -> Ability
-ability attrs = mkAbility
-  (toSource attrs)
-  1
-  (FastAbility
-    (GroupClueCost (PerPlayer 3) $ Just (LocationWithTitle "Dormitories"))
-  )
-
 instance HasAbilities env Dormitories where
-  getAbilities iid window@(Window Timing.When FastPlayerWindow) (Dormitories attrs@LocationAttrs {..})
-    | locationRevealed
-    = withBaseAbilities iid window attrs $ pure [locationAbility (ability attrs)]
-  getAbilities iid window (Dormitories attrs) = getAbilities iid window attrs
+  getAbilities iid window (Dormitories attrs) =
+    withBaseAbilities iid window attrs $ pure
+      [ restrictedAbility attrs 1 Here
+        $ FastAbility
+        $ GroupClueCost (PerPlayer 3)
+        $ Just (LocationWithTitle "Dormitories")
+      ]
 
 instance LocationRunner env => RunMessage env Dormitories where
   runMessage msg l@(Dormitories attrs) = case msg of

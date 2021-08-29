@@ -70,7 +70,7 @@ drawCards i n = DrawCards (toId i) n False
 
 investigate :: Investigator -> Location -> Message
 investigate i l =
-  Investigate (toId i) (toId l) (TestSource mempty) SkillIntellect False
+  Investigate (toId i) (toId l) (TestSource mempty) Nothing SkillIntellect False
 
 beginSkillTest :: Investigator -> SkillType -> Int -> Message
 beginSkillTest i =

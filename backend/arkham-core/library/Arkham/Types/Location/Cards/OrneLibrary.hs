@@ -13,7 +13,7 @@ import Arkham.Types.Target
 
 newtype OrneLibrary = OrneLibrary LocationAttrs
   deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 orneLibrary :: LocationCard OrneLibrary
 orneLibrary =
@@ -25,8 +25,5 @@ instance HasModifiersFor env OrneLibrary where
     $ toModifiers attrs [ActionCostOf (IsAction Action.Investigate) 1]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env OrneLibrary where
-  getAbilities i window (OrneLibrary attrs) = getAbilities i window attrs
-
-instance (LocationRunner env) => RunMessage env OrneLibrary where
+instance LocationRunner env => RunMessage env OrneLibrary where
   runMessage msg (OrneLibrary attrs) = OrneLibrary <$> runMessage msg attrs

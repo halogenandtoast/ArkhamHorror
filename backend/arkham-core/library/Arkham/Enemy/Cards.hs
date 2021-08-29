@@ -52,7 +52,12 @@ enemy cardCode name encounterSet encounterSetQuantity =
 allPlayerEnemyCards :: HashMap CardCode CardDef
 allPlayerEnemyCards = mapFromList $ map
   (toCardCode &&& id)
-  [mobEnforcer, silverTwilightAcolyte, stubbornDetective, graveyardGhouls]
+  [ mobEnforcer
+  , silverTwilightAcolyte
+  , stubbornDetective
+  , graveyardGhouls
+  , theThingThatFollows
+  ]
 
 allEncounterEnemyCards :: HashMap CardCode CardDef
 allEncounterEnemyCards = mapFromList $ map
@@ -466,6 +471,13 @@ graveyardGhouls :: CardDef
 graveyardGhouls = (weakness "03017" "Graveyard Ghouls")
   { cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
   , cdKeywords = setFromList [Keyword.Hunter]
+  }
+
+theThingThatFollows :: CardDef
+theThingThatFollows = (weakness "03042" "The Thing That Follows")
+  { cdCardTraits = setFromList [Monster, Curse]
+  , cdKeywords = setFromList [Keyword.Hunter]
+  , cdUnique = True
   }
 
 corpseHungryGhoul :: CardDef

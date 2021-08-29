@@ -66,6 +66,7 @@ allPlayerTreacheryCards = mapFromList $ map
   , coverUp
   , crisisOfIdentity
   , curseOfTheRougarou
+  , drawingTheSign
   , finalRhapsody
   , haunted
   , hospitalDebts
@@ -522,6 +523,11 @@ crisisOfIdentity =
 overzealous :: CardDef
 overzealous =
   (weakness "03040" "Overzealous") { cdCardTraits = singleton Flaw }
+
+drawingTheSign :: CardDef
+drawingTheSign = (weakness "03041" "Drawing the Sign")
+  { cdCardTraits = setFromList [Pact, Madness]
+  }
 
 theZealotsSeal :: CardDef
 theZealotsSeal = (treachery "50024" "The Zealot's Seal" ReturnToTheGathering 2)

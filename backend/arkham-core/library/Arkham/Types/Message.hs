@@ -23,7 +23,7 @@ import Arkham.Types.Exception
 import Arkham.Types.Helpers
 import Arkham.Types.Id
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (EnemyDefeated)
 import Arkham.Types.Name
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Resolution
@@ -45,6 +45,7 @@ data MessageType
     | ResolveTokenMessage
     | RunWindowMessage
     | EnemySpawnMessage
+    | EnemyDefeatedMessage
     | DamageMessage
     | DrawEncounterCardMessage
     deriving stock (Eq, Show, Generic)
@@ -56,6 +57,7 @@ messageType Revelation{} = Just RevelationMessage
 messageType DrawToken{} = Just DrawTokenMessage
 messageType ResolveToken{} = Just ResolveTokenMessage
 messageType EnemySpawn{} = Just EnemySpawnMessage
+messageType EnemyDefeated{} = Just EnemyDefeatedMessage
 messageType RevealToken{} = Just RevealTokenMessage
 messageType InvestigatorDamage{} = Just DamageMessage
 messageType InvestigatorDoAssignDamage{} = Just DamageMessage

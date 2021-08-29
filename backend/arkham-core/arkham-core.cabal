@@ -455,6 +455,7 @@ library
       Arkham.Types.Enemy.Cards.TheExperiment
       Arkham.Types.Enemy.Cards.TheMaskedHunter
       Arkham.Types.Enemy.Cards.TheRougarou
+      Arkham.Types.Enemy.Cards.TheThingThatFollows
       Arkham.Types.Enemy.Cards.Thrall
       Arkham.Types.Enemy.Cards.Umordhoth
       Arkham.Types.Enemy.Cards.VictoriaDevereux
@@ -881,6 +882,7 @@ library
       Arkham.Types.Treachery.Cards.CurseOfTheRougarou
       Arkham.Types.Treachery.Cards.DissonantVoices
       Arkham.Types.Treachery.Cards.DraggedUnder
+      Arkham.Types.Treachery.Cards.DrawingTheSign
       Arkham.Types.Treachery.Cards.DreamsOfRlyeh
       Arkham.Types.Treachery.Cards.EagerForDeath
       Arkham.Types.Treachery.Cards.EphemeralExhibits

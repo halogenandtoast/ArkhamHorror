@@ -427,7 +427,11 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
                 : [ EnemyEngageInvestigator eid iid | iid <- investigatorIds ]
     EnemySpawnedAt lid eid | eid == enemyId -> do
       a <$ push (EnemyEntered eid lid)
-    EnemyEntered eid lid | eid == enemyId -> pure $ a & locationL .~ lid
+    EnemyEntered eid lid | eid == enemyId -> do
+      pushAll =<< checkWindows
+        ((`Window` Window.EnemyEnters eid lid) <$> [Timing.When, Timing.After]
+        )
+      pure $ a & locationL .~ lid
     Ready target | isTarget a target -> do
       leadInvestigatorId <- getLeadInvestigatorId
       iids <- getSetList enemyLocation

@@ -5,6 +5,7 @@ module Arkham.Types.Matcher where
 import Arkham.Prelude
 
 import Arkham.Types.Action (Action)
+import Arkham.Types.Agenda.AdvancementReason
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardType
@@ -311,6 +312,9 @@ instance Semigroup ExtendedCardMatcher where
   x <> ExtendedCardMatches xs = ExtendedCardMatches (x : xs)
   x <> y = ExtendedCardMatches [x, y]
 
+cardIs :: HasCardCode a => a -> CardMatcher
+cardIs = CardWithCardCode . toCardCode
+
 -- | Only relies on card state, can be used purely with `cardMatch`
 data CardMatcher
   = CardWithType CardType
@@ -342,18 +346,23 @@ instance Semigroup CardMatcher where
 data WindowMatcher
   = EnemyDefeated Timing Who EnemyMatcher
   | EnemyWouldBeDefeated Timing EnemyMatcher
+  | EnemyWouldReady Timing EnemyMatcher
+  | EnemyEnters Timing Where EnemyMatcher
   | AgendaAdvances Timing AgendaMatcher
+  | AgendaWouldAdvance Timing AgendaAdvancementReason AgendaMatcher
   | AssetDefeated Timing AssetMatcher
   | EnemyEvaded Timing Who EnemyMatcher
   | EnemyEngaged Timing Who EnemyMatcher
   | MythosStep WindowMythosStepMatcher
   | AssetEntersPlay Timing AssetMatcher
   | AssetDealtDamage Timing AssetMatcher
+  | TookControlOfAsset Timing Who AssetMatcher
   | DiscoveringLastClue Timing Who Where
   | DiscoverClues Timing Who Where ValueMatcher
   | EnemyAttacks Timing Who EnemyMatcher
   | RevealChaosToken Timing Who TokenMatcher
   | WouldRevealChaosToken Timing Who
+  | Discarded Timing Who CardMatcher
   | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | PlacedCounter Timing Who CounterMatcher ValueMatcher
   | WouldHaveSkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher

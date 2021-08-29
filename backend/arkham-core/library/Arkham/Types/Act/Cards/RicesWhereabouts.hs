@@ -18,11 +18,12 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Exception
 import Arkham.Types.Matcher
-import Arkham.Types.Message
+import Arkham.Types.Message hiding (Discarded)
 import Arkham.Types.ScenarioId
-import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
+import Data.List.Extra (firstJust)
 
 newtype RicesWhereabouts = RicesWhereabouts ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)
@@ -31,41 +32,45 @@ newtype RicesWhereabouts = RicesWhereabouts ActAttrs
 ricesWhereabouts :: ActCard RicesWhereabouts
 ricesWhereabouts = act (2, A) RicesWhereabouts Cards.ricesWhereabouts Nothing
 
-ability :: ActAttrs -> Ability
-ability attrs = mkAbility
-  (toSource attrs)
-  1
-  (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1])
-
 instance HasAbilities env RicesWhereabouts where
-  getAbilities _ (Window Timing.When NonFast) (RicesWhereabouts x) =
-    pure [ability x]
-  getAbilities iid window (RicesWhereabouts x) = getAbilities iid window x
+  getAbilities _ _ (RicesWhereabouts x) = pure
+    [ mkAbility x 1 $ ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1]
+    , mkAbility x 2 $ ForcedAbility $ Discarded
+      Timing.When
+      You
+      (cardIs Assets.jazzMulligan)
+    , mkAbility x 3 $ Objective $ ForcedAbility $ TookControlOfAsset
+      Timing.When
+      You
+      (assetIs Assets.jazzMulligan)
+    ]
 
 instance ActRunner env => RunMessage env RicesWhereabouts where
-  runMessage msg a@(RicesWhereabouts attrs@ActAttrs {..}) = case msg of
-    TakeControlOfAsset _ assetId -> do
-      cardCode <- getId assetId
-      a <$ when
-        (cardCode == CardCode "02060")
-        (push $ AdvanceAct actId (toSource attrs))
-    Discarded (InvestigatorTarget iid) card
-      | toCardCode card == CardCode "02060" -> case card of
-        EncounterCard ec ->
+  runMessage msg a@(RicesWhereabouts attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      playerCount <- getPlayerCount
+      let discardCount = if playerCount == 1 then 10 else 5
+      a <$ push (DiscardTopOfEncounterDeck iid discardCount Nothing)
+    UseCardAbility iid source windows 2 _ | isSource attrs source -> do
+      let
+        mCard = flip firstJust windows $ \case
+          Window _ (Window.Discarded _ card)
+            | toCardDef card == Assets.jazzMulligan -> Just card
+          _ -> Nothing
+      case mCard of
+        Just (EncounterCard ec) ->
           a
             <$ pushAll
                  [ RemoveFromEncounterDiscard ec
                  , InvestigatorDrewEncounterCard iid ec
                  ]
-        PlayerCard _ -> throwIO $ InvalidState "not a player card"
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      playerCount <- getPlayerCount
-      let discardCount = if playerCount == 1 then 10 else 5
-      a <$ push (DiscardTopOfEncounterDeck iid discardCount Nothing)
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
+        _ -> throwIO $ InvalidState "did not find the correct card"
+    UseCardAbility _ source _ 3 _ | isSource attrs source -> do
+      a <$ push (AdvanceAct (toId attrs) source)
+    AdvanceAct aid _ | aid == toId attrs && onSide A attrs -> do
       push (AdvanceAct aid $ toSource attrs)
       pure . RicesWhereabouts $ attrs & sequenceL .~ Act 2 B
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+    AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
       alchemyLabsInPlay <- isJust
         <$> selectOne (LocationWithTitle "Alchemy Labs")
       agendaStep <- unAgendaStep <$> getStep ()

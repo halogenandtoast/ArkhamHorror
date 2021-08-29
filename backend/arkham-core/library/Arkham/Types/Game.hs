@@ -47,6 +47,7 @@ import Arkham.Types.Location
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Matcher hiding
   ( AssetDefeated
+  , Discarded
   , DuringTurn
   , EnemyAttacks
   , EnemyDefeated
@@ -3574,6 +3575,10 @@ runGameMessage msg g = case msg of
                (card : discardedCards)
            ]
       pure $ g & discardL %~ (card :) & encounterDeckL .~ Deck cards
+  Discarded (InvestigatorTarget iid) card -> do
+    pushAll =<< checkWindows
+      ((`Window` Window.Discarded iid card) <$> [Timing.When, Timing.After])
+    pure g
   DrawEncounterCards target n -> do
     let (cards, encounterDeck) = splitAt n (unDeck $ g ^. encounterDeckL)
     push (RequestedEncounterCards target cards)

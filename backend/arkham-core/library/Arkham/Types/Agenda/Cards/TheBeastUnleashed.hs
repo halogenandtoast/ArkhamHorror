@@ -3,44 +3,60 @@ module Arkham.Types.Agenda.Cards.TheBeastUnleashed where
 import Arkham.Prelude
 
 import qualified Arkham.Agenda.Cards as Cards
+import qualified Arkham.Enemy.Cards as Cards
+import qualified Arkham.Location.Cards as Cards
+import Arkham.Types.Ability
+import Arkham.Types.Agenda.AdvancementReason
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
-import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 
 newtype TheBeastUnleashed = TheBeastUnleashed AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsAgenda, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theBeastUnleashed :: AgendaCard TheBeastUnleashed
 theBeastUnleashed =
   agenda (3, A) TheBeastUnleashed Cards.theBeastUnleashed (Static 2)
 
+instance HasAbilities env TheBeastUnleashed where
+  getAbilities _ _ (TheBeastUnleashed x) = pure
+    [ mkAbility x 1
+    $ ForcedAbility
+    $ AgendaWouldAdvance Timing.When DoomThreshold
+    $ AgendaWithId
+    $ toId x
+    , mkAbility x 2 $ Objective $ ForcedAbility $ EnemyEnters
+      Timing.After
+      (locationIs Cards.dormitories)
+      (enemyIs Cards.theExperiment)
+    ]
+
+getTheExperiment :: (MonadReader env m, Query EnemyMatcher env) => m EnemyId
+getTheExperiment =
+  fromJustNote "must be in play" <$> selectOne (enemyIs Cards.theExperiment)
+
 instance AgendaRunner env => RunMessage env TheBeastUnleashed where
-  runMessage msg a@(TheBeastUnleashed attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgendaIfThresholdSatisfied -> do
-      perPlayerDoomThreshold <- getPlayerCountValue agendaDoomThreshold
-      totalDoom <- unDoomCount <$> getCount ()
-      experimentId <- unStoryEnemyId . fromJustNote "must be in play" <$> getId
-        (CardCode "02058")
-      a <$ when
-        (totalDoom >= perPlayerDoomThreshold)
-        (pushAll
-          [ RemoveAllDoom
-          , MoveToward
-            (EnemyTarget experimentId)
-            (LocationWithTitle "Dormitories")
-          ]
-        )
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
+  runMessage msg a@(TheBeastUnleashed attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+      experimentId <- getTheExperiment
+      a <$ pushAll
+        [ RemoveAllDoom
+        , MoveToward
+          (EnemyTarget experimentId)
+          (LocationWithTitle "Dormitories")
+        ]
+    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
+      a <$ push (AdvanceAgenda $ toId attrs)
+    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       investigatorIds <- getInvestigatorIds
       a <$ pushAll
         ([ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 3
@@ -48,11 +64,4 @@ instance AgendaRunner env => RunMessage env TheBeastUnleashed where
          ]
         <> [Label "Resolution 4" [ScenarioResolution $ Resolution 4]]
         )
-    EnemyEntered eid lid -> do
-      experimentId <- unStoryEnemyId . fromJustNote "must be in play" <$> getId
-        (CardCode "02058")
-      mDormitoriesId <- getId (LocationWithTitle "Dormitories")
-      a <$ when
-        (mDormitoriesId == Just lid && eid == experimentId)
-        (push $ AdvanceAgenda (toId attrs))
     _ -> TheBeastUnleashed <$> runMessage msg attrs

@@ -17,6 +17,7 @@ type TreacheryRunner env
   = ( HasQueue env
     , HasHistory env
     , Query AssetMatcher env
+    , Query LocationMatcher env
     , HasCount ActsRemainingCount env ()
     , HasCount CardCount env InvestigatorId
     , HasCount ClueCount env InvestigatorId

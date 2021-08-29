@@ -6,20 +6,19 @@ module Arkham.Types.Investigator.Cards.RexMurphy
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import qualified Arkham.Types.Action as Action
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EntityInstance
+import Arkham.Types.Criteria
+import Arkham.Types.GameValue
 import Arkham.Types.Investigator.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (PassSkillTest)
-import Arkham.Types.Query
-import Arkham.Types.Source
+import Arkham.Types.Modifier
 import Arkham.Types.Stats
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window hiding (FailSkillTest)
 
 newtype RexMurphy = RexMurphy InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
@@ -40,32 +39,40 @@ rexMurphy = RexMurphy $ baseAttrs
     }
   [Reporter]
 
-instance EntityInstanceRunner env => HasAbilities env RexMurphy where
-  getAbilities iid (Window Timing.After (PassSkillTest (Just Action.Investigate) _ who n)) (RexMurphy attrs@InvestigatorAttrs {..})
-    | iid == investigatorId && n >= 2 && iid == who
-    = do
-      let ability = mkAbility (toSource attrs) 1 (LegacyReactionAbility Free)
-      clueCount' <- unClueCount <$> getCount investigatorLocation
-      pure [ ability | clueCount' > 0 ]
-  getAbilities i window (RexMurphy attrs) = getAbilities i window attrs
+instance HasAbilities env RexMurphy where
+  getAbilities _ _ (RexMurphy x) = pure
+    [ restrictedAbility
+          x
+          1
+          (Self
+          <> LocationExists (YourLocation <> LocationWithAnyClues)
+          <> Negate (SelfHasModifier CannotDiscoverClues)
+          )
+        $ ReactionAbility
+            (SkillTestResult
+              Timing.After
+              You
+              (WhileInvestigating Anywhere)
+              (SuccessResult $ AtLeast $ Static 2)
+            )
+            Free
+    ]
 
 instance HasTokenValue env RexMurphy where
-  getTokenValue (RexMurphy attrs) iid ElderSign | iid == investigatorId attrs =
+  getTokenValue (RexMurphy attrs) iid ElderSign | iid == toId attrs =
     pure $ TokenValue ElderSign (PositiveModifier 2)
   getTokenValue (RexMurphy attrs) iid token = getTokenValue attrs iid token
 
 instance (InvestigatorRunner env) => RunMessage env RexMurphy where
-  runMessage msg i@(RexMurphy attrs@InvestigatorAttrs {..}) = case msg of
-    UseCardAbility _ (InvestigatorSource iid) _ 1 _ | iid == investigatorId ->
-      i
-        <$ push
-             (DiscoverCluesAtLocation
-               investigatorId
-               investigatorLocation
-               1
-               Nothing
-             )
-    ResolveToken _drawnToken ElderSign iid | iid == investigatorId -> i <$ push
+  runMessage msg i@(RexMurphy attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> i <$ push
+      (DiscoverCluesAtLocation
+        (toId attrs)
+        (investigatorLocation attrs)
+        1
+        Nothing
+      )
+    ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> i <$ push
       (chooseOne
         iid
         [ Label

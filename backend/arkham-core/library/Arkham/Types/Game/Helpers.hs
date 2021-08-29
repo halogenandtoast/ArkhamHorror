@@ -974,6 +974,10 @@ passesCriteria iid source windows = \case
   Criteria.Self -> case source of
     InvestigatorSource iid' -> pure $ iid == iid'
     _ -> pure False
+  Criteria.SelfHasModifier modifier -> case source of
+    InvestigatorSource iid' ->
+      elem modifier <$> getModifiers source (InvestigatorTarget iid')
+    _ -> pure False
   Criteria.Here -> case source of
     LocationSource lid -> (== lid) <$> getId iid
     _ -> pure False

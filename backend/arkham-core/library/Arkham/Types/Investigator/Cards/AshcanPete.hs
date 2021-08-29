@@ -10,17 +10,14 @@ import Arkham.Types.Ability
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EntityInstance
+import Arkham.Types.Criteria
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Matcher hiding (FastPlayerWindow)
 import Arkham.Types.Message
-import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype AshcanPete = AshcanPete InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
@@ -43,37 +40,26 @@ ashcanPete = AshcanPete $ base & startsWithL .~ [Assets.duke]
       }
     [Drifter]
 
-ability :: InvestigatorAttrs -> Ability
-ability attrs = base { abilityLimit = PlayerLimit PerRound 1 }
- where
-  base = mkAbility
-    (toSource attrs)
-    1
-    (FastAbility $ HandDiscardCost 1 Nothing mempty mempty)
-
-instance EntityInstanceRunner env => HasAbilities env AshcanPete where
-  getAbilities iid (Window Timing.When FastPlayerWindow) (AshcanPete attrs@InvestigatorAttrs {..})
-    | iid == investigatorId
-    = do
-      exhaustedAssetIds <- select (AssetOwnedBy You <> AssetExhausted)
-      pure [ ability attrs | notNull exhaustedAssetIds ]
-  getAbilities i window (AshcanPete attrs) = getAbilities i window attrs
+instance HasAbilities env AshcanPete where
+  getAbilities _ _ (AshcanPete x) = pure
+    [ restrictedAbility
+        x
+        1
+        (Self <> AssetExists (AssetOwnedBy You <> AssetExhausted))
+      $ FastAbility
+      $ HandDiscardCost 1 Nothing mempty mempty
+    ]
 
 instance HasTokenValue env AshcanPete where
-  getTokenValue (AshcanPete attrs) iid ElderSign | iid == investigatorId attrs =
+  getTokenValue (AshcanPete attrs) iid ElderSign | iid == toId attrs =
     pure $ TokenValue ElderSign (PositiveModifier 2)
   getTokenValue (AshcanPete attrs) iid token = getTokenValue attrs iid token
 
-instance (InvestigatorRunner env) => RunMessage env AshcanPete where
-  runMessage msg i@(AshcanPete attrs@InvestigatorAttrs {..}) = case msg of
-    ResolveToken _drawnToken ElderSign iid | iid == investigatorId ->
+instance InvestigatorRunner env => RunMessage env AshcanPete where
+  runMessage msg i@(AshcanPete attrs) = case msg of
+    ResolveToken _drawnToken ElderSign iid | iid == toId attrs ->
       i <$ push (Ready $ CardCodeTarget "02014")
-    UseCardAbility _ (InvestigatorSource iid) _ 1 _ | iid == investigatorId ->
-      do
-        exhaustedAssetIds <- selectList (AssetOwnedBy You <> AssetExhausted)
-        i <$ push
-          (chooseOne
-            investigatorId
-            [ Ready (AssetTarget aid) | aid <- exhaustedAssetIds ]
-          )
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+      targets <- selectListMap AssetTarget (AssetOwnedBy You <> AssetExhausted)
+      i <$ push (chooseOne (toId attrs) [ Ready target | target <- targets ])
     _ -> AshcanPete <$> runMessage msg attrs

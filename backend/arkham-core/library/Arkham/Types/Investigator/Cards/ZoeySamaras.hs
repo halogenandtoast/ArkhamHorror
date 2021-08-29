@@ -6,20 +6,19 @@ import Arkham.Types.Ability
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
-import Arkham.Types.EntityInstance
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Source
 import Arkham.Types.Stats
-import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype ZoeySamaras = ZoeySamaras InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
@@ -40,37 +39,29 @@ zoeySamaras = ZoeySamaras $ baseAttrs
     }
   [Believer, Hunter]
 
-instance EntityInstanceRunner env => HasAbilities env ZoeySamaras where
-  getAbilities iid (Window Timing.After (EnemyEngaged who _)) (ZoeySamaras InvestigatorAttrs {..})
-    | iid == investigatorId && iid == who
-    = do
-      let
-        ability = mkAbility
-          (InvestigatorSource investigatorId)
+instance HasAbilities env ZoeySamaras where
+  getAbilities _ _ (ZoeySamaras x) = pure
+    [ restrictedAbility
+          x
           1
-          (LegacyReactionAbility Free)
-      modifiers' <- getModifiers
-        (InvestigatorSource investigatorId)
-        (InvestigatorTarget investigatorId)
-      pure [ ability | CannotGainResources `notElem` modifiers' ]
-
-  getAbilities i window (ZoeySamaras attrs) = getAbilities i window attrs
+          (Self <> Negate (SelfHasModifier CannotGainResources))
+        $ ReactionAbility (EnemyEngaged Timing.After You AnyEnemy) Free
+    ]
 
 instance HasTokenValue env ZoeySamaras where
-  getTokenValue (ZoeySamaras attrs) iid ElderSign
-    | iid == investigatorId attrs = pure
-    $ TokenValue ElderSign (PositiveModifier 1)
+  getTokenValue (ZoeySamaras attrs) iid ElderSign | iid == toId attrs =
+    pure $ TokenValue ElderSign (PositiveModifier 1)
   getTokenValue (ZoeySamaras attrs) iid token = getTokenValue attrs iid token
 
 instance InvestigatorRunner env => RunMessage env ZoeySamaras where
-  runMessage msg i@(ZoeySamaras attrs@InvestigatorAttrs {..}) = case msg of
-    UseCardAbility _ (InvestigatorSource iid) _ 1 _ | iid == investigatorId ->
-      i <$ push (TakeResources investigatorId 1 False)
-    ResolveToken _drawnToken ElderSign iid | iid == investigatorId -> i <$ push
+  runMessage msg i@(ZoeySamaras attrs) = case msg of
+    UseCardAbility _ (InvestigatorSource iid) _ 1 _ | iid == toId attrs ->
+      i <$ push (TakeResources (toId attrs) 1 False)
+    ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> i <$ push
       (CreateWindowModifierEffect
         EffectSkillTestWindow
         (EffectModifiers $ toModifiers attrs [DamageDealt 1])
-        (InvestigatorSource investigatorId)
-        (InvestigatorTarget investigatorId)
+        (toSource attrs)
+        (toTarget attrs)
       )
     _ -> ZoeySamaras <$> runMessage msg attrs

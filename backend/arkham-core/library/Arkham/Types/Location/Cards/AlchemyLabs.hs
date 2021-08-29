@@ -11,6 +11,7 @@ import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -19,8 +20,6 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window hiding (SuccessfulInvestigation)
 
 newtype AlchemyLabs = AlchemyLabs LocationAttrs
   deriving anyclass IsLocation
@@ -36,21 +35,20 @@ instance HasModifiersFor env AlchemyLabs where
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities env AlchemyLabs where
-  getAbilities iid window@(Window Timing.When NonFast) (AlchemyLabs attrs@LocationAttrs {..})
-    | locationRevealed
-    = withBaseAbilities iid window attrs $ do
-      let
-        ability = mkAbility attrs 1
-          $ ActionAbility (Just Action.Investigate) (ActionCost 1)
-      pure [locationAbility ability]
-  getAbilities iid window (AlchemyLabs attrs) = getAbilities iid window attrs
+  getAbilities iid window (AlchemyLabs attrs) =
+    withBaseAbilities iid window attrs $ do
+      pure
+        [ restrictedAbility attrs 1 Here
+            $ ActionAbility (Just Action.Investigate) (ActionCost 1)
+        | locationRevealed attrs
+        ]
 
 instance LocationRunner env => RunMessage env AlchemyLabs where
   runMessage msg l@(AlchemyLabs attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (Investigate
         iid
-        (locationId attrs)
+        (toId attrs)
         (AbilitySource source 1)
         Nothing
         SkillIntellect

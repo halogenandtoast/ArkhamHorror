@@ -3,17 +3,19 @@ module Arkham.Types.Location.Cards.ScienceBuilding where
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (scienceBuilding)
+import Arkham.Types.Ability
 import Arkham.Types.Classes
+import Arkham.Types.Criteria
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Matcher hiding (RevealLocation)
-import Arkham.Types.Message
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (RevealLocation)
 import Arkham.Types.SkillType
-import Arkham.Types.Source
-import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 
 newtype ScienceBuilding = ScienceBuilding LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 scienceBuilding :: LocationCard ScienceBuilding
@@ -25,17 +27,27 @@ scienceBuilding = location
   Hourglass
   [Plus, Squiggle]
 
-instance HasModifiersFor env ScienceBuilding
-
 instance HasAbilities env ScienceBuilding where
-  getAbilities i window (ScienceBuilding attrs) = getAbilities i window attrs
+  getAbilities i window (ScienceBuilding x) =
+    withBaseAbilities i window x $ pure $ if locationRevealed x
+      then
+        [ restrictedAbility x 1 Here
+        $ ForcedAbility
+        $ RevealLocation Timing.After You
+        $ LocationWithId
+        $ toId x
+        , restrictedAbility x 2 Here $ ForcedAbility $ SkillTestResult
+          Timing.When
+          You
+          (SkillTestWithSkillType SkillWillpower)
+          (FailureResult AnyValue)
+        ]
+      else []
 
 instance (LocationRunner env) => RunMessage env ScienceBuilding where
   runMessage msg l@(ScienceBuilding attrs) = case msg of
-    RevealLocation _ lid | lid == locationId attrs -> do
-      push $ PlaceLocationMatching (LocationWithTitle "Alchemy Labs")
-      ScienceBuilding <$> runMessage msg attrs
-    FailedSkillTest iid _ (SkillTestSource _ SkillWillpower _ _ _) SkillTestInitiatorTarget{} _ _
-      | iid `elem` locationInvestigators attrs
-      -> l <$ push (InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0)
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      l <$ push (PlaceLocationMatching $ LocationWithTitle "Alchemy Labs")
+    UseCardAbility iid source _ 2 _ | isSource attrs source ->
+      l <$ push (InvestigatorAssignDamage iid source DamageAny 1 0)
     _ -> ScienceBuilding <$> runMessage msg attrs

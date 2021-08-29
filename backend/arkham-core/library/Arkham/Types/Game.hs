@@ -2898,6 +2898,12 @@ runGameMessage msg g = case msg of
       PlayerCard card -> push (ShuffleCardsIntoDeck iid [card])
       EncounterCard _ -> error "Unhandled"
     pure $ g & treacheriesL %~ deleteMap treacheryId
+  ShuffleIntoDeck iid (EnemyTarget enemyId) -> do
+    enemy <- getEnemy enemyId
+    case toCard enemy of
+      PlayerCard card -> push (ShuffleCardsIntoDeck iid [card])
+      EncounterCard _ -> error "Unhandled"
+    pure $ g & enemiesL %~ deleteMap enemyId
   PlayDynamicCard iid cardId n _mtarget False -> do
     investigator <- getInvestigator iid
     let

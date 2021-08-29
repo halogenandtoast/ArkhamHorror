@@ -1464,6 +1464,10 @@ windowMatches iid source window' = \case
         (enemyMatches enemyId enemyMatcher)
         (matchWho iid who whoMatcher)
       _ -> pure False
+  Matcher.EnemyWouldBeDefeated timingMatcher enemyMatcher -> case window' of
+    Window t (Window.EnemyWouldBeDefeated enemyId) | timingMatcher == t ->
+      enemyMatches enemyId enemyMatcher
+    _ -> pure False
   Matcher.FastPlayerWindow -> case window' of
     Window Timing.When Window.FastPlayerWindow -> pure True
     _ -> pure False

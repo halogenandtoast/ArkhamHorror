@@ -341,6 +341,7 @@ instance Semigroup CardMatcher where
 
 data WindowMatcher
   = EnemyDefeated Timing Who EnemyMatcher
+  | EnemyWouldBeDefeated Timing EnemyMatcher
   | AgendaAdvances Timing AgendaMatcher
   | AssetDefeated Timing AssetMatcher
   | EnemyEvaded Timing Who EnemyMatcher

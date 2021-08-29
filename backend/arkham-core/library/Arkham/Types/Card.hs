@@ -57,7 +57,7 @@ cardMatch a = \case
   CardWithId cardId -> toCardId a == cardId
   CardWithTitle title -> (nameTitle . cdName $ toCardDef a) == title
   CardWithTrait trait -> trait `member` toTraits a
-  CardWithClass role -> traceShowId $ cdClassSymbol (toCardDef a) == Just role
+  CardWithClass role -> cdClassSymbol (toCardDef a) == Just role
   CardMatches ms -> all (cardMatch a) ms
   CardWithOneOf ms -> any (cardMatch a) ms
   CardWithoutKeyword k -> k `notMember` cdKeywords (toCardDef a)

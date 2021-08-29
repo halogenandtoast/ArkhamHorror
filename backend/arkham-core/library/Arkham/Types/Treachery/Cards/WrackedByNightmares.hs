@@ -9,17 +9,15 @@ import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Id
+import Arkham.Types.Criteria
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
 
 newtype WrackedByNightmares = WrackedByNightmares TreacheryAttrs
   deriving anyclass IsTreachery
@@ -35,26 +33,21 @@ instance HasModifiersFor env WrackedByNightmares where
       [ ControlledAssetsCannotReady | treacheryOnInvestigator iid attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env WrackedByNightmares where
-  getAbilities iid (Window Timing.When NonFast) (WrackedByNightmares a) =
-    withTreacheryInvestigator a $ \tormented -> do
-      treacheryLocation <- getId tormented
-      investigatorLocationId <- getId @LocationId iid
-      pure
-        [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 2
-        | treacheryLocation == investigatorLocationId
-        ]
-  getAbilities _ _ _ = pure []
+instance HasAbilities env WrackedByNightmares where
+  getAbilities _ _ (WrackedByNightmares a) = pure
+    [ restrictedAbility a 1 OnSameLocation $ ActionAbility Nothing $ ActionCost
+        2
+    ]
 
 instance TreacheryRunner env => RunMessage env WrackedByNightmares where
   runMessage msg t@(WrackedByNightmares attrs@TreacheryAttrs {..}) =
     case msg of
-      Revelation iid source | isSource attrs source ->
-        t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)
-      AttachTreachery tid (InvestigatorTarget iid) | tid == treacheryId -> do
+      Revelation iid source | isSource attrs source -> do
         assetIds <- selectList (AssetOwnedBy $ InvestigatorWithId iid)
-        pushAll [ Exhaust (AssetTarget aid) | aid <- assetIds ]
-        WrackedByNightmares <$> runMessage msg attrs
+        t <$ pushAll
+          ([ Exhaust (AssetTarget aid) | aid <- assetIds ]
+          <> [AttachTreachery treacheryId $ InvestigatorTarget iid]
+          )
       UseCardAbility _ (TreacherySource tid) _ 1 _ | tid == treacheryId ->
         t <$ push (Discard (TreacheryTarget treacheryId))
       _ -> WrackedByNightmares <$> runMessage msg attrs

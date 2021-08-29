@@ -44,6 +44,7 @@ data WindowType
   | AssetDefeated AssetId
   | EnemyAttacks InvestigatorId EnemyId
   | EnemyDefeated InvestigatorId EnemyId
+  | EnemyWouldBeDefeated EnemyId
   | EnemyEngaged InvestigatorId EnemyId
   | EnemyEvaded InvestigatorId EnemyId
   | EnemySpawns EnemyId LocationId

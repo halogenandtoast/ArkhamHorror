@@ -715,18 +715,19 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
     EnemyDamage eid iid source amount | eid == enemyId -> do
       amount' <- getModifiedDamageAmount a amount
       modifiedHealth <- getModifiedHealth a
-      (a & damageL +~ amount') <$ when
-        (a ^. damageL + amount' >= modifiedHealth)
-        (push
-          (EnemyDefeated
-            eid
-            iid
-            enemyLocation
-            (toCardCode a)
-            source
-            (setToList $ toTraits a)
-          )
-        )
+      when (a ^. damageL + amount' >= modifiedHealth) $ do
+        whenMsgs <- checkWindows
+          [Window Timing.When (Window.EnemyWouldBeDefeated eid)]
+        afterMsgs <- checkWindows
+          [Window Timing.After (Window.EnemyWouldBeDefeated eid)]
+        push $ EnemyDefeated
+          eid
+          iid
+          enemyLocation
+          (toCardCode a)
+          source
+          (setToList $ toTraits a)
+      pure $ a & damageL +~ amount'
     DefeatEnemy eid iid source | eid == enemyId -> a <$ push
       (EnemyDefeated
         eid

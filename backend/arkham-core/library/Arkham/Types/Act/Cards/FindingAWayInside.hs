@@ -28,7 +28,7 @@ findingAWayInside = act
   (1, A)
   FindingAWayInside
   Cards.findingAWayInside
-  (Just $ GroupClueCost (Static 2) Nothing)
+  (Just $ GroupClueCost (Static 2) Anywhere)
 
 instance HasAbilities env FindingAWayInside where
   getAbilities i window (FindingAWayInside x) = getAbilities i window x

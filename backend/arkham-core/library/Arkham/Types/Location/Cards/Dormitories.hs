@@ -31,10 +31,9 @@ instance HasModifiersFor env Dormitories where
 instance HasAbilities env Dormitories where
   getAbilities iid window (Dormitories attrs) =
     withBaseAbilities iid window attrs $ pure
-      [ restrictedAbility attrs 1 Here
-        $ FastAbility
-        $ GroupClueCost (PerPlayer 3)
-        $ Just (LocationWithTitle "Dormitories")
+      [ restrictedAbility attrs 1 Here $ FastAbility $ GroupClueCost
+          (PerPlayer 3)
+          (LocationWithTitle "Dormitories")
       ]
 
 instance LocationRunner env => RunMessage env Dormitories where

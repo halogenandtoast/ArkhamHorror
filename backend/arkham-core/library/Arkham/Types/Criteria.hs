@@ -49,6 +49,7 @@ data Criterion
   | InvestigatorIsAlone
   | InvestigatorsHaveSpendableClues ValueMatcher
   | LocationExists LocationMatcher
+  | AllUndefeatedInvestigatorsResigned
   | OnLocation LocationMatcher
   | OnSameLocation
   | OwnCardWithDoom

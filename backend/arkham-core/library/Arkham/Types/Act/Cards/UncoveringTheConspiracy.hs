@@ -31,7 +31,7 @@ instance HasAbilities env UncoveringTheConspiracy where
     [ mkAbility a 1
     $ ActionAbility Nothing
     $ ActionCost 1
-    <> GroupClueCost (PerPlayer 2) Nothing
+    <> GroupClueCost (PerPlayer 2) Anywhere
     , restrictedAbility
       a
       2

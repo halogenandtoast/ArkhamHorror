@@ -37,7 +37,7 @@ ability a = mkAbility
   a
   1
   (ActionAbility Nothing
-  $ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) Nothing]
+  $ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) Anywhere]
   )
 
 instance ActionRunner env => HasAbilities env TheCarnevaleConspiracy where

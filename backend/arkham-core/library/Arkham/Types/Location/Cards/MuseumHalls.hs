@@ -61,9 +61,7 @@ instance ActionRunner env => HasAbilities env MuseumHalls where
       [ locationAbility
           (mkAbility attrs 1 $ ActionAbility Nothing $ Costs
             [ ActionCost 1
-            , GroupClueCost
-              (PerPlayer 1)
-              (Just $ LocationWithTitle "Museum Halls")
+            , GroupClueCost (PerPlayer 1) (LocationWithTitle "Museum Halls")
             ]
           )
       ]

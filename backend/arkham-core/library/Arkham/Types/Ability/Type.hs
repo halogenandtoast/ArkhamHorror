@@ -17,6 +17,7 @@ data AbilityType
   | ActionAbilityWithBefore (Maybe Action) (Maybe Action) Cost -- Action is first type, before is second
   | LegacyForcedAbility
   | ForcedAbility WindowMatcher
+  | ForcedAbilityWithCost WindowMatcher Cost
   | AbilityEffect Cost
   | Objective AbilityType
   deriving stock (Show, Generic, Eq)
@@ -32,6 +33,7 @@ abilityTypeAction = \case
   ActionAbilityWithBefore mAction _ _ -> mAction
   LegacyForcedAbility -> Nothing
   ForcedAbility _ -> Nothing
+  ForcedAbilityWithCost _ _ -> Nothing
   AbilityEffect _ -> Nothing
   Objective aType -> abilityTypeAction aType
 
@@ -45,6 +47,7 @@ abilityTypeCost = \case
   ActionAbilityWithBefore _ _ cost -> cost
   LegacyForcedAbility -> Free
   ForcedAbility _ -> Free
+  ForcedAbilityWithCost _ cost -> cost
   AbilityEffect cost -> cost
   Objective aType -> abilityTypeCost aType
 
@@ -64,6 +67,8 @@ applyAbilityTypeModifiers aType modifiers = case aType of
       $ applyCostModifiers cost modifiers
   LegacyForcedAbility -> LegacyForcedAbility
   ForcedAbility window -> ForcedAbility window
+  ForcedAbilityWithCost window cost ->
+    ForcedAbilityWithCost window $ applyCostModifiers cost modifiers
   AbilityEffect cost -> AbilityEffect cost -- modifiers don't yet apply here
   Objective aType' -> Objective $ applyAbilityTypeModifiers aType' modifiers
 

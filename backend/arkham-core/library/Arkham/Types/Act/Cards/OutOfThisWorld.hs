@@ -14,6 +14,7 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
@@ -28,7 +29,7 @@ outOfThisWorld = act
   (1, A)
   OutOfThisWorld
   Cards.outOfThisWorld
-  (Just $ GroupClueCost (PerPlayer 2) Nothing)
+  (Just $ GroupClueCost (PerPlayer 2) Anywhere)
 
 instance HasAbilities env OutOfThisWorld where
   getAbilities iid window@(Window Timing.When NonFast) (OutOfThisWorld x) =

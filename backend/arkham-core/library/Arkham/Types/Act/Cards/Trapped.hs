@@ -9,6 +9,7 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
+import Arkham.Types.Matcher (LocationMatcher(..))
 import Arkham.Types.Message
 import Arkham.Types.Target
 
@@ -18,7 +19,7 @@ newtype Trapped = Trapped ActAttrs
 
 trapped :: ActCard Trapped
 trapped =
-  act (1, A) Trapped Cards.trapped (Just $ GroupClueCost (PerPlayer 2) Nothing)
+  act (1, A) Trapped Cards.trapped (Just $ GroupClueCost (PerPlayer 2) Anywhere)
 
 instance ActRunner env => RunMessage env Trapped where
   runMessage msg a@(Trapped attrs@ActAttrs {..}) = case msg of

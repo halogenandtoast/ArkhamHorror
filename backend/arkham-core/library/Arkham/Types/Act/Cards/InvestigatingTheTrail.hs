@@ -13,6 +13,7 @@ import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 
 newtype InvestigatingTheTrail = InvestigatingTheTrail ActAttrs
@@ -24,7 +25,7 @@ investigatingTheTrail = act
   (1, A)
   InvestigatingTheTrail
   Cards.investigatingTheTrail
-  (Just $ GroupClueCost (PerPlayer 3) Nothing)
+  (Just $ GroupClueCost (PerPlayer 3) Anywhere)
 
 instance ActRunner env => RunMessage env InvestigatingTheTrail where
   runMessage msg a@(InvestigatingTheTrail attrs@ActAttrs {..}) = case msg of

@@ -23,8 +23,7 @@ theGateOpens = act
   (3, A)
   TheGateOpens
   Cards.theGateOpens
-  (Just $ GroupClueCost (PerPlayer 2) (Just $ LocationWithTitle "Sentinel Peak")
-  )
+  (Just $ GroupClueCost (PerPlayer 2) (LocationWithTitle "Sentinel Peak"))
 
 instance HasAbilities env TheGateOpens where
   getAbilities i window (TheGateOpens x) = getAbilities i window x

@@ -53,7 +53,7 @@ instance HasAbilities env FacultyOfficesTheNightIsStillYoung where
         $ toId x
         , restrictedAbility x 2 Here $ FastAbility $ GroupClueCost
           (PerPlayer 2)
-          (Just $ LocationWithTitle "Faculty Offices")
+          (LocationWithTitle "Faculty Offices")
         ]
       else []
 

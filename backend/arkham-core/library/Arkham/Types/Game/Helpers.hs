@@ -157,6 +157,7 @@ meetsActionRestrictions _ _ Ability {..} = go abilityType
     ReactionAbility _ _ -> pure True
     LegacyForcedAbility -> pure True
     ForcedAbility _ -> pure True
+    ForcedAbilityWithCost _ _ -> pure True
     AbilityEffect _ -> pure True
 
 getCanAffordAbility
@@ -192,6 +193,8 @@ getCanAffordAbilityCost iid Ability {..} = case abilityType of
     getCanAffordCost iid abilitySource Nothing [] cost
   ReactionAbility _ cost -> getCanAffordCost iid abilitySource Nothing [] cost
   FastAbility cost -> getCanAffordCost iid abilitySource Nothing [] cost
+  ForcedAbilityWithCost _ cost ->
+    getCanAffordCost iid abilitySource Nothing [] cost
   LegacyForcedAbility -> pure True
   ForcedAbility _ -> pure True
   AbilityEffect _ -> pure True
@@ -211,6 +214,8 @@ getCanAffordUse iid ability = case abilityLimit ability of
     LegacyForcedAbility ->
       notElem (iid, ability) . map unUsedAbility <$> getList ()
     ForcedAbility _ ->
+      notElem (iid, ability) . map unUsedAbility <$> getList ()
+    ForcedAbilityWithCost _ _ ->
       notElem (iid, ability) . map unUsedAbility <$> getList ()
     ActionAbility _ _ -> pure True
     ActionAbilityWithBefore{} -> pure True
@@ -286,20 +291,12 @@ getCanAffordCost iid source mAction windows = \case
   PlaceClueOnLocationCost n -> do
     spendableClues <- unSpendableClueCount <$> getCount iid
     pure $ spendableClues >= n
-  GroupClueCost n Nothing -> do
-    totalSpendableClues <- unSpendableClueCount <$> getCount ()
+  GroupClueCost n locationMatcher -> do
     cost <- getPlayerCountValue n
+    iids <- selectList $ Matcher.InvestigatorAt locationMatcher
+    totalSpendableClues <- sum
+      <$> for iids ((unSpendableClueCount <$>) . getCount)
     pure $ totalSpendableClues >= cost
-  GroupClueCost n (Just locationMatcher) -> do
-    mLocationId <- getId @(Maybe LocationId) locationMatcher
-    cost <- getPlayerCountValue n
-    case mLocationId of
-      Just lid -> do
-        iids <- getSetList @InvestigatorId lid
-        totalSpendableClues <- sum
-          <$> for iids ((unSpendableClueCount <$>) . getCount)
-        pure $ totalSpendableClues >= cost
-      Nothing -> pure False
   ResourceCost n -> do
     resources <- unResourceCount <$> getCount iid
     pure $ resources >= n
@@ -959,6 +956,8 @@ passesCriteria
 passesCriteria iid source windows = \case
   Criteria.Negate restriction ->
     not <$> passesCriteria iid source windows restriction
+  Criteria.AllUndefeatedInvestigatorsResigned ->
+    null <$> select Matcher.UneliminatedInvestigator
   Criteria.Never -> pure False
   Criteria.InThreatAreaOf who -> do
     investigators <- selectList who

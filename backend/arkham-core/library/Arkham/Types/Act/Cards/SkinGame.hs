@@ -30,26 +30,14 @@ skinGame = act
   (2, A)
   SkinGame
   Cards.skinGame
-  (Just $ GroupClueCost (PerPlayer 2) (Just $ LocationWithTitle "VIP Area"))
+  (Just $ GroupClueCost (PerPlayer 2) (LocationWithTitle "VIP Area"))
 
 instance HasAbilities env SkinGame where
   getAbilities i window (SkinGame x) = getAbilities i window x
 
 instance ActRunner env => RunMessage env SkinGame where
-  runMessage msg a@(SkinGame attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      vipAreaId <- fromJustNote "must exist"
-        <$> selectOne (LocationWithTitle "VIP Area")
-      investigatorIds <- getSetList vipAreaId
-      requiredClueCount <- getPlayerCountValue (PerPlayer 2)
-      pushAll
-        (SpendClues requiredClueCount investigatorIds
-        : [ chooseOne iid [AdvanceAct aid (toSource attrs)]
-          | iid <- investigatorIds
-          ]
-        )
-      pure $ SkinGame $ attrs & sequenceL .~ Act 2 B
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+  runMessage msg a@(SkinGame attrs) = case msg of
+    AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
       completedExtracurricularActivity <-
         elem "02041" . map unCompletedScenarioId <$> getSetList ()
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
@@ -64,13 +52,12 @@ instance ActRunner env => RunMessage env SkinGame where
             leadInvestigatorId
             (toTarget attrs)
             (CardWithType EnemyType <> CardWithTrait Abomination)
-          , NextAct actId "02069"
+          , NextAct (toId attrs) "02069"
           ]
-        else
-          pushAll
-            [ CreateStoryAssetAt drFrancisMorgan vipAreaId
-            , NextAct actId "02068"
-            ]
+        else pushAll
+          [ CreateStoryAssetAt drFrancisMorgan vipAreaId
+          , NextAct (toId attrs) "02068"
+          ]
     FoundEncounterCard _ target ec | isTarget attrs target -> do
       cloverClubBarId <- getJustLocationIdByName "Clover Club Bar"
       a <$ push (SpawnEnemyAt (EncounterCard ec) cloverClubBarId)

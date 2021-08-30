@@ -25,6 +25,7 @@ data WindowType
   = ActAdvance ActId
   | AgendaAdvance AgendaId
   | AgendaWouldAdvance AgendaAdvancementReason AgendaId
+  | AllUndefeatedInvestigatorsResigned
   | AllDrawEncounterCard
   | AmongSearchedCards InvestigatorId
   | AnyPhaseBegins

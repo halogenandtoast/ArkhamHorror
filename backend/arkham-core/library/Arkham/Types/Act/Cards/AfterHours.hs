@@ -8,6 +8,7 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 
 newtype AfterHours = AfterHours ActAttrs
@@ -19,7 +20,7 @@ afterHours = act
   (1, A)
   AfterHours
   Cards.afterHours
-  (Just $ GroupClueCost (PerPlayer 3) Nothing)
+  (Just $ GroupClueCost (PerPlayer 3) Anywhere)
 
 instance ActRunner env => RunMessage env AfterHours where
   runMessage msg a@(AfterHours attrs@ActAttrs {..}) = case msg of

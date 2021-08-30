@@ -25,7 +25,7 @@ mysteriousGateway = act
   (1, A)
   MysteriousGateway
   Cards.mysteriousGateway
-  (Just $ GroupClueCost (PerPlayer 3) (Just $ LocationWithTitle "Guest Hall"))
+  (Just $ GroupClueCost (PerPlayer 3) (LocationWithTitle "Guest Hall"))
 
 instance HasAbilities env MysteriousGateway where
   getAbilities i window (MysteriousGateway x) = getAbilities i window x

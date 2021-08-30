@@ -216,6 +216,7 @@ data LocationMatcher
   | LocationWithClues ValueMatcher
   | LocationWithoutInvestigators
   | LocationWithoutEnemies
+  | LocationWithEnemy EnemyMatcher
   | RevealedLocation
   | InvestigatableLocation
   | FarthestLocationFromYou LocationMatcher
@@ -357,6 +358,7 @@ data WindowMatcher
   | MythosStep WindowMythosStepMatcher
   | AssetEntersPlay Timing AssetMatcher
   | AssetDealtDamage Timing AssetMatcher
+  | EnemyDealtDamage Timing EnemyMatcher
   | TookControlOfAsset Timing Who AssetMatcher
   | DiscoveringLastClue Timing Who Where
   | DiscoverClues Timing Who Where ValueMatcher

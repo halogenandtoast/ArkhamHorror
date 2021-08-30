@@ -429,8 +429,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
       a <$ push (EnemyEntered eid lid)
     EnemyEntered eid lid | eid == enemyId -> do
       pushAll =<< checkWindows
-        ((`Window` Window.EnemyEnters eid lid) <$> [Timing.When, Timing.After]
-        )
+        ((`Window` Window.EnemyEnters eid lid) <$> [Timing.When, Timing.After])
       pure $ a & locationL .~ lid
     Ready target | isTarget a target -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -719,6 +718,10 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
     EnemyDamage eid iid source amount | eid == enemyId -> do
       amount' <- getModifiedDamageAmount a amount
       modifiedHealth <- getModifiedHealth a
+      damageWhenMsgs <- checkWindows
+        [Window Timing.When (Window.DealtDamage source $ toTarget a)]
+      damageAfterMsgs <- checkWindows
+        [Window Timing.After (Window.DealtDamage source $ toTarget a)]
       when (a ^. damageL + amount' >= modifiedHealth) $ do
         whenMsgs <- checkWindows
           [Window Timing.When (Window.EnemyWouldBeDefeated eid)]
@@ -735,6 +738,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
                  source
                  (setToList $ toTraits a)
              ]
+      pushAll $ damageWhenMsgs <> damageAfterMsgs
       pure $ a & damageL +~ amount'
     DefeatEnemy eid iid source | eid == enemyId -> a <$ push
       (EnemyDefeated

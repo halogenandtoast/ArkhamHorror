@@ -675,6 +675,12 @@ getLocationsMatching = \case
     filter noInvestigatorsAtLocation . toList . view locationsL <$> getGame
   LocationWithoutEnemies ->
     filter noEnemiesAtLocation . toList . view locationsL <$> getGame
+  LocationWithEnemy enemyMatcher -> do
+    enemies <- select enemyMatcher
+    filterM (fmap (notNull . intersection enemies) . getSet . toId)
+      . toList
+      . view locationsL
+      =<< getGame
   RevealedLocation -> filter isRevealed . toList . view locationsL <$> getGame
   LocationWithClues gameValueMatcher -> do
     allLocations' <- toList . view locationsL <$> getGame

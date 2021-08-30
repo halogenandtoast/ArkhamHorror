@@ -8,10 +8,8 @@ import Arkham.Prelude
 import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.Id
-import Arkham.Types.Message
+import Arkham.Types.Matcher
 import Arkham.Types.Prey
 import Arkham.Types.SkillType
 
@@ -25,11 +23,9 @@ lupineThrall = enemyWith
   Cards.lupineThrall
   (4, Static 3, 4)
   (1, 1)
-  (preyL .~ LowestSkill SkillAgility)
+  ((preyL .~ LowestSkill SkillAgility)
+  . (spawnAtL ?~ FarthestLocationFromYou Anywhere)
+  )
 
 instance EnemyRunner env => RunMessage env LupineThrall where
-  runMessage msg e@(LupineThrall attrs@EnemyAttrs {..}) = case msg of
-    InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
-      farthestLocations <- map unFarthestLocationId <$> getSetList iid
-      e <$ spawnAtOneOf iid eid farthestLocations
-    _ -> LupineThrall <$> runMessage msg attrs
+  runMessage msg (LupineThrall attrs) = LupineThrall <$> runMessage msg attrs

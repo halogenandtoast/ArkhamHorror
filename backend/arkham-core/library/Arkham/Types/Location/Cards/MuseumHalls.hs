@@ -20,8 +20,6 @@ import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype MuseumHalls = MuseumHalls LocationAttrs
   deriving anyclass IsLocation
@@ -43,8 +41,8 @@ instance HasModifiersFor env MuseumHalls where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasAbilities env MuseumHalls where
-  getAbilities iid window@(Window Timing.When NonFast) (MuseumHalls attrs)
-    | unrevealed attrs = withBaseAbilities iid window attrs $ do
+  getAbilities iid window (MuseumHalls attrs) | unrevealed attrs =
+    withBaseAbilities iid window attrs $ do
       lid <- fromJustNote "missing location"
         <$> selectOne (LocationWithTitle "Museum Entrance")
       pure
@@ -56,8 +54,8 @@ instance ActionRunner env => HasAbilities env MuseumHalls where
             { abilityCriteria = Just (OnLocation $ LocationWithId lid)
             }
         ]
-  getAbilities iid window@(Window Timing.When NonFast) (MuseumHalls attrs)
-    | revealed attrs = withBaseAbilities iid window attrs $ pure
+  getAbilities iid window (MuseumHalls attrs) =
+    withBaseAbilities iid window attrs $ pure
       [ locationAbility
           (mkAbility attrs 1 $ ActionAbility Nothing $ Costs
             [ ActionCost 1
@@ -65,7 +63,6 @@ instance ActionRunner env => HasAbilities env MuseumHalls where
             ]
           )
       ]
-  getAbilities iid window (MuseumHalls attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env MuseumHalls where
   runMessage msg l@(MuseumHalls attrs) = case msg of

@@ -7,6 +7,8 @@ import Arkham.Prelude
 
 import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Asset.Cards as Assets
+import qualified Arkham.Location.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
@@ -16,8 +18,8 @@ import Arkham.Types.Classes
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 
 newtype BreakingAndEntering = BreakingAndEntering ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)
@@ -28,11 +30,16 @@ breakingAndEntering =
   act (2, A) BreakingAndEntering Cards.breakingAndEntering Nothing
 
 instance HasAbilities env BreakingAndEntering where
-  getAbilities i window (BreakingAndEntering x) = getAbilities i window x
+  getAbilities _ _ (BreakingAndEntering x) = pure
+    [ mkAbility x 1 $ ForcedAbility $ Enters Timing.When You $ locationIs
+        Cards.exhibitHallRestrictedHall
+    ]
 
-instance (HasName env LocationId, ActRunner env) => RunMessage env BreakingAndEntering where
-  runMessage msg a@(BreakingAndEntering attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+instance ActRunner env => RunMessage env BreakingAndEntering where
+  runMessage msg a@(BreakingAndEntering attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      a <$ push (AdvanceAct (toId attrs) source)
+    AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       mHuntingHorror <- fmap unStoryEnemyId <$> getId (CardCode "02141")
@@ -51,7 +58,7 @@ instance (HasName env LocationId, ActRunner env) => RunMessage env BreakingAndEn
               ]
             , EnemySpawn Nothing lid eid
             , Ready (EnemyTarget eid)
-            , NextAct actId "02125"
+            , NextAct (toId attrs) "02125"
             ]
         Nothing -> a <$ pushAll
           [ chooseOne
@@ -69,14 +76,11 @@ instance (HasName env LocationId, ActRunner env) => RunMessage env BreakingAndEn
     FoundEnemyInVoid _ target eid | isTarget attrs target -> do
       lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
         <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
-      a <$ pushAll [EnemySpawnFromVoid Nothing lid eid, NextAct actId "02125"]
+      a <$ pushAll
+        [EnemySpawnFromVoid Nothing lid eid, NextAct (toId attrs) "02125"]
     FoundEncounterCard _ target ec | isTarget attrs target -> do
       lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
         <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
-      a <$ pushAll [SpawnEnemyAt (EncounterCard ec) lid, NextAct actId "02125"]
-    WhenEnterLocation _ lid -> do
-      name <- getName lid
-      a <$ when
-        (name == mkFullName "Exhibit Hall" "Restricted Hall")
-        (push $ AdvanceAct actId (toSource attrs))
+      a <$ pushAll
+        [SpawnEnemyAt (EncounterCard ec) lid, NextAct (toId attrs) "02125"]
     _ -> BreakingAndEntering <$> runMessage msg attrs

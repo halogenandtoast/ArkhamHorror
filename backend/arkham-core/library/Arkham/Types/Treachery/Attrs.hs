@@ -178,6 +178,6 @@ instance TreacheryRunner env => RunMessage env TreacheryAttrs where
       pure $ a & resourcesL ?~ amount
     PlaceEnemyInVoid eid | EnemyTarget eid `elem` treacheryAttachedTarget ->
       a <$ push (Discard $ toTarget a)
-    Discard target | target `elem` treacheryAttachedTarget ->
+    Discarded target _ | target `elem` treacheryAttachedTarget ->
       a <$ push (Discard $ toTarget a)
     _ -> pure a

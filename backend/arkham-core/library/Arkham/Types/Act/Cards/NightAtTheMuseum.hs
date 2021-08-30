@@ -6,6 +6,8 @@ module Arkham.Types.Act.Cards.NightAtTheMuseum
 import Arkham.Prelude
 
 import qualified Arkham.Act.Cards as Cards
+import qualified Arkham.Location.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
@@ -16,6 +18,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 
 newtype NightAtTheMuseum = NightAtTheMuseum ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)
@@ -25,15 +28,16 @@ nightAtTheMuseum :: ActCard NightAtTheMuseum
 nightAtTheMuseum = act (2, A) NightAtTheMuseum Cards.nightAtTheMuseum Nothing
 
 instance HasAbilities env NightAtTheMuseum where
-  getAbilities i window (NightAtTheMuseum x) = getAbilities i window x
+  getAbilities _ _ (NightAtTheMuseum x) = pure
+    [ mkAbility x 1 $ ForcedAbility $ Enters Timing.When You $ locationIs
+        Cards.exhibitHallRestrictedHall
+    ]
 
 instance ActRunner env => RunMessage env NightAtTheMuseum where
-  runMessage msg a@(NightAtTheMuseum attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      push (chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)])
-      pure $ NightAtTheMuseum $ attrs & sequenceL .~ Act 2 B
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+  runMessage msg a@(NightAtTheMuseum attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      a <$ push (AdvanceAct (toId attrs) source)
+    AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       mHuntingHorror <- fmap unStoryEnemyId <$> getId (CardCode "02141")
       case mHuntingHorror of
@@ -43,7 +47,7 @@ instance ActRunner env => RunMessage env NightAtTheMuseum where
           a <$ pushAll
             [ EnemySpawn Nothing lid eid
             , Ready (EnemyTarget eid)
-            , NextAct actId "02125"
+            , NextAct (toId attrs) "02125"
             ]
         Nothing -> a <$ push
           (FindEncounterCard
@@ -54,15 +58,11 @@ instance ActRunner env => RunMessage env NightAtTheMuseum where
     FoundEnemyInVoid _ target eid | isTarget attrs target -> do
       lid <- getJustLocationIdByName
         (mkFullName "Exhibit Hall" "Restricted Hall")
-      a <$ pushAll [EnemySpawnFromVoid Nothing lid eid, NextAct actId "02125"]
+      a <$ pushAll
+        [EnemySpawnFromVoid Nothing lid eid, NextAct (toId attrs) "02125"]
     FoundEncounterCard _ target ec | isTarget attrs target -> do
       lid <- getJustLocationIdByName
         (mkFullName "Exhibit Hall" "Restricted Hall")
-      a <$ pushAll [SpawnEnemyAt (EncounterCard ec) lid, NextAct actId "02125"]
-    WhenEnterLocation _ lid -> do
-      mRestrictedHallId <- getLocationIdByName
-        (mkFullName "Exhibit Hall" "Restricted Hall")
-      a <$ when
-        (Just lid == mRestrictedHallId)
-        (push $ AdvanceAct actId (toSource attrs))
+      a <$ pushAll
+        [SpawnEnemyAt (EncounterCard ec) lid, NextAct (toId attrs) "02125"]
     _ -> NightAtTheMuseum <$> runMessage msg attrs

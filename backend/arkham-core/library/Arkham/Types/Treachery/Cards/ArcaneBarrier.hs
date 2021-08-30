@@ -21,6 +21,7 @@ newtype ArcaneBarrier = ArcaneBarrier TreacheryAttrs
 arcaneBarrier :: TreacheryCard ArcaneBarrier
 arcaneBarrier = treachery ArcaneBarrier Cards.arcaneBarrier
 
+-- TODO: Move move to effect to a modifier...
 instance TreacheryRunner env => RunMessage env ArcaneBarrier where
   runMessage msg t@(ArcaneBarrier attrs) = case msg of
     Revelation iid source | isSource attrs source -> do

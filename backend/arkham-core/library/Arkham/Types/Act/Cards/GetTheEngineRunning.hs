@@ -10,9 +10,9 @@ import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
+import Arkham.Types.Criteria
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Query
 import Arkham.Types.Resolution
 
 newtype GetTheEngineRunning = GetTheEngineRunning ActAttrs
@@ -23,16 +23,16 @@ getTheEngineRunning :: ActCard GetTheEngineRunning
 getTheEngineRunning =
   act (2, A) GetTheEngineRunning Cards.getTheEngineRunning Nothing
 
-instance ActionRunner env => HasAbilities env GetTheEngineRunning where
-  getAbilities i window (GetTheEngineRunning x) = do
-    mEngineCar <- selectOne $ LocationWithTitle "Engine Car"
-    case mEngineCar of
-      Just engineCar -> do
-        mustAdvance <- (== 0) . unClueCount <$> getCount engineCar
-        if mustAdvance
-          then pure [mkAbility x 1 LegacyForcedAbility]
-          else getAbilities i window x
-      Nothing -> getAbilities i window x
+instance HasAbilities env GetTheEngineRunning where
+  getAbilities _ _ (GetTheEngineRunning x) = pure
+    [ restrictedAbility
+        x
+        1
+        (LocationExists $ LocationWithTitle "Engine Car" <> LocationWithoutClues
+        )
+      $ Objective
+      $ ForcedAbility AnyWindow
+    ]
 
 instance ActRunner env => RunMessage env GetTheEngineRunning where
   runMessage msg a@(GetTheEngineRunning attrs@ActAttrs {..}) = case msg of

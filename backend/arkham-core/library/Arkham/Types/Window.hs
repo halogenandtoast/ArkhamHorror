@@ -37,6 +37,7 @@ data WindowType
   | DealtHorror Source Target
   | Defeated Source
   | DiscoverClues InvestigatorId LocationId Int
+  | GainsClues InvestigatorId Int
   | DiscoveringLastClue InvestigatorId LocationId
   | DrawCard InvestigatorId Card DeckSignifier
   | Discarded InvestigatorId Card
@@ -48,6 +49,7 @@ data WindowType
   | AssetDefeated AssetId
   | TookControlOfAsset InvestigatorId AssetId
   | EnemyAttacks InvestigatorId EnemyId
+  | EnemyAttacked InvestigatorId Source EnemyId
   | EnemyDefeated InvestigatorId EnemyId
   | EnemyWouldBeDefeated EnemyId
   | EnemyEngaged InvestigatorId EnemyId
@@ -64,7 +66,7 @@ data WindowType
   | InDiscardWindow InvestigatorId Window
   | InHandWindow InvestigatorId Window
   | Leaving InvestigatorId LocationId
-  | LocationLeavesPlay LocationId
+  | LeavePlay Target
   | MoveFromHunter EnemyId
   | NonFast
   | PassSkillTest (Maybe Action) Source InvestigatorId Int
@@ -83,6 +85,7 @@ data WindowType
   | SuccessfulInvestigation InvestigatorId LocationId
   | TurnBegins InvestigatorId
   | TurnEnds InvestigatorId
+  | DeckHasNoCards InvestigatorId
   | WouldDrawEncounterCard InvestigatorId
   | WouldFailSkillTest InvestigatorId
   | WouldReady Target

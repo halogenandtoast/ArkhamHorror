@@ -19,16 +19,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Matcher hiding
-  ( DiscoverClues
-  , Discarded
-  , DuringTurn
-  , EnemyEvaded
-  , FastPlayerWindow
-  , InvestigatorEliminated
-  , PlayCard
-  , RevealLocation
-  )
+import Arkham.Types.Matcher (AssetMatcher(..), InvestigatorMatcher(..), assetIs)
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
@@ -920,7 +911,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (deckL .~ Deck deck')
       & (slotsL %~ removeFromSlots aid)
   Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
-  Discard (EnemyTarget eid) -> pure $ a & engagedEnemiesL %~ deleteSet eid
+  Discarded (EnemyTarget eid) _ -> pure $ a & engagedEnemiesL %~ deleteSet eid
   PlaceEnemyInVoid eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
   Discarded (AssetTarget aid) (PlayerCard card)
     | aid `elem` investigatorAssets
@@ -1328,6 +1319,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       else pure a
   GainClues iid n | iid == investigatorId -> do
     push (After (GainClues iid n))
+    pushAll =<< checkWindows
+      ((`Window` Window.GainsClues iid n) <$> [Timing.When, Timing.After])
     pure $ a & cluesL +~ n
   DiscoverClues iid lid n _ | iid == investigatorId ->
     a <$ push (AfterDiscoverClues iid lid n)
@@ -1623,8 +1616,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (actionsTakenL .~ mempty)
   DiscardTopOfDeck iid n mTarget | iid == investigatorId -> do
     let (cs, deck') = splitAt n (unDeck investigatorDeck)
+    windowMsgs <- if null deck'
+      then checkWindows
+        ((`Window` Window.DeckHasNoCards iid) <$> [Timing.When, Timing.After])
+      else pure []
     pushAll
-      $ [ DeckHasNoCards investigatorId mTarget | null deck' ]
+      $ windowMsgs
+      <> [ DeckHasNoCards investigatorId mTarget | null deck' ]
       <> [ DiscardedTopOfDeck iid cs target | target <- maybeToList mTarget ]
     pure $ a & deckL .~ Deck deck' & discardL %~ (reverse cs <>)
   DrawCards iid n True | iid == investigatorId -> a <$ pushAll
@@ -1663,8 +1661,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 )
               $ push (Revelation iid (PlayerCardSource $ toCardId card))
           Nothing -> pure ()
+
+        windowMsgs <- if null deck
+          then checkWindows
+            ((`Window` Window.DeckHasNoCards iid)
+            <$> [Timing.When, Timing.After]
+            )
+          else pure []
         pushAll
-          $ [ DeckHasNoCards iid Nothing | null deck ]
+          $ windowMsgs
+          <> [ DeckHasNoCards iid Nothing | null deck ]
           <> [ InvestigatorDrewPlayerCard iid card | card <- maybeToList mcard ]
           <> [DrawCards iid (n - 1) False]
         pure $ a & handL %~ handUpdate & deckL .~ Deck deck

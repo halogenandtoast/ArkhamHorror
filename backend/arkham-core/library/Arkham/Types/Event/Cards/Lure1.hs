@@ -8,14 +8,15 @@ import Arkham.Prelude
 import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
+import Arkham.Types.Criteria
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Helpers
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype Lure1 = Lure1 EventAttrs
   deriving anyclass IsEvent
@@ -25,10 +26,8 @@ lure1 :: EventCard Lure1
 lure1 = event Lure1 Cards.lure1
 
 instance HasAbilities env Lure1 where
-  getAbilities iid (Window Timing.When AtEndOfRound) (Lure1 attrs)
-    | isJust (eventAttachedTarget attrs) = pure
-      [ mkAbility attrs 1 LegacyForcedAbility | eventOwner attrs == iid ]
-  getAbilities _ _ _ = pure []
+  getAbilities _ _ (Lure1 attrs) = pure
+    [restrictedAbility attrs 1 OwnsThis $ ForcedAbility $ RoundEnds Timing.When]
 
 instance HasModifiersFor env Lure1 where
   getModifiersFor _ (EnemyTarget _) (Lure1 attrs) =

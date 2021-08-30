@@ -9,11 +9,13 @@ import qualified Arkham.Location.Cards as Cards (passengerCar_169)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Direction
 import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
@@ -45,12 +47,18 @@ instance HasCount ClueCount env LocationId => HasModifiersFor env PassengerCar_1
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities env PassengerCar_169 where
-  getAbilities iid window (PassengerCar_169 attrs) =
-    getAbilities iid window attrs
+  getAbilities i w (PassengerCar_169 x) = withBaseAbilities i w x $ pure
+    [ mkAbility x 1
+      $ ForcedAbility
+      $ Enters Timing.After You
+      $ LocationWithId
+      $ toId x
+    | locationRevealed x
+    ]
 
 instance LocationRunner env => RunMessage env PassengerCar_169 where
-  runMessage msg l@(PassengerCar_169 attrs@LocationAttrs {..}) = case msg of
-    AfterEnterLocation iid lid | lid == locationId -> do
+  runMessage msg l@(PassengerCar_169 attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       let cost = SkillIconCost 2 (singleton SkillWillpower)
       hasSkills <- getCanAffordCost
         iid

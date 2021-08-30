@@ -19,6 +19,7 @@
       v-for="ability in abilities"
       :key="ability"
       :ability="choices[ability]"
+      :data-image="image"
       @click="$emit('choose', ability)"
       />
 

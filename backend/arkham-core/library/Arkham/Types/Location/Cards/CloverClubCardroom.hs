@@ -7,20 +7,18 @@ import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (cloverClubCardroom)
 import Arkham.Types.Ability
-import Arkham.Types.ActId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Message
 import Arkham.Types.RequestedTokenStrategy
-import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
-import Arkham.Types.Window
 
 newtype CloverClubCardroom = CloverClubCardroom LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cloverClubCardroom :: LocationCard CloverClubCardroom
@@ -32,30 +30,23 @@ cloverClubCardroom = location
   Triangle
   [Circle, Square, Diamond]
 
-instance HasModifiersFor env CloverClubCardroom
-
-ability :: LocationAttrs -> Ability
-ability attrs = base { abilityLimit = GroupLimit PerRound 1 }
- where
-  base = mkAbility
-    (toSource attrs)
-    1
-    (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
-
-instance ActionRunner env => HasAbilities env CloverClubCardroom where
-  getAbilities iid window@(Window Timing.When NonFast) (CloverClubCardroom attrs@LocationAttrs {..})
-    | locationRevealed
-    = withBaseAbilities iid window attrs $ do
-      step <- unActStep <$> getStep ()
-      pure [ locationAbility (ability attrs) | step == 1 ]
+instance HasAbilities env CloverClubCardroom where
   getAbilities iid window (CloverClubCardroom attrs) =
-    getAbilities iid window attrs
+    withBaseAbilities iid window attrs $ do
+      pure
+        [ restrictedAbility
+              attrs
+              1
+              (OnAct 1)
+              (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
+            & (abilityLimitL .~ GroupLimit PerRound 1)
+        | locationRevealed attrs
+        ]
 
 instance LocationRunner env => RunMessage env CloverClubCardroom where
-  runMessage msg l@(CloverClubCardroom attrs@LocationAttrs {..}) = case msg of
-    UseCardAbility iid source _ 1 _
-      | isSource attrs source && locationRevealed -> l
-      <$ push (RequestTokens source (Just iid) 1 SetAside)
+  runMessage msg l@(CloverClubCardroom attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      l <$ push (RequestTokens source (Just iid) 1 SetAside)
     RequestedTokens source (Just iid) tokens | isSource attrs source -> do
       tokenFaces <- getModifiedTokenFaces source tokens
       let

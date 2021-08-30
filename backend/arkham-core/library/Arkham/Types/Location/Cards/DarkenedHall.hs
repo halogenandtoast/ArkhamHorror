@@ -6,13 +6,17 @@ module Arkham.Types.Location.Cards.DarkenedHall
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Message
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (RevealLocation)
+import qualified Arkham.Types.Timing as Timing
 
 newtype DarkenedHall = DarkenedHall LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 darkenedHall :: LocationCard DarkenedHall
@@ -27,14 +31,19 @@ darkenedHall = locationWith
   .~ setFromList [Triangle, T, Hourglass, Plus, Squiggle]
   )
 
-instance HasModifiersFor env DarkenedHall
-
 instance HasAbilities env DarkenedHall where
-  getAbilities iid window (DarkenedHall attrs) = getAbilities iid window attrs
+  getAbilities i w (DarkenedHall x) = withBaseAbilities i w x $ pure
+    [ mkAbility x 1
+      $ ForcedAbility
+      $ RevealLocation Timing.After Anyone
+      $ LocationWithId
+      $ toId x
+    | locationRevealed x
+    ]
 
 instance LocationRunner env => RunMessage env DarkenedHall where
-  runMessage msg (DarkenedHall attrs@LocationAttrs {..}) = case msg of
-    RevealLocation _ lid | lid == locationId -> do
+  runMessage msg (DarkenedHall attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       locations <- shuffleM [Cards.artGallery, Cards.vipArea, Cards.backAlley]
       randomIds <- replicateM 3 getRandom
       pushAll $ concat

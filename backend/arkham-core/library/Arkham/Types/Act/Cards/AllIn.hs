@@ -55,11 +55,8 @@ instance ActRunner env => RunMessage env AllIn where
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       resignedWithDrFrancisMorgan <- elem (ResignedCardCode $ CardCode "02080")
         <$> getList ()
-      a <$ push
-        (ScenarioResolution $ Resolution $ if resignedWithDrFrancisMorgan
-          then 2
-          else 1
-        )
+      let resolution = if resignedWithDrFrancisMorgan then 2 else 1
+      a <$ push (ScenarioResolution $ Resolution resolution)
     UseCardAbility iid (ProxySource _ source) _ 1 _
       | isSource attrs source && onSide A attrs -> do
         maid <- selectOne (assetIs Cards.drFrancisMorgan)

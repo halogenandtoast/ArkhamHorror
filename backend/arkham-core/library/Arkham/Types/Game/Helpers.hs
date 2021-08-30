@@ -1521,6 +1521,10 @@ windowMatches iid source window' = \case
     Window t (Window.DealtDamage _ (AssetTarget aid)) | t == timingMatcher ->
       member aid <$> select assetMatcher
     _ -> pure False
+  Matcher.EnemyDealtDamage timingMatcher enemyMatcher -> case window' of
+    Window t (Window.DealtDamage _ (EnemyTarget eid)) | t == timingMatcher ->
+      member eid <$> select enemyMatcher
+    _ -> pure False
   Matcher.DiscoverClues whenMatcher whoMatcher whereMatcher valueMatcher ->
     case window' of
       Window t (Window.DiscoverClues who lid n) | whenMatcher == t -> andM
@@ -1658,6 +1662,8 @@ locationMatches investigatorId source window locationId = \case
   Matcher.LocationWithoutInvestigators ->
     null <$> getSet @InvestigatorId locationId
   Matcher.LocationWithoutEnemies -> null <$> getSet @EnemyId locationId
+  Matcher.LocationWithEnemy enemyMatcher -> notNull <$> select
+    (Matcher.EnemyAt (Matcher.LocationWithId locationId) <> enemyMatcher)
   Matcher.AccessibleLocation -> do
     yourLocationId <- getId @LocationId investigatorId
     member (AccessibleLocationId locationId) <$> getSet yourLocationId

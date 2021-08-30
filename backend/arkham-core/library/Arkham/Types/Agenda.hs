@@ -43,7 +43,7 @@ instance HasAbilities env Agenda where
 instance (HasId (Maybe EnemyId) env EnemyMatcher, HasRecord env, AgendaRunner env) => RunMessage env Agenda where
   runMessage = genericRunMessage
 
-instance (HasSet EnemyId env (), HasSet Trait env EnemyId) => HasModifiersFor env Agenda where
+instance (Query EnemyMatcher env, HasSet Trait env EnemyId) => HasModifiersFor env Agenda where
   getModifiersFor = genericGetModifiersFor
 
 instance Entity Agenda where

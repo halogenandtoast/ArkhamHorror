@@ -6,50 +6,53 @@ module Arkham.Types.Agenda.Cards.TheCloverClub
 import Arkham.Prelude
 
 import qualified Arkham.Agenda.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Id
 import Arkham.Types.Keyword
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Query
-import Arkham.Types.ScenarioId
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 
 newtype TheCloverClub = TheCloverClub AgendaAttrs
-  deriving anyclass (IsAgenda, HasAbilities env)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theCloverClub :: AgendaCard TheCloverClub
 theCloverClub = agenda (1, A) TheCloverClub Cards.theCloverClub (Static 4)
 
-instance (HasSet EnemyId env (), HasSet Trait env EnemyId) => HasModifiersFor env TheCloverClub where
+instance Query EnemyMatcher env => HasModifiersFor env TheCloverClub where
   getModifiersFor _ (EnemyTarget eid) (TheCloverClub attrs) | onSide A attrs =
     do
-      enemyIds <- getSet ()
-      if eid `member` enemyIds
-        then do
-          traits <- getSet eid
-          pure $ toModifiers
-            attrs
-            [ AddKeyword Aloof | Criminal `member` traits ]
-        else pure []
+      isCriminal <- member eid <$> select (EnemyWithTrait Criminal)
+      pure $ toModifiers attrs [ AddKeyword Aloof | isCriminal ]
   getModifiersFor _ _ _ = pure []
 
+instance HasAbilities env TheCloverClub where
+  getAbilities _ _ (TheCloverClub x) = pure
+    [ mkAbility x 1
+      $ ForcedAbility
+      $ EnemyDealtDamage Timing.When
+      $ EnemyWithTrait Criminal
+    | onSide A x
+    ]
+
 instance AgendaRunner env => RunMessage env TheCloverClub where
-  runMessage msg a@(TheCloverClub attrs@AgendaAttrs {..}) = case msg of
-    InvestigatorDamageEnemy _ eid | agendaSequence == Agenda 1 A -> do
-      traits <- getSet eid
-      a <$ when (Criminal `member` traits) (push $ AdvanceAgenda agendaId)
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
+  runMessage msg a@(TheCloverClub attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      a <$ push (AdvanceAgenda $ toId attrs)
+    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+      leadInvestigatorId <- getLeadInvestigatorId
       completedExtracurricularActivity <-
         elem "02041" . map unCompletedScenarioId <$> getSetList ()
-      enemyIds <- getSetList Criminal
+      enemyIds <- selectList $ EnemyWithTrait Criminal
 
       let
         continueMessages =

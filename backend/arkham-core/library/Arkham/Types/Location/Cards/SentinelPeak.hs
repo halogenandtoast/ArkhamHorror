@@ -10,6 +10,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Matcher (LocationMatcher(..))
 import Arkham.Types.Message
 import Arkham.Types.Trait
 
@@ -26,7 +27,7 @@ sentinelPeak = locationWith
   Diamond
   [Square]
   (costToEnterUnrevealedL
-  .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 2) Nothing]
+  .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 2) Anywhere]
   )
 
 instance HasModifiersFor env SentinelPeak

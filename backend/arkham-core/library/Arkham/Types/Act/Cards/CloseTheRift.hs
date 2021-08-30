@@ -31,7 +31,7 @@ closeTheRift = act
   Cards.closeTheRift
   (Just $ GroupClueCost
     (PerPlayer 3)
-    (Just $ LocationWithTitle "The Edge of the Universe")
+    (LocationWithTitle "The Edge of the Universe")
   )
 
 instance HasAbilities env CloseTheRift where

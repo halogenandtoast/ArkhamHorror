@@ -99,6 +99,8 @@ startPayment iid window abilityType abilitySource abilityDoesNotProvokeAttacksOf
       abilityDoesNotProvokeAttacksOfOpportunity
     LegacyForcedAbility -> pure ()
     ForcedAbility _ -> pure ()
+    ForcedAbilityWithCost _ cost ->
+      push (PayAbilityCost abilitySource iid Nothing False cost)
     AbilityEffect cost ->
       push (PayAbilityCost abilitySource iid Nothing False cost)
     FastAbility cost ->
@@ -162,7 +164,6 @@ instance
   , HasCostPayment env
   , HasSet Trait env Source
   , HasModifiersFor env ()
-  , Query InvestigatorMatcher env
   , HasCount ActionRemainingCount env InvestigatorId
   )
   => RunMessage env PayForAbilityEffect where
@@ -324,20 +325,11 @@ instance
         PlaceClueOnLocationCost x -> do
           push (InvestigatorPlaceCluesOnLocation iid x)
           withPayment $ CluePayment x
-        GroupClueCost x Nothing -> do
-          investigatorIds <- map unInScenarioInvestigatorId <$> getSetList ()
+        GroupClueCost x locationMatcher -> do
           totalClues <- getPlayerCountValue x
-          push (SpendClues totalClues investigatorIds)
+          iids <- selectList $ InvestigatorAt locationMatcher
+          push (SpendClues totalClues iids)
           withPayment $ CluePayment totalClues
-        GroupClueCost x (Just locationMatcher) -> do
-          mLocationId <- getId @(Maybe LocationId) locationMatcher
-          totalClues <- getPlayerCountValue x
-          case mLocationId of
-            Just lid -> do
-              iids <- getSetList @InvestigatorId lid
-              push (SpendClues totalClues iids)
-              withPayment $ CluePayment totalClues
-            Nothing -> error "could not pay cost"
         HandDiscardCost x mPlayerCardType traits skillTypes -> do
           handCards <- mapMaybe (preview _PlayerCard . unHandCard)
             <$> getList iid

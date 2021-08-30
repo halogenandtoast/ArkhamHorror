@@ -14,8 +14,8 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.Action
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
-import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
@@ -23,8 +23,6 @@ import Arkham.Types.Resolution
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype AllIn = AllIn ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)
@@ -33,36 +31,27 @@ newtype AllIn = AllIn ActAttrs
 allIn :: ActCard AllIn
 allIn = act (3, A) AllIn Cards.allIn Nothing
 
-instance ActionRunner env => HasAbilities env AllIn where
-  getAbilities iid (Window Timing.When NonFast) (AllIn attrs) =
-    withBaseAbilities iid (Window Timing.When NonFast) attrs $ do
-      investigatorLocationId <- getId @LocationId iid
-      maid <- selectOne (assetIs Cards.drFrancisMorgan)
-      case maid of
-        Nothing -> pure []
-        Just aid -> do
-          miid <- fmap unOwnerId <$> getId aid
-          assetLocationId <- getId aid
-          pure
-            [ mkAbility
-                (ProxySource (AssetSource aid) (toSource attrs))
-                1
-                (ActionAbility (Just Parley) $ ActionCost 1)
-            | isNothing miid && Just investigatorLocationId == assetLocationId
-            ]
-  getAbilities i window (AllIn x) = getAbilities i window x
+instance HasAbilities env AllIn where
+  getAbilities i w (AllIn x) = withBaseAbilities i w x $ pure $ if onSide A x
+    then
+      [ restrictedAbility
+        (ProxySource
+          (AssetMatcherSource $ assetIs Cards.drFrancisMorgan)
+          (toSource x)
+        )
+        1
+        (Unowned <> OnSameLocation)
+        (ActionAbility (Just Parley) $ ActionCost 1)
+      , restrictedAbility x 1 AllUndefeatedInvestigatorsResigned
+      $ Objective
+      $ ForcedAbility AnyWindow
+      ]
+    else []
 
 instance ActRunner env => RunMessage env AllIn where
   runMessage msg a@(AllIn attrs@ActAttrs {..}) = case msg of
-    InvestigatorResigned _ -> do
-      investigatorIds <- getSet @InScenarioInvestigatorId ()
-      a <$ when
-        (null investigatorIds)
-        (push $ AdvanceAct actId (toSource attrs))
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      push $ chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
-      pure $ AllIn $ attrs & sequenceL .~ Act 3 B
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      a <$ push (AdvanceAct (toId attrs) source)
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       resignedWithDrFrancisMorgan <- elem (ResignedCardCode $ CardCode "02080")
         <$> getList ()

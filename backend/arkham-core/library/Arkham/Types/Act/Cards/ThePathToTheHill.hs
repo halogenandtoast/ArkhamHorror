@@ -27,7 +27,7 @@ thePathToTheHill = act
   (1, A)
   ThePathToTheHill
   Cards.thePathToTheHill
-  (Just $ GroupClueCost (PerPlayer 2) Nothing)
+  (Just $ GroupClueCost (PerPlayer 2) Anywhere)
 
 instance ActionRunner env => HasAbilities env ThePathToTheHill where
   getAbilities i window (ThePathToTheHill x) = do

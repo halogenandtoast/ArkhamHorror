@@ -112,7 +112,7 @@ onSide side ActAttrs {..} = actSide actSequence == side
 instance HasAbilities env ActAttrs where
   getAbilities _ (Window Timing.When FastPlayerWindow) attrs@ActAttrs {..} =
     case actAdvanceCost of
-      Just cost -> pure [mkAbility attrs 100 (FastAbility cost)]
+      Just cost -> pure [mkAbility attrs 100 (Objective $ FastAbility cost)]
       Nothing -> pure []
   getAbilities _ _ _ = pure []
 
@@ -147,7 +147,13 @@ instance ActAttrsRunner env => RunMessage env ActAttrs where
       pure $ a & treacheriesL %~ insertSet tid
     InvestigatorResigned _ -> do
       investigatorIds <- getSet @InScenarioInvestigatorId ()
-      a <$ when (null investigatorIds) (push AllInvestigatorsResigned)
+      whenMsgs <- checkWindows
+        [Window Timing.When AllUndefeatedInvestigatorsResigned]
+      afterMsgs <- checkWindows
+        [Window Timing.When AllUndefeatedInvestigatorsResigned]
+      a <$ when
+        (null investigatorIds)
+        (pushAll $ whenMsgs <> afterMsgs <> [AllInvestigatorsResigned])
     UseCardAbility iid source _ 100 _ | isSource a source ->
       a <$ push (AdvanceAct (toId a) (InvestigatorSource iid))
     PlaceClues (ActTarget aid) n | aid == actId -> do

@@ -14,6 +14,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Id
+import Arkham.Types.Matcher (LocationMatcher(..))
 import Arkham.Types.Message
 import Arkham.Types.Target
 
@@ -51,7 +52,7 @@ instance ActionRunner env => HasAbilities env TheRougarou where
           engageAction =
             mkAbility attrs 102
               $ ActionAbility (Just Action.Engage)
-              $ GroupClueCost (Static requiredClues) Nothing
+              $ GroupClueCost (Static requiredClues) Anywhere
               <> ActionCost 1
         pure $ filter (not . isEngage) actions' <> [engageAction]
       else pure actions'

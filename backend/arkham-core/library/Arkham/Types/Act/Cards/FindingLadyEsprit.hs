@@ -35,7 +35,7 @@ findingLadyEsprit = act
   (1, A)
   FindingLadyEsprit
   Cards.findingLadyEsprit
-  (Just $ GroupClueCost (PerPlayer 1) (Just $ LocationWithTrait Bayou))
+  (Just $ GroupClueCost (PerPlayer 1) (LocationWithTrait Bayou))
 
 instance HasAbilities env FindingLadyEsprit where
   getAbilities i window (FindingLadyEsprit x) = getAbilities i window x

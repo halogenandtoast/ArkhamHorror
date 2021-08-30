@@ -28,9 +28,7 @@ saracenicScript = act
   (1, A)
   SaracenicScript
   Cards.saracenicScript
-  (Just
-  $ GroupClueCost (PerPlayer 2) (Just $ LocationWithTitle "Whateley Ruins")
-  )
+  (Just $ GroupClueCost (PerPlayer 2) (LocationWithTitle "Whateley Ruins"))
 
 instance HasAbilities env SaracenicScript where
   getAbilities i window (SaracenicScript x) = getAbilities i window x

@@ -31,7 +31,7 @@ instance HasAbilities env TheBarrier where
     [ mkAbility x 1
       $ Objective
       $ ReactionAbility (RoundEnds Timing.When)
-      $ GroupClueCost (PerPlayer 3) (Just $ LocationWithTitle "Hallway")
+      $ GroupClueCost (PerPlayer 3) (LocationWithTitle "Hallway")
     ]
 
 instance ActRunner env => RunMessage env TheBarrier where

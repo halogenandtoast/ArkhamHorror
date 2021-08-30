@@ -14,7 +14,6 @@ import Arkham.Types.Effect.Effects
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Id
-import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
@@ -148,7 +147,6 @@ instance
   , HasList DiscardedPlayerCard env InvestigatorId
   , HasCount ActionRemainingCount env InvestigatorId
   , HasSet ClassSymbol env InvestigatorId
-  , Query InvestigatorMatcher env
   )
   => RunMessage env Effect where
   runMessage = genericRunMessage

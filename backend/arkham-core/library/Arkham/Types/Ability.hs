@@ -81,6 +81,7 @@ abilityEffect a cost = mkAbility a (-1) (AbilityEffect cost)
 defaultAbilityLimit :: AbilityType -> AbilityLimit
 defaultAbilityLimit = \case
   ForcedAbility _ -> PlayerLimit PerWindow 1
+  ForcedAbilityWithCost _ _ -> PlayerLimit PerWindow 1
   LegacyForcedAbility -> PlayerLimit PerWindow 1
   ReactionAbility _ _ -> PlayerLimit PerWindow 1
   LegacyReactionAbility _ -> PlayerLimit PerWindow 1
@@ -98,6 +99,7 @@ defaultAbilityWindow = \case
   ActionAbilityWithBefore{} -> DuringTurn You
   ActionAbilityWithSkill{} -> DuringTurn You
   ForcedAbility window -> window
+  ForcedAbilityWithCost window _ -> window
   LegacyForcedAbility -> AnyWindow
   ReactionAbility window _ -> window
   LegacyReactionAbility _ -> AnyWindow
@@ -126,6 +128,7 @@ isForcedAbility Ability { abilityType } = go abilityType
   go = \case
     LegacyForcedAbility -> True
     ForcedAbility{} -> True
+    ForcedAbilityWithCost{} -> True
     Objective aType -> go aType
     FastAbility{} -> False
     LegacyReactionAbility{} -> False
@@ -142,6 +145,7 @@ isFastAbility Ability { abilityType } = go abilityType
     FastAbility{} -> True
     LegacyForcedAbility -> False
     ForcedAbility{} -> False
+    ForcedAbilityWithCost{} -> False
     Objective aType -> go aType
     LegacyReactionAbility{} -> False
     ReactionAbility{} -> False

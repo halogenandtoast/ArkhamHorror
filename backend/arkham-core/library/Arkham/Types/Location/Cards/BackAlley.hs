@@ -7,11 +7,12 @@ import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (backAlley)
 import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 
 newtype BackAlley = BackAlley LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 backAlley :: LocationCard BackAlley
@@ -24,10 +25,9 @@ backAlley = locationWith
   [Diamond]
   (revealedSymbolL .~ Squiggle)
 
-instance HasModifiersFor env BackAlley
-
 instance HasAbilities env BackAlley where
-  getAbilities _ _ (BackAlley a) = pure [locationResignAction a]
+  getAbilities i w (BackAlley a) =
+    withBaseAbilities i w a $ pure [locationResignAction a]
 
 instance LocationRunner env => RunMessage env BackAlley where
   runMessage msg (BackAlley attrs) = BackAlley <$> runMessage msg attrs

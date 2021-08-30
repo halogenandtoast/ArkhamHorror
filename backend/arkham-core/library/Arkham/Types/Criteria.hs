@@ -2,12 +2,12 @@
 
 module Arkham.Types.Criteria where
 
-import Arkham.Prelude
+import           Arkham.Prelude
 
-import Arkham.Types.GameValue
-import Arkham.Types.Matcher
-import Arkham.Types.Modifier
-import Arkham.Types.Trait
+import           Arkham.Types.GameValue
+import           Arkham.Types.Matcher
+import           Arkham.Types.Modifier
+import           Arkham.Types.Trait
 
 data DiscardSignifier = AnyPlayerDiscard
   deriving stock (Show, Eq, Generic)
@@ -31,6 +31,7 @@ pattern CanDrawCards <-
 
 data Criterion
   = AssetExists AssetMatcher
+  | OnAct Int
   | CardExists CardMatcher
   | CardInDiscard DiscardSignifier [Trait]
   | ChargesOnThis ValueMatcher
@@ -73,14 +74,14 @@ data Criterion
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 instance Semigroup Criterion where
-  Never <> _ = Never
-  _ <> Never = Never
-  NoRestriction <> x = x
-  x <> NoRestriction = x
+  Never <> _                 = Never
+  _ <> Never                 = Never
+  NoRestriction <> x         = x
+  x <> NoRestriction         = x
   Criteria xs <> Criteria ys = Criteria $ xs <> ys
-  Criteria xs <> x = Criteria $ x : xs
-  x <> Criteria xs = Criteria $ x : xs
-  x <> y = Criteria [x, y]
+  Criteria xs <> x           = Criteria $ x : xs
+  x <> Criteria xs           = Criteria $ x : xs
+  x <> y                     = Criteria [x, y]
 
 instance Monoid Criterion where
   mempty = NoRestriction

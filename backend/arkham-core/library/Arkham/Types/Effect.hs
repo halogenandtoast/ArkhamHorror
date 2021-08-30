@@ -137,7 +137,6 @@ instance
   , HasId (Maybe OwnerId) env AssetId
   , HasSet Trait env EnemyId
   , HasCostPayment env
-  , HasSet InScenarioInvestigatorId env ()
   , HasSet Trait env Source
   , HasModifiersFor env ()
   , HasId Difficulty env ()

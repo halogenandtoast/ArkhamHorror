@@ -7,16 +7,14 @@ import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (cloverClubBar)
 import Arkham.Types.Ability
-import Arkham.Types.ActId
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Message
 import Arkham.Types.ScenarioLogKey
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype CloverClubBar = CloverClubBar LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -31,27 +29,21 @@ cloverClubBar = location
   Square
   [Triangle, Circle]
 
-ability :: LocationAttrs -> Ability
-ability attrs = (mkAbility
-                  (toSource attrs)
-                  1
-                  (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2]
-                  )
-                )
-  { abilityLimit = PlayerLimit PerGame 1
-  }
-
-instance ActionRunner env => HasAbilities env CloverClubBar where
-  getAbilities iid window@(Window Timing.When NonFast) (CloverClubBar attrs@LocationAttrs {..})
-    | locationRevealed
-    = withBaseAbilities iid window attrs $ do
-      step <- unActStep <$> getStep ()
-      pure [ locationAbility (ability attrs) | step == 1 ]
-  getAbilities iid window (CloverClubBar attrs) = getAbilities iid window attrs
+instance HasAbilities env CloverClubBar where
+  getAbilities iid window (CloverClubBar attrs) =
+    withBaseAbilities iid window attrs $ do
+      pure
+        [ restrictedAbility
+              attrs
+              1
+              (OnAct 1)
+              (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
+            & (abilityLimitL .~ PlayerLimit PerGame 1)
+        | locationRevealed attrs
+        ]
 
 instance LocationRunner env => RunMessage env CloverClubBar where
-  runMessage msg l@(CloverClubBar attrs@LocationAttrs {..}) = case msg of
-    UseCardAbility iid source _ 1 _
-      | isSource attrs source && locationRevealed -> l <$ pushAll
-        [GainClues iid 2, DrawCards iid 2 False, Remember $ HadADrink iid]
+  runMessage msg l@(CloverClubBar attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ pushAll
+      [GainClues iid 2, DrawCards iid 2 False, Remember $ HadADrink iid]
     _ -> CloverClubBar <$> runMessage msg attrs

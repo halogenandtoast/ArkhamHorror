@@ -16,7 +16,7 @@ import Arkham.Types.Target
 
 newtype VipArea = VipArea LocationAttrs
   deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 vipArea :: LocationCard VipArea
 vipArea = locationWith
@@ -36,9 +36,6 @@ instance HasPhase env => HasModifiersFor env VipArea where
         then pure $ toModifiers attrs [CannotDrawCards, CannotGainResources]
         else pure []
   getModifiersFor _ _ _ = pure []
-
-instance HasAbilities env VipArea where
-  getAbilities iid window (VipArea attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env VipArea where
   runMessage msg (VipArea attrs) = VipArea <$> runMessage msg attrs

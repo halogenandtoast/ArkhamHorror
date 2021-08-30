@@ -14,8 +14,8 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.Action
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
-import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
@@ -23,8 +23,6 @@ import Arkham.Types.Resolution
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype Fold = Fold ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)
@@ -33,37 +31,32 @@ newtype Fold = Fold ActAttrs
 fold :: ActCard Fold
 fold = act (3, A) Fold Cards.fold Nothing
 
-instance ActionRunner env => HasAbilities env Fold where
-  getAbilities iid window@(Window Timing.When NonFast) (Fold attrs) =
-    withBaseAbilities iid window attrs $ do
-      investigatorLocationId <- getId @LocationId iid
-      maid <- selectOne (assetIs Cards.peterClover)
-      case maid of
-        Nothing -> pure []
-        Just aid -> do
-          miid <- fmap unOwnerId <$> getId aid
-          assetLocationId <- getId aid
-          pure
-            [ mkAbility
-                (ProxySource (AssetSource aid) (toSource attrs))
-                1
-                (ActionAbility (Just Parley) $ ActionCost 1)
-            | isNothing miid && Just investigatorLocationId == assetLocationId
-            ]
-  getAbilities i window (Fold x) = getAbilities i window x
+instance HasAbilities env Fold where
+  getAbilities i w (Fold x) = withBaseAbilities i w x $ pure $ if onSide A x
+    then
+      [ restrictedAbility
+        (ProxySource
+          (AssetMatcherSource $ assetIs Cards.peterClover)
+          (toSource x)
+        )
+        1
+        (Unowned <> OnSameLocation)
+        (ActionAbility (Just Parley) $ ActionCost 1)
+      , restrictedAbility x 1 AllUndefeatedInvestigatorsResigned
+      $ Objective
+      $ ForcedAbility AnyWindow
+      ]
+    else []
 
 instance ActRunner env => RunMessage env Fold where
   runMessage msg a@(Fold attrs@ActAttrs {..}) = case msg of
-    InvestigatorResigned _ -> do
-      investigatorIds <- getSet @InScenarioInvestigatorId ()
-      a <$ when
-        (null investigatorIds)
-        (push $ AdvanceAct actId (toSource attrs))
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      a <$ push (AdvanceAct (toId attrs) source)
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
-      resignedCardCodes <- map unResignedCardCode <$> getList ()
-      a <$ if "02079" `elem` resignedCardCodes
-        then push (ScenarioResolution $ Resolution 3)
-        else push (ScenarioResolution $ Resolution 1)
+      resignedWithPeterClover <- elem (ResignedCardCode $ CardCode "02079")
+        <$> getList ()
+      let resolution = if resignedWithPeterClover then 3 else 1
+      a <$ push (ScenarioResolution $ Resolution resolution)
     UseCardAbility iid (ProxySource _ source) _ 1 _
       | isSource attrs source && actSequence == Act 3 A -> do
         maid <- selectOne (assetIs Cards.peterClover)

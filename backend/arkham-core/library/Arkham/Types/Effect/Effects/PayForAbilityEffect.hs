@@ -160,7 +160,6 @@ startPayment iid window abilityType abilitySource abilityDoesNotProvokeAttacksOf
 
 instance
   ( HasQueue env
-  , HasSet InScenarioInvestigatorId env ()
   , HasCostPayment env
   , HasSet Trait env Source
   , HasModifiersFor env ()

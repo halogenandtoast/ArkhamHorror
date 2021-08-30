@@ -819,6 +819,7 @@ hasInvestigateActions _ window = notNull <$> select
 
 type CanCheckPlayable env
   = ( HasModifiersFor env ()
+    , HasStep ActStep env ()
     , HasSet VictoryDisplayCard env ()
     , HasId (Maybe LocationId) env TreacheryId
     , HasId (Maybe LocationId) env EventId
@@ -1104,6 +1105,7 @@ passesCriteria iid source windows = \case
     passesEnemyCriteria iid source windows enemyCriteria
   Criteria.SetAsideCardExists matcher ->
     notNull <$> getSet @SetAsideCardId matcher
+  Criteria.OnAct step -> (== step) . unActStep <$> getStep ()
   Criteria.AssetExists matcher -> notNull <$> getSet @AssetId matcher
   Criteria.InvestigatorExists matcher ->
     notNull <$> getSet @InvestigatorId matcher

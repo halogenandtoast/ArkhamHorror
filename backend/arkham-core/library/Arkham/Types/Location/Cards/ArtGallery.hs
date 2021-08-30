@@ -6,15 +6,20 @@ module Arkham.Types.Location.Cards.ArtGallery
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (artGallery)
+import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
+import Arkham.Types.Criteria
+import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 
 newtype ArtGallery = ArtGallery LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 artGallery :: LocationCard ArtGallery
@@ -27,10 +32,15 @@ artGallery = locationWith
   [Diamond]
   (revealedSymbolL .~ Hourglass)
 
-instance HasModifiersFor env ArtGallery
-
 instance HasAbilities env ArtGallery where
-  getAbilities iid window (ArtGallery attrs) = getAbilities iid window attrs
+  getAbilities i w (ArtGallery x) = withBaseAbilities i w x $ pure
+    [ restrictedAbility x 1 Here $ ForcedAbility $ SkillTestResult
+        Timing.After
+        You
+        (WhileInvestigating $ LocationWithId $ toId x)
+        (FailureResult AnyValue)
+    | locationRevealed x
+    ]
 
 instance LocationRunner env => RunMessage env ArtGallery where
   runMessage msg l@(ArtGallery attrs) = case msg of

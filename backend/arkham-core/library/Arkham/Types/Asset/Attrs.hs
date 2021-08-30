@@ -301,21 +301,15 @@ instance
       LocationTarget lid ->
         pure
           $ a
-          & investigatorL
-          .~ Nothing
-          & enemyL
-          .~ Nothing
-          & locationL
-          ?~ lid
+          & (investigatorL .~ Nothing)
+          . (enemyL .~ Nothing)
+          . (locationL ?~ lid)
       EnemyTarget eid ->
         pure
           $ a
-          & investigatorL
-          .~ Nothing
-          & locationL
-          .~ Nothing
-          & enemyL
-          ?~ eid
+          & (investigatorL .~ Nothing)
+          . (locationL .~ Nothing)
+          . (enemyL ?~ eid)
       _ -> error "Cannot attach asset to that type"
     RemoveFromGame target | a `isTarget` target ->
       a <$ push (RemovedFromPlay $ toSource a)
@@ -324,6 +318,12 @@ instance
         [RemovedFromPlay $ toSource a, Discarded (toTarget a) (toCard a)]
     Exile target | a `isTarget` target ->
       a <$ pushAll [RemovedFromPlay $ toSource a, Exiled target (toCard a)]
+    RemovedFromPlay source | isSource a source -> do
+      pushAll =<< checkWindows
+        ((`Window` Window.LeavePlay (toTarget a))
+        <$> [Timing.When, Timing.After]
+        )
+      pure a
     InvestigatorPlayedAsset iid aid _ _ | aid == assetId -> do
       -- we specifically use the investigator source here because the
       -- asset has no knowledge of being owned yet, and this will allow

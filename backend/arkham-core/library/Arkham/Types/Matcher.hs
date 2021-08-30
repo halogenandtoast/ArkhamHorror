@@ -214,6 +214,7 @@ data LocationMatcher
   | ConnectedLocation
   | LocationWithResources ValueMatcher
   | LocationWithClues ValueMatcher
+  | LocationWithMostClues
   | LocationWithoutInvestigators
   | LocationWithoutEnemies
   | LocationWithEnemy EnemyMatcher
@@ -347,6 +348,7 @@ instance Semigroup CardMatcher where
 
 data WindowMatcher
   = EnemyDefeated Timing Who EnemyMatcher
+  | DeckHasNoCards Timing Who
   | EnemyWouldBeDefeated Timing EnemyMatcher
   | EnemyWouldReady Timing EnemyMatcher
   | EnemyEnters Timing Where EnemyMatcher
@@ -357,12 +359,16 @@ data WindowMatcher
   | EnemyEngaged Timing Who EnemyMatcher
   | MythosStep WindowMythosStepMatcher
   | AssetEntersPlay Timing AssetMatcher
+  | AssetLeavesPlay Timing AssetMatcher
   | AssetDealtDamage Timing AssetMatcher
   | EnemyDealtDamage Timing EnemyMatcher
+  | EnemyLeavesPlay Timing EnemyMatcher
   | TookControlOfAsset Timing Who AssetMatcher
   | DiscoveringLastClue Timing Who Where
   | DiscoverClues Timing Who Where ValueMatcher
+  | GainsClues Timing Who ValueMatcher
   | EnemyAttacks Timing Who EnemyMatcher
+  | EnemyAttacked Timing Who SourceMatcher EnemyMatcher
   | RevealChaosToken Timing Who TokenMatcher
   | WouldRevealChaosToken Timing Who
   | Discarded Timing Who CardMatcher
@@ -499,6 +505,6 @@ data DeckMatcher = EncounterDeck | DeckOf InvestigatorMatcher | AnyDeck
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-newtype AgendaMatcher = AgendaWithId AgendaId
+data AgendaMatcher = AgendaWithId AgendaId | AnyAgenda
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

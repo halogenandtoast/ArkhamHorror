@@ -1448,6 +1448,15 @@ windowMatches iid source window' = \case
       (matchWho iid who whoMatcher)
       (enemyMatches enemyId enemyMatcher)
     _ -> pure False
+  Matcher.EnemyAttacked timingMatcher whoMatcher sourceMatcher enemyMatcher ->
+    case window' of
+      Window t (Window.EnemyAttacked who attackSource enemyId)
+        | timingMatcher == t -> andM
+          [ matchWho iid who whoMatcher
+          , enemyMatches enemyId enemyMatcher
+          , sourceMatches attackSource sourceMatcher
+          ]
+      _ -> pure False
   Matcher.EnemyEvaded timingMatcher whoMatcher enemyMatcher -> case window' of
     Window t (Window.EnemyEvaded who enemyId) | timingMatcher == t -> liftA2
       (&&)
@@ -1534,6 +1543,10 @@ windowMatches iid source window' = \case
         , gameValueMatches n valueMatcher
         ]
       _ -> pure False
+  Matcher.GainsClues whenMatcher whoMatcher valueMatcher -> case window' of
+    Window t (Window.GainsClues who n) | whenMatcher == t ->
+      andM [matchWho iid who whoMatcher, gameValueMatches n valueMatcher]
+    _ -> pure False
   Matcher.DiscoveringLastClue whenMatcher whoMatcher whereMatcher ->
     case window' of
       Window t (Window.DiscoveringLastClue who lid) | whenMatcher == t -> liftA2
@@ -1549,6 +1562,10 @@ windowMatches iid source window' = \case
         , deckMatch iid deck deckMatcher
         ]
       _ -> pure False
+  Matcher.DeckHasNoCards whenMatcher whoMatcher -> case window' of
+    Window t (Window.DeckHasNoCards who) | whenMatcher == t ->
+      matchWho iid who whoMatcher
+    _ -> pure False
   Matcher.PlayCard whenMatcher whoMatcher cardMatcher -> case window' of
     Window t (Window.PlayCard who card) | whenMatcher == t -> liftA2
       (&&)
@@ -1558,6 +1575,14 @@ windowMatches iid source window' = \case
   Matcher.AssetEntersPlay timingMatcher assetMatcher -> case window' of
     Window t (Window.EnterPlay (AssetTarget aid)) | t == timingMatcher ->
       member aid <$> select assetMatcher
+    _ -> pure False
+  Matcher.AssetLeavesPlay timingMatcher assetMatcher -> case window' of
+    Window t (Window.LeavePlay (AssetTarget aid)) | t == timingMatcher ->
+      member aid <$> select assetMatcher
+    _ -> pure False
+  Matcher.EnemyLeavesPlay timingMatcher enemyMatcher -> case window' of
+    Window t (Window.LeavePlay (EnemyTarget eid)) | t == timingMatcher ->
+      member eid <$> select enemyMatcher
     _ -> pure False
 
 matchWho
@@ -1681,10 +1706,13 @@ locationMatches investigatorId source window locationId = \case
     member (RevealedLocationId locationId) <$> getSet ()
   Matcher.LocationWithClues valueMatcher ->
     (`gameValueMatches` valueMatcher) . unClueCount =<< getCount locationId
+  Matcher.LocationWithMostClues ->
+    member locationId <$> select Matcher.LocationWithMostClues
   Matcher.LocationWithResources valueMatcher ->
     (`gameValueMatches` valueMatcher) . unResourceCount =<< getCount locationId
   Matcher.LocationLeavingPlay -> case window of
-    Window _ (Window.LocationLeavesPlay lid) -> pure $ locationId == lid
+    Window _ (Window.LeavePlay (LocationTarget lid)) ->
+      pure $ locationId == lid
     _ -> error "invalid window for LocationLeavingPlay"
   Matcher.SameLocation -> do
     lid' <- case source of
@@ -1818,6 +1846,7 @@ deckMatch iid deckSignifier = \case
   Matcher.AnyDeck -> pure True
 
 agendaMatches :: AgendaId -> Matcher.AgendaMatcher -> Bool
+agendaMatches _ Matcher.AnyAgenda = True
 agendaMatches aid (Matcher.AgendaWithId aid') = aid == aid'
 
 spawnAtOneOf

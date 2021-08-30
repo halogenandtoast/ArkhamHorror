@@ -1,3 +1,4 @@
+{-# LANGUAGE PatternSynonyms #-}
 module Arkham.Types.Enemy.Attrs
   ( module Arkham.Types.Enemy.Attrs
   , module X
@@ -22,8 +23,12 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword (HasKeywords(..), Keyword)
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.LocationId
-import Arkham.Types.Matcher hiding
-  (DuringTurn, EnemyDefeated, EnemyEvaded, InvestigatorEliminated)
+import Arkham.Types.Matcher
+  ( EnemyMatcher(..)
+  , InvestigatorMatcher(Anyone, You)
+  , LocationMatcher
+  , pattern AloofEnemy
+  )
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
@@ -749,8 +754,36 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
         source
         (setToList $ toTraits a)
       )
-    EnemyDefeated eid _ _ _ _ _ | eid == enemyId ->
-      a <$ pushAll (map (Discard . AssetTarget) (setToList enemyAssets))
+    EnemyDefeated eid iid _ _ _ _ | eid == toId a -> do
+      whenMsgs <- checkWindows
+        [Window Timing.When (Window.EnemyDefeated iid eid)]
+      afterMsgs <- checkWindows
+        [Window Timing.After (Window.EnemyDefeated iid eid)]
+      let
+        victory = cdVictoryPoints $ toCardDef a
+        victoryMsgs = [ AddToVictory $ toTarget a | isJust victory ]
+        defeatMsgs =
+          if isJust victory then [RemoveEnemy eid] else [Discard $ toTarget a]
+
+      withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
+
+      a <$ pushAll
+        (map (Discard . AssetTarget) (setToList enemyAssets)
+        <> whenMsgs
+        <> [When msg, After msg]
+        <> victoryMsgs
+        <> afterMsgs
+        <> defeatMsgs
+        )
+    Discard target | a `isTarget` target ->
+      a <$ pushAll
+        [RemovedFromPlay $ toSource a, Discarded (toTarget a) (toCard a)]
+    RemovedFromPlay source | isSource a source -> do
+      pushAll =<< checkWindows
+        ((`Window` Window.LeavePlay (toTarget a))
+        <$> [Timing.When, Timing.After]
+        )
+      pure a
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
       lid <- getId @LocationId iid
       when (lid /= enemyLocation) (push $ EnemyEntered eid lid)
@@ -799,7 +832,8 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
     AttachAsset aid (EnemyTarget eid) | eid == enemyId ->
       pure $ a & assetsL %~ insertSet aid
     AttachAsset aid _ -> pure $ a & assetsL %~ deleteSet aid
-    PlaceEnemyInVoid eid | eid == enemyId ->
+    PlaceEnemyInVoid eid | eid == enemyId -> do
+      withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
       pure
         $ a
         & (damageL .~ 0)
@@ -816,3 +850,30 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
     UseCardAbility iid source _ 102 _ | isSource a source ->
       a <$ push (EngageEnemy iid (toId a) False)
     _ -> pure a
+
+-- | Handle when enemy no longer exists
+-- When an enemy is defeated we need to remove related messages from choices
+-- and if not more choices exist, remove the message entirely
+filterOutEnemyMessages :: EnemyId -> Message -> Maybe Message
+filterOutEnemyMessages eid (Ask iid q) = case q of
+  ChooseOne msgs -> case mapMaybe (filterOutEnemyMessages eid) msgs of
+    [] -> Nothing
+    x -> Just (Ask iid $ ChooseOne x)
+  ChooseN n msgs -> case mapMaybe (filterOutEnemyMessages eid) msgs of
+    [] -> Nothing
+    x -> Just (Ask iid $ ChooseN n x)
+  ChooseSome msgs -> case mapMaybe (filterOutEnemyMessages eid) msgs of
+    [] -> Nothing
+    x -> Just (Ask iid $ ChooseSome x)
+  ChooseUpToN n msgs -> case mapMaybe (filterOutEnemyMessages eid) msgs of
+    [] -> Nothing
+    x -> Just (Ask iid $ ChooseUpToN n x)
+  ChooseOneAtATime msgs -> case mapMaybe (filterOutEnemyMessages eid) msgs of
+    [] -> Nothing
+    x -> Just (Ask iid $ ChooseOneAtATime x)
+  ChooseUpgradeDeck -> Just (Ask iid ChooseUpgradeDeck)
+filterOutEnemyMessages eid msg = case msg of
+  EnemyAttack _ eid' _ | eid == eid' -> Nothing
+  Discarded (EnemyTarget eid') _ | eid == eid' -> Nothing
+  m -> Just m
+

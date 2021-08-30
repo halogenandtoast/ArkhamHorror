@@ -37,7 +37,7 @@ forcedAbility a lid =
     ?~ TargetMetadata (LocationTarget lid)
 
 instance ActionRunner env => HasAbilities env AnotherDimension where
-  getAbilities iid (Window Timing.When (LocationLeavesPlay lid)) (AnotherDimension attrs)
+  getAbilities iid (Window Timing.When (LeavePlay (LocationTarget lid))) (AnotherDimension attrs)
     = do
       leadInvestigator <- getLeadInvestigatorId
       investigatorIds <- getSet @InvestigatorId lid
@@ -50,7 +50,7 @@ instance ActionRunner env => HasAbilities env AnotherDimension where
 
 instance (HasSet UnengagedEnemyId env LocationId, LocationRunner env) => RunMessage env AnotherDimension where
   runMessage msg l@(AnotherDimension attrs) = case msg of
-    UseCardAbility _ source [Window _ (LocationLeavesPlay lid)] 1 _
+    UseCardAbility _ source [Window _ (LeavePlay (LocationTarget lid))] 1 _
       | isSource attrs source -> do
         investigatorIds <- getSetList @InvestigatorId lid
         enemyIds <- map unUnengagedEnemyId <$> getSetList lid

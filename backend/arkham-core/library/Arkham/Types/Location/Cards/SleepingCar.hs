@@ -9,6 +9,7 @@ import qualified Arkham.Location.Cards as Cards (sleepingCar)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Direction
 import Arkham.Types.GameValue
 import Arkham.Types.Id
@@ -18,8 +19,6 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.ScenarioLogKey
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype SleepingCar = SleepingCar LocationAttrs
   deriving anyclass IsLocation
@@ -44,17 +43,13 @@ instance HasCount ClueCount env LocationId => HasModifiersFor env SleepingCar wh
       Nothing -> pure []
   getModifiersFor _ _ _ = pure []
 
-ability :: LocationAttrs -> Ability
-ability attrs =
-  (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
-    { abilityLimit = GroupLimit PerGame 1
-    }
-
 instance HasAbilities env SleepingCar where
-  getAbilities iid window@(Window Timing.When NonFast) (SleepingCar attrs)
-    | locationRevealed attrs = withBaseAbilities iid window attrs
-    $ pure [locationAbility (ability attrs)]
-  getAbilities iid window (SleepingCar attrs) = getAbilities iid window attrs
+  getAbilities iid window (SleepingCar attrs) =
+    withBaseAbilities iid window attrs $ pure
+      [ restrictedAbility attrs 1 Here (ActionAbility Nothing $ ActionCost 1)
+          & (abilityLimitL .~ GroupLimit PerGame 1)
+      | locationRevealed attrs
+      ]
 
 instance LocationRunner env => RunMessage env SleepingCar where
   runMessage msg l@(SleepingCar attrs) = case msg of

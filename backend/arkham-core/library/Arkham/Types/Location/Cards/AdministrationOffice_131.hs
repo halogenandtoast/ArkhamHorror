@@ -17,7 +17,7 @@ import Arkham.Types.Source
 
 newtype AdministrationOffice_131 = AdministrationOffice_131 LocationAttrs
   deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 administrationOffice_131 :: LocationCard AdministrationOffice_131
 administrationOffice_131 = location
@@ -35,10 +35,6 @@ instance HasCount CardCount env InvestigatorId => HasModifiersFor env Administra
       cardsInHand <- unCardCount <$> getCount iid
       pure $ toModifiers attrs [ CannotInvestigate | cardsInHand <= 4 ]
   getModifiersFor _ _ _ = pure []
-
-instance HasAbilities env AdministrationOffice_131 where
-  getAbilities iid window (AdministrationOffice_131 attrs) =
-    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env AdministrationOffice_131 where
   runMessage msg (AdministrationOffice_131 attrs) =

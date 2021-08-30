@@ -6,15 +6,15 @@ module Arkham.Types.Act.Cards.SearchingForTheTome
 import Arkham.Prelude
 
 import qualified Arkham.Act.Cards as Cards
+import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
-import Arkham.Types.LocationId
+import Arkham.Types.Criteria
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Query
 import Arkham.Types.Resolution
 
 newtype SearchingForTheTome = SearchingForTheTome ActAttrs
@@ -25,24 +25,24 @@ searchingForTheTome :: ActCard SearchingForTheTome
 searchingForTheTome =
   act (3, A) SearchingForTheTome Cards.searchingForTheTome Nothing
 
-instance ActionRunner env => HasAbilities env SearchingForTheTome where
-  getAbilities i window (SearchingForTheTome x) = do
-    mRestrictedHall <- getId @(Maybe LocationId)
-      (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
-    case mRestrictedHall of
-      Just restrictedHall -> do
-        mustAdvance <- (== 0) . unClueCount <$> getCount restrictedHall
-        if mustAdvance
-          then pure [mkAbility x 1 LegacyForcedAbility]
-          else getAbilities i window x
-      Nothing -> getAbilities i window x
+instance HasAbilities env SearchingForTheTome where
+  getAbilities _ _ (SearchingForTheTome x) = pure
+    [ restrictedAbility
+        x
+        1
+        (LocationExists
+        $ locationIs Cards.exhibitHallRestrictedHall
+        <> LocationWithoutClues
+        )
+      $ Objective
+      $ ForcedAbility AnyWindow
+    ]
 
 instance ActRunner env => RunMessage env SearchingForTheTome where
-  runMessage msg a@(SearchingForTheTome attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      push (AdvanceAct aid $ toSource attrs)
-      pure . SearchingForTheTome $ attrs & sequenceL .~ Act 3 B
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+  runMessage msg a@(SearchingForTheTome attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      a <$ push (AdvanceAct (toId attrs) source)
+    AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       a <$ push
         (chooseOne
@@ -55,6 +55,4 @@ instance ActRunner env => RunMessage env SearchingForTheTome where
             [ScenarioResolution $ Resolution 2]
           ]
         )
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) (toSource attrs))
     _ -> SearchingForTheTome <$> runMessage msg attrs

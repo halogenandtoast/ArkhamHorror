@@ -6,14 +6,17 @@ module Arkham.Types.Location.Cards.ExhibitHallNatureExhibit
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (exhibitHallNatureExhibit)
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Message
+import qualified Arkham.Types.Timing as Timing
 
 newtype ExhibitHallNatureExhibit = ExhibitHallNatureExhibit LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallNatureExhibit :: LocationCard ExhibitHallNatureExhibit
@@ -27,15 +30,19 @@ exhibitHallNatureExhibit = locationWithRevealedSideConnections
   Hourglass
   [Square, Squiggle]
 
-instance HasModifiersFor env ExhibitHallNatureExhibit
-
 instance HasAbilities env ExhibitHallNatureExhibit where
-  getAbilities iid window (ExhibitHallNatureExhibit attrs) =
-    getAbilities iid window attrs
+  getAbilities i w (ExhibitHallNatureExhibit x) = withBaseAbilities i w x $ do
+    pure
+      [ mkAbility x 1
+        $ ForcedAbility
+        $ Enters Timing.After You
+        $ LocationWithId
+        $ toId x
+      | locationRevealed x
+      ]
 
 instance LocationRunner env => RunMessage env ExhibitHallNatureExhibit where
   runMessage msg l@(ExhibitHallNatureExhibit attrs) = case msg of
-    After (FailedSkillTest iid (Just Action.Investigate) _ target _ _)
-      | isTarget attrs target -> l
-      <$ pushAll [RandomDiscard iid, RandomDiscard iid]
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      l <$ pushAll [RandomDiscard iid, RandomDiscard iid]
     _ -> ExhibitHallNatureExhibit <$> runMessage msg attrs

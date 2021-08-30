@@ -687,6 +687,10 @@ getLocationsMatching = \case
     filterM
       (getCount >=> (`gameValueMatches` gameValueMatcher) . unClueCount)
       allLocations'
+  LocationWithMostClues -> do
+    allLocations' <- toList . view locationsL <$> getGame
+    maxes
+      <$> traverse (traverseToSnd $ (unClueCount <$>) . getCount) allLocations'
   LocationWithoutTreacheryWithCardCode cardCode ->
     filterM
         (fmap (cardCode `notElem`) . traverse getId <=< getSetList @TreacheryId)
@@ -2552,31 +2556,6 @@ runPreGameMessage msg g = case msg of
     pure $ g & (skillTestL .~ Nothing) & (skillTestResultsL .~ Nothing)
   _ -> pure g
 
--- | Handle when enemy no longer exists
--- When an enemy is defeated we need to remove related messages from choices
--- and if not more choices exist, remove the message entirely
-filterOutEnemyMessages :: EnemyId -> Message -> Maybe Message
-filterOutEnemyMessages eid (Ask iid q) = case q of
-  ChooseOne msgs -> case mapMaybe (filterOutEnemyMessages eid) msgs of
-    [] -> Nothing
-    x -> Just (Ask iid $ ChooseOne x)
-  ChooseN n msgs -> case mapMaybe (filterOutEnemyMessages eid) msgs of
-    [] -> Nothing
-    x -> Just (Ask iid $ ChooseN n x)
-  ChooseSome msgs -> case mapMaybe (filterOutEnemyMessages eid) msgs of
-    [] -> Nothing
-    x -> Just (Ask iid $ ChooseSome x)
-  ChooseUpToN n msgs -> case mapMaybe (filterOutEnemyMessages eid) msgs of
-    [] -> Nothing
-    x -> Just (Ask iid $ ChooseUpToN n x)
-  ChooseOneAtATime msgs -> case mapMaybe (filterOutEnemyMessages eid) msgs of
-    [] -> Nothing
-    x -> Just (Ask iid $ ChooseOneAtATime x)
-  ChooseUpgradeDeck -> Just (Ask iid ChooseUpgradeDeck)
-filterOutEnemyMessages eid msg = case msg of
-  EnemyAttack _ eid' _ | eid == eid' -> Nothing
-  m -> Just m
-
 runGameMessage
   :: (HasQueue env, MonadReader env m, MonadRandom m, MonadIO m, HasGame env)
   => Message
@@ -2778,7 +2757,8 @@ runGameMessage msg g = case msg of
   SetEncounterDeck encounterDeck -> pure $ g & encounterDeckL .~ encounterDeck
   RemoveEnemy eid -> pure $ g & enemiesL %~ deleteMap eid
   When (RemoveLocation lid) -> do
-    windows <- checkWindows [Window Timing.When (Window.LocationLeavesPlay lid)]
+    windows <- checkWindows
+      [Window Timing.When (Window.LeavePlay $ LocationTarget lid)]
     g <$ pushAll windows
   RemoveLocation lid -> do
     treacheryIds <- getSetList lid
@@ -2906,6 +2886,7 @@ runGameMessage msg g = case msg of
       EncounterCard _ -> error "Unhandled"
     pure $ g & treacheriesL %~ deleteMap treacheryId
   ShuffleIntoDeck iid (EnemyTarget enemyId) -> do
+    -- The Thing That Follows
     enemy <- getEnemy enemyId
     case toCard enemy of
       PlayerCard card -> push (ShuffleCardsIntoDeck iid [card])
@@ -3189,27 +3170,6 @@ runGameMessage msg g = case msg of
           & (enemiesInVoidL %~ deleteMap eid)
           & (enemiesL %~ insertMap eid enemy)
       Nothing -> error "enemy was not in void"
-  EnemyDefeated eid iid _ _ _ _ -> do
-    whenMsgs <- checkWindows [Window Timing.When (Window.EnemyDefeated iid eid)]
-    afterMsgs <- checkWindows
-      [Window Timing.After (Window.EnemyDefeated iid eid)]
-    enemy <- getEnemy eid
-    let
-      victoryMsgs =
-        [ AddToVictory (EnemyTarget eid) | isJust (getEnemyVictory enemy) ]
-      defeatMsgs = if isJust (getEnemyVictory enemy)
-        then [RemoveEnemy eid]
-        else [Discard (EnemyTarget eid)]
-
-    withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
-
-    g <$ pushAll
-      (whenMsgs
-      <> [When msg, After msg]
-      <> victoryMsgs
-      <> afterMsgs
-      <> defeatMsgs
-      )
   Discard (SearchedCardTarget iid cardId) -> do
     let
       card = fromJustNote "must exist"
@@ -3220,7 +3180,7 @@ runGameMessage msg g = case msg of
         pure $ g & focusedCardsL %~ filter (/= card)
       _ -> error "should not be an option for other cards"
   Discard (ActTarget _) -> pure $ g & actsL .~ mempty
-  Discard (EnemyTarget eid) -> do
+  Discarded (EnemyTarget eid) _ -> do
     enemy <- getEnemy eid
     let card = toCard enemy
     case card of

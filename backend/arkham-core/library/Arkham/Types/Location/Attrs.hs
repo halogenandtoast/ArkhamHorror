@@ -24,8 +24,7 @@ import Arkham.Types.Id
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner as X
 import Arkham.Types.LocationSymbol as X
-import Arkham.Types.Matcher hiding
-  (DiscoverClues, EnemyDefeated, InvestigatorEliminated, RevealLocation)
+import Arkham.Types.Matcher (LocationMatcher(..))
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
@@ -498,10 +497,10 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       pure $ a & treacheriesL %~ insertSet tid
     AttachEvent eid (LocationTarget lid) | lid == locationId ->
       pure $ a & eventsL %~ insertSet eid
-    Discard (AssetTarget aid) -> pure $ a & assetsL %~ deleteSet aid
+    Discarded (AssetTarget aid) _ -> pure $ a & assetsL %~ deleteSet aid
     Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
     Discard (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
-    Discard (EnemyTarget eid) -> pure $ a & enemiesL %~ deleteSet eid
+    Discarded (EnemyTarget eid) _ -> pure $ a & enemiesL %~ deleteSet eid
     PlaceEnemyInVoid eid -> pure $ a & enemiesL %~ deleteSet eid
     RemoveFromGame (AssetTarget aid) -> pure $ a & assetsL %~ deleteSet aid
     RemoveFromGame (TreacheryTarget tid) ->
@@ -553,6 +552,8 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       | lid /= locationId && iid `elem` locationInvestigators
       -> pure $ a & investigatorsL %~ deleteSet iid -- TODO: should we broadcast leaving the location
     WhenEnterLocation iid lid | lid == locationId -> do
+      pushAll =<< checkWindows
+        ((`Window` Window.Entering iid lid) <$> [Timing.When, Timing.After])
       unless locationRevealed $ push (RevealLocation (Just iid) lid)
       pure $ a & investigatorsL %~ insertSet iid
     SetLocationAsIf iid lid | lid == locationId -> do

@@ -16,7 +16,7 @@ import Arkham.Types.Modifier
 
 newtype ExhibitHallRestrictedHall = ExhibitHallRestrictedHall LocationAttrs
   deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 exhibitHallRestrictedHall :: LocationCard ExhibitHallRestrictedHall
 exhibitHallRestrictedHall = locationWithRevealedSideConnections
@@ -38,10 +38,6 @@ instance HasId (Maybe StoryEnemyId) env CardCode => HasModifiersFor env ExhibitH
           pure $ toModifiers attrs [CannotInvestigate]
         _ -> pure []
   getModifiersFor _ _ _ = pure []
-
-instance HasAbilities env ExhibitHallRestrictedHall where
-  getAbilities iid window (ExhibitHallRestrictedHall attrs) =
-    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env ExhibitHallRestrictedHall where
   runMessage msg (ExhibitHallRestrictedHall attrs) =

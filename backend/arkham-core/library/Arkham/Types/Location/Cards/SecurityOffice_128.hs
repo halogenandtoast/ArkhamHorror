@@ -9,16 +9,15 @@ import qualified Arkham.Location.Cards as Cards (securityOffice_128)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype SecurityOffice_128 = SecurityOffice_128 LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 securityOffice_128 :: LocationCard SecurityOffice_128
@@ -30,19 +29,12 @@ securityOffice_128 = location
   Diamond
   [Square]
 
-instance HasModifiersFor env SecurityOffice_128
-
-ability :: LocationAttrs -> Ability
-ability attrs =
-  (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 2))
-    { abilityLimit = PlayerLimit PerTurn 1
-    }
-
 instance HasAbilities env SecurityOffice_128 where
-  getAbilities iid window@(Window Timing.When NonFast) (SecurityOffice_128 attrs)
-    = withBaseAbilities iid window attrs $ pure [locationAbility (ability attrs)]
-  getAbilities iid window (SecurityOffice_128 attrs) =
-    getAbilities iid window attrs
+  getAbilities i w (SecurityOffice_128 x) = withBaseAbilities i w x $ pure
+    [ restrictedAbility x 1 Here (ActionAbility Nothing $ ActionCost 2)
+        & (abilityLimitL .~ PlayerLimit PerTurn 1)
+    | locationRevealed x
+    ]
 
 instance LocationRunner env => RunMessage env SecurityOffice_128 where
   runMessage msg l@(SecurityOffice_128 attrs) = case msg of

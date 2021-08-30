@@ -6,18 +6,23 @@ module Arkham.Types.Enemy.Cards.ConglomerationOfSpheres
 import Arkham.Prelude
 
 import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Prey
 import Arkham.Types.SkillType
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 newtype ConglomerationOfSpheres = ConglomerationOfSpheres EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 conglomerationOfSpheres :: EnemyCard ConglomerationOfSpheres
 conglomerationOfSpheres = enemyWith
@@ -27,12 +32,18 @@ conglomerationOfSpheres = enemyWith
   (1, 1)
   (preyL .~ LowestSkill SkillWillpower)
 
+instance HasAbilities env ConglomerationOfSpheres where
+  getAbilities i w (ConglomerationOfSpheres x) = withBaseAbilities i w x $ pure
+    [ mkAbility x 1
+      $ ForcedAbility
+      $ EnemyAttacked Timing.After You (SourceWithTrait Melee)
+      $ EnemyWithId
+      $ toId x
+    ]
+
 instance EnemyRunner env => RunMessage env ConglomerationOfSpheres where
-  runMessage msg e@(ConglomerationOfSpheres attrs@EnemyAttrs {..}) =
-    case msg of
-      After (FightEnemy _ eid source _ _) | eid == enemyId -> do
-        traits <- getSet source
-        e <$ when
-          (Melee `member` traits)
-          (push $ Discard $ sourceToTarget source)
-      _ -> ConglomerationOfSpheres <$> runMessage msg attrs
+  runMessage msg e@(ConglomerationOfSpheres attrs) = case msg of
+    UseCardAbility _ source [Window _ (Window.EnemyAttacked _ attackSource _)] 1 _
+      | isSource attrs source
+      -> e <$ push (Discard $ sourceToTarget attackSource)
+    _ -> ConglomerationOfSpheres <$> runMessage msg attrs

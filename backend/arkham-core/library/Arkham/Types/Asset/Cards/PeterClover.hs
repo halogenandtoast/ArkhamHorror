@@ -12,7 +12,6 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
-import Arkham.Types.Id
 import Arkham.Types.Matcher hiding (EnemyEvaded)
 import Arkham.Types.Message
 import Arkham.Types.Phase

@@ -9,7 +9,6 @@ import qualified Arkham.Location.Cards as Cards (passengerCar_168)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Criteria
 import Arkham.Types.Direction
 import Arkham.Types.GameValue
 import Arkham.Types.Id

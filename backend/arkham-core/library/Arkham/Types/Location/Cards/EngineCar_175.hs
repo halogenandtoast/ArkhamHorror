@@ -17,7 +17,7 @@ import Arkham.Types.Query
 
 newtype EngineCar_175 = EngineCar_175 LocationAttrs
   deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 engineCar_175 :: LocationCard EngineCar_175
 engineCar_175 = locationWith
@@ -37,9 +37,6 @@ instance HasCount ClueCount env LocationId => HasModifiersFor env EngineCar_175 
         pure $ toModifiers l [ Blocked | not locationRevealed && clueCount > 0 ]
       Nothing -> pure []
   getModifiersFor _ _ _ = pure []
-
-instance HasAbilities env EngineCar_175 where
-  getAbilities iid window (EngineCar_175 attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env EngineCar_175 where
   runMessage msg (EngineCar_175 attrs) = EngineCar_175 <$> runMessage msg attrs

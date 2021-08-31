@@ -17,6 +17,7 @@ import Arkham.Types.Cost
 import Arkham.Types.Criteria (Criterion)
 import qualified Arkham.Types.Criteria as Criteria
 import Arkham.Types.Deck
+import Arkham.Types.Direction
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
 import Arkham.Types.GameValue
@@ -821,6 +822,7 @@ type CanCheckPlayable env
   = ( HasModifiersFor env ()
     , HasStep ActStep env ()
     , HasSet VictoryDisplayCard env ()
+    , HasId (Maybe LocationId) env (Direction, LocationId)
     , HasId (Maybe LocationId) env TreacheryId
     , HasId (Maybe LocationId) env EventId
     , Query Matcher.AssetMatcher env
@@ -1726,6 +1728,9 @@ locationMatches investigatorId source window locationId = \case
   Matcher.NotYourLocation -> do
     yourLocationId <- getId @LocationId investigatorId
     pure $ locationId /= yourLocationId
+  Matcher.LocationInDirection direction matcher' -> do
+    starts <- selectList matcher'
+    elem locationId . catMaybes <$> traverse (getId . (direction, )) starts
   Matcher.FarthestLocationFromYou matcher' ->
     member (FarthestLocationId locationId) <$> getSet (investigatorId, matcher')
   Matcher.LocationWithTrait t -> member t <$> getSet locationId

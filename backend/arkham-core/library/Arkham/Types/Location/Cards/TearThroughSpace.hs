@@ -16,7 +16,6 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Name
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 import Control.Monad.Extra (findM)
 
 newtype TearThroughSpace = TearThroughSpace LocationAttrs
@@ -32,28 +31,15 @@ tearThroughSpace = location
   Square
   [Diamond, Triangle, Square]
 
-forcedAbility :: LocationAttrs -> Ability
-forcedAbility a = mkAbility (toSource a) 1 LegacyForcedAbility
-
-instance ActionRunner env => HasAbilities env TearThroughSpace where
-  getAbilities iid (Window Timing.When AtEndOfRound) (TearThroughSpace attrs) =
-    do
-      leadInvestigator <- getLeadInvestigatorId
-      pure [ forcedAbility attrs | iid == leadInvestigator ]
+instance HasAbilities env TearThroughSpace where
   getAbilities iid window (TearThroughSpace attrs) =
-    getAbilities iid window attrs
+    withBaseAbilities iid window attrs $ pure
+      [ mkAbility attrs 1 $ ForcedAbility $ RoundEnds Timing.When
+      | locationRevealed attrs
+      ]
 
 instance LocationRunner env => RunMessage env TearThroughSpace where
   runMessage msg l@(TearThroughSpace attrs) = case msg of
-    Revelation _ source | isSource attrs source -> do
-      let
-        labels = [ nameToLabel (toName attrs) <> tshow @Int n | n <- [1 .. 4] ]
-      availableLabel <- findM
-        (fmap isNothing . getId @(Maybe LocationId) . LocationWithLabel)
-        labels
-      case availableLabel of
-        Just label -> pure . TearThroughSpace $ attrs & labelL .~ label
-        Nothing -> error "could not find label"
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (chooseOne
         iid
@@ -63,4 +49,13 @@ instance LocationRunner env => RunMessage env TearThroughSpace where
         , Label "Discard Tear through Space" [Discard (toTarget attrs)]
         ]
       )
+    Revelation _ source | isSource attrs source -> do
+      let
+        labels = [ nameToLabel (toName attrs) <> tshow @Int n | n <- [1 .. 4] ]
+      availableLabel <- findM
+        (fmap isNothing . getId @(Maybe LocationId) . LocationWithLabel)
+        labels
+      case availableLabel of
+        Just label -> pure . TearThroughSpace $ attrs & labelL .~ label
+        Nothing -> error "could not find label"
     _ -> TearThroughSpace <$> runMessage msg attrs

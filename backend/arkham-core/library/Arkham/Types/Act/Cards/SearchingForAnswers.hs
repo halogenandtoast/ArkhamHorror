@@ -7,17 +7,16 @@ import Arkham.Prelude
 
 import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Enemy.Cards as Enemies
+import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
-import Arkham.Types.ActId
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
-import Arkham.Types.Game.Helpers
-import Arkham.Types.LocationId
 import Arkham.Types.Matcher hiding (RevealLocation)
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 
 newtype SearchingForAnswers = SearchingForAnswers ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)
@@ -28,25 +27,17 @@ searchingForAnswers =
   act (1, A) SearchingForAnswers Cards.searchingForAnswers Nothing
 
 instance HasAbilities env SearchingForAnswers where
-  getAbilities iid window (SearchingForAnswers attrs) =
-    getAbilities iid window attrs
+  getAbilities _ _ (SearchingForAnswers x) = pure
+    [ mkAbility x 1 $ ForcedAbility $ Enters Timing.When You $ LocationWithTitle
+        "The Hidden Chamber"
+    ]
 
 instance ActRunner env => RunMessage env SearchingForAnswers where
-  runMessage msg a@(SearchingForAnswers attrs@ActAttrs {..}) = case msg of
-    WhenEnterLocation _ lid -> do
-      mHiddenChamberId <- getLocationIdByName "The Hidden Chamber"
-      a <$ when
-        (Just lid == mHiddenChamberId)
-        (push $ AdvanceAct actId (toSource attrs))
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      push $ chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
-      pure
-        . SearchingForAnswers
-        $ attrs
-        & (sequenceL .~ Act (unActStep $ actStep actSequence) B)
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
-      unrevealedLocationIds <- map unUnrevealedLocationId <$> getSetList ()
+  runMessage msg a@(SearchingForAnswers attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      a <$ push (AdvanceAct (toId attrs) source)
+    AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
+      unrevealedLocationIds <- selectList UnrevealedLocation
       hiddenChamber <- fromJustNote "must exist"
         <$> getId (LocationWithTitle "The Hidden Chamber")
       silasBishop <- EncounterCard <$> genEncounterCard Enemies.silasBishop

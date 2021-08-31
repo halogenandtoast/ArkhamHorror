@@ -9,7 +9,9 @@ import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes.Entity
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers as X
+import Arkham.Types.Matcher
 
 resignAction :: SourceEntity a => a -> Ability
 resignAction a =
@@ -17,4 +19,11 @@ resignAction a =
 
 drawCardUnderneathAction :: SourceEntity a => a -> Ability
 drawCardUnderneathAction a =
-  (mkAbility a 98 $ FastAbility Free) { abilityLimit = GroupLimit PerGame 1 }
+  (restrictedAbility
+        a
+        98
+        (Here <> LocationExists (YourLocation <> LocationWithoutClues))
+    $ FastAbility Free
+    )
+    { abilityLimit = GroupLimit PerGame 1
+    }

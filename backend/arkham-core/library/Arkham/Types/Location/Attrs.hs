@@ -341,10 +341,6 @@ withResignAction iid window x body = do
 locationResignAction :: LocationAttrs -> Ability
 locationResignAction attrs = toLocationAbility attrs (resignAction attrs)
 
-drawCardUnderneathLocationAction :: LocationAttrs -> Ability
-drawCardUnderneathLocationAction attrs =
-  toLocationAbility attrs (drawCardUnderneathAction attrs)
-
 toLocationAbility :: LocationAttrs -> Ability -> Ability
 toLocationAbility attrs ability = ability
   { abilityCriteria = Just
@@ -369,13 +365,9 @@ withDrawCardUnderneathAction
   -> Window
   -> location
   -> m [Ability]
-withDrawCardUnderneathAction iid window@(Window Timing.When Window.NonFast) x
-  | locationRevealed (toAttrs x) = withBaseAbilities iid window attrs $ pure
-    [ drawCardUnderneathAction attrs
-    | iid `on` attrs && locationClues attrs == 0
-    ]
+withDrawCardUnderneathAction iid window x = withBaseAbilities iid window attrs
+  $ pure [ drawCardUnderneathAction attrs | locationRevealed attrs ]
   where attrs = toAttrs x
-withDrawCardUnderneathAction iid window x = getAbilities iid window (toAttrs x)
 
 instance HasAbilities env LocationAttrs where
   getAbilities _ _ l = pure

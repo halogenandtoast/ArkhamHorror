@@ -220,6 +220,7 @@ data LocationMatcher
   | LocationWithoutEnemies
   | LocationWithEnemy EnemyMatcher
   | RevealedLocation
+  | UnrevealedLocation
   | InvestigatableLocation
   | FarthestLocationFromYou LocationMatcher
   | LocationWithTrait Trait

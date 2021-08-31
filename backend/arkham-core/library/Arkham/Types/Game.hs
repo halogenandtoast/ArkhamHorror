@@ -682,6 +682,8 @@ getLocationsMatching = \case
       . view locationsL
       =<< getGame
   RevealedLocation -> filter isRevealed . toList . view locationsL <$> getGame
+  UnrevealedLocation ->
+    filter (not . isRevealed) . toList . view locationsL <$> getGame
   LocationWithClues gameValueMatcher -> do
     allLocations' <- toList . view locationsL <$> getGame
     filterM

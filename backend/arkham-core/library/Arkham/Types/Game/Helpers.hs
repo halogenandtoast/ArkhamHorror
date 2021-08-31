@@ -1705,7 +1705,9 @@ locationMatches investigatorId source window locationId = \case
     yourLocationId <- getId @LocationId investigatorId
     member (ConnectedLocationId locationId) <$> getSet yourLocationId
   Matcher.RevealedLocation ->
-    member (RevealedLocationId locationId) <$> getSet ()
+    member locationId <$> select Matcher.RevealedLocation
+  Matcher.UnrevealedLocation ->
+    member locationId <$> select Matcher.UnrevealedLocation
   Matcher.LocationWithClues valueMatcher ->
     (`gameValueMatches` valueMatcher) . unClueCount =<< getCount locationId
   Matcher.LocationWithMostClues ->

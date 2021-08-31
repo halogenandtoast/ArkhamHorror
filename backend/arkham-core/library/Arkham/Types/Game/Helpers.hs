@@ -848,6 +848,7 @@ type CanCheckPlayable env
     , HasCount (Maybe ClueCount) env TreacheryId
     , HasCount ClueCount env AssetId
     , HasCount ClueCount env ActId
+    , HasCount ClueCount env InvestigatorId
     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
     , HasSet InvestigatorId env LocationId
     , HasSet EnemyId env LocationId
@@ -1504,6 +1505,10 @@ windowMatches iid source window' = \case
         (enemyMatches enemyId enemyMatcher)
         (locationMatches iid source window' lid whereMatcher)
       _ -> pure False
+  Matcher.ChosenRandomLocation timingMatcher whereMatcher -> case window' of
+    Window t (Window.ChosenRandomLocation lid) | timingMatcher == t ->
+      locationMatches iid source window' lid whereMatcher
+    _ -> pure False
   Matcher.EnemyWouldBeDefeated timingMatcher enemyMatcher -> case window' of
     Window t (Window.EnemyWouldBeDefeated enemyId) | timingMatcher == t ->
       enemyMatches enemyId enemyMatcher
@@ -1625,6 +1630,8 @@ matchWho you who = \case
   Matcher.InvestigatorCanMove -> do
     notElem CannotMove
       <$> getModifiers (InvestigatorSource who) (InvestigatorTarget who)
+  Matcher.InvestigatorWithClues valueMatcher ->
+    (`gameValueMatches` valueMatcher) . unClueCount =<< getCount who
   Matcher.InvestigatorWithDamage valueMatcher ->
     (`gameValueMatches` valueMatcher) . unDamageCount =<< getCount who
   Matcher.InvestigatorWithHorror valueMatcher ->

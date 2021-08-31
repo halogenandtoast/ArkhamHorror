@@ -12,13 +12,13 @@ import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Message
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (ChosenRandomLocation)
+import qualified Arkham.Types.Message as Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
 
 newtype ColdSpringGlen_245 = ColdSpringGlen_245 LocationAttrs
   deriving anyclass IsLocation
@@ -40,15 +40,14 @@ instance HasModifiersFor env ColdSpringGlen_245 where
       [ EnemyEvade (-1) | eid `elem` locationEnemies attrs ]
   getModifiersFor _ _ _ = pure []
 
-ability :: LocationAttrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (LegacyReactionAbility Free)
-
 instance HasAbilities env ColdSpringGlen_245 where
-  getAbilities _ (Window Timing.When (Window.ChosenRandomLocation lid)) (ColdSpringGlen_245 attrs)
-    | lid == toId attrs
-    = pure [locationAbility (ability attrs)]
   getAbilities iid window (ColdSpringGlen_245 attrs) =
-    getAbilities iid window attrs
+    withBaseAbilities iid window attrs $ pure
+      [ mkAbility attrs 1 $ ReactionAbility
+          (ChosenRandomLocation Timing.After $ LocationWithId $ toId attrs)
+          Free
+      | locationRevealed attrs
+      ]
 
 instance LocationRunner env => RunMessage env ColdSpringGlen_245 where
   runMessage msg l@(ColdSpringGlen_245 attrs) = case msg of
@@ -58,11 +57,11 @@ instance LocationRunner env => RunMessage env ColdSpringGlen_245 where
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> l <$ replaceMessageMatching
         (\case
-          ChosenRandomLocation _ lid | lid == toId attrs -> True
+          Message.ChosenRandomLocation _ lid | lid == toId attrs -> True
           _ -> False
         )
         (\case
-          ChosenRandomLocation target lid | lid == toId attrs ->
+          Message.ChosenRandomLocation target lid | lid == toId attrs ->
             [ChooseRandomLocation target (singleton lid)]
           _ -> error "should be the matching message"
         )

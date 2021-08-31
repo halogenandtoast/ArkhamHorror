@@ -6,13 +6,14 @@ module Arkham.Types.Location.Cards.CongregationalChurch_208
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (congregationalChurch_208)
+import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Matcher hiding (RevealLocation)
-import Arkham.Types.Message
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (RevealLocation)
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 
 newtype CongregationalChurch_208 = CongregationalChurch_208 LocationAttrs
@@ -29,17 +30,26 @@ congregationalChurch_208 = location
   [Plus, Triangle, Squiggle]
 
 instance HasAbilities env CongregationalChurch_208 where
-  getAbilities = withDrawCardUnderneathAction
+  getAbilities iid window (CongregationalChurch_208 attrs) = do
+    rest <- withDrawCardUnderneathAction iid window attrs
+    pure
+      $ [ mkAbility attrs 1
+          $ ForcedAbility
+          $ RevealLocation Timing.After Anyone
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
+      <> rest
 
 instance LocationRunner env => RunMessage env CongregationalChurch_208 where
   runMessage msg l@(CongregationalChurch_208 attrs) = case msg of
-    RevealLocation miid lid | lid == locationId attrs -> do
-      iid <- maybe getLeadInvestigatorId pure miid
-      push $ FindEncounterCard
-        iid
-        (toTarget attrs)
-        (CardWithType EnemyType <> CardWithTrait Humanoid)
-      CongregationalChurch_208 <$> runMessage msg attrs
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      l <$ push
+        (FindEncounterCard iid (toTarget attrs)
+        $ CardWithType EnemyType
+        <> CardWithTrait Humanoid
+        )
     FoundEncounterCard _iid target card | isTarget attrs target -> do
       villageCommonsId <- fromJustNote "missing village commons"
         <$> getId (LocationWithTitle "Village Commons")

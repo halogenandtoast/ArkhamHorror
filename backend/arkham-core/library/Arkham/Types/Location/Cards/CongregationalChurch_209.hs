@@ -33,6 +33,7 @@ instance HasAbilities env CongregationalChurch_209 where
     pure
       $ [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ Costs
             [ActionCost 1, HandDiscardCost 1 Nothing mempty mempty]
+        | locationRevealed attrs
         ]
       <> rest
 

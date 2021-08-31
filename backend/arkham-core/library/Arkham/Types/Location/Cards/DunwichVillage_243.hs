@@ -33,7 +33,7 @@ dunwichVillage_243 = location
   [Triangle, Square, Diamond]
 
 instance HasAbilities env DunwichVillage_243 where
-  getAbilities iid window (DunwichVillage_243 x) | locationRevealed x =
+  getAbilities iid window (DunwichVillage_243 x) =
     withResignAction iid window x $ do
       pure
         [ restrictedAbility
@@ -44,9 +44,8 @@ instance HasAbilities env DunwichVillage_243 where
             )
           $ ActionAbility Nothing
           $ ActionCost 1
+        | locationRevealed x
         ]
-  getAbilities iid window (DunwichVillage_243 attrs) =
-    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env DunwichVillage_243 where
   runMessage msg l@(DunwichVillage_243 attrs) = case msg of

@@ -6,13 +6,14 @@ module Arkham.Types.Location.Cards.HouseInTheReeds_211
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (houseInTheReeds_211)
+import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
-import Arkham.Types.Matcher hiding (RevealLocation)
-import Arkham.Types.Message
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (RevealLocation)
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 
 newtype HouseInTheReeds_211 = HouseInTheReeds_211 LocationAttrs
@@ -31,17 +32,25 @@ houseInTheReeds_211 = location
 instance HasModifiersFor env HouseInTheReeds_211
 
 instance HasAbilities env HouseInTheReeds_211 where
-  getAbilities = withDrawCardUnderneathAction
+  getAbilities iid window (HouseInTheReeds_211 x) = do
+    rest <- withDrawCardUnderneathAction iid window x
+    pure
+      $ [ mkAbility x 1
+          $ ForcedAbility
+          $ RevealLocation Timing.After Anyone
+          $ LocationWithId
+          $ toId x
+        | locationRevealed x
+        ]
+      <> rest
 
 instance LocationRunner env => RunMessage env HouseInTheReeds_211 where
   runMessage msg l@(HouseInTheReeds_211 attrs) = case msg of
-    RevealLocation miid lid | lid == locationId attrs -> do
-      iid <- maybe getLeadInvestigatorId pure miid
-      push $ FindEncounterCard
-        iid
-        (toTarget attrs)
-        (CardWithType EnemyType <> CardWithTrait Nightgaunt)
-      HouseInTheReeds_211 <$> runMessage msg attrs
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+      (FindEncounterCard iid (toTarget attrs)
+      $ CardWithType EnemyType
+      <> CardWithTrait Nightgaunt
+      )
     FoundEncounterCard _iid target card | isTarget attrs target -> do
       villageCommonsId <- fromJustNote "missing village commons"
         <$> getId (LocationWithTitle "Village Commons")

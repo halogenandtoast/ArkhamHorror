@@ -239,6 +239,7 @@ data LocationMatcher
   | LocationWithoutInvestigators
   | LocationWithoutEnemies
   | LocationWithEnemy EnemyMatcher
+  | LocationWithInvestigator InvestigatorMatcher
   | RevealedLocation
   | UnrevealedLocation
   | InvestigatableLocation
@@ -390,6 +391,7 @@ data WindowMatcher
   | AssetDealtDamage Timing AssetMatcher
   | EnemyDealtDamage Timing EnemyMatcher
   | EnemyLeavesPlay Timing EnemyMatcher
+  | LocationLeavesPlay Timing LocationMatcher
   | TookControlOfAsset Timing Who AssetMatcher
   | DiscoveringLastClue Timing Who Where
   | DiscoverClues Timing Who Where ValueMatcher
